@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>{% block title %}EZID{% endblock %}</title>
+<link rel="stylesheet" type="text/css" href="/ezid/static/style.css"/>
+<script type="text/javascript" src="/ezid/static/jquery.js"></script>
+<script type="text/javascript" src="/ezid/static/base.js"></script>
+{% block header %}{% endblock %}
+<script type="text/javascript">/*<![CDATA[*/
+areMessages = {% if messages %}true{% else %}false{% endif %};
+{% block javascript %}{% endblock %}
+/*]]>*/</script>
+</head>
+
+<body>
+
+<table id="header">
+<tr>
+<td id="logo" rowspan="2">
+<a href="http://www.cdlib.org/services/uc3/"><img src="/ezid/static/logo.gif"
+alt="UC3"/></a>
+</td>
+<td id="branding" rowspan="2">
+<span id="uc3brand"><a href="http://www.cdlib.org/services/uc3/">The
+UC Curation Center at</a></span><br/>
+<span id="cdlbrand"><a href="http://www.cdlib.org/">CDL</a></span>
+</td>
+<td id="logininfo">
+{% if session.auth %}
+Logged in as {{ session.auth.user|first }} |
+<a href="/ezid/logout">Logout</a>
+{% else %}
+<a href="/ezid/login">Login</a>
+<!-- | <a href="/ezid/register">Register</a> -->
+{% endif %}
+| <a href="http://www.cdlib.org/services/uc3/contact.html">Contact UC3</a>
+</td>
+</tr>
+<tr>
+<td id="historyinfo"><div>
+<select id="history">
+<option selected="selected">Recent identifiers</option>
+{% for id in session.history %}
+<option class="historyentry" value="{{ id.url }}">{{ id.abbreviated }}</option>
+{% endfor %}
+<option value="clear">Clear list...</option>
+</select>
+</div></td>
+</tr>
+</table>
+
+<div id="title"><a href="/ezid/">EZID</a></div>
+<div id="subtitle">long-term identifiers made easy</div>
+
+<div id="messages">
+{% if messages %}
+{% for m in messages %}
+<span class="{{ m.tags }}">{{ m }}</span>
+{% endfor %}
+{% else %}
+&nbsp;
+{% endif %}
+</div>
+
+{% block tabs %}{% endblock %}
+
+<div id="content">
+{% block content %}{% endblock %}
+</div>
+
+{% comment %} Add a little whitespace to the bottom of the page proper
+so that content at the bottom of the page doesn't get occluded by the
+floating copyright. {% endcomment %}
+
+{% block bottomspacer %}
+<p>&nbsp;</p>
+{% endblock %}
+
+<div id="footer">EZID is a service of the <a
+href="http://www.cdlib.org/services/uc3/">University of California
+Curation Center</a> of the <a href="http://www.cdlib.org/">California
+Digital Library</a><br/>
+Copyright &copy; 2009-2010 The Regents of the University of
+California</div>
+
+</body>
+
+</html>

@@ -1,0 +1,137 @@
+{% extends "tabs.html" %}
+
+{% comment %} Non-obvious point: to get around a Django restriction,
+references to profile elements whose names begin with an underscore
+are simply written without the underscores; module metadata adds the
+underscores back in.  E.g., profiles.0.target refers to element
+_target. {% endcomment %}
+
+{% block title %}EZID : {{ identifier }}{% endblock %}
+
+{% block header %}
+<script type="text/javascript" src="/ezid/static/jquery.tooltip.js"></script>
+<script type="text/javascript"
+src="/ezid/static/metadata_tooltips.js"></script>
+<script type="text/javascript" src="/ezid/static/identifier.js"></script>
+{% endblock %}
+
+{% block javascript %}
+defaultTargetUrl = "{{ defaultTargetUrl|escapejs }}";
+currentProfile = "{{ profiles.0.profile.value|escapejs }}";
+identifier = "{{ identifier|escapejs }}";
+{% endblock %}
+
+{% block managetab %}active{% endblock %}
+
+{% block content %}
+
+<form action="null">
+
+<table id="idtable">
+
+<tr>
+<th class="labelvalue label idlabelvalue">Identifier</th>
+<td class="labelvalue idlabelvalue">{{ identifier }}</td>
+</tr>
+<tr>
+<th id="element__urlform" class="labelvalue label">
+{{ profiles.0.urlform.displayName }}
+</th>
+<td class="labelvalue"><div class="value">
+{% if profiles.0.urlform.value != "(none)" %}
+<a href="{{ profiles.0.urlform.value }}">{{ profiles.0.urlform.value }}</a>
+{% else %}
+{{ profiles.0.urlform.value }}
+{% endif %}
+<span id="urlformnote">{{ profiles.0.urlform.note }}</span>
+</div></td>
+</tr>
+
+<tr><th class="section" colspan="2">Object location...</th></tr>
+
+<tr>
+<th id="element__target" class="labelvalue label">
+{{ profiles.0.target.displayName }}
+</th>
+{% comment %} No space between the TD and DIV below! {% endcomment %}
+<td class="labelvalue"><div>
+<div class="value{% if editable %} editable{% endif %}"
+{% if editable %}onclick="openEditBox(this, '_target');"{% endif %}>
+{{ profiles.0.target.value }}
+</div>
+{% if profiles.0.target.value != "(this page)" %}
+<div class="visit"><a href="{{ profiles.0.target.value }}">Visit now</a></div>
+{% endif %}
+</div></td>
+</tr>
+
+<tr><td colspan="2"><div>
+<table class="innertable">
+<tr>
+<th class="section">About the identified object...</th>
+<td>
+Viewing <select id="profileselect">
+{% for p in profiles|slice:"1:" %}
+<option value="{{ p.name }}"
+{% if p.name == profiles.0.profile.value %}selected="selected"{% endif %}
+>{{ p.displayName }}</option>
+{% endfor %}
+</select> citation profile
+</td>
+</tr>
+</table>
+</div></td></tr>
+
+{% for p in profiles|slice:"1:" %}
+{% for e in p.elements %}
+<tr class="profile_{{ p.name|slugify }}"
+{% if p.name != profiles.0.profile.value %}style="display: none"{% endif %}>
+<th id="element_{{ e.name|slugify }}"
+class="labelvalue label">{{ e.displayName }}</th>
+{% comment %} No space between the TD and DIV below! {% endcomment %}
+<td class="labelvalue"><div class="value{% if editable %} editable{% endif %}"
+{% if editable %}
+onclick="openEditBox(this, '{{ e.name|escapejs }}');"
+{% endif %}>
+{{ e.value|linebreaksbr }}
+</div></td>
+</tr>
+{% endfor %}
+{% endfor %}
+
+<tr><th class="section" colspan="2">
+<a id="moreswitch" href="#"><span id="more"></span><span id="less"></span>
+About this identifier...</a>
+</th></tr>
+
+{% for e in profiles.0.elements|slice:"3:" %}
+{% if e.value != "(no value)" %}
+<tr class="profile_internal" style="display: none">
+<th id="element_{{ e.name|slugify }}"
+class="labelvalue label">{{ e.displayName }}</th>
+<td class="labelvalue"><div class="value">
+{% if e.hyperlink %}
+<a href="{{ e.hyperlink }}">{{ e.value }}</a>
+{% else %}
+{{ e.value }}
+{% endif %}
+</div></td>
+</tr>
+{% endif %}
+{% endfor %}
+
+{% comment %} Hack to force the left column to minimum width: put a
+bunch of invisible crap in the right column. {% endcomment %}
+<tr id="columnshifter">
+<th class="labelvalue"></th>
+<td class="labelvalue">M M M M M M M M M M M M M M M M M M M M M M M M
+M M M M M M M M M M M M M M M M M M M M M M M M</td>
+</tr>
+
+</table>
+
+</form>
+
+{% endblock %}
+
+{% block bottomspacer %}{% endblock %}

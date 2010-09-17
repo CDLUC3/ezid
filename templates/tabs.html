@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block tabs %}
+<div id="tabs">
+<ul>
+<li><a class="{% block hometab %}inactive{% endblock %}"
+href="/ezid/">Home</a></li>
+<li><a class="{% block createtab %}inactive{% endblock %}"
+href="/ezid/create">Create</a></li>
+<li><a class="{% block managetab %}inactive{% endblock %}"
+href="/ezid/manage">Manage</a></li>
+<li><a class="{% block helptab %}inactive{% endblock %}"
+href="/ezid/help">Help</a></li>
+{% if session.auth.user|first == "admin" %}
+<li><a class="{% block admintab %}inactive{% endblock %}"
+href="/ezid/admin">Admin</a></li>
+{% endif %}
+</ul>
+</div>
+{% endblock %}

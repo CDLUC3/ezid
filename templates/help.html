@@ -1,0 +1,122 @@
+{% extends "tabs.html" %}
+
+{% block title %}EZID : Help{% endblock %}
+
+{% block javascript %}
+var index = {{ index }};
+function changePrefix (newIndex) {
+  if (newIndex == index) return;
+  clearMessages();
+  $("#submit" + index).css("visibility", "hidden");
+  $("#suffix" + index).css("background-color", "white");
+  index = newIndex;
+  $("#submit" + index).css("visibility", "visible");
+  $("#radio" + index).attr("checked", true);
+  $("#suffix" + index).css("background-color", "#FFF1A8");
+}
+$(document).ready(function () {
+  $("#form").submit(function () {
+    addMessage("<span class='info'>Working...</span>");
+    return true;
+  });
+  for (var i = 1; i <= $("#createtable")[0].rows.length-2; ++i) {
+    $("#radio" + i).click(function (j) {
+      return function () { $("#suffix" + j).focus(); }
+    }(i));
+    $("#suffix" + i).keydown(clearMessages);
+    $("#suffix" + i).focus(function (j) {
+      return function () { changePrefix(j); }
+    }(i));
+  }
+  $("#suffix" + index).focus();
+});
+{% endblock %}
+
+{% block helptab %}active{% endblock %}
+
+{% block content %}
+
+<p>We hope that most of this interface is easy to use.  You can use
+the form below to create test identifiers exactly as you would under
+the Create tab.  Test identifiers are the same as long-term
+identifiers except they are deleted after 72 hours.</p>
+
+<p>Clicking the Create button below (leaving the Remainder blank) will
+generate a preservation-ready test identifier for you.</p>
+
+<form id="form" method="post" action="/ezid/help">
+
+<table id="createtable">
+<tr>
+<td></td>
+<th rowspan="2">Namespace</th>
+<td id="gap"></td>
+<th id="identifierheader" colspan="2">Identifier</th>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<th id="prefixheader">Prefix</th>
+<th id="remainderheader">Remainder</th>
+<td></td>
+</tr>
+{% for p in prefixes %}
+<tr>
+<td>
+<input type="radio" id="radio{{ forloop.counter }}" name="index"
+value="{{ forloop.counter }}"
+{% if forloop.counter == index %}checked="checked"{% endif %}/>
+</td>
+<td>{{ p.namespace }}</td>
+<td></td>
+<td class="prefix">{{ p.prefix }}</td>
+<td>
+<input type="hidden" name="prefix{{ forloop.counter }}"
+value="{{ p.prefix }}"/>
+<input type="text" id="suffix{{ forloop.counter }}"
+name="suffix{{ forloop.counter }}" size="30"
+{% if forloop.counter == index %}
+style="background-color: #FFF1A8"
+{% if suffix %}value="{{ suffix }}"{% endif %}
+{% endif %}/>
+</td>
+<td>
+<input type="submit" id="submit{{ forloop.counter }}" value="Create"
+{% if forloop.counter != index %}style="visibility: hidden"{% endif %}/>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+</form>
+
+<p>A namespace is the set of all possible identifiers that begin with
+a certain prefix, such as ark:/99999/fk4.... EZID always supplies the
+prefix, and usually the remainder as well.  We strongly advise letting
+EZID generate the identifier for you.  This way it will be short,
+opaque, globally unique, and transcription-safe (EZID adds a "check
+character").</p>
+
+<p>On the Manage tab, you can add metadata ("data about data") for an
+identified object.  Editable fields change color to yellow as you
+mouse over them.  The "URL" field stores the current location of the
+identified object.  When you first create your identifier, EZID
+supplies a default value for this field, namely the URL of the Manage
+tab for that identifier.  We recommend that you replace this with the
+actual current location of the object.</p>
+
+<p>On the right is a pull-down for selecting a "citation profile."
+The profile determines the metadata elements you can complete for the
+identifier.  Depending on the type of identifier you create, EZID will
+select the appropriate profile as the default.  At present there is no
+automatic mapping between profiles.</p>
+
+<p>You can also use the Manage tab to look up an identifier you know
+about.  You must enter the identifier in a particular format, with the
+scheme first.  EZID currently accepts only identifiers beginning with
+one of two schemes, "ark:" or "doi:".  From any tab you can jump to
+managing a recently-viewed identifier using the pull-down menu found
+in the upper right-hand corner of your window.</p>
+
+{% endblock %}

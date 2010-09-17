@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}EZID : Login{% endblock %}
+
+{% block javascript %}
+$(document).ready(function () {
+  $("#username").keydown(clearMessages);
+  $("#password").keydown(clearMessages);
+  $("#username").focus();
+});
+{% endblock %}
+
+{% block content %}
+
+<div id="login">
+
+<form method="post" action="/ezid/login">
+<table>
+<tr>
+<th>Username</th>
+<td><input type="text" id="username" name="username" size="20"/></td>
+</tr>
+<tr>
+<th>Password</th>
+<td><input type="password" id="password" name="password" size="20"/></td>
+</tr>
+<tr>
+<td></td>
+<td><input type="submit" value="Login"/></td>
+</tr>
+</table>
+</form>
+
+<p>If you do not already have an account please
+<!-- <a href="/ezid/register">register</a>. -->
+<a href="http://www.cdlib.org/services/uc3/contact.html">contact us</a>.
+<!-- <br/>
+If you have forgotten your password request a
+<a href="/ezid/passwordreset">password reset</a>. --></p>
+
+</div>
+
+{% endblock %}

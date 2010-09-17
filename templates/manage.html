@@ -1,0 +1,36 @@
+{% extends "tabs.html" %}
+
+{% block title %}EZID : Manage{% endblock %}
+
+{% block javascript %}
+$(document).ready(function () {
+  $("#identifier").keydown(clearMessages);
+  $("#identifier").focus();
+});
+{% endblock %}
+
+{% block managetab %}active{% endblock %}
+
+{% block content %}
+
+<p>View and manage an existing long-term identifier.<br/>
+Be sure to include the identifier's scheme (e.g., <span
+id="manageexample">doi:</span>10.1234/foo).</p>
+
+<form method="post" action="/ezid/manage">
+<table id="managetable">
+<tr>
+<th>Identifier</th>
+<td>
+<input type="text" id="identifier" name="identifier" size="40"
+{% if identifier %}value="{{ identifier }}"{% endif %}/>
+</td>
+</tr>
+<tr>
+<td></td>
+<td><input type="submit" value="View"/></td>
+</tr>
+</table>
+</form>
+
+{% endblock %}

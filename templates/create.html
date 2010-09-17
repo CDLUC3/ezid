@@ -1,0 +1,106 @@
+{% extends "tabs.html" %}
+
+{% block title %}EZID : Create{% endblock %}
+
+{% block javascript %}
+{% if session.auth %}
+var index = {{ index }};
+function changePrefix (newIndex) {
+  if (newIndex == index) return;
+  clearMessages();
+  $("#submit" + index).css("visibility", "hidden");
+  $("#suffix" + index).css("background-color", "white");
+  index = newIndex;
+  $("#submit" + index).css("visibility", "visible");
+  $("#radio" + index).attr("checked", true);
+  $("#suffix" + index).css("background-color", "#FFF1A8");
+}
+$(document).ready(function () {
+  $("#form").submit(function () {
+    addMessage("<span class='info'>Working...</span>");
+    return true;
+  });
+  for (var i = 1; i <= $("#createtable")[0].rows.length-2; ++i) {
+    $("#radio" + i).click(function (j) {
+      return function () { $("#suffix" + j).focus(); }
+    }(i));
+    $("#suffix" + i).keydown(clearMessages);
+    $("#suffix" + i).focus(function (j) {
+      return function () { changePrefix(j); }
+    }(i));
+  }
+  $("#suffix" + index).focus();
+});
+{% endif %}
+{% endblock %}
+
+{% block createtab %}active{% endblock %}
+
+{% block content %}
+
+{% if not session.auth %}
+
+You must be logged in to create an identifier.<br/>
+Consult <a href="/ezid/help">help</a> to create test (i.e., temporary)
+identifiers.
+
+{% else %}
+
+<form id="form" method="post" action="/ezid/create">
+
+<p>Create a long-term identifier.  The identifier will be the
+concatenation of the prefix and remainder; leave the latter blank to
+have an identifier generated for you.</p>
+
+<table id="createtable">
+<tr>
+<td></td>
+<th rowspan="2">Namespace</th>
+<td id="gap"></td>
+<th id="identifierheader" colspan="2">Identifier</th>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<th id="prefixheader">Prefix</th>
+<th id="remainderheader">Remainder</th>
+<td></td>
+</tr>
+{% for p in session.prefixes %}
+<tr>
+<td>
+<input type="radio" id="radio{{ forloop.counter }}" name="index"
+value="{{ forloop.counter }}"
+{% if forloop.counter == index %}checked="checked"{% endif %}/>
+</td>
+<td>{{ p.namespace }}</td>
+<td></td>
+<td class="prefix">{{ p.prefix }}</td>
+<td>
+<input type="hidden" name="prefix{{ forloop.counter }}"
+value="{{ p.prefix }}"/>
+<input type="text" id="suffix{{ forloop.counter }}"
+name="suffix{{ forloop.counter }}" size="30"
+{% if forloop.counter == index %}
+style="background-color: #FFF1A8"
+{% if suffix %}value="{{ suffix }}"{% endif %}
+{% endif %}/>
+</td>
+<td>
+<input type="submit" id="submit{{ forloop.counter }}" value="Create"
+{% if forloop.counter != index %}style="visibility: hidden"{% endif %}/>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+<p>Once created, an identifier cannot be renamed or deleted.<br/>
+Consult <a href="/ezid/help">help</a> for considerations in naming
+identifiers and to create test identifiers.</p>
+
+</form>
+
+{% endif %}
+
+{% endblock %}
