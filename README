@@ -1,0 +1,108 @@
+EZID Installation Instructions
+==============================
+
+EZID is a Django web application that can be run under Django's
+built-in development server or under Apache with the mod_wsgi
+extension.  In either case, it assumes that it is embedded in the
+following directory layout:
+
+    .../SITE_ROOT/
+        PROJECT_ROOT/
+            (this software distribution:)
+            README
+            apache/
+            code/
+            profiles/
+            settings/
+            static/
+            templates/
+        db/
+            db.sqlite3
+        logs/
+            ezid-transaction-log
+
+The names of the SITE_ROOT and PROJECT_ROOT directories are arbitrary
+(EZID automatically detects what they are), but for the remainder of
+this document we'll assume that they are literally those names.
+
+EZID requires one environment variable, DJANGO_SETTINGS_MODULE, that
+indicates the deployment level.  Possible values:
+
+    settings.localdev
+    settings.development
+    settings.staging
+    settings.production
+
+See the corresponding modules in the settings directory for the
+effects the deployment level has.  In addition, the deployment level
+is used to define deployment-level-specific values for parameters in
+settings/ezid.conf, as in:
+
+    bind_noid: http://noid-dev.cdlib.org/nd/noidu_g3
+    {production}bind_noid: http://noid.cdlib.org/nd/noidu_g3
+
+When running EZID under Django's built-in server it will probably be
+necessary to set the PYTHONPATH like so:
+
+    setenv PYTHONPATH .../SITE_ROOT/PROJECT_ROOT
+
+The combination of the PYTHONPATH and DJANGO_SETTINGS_MODULE
+environment variables determines the location of the Django
+application.
+
+To create the initial Django database, assuming the above environment
+variables have been set:
+
+    django-admin.py syncdb
+
+To run the built-in server:
+
+    django-admin.py runserver
+
+The server is hosted at http://localhost:8000/ezid/.
+
+To run EZID under Apache and mod_wsgi, only the DJANGO_SETTINGS_MODULE
+environment variable need be set.  Five sets of directives are
+required in Apache's httpd.conf.  The following assume that EZID is
+hosted at http://{host}/ezid/.
+
+1. Load mod_wsgi.
+
+    LoadModule wsgi_module path/to/mod_wsgi.so
+
+2. Add two rewrite rules, one to preserve the Authorization header
+used in HTTP Basic authentication (for some reason Apache strips it
+out) and another to redirect the login page to HTTPS.
+
+    RewriteEngine on
+    RewriteBase /
+
+    RewriteCond %{HTTP:Authorization} (.+)
+    RewriteRule ^ - [e=HTTP_AUTHORIZATION:%1]
+
+    RewriteCond %{HTTPS} off
+    RewriteRule ^path/to/SITE_ROOT/PROJECT_ROOT/apache/django.wsgi/login$ \
+      https://%{HTTP_HOST}/ezid/login
+
+3. Add an alias so that static files are served by Apache, not Django.
+
+    Alias /ezid/static /path/to/SITE_ROOT/PROJECT_ROOT/static
+
+    <Directory /path/to/SITE_ROOT/PROJECT_ROOT/static>
+    Order deny,allow
+    Allow from all
+    </Directory>
+
+4. Tell mod_wsgi to run EZID as a single, multithreaded process.
+
+    WSGIDaemonProcess site-1
+    WSGIProcessGroup site-1
+
+5. Finally, map EZID URLs to mod_wsgi.
+
+    WSGIScriptAlias /ezid /path/to/SITE_ROOT/PROJECT_ROOT/apache/django.wsgi
+
+    <Directory /path/to/SITE_ROOT/PROJECT_ROOT/apache>
+    Order deny,allow
+    Allow from all
+    </Directory>
