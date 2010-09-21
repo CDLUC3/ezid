@@ -35,7 +35,7 @@ Logged in as {{ session.auth.user|first }} |
 <a href="/ezid/logout">Logout</a>
 {% else %}
 <a href="/ezid/login">Login</a>
-<!-- | <a href="/ezid/register">Register</a> -->
+{% comment %} | <a href="/ezid/register">Register</a> {% endcomment %}
 {% endif %}
 | <a href="http://www.cdlib.org/services/uc3/contact.html">Contact UC3</a>
 </td>
