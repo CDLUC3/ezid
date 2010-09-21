@@ -16,6 +16,7 @@ following directory layout:
             settings/
             static/
             templates/
+            tools/
         db/
             db.sqlite3
         logs/

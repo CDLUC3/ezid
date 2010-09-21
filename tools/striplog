@@ -1,0 +1,85 @@
+#! /usr/bin/python
+
+# Strips EZID transaction log files, retaining just BEGIN records for
+# those transactions that successfully created or updated an
+# identifier.  Usage:
+#
+#    striplog files... > output
+#
+# Greg Janee <gjanee@ucop.edu>
+# September 2010
+
+import re
+import sys
+
+testDoiPrefix = "10.9999/"
+testArkPrefix = "99999/fk4"
+
+def error (file, lineNo, message):
+  sys.stderr.write("%s, line %d: %s\n" % (file, lineNo, message))
+
+class Record:
+  def __init__ (self, file, lineNo, timestamp, beginRecord):
+    self.file = file
+    self.lineNo = lineNo
+    self.timestamp = timestamp
+    self.beginRecord = beginRecord
+    self.endRecord = None
+
+records = []
+tidMap = {}
+
+pattern = re.compile("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) " +\
+  "(([\da-fA-F]{32}) (BEGIN|END) |- ERROR )(.*)")
+
+for file in sys.argv[1:]:
+  f = open(file)
+  n = 0
+  for l in f:
+    n += 1
+    m = pattern.match(l)
+    if not m:
+      error(file, n, "unrecognized record")
+      continue
+    # Strip non-transaction errors.
+    if m.group(2).startswith("-"): continue
+    tid = m.group(3)
+    if m.group(4) == "BEGIN":
+      if tid in tidMap:
+        error(file, n, "duplicate transaction ID")
+        continue
+      r = Record(file, n, m.group(1), m.group(5))
+      records.append(r)
+      tidMap[tid] = r
+    else:
+      if tid not in tidMap:
+        error(file, n, "no corresponding BEGIN record")
+        continue
+      if tidMap[tid].endRecord != None:
+        error(file, n, "duplicate END record")
+        continue
+      tidMap[tid].endRecord = m.group(5)
+  f.close()
+
+for r in records:
+  if r.endRecord == None:
+    error(r.file, r.lineNo, "no corresponding END record")
+    continue
+  b = r.beginRecord.split()
+  e = r.endRecord.split()
+  # Strip errors.
+  if e[0] != "SUCCESS": continue
+  # Strip simple get requests.
+  if b[0] == "getMetadata": continue
+  # Strip everything related to test identifiers.
+  if ((b[0] == "mintDoi" or b[0] == "createDoi") and\
+       b[1].startswith(testDoiPrefix)) or\
+     ((b[0] == "mintArk" or b[0] == "createArk") and\
+       b[1].startswith(testArkPrefix)) or\
+     (b[0] == "setMetadata" and (b[1].startswith("doi:" + testDoiPrefix) or\
+       b[1].startswith("ark:/" + testArkPrefix))):
+    continue
+  # Special case: on a mint transaction, tack the new identifier onto
+  # the end of the BEGIN record.
+  if b[0] == "mintDoi" or b[0] == "mintArk": r.beginRecord += " -> " + e[1]
+  print "%s %s" % (r.timestamp, r.beginRecord)
