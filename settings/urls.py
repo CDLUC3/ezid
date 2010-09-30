@@ -24,7 +24,7 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("login$", "dispatch.d", { "function": "login" }),
   _p("logout$", "dispatch.d", { "function": "logout" }),
   _p("manage$", "ui.manage"),
-  _p("prefix/", "api.mintIdentifier"),
+  _p("shoulder/", "api.mintIdentifier"),
   _p("status$", "api.getStatus")
 )
 
