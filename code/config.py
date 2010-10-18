@@ -4,6 +4,15 @@
 #
 # Interface to the configuration file.
 #
+# In an extension to Python's configuration file format, we allow an
+# option to be prefixed with a deployment level in braces, e.g.,
+#
+#   {production}the_answer: 42
+#
+# If a deployment-level-specific value for an option corresponding to
+# the current deployment level exists, that value is used; otherwise,
+# the value for the option with no deployment level is used.
+#
 # Standard coding practice: to support dynamic configuration
 # reloading, if a module caches any configuration parameters in module
 # variables, upon being initially loaded it should call
