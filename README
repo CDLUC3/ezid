@@ -49,7 +49,7 @@ layout:
         db/
             db.sqlite3
         logs/
-            ezid-transaction-log
+            transaction_log
 
 The names of the SITE_ROOT and PROJECT_ROOT directories are arbitrary
 (EZID automatically detects what they are), but for the remainder of
