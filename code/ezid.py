@@ -169,7 +169,7 @@ def mintDoi (prefix, user, group, target=None):
   """
   Mints a DOI identifier having the given scheme-less prefix, e.g.,
   "10.5060/".  'user' and 'group' should each be authenticated (local
-  name, persistent identifier) pairs, e.g., ("dryad",
+  name, persistent identifier) tuples, e.g., ("dryad",
   "ark:/13030/foo").  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, scheme-less form of
@@ -216,8 +216,8 @@ def createDoi (doi, user, group, target=None):
   Creates a DOI identifier having the given scheme-less name, e.g.,
   "10.5060/foo".  The identifier must not already exist.  'user' and
   'group' should each be authenticated (local name, persistent
-  identifier) pairs, e.g., ("dryad", "ark:/13030/foo").  If an initial
-  target URL is not supplied, the identifier is given a
+  identifier) tuples, e.g., ("dryad", "ark:/13030/foo").  If an
+  initial target URL is not supplied, the identifier is given a
   self-referential target URL.  The successful return is a string that
   includes the canonical, scheme-less form of the new identifier, as
   in:
@@ -256,8 +256,8 @@ def createDoi (doi, user, group, target=None):
     _bindNoid.holdIdentifier(shadowArk)
     t = str(int(time.time()))
     _bindNoid.setElements(shadowArk,
-      { "_o": "%s %s" % user,
-        "_g": "%s %s" % group,
+      { "_o": "%s %s" % user[:2],
+        "_g": "%s %s" % group[:2],
         "_c": t,
         "_u": t,
         "_t": arkTarget,
@@ -278,7 +278,7 @@ def mintArk (prefix, user, group, target=None):
   """
   Mints an ARK identifier having the given scheme-less prefix, e.g.,
   "13030/fk4".  'user' and 'group' should each be authenticated (local
-  name, persistent identifier) pairs, e.g., ("dryad",
+  name, persistent identifier) tuples, e.g., ("dryad",
   "ark:/13030/foo").  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, scheme-less form of
@@ -316,8 +316,8 @@ def createArk (ark, user, group, target=None):
   Creates an ARK identifier having the given scheme-less name, e.g.,
   "13030/bar".  The identifier must not already exist.  'user' and
   'group' should each be authenticated (local name, persistent
-  identifier) pairs, e.g., ("dryad", "ark:/13030/foo").  If an initial
-  target URL is not supplied, the identifier is given a
+  identifier) tuples, e.g., ("dryad", "ark:/13030/foo").  If an
+  initial target URL is not supplied, the identifier is given a
   self-referential target URL.  The successful return is a string that
   includes the canonical, scheme-less form of the new identifier, as
   in:
@@ -348,8 +348,8 @@ def createArk (ark, user, group, target=None):
     if not target: target = "%s/id/%s" % (_ezidUrl, urllib.quote(qark, ":/"))
     t = str(int(time.time()))
     _bindNoid.setElements(ark,
-      { "_o": "%s %s" % user,
-        "_g": "%s %s" % group,
+      { "_o": "%s %s" % user[:2],
+        "_g": "%s %s" % group[:2],
         "_c": t,
         "_u": t,
         "_t": target,
@@ -367,7 +367,7 @@ def mintIdentifier (prefix, user, group, target=None):
   """
   Mints an identifier having the given qualified prefix, e.g.,
   "doi:10.5060/".  'user' and 'group' should each be authenticated
-  (local name, persistent identifier) pairs, e.g., ("dryad",
+  (local name, persistent identifier) tuples, e.g., ("dryad",
   "ark:/13030/foo").  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, qualified form of
@@ -400,7 +400,7 @@ def createIdentifier (identifier, user, group, target=None):
   """
   Creates an identifier having the given qualified name, e.g.,
   "doi:10.5060/foo".  'user' and 'group' should each be authenticated
-  (local name, persistent identifier) pairs, e.g., ("dryad",
+  (local name, persistent identifier) tuples, e.g., ("dryad",
   "ark:/13030/foo").  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, qualified form of
@@ -496,7 +496,7 @@ def setMetadata (identifier, user, group, metadata):
   """
   Sets metadata elements of a given qualified identifier, e.g.,
   "doi:10.5060/foo".  'user' and 'group' should each be authenticated
-  (local name, persistent identifier) pairs, e.g., ("dryad",
+  (local name, persistent identifier) tuples, e.g., ("dryad",
   "ark:/13030/foo").  'metadata' should be a dictionary of element
   (name, value) pairs.  If an element being set already exists, it is
   overwritten, if not, it is created; existing elements not set are
