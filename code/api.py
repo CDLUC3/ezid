@@ -65,6 +65,15 @@ import config
 import ezid
 import userauth
 
+_adminUsername = None
+
+def _loadConfig ():
+  global _adminUsername
+  _adminUsername = config.config("ldap.admin_username")
+
+_loadConfig()
+config.addLoader(_loadConfig)
+
 def _readInput (request):
   if "CONTENT_TYPE" in request.META:
     ct = [w.strip() for w in request.META["CONTENT_TYPE"].split(";")]
@@ -230,7 +239,7 @@ def reload (request):
   auth = userauth.authenticateRequest(request)
   if type(auth) is str:
     return _response(auth)
-  elif not auth or auth.user[0] != "admin":
+  elif not auth or auth.user[0] != _adminUsername:
     return _unauthorized()
   config.load()
   return _response("success: configuration file reloaded and caches emptied")
