@@ -1,14 +1,43 @@
-EZID Installation Instructions
-==============================
+What is this thing?
+===================
 
 EZID is a Django web application that can be run under Django's
 built-in development server or under Apache with the mod_wsgi
-extension.  In either case, it assumes that it is embedded in the
-following directory layout:
+extension.
+
+Prerequisites
+=============
+
+Fundamentally, EZID requires Django <http://www.djangoproject.com/>,
+which in turn requires Python <http://www.python.org/> and a
+relational database of some kind (SQLite <http://www.sqlite.org/> is
+just fine).  Running under Apache requires Apache
+<http://httpd.apache.org/>, of course, and mod_wsgi
+<http://code.google.com/p/modwsgi/>.  To work with mod_wsgi, Python
+will have to have been compiled with shared object support.  OpenSSL
+<http://www.openssl.org/> is needed to communicate with DataCite and
+possibly with LDAP.  If LDAP authentication is used, then OpenLDAP
+<http://www.openldap.org/> and python-ldap
+<http://www.python-ldap.org/> are required.
+
+Those are the core prerequisites for running EZID standalone.  But
+EZID is of little value unless there are some other, external servers
+running: a Noid <http://wiki.ucop.edu/display/Curation/NOID> server
+for storing metadata; additional Noid servers for minting identifiers;
+DataCite services for creating DOI identifiers; and an LDAP server, if
+LDAP authentication is used.
+
+Installation Instructions
+=========================
+
+Whether it is run under the built-in development server or under
+Apache, EZID assumes that it is embedded in the following directory
+layout:
 
     .../SITE_ROOT/
         PROJECT_ROOT/
             (this software distribution:)
+            LDAP
             README
             apache/
             code/
