@@ -1,0 +1,70 @@
+LDAP Schema
+===========
+
+Here's the LDAP schema used by EZID.  Note that the object classes
+below are auxiliary, not structural; as a consequence, EZID makes no
+assumptions about the structural typing or relationships of LDAP
+entries (beyond its assumption that user DNs can be formed by
+inserting usernames in a common template.)
+
+object class ezidUser:
+  Describes an EZID user.  Attributes:
+  uid
+    Username, e.g., "dryad".  Must not contain spaces.
+  arkId
+    The user's ARK identifier, e.g., "ark:/99166/p9bg2h891".  Must
+    begin with "ark:/" and must be in canonical form.
+  ezidOwnerGroup
+    The DN of the user's owner group, e.g.,
+    "ou=CDL,ou=ezid-groups,ou=uc3,dc=cdlib,dc=org".  An LDAP entry may
+    be both an EZID user and an EZID group, and this attribute may be
+    self-referential.
+
+object class ezidGroup:
+  Describes an EZID group.  Attributes:
+  gid or uid
+    The group name, e.g., "cdl".  Must not contain spaces.
+  groupArkId or arkId
+    The group's ARK identifier, e.g., "ark:/99166/p96q1sg5w".  Must
+    begin with "ark:/" and must be in canonical form.  The user and
+    group identifiers for a given user must be different.
+  shoulderList
+    List of labels of the identifier shoulders to which the group has
+    access.  The labels must be separated by spaces and/or commas,
+    e.g., "cdlark,cdldoi".
+
+The formal LDIF declarations are as follows (note that the uid
+attribute is predefined):
+
+attributeTypes: ( gid-oid NAME 'gid' SUP uid EQUALITY caseIgnoreMatch
+ORDERING caseIgnoreOrderingMatch SUBSTR caseIgnoreSubstringsMatch
+SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE USAGE
+userApplications )
+
+attributeTypes: ( arkId-oid NAME 'arkId' DESC 'ARK identifier, must
+begin with ark:/' EQUALITY caseExactMatch ORDERING
+caseExactOrderingMatch SUBSTR caseExactSubstringsMatch SYNTAX
+1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE USAGE userApplications )
+
+attributeTypes: ( groupArkId-oid NAME 'groupArkId' DESC 'ARK
+identifier, must begin with ark:/' SUP arkId EQUALITY caseExactMatch
+ORDERING caseExactOrderingMatch SUBSTR caseExactSubstringsMatch SYNTAX
+1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE USAGE userApplications )
+
+attributeTypes: ( ezidOwnerGroup-oid NAME 'ezidOwnerGroup' DESC 'EZID
+owner group' EQUALITY distinguishedNameMatch SUBSTR
+caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.12
+SINGLE-VALUE USAGE userApplications )
+
+attributeTypes: ( shoulderList-oid NAME 'shoulderList' DESC 'List of
+identifier shoulder labels separated by spaces and/or commas' EQUALITY
+caseExactMatch ORDERING caseExactOrderingMatch SUBSTR
+caseExactSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+SINGLE-VALUE USAGE userApplications )
+
+objectClasses: ( ezidUser-oid NAME 'ezidUser' DESC 'EZID user' SUP top
+AUXILIARY MUST ( objectClass $ arkId $ uid $ ezidOwnerGroup ) )
+
+objectClasses: ( ezidGroup-oid NAME 'ezidGroup' DESC 'EZID group' SUP
+top AUXILIARY MUST ( objectClass $ shoulderList ) MAY ( groupArkId $
+arkId $ uid $ gid ) )
