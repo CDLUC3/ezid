@@ -37,10 +37,11 @@ _testPrefixes = None
 _testDoiPrefix = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
+_adminUsername = None
 
 def _loadConfig ():
   global _ezidUrl, _templates, _prefixes, _testPrefixes, _testDoiPrefix
-  global _defaultDoiProfile, _defaultArkProfile
+  global _defaultDoiProfile, _defaultArkProfile, _adminUsername
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   t = {}
   for f in os.listdir(django.conf.settings.TEMPLATE_DIRS[0]):
@@ -55,6 +56,7 @@ def _loadConfig ():
   _testDoiPrefix = config.config("prefix_TESTDOI.prefix")
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
+  _adminUsername = config.config("ldap.admin_username")
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -84,6 +86,9 @@ def _error (code):
 
 def _badRequest ():
   return _error(400)
+
+def _unauthorized ():
+  return _error(401)
 
 def _methodNotAllowed ():
   return _error(405)
@@ -377,4 +382,7 @@ def admin (request):
   Renders the EZID admin page.
   """
   if request.method != "GET": return _methodNotAllowed()
+  if "auth" not in request.session or\
+    request.session["auth"].user[0] != _adminUsername:
+    return _unauthorized()
   return _render(request, "admin")
