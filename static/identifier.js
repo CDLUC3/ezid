@@ -114,6 +114,7 @@ function cancelEdit (table, fieldName, originalValue) {
 var currentProfile;
 
 function changeProfiles () {
+  clearMessages();
   var newProfile = $("#profileselect").val();
   $(".profile_" + currentProfile).css("display", "none");
   $(".profile_" + newProfile).css("display", "table-row");
@@ -123,6 +124,7 @@ function changeProfiles () {
 var moreDisplayed = false;
 
 function showMoreOrLess () {
+  clearMessages();
   if (moreDisplayed) {
     $("#less").css("display", "inline");
     $("#more").css("display", "none");
