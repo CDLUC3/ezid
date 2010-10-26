@@ -14,7 +14,7 @@
 # the value for the option with no deployment level is used.
 #
 # Standard coding practice: to support dynamic configuration
-# reloading, if a module caches any configuration parameters in module
+# reloading, if a module caches any configuration options in module
 # variables, upon being initially loaded it should call
 # config.addLoader to add a reload function.
 #
