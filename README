@@ -47,6 +47,7 @@ layout:
             templates/
             tools/
         db/
+            alert_message
             db.sqlite3
         logs/
             transaction_log

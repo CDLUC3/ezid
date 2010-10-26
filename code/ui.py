@@ -18,6 +18,7 @@ import django.contrib.messages
 import django.http
 import django.template
 import django.template.loader
+import errno
 import os
 import re
 import time
@@ -32,6 +33,7 @@ import userauth
 
 _ezidUrl = None
 _templates = None
+_alertMessage = None
 _prefixes = None
 _testPrefixes = None
 _testDoiPrefix = None
@@ -40,13 +42,23 @@ _defaultArkProfile = None
 _adminUsername = None
 
 def _loadConfig ():
-  global _ezidUrl, _templates, _prefixes, _testPrefixes, _testDoiPrefix
-  global _defaultDoiProfile, _defaultArkProfile, _adminUsername
+  global _ezidUrl, _templates, _alertMessage, _prefixes, _testPrefixes
+  global _testDoiPrefix, _defaultDoiProfile, _defaultArkProfile, _adminUsername
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   t = {}
   for f in os.listdir(django.conf.settings.TEMPLATE_DIRS[0]):
     if f.endswith(".html"): t[f[:-5]] = django.template.loader.get_template(f)
   _templates = t
+  try:
+    f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
+      "alert_message"))
+    _alertMessage = f.read().strip()
+    f.close()
+  except IOError, e:
+    if e.errno == errno.ENOENT:
+      _alertMessage = ""
+    else:
+      raise
   keys = config.config("prefixes.keys").split(",")
   _prefixes = dict([config.config("prefix_%s.prefix" % k),
     config.config("prefix_%s.name" % k)] for k in keys)
@@ -62,7 +74,7 @@ _loadConfig()
 config.addLoader(_loadConfig)
 
 def _render (request, template, context={}):
-  c = { "session": request.session }
+  c = { "session": request.session, "alertMessage": _alertMessage }
   c.update(context)
   content = _templates[template].render(
     django.template.RequestContext(request, c))
@@ -379,10 +391,28 @@ def help (request):
 
 def admin (request):
   """
-  Renders the EZID admin page.
+  Renders the EZID admin page (GET) or processes a form submission on
+  the admin page (POST).
   """
-  if request.method != "GET": return _methodNotAllowed()
+  global _alertMessage
   if "auth" not in request.session or\
     request.session["auth"].user[0] != _adminUsername:
     return _unauthorized()
-  return _render(request, "admin")
+  if request.method == "GET":
+    return _render(request, "admin")
+  elif request.method == "POST":
+    P = request.POST
+    if "operation" not in P: return _badRequest()
+    if P["operation"] == "set_alert":
+      if "message" not in P: return _badRequest()
+      m = P["message"].strip()
+      f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
+        "alert_message"), "w")
+      f.write(m)
+      f.close()
+      _alertMessage = m
+      return _render(request, "admin")
+    else:
+      return _badRequest()
+  else:
+    return _methodNotAllowed()

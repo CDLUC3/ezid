@@ -2,10 +2,50 @@
 
 {% block title %}EZID : Admin{% endblock %}
 
+{% block header %}
+<script type="text/javascript" src="/ezid/static/admin.js"></script>
+{% endblock %}
+
 {% block admintab %}active{% endblock %}
 
 {% block content %}
-<form method="post" action="/ezid/admin/reload">
-<p><input type="submit" value="Reload EZID"/></p>
+<div id="admin">
+
+<p><a id="switch_alert" class="switch" href="#"><span
+class="open"></span><span class="closed"></span>Set alert message</a></p>
+
+<div id="section_alert" class="section">
+<form method="post" action="/ezid/admin">
+<p>The message will appear at the top of every page.</p>
+<table class="formtable">
+<tr>
+<th>Message</th>
+<td>
+<input type="text" id="message" name="message" size="60" class="firsttext"/>
+</td>
+</tr>
+<tr>
+<td></td>
+<td><input type="submit" value="Set"/>
+<input type="hidden" name="operation" value="set_alert"/>
+</td>
+</tr>
+</table>
 </form>
+</div>
+
+<p><a id="switch_reload" class="switch" href="#"><span
+class="open"></span><span class="closed"></span>Reload EZID</a></p>
+
+<div id="section_reload" class="section">
+<form method="post" action="/ezid/admin/reload">
+<p>Reloading EZID re-reads the configuration files and empties all
+caches, including the group prefix cache.</p>
+<table class="formtable">
+<tr><td><input type="submit" value="Reload"/></td></tr>
+</table>
+</form>
+</div>
+
+</div>
 {% endblock %}

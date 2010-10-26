@@ -53,6 +53,13 @@ Logged in as {{ session.auth.user|first }} |
 </tr>
 </table>
 
+<div id="alert">
+{% if alertMessage == "" %}
+&nbsp;
+{% else %}
+{{ alertMessage }}
+{% endif %}
+</div>
 <div id="title"><a href="/ezid/">EZID</a></div>
 <div id="subtitle">long-term identifiers made easy</div>
 

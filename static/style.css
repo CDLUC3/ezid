@@ -18,7 +18,8 @@ changed, it should be uniformly changed in all those places. */
 #logininfo { text-align: right; font-size: 75% }
 #historyinfo { text-align: right }
 
-#title { font-size: 36pt; padding-top: .75em }
+#alert { padding-top: 1em; padding-bottom: .25em; color: red }
+#title { font-size: 36pt }
 #title a { text-decoration: none; color: black }
 #title a:hover { color: blue }
 #subtitle { font-style: oblique; padding-bottom: .5em }
@@ -96,6 +97,19 @@ changed, it should be uniformly changed in all those places. */
 #login table { border: 2px solid black; margin-top: 1em; margin-left: auto;
   margin-right: auto; padding: 1em }
 #login th { text-align: right; font-weight: normal }
+
+#admin .switch { text-decoration: none; color: black; font-style: oblique }
+#admin .switch:hover { color: blue }
+#admin .switch span {
+  background-image: url("/ezid/static/triangles.gif"); width: 12px;
+  height: 12px; float: left; margin-top: 3px; margin-right: 2px }
+#admin .switch .open { background-position: 0 0; display: none }
+#admin .switch .closed { background-position: 12px 0 }
+#admin .switch:hover .open { background-position: 0 12px }
+#admin .switch:hover .closed { background-position: 12px 12px }
+#admin .section { margin-left: 1em; display: none }
+#admin .formtable { border: 2px solid black; padding: 1em }
+#admin .formtable th { text-align: right; font-weight: normal }
 
 #footer { position: fixed; top: auto; bottom: 0; left: 0; right: 0;
   padding-top: .25em; padding-bottom: .25em; background-color: #CCC;
