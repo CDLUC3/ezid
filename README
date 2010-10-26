@@ -27,8 +27,8 @@ for storing metadata; additional Noid servers for minting identifiers;
 DataCite services for creating DOI identifiers; and an LDAP server, if
 LDAP authentication is used.
 
-Installation Instructions
-=========================
+General layout and configuration
+================================
 
 Whether it is run under the built-in development server or under
 Apache, EZID assumes that it is embedded in the following directory
@@ -66,11 +66,15 @@ indicates the deployment level.  Possible values:
 
 See the corresponding modules in the settings directory for the
 effects the deployment level has.  In addition, the deployment level
-is used to define deployment-level-specific values for parameters in
+is used to define deployment-level-specific values for options in
 settings/ezid.conf, as in:
 
-    bind_noid: http://noid-dev.cdlib.org/nd/noidu_g3
-    {production}bind_noid: http://noid.cdlib.org/nd/noidu_g3
+    [datacite]
+    enabled: false
+    {production}enabled: true
+
+Running under Django
+====================
 
 When running EZID under Django's built-in server it will probably be
 necessary to set the PYTHONPATH like so:
@@ -92,6 +96,9 @@ To run the built-in server:
 
 The server is hosted at http://localhost:8000/ezid/.
 
+Running under Apache
+====================
+
 To run EZID under Apache and mod_wsgi, only the DJANGO_SETTINGS_MODULE
 environment variable need be set.  Five sets of directives are
 required in Apache's httpd.conf.  The following assume that EZID is
@@ -101,39 +108,43 @@ hosted at http://{host}/ezid/.
 
     LoadModule wsgi_module path/to/mod_wsgi.so
 
-2. Add two rewrite rules, one to preserve the Authorization header
-used in HTTP Basic authentication (for some reason Apache strips it
-out) and another to redirect the login page to HTTPS.
+2. Tell mod_wsgi to run EZID as a single, separate, multithreaded
+process.  (Actually, this directive applies to all mod_wsgi
+applications within the same server or virtual host.)  The name is
+arbitrary.
 
+    WSGIDaemonProcess site-1
+
+3. Map EZID URLs to mod_wsgi/Django.
+
+    WSGIScriptAlias /ezid /path/to/SITE_ROOT/PROJECT_ROOT/apache/django.wsgi
+
+4. Add the following directives.  If SSL is used to protect the login
+page, the WSGIApplicationGroup directive is needed to avoid creating
+two, parallel instances of the Python interpreter, one for HTTP and
+one for HTTPS.  (Strangely, though, while this directive has the
+desired effect, it does not need to be mentioned anywhere in Apache's
+SSL configuration.  In fact, nothing EZID-related needs mentioning in
+the SSL configuration.)  The WSGIPassAuthorization directive is needed
+to pass through HTTP Basic authentication credentials (otherwise, they
+get swallowed).
+
+    <Directory /path/to/SITE_ROOT/PROJECT_ROOT/apache>
+    Order deny,allow
+    Allow from all
+    WSGIApplicationGroup ezid
+    WSGIProcessGroup site-1
+    WSGIPassAuthorization on
     RewriteEngine on
-    RewriteBase /
-
-    RewriteCond %{HTTP:Authorization} (.+)
-    RewriteRule ^ - [e=HTTP_AUTHORIZATION:%1]
-
     RewriteCond %{HTTPS} off
-    RewriteRule ^path/to/SITE_ROOT/PROJECT_ROOT/apache/django.wsgi/login$ \
-      https://%{HTTP_HOST}/ezid/login
+    RewriteRule ^django.wsgi/login$ https://%{HTTP_HOST}/ezid/login
+    </Directory>
 
-3. Add an alias so that static files are served by Apache, not Django.
+5. Add an alias so that static files are served by Apache, not Django.
 
     Alias /ezid/static /path/to/SITE_ROOT/PROJECT_ROOT/static
 
     <Directory /path/to/SITE_ROOT/PROJECT_ROOT/static>
-    Order deny,allow
-    Allow from all
-    </Directory>
-
-4. Tell mod_wsgi to run EZID as a single, multithreaded process.
-
-    WSGIDaemonProcess site-1
-    WSGIProcessGroup site-1
-
-5. Finally, map EZID URLs to mod_wsgi.
-
-    WSGIScriptAlias /ezid /path/to/SITE_ROOT/PROJECT_ROOT/apache/django.wsgi
-
-    <Directory /path/to/SITE_ROOT/PROJECT_ROOT/apache>
     Order deny,allow
     Allow from all
     </Directory>
