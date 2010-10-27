@@ -32,9 +32,3 @@ displayname: Publisher
 tooltip:
 <b><u>Publisher</u></b><br/>
 Holder of the data or institution which submitted the work.
-
-element: datacite.discipline
-displayname: Discipline
-tooltip:
-<b><u>Discipline</u></b><br/>
-Academic discipline of the data.
