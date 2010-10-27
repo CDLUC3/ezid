@@ -116,8 +116,8 @@ var currentProfile;
 function changeProfiles () {
   clearMessages();
   var newProfile = $("#profileselect").val();
-  $(".profile_" + currentProfile).css("display", "none");
-  $(".profile_" + newProfile).css("display", "table-row");
+  $(".profile_" + currentProfile).hide();
+  $(".profile_" + newProfile).show();
   currentProfile = newProfile;
 }
 
@@ -126,13 +126,13 @@ var moreDisplayed = false;
 function showMoreOrLess () {
   clearMessages();
   if (moreDisplayed) {
-    $("#less").css("display", "inline");
-    $("#more").css("display", "none");
-    $(".profile_internal").css("display", "none");
+    $("#less").show();
+    $("#more").hide();
+    $(".profile_internal").hide();
   } else {
-    $("#less").css("display", "none");
-    $("#more").css("display", "inline");
-    $(".profile_internal").css("display", "table-row");
+    $("#less").hide();
+    $("#more").show();
+    $(".profile_internal").show();
   }
   moreDisplayed = !moreDisplayed;
   return false;
