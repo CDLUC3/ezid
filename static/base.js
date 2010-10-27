@@ -1,4 +1,5 @@
 function viewRecentIdentifier () {
+  if ($("#history").attr("selectedIndex") == 0) return;
   var url = $("#history").val();
   $("#history").attr("selectedIndex", 0);
   if (url == "clear") {
