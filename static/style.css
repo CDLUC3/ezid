@@ -9,20 +9,12 @@ td { text-align: left }
 changed, it should be uniformly changed in all those places. */
 
 #header { width: 40em; margin-left: auto; margin-right: auto }
-#logo { width: 30px }
-#logo img { border-width: 0; vertical-align: middle }
-#branding a { text-decoration: none; color: black }
-#branding a:hover { color: blue }
-#uc3brand { font-size: 8pt }
-#cdlbrand { font-size: 14pt; font-family: "Times New Roman", serif }
+#header tr { vertical-align: top }
+#header img { border-width: 0 }
 #logininfo { text-align: right; font-size: 75% }
-#historyinfo { text-align: right }
+#historydiv { padding-top: .25em }
 
-#alert { padding-top: 1em; padding-bottom: .25em; color: red }
-#title { font-size: 36pt }
-#title a { text-decoration: none; color: black }
-#title a:hover { color: blue }
-#subtitle { font-style: oblique; padding-bottom: .5em }
+#alert { margin-bottom: .25em; color: red }
 
 #messages span { padding: .25em 1em }
 #messages .success { background-color: #9F9 }

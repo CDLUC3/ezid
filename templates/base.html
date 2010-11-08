@@ -6,6 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>{% block title %}EZID{% endblock %}</title>
+<link rel="shortcut icon" href="/ezid/static/favicon.ico"/>
 <link rel="stylesheet" type="text/css" href="/ezid/static/style.css"/>
 <script type="text/javascript" src="/ezid/static/jquery.js"></script>
 <script type="text/javascript" src="/ezid/static/base.js"></script>
@@ -20,16 +21,11 @@ areMessages = {% if messages %}true{% else %}false{% endif %};
 
 <table id="header">
 <tr>
-<td id="logo" rowspan="2">
-<a href="http://www.cdlib.org/services/uc3/"><img src="/ezid/static/logo.gif"
-alt="UC3"/></a>
-</td>
-<td id="branding" rowspan="2">
-<span id="uc3brand"><a href="http://www.cdlib.org/services/uc3/">The
-UC Curation Center at</a></span><br/>
-<span id="cdlbrand"><a href="http://www.cdlib.org/">CDL</a></span>
+<td>
+<a href="/ezid/"><img src="/ezid/static/logo.png" alt="EZID"/></a>
 </td>
 <td id="logininfo">
+<div>
 {% if session.auth %}
 Logged in as {{ session.auth.user|first }} |
 <a href="/ezid/logout">Logout</a>
@@ -38,10 +34,8 @@ Logged in as {{ session.auth.user|first }} |
 {% comment %} | <a href="/ezid/register">Register</a> {% endcomment %}
 {% endif %}
 | <a href="http://www.cdlib.org/services/uc3/contact.html">Contact UC3</a>
-</td>
-</tr>
-<tr>
-<td id="historyinfo"><div>
+</div>
+<div id="historydiv">
 <select id="history">
 <option selected="selected">Recent identifiers</option>
 {% for id in session.history %}
@@ -49,19 +43,14 @@ Logged in as {{ session.auth.user|first }} |
 {% endfor %}
 <option value="clear">Clear list...</option>
 </select>
-</div></td>
+</div>
+</td>
 </tr>
 </table>
 
-<div id="alert">
-{% if alertMessage == "" %}
-&nbsp;
-{% else %}
-{{ alertMessage }}
+{% if alertMessage != "" %}
+<div id="alert">{{ alertMessage }}</div>
 {% endif %}
-</div>
-<div id="title"><a href="/ezid/">EZID</a></div>
-<div id="subtitle">long-term identifiers made easy</div>
 
 <div id="messages">
 {% if messages %}
