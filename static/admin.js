@@ -2,7 +2,8 @@ var sectionIsOpen = new Array();
 
 function openOrCloseSection (evt) {
   clearMessages();
-  var section = "section_" + evt.target.id.substr(7); /* strip off "switch_" */
+  var id = $(evt.target).attr("id") || $(evt.target).parent().attr("id");
+  var section = "section_" + id.substr(7); /* strip off "switch_" */
   if (section in sectionIsOpen && sectionIsOpen[section]) {
     $("#" + section).hide();
     sectionIsOpen[section] = false;
