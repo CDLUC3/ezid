@@ -28,12 +28,13 @@ MEDIA_URL = "static/"
 
 SECRET_KEY = "ah2l_w1)ejdxor=0198d$1k$9gdqccsza@4@lqiii2%@!2)m1u"
 
-REQUIRE_SSL_AUTHENTICATION = True
+SSL = True
 
 MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
   "django.contrib.sessions.middleware.SessionMiddleware",
-  "django.contrib.messages.middleware.MessageMiddleware"
+  "django.contrib.messages.middleware.MessageMiddleware",
+  "middleware.SslMiddleware"
 )
 
 ROOT_URLCONF = "settings.urls"

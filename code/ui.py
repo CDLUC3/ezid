@@ -142,10 +142,7 @@ def login (request):
       request.session["auth"] = auth
       request.session["prefixes"] = p
       django.contrib.messages.success(request, "Login successful.")
-      u = request.build_absolute_uri()
-      if u.startswith("https:"): u = "http:" + u[6:]
-      assert u.endswith("/login")
-      return _redirect(u[:-5])
+      return _redirect("/ezid/")
     else:
       django.contrib.messages.error(request, "Login failed.")
       return _render(request, "login")

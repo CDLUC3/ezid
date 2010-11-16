@@ -115,7 +115,7 @@ arbitrary.
 
     WSGIDaemonProcess site-1
 
-3. Map EZID URLs to mod_wsgi/Django.
+3. Map EZID URLs to mod_wsgi+Django.
 
     WSGIScriptAlias /ezid /path/to/SITE_ROOT/PROJECT_ROOT/apache/django.wsgi
 
@@ -135,9 +135,6 @@ get swallowed).
     WSGIApplicationGroup ezid
     WSGIProcessGroup site-1
     WSGIPassAuthorization on
-    RewriteEngine on
-    RewriteCond %{HTTPS} off
-    RewriteRule ^django.wsgi/login$ https://%{HTTP_HOST}/ezid/login
     </Directory>
 
 5. Add an alias so that static files are served by Apache, not Django.
