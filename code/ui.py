@@ -443,6 +443,10 @@ def resetPassword (request, pwrr, ssl=False):
           "Password and confirmation do not match.")
         return _render(request, "pwreset2", { "pwrr": pwrr,
           "username": username })
+      if password == "":
+        django.contrib.messages.error(request, "Password required.")
+        return _render(request, "pwreset2", { "pwrr": pwrr,
+          "username": username })
       r = useradmin.resetPassword(username, password)
       if type(r) is str:
         django.contrib.messages.error(request, r)
