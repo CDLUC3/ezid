@@ -15,7 +15,7 @@ ADMINS = (
   ("John Kunze", "john.kunze@ucop.edu")
 )
 MANAGERS = ADMINS
-SERVER_EMAIL = "n2t role account <n2t@n2t.net>"
+SERVER_EMAIL = "ezid@n2t.net"
 SEND_BROKEN_LINK_EMAILS = True
 
 DATABASE_ENGINE = "sqlite3"

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}EZID : Reset password{% endblock %}
+
+{% block javascript %}
+$(document).ready(function () {
+  $("#password").keydown(clearMessages);
+  $("#confirm").keydown(clearMessages);
+  $("#password").focus();
+});
+{% endblock %}
+
+{% block content %}
+
+<div id="pwreset">
+
+<p id="title">Reset password</p>
+
+<form method="post" action="/ezid/pwreset{{ pwrr|urlencode }}">
+<table>
+<tr>
+<th>Username</th>
+<td><input type="text" name="username" size="20"
+value="{{ username }}" readonly="readonly"/></td>
+</tr>
+<tr>
+<th>New password</th>
+<td><input type="password" id="password" name="password" size="20"/></td>
+</tr>
+<tr>
+<th>Confirm password</th>
+<td><input type="password" id="confirm" name="confirm" size="20"/></td>
+</tr>
+<tr>
+<td></td>
+<td><input type="submit" value="Submit"/></td>
+</tr>
+</table>
+</form>
+
+</div>
+
+{% endblock %}

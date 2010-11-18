@@ -86,6 +86,7 @@ changed, it should be uniformly changed in all those places. */
   text-align: left; font-size: 75% }
 
 #login { text-align: center }
+#login #title { font-weight: bold }
 #login table { border: 2px solid black; margin-top: 1em; margin-left: auto;
   margin-right: auto; padding: 1em }
 #login th { text-align: right; font-weight: normal }
@@ -102,6 +103,12 @@ changed, it should be uniformly changed in all those places. */
 #admin .section { margin-left: 1em; display: none }
 #admin .formtable { border: 2px solid black; padding: 1em }
 #admin .formtable th { text-align: right; font-weight: normal }
+
+#pwreset { text-align: center }
+#pwreset #title { font-weight: bold }
+#pwreset table { border: 2px solid black; margin-top: 1em; margin-left: auto;
+  margin-right: auto; padding: 1em }
+#pwreset th { text-align: right; font-weight: normal }
 
 #footer { position: fixed; top: auto; bottom: 0; left: 0; right: 0;
   padding-top: .25em; padding-bottom: .25em; background-color: #CCC;

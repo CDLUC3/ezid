@@ -29,6 +29,7 @@ import ezid
 import log
 import metadata
 import policy
+import useradmin
 import userauth
 
 _ezidUrl = None
@@ -413,3 +414,66 @@ def admin (request):
       return _badRequest()
   else:
     return _methodNotAllowed()
+
+def resetPassword (request, pwrr, ssl=False):
+  """
+  Handles all GET and POST interactions related to password resets.
+  """
+  if pwrr:
+    # N.B.: it seems that Django has already urllib.unquote'd pwrr.
+    r = useradmin.decodePasswordResetRequest(pwrr)
+    if not r:
+      django.contrib.messages.error(request, "Invalid password reset request.")
+      return _redirect("/ezid/")
+    username, t = r
+    if int(time.time())-t >= 24*60*60:
+      django.contrib.messages.error(request,
+        "Password reset request has expired.")
+      return _redirect("/ezid/")
+    if request.method == "GET":
+      return _render(request, "pwreset2", { "pwrr": pwrr,
+        "username": username })
+    elif request.method == "POST":
+      if "password" not in request.POST or "confirm" not in request.POST:
+        return _badRequest()
+      password = request.POST["password"]
+      confirm = request.POST["confirm"]
+      if password != confirm:
+        django.contrib.messages.error(request,
+          "Password and confirmation do not match.")
+        return _render(request, "pwreset2", { "pwrr": pwrr,
+          "username": username })
+      r = useradmin.resetPassword(username, password)
+      if type(r) is str:
+        django.contrib.messages.error(request, r)
+        return _render(request, "pwreset2", { "pwrr": pwrr,
+          "username": username })
+      else:
+        django.contrib.messages.success(request, "Password changed.")
+        return _redirect("/ezid/")
+    else:
+      return _methodNotAllowed()
+  else:
+    if request.method == "GET":
+      return _render(request, "pwreset1")
+    elif request.method == "POST":
+      if "username" not in request.POST or "email" not in request.POST:
+        return _badRequest()
+      username = request.POST["username"].strip()
+      email = request.POST["email"].strip()
+      if username == "":
+        django.contrib.messages.error(request, "Username required.")
+        return _render(request, "pwreset1", { "email": email })
+      if email == "":
+        django.contrib.messages.error(request, "Email address required.")
+        return _render(request, "pwreset1", { "username": username })
+      r = useradmin.sendPasswordResetEmail(username, email)
+      if type(r) is str:
+        django.contrib.messages.error(request, r)
+        return _render(request, "pwreset1", { "username": username,
+          "email": email })
+      else:
+        django.contrib.messages.success(request, "Email sent.")
+        return _redirect("/ezid/")
+    else:
+      return _methodNotAllowed()

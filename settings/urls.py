@@ -24,6 +24,7 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("login$", "dispatch.d", { "function": "login", "ssl": True }),
   _p("logout$", "dispatch.d", { "function": "logout" }),
   _p("manage$", "ui.manage"),
+  _p("pwreset(?P<pwrr>/.*)?$", "ui.resetPassword", { "ssl": True }),
   _p("shoulder/", "api.mintIdentifier"),
   _p("status$", "api.getStatus")
 )
