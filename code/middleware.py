@@ -38,12 +38,12 @@ class SslMiddleware:
   redirects on GET requests; other request methods are either
   disallowed (if the request does not use SSL but the URL requires it)
   or silently allowed (vice versa).  Note that this processing applies
-  only to UI requests, not API requests, and only if the SSL Django
-  setting is true.
+  only to non-AJAX UI requests, not API requests, and only if the SSL
+  Django setting is true.
   """
   def process_view (self, request, view_func, view_args, view_kwargs):
     if not django.conf.settings.SSL: return None
-    if not _isUiRequest(request, view_func): return None
+    if request.is_ajax() or not _isUiRequest(request, view_func): return None
     if view_kwargs.get("ssl", False):
       if request.is_secure(): return None
       if request.method == "GET":
