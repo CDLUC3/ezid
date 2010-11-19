@@ -68,7 +68,8 @@ def sendPasswordResetEmail (username, emailAddress):
     assert len(r) == 1 and r[0][0] == dn,\
       "unexpected return from LDAP search command, DN='%s'" % dn
     if "ezidUser" not in r[0][1]["objectClass"]: return "No such user."
-    if "mail" not in r[0][1] or r[0][1]["mail"][0] != emailAddress:
+    if "mail" not in r[0][1] or\
+      r[0][1]["mail"][0].lower() != emailAddress.lower():
       return "Email address does not match address registered for username."
     t = int(time.time())
     hash = hashlib.sha1("%s|%d|%s" % (username, t,
