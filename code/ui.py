@@ -249,7 +249,7 @@ def identifierDispatcher (request):
   AJAX metadata update request (POST).
   """
   assert request.path.startswith("/ezid/id/")
-  id = urllib.unquote(request.path[9:])
+  id = request.path[9:]
   if request.method == "GET":
     r = ezid.getMetadata(id)
     if type(r) is str:
@@ -420,7 +420,6 @@ def resetPassword (request, pwrr, ssl=False):
   Handles all GET and POST interactions related to password resets.
   """
   if pwrr:
-    # N.B.: it seems that Django has already urllib.unquote'd pwrr.
     r = useradmin.decodePasswordResetRequest(pwrr)
     if not r:
       django.contrib.messages.error(request, "Invalid password reset request.")

@@ -58,7 +58,6 @@
 # -----------------------------------------------------------------------------
 
 import django.http
-import urllib
 
 import anvl
 import config
@@ -138,7 +137,7 @@ def mintIdentifier (request):
     target = metadata["_target"]
     del metadata["_target"]
   assert request.path.startswith("/ezid/shoulder/")
-  prefix = urllib.unquote(request.path[15:])
+  prefix = request.path[15:]
   s = ezid.mintIdentifier(prefix, auth.user, auth.group, target)
   if not s.startswith("success:"): return _response(s)
   if len(metadata) > 0:
@@ -163,7 +162,7 @@ def identifierDispatcher (request):
 
 def _getMetadata (request):
   assert request.path.startswith("/ezid/id/")
-  r = ezid.getMetadata(urllib.unquote(request.path[9:]))
+  r = ezid.getMetadata(request.path[9:])
   if type(r) is str: return _response(r)
   s, metadata = r
   return _response("%s\n%s" % (s, anvl.format(metadata)))
@@ -177,7 +176,7 @@ def _setMetadata (request):
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
   assert request.path.startswith("/ezid/id/")
-  identifier = urllib.unquote(request.path[9:])
+  identifier = request.path[9:]
   return _response(ezid.setMetadata(identifier, auth.user, auth.group,
     metadata))
 
@@ -194,7 +193,7 @@ def _createIdentifier (request):
     target = metadata["_target"]
     del metadata["_target"]
   assert request.path.startswith("/ezid/id/")
-  identifier = urllib.unquote(request.path[9:])
+  identifier = request.path[9:]
   s = ezid.createIdentifier(identifier, auth.user, auth.group, target)
   if not s.startswith("success:"): return _response(s)
   if len(metadata) > 0:
