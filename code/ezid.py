@@ -193,6 +193,9 @@ def mintDoi (prefix, user, group, target=None):
     if not policy.authorizeCreate(user, group, qprefix):
       log.unauthorized(tid)
       return "error: unauthorized"
+    if _prefixes[qprefix].server == "":
+      log.badRequest(tid)
+      return "error: bad request - no minter for namespace"
     shadowArk = _prefixes[qprefix].mintIdentifier()
     # The following is, well, a hack.  To avoid using separate minters
     # for test ARKs and test DOIs, we use the test ARK minter for both
@@ -299,6 +302,9 @@ def mintArk (prefix, user, group, target=None):
     if not policy.authorizeCreate(user, group, qprefix):
       log.unauthorized(tid)
       return "error: unauthorized"
+    if _prefixes[qprefix].server == "":
+      log.badRequest(tid)
+      return "error: bad request - no minter for namespace"
     ark = _prefixes[qprefix].mintIdentifier()
     assert ark.startswith(prefix), "minted ARK does not match requested prefix"
   except Exception, e:
