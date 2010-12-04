@@ -1,0 +1,2 @@
+#! /bin/csh -f
+hg push $argv --remotecmd /tdr/bin/hg ssh://badger//tdr/hg/ezid
