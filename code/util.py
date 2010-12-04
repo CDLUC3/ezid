@@ -96,6 +96,10 @@ def validateArk (ark):
     return None
   return p+s
 
+def _percentEncodeCdr (m):
+  s = m.group(0)
+  return s[0] + "".join("%%%02x" % ord(c) for c in s[1:])
+
 def doi2shadow (doi):
   """
   Given a scheme-less DOI identifier (e.g., "10.5060/FOO"), returns
@@ -119,7 +123,16 @@ def doi2shadow (doi):
   # mapping to lowercase must be uniform).  It is possible for the
   # conversion to fail, but this should occur only in pathological
   # cases.
-  return validateArk(("b" + doi[3:]).replace("%", "%25").lower())
+  # Update: to prevent different DOIs from mapping to the same shadow
+  # ARK, we percent-encode characters (and only those characters) that
+  # would otherwise be removed by the ARK normalization process.
+  p = "b" + doi[3:8]
+  s = doi[8:].replace("%", "%25").replace("-", "%2d").lower()
+  s = _arkPattern3.sub(lambda c: "%%%02x" % ord(c.group(0)), s)
+  s = _arkPattern2.sub(_percentEncodeCdr, s)
+  a = validateArk(p + s)
+  assert a != None, "shadow ARK failed validation"
+  return a
 
 def shadow2doi (ark):
   """

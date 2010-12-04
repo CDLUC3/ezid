@@ -234,9 +234,6 @@ def createDoi (doi, user, group, target=None):
   if not doi: return "error: bad request - invalid DOI identifier"
   qdoi = "doi:" + doi
   shadowArk = util.doi2shadow(doi)
-  if not shadowArk:
-    # Very unlikely.
-    return "error: bad request - invalid DOI identifier"
   tid = uuid.uuid1()
   _acquireIdentifierLock(shadowArk)
   try:
@@ -448,9 +445,6 @@ def getMetadata (identifier):
     doi = util.validateDoi(identifier[4:])
     if not doi: return "error: bad request - invalid DOI identifier"
     ark = util.doi2shadow(doi)
-    if not ark:
-      # Very unlikely.
-      return "error: bad request - invalid DOI identifier"
     nqidentifier = "doi:" + doi
   elif identifier.startswith("ark:/"):
     ark = util.validateArk(identifier[5:])
@@ -516,9 +510,6 @@ def setMetadata (identifier, user, group, metadata):
     doi = util.validateDoi(identifier[4:])
     if not doi: return "error: bad request - invalid DOI identifier"
     ark = util.doi2shadow(doi)
-    if not ark:
-      # Very unlikely.
-      return "error: bad request - invalid DOI identifier"
     nqidentifier = "doi:" + doi
   elif identifier.startswith("ark:/"):
     ark = util.validateArk(identifier[5:])
