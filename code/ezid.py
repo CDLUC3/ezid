@@ -557,21 +557,30 @@ def setMetadata (identifier, user, group, metadata):
       if "_profile" in metadata:
         profile = metadata["_profile"]
         del metadata["_profile"]
-      if len(metadata) > 0:
+      if len(metadata) > 0 and not nqidentifier.startswith(_testDoiPrefix):
         for k in filter(lambda k: k.startswith("_"), m): del m[k]
         m.update(metadata)
-        if not nqidentifier.startswith(_testDoiPrefix):
-          datacite.uploadMetadata(doi, m)
+        datacite.uploadMetadata(doi, m)
       if target is not None: metadata["_st"] = target
       if profile is not None: metadata["_p"] = profile
       metadata["_su"] = str(int(time.time()))
     elif nqidentifier.startswith("ark:/"):
+      target = None
       if "_target" in metadata:
-        metadata["_t"] = metadata["_target"]
+        target = metadata["_target"]
         del metadata["_target"]
+      profile = None
       if "_profile" in metadata:
-        metadata["_p"] = metadata["_profile"]
+        profile = metadata["_profile"]
         del metadata["_profile"]
+      if "_s" in m and m["_s"].startswith("doi:") and len(metadata) > 0 and\
+        not m["_s"].startswith(_testDoiPrefix):
+        doi = m["_s"][4:]
+        m.update(metadata)
+        for k in filter(lambda k: k.startswith("_"), m): del m[k]
+        datacite.uploadMetadata(doi, m)
+      if target is not None: metadata["_t"] = target
+      if profile is not None: metadata["_p"] = profile
       metadata["_u"] = str(int(time.time()))
     _bindNoid.setElements(ark, metadata)
   except Exception, e:
