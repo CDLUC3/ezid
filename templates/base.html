@@ -52,7 +52,9 @@ Logged in as {{ session.auth.user|first }} |
 <div id="alert">{{ alertMessage }}</div>
 {% endif %}
 
-<div id="messages">
+<div id="messagediv">
+<span id="workings"></span>
+<span id="messages">
 {% if messages %}
 {% for m in messages %}
 <span class="{{ m.tags }}">{{ m }}</span>
@@ -60,6 +62,7 @@ Logged in as {{ session.auth.user|first }} |
 {% else %}
 &nbsp;
 {% endif %}
+</span>
 </div>
 
 {% block tabs %}{% endblock %}

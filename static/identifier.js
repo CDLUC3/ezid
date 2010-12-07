@@ -86,22 +86,28 @@ function saveEdit (table, fieldName) {
       }
     }
   }
-  addMessage("<span class='info'>Working...</span>");
-  var response = $.ajax({ async: false, type: "POST",
+  working(1);
+  $.ajax({ type: "POST", cache: false, dataType: "text",
     data: { field: fieldName, value: setValue, profile: currentProfile },
-    dataType: "text" }).responseText;
-  clearMessages();
-  if (response == "success") {
-    displayValue(table, fieldName, xmlEscape(value));
-    if (fieldName == "_target" && identifier.match(/^doi:/) &&
-      !$("#urlformnote").html().match(/^\(test/)) {
-      $("#urlformnote").html("(may take 30 minutes for link to be updated)");
-    }
-    addMessage("<span class='success'>Changes saved.</span>");
-  } else {
-    if (!response || response == "") response = "Internal server error.";
-    addMessage("<span class='error'>" + xmlEscape(response) + "</span>");
-  }
+    error: function () {
+      working(-1);
+      addMessage("<span class='error'>Internal server error.</span>");
+    },
+    success: function (response) {
+      working(-1);
+      if (response == "success") {
+        displayValue(table, fieldName, xmlEscape(value));
+        if (fieldName == "_target" && identifier.match(/^doi:/) &&
+          !$("#urlformnote").html().match(/^\(test/)) {
+          $("#urlformnote").html(
+            "(may take 30 minutes for link to be updated)");
+        }
+        addMessage("<span class='success'>Changes saved.</span>");
+      } else {
+        if (!response || response == "") response = "Internal server error.";
+        addMessage("<span class='error'>" + xmlEscape(response) + "</span>");
+      }
+    }});
   return false;
 }
 

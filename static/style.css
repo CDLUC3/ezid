@@ -16,10 +16,9 @@ changed, it should be uniformly changed in all those places. */
 
 #alert { margin-bottom: .25em; color: red }
 
-#messages span { padding: .25em 1em }
-#messages .success { background-color: #9F9 }
-#messages .info { background-color: #FFF1A8 }
-#messages .error { background-color: #F99 }
+#messagediv .success { padding: .25em 1em; background-color: #9F9 }
+#messagediv .info { padding: .25em 1em; background-color: #FFF1A8 }
+#messagediv .error { padding: .25em 1em; background-color: #F99 }
 
 #tabs { width: 40em; margin-left: auto; margin-right: auto; font-weight: bold;
   text-align: left }

@@ -4,13 +4,18 @@ function viewRecentIdentifier () {
   $("#history").attr("selectedIndex", 0);
   if (url == "clear") {
     clearMessages();
-    r = $.ajax({ url: "/ezid/clearhistory", async: false }).responseText;
-    if (r == "success") {
-      $("#history .historyentry").remove();
-      addMessage("<span class='success'>History cleared.</span>");
-    } else {
-      addMessage("<span class='error'>Internal server error.</span>");
-    }
+    $.ajax({ url: "/ezid/clearhistory", dataType: "text", cache: false,
+      error: function () {
+        addMessage("<span class='error'>Internal server error.</span>");
+      },
+      success: function (data) {
+        if (data == "success") {
+          $("#history .historyentry").remove();
+          addMessage("<span class='success'>History cleared.</span>");
+        } else {
+          addMessage("<span class='error'>Internal server error.</span>");
+        }
+      }});
   } else {
     location.href = url;
   }
@@ -19,6 +24,17 @@ function viewRecentIdentifier () {
 $(document).ready(function () {
   $("#history").change(viewRecentIdentifier);
 });
+
+var numAjaxThreads = 0;
+
+function working (delta) {
+  numAjaxThreads += delta;
+  var s = "";
+  for (var i = 0; i < numAjaxThreads; ++i) {
+    s += "<span class='info'>Working...</span> "
+  }
+  $("#workings").html(s);
+}
 
 var areMessages;
 
