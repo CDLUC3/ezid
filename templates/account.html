@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}EZID : My account{% endblock %}
+
+{% block header %}
+<script type="text/javascript" src="/ezid/static/account.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div id="account">
+
+<p class="heading">Contact information</p>
+
+<form id="contactform" action="null">
+<table>
+<tr>
+<th>First name</th>
+<td><input type="text" id="givenName" name="givenName" size="30"
+value="{{ givenName }}"/></td>
+</tr>
+<tr>
+<th>Last name</th>
+<td><input type="text" id="sn" name="sn" size="30" value="{{ sn }}"/></td>
+</tr>
+<tr>
+<th>Email address</th>
+<td><input type="text" id="mail" name="mail" size="30"
+value="{{ mail }}"/></td>
+</tr>
+<tr>
+<th>Phone number</th>
+<td><input type="text" id="telephoneNumber" name="telephoneNumber" size="30"
+value="{{ telephoneNumber }}"/></td>
+</tr>
+<tr>
+<td></td>
+<td><input type="submit" value="Update"/></td>
+</tr>
+</table>
+</form>
+
+<p class="heading">Change password</p>
+
+<form id="passwordform" action="null">
+<table>
+<tr>
+<th>Current password</th>
+<td><input type="password" id="pwcurrent" name="pwcurrent" size="20"/></td>
+</tr>
+<tr>
+<th>New password</th>
+<td><input type="password" id="pwnew" name="pwnew" size="20"/></td>
+</tr>
+<tr>
+<th>Confirm new password</th>
+<td><input type="password" id="pwconfirm" name="pwconfirm" size="20"/></td>
+</tr>
+<tr>
+<td></td>
+<td><input type="submit" value="Change password"/></td>
+</tr>
+</table>
+</form>
+
+</div>
+
+{% endblock %}

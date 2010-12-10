@@ -28,6 +28,7 @@ areMessages = {% if messages %}true{% else %}false{% endif %};
 <div>
 {% if session.auth %}
 Logged in as {{ session.auth.user|first }} |
+<a href="/ezid/account">My account</a> |
 <a href="/ezid/logout">Logout</a>
 {% else %}
 <a href="/ezid/login">Login</a>

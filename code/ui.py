@@ -480,3 +480,54 @@ def resetPassword (request, pwrr, ssl=False):
         return _redirect("/ezid/")
     else:
       return _methodNotAllowed()
+
+_contactInfoFields = [
+  ("givenName", "First name", False),
+  ("sn", "Last name", True),
+  ("mail", "Email address", True),
+  ("telephoneNumber", "Phone number", False)]
+
+def account (request, ssl=False):
+  """
+  Renders the user account page (GET) or processes an AJAX form
+  submission on the user account page (POST).
+  """
+  if "auth" not in request.session: return _unauthorized()
+  if request.method == "GET":
+    r = useradmin.getContactInfo(request.session["auth"].user[0])
+    if type(r) is str:
+      django.contrib.messages.error(request, r)
+      return _redirect("/ezid/")
+    else:
+      return _render(request, "account", r)
+  elif request.method == "POST":
+    if request.POST.get("form", "") == "contact":
+      d = {}
+      missing = None
+      for field, displayName, isRequired in _contactInfoFields:
+        if field not in request.POST: return _badRequest()
+        d[field] = request.POST[field].strip()
+        if isRequired and d[field] == "": missing = displayName
+      if missing: return _plainTextResponse(missing + " is required.")
+      r = useradmin.setContactInfo(request.session["auth"].user[0], d)
+      if type(r) is str:
+        return _plainTextResponse(r)
+      else:
+        return _plainTextResponse("success")
+    elif request.POST.get("form", "") == "password":
+      if "pwcurrent" not in request.POST or "pwnew" not in request.POST:
+        return _badRequest()
+      if request.POST["pwcurrent"] == "":
+        return _plainTextResponse("Current password required.")
+      if request.POST["pwnew"] == "":
+        return _plainTextResponse("New password required.")
+      r = useradmin.setPassword(request.session["auth"].user[0],
+        request.POST["pwcurrent"], request.POST["pwnew"])
+      if type(r) is str:
+        return _plainTextResponse(r)
+      else:
+        return _plainTextResponse("success")
+    else:
+      return _badRequest()
+  else:
+    return _methodNotAllowed()

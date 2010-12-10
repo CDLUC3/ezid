@@ -109,6 +109,12 @@ changed, it should be uniformly changed in all those places. */
   margin-right: auto; padding: 1em }
 #pwreset th { text-align: right; font-weight: normal }
 
+#account { text-align: center }
+#account .heading { font-weight: bold }
+#account table { border: 2px solid black; margin-left: auto;
+  margin-right: auto; padding: 1em }
+#account th { text-align: right; font-weight: normal }
+
 #footer { position: fixed; top: auto; bottom: 0; left: 0; right: 0;
   padding-top: .25em; padding-bottom: .25em; background-color: #CCC;
   font-size: 50% }

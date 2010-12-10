@@ -128,3 +128,106 @@ def resetPassword (username, password):
     return "Internal server error."
   finally:
     if l: l.unbind()
+
+def getContactInfo (username):
+  """
+  Returns a user's contact information as a dictionary keyed by LDAP
+  attribute names.  Returns a string message on error.
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    l.bind_s(_userDnTemplate % _adminUsername, _adminPassword,
+      ldap.AUTH_SIMPLE)
+    dn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
+    r = l.search_s(dn, ldap.SCOPE_BASE)
+    assert len(r) == 1 and r[0][0] == dn,\
+      "unexpected return from LDAP search command, DN='%s'" % dn
+    assert "ezidUser" in r[0][1]["objectClass"],\
+      "not an EZID user, DN='%s'" % dn
+    p = {}
+    for a in ["givenName", "sn", "mail", "telephoneNumber"]:
+      if a in r[0][1]:
+        # Although not documented anywhere, it appears that returned
+        # values are UTF-8 encoded.
+        p[a] = r[0][1][a][0].decode("UTF-8")
+      else:
+        p[a] = ""
+    return p
+  except Exception, e:
+    log.otherError("useradmin.getContactInfo", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
+
+def setContactInfo (username, d):
+  """
+  Sets a user's contact information.  'd' should be a dictionary that
+  maps LDAP attribute names to values.  Note that if either of the
+  LDAP attributes givenName or sn is supplied, then both should be,
+  and a new value for cn will be computed and set as well.  Returns
+  None on success or a string message on error.
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  if "givenName" in d:
+    assert "sn" in d
+    d["cn"] = (d["givenName"] + " " + d["sn"]).strip()
+  else:
+    assert "sn" not in d
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    # This operation requires binding as a privileged LDAP user.
+    l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
+    dn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
+    r = l.search_s(dn, ldap.SCOPE_BASE)
+    assert len(r) == 1 and r[0][0] == dn,\
+      "unexpected return from LDAP search command, DN='%s'" % dn
+    assert "ezidUser" in r[0][1]["objectClass"],\
+      "not an EZID user, DN='%s'" % dn
+    m = []
+    for a, v in d.items():
+      # Although not documented anywhere, it appears that attribute
+      # values are UTF-8 encoded.
+      v = v.encode("UTF-8")
+      if v != "":
+        if a in r[0][1]:
+          if len(r[0][1][a]) != 1 or v != r[0][1][a][0]:
+            m.append((ldap.MOD_REPLACE, a, v))
+        else:
+          m.append((ldap.MOD_ADD, a, v))
+      else:
+        if a in r[0][1]: m.append((ldap.MOD_DELETE, a, None))
+    try:
+      if len(m) > 0: l.modify_s(dn, m)
+    except ldap.INVALID_SYNTAX:
+      return "Invalid syntax."
+    return None
+  except Exception, e:
+    log.otherError("useradmin.setContactInfo", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
+
+def setPassword (username, old, new):
+  """
+  Sets a user's password.  Returns None on success or a string message
+  on error.
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    dn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
+    try:
+      l.bind_s(dn, old, ldap.AUTH_SIMPLE)
+      l.passwd_s(dn, old, new)
+    except ldap.INVALID_CREDENTIALS:
+      return "Incorrect current password."
+    return None
+  except Exception, e:
+    log.otherError("useradmin.setPassword", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
