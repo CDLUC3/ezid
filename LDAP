@@ -1,11 +1,11 @@
 LDAP Schema
 ===========
 
-Here's the LDAP schema used by EZID.  Note that the object classes
-below are auxiliary, not structural; as a consequence, EZID makes no
-assumptions about the structural typing or relationships of LDAP
-entries (beyond its assumption that user DNs can be formed by
-inserting usernames in a common template.)
+Here's the LDAP schema used by EZID.  For its core processing EZID
+uses the following classes, which are auxiliary, not structural.  As a
+consequence, for the most part (caveats below) EZID makes no
+assumptions about the structural typing of or relationships between
+LDAP entries.
 
 object class ezidUser:
   Describes an EZID user.  Attributes:
@@ -32,6 +32,18 @@ object class ezidGroup:
     List of labels of the identifier shoulders to which the group has
     access.  The labels must be separated by spaces and/or commas,
     e.g., "cdlark,cdldoi".
+
+Now for the caveats.  EZID assumes that user DNs can be formed by
+inserting usernames into a common template (thus assuming that all
+users share some structural parent).
+
+Also, for password and user account (or "profile") management, EZID
+assumes that users are of structural class inetOrgPerson, specifically
+that users have passwords and have the standard LDAP attributes
+givenName, sn, cn, mail, and telephoneNumber.
+
+Appendix
+--------
 
 The formal LDIF declarations are as follows (note that the uid
 attribute is predefined):
