@@ -1,3 +1,4 @@
+import ldap
 import os.path
 import sys
 
@@ -6,6 +7,9 @@ SITE_ROOT = os.path.split(PROJECT_ROOT)[0]
 EZID_CONFIG_FILE = os.path.join(PROJECT_ROOT, "settings", "ezid.conf")
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))
+
+ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, os.path.join(PROJECT_ROOT,
+  "settings", "certs"))
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
