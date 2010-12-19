@@ -202,7 +202,7 @@ def create (request):
         request.session["auth"].group)
     if s.startswith("success:"):
       django.contrib.messages.success(request, "Identifier created.")
-      return _redirect("/ezid/id/" + urllib.quote(s[8:].strip(), ":/"))
+      return _redirect("/ezid/id/" + urllib.quote(s.split()[1], ":/"))
     elif s.startswith("error: bad request - identifier already exists"):
       django.contrib.messages.error(request, _formatError(s))
       return _redirect("/ezid/id/" + urllib.quote(prefix+suffix, ":/"))
@@ -376,7 +376,7 @@ def help (request):
       s = ezid.createIdentifier(prefix+suffix, user, group)
     if s.startswith("success:"):
       django.contrib.messages.success(request, "Identifier created.")
-      return _redirect("/ezid/id/" + urllib.quote(s[8:].strip(), ":/"))
+      return _redirect("/ezid/id/" + urllib.quote(s.split()[1], ":/"))
     elif s.startswith("error: bad request - identifier already exists"):
       django.contrib.messages.error(request, _formatError(s))
       return _redirect("/ezid/id/" + urllib.quote(prefix+suffix, ":/"))

@@ -141,8 +141,9 @@ def mintIdentifier (request):
   s = ezid.mintIdentifier(prefix, auth.user, auth.group, target)
   if not s.startswith("success:"): return _response(s)
   if len(metadata) > 0:
-    identifier = s[8:].strip()
-    s = ezid.setMetadata(identifier, auth.user, auth.group, metadata)
+    identifier = s.split()[1]
+    s2 = ezid.setMetadata(identifier, auth.user, auth.group, metadata)
+    if not s2.startswith("success:"): s = s2
   return _response(s, createRequest=True)
 
 def identifierDispatcher (request):
@@ -197,7 +198,9 @@ def _createIdentifier (request):
   s = ezid.createIdentifier(identifier, auth.user, auth.group, target)
   if not s.startswith("success:"): return _response(s)
   if len(metadata) > 0:
-    s = ezid.setMetadata(identifier, auth.user, auth.group, metadata)
+    identifier = s.split()[1]
+    s2 = ezid.setMetadata(identifier, auth.user, auth.group, metadata)
+    if not s2.startswith("success:"): s = s2
   return _response(s, createRequest=True)
 
 def login (request):

@@ -173,9 +173,10 @@ def mintDoi (prefix, user, group, target=None):
   "ark:/13030/foo").  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, scheme-less form of
-  the new identifier, as in:
+  the new identifier, followed by the new identifier's qualified
+  shadow ARK, as in:
 
-    success: 10.5060/FK35717N0H
+    success: 10.5060/FK35717N0H | ark:/b5060/fk35717n0h
 
   Unsuccessful returns include the strings:
 
@@ -222,10 +223,10 @@ def createDoi (doi, user, group, target=None):
   identifier) tuples, e.g., ("dryad", "ark:/13030/foo").  If an
   initial target URL is not supplied, the identifier is given a
   self-referential target URL.  The successful return is a string that
-  includes the canonical, scheme-less form of the new identifier, as
-  in:
+  includes the canonical, scheme-less form of the new identifier,
+  followed by the new identifier's qualified shadow ARK, as in:
 
-    success: 10.5060/FOO
+    success: 10.5060/FOO | ark:/b5060/foo
 
   Unsuccessful returns include the strings:
 
@@ -270,7 +271,7 @@ def createDoi (doi, user, group, target=None):
     return "error: internal server error"
   else:
     log.success(tid)
-    return "success: " + doi
+    return "success: " + doi + " | ark:/" + shadowArk
   finally:
     _releaseIdentifierLock(shadowArk)
 
@@ -374,9 +375,14 @@ def mintIdentifier (prefix, user, group, target=None):
   "ark:/13030/foo").  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, qualified form of
-  new identifier, as in:
+  the new identifier, as in:
 
-    success: doi:10.5060/FK35717N0H
+    success: ark:/95060/fk35717n0h
+
+  For non-ARK identifiers, the string also includes the qualified
+  shadow ARK, as in:
+
+    success: doi:10.5060/FK35717N0H | ark:/b5060/fk35717n0h
 
   Unsuccessful returns include the strings:
 
@@ -407,9 +413,14 @@ def createIdentifier (identifier, user, group, target=None):
   "ark:/13030/foo").  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, qualified form of
-  new identifier, as in:
+  the new identifier, as in:
 
-    success: doi:10.5060/FOO
+    success: ark:/95060/foo
+
+  For non-ARK identifiers, the string also includes the qualified
+  shadow ARK, as in:
+
+    success: doi:10.5060/FOO | ark:/b5060/foo
 
   Unsuccessful returns include the strings:
 
