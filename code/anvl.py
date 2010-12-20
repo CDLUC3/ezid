@@ -41,13 +41,18 @@ def _decodeRewriter (m):
 def _decode (s):
   return _pattern3.sub(_decodeRewriter, s)
 
+def formatPair (label, value):
+  """
+  Formats a label and value into an ANVL element.
+  """
+  return "%s: %s\n" % (_encodeLabel(label), _encodeValue(value))
+
 def format (d):
   """
   Formats a dictionary into an ANVL string.  Labels and values are
   suitably percent-encoded.
   """
-  return "".join("%s: %s\n" % (_encodeLabel(k), _encodeValue(v))\
-    for k, v in d.items())
+  return "".join(formatPair(k, v) for k, v in d.items())
 
 def parse (s):
   """

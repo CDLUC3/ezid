@@ -102,10 +102,15 @@ def _statusMapping (content, createRequest):
   else:
     return 500
 
-def _response (content, createRequest=False, addAuthenticateHeader=False):
-  c = content.encode("UTF-8")
-  r = django.http.HttpResponse(c,
-    status=_statusMapping(content, createRequest),
+def _response (status, createRequest=False, addAuthenticateHeader=False,
+  anvlBody=""):
+  c = anvl.formatPair(*[v.strip() for v in status.split(":", 1)])
+  if len(anvlBody) > 0:
+    c += anvlBody
+  else:
+    c = c[:-1]
+  c = c.encode("UTF-8")
+  r = django.http.HttpResponse(c, status=_statusMapping(status, createRequest),
     content_type="text/plain; charset=UTF-8")
   r["Content-Length"] = len(c)
   if addAuthenticateHeader: r["WWW-Authenticate"] = "Basic realm=\"EZID\""
@@ -115,10 +120,7 @@ def _unauthorized ():
   return _response("error: unauthorized", addAuthenticateHeader=True)
 
 def _methodNotAllowed ():
-  return _response("error: method not allowed\n" +\
-    "  EZID API, Version 2.\n" +\
-    "  Please report problems to ezid-l at ucop dot edu.\n" +\
-    "  See http://www.cdlib.org/uc3/docs/ezidapi.html for usage instructions.")
+  return _response("error: method not allowed")
 
 def mintIdentifier (request):
   """
@@ -166,7 +168,7 @@ def _getMetadata (request):
   r = ezid.getMetadata(request.path[9:])
   if type(r) is str: return _response(r)
   s, metadata = r
-  return _response("%s\n%s" % (s, anvl.format(metadata)))
+  return _response(s, anvlBody=anvl.format(metadata))
 
 def _setMetadata (request):
   auth = userauth.authenticateRequest(request)
