@@ -26,6 +26,7 @@ import urllib
 
 import config
 import ezid
+import ezidadmin
 import log
 import metadata
 import policy
@@ -89,6 +90,31 @@ def _render (request, template, context={}):
 def _plainTextResponse (message):
   r = django.http.HttpResponse(message, content_type="text/plain")
   r["Content-Length"] = len(message)
+  return r
+
+# Our development version of Python (2.5) doesn't have the standard
+# JSON module (introduced in 2.6), so we provide our own encoder here.
+
+_jsonRe = re.compile("[\\x00-\\x1F\"\\\\\\xFF]")
+def _json (o):
+  if type(o) is dict:
+    assert all(type(k) is str for k in o), "unexpected object type"
+    return "{" + ", ".join(_json(k) + ": " + _json(v) for k, v in o.items()) +\
+      "}"
+  elif type(o) is list:
+    return "[" + ", ".join(_json(v) for v in o) + "]"
+  elif type(o) is str or type(o) is unicode:
+    return "\"" + _jsonRe.sub(lambda c: "\\u%04X" % ord(c.group(0)), o) + "\""
+  elif type(o) is bool:
+    return "true" if o else "false"
+  else:
+    assert False, "unexpected object type"
+
+def _jsonResponse (data):
+  # Per RFC 4627, the default encoding is understood to be UTF-8.
+  ec = _json(data).encode("UTF-8")
+  r = django.http.HttpResponse(ec, content_type="application/json")
+  r["Content-Length"] = len(ec)
   return r
 
 _redirect = django.http.HttpResponseRedirect
@@ -414,6 +440,37 @@ def admin (request):
       return _badRequest()
   else:
     return _methodNotAllowed()
+
+def getEntries (request):
+  """
+  Returns all LDAP entries.
+  """
+  if "auth" not in request.session or\
+    request.session["auth"].user[0] != _adminUsername:
+    return _unauthorized()
+  if request.method != "GET": return _methodNotAllowed()
+  return _jsonResponse(ezidadmin.getEntries("usersOnly" in request.GET and\
+    request.GET["usersOnly"].lower() == "true"))
+
+def getGroups (request):
+  """
+  Returns all EZID groups.
+  """
+  if "auth" not in request.session or\
+    request.session["auth"].user[0] != _adminUsername:
+    return _unauthorized()
+  if request.method != "GET": return _methodNotAllowed()
+  return _jsonResponse(ezidadmin.getGroups())
+
+def getUsers (request):
+  """
+  Returns all EZID users.
+  """
+  if "auth" not in request.session or\
+    request.session["auth"].user[0] != _adminUsername:
+    return _unauthorized()
+  if request.method != "GET": return _methodNotAllowed()
+  return _jsonResponse(ezidadmin.getUsers())
 
 def resetPassword (request, pwrr, ssl=False):
   """

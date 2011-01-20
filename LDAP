@@ -32,6 +32,8 @@ object class ezidGroup:
     List of labels of the identifier shoulders to which the group has
     access.  The labels must be separated by spaces and/or commas,
     e.g., "cdlark,cdldoi".
+  agreementOnFile
+    Optional boolean flag; not used by EZID itself.
 
 Now for the caveats.  EZID assumes that user DNs can be formed by
 inserting usernames into a common template (thus assuming that all
@@ -48,35 +50,83 @@ Appendix
 The formal LDIF declarations are as follows (note that the uid
 attribute is predefined):
 
-attributeTypes: ( gid-oid NAME 'gid' SUP uid EQUALITY caseIgnoreMatch
-ORDERING caseIgnoreOrderingMatch SUBSTR caseIgnoreSubstringsMatch
-SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE USAGE
-userApplications )
+attributeTypes: (
+  gid-oid
+  NAME 'gid'
+  SUP uid
+  EQUALITY caseIgnoreMatch
+  ORDERING caseIgnoreOrderingMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  USAGE userApplications )
 
-attributeTypes: ( arkId-oid NAME 'arkId' DESC 'ARK identifier, must
-begin with ark:/' EQUALITY caseExactMatch ORDERING
-caseExactOrderingMatch SUBSTR caseExactSubstringsMatch SYNTAX
-1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE USAGE userApplications )
+attributeTypes: (
+  arkId-oid
+  NAME 'arkId'
+  DESC 'ARK identifier, must begin with ark:/'
+  EQUALITY caseExactMatch
+  ORDERING caseExactOrderingMatch
+  SUBSTR caseExactSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  USAGE userApplications )
 
-attributeTypes: ( groupArkId-oid NAME 'groupArkId' DESC 'ARK
-identifier, must begin with ark:/' SUP arkId EQUALITY caseExactMatch
-ORDERING caseExactOrderingMatch SUBSTR caseExactSubstringsMatch SYNTAX
-1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE USAGE userApplications )
+attributeTypes: (
+  groupArkId-oid
+  NAME 'groupArkId'
+  DESC 'ARK identifier, must begin with ark:/'
+  SUP arkId
+  EQUALITY caseExactMatch
+  ORDERING caseExactOrderingMatch
+  SUBSTR caseExactSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  USAGE userApplications )
 
-attributeTypes: ( ezidOwnerGroup-oid NAME 'ezidOwnerGroup' DESC 'EZID
-owner group' EQUALITY distinguishedNameMatch SUBSTR
-caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.12
-SINGLE-VALUE USAGE userApplications )
+attributeTypes: (
+  ezidOwnerGroup-oid
+  NAME 'ezidOwnerGroup'
+  DESC 'EZID owner group'
+  EQUALITY distinguishedNameMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.12
+  SINGLE-VALUE
+  USAGE userApplications )
 
-attributeTypes: ( shoulderList-oid NAME 'shoulderList' DESC 'List of
-identifier shoulder labels separated by spaces and/or commas' EQUALITY
-caseExactMatch ORDERING caseExactOrderingMatch SUBSTR
-caseExactSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
-SINGLE-VALUE USAGE userApplications )
+attributeTypes: (
+  shoulderList-oid
+  NAME 'shoulderList'
+  DESC 'List of identifier shoulder labels separated by spaces and/or commas'
+  EQUALITY caseExactMatch
+  ORDERING caseExactOrderingMatch
+  SUBSTR caseExactSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  USAGE userApplications )
 
-objectClasses: ( ezidUser-oid NAME 'ezidUser' DESC 'EZID user' SUP top
-AUXILIARY MUST ( objectClass $ arkId $ uid $ ezidOwnerGroup ) )
+attributeTypes: (
+  agreementOnFile-oid
+  NAME 'agreementOnFile'
+  DESC 'Present and true if an agreement is on file'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE
+  USAGE userApplications )
 
-objectClasses: ( ezidGroup-oid NAME 'ezidGroup' DESC 'EZID group' SUP
-top AUXILIARY MUST ( objectClass $ shoulderList ) MAY ( groupArkId $
-arkId $ uid $ gid ) )
+objectClasses: (
+  ezidUser-oid
+  NAME 'ezidUser'
+  DESC 'EZID user'
+  SUP top
+  AUXILIARY
+  MUST ( objectClass $ arkId $ uid $ ezidOwnerGroup ) )
+
+objectClasses: (
+  ezidGroup-oid
+  NAME 'ezidGroup'
+  DESC 'EZID group'
+  SUP top
+  AUXILIARY
+  MUST ( objectClass $ shoulderList )
+  MAY ( groupArkId $ arkId $ uid $ gid $ agreementOnFile ) )
