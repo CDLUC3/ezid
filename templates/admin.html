@@ -3,6 +3,10 @@
 {% block title %}EZID : Admin{% endblock %}
 
 {% block header %}
+<link rel="stylesheet" type="text/css"
+href="/ezid/static/jquery.autocomplete.css"/>
+<script type="text/javascript"
+src="/ezid/static/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="/ezid/static/admin.js"></script>
 {% endblock %}
 
@@ -11,40 +15,202 @@
 {% block content %}
 <div id="admin">
 
-<p><a id="switch_alert" class="switch" href="#"><span
-class="open"></span><span class="closed"></span> Set alert
-message</a></p>
+<p><a id="ng_switch" class="switch" href="#"><span id="ng_open"
+class="open"></span><span id="ng_close" class="closed"></span> Groups:
+make new</a></p>
 
-<div id="section_alert" class="section">
-<form method="post" action="/ezid/admin">
-<p>The message will appear at the top of every page.</p>
-<table class="formtable">
+<div id="ng_section" class="section">
+<form id="ng_form" action="null">
+<p>Make an existing LDAP entry (person, institution, etc.) an EZID
+group.</p>
+<table class="form">
 <tr>
-<th>Message</th>
-<td>
-<input type="text" id="message" name="message" size="60" class="firsttext"/>
+<th>LDAP entry</th>
+<td colspan="2"><input type="text" id="ng_entry" name="ng_entry"
+size="60"/></td>
+</tr>
+<tr>
+<th>Group name</th>
+<td colspan="2"><input type="text" id="ng_gid" name="ng_gid" size="20"/>
+<span class="note">E.g., "labarchives"</span></td>
+</tr>
+<tr>
+<th>Agreement on file</th>
+<td colspan="2"><input type="checkbox" id="ng_agreement"
+name="ng_agreement"/></td>
+</tr>
+<tr>
+<th>Shoulder list</th>
+<td colspan="2"><input type="text" id="ng_shoulderlist" name="ng_shoulderlist"
+size="60"/></td>
+</tr>
+<tr>
+<td></td>
+<td class="gap"></td>
+<td class="note">Enter one or more shoulders separated by commas.
+Choose from:
+{% for s in shoulders %}
+<span class="shoulder">{{ s }}</span>{% if forloop.last %}.{% else %},
+{% endif %}
+{% endfor %}
 </td>
 </tr>
 <tr>
 <td></td>
-<td><input type="submit" value="Set"/>
-<input type="hidden" name="operation" value="set_alert"/>
-</td>
+<td colspan="2"><input type="submit" value="Make group"/></td>
 </tr>
 </table>
 </form>
 </div>
 
-<p><a id="switch_reload" class="switch" href="#"><span
-class="open"></span><span class="closed"></span> Reload EZID</a></p>
+<p><a id="mg_switch" class="switch" href="#"><span id="mg_open"
+class="open"></span><span id="mg_close" class="closed"></span> Groups:
+manage existing</a></p>
 
-<div id="section_reload" class="section">
+<div id="mg_section" class="section">
+<form id="mg_form" action="null">
+<p>Manage an existing EZID group.</p>
+<table class="form">
+<tr>
+<th>Group</th>
+<td colspan="2">
+<select id="mg_select">
+<option selected="selected">Loading groups...</option>
+</select>
+</td>
+</tr>
+<tr>
+<th>LDAP entry</th>
+<td id="mg_entry" colspan="2" class="value"></td>
+</tr>
+<tr>
+<th>ARK identifier</th>
+<td id="mg_arkid" colspan="2" class="value"></td>
+</tr>
+<tr>
+<th>Users</th>
+<td id="mg_users" colspan="2" class="value"></td>
+</tr>
+<tr>
+<th>Agreement on file</th>
+<td colspan="2"><input type="checkbox" id="mg_agreement"
+name="mg_agreement"/></td>
+</tr>
+<tr>
+<th>Shoulder list</th>
+<td colspan="2"><input type="text" id="mg_shoulderlist" name="mg_shoulderlist"
+size="60"/></td>
+</tr>
+<tr>
+<td></td>
+<td class="gap"></td>
+<td class="note">Enter one or more shoulders separated by commas.
+Choose from:
+{% for s in shoulders %}
+<span class="shoulder">{{ s }}</span>{% if forloop.last %}.{% else %},
+{% endif %}
+{% endfor %}
+</td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2"><input type="submit" value="Update"/></td>
+</tr>
+</table>
+</form>
+</div>
+
+<p><a id="nu_switch" class="switch" href="#"><span id="nu_open"
+class="open"></span><span id="nu_close" class="closed"></span> Users:
+make new</a></p>
+
+<div id="nu_section" class="section">
+<form id="nu_form" action="null">
+<p>Make an existing LDAP entry (person, institution, etc.) an EZID
+user.</p>
+<table class="form">
+<tr>
+<th>LDAP entry</th>
+<td><input type="text" id="nu_entry" name="nu_entry" size="60"/></td>
+</tr>
+<tr>
+<th>Group</th>
+<td>
+<select id="nu_select">
+<option selected="selected">Loading groups...</option>
+</select>
+</td>
+</tr>
+<tr>
+<td></td>
+<td><input type="submit" value="Make user"/></td>
+</tr>
+</table>
+</form>
+</div>
+
+<p><a id="mu_switch" class="switch" href="#"><span id="mu_open"
+class="open"></span><span id="mu_close" class="closed"></span> Users:
+manage existing</a></p>
+
+<div id="mu_section" class="section">
+<p>Manage an existing EZID user.</p>
+<table class="form">
+<tr>
+<th>User</th>
+<td>
+<select id="mu_select">
+<option selected="selected">Loading users...</option>
+</select>
+</td>
+</tr>
+<tr>
+<th>LDAP entry</th>
+<td id="mu_entry" class="value"></td>
+</tr>
+<tr>
+<th>ARK identifier</th>
+<td id="mu_arkid" class="value"></td>
+</tr>
+<tr>
+<th>Group</th>
+<td id="mu_gid" class="value"></td>
+</tr>
+</table>
+</div>
+
+<p><a id="sa_switch" class="switch" href="#"><span id="sa_open"
+class="open"></span><span id="sa_close" class="closed"></span> Set
+alert message</a></p>
+
+<div id="sa_section" class="section">
+<form method="post" action="/ezid/admin">
+<p>The message will appear at the top of every page.</p>
+<table class="form">
+<tr>
+<th>Message</th>
+<td><input type="text" id="sa_message" name="message" size="60"/></td>
+</tr>
+<tr>
+<td></td>
+<td><input type="submit" value="Set"/>
+<input type="hidden" name="operation" value="set_alert"/></td>
+</tr>
+</table>
+</form>
+</div>
+
+<p><a id="rl_switch" class="switch" href="#"><span id="rl_open"
+class="open"></span><span id="rl_close" class="closed"></span> Reload
+EZID</a></p>
+
+<div id="rl_section" class="section">
 <form method="post" action="/ezid/admin/reload">
 <p>Reloading EZID re-reads the configuration files and empties all
 caches, including the group prefix cache.  It may be necessary to <a
 href="/ezid/logout">logout</a> and log back in again to see the
 effects of configuration changes.</p>
-<table class="formtable">
+<table class="form">
 <tr><td><input type="submit" value="Reload"/></td></tr>
 </table>
 </form>

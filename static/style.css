@@ -100,8 +100,14 @@ changed, it should be uniformly changed in all those places. */
 #admin .switch:hover .open { background-position: 0 12px }
 #admin .switch:hover .closed { background-position: 12px 12px }
 #admin .section { margin-left: 1em; display: none }
-#admin .formtable { border: 2px solid black; padding: 1em }
-#admin .formtable th { text-align: right; font-weight: normal }
+#admin .form { border: 2px solid black; padding: 1em }
+#admin .form tr { vertical-align: baseline }
+#admin .form th { text-align: right; font-weight: normal; white-space: nowrap;
+  padding-right: .25em }
+#admin .gap { width: 1em }
+#admin .value { font-size: 75% }
+#admin .note { font-size: 75%; font-style: oblique }
+#admin .shoulder { color: green }
 
 #pwreset { text-align: center }
 #pwreset #title { font-weight: bold }
