@@ -44,6 +44,33 @@ function newGroup () {
   return false;
 }
 
+function makeGroup () {
+  clearMessages();
+  working(1);
+  $.ajax({ type: "POST", dataType: "text", cache: false,
+    data: { operation: "make_group", dn: $("#ng_entry").val(),
+      gid: $("#ng_gid").val(),
+      agreementOnFile: $("#ng_agreement").attr("checked"),
+      shoulderList: $("#ng_shoulderlist").val() },
+    error: function () {
+      working(-1);
+      addMessage("<span class='error'>Internal server error.</span>");
+    },
+    success: function (response) {
+      working(-1);
+      if (response == "success") {
+        addMessage("<span class='success'>New group created.</span>");
+      } else {
+        if (typeof(response) != "string" || response == "") {
+          response = "Internal server error.";
+        }
+        addMessage("<span class='error'>" + xmlEscape(response) + "</span>");
+      }
+    }
+  });
+  return false;
+}
+
 var manageGroupOpen = false;
 var groups = null;
 
@@ -118,6 +145,32 @@ function selectGroup () {
   setGroup($("#mg_select").val());
 }
 
+function updateGroup () {
+  clearMessages();
+  working(1);
+  $.ajax({ type: "POST", dataType: "text", cache: false,
+    data: { operation: "update_group", dn: $("#mg_select").val(),
+      agreementOnFile: $("#mg_agreement").attr("checked"),
+      shoulderList: $("#mg_shoulderlist").val() },
+    error: function () {
+      working(-1);
+      addMessage("<span class='error'>Internal server error.</span>");
+    },
+    success: function (response) {
+      working(-1);
+      if (response == "success") {
+        addMessage("<span class='success'>Group updated.</span>");
+      } else {
+        if (typeof(response) != "string" || response == "") {
+          response = "Internal server error.";
+        }
+        addMessage("<span class='error'>" + xmlEscape(response) + "</span>");
+      }
+    }
+  });
+  return false;
+}
+
 var newUserOpen = false;
 var groups2 = null;
 
@@ -185,6 +238,31 @@ function newUser () {
     });
   }
   newUserOpen = !newUserOpen;
+  return false;
+}
+
+function makeUser () {
+  clearMessages();
+  working(1);
+  $.ajax({ type: "POST", dataType: "text", cache: false,
+    data: { operation: "make_user", dn: $("#nu_entry").val(),
+      groupDn: $("#nu_select").val() },
+    error: function () {
+      working(-1);
+      addMessage("<span class='error'>Internal server error.</span>");
+    },
+    success: function (response) {
+      working(-1);
+      if (response == "success") {
+        addMessage("<span class='success'>New user created.</span>");
+      } else {
+        if (typeof(response) != "string" || response == "") {
+          response = "Internal server error.";
+        }
+        addMessage("<span class='error'>" + xmlEscape(response) + "</span>");
+      }
+    }
+  });
   return false;
 }
 
@@ -296,11 +374,14 @@ $(document).ready(function () {
   $("input").keydown(clearMessages);
   $("#ng_switch").click(newGroup);
   $("#ng_agreement").change(clearMessages);
+  $("#ng_form").submit(makeGroup);
   $("#mg_switch").click(manageGroup);
   $("#mg_select").change(selectGroup);
   $("#mg_agreement").change(clearMessages);
+  $("#mg_form").submit(updateGroup);
   $("#nu_switch").click(newUser);
   $("#nu_select").change(clearMessages);
+  $("#nu_form").submit(makeUser);
   $("#mu_switch").click(manageUser);
   $("#mu_select").change(selectUser);
   $("#sa_switch").click(setAlert);

@@ -228,3 +228,12 @@ def getUsers ():
     return "Internal server error."
   finally:
     if l: l.unbind()
+
+def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
+  return "TBD"
+
+def updateGroup (dn, agreementOnFile, shoulderList):
+  return "TBD"
+
+def makeUser (dn, groupDn, user, group):
+  return "TBD"

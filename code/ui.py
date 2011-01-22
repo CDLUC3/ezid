@@ -434,7 +434,38 @@ def admin (request):
   elif request.method == "POST":
     P = request.POST
     if "operation" not in P: return _badRequest()
-    if P["operation"] == "set_alert":
+    if P["operation"] == "make_group":
+      if "dn" not in P or "gid" not in P or "agreementOnFile" not in P\
+        or P["agreementOnFile"].lower() not in ["true", "false"] or\
+        "shoulderList" not in P:
+        return _badRequest()
+      r = ezidadmin.makeGroup(P["dn"].strip(), P["gid"].strip(),
+        (P["agreementOnFile"].lower() == "true"), P["shoulderList"].strip(),
+        request.session["auth"].user, request.session["auth"].group)
+      if type(r) is str:
+        return _plainTextResponse(r)
+      else:
+        return _plainTextResponse("success")
+    elif P["operation"] == "update_group":
+      if "dn" not in P or "agreementOnFile" not in P or\
+        P["agreementOnFile"].lower() not in ["true", "false"] or\
+        "shoulderList" not in P:
+        return _badRequest()
+      r = ezidadmin.updateGroup(P["dn"],
+        (P["agreementOnFile"].lower() == "true"), P["shoulderList"].strip())
+      if type(r) is str:
+        return _plainTextResponse(r)
+      else:
+        return _plainTextResponse("success")
+    elif P["operation"] == "make_user":
+      if "dn" not in P or "groupDn" not in P: return _badRequest()
+      r = ezidadmin.makeUser(P["dn"].strip(), P["groupDn"],
+        request.session["auth"].user, request.session["auth"].group)
+      if type(r) is str:
+        return _plainTextResponse(r)
+      else:
+        return _plainTextResponse("success")
+    elif P["operation"] == "set_alert":
       if "message" not in P: return _badRequest()
       m = P["message"].strip()
       f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
