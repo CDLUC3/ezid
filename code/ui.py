@@ -42,10 +42,13 @@ _testDoiPrefix = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
 _adminUsername = None
+_shoulders = None
+_defaultShoulders = None
 
 def _loadConfig ():
   global _ezidUrl, _templates, _alertMessage, _prefixes, _testPrefixes
   global _testDoiPrefix, _defaultDoiProfile, _defaultArkProfile, _adminUsername
+  global _shoulders, _defaultShoulders
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   t = {}
   for f in os.listdir(django.conf.settings.TEMPLATE_DIRS[0]):
@@ -71,6 +74,9 @@ def _loadConfig ():
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
   _adminUsername = config.config("ldap.admin_username")
+  _shoulders = [k for k in config.config("prefixes.keys").split(",")\
+    if not k.startswith("TEST")]
+  _defaultShoulders = config.config("prefixes.default_keys")
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -423,7 +429,8 @@ def admin (request):
     request.session["auth"].user[0] != _adminUsername:
     return _unauthorized()
   if request.method == "GET":
-    return _render(request, "admin")
+    return _render(request, "admin", { "shoulders": _shoulders,
+      "defaultShoulders": _defaultShoulders })
   elif request.method == "POST":
     P = request.POST
     if "operation" not in P: return _badRequest()
@@ -435,7 +442,8 @@ def admin (request):
       f.write(m)
       f.close()
       _alertMessage = m
-      return _render(request, "admin")
+      return _render(request, "admin", { "shoulders": _shoulders,
+        "defaultShoulders": _defaultShoulders })
     else:
       return _badRequest()
   else:

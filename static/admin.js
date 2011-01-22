@@ -19,7 +19,7 @@ function newGroup () {
     $("#ng_entry").val("Loading entries...");
     $("#ng_gid").val("");
     $("#ng_agreement").attr("checked", false);
-    $("#ng_shoulderlist").val("cdlark,cdldoi");
+    $("#ng_shoulderlist").val(defaultShoulders);
     $.ajax({ url: "/ezid/admin/entries", dataType: "json", cache: false,
       error: function () {
         $("#ng_entry").val("Loading entries... failed");

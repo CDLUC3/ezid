@@ -10,6 +10,10 @@ src="/ezid/static/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="/ezid/static/admin.js"></script>
 {% endblock %}
 
+{% block javascript %}
+defaultShoulders = "{{ defaultShoulders|escapejs }}";
+{% endblock %}
+
 {% block admintab %}active{% endblock %}
 
 {% block content %}

@@ -35,10 +35,12 @@ _adminUsername = None
 _adminPassword = None
 _ldapAdminDn = None
 _ldapAdminPassword = None
+_shoulders = None
 
 def _loadConfig ():
   global _ldapEnabled, _ldapServer, _baseDn, _userDnTemplate, _userDnPattern
   global _adminUsername, _adminPassword, _ldapAdminDn, _ldapAdminPassword
+  global _shoulders
   _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
   _ldapServer = config.config("ldap.server")
   _baseDn = config.config("ldap.base_dn")
@@ -50,9 +52,21 @@ def _loadConfig ():
   _adminPassword = config.config("ldap.admin_password")
   _ldapAdminDn = config.config("ldap.ldap_admin_dn")
   _ldapAdminPassword = config.config("ldap.ldap_admin_password")
+  _shoulders = [k for k in config.config("prefixes.keys").split(",")\
+    if not k.startswith("TEST")]
 
 _loadConfig()
 config.addLoader(_loadConfig)
+
+def _validateShoulderList (sl):
+  # Returns a normalized shoulder list in string form, or None.
+  l = []
+  for s in re.split("[, ]+", sl):
+    if len(s) == 0: continue
+    if s not in _shoulders: return None
+    if s not in l: l.append(s)
+  if len(l) == 0: return None
+  return ",".join(l)
 
 def getEntries (usersOnly=False):
   """
@@ -116,6 +130,11 @@ def getGroups ():
         "duplicate ARK identifier, DN='%s'" % dn
       seenArkIds.add(d["arkId"])
       d["shoulderList"] = attrs["shoulderList"][0].decode("UTF-8")
+      if d["gid"] == _adminUsername:
+        assert d["shoulderList"] == "*", "invalid admin shoulder list"
+      else:
+        d["shoulderList"] = _validateShoulderList(d["shoulderList"])
+        assert d["shoulderList"] != None, "invalid shoulder list, DN='%s'" % dn
       if "agreementOnFile" in attrs:
         d["agreementOnFile"] = (attrs["agreementOnFile"][0].lower() == "true")
       else:
