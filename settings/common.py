@@ -1,5 +1,7 @@
 import ldap
+import os
 import os.path
+import socket
 import sys
 
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
@@ -19,7 +21,12 @@ ADMINS = (
   ("John Kunze", "john.kunze@ucop.edu")
 )
 MANAGERS = ADMINS
-SERVER_EMAIL = "ezid@n2t.net"
+
+if "HOSTNAME" in os.environ:
+  SERVER_EMAIL = "ezid@" + os.environ["HOSTNAME"]
+else:
+  SERVER_EMAIL = "ezid@" + socket.gethostname()
+
 SEND_BROKEN_LINK_EMAILS = True
 
 DATABASE_ENGINE = "sqlite3"
