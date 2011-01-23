@@ -42,15 +42,3 @@ An entity responsible for making the resource available.  Examples of
 a Publisher include a person, an organization, or a service.
 Typically, the name of a Publisher should be used to indicate the
 entity.
-
-element: dc.identifier
-displayname: Identifier
-tooltip:
-<b><u>Identifier</u></b><br/>
-An unambiguous reference to the resource within a given context (other
-than the EZID identifier).  Recommended best practice is to identify
-the resource by means of a string or number conforming to a formal
-identification system.  Example formal identification systems include
-the Uniform Resource Identifier (URI) (including the Uniform Resource
-Locator (URL)), the Digital Object Identifier (DOI) and the
-International Standard Book Number (ISBN).
