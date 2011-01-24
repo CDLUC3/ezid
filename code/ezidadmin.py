@@ -23,6 +23,7 @@ import ldap
 import re
 
 import config
+import ezid
 import log
 import util
 
@@ -36,11 +37,12 @@ _adminPassword = None
 _ldapAdminDn = None
 _ldapAdminPassword = None
 _shoulders = None
+_agentPrefix = None
 
 def _loadConfig ():
   global _ldapEnabled, _ldapServer, _baseDn, _userDnTemplate, _userDnPattern
   global _adminUsername, _adminPassword, _ldapAdminDn, _ldapAdminPassword
-  global _shoulders
+  global _shoulders, _agentPrefix
   _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
   _ldapServer = config.config("ldap.server")
   _baseDn = config.config("ldap.base_dn")
@@ -54,6 +56,8 @@ def _loadConfig ():
   _ldapAdminPassword = config.config("ldap.ldap_admin_password")
   _shoulders = [k for k in config.config("prefixes.keys").split(",")\
     if not k.startswith("TEST")]
+  _agentPrefix = config.config("prefix_cdlagent.prefix")
+  assert _agentPrefix.startswith("ark:/")
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -230,10 +234,175 @@ def getUsers ():
     if l: l.unbind()
 
 def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
-  return "TBD"
+  """
+  Makes an existing LDAP entry an EZID group, returning None on
+  success or a string message on error.  'dn' should be the entry's
+  DN; the entry must not already be an EZID group, nor may it already
+  have any EZID group attributes (gid, groupArkId, agreementOnFile, or
+  shoulderList).  'user' and 'group' are used in identifier creation
+  and modification; each should be authenticated (local name,
+  persistent identifier) tuples, e.g., ("dryad", "ark:/13030/foo").
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  if len(dn) == 0: return "LDAP entry required."
+  if len(gid) == 0: return "Group name required."
+  if " " in gid: return "Invalid group name."
+  if len(shoulderList) == 0: return "Shoulder list required."
+  shoulderList = _validateShoulderList(shoulderList)
+  if shoulderList == None: return "Unrecognized shoulder."
+  groups = getGroups()
+  if type(groups) is str: return groups
+  if gid in [g["gid"] for g in groups]: return "Group name is already in use."
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    # The modify operation below requires binding as a privileged LDAP
+    # user.
+    l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
+    try:
+      r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass", "gid",
+        "groupArkId", "agreementOnFile", "shoulderList"])
+    except ldap.INVALID_DN_SYNTAX:
+      return "Invalid DN."
+    except ldap.NO_SUCH_OBJECT:
+      return "No such LDAP entry."
+    if "ezidGroup" in r[0][1]["objectClass"]:
+      return "LDAP entry is already an EZID group."
+    assert "gid" not in r[0][1] and "groupArkId" not in r[0][1] and\
+      "agreementOnFile" not in r[0][1] and "shoulderList" not in r[0][1],\
+      "unexpected LDAP attribute, DN='%s'" % dn
+    r = ezid.mintIdentifier(_agentPrefix, user, group)
+    if r.startswith("success:"):
+      arkId = r.split()[1]
+    else:
+      assert False, "ezid.mintIdentifier failed: " + r
+    r = ezid.setMetadata(arkId, user, group,
+      { "_profile": "erc", "erc.who": dn, "erc.what": "EZID group" })
+    assert r.startswith("success:"), "ezid.setMetadata failed: " + r
+    l.modify_s(dn, [(ldap.MOD_ADD, "objectClass", "ezidGroup"),
+      (ldap.MOD_ADD, "gid", gid.encode("UTF-8")),
+      (ldap.MOD_ADD, "groupArkId", arkId.encode("UTF-8")),
+      (ldap.MOD_ADD, "agreementOnFile",
+        "true" if agreementOnFile else "false"),
+      (ldap.MOD_ADD, "shoulderList", shoulderList.encode("UTF-8"))])
+    return None
+  except Exception, e:
+    log.otherError("ezidadmin.makeGroup", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
 
 def updateGroup (dn, agreementOnFile, shoulderList):
-  return "TBD"
+  """
+  Updates an EZID group, returning None on success or a string message
+  on error.  'dn' should be the group's LDAP entry's DN.
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  if len(shoulderList) == 0: return "Shoulder list required."
+  shoulderList = _validateShoulderList(shoulderList)
+  if shoulderList == None: return "Unrecognized shoulder."
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    # The modify operation below requires binding as a privileged LDAP
+    # user.
+    l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
+    try:
+      r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass",
+        "agreementOnFile", "shoulderList"])
+    except ldap.NO_SUCH_OBJECT:
+      # UI controls should prevent this from ever happening.
+      return "No such LDAP entry."
+    if "ezidGroup" not in r[0][1]["objectClass"]:
+      # Ditto.
+      return "LDAP entry is not an EZID group."
+    assert "shoulderList" in r[0][1],\
+      "missing required LDAP attribute, DN='%s'" % dn
+    l.modify_s(dn,
+      [(ldap.MOD_REPLACE, "shoulderList", shoulderList.encode("UTF-8")),
+      (ldap.MOD_REPLACE if "agreementOnFile" in r[0][1] else ldap.MOD_ADD,
+      "agreementOnFile", "true" if agreementOnFile else "false")])
+    return None
+  except Exception, e:
+    log.otherError("ezidadmin.updateGroup", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
 
 def makeUser (dn, groupDn, user, group):
-  return "TBD"
+  """
+  Makes an existing LDAP entry an EZID user, returning None on success
+  or a string message on error.  'dn' should be the entry's DN.  The
+  entry must not already be an EZID user; must already have a uid
+  attribute; must not already have an ezidOwnerGroup attribute; and
+  may already have an arkId attribute.  'groupDn' should be the new
+  user's EZID group's LDAP entry's DN.  'user' and 'group' are used in
+  identifier creation and modification; each should be authenticated
+  (local name, persistent identifier) tuples, e.g., ("dryad",
+  "ark:/13030/foo").
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  if len(dn) == 0: return "LDAP entry required."
+  if not _userDnPattern.match(dn): return "DN does not match user template."
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    # The modify operation below requires binding as a privileged LDAP
+    # user.
+    l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
+    try:
+      r = l.search_s(groupDn, ldap.SCOPE_BASE, attrlist=["objectClass"])
+    except ldap.NO_SUCH_OBJECT:
+      # UI controls should prevent this from ever happening.
+      return "No such group LDAP entry."
+    if "ezidGroup" not in r[0][1]["objectClass"]:
+      # Ditto.
+      return "Group LDAP entry is not an EZID group."
+    try:
+      r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass", "uid",
+        "arkId", "ezidOwnerGroup"])
+    except ldap.INVALID_DN_SYNTAX:
+      return "Invalid DN."
+    except ldap.NO_SUCH_OBJECT:
+      return "No such LDAP entry."
+    if "ezidUser" in r[0][1]["objectClass"]:
+      return "LDAP entry is already an EZID user."
+    if "uid" not in r[0][1]: return "LDAP entry lacks a uid attribute."
+    if " " in r[0][1]["uid"][0].decode("UTF-8"):
+      return "LDAP entry's uid is invalid."
+    assert "ezidOwnerGroup" not in r[0][1],\
+      "unexpected LDAP attribute, DN='%s'" % dn
+    if "arkId" in r[0][1]:
+      arkId = r[0][1]["arkId"][0].decode("UTF-8")
+      if not arkId.startswith(_agentPrefix) or\
+        arkId[5:] != util.validateArk(arkId[5:]):
+        return "LDAP entry has invalid ARK identifier."
+      r = ezid.getMetadata(arkId)
+      assert type(r) is tuple, "ezid.getMetadata failed: " + r
+      if "erc.what" in r[1] and len(r[1]["erc.what"].strip()) > 0:
+        what = r[1]["erc.what"].strip() + "\nEZID user"
+      else:
+        what = "EZID user"
+      r = ezid.setMetadata(arkId, user, group,
+        { "_profile": "erc", "erc.who": dn, "erc.what": what })
+      assert r.startswith("success:"), "ezid.setMetadata failed: " + r
+      m = []
+    else:
+      r = ezid.mintIdentifier(_agentPrefix, user, group)
+      if r.startswith("success:"):
+        arkId = r.split()[1]
+      else:
+        assert False, "ezid.mintIdentifier failed: " + r
+      r = ezid.setMetadata(arkId, user, group,
+        { "_profile": "erc", "erc.who": dn, "erc.what": "EZID user" })
+      assert r.startswith("success:"), "ezid.setMetadata failed: " + r
+      m = [(ldap.MOD_ADD, "arkId", arkId.encode("UTF-8"))]
+    m += [(ldap.MOD_ADD, "objectClass", "ezidUser"),
+      (ldap.MOD_ADD, "ezidOwnerGroup", groupDn.encode("UTF-8"))]
+    l.modify_s(dn, m)
+    return None
+  except Exception, e:
+    log.otherError("ezidadmin.makeUser", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
