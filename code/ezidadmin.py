@@ -25,6 +25,7 @@ import re
 import config
 import ezid
 import log
+import policy
 import util
 
 _ldapEnabled = None
@@ -309,19 +310,27 @@ def updateGroup (dn, agreementOnFile, shoulderList):
     l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
     try:
       r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass",
-        "agreementOnFile", "shoulderList"])
+        "agreementOnFile", "shoulderList", "uid", "gid"])
     except ldap.NO_SUCH_OBJECT:
       # UI controls should prevent this from ever happening.
       return "No such LDAP entry."
     if "ezidGroup" not in r[0][1]["objectClass"]:
       # Ditto.
       return "LDAP entry is not an EZID group."
-    assert "shoulderList" in r[0][1],\
+    assert "shoulderList" in r[0][1] and\
+      ("gid" in r[0][1] or "uid" in r[0][1]),\
       "missing required LDAP attribute, DN='%s'" % dn
     l.modify_s(dn,
       [(ldap.MOD_REPLACE, "shoulderList", shoulderList.encode("UTF-8")),
       (ldap.MOD_REPLACE if "agreementOnFile" in r[0][1] else ldap.MOD_ADD,
       "agreementOnFile", "true" if agreementOnFile else "false")])
+    oldShoulderList = r[0][1]["shoulderList"][0].decode("UTF-8")
+    if shoulderList != oldShoulderList:
+      if "gid" in r[0][1]:
+        gid = r[0][1]["gid"][0].decode("UTF-8")
+      else:
+        gid = r[0][1]["uid"][0].decode("UTF-8")
+      policy.clearPrefixCache(gid)
     return None
   except Exception, e:
     log.otherError("ezidadmin.updateGroup", e)

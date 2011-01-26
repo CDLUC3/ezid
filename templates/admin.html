@@ -73,7 +73,9 @@ manage existing</a></p>
 
 <div id="mg_section" class="section">
 <form id="mg_form" action="null">
-<p>Manage an existing EZID group.</p>
+<p>Manage an existing EZID group.  Due to session caching, if a
+group's shoulder list is changed, users in that group with open
+sessions will have to logout and login again to see the change.</p>
 <table class="form">
 <tr>
 <th>Group</th>
@@ -210,10 +212,10 @@ EZID</a></p>
 
 <div id="rl_section" class="section">
 <form method="post" action="/ezid/admin/reload">
-<p>Reloading EZID re-reads the configuration files and empties all
-caches, including the group prefix cache.  It may be necessary to <a
-href="/ezid/logout">logout</a> and log back in again to see the
-effects of configuration changes.</p>
+<p>Reloading EZID empties the group prefix cache and re-reads the
+configuration file.  Due to session caching, it may be necessary for
+users with open sessions to logout and login again to see the effects
+of configuration changes, particularly those related to shoulders.</p>
 <table class="form">
 <tr><td><input type="submit" value="Reload"/></td></tr>
 </table>

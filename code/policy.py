@@ -101,6 +101,20 @@ def getPrefixes (user, group):
   """
   return _getPrefixes(group)[:]
 
+def clearPrefixCache (group):
+  """
+  Clears the prefix cache for a group.  'group' should be a simple
+  group name, e.g., "dryad".
+  """
+  _lock.acquire()
+  try:
+    for g in _groups:
+      if g[0] == group:
+        del _groups[g]
+        break
+  finally:
+    _lock.release()
+
 def authorizeCreate (user, group, prefix):
   """
   Returns true if a request to mint or create an identifier is
