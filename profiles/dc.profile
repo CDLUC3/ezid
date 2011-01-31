@@ -24,6 +24,15 @@ tooltip:
 A name given to the resource.  Typically, a Title will be a name by
 which the resource is formally known.
 
+element: dc.publisher
+displayname: Publisher
+tooltip:
+<b><u>Publisher</u></b><br/>
+An entity responsible for making the resource available.  Examples of
+a Publisher include a person, an organization, or a service.
+Typically, the name of a Publisher should be used to indicate the
+entity.
+
 element: dc.date
 displayname: Date
 tooltip:
@@ -33,12 +42,3 @@ Typically, Date will be associated with the creation or availability
 of the resource.  Recommended best practice for encoding the date
 value is defined in a profile of ISO 8601 and follows the YYYY-MM-DD
 format.
-
-element: dc.publisher
-displayname: Publisher
-tooltip:
-<b><u>Publisher</u></b><br/>
-An entity responsible for making the resource available.  Examples of
-a Publisher include a person, an organization, or a service.
-Typically, the name of a Publisher should be used to indicate the
-entity.
