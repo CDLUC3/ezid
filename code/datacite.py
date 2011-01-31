@@ -122,24 +122,13 @@ _uploadTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
   </soapenv:Body>
 </soapenv:Envelope>"""
 
-# The following template is based on:
-# http://datacite.org/schema/DataCite-MetadataKernel_v2.0.pdf
-
 _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
 <resource>
-  <identifier identifierType="DOI">%s</identifier>
-  <creators>
-    <creator>
-      <creatorName>%s</creatorName>
-    </creator>
-  </creators>
-  <titles>
-    <title>%s</title>
-  </titles>
-  <publisher>%s</publisher>
-  <publicationYear>%s</publicationYear>
-</resource>
+  <DOI>%s</DOI>
 """
+
+def _protect (s):
+  return re.sub("[^\w]", "_", s)
 
 def uploadMetadata (doi, metadata):
   """
@@ -147,16 +136,12 @@ def uploadMetadata (doi, metadata):
   scheme-less DOI identifier (e.g., "10.5060/foo") to DataCite.  This
   same function can be used to overwrite previously-uploaded metadata.
   'metadata' should be a dictionary that maps metadata element names
-  to values; note that only metadata elements from the DataCite
-  profile (e.g., "datacite.title") are read.  No error checking is
-  done on the inputs.
+  (e.g., "Title") to values.  No error checking is done on the inputs.
   """
-  creator = metadata.get("datacite.creator", "")
-  title = metadata.get("datacite.title", "")
-  publisher = metadata.get("datacite.publisher", "")
-  publicationYear = metadata.get("datacite.publicationyear", "")
-  m = _interpolate(_metadataTemplate, doi, creator, title, publisher,
-    publicationYear)
+  m = _interpolate(_metadataTemplate, doi)
+  m += "".join(_interpolate("  <%s>%s</%s>\n", _protect(k), v, _protect(k))
+    for k, v in metadata.items())
+  m += "</resource>"
   _soapRequest(_interpolate(_uploadTemplate, m))
 
 def identifierExists (doi):
