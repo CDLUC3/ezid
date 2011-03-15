@@ -1,0 +1,3 @@
+# Sample crontab
+0 0 * * 0 env PYTHONPATH=/n2t/apache/ezid/SITE/PROJECT DJANGO_SETTINGS_MODULE=settings.production /opt/csw/bin/django-admin.py cleanup
+5 0 * * 0 /opt/csw/bin/sqlite3 /n2t/apache/ezid/SITE/db/db.sqlite3 vacuum
