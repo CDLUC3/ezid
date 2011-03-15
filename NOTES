@@ -1,0 +1,59 @@
+Design notes...
+
+1. Internal identification of users and groups
+----------------------------------------------
+
+Users and groups are both identified by 2- or 3-element tuples of the
+form:
+
+  (name, persistent identifier [, DN])
+
+For example:
+
+  ("dryad", "ark:/13030/foo", "uid=dryad,ou=People,ou=uc3,dc=cdlib,dc=org")
+
+The last tuple element is present only if LDAP is enabled.
+
+2. Session cookies
+------------------
+
+Session cookies store the following key/value pairs:
+
+  auth
+    A userauth.AuthenticatedUser object which has 'user' and 'group'
+    attributes, each of which is a tuple as described above.
+    Existence of this key indicates that the user is authenticated.
+
+  prefixes
+    A list of the prefixes to which the user has access.  Each element
+    of the list is a dictionary with keys 'prefix' and 'namespace',
+    e.g., { "prefix": "ark:/13030/c7", "namespace": "CDL ARK" }.  Set
+    and used only by the UI for rendering purposes, not access
+    control.
+
+3. Caching
+----------
+
+Caching is employed in several places:
+
+  ezid.conf settings
+    Cached in various modules.  Loaded at module load time.  Invoking
+    the "Reload EZID" admin function causes all settings to be
+    reloaded (except logging settings).
+
+  policy._groups prefix cache
+    A dictionary that maps groups (identified by tuples; see above) to
+    lists of prefixes.  Loaded on demand as groups are encountered.
+    Emptied when EZID is reloaded.  Also, individual entries are
+    removed when shoulder lists are modified through the admin
+    interface.
+
+  session cookies
+    See above.  A session cookie is invalidated if/when a user logs
+    out, but otherwise there's currently no way to invalidate a
+    session cookie.
+
+4. Identifier metadata
+----------------------
+
+See ezid.py.
