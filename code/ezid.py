@@ -473,13 +473,10 @@ def getMetadata (identifier):
   _acquireIdentifierLock(ark)
   try:
     log.begin(tid, "getMetadata", nqidentifier)
-    # The presence of metadata bound to an identifier is currently the
-    # indicator of existence.  But in case this changes in the future,
-    # we include an explicit existence check here.
-    if not _bindNoid.identifierExists(ark):
+    d = _bindNoid.getElements(ark)
+    if d is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
-    d = _bindNoid.getElements(ark)
     if nqidentifier.startswith("doi:"):
       for k in filter(lambda k: k.startswith("_"), d):
         if k in ["_u", "_t", "_s"]:
@@ -544,13 +541,10 @@ def setMetadata (identifier, user, group, metadata):
   try:
     log.begin(tid, "setMetadata", nqidentifier, user[0], user[1], group[0],
       group[1], *[a for p in metadata.items() for a in p])
-    # The presence of metadata bound to an identifier is currently the
-    # indicator of existence.  But in case this changes in the future,
-    # we include an explicit existence check here.
-    if not _bindNoid.identifierExists(ark):
+    m = _bindNoid.getElements(ark)
+    if m is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
-    m = _bindNoid.getElements(ark)
     iUser = tuple(m["_o"].split())
     iGroup = tuple(m["_g"].split())
     if not policy.authorizeUpdate(user, group, nqidentifier, iUser, iGroup):

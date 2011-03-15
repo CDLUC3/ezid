@@ -121,14 +121,16 @@ class Noid (object):
   def getElements (self, identifier):
     """
     Returns all metadata elements (in the form of a dictionary) that
-    are bound to a scheme-less ARK identifier, e.g., "13030/foo".  The
-    identifier is assumed to be in canonical form.
+    are bound to a scheme-less ARK identifier (e.g., "13030/foo"), or
+    None if the identifier doesn't exist.  The identifier is assumed
+    to be in canonical form.
     """
+    # See the comment under identifierExists above.
     s = self._issue(self._command("fetch", [0, identifier]))
     assert len(s) >= 3 and s[0].startswith("id:") and\
       s[1].startswith("Circ:"), "unexpected return from noid 'fetch' command"
     if s[2].startswith("note: no elements bound under"):
-      return {}
+      return None
     else:
       d = {}
       for l in s[2:]:
