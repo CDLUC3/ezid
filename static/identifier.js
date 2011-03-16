@@ -59,7 +59,7 @@ function displayValue (table, fieldName, value) {
   if (fieldName == "_target") {
     var outerDiv = $("<div>");
     outerDiv.append(div);
-    if (displayValue != "(this page)") {
+    if (displayValue != "(this page)" && displayValue != "(no value)") {
       outerDiv.append($("<div class='visit'><a href='" +
         displayValue.replace(/\'/g, "&#39;") + "'>Visit now</a></div>"));
     }

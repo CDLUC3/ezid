@@ -59,7 +59,7 @@ identifier = "{{ identifier|escapejs }}";
 {% if editable %}onclick="openEditBox(this, '_target');"{% endif %}>
 {{ profiles.0.target.value }}
 </div>
-{% if profiles.0.target.value != "(this page)" %}
+{% if profiles.0.target.value != "(this page)" and profiles.0.target.value != "(no value)" %}
 <div class="visit"><a href="{{ profiles.0.target.value }}">Visit now</a></div>
 {% endif %}
 </div></td>
