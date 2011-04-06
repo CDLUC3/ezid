@@ -111,10 +111,11 @@ _prefixes = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
 _testDoiPrefix = None
+_adminUsername = None
 
 def _loadConfig ():
   global _bindNoid, _ezidUrl, _prefixes, _defaultDoiProfile, _defaultArkProfile
-  global _testDoiPrefix
+  global _testDoiPrefix, _adminUsername
   _bindNoid = noid.Noid(config.config("DEFAULT.bind_noid"))
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _prefixes = dict([config.config("prefix_%s.prefix" % k),
@@ -123,6 +124,7 @@ def _loadConfig ():
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
   _testDoiPrefix = config.config("prefix_TESTDOI.prefix")
+  _adminUsername = config.config("ldap.admin_username")
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -509,8 +511,11 @@ def setMetadata (identifier, user, group, metadata):
   (name, value) pairs.  If an element being set already exists, it is
   overwritten, if not, it is created; existing elements not set are
   left unchanged.  Of the reserved metadata elements, only "_target"
-  and "_profile" may be set.  The successful return is a string that
-  includes the canonical, qualified form of the identifier, as in:
+  and "_profile" may be set (unless the user is the EZID
+  administrator, in which case the other reserved metadata elements
+  may be set using their stored forms).  The successful return is a
+  string that includes the canonical, qualified form of the
+  identifier, as in:
 
     success: doi:10.5060/FOO
 
@@ -533,7 +538,7 @@ def setMetadata (identifier, user, group, metadata):
     return "error: bad request - unrecognized identifier scheme"
   if len(filter(lambda k: len(k) == 0, metadata)) > 0:
     return "error: bad request - empty element name"
-  if len(filter(lambda k: k.startswith("_") and\
+  if user[0] != _adminUsername and len(filter(lambda k: k.startswith("_") and\
     k not in ["_target", "_profile"], metadata)) > 0:
     return "error: bad request - use of reserved metadata element name"
   tid = uuid.uuid1()
@@ -563,12 +568,12 @@ def setMetadata (identifier, user, group, metadata):
         profile = metadata["_profile"]
         del metadata["_profile"]
       if len(metadata) > 0 and not nqidentifier.startswith(_testDoiPrefix):
-        for k in filter(lambda k: k.startswith("_"), m): del m[k]
         m.update(metadata)
-        datacite.uploadMetadata(doi, m)
+        for k in filter(lambda k: k.startswith("_"), m): del m[k]
+        if len(m) > 0: datacite.uploadMetadata(doi, m)
       if target is not None: metadata["_st"] = target
       if profile is not None: metadata["_p"] = profile
-      metadata["_su"] = str(int(time.time()))
+      if "_su" not in metadata: metadata["_su"] = str(int(time.time()))
     elif nqidentifier.startswith("ark:/"):
       target = None
       if "_target" in metadata:
@@ -583,10 +588,10 @@ def setMetadata (identifier, user, group, metadata):
         doi = m["_s"][4:]
         m.update(metadata)
         for k in filter(lambda k: k.startswith("_"), m): del m[k]
-        datacite.uploadMetadata(doi, m)
+        if len(m) > 0: datacite.uploadMetadata(doi, m)
       if target is not None: metadata["_t"] = target
       if profile is not None: metadata["_p"] = profile
-      metadata["_u"] = str(int(time.time()))
+      if "_u" not in metadata: metadata["_u"] = str(int(time.time()))
     _bindNoid.setElements(ark, metadata)
   except Exception, e:
     log.error(tid, e)
