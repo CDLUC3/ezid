@@ -84,6 +84,9 @@ def _authenticateLdap (username, password):
       l.bind_s(userDn, password, ldap.AUTH_SIMPLE)
     except ldap.INVALID_CREDENTIALS:
       return None
+    except ldap.UNWILLING_TO_PERFORM:
+      # E.g., server won't accept empty password.
+      return None
     ua = _getAttributes(l, userDn)
     if "ezidUser" not in ua["objectClass"]: return None
     uid = ua["uid"]
@@ -132,6 +135,9 @@ def authenticate (username, password):
   successful, None if unsuccessful, or a string message if an error
   occurred.
   """
+  username = username.strip()
+  if username == "": return "error: bad request - username required"
+  password = password.strip()
   if _ldapEnabled:
     return _authenticateLdap(username, password)
   else:

@@ -163,13 +163,7 @@ def login (request):
   elif request.method == "POST":
     if "username" not in request.POST or "password" not in request.POST:
       return _badRequest()
-    if request.POST["username"].strip() == "":
-      django.contrib.messages.error(request, "Username required.")
-      return _render(request, "login")
-    if request.POST["password"].strip() == "":
-      django.contrib.messages.error(request, "Password required.")
-      return _render(request, "login")
-    auth = userauth.authenticate(request.POST["username"].strip(),
+    auth = userauth.authenticate(request.POST["username"],
       request.POST["password"])
     if type(auth) is str:
       django.contrib.messages.error(request, _formatError(auth))
