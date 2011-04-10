@@ -168,6 +168,13 @@ def _getMetadata (request):
   r = ezid.getMetadata(request.path[9:])
   if type(r) is str: return _response(r)
   s, metadata = r
+  if "_ezid_role" in metadata:
+    # Special case.
+    auth = userauth.authenticateRequest(request)
+    if type(auth) is str:
+      return _response(auth)
+    elif not auth or auth.user[0] != _adminUsername:
+      return _unauthorized()
   return _response(s, anvlBody=anvl.format(metadata))
 
 def _setMetadata (request):

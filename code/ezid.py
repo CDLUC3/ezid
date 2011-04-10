@@ -37,16 +37,18 @@
 # stored | transmitted |
 # label  | label       | meaning
 # -------+-------------+----------------------------------------------
-# _o     | _owner      | The identifier's owner expressed as a local
-#        |             | name and owner persistent identifier, e.g.,
-#        |             | "ryan ark:/13030/foo".  For a shadow ARK,
+# _o     | _owner      | The identifier's owner.  The owner is stored
+#        |             | as a persistent identifier (e.g.,
+#        |             | "ark:/13030/foo") but returned as a local
+#        |             | name (e.g., "ryan").  For a shadow ARK,
 #        |             | applies to both the shadow ARK and shadowed
 #        |             | identifier.
-# _g     | _ownergroup | The identifier's owner's group expressed as a
-#        |             | local name and group persistent identifier,
-#        |             | e.g., "dryad ark:/13030/bar".  For a shadow
-#        |             | ARK, applies to both the shadow ARK and
-#        |             | shadowed identifier.
+# _g     | _ownergroup | The identifier's owner's group.  The group is
+#        |             | stored as a persistent identifier (e.g.,
+#        |             | "ark:/13030/bar") but returned as a local
+#        |             | name (e.g., "dryad").  For a shadow ARK,
+#        |             | applies to both the shadow ARK and shadowed
+#        |             | identifier.
 # _c     | _created    | The time the identifier was created expressed
 #        |             | as a Unix timestamp, e.g., "1280889190".  For
 #        |             | a shadow ARK, applies to both the shadow ARK
@@ -84,6 +86,14 @@
 # non-graphic ASCII characters and a few other reserved characters are
 # percent-encoded; see util.encode{3,4} and util.decode.
 #
+# ARK identifiers that identify users and groups ("agent identifiers")
+# are treated specially by EZID.  Such identifiers are identified by
+# the presence of an _ezid_role metadata element, which may have the
+# value "user" or "group".  Additional metadata elements cache
+# information stored primarily in LDAP.  Agent identifiers are owned
+# by the EZID administrator, and to protect user privacy, they may be
+# viewed by the EZID administrator only.
+#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
@@ -100,6 +110,7 @@ import uuid
 
 import config
 import datacite
+import idmap
 import log
 import noid
 import policy
@@ -259,8 +270,8 @@ def createDoi (doi, user, group, target=None):
     _bindNoid.holdIdentifier(shadowArk)
     t = str(int(time.time()))
     _bindNoid.setElements(shadowArk,
-      { "_o": "%s %s" % user[:2],
-        "_g": "%s %s" % group[:2],
+      { "_o": user[1],
+        "_g": group[1],
         "_c": t,
         "_u": t,
         "_t": arkTarget,
@@ -354,8 +365,8 @@ def createArk (ark, user, group, target=None):
     if not target: target = "%s/id/%s" % (_ezidUrl, urllib.quote(qark, ":/"))
     t = str(int(time.time()))
     _bindNoid.setElements(ark,
-      { "_o": "%s %s" % user[:2],
-        "_g": "%s %s" % group[:2],
+      { "_o": user[1],
+        "_g": group[1],
         "_c": t,
         "_u": t,
         "_t": target,
@@ -494,6 +505,8 @@ def getMetadata (identifier):
         elif k in _labelMapping:
           d[_labelMapping[k]] = d[k]
           del d[k]
+    d["_owner"] = idmap.getAgent(d["_owner"])[0]
+    d["_ownergroup"] = idmap.getAgent(d["_ownergroup"])[0]
     log.success(tid)
     return ("success: " + nqidentifier, d)
   except Exception, e:
@@ -550,9 +563,10 @@ def setMetadata (identifier, user, group, metadata):
     if m is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
-    iUser = tuple(m["_o"].split())
-    iGroup = tuple(m["_g"].split())
-    if not policy.authorizeUpdate(user, group, nqidentifier, iUser, iGroup):
+    iUser = m["_o"]
+    iGroup = m["_g"]
+    if not policy.authorizeUpdate(user, group, nqidentifier,
+      (idmap.getAgent(iUser)[0], iUser), (idmap.getAgent(iGroup)[0], iGroup)):
       log.unauthorized(tid)
       return "error: unauthorized"
     metadata = metadata.copy()

@@ -27,6 +27,7 @@ import urllib
 import config
 import ezid
 import ezidadmin
+import idmap
 import log
 import metadata
 import policy
@@ -288,6 +289,11 @@ def identifierDispatcher (request):
       django.contrib.messages.error(request, _formatError(r))
       return _redirect("/ezid/manage")
     s, m = r
+    if "_ezid_role" in m and ("auth" not in request.session or\
+      request.session["auth"].user[0] != _adminUsername):
+      # Special case.
+      django.contrib.messages.error(request, "Unauthorized.")
+      return _redirect("/ezid/manage")
     assert s.startswith("success:")
     id = s[8:].strip()
     defaultTargetUrl = "%s/id/%s" % (_ezidUrl, urllib.quote(id, ":/"))
@@ -317,9 +323,6 @@ def identifierDispatcher (request):
       ip["_urlform"].value = "(none)"
     if ip["_target"].value == defaultTargetUrl:
       ip["_target"].value = "(this page)"
-    for f in ["_owner", "_ownergroup"]:
-      ip[f].fullValue = tuple(ip[f].value.split())
-      ip[f].value = ip[f].fullValue[0]
     ip["_created"].value = _formatTime(int(ip["_created"].value))
     ip["_updated"].value = _formatTime(int(ip["_updated"].value))
     for f in ["_shadows", "_shadowedby"]:
@@ -347,8 +350,9 @@ def identifierDispatcher (request):
       group = request.session["auth"].group
     else:
       user = group = ("anonymous", "anonymous")
-    editable = policy.authorizeUpdate(user, group, id, ip["_owner"].fullValue,
-      ip["_ownergroup"].fullValue)
+    editable = policy.authorizeUpdate(user, group, id,
+      (ip["_owner"].value, idmap.getUserId(ip["_owner"].value)),
+      (ip["_ownergroup"].value, idmap.getGroupId(ip["_ownergroup"].value)))
     # Update the recent identifier list.
     if "history" not in request.session: request.session["history"] = []
     if id not in [e["id"] for e in request.session["history"]]:
@@ -452,7 +456,8 @@ def admin (request):
         "shoulderList" not in P:
         return _badRequest()
       r = ezidadmin.updateGroup(P["dn"],
-        (P["agreementOnFile"].lower() == "true"), P["shoulderList"].strip())
+        (P["agreementOnFile"].lower() == "true"), P["shoulderList"].strip(),
+        request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:
         return _plainTextResponse(r)
       else:

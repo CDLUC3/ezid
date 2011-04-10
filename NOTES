@@ -64,7 +64,31 @@ Caching is employed in several places:
     out, but otherwise there's currently no way to invalidate a
     session cookie.
 
+  idmap.py: _idMap, _groupMap, _userMap
+    These dictionaries cache correspondences between agent identifiers
+    and user and group local names.  Loaded on demand.  Emptied when
+    EZID is reloaded.
+
+  LDAP information
+    Cached in agent identifiers for the purposes of storage redundancy
+    and locality only.  Written only, never read.
+
 4. Identifier metadata
 ----------------------
 
 See ezid.py.
+
+5. Agent identifiers
+--------------------
+
+"Agents" (users and groups) are internally referred to and stored as
+ARK identifiers (e.g., "ark:/99166/foo"), but are externally referred
+to by local names (e.g., "dryad").  Identifiers that identify agents
+are termed "agent identifiers;" see ezid.py and idmap.py for more
+information.  Because potentially sensitive LDAP information is cached
+in agent identifiers (see above), not only are agent identifiers not
+revealed to clients, they are owned by the EZID administrator and can
+only be viewed by the EZID administrator.  To avoid coding
+complications (ezid.getMetadata is used both to service client
+requests and by EZID itself) this special access control is
+implemented in the API and UI, not in ezid.py.

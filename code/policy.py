@@ -138,4 +138,4 @@ def authorizeUpdate (rUser, rGroup, identifier, iUser, iGroup):
   'identifier' is the identifier in question; it must be qualified, as
   in "doi:10.5060/foo".  Throws an exception on error.
   """
-  return rUser[:2] == iUser or rUser[0] == _adminUsername
+  return rUser[1] == iUser[1] or rUser[0] == _adminUsername

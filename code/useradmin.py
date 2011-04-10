@@ -23,6 +23,8 @@ import time
 import urllib
 
 import config
+import ezid
+import idmap
 import log
 
 _ezidUrl = None
@@ -161,6 +163,19 @@ def getContactInfo (username):
   finally:
     if l: l.unbind()
 
+def _cacheLdapInformation (l, dn, arkId):
+  attrs = l.search_s(dn, ldap.SCOPE_BASE)[0][1]
+  d = {}
+  for a in attrs:
+    if a != "userPassword":
+      d["ldap." + a] = " ; ".join(v.decode("UTF-8") for v in attrs[a])
+  # We're assuming here that the EZID administrator user and group
+  # names are identical.
+  user = (_adminUsername, idmap.getUserId(_adminUsername))
+  group = (_adminUsername, idmap.getGroupId(_adminUsername))
+  r = ezid.setMetadata(arkId, user, group, d)
+  assert r.startswith("success:"), "ezid.setMetadata failed: " + r
+
 def setContactInfo (username, d):
   """
   Sets a user's contact information.  'd' should be a dictionary that
@@ -186,6 +201,8 @@ def setContactInfo (username, d):
       "unexpected return from LDAP search command, DN='%s'" % dn
     assert "ezidUser" in r[0][1]["objectClass"],\
       "not an EZID user, DN='%s'" % dn
+    assert "arkId" in r[0][1], "missing required LDAP attribute, DN='%s'" % dn
+    arkId = r[0][1]["arkId"][0].decode("UTF-8")
     m = []
     for a, v in d.items():
       # Although not documented anywhere, it appears that attribute
@@ -203,6 +220,7 @@ def setContactInfo (username, d):
       if len(m) > 0: l.modify_s(dn, m)
     except ldap.INVALID_SYNTAX:
       return "Invalid syntax."
+    _cacheLdapInformation(l, dn, arkId)
     return None
   except Exception, e:
     log.otherError("useradmin.setContactInfo", e)
