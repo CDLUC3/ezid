@@ -18,11 +18,13 @@ import re
 import threading
 
 import config
+import useradmin
 
 _lock = threading.Lock()
 _prefixes = None
 _nonTestLabels = None
 _groups = None
+_coOwners = None
 _ldapEnabled = None
 _ldapServer = None
 _userDnTemplate = None
@@ -30,8 +32,8 @@ _adminUsername = None
 _adminPassword = None
 
 def _loadConfig ():
-  global _prefixes, _nonTestLabels, _groups, _ldapEnabled, _ldapServer
-  global _userDnTemplate, _adminUsername, _adminPassword
+  global _prefixes, _nonTestLabels, _groups, _coOwners, _ldapEnabled
+  global _ldapServer, _userDnTemplate, _adminUsername, _adminPassword
   _lock.acquire()
   try:
     _prefixes = dict([k, config.config("prefix_%s.prefix" % k)]\
@@ -39,6 +41,7 @@ def _loadConfig ():
     _nonTestLabels = ",".join(k for k in\
       config.config("prefixes.keys").split(",") if not k.startswith("TEST"))
     _groups = {}
+    _coOwners = {}
     _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
     _ldapServer = config.config("ldap.server")
     _userDnTemplate = config.config("ldap.user_dn_template")
@@ -115,6 +118,58 @@ def clearPrefixCache (group):
   finally:
     _lock.release()
 
+def _loadCoOwnersLdap (user):
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    l.bind_s(_userDnTemplate % _adminUsername, _adminPassword,
+      ldap.AUTH_SIMPLE)
+    dn = _userDnTemplate % ldap.dn.escape_dn_chars(user)
+    r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass",
+      "ezidCoOwners"])
+    assert len(r) == 1 and r[0][0] == dn and\
+      "ezidUser" in r[0][1]["objectClass"],\
+      "unexpected return from LDAP search command, DN='%s'" % dn
+    if "ezidCoOwners" in r[0][1]:
+      col = useradmin.validateCoOwnerList(l,
+        r[0][1]["ezidCoOwners"][0].decode("UTF-8"))
+      assert col is not None,\
+        "no such EZID user in co-owner list, DN='%s'" % dn
+      return col
+    else:
+      return []
+  finally:
+    if l: l.unbind()
+
+def _loadCoOwnersLocal (user):
+  return [o for o in config.config("user_%s.co_owners" % user).split(",")\
+    if len(o) > 0]
+
+def _loadCoOwners (user):
+  if _ldapEnabled:
+    return _loadCoOwnersLdap(user)
+  else:
+    return _loadCoOwnersLocal(user)
+
+def _getCoOwners (user):
+  _lock.acquire()
+  try:
+    if user not in _coOwners: _coOwners[user] = _loadCoOwners(user)
+    return _coOwners[user]
+  finally:
+    _lock.release()
+
+def clearCoOwnerCache (user):
+  """
+  Clears the co-owner cache for a user.  'user' should be a simple
+  username, e.g., "ryan".
+  """
+  _lock.acquire()
+  try:
+    if user in _coOwners: del _coOwners[user]
+  finally:
+    _lock.release()
+
 def authorizeCreate (user, group, prefix):
   """
   Returns true if a request to mint or create an identifier is
@@ -124,9 +179,10 @@ def authorizeCreate (user, group, prefix):
   prefix of one; in either case it must be qualified, e.g.,
   "doi:10.5060/".  Throws an exception on error.
   """
-  return prefix.startswith(_prefixes["TESTARK"]) or\
-    prefix.startswith(_prefixes["TESTDOI"]) or\
-    len(filter(lambda p: prefix.startswith(p), _getPrefixes(group))) > 0
+  if prefix.startswith(_prefixes["TESTARK"]): return True
+  if prefix.startswith(_prefixes["TESTDOI"]): return True
+  if any(map(lambda p: prefix.startswith(p), _getPrefixes(group))): return True
+  return False
 
 def authorizeUpdate (rUser, rGroup, identifier, iUser, iGroup):
   """
@@ -138,4 +194,7 @@ def authorizeUpdate (rUser, rGroup, identifier, iUser, iGroup):
   'identifier' is the identifier in question; it must be qualified, as
   in "doi:10.5060/foo".  Throws an exception on error.
   """
-  return rUser[1] == iUser[1] or rUser[0] == _adminUsername
+  if rUser[1] == iUser[1]: return True
+  if rUser[0] == _adminUsername: return True
+  if rUser[0] in _getCoOwners(iUser[0]): return True
+  return False

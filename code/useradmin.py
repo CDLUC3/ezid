@@ -26,6 +26,7 @@ import config
 import ezid
 import idmap
 import log
+import policy
 
 _ezidUrl = None
 _ldapEnabled = None
@@ -131,6 +132,35 @@ def resetPassword (username, password):
   finally:
     if l: l.unbind()
 
+def getAccountProfile (username):
+  """
+  Returns a user's account profile as a dictionary keyed by LDAP
+  attribute names.  Returns a string message on error.
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    l.bind_s(_userDnTemplate % _adminUsername, _adminPassword,
+      ldap.AUTH_SIMPLE)
+    dn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
+    r = l.search_s(dn, ldap.SCOPE_BASE)
+    assert len(r) == 1 and r[0][0] == dn,\
+      "unexpected return from LDAP search command, DN='%s'" % dn
+    assert "ezidUser" in r[0][1]["objectClass"],\
+      "not an EZID user, DN='%s'" % dn
+    if "ezidCoOwners" in r[0][1]:
+      # Although not documented anywhere, it appears that returned
+      # values are UTF-8 encoded.
+      return { "ezidCoOwners": r[0][1]["ezidCoOwners"][0].decode("UTF-8") }
+    else:
+      return {}
+  except Exception, e:
+    log.otherError("useradmin.getAccountProfile", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
+
 def getContactInfo (username):
   """
   Returns a user's contact information as a dictionary keyed by LDAP
@@ -163,6 +193,25 @@ def getContactInfo (username):
   finally:
     if l: l.unbind()
 
+def validateCoOwnerList (l, coOwnerList):
+  """
+  Validates and normalizes a co-owner list and converts it from string
+  to list form.  Returns None if a username in the list does not exist
+  or exists but is not an EZID user.  May also throw an exception.
+  'l' should be an open LDAP connection.
+  """
+  col = []
+  for o in re.split("[, ]+", coOwnerList):
+    if len(o) == 0: continue
+    try:
+      dn = _userDnTemplate % ldap.dn.escape_dn_chars(o)
+      r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass"])
+      if "ezidUser" not in r[0][1]["objectClass"]: return None
+    except ldap.NO_SUCH_OBJECT:
+      return None
+    if o not in col: col.append(o)
+  return col
+
 def _cacheLdapInformation (l, dn, arkId):
   attrs = l.search_s(dn, ldap.SCOPE_BASE)[0][1]
   d = {}
@@ -175,6 +224,46 @@ def _cacheLdapInformation (l, dn, arkId):
   group = (_adminUsername, idmap.getGroupId(_adminUsername))
   r = ezid.setMetadata(arkId, user, group, d)
   assert r.startswith("success:"), "ezid.setMetadata failed: " + r
+
+def setAccountProfile (username, coOwnerList):
+  """
+  Sets a user's account profile.  Returns None on success or a string
+  message on error.
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    # This operation requires binding as a privileged LDAP user.
+    l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
+    dn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
+    r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass", "arkId",
+      "ezidCoOwners"])
+    assert len(r) == 1 and r[0][0] == dn,\
+      "unexpected return from LDAP search command, DN='%s'" % dn
+    assert "ezidUser" in r[0][1]["objectClass"],\
+      "not an EZID user, DN='%s'" % dn
+    assert "arkId" in r[0][1], "missing required LDAP attribute, DN='%s'" % dn
+    arkId = r[0][1]["arkId"][0].decode("UTF-8")
+    coOwnerList = validateCoOwnerList(l, coOwnerList)
+    if coOwnerList is None: return "No such EZID user."
+    if len(coOwnerList) > 0:
+      m = [(ldap.MOD_REPLACE if "ezidCoOwners" in r[0][1] else\
+        ldap.MOD_ADD, "ezidCoOwners", ",".join(coOwnerList).encode("UTF-8"))]
+    else:
+      if "ezidCoOwners" in r[0][1]:
+        m = [(ldap.MOD_DELETE, "ezidCoOwners", None)]
+      else:
+        m = []
+    if len(m) > 0: l.modify_s(dn, m)
+    policy.clearCoOwnerCache(username)
+    _cacheLdapInformation(l, dn, arkId)
+    return None
+  except Exception, e:
+    log.otherError("useradmin.setAccountProfile", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
 
 def setContactInfo (username, d):
   """

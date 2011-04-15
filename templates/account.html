@@ -10,6 +10,29 @@
 
 <div id="account">
 
+<p class="heading">Account profile</p>
+
+<form id="profileform" action="null">
+<table>
+<tr>
+<th>Co-owners</th>
+<td colspan="2"><input type="text" id="ezidCoOwners" name="ezidCoOwners"
+size="40" value="{{ ezidCoOwners }}"/></td>
+</tr>
+<tr>
+<td></td>
+<td class="gap"></td>
+<td class="note">Enter zero or more EZID usernames (e.g., "merritt")
+separated by commas.  These users are allowed to update your
+identifiers.</td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2"><input type="submit" value="Update"/></td>
+</tr>
+</table>
+</form>
+
 <p class="heading">Contact information</p>
 
 <form id="contactform" action="null">

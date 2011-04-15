@@ -595,14 +595,26 @@ def account (request, ssl=False):
   """
   if "auth" not in request.session: return _unauthorized()
   if request.method == "GET":
-    r = useradmin.getContactInfo(request.session["auth"].user[0])
+    r = useradmin.getAccountProfile(request.session["auth"].user[0])
     if type(r) is str:
       django.contrib.messages.error(request, r)
       return _redirect("/ezid/")
-    else:
-      return _render(request, "account", r)
+    r2 = useradmin.getContactInfo(request.session["auth"].user[0])
+    if type(r2) is str:
+      django.contrib.messages.error(request, r2)
+      return _redirect("/ezid/")
+    r.update(r2)
+    return _render(request, "account", r)
   elif request.method == "POST":
-    if request.POST.get("form", "") == "contact":
+    if request.POST.get("form", "") == "profile":
+      if "ezidCoOwners" not in request.POST: return _badRequest()
+      r = useradmin.setAccountProfile(request.session["auth"].user[0],
+        request.POST["ezidCoOwners"].strip())
+      if type(r) is str:
+        return _plainTextResponse(r)
+      else:
+        return _plainTextResponse("success")
+    elif request.POST.get("form", "") == "contact":
       d = {}
       missing = None
       for field, displayName, isRequired in _contactInfoFields:
