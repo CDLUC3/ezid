@@ -138,3 +138,22 @@ class Noid (object):
           e, v = l.split(":", 1)
           d[util.decode(e)] = util.decode(v.strip())
       return d
+
+  def deleteIdentifier (self, identifier):
+    """
+    Deletes a scheme-less ARK identifier (e.g., "13030/foo").  The
+    identifier is assumed to be in canonical form.  The identifier is
+    deleted in the sense that, after calling this method,
+    identifierExists(identifier) will return False and
+    getElements(identifier) will return None.  As far as noid is
+    concerned, however, the identifier still exists and metadata
+    elements can be re-bound to it in the future.  If a hold was
+    previously placed on the identifier, it is not removed.
+    """
+    d = self.getElements(identifier)
+    if d is None: return
+    s = self._issue("\n".join(self._command("bind", "delete", [0, identifier],
+      [4, e]) for e in d))
+    for i in range(len(d)):
+      assert len(s) >= i*5+4 and s[i*5+3].startswith("Status:  ok"),\
+        "unexpected return from noid 'bind delete' command"
