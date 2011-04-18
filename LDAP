@@ -34,8 +34,8 @@ object class ezidGroup:
     group identifiers for a given user must be different.
   shoulderList
     List of labels of the identifier shoulders to which the group has
-    access.  The labels must be separated by spaces and/or commas,
-    e.g., "cdlark,cdldoi".
+    access, or "NONE".  The labels must be separated by spaces and/or
+    commas, e.g., "cdlark,cdldoi".
   agreementOnFile
     Optional boolean flag; not used by EZID itself.
 

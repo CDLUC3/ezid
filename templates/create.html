@@ -44,6 +44,10 @@ You must be logged in to create an identifier.<br/>
 Consult <a href="/ezid/help">help</a> to create test (i.e., temporary)
 identifiers.
 
+{% else %}{% if not session.prefixes %}
+
+Your account is not allowed to create identifiers.
+
 {% else %}
 
 <form id="form" method="post" action="/ezid/create">
@@ -101,6 +105,6 @@ identifiers and to create test identifiers.</p>
 
 </form>
 
-{% endif %}
+{% endif %}{% endif %}
 
 {% endblock %}

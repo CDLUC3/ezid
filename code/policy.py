@@ -77,12 +77,15 @@ def _loadPrefixes (group):
   if group[0] == _adminUsername:
     l = _nonTestLabels
   elif group[0] == "anonymous":
-    l = ""
+    l = "NONE"
   elif _ldapEnabled:
     l = _loadPrefixesLdap(group)
   else:
     l = _loadPrefixesLocal(group)
-  return [_prefixes[k] for k in re.split("[, ]+", l) if len(k) > 0]
+  if l == "NONE":
+    return []
+  else:
+    return [_prefixes[k] for k in re.split("[, ]+", l) if len(k) > 0]
 
 def _getPrefixes (group):
   _lock.acquire()

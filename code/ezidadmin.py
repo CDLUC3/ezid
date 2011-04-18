@@ -66,6 +66,7 @@ config.addLoader(_loadConfig)
 
 def _validateShoulderList (sl):
   # Returns a normalized shoulder list in string form, or None.
+  if sl == "NONE": return sl
   l = []
   for s in re.split("[, ]+", sl):
     if len(s) == 0: continue
