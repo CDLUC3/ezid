@@ -1,7 +1,6 @@
 #! /usr/bin/python
 
-# Simple EZID command line client.  Requires anvl.py from the main
-# EZID code.
+# Simple EZID command line client.  The output is UTF-8 encoded.
 #
 # Usage: client server credentials operation...
 #
@@ -30,11 +29,10 @@
 # Greg Janee <gjanee@ucop.edu>
 # April 2011
 
+import re
 import sys
 import types
 import urllib2
-
-import anvl
 
 knownServers = {
   "l" : "http://localhost:8000/ezid",
@@ -93,6 +91,14 @@ class MyHTTPErrorProcessor (urllib2.HTTPErrorProcessor):
       return urllib2.HTTPErrorProcessor.http_response(self, request, response)
   https_response = http_response
 
+def formatAnvl (l):
+  r = []
+  for i in range(0, len(l), 2):
+    k = re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), l[i])
+    v = re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), l[i+1])
+    r.append("%s: %s" % (k, v))
+  return "\n".join(r)
+
 if len(sys.argv) < 4: usageError()
 server = knownServers.get(sys.argv[1], sys.argv[1])
 opener = urllib2.build_opener(MyHTTPErrorProcessor())
@@ -120,10 +126,8 @@ if operation in ["mint", "create", "update"]:
   request = urllib2.Request("%s/%s/%s" % (server, path, sys.argv[4]))
   request.get_method = lambda: "PUT" if operation == "create" else "POST"
   if len(sys.argv) > 5:
-    data = anvl.format(
-      dict((sys.argv[i], sys.argv[i+1]) for i in range(5, len(sys.argv), 2)))
     request.add_header("Content-Type", "text/plain; charset=UTF-8")
-    request.add_data(data.encode("UTF-8"))
+    request.add_data(formatAnvl(sys.argv[5:]).encode("UTF-8"))
 elif operation == "view":
   request = urllib2.Request("%s/id/%s" % (server, sys.argv[4]))
 elif operation in ["login", "logout", "status"]:
