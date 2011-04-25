@@ -505,9 +505,8 @@ def getMetadata (identifier):
         elif k in _labelMapping:
           d[_labelMapping[k]] = d[k]
           del d[k]
-    # SPLITS ARE TEMPORARY
-    d["_owner"] = idmap.getAgent(d["_owner"].split()[-1])[0]
-    d["_ownergroup"] = idmap.getAgent(d["_ownergroup"].split()[-1])[0]
+    d["_owner"] = idmap.getAgent(d["_owner"])[0]
+    d["_ownergroup"] = idmap.getAgent(d["_ownergroup"])[0]
     log.success(tid)
     return ("success: " + nqidentifier, d)
   except Exception, e:
@@ -564,9 +563,8 @@ def setMetadata (identifier, user, group, metadata):
     if m is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
-    # SPLITS ARE TEMPORARY
-    iUser = m["_o"].split()[-1]
-    iGroup = m["_g"].split()[-1]
+    iUser = m["_o"]
+    iGroup = m["_g"]
     if not policy.authorizeUpdate(user, group, nqidentifier,
       (idmap.getAgent(iUser)[0], iUser), (idmap.getAgent(iGroup)[0], iGroup)):
       log.unauthorized(tid)
