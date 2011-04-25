@@ -155,6 +155,7 @@ def _loadCoOwners (user):
     return _loadCoOwnersLocal(user)
 
 def _getCoOwners (user):
+  if user == "anonymous": return []
   _lock.acquire()
   try:
     if user not in _coOwners: _coOwners[user] = _loadCoOwners(user)
