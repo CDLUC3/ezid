@@ -168,3 +168,13 @@ class Noid (object):
     s = self._issue(self._command("hold", "release", [0, identifier]))
     assert len(s) >= 1 and s[0].startswith("ok: 1 hold placed"),\
       "unexpected return from noid 'hold release' command"
+
+  def ping (self):
+    """
+    Tests the server, returning "up" or "down".
+    """
+    try:
+      s = self._issue("")
+      return "up" if len(s) == 0 else "down"
+    except Exception, e:
+      return "down"

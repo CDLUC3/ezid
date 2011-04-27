@@ -21,11 +21,15 @@
 
 import ldap
 import re
+import threading
+import uuid
 
 import config
+import datacite
 import ezid
 import idmap
 import log
+import noid
 import policy
 import util
 
@@ -40,11 +44,13 @@ _ldapAdminDn = None
 _ldapAdminPassword = None
 _shoulders = None
 _agentPrefix = None
+_lock = threading.Lock()
+_statusProbes = None
 
 def _loadConfig ():
   global _ldapEnabled, _ldapServer, _baseDn, _userDnTemplate, _userDnPattern
   global _adminUsername, _adminPassword, _ldapAdminDn, _ldapAdminPassword
-  global _shoulders, _agentPrefix
+  global _shoulders, _agentPrefix, _statusProbes
   _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
   _ldapServer = config.config("ldap.server")
   _baseDn = config.config("ldap.base_dn")
@@ -60,6 +66,11 @@ def _loadConfig ():
     if not k.startswith("TEST")]
   _agentPrefix = config.config("prefix_cdlagent.prefix")
   assert _agentPrefix.startswith("ark:/")
+  _lock.acquire()
+  try:
+    _statusProbes = {}
+  finally:
+    _lock.release()
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -450,3 +461,47 @@ def makeUser (dn, groupDn, user, group):
     return "Internal server error."
   finally:
     if l: l.unbind()
+
+def _addStatusProbe (type, url):
+  id = uuid.uuid1().hex
+  _lock.acquire()
+  try:
+    _statusProbes[id] = (type, url)
+  finally:
+    _lock.release()
+  return id
+
+def systemStatus (id=None):
+  """
+  Returns system status information.  If 'id' is None, a list of
+  subsystems is returned; each subsystem is described by a dictionary
+  with keys 'id' (a globally unique identifier) and 'name' (a
+  human-readable name).  If 'id' is not None, the identified subsystem
+  is tested and "up" or "down" is returned.  ("down" is also returned
+  if 'id' doesn't identify a subsystem.)
+  """
+  if id is None:
+    probes = []
+    probes.append({ "id": _addStatusProbe("noid",
+      config.config("DEFAULT.bind_noid")), "name": "Noid binder" })
+    probes.append({ "id": _addStatusProbe("datacite", None),
+      "name": "DataCite API" })
+    for p in config.config("prefixes.keys").split(","):
+      minter = config.config("prefix_%s.minter" % p)
+      if minter != "":
+        probes.append({ "id": _addStatusProbe("noid", minter),
+          "name": "%s (%s) minter" % (config.config("prefix_%s.name" % p),
+          config.config("prefix_%s.prefix" % p)) })
+    return probes
+  else:
+    _lock.acquire()
+    try:
+      if id not in _statusProbes: return "down"
+      type, url = _statusProbes[id]
+      del _statusProbes[id]
+    finally:
+      _lock.release()
+    if type == "noid":
+      return noid.Noid(url).ping()
+    elif type == "datacite":
+      return datacite.ping()

@@ -335,6 +335,61 @@ function selectUser () {
   setUser($("#mu_select").val());
 }
 
+var systemStatusOpen = false;
+
+function systemStatus () {
+  clearMessages();
+  if (systemStatusOpen) {
+    $("#ss_section").hide();
+    $("#ss_open").hide();
+    $("#ss_close").show();
+  } else {
+    $("#ss_close").hide();
+    $("#ss_open").show();
+    $("#ss_section").show();
+    $("#sstable").empty();
+    $.ajax({ url: "/ezid/admin/systemstatus", dataType: "json", cache: false,
+      error: function () {
+        addMessage("<span class='error'>Internal server error.</span>");
+      },
+      success: function (data) {
+        if ($.isArray(data)) {
+          for (var i = 0; i < data.length; ++i) {
+            $("#sstable").append("<tr><td id='status-" + data[i].id +
+              "' class='status'></td><td>" +
+              xmlEscape(data[i].name) + "</td></tr>");
+          }
+          for (var i = 0; i < data.length; ++i) {
+            $.ajax({ url: "/ezid/admin/systemstatus?id=" + data[i].id,
+              dataType: "text", cache: false,
+              error: function () {
+                addMessage("<span class='error'>Internal server " +
+                  "error.</span>");
+              },
+              success: function (id) {
+                return function (updown) {
+                  if (updown == "up") {
+                    $("#status-" + id).addClass("up");
+                  } else {
+                    $("#status-" + id).addClass("down");
+                  }
+                }
+              }(data[i].id)
+            });
+          }
+        } else {
+          if (typeof(data) != "string" || data == "") {
+            data = "Internal server error.";
+          }
+          addMessage("<span class='error'>" + xmlEscape(data) + "</span>");
+        }
+      }
+    });
+  }
+  systemStatusOpen = !systemStatusOpen;
+  return false;
+}
+
 var setAlertOpen = false;
 
 function setAlert () {
@@ -384,6 +439,7 @@ $(document).ready(function () {
   $("#nu_form").submit(makeUser);
   $("#mu_switch").click(manageUser);
   $("#mu_select").change(selectUser);
+  $("#ss_switch").click(systemStatus);
   $("#sa_switch").click(setAlert);
   $("#rl_switch").click(reload);
 });

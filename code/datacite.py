@@ -147,3 +147,14 @@ def uploadMetadata (doi, metadata):
 def identifierExists (doi):
   # TBD
   return False
+
+def ping ():
+  """
+  Tests the DataCite API, returning "up" or "down".
+  """
+  try:
+    uploadMetadata("10.5072/status_check", {})
+  except Exception, e:
+    return "down"
+  else:
+    return "up"

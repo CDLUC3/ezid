@@ -516,6 +516,21 @@ def getUsers (request):
   if request.method != "GET": return _methodNotAllowed()
   return _jsonResponse(ezidadmin.getUsers())
 
+def systemStatus (request):
+  """
+  AJAX support.  In response to a GET request, returns a plain text
+  subsystem status (if an 'id' parameter is supplied) or a JSON list
+  of subsystems (if not).
+  """
+  if "auth" not in request.session or\
+    request.session["auth"].user[0] != _adminUsername:
+    return _unauthorized()
+  if request.method != "GET": return _methodNotAllowed()
+  if "id" in request.GET:
+    return _plainTextResponse(ezidadmin.systemStatus(request.GET["id"]))
+  else:
+    return _jsonResponse(ezidadmin.systemStatus())
+
 def resetPassword (request, pwrr, ssl=False):
   """
   Handles all GET and POST interactions related to password resets.

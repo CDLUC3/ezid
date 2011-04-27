@@ -108,6 +108,11 @@ changed, it should be uniformly changed in all those places. */
 #admin .value { font-size: 75% }
 #admin .note { font-size: 75%; font-style: oblique }
 #admin .shoulder { color: green }
+#admin #sstable { border-collapse: collapse; border: 2px solid black }
+#admin #sstable td { border: 1px solid black; padding: .25em }
+#admin .status { width: 1em; background-color: #FFF1A8 }
+#admin .up { background-color: #9F9 }
+#admin .down { background-color: #F99 }
 
 #pwreset { text-align: center }
 #pwreset #title { font-weight: bold }
