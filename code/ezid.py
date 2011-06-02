@@ -49,6 +49,13 @@
 #        |             | name (e.g., "dryad").  For a shadow ARK,
 #        |             | applies to both the shadow ARK and shadowed
 #        |             | identifier.
+# _co    | _coowners   | The identifier's co-owners expressed as a
+#        |             | list of persistent identifiers separated by
+#        |             | semicolons (e.g., "ark:/13030/foo ;
+#        |             | ark:/13030/bar") but returned as a list of
+#        |             | local names (e.g., "peter ; paul").  For a
+#        |             | shadow ARK, applies to both the shadow ARK
+#        |             | and shadowed identifier.  Optional.
 # _c     | _created    | The time the identifier was created expressed
 #        |             | as a Unix timestamp, e.g., "1280889190".  For
 #        |             | a shadow ARK, applies to both the shadow ARK
@@ -103,6 +110,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import exceptions
 import threading
 import time
 import urllib
@@ -169,6 +177,7 @@ def numIdentifiersLocked ():
 _labelMapping = {
   "_o": "_owner",
   "_g": "_ownergroup",
+  "_co": "_coowners",
   "_c": "_created",
   "_u": "_updated",
   "_t": "_target",
@@ -507,6 +516,10 @@ def getMetadata (identifier):
           del d[k]
     d["_owner"] = idmap.getAgent(d["_owner"])[0]
     d["_ownergroup"] = idmap.getAgent(d["_ownergroup"])[0]
+    if "_coowners" in d:
+      # Semicolons are not valid characters in ARK identifiers.
+      d["_coowners"] = " ; ".join(idmap.getAgent(id.strip())[0]\
+        for id in d["_coowners"].split(";") if len(id.strip()) > 0)
     log.success(tid)
     return ("success: " + nqidentifier, d)
   except Exception, e:
@@ -523,12 +536,12 @@ def setMetadata (identifier, user, group, metadata):
   "ark:/13030/foo").  'metadata' should be a dictionary of element
   (name, value) pairs.  If an element being set already exists, it is
   overwritten, if not, it is created; existing elements not set are
-  left unchanged.  Of the reserved metadata elements, only "_target"
-  and "_profile" may be set (unless the user is the EZID
-  administrator, in which case the other reserved metadata elements
-  may be set using their stored forms).  The successful return is a
-  string that includes the canonical, qualified form of the
-  identifier, as in:
+  left unchanged.  Of the reserved metadata elements, only
+  "_coowners", "_target", and "_profile" may be set (unless the user
+  is the EZID administrator, in which case the other reserved metadata
+  elements may be set using their stored forms).  The successful
+  return is a string that includes the canonical, qualified form of
+  the identifier, as in:
 
     success: doi:10.5060/FOO
 
@@ -552,7 +565,7 @@ def setMetadata (identifier, user, group, metadata):
   if len(filter(lambda k: len(k) == 0, metadata)) > 0:
     return "error: bad request - empty element name"
   if user[0] != _adminUsername and len(filter(lambda k: k.startswith("_") and\
-    k not in ["_target", "_profile"], metadata)) > 0:
+    k not in ["_coowners", "_target", "_profile"], metadata)) > 0:
     return "error: bad request - use of reserved metadata element name"
   tid = uuid.uuid1()
   _acquireIdentifierLock(ark)
@@ -565,11 +578,46 @@ def setMetadata (identifier, user, group, metadata):
       return "error: bad request - no such identifier"
     iUser = m["_o"]
     iGroup = m["_g"]
+    if "_co" in m:
+      # Semicolons are not valid characters in ARK identifiers.
+      iCoOwners = [co.strip() for co in m["_co"].split(";")\
+        if len(co.strip()) > 0]
+    else:
+      iCoOwners = []
     if not policy.authorizeUpdate(user, group, nqidentifier,
-      (idmap.getAgent(iUser)[0], iUser), (idmap.getAgent(iGroup)[0], iGroup)):
+      (idmap.getAgent(iUser)[0], iUser), (idmap.getAgent(iGroup)[0], iGroup),
+      [(idmap.getAgent(co)[0], co) for co in iCoOwners], metadata.keys()):
       log.unauthorized(tid)
       return "error: unauthorized"
     metadata = metadata.copy()
+    coOwners = None
+    if "_coowners" in metadata:
+      coOwners = []
+      for co in metadata["_coowners"].split(";"):
+        co = co.strip()
+        if co in ["", "anonymous", _adminUsername]: continue
+        try:
+          id = idmap.getUserId(co)
+        except Exception, e:
+          if type(e) is exceptions.AssertionError and\
+            "unknown user" in e.message:
+            log.badRequest(tid)
+            return "error: bad request - no such user in co-owner list"
+          else:
+            raise
+        if id != iUser and id not in coOwners: coOwners.append(id)
+      del metadata["_coowners"]
+    # If the user is not the owner of the identifier, add the user to
+    # the identifier's co-owner list.
+    if user[1] != iUser and user[0] != _adminUsername:
+      if coOwners is None:
+        if user[1] not in iCoOwners: coOwners = iCoOwners + [user[1]]
+      else:
+        if user[1] not in coOwners: coOwners.append(user[1])
+    profile = None
+    if "_profile" in metadata:
+      profile = metadata["_profile"]
+      del metadata["_profile"]
     if nqidentifier.startswith("doi:"):
       target = None
       if "_target" in metadata:
@@ -577,26 +625,17 @@ def setMetadata (identifier, user, group, metadata):
         del metadata["_target"]
         if not nqidentifier.startswith(_testDoiPrefix):
           datacite.setTargetUrl(doi, target)
-      profile = None
-      if "_profile" in metadata:
-        profile = metadata["_profile"]
-        del metadata["_profile"]
       if len(metadata) > 0 and not nqidentifier.startswith(_testDoiPrefix):
         m.update(metadata)
         for k in filter(lambda k: k.startswith("_"), m): del m[k]
         if len(m) > 0: datacite.uploadMetadata(doi, m)
       if target is not None: metadata["_st"] = target
-      if profile is not None: metadata["_p"] = profile
       if "_su" not in metadata: metadata["_su"] = str(int(time.time()))
     elif nqidentifier.startswith("ark:/"):
       target = None
       if "_target" in metadata:
         target = metadata["_target"]
         del metadata["_target"]
-      profile = None
-      if "_profile" in metadata:
-        profile = metadata["_profile"]
-        del metadata["_profile"]
       if "_s" in m and m["_s"].startswith("doi:") and len(metadata) > 0 and\
         not m["_s"].startswith(_testDoiPrefix):
         doi = m["_s"][4:]
@@ -604,8 +643,9 @@ def setMetadata (identifier, user, group, metadata):
         for k in filter(lambda k: k.startswith("_"), m): del m[k]
         if len(m) > 0: datacite.uploadMetadata(doi, m)
       if target is not None: metadata["_t"] = target
-      if profile is not None: metadata["_p"] = profile
       if "_u" not in metadata: metadata["_u"] = str(int(time.time()))
+    if coOwners is not None: metadata["_co"] = " ; ".join(coOwners)
+    if profile is not None: metadata["_p"] = profile
     _bindNoid.setElements(ark, metadata)
   except Exception, e:
     log.error(tid, e)

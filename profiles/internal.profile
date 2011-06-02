@@ -37,13 +37,21 @@ element: _owner
 displayname: Owner
 tooltip:
 <b><u>Owner</u></b><br/>
-The identifier's owner.  Only the owner may modify the identifier.
+The identifier's owner.  Only the owner and any account-wide or
+per-identifier co-owners may modify the identifier.
 
 element: _ownergroup
 displayname: Owner group
 tooltip:
 <b><u>Owner group</u></b><br/>
 The identifier's owner group.
+
+element: _coowners
+displayname: Co-owners
+tooltip:
+<b><u>Co-owners</u></b><br/>
+The identifier's co-owners (additional users who may modify the
+identifier).
 
 element: _created
 displayname: Created

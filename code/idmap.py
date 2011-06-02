@@ -87,6 +87,7 @@ def getAgent (id):
   """
   Given an agent identifier (e.g., "ark:/99166/foo"), returns a tuple
   (localName, agentType).  The agent type is either "user" or "group".
+  Throws an exception on error.
   """
   if id == "anonymous": return ("anonymous", "user")
   _lock.acquire()
@@ -100,7 +101,7 @@ def getAgent (id):
 def getGroupId (group):
   """
   Returns an agent identifier (e.g., "ark:/99166/foo") given a group
-  local name (e.g., "dryad").
+  local name (e.g., "dryad").  Throws an exception on error.
   """
   if group == "anonymous": return "anonymous"
   _lock.acquire()
@@ -114,12 +115,13 @@ def getGroupId (group):
 def getUserId (user):
   """
   Returns an agent identifier (e.g., "ark:/99166/foo") given a user
-  local name (e.g., "ryan").
+  local name (e.g., "ryan").  Throws an exception on error.
   """
   if user == "anonymous": return "anonymous"
   _lock.acquire()
   try:
     if _userMap is None: _loadIds()
+    # Module ezid relies on the formatting of the following error message.
     assert user in _userMap, "unknown user: " + user
     return _userMap[user]
   finally:
@@ -128,7 +130,8 @@ def getUserId (user):
 def addGroup (group, id):
   """
   Adds a mapping between a group local name (e.g., "dryad") and an
-  agent identifier (e.g., "ark:/99166/foo").
+  agent identifier (e.g., "ark:/99166/foo").  Throws an exception on
+  error.
   """
   _lock.acquire()
   try:
@@ -146,7 +149,7 @@ def addGroup (group, id):
 def addUser (user, id):
   """
   Adds a mapping between a user local name (e.g., "ryan") and an agent
-  identifier (e.g., "ark:/99166/foo").
+  identifier (e.g., "ark:/99166/foo").  Throws an exception on error.
   """
   _lock.acquire()
   try:

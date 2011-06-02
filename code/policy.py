@@ -188,7 +188,8 @@ def authorizeCreate (user, group, prefix):
   if any(map(lambda p: prefix.startswith(p), _getPrefixes(group))): return True
   return False
 
-def authorizeUpdate (rUser, rGroup, identifier, iUser, iGroup):
+def authorizeUpdate (rUser, rGroup, identifier, iUser, iGroup, iCoOwners,
+  metadataElements):
   """
   Returns true if a request to update an existing identifier is
   authorized.  'rUser' and 'rGroup' identify the requester and should
@@ -196,9 +197,16 @@ def authorizeUpdate (rUser, rGroup, identifier, iUser, iGroup):
   e.g., ("dryad", "ark:/13030/foo"); 'iUser' and 'iGroup' should be
   similar quantities that identify the identifier's owner.
   'identifier' is the identifier in question; it must be qualified, as
-  in "doi:10.5060/foo".  Throws an exception on error.
+  in "doi:10.5060/foo".  'iCoOwners' is a list of the identifier's
+  co-owners; each co-owner should be a tuple as above.
+  'metadataElements' is a list of the metadata elements being updated.
+  Throws an exception on error.
   """
-  if rUser[1] == iUser[1]: return True
-  if rUser[0] == _adminUsername: return True
-  if rUser[0] in _getCoOwners(iUser[0]): return True
-  return False
+  if rUser[1] == iUser[1] or rUser[0] == _adminUsername:
+    return True
+  elif (rUser[0] in _getCoOwners(iUser[0]) or\
+    rUser[1] in [co[1] for co in iCoOwners]) and\
+    "_coowners" not in metadataElements:
+    return True
+  else:
+    return False

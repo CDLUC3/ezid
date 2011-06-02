@@ -344,15 +344,22 @@ def identifierDispatcher (request):
       ep.elements = [e for e in ep.elements if e.name == "erc"]
     else:
       ep.elements = [e for e in ep.elements if e.name != "erc"]
+    if ip["_coowners"].value == "(no value)": ip["_coowners"].value = "(none)"
     # Determine if the user can edit the metadata.
     if "auth" in request.session:
       user = request.session["auth"].user
       group = request.session["auth"].group
     else:
       user = group = ("anonymous", "anonymous")
+    if ip["_coowners"].value == "(none)":
+      coOwners = []
+    else:
+      coOwners = [(co.strip(), idmap.getUserId(co.strip()))\
+        for co in ip["_coowners"].value.split(";") if len(co.strip()) > 0]
     editable = policy.authorizeUpdate(user, group, id,
       (ip["_owner"].value, idmap.getUserId(ip["_owner"].value)),
-      (ip["_ownergroup"].value, idmap.getGroupId(ip["_ownergroup"].value)))
+      (ip["_ownergroup"].value, idmap.getGroupId(ip["_ownergroup"].value)),
+      coOwners, [])
     # Update the recent identifier list.
     if "history" not in request.session: request.session["history"] = []
     if id not in [e["id"] for e in request.session["history"]]:
