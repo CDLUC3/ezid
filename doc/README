@@ -1,0 +1,11 @@
+The API documentation is written in reStructuredText
+(http://docutils.sourceforge.net/rst.html).  To build:
+
+   rst2html.py --stylesheet=docstyle.css apidoc.2.rst apidoc.2.html
+
+Whenever the documentation is changed, rebuild the HTML version and
+check both the reStructuredText source and HTML derivative into
+Mercurial.
+
+Note that all .html files in this directory (and only the .html files)
+are externally visible.

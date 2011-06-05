@@ -94,6 +94,12 @@ def _render (request, template, context={}):
   r["Content-Length"] = len(ec)
   return r
 
+def _staticHtmlResponse (content):
+  r = django.http.HttpResponse(content,
+    content_type="text/html; charset=UTF-8")
+  r["Content-Length"] = len(content)
+  return r
+
 def _plainTextResponse (message):
   r = django.http.HttpResponse(message, content_type="text/plain")
   r["Content-Length"] = len(message)
@@ -666,3 +672,19 @@ def account (request, ssl=False):
       return _badRequest()
   else:
     return _methodNotAllowed()
+
+def doc (request):
+  """
+  Renders UTF-8 encoded HTML documentation.
+  """
+  if request.method != "GET": return _methodNotAllowed()
+  assert request.path.startswith("/ezid/doc/")
+  file = os.path.join(django.conf.settings.PROJECT_ROOT, "doc",
+    request.path[10:])
+  if os.path.exists(file):
+    f = open(file)
+    content = f.read()
+    f.close()
+    return _staticHtmlResponse(content)
+  else:
+    return _error(404)

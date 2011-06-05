@@ -38,9 +38,11 @@ layout:
         PROJECT_ROOT/
             (this software distribution:)
             LDAP
+            NOTES
             README
             apache/
             code/
+            doc/
             profiles/
             settings/
             static/

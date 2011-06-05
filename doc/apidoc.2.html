@@ -1,0 +1,1140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.8: http://docutils.sourceforge.net/" />
+<title>The EZID API, Version 2</title>
+<style type="text/css">
+
+/* The following is a copy of the stylesheet distributed with Pandoc
+(http://johnmacfarlane.net/pandoc/demo/pandoc.css) with some additions
+noted at the end. */
+
+body {
+    margin: auto;
+    padding-right: 1em;
+    padding-left: 1em;
+    max-width: 44em;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    color: black;
+    font-family: Verdana, sans-serif;
+    font-size: 100%;
+    line-height: 140%;
+    color: #333;
+}
+pre {
+    border: 1px dotted gray;
+    background-color: #ececec;
+    color: #111111;
+    padding: 0.5em;
+}
+code {
+    font-family: monospace;
+}
+h1 a, h2 a, h3 a, h4 a, h5 a {
+    text-decoration: none;
+    color: #7a5ada;
+}
+h1, h2, h3, h4, h5 { font-family: verdana;
+                     font-weight: bold;
+                     border-bottom: 1px dotted black;
+                     color: #7a5ada; }
+h1 {
+        font-size: 130%;
+}
+
+h2 {
+        font-size: 110%;
+}
+
+h3 {
+        font-size: 95%;
+}
+
+h4 {
+        font-size: 90%;
+        font-style: italic;
+}
+
+h5 {
+        font-size: 90%;
+        font-style: italic;
+}
+
+h1.title {
+        font-size: 200%;
+        font-weight: bold;
+        padding-top: 0.2em;
+        padding-bottom: 0.2em;
+        text-align: left;
+        border: none;
+}
+
+dt code {
+        font-weight: bold;
+}
+dd p {
+        margin-top: 0;
+}
+
+#footer {
+        padding-top: 1em;
+        font-size: 70%;
+        color: gray;
+        text-align: center;
+}
+
+/* Additions... */
+
+.hl1 { color: green; font-style: oblique }
+.hl2 { font-family: monospace; font-style: oblique; color: green }
+
+table { border-collapse: collapse }
+th, td { border: 1px solid black; padding: .25em }
+th { text-align: left; background-color: #EEE }
+th p.first, td p.first { margin-top: 0pt }
+th p.first, td p.last { margin-bottom: 0pt }
+
+table.leftheaders tr > td:first-child { background-color: #EEE;
+  font-weight: bold }
+
+div.smallfont { font-size: 80%; line-height: 100% }
+
+</style>
+</head>
+<body>
+<div class="document" id="the-ezid-api-version-2">
+<h1 class="title">The EZID API, Version 2</h1>
+
+<div class="smallfont line-block">
+<div class="line"><strong>This version:</strong> <a class="reference external" href="http://n2t.net/ezid/doc/apidoc.2.html">http://n2t.net/ezid/doc/apidoc.2.html</a></div>
+<div class="line"><strong>Latest version:</strong> <a class="reference external" href="http://n2t.net/ezid/doc/apidoc.html">http://n2t.net/ezid/doc/apidoc.html</a></div>
+</div>
+<p>EZID (easy-eye-dee) provides an easy way to obtain, describe, and
+manage long-term identifiers for digital objects.  It can be accessed
+via a web User Interface (UI) and a web Application Programming
+Interface (API).  A few account management functions can be accessed
+from the UI only, but otherwise all of EZID's functionality is
+available through the API.  This document describes Version 2 of the
+EZID API.</p>
+<p>Please send mail to the EZID discussion list to ask questions or
+report problems:</p>
+<blockquote>
+<a class="reference external" href="mailto:ezid-l&#64;listserv.ucop.edu">ezid-l&#64;listserv.ucop.edu</a></blockquote>
+<div class="section" id="contents">
+<h1>Contents</h1>
+<ul class="simple">
+<li><a class="reference internal" href="#framework">Framework</a></li>
+<li><a class="reference internal" href="#api-vs-ui">API vs. UI</a></li>
+<li><a class="reference internal" href="#authentication">Authentication</a></li>
+<li><a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a></li>
+<li><a class="reference internal" href="#errors">Errors</a></li>
+<li><a class="reference internal" href="#operation-get-identifier-metadata">Operation: get identifier metadata</a></li>
+<li><a class="reference internal" href="#operation-create-identifier">Operation: create identifier</a></li>
+<li><a class="reference internal" href="#operation-mint-identifier">Operation: mint identifier</a></li>
+<li><a class="reference internal" href="#operation-modify-identifier">Operation: modify identifier</a></li>
+<li><a class="reference internal" href="#ownership-model">Ownership model</a></li>
+<li><a class="reference internal" href="#shadow-arks">Shadow ARKs</a></li>
+<li><a class="reference internal" href="#internal-metadata">Internal metadata</a></li>
+<li><a class="reference internal" href="#metadata-profiles">Metadata profiles</a></li>
+<li><a class="reference internal" href="#python-example">Python example</a></li>
+<li><a class="reference internal" href="#php-examples">PHP examples</a></li>
+</ul>
+</div>
+<div class="section" id="framework">
+<h1>Framework</h1>
+<p>The EZID API is available from the base URL</p>
+<blockquote>
+<a class="reference external" href="http://n2t.net/ezid">http://n2t.net/ezid</a></blockquote>
+<p>Interaction is via <a class="reference external" href="http://oreilly.com/catalog/9780596529260">REST-style</a> HTTP web services.  The API's central
+design principle is to treat an identifier as a kind of web resource.
+Specifically, identifier <span class="hl1">foo</span> is represented as a resource at
+URL http://n2t.net/ezid/id/<span class="hl1">foo</span>.  In this document we will
+refer to this URL as the identifier's &quot;EZID URL.&quot;  A client
+manipulates an identifier by performing HTTP operations on its EZID
+URL: PUT to create the identifier, GET to view it, and POST to modify
+it.</p>
+<p>An identifier's EZID URL should not be confused with the identifier's
+&quot;URL form.&quot;  The former is used to manipulate the identifier, whereas
+the latter is used to express the identifier as an embeddable
+hyperlink that redirects to the identifier's target URL.  For DOI
+identifiers:</p>
+<table border="1" class="leftheaders docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Identifier</td>
+<td><span class="hl1">doi:10.nnnn/suffix</span></td>
+</tr>
+<tr><td>URL form</td>
+<td>http://dx.doi.org/<span class="hl1">10.nnnn/suffix</span></td>
+</tr>
+<tr><td>EZID URL</td>
+<td>http://n2t.net/ezid/id/<span class="hl1">doi:10.nnnn/suffix</span></td>
+</tr>
+</tbody>
+</table>
+<p>For ARK identifiers:</p>
+<table border="1" class="leftheaders docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Identifier</td>
+<td><span class="hl1">ark:/nnnnn/suffix</span></td>
+</tr>
+<tr><td>URL form</td>
+<td>http://n2t.net/<span class="hl1">ark:/nnnnn/suffix</span></td>
+</tr>
+<tr><td>EZID URL</td>
+<td>http://n2t.net/ezid/id/<span class="hl1">ark:/nnnnn/suffix</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="api-vs-ui">
+<h1>API vs. UI</h1>
+<p>The EZID UI and API share some URLs (the base URL is the same for
+both) but their behavior is different.  For example, in the API a GET
+operation on an EZID URL returns client-parseable metadata (see
+<a class="reference internal" href="#operation-get-identifier-metadata">Operation: get identifier metadata</a> below), but in the UI it returns
+an HTML page.</p>
+<p>To distinguish between the two interfaces EZID employs HTTP <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html">content
+negotiation</a>.  If a request comes in with an HTTP Accept header that
+expresses a preference for any form of HTML or XML, the UI is invoked;
+otherwise, the API is invoked.  A preference for the API can be made
+explicit by omitting any Accept header, or setting the Accept header
+to something like &quot;text/plain&quot;.  If using Java, it will probably be
+necessary to override the default Accept header Java sends as
+follows:</p>
+<pre class="literal-block">
+import java.net.*;
+
+URL u = new URL(&quot;http://n2t.net/ezid/...&quot;);
+URLConnection c = u.openConnection();
+c.setRequestProperty(&quot;Accept&quot;, &quot;text/plain&quot;);
+c.connect();
+</pre>
+</div>
+<div class="section" id="authentication">
+<h1>Authentication</h1>
+<p>Most requests require authentication.  The EZID API supports two
+methods of authentication:</p>
+<ol class="arabic">
+<li><p class="first"><strong>HTTP Basic authentication over SSL</strong>.  With this method, the
+client connects to EZID using HTTPS URLs (i.e.,
+https://n2t.net/ezid/...) and supplies HTTP Basic
+authentication credentials on every request.  HTTPS URLs <em>must</em> be
+used.  The authentication realm is &quot;EZID&quot;.  For example,
+credentials can be added manually in Python as follows:</p>
+<pre class="literal-block">
+import base64, urllib2
+r = urllib2.Request(&quot;https://n2t.net/ezid/...&quot;)
+r.add_header(&quot;Authorization&quot;, &quot;Basic &quot; + base64.b64encode(&quot;<span class="hl2">username</span>:<span class="hl2">password</span>&quot;))
+</pre>
+<p>But most programming libraries provide higher-level support for
+authentication.  For example, Python provides HTTPBasicAuthHandler:</p>
+<pre class="literal-block">
+import urllib2
+h = urllib2.HTTPBasicAuthHandler()
+h.add_password(&quot;EZID&quot;, &quot;https://n2t.net/ezid/&quot;, &quot;<span class="hl2">username</span>&quot;, &quot;<span class="hl2">password</span>&quot;)
+o = urllib2.build_opener(h)
+o.open(&quot;https://n2t.net/ezid/...&quot;)
+</pre>
+<p>The downside of using higher-level authentication mechanisms is
+that they often do not supply credentials initially, but only in
+response to a challenge from EZID, thus doubling the number of HTTP
+transactions.</p>
+<p>To manually provide credentials in Java, using <a class="reference external" href="http://commons.apache.org/codec/">Apache Commons
+Codec</a> to do the Base64 encoding:</p>
+<pre class="literal-block">
+import java.net.*;
+import org.apache.commons.codec.binary.*;
+
+URL u = new URL(&quot;https://n2t.net/ezid/...);
+URLConnection c = u.openConnection();
+c.setRequestProperty(&quot;Accept&quot;, &quot;text/plain&quot;);
+c.setRequestProperty(&quot;Authorization&quot;, &quot;Basic &quot; +
+  new String(Base64.encodeBase64(&quot;<span class="hl2">username</span>:<span class="hl2">password</span>&quot;.getBytes())));
+c.connect();
+</pre>
+<p>Java also provides an Authenticator class:</p>
+<pre class="literal-block">
+import java.net.*;
+
+class MyAuthenticator extends Authenticator {
+  protected PasswordAuthentication getPasswordAuthentication () {
+    return new PasswordAuthentication(&quot;<span class="hl2">username</span>&quot;, &quot;<span class="hl2">password</span>&quot;.toCharArray());
+  }
+}
+
+Authenticator.setDefault(new MyAuthenticator());
+</pre>
+</li>
+<li><p class="first"><strong>One-time login over SSL</strong>.  Perform a GET operation on
+https://n2t.net/ezid/login and supply HTTP Basic credentials as
+above.  In response, EZID returns a session cookie.  Remaining
+requests can be made over plain HTTP as long as the session cookie
+is supplied in an HTTP Cookie header.  Here's an example
+interaction:</p>
+<pre class="literal-block">
+⇒ GET /ezid/login HTTP/1.1
+⇒ Host: n2t.net
+⇒ Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=
+
+⇐ HTTP/1.1 200 OK
+⇐ Set-Cookie: sessionid=403a1ea3b03b74f663c1cd7fc877f495; expires...
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 32
+⇐
+⇐ success: session cookie returned
+</pre>
+<p>In Python, cookies can be managed using <a class="reference external" href="http://docs.python.org/library/cookielib.html">cookielib</a>, or manually
+captured and set using code similar to the following:</p>
+<pre class="literal-block">
+import urllib2
+c = urllib2.urlopen(&quot;https://n2t.net/ezid/login&quot;)
+<span class="hl2">cookie</span> = c.headers[&quot;Set-Cookie&quot;].split(&quot;;&quot;)[0]
+...
+r = urllib2.Request(&quot;http://n2t.net/ezid/...&quot;)
+r.add_header(&quot;Cookie&quot;, <span class="hl2">cookie</span>)
+</pre>
+<p>In Java, cookies can be manually captured and set using code
+analogous to the Python code above or, in Java 1.6 and newer,
+<a class="reference external" href="http://download.oracle.com/javase/6/docs/api/java/net/CookieManager.html">CookieManager</a> can be used to manage cookies.</p>
+<p>Perform a GET operation on http://n2t.net/ezid/logout to
+invalidate a session.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="request-response-bodies">
+<h1>Request &amp; response bodies</h1>
+<p>Request and response bodies are used to transmit identifier metadata.
+The HTTP content type for all bodies is &quot;text/plain&quot; using UTF-8
+charset encoding.  In request bodies, if no charset encoding is
+declared in the HTTP Content-Type header, it is assumed to be UTF-8.</p>
+<p>EZID's data model for metadata is a dictionary of element name/value
+pairs.  Names and values are strings.  Leading and trailing whitespace
+in names and values is not significant.  Element values may be empty,
+but not names.</p>
+<p>Metadata dictionaries are serialized using a subset of <a class="reference external" href="https://wiki.ucop.edu/display/Curation/Anvl">A Name-Value
+Language (ANVL)</a> rules:</p>
+<ul class="simple">
+<li>One element name/value pair per line.</li>
+<li>Names separated from values by colons.</li>
+</ul>
+<p>For example:</p>
+<pre class="literal-block">
+who: Proust, Marcel
+what: Remembrance of Things Past
+when: 1922
+</pre>
+<p>Care must be taken to escape structural characters that appear in
+element names and values, specifically, line terminators (both
+newlines (&quot;\n&quot;, U+000A) and carriage returns (&quot;\r&quot;, U+000D)) and, in
+element names, colons (&quot;:&quot;, U+003A).  EZID employs <a class="reference external" href="http://en.wikipedia.org/wiki/Percent-encoding">percent-encoding</a>
+as the escaping mechanism, and thus percent signs (&quot;%&quot;, U+0025) must
+be escaped as well.  In Python, a dictionary of Unicode metadata
+element names and values, <span class="hl2">metadata</span>, is serialized into a UTF-8
+encoded string, <span class="hl2">anvl</span>, with the following code:</p>
+<pre class="literal-block">
+import re
+
+def escape (s):
+  return re.sub(&quot;[%:\r\n]&quot;, lambda c: &quot;%%%02X&quot; % ord(c.group(0)), s)
+
+<span class="hl2">anvl</span> = &quot;\n&quot;.join(&quot;%s: %s&quot; % (escape(name), escape(value)) for name,
+  value in <span class="hl2">metadata</span>.items()).encode(&quot;UTF-8&quot;)
+</pre>
+<p>Conversely, to parse a UTF-8 encoded string, <span class="hl2">anvl</span>, producing
+a dictionary, <span class="hl2">metadata</span>:</p>
+<pre class="literal-block">
+import re
+
+def unescape (s):
+  return re.sub(&quot;%([0-9A-Fa-f][0-9A-Fa-f])&quot;,
+    lambda m: chr(int(m.group(1), 16)), s)
+
+<span class="hl2">metadata</span> = dict(tuple(unescape(v).strip() for v in l.split(&quot;:&quot;, 1)) \
+  for l in <span class="hl2">anvl</span>.decode(&quot;UTF-8&quot;).splitlines())
+</pre>
+<p>In Java, to serialize a HashMap of metadata element names and values,
+<span class="hl1">metadata</span>, into an ANVL-formatted Unicode string, <span class="hl1">anvl</span>:</p>
+<pre class="literal-block">
+import java.util.*;
+
+String escape (String s) {
+  return s.replace(&quot;%&quot;, &quot;%25&quot;).replace(&quot;\n&quot;, &quot;%0A&quot;).
+    replace(&quot;\r&quot;, &quot;%0D&quot;).replace(&quot;:&quot;, &quot;%3A&quot;);
+}
+
+Iterator&lt;Map.Entry&lt;String, String&gt;&gt; i = <span class="hl2">metadata</span>.entrySet().iterator();
+StringBuffer b = new StringBuffer();
+while (i.hasNext()) {
+  Map.Entry&lt;String, String&gt; e = i.next();
+  b.append(escape(e.getKey()) + &quot;: &quot; + escape(e.getValue()) + &quot;\n&quot;);
+}
+String <span class="hl2">anvl</span> = b.toString();
+</pre>
+<p>And conversely, to parse a Unicode ANVL-formatted string, <span class="hl1">anvl</span>,
+producing a HashMap, <span class="hl2">metadata</span>:</p>
+<pre class="literal-block">
+import java.util.*;
+
+String unescape (String s) {
+  StringBuffer b = new StringBuffer();
+  int i;
+  while ((i = s.indexOf(&quot;%&quot;)) &gt;= 0) {
+    b.append(s.substring(0, i));
+    b.append((char) Integer.parseInt(s.substring(i+1, i+3), 16));
+    s = s.substring(i+3);
+  }
+  b.append(s);
+  return b.toString();
+}
+
+HashMap&lt;String, String&gt; <span class="hl2">metadata</span> = new HashMap&lt;String, String&gt;();
+for (String l : <span class="hl2">anvl</span>.split(&quot;[\\r\\n]+&quot;)) {
+  String[] kv = l.split(&quot;:&quot;, 2);
+  metadata.put(unescape(kv[0]).trim(), unescape(kv[1]).trim());
+}
+</pre>
+<p>The first line of an EZID response body is a status indicator
+consisting of &quot;success&quot; or &quot;error&quot;, followed by a colon, followed by
+additional information.  Two examples:</p>
+<pre class="literal-block">
+success: ark:/99999/fk4test
+error: bad request - no such identifier
+</pre>
+</div>
+<div class="section" id="errors">
+<h1>Errors</h1>
+<p>An error is indicated by both an HTTP status code and an error status
+line of the form &quot;error: <span class="hl1">reason</span>&quot;.  For example:</p>
+<pre class="literal-block">
+⇒ GET /ezid/id/ark:/99999/bogus HTTP/1.1
+⇒ Host: n2t.net
+
+⇐ HTTP/1.1 400 BAD REQUEST
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 39
+⇐
+⇐ error: bad request - no such identifier
+</pre>
+</div>
+<div class="section" id="operation-get-identifier-metadata">
+<h1>Operation: get identifier metadata</h1>
+<p>Metadata can be retrieved for any existing identifier; no
+authentication is required.  Simply issue a GET request to the
+identifier's EZID URL.  Here is a sample interaction:</p>
+<pre class="literal-block">
+⇒ GET /ezid/id/ark:/99999/fk4cz3dh0 HTTP/1.1
+⇒ Host: n2t.net
+
+⇐ HTTP/1.1 200 OK
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 208
+⇐
+⇐ success: ark:/99999/fk4cz3dh0
+⇐ _created: 1300812337
+⇐ _updated: 1300913550
+⇐ _target: http://www.gutenberg.org/ebooks/7178
+⇐ _profile: erc
+⇐ erc.who: Proust, Marcel
+⇐ erc.what: Remembrance of Things Past
+⇐ erc.when: 1922
+</pre>
+<p>The first line of the response body is a status line.  Assuming
+success (see <a class="reference internal" href="#errors">Errors</a> above), the remainder of the status line echoes
+the canonical form of the requested identifier.</p>
+<p>The remaining lines are metadata element name/value pairs serialized
+per ANVL rules; see <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above.  The order of
+elements is undefined.  Element names beginning with an underscore
+(&quot;_&quot;, U+005F) are reserved for use by EZID; their meanings are
+described in <a class="reference internal" href="#internal-metadata">Internal metadata</a> below.  Some elements may be drawn
+from citation metadata standards; see <a class="reference internal" href="#metadata-profiles">Metadata profiles</a> below.</p>
+</div>
+<div class="section" id="operation-create-identifier">
+<h1>Operation: create identifier</h1>
+<p>An identifier can be &quot;created&quot; by sending a PUT request to the
+identifier's EZID URL.  Here, identifier creation means establishing a
+record of the identifier in EZID (to be successful, no such record can
+already exist).  Authentication is required, and the user's group must
+have permission to create identifiers in the namespace (or &quot;shoulder&quot;)
+named by the identifier's prefix.  Users can view the namespaces
+available to their group by visiting the EZID UI and navigating to the
+Create tab.  For example, if the user's group has permission to create
+identifiers in the general CDL ARK (ark:/13030/c7) namespace, then the
+user may create identifiers beginning with &quot;ark:/13030/c7&quot;.</p>
+<p>A request body is optional; if present, it defines the identifier's
+starting metadata.  There are no restrictions on what metadata
+elements can be submitted, but a convention has been established for
+naming metadata elements, and EZID has built-in support for certain
+sets of metadata elements; see <a class="reference internal" href="#metadata-profiles">Metadata profiles</a> below.  A few of
+the internal EZID metadata elements may be set; see <a class="reference internal" href="#internal-metadata">Internal
+metadata</a> below.</p>
+<p>Here's a sample interaction creating an ARK identifier:</p>
+<pre class="literal-block">
+⇒ PUT /ezid/id/ark:/99999/fk4test HTTP/1.1
+⇒ Host: n2t.net
+⇒ Content-Type: text/plain; charset=UTF-8
+⇒ Content-Length: 30
+⇒
+⇒ _target: http://www.cdlib.org/
+
+⇐ HTTP/1.1 201 CREATED
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 27
+⇐
+⇐ success: ark:/99999/fk4test
+</pre>
+<p>The return is a status line.  If an ARK identifier was created, the
+normalized form of the identifier is returned as shown above.  If a
+DOI identifier was created, the status line includes the normalized
+form of the DOI and, separated by a pipe character (&quot;|&quot;, U+007C), the
+DOI's shadow ARK (see <a class="reference internal" href="#shadow-arks">Shadow ARKs</a> for more information).  Note that
+different identifier schemes have different normalization rules (e.g.,
+DOIs are normalized to all uppercase letters).  Here's a sample
+interaction creating a DOI identifier:</p>
+<pre class="literal-block">
+⇒ PUT /ezid/id/doi:10.9999/test HTTP/1.1
+⇒ Host: n2t.net
+
+⇐ HTTP/1.1 201 CREATED
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 46
+⇐
+⇐ success: doi:10.9999/TEST | ark:/99999/fk4test
+</pre>
+</div>
+<div class="section" id="operation-mint-identifier">
+<h1>Operation: mint identifier</h1>
+<p>Minting an identifier is the same as creating an identifier, but
+instead of supplying a complete identifier, the client specifies only
+a namespace (or &quot;shoulder&quot;) that forms the identifier's prefix, and
+EZID generates an opaque, random string for the identifier's suffix.
+An identifier can be minted by sending a POST request to the URL
+http://n2t.net/ezid/shoulder/<span class="hl1">shoulder</span> where <span class="hl1">shoulder</span> is
+the desired namespace.  For example:</p>
+<pre class="literal-block">
+⇒ POST /ezid/shoulder/<span class="hl2">ark:/13030/c7</span> HTTP/1.1
+⇒ Host: n2t.net
+⇒ Content-Type: text/plain; charset=UTF-8
+⇒ Content-Length: 30
+⇒
+⇒ _target: http://www.cdlib.org/
+
+⇐ HTTP/1.1 201 CREATED
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 29
+⇐
+⇐ success: <span class="hl2">ark:/13030/c7</span>9cz3dh0
+</pre>
+<p>Aside from specifying a complete identifier versus specifying a
+shoulder only, the create and mint operations operate identically.
+Authentication is required to mint an identifier; namespace permission
+is required; and permissions can be viewed in the EZID UI under the
+Create tab.  The request and response bodies are identical.</p>
+</div>
+<div class="section" id="operation-modify-identifier">
+<h1>Operation: modify identifier</h1>
+<p>An identifier's metadata can be modified by sending a POST request to
+the identifier's EZID URL.  Authentication is required; only the
+identifier's owner and any listed co-owners may modify the identifier
+(see <a class="reference internal" href="#ownership-model">Ownership model</a> below).</p>
+<p>Metadata elements are operated on individually.  If the identifier
+already has a value for a metadata element included in the request
+body, the value is overwritten, otherwise the element and its value
+are added.  Only a few of the reserved EZID metadata elements may be
+modified; see <a class="reference internal" href="#internal-metadata">Internal metadata</a> below.  Here's a sample
+interaction:</p>
+<pre class="literal-block">
+⇒ POST /ezid/id/ark:/99999/fk4cz3dh0 HTTP/1.1
+⇒ Host: n2t.net
+⇒ Content-Type: text/plain; charset=UTF-8
+⇒ Content-Length: 30
+⇒
+⇒ _target: http://www.cdlib.org/
+
+⇐ HTTP/1.1 200 OK
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 29
+⇐
+⇐ success: ark:/99999/fk4cz3dh0
+</pre>
+<p>The return is a status line.  Assuming success (see <a class="reference internal" href="#errors">Errors</a> above),
+the remainder of the status line echoes the canonical form of the
+identifier in question.</p>
+<p>There is currently no means to delete a metadata element, but setting
+an element's value to the empty string has much the same effect.</p>
+</div>
+<div class="section" id="ownership-model">
+<h1>Ownership model</h1>
+<p>EZID maintains ownership information about identifiers and uses that
+information to enforce access control.</p>
+<p>For read access, identifiers are considered public resources, and
+their EZID metadata may be retrieved by anybody, just as anybody may
+submit the URL form of an identifier to a resolving service and be
+redirected to the identifier's target URL.  But an identifier may be
+modified only by its owner.</p>
+<p>Additionally, an identifier may have one or more &quot;co-owners,&quot; which
+are users other than the owner who are allowed to modify the
+identifier.  Co-ownership can be specified in two ways.  First, it can
+be specified globally as part of a user's account profile.  For
+example, assuming a repository <span class="hl1">R</span> has an EZID account (i.e.,
+this is a special kind of EZID user representing a repository system),
+an EZID user <span class="hl1">U</span> depositing digital objects in <span class="hl1">R</span> and using
+EZID to create identifiers for those objects can name <span class="hl1">R</span> as a
+co-owner of all its identifiers, past and future, thereby allowing the
+repository to manage the objects' target URLs and other metadata.
+Visit the EZID UI and navigate to &quot;My account&quot; to specify global
+co-ownership.</p>
+<p>Second, co-ownership can be specified on a per-identifier basis by
+listing one or more users in the identifier's &quot;_coowners&quot; reserved
+metadata element; see <a class="reference internal" href="#internal-metadata">Internal metadata</a> below.  For example,
+repository <span class="hl1">R</span>, creating identifiers in EZID on behalf of EZID
+user <span class="hl1">U</span>, can name <span class="hl1">U</span> as a co-owner of those identifiers,
+thereby giving <span class="hl1">U</span> the right to modify identifiers created by the
+repository on its behalf.  Note that any time a user modifies an
+identifier that it doesn't own, EZID adds the user to the identifier's
+&quot;_coowners&quot; element.</p>
+</div>
+<div class="section" id="shadow-arks">
+<h1>Shadow ARKs</h1>
+<p>When EZID creates a non-ARK identifier (e.g., a DOI identifier), it
+also creates a related ARK identifier.  These special ARK identifiers
+are termed &quot;shadow ARKs.&quot;</p>
+<p>A non-ARK identifier and its shadow ARK have the same owner and
+co-owners (and hence the same access characteristics) and the same
+creation time and citation metadata, but they have separate target
+URLs and update times.  By sharing citation metadata, a non-ARK
+identifier and its shadow ARK are intended to identify the same
+digital object or conceptual entity, but having separate target URLs
+allows the identifiers to address different representations of the
+object.  Clients can also use shadow ARKs to exploit the different
+technical characteristics between ARK and DOI identifiers.</p>
+<p>Shadow ARKs are returned on the status line when creating or minting
+non-ARK identifiers (see <a class="reference internal" href="#operation-create-identifier">Operation: create identifier</a> and
+<a class="reference internal" href="#operation-mint-identifier">Operation: mint identifier</a> above).  Also, a non-ARK identifier's
+shadow ARK is returned as the value of the &quot;_shadowedby&quot; reserved
+metadata element (see <a class="reference internal" href="#internal-metadata">Internal metadata</a> below).  Conversely, the
+identifier shadowed by a shadow ARK is returned as the value of its
+&quot;_shadows&quot; metadata element.</p>
+<p>Shadow ARKs have similar names to their non-ARK counterparts (for
+example, the shadow ARK for identifier doi:10.1234/FOO is
+ark:/b1234/foo), but due to subtleties in identifier syntax rules,
+clients should not rely on this pattern, nor should they attempt to
+map between identifiers themselves.  Instead, the aforementioned
+&quot;_shadows&quot; and &quot;_shadowedby&quot; metadata elements should be used to map
+between non-ARK identifiers and shadow ARKs.</p>
+</div>
+<div class="section" id="internal-metadata">
+<h1>Internal metadata</h1>
+<p>Metadata element names beginning with an underscore (&quot;_&quot;, U+005F) are
+reserved for use by EZID.  The reserved elements below are returned by
+the EZID API, and have the following meanings.  A check mark in the
+first column indicates the element is modifiable by clients.</p>
+<blockquote>
+<table border="1" class="docutils">
+<colgroup>
+<col width="4%" />
+<col width="15%" />
+<col width="59%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">✓</th>
+<th class="head">Element</th>
+<th class="head">Definition</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td></td>
+<td>_owner</td>
+<td>The identifier's owner.</td>
+<td>jsmith</td>
+</tr>
+<tr><td></td>
+<td>_ownergroup</td>
+<td>The identifier's owner's group.</td>
+<td>ucla</td>
+</tr>
+<tr><td>✓</td>
+<td>_coowners</td>
+<td>The identifier's co-owners separated by
+semicolons (&quot;;&quot;, U+003B).  Modifiable only
+by the identifier's owner.</td>
+<td>manny ; moe ;
+jack</td>
+</tr>
+<tr><td></td>
+<td>_created</td>
+<td>The time the identifier was created
+expressed as a Unix timestamp.</td>
+<td>1300812337</td>
+</tr>
+<tr><td></td>
+<td>_updated</td>
+<td>The time the identifier was last modified
+expressed as a Unix timestamp.</td>
+<td>1300913550</td>
+</tr>
+<tr><td>✓</td>
+<td>_target</td>
+<td colspan="2">The identifier's target URL.  Defaults to the identifier's
+EZID URL.  That is, the default target URL for
+identifier <span class="hl1">foo</span> is the self-referential URL
+http://n2t.net/ezid/id/<span class="hl1">foo</span>.</td>
+</tr>
+<tr><td></td>
+<td>_shadows</td>
+<td>Shadow ARKs only.  The shadowed identifier.</td>
+<td>doi:10.9999/TEST</td>
+</tr>
+<tr><td></td>
+<td>_shadowedby</td>
+<td>Shadowed identifiers only.  The identifier's
+shadow ARK.</td>
+<td>ark:/b9999/test</td>
+</tr>
+<tr><td>✓</td>
+<td>_profile</td>
+<td>The identifier's preferred metadata profile
+(see <a class="reference internal" href="#metadata-profiles">Metadata profiles</a> next).</td>
+<td>erc</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+</div>
+<div class="section" id="metadata-profiles">
+<h1>Metadata profiles</h1>
+<p>There is no requirement that an identifier have any citation
+(descriptive) metadata, but uploading at least minimal citation
+metadata to EZID is strongly encouraged to aid in the understanding of
+what the identifier represents and to facilitate the identifier's
+long-term maintenance.  EZID supports several citation metadata
+&quot;profiles,&quot; or standard sets of citation metadata elements.</p>
+<p>By convention, a metadata profile is referred to using a simple,
+lowercase name, e.g., &quot;erc&quot;, and elements belonging to that profile
+are referred to using the syntax &quot;<span class="hl1">profile</span>.<span class="hl1">element</span>&quot;,
+e.g., &quot;erc.who&quot;.</p>
+<p>Currently EZID treats profiles entirely separately, and thus an
+identifier may have values for multiple metadata profiles
+simultaneously.  However, we anticipate that EZID will provide
+metadata cross-walking in the future, in which case setting a value
+for an element in one profile will automatically provide a value for
+equivalent elements in other profiles.  For this reason, clients are
+encouraged to pick one profile to populate per identifier.</p>
+<p>The &quot;_profile&quot; internal metadata element defines the identifier's
+preferred metadata profile (typically the only profile for which it
+has metadata).  There is no restriction on what metadata elements may
+be bound to an identifier, and hence clients are free to use alternate
+citation profiles or no citation profile at all.  However, EZID's UI
+is, and its future metadata cross-walking support will be, limited to
+those profiles that it explicitly supports.</p>
+<ol class="arabic simple">
+<li><strong>Profile &quot;erc&quot;</strong>.  These elements are drawn from <a class="reference external" href="https://wiki.ucop.edu/display/Curation/ERC">Kernel Metadata
+and Electronic Resource Citations (ERCs)</a>.  This profile aims at
+universal citations: any kind of object (digital, physical,
+abstract) or agent (person, group, software, satellite) for any
+purpose (research, education, entertainment, administration), any
+subject focus (oceanography, sales, religion, archiving), and any
+medium (television, newspaper, database, book).  This is the
+default profile for ARK identifiers.</li>
+</ol>
+<blockquote>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="88%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Element</th>
+<th class="head">Definition</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>erc.who</td>
+<td><p class="first">The name of an entity (person, organization, or service)
+responsible for creating the content or making it
+available.  For an article, this could be an author.  Put
+name parts in &quot;sort-friendly&quot; order, such as:</p>
+<ul class="simple">
+<li>van Gogh, Vincent,</li>
+<li>Hu Jintao</li>
+<li>Gilbert, William, Sir,,; Sullivan, Arthur, Sir,</li>
+</ul>
+<p class="last">Separate multiple names with &quot;;&quot;.  Append one or more final
+commas (&quot;,&quot;) to indicate that one or more internal commas
+can be used as inversion points to recover natural word
+order (if different from sort-friendly word order).</p>
+</td>
+</tr>
+<tr><td>erc.what</td>
+<td><p class="first">A name or other human-oriented identifier given to the
+resource.  For an article, this could be a title such
+as:</p>
+<ul class="simple">
+<li>Moby Dick</li>
+<li>Scarlet Pimpernel, The,</li>
+</ul>
+<p class="last">Use sort-friendly name parts and final commas in the same
+way as for the erc.who element.</p>
+</td>
+</tr>
+<tr><td>erc.when</td>
+<td><p class="first">A point or period of time important in the lifecycle of the
+resource, often when it was created, modified, or made
+available.  For an article, this could be the date it was
+written, such as:</p>
+<ul class="simple">
+<li>2009.04.23</li>
+<li>1924~</li>
+<li>BCE0386</li>
+<li>1998-2003; 2008-</li>
+</ul>
+<p class="last">A date range (which can be open ended) may be useful, such
+as to indicate the years during which a periodical
+operated.  Use &quot;;&quot; to separate entries and &quot;~&quot; to indicate
+approximation.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>As a special case, an entire <a class="reference external" href="https://wiki.ucop.edu/display/Curation/Anvl">ANVL</a> document containing ERC metadata
+may be bound to the metadata element &quot;erc&quot;.  Care should be taken
+to escape line terminators in the document (as is true for all
+metadata element values; see <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above).
+For example, the ANVL document:</p>
+<pre class="literal-block">
+who: Proust, Marcel
+what: Remembrance of Things Past
+</pre>
+<p>would be expressed as the single value:</p>
+<pre class="literal-block">
+erc: who: Proust, Marcel%0Awhat: Remembrance of Things Past
+</pre>
+</blockquote>
+<ol class="arabic simple" start="2">
+<li><strong>Profile &quot;datacite&quot;</strong>.  These elements are drawn from the
+<a class="reference external" href="http://dx.doi.org/10.5438/0003">DataCite Metadata Scheme for the Publication and Citation of
+Research Data</a>.  This is the default profile for DOI identifiers.</li>
+</ol>
+<blockquote>
+<table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Element</th>
+<th class="head">Definition</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>datacite.creator</td>
+<td><p class="first">The main researchers involved in producing
+the data, or the authors of the publication
+in priority order.  Each name may be a
+corporate, institutional, or personal name.
+In personal names list family name before
+given name, as in:</p>
+<ul class="simple">
+<li>Shakespeare, William</li>
+</ul>
+<p class="last">Non-roman names should be transliterated
+according to the ALA-LC schemes.</p>
+</td>
+</tr>
+<tr><td>datacite.title</td>
+<td>A name or title by which the data or
+publication is known.</td>
+</tr>
+<tr><td>datacite.publisher</td>
+<td>A holder of the data (e.g., an archive) or
+the institution which submitted the work.
+In the case of datasets, the publisher is
+the entity primarily responsible for making
+the data available to the research
+community.</td>
+</tr>
+<tr><td>datacite.publicationyear</td>
+<td>The year when the data was or will be made
+publicly available.  If an embargo period
+is in effect, use the year when the embargo
+period ends.</td>
+</tr>
+</tbody>
+</table>
+<p>As a special case, an entire XML document adhering to the DataCite
+Metadata Scheme schema may be bound to the metadata element
+&quot;datacite&quot;.  Care should be taken to escape line terminators and
+percent signs in the document (as is true for all metadata element
+values; see <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above).</p>
+<p>All DataCite Metadata Scheme metadata bound to DOI identifiers is
+automatically and immediately uploaded to <a class="reference external" href="http://datacite.org/">DataCite</a>, where it may
+be made available DataCite's search system and other indexing
+services.</p>
+</blockquote>
+<ol class="arabic" start="3">
+<li><p class="first"><strong>Profile &quot;dc&quot;</strong>.  These elements are drawn from the <a class="reference external" href="http://dublincore.org/documents/dces/">Dublin Core
+Metadata Element Set</a>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head"><p class="first last">Element</p>
+</th>
+<th class="head"><p class="first last">Definition</p>
+</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><p class="first last">dc.creator</p>
+</td>
+<td><p class="first last">An entity primarily responsible for making the content
+of the resource.  Examples of a Creator include a
+person, an organization, or a service.  Typically, the
+name of a Creator should be used to indicate the
+entity.</p>
+</td>
+</tr>
+<tr><td><p class="first last">dc.title</p>
+</td>
+<td><p class="first last">A name given to the resource.  Typically, a Title will
+be a name by which the resource is formally known.</p>
+</td>
+</tr>
+<tr><td><p class="first last">dc.publisher</p>
+</td>
+<td><p class="first last">An entity responsible for making the resource
+available.  Examples of a Publisher include a person,
+an organization, or a service.  Typically, the name of
+a Publisher should be used to indicate the entity.</p>
+</td>
+</tr>
+<tr><td><p class="first last">dc.date</p>
+</td>
+<td><p class="first last">A date associated with an event in the life cycle of
+the resource.  Typically, Date will be associated with
+the creation or availability of the resource.
+Recommended best practice for encoding the date value
+is defined in a profile of ISO 8601 and follows the
+YYYY-MM-DD format.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+</div>
+<div class="section" id="python-example">
+<h1>Python example</h1>
+<p>Below is a command line EZID client capable of exercising all API
+functions.  Printed output is left UTF-8 encoded.  The general usage
+is:</p>
+<pre class="literal-block">
+% client <span class="hl2">credentials</span> <span class="hl2">operation</span> <span class="hl2">[arguments...]</span>
+</pre>
+<p>For example, to view an identifier:</p>
+<pre class="literal-block">
+% client - view ark:/99999/fk4cz3dh0
+</pre>
+<p>Run the client with no arguments for a complete usage statement.</p>
+<pre class="literal-block">
+#! /usr/bin/python
+
+import re
+import sys
+import types
+import urllib2
+
+server = &quot;http://n2t.net/ezid&quot;
+
+operations = {
+  # operation : number of arguments
+  &quot;mint&quot; : lambda l: l%2 == 1,
+  &quot;create&quot; : lambda l: l%2 == 1,
+  &quot;view&quot; : 1,
+  &quot;update&quot; : lambda l: l%2 == 1,
+  &quot;login&quot; : 0,
+  &quot;logout&quot; : 0
+}
+
+usageText = &quot;&quot;&quot;Usage: client credentials operation...
+
+  credentials
+    username:password
+    sessionid (as returned by previous login)
+    - (none)
+
+  operation
+    m[int] shoulder [label value label value ...]
+    c[reate] identifier [label value label value ...]
+    v[iew] identifier
+    u[pdate] identifier [label value label value ...]
+    login
+    logout
+&quot;&quot;&quot;
+
+def usageError ():
+  sys.stderr.write(usageText)
+  sys.exit(1)
+
+class MyHTTPErrorProcessor (urllib2.HTTPErrorProcessor):
+  def http_response (self, request, response):
+    # Bizarre that Python leaves this out.
+    if response.code == 201:
+      return response
+    else:
+      return urllib2.HTTPErrorProcessor.http_response(self, request,
+        response)
+  https_response = http_response
+
+def formatAnvl (l):
+  r = []
+  for i in range(0, len(l), 2):
+    k = re.sub(&quot;[%:\r\n]&quot;, lambda c: &quot;%%%02X&quot; % ord(c.group(0)), l[i])
+    v = re.sub(&quot;[%\r\n]&quot;, lambda c: &quot;%%%02X&quot; % ord(c.group(0)), l[i+1])
+    r.append(&quot;%s: %s&quot; % (k, v))
+  return &quot;\n&quot;.join(r)
+
+if len(sys.argv) &lt; 3: usageError()
+opener = urllib2.build_opener(MyHTTPErrorProcessor())
+if &quot;:&quot; in sys.argv[1]:
+  server = &quot;https&quot; + server[4:]
+  h = urllib2.HTTPBasicAuthHandler()
+  h.add_password(&quot;EZID&quot;, server, *sys.argv[1].split(&quot;:&quot;, 1))
+  opener.add_handler(h)
+  cookie = None
+elif sys.argv[1] != &quot;-&quot;:
+  cookie = &quot;sessionid=&quot; + sys.argv[1]
+else:
+  cookie = None
+operation = [o for o in operations if o.startswith(sys.argv[2])]
+if len(operation) != 1: usageError()
+operation = operation[0]
+if (type(operations[operation]) is int and\
+  len(sys.argv)-3 != operations[operation]) or\
+  (type(operations[operation]) is types.LambdaType and\
+  not operations[operation](len(sys.argv)-3)): usageError()
+
+if operation in [&quot;mint&quot;, &quot;create&quot;, &quot;update&quot;]:
+  path = &quot;shoulder&quot; if operation == &quot;mint&quot; else &quot;id&quot;
+  request = urllib2.Request(&quot;%s/%s/%s&quot; % (server, path, sys.argv[3]))
+  request.get_method = lambda: &quot;PUT&quot; if operation == &quot;create&quot; else &quot;POST&quot;
+  if len(sys.argv) &gt; 4:
+    request.add_header(&quot;Content-Type&quot;, &quot;text/plain; charset=UTF-8&quot;)
+    request.add_data(formatAnvl(sys.argv[4:]).encode(&quot;UTF-8&quot;))
+elif operation == &quot;view&quot;:
+  request = urllib2.Request(&quot;%s/id/%s&quot; % (server, sys.argv[3]))
+elif operation in [&quot;login&quot;, &quot;logout&quot;]:
+  request = urllib2.Request(&quot;%s/%s&quot; % (server, operation))
+
+if cookie: request.add_header(&quot;Cookie&quot;, cookie)
+
+try:
+  c = opener.open(request)
+  output = c.read()
+  if not output.endswith(&quot;\n&quot;): output += &quot;\n&quot;
+  if operation == &quot;login&quot;:
+    output += c.info()[&quot;set-cookie&quot;].split(&quot;;&quot;)[0].split(&quot;=&quot;)[1] + &quot;\n&quot;
+  print output,
+except urllib2.HTTPError, e:
+  print e.code, e.msg
+  print e.fp.read()
+</pre>
+</div>
+<div class="section" id="php-examples">
+<h1>PHP examples</h1>
+<p>PHP is agnostic with respect to character sets and character set
+encoding; it operates on bytes only.  The following examples assume
+that input data is already UTF-8 encoded and hence can be passed
+directly to EZID; if this is not the case, input data will need to be
+converted to UTF-8 using the functions PHP provides for that purpose.</p>
+<p>Get identifier metadata:</p>
+<pre class="literal-block">
+&lt;?php
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'http://n2t.net/ezid/id/<span class="hl2">identifier</span>');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$output = curl_exec($ch);
+print curl_getinfo($ch, CURLINFO_HTTP_CODE) . &quot;\n&quot;;
+print $output . &quot;\n&quot;;
+curl_close($ch);
+?&gt;
+</pre>
+<p>Create identifier:</p>
+<pre class="literal-block">
+&lt;?php
+$input = '_target: <span class="hl2">url</span>
+<span class="hl2">element1</span>: <span class="hl2">value1</span>
+<span class="hl2">element2</span>: <span class="hl2">value2</span>';
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://n2t.net/ezid/id/<span class="hl2">identifier</span>');
+curl_setopt($ch, CURLOPT_USERPWD, '<span class="hl2">username</span>:<span class="hl2">password</span>');
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+curl_setopt($ch, CURLOPT_HTTPHEADER,
+  array('Content-Type: text/plain; charset=UTF-8',
+        'Content-Length: ' . strlen($input)));
+curl_setopt($ch, CURLOPT_POSTFIELDS, $input);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$output = curl_exec($ch);
+print curl_getinfo($ch, CURLINFO_HTTP_CODE) . &quot;\n&quot;;
+print $output . &quot;\n&quot;;
+curl_close($ch);
+?&gt;
+</pre>
+<p>Mint identifier:</p>
+<pre class="literal-block">
+&lt;?php
+$input = '_target: <span class="hl2">url</span>
+<span class="hl2">element1</span>: <span class="hl2">value1</span>
+<span class="hl2">element2</span>: <span class="hl2">value2</span>';
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://n2t.net/ezid/shoulder/<span class="hl2">shoulder</span>');
+curl_setopt($ch, CURLOPT_USERPWD, '<span class="hl2">username</span>:<span class="hl2">password</span>');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER,
+  array('Content-Type: text/plain; charset=UTF-8',
+        'Content-Length: ' . strlen($input)));
+curl_setopt($ch, CURLOPT_POSTFIELDS, $input);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$output = curl_exec($ch);
+print curl_getinfo($ch, CURLINFO_HTTP_CODE) . &quot;\n&quot;;
+print $output . &quot;\n&quot;;
+curl_close($ch);
+?&gt;
+</pre>
+<p>Modify identifier:</p>
+<pre class="literal-block">
+&lt;?php
+$input = '_target: <span class="hl2">url</span>';
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://n2t.net/ezid/id/<span class="hl2">identifier</span>');
+curl_setopt($ch, CURLOPT_USERPWD, '<span class="hl2">username</span>:<span class="hl2">password</span>');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER,
+  array('Content-Type: text/plain; charset=UTF-8',
+        'Content-Length: ' . strlen($input)));
+curl_setopt($ch, CURLOPT_POSTFIELDS, $input);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$output = curl_exec($ch);
+print curl_getinfo($ch, CURLINFO_HTTP_CODE) . &quot;\n&quot;;
+print $output . &quot;\n&quot;;
+curl_close($ch);
+?&gt;
+</pre>
+</div>
+</div>
+</body>
+</html>
