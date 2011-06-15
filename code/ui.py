@@ -685,6 +685,21 @@ def doc (request):
     f = open(file)
     content = f.read()
     f.close()
+    # If the filename of the requested document has what looks to be a
+    # version indicator, attempt to load the unversioned (i.e.,
+    # latest) version of the document.  Then, if the requested
+    # document is not the latest version, add a warning.
+    m = re.match("(.*/\w+)\.\w+\.html$", file)
+    if m:
+      uvfile = m.group(1) + ".html"
+      if os.path.exists(uvfile):
+        f = open(uvfile)
+        uvcontent = f.read()
+        f.close()
+        if content != uvcontent:
+          content = re.sub("<!-- superseded warning placeholder -->",
+            "<p class='warning'>THIS VERSION IS SUPERSEDED BY A NEWER " +\
+            "VERSION</p>", content)
     return _staticHtmlResponse(content)
   else:
     return _error(404)

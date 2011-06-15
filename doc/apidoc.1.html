@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.8: http://docutils.sourceforge.net/" />
+<title>The EZID API, Version 1</title>
+<style type="text/css">
+
+/* The following is a copy of the stylesheet distributed with Pandoc
+(http://johnmacfarlane.net/pandoc/demo/pandoc.css) with some additions
+noted at the end. */
+
+body {
+    margin: auto;
+    padding-right: 1em;
+    padding-left: 1em;
+    max-width: 44em;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    color: black;
+    font-family: Verdana, sans-serif;
+    font-size: 100%;
+    line-height: 140%;
+    color: #333;
+}
+pre {
+    border: 1px dotted gray;
+    background-color: #ececec;
+    color: #111111;
+    padding: 0.5em;
+}
+code {
+    font-family: monospace;
+}
+h1 a, h2 a, h3 a, h4 a, h5 a {
+    text-decoration: none;
+    color: #7a5ada;
+}
+h1, h2, h3, h4, h5 { font-family: verdana;
+                     font-weight: bold;
+                     border-bottom: 1px dotted black;
+                     color: #7a5ada; }
+h1 {
+        font-size: 130%;
+}
+
+h2 {
+        font-size: 110%;
+}
+
+h3 {
+        font-size: 95%;
+}
+
+h4 {
+        font-size: 90%;
+        font-style: italic;
+}
+
+h5 {
+        font-size: 90%;
+        font-style: italic;
+}
+
+h1.title {
+        font-size: 200%;
+        font-weight: bold;
+        padding-top: 0.2em;
+        padding-bottom: 0.2em;
+        text-align: left;
+        border: none;
+}
+
+dt code {
+        font-weight: bold;
+}
+dd p {
+        margin-top: 0;
+}
+
+#footer {
+        padding-top: 1em;
+        font-size: 70%;
+        color: gray;
+        text-align: center;
+}
+
+/* Additions... */
+
+.hl1 { color: green; font-style: oblique }
+.hl2 { font-family: monospace; font-style: oblique; color: green }
+
+table { border-collapse: collapse }
+th, td { border: 1px solid black; padding: .25em }
+th { text-align: left; background-color: #EEE }
+th p.first, td p.first { margin-top: 0pt }
+th p.first, td p.last { margin-bottom: 0pt }
+
+table.leftheaders tr > td:first-child { background-color: #EEE;
+  font-weight: bold }
+
+.warning { font-weight: bold; color: red }
+.smallfont { font-size: 80%; line-height: 100% }
+
+</style>
+</head>
+<body>
+<div class="document" id="the-ezid-api-version-1">
+<h1 class="title">The EZID API, Version 1</h1>
+
+<!-- superseded warning placeholder -->
+<div class="smallfont line-block">
+<div class="line"><strong>This version:</strong> <a class="reference external" href="http://n2t.net/ezid/doc/apidoc.1.html">http://n2t.net/ezid/doc/apidoc.1.html</a></div>
+<div class="line"><strong>Latest version:</strong> <a class="reference external" href="http://n2t.net/ezid/doc/apidoc.html">http://n2t.net/ezid/doc/apidoc.html</a></div>
+</div>
+<p>Modified 2010.06.24.</p>
+<p>EZID is an interface that provides an easy way for digital object
+producers and others to obtain, register, and describe long-term
+identifiers for their objects.  It comes with a web user interface
+(UI) and a web Application Programming Interface (API).  This document
+describes Version 1 of the EZID API.</p>
+<p>Please use the following address to report any problems:</p>
+<blockquote>
+<a class="reference external" href="mailto:ezid-l&#64;listserv.ucop.edu">ezid-l&#64;listserv.ucop.edu</a></blockquote>
+<p>Failures outside of normal working hours (08:00 to 17:00 Pacific,
+Monday - Friday) will be addressed the next work day.</p>
+<div class="section" id="framework">
+<h1>Framework</h1>
+<p>The EZID API (and UI) is available from the base URL,</p>
+<blockquote>
+<a class="reference external" href="http://n2t.net/ezid">http://n2t.net/ezid</a></blockquote>
+<p>Interaction is done via RESTful HTTP.  Message bodies of both requests
+and responses are of content type &quot;text/plain&quot;, with all text in
+Unicode and encoded in UTF-8.</p>
+<p>A message body is a set of newline-terminated (LF) text lines.  Each
+line represents an element consisting of an element name, a colon, and
+the element value (this is a subset of the ANVL format).</p>
+<pre class="literal-block">
+Author: Proust, Marcel
+Title: Remembrance of Things Past
+_target: http://...
+</pre>
+<p>Some characters must be percent-encoded with three characters &quot;%XY&quot;,
+where XY is the character's hex code.  These include ':' and '.' in
+element names, and ';' and '|' in element values.</p>
+<p>Element names beginning with an underscore ('_') are reserved for
+internal use by EZID.  There is one reserved element name, _target, to
+hold the reidirection target URL.  In returned metadata, additional
+elements with leading underscores may be returned; this is metadata
+maintained by EZID.</p>
+</div>
+<div class="section" id="requests-and-responses">
+<h1>Requests and Responses</h1>
+<p>All requests require HTTP basic authentication except GETs on
+identifiers.</p>
+<p>Responses consist of a status line possibly followed by metadata,
+depending on the operation.  A status line may be &quot;success:&quot; followed
+by the normalized form of the identifier in question, e.g.,</p>
+<pre class="literal-block">
+success: doi:10.1234/FOO
+</pre>
+<p>or a status line may contain some kind of error:</p>
+<pre class="literal-block">
+error: bad request - &lt;reason...&gt;
+error: unauthorized
+error: internal server error
+error: method not allowed
+</pre>
+<p>The HTTP status code matches the status line.</p>
+</div>
+<div class="section" id="registering-a-doi">
+<h1>Registering a DOI</h1>
+<p>A DOI is registered with a request of the form</p>
+<blockquote>
+PUT http://n2t.net/ezid/id/{identifier}</blockquote>
+<p>This will create the supplied {identifier} in the sense that it will
+bind (record) assertions about the identifier string in a place where
+others can see them.  Until such assertions are shared, an identifier
+is not much harder to manage than a private thought, as the identifier
+string is unencumbered by others' expectations.</p>
+<p>The body, which may be empty, should contain metadata to associate
+(bind) with the identifier.  For example,</p>
+<pre class="literal-block">
+C: PUT http://n2t.net/ezid/id/doi%3A10.1234/foo
+C:
+C: _target: http://...
+S: HTTP/1.1 200 OK
+S: Content-Type: text/plain
+S:
+S: success: doi:10.1234/FOO
+</pre>
+<p>where lines marked with a C are issued by a web client and lines
+marked S are issued by the server.  The response is successful if and
+only if the HTTP response returns code 200 and the response body
+begins with &quot;success:&quot;.</p>
+</div>
+<div class="section" id="example-python-client">
+<h1>Example Python Client</h1>
+<pre class="literal-block">
+import urllib2
+
+baseurl = &quot;http://n2t.net/ezid&quot;
+
+h = urllib2.HTTPBasicAuthHandler()
+h.add_password(&quot;EZID&quot;, baseurl, &quot;username&quot;, &quot;password&quot;)
+opener = urllib2.build_opener(h)
+
+# Create a DOI with an initial target and other metadata.
+
+r = urllib2.Request(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
+r.get_method = lambda: &quot;PUT&quot;
+r.add_header(&quot;Content-Type&quot;, &quot;text/plain&quot;)
+r.add_data(&quot;_target: http://www.cnn.com/\nCreator: Francis Bacon&quot;)
+try:
+  c = opener.open(r)
+  print c.read()
+  c.close()
+except urllib2.HTTPError, e:
+  print e.code, e.msg
+  print e.fp.read()
+
+# Add/update some metadata to a DOI.
+
+r = urllib2.Request(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
+r.add_header(&quot;Content-Type&quot;, &quot;text/plain&quot;)
+r.add_data(&quot;Creator: J.K. Frimple&quot;)
+try:
+  c = opener.open(r)
+  print c.read()
+  c.close()
+except urllib2.HTTPError, e:
+  print e.code, e.msg
+  print e.fp.read()
+
+# Retrieve a DOI's metadata.
+
+try:
+  c = urllib2.urlopen(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
+  print c.read()
+  c.close()
+except urllib2.HTTPError, e:
+  print e.code, e.msg
+  print e.fp.read()
+</pre>
+</div>
+</div>
+</body>
+</html>

@@ -91,4 +91,5 @@ th p.first, td p.last { margin-bottom: 0pt }
 table.leftheaders tr > td:first-child { background-color: #EEE;
   font-weight: bold }
 
-div.smallfont { font-size: 80%; line-height: 100% }
+.warning { font-weight: bold; color: red }
+.smallfont { font-size: 80%; line-height: 100% }

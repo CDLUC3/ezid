@@ -21,10 +21,13 @@
 The EZID API, Version 2
 =======================
 
+.. superseded warning placeholder
+
 .. class:: smallfont
 
 | **This version:** http://n2t.net/ezid/doc/apidoc.2.html
 | **Latest version:** http://n2t.net/ezid/doc/apidoc.html
+| **Previous version:** http://n2t.net/ezid/doc/apidoc.1.html
 
 EZID (easy-eye-dee) provides an easy way to obtain, describe, and
 manage long-term identifiers for digital objects.  It can be accessed
