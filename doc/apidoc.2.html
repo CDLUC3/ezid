@@ -133,7 +133,7 @@ report problems:</p>
 <li><a class="reference internal" href="#api-vs-ui">API vs. UI</a></li>
 <li><a class="reference internal" href="#authentication">Authentication</a></li>
 <li><a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a></li>
-<li><a class="reference internal" href="#errors">Errors</a></li>
+<li><a class="reference internal" href="#error-handling">Error handling</a></li>
 <li><a class="reference internal" href="#operation-get-identifier-metadata">Operation: get identifier metadata</a></li>
 <li><a class="reference internal" href="#operation-create-identifier">Operation: create identifier</a></li>
 <li><a class="reference internal" href="#operation-mint-identifier">Operation: mint identifier</a></li>
@@ -415,8 +415,8 @@ success: ark:/99999/fk4test
 error: bad request - no such identifier
 </pre>
 </div>
-<div class="section" id="errors">
-<h1>Errors</h1>
+<div class="section" id="error-handling">
+<h1>Error handling</h1>
 <p>An error is indicated by both an HTTP status code and an error status
 line of the form &quot;error: <span class="hl1">reason</span>&quot;.  For example:</p>
 <pre class="literal-block">
@@ -453,8 +453,8 @@ identifier's EZID URL.  Here is a sample interaction:</p>
 ⇐ erc.when: 1922
 </pre>
 <p>The first line of the response body is a status line.  Assuming
-success (see <a class="reference internal" href="#errors">Errors</a> above), the remainder of the status line echoes
-the canonical form of the requested identifier.</p>
+success (see <a class="reference internal" href="#error-handling">Error handling</a> above), the remainder of the status
+line echoes the canonical form of the requested identifier.</p>
 <p>The remaining lines are metadata element name/value pairs serialized
 per ANVL rules; see <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above.  The order of
 elements is undefined.  Element names beginning with an underscore
@@ -570,9 +570,9 @@ interaction:</p>
 ⇐
 ⇐ success: ark:/99999/fk4cz3dh0
 </pre>
-<p>The return is a status line.  Assuming success (see <a class="reference internal" href="#errors">Errors</a> above),
-the remainder of the status line echoes the canonical form of the
-identifier in question.</p>
+<p>The return is a status line.  Assuming success (see <a class="reference internal" href="#error-handling">Error handling</a>
+above), the remainder of the status line echoes the canonical form of
+the identifier in question.</p>
 <p>There is currently no means to delete a metadata element, but setting
 an element's value to the empty string has much the same effect.</p>
 </div>

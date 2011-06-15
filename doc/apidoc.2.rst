@@ -49,7 +49,7 @@ Contents
 - `API vs. UI`_
 - Authentication_
 - `Request & response bodies`_
-- Errors_
+- `Error handling`_
 - `Operation: get identifier metadata`_
 - `Operation: create identifier`_
 - `Operation: mint identifier`_
@@ -347,8 +347,8 @@ additional information.  Two examples::
   success: ark:/99999/fk4test
   error: bad request - no such identifier
 
-Errors
-------
+Error handling
+--------------
 
 An error is indicated by both an HTTP status code and an error status
 line of the form "error: `reason`:hl1:".  For example:
@@ -390,8 +390,8 @@ identifier's EZID URL.  Here is a sample interaction:
   |lArr| erc.when: 1922
 
 The first line of the response body is a status line.  Assuming
-success (see Errors_ above), the remainder of the status line echoes
-the canonical form of the requested identifier.
+success (see `Error handling`_ above), the remainder of the status
+line echoes the canonical form of the requested identifier.
 
 The remaining lines are metadata element name/value pairs serialized
 per ANVL rules; see `Request & response bodies`_ above.  The order of
@@ -521,9 +521,9 @@ interaction:
   |lArr|
   |lArr| success: ark:/99999/fk4cz3dh0
 
-The return is a status line.  Assuming success (see Errors_ above),
-the remainder of the status line echoes the canonical form of the
-identifier in question.
+The return is a status line.  Assuming success (see `Error handling`_
+above), the remainder of the status line echoes the canonical form of
+the identifier in question.
 
 There is currently no means to delete a metadata element, but setting
 an element's value to the empty string has much the same effect.
