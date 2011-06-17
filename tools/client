@@ -8,6 +8,7 @@
 #     l (local server, no https)
 #     d (development)
 #     s (staging)
+#     w (workflow)
 #     p (production)
 #     http://...
 #
@@ -38,6 +39,7 @@ knownServers = {
   "l" : "http://localhost:8000/ezid",
   "d" : "http://n2t-dev.cdlib.org/ezid",
   "s" : "http://n2t-stage.cdlib.org/ezid",
+  "w" : "http://n2t-wf.cdlib.org/ezid",
   "p" : "http://n2t.net/ezid"
 }
 
@@ -59,6 +61,7 @@ usageText = """Usage: client server credentials operation...
     l (local server, no https)
     d (development)
     s (staging)
+    w (workflow)
     p (production)
     http://...
 

@@ -64,6 +64,7 @@ indicates the deployment level.  Possible values:
     settings.localdev
     settings.development
     settings.staging
+    settings.workflow
     settings.production
 
 See the corresponding modules in the settings directory for the
