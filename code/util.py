@@ -40,23 +40,24 @@ def validateDoi (doi):
     return None
 
 _arkPattern1 = re.compile("((?:\d|b)\d{4}(?:\d{4})?/)([!-~]+)$")
-_arkPattern2 = re.compile("([./])[./]+")
-_arkPattern3 = re.compile("^[./]|[./]$")
-_arkPattern4 = re.compile("%[0-9a-fA-F][0-9a-fA-F]|.")
-_arkPattern5 = re.compile("[0-9a-zA-Z=#*+@_$]")
-_arkPattern6 = re.compile("[0-9a-zA-Z=#*+@_$./]")
+_arkPattern2 = re.compile("\./|/\.")
+_arkPattern3 = re.compile("([./])[./]+")
+_arkPattern4 = re.compile("^[./]|[./]$")
+_arkPattern5 = re.compile("%[0-9a-fA-F][0-9a-fA-F]|.")
+_arkPattern6 = re.compile("[0-9a-zA-Z=#*+@_$~]")
+_arkPattern7 = re.compile("[0-9a-zA-Z=#*+@_$~./]")
 
 def _normalizeArkPercentEncoding (m):
   s = m.group(0)
   if len(s) == 3:
     c = chr(int(s[1:], 16))
-    if _arkPattern5.match(c):
+    if _arkPattern6.match(c):
       return c
     else:
       return s.lower()
   else:
     assert s != "%", "malformed percent-encoding"
-    if _arkPattern6.match(s):
+    if _arkPattern7.match(s):
       return s
     else:
       return "%%%02x" % ord(s)
@@ -84,14 +85,16 @@ def validateArk (ark):
   s = m.group(2)
   # Hyphens are insignificant.
   s = s.replace("-", "")
+  # Dissimilar adjacent structural characters are not allowed.
+  if _arkPattern2.search(s): return None
   # Consolidate adjacent structural characters.
-  s = _arkPattern2.sub("\\1", s)
+  s = _arkPattern3.sub("\\1", s)
   # Eliminate leading and trailing structural characters.
-  s = _arkPattern3.sub("", s)
+  s = _arkPattern4.sub("", s)
   if len(s) == 0: return None
   # Normalize percent-encodings.
   try:
-    s = _arkPattern4.sub(_normalizeArkPercentEncoding, s)
+    s = _arkPattern5.sub(_normalizeArkPercentEncoding, s)
   except AssertionError:
     return None
   return p+s
@@ -104,9 +107,8 @@ def doi2shadow (doi):
   """
   Given a scheme-less DOI identifier (e.g., "10.5060/FOO"), returns
   the corresponding scheme-less shadow ARK identifier (e.g.,
-  "b5060/foo").  The returned identifier is in canonical form.  If the
-  conversion cannot be performed, None is returned.  Note that the
-  conversion is *not* in general reversible by shadow2doi.
+  "b5060/foo").  The returned identifier is in canonical form.  Note
+  that the conversion is *not* in general reversible by shadow2doi.
   """
   # The conversion of DOIs to ARKs is a little tricky because ARKs
   # place semantics on certain characters in suffixes while DOIs do
@@ -128,8 +130,8 @@ def doi2shadow (doi):
   # would otherwise be removed by the ARK normalization process.
   p = "b" + doi[3:8]
   s = doi[8:].replace("%", "%25").replace("-", "%2d").lower()
-  s = _arkPattern3.sub(lambda c: "%%%02x" % ord(c.group(0)), s)
-  s = _arkPattern2.sub(_percentEncodeCdr, s)
+  s = _arkPattern4.sub(lambda c: "%%%02x" % ord(c.group(0)), s)
+  s = _arkPattern3.sub(_percentEncodeCdr, s)
   a = validateArk(p + s)
   assert a != None, "shadow ARK failed validation"
   return a
