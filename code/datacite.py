@@ -3,8 +3,9 @@
 # EZID :: datacite.py
 #
 # Interface to DataCite <http://www.datacite.org/>; specifically,
-# interface to the SOAP services operated by the Technische
-# Informationsbibliothek (TIB) <http://www.tib.uni-hannover.de/>.
+# interface to the DataCite Metadata Store <https://mds.datacite.org/>
+# operated by the Technische Informationsbibliothek (TIB)
+# <http://www.tib.uni-hannover.de/>.
 #
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
@@ -15,6 +16,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import base64
 import re
 import urllib2
 import xml.sax.saxutils
@@ -22,63 +24,30 @@ import xml.sax.saxutils
 import config
 
 _enabled = None
-_soapUrl = None
-_realm = None
-_username = None
-_password = None
+_doiUrl = None
+_metadataUrl = None
+_auth = None
 
 def _loadConfig ():
-  global _enabled, _soapUrl, _realm, _username, _password
+  global _enabled, _doiUrl, _metadataUrl, _auth
   _enabled = (config.config("datacite.enabled").lower() == "true")
-  _soapUrl = config.config("datacite.soap_url")
-  _realm = config.config("datacite.realm")
-  _username = config.config("datacite.username")
-  _password = config.config("datacite.password")
+  _doiUrl = config.config("datacite.doi_url")
+  _metadataUrl = config.config("datacite.metadata_url")
+  datacenter = config.config("datacite.datacenter")
+  password = config.config("datacite.password")
+  _auth = "Basic " + base64.b64encode(datacenter + ":" + password)
 
 _loadConfig()
 config.addLoader(_loadConfig)
 
-class SoapException (Exception):
-  pass
-
-def _soapRequest (request):
-  if not _enabled: return ""
-  h = urllib2.HTTPBasicAuthHandler()
-  h.add_password(_realm, _soapUrl, _username, _password)
-  o = urllib2.build_opener(h)
-  r = urllib2.Request(_soapUrl)
-  r.add_header("Content-Type", "text/xml; charset=UTF-8")
-  r.add_header("SOAPAction", '""')
-  r.add_data(request.encode("UTF-8"))
-  c = o.open(r)
-  s = c.read()
-  c.close()
-  # The following is not a particularly robust way of detecting faults
-  # and extracting fault information, but... this whole SOAP interface
-  # is going away soon anyway.
-  if "<soap:Fault>" in s:
-    m = re.search("<faultstring>(.*?)</faultstring>", s)
-    if m:
-      raise SoapException(m.group(1))
+class _HTTPErrorProcessor (urllib2.HTTPErrorProcessor):
+  def http_response (self, request, response):
+    # Bizarre that Python considers this an error.
+    if response.code == 201:
+      return response
     else:
-      raise SoapException("unknown SOAP fault")
-  return s
-
-def _interpolate (template, *args):
-  return template % tuple(xml.sax.saxutils.escape(a) for a in args)
-
-_registerTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope
-  xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-  xmlns:rs="RegServ"
-  soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-  <soapenv:Body>
-    <rs:registerDataDOI>
-      <rs:arg0>%s</rs:arg0>
-      <rs:arg1>%s</rs:arg1>
-    </rs:registerDataDOI>
-  </soapenv:Body>
-</soapenv:Envelope>"""
+      return urllib2.HTTPErrorProcessor.http_response(self, request, response)
+  https_response = http_response
 
 def registerIdentifier (doi, targetUrl):
   """
@@ -88,47 +57,46 @@ def registerIdentifier (doi, targetUrl):
   that the arguments are syntactically correct, nor is it checked that
   we have rights to the DOI prefix.
   """
-  _soapRequest(_interpolate(_registerTemplate, doi, targetUrl))
-
-_setTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope
-  xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-  xmlns:rs="RegServ"
-  soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-  <soapenv:Body>
-    <rs:updateURL>
-      <rs:arg0>%s</rs:arg0>
-      <rs:arg1>%s</rs:arg1>
-    </rs:updateURL>
-  </soapenv:Body>
-</soapenv:Envelope>"""
+  o = urllib2.build_opener(_HTTPErrorProcessor)
+  r = urllib2.Request(_doiUrl)
+  # We manually supply the HTTP Basic authorization header to avoid
+  # the doubling of the number of HTTP transactions caused by the
+  # challenge/response model.
+  r.add_header("Authorization", _auth)
+  r.add_header("Content-Type", "text/plain; charset=UTF-8")
+  r.add_data(("doi=%s\nurl=%s" % (doi, targetUrl)).encode("UTF-8"))
+  c = o.open(r)
+  assert c.read() == "OK",\
+    "unexpected return from DataCite register DOI operation"
+  c.close()
 
 def setTargetUrl (doi, targetUrl):
   """
   Sets the target URL of an existing scheme-less DOI identifier (e.g.,
   "10.5060/foo").  No error checking is done on the inputs.
   """
-  _soapRequest(_interpolate(_setTemplate, doi, targetUrl))
+  registerIdentifier(doi, targetUrl)
 
-_uploadTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope
-  xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-  xmlns:rs="RegServ"
-  soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-  <soapenv:Body>
-    <rs:updateCitationDOI>
-      <rs:arg0>%s</rs:arg0>
-    </rs:updateCitationDOI>
-  </soapenv:Body>
-</soapenv:Envelope>"""
+def _interpolate (template, *args):
+  return template % tuple(xml.sax.saxutils.escape(a) for a in args)
 
 _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
-<resource>
-  <DOI>%s</DOI>
-"""
-
-def _protect (s):
-  return re.sub("[^\w]", "_", s)
+<resource xmlns="http://datacite.org/schema/kernel-2.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://datacite.org/schema/kernel-2.1
+    http://schema.datacite.org/meta/kernel-2.1/metadata.xsd">
+  <identifier identifierType="DOI">%s</identifier>
+  <creators>
+    <creator>
+      <creatorName>%s</creatorName>
+    </creator>
+  </creators>
+  <titles>
+    <title>%s</title>
+  </titles>
+  <publisher>%s</publisher>
+  <publicationYear>%s</publicationYear>
+</resource>"""
 
 def uploadMetadata (doi, metadata):
   """
@@ -138,11 +106,24 @@ def uploadMetadata (doi, metadata):
   'metadata' should be a dictionary that maps metadata element names
   (e.g., "Title") to values.  No error checking is done on the inputs.
   """
-  m = _interpolate(_metadataTemplate, doi)
-  m += "".join(_interpolate("  <%s>%s</%s>\n", _protect(k), v, _protect(k))
-    for k, v in metadata.items())
-  m += "</resource>"
-  _soapRequest(_interpolate(_uploadTemplate, m))
+  creator = metadata.get("datacite.creator", "none supplied")
+  title = metadata.get("datacite.title", "none supplied")
+  publisher = metadata.get("datacite.publisher", "none supplied")
+  date = metadata.get("datacite.publicationyear", "0000")
+  if not re.match("\d{4}$", date): date = "0000"
+  o = urllib2.build_opener(_HTTPErrorProcessor)
+  r = urllib2.Request(_metadataUrl)
+  # We manually supply the HTTP Basic authorization header to avoid
+  # the doubling of the number of HTTP transactions caused by the
+  # challenge/response model.
+  r.add_header("Authorization", _auth)
+  r.add_header("Content-Type", "application/xml; charset=UTF-8")
+  r.add_data(_interpolate(_metadataTemplate, doi, creator, title, publisher,
+    date).encode("UTF-8"))
+  c = o.open(r)
+  assert c.read() == "OK",\
+   "unexpected return from DataCite store metadata operation"
+  c.close()
 
 def identifierExists (doi):
   # TBD
@@ -153,7 +134,7 @@ def ping ():
   Tests the DataCite API, returning "up" or "down".
   """
   try:
-    uploadMetadata("10.5072/status_check", {})
+    registerIdentifier("10.5072/cdl_status_check", "http://www.cdlib.org/")
   except Exception, e:
     return "down"
   else:
