@@ -411,8 +411,8 @@ have permission to create identifiers in the namespace (or "shoulder")
 named by the identifier's prefix.  Users can view the namespaces
 available to their group by visiting the EZID UI and navigating to the
 Create tab.  For example, if the user's group has permission to create
-identifiers in the general CDL ARK (ark:/13030/c7) namespace, then the
-user may create identifiers beginning with "ark:/13030/c7".
+identifiers in the general EZID ARK (ark:/13030/c7) namespace, then
+the user may create identifiers beginning with "ark:/13030/c7".
 
 A request body is optional; if present, it defines the identifier's
 starting metadata.  There are no restrictions on what metadata

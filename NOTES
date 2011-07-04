@@ -31,7 +31,7 @@ Session cookies store the following key/value pairs:
   prefixes
     A list of the prefixes to which the user has access.  Each element
     of the list is a dictionary with keys 'prefix' and 'namespace',
-    e.g., { "prefix": "ark:/13030/c7", "namespace": "CDL ARK" }.  Set
+    e.g., { "prefix": "ark:/13030/c7", "namespace": "EZID ARK" }.  Set
     and used only by the UI for rendering purposes, not access
     control.
 
