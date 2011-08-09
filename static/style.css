@@ -84,6 +84,15 @@ changed, it should be uniformly changed in all those places. */
   border: 1px solid #111; background-color: #CEFFFF; padding: .5em;
   text-align: left; font-size: 75% }
 
+/* For rendering DataCite metadata... */
+
+.dcms_table { border-spacing: 0 }
+.dcms_label { padding: .25em .5em; white-space: nowrap }
+.dcms_value { padding: .25em .5em }
+.dcms_sublabel { font-size: 80% }
+.dcms_subvalue { font-size: 80% }
+.dcms_identifier { display: none }
+
 #login { text-align: center }
 #login #title { font-weight: bold }
 #login table { border: 2px solid black; margin-left: auto; margin-right: auto;

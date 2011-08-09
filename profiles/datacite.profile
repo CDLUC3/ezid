@@ -8,6 +8,12 @@
 # element:
 # etc.
 
+element: datacite
+displayname: DataCite
+tooltip:
+<b><u>DataCite</u></b><br/>
+A complete DataCite Metadata Scheme record.
+
 element: datacite.creator
 displayname: Creator
 tooltip:

@@ -25,6 +25,7 @@ import time
 import urllib
 
 import config
+import datacite
 import ezid
 import ezidadmin
 import idmap
@@ -339,6 +340,7 @@ def identifierDispatcher (request):
         ip["_profile"].value = _defaultDoiProfile
       else:
         ip["_profile"].value = _defaultArkProfile
+    if ip["_coowners"].value == "(no value)": ip["_coowners"].value = "(none)"
     # Hack (hopefully temporary) for the Merritt folks.  In addition
     # to defining individual ERC fields, the ERC profile defines an
     # "erc" element to hold an entire block of ERC metadata.  We
@@ -350,7 +352,16 @@ def identifierDispatcher (request):
       ep.elements = [e for e in ep.elements if e.name == "erc"]
     else:
       ep.elements = [e for e in ep.elements if e.name != "erc"]
-    if ip["_coowners"].value == "(no value)": ip["_coowners"].value = "(none)"
+    # Similar capability for the DataCite profile.
+    dp = [p for p in profiles if p.name == "datacite"][0]
+    if dp["datacite"].value != "(no value)":
+      dp.elements = [e for e in dp.elements if e.name == "datacite"]
+      html = datacite.dcmsToHtml(dp["datacite"].value)
+      if html is not None:
+        dp["datacite"].value = html
+        dp["datacite"].htmlMode = True
+    else:
+      dp.elements = [e for e in dp.elements if e.name != "datacite"]
     # Determine if the user can edit the metadata.
     if "auth" in request.session:
       user = request.session["auth"].user

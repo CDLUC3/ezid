@@ -17,6 +17,9 @@
 # -----------------------------------------------------------------------------
 
 import base64
+import django.conf
+import lxml.etree
+import os.path
 import re
 import urllib2
 import xml.sax.saxutils
@@ -27,15 +30,18 @@ _enabled = None
 _doiUrl = None
 _metadataUrl = None
 _auth = None
+_stylesheet = None
 
 def _loadConfig ():
-  global _enabled, _doiUrl, _metadataUrl, _auth
+  global _enabled, _doiUrl, _metadataUrl, _auth, _stylesheet
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
   datacenter = config.config("datacite.datacenter")
   password = config.config("datacite.password")
   _auth = "Basic " + base64.b64encode(datacenter + ":" + password)
+  _stylesheet = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
+    django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -139,3 +145,27 @@ def ping ():
     return "down"
   else:
     return "up"
+
+_prologRE = re.compile("(<\?xml\s+version\s*=\s*['\"][-\w.:]+[\"'])" +\
+  "(\s+encoding\s*=\s*['\"][-\w.]+[\"'])")
+
+def _removeEncodingDeclaration (d):
+  m = _prologRE.match(d)
+  if m:
+    return d[:len(m.group(1))]+d[len(m.group(1))+len(m.group(2)):]
+  else:
+    return d
+
+def dcmsToHtml (metadata):
+  """
+  Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
+  record to an XHTML table.  Returns None on error.
+  """
+  if type(metadata) is unicode: metadata = _removeEncodingDeclaration(metadata)
+  try:
+    r = lxml.etree.tostring(_stylesheet(lxml.etree.XML(metadata)),
+      encoding=unicode)
+    assert r.startswith("<table")
+    return r
+  except:
+    return None

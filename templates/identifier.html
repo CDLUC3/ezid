@@ -89,11 +89,16 @@ Viewing <select id="profileselect">
 <th id="element_{{ e.name|slugify }}"
 class="labelvalue label">{{ e.displayName }}</th>
 {% comment %} No space between the TD and DIV below! {% endcomment %}
-<td class="labelvalue"><div class="value{% if editable %} editable{% endif %}"
-{% if editable %}
+<td class="labelvalue"><div
+class="value{% if editable and not e.htmlMode %} editable{% endif %}"
+{% if editable and not e.htmlMode %}
 onclick="openEditBox(this, '{{ e.name|escapejs }}');"
 {% endif %}>
+{% if e.htmlMode %}
+{{ e.value|safe }}
+{% else %}
 {{ e.value|linebreaksbr }}
+{% endif %}
 </div></td>
 </tr>
 {% endfor %}
