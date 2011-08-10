@@ -63,6 +63,7 @@ def registerIdentifier (doi, targetUrl):
   that the arguments are syntactically correct, nor is it checked that
   we have rights to the DOI prefix.
   """
+  if not _enabled: return
   o = urllib2.build_opener(_HTTPErrorProcessor)
   r = urllib2.Request(_doiUrl)
   # We manually supply the HTTP Basic authorization header to avoid
@@ -112,6 +113,7 @@ def uploadMetadata (doi, metadata):
   'metadata' should be a dictionary that maps metadata element names
   (e.g., "Title") to values.  No error checking is done on the inputs.
   """
+  if not _enabled: return
   creator = metadata.get("datacite.creator", "none supplied")
   title = metadata.get("datacite.title", "none supplied")
   publisher = metadata.get("datacite.publisher", "none supplied")
