@@ -87,7 +87,7 @@ changed, it should be uniformly changed in all those places. */
 /* For rendering DataCite metadata... */
 
 .dcms_table { border-spacing: 0 }
-.dcms_label { padding: .25em .5em; white-space: nowrap }
+.dcms_label { padding: .25em .5em; text-align: left; white-space: nowrap }
 .dcms_value { padding: .25em .5em }
 .dcms_sublabel { font-size: 80% }
 .dcms_subvalue { font-size: 80% }
