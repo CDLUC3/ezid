@@ -111,6 +111,7 @@
 # -----------------------------------------------------------------------------
 
 import exceptions
+import re
 import threading
 import time
 import urllib
@@ -528,6 +529,9 @@ def getMetadata (identifier):
   finally:
     _releaseIdentifierLock(ark)
 
+def _oneline (s):
+  return re.sub("\s", " ", s)
+
 def setMetadata (identifier, user, group, metadata):
   """
   Sets metadata elements of a given qualified identifier, e.g.,
@@ -567,6 +571,17 @@ def setMetadata (identifier, user, group, metadata):
   if user[0] != _adminUsername and len(filter(lambda k: k.startswith("_") and\
     k not in ["_coowners", "_target", "_profile"], metadata)) > 0:
     return "error: bad request - use of reserved metadata element name"
+  # The only citation element we validate.  If more such cases arise,
+  # a more general mechanism should be emplaced.  Note that the
+  # validation check here precludes updating a DataCite Metadata
+  # Scheme record via a shadow ARK (but individual DataCite elements
+  # can still be updated).
+  if "datacite" in metadata and metadata["datacite"].strip() != "":
+    try:
+      metadata["datacite"] = datacite.validateDcmsRecord(nqidentifier,
+        metadata["datacite"])
+    except AssertionError, e:
+      return "error: bad request - element 'datacite': " + _oneline(str(e))
   tid = uuid.uuid1()
   _acquireIdentifierLock(ark)
   try:
@@ -626,9 +641,11 @@ def setMetadata (identifier, user, group, metadata):
         if not nqidentifier.startswith(_testDoiPrefix):
           datacite.setTargetUrl(doi, target)
       if len(metadata) > 0 and not nqidentifier.startswith(_testDoiPrefix):
-        m.update(metadata)
-        for k in filter(lambda k: k.startswith("_"), m): del m[k]
-        if len(m) > 0: datacite.uploadMetadata(doi, m)
+        message = datacite.uploadMetadata(doi, m, metadata)
+        if message is not None:
+          log.badRequest(tid)
+          return "error: bad request - element 'datacite': " +\
+            _oneline(message)
       if target is not None: metadata["_st"] = target
       if "_su" not in metadata: metadata["_su"] = str(int(time.time()))
     elif nqidentifier.startswith("ark:/"):
@@ -638,10 +655,11 @@ def setMetadata (identifier, user, group, metadata):
         del metadata["_target"]
       if "_s" in m and m["_s"].startswith("doi:") and len(metadata) > 0 and\
         not m["_s"].startswith(_testDoiPrefix):
-        doi = m["_s"][4:]
-        m.update(metadata)
-        for k in filter(lambda k: k.startswith("_"), m): del m[k]
-        if len(m) > 0: datacite.uploadMetadata(doi, m)
+        message = datacite.uploadMetadata(m["_s"][4:], m, metadata)
+        if message is not None:
+          log.badRequest(tid)
+          return "error: bad request - element 'datacite': " +\
+            _oneline(message)
       if target is not None: metadata["_t"] = target
       if "_u" not in metadata: metadata["_u"] = str(int(time.time()))
     if coOwners is not None: metadata["_co"] = " ; ".join(coOwners)

@@ -356,7 +356,7 @@ def identifierDispatcher (request):
     dp = [p for p in profiles if p.name == "datacite"][0]
     if dp["datacite"].value != "(no value)":
       dp.elements = [e for e in dp.elements if e.name == "datacite"]
-      html = datacite.dcmsToHtml(dp["datacite"].value)
+      html = datacite.dcmsRecordToHtml(dp["datacite"].value)
       if html is not None:
         dp["datacite"].value = html
         dp["datacite"].htmlMode = True
