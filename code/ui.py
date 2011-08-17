@@ -494,6 +494,22 @@ def admin (request):
         return _plainTextResponse(r)
       else:
         return _plainTextResponse("success")
+    elif P["operation"] == "update_user":
+      if "uid" not in P or "ezidCoOwners" not in P: return _badRequest()
+      d = {}
+      for a in ["givenName", "sn", "mail", "telephoneNumber", "description"]:
+        if a not in P: return _badRequest()
+        d[a] = P[a].strip()
+      if d["sn"] == "": return _plainTextResponse("Last name is required.")
+      if d["mail"] == "":
+        return _plainTextResponse("Email address is required.")
+      r = useradmin.setContactInfo(P["uid"], d)
+      if type(r) is str: return _plainTextResponse(r)
+      r = useradmin.setAccountProfile(P["uid"], P["ezidCoOwners"].strip())
+      if type(r) is str:
+        return _plainTextResponse(r)
+      else:
+        return _plainTextResponse("success")
     elif P["operation"] == "set_alert":
       if "message" not in P: return _badRequest()
       m = P["message"].strip()
