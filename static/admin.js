@@ -85,6 +85,7 @@ function setGroup (dn) {
         function (u) { return xmlEscape(u.uid); }).join(", "));
       $("#mg_agreement").attr("checked", groups[i].agreementOnFile);
       $("#mg_shoulderlist").val(groups[i].shoulderList);
+      break;
     }
   }
 }
@@ -269,14 +270,21 @@ function makeUser () {
 var manageUserOpen = false;
 var users = null;
 
-function setUser (dn) {
+function setUser (uid) {
   for (var i = 0; i < users.length; ++i) {
-    if (users[i].dn == dn) {
+    if (users[i].uid == uid) {
       $("#mu_entry").html(xmlEscape(users[i].dn));
       $("#mu_arkid").html("<a href='/ezid/id/" +
         xmlEscape(encodeURI(users[i].arkId)) + "'>" +
         xmlEscape(users[i].arkId) + "</a>");
       $("#mu_gid").html(xmlEscape(users[i].groupGid));
+      $("#mu_givenName").val(users[i].givenName);
+      $("#mu_sn").val(users[i].sn);
+      $("#mu_mail").val(users[i].mail);
+      $("#mu_telephoneNumber").val(users[i].telephoneNumber);
+      $("#mu_description").val(users[i].description);
+      $("#mu_ezidCoOwners").val(users[i].ezidCoOwners);
+      break;
     }
   }
 }
@@ -297,6 +305,12 @@ function manageUser () {
     $("#mu_entry").empty();
     $("#mu_arkid").empty();
     $("#mu_gid").empty();
+    $("#mu_givenName").val("");
+    $("#mu_sn").val("");
+    $("#mu_mail").val("");
+    $("#mu_telephoneNumber").val("");
+    $("#mu_description").val("");
+    $("#mu_ezidCoOwners").val("");
     $.ajax({ url: "/ezid/admin/users", dataType: "json", cache: false,
       error: function () {
         $("#mu_select").html(
@@ -309,12 +323,12 @@ function manageUser () {
           var s = $("#mu_select");
           s.empty();
           for (var i = 0; i < data.length; ++i) {
-            var o = "<option value='" + xmlEscape(data[i].dn) + "'";
+            var o = "<option value='" + xmlEscape(data[i].uid) + "'";
             if (i == 0) o += " selected='selected'";
             o += ">" + xmlEscape(data[i].uid) + "</option>";
             s.append(o);
           }
-          setUser(data[0].dn);
+          setUser(data[0].uid);
         } else {
           $("#mu_select").html(
             "<option selected='selected'>Loading users... failed</option>");
@@ -333,6 +347,43 @@ function manageUser () {
 function selectUser () {
   clearMessages();
   setUser($("#mu_select").val());
+}
+
+/* Extracted from the jQuery validation plugin,
+<http://bassistance.de/jquery-plugins/jquery-plugin-validation/>. */
+var emailRegex = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i;
+
+function updateUser () {
+  clearMessages();
+  if (!emailRegex.test($("#mu_mail").val())) {
+    addMessage("<span class='error'>Invalid email address.</span>");
+    return false;
+  }
+  working(1);
+  $.ajax({ type: "POST", dataType: "text", cache: false,
+    data: { operation: "update_user", uid: $("#mu_select").val(),
+      givenName: $("#mu_givenName").val(), sn: $("#mu_sn").val(),
+      mail: $("#mu_mail").val(),
+      telephoneNumber: $("#mu_telephoneNumber").val(),
+      description: $("#mu_description").val(),
+      ezidCoOwners: $("#mu_ezidCoOwners").val() },
+    error: function () {
+      working(-1);
+      addMessage("<span class='error'>Internal server error.</span>");
+    },
+    success: function (response) {
+      working(-1);
+      if (response == "success") {
+        addMessage("<span class='success'>User updated.</span>");
+      } else {
+        if (typeof(response) != "string" || response == "") {
+          response = "Internal server error.";
+        }
+        addMessage("<span class='error'>" + xmlEscape(response) + "</span>");
+      }
+    }
+  });
+  return false;
 }
 
 var systemStatusOpen = false;
@@ -427,6 +478,7 @@ function reload () {
 
 $(document).ready(function () {
   $("input").keydown(clearMessages);
+  $("textarea").keydown(clearMessages);
   $("#ng_switch").click(newGroup);
   $("#ng_agreement").change(clearMessages);
   $("#ng_form").submit(makeGroup);
@@ -439,6 +491,7 @@ $(document).ready(function () {
   $("#nu_form").submit(makeUser);
   $("#mu_switch").click(manageUser);
   $("#mu_select").change(selectUser);
+  $("#mu_form").submit(updateUser);
   $("#ss_switch").click(systemStatus);
   $("#sa_switch").click(setAlert);
   $("#rl_switch").click(reload);

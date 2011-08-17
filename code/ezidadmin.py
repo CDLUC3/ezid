@@ -187,8 +187,9 @@ def getUsers ():
   """
   Returns a list of all EZID users, or a string message if an error
   occurs.  Each user is represented as a dictionary with keys 'dn',
-  'uid', 'arkId', 'groupDn', and 'groupGid'.  The list is ordered by
-  uid.
+  'uid', 'arkId', 'groupDn', 'groupGid', 'givenName', 'sn', 'mail',
+  'telephoneNumber', 'description', and 'ezidCoOwners'.  The list is
+  ordered by uid.
   """
   if not _ldapEnabled: return "Functionality unavailable."
   l = None
@@ -214,7 +215,8 @@ def getUsers ():
       seenArkIds.add(arkId)
       groups[dn] = gid
     r = l.search_s(_baseDn, ldap.SCOPE_SUBTREE, "(objectClass=ezidUser)",
-      attrlist=["uid", "arkId", "ezidOwnerGroup"])
+      attrlist=["uid", "arkId", "givenName", "sn", "mail", "telephoneNumber",
+      "description", "ezidOwnerGroup", "ezidCoOwners"])
     users = []
     seenUids = set()
     for dn, attrs in r:
@@ -238,6 +240,12 @@ def getUsers ():
       assert d["groupDn"] in groups,\
         "user references nonexistent group, DN='%s'" % dn
       d["groupGid"] = groups[d["groupDn"]]
+      for a in ["givenName", "sn", "mail", "telephoneNumber", "description",
+        "ezidCoOwners"]:
+        if a in attrs:
+          d[a] = attrs[a][0].decode("UTF-8")
+        else:
+          d[a] = ""
       users.append(d)
     users.sort(key=lambda u: u["uid"])
     return users
