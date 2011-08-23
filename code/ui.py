@@ -25,6 +25,7 @@ import time
 import urllib
 
 import config
+import datacite
 import ezid
 import ezidadmin
 import idmap
@@ -339,6 +340,7 @@ def identifierDispatcher (request):
         ip["_profile"].value = _defaultDoiProfile
       else:
         ip["_profile"].value = _defaultArkProfile
+    if ip["_coowners"].value == "(no value)": ip["_coowners"].value = "(none)"
     # Hack (hopefully temporary) for the Merritt folks.  In addition
     # to defining individual ERC fields, the ERC profile defines an
     # "erc" element to hold an entire block of ERC metadata.  We
@@ -350,7 +352,16 @@ def identifierDispatcher (request):
       ep.elements = [e for e in ep.elements if e.name == "erc"]
     else:
       ep.elements = [e for e in ep.elements if e.name != "erc"]
-    if ip["_coowners"].value == "(no value)": ip["_coowners"].value = "(none)"
+    # Similar capability for the DataCite profile.
+    dp = [p for p in profiles if p.name == "datacite"][0]
+    if dp["datacite"].value != "(no value)":
+      dp.elements = [e for e in dp.elements if e.name == "datacite"]
+      html = datacite.dcmsRecordToHtml(dp["datacite"].value)
+      if html is not None:
+        dp["datacite"].value = html
+        dp["datacite"].htmlMode = True
+    else:
+      dp.elements = [e for e in dp.elements if e.name != "datacite"]
     # Determine if the user can edit the metadata.
     if "auth" in request.session:
       user = request.session["auth"].user
@@ -479,6 +490,22 @@ def admin (request):
       if "dn" not in P or "groupDn" not in P: return _badRequest()
       r = ezidadmin.makeUser(P["dn"].strip(), P["groupDn"],
         request.session["auth"].user, request.session["auth"].group)
+      if type(r) is str:
+        return _plainTextResponse(r)
+      else:
+        return _plainTextResponse("success")
+    elif P["operation"] == "update_user":
+      if "uid" not in P or "ezidCoOwners" not in P: return _badRequest()
+      d = {}
+      for a in ["givenName", "sn", "mail", "telephoneNumber", "description"]:
+        if a not in P: return _badRequest()
+        d[a] = P[a].strip()
+      if d["sn"] == "": return _plainTextResponse("Last name is required.")
+      if d["mail"] == "":
+        return _plainTextResponse("Email address is required.")
+      r = useradmin.setContactInfo(P["uid"], d)
+      if type(r) is str: return _plainTextResponse(r)
+      r = useradmin.setAccountProfile(P["uid"], P["ezidCoOwners"].strip())
       if type(r) is str:
         return _plainTextResponse(r)
       else:

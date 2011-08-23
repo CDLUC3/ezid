@@ -46,7 +46,7 @@ users share some structural parent).
 Also, for password and user account (or "profile") management, EZID
 assumes that users are of structural class inetOrgPerson, specifically
 that users have passwords and have the standard LDAP attributes
-givenName, sn, cn, mail, and telephoneNumber.
+givenName, sn, cn, mail, telephoneNumber, and description.
 
 Appendix
 --------

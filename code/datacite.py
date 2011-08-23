@@ -17,6 +17,9 @@
 # -----------------------------------------------------------------------------
 
 import base64
+import django.conf
+import lxml.etree
+import os.path
 import re
 import urllib2
 import xml.sax.saxutils
@@ -27,15 +30,18 @@ _enabled = None
 _doiUrl = None
 _metadataUrl = None
 _auth = None
+_stylesheet = None
 
 def _loadConfig ():
-  global _enabled, _doiUrl, _metadataUrl, _auth
+  global _enabled, _doiUrl, _metadataUrl, _auth, _stylesheet
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
   datacenter = config.config("datacite.datacenter")
   password = config.config("datacite.password")
   _auth = "Basic " + base64.b64encode(datacenter + ":" + password)
+  _stylesheet = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
+    django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -57,6 +63,7 @@ def registerIdentifier (doi, targetUrl):
   that the arguments are syntactically correct, nor is it checked that
   we have rights to the DOI prefix.
   """
+  if not _enabled: return
   o = urllib2.build_opener(_HTTPErrorProcessor)
   r = urllib2.Request(_doiUrl)
   # We manually supply the HTTP Basic authorization header to avoid
@@ -76,6 +83,66 @@ def setTargetUrl (doi, targetUrl):
   "10.5060/foo").  No error checking is done on the inputs.
   """
   registerIdentifier(doi, targetUrl)
+
+_prologRE = re.compile("(<\?xml\s+version\s*=\s*['\"]([-\w.:]+)[\"'])" +\
+  "(\s+encoding\s*=\s*['\"]([-\w.]+)[\"'])?")
+_utf8RE = re.compile("UTF-?8$", re.I)
+_rootTagRE =\
+  re.compile("{(http://datacite\.org/schema/kernel-[^}]*)}resource$")
+
+def validateDcmsRecord (identifier, record):
+  """
+  Validates and normalizes a DataCite Metadata Scheme
+  <http://schema.datacite.org/> record for a qualified identifier
+  (e.g., "doi:10.5060/foo").  The record should be unencoded.  Either
+  the normalized record is returned or an assertion error is raised.
+  Validation is limited to checking that the record is well-formed
+  XML, that the record appears to be a DCMS record (by examining the
+  root element), and that the identifier embedded in the record
+  matches 'identifier'.  (In an extension to DCMS, we allow the
+  identifier to be something other than a DOI, specifically, an ARK.)
+  Normalization is limited to removing any encoding declaration.
+  """
+  m = _prologRE.match(record)
+  if m:
+    assert m.group(2) == "1.0", "unsupported XML version"
+    if m.group(3) != None:
+      assert _utf8RE.match(m.group(4)), "XML encoding must be UTF-8"
+      record = record[:len(m.group(1))] +\
+        record[len(m.group(1))+len(m.group(3)):]
+  else:
+    record = "<?xml version=\"1.0\"?>\n" + record
+  try:
+    root = lxml.etree.XML(record)
+  except Exception, e:
+    assert False, "XML parse error: " + str(e)
+  m = _rootTagRE.match(root.tag)
+  assert m, "not a DataCite record"
+  i = root.xpath("N:identifier", namespaces={ "N": m.group(1) })
+  assert len(i) == 1 and "identifierType" in i[0].attrib,\
+    "not a valid DataCite record"
+  if identifier.startswith("doi:"):
+    type = "DOI"
+    identifier = identifier[4:]
+  elif identifier.startswith("ark:/"):
+    type = "ARK"
+    identifier = identifier[5:]
+  else:
+    assert False, "unrecognized identifier scheme"
+  assert i[0].attrib["identifierType"] == type and i[0].text == identifier,\
+    "identifier embedded in record does not match identifier being operated on"
+  return record
+
+def _insertEncodingDeclaration (record):
+  m = _prologRE.match(record)
+  if m:
+    if m.group(3) is None:
+      return record[:len(m.group(1))] + " encoding=\"UTF-8\"" +\
+        record[len(m.group(1)):]
+    else:
+      return record
+  else:
+    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + record
 
 def _interpolate (template, *args):
   return template % tuple(xml.sax.saxutils.escape(a) for a in args)
@@ -98,19 +165,41 @@ _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
   <publicationYear>%s</publicationYear>
 </resource>"""
 
-def uploadMetadata (doi, metadata):
+def _formRecord (doi, metadata):
+  if metadata.get("datacite", "").strip() != "":
+    return _insertEncodingDeclaration(metadata["datacite"])
+  else:
+    m = {}
+    for f in ["creator", "title", "publisher", "publicationyear"]:
+      if metadata.get("datacite."+f, "").strip() != "":
+        m[f] = metadata["datacite."+f]
+      else:
+        m[f] = "none supplied"
+    if not re.match("\d{4}$", m["publicationyear"]):
+      m["publicationyear"] = "0000"
+    return _interpolate(_metadataTemplate, doi, m["creator"], m["title"],
+      m["publisher"], m["publicationyear"])
+
+def uploadMetadata (doi, current, delta):
   """
   Uploads citation metadata for the resource identified by an existing
   scheme-less DOI identifier (e.g., "10.5060/foo") to DataCite.  This
   same function can be used to overwrite previously-uploaded metadata.
-  'metadata' should be a dictionary that maps metadata element names
-  (e.g., "Title") to values.  No error checking is done on the inputs.
+  'current' and 'delta' should be dictionaries mapping metadata
+  element names (e.g., "Title") to values.  'current+delta' is
+  uploaded, but only if there is at least one DataCite-relevant
+  difference between it and 'current' alone.  There are three possible
+  returns: None on success; a string error message if the uploaded
+  DataCite Metadata Scheme record was not accepted by DataCite (due to
+  an XML-related problem); or a thrown exception on other error.  No
+  error checking is done on the inputs.
   """
-  creator = metadata.get("datacite.creator", "none supplied")
-  title = metadata.get("datacite.title", "none supplied")
-  publisher = metadata.get("datacite.publisher", "none supplied")
-  date = metadata.get("datacite.publicationyear", "0000")
-  if not re.match("\d{4}$", date): date = "0000"
+  if not _enabled: return
+  oldRecord = _formRecord(doi, current)
+  m = current.copy()
+  m.update(delta)
+  newRecord = _formRecord(doi, m)
+  if newRecord == oldRecord: return None
   o = urllib2.build_opener(_HTTPErrorProcessor)
   r = urllib2.Request(_metadataUrl)
   # We manually supply the HTTP Basic authorization header to avoid
@@ -118,12 +207,22 @@ def uploadMetadata (doi, metadata):
   # challenge/response model.
   r.add_header("Authorization", _auth)
   r.add_header("Content-Type", "application/xml; charset=UTF-8")
-  r.add_data(_interpolate(_metadataTemplate, doi, creator, title, publisher,
-    date).encode("UTF-8"))
-  c = o.open(r)
-  assert c.read() == "OK",\
-   "unexpected return from DataCite store metadata operation"
-  c.close()
+  r.add_data(newRecord.encode("UTF-8"))
+  c = None
+  try:
+    c = o.open(r)
+    assert c.read() == "OK",\
+     "unexpected return from DataCite store metadata operation"
+  except urllib2.HTTPError, e:
+    message = e.fp.read()
+    if e.code == 400 and message.startswith("[xml]"):
+      return message
+    else:
+      raise e
+  else:
+    return None
+  finally:
+    if c: c.close()
 
 def identifierExists (doi):
   # TBD
@@ -139,3 +238,24 @@ def ping ():
     return "down"
   else:
     return "up"
+
+def _removeEncodingDeclaration (record):
+  m = _prologRE.match(record)
+  if m and m.group(3) != None:
+    return record[:len(m.group(1))] + record[len(m.group(1))+len(m.group(3)):]
+  else:
+    return record
+
+def dcmsRecordToHtml (record):
+  """
+  Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
+  record to an XHTML table.  The record should be unencoded.  Returns
+  None on error.
+  """
+  try:
+    r = lxml.etree.tostring(_stylesheet(lxml.etree.XML(
+      _removeEncodingDeclaration(record))), encoding=unicode)
+    assert r.startswith("<table")
+    return r
+  except:
+    return None
