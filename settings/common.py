@@ -29,8 +29,12 @@ else:
 
 SEND_BROKEN_LINK_EMAILS = True
 
-DATABASE_ENGINE = "sqlite3"
-DATABASE_NAME = os.path.join(SITE_ROOT, "db", "db.sqlite3")
+DATABASES = {
+  "default": {
+    "ENGINE": "django.db.backends.sqlite3",
+    "NAME": os.path.join(SITE_ROOT, "db", "db.sqlite3")
+  }
+}
 
 TIME_ZONE = "America/Los_Angeles"
 
@@ -50,7 +54,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = "settings.urls"
 
-TEMPLATE_LOADERS = ("django.template.loaders.filesystem.load_template_source",)
+TEMPLATE_LOADERS = ("django.template.loaders.filesystem.Loader",)
 TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
 TEMPLATE_CONTEXT_PROCESSORS =\
   ("django.contrib.messages.context_processors.messages",)
