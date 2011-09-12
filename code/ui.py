@@ -487,13 +487,20 @@ def admin (request, ssl=False):
       else:
         return _plainTextResponse("success")
     elif P["operation"] == "make_user":
-      if "dn" not in P or "groupDn" not in P: return _badRequest()
-      r = ezidadmin.makeUser(P["dn"].strip(), P["groupDn"],
+      if "uid" not in P or "existingUserDn" not in P or "groupDn" not in P:
+        return _badRequest()
+      if P["uid"].strip() != "":
+        r = ezidadmin.makeLdapUser(P["uid"].strip())
+        if type(r) is str: return _plainTextResponse(r)
+        dn = r[0]
+      else:
+        dn = P["existingUserDn"]
+      r = ezidadmin.makeUser(dn.strip(), P["groupDn"],
         request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:
         return _plainTextResponse(r)
       else:
-        return _plainTextResponse("success")
+        return _plainTextResponse("success: " + dn)
     elif P["operation"] == "update_user":
       for a in ["uid", "ezidCoOwners", "disable", "userPassword"]:
         if a not in P: return _badRequest()
@@ -539,7 +546,9 @@ def getEntries (request):
     return _unauthorized()
   if request.method != "GET": return _methodNotAllowed()
   return _jsonResponse(ezidadmin.getEntries("usersOnly" in request.GET and\
-    request.GET["usersOnly"].lower() == "true"))
+    request.GET["usersOnly"].lower() == "true",
+    "nonEzidUsersOnly" in request.GET and\
+    request.GET["nonEzidUsersOnly"].lower() == "true"))
 
 def getGroups (request):
   """

@@ -179,7 +179,6 @@ function newUser () {
   clearMessages();
   if (newUserOpen) {
     groups2 = null;
-    $("#nu_entry").flushCache();
     $("#nu_section").hide();
     $("#nu_open").hide();
     $("#nu_close").show();
@@ -187,22 +186,32 @@ function newUser () {
     $("#nu_close").hide();
     $("#nu_open").show();
     $("#nu_section").show();
-    $("#nu_entry").val("Loading entries...");
-    $("#nu_select").html(
+    $("#nu_uid").val("");
+    $("#nu_userselect").html(
+      "<option selected='selected'>Loading LDAP users...</option>");
+    $("#nu_groupselect").html(
       "<option selected='selected'>Loading groups...</option>");
-    $.ajax({ url: "/ezid/admin/entries?usersOnly=true", dataType: "json",
-      cache: false,
+    $.ajax({ url: "/ezid/admin/entries?usersOnly=true&nonEzidUsersOnly=true",
+      dataType: "json", cache: false,
       error: function () {
-        $("#nu_entry").val("Loading entries... failed");
+        $("#nu_userselect").html(
+          "<option selected='selected'>Loading LDAP users... failed</option>");
         addMessage("<span class='error'>Internal server error.</span>");
       },
       success: function (data) {
         if ($.isArray(data)) {
-          $("#nu_entry").autocomplete(data, { matchContains: true });
-          $("#nu_entry").val("Type any substring of the entry's DN");
-          $("#nu_entry").select();
+          var s = $("#nu_userselect");
+          s.empty();
+          s.append("<option value='' selected='selected'></option>");
+          for (var i = 0; i < data.length; ++i) {
+            var o = "<option value='" + xmlEscape(data[i].dn) + "'>" +
+              xmlEscape(data[i].uid) + "</option>";
+            s.append(o);
+          }
         } else {
-          $("#nu_entry").val("Loading entries... failed");
+          $("#nu_userselect").html(
+            "<option selected='selected'>Loading LDAP users... " +
+            "failed</option>");
           if (typeof(data) != "string" || data == "") {
             data = "Internal server error.";
           }
@@ -212,14 +221,14 @@ function newUser () {
     });
     $.ajax({ url: "/ezid/admin/groups", dataType: "json", cache: false,
       error: function () {
-        $("#nu_select").html(
+        $("#nu_groupselect").html(
           "<option selected='selected'>Loading groups... failed</option>");
         addMessage("<span class='error'>Internal server error.</span>");
       },
       success: function (data) {
         if ($.isArray(data)) {
           groups2 = data;
-          var s = $("#nu_select");
+          var s = $("#nu_groupselect");
           s.empty();
           for (var i = 0; i < data.length; ++i) {
             var o = "<option value='" + xmlEscape(data[i].dn) + "'";
@@ -228,7 +237,7 @@ function newUser () {
             s.append(o);
           }
         } else {
-          $("#nu_select").html(
+          $("#nu_groupselect").html(
             "<option selected='selected'>Loading groups... failed</option>");
           if (typeof(data) != "string" || data == "") {
             data = "Internal server error.";
@@ -244,17 +253,25 @@ function newUser () {
 
 function makeUser () {
   clearMessages();
+  if ($.trim($("#nu_uid").val()) != "" && $("#nu_userselect").val() != "") {
+    addMessage("<span class='error'>Ambiguous choice.</span>");
+    return false;
+  }
   working(1);
   $.ajax({ type: "POST", dataType: "text", cache: false,
-    data: { operation: "make_user", dn: $("#nu_entry").val(),
-      groupDn: $("#nu_select").val() },
+    data: { operation: "make_user", uid: $("#nu_uid").val(),
+      existingUserDn: $("#nu_userselect").val(),
+      groupDn: $("#nu_groupselect").val() },
     error: function () {
       working(-1);
       addMessage("<span class='error'>Internal server error.</span>");
     },
     success: function (response) {
       working(-1);
-      if (response == "success") {
+      if (response.substr(0, 9) == "success: ") {
+        if (newUserOpen) newUser();
+        if (manageUserOpen) manageUser(null);
+        manageUser(response.substr(9));
         addMessage("<span class='success'>New user created.</span>");
       } else {
         if (typeof(response) != "string" || response == "") {
@@ -523,7 +540,8 @@ $(document).ready(function () {
   $("#mg_agreement").change(clearMessages);
   $("#mg_form").submit(updateGroup);
   $("#nu_switch").click(newUser);
-  $("#nu_select").change(clearMessages);
+  $("#nu_userselect").change(clearMessages);
+  $("#nu_groupselect").change(clearMessages);
   $("#nu_form").submit(makeUser);
   $("#mu_switch").click(function () { return manageUser(null); });
   $("#mu_select").change(selectUser);

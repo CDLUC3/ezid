@@ -86,11 +86,15 @@ def _validateShoulderList (sl):
   if len(l) == 0: return None
   return ",".join(l)
 
-def getEntries (usersOnly=False):
+def getEntries (usersOnly=False, nonEzidUsersOnly=False):
   """
-  Returns a list of the DNs of all LDAP entries, or a string message
-  if an error occurs.  If usersOnly is true, only entries whose DNs
-  match the user DN template are returned.
+  Returns a list of all LDAP entries, or a string message if an error
+  occurs.  If 'usersOnly' is false, a list of DNs is returned.
+  Otherwise, if 'usersOnly' is true, only entries whose DNs match the
+  user DN template are returned and each entry is described by a
+  dictionary with keys 'dn' and 'uid'.  Furthermore, the returned list
+  is ordered by uid.  If both 'usersOnly' and 'nonEzidUsersOnly' are
+  true, only entries that are not EZID users are returned.
   """
   if not _ldapEnabled: return "Functionality unavailable."
   l = None
@@ -98,10 +102,16 @@ def getEntries (usersOnly=False):
     l = ldap.initialize(_ldapServer)
     l.bind_s(_userDnTemplate % _adminUsername, _adminPassword,
       ldap.AUTH_SIMPLE)
-    # We don't want any attributes; setting attrlist to [] below
-    # doesn't work for some reason, but setting it to [""] does.
-    r = l.search_s(_baseDn, ldap.SCOPE_SUBTREE, attrlist=[""])
-    return [v[0] for v in r if not usersOnly or _userDnPattern.match(v[0])]
+    r = l.search_s(_baseDn, ldap.SCOPE_SUBTREE,
+      attrlist=["objectClass", "uid"])
+    if usersOnly:
+      entries = [{ "dn": e[0], "uid": e[1]["uid"][0].decode("UTF-8") }\
+        for e in r if _userDnPattern.match(e[0]) and\
+        (not nonEzidUsersOnly or "ezidUser" not in e[1]["objectClass"])]
+      entries.sort(key=lambda u: u["uid"])
+      return entries
+    else:
+      return [e[0] for e in r]
   except Exception, e:
     log.otherError("ezidadmin.getEntries", e)
     return "Internal server error."
@@ -379,6 +389,40 @@ def updateGroup (dn, agreementOnFile, shoulderList, user, group):
     return None
   except Exception, e:
     log.otherError("ezidadmin.updateGroup", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
+
+def makeLdapUser (uid):
+  """
+  Creates an LDAP entry of class 'inetOrgPerson', in the
+  _userDnTemplate hierarchy, having the given uid.  Attributes
+  required by LDAP are given provisional values.  The new entry has no
+  password.  Returns a 1-tuple containing the new DN on success or a
+  string message on error.
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  # For EZID's purposes the critical characters to exclude from
+  # usernames are the list delimiters used in various places: spaces,
+  # semicolons, and pipes.  But for good citizenship we're much more
+  # restrictive than that.
+  if not re.match("[a-z0-9]+([-_.][a-z0-9]+)*$", uid, re.I):
+    return "Invalid username."
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    # The operation below requires binding as a privileged LDAP user.
+    l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
+    dn = _userDnTemplate % ldap.dn.escape_dn_chars(uid)
+    try:
+      l.add_s(dn, [("objectClass", "inetOrgPerson"),
+        ("sn", "please supply"), ("cn", "please supply"),
+        ("mail", "please supply")])
+    except ldap.ALREADY_EXISTS:
+      return "Username already in use."
+    return (dn,)
+  except Exception, e:
+    log.otherError("ezidadmin.makeLdapUser", e)
     return "Internal server error."
   finally:
     if l: l.unbind()

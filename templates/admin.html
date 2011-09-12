@@ -134,17 +134,29 @@ make new</a></p>
 
 <div id="nu_section" class="section">
 <form id="nu_form" action="null">
-<p>Make an existing LDAP entry (person, institution, etc.) an EZID
-user.</p>
+<p>Make a new EZID user.</p>
 <table class="form">
 <tr>
-<th>LDAP entry</th>
-<td><input type="text" id="nu_entry" name="nu_entry" size="60"/></td>
+<th rowspan="4" class="multiline">Username</th>
+<td class="note">Either enter new username (e.g., "jdoe"):</td>
+</tr>
+<tr>
+<td><input type="text" id="nu_uid" name="nu_uid" size="20"/></td>
+</tr>
+<tr>
+<td class="note">Or select existing LDAP user:</td>
+</tr>
+<tr>
+<td>
+<select id="nu_userselect">
+<option selected="selected">Loading LDAP users...</option>
+</select>
+</td>
 </tr>
 <tr>
 <th>Group</th>
 <td>
-<select id="nu_select">
+<select id="nu_groupselect">
 <option selected="selected">Loading groups...</option>
 </select>
 </td>
