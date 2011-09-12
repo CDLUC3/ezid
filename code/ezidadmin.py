@@ -188,15 +188,18 @@ def getUsers ():
   Returns a list of all EZID users, or a string message if an error
   occurs.  Each user is represented as a dictionary with keys 'dn',
   'uid', 'arkId', 'groupDn', 'groupGid', 'givenName', 'sn', 'mail',
-  'telephoneNumber', 'description', and 'ezidCoOwners'.  The list is
-  ordered by uid.
+  'telephoneNumber', 'description', 'ezidCoOwners', and
+  'currentlyEnabled' ("true" if the user has a password, "false"
+  otherwise).  The list is ordered by uid.
   """
   if not _ldapEnabled: return "Functionality unavailable."
   l = None
   try:
     l = ldap.initialize(_ldapServer)
-    l.bind_s(_userDnTemplate % _adminUsername, _adminPassword,
-      ldap.AUTH_SIMPLE)
+    # Retrieving the user password requires binding as the LDAP
+    # administrator; otherwise, the EZID administrator account would
+    # suffice.
+    l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
     r = l.search_s(_baseDn, ldap.SCOPE_SUBTREE, "(objectClass=ezidGroup)",
       attrlist=["gid", "uid", "groupArkId", "arkId"])
     groups = {}
@@ -216,7 +219,7 @@ def getUsers ():
       groups[dn] = gid
     r = l.search_s(_baseDn, ldap.SCOPE_SUBTREE, "(objectClass=ezidUser)",
       attrlist=["uid", "arkId", "givenName", "sn", "mail", "telephoneNumber",
-      "description", "ezidOwnerGroup", "ezidCoOwners"])
+      "description", "ezidOwnerGroup", "ezidCoOwners", "userPassword"])
     users = []
     seenUids = set()
     for dn, attrs in r:
@@ -246,6 +249,7 @@ def getUsers ():
           d[a] = attrs[a][0].decode("UTF-8")
         else:
           d[a] = ""
+      d["currentlyEnabled"] = "true" if "userPassword" in attrs else "false"
       users.append(d)
     users.sort(key=lambda u: u["uid"])
     return users
@@ -466,6 +470,36 @@ def makeUser (dn, groupDn, user, group):
     return None
   except Exception, e:
     log.otherError("ezidadmin.makeUser", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
+
+def disableUser (username):
+  """
+  Disables an EZID user, i.e., prevents the user from logging in (by
+  removing the user's password).  Returns None on success or a string
+  message on error.
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    # This operation requires binding as a privileged LDAP user.
+    l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
+    dn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
+    try:
+      r = l.search_s(dn, ldap.SCOPE_BASE,
+        attrlist=["objectClass", "userPassword"])
+    except ldap.NO_SUCH_OBJECT:
+      return "No such user."
+    assert len(r) == 1 and r[0][0] == dn,\
+      "unexpected return from LDAP search command, DN='%s'" % dn
+    if "ezidUser" not in r[0][1]["objectClass"]: return "No such user."
+    if "userPassword" in r[0][1]:
+      l.modify_s(dn, [(ldap.MOD_DELETE, "userPassword", None)])
+    return None
+  except Exception, e:
+    log.otherError("ezidadmin.disableUser", e)
     return "Internal server error."
   finally:
     if l: l.unbind()

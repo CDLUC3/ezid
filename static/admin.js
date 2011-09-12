@@ -270,10 +270,11 @@ function makeUser () {
 var manageUserOpen = false;
 var users = null;
 
-function setUser (uid) {
+function setUser (dn) {
   for (var i = 0; i < users.length; ++i) {
-    if (users[i].uid == uid) {
-      $("#mu_entry").html(xmlEscape(users[i].dn));
+    if (users[i].dn == dn) {
+      $("#mu_uid").val(users[i].uid);
+      $("#mu_currentlyEnabled").val(users[i].currentlyEnabled);
       $("#mu_arkid").html("<a href='/ezid/id/" +
         xmlEscape(encodeURI(users[i].arkId)) + "'>" +
         xmlEscape(users[i].arkId) + "</a>");
@@ -284,12 +285,14 @@ function setUser (uid) {
       $("#mu_telephoneNumber").val(users[i].telephoneNumber);
       $("#mu_description").val(users[i].description);
       $("#mu_ezidCoOwners").val(users[i].ezidCoOwners);
+      $("#mu_enabled").attr("checked", users[i].currentlyEnabled == "true");
+      $("#mu_userPassword").val("");
       break;
     }
   }
 }
 
-function manageUser () {
+function manageUser (newlyCreatedUser) {
   clearMessages();
   if (manageUserOpen) {
     users = null;
@@ -302,7 +305,8 @@ function manageUser () {
     $("#mu_section").show();
     $("#mu_select").html(
       "<option selected='selected'>Loading users...</option>");
-    $("#mu_entry").empty();
+    $("#mu_uid").val("");
+    $("#mu_currentlyEnabled").val("");
     $("#mu_arkid").empty();
     $("#mu_gid").empty();
     $("#mu_givenName").val("");
@@ -311,33 +315,42 @@ function manageUser () {
     $("#mu_telephoneNumber").val("");
     $("#mu_description").val("");
     $("#mu_ezidCoOwners").val("");
+    $("#mu_enabled").attr("checked", false);
+    $("#mu_userPassword").val("");
     $.ajax({ url: "/ezid/admin/users", dataType: "json", cache: false,
       error: function () {
         $("#mu_select").html(
           "<option selected='selected'>Loading users... failed</option>");
         addMessage("<span class='error'>Internal server error.</span>");
       },
-      success: function (data) {
-        if ($.isArray(data)) {
-          users = data;
-          var s = $("#mu_select");
-          s.empty();
-          for (var i = 0; i < data.length; ++i) {
-            var o = "<option value='" + xmlEscape(data[i].uid) + "'";
-            if (i == 0) o += " selected='selected'";
-            o += ">" + xmlEscape(data[i].uid) + "</option>";
-            s.append(o);
+      success: function (selectedUser) {
+        return function (data) {
+          if ($.isArray(data)) {
+            users = data;
+            var s = $("#mu_select");
+            s.empty();
+            var j;
+            for (var i = 0; i < data.length; ++i) {
+              var o = "<option value='" + xmlEscape(data[i].dn) + "'";
+              if ((selectedUser != null && data[i].dn == selectedUser) ||
+                (selectedUser == null && i == 0)) {
+                o += " selected='selected'";
+                j = i;
+              }
+              o += ">" + xmlEscape(data[i].uid) + "</option>";
+              s.append(o);
+            }
+            setUser(data[j].dn);
+          } else {
+            $("#mu_select").html(
+              "<option selected='selected'>Loading users... failed</option>");
+            if (typeof(data) != "string" || data == "") {
+              data = "Internal server error.";
+            }
+            addMessage("<span class='error'>" + xmlEscape(data) + "</span>");
           }
-          setUser(data[0].uid);
-        } else {
-          $("#mu_select").html(
-            "<option selected='selected'>Loading users... failed</option>");
-          if (typeof(data) != "string" || data == "") {
-            data = "Internal server error.";
-          }
-          addMessage("<span class='error'>" + xmlEscape(data) + "</span>");
         }
-      }
+      }(newlyCreatedUser)
     });
   }
   manageUserOpen = !manageUserOpen;
@@ -359,14 +372,32 @@ function updateUser () {
     addMessage("<span class='error'>Invalid email address.</span>");
     return false;
   }
+  var disable = false;
+  if ($("#mu_enabled").attr("checked") !=
+    ($("#mu_currentlyEnabled").val() == "true")) {
+    if ($("#mu_enabled").attr("checked")) {
+      if ($.trim($("#mu_userPassword").val()) == "") {
+        addMessage("<span class='error'>New password required.</span>");
+        return false;
+      }
+    } else {
+      if ($.trim($("#mu_userPassword").val()) != "") {
+        addMessage("<span class='error'>New password not allowed.</span>");
+        return false;
+      }
+      disable = true;
+    }
+  }
   working(1);
   $.ajax({ type: "POST", dataType: "text", cache: false,
-    data: { operation: "update_user", uid: $("#mu_select").val(),
+    data: { operation: "update_user", uid: $("#mu_uid").val(),
       givenName: $("#mu_givenName").val(), sn: $("#mu_sn").val(),
       mail: $("#mu_mail").val(),
       telephoneNumber: $("#mu_telephoneNumber").val(),
       description: $("#mu_description").val(),
-      ezidCoOwners: $("#mu_ezidCoOwners").val() },
+      ezidCoOwners: $("#mu_ezidCoOwners").val(),
+      disable: disable,
+      userPassword: $("#mu_userPassword").val() },
     error: function () {
       working(-1);
       addMessage("<span class='error'>Internal server error.</span>");
@@ -374,6 +405,11 @@ function updateUser () {
     success: function (response) {
       working(-1);
       if (response == "success") {
+        /* A successful update will not cause our internal data
+        structures (namely, the 'users' array) to be updated.  For
+        now, to be safe, we simply close the section to force a reload
+        when the user re-opens it. */
+        if (manageUserOpen) manageUser(null);
         addMessage("<span class='success'>User updated.</span>");
       } else {
         if (typeof(response) != "string" || response == "") {
@@ -489,8 +525,21 @@ $(document).ready(function () {
   $("#nu_switch").click(newUser);
   $("#nu_select").change(clearMessages);
   $("#nu_form").submit(makeUser);
-  $("#mu_switch").click(manageUser);
+  $("#mu_switch").click(function () { return manageUser(null); });
   $("#mu_select").change(selectUser);
+  $("#mu_enabled").click(function () {
+    if($("#mu_enabled").attr("checked")) {
+      $("#mu_userPassword").val("please supply")
+      $("#mu_userPassword").select();
+    } else {
+      $("#mu_userPassword").val("")
+    }
+  });
+  $("#mu_userPassword").keydown(function () {
+    if (!$("#mu_enabled").attr("checked")) {
+      $("#mu_enabled").attr("checked", true);
+    }
+  });
   $("#mu_form").submit(updateUser);
   $("#ss_switch").click(systemStatus);
   $("#sa_switch").click(setAlert);

@@ -447,7 +447,7 @@ def help (request):
   else:
     return _methodNotAllowed()
 
-def admin (request):
+def admin (request, ssl=False):
   """
   Renders the EZID admin page (GET) or processes a form submission on
   the admin page (POST).
@@ -495,7 +495,8 @@ def admin (request):
       else:
         return _plainTextResponse("success")
     elif P["operation"] == "update_user":
-      if "uid" not in P or "ezidCoOwners" not in P: return _badRequest()
+      for a in ["uid", "ezidCoOwners", "disable", "userPassword"]:
+        if a not in P: return _badRequest()
       d = {}
       for a in ["givenName", "sn", "mail", "telephoneNumber", "description"]:
         if a not in P: return _badRequest()
@@ -506,10 +507,14 @@ def admin (request):
       r = useradmin.setContactInfo(P["uid"], d)
       if type(r) is str: return _plainTextResponse(r)
       r = useradmin.setAccountProfile(P["uid"], P["ezidCoOwners"].strip())
-      if type(r) is str:
-        return _plainTextResponse(r)
-      else:
-        return _plainTextResponse("success")
+      if type(r) is str: return _plainTextResponse(r)
+      if P["disable"].lower() == "true":
+        r = ezidadmin.disableUser(P["uid"])
+        if type(r) is str: return _plainTextResponse(r)
+      elif P["userPassword"].strip() != "":
+        r = useradmin.resetPassword(P["uid"], P["userPassword"].strip())
+        if type(r) is str: return _plainTextResponse(r)
+      return _plainTextResponse("success")
     elif P["operation"] == "set_alert":
       if "message" not in P: return _badRequest()
       m = P["message"].strip()

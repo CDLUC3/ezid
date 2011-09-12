@@ -16,7 +16,7 @@ def _p (urlPattern, function, kwargs=None):
 urlpatterns = django.conf.urls.defaults.patterns("",
   _p("$", "ui.home"),
   _p("account$", "ui.account", { "ssl": True }),
-  _p("admin$", "ui.admin"),
+  _p("admin$", "ui.admin", { "ssl": True }),
   _p("admin/entries$", "ui.getEntries"),
   _p("admin/groups$", "ui.getGroups"),
   _p("admin/reload$", "api.reload"),
