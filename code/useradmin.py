@@ -30,6 +30,7 @@ import policy
 
 _ezidUrl = None
 _ldapEnabled = None
+_updatesEnabled = None
 _ldapServer = None
 _userDnTemplate = None
 _adminUsername = None
@@ -38,10 +39,11 @@ _ldapAdminDn = None
 _ldapAdminPassword = None
 
 def _loadConfig ():
-  global _ezidUrl, _ldapEnabled, _ldapServer, _userDnTemplate
+  global _ezidUrl, _ldapEnabled, _updatesEnabled, _ldapServer, _userDnTemplate
   global _adminUsername, _adminPassword, _ldapAdminDn, _ldapAdminPassword
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
+  _updatesEnabled = (config.config("ldap.updates_enabled").lower() == "true")
   _ldapServer = config.config("ldap.server")
   _userDnTemplate = config.config("ldap.user_dn_template")
   _adminUsername = config.config("ldap.admin_username")
@@ -231,6 +233,7 @@ def setAccountProfile (username, coOwnerList):
   message on error.
   """
   if not _ldapEnabled: return "Functionality unavailable."
+  if not _updatesEnabled: return "Prohibited by configuration."
   l = None
   try:
     l = ldap.initialize(_ldapServer)
@@ -274,6 +277,7 @@ def setContactInfo (username, d):
   None on success or a string message on error.
   """
   if not _ldapEnabled: return "Functionality unavailable."
+  if not _updatesEnabled: return "Prohibited by configuration."
   if "givenName" in d:
     assert "sn" in d
     d["cn"] = (d["givenName"] + " " + d["sn"]).strip()

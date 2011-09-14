@@ -34,6 +34,7 @@ import policy
 import util
 
 _ldapEnabled = None
+_updatesEnabled = None
 _ldapServer = None
 _baseDn = None
 _userDnTemplate = None
@@ -49,10 +50,12 @@ _lock = threading.Lock()
 _statusProbes = None
 
 def _loadConfig ():
-  global _ldapEnabled, _ldapServer, _baseDn, _userDnTemplate, _userDnPattern
-  global _groupDnTemplate, _adminUsername, _adminPassword, _ldapAdminDn
-  global _ldapAdminPassword, _shoulders, _agentPrefix, _statusProbes
+  global _ldapEnabled, _updatesEnabled, _ldapServer, _baseDn, _userDnTemplate
+  global _userDnPattern, _groupDnTemplate, _adminUsername, _adminPassword
+  global _ldapAdminDn, _ldapAdminPassword, _shoulders, _agentPrefix
+  global _statusProbes
   _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
+  _updatesEnabled = (config.config("ldap.updates_enabled").lower() == "true")
   _ldapServer = config.config("ldap.server")
   _baseDn = config.config("ldap.base_dn")
   _userDnTemplate = config.config("ldap.user_dn_template")
@@ -292,6 +295,7 @@ def makeLdapGroup (gid):
   containing the new DN on success or a string message on error.
   """
   if not _ldapEnabled: return "Functionality unavailable."
+  if not _updatesEnabled: return "Prohibited by configuration."
   # For EZID's purposes the critical characters to exclude from group
   # names are the list delimiters used in various places: spaces,
   # semicolons, and pipes.  But for good citizenship we're much more
@@ -328,6 +332,7 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
   persistent identifier) tuples, e.g., ("dryad", "ark:/13030/foo").
   """
   if not _ldapEnabled: return "Functionality unavailable."
+  if not _updatesEnabled: return "Prohibited by configuration."
   if len(dn) == 0: return "LDAP entry required."
   if len(gid) == 0: return "Group name required."
   if " " in gid: return "Invalid group name."
@@ -388,6 +393,7 @@ def updateGroup (dn, description, agreementOnFile, shoulderList, user, group):
   ("dryad", "ark:/13030/foo").
   """
   if not _ldapEnabled: return "Functionality unavailable."
+  if not _updatesEnabled: return "Prohibited by configuration."
   if len(shoulderList) == 0: return "Shoulder list required."
   if dn == _userDnTemplate % _adminUsername:
     if shoulderList != "*": return "Administrator shoulder list must be '*'."
@@ -452,6 +458,7 @@ def makeLdapUser (uid):
   string message on error.
   """
   if not _ldapEnabled: return "Functionality unavailable."
+  if not _updatesEnabled: return "Prohibited by configuration."
   # For EZID's purposes the critical characters to exclude from
   # usernames are the list delimiters used in various places: spaces,
   # semicolons, and pipes.  But for good citizenship we're much more
@@ -490,6 +497,7 @@ def makeUser (dn, groupDn, user, group):
   "ark:/13030/foo").
   """
   if not _ldapEnabled: return "Functionality unavailable."
+  if not _updatesEnabled: return "Prohibited by configuration."
   if len(dn) == 0: return "LDAP entry required."
   if not _userDnPattern.match(dn): return "DN does not match user template."
   l = None
