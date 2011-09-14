@@ -77,14 +77,42 @@ var groups = null;
 function setGroup (dn) {
   for (var i = 0; i < groups.length; ++i) {
     if (groups[i].dn == dn) {
-      $("#mg_entry").html(xmlEscape(groups[i].dn));
       $("#mg_arkid").html("<a href='/ezid/id/" +
         xmlEscape(encodeURI(groups[i].arkId)) + "'>" +
         xmlEscape(groups[i].arkId) + "</a>");
       $("#mg_users").html($.map(groups[i].users,
         function (u) { return xmlEscape(u.uid); }).join(", "));
+      $("#mg_description").val(groups[i].description);
       $("#mg_agreement").attr("checked", groups[i].agreementOnFile);
-      $("#mg_shoulderlist").val(groups[i].shoulderList);
+      var s = $("#mg_shoulders");
+      s.empty();
+      if (groups[i].shoulderList[0] == "*") {
+        /* Special case for the admin user. */
+        s.append("<option value='*' selected='selected'>*</option>");
+      }
+      for (var j = 0; j < shoulders.length; ++j) {
+        if ($.inArray(shoulders[j].label, groups[i].shoulderList) >= 0) {
+          var o = "<option value='" + xmlEscape(shoulders[j].label) +
+            "' selected='selected'>" + xmlEscape(shoulders[j].name);
+          if (shoulders[j].name != "NONE") {
+            o += " (" + xmlEscape(shoulders[j].prefix) + ")";
+          }
+          o += "</option>";
+          s.append(o);
+        }
+      }
+      s.append("<option value='-'></option>");
+      for (var j = 0; j < shoulders.length; ++j) {
+        if ($.inArray(shoulders[j].label, groups[i].shoulderList) < 0) {
+          var o = "<option value='" + xmlEscape(shoulders[j].label) +
+            "'>" + xmlEscape(shoulders[j].name);
+          if (shoulders[j].name != "NONE") {
+            o += " (" + xmlEscape(shoulders[j].prefix) + ")";
+          }
+          o += "</option>";
+          s.append(o);
+        }
+      }
       break;
     }
   }
@@ -103,11 +131,11 @@ function manageGroup () {
     $("#mg_section").show();
     $("#mg_select").html(
       "<option selected='selected'>Loading groups...</option>");
-    $("#mg_entry").empty();
     $("#mg_arkid").empty();
     $("#mg_users").empty();
+    $("#mg_description").val("");
     $("#mg_agreement").attr("checked", false);
-    $("#mg_shoulderlist").val("");
+    $("#mg_shoulders").empty();
     $.ajax({ url: "/ezid/admin/groups", dataType: "json", cache: false,
       error: function () {
         $("#mg_select").html(
@@ -120,6 +148,7 @@ function manageGroup () {
           var s = $("#mg_select");
           s.empty();
           for (var i = 0; i < data.length; ++i) {
+            data[i].shoulderList = data[i].shoulderList.split(",");
             var o = "<option value='" + xmlEscape(data[i].dn) + "'";
             if (i == 0) o += " selected='selected'";
             o += ">" + xmlEscape(data[i].gid) + "</option>";
@@ -148,11 +177,37 @@ function selectGroup () {
 
 function updateGroup () {
   clearMessages();
+  var s = $("#mg_shoulders");
+  var v = s.val();
+  if (v == null) v = [];
+  var i = $.inArray("-", v);
+  if (i >= 0) {
+    v = v.slice(0);
+    v.splice(i, 1);
+  }
+  if (v.length == 0) {
+    addMessage("<span class='error'>At least one shoulder must be " +
+      "selected.</span>");
+    return false;
+  }
+  if (s.children()[0].value == "*") {
+    /* Special case for the admin user. */
+    if (v.length != 1 || v[0] != "*") {
+      addMessage("<span class='error'>The admin group's shoulders cannot be " +
+        "modified.</span>");
+      return false;
+    }
+  }
+  if ($.inArray("NONE", v) >= 0 && v.length > 1) {
+    addMessage("<span class='error'>Ambiguous shoulder choice.</span>");
+    return false;
+  }
   working(1);
   $.ajax({ type: "POST", dataType: "text", cache: false,
     data: { operation: "update_group", dn: $("#mg_select").val(),
+      description: $("#mg_description").val(),
       agreementOnFile: $("#mg_agreement").attr("checked"),
-      shoulderList: $("#mg_shoulderlist").val() },
+      shoulderList: v.join(",") },
     error: function () {
       working(-1);
       addMessage("<span class='error'>Internal server error.</span>");
@@ -160,6 +215,11 @@ function updateGroup () {
     success: function (response) {
       working(-1);
       if (response == "success") {
+        /* A successful update will not cause our internal data
+        structures (namely, the 'groups' array) to be updated.  For
+        now, to be safe, we simply close the section to force a reload
+        when the user re-opens it. */
+        if (manageGroupOpen) manageGroup();
         addMessage("<span class='success'>Group updated.</span>");
       } else {
         if (typeof(response) != "string" || response == "") {
@@ -538,6 +598,7 @@ $(document).ready(function () {
   $("#mg_switch").click(manageGroup);
   $("#mg_select").change(selectGroup);
   $("#mg_agreement").change(clearMessages);
+  $("#mg_shoulders").change(clearMessages);
   $("#mg_form").submit(updateGroup);
   $("#nu_switch").click(newUser);
   $("#nu_userselect").change(clearMessages);

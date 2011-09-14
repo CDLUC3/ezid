@@ -11,6 +11,13 @@ src="/ezid/static/jquery.autocomplete.js"></script>
 {% endblock %}
 
 {% block javascript %}
+shoulders = [
+{ label: "NONE", name: "NONE", prefix: "" }
+{% for s in shoulders %}
+, { label: "{{ s.label|escapejs }}", name: "{{ s.name|escapejs }}",
+prefix: "{{ s.prefix|escapejs }}" }
+{% endfor %}
+];
 defaultShoulders = "{{ defaultShoulders|escapejs }}";
 {% endblock %}
 
@@ -75,54 +82,43 @@ manage existing</a></p>
 <div id="mg_section" class="section">
 <form id="mg_form" action="null">
 <p>Manage an existing EZID group.  Due to session caching, if a
-group's shoulder list is changed, users in that group with open
-sessions will have to logout and login again to see the change.</p>
+group's shoulders are changed, users in that group with open sessions
+will have to logout and login again to see the change.</p>
 <table class="form">
 <tr>
 <th>Group</th>
-<td colspan="2">
+<td>
 <select id="mg_select">
 <option selected="selected">Loading groups...</option>
 </select>
 </td>
 </tr>
 <tr>
-<th>LDAP entry</th>
-<td id="mg_entry" colspan="2" class="value"></td>
-</tr>
-<tr>
 <th>ARK identifier</th>
-<td id="mg_arkid" colspan="2" class="value"></td>
+<td id="mg_arkid" class="value"></td>
 </tr>
 <tr>
 <th>Users</th>
-<td id="mg_users" colspan="2" class="value"></td>
+<td id="mg_users" class="value"></td>
+</tr>
+<tr class="multiline">
+<th>Description</th>
+<td><textarea id="mg_description" name="mg_description" rows="5"
+cols="40"></textarea></td>
 </tr>
 <tr>
 <th>Agreement on file</th>
-<td colspan="2"><input type="checkbox" id="mg_agreement"
-name="mg_agreement"/></td>
+<td><input type="checkbox" id="mg_agreement" name="mg_agreement"/></td>
 </tr>
-<tr>
-<th>Shoulder list</th>
-<td colspan="2"><input type="text" id="mg_shoulderlist" name="mg_shoulderlist"
-size="60"/></td>
-</tr>
-<tr>
-<td></td>
-<td class="gap"></td>
-<td class="note">Enter one or more shoulders separated by commas.
-Choose from:
-{% for s in shoulders %}
-<span class="shoulder">{{ s }}</span>{% if forloop.last %}.{% else %},
-{% endif %}
-{% endfor %}
-Or enter "NONE" to disable identifier creation.
+<tr class="multiline">
+<th>Shoulders</th>
+<td>
+<select multiple="multiple" id="mg_shoulders"></select>
 </td>
 </tr>
 <tr>
 <td></td>
-<td colspan="2"><input type="submit" value="Update"/></td>
+<td><input type="submit" value="Update"/></td>
 </tr>
 </table>
 </form>
@@ -178,7 +174,7 @@ manage existing</a></p>
 <p>Manage an existing EZID user.</p>
 <table class="form">
 <tr>
-<th>Username</th>
+<th>User</th>
 <td colspan="2">
 <input type="hidden" id="mu_uid" name="mu_uid"/>
 <input type="hidden" id="mu_currentlyEnabled" name="mu_currentlyEnabled"/>

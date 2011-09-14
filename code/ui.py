@@ -76,7 +76,9 @@ def _loadConfig ():
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
   _adminUsername = config.config("ldap.admin_username")
-  _shoulders = [k for k in config.config("prefixes.keys").split(",")\
+  _shoulders = [{ "label": k, "name": config.config("prefix_%s.name" % k),
+    "prefix": config.config("prefix_%s.prefix" % k) }\
+    for k in config.config("prefixes.keys").split(",")\
     if not k.startswith("TEST")]
   _defaultShoulders = config.config("prefixes.default_keys")
 
@@ -475,11 +477,12 @@ def admin (request, ssl=False):
       else:
         return _plainTextResponse("success")
     elif P["operation"] == "update_group":
-      if "dn" not in P or "agreementOnFile" not in P or\
+      if "dn" not in P or "description" not in P or\
+        "agreementOnFile" not in P or\
         P["agreementOnFile"].lower() not in ["true", "false"] or\
         "shoulderList" not in P:
         return _badRequest()
-      r = ezidadmin.updateGroup(P["dn"],
+      r = ezidadmin.updateGroup(P["dn"], P["description"].strip(),
         (P["agreementOnFile"].lower() == "true"), P["shoulderList"].strip(),
         request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:

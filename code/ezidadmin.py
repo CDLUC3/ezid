@@ -124,10 +124,10 @@ def getGroups ():
   occurs.  Each group is represented as a dictionary with keys 'dn',
   'gid' (selected from LDAP attributes gid or uid), 'arkId' (selected
   from LDAP attributes groupArkId or arkId), 'shoulderList',
-  'agreementOnFile' (a boolean), and 'users'.  The latter is a list of
-  the group's users; each user is represented as a dictionary with
-  keys 'dn' and 'uid'.  User lists are ordered by uid; the list of
-  groups as a whole is ordered by gid.
+  'description', 'agreementOnFile' (a boolean), and 'users'.  The
+  latter is a list of the group's users; each user is represented as a
+  dictionary with keys 'dn' and 'uid'.  User lists are ordered by uid;
+  the list of groups as a whole is ordered by gid.
   """
   if not _ldapEnabled: return "Functionality unavailable."
   l = None
@@ -159,10 +159,15 @@ def getGroups ():
       seenArkIds.add(d["arkId"])
       d["shoulderList"] = attrs["shoulderList"][0].decode("UTF-8")
       if d["gid"] == _adminUsername:
-        assert d["shoulderList"] == "*", "invalid admin shoulder list"
+        assert d["shoulderList"] == "*",\
+          "invalid EZID administrator shoulder list"
       else:
         d["shoulderList"] = _validateShoulderList(d["shoulderList"])
         assert d["shoulderList"] != None, "invalid shoulder list, DN='%s'" % dn
+      if "description" in attrs:
+        d["description"] = attrs["description"][0].decode("UTF-8")
+      else:
+        d["description"] = ""
       if "agreementOnFile" in attrs:
         d["agreementOnFile"] = (attrs["agreementOnFile"][0].lower() == "true")
       else:
@@ -340,7 +345,7 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
   finally:
     if l: l.unbind()
 
-def updateGroup (dn, agreementOnFile, shoulderList, user, group):
+def updateGroup (dn, description, agreementOnFile, shoulderList, user, group):
   """
   Updates an EZID group, returning None on success or a string message
   on error.  'dn' should be the group's LDAP entry's DN.  'user' and
@@ -350,8 +355,11 @@ def updateGroup (dn, agreementOnFile, shoulderList, user, group):
   """
   if not _ldapEnabled: return "Functionality unavailable."
   if len(shoulderList) == 0: return "Shoulder list required."
-  shoulderList = _validateShoulderList(shoulderList)
-  if shoulderList == None: return "Unrecognized shoulder."
+  if dn == _userDnTemplate % _adminUsername:
+    if shoulderList != "*": return "Administrator shoulder list must be '*'."
+  else:
+    shoulderList = _validateShoulderList(shoulderList)
+    if shoulderList == None: return "Unrecognized shoulder."
   l = None
   try:
     l = ldap.initialize(_ldapServer)
@@ -361,7 +369,7 @@ def updateGroup (dn, agreementOnFile, shoulderList, user, group):
     try:
       r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass",
         "agreementOnFile", "shoulderList", "uid", "gid", "arkId",
-        "groupArkId"])
+        "groupArkId", "description"])
     except ldap.NO_SUCH_OBJECT:
       # UI controls should prevent this from ever happening.
       return "No such LDAP entry."
@@ -372,10 +380,18 @@ def updateGroup (dn, agreementOnFile, shoulderList, user, group):
       ("gid" in r[0][1] or "uid" in r[0][1]) and\
       ("groupArkId" in r[0][1] or "arkId" in r[0][1]),\
       "missing required LDAP attribute, DN='%s'" % dn
+    if len(description) > 0:
+      dm = [(ldap.MOD_REPLACE if "description" in r[0][1] else ldap.MOD_ADD,
+        "description", description.encode("UTF-8"))]
+    else:
+      if "description" in r[0][1]:
+        dm = [(ldap.MOD_DELETE, "description", None)]
+      else:
+        dm = []
     l.modify_s(dn,
       [(ldap.MOD_REPLACE, "shoulderList", shoulderList.encode("UTF-8")),
       (ldap.MOD_REPLACE if "agreementOnFile" in r[0][1] else ldap.MOD_ADD,
-      "agreementOnFile", "true" if agreementOnFile else "false")])
+      "agreementOnFile", "true" if agreementOnFile else "false")] + dm)
     oldShoulderList = r[0][1]["shoulderList"][0].decode("UTF-8")
     if shoulderList != oldShoulderList:
       if "gid" in r[0][1]:
