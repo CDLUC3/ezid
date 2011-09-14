@@ -33,7 +33,10 @@ function makeGroup () {
     },
     success: function (response) {
       working(-1);
-      if (response == "success") {
+      if (response.substr(0, 9) == "success: ") {
+        if (newGroupOpen) newGroup();
+        if (manageGroupOpen) manageGroup(null);
+        manageGroup(response.substr(9));
         addMessage("<span class='success'>New group created.</span>");
       } else {
         if (typeof(response) != "string" || response == "") {
@@ -97,7 +100,7 @@ function setGroup (dn) {
   }
 }
 
-function manageGroup () {
+function manageGroup (newlyCreatedGroup) {
   clearMessages();
   if (manageGroupOpen) {
     groups = null;
@@ -121,28 +124,35 @@ function manageGroup () {
           "<option selected='selected'>Loading groups... failed</option>");
         addMessage("<span class='error'>Internal server error.</span>");
       },
-      success: function (data) {
-        if ($.isArray(data)) {
-          groups = data;
-          var s = $("#mg_select");
-          s.empty();
-          for (var i = 0; i < data.length; ++i) {
-            data[i].shoulderList = data[i].shoulderList.split(",");
-            var o = "<option value='" + xmlEscape(data[i].dn) + "'";
-            if (i == 0) o += " selected='selected'";
-            o += ">" + xmlEscape(data[i].gid) + "</option>";
-            s.append(o);
+      success: function (selectedGroup) {
+        return function (data) {
+          if ($.isArray(data)) {
+            groups = data;
+            var s = $("#mg_select");
+            s.empty();
+            var j;
+            for (var i = 0; i < data.length; ++i) {
+              data[i].shoulderList = data[i].shoulderList.split(",");
+              var o = "<option value='" + xmlEscape(data[i].dn) + "'";
+              if ((selectedGroup != null && data[i].dn == selectedGroup) ||
+                (selectedGroup == null && i == 0)) {
+                o += " selected='selected'";
+                j = i;
+              }
+              o += ">" + xmlEscape(data[i].gid) + "</option>";
+              s.append(o);
+            }
+            setGroup(data[j].dn);
+          } else {
+            $("#mg_select").html(
+              "<option selected='selected'>Loading groups... failed</option>");
+            if (typeof(data) != "string" || data == "") {
+              data = "Internal server error.";
+            }
+            addMessage("<span class='error'>" + xmlEscape(data) + "</span>");
           }
-          setGroup(data[0].dn);
-        } else {
-          $("#mg_select").html(
-            "<option selected='selected'>Loading groups... failed</option>");
-          if (typeof(data) != "string" || data == "") {
-            data = "Internal server error.";
-          }
-          addMessage("<span class='error'>" + xmlEscape(data) + "</span>");
         }
-      }
+      }(newlyCreatedGroup)
     });
   }
   manageGroupOpen = !manageGroupOpen;
@@ -198,7 +208,7 @@ function updateGroup () {
         structures (namely, the 'groups' array) to be updated.  For
         now, to be safe, we simply close the section to force a reload
         when the user re-opens it. */
-        if (manageGroupOpen) manageGroup();
+        if (manageGroupOpen) manageGroup(null);
         addMessage("<span class='success'>Group updated.</span>");
       } else {
         if (typeof(response) != "string" || response == "") {
@@ -574,7 +584,7 @@ $(document).ready(function () {
   $("textarea").keydown(clearMessages);
   $("#ng_switch").click(newGroup);
   $("#ng_form").submit(makeGroup);
-  $("#mg_switch").click(manageGroup);
+  $("#mg_switch").click(function () { return manageGroup(null); });
   $("#mg_select").change(selectGroup);
   $("#mg_agreement").change(clearMessages);
   $("#mg_shoulders").change(clearMessages);

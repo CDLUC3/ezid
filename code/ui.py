@@ -471,7 +471,7 @@ def admin (request, ssl=False):
       if type(r) is str:
         return _plainTextResponse(r)
       else:
-        return _plainTextResponse("success")
+        return _plainTextResponse("success: " + dn)
     elif P["operation"] == "update_group":
       if "dn" not in P or "description" not in P or\
         "agreementOnFile" not in P or\
