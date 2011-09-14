@@ -87,7 +87,7 @@ will have to logout and login again to see the change.</p>
 <table class="form">
 <tr>
 <th>Group</th>
-<td>
+<td colspan="2">
 <select id="mg_select">
 <option selected="selected">Loading groups...</option>
 </select>
@@ -95,30 +95,36 @@ will have to logout and login again to see the change.</p>
 </tr>
 <tr>
 <th>ARK identifier</th>
-<td id="mg_arkid" class="value"></td>
+<td colspan="2" id="mg_arkid" class="value"></td>
 </tr>
 <tr>
 <th>Users</th>
-<td id="mg_users" class="value"></td>
+<td colspan="2" id="mg_users" class="value"></td>
 </tr>
 <tr class="multiline">
 <th>Description</th>
-<td><textarea id="mg_description" name="mg_description" rows="5"
+<td colspan="2"><textarea id="mg_description" name="mg_description" rows="5"
 cols="40"></textarea></td>
 </tr>
 <tr>
 <th>Agreement on file</th>
-<td><input type="checkbox" id="mg_agreement" name="mg_agreement"/></td>
+<td colspan="2"><input type="checkbox" id="mg_agreement"
+name="mg_agreement"/></td>
 </tr>
 <tr class="multiline">
 <th>Shoulders</th>
-<td>
+<td colspan="2">
 <select multiple="multiple" id="mg_shoulders"></select>
 </td>
 </tr>
 <tr>
 <td></td>
-<td><input type="submit" value="Update"/></td>
+<td class="gap"></td>
+<td class="note">Select "NONE" to disable identifier creation.</td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2"><input type="submit" value="Update"/></td>
 </tr>
 </table>
 </form>
