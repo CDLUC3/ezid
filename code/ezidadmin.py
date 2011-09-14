@@ -38,6 +38,7 @@ _ldapServer = None
 _baseDn = None
 _userDnTemplate = None
 _userDnPattern = None
+_groupDnTemplate = None
 _adminUsername = None
 _adminPassword = None
 _ldapAdminDn = None
@@ -49,8 +50,8 @@ _statusProbes = None
 
 def _loadConfig ():
   global _ldapEnabled, _ldapServer, _baseDn, _userDnTemplate, _userDnPattern
-  global _adminUsername, _adminPassword, _ldapAdminDn, _ldapAdminPassword
-  global _shoulders, _agentPrefix, _statusProbes
+  global _groupDnTemplate, _adminUsername, _adminPassword, _ldapAdminDn
+  global _ldapAdminPassword, _shoulders, _agentPrefix, _statusProbes
   _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
   _ldapServer = config.config("ldap.server")
   _baseDn = config.config("ldap.base_dn")
@@ -58,6 +59,7 @@ def _loadConfig ():
   i = _userDnTemplate.find("%s")
   _userDnPattern = re.compile(re.escape(_userDnTemplate[:i]) + ".*" +\
     re.escape(_userDnTemplate[i+2:]) + "$")
+  _groupDnTemplate = config.config("ldap.group_dn_template")
   _adminUsername = config.config("ldap.admin_username")
   _adminPassword = config.config("ldap.admin_password")
   _ldapAdminDn = config.config("ldap.ldap_admin_dn")
@@ -282,6 +284,38 @@ def _cacheLdapInformation (l, dn, arkId, user, group):
       d["ldap." + a] = " ; ".join(v.decode("UTF-8") for v in attrs[a])
   r = ezid.setMetadata(arkId, user, group, d)
   assert r.startswith("success:"), "ezid.setMetadata failed: " + r
+
+def makeLdapGroup (gid):
+  """
+  Creates an LDAP entry of class 'organization', in the
+  _groupDnTemplate hierarchy, having name 'gid'.  Returns a 1-tuple
+  containing the new DN on success or a string message on error.
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  # For EZID's purposes the critical characters to exclude from group
+  # names are the list delimiters used in various places: spaces,
+  # semicolons, and pipes.  But for good citizenship we're much more
+  # restrictive than that.
+  if not re.match("[a-z0-9]+([-_.][a-z0-9]+)*$", gid, re.I):
+    return "Invalid group name."
+  # Remove any Unicode-ness for LDAP's sake.
+  gid = str(gid)
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    # The operation below requires binding as a privileged LDAP user.
+    l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
+    dn = _groupDnTemplate % ldap.dn.escape_dn_chars(gid)
+    try:
+      l.add_s(dn, [("objectClass", "organization"), ("o", gid)])
+    except ldap.ALREADY_EXISTS:
+      return "Group name already in use."
+    return (dn,)
+  except Exception, e:
+    log.otherError("ezidadmin.makeLdapGroup", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
 
 def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
   """

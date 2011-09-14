@@ -8,7 +8,6 @@ var newGroupOpen = false;
 function newGroup () {
   clearMessages();
   if (newGroupOpen) {
-    $("#ng_entry").flushCache();
     $("#ng_section").hide();
     $("#ng_open").hide();
     $("#ng_close").show();
@@ -16,29 +15,8 @@ function newGroup () {
     $("#ng_close").hide();
     $("#ng_open").show();
     $("#ng_section").show();
-    $("#ng_entry").val("Loading entries...");
     $("#ng_gid").val("");
-    $("#ng_agreement").attr("checked", false);
-    $("#ng_shoulderlist").val(defaultShoulders);
-    $.ajax({ url: "/ezid/admin/entries", dataType: "json", cache: false,
-      error: function () {
-        $("#ng_entry").val("Loading entries... failed");
-        addMessage("<span class='error'>Internal server error.</span>");
-      },
-      success: function (data) {
-        if ($.isArray(data)) {
-          $("#ng_entry").autocomplete(data, { matchContains: true });
-          $("#ng_entry").val("Type any substring of the entry's DN");
-          $("#ng_entry").select();
-        } else {
-          $("#ng_entry").val("Loading entries... failed");
-          if (typeof(data) != "string" || data == "") {
-            data = "Internal server error.";
-          }
-          addMessage("<span class='error'>" + xmlEscape(data) + "</span>");
-        }
-      }
-    });
+    $("#ng_gid").select();
   }
   newGroupOpen = !newGroupOpen;
   return false;
@@ -48,10 +26,7 @@ function makeGroup () {
   clearMessages();
   working(1);
   $.ajax({ type: "POST", dataType: "text", cache: false,
-    data: { operation: "make_group", dn: $("#ng_entry").val(),
-      gid: $("#ng_gid").val(),
-      agreementOnFile: $("#ng_agreement").attr("checked"),
-      shoulderList: $("#ng_shoulderlist").val() },
+    data: { operation: "make_group", gid: $("#ng_gid").val() },
     error: function () {
       working(-1);
       addMessage("<span class='error'>Internal server error.</span>");
@@ -80,8 +55,12 @@ function setGroup (dn) {
       $("#mg_arkid").html("<a href='/ezid/id/" +
         xmlEscape(encodeURI(groups[i].arkId)) + "'>" +
         xmlEscape(groups[i].arkId) + "</a>");
-      $("#mg_users").html($.map(groups[i].users,
-        function (u) { return xmlEscape(u.uid); }).join(", "));
+      if (groups[i].users.length > 0) {
+        $("#mg_users").html($.map(groups[i].users,
+          function (u) { return xmlEscape(u.uid); }).join(", "));
+      } else {
+        $("#mg_users").html("(none)");
+      }
       $("#mg_description").val(groups[i].description);
       $("#mg_agreement").attr("checked", groups[i].agreementOnFile);
       var s = $("#mg_shoulders");
@@ -251,6 +230,7 @@ function newUser () {
       "<option selected='selected'>Loading LDAP users...</option>");
     $("#nu_groupselect").html(
       "<option selected='selected'>Loading groups...</option>");
+    $("#nu_uid").select();
     $.ajax({ url: "/ezid/admin/entries?usersOnly=true&nonEzidUsersOnly=true",
       dataType: "json", cache: false,
       error: function () {
@@ -593,7 +573,6 @@ $(document).ready(function () {
   $("input").keydown(clearMessages);
   $("textarea").keydown(clearMessages);
   $("#ng_switch").click(newGroup);
-  $("#ng_agreement").change(clearMessages);
   $("#ng_form").submit(makeGroup);
   $("#mg_switch").click(manageGroup);
   $("#mg_select").change(selectGroup);

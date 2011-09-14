@@ -45,12 +45,11 @@ _defaultDoiProfile = None
 _defaultArkProfile = None
 _adminUsername = None
 _shoulders = None
-_defaultShoulders = None
 
 def _loadConfig ():
   global _ezidUrl, _templates, _alertMessage, _prefixes, _testPrefixes
   global _testDoiPrefix, _defaultDoiProfile, _defaultArkProfile, _adminUsername
-  global _shoulders, _defaultShoulders
+  global _shoulders
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   t = {}
   for f in os.listdir(django.conf.settings.TEMPLATE_DIRS[0]):
@@ -80,7 +79,6 @@ def _loadConfig ():
     "prefix": config.config("prefix_%s.prefix" % k) }\
     for k in config.config("prefixes.keys").split(",")\
     if not k.startswith("TEST")]
-  _defaultShoulders = config.config("prefixes.default_keys")
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -459,18 +457,16 @@ def admin (request, ssl=False):
     request.session["auth"].user[0] != _adminUsername:
     return _unauthorized()
   if request.method == "GET":
-    return _render(request, "admin", { "shoulders": _shoulders,
-      "defaultShoulders": _defaultShoulders })
+    return _render(request, "admin", { "shoulders": _shoulders })
   elif request.method == "POST":
     P = request.POST
     if "operation" not in P: return _badRequest()
     if P["operation"] == "make_group":
-      if "dn" not in P or "gid" not in P or "agreementOnFile" not in P\
-        or P["agreementOnFile"].lower() not in ["true", "false"] or\
-        "shoulderList" not in P:
-        return _badRequest()
-      r = ezidadmin.makeGroup(P["dn"].strip(), P["gid"].strip(),
-        (P["agreementOnFile"].lower() == "true"), P["shoulderList"].strip(),
+      if "gid" not in P: return _badRequest()
+      r = ezidadmin.makeLdapGroup(P["gid"].strip())
+      if type(r) is str: return _plainTextResponse(r)
+      dn = r[0]
+      r = ezidadmin.makeGroup(dn, P["gid"].strip(), False, "NONE",
         request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:
         return _plainTextResponse(r)
@@ -533,8 +529,7 @@ def admin (request, ssl=False):
       f.write(m)
       f.close()
       _alertMessage = m
-      return _render(request, "admin", { "shoulders": _shoulders,
-        "defaultShoulders": _defaultShoulders })
+      return _render(request, "admin", { "shoulders": _shoulders })
     else:
       return _badRequest()
   else:

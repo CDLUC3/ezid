@@ -3,10 +3,6 @@
 {% block title %}EZID : Admin{% endblock %}
 
 {% block header %}
-<link rel="stylesheet" type="text/css"
-href="/ezid/static/jquery.autocomplete.css"/>
-<script type="text/javascript"
-src="/ezid/static/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="/ezid/static/admin.js"></script>
 {% endblock %}
 
@@ -18,7 +14,6 @@ shoulders = [
 prefix: "{{ s.prefix|escapejs }}" }
 {% endfor %}
 ];
-defaultShoulders = "{{ defaultShoulders|escapejs }}";
 {% endblock %}
 
 {% block admintab %}active{% endblock %}
@@ -32,44 +27,16 @@ make new</a></p>
 
 <div id="ng_section" class="section">
 <form id="ng_form" action="null">
-<p>Make an existing LDAP entry (person, institution, etc.) an EZID
-group.</p>
+<p>Make a new EZID group.</p>
 <table class="form">
 <tr>
-<th>LDAP entry</th>
-<td colspan="2"><input type="text" id="ng_entry" name="ng_entry"
-size="60"/></td>
-</tr>
-<tr>
 <th>Group name</th>
-<td colspan="2"><input type="text" id="ng_gid" name="ng_gid" size="20"/>
+<td><input type="text" id="ng_gid" name="ng_gid" size="20"/>
 <span class="note">E.g., "labarchives"</span></td>
 </tr>
 <tr>
-<th>Agreement on file</th>
-<td colspan="2"><input type="checkbox" id="ng_agreement"
-name="ng_agreement"/></td>
-</tr>
-<tr>
-<th>Shoulder list</th>
-<td colspan="2"><input type="text" id="ng_shoulderlist" name="ng_shoulderlist"
-size="60"/></td>
-</tr>
-<tr>
 <td></td>
-<td class="gap"></td>
-<td class="note">Enter one or more shoulders separated by commas.
-Choose from:
-{% for s in shoulders %}
-<span class="shoulder">{{ s }}</span>{% if forloop.last %}.{% else %},
-{% endif %}
-{% endfor %}
-Or enter "NONE" to disable identifier creation.
-</td>
-</tr>
-<tr>
-<td></td>
-<td colspan="2"><input type="submit" value="Make group"/></td>
+<td><input type="submit" value="Make group"/></td>
 </tr>
 </table>
 </form>
