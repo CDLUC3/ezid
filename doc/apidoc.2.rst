@@ -455,9 +455,9 @@ interaction creating a DOI identifier:
 
   |lArr| HTTP/1.1 201 CREATED
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 46
+  |lArr| Content-Length: 43
   |lArr|
-  |lArr| success: doi:10.9999/TEST | ark:/99999/fk4test
+  |lArr| success: doi:10.9999/TEST | ark:/b9999/test
 
 Operation: mint identifier
 --------------------------
