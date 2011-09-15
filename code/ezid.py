@@ -261,7 +261,7 @@ def createDoi (doi, user, group, target=None):
     if not policy.authorizeCreate(user, group, qdoi):
       log.unauthorized(tid)
       return "error: unauthorized"
-    if _bindNoid.identifierExists(shadowArk) or datacite.identifierExists(doi):
+    if _bindNoid.identifierExists(shadowArk):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     if not target: target = "%s/id/%s" % (_ezidUrl, urllib.quote(qdoi, ":/"))

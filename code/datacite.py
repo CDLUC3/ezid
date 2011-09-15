@@ -224,10 +224,6 @@ def uploadMetadata (doi, current, delta):
   finally:
     if c: c.close()
 
-def identifierExists (doi):
-  # TBD
-  return False
-
 def ping ():
   """
   Tests the DataCite API, returning "up" or "down".
