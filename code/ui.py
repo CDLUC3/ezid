@@ -40,7 +40,6 @@ _templates = None
 _alertMessage = None
 _prefixes = None
 _testPrefixes = None
-_testDoiPrefix = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
 _adminUsername = None
@@ -48,8 +47,7 @@ _shoulders = None
 
 def _loadConfig ():
   global _ezidUrl, _templates, _alertMessage, _prefixes, _testPrefixes
-  global _testDoiPrefix, _defaultDoiProfile, _defaultArkProfile, _adminUsername
-  global _shoulders
+  global _defaultDoiProfile, _defaultArkProfile, _adminUsername, _shoulders
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   t = {}
   for f in os.listdir(django.conf.settings.TEMPLATE_DIRS[0]):
@@ -71,7 +69,6 @@ def _loadConfig ():
   _testPrefixes = [{ "namespace": config.config("prefix_%s.name" % k),
     "prefix": config.config("prefix_%s.prefix" % k) }\
     for k in keys if k.startswith("TEST")]
-  _testDoiPrefix = config.config("prefix_TESTDOI.prefix")
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
   _adminUsername = config.config("ldap.admin_username")
@@ -320,9 +317,7 @@ def identifierDispatcher (request):
     # The internal profile requires lots of customization.
     if id.startswith("doi:"):
       ip["_urlform"].value = "http://dx.doi.org/" + urllib.quote(id[4:], ":/")
-      if id.startswith(_testDoiPrefix):
-        ip["_urlform"].note = "(test identifier; link will not work)"
-      elif int(time.time())-int(m["_created"]) < 1800:
+      if int(time.time())-int(m["_created"]) < 1800:
         ip["_urlform"].note = "(may take 30 minutes for link to work)"
     elif id.startswith("ark:/"):
       ip["_urlform"].value = "http://n2t.net/" + urllib.quote(id, ":/")

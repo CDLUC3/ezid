@@ -97,8 +97,7 @@ function saveEdit (table, fieldName) {
       working(-1);
       if (response == "success") {
         displayValue(table, fieldName, xmlEscape(value));
-        if (fieldName == "_target" && identifier.match(/^doi:/) &&
-          !$("#urlformnote").html().match(/^\(test/)) {
+        if (fieldName == "_target" && identifier.match(/^doi:/)) {
           $("#urlformnote").html(
             "(may take 30 minutes for link to be updated)");
         }

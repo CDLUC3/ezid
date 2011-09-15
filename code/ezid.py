@@ -130,12 +130,11 @@ _ezidUrl = None
 _prefixes = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
-_testDoiPrefix = None
 _adminUsername = None
 
 def _loadConfig ():
   global _bindNoid, _ezidUrl, _prefixes, _defaultDoiProfile, _defaultArkProfile
-  global _testDoiPrefix, _adminUsername
+  global _adminUsername
   _bindNoid = noid.Noid(config.config("DEFAULT.bind_noid"))
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _prefixes = dict([config.config("prefix_%s.prefix" % k),
@@ -143,7 +142,6 @@ def _loadConfig ():
     for k in config.config("prefixes.keys").split(","))
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
-  _testDoiPrefix = config.config("prefix_TESTDOI.prefix")
   _adminUsername = config.config("ldap.admin_username")
 
 _loadConfig()
@@ -221,12 +219,6 @@ def mintDoi (prefix, user, group, target=None):
       log.badRequest(tid)
       return "error: bad request - no minter for namespace"
     shadowArk = _prefixes[qprefix].mintIdentifier()
-    # The following is, well, a hack.  To avoid using separate minters
-    # for test ARKs and test DOIs, we use the test ARK minter for both
-    # and exploit a similarity between the two prefixes.  Should that
-    # similarity cease to be true someday, one of the assertions below
-    # will fail and this code will have to be rewritten.
-    if qprefix == _testDoiPrefix: shadowArk = "b" + shadowArk[1:]
     doi = util.shadow2doi(shadowArk)
     assert doi.startswith(prefix), "minted DOI does not match requested prefix"
     assert util.doi2shadow(doi) == shadowArk,\
@@ -275,8 +267,7 @@ def createDoi (doi, user, group, target=None):
     if not target: target = "%s/id/%s" % (_ezidUrl, urllib.quote(qdoi, ":/"))
     arkTarget = "%s/id/%s" % (_ezidUrl,
       urllib.quote("ark:/" + shadowArk, ":/"))
-    if not qdoi.startswith(_testDoiPrefix):
-      datacite.registerIdentifier(doi, target)
+    datacite.registerIdentifier(doi, target)
     _bindNoid.holdIdentifier(shadowArk)
     t = str(int(time.time()))
     _bindNoid.setElements(shadowArk,
@@ -638,9 +629,8 @@ def setMetadata (identifier, user, group, metadata):
       if "_target" in metadata:
         target = metadata["_target"]
         del metadata["_target"]
-        if not nqidentifier.startswith(_testDoiPrefix):
-          datacite.setTargetUrl(doi, target)
-      if len(metadata) > 0 and not nqidentifier.startswith(_testDoiPrefix):
+        datacite.setTargetUrl(doi, target)
+      if len(metadata) > 0:
         message = datacite.uploadMetadata(doi, m, metadata)
         if message is not None:
           log.badRequest(tid)
@@ -653,8 +643,7 @@ def setMetadata (identifier, user, group, metadata):
       if "_target" in metadata:
         target = metadata["_target"]
         del metadata["_target"]
-      if "_s" in m and m["_s"].startswith("doi:") and len(metadata) > 0 and\
-        not m["_s"].startswith(_testDoiPrefix):
+      if "_s" in m and m["_s"].startswith("doi:") and len(metadata) > 0:
         message = datacite.uploadMetadata(m["_s"][4:], m, metadata)
         if message is not None:
           log.badRequest(tid)
