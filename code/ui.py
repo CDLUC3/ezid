@@ -318,7 +318,7 @@ def identifierDispatcher (request):
     if id.startswith("doi:"):
       ip["_urlform"].value = "http://dx.doi.org/" + urllib.quote(id[4:], ":/")
       if int(time.time())-int(m["_created"]) < 1800:
-        ip["_urlform"].note = "(may take 30 minutes for link to work)"
+        ip["_urlform"].note = "(takes up to 30 minutes for link to work)"
     elif id.startswith("ark:/"):
       ip["_urlform"].value = "http://n2t.net/" + urllib.quote(id, ":/")
     else:

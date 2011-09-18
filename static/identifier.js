@@ -99,7 +99,7 @@ function saveEdit (table, fieldName) {
         displayValue(table, fieldName, xmlEscape(value));
         if (fieldName == "_target" && identifier.match(/^doi:/)) {
           $("#urlformnote").html(
-            "(may take 30 minutes for link to be updated)");
+            "(takes up to 30 minutes for link to be updated)");
         }
         addMessage("<span class='success'>Changes saved.</span>");
       } else {
