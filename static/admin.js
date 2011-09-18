@@ -55,12 +55,27 @@ var groups = null;
 function setGroup (dn) {
   for (var i = 0; i < groups.length; ++i) {
     if (groups[i].dn == dn) {
+      if ($("#mg_select").attr("selectedIndex") != i) {
+        $("#mg_select").attr("selectedIndex", i);
+      }
       $("#mg_arkid").html("<a href='/ezid/id/" +
         xmlEscape(encodeURI(groups[i].arkId)) + "'>" +
         xmlEscape(groups[i].arkId) + "</a>");
       if (groups[i].users.length > 0) {
-        $("#mg_users").html($.map(groups[i].users,
-          function (u) { return xmlEscape(u.uid); }).join(", "));
+        var u = $("#mg_users");
+        u.empty();
+        for (var j = 0; j < groups[i].users.length; ++j) {
+          var a = $("<a href='#'>" + xmlEscape(groups[i].users[j].uid) +
+            "</a>");
+          a.click(function (dn) {
+            return function () {
+              jumpToUser(dn);
+              return false;
+            }
+          }(groups[i].users[j].dn));
+          u.append(a);
+          if (j < groups[i].users.length-1) u.append(", ");
+        }
       } else {
         $("#mg_users").html("(none)");
       }
@@ -162,6 +177,16 @@ function manageGroup (newlyCreatedGroup) {
 function selectGroup () {
   clearMessages();
   setGroup($("#mg_select").val());
+}
+
+function jumpToGroup (dn) {
+  clearMessages();
+  if (manageUserOpen) manageUser(null);
+  if (manageGroupOpen) {
+    setGroup(dn);
+  } else {
+    manageGroup(dn);
+  }
 }
 
 function updateGroup () {
@@ -340,12 +365,23 @@ var users = null;
 function setUser (dn) {
   for (var i = 0; i < users.length; ++i) {
     if (users[i].dn == dn) {
+      if ($("#mu_select").attr("selectedIndex") != i) {
+        $("#mu_select").attr("selectedIndex", i);
+      }
       $("#mu_uid").val(users[i].uid);
       $("#mu_currentlyEnabled").val(users[i].currentlyEnabled);
       $("#mu_arkid").html("<a href='/ezid/id/" +
         xmlEscape(encodeURI(users[i].arkId)) + "'>" +
         xmlEscape(users[i].arkId) + "</a>");
-      $("#mu_gid").html(xmlEscape(users[i].groupGid));
+      $("#mu_gid").empty();
+      var a = $("<a href='#'>" + xmlEscape(users[i].groupGid) + "</a>");
+      a.click(function (dn) {
+        return function () {
+          jumpToGroup(dn);
+          return false;
+        }
+      }(users[i].groupDn));
+      $("#mu_gid").append(a);
       $("#mu_givenName").val(users[i].givenName);
       $("#mu_sn").val(users[i].sn);
       $("#mu_mail").val(users[i].mail);
@@ -427,6 +463,16 @@ function manageUser (newlyCreatedUser) {
 function selectUser () {
   clearMessages();
   setUser($("#mu_select").val());
+}
+
+function jumpToUser (dn) {
+  clearMessages();
+  if (manageGroupOpen) manageGroup(null);
+  if (manageUserOpen) {
+    setUser(dn);
+  } else {
+    manageUser(dn);
+  }
 }
 
 /* Extracted from the jQuery validation plugin,
