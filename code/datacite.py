@@ -18,13 +18,16 @@
 
 import base64
 import django.conf
-import lxml.etree
 import os.path
 import re
 import urllib2
 import xml.sax.saxutils
 
 import config
+
+# Temporary patch for the workflow EZID instance.  Remove as soon as
+# lxml is installed on that machine.
+if config.config("DEFAULT.lxml_available").lower() == "true": import lxml.etree
 
 _enabled = None
 _doiUrl = None
@@ -40,8 +43,9 @@ def _loadConfig ():
   datacenter = config.config("datacite.datacenter")
   password = config.config("datacite.password")
   _auth = "Basic " + base64.b64encode(datacenter + ":" + password)
-  _stylesheet = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
-    django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
+  if config.config("DEFAULT.lxml_available").lower() == "true":
+    _stylesheet = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
+      django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -112,6 +116,8 @@ def validateDcmsRecord (identifier, record):
         record[len(m.group(1))+len(m.group(3)):]
   else:
     record = "<?xml version=\"1.0\"?>\n" + record
+  if config.config("DEFAULT.lxml_available").lower() != "true":
+    assert False, "lxml not installed"
   try:
     root = lxml.etree.XML(record)
   except Exception, e:
