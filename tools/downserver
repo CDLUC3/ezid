@@ -1,0 +1,116 @@
+#! /usr/bin/python
+
+# Standalone server that mimics EZID, but only indicates that the
+# system is down.  Specifically, all UI requests, regardless of HTTP
+# method, return a 200 OK status and an HTML page containing the
+# message "EZID is down for maintenance".  The /ezid/status API
+# request returns a 200 OK status and the plain text response
+# "success: EZID is down for maintenance"; all other API requests,
+# regardless of HTTP method, return a 500 Internal Server Error status
+# and the plain text response "error: EZID is down for maintenance".
+# In all cases, a different message may be specified on the command
+# line.  Usage:
+#
+#    downserver host port [message]
+#
+# If a file logo.png is found in the same directory as this script,
+# the image is inserted in the HTML page.
+#
+# Limitation: SSL is not handled in any way.
+#
+# Greg Janee <gjanee@ucop.edu>
+# September 2011
+
+import BaseHTTPServer
+import os.path
+import re
+import SocketServer
+import sys
+import xml.sax.saxutils
+
+document = """<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>EZID</title>
+<style type="text/css">
+body { text-align: center; margin-top: 5em; font-family: Helvetica, sans-serif;
+  font-weight: bold }
+p.big { font-size: 200%% }
+</style>
+</head>
+<body>
+%s<p class="big">%s</p>
+<p>EZID's regularly scheduled maintenance window is Sunday <a
+href="http://www.thetimezoneconverter.com/?t=8:00pm&amp;tz=Oakland">8:00pm</a>&ndash;<a
+href="http://www.thetimezoneconverter.com/?t=9:00pm&amp;tz=Oakland">9:00pm</a>
+Pacific time.</p>
+</body>
+</html>
+"""
+
+if len(sys.argv) not in [3, 4] or not re.match("\d+$", sys.argv[2]):
+  sys.stderr.write("Usage: downserver host port [message]\n")
+  sys.exit(1)
+host = sys.argv[1]
+port = int(sys.argv[2])
+if len(sys.argv) == 4:
+  message = sys.argv[3]
+else:
+  message = "EZID is down for maintenance"
+
+logoPath = os.path.join(os.path.split(sys.argv[0])[0], "logo.png")
+if os.path.exists(logoPath):
+  f = open(logoPath)
+  logo = f.read()
+  f.close()
+  logoLink = "<p><img src=\"logo.png\" alt=\"EZID\"/></p>\n"
+else:
+  logo = None
+  logoLink = ""
+
+document = document % (logoLink, xml.sax.saxutils.escape(message))
+
+# The following two functions are copied from dispatch.py:
+
+def htmlWanted (acceptHeader):
+  for mt in acceptHeader.split(","):
+    if mt.split(";")[0].strip() in ["text/html", "application/xml",
+      "application/xhtml+xml"]:
+      return True
+  return False
+
+def isUiRequest (headers):
+  return ("user-agent" in headers and "Mozilla" in headers["user-agent"]) or\
+    ("accept" in headers and htmlWanted(headers["accept"]))
+
+class MyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
+  def sendResponse (self, status, type, length, content):
+    self.send_response(status)
+    self.send_header("Content-Type", type)
+    self.send_header("Content-Length", length)
+    self.end_headers()
+    self.wfile.write(content)
+    self.wfile.flush()
+  def do_GET (self):
+    if self.command == "GET" and self.path == "/ezid/status":
+      self.sendResponse(200, "text/plain", len(message)+9,
+        "success: " + message)
+    elif not isUiRequest(self.headers):
+      self.sendResponse(500, "text/plain", len(message)+7, "error: " + message)
+    elif self.command == "GET" and self.path.endswith("/logo.png") and\
+      logo is not None:
+      self.sendResponse(200, "image/png", len(logo), logo)
+    else:
+      self.sendResponse(200, "text/html", len(document), document)
+  do_DELETE = do_GET
+  do_HEAD = do_GET
+  do_POST = do_GET
+  do_PUT = do_GET
+
+class MyServer (SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
+  pass
+
+server = MyServer((host, port), MyHandler)
+server.serve_forever()
