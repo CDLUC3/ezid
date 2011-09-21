@@ -32,17 +32,24 @@ if config.config("DEFAULT.lxml_available").lower() == "true": import lxml.etree
 _enabled = None
 _doiUrl = None
 _metadataUrl = None
-_auth = None
+_datacenters = None
+_prefixes = None
 _stylesheet = None
 
 def _loadConfig ():
-  global _enabled, _doiUrl, _metadataUrl, _auth, _stylesheet
+  global _enabled, _doiUrl, _metadataUrl, _datacenters, _prefixes, _stylesheet
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
-  datacenter = config.config("datacite.datacenter")
-  password = config.config("datacite.password")
-  _auth = "Basic " + base64.b64encode(datacenter + ":" + password)
+  _datacenters = {}
+  for dc in config.config("datacite.datacenters").split(","):
+    _datacenters[dc] = "Basic " +\
+      base64.b64encode(config.config("datacenter_%s.name" % dc) + ":" +\
+      config.config("datacenter_%s.password" % dc))
+  _prefixes = dict((config.config("prefix_%s.prefix" % k)[4:],
+    config.config("prefix_%s.datacenter" % k))\
+    for k in config.config("prefixes.keys").split(",")\
+    if config.config("prefix_%s.prefix" % k).startswith("doi:"))
   if config.config("DEFAULT.lxml_available").lower() == "true":
     _stylesheet = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
       django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
@@ -59,6 +66,13 @@ class _HTTPErrorProcessor (urllib2.HTTPErrorProcessor):
       return urllib2.HTTPErrorProcessor.http_response(self, request, response)
   https_response = http_response
 
+def _datacenterAuthorization (doi):
+  dcl = []
+  for p, dc in _prefixes.items():
+    if doi.startswith(p): dcl.append(dc)
+  assert len(dcl) == 1, "ambiguous prefix or prefix not found"
+  return _datacenters[dcl[0]]
+
 def registerIdentifier (doi, targetUrl):
   """
   Registers a scheme-less DOI identifier (e.g., "10.5060/foo") and
@@ -73,7 +87,7 @@ def registerIdentifier (doi, targetUrl):
   # We manually supply the HTTP Basic authorization header to avoid
   # the doubling of the number of HTTP transactions caused by the
   # challenge/response model.
-  r.add_header("Authorization", _auth)
+  r.add_header("Authorization", _datacenterAuthorization(doi))
   r.add_header("Content-Type", "text/plain; charset=UTF-8")
   r.add_data(("doi=%s\nurl=%s" % (doi, targetUrl)).encode("UTF-8"))
   c = o.open(r)
@@ -211,7 +225,7 @@ def uploadMetadata (doi, current, delta):
   # We manually supply the HTTP Basic authorization header to avoid
   # the doubling of the number of HTTP transactions caused by the
   # challenge/response model.
-  r.add_header("Authorization", _auth)
+  r.add_header("Authorization", _datacenterAuthorization(doi))
   r.add_header("Content-Type", "application/xml; charset=UTF-8")
   r.add_data(newRecord.encode("UTF-8"))
   c = None
@@ -235,7 +249,7 @@ def ping ():
   Tests the DataCite API, returning "up" or "down".
   """
   try:
-    registerIdentifier("10.5072/cdl_status_check", "http://www.cdlib.org/")
+    registerIdentifier("10.5072/FK2_cdl_status_check", "http://www.cdlib.org/")
   except Exception, e:
     return "down"
   else:
