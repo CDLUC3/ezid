@@ -12,7 +12,7 @@
 import re
 import sys
 
-testDoiPrefix = "10.9999/"
+testDoiPrefix = "10.5072/FK2"
 testArkPrefix = "99999/fk4"
 
 def error (file, lineNo, message):
