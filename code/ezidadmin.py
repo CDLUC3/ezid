@@ -395,7 +395,10 @@ def updateGroup (dn, description, agreementOnFile, shoulderList, user, group):
   if not _ldapEnabled: return "Functionality unavailable."
   if not _updatesEnabled: return "Prohibited by configuration."
   if len(shoulderList) == 0: return "Shoulder list required."
-  if dn == _userDnTemplate % _adminUsername:
+  # Technically the following test is a bug, as it assumes that the
+  # admin group's LDAP entry resides within _groupDnTemplate, an
+  # assumption that is made nowhere else.
+  if dn == _groupDnTemplate % _adminUsername:
     if shoulderList != "*": return "Administrator shoulder list must be '*'."
   else:
     shoulderList = _validateShoulderList(shoulderList)
