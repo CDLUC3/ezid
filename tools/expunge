@@ -18,8 +18,11 @@
 #     k: print _c bindings of test identifiers to be kept
 #     e: print _c bindings of expired test identifiers
 #
-# Note that this script requires several EZID modules; the PYTHONPATH
-# environment variable must be set accordingly.
+# Note that this script requires several EZID modules.  The
+# DJANGO_SETTINGS_MODULE environment variable must be set
+# appropriately (e.g., to "settings.production") and the PYTHONPATH
+# environment variable must be set to the .../SITE_ROOT/PROJECT_ROOT
+# directory.
 #
 # Greg Janee <gjanee@ucop.edu>
 # April 2011
@@ -28,13 +31,23 @@ import bsddb.db
 import re
 import sys
 import time
+import urllib
 
+# Bootstrapping: reference a(ny) Django setting to trigger the loading
+# of said settings, which causes the PYTHONPATH to be modified,
+# supporting subsequent imports.
+import django.conf
+django.conf.settings.PROJECT_ROOT
+
+import config
+import datacite
 import noid
 import util
 
-testArkPrefix = "99999/fk4"
-testDoiPrefix = "b9999/"
+testArkPrefix = config.config("prefix_TESTARK.prefix")[5:]
+testDoiPrefix = util.doi2shadow(config.config("prefix_TESTDOI.prefix")[4:])
 lifetime = 72*60*60 # seconds
+ezidUrl = config.config("DEFAULT.ezid_base_url")
 
 usageText = """Usage:
 
@@ -77,6 +90,7 @@ db.open(dbPath, flags=bsddb.db.DB_RDONLY)
 cursor = db.cursor()
 
 expungeList = []
+shadowedIds = {}
 
 entry = cursor.first()
 while entry != None:
@@ -88,6 +102,7 @@ while entry != None:
     if util.validateArk(id) != id:
       output("z", k, v)
     elif label != "_c" or not re.match("[0-9]+$", v):
+      if label == "_s": shadowedIds[id] = util.decode(v)
       output("o", k, v)
     elif not id.startswith(testArkPrefix) and not id.startswith(testDoiPrefix):
       output("r", k, v)
@@ -105,6 +120,15 @@ db.close()
 if debug == "":
   for id in expungeList:
     try:
+      # We can't actually delete a DOI.  As the next best thing, we
+      # set its target URL to point back at EZID, which will return
+      # "no such identifier" after we've deleted the identifier from
+      # the bind database.
+      if id.startswith(testDoiPrefix):
+        doi = shadowedIds[id]
+        assert doi.startswith("doi:")
+        datacite.setTargetUrl(doi[4:],
+          "%s/id/%s" % (ezidUrl, urllib.quote(doi, ":/")))
       bindNoid.deleteElements(id)
       bindNoid.releaseIdentifier(id)
     except Exception, e:
