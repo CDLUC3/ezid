@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.8.1: http://docutils.sourceforge.net/" />
 <title>The EZID API, Version 2</title>
 <style type="text/css">
 
@@ -343,8 +343,8 @@ newlines (&quot;\n&quot;, U+000A) and carriage returns (&quot;\r&quot;, U+000D))
 element names, colons (&quot;:&quot;, U+003A).  EZID employs <a class="reference external" href="http://en.wikipedia.org/wiki/Percent-encoding">percent-encoding</a>
 as the escaping mechanism, and thus percent signs (&quot;%&quot;, U+0025) must
 be escaped as well.  In Python, a dictionary of Unicode metadata
-element names and values, <span class="hl2">metadata</span>, is serialized into a UTF-8
-encoded string, <span class="hl2">anvl</span>, with the following code:</p>
+element names and values, <span class="hl1">metadata</span>, is serialized into a UTF-8
+encoded string, <span class="hl1">anvl</span>, with the following code:</p>
 <pre class="literal-block">
 import re
 
@@ -354,8 +354,8 @@ def escape (s):
 <span class="hl2">anvl</span> = &quot;\n&quot;.join(&quot;%s: %s&quot; % (escape(name), escape(value)) for name,
   value in <span class="hl2">metadata</span>.items()).encode(&quot;UTF-8&quot;)
 </pre>
-<p>Conversely, to parse a UTF-8 encoded string, <span class="hl2">anvl</span>, producing
-a dictionary, <span class="hl2">metadata</span>:</p>
+<p>Conversely, to parse a UTF-8 encoded string, <span class="hl1">anvl</span>, producing
+a dictionary, <span class="hl1">metadata</span>:</p>
 <pre class="literal-block">
 import re
 
@@ -385,7 +385,7 @@ while (i.hasNext()) {
 String <span class="hl2">anvl</span> = b.toString();
 </pre>
 <p>And conversely, to parse a Unicode ANVL-formatted string, <span class="hl1">anvl</span>,
-producing a HashMap, <span class="hl2">metadata</span>:</p>
+producing a HashMap, <span class="hl1">metadata</span>:</p>
 <pre class="literal-block">
 import java.util.*;
 

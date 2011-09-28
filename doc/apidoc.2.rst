@@ -267,8 +267,8 @@ newlines ("\\n", U+000A) and carriage returns ("\\r", U+000D)) and, in
 element names, colons (":", U+003A).  EZID employs `percent-encoding`_
 as the escaping mechanism, and thus percent signs ("%", U+0025) must
 be escaped as well.  In Python, a dictionary of Unicode metadata
-element names and values, `metadata`:hl2:, is serialized into a UTF-8
-encoded string, `anvl`:hl2:, with the following code:
+element names and values, `metadata`:hl1:, is serialized into a UTF-8
+encoded string, `anvl`:hl1:, with the following code:
 
 .. parsed-literal::
 
@@ -280,8 +280,8 @@ encoded string, `anvl`:hl2:, with the following code:
   `anvl`:hl2: = "\\n".join("%s: %s" % (escape(name), escape(value)) for name,
     value in `metadata`:hl2:.items()).encode("UTF-8")
 
-Conversely, to parse a UTF-8 encoded string, `anvl`:hl2:, producing
-a dictionary, `metadata`:hl2:\:
+Conversely, to parse a UTF-8 encoded string, `anvl`:hl1:, producing
+a dictionary, `metadata`:hl1:\:
 
 .. parsed-literal::
 
@@ -316,7 +316,7 @@ In Java, to serialize a HashMap of metadata element names and values,
   String `anvl`:hl2: = b.toString();
 
 And conversely, to parse a Unicode ANVL-formatted string, `anvl`:hl1:,
-producing a HashMap, `metadata`:hl2:\:
+producing a HashMap, `metadata`:hl1:\:
 
 .. parsed-literal::
 
