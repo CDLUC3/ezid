@@ -59,6 +59,14 @@ Caching is employed in several places:
     removed when shoulder lists are modified through the admin
     interface.
 
+  policy._coOwners cache
+    A dictionary that maps users (identified by simple names) to
+    co-owner lists (in which users are also identified by simple
+    names).  Loaded on demand as users are encountered.  Emptied when
+    EZID is reloaded.  Also, individual entries are removed when
+    co-owner lists are modified through the account and admin
+    interfaces.
+
   session cookies
     See above.  A session cookie is invalidated if/when a user logs
     out, but otherwise there's currently no way to invalidate a
