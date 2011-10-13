@@ -1032,8 +1032,7 @@ hash, `%metadata`:hl1:\ :
   $r = $ua->get("http://n2t.net/ezid/id/`identifier`:hl2:");
   if ($r->is_success) {
     ($statusline, $m) = split(/\\n/, $r->decoded_content, 2);
-    `%metadata`:hl2: = map { map { s/%([0-9A-F]{2})/pack("C", hex($1))/egi; \
-  $_ }
+    %metadata = map { map { s/%([0-9A-F]{2})/pack("C", hex($1))/egi; $_ }
       split(/: /, $_, 2) } split(/\\n/, $m);
   } else {
     print $r->code, $r->decoded_content;
@@ -1080,7 +1079,7 @@ obtaining a new identifier, `$identifier`:hl1:\ :
   $r = $ua->request(POST "\https://n2t.net:443/ezid/shoulder/`shoulder`:hl2:",
     "Content-Type" => "text/plain; charset=UTF-8");
   if ($r->is_success) {
-    `$identifier`:hl2: = $r->decoded_content =~ m/success: ([^ ]*)/ && $1;
+    $identifier = $r->decoded_content =~ m/success: ([^ ]*)/ && $1;
   } else {
     print $r->code, $r->decoded_content;
   }
@@ -1099,12 +1098,12 @@ To modify an identifier using values from a hash, `%metadata`:hl1:\ :
     return $s;
   }
 
+  %metadata = ( "_target" => "`url`:hl2:" );
   $ua = LWP::UserAgent->new;
   $ua->credentials("n2t.net:443", "EZID", "`username`:hl2:", \
   "`password`:hl2:");
   $r = $ua->request(POST "\https://n2t.net:443/ezid/id/`identifier`:hl2:",
     "Content-Type" => "text/plain; charset=UTF-8",
     Content => encode("UTF-8", join("\\n",
-      map { escape($_) . ": " . escape($metadata{$_}) } keys \
-  `%metadata`:hl2:)));
+      map { escape($_) . ": " . escape($metadata{$_}) } keys %metadata)));
   print $r->code, $r->decoded_content unless $r->is_success;
