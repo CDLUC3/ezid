@@ -15,6 +15,7 @@
 .. _DataCite Metadata Scheme: http://dx.doi.org/10.5438/0003
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
 .. _ERC: https://wiki.ucop.edu/display/Curation/ERC
+.. _libwww-perl: http://search.cpan.org/dist/libwww-perl/
 .. _percent-encoding: http://en.wikipedia.org/wiki/Percent-encoding
 .. _REST-style: http://oreilly.com/catalog/9780596529260
 
@@ -60,6 +61,7 @@ Contents
 - `Metadata profiles`_
 - `Python example`_
 - `PHP examples`_
+- `Perl examples`_
 
 Framework
 ---------
@@ -1011,3 +1013,98 @@ Modify identifier:
   print $output . "\\n";
   curl_close($ch);
   ?>
+
+Perl examples
+-------------
+
+The following Perl examples use the `libwww-perl (LWP)`__ library.
+
+__ libwww-perl_
+
+To get identifier metadata, parse and decode it, and store it in a
+hash, `%metadata`:hl1:\ :
+
+.. parsed-literal::
+
+  use LWP::UserAgent;
+
+  $ua = LWP::UserAgent->new;
+  $r = $ua->get("http://n2t.net/ezid/id/`identifier`:hl2:");
+  if ($r->is_success) {
+    ($statusline, $m) = split(/\\n/, $r->decoded_content, 2);
+    `%metadata`:hl2: = map { map { s/%([0-9A-F]{2})/pack("C", hex($1))/egi; \
+  $_ }
+      split(/: /, $_, 2) } split(/\\n/, $m);
+  } else {
+    print $r->code, $r->decoded_content;
+  }
+
+To create an identifier, supplying initial metadata values from a
+hash, `%metadata`:hl1:\ :
+
+.. parsed-literal::
+
+  use Encode;
+  use \HTTP::Request::Common;
+  use LWP::UserAgent;
+  use URI::Escape;
+
+  sub escape {
+    (my $s = $_[0]) =~ s/([%:\\r\\n])/uri_escape($1)/eg;
+    return $s;
+  }
+
+  %metadata = ( "_target" => "`url`:hl2:",
+    "`element1`:hl2:" => "`value1`:hl2:",
+    "`element2`:hl2:" => "`value2`:hl2:" );
+  $ua = LWP::UserAgent->new;
+  $ua->credentials("n2t.net:443", "EZID", "`username`:hl2:", \
+  "`password`:hl2:");
+  $r = $ua->request(PUT "\https://n2t.net:443/ezid/id/`identifier`:hl2:",
+    "Content-Type" => "text/plain; charset=UTF-8",
+    Content => encode("UTF-8", join("\\n",
+      map { escape($_) . ": " . escape($metadata{$_}) } keys %metadata)));
+  print $r->code, $r->decoded_content unless $r->is_success;
+
+To mint an identifier (in this case supplying no metadata initially),
+obtaining a new identifier, `$identifier`:hl1:\ :
+
+.. parsed-literal::
+
+  use \HTTP::Request::Common;
+  use LWP::UserAgent;
+
+  $ua = LWP::UserAgent->new;
+  $ua->credentials("n2t.net:443", "EZID", "`username`:hl2:", \
+  "`password`:hl2:");
+  $r = $ua->request(POST "\https://n2t.net:443/ezid/shoulder/`shoulder`:hl2:",
+    "Content-Type" => "text/plain; charset=UTF-8");
+  if ($r->is_success) {
+    `$identifier`:hl2: = $r->decoded_content =~ m/success: ([^ ]*)/ && $1;
+  } else {
+    print $r->code, $r->decoded_content;
+  }
+
+To modify an identifier using values from a hash, `%metadata`:hl1:\ :
+
+.. parsed-literal::
+
+  use Encode;
+  use \HTTP::Request::Common;
+  use LWP::UserAgent;
+  use URI::Escape;
+
+  sub escape {
+    (my $s = $_[0]) =~ s/([%:\\r\\n])/uri_escape($1)/eg;
+    return $s;
+  }
+
+  $ua = LWP::UserAgent->new;
+  $ua->credentials("n2t.net:443", "EZID", "`username`:hl2:", \
+  "`password`:hl2:");
+  $r = $ua->request(POST "\https://n2t.net:443/ezid/id/`identifier`:hl2:",
+    "Content-Type" => "text/plain; charset=UTF-8",
+    Content => encode("UTF-8", join("\\n",
+      map { escape($_) . ": " . escape($metadata{$_}) } keys \
+  `%metadata`:hl2:)));
+  print $r->code, $r->decoded_content unless $r->is_success;

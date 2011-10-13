@@ -144,6 +144,7 @@ report problems:</p>
 <li><a class="reference internal" href="#metadata-profiles">Metadata profiles</a></li>
 <li><a class="reference internal" href="#python-example">Python example</a></li>
 <li><a class="reference internal" href="#php-examples">PHP examples</a></li>
+<li><a class="reference internal" href="#perl-examples">Perl examples</a></li>
 </ul>
 </div>
 <div class="section" id="framework">
@@ -1136,6 +1137,85 @@ print curl_getinfo($ch, CURLINFO_HTTP_CODE) . &quot;\n&quot;;
 print $output . &quot;\n&quot;;
 curl_close($ch);
 ?&gt;
+</pre>
+</div>
+<div class="section" id="perl-examples">
+<h1>Perl examples</h1>
+<p>The following Perl examples use the <a class="reference external" href="http://search.cpan.org/dist/libwww-perl/">libwww-perl (LWP)</a> library.</p>
+<p>To get identifier metadata, parse and decode it, and store it in a
+hash, <span class="hl1">%metadata</span>:</p>
+<pre class="literal-block">
+use LWP::UserAgent;
+
+$ua = LWP::UserAgent-&gt;new;
+$r = $ua-&gt;get(&quot;http://n2t.net/ezid/id/<span class="hl2">identifier</span>&quot;);
+if ($r-&gt;is_success) {
+  ($statusline, $m) = split(/\n/, $r-&gt;decoded_content, 2);
+  <span class="hl2">%metadata</span> = map { map { s/%([0-9A-F]{2})/pack(&quot;C&quot;, hex($1))/egi; $_ }
+    split(/: /, $_, 2) } split(/\n/, $m);
+} else {
+  print $r-&gt;code, $r-&gt;decoded_content;
+}
+</pre>
+<p>To create an identifier, supplying initial metadata values from a
+hash, <span class="hl1">%metadata</span>:</p>
+<pre class="literal-block">
+use Encode;
+use HTTP::Request::Common;
+use LWP::UserAgent;
+use URI::Escape;
+
+sub escape {
+  (my $s = $_[0]) =~ s/([%:\r\n])/uri_escape($1)/eg;
+  return $s;
+}
+
+%metadata = ( &quot;_target&quot; =&gt; &quot;<span class="hl2">url</span>&quot;,
+  &quot;<span class="hl2">element1</span>&quot; =&gt; &quot;<span class="hl2">value1</span>&quot;,
+  &quot;<span class="hl2">element2</span>&quot; =&gt; &quot;<span class="hl2">value2</span>&quot; );
+$ua = LWP::UserAgent-&gt;new;
+$ua-&gt;credentials(&quot;n2t.net:443&quot;, &quot;EZID&quot;, &quot;<span class="hl2">username</span>&quot;, &quot;<span class="hl2">password</span>&quot;);
+$r = $ua-&gt;request(PUT &quot;https://n2t.net:443/ezid/id/<span class="hl2">identifier</span>&quot;,
+  &quot;Content-Type&quot; =&gt; &quot;text/plain; charset=UTF-8&quot;,
+  Content =&gt; encode(&quot;UTF-8&quot;, join(&quot;\n&quot;,
+    map { escape($_) . &quot;: &quot; . escape($metadata{$_}) } keys %metadata)));
+print $r-&gt;code, $r-&gt;decoded_content unless $r-&gt;is_success;
+</pre>
+<p>To mint an identifier (in this case supplying no metadata initially),
+obtaining a new identifier, <span class="hl1">$identifier</span>:</p>
+<pre class="literal-block">
+use HTTP::Request::Common;
+use LWP::UserAgent;
+
+$ua = LWP::UserAgent-&gt;new;
+$ua-&gt;credentials(&quot;n2t.net:443&quot;, &quot;EZID&quot;, &quot;<span class="hl2">username</span>&quot;, &quot;<span class="hl2">password</span>&quot;);
+$r = $ua-&gt;request(POST &quot;https://n2t.net:443/ezid/shoulder/<span class="hl2">shoulder</span>&quot;,
+  &quot;Content-Type&quot; =&gt; &quot;text/plain; charset=UTF-8&quot;);
+if ($r-&gt;is_success) {
+  <span class="hl2">$identifier</span> = $r-&gt;decoded_content =~ m/success: ([^ ]*)/ &amp;&amp; $1;
+} else {
+  print $r-&gt;code, $r-&gt;decoded_content;
+}
+</pre>
+<p>To modify an identifier using values from a hash, <span class="hl1">%metadata</span>:</p>
+<pre class="literal-block">
+use Encode;
+use HTTP::Request::Common;
+use LWP::UserAgent;
+use URI::Escape;
+
+sub escape {
+  (my $s = $_[0]) =~ s/([%:\r\n])/uri_escape($1)/eg;
+  return $s;
+}
+
+$ua = LWP::UserAgent-&gt;new;
+$ua-&gt;credentials(&quot;n2t.net:443&quot;, &quot;EZID&quot;, &quot;<span class="hl2">username</span>&quot;, &quot;<span class="hl2">password</span>&quot;);
+$r = $ua-&gt;request(POST &quot;https://n2t.net:443/ezid/id/<span class="hl2">identifier</span>&quot;,
+  &quot;Content-Type&quot; =&gt; &quot;text/plain; charset=UTF-8&quot;,
+  Content =&gt; encode(&quot;UTF-8&quot;, join(&quot;\n&quot;,
+    map { escape($_) . &quot;: &quot; . escape($metadata{$_}) } keys <span class="hl2">%metadata</span>)));
+print $r-&gt;code, $r-&gt;decoded_content unless $r-&gt;is_success;
 </pre>
 </div>
 </div>
