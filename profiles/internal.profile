@@ -23,6 +23,18 @@ form<br/>
 &nbsp;&nbsp;<font face="Courier">&lt;a href="url
 form"&gt;identifier&lt;/a&gt;</font>
 
+element: _status
+displayname: Status
+tooltip:
+<b><u>Status</u></b><br/>
+The identifier's status.  "<font face="Courier">public</font>"
+indicates the identifier is globally and publicly visible.  "<font
+face="Courier">reserved</font>" indicates the identifier has been
+reserved within EZID, but has not been made public yet.  "<font
+face="Courier">unavailable</font>" indicates the identifier is public,
+but the object referenced by the identifier is not available; a reason
+for the object's unavailability may be given.
+
 element: _target
 displayname: URL
 tooltip:

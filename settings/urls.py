@@ -32,7 +32,8 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("manage$", "ui.manage"),
   _p("pwreset(?P<pwrr>/.*)?$", "ui.resetPassword", { "ssl": True }),
   _p("shoulder/", "api.mintIdentifier"),
-  _p("status$", "api.getStatus")
+  _p("status$", "api.getStatus"),
+  _p("tombstone/id/", "ui.tombstone")
 )
 
 if django.conf.settings.DEPLOYMENT_LEVEL == "localdev":

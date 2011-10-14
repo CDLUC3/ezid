@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>EZID : unavailable : {{ identifier }}</title>
+<link rel="shortcut icon" href="/ezid/static/favicon.ico"/>
+<link rel="stylesheet" type="text/css" href="/ezid/static/style.css"/>
+</head>
+
+<body>
+<div id="tombstone">
+
+<p id="title">{{ reason }}</p>
+
+{% if htmlMode %}
+{{ metadata|safe }}
+{% else %}
+<table id="metadata">
+{% for m in metadata %}
+<tr>
+<th>{{ m.label }}</th>
+<td>{{ m.value|linebreaksbr }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+<p><a href="{{ identifierLink }}">Descriptive information</a> provided
+by <a href="/ezid/">EZID</a>.</p>
+
+<p><a href="/ezid/"><img src="/ezid/static/logo.png"
+alt="EZID"/></a></p>
+
+</div>
+</body>
+
+</html>

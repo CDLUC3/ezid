@@ -323,6 +323,9 @@ def identifierDispatcher (request):
       ip["_urlform"].value = "http://n2t.net/" + urllib.quote(id, ":/")
     else:
       ip["_urlform"].value = "(none)"
+    if m["_status"].startswith("unavailable") and "|" in m["_status"]:
+      ip["_status"].value = "unavailable (%s)" %\
+        m["_status"].split("|", 1)[1].strip()
     if ip["_target"].value == defaultTargetUrl:
       ip["_target"].value = "(this page)"
     ip["_created"].value = _formatTime(int(ip["_created"].value))
@@ -737,3 +740,49 @@ def doc (request):
     return _staticHtmlResponse(content)
   else:
     return _error(404)
+
+def tombstone (request):
+  """
+  Renders a tombstone (i.e., unavailable identifier) page.
+  """
+  if request.method != "GET": return _methodNotAllowed()
+  assert request.path.startswith("/ezid/tombstone/id/")
+  id = request.path[19:]
+  r = ezid.getMetadata(id)
+  if type(r) is str:
+    django.contrib.messages.error(request, _formatError(r))
+    return _redirect("/ezid/")
+  s, m = r
+  if "_ezid_role" in m and ("auth" not in request.session or\
+    request.session["auth"].user[0] != _adminUsername):
+    # Special case.
+    django.contrib.messages.error(request, "Unauthorized.")
+    return _redirect("/ezid/")
+  assert s.startswith("success:")
+  id = s[8:].strip()
+  if not m["_status"].startswith("unavailable"):
+    return _redirect("/ezid/id/%s" % urllib.quote(id, ":/"))
+  if "|" in m["_status"]:
+    reason = "Not available: " + m["_status"].split("|", 1)[1].strip()
+  else:
+    reason = "Not available"
+  htmlMode = False
+  if m["_profile"] == "datacite" and "datacite" in m:
+    md = datacite.dcmsRecordToHtml(m["datacite"])
+    if md: htmlMode = True
+  if not htmlMode:
+    # This echoes the Merritt hack above.
+    if m["_profile"] == "erc" and m.get("erc", "").strip() != "":
+      md = [{ "label": "ERC", "value": m["erc"].strip() }]
+    else:
+      p = metadata.getProfile(m["_profile"])
+      if not p: p = metadata.getProfile("erc")
+      md = []
+      for e in p.elements:
+        if "." not in e.name: continue
+        v = m.get(e.name, "").strip()
+        md.append({ "label": e.displayName,
+          "value": v if v != "" else "(no value)" })
+  return _render(request, "tombstone", { "identifier": id,
+    "identifierLink": "/ezid/id/%s" % urllib.quote(id, ":/"),
+    "reason": reason, "htmlMode": htmlMode, "metadata": md })

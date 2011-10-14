@@ -88,6 +88,13 @@
 #        |             | convention, the element names of a profile
 #        |             | are prefixed with the profile name, e.g.,
 #        |             | "erc.who".
+# _is    | _status     | Identifier status; either "reserved",
+#        |             | "public", or "unavailable".  If
+#        |             | "unavailable", a reason may follow separated
+#        |             | by a pipe character, e.g., "unavailable |
+#        |             | withdrawn by author".  Optional, but always
+#        |             | returned; if no value is stored, "public" is
+#        |             | implied and returned.
 #
 # Element names and values are first UTF-8 encoded, and then
 # non-graphic ASCII characters and a few other reserved characters are
@@ -183,7 +190,8 @@ _labelMapping = {
   "_s": "_shadows",
   "_su": "_updated",
   "_st": "_target",
-  "_p": "_profile"
+  "_p": "_profile",
+  "_is": "_status"
 }
 
 def mintDoi (prefix, user, group, target=None):
@@ -512,6 +520,7 @@ def getMetadata (identifier):
       # Semicolons are not valid characters in ARK identifiers.
       d["_coowners"] = " ; ".join(idmap.getAgent(id.strip())[0]\
         for id in d["_coowners"].split(";") if len(id.strip()) > 0)
+    if "_status" not in d: d["_status"] = "public"
     log.success(tid)
     return ("success: " + nqidentifier, d)
   except Exception, e:

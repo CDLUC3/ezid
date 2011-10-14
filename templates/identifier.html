@@ -46,6 +46,14 @@ identifier = "{{ identifier|escapejs }}";
 <span id="urlformnote">{{ profiles.0.urlform.note }}</span>
 </div></td>
 </tr>
+<tr>
+<th id="element__status" class="labelvalue label">
+{{ profiles.0.status.displayName }}
+</th>
+<td class="labelvalue"><div class="value">
+{{ profiles.0.status.value }}
+</div></td>
+</tr>
 
 <tr><th class="section" colspan="2">Object location...</th></tr>
 
@@ -109,7 +117,7 @@ onclick="openEditBox(this, '{{ e.name|escapejs }}');"
 About this identifier...</a>
 </th></tr>
 
-{% for e in profiles.0.elements|slice:"3:" %}
+{% for e in profiles.0.elements|slice:"4:" %}
 {% if e.value != "(no value)" %}
 <tr class="profile_internal" style="display: none">
 <th id="element_{{ e.name|slugify }}"

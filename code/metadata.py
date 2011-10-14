@@ -122,3 +122,13 @@ def getProfiles ():
   performed, so the caller is free to modify the returned objects.
   """
   return [p.clone() for p in _profiles]
+
+def getProfile (name):
+  """
+  Returns the named metadata profile, or None if there is no such
+  profile.  A deep copy is performed, so the caller is free to modify
+  the returned object.
+  """
+  for p in _profiles:
+    if p.name == name: return p.clone()
+  return None
