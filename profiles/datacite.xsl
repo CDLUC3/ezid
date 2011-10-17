@@ -3,10 +3,14 @@
 <!-- ==========================================================================
 
 Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
-record to an XHTML table.  The XPath expressions are written the
-convoluted way they are to allow this transform to operate
-independently of the XML namespace (which differs depending on the
-version of the record).
+record to an XHTML table.
+
+In a slight extension, this transform allows the record identifier to
+be other than a DOI.
+
+The XPath expressions are written the convoluted way they are to allow
+this transform to operate independently of the XML namespace (which
+differs depending on the version of the record).
 
 Greg Janee <gjanee@ucop.edu>
 
@@ -27,7 +31,23 @@ http://creativecommons.org/licenses/BSD/
     <tr class="dcms_element dcms_identifier">
       <th class="dcms_label dcms_identifier">Identifier</th>
       <td class="dcms_value dcms_identifier">
-        <xsl:text>doi:</xsl:text>
+        <xsl:variable name="idType"
+          select="*[local-name()='identifier']/@identifierType"/>
+        <xsl:choose>
+          <xsl:when test="$idType = 'DOI'">
+            <xsl:text>doi:</xsl:text>
+          </xsl:when>
+          <xsl:when test="$idType = 'ARK'">
+            <xsl:text>ark:/</xsl:text>
+          </xsl:when>
+          <xsl:when test="$idType = 'URN:UUID'">
+            <xsl:text>urn:uuid:</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$idType"/>
+            <xsl:text>:</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
         <xsl:value-of select="*[local-name()='identifier']"/>
       </td>
     </tr>

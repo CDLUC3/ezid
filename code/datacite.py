@@ -114,7 +114,7 @@ def validateDcmsRecord (identifier, record):
   XML, that the record appears to be a DCMS record (by examining the
   root element), and that the identifier embedded in the record
   matches 'identifier'.  (In an extension to DCMS, we allow the
-  identifier to be something other than a DOI, specifically, an ARK.)
+  identifier to be something other than a DOI, for example, an ARK.)
   Normalization is limited to removing any encoding declaration.
   """
   m = _prologRE.match(record)
@@ -141,6 +141,9 @@ def validateDcmsRecord (identifier, record):
   elif identifier.startswith("ark:/"):
     type = "ARK"
     identifier = identifier[5:]
+  elif identifier.startswith("urn:uuid:"):
+    type = "URN:UUID"
+    identifier = identifier[9:]
   else:
     assert False, "unrecognized identifier scheme"
   assert i[0].attrib["identifierType"] == type and i[0].text == identifier,\
