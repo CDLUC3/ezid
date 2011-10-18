@@ -81,5 +81,5 @@ for r in records:
     continue
   # Special case: on a mint transaction, tack the new identifier onto
   # the end of the BEGIN record.
-  if b[0] == "mintDoi" or b[0] == "mintArk": r.beginRecord += " -> " + e[1]
+  if b[0].startswith("mint"): r.beginRecord += " -> " + e[1]
   print "%s %s" % (r.timestamp, r.beginRecord)
