@@ -99,6 +99,22 @@ def validateArk (ark):
     return None
   return p+s
 
+_urnUuidPattern = re.compile("[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+  re.I)
+
+def validateUrnUuid (urn):
+  """
+  If the supplied string (e.g.,
+  "f81d4fae-7dec-11d0-a765-00a0c91e6bf6") is a syntactically valid
+  scheme-less UUID URN identifier as defined by RFC 4122
+  <http://www.ietf.org/rfc/rfc4122.txt>, returns the canonical form of
+  the identifier (namely, lowercased).  Otherwise, returns None.
+  """
+  if _urnUuidPattern.match(urn) and urn[-1] != "\n":
+    return urn.lower()
+  else:
+    return None
+
 def _percentEncodeCdr (m):
   s = m.group(0)
   return s[0] + "".join("%%%02x" % ord(c) for c in s[1:])
@@ -145,6 +161,17 @@ def shadow2doi (ark):
   only; it is not in general the inverse of doi2shadow.
   """
   return ("10." + ark[1:]).upper()
+
+_urnUuidShadowArkPrefix = "97720/"
+def urnUuid2shadow (urn):
+  """
+  Given a scheme-less UUID URN identifier (e.g.,
+  "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"), returns the corresponding
+  scheme-less shadow ARK identifier (e.g.,
+  "97720/f81d4fae7dec11d0a76500a0c91e6bf6").  The URN is assumed to be
+  in canonical form; the returned identifier is in canonical form.
+  """
+  return _urnUuidShadowArkPrefix + urn.replace("-", "")
 
 def _encode (pattern, s):
   return pattern.sub(lambda c: "%%%02X" % ord(c.group(0)), s.encode("UTF-8"))

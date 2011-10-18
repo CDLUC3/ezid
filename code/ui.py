@@ -42,12 +42,14 @@ _prefixes = None
 _testPrefixes = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
+_defaultUrnUuidProfile = None
 _adminUsername = None
 _shoulders = None
 
 def _loadConfig ():
   global _ezidUrl, _templates, _alertMessage, _prefixes, _testPrefixes
-  global _defaultDoiProfile, _defaultArkProfile, _adminUsername, _shoulders
+  global _defaultDoiProfile, _defaultArkProfile, _defaultUrnUuidProfile
+  global _adminUsername, _shoulders
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   t = {}
   for f in os.listdir(django.conf.settings.TEMPLATE_DIRS[0]):
@@ -71,6 +73,7 @@ def _loadConfig ():
     for k in keys if k.startswith("TEST")]
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
+  _defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
   _adminUsername = config.config("ldap.admin_username")
   _shoulders = [{ "label": k, "name": config.config("prefix_%s.name" % k),
     "prefix": config.config("prefix_%s.prefix" % k) }\
@@ -319,7 +322,7 @@ def identifierDispatcher (request):
       ip["_urlform"].value = "http://dx.doi.org/" + urllib.quote(id[4:], ":/")
       if int(time.time())-int(m["_created"]) < 1800:
         ip["_urlform"].note = "(takes up to 30 minutes for link to work)"
-    elif id.startswith("ark:/"):
+    elif id.startswith("ark:/") or id.startswith("urn:uuid:"):
       ip["_urlform"].value = "http://n2t.net/" + urllib.quote(id, ":/")
     else:
       ip["_urlform"].value = "(none)"
@@ -336,6 +339,8 @@ def identifierDispatcher (request):
     if ip["_profile"].value not in [p.name for p in profiles[1:]]:
       if id.startswith("doi:"):
         ip["_profile"].value = _defaultDoiProfile
+      elif id.startswith("urn:uuid:"):
+        ip["_profile"].value = _defaultUrnUuidProfile
       else:
         ip["_profile"].value = _defaultArkProfile
     if ip["_coowners"].value == "(no value)": ip["_coowners"].value = "(none)"

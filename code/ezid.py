@@ -7,15 +7,13 @@
 # All identifier metadata is stored in a single "bind" noid instance.
 # Metadata for an ARK identifier (e.g., ark:/13030/foo) is keyed by
 # the canonical form of that identifier (see util.validateArk);
-# metadata for a DOI identifier (e.g., doi:10.5060/FOO) is keyed by
-# the identifier's shadow ARK (e.g., ark:/b5060/foo).  Currently DOIs
-# are the only non-ARK identifiers supported, but the code has been
-# written in anticipation of there being other kinds (Handles, PURLs,
-# etc.) that employ the same shadow ARK mechanism.
+# metadata for a non-ARK identifier (e.g., doi:10.5060/FOO) is keyed
+# by the identifier's shadow ARK (e.g., ark:/b5060/foo).  The
+# supported non-ARK identifiers include DOIs and URNs.
 #
-# The shadow ARK for a DOI identifier is computable by a simple
-# mapping (see util.doi2shadow); the reverse mapping is not simple and
-# requires a lookup.
+# The shadow ARK for a non-ARK identifier is computable by a simple
+# mapping (see util.doi2shadow, util.urnUuid2shadow, etc.); the
+# reverse mapping is not simple and requires a lookup.
 #
 # Shadow ARKs provide a technical means of storing metadata for
 # non-ARK identifiers, but they're also identifiers in their own
@@ -137,11 +135,12 @@ _ezidUrl = None
 _prefixes = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
+_defaultUrnUuidProfile = None
 _adminUsername = None
 
 def _loadConfig ():
   global _bindNoid, _ezidUrl, _prefixes, _defaultDoiProfile, _defaultArkProfile
-  global _adminUsername
+  global _defaultUrnUuidProfile, _adminUsername
   _bindNoid = noid.Noid(config.config("DEFAULT.bind_noid"))
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _prefixes = dict([config.config("prefix_%s.prefix" % k),
@@ -149,6 +148,7 @@ def _loadConfig ():
     for k in config.config("prefixes.keys").split(","))
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
+  _defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
   _adminUsername = config.config("ldap.admin_username")
 
 _loadConfig()
@@ -389,6 +389,85 @@ def createArk (ark, user, group, target=None):
   finally:
     _releaseIdentifierLock(ark)
 
+def mintUrnUuid (user, group, target=None):
+  """
+  Mints a UUID URN.  'user' and 'group' should each be authenticated
+  (local name, persistent identifier) tuples, e.g., ("dryad",
+  "ark:/13030/foo").  If an initial target URL is not supplied, the
+  identifier is given a self-referential target URL.  The successful
+  return is a string that includes the canonical, scheme-less form of
+  the new identifier, followed by the new identifier's qualified
+  shadow ARK, as in:
+
+    success: f81d4fae-7dec-11d0-a765-00a0c91e6bf6 | ark:/97720/f81...
+
+  Unsuccessful returns include the strings:
+
+    error: unauthorized
+    error: bad request - subreason...
+    error: internal server error
+  """
+  return createUrnUuid(uuid.uuid1().urn[9:], user, group, target)
+
+def createUrnUuid (urn, user, group, target=None):
+  """
+  Creates a UUID URN identifier having the given scheme-less name,
+  e.g., "f81d4fae-7dec-11d0-a765-00a0c91e6bf6".  The identifier must
+  not already exist.  'user' and 'group' should each be authenticated
+  (local name, persistent identifier) tuples, e.g., ("dryad",
+  "ark:/13030/foo").  If an initial target URL is not supplied, the
+  identifier is given a self-referential target URL.  The successful
+  return is a string that includes the canonical, scheme-less form of
+  the new identifier, followed by the new identifier's qualified
+  shadow ARK, as in:
+
+    success: f81d4fae-7dec-11d0-a765-00a0c91e6bf6 | ark:/97720/f81...
+
+  Unsuccessful returns include the strings:
+
+    error: unauthorized
+    error: bad request - subreason...
+    error: internal server error
+  """
+  urn = util.validateUrnUuid(urn)
+  if not urn: return "error: bad request - invalid UUID URN identifier"
+  qurn = "urn:uuid:" + urn
+  shadowArk = util.urnUuid2shadow(urn)
+  tid = uuid.uuid1()
+  _acquireIdentifierLock(shadowArk)
+  try:
+    log.begin(tid, "createUrnUuid", urn, user[0], user[1], group[0], group[1],
+      target or "None")
+    if not policy.authorizeCreate(user, group, qurn):
+      log.unauthorized(tid)
+      return "error: unauthorized"
+    if _bindNoid.identifierExists(shadowArk):
+      log.badRequest(tid)
+      return "error: bad request - identifier already exists"
+    if not target: target = "%s/id/%s" % (_ezidUrl, urllib.quote(qurn, ":/"))
+    arkTarget = "%s/id/%s" % (_ezidUrl,
+      urllib.quote("ark:/" + shadowArk, ":/"))
+    _bindNoid.holdIdentifier(shadowArk)
+    t = str(int(time.time()))
+    _bindNoid.setElements(shadowArk,
+      { "_o": user[1],
+        "_g": group[1],
+        "_c": t,
+        "_u": t,
+        "_t": arkTarget,
+        "_s": qurn,
+        "_su": t,
+        "_st": target,
+        "_p": _defaultUrnUuidProfile })
+  except Exception, e:
+    log.error(tid, e)
+    return "error: internal server error"
+  else:
+    log.success(tid)
+    return "success: " + urn + " | ark:/" + shadowArk
+  finally:
+    _releaseIdentifierLock(shadowArk)
+
 def mintIdentifier (prefix, user, group, target=None):
   """
   Mints an identifier having the given qualified prefix, e.g.,
@@ -422,6 +501,12 @@ def mintIdentifier (prefix, user, group, target=None):
     s = mintArk(prefix[5:], user, group, target)
     if s.startswith("success: "):
       return "success: ark:/" + s[9:]
+    else:
+      return s
+  elif prefix == "urn:uuid:":
+    s = mintUrnUuid(user, group, target)
+    if s.startswith("success: "):
+      return "success: urn:uuid:" + s[9:]
     else:
       return s
   else:
@@ -462,6 +547,12 @@ def createIdentifier (identifier, user, group, target=None):
       return "success: ark:/" + s[9:]
     else:
       return s
+  elif identifier.startswith("urn:uuid:"):
+    s = createUrnUuid(identifier[9:], user, group, target)
+    if s.startswith("success: "):
+      return "success: urn:uuid:" + s[9:]
+    else:
+      return s
   else:
     return "error: bad request - unrecognized identifier scheme"
 
@@ -489,6 +580,11 @@ def getMetadata (identifier):
     ark = util.validateArk(identifier[5:])
     if not ark: return "error: bad request - invalid ARK identifier"
     nqidentifier = "ark:/" + ark
+  elif identifier.startswith("urn:uuid:"):
+    urn = util.validateUrnUuid(identifier[9:])
+    if not urn: return "error: bad request - invalid UUID URN identifier"
+    ark = util.urnUuid2shadow(urn)
+    nqidentifier = "urn:uuid:" + urn
   else:
     return "error: bad request - unrecognized identifier scheme"
   tid = uuid.uuid1()
@@ -499,7 +595,14 @@ def getMetadata (identifier):
     if d is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
-    if nqidentifier.startswith("doi:"):
+    if nqidentifier.startswith("ark:/"):
+      for k in filter(lambda k: k.startswith("_"), d):
+        if k in ["_su", "_st"]:
+          del d[k]
+        elif k in _labelMapping:
+          d[_labelMapping[k]] = d[k]
+          del d[k]
+    else:
       for k in filter(lambda k: k.startswith("_"), d):
         if k in ["_u", "_t", "_s"]:
           del d[k]
@@ -507,13 +610,6 @@ def getMetadata (identifier):
           d[_labelMapping[k]] = d[k]
           del d[k]
       d["_shadowedby"] = "ark:/" + ark
-    elif nqidentifier.startswith("ark:/"):
-      for k in filter(lambda k: k.startswith("_"), d):
-        if k in ["_su", "_st"]:
-          del d[k]
-        elif k in _labelMapping:
-          d[_labelMapping[k]] = d[k]
-          del d[k]
     d["_owner"] = idmap.getAgent(d["_owner"])[0]
     d["_ownergroup"] = idmap.getAgent(d["_ownergroup"])[0]
     if "_coowners" in d:
@@ -564,6 +660,11 @@ def setMetadata (identifier, user, group, metadata):
     ark = util.validateArk(identifier[5:])
     if not ark: return "error: bad request - invalid ARK identifier"
     nqidentifier = "ark:/" + ark
+  elif identifier.startswith("urn:uuid:"):
+    urn = util.validateUrnUuid(identifier[9:])
+    if not urn: return "error: bad request - invalid UUID URN identifier"
+    ark = util.urnUuid2shadow(urn)
+    nqidentifier = "urn:uuid:" + urn
   else:
     return "error: bad request - unrecognized identifier scheme"
   if len(filter(lambda k: len(k) == 0, metadata)) > 0:
@@ -660,6 +761,13 @@ def setMetadata (identifier, user, group, metadata):
             _oneline(message)
       if target is not None: metadata["_t"] = target
       if "_u" not in metadata: metadata["_u"] = str(int(time.time()))
+    elif nqidentifier.startswith("urn:uuid:"):
+      if "_target" in metadata:
+        metadata["_st"] = metadata["_target"]
+        del metadata["_target"]
+      if "_su" not in metadata: metadata["_su"] = str(int(time.time()))
+    else:
+      assert False, "unhandled case"
     if coOwners is not None: metadata["_co"] = " ; ".join(coOwners)
     if profile is not None: metadata["_p"] = profile
     _bindNoid.setElements(ark, metadata)
