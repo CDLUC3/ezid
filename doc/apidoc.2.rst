@@ -103,6 +103,16 @@ URL form   \http://n2t.net/`ark:/nnnnn/suffix`:hl1:
 EZID URL   \http://n2t.net/ezid/id/`ark:/nnnnn/suffix`:hl1:
 ========== ================================================
 
+For URN identifiers:
+
+.. class:: leftheaders
+
+========== ================================================
+Identifier `urn:nid:suffix`:hl1:
+URL form   \http://n2t.net/`urn:nid:suffix`:hl1:
+EZID URL   \http://n2t.net/ezid/id/`urn:nid:suffix`:hl1:
+========== ================================================
+
 API vs. UI
 ----------
 
@@ -442,13 +452,14 @@ Here's a sample interaction creating an ARK identifier:
   |lArr| success: ark:/99999/fk4test
 
 The return is a status line.  If an ARK identifier was created, the
-normalized form of the identifier is returned as shown above.  If a
-DOI identifier was created, the status line includes the normalized
-form of the DOI and, separated by a pipe character ("|", U+007C), the
-DOI's shadow ARK (see `Shadow ARKs`_ for more information).  Note that
-different identifier schemes have different normalization rules (e.g.,
-DOIs are normalized to all uppercase letters).  Here's a sample
-interaction creating a DOI identifier:
+normalized form of the identifier is returned as shown above.  If an
+identifier other than an ARK was created (e.g., a DOI or URN), the
+status line includes the normalized form of the identifier and,
+separated by a pipe character ("|", U+007C), the identifier's shadow
+ARK (see `Shadow ARKs`_ for more information).  Note that different
+identifier schemes have different normalization rules (e.g., DOIs are
+normalized to all uppercase letters).  Here's a sample interaction
+creating a DOI identifier:
 
 .. parsed-literal::
 
@@ -580,7 +591,7 @@ identifier and its shadow ARK are intended to identify the same
 digital object or conceptual entity, but having separate target URLs
 allows the identifiers to address different representations of the
 object.  Clients can also use shadow ARKs to exploit the different
-technical characteristics between ARK and DOI identifiers.
+technical characteristics between ARK and non-ARK identifiers.
 
 Shadow ARKs are returned on the status line when creating or minting
 non-ARK identifiers (see `Operation: create identifier`_ and
@@ -668,7 +679,7 @@ those profiles that it explicitly supports.
    purpose (research, education, entertainment, administration), any
    subject focus (oceanography, sales, religion, archiving), and any
    medium (television, newspaper, database, book).  This is the
-   default profile for ARK identifiers.
+   default profile for ARK and URN identifiers.
 
 __ ERC_
 

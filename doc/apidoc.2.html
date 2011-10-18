@@ -200,6 +200,24 @@ identifiers:</p>
 </tr>
 </tbody>
 </table>
+<p>For URN identifiers:</p>
+<table border="1" class="leftheaders docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Identifier</td>
+<td><span class="hl1">urn:nid:suffix</span></td>
+</tr>
+<tr><td>URL form</td>
+<td>http://n2t.net/<span class="hl1">urn:nid:suffix</span></td>
+</tr>
+<tr><td>EZID URL</td>
+<td>http://n2t.net/ezid/id/<span class="hl1">urn:nid:suffix</span></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="api-vs-ui">
 <h1>API vs. UI</h1>
@@ -498,13 +516,14 @@ metadata</a> below.</p>
 ⇐ success: ark:/99999/fk4test
 </pre>
 <p>The return is a status line.  If an ARK identifier was created, the
-normalized form of the identifier is returned as shown above.  If a
-DOI identifier was created, the status line includes the normalized
-form of the DOI and, separated by a pipe character (&quot;|&quot;, U+007C), the
-DOI's shadow ARK (see <a class="reference internal" href="#shadow-arks">Shadow ARKs</a> for more information).  Note that
-different identifier schemes have different normalization rules (e.g.,
-DOIs are normalized to all uppercase letters).  Here's a sample
-interaction creating a DOI identifier:</p>
+normalized form of the identifier is returned as shown above.  If an
+identifier other than an ARK was created (e.g., a DOI or URN), the
+status line includes the normalized form of the identifier and,
+separated by a pipe character (&quot;|&quot;, U+007C), the identifier's shadow
+ARK (see <a class="reference internal" href="#shadow-arks">Shadow ARKs</a> for more information).  Note that different
+identifier schemes have different normalization rules (e.g., DOIs are
+normalized to all uppercase letters).  Here's a sample interaction
+creating a DOI identifier:</p>
 <pre class="literal-block">
 ⇒ PUT /ezid/id/doi:10.9999/test HTTP/1.1
 ⇒ Host: n2t.net
@@ -621,7 +640,7 @@ identifier and its shadow ARK are intended to identify the same
 digital object or conceptual entity, but having separate target URLs
 allows the identifiers to address different representations of the
 object.  Clients can also use shadow ARKs to exploit the different
-technical characteristics between ARK and DOI identifiers.</p>
+technical characteristics between ARK and non-ARK identifiers.</p>
 <p>Shadow ARKs are returned on the status line when creating or minting
 non-ARK identifiers (see <a class="reference internal" href="#operation-create-identifier">Operation: create identifier</a> and
 <a class="reference internal" href="#operation-mint-identifier">Operation: mint identifier</a> above).  Also, a non-ARK identifier's
@@ -751,7 +770,7 @@ abstract) or agent (person, group, software, satellite) for any
 purpose (research, education, entertainment, administration), any
 subject focus (oceanography, sales, religion, archiving), and any
 medium (television, newspaper, database, book).  This is the
-default profile for ARK identifiers.</li>
+default profile for ARK and URN identifiers.</li>
 </ol>
 <blockquote>
 <table border="1" class="docutils">
