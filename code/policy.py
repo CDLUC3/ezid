@@ -4,6 +4,9 @@
 #
 # Authorization policy.
 #
+# All authorization-related policies are in this module except access
+# control over agent identifiers, which is in api.py and ui.py.
+#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
