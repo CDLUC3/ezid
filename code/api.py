@@ -138,9 +138,13 @@ def mintIdentifier (request):
   if "_target" in metadata:
     target = metadata["_target"]
     del metadata["_target"]
+  reserveOnly = False
+  if "_status" in metadata and metadata["_status"] == "reserved":
+    reserveOnly = True
+    del metadata["_status"]
   assert request.path.startswith("/ezid/shoulder/")
   prefix = request.path[15:]
-  s = ezid.mintIdentifier(prefix, auth.user, auth.group, target)
+  s = ezid.mintIdentifier(prefix, auth.user, auth.group, target, reserveOnly)
   if not s.startswith("success:"): return _response(s)
   if len(metadata) > 0:
     identifier = s.split()[1]
@@ -202,9 +206,14 @@ def _createIdentifier (request):
   if "_target" in metadata:
     target = metadata["_target"]
     del metadata["_target"]
+  reserveOnly = False
+  if "_status" in metadata and metadata["_status"] == "reserved":
+    reserveOnly = True
+    del metadata["_status"]
   assert request.path.startswith("/ezid/id/")
   identifier = request.path[9:]
-  s = ezid.createIdentifier(identifier, auth.user, auth.group, target)
+  s = ezid.createIdentifier(identifier, auth.user, auth.group, target,
+    reserveOnly)
   if not s.startswith("success:"): return _response(s)
   if len(metadata) > 0:
     identifier = s.split()[1]
