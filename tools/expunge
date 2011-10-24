@@ -90,7 +90,8 @@ db.open(dbPath, flags=bsddb.db.DB_RDONLY)
 cursor = db.cursor()
 
 expungeList = []
-shadowedIds = {}
+shadowedId = {}
+status = {}
 
 entry = cursor.first()
 while entry != None:
@@ -102,7 +103,10 @@ while entry != None:
     if util.validateArk(id) != id:
       output("z", k, v)
     elif label != "_c" or not re.match("[0-9]+$", v):
-      if label == "_s": shadowedIds[id] = util.decode(v)
+      if label == "_s":
+        shadowedId[id] = util.decode(v)
+      elif label == "_is":
+        status[id] = util.decode(v)
       output("o", k, v)
     elif not id.startswith(testArkPrefix) and not id.startswith(testDoiPrefix):
       output("r", k, v)
@@ -124,8 +128,9 @@ if debug == "":
       # set its target URL to point back at EZID, which will return
       # "no such identifier" after we've deleted the identifier from
       # the bind database.
-      if id.startswith(testDoiPrefix):
-        doi = shadowedIds[id]
+      if id.startswith(testDoiPrefix) and\
+        status.get(id, "public") != "reserved":
+        doi = shadowedId[id]
         assert doi.startswith("doi:")
         datacite.setTargetUrl(doi[4:],
           "%s/id/%s" % (ezidUrl, urllib.quote(doi, ":/")))
