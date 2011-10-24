@@ -633,7 +633,10 @@ def getMetadata (identifier):
     if d is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
-    if d.get("_is", "public") != "public":
+    if d.get("_is", "public") == "public":
+      if "_t1" in d: del d["_t1"]
+      if "_st1" in d: del d["_st1"]
+    else:
       d["_t"] = d["_t1"]
       del d["_t1"]
       if "_st1" in d:
