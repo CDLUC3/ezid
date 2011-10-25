@@ -57,6 +57,7 @@ Contents
 - `Operation: modify identifier`_
 - `Ownership model`_
 - `Shadow ARKs`_
+- `Identifier status`_
 - `Internal metadata`_
 - `Metadata profiles`_
 - `Python example`_
@@ -609,6 +610,47 @@ map between identifiers themselves.  Instead, the aforementioned
 "_shadows" and "_shadowedby" metadata elements should be used to map
 between non-ARK identifiers and shadow ARKs.
 
+Identifier status
+-----------------
+
+Each identifier in EZID has a status.  In the case of a non-ARK
+identifier (e.g., a DOI identifier), the identifier and its shadow ARK
+share the same status.  The status is recorded as the value of the
+"_status" reserved metadata element (see `Internal metadata`_ below)
+and may be one of:
+
+**public**
+  The default value.
+
+**reserved**
+  The identifier is known only to EZID.  This status may be used to
+  reserve an identifier name within EZID without advertising the
+  identifier's existence to resolving and other external services.
+
+**unavailable**
+  The identifier is public, but the object referenced by the
+  identifier is not available.  A reason for the object's
+  unavailability may optionally follow the status separated by a pipe
+  character ("|", U+007C), e.g., "unavailable | withdrawn by author".
+  The identifier redirects to an EZID-provided "tombstone" page (an
+  HTML page that displays the identifier's citation metadata and the
+  reason for the object's unavailability) regardless of its target
+  URL.
+
+An identifier's status may be changed by setting a new value for the
+aforementioned "_status" metadata element.  EZID permits only certain
+status transitions:
+
+* A status of "reserved" may be specified only at identifier
+  creation time.
+
+* A reserved identifier may be made public.  At this time the
+  identifier will be registered with external services.
+
+* A public identifier may be marked as unavailable.
+
+* An unavailable identifier may be returned to public status.
+
 Internal metadata
 -----------------
 
@@ -639,6 +681,9 @@ first column indicates the element is modifiable by clients.
                   shadow ARK.
   |X| _profile    The identifier's preferred metadata profile  erc
                   (see `Metadata profiles`_ next).
+  |X| _status     The identifier's status (see                 unavailable |
+                  `Identifier status`_ above).                 withdrawn by
+                                                               author
   === =========== ============================================ ================
 
 Metadata profiles
