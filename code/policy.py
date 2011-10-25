@@ -213,3 +213,23 @@ def authorizeUpdate (rUser, rGroup, identifier, iUser, iGroup, iCoOwners,
     return True
   else:
     return False
+
+def authorizeDelete (rUser, rGroup, identifier, iUser, iGroup, iCoOwners):
+  """
+  Returns true if a request to delete an existing identifier is
+  authorized.  'rUser' and 'rGroup' identify the requester and should
+  each be authenticated (local name, persistent identifier) tuples,
+  e.g., ("dryad", "ark:/13030/foo"); 'iUser' and 'iGroup' should be
+  similar quantities that identify the identifier's owner.
+  'identifier' is the identifier in question; it must be qualified, as
+  in "doi:10.5060/foo".  'iCoOwners' is a list of the identifier's
+  co-owners; each co-owner should be a tuple as above.  Throws an
+  exception on error.
+  """
+  if rUser[1] == iUser[1] or rUser[0] == _adminUsername:
+    return True
+  elif (rUser[0] in _getCoOwners(iUser[0]) or\
+    rUser[1] in [co[1] for co in iCoOwners]):
+    return True
+  else:
+    return False

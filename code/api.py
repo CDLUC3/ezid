@@ -31,6 +31,10 @@
 #   request body: optional metadata
 #   response body: status line
 #
+# Delete an identifier:
+#   DELETE /ezid/id/{identifier}   [authentication required]
+#   response body: status line
+#
 # Login to obtain session cookie, nothing else:
 #   GET /ezid/login   [authentication required]
 #   response body: status line
@@ -164,6 +168,8 @@ def identifierDispatcher (request):
     return _setMetadata(request)
   elif request.method == "PUT":
     return _createIdentifier(request)
+  elif request.method == "DELETE":
+    return _deleteIdentifier(request)
   else:
     return _methodNotAllowed()
 
@@ -220,6 +226,16 @@ def _createIdentifier (request):
     s2 = ezid.setMetadata(identifier, auth.user, auth.group, metadata)
     if not s2.startswith("success:"): s = s2
   return _response(s, createRequest=True)
+
+def _deleteIdentifier (request):
+  auth = userauth.authenticateRequest(request)
+  if type(auth) is str:
+    return _response(auth)
+  elif not auth:
+    return _unauthorized()
+  assert request.path.startswith("/ezid/id/")
+  identifier = request.path[9:]
+  return _response(ezid.deleteIdentifier(identifier, auth.user, auth.group))
 
 def login (request):
   """

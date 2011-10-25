@@ -913,3 +913,72 @@ def _statusChangeUnavailableToPublic (ark, m):
   m = m.copy()
   m.update(d)
   return m
+
+def deleteIdentifier (identifier, user, group):
+  """
+  Deletes an identifier having the given qualified name, e.g.,
+  "doi:10.5060/foo".  'user' and 'group' should each be authenticated
+  (local name, persistent identifier) tuples, e.g., ("dryad",
+  "ark:/13030/foo").  The successful return is a string that includes
+  the canonical, qualified form of the now-nonexistent identifier, as
+  in:
+
+    success: doi:/10.5060/FOO
+
+  Unsuccessful returns include the strings:
+
+    error: unauthorized
+    error: bad request - subreason...
+    error: internal server error
+  """
+  if identifier.startswith("doi:"):
+    doi = util.validateDoi(identifier[4:])
+    if not doi: return "error: bad request - invalid DOI identifier"
+    ark = util.doi2shadow(doi)
+    nqidentifier = "doi:" + doi
+  elif identifier.startswith("ark:/"):
+    ark = util.validateArk(identifier[5:])
+    if not ark: return "error: bad request - invalid ARK identifier"
+    nqidentifier = "ark:/" + ark
+  elif identifier.startswith("urn:uuid:"):
+    urn = util.validateUrnUuid(identifier[9:])
+    if not urn: return "error: bad request - invalid UUID URN identifier"
+    ark = util.urnUuid2shadow(urn)
+    nqidentifier = "urn:uuid:" + urn
+  else:
+    return "error: bad request - unrecognized identifier scheme"
+  tid = uuid.uuid1()
+  _acquireIdentifierLock(ark)
+  try:
+    log.begin(tid, "deleteIdentifier", nqidentifier, user[0], user[1],
+      group[0], group[1])
+    m = _bindNoid.getElements(ark)
+    if m is None:
+      log.badRequest(tid)
+      return "error: bad request - no such identifier"
+    iUser = m["_o"]
+    iGroup = m["_g"]
+    if "_co" in m:
+      # Semicolons are not valid characters in ARK identifiers.
+      iCoOwners = [co.strip() for co in m["_co"].split(";")\
+        if len(co.strip()) > 0]
+    else:
+      iCoOwners = []
+    if not policy.authorizeDelete(user, group, nqidentifier,
+      (idmap.getAgent(iUser)[0], iUser), (idmap.getAgent(iGroup)[0], iGroup),
+      [(idmap.getAgent(co)[0], co) for co in iCoOwners]):
+      log.unauthorized(tid)
+      return "error: unauthorized"
+    if m.get("_is", "public") != "reserved":
+      log.badRequest(tid)
+      return "error: bad request - identifier status does not support deletion"
+    _bindNoid.deleteElements(ark)
+    _bindNoid.releaseIdentifier(ark)
+  except Exception, e:
+    log.error(tid, e)
+    return "error: internal server error"
+  else:
+    log.success(tid)
+    return "success: " + nqidentifier
+  finally:
+    _releaseIdentifierLock(ark)

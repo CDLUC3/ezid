@@ -22,6 +22,7 @@
 #     c[reate] identifier [label value label value ...]
 #     v[iew] identifier
 #     u[pdate] identifier [label value label value ...]
+#     d[elete] identifier
 #     login
 #     logout
 #     s[tatus]
@@ -49,6 +50,7 @@ operations = {
   "create" : lambda l: l%2 == 1,
   "view" : 1,
   "update" : lambda l: l%2 == 1,
+  "delete" : 1,
   "login" : 0,
   "logout" : 0,
   "status" : 0,
@@ -75,6 +77,7 @@ usageText = """Usage: client server credentials operation...
     c[reate] identifier [label value label value ...]
     v[iew] identifier
     u[pdate] identifier [label value label value ...]
+    d[elete] identifier
     login
     logout
     s[tatus]
@@ -133,6 +136,9 @@ if operation in ["mint", "create", "update"]:
     request.add_data(formatAnvl(sys.argv[5:]).encode("UTF-8"))
 elif operation == "view":
   request = urllib2.Request("%s/id/%s" % (server, sys.argv[4]))
+elif operation == "delete":
+  request = urllib2.Request("%s/id/%s" % (server, sys.argv[4]))
+  request.get_method = lambda: "DELETE"
 elif operation in ["login", "logout", "status"]:
   request = urllib2.Request("%s/%s" % (server, operation))
 elif operation == "reload":
