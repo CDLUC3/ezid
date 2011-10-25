@@ -55,6 +55,7 @@ Contents
 - `Operation: create identifier`_
 - `Operation: mint identifier`_
 - `Operation: modify identifier`_
+- `Operation: delete identifier`_
 - `Ownership model`_
 - `Shadow ARKs`_
 - `Identifier status`_
@@ -542,6 +543,32 @@ the identifier in question.
 There is currently no means to delete a metadata element, but setting
 an element's value to the empty string has much the same effect.
 
+Operation: delete identifier
+----------------------------
+
+A reserved identifier can be deleted by sending a DELETE request to
+the identifier's EZID URL.  We emphasize that only *reserved*
+identifiers may be deleted; see `Identifier status`_ below.
+Authentication is required; only the identifier's owner and any listed
+co-owners may delete an identifier (see `Ownership model`_).
+
+Here's a sample interaction:
+
+.. parsed-literal::
+
+  |rArr| DELETE /ezid/id/ark:/99999/fk4cz3dh0 HTTP/1.1
+  |rArr| Host: n2t.net
+
+  |lArr| HTTP/1.1 200 OK
+  |lArr| Content-Type: text/plain; charset=UTF-8
+  |lArr| Content-Length: 29
+  |lArr|
+  |lArr| success: ark:/99999/fk4cz3dh0
+
+The return is a status line.  Assuming success (see `Error handling`_
+above), the remainder of the status line echoes the canonical form of
+the identifier just deleted.
+
 Ownership model
 ---------------
 
@@ -886,6 +913,7 @@ Run the client with no arguments for a complete usage statement.
     "create" : lambda l: l%2 == 1,
     "view" : 1,
     "update" : lambda l: l%2 == 1,
+    "delete" : 1,
     "login" : 0,
     "logout" : 0
   }
@@ -902,6 +930,7 @@ Run the client with no arguments for a complete usage statement.
       c[reate] identifier [label value label value ...]
       v[iew] identifier
       u[pdate] identifier [label value label value ...]
+      d[elete] identifier
       login
       logout
   """
@@ -955,6 +984,9 @@ Run the client with no arguments for a complete usage statement.
     if len(sys.argv) > 4:
       request.add_header("Content-Type", "text/plain; charset=UTF-8")
       request.add_data(formatAnvl(sys.argv[4:]).encode("UTF-8"))
+  elif operation == "delete":
+    request = urllib2.Request("%s/id/%s" % (server, sys.argv[3]))
+    request.get_method = lambda: "DELETE"
   elif operation == "view":
     request = urllib2.Request("%s/id/%s" % (server, sys.argv[3]))
   elif operation in ["login", "logout"]:

@@ -138,6 +138,7 @@ report problems:</p>
 <li><a class="reference internal" href="#operation-create-identifier">Operation: create identifier</a></li>
 <li><a class="reference internal" href="#operation-mint-identifier">Operation: mint identifier</a></li>
 <li><a class="reference internal" href="#operation-modify-identifier">Operation: modify identifier</a></li>
+<li><a class="reference internal" href="#operation-delete-identifier">Operation: delete identifier</a></li>
 <li><a class="reference internal" href="#ownership-model">Ownership model</a></li>
 <li><a class="reference internal" href="#shadow-arks">Shadow ARKs</a></li>
 <li><a class="reference internal" href="#identifier-status">Identifier status</a></li>
@@ -597,6 +598,28 @@ the identifier in question.</p>
 <p>There is currently no means to delete a metadata element, but setting
 an element's value to the empty string has much the same effect.</p>
 </div>
+<div class="section" id="operation-delete-identifier">
+<h1>Operation: delete identifier</h1>
+<p>A reserved identifier can be deleted by sending a DELETE request to
+the identifier's EZID URL.  We emphasize that only <em>reserved</em>
+identifiers may be deleted; see <a class="reference internal" href="#identifier-status">Identifier status</a> below.
+Authentication is required; only the identifier's owner and any listed
+co-owners may delete an identifier (see <a class="reference internal" href="#ownership-model">Ownership model</a>).</p>
+<p>Here's a sample interaction:</p>
+<pre class="literal-block">
+⇒ DELETE /ezid/id/ark:/99999/fk4cz3dh0 HTTP/1.1
+⇒ Host: n2t.net
+
+⇐ HTTP/1.1 200 OK
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 29
+⇐
+⇐ success: ark:/99999/fk4cz3dh0
+</pre>
+<p>The return is a status line.  Assuming success (see <a class="reference internal" href="#error-handling">Error handling</a>
+above), the remainder of the status line echoes the canonical form of
+the identifier just deleted.</p>
+</div>
 <div class="section" id="ownership-model">
 <h1>Ownership model</h1>
 <p>EZID maintains ownership information about identifiers and uses that
@@ -1034,6 +1057,7 @@ operations = {
   &quot;create&quot; : lambda l: l%2 == 1,
   &quot;view&quot; : 1,
   &quot;update&quot; : lambda l: l%2 == 1,
+  &quot;delete&quot; : 1,
   &quot;login&quot; : 0,
   &quot;logout&quot; : 0
 }
@@ -1050,6 +1074,7 @@ usageText = &quot;&quot;&quot;Usage: client credentials operation...
     c[reate] identifier [label value label value ...]
     v[iew] identifier
     u[pdate] identifier [label value label value ...]
+    d[elete] identifier
     login
     logout
 &quot;&quot;&quot;
@@ -1103,6 +1128,9 @@ if operation in [&quot;mint&quot;, &quot;create&quot;, &quot;update&quot;]:
   if len(sys.argv) &gt; 4:
     request.add_header(&quot;Content-Type&quot;, &quot;text/plain; charset=UTF-8&quot;)
     request.add_data(formatAnvl(sys.argv[4:]).encode(&quot;UTF-8&quot;))
+elif operation == &quot;delete&quot;:
+  request = urllib2.Request(&quot;%s/id/%s&quot; % (server, sys.argv[3]))
+  request.get_method = lambda: &quot;DELETE&quot;
 elif operation == &quot;view&quot;:
   request = urllib2.Request(&quot;%s/id/%s&quot; % (server, sys.argv[3]))
 elif operation in [&quot;login&quot;, &quot;logout&quot;]:
