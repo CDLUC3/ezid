@@ -12,7 +12,7 @@
 .. _CookieManager:
    http://download.oracle.com/javase/6/docs/api/java/net/CookieManager.html
 .. _DataCite: http://datacite.org/
-.. _DataCite Metadata Scheme: http://dx.doi.org/10.5438/0003
+.. _DataCite Metadata Scheme: http://schema.datacite.org/
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
 .. _ERC: https://wiki.ucop.edu/display/Curation/ERC
 .. _libwww-perl: http://search.cpan.org/dist/libwww-perl/
