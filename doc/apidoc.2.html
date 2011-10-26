@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.8.1: http://docutils.sourceforge.net/" />
 <title>The EZID API, Version 2</title>
 <style type="text/css">
 
@@ -600,11 +600,11 @@ an element's value to the empty string has much the same effect.</p>
 </div>
 <div class="section" id="operation-delete-identifier">
 <h1>Operation: delete identifier</h1>
-<p>A reserved identifier can be deleted by sending a DELETE request to
-the identifier's EZID URL.  We emphasize that only <em>reserved</em>
-identifiers may be deleted; see <a class="reference internal" href="#identifier-status">Identifier status</a> below.
-Authentication is required; only the identifier's owner and any listed
-co-owners may delete an identifier (see <a class="reference internal" href="#ownership-model">Ownership model</a>).</p>
+<p>An identifier that has only been reserved can be deleted by sending a
+DELETE request to the identifier's EZID URL.  We emphasize that only
+<em>reserved</em> identifiers may be deleted; see <a class="reference internal" href="#identifier-status">Identifier status</a> below.
+Authentication is required; only an identifier's owner and any listed
+co-owners may delete the identifier (see <a class="reference internal" href="#ownership-model">Ownership model</a>).</p>
 <p>Here's a sample interaction:</p>
 <pre class="literal-block">
 ⇒ DELETE /ezid/id/ark:/99999/fk4cz3dh0 HTTP/1.1
@@ -693,7 +693,8 @@ and may be one of:</p>
 <dt><strong>reserved</strong></dt>
 <dd>The identifier is known only to EZID.  This status may be used to
 reserve an identifier name within EZID without advertising the
-identifier's existence to resolving and other external services.</dd>
+identifier's existence to resolvers and other external services.  A
+reserved identifier may be deleted.</dd>
 <dt><strong>unavailable</strong></dt>
 <dd>The identifier is public, but the object referenced by the
 identifier is not available.  A reason for the object's
@@ -711,7 +712,8 @@ status transitions:</p>
 <li>A status of &quot;reserved&quot; may be specified only at identifier
 creation time.</li>
 <li>A reserved identifier may be made public.  At this time the
-identifier will be registered with external services.</li>
+identifier will be registered with resolvers and other external
+services.</li>
 <li>A public identifier may be marked as unavailable.</li>
 <li>An unavailable identifier may be returned to public status.</li>
 </ul>

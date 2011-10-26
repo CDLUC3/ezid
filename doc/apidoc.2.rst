@@ -546,11 +546,11 @@ an element's value to the empty string has much the same effect.
 Operation: delete identifier
 ----------------------------
 
-A reserved identifier can be deleted by sending a DELETE request to
-the identifier's EZID URL.  We emphasize that only *reserved*
-identifiers may be deleted; see `Identifier status`_ below.
-Authentication is required; only the identifier's owner and any listed
-co-owners may delete an identifier (see `Ownership model`_).
+An identifier that has only been reserved can be deleted by sending a
+DELETE request to the identifier's EZID URL.  We emphasize that only
+*reserved* identifiers may be deleted; see `Identifier status`_ below.
+Authentication is required; only an identifier's owner and any listed
+co-owners may delete the identifier (see `Ownership model`_).
 
 Here's a sample interaction:
 
@@ -652,7 +652,8 @@ and may be one of:
 **reserved**
   The identifier is known only to EZID.  This status may be used to
   reserve an identifier name within EZID without advertising the
-  identifier's existence to resolving and other external services.
+  identifier's existence to resolvers and other external services.  A
+  reserved identifier may be deleted.
 
 **unavailable**
   The identifier is public, but the object referenced by the
@@ -672,7 +673,8 @@ status transitions:
   creation time.
 
 * A reserved identifier may be made public.  At this time the
-  identifier will be registered with external services.
+  identifier will be registered with resolvers and other external
+  services.
 
 * A public identifier may be marked as unavailable.
 
