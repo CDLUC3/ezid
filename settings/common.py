@@ -10,6 +10,14 @@ EZID_CONFIG_FILE = os.path.join(PROJECT_ROOT, "settings", "ezid.conf")
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))
 
+# Workaround for an obscure Django bug: when running under Apache (and
+# only under Apache), certain rewriting of the request URL (for
+# example, replacement of double slashes with single slashes) messes
+# up Django's URL processing, causing HttpRequest.path to not match
+# the urlpattern corresponding to the invoked callback function.  See
+# django.core.handlers.base.get_script_name.
+FORCE_SCRIPT_NAME = "/ezid"
+
 ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, os.path.join(PROJECT_ROOT,
   "settings", "certs"))
 
