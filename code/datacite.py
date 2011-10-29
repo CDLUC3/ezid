@@ -29,15 +29,18 @@ import config
 _enabled = None
 _doiUrl = None
 _metadataUrl = None
+_numAttempts = None
 _datacenters = None
 _prefixes = None
 _stylesheet = None
 
 def _loadConfig ():
-  global _enabled, _doiUrl, _metadataUrl, _datacenters, _prefixes, _stylesheet
+  global _enabled, _doiUrl, _metadataUrl, _numAttempts, _datacenters, _prefixes
+  global _stylesheet
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
+  _numAttempts = int(config.config("datacite.num_attempts"))
   _datacenters = {}
   for dc in config.config("datacite.datacenters").split(","):
     _datacenters[dc] = "Basic " +\
@@ -78,18 +81,28 @@ def registerIdentifier (doi, targetUrl):
   we have rights to the DOI prefix.
   """
   if not _enabled: return
-  o = urllib2.build_opener(_HTTPErrorProcessor)
-  r = urllib2.Request(_doiUrl)
-  # We manually supply the HTTP Basic authorization header to avoid
-  # the doubling of the number of HTTP transactions caused by the
-  # challenge/response model.
-  r.add_header("Authorization", _datacenterAuthorization(doi))
-  r.add_header("Content-Type", "text/plain; charset=UTF-8")
-  r.add_data(("doi=%s\nurl=%s" % (doi, targetUrl)).encode("UTF-8"))
-  c = o.open(r)
-  assert c.read() == "OK",\
-    "unexpected return from DataCite register DOI operation"
-  c.close()
+  # To deal with transient problems with the Handle system underlying
+  # the DataCite service, we make multiple attempts.
+  for i in range(_numAttempts):
+    o = urllib2.build_opener(_HTTPErrorProcessor)
+    r = urllib2.Request(_doiUrl)
+    # We manually supply the HTTP Basic authorization header to avoid
+    # the doubling of the number of HTTP transactions caused by the
+    # challenge/response model.
+    r.add_header("Authorization", _datacenterAuthorization(doi))
+    r.add_header("Content-Type", "text/plain; charset=UTF-8")
+    r.add_data(("doi=%s\nurl=%s" % (doi, targetUrl)).encode("UTF-8"))
+    c = None
+    try:
+      c = o.open(r)
+      assert c.read() == "OK",\
+        "unexpected return from DataCite register DOI operation"
+    except urllib2.HTTPError, e:
+      if e.code != 500 or i == _numAttempts-1: raise e
+    else:
+      break
+    finally:
+      if c: c.close()
 
 def setTargetUrl (doi, targetUrl):
   """
