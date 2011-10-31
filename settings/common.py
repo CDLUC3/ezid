@@ -7,6 +7,7 @@ import sys
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 SITE_ROOT = os.path.split(PROJECT_ROOT)[0]
 EZID_CONFIG_FILE = os.path.join(PROJECT_ROOT, "settings", "ezid.conf")
+EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))
 

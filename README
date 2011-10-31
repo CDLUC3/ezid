@@ -70,7 +70,7 @@ indicates the deployment level.  Possible values:
 See the corresponding modules in the settings directory for the
 effects the deployment level has.  In addition, the deployment level
 is used to define deployment-level-specific values for options in
-settings/ezid.conf, as in:
+settings/ezid.conf and settings/ezid.conf.shadow, as in:
 
     [datacite]
     enabled: false

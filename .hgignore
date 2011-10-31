@@ -1,3 +1,4 @@
 \.pyc$
 ~$
-^static/metadata_tooltips.js$
+^settings/ezid\.conf\.shadow$
+^static/metadata_tooltips\.js$
