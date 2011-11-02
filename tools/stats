@@ -1,0 +1,184 @@
+#! /usr/bin/python
+
+# Computes cumulative EZID statistics and uploads them to the CDL
+# dashboard service.
+#
+# The statistics consist of cumulative identifier counts aggregated by
+# month and broken down by identifier type (URNs are not currently
+# included).  The counts do not include test identifiers, but do
+# include reserved identifiers.  Example data:
+#
+#   YYYY-MM,DOI,ARK
+#   2010-06,1,0
+#   2010-07,44,0
+#   2010-08,134,0
+#   2010-09,1162,15
+#   2010-10,1199,59
+#   2010-11,1296,43089
+#   ...
+#
+# Usage:
+#
+#   stats dbfile dashurl
+#   stats --compute-only dbfile > data
+#   stats --upload-only dashurl < data
+#
+#     dbfile: bind database file (noid.bdb)
+#     dashurl: dashboard base URL (http://host:port)
+#
+# Note that this script requires an EZID module; the PYTHONPATH
+# environment variable must be set accordingly.
+#
+# Greg Janee <gjanee@ucop.edu>
+# November 2011
+
+import bsddb.db
+import datetime
+import re
+import sys
+import urllib2
+import uuid
+
+import util
+
+testDoiPrefix = "b5072/fk2"
+testArkPrefix = "99999/fk4"
+urnPrefix = "97720/"
+
+usageText = """Usage:
+
+  stats dbfile dashurl
+  stats --compute-only dbfile > data
+  stats --upload-only dashurl < data
+
+    dbfile: bind database file (noid.bdb)
+    dashurl: dashboard base URL (http://host:port)
+"""
+
+if len(sys.argv) != 3 or (sys.argv[1] != "--compute-only" and\
+  not sys.argv[2].startswith("http://")):
+  sys.stderr.write(usageText)
+  sys.exit(1)
+
+doCompute = doUpload = True
+if sys.argv[1] == "--compute-only":
+  doUpload = False
+  dbFile = sys.argv[2]
+else:
+  if sys.argv[1] == "--upload-only":
+    doCompute = False
+  else:
+    dbFile = sys.argv[1]
+  slash = "" if sys.argv[2].endswith("/") else "/"
+  uploadUrl = "%s%scgi-bin/file_upload.cgi" % (sys.argv[2], slash)
+  uploadCompletionUrl = "%s%scgi-bin/file_upload_completion.cgi" %\
+    (sys.argv[2], slash)
+
+class Counter (object):
+  def __init__ (self):
+    self.numArks = 0
+    self.numDois = 0
+    self.numUrns = 0
+  def __str__ (self):
+    # URN counts are not included yet.
+    return "%d,%d" % (self.numDois, self.numArks)
+  def __iadd__ (self, other):
+    self.numArks += other.numArks
+    self.numDois += other.numDois
+    self.numUrns += other.numUrns
+    return self
+
+def incrementMonth (month):
+  return (month + datetime.timedelta(31)).replace(day=1)
+
+if doCompute:
+  # Gather raw counts.
+  db = bsddb.db.DB()
+  db.open(dbFile, flags=bsddb.db.DB_RDONLY)
+  cursor = db.cursor()
+  counters = {}
+  entry = cursor.first()
+  while entry != None:
+    k, v = entry
+    if "\t" in k:
+      id, label = k.split("\t", 1)
+      if util.validateArk(id) == id and label == "_c" and re.match("\d+$", v):
+        if not id.startswith(testArkPrefix) and\
+          not id.startswith(testDoiPrefix):
+          month = datetime.date.fromtimestamp(int(v)).replace(day=1)
+          if month in counters:
+            c = counters[month]
+          else:
+            c = Counter()
+            counters[month] = c
+          if re.match("b\d{4}/", id):
+            c.numDois += 1
+          elif id.startswith(urnPrefix):
+            c.numUrns += 1
+          else:
+            c.numArks += 1
+    entry = cursor.next()
+  db.close()
+  # Fill in any missing months.
+  months = counters.keys()
+  months.sort()
+  for month in months:
+    if month != months[0]:
+      nextMonth = incrementMonth(lastMonth)
+      while nextMonth not in months:
+        counters[nextMonth] = Counter()
+        nextMonth = incrementMonth(nextMonth)
+    lastMonth = month
+  # Accumulate counts, excluding the current month (which is partial).
+  thisMonth = datetime.date.today().replace(day=1)
+  data = "YYYY-MM,DOI,ARK\n"
+  months = counters.keys()
+  months.sort()
+  lastMonth = Counter()
+  for month in months:
+    counters[month] += lastMonth
+    if month < thisMonth:
+      data += "%s,%s\n" % (month.isoformat()[:7], counters[month])
+      lastDataMonth = month
+    lastMonth = counters[month]
+else:
+  # Load previously-generated data.
+  data = sys.stdin.read()
+  m = data.splitlines()[-1].split(",")[0]
+  lastDataMonth = datetime.date(int(m[:4]), int(m[5:]), 1)
+
+boundary = "BOUNDARY_" + uuid.uuid1().hex
+
+def multipartBody (*parts):
+  body = []
+  for p in parts:
+    body.append("--" + boundary)
+    if len(p) == 2:
+      body.append("Content-Disposition: form-data; name=\"%s\"" % p[0])
+      body.append("")
+      body.append(p[1])
+    else:
+      body.append(("Content-Disposition: form-data; name=\"%s\"; " +\
+        "filename=\"%s\"") % (p[0], p[1]))
+      body.append("Content-Type: text/plain")
+      body.append("")
+      body.append(p[2])
+  body.append("--%s--" % boundary)
+  return "\r\n".join(body)
+
+if doUpload:
+  year = "%02d" % (lastDataMonth.year%100)
+  month = "%02d" % lastDataMonth.month
+  body = multipartBody(("typefile", "IdentifiersEZID"),
+    ("year", year), ("month", month),
+    ("filename", "IdentifiersEZID%s%s.csv" % (year, month), data))
+  response = urllib2.urlopen(urllib2.Request(uploadUrl, body,
+    { "Content-Type": "multipart/form-data; boundary=" + boundary })).read()
+  assert re.search("copy file into production", response, re.I)
+  body = multipartBody(("typefile", "IdentifiersEZID"),
+    ("year", year), ("month", month))
+  response = urllib2.urlopen(urllib2.Request(uploadCompletionUrl, body,
+    { "Content-Type": "multipart/form-data; boundary=" + boundary })).read()
+  assert re.search("your file is now moved", response, re.I)
+else:
+  sys.stdout.write(data)
