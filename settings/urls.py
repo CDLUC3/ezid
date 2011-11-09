@@ -6,7 +6,7 @@ def _p (urlPattern, function, kwargs=None):
   # "/ezid/" and that prefix doesn't get mentioned here.  But if we're
   # running locally (i.e., sans Apache), then it must be added.
   # (There's probably a better way to do this.)
-  if django.conf.settings.DEPLOYMENT_LEVEL == "localdev":
+  if django.conf.settings.STANDALONE:
     t = ("^ezid/" + urlPattern, function)
   else:
     t = ("^" + urlPattern, function)
@@ -36,7 +36,7 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("tombstone/id/", "ui.tombstone")
 )
 
-if django.conf.settings.DEPLOYMENT_LEVEL == "localdev":
+if django.conf.settings.STANDALONE:
   urlpatterns += django.conf.urls.defaults.patterns("",
     ("^ezid/static/(?P<path>.*)$", "django.views.static.serve",
     { "document_root": django.conf.settings.MEDIA_ROOT }))
