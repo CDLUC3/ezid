@@ -8,17 +8,18 @@ extension.
 Prerequisites
 =============
 
-Fundamentally, EZID requires Django <http://www.djangoproject.com/>,
-which in turn requires Python <http://www.python.org/> and a
-relational database of some kind (SQLite <http://www.sqlite.org/> is
-just fine).  lxml <http://lxml.de/> is required for processing XML.
-Running under Apache requires Apache <http://httpd.apache.org/>, of
-course, and mod_wsgi <http://code.google.com/p/modwsgi/>.  To work
-with mod_wsgi, Python will have to have been compiled with shared
-object support.  OpenSSL <http://www.openssl.org/> is needed to
-communicate with DataCite and possibly with LDAP.  If LDAP
-authentication is used, then OpenLDAP <http://www.openldap.org/> and
-python-ldap <http://www.python-ldap.org/> are required.
+Fundamentally, EZID requires Django <http://www.djangoproject.com/>
+(version 1.3 or later), which in turn requires Python
+<http://www.python.org/> (version 2.5 or later) and a relational
+database of some kind (SQLite <http://www.sqlite.org/> is just fine).
+lxml <http://lxml.de/> is required for processing XML.  Running under
+Apache requires Apache <http://httpd.apache.org/>, of course, and
+mod_wsgi <http://code.google.com/p/modwsgi/>.  To work with mod_wsgi,
+Python will have to have been compiled with shared object support.
+OpenSSL <http://www.openssl.org/> is needed to communicate with
+DataCite and possibly with LDAP.  If LDAP authentication is used, then
+OpenLDAP <http://www.openldap.org/> and python-ldap
+<http://www.python-ldap.org/> are required.
 
 Those are the core prerequisites for running EZID standalone.  But
 EZID is of little value unless there are some other, external servers
