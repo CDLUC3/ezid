@@ -11,6 +11,7 @@
 .. _cookielib: http://docs.python.org/library/cookielib.html
 .. _CookieManager:
    http://download.oracle.com/javase/6/docs/api/java/net/CookieManager.html
+.. _cURL: http://curl.haxx.se/
 .. _DataCite: http://datacite.org/
 .. _DataCite Metadata Scheme: http://schema.datacite.org/
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
@@ -64,6 +65,7 @@ Contents
 - `Python example`_
 - `PHP examples`_
 - `Perl examples`_
+- `cURL examples`_
 
 Framework
 ---------
@@ -1197,3 +1199,73 @@ To modify an identifier using values from a hash, `%metadata`:hl1:\ :
     Content => encode("UTF-8", join("\\n",
       map { escape($_) . ": " . escape($metadata{$_}) } keys %metadata)));
   print $r->code, $r->decoded_content unless $r->is_success;
+
+cURL examples
+-------------
+
+The EZID API can be exercised using the cURL_ command line tool.  The
+following examples assume metadata is UTF-8 encoded throughout.
+
+To get identifier metadata, obtaining text formatted as described in
+`Request & response bodies`_ above:
+
+.. parsed-literal::
+
+  curl \http://n2t.net/ezid/id/`identifier`:hl2:
+
+To mint an identifier:
+
+.. parsed-literal::
+
+  curl -u `username`:hl2::`password`:hl2: -X POST \https://n2t.net/ezid/\
+  shoulder/`shoulder`:hl2:
+
+A single metadata element can be specified on the command line.  For
+example, to mint an identifier and specify a target URL at the same
+time:
+
+.. parsed-literal::
+
+  curl -u `username`:hl2::`password`:hl2: -X POST -H 'Content-Type: text/plain'
+    --data-binary '_target: `url`:hl2:' \https://n2t.net/ezid/shoulder/\
+  `shoulder`:hl2:
+
+To specify more than one metadata element, the metadata must be placed
+in a file.  For example, to mint an identifier and upload metadata
+contained in a file `metadata.txt`:hl1:\ :
+
+.. parsed-literal::
+
+  curl -u `username`:hl2::`password`:hl2: -X POST -H 'Content-Type: text/plain'
+    --data-binary @\ `metadata.txt`:hl2: \https://n2t.net/ezid/shoulder/\
+  `shoulder`:hl2:
+
+Creating an identifier is similar to minting one, except that the HTTP
+method (-X option) is changed from POST to PUT and an identifier is
+specified instead of a shoulder.  Here are the three examples above,
+but now creating an identifier:
+
+.. parsed-literal::
+
+  curl -u `username`:hl2::`password`:hl2: -X PUT \https://n2t.net/ezid/id/\
+  `identifier`:hl2:
+
+  curl -u `username`:hl2::`password`:hl2: -X PUT -H 'Content-Type: text/plain'
+    --data-binary '_target: `url`:hl2:' \https://n2t.net/ezid/id/\
+  `identifier`:hl2:
+
+  curl -u `username`:hl2::`password`:hl2: -X PUT -H 'Content-Type: text/plain'
+    --data-binary @\ `metadata.txt`:hl2: \https://n2t.net/ezid/id/\
+  `identifier`:hl2:
+
+To modify identifier metadata:
+
+.. parsed-literal::
+
+  curl -u `username`:hl2::`password`:hl2: -X POST -H 'Content-Type: text/plain'
+    --data-binary '_target: `url`:hl2:' \https://n2t.net/ezid/id/\
+  `identifier`:hl2:
+
+  curl -u `username`:hl2::`password`:hl2: -X POST -H 'Content-Type: text/plain'
+    --data-binary @\ `metadata.txt`:hl2: \https://n2t.net/ezid/id/\
+  `identifier`:hl2:

@@ -147,6 +147,7 @@ report problems:</p>
 <li><a class="reference internal" href="#python-example">Python example</a></li>
 <li><a class="reference internal" href="#php-examples">PHP examples</a></li>
 <li><a class="reference internal" href="#perl-examples">Perl examples</a></li>
+<li><a class="reference internal" href="#curl-examples">cURL examples</a></li>
 </ul>
 </div>
 <div class="section" id="framework">
@@ -1311,6 +1312,55 @@ $r = $ua-&gt;request(POST &quot;https://n2t.net:443/ezid/id/<span class="hl2">id
   Content =&gt; encode(&quot;UTF-8&quot;, join(&quot;\n&quot;,
     map { escape($_) . &quot;: &quot; . escape($metadata{$_}) } keys %metadata)));
 print $r-&gt;code, $r-&gt;decoded_content unless $r-&gt;is_success;
+</pre>
+</div>
+<div class="section" id="curl-examples">
+<h1>cURL examples</h1>
+<p>The EZID API can be exercised using the <a class="reference external" href="http://curl.haxx.se/">cURL</a> command line tool.  The
+following examples assume metadata is UTF-8 encoded throughout.</p>
+<p>To get identifier metadata, obtaining text formatted as described in
+<a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above:</p>
+<pre class="literal-block">
+curl http://n2t.net/ezid/id/<span class="hl2">identifier</span>
+</pre>
+<p>To mint an identifier:</p>
+<pre class="literal-block">
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST https://n2t.net/ezid/shoulder/<span class="hl2">shoulder</span>
+</pre>
+<p>A single metadata element can be specified on the command line.  For
+example, to mint an identifier and specify a target URL at the same
+time:</p>
+<pre class="literal-block">
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST -H 'Content-Type: text/plain'
+  --data-binary '_target: <span class="hl2">url</span>' https://n2t.net/ezid/shoulder/<span class="hl2">shoulder</span>
+</pre>
+<p>To specify more than one metadata element, the metadata must be placed
+in a file.  For example, to mint an identifier and upload metadata
+contained in a file <span class="hl1">metadata.txt</span>:</p>
+<pre class="literal-block">
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST -H 'Content-Type: text/plain'
+  --data-binary &#64;<span class="hl2">metadata.txt</span> https://n2t.net/ezid/shoulder/<span class="hl2">shoulder</span>
+</pre>
+<p>Creating an identifier is similar to minting one, except that the HTTP
+method (-X option) is changed from POST to PUT and an identifier is
+specified instead of a shoulder.  Here are the three examples above,
+but now creating an identifier:</p>
+<pre class="literal-block">
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X PUT https://n2t.net/ezid/id/<span class="hl2">identifier</span>
+
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X PUT -H 'Content-Type: text/plain'
+  --data-binary '_target: <span class="hl2">url</span>' https://n2t.net/ezid/id/<span class="hl2">identifier</span>
+
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X PUT -H 'Content-Type: text/plain'
+  --data-binary &#64;<span class="hl2">metadata.txt</span> https://n2t.net/ezid/id/<span class="hl2">identifier</span>
+</pre>
+<p>To modify identifier metadata:</p>
+<pre class="literal-block">
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST -H 'Content-Type: text/plain'
+  --data-binary '_target: <span class="hl2">url</span>' https://n2t.net/ezid/id/<span class="hl2">identifier</span>
+
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST -H 'Content-Type: text/plain'
+  --data-binary &#64;<span class="hl2">metadata.txt</span> https://n2t.net/ezid/id/<span class="hl2">identifier</span>
 </pre>
 </div>
 </div>
