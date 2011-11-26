@@ -902,10 +902,10 @@ identifiers.  `Contact UC3`_ for the password for this account.
 
 Test identifiers and reserved identifiers are orthogonal concepts.  A
 test identifier has a limited lifetime and is deleted by EZID when it
-expires.  A reserved identifier may be deleted by the user while still
-in its reserved state, but once made public, is permanent.  As
-evidence of this orthogonality, it is possible to create a reserved
-test identifier.
+expires.  A reserved identifier may be deleted by the owner while
+still in its reserved state, but once made public, is permanent.  As
+evidence of this orthogonality, it is possible to create reserved test
+identifiers.
 
 Python example
 --------------
@@ -1255,7 +1255,8 @@ time:
   `shoulder`:hl2:
 
 To specify more than one metadata element, the metadata must be placed
-in a file.  For example, to mint an identifier and upload metadata
+in a file that is formatted as described in `Request & response
+bodies`_.  For example, to mint an identifier and upload metadata
 contained in a file `metadata.txt`:hl1:\ :
 
 .. parsed-literal::

@@ -1046,10 +1046,10 @@ provides an &quot;apitest&quot; account that is permitted to create only test
 identifiers.  <a class="reference external" href="http://www.cdlib.org/services/uc3/contact.html">Contact UC3</a> for the password for this account.</p>
 <p>Test identifiers and reserved identifiers are orthogonal concepts.  A
 test identifier has a limited lifetime and is deleted by EZID when it
-expires.  A reserved identifier may be deleted by the user while still
-in its reserved state, but once made public, is permanent.  As
-evidence of this orthogonality, it is possible to create a reserved
-test identifier.</p>
+expires.  A reserved identifier may be deleted by the owner while
+still in its reserved state, but once made public, is permanent.  As
+evidence of this orthogonality, it is possible to create reserved test
+identifiers.</p>
 </div>
 <div class="section" id="python-example">
 <h1>Python example</h1>
@@ -1355,7 +1355,8 @@ curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X P
   --data-binary '_target: <span class="hl2">url</span>' https://n2t.net/ezid/shoulder/<span class="hl2">shoulder</span>
 </pre>
 <p>To specify more than one metadata element, the metadata must be placed
-in a file.  For example, to mint an identifier and upload metadata
+in a file that is formatted as described in <a class="reference internal" href="#request-response-bodies">Request &amp; response
+bodies</a>.  For example, to mint an identifier and upload metadata
 contained in a file <span class="hl1">metadata.txt</span>:</p>
 <pre class="literal-block">
 curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST -H 'Content-Type: text/plain'
