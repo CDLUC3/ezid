@@ -7,6 +7,7 @@
 
 .. _ANVL: https://wiki.ucop.edu/display/Curation/Anvl
 .. _Apache Commons Codec: http://commons.apache.org/codec/
+.. _Contact UC3: http://www.cdlib.org/services/uc3/contact.html
 .. _content negotiation: http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html
 .. _cookielib: http://docs.python.org/library/cookielib.html
 .. _CookieManager:
@@ -62,6 +63,7 @@ Contents
 - `Identifier status`_
 - `Internal metadata`_
 - `Metadata profiles`_
+- `Testing the API`_
 - `Python example`_
 - `PHP examples`_
 - `Perl examples`_
@@ -882,6 +884,28 @@ __ `DataCite Metadata Scheme`_
                 is defined in a profile of ISO 8601 and follows the
                 YYYY-MM-DD format.
    ============ =======================================================
+
+Testing the API
+---------------
+
+EZID provides two namespaces (or "shoulders") for testing purposes:
+ark:/99999/fk4 for ARK identifiers and doi:10.5072/FK2 for DOI
+identifiers.  Identifiers in these namespaces are termed "test
+identifiers."  They are ordinary long-term identifiers in almost all
+respects, including resolvability, except that EZID deletes them after
+72 hours.  An additional difference is that citation metadata for test
+identifiers is not uploaded to external search services.
+
+All user accounts are permitted to create test identifiers.  EZID also
+provides an "apitest" account that is permitted to create only test
+identifiers.  `Contact UC3`_ for the password for this account.
+
+Test identifiers and reserved identifiers are orthogonal concepts.  A
+test identifier has a limited lifetime and is deleted by EZID when it
+expires.  A reserved identifier may be deleted by the user while still
+in its reserved state, but once made public, is permanent.  As
+evidence of this orthogonality, it is possible to create a reserved
+test identifier.
 
 Python example
 --------------

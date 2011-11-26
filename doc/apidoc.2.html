@@ -144,6 +144,7 @@ report problems:</p>
 <li><a class="reference internal" href="#identifier-status">Identifier status</a></li>
 <li><a class="reference internal" href="#internal-metadata">Internal metadata</a></li>
 <li><a class="reference internal" href="#metadata-profiles">Metadata profiles</a></li>
+<li><a class="reference internal" href="#testing-the-api">Testing the API</a></li>
 <li><a class="reference internal" href="#python-example">Python example</a></li>
 <li><a class="reference internal" href="#php-examples">PHP examples</a></li>
 <li><a class="reference internal" href="#perl-examples">Perl examples</a></li>
@@ -1030,6 +1031,25 @@ YYYY-MM-DD format.</p>
 </table>
 </li>
 </ol>
+</div>
+<div class="section" id="testing-the-api">
+<h1>Testing the API</h1>
+<p>EZID provides two namespaces (or &quot;shoulders&quot;) for testing purposes:
+ark:/99999/fk4 for ARK identifiers and doi:10.5072/FK2 for DOI
+identifiers.  Identifiers in these namespaces are termed &quot;test
+identifiers.&quot;  They are ordinary long-term identifiers in almost all
+respects, including resolvability, except that EZID deletes them after
+72 hours.  An additional difference is that citation metadata for test
+identifiers is not uploaded to external search services.</p>
+<p>All user accounts are permitted to create test identifiers.  EZID also
+provides an &quot;apitest&quot; account that is permitted to create only test
+identifiers.  <a class="reference external" href="http://www.cdlib.org/services/uc3/contact.html">Contact UC3</a> for the password for this account.</p>
+<p>Test identifiers and reserved identifiers are orthogonal concepts.  A
+test identifier has a limited lifetime and is deleted by EZID when it
+expires.  A reserved identifier may be deleted by the user while still
+in its reserved state, but once made public, is permanent.  As
+evidence of this orthogonality, it is possible to create a reserved
+test identifier.</p>
 </div>
 <div class="section" id="python-example">
 <h1>Python example</h1>
