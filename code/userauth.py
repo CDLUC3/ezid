@@ -61,7 +61,7 @@ def _escape (v):
 
 def _getAttributes (server, dn):
   r = server.search_s(dn, ldap.SCOPE_BASE)
-  assert len(r) == 1 and r[0][0] == dn,\
+  assert len(r) == 1 and r[0][0].lower() == dn.lower(),\
     "unexpected return from LDAP search command, DN='%s'" % dn
   r = r[0][1]
   # Although not documented anywhere, it appears that returned values
