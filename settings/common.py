@@ -64,14 +64,17 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = "settings.urls"
 
-TEMPLATE_LOADERS = ("django.template.loaders.filesystem.Loader",)
+TEMPLATE_LOADERS = ("django.template.loaders.filesystem.Loader",
+                    "django.template.loaders.app_directories.load_template_source")
 TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
 TEMPLATE_CONTEXT_PROCESSORS =\
   ("django.contrib.messages.context_processors.messages",)
 
 INSTALLED_APPS = (
   "django.contrib.sessions",
-  "django.contrib.messages"
+  "django.contrib.messages",
+  "ui_tags",
+  
 )
 
 SESSION_COOKIE_PATH = "/ezid/"

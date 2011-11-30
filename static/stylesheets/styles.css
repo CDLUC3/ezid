@@ -78,36 +78,36 @@ h4 {
 }
 
 div.rb1 {
-  background: url(/ezid/static/layout_test/corners/dot.gif) 0 0 repeat-x;
+  background: url(/ezid/static/images/corners/dot.gif) 0 0 repeat-x;
   width: 100%;
   }
 
 div.rb2 {
-  background: url(/ezid/static/layout_test/corners/dot.gif) 0 100% repeat-x;
+  background: url(/ezid/static/images/corners/dot.gif) 0 100% repeat-x;
 }
 
 div.rb3 {
-  background: url(/ezid/static/layout_test/corners/dot.gif) 0 0 repeat-y; 
+  background: url(/ezid/static/images/corners/dot.gif) 0 0 repeat-y; 
 }
 
 div.rb4 {
-  background: url(/ezid/static/layout_test/corners/dot.gif) 100% 0 repeat-y;
+  background: url(/ezid/static/images/corners/dot.gif) 100% 0 repeat-y;
 }
 
 div.rb5 {
-  background: url(/ezid/static/layout_test/corners/bl.gif) 0 100% no-repeat;
+  background: url(/ezid/static/images/corners/bl.gif) 0 100% no-repeat;
 }
 
 div.rb6 {
-  background: url(/ezid/static/layout_test/corners/br.gif) 100% 100% no-repeat;
+  background: url(/ezid/static/images/corners/br.gif) 100% 100% no-repeat;
 }
 
 div.rb7 {
-  background: url(/ezid/static/layout_test/corners/tl.gif) 0 0 no-repeat;
+  background: url(/ezid/static/images/corners/tl.gif) 0 0 no-repeat;
 }
 
 div.rb8 {
-  background: url(/ezid/static/layout_test/corners/tr.gif) 100% 0 no-repeat;
+  background: url(/ezid/static/images/corners/tr.gif) 100% 0 no-repeat;
   padding:10px;
 }
 
