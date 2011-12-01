@@ -249,13 +249,14 @@ class="open"></span><span id="rl_close" class="closed"></span> Reload
 EZID</a></p>
 
 <div id="rl_section" class="section">
-<form method="post" action="/ezid/admin/reload">
+<form method="post" action="/ezid/admin">
 <p>Reloading EZID empties its caches and re-reads the configuration
 file.  Due to session caching, it may be necessary for users with open
 sessions to logout and login again to see the effects of configuration
 changes, particularly those related to shoulders.</p>
 <table class="form">
-<tr><td><input type="submit" value="Reload"/></td></tr>
+<tr><td><input type="submit" value="Reload"/>
+<input type="hidden" name="operation" value="reload"/></td></tr>
 </table>
 </form>
 </div>
