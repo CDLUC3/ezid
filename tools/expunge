@@ -46,7 +46,7 @@ import util
 
 testArkPrefix = config.config("prefix_TESTARK.prefix")[5:]
 testDoiPrefix = util.doi2shadow(config.config("prefix_TESTDOI.prefix")[4:])
-lifetime = 72*60*60 # seconds
+lifetime = 2*7*24*60*60 # seconds
 ezidUrl = config.config("DEFAULT.ezid_base_url")
 
 usageText = """Usage:

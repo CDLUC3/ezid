@@ -893,7 +893,7 @@ ark:/99999/fk4 for ARK identifiers and doi:10.5072/FK2 for DOI
 identifiers.  Identifiers in these namespaces are termed "test
 identifiers."  They are ordinary long-term identifiers in almost all
 respects, including resolvability, except that EZID deletes them after
-72 hours.  An additional difference is that citation metadata for test
+2 weeks.  An additional difference is that citation metadata for test
 identifiers is not uploaded to external search services.
 
 All user accounts are permitted to create test identifiers.  EZID also
