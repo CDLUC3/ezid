@@ -2,7 +2,7 @@ from django import template
 
 register = template.Library()
 
-#This captures the block, can't believe what a PITA this is in django
+#This captures the block around with rounded corners go, can't believe what a PITA this is in django
 @register.tag(name="rounded_borders")
 def do_rounded_borders(parser, token):
   nodelist = parser.parse(('endrounded_borders'))
