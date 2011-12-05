@@ -75,12 +75,12 @@ def _datacenterAuthorization (doi):
 def registerIdentifier (doi, targetUrl):
   """
   Registers a scheme-less DOI identifier (e.g., "10.5060/foo") and
-  target URL (e.g., "http://whatever...") with DataCite.  No error
-  checking is done on the inputs; in particular, it is not checked
-  that the arguments are syntactically correct, nor is it checked that
-  we have rights to the DOI prefix.
+  target URL (e.g., "http://whatever...") with DataCite.  There are
+  three possible returns: None on success; a string error message if
+  the target URL was not accepted by DataCite; or a thrown exception
+  on other error.
   """
-  if not _enabled: return
+  if not _enabled: return None
   # To deal with transient problems with the Handle system underlying
   # the DataCite service, we make multiple attempts.
   for i in range(_numAttempts):
@@ -98,18 +98,23 @@ def registerIdentifier (doi, targetUrl):
       assert c.read() == "OK",\
         "unexpected return from DataCite register DOI operation"
     except urllib2.HTTPError, e:
+      message = e.fp.read()
+      if e.code == 400 and message.startswith("[url]"): return message
       if e.code != 500 or i == _numAttempts-1: raise e
     else:
       break
     finally:
       if c: c.close()
+  return None
 
 def setTargetUrl (doi, targetUrl):
   """
   Sets the target URL of an existing scheme-less DOI identifier (e.g.,
-  "10.5060/foo").  No error checking is done on the inputs.
+  "10.5060/foo").  There are three possible returns: None on success;
+  a string error message if the target URL was not accepted by
+  DataCite; or a thrown exception on other error.
   """
-  registerIdentifier(doi, targetUrl)
+  return registerIdentifier(doi, targetUrl)
 
 _prologRE = re.compile("(<\?xml\s+version\s*=\s*['\"]([-\w.:]+)[\"'])" +\
   "(\s+encoding\s*=\s*['\"]([-\w.]+)[\"'])?")
@@ -224,7 +229,7 @@ def uploadMetadata (doi, current, delta):
   an XML-related problem); or a thrown exception on other error.  No
   error checking is done on the inputs.
   """
-  if not _enabled: return
+  if not _enabled: return None
   oldRecord = _formRecord(doi, current)
   m = current.copy()
   m.update(delta)
@@ -259,7 +264,8 @@ def ping ():
   Tests the DataCite API, returning "up" or "down".
   """
   try:
-    registerIdentifier("10.5072/FK2_cdl_status_check", "http://www.cdlib.org/")
+    assert registerIdentifier("10.5072/FK2_cdl_status_check",
+      "http://www.cdlib.org/") is None
   except Exception, e:
     return "down"
   else:
