@@ -251,6 +251,12 @@ methods of authentication:
    Perform a GET operation on \http://n2t.net/ezid/logout to
    invalidate a session.
 
+If authentication is required and credentials are either missing or
+invalid, EZID returns a 401 HTTP status code and the status line
+"error: unauthorized - authentication failure" (see `Error handling`_
+below).  If authentication is successful but the request is still not
+authorized, the returned status line is simply "error: unauthorized".
+
 Request & response bodies
 -------------------------
 

@@ -120,8 +120,12 @@ def _response (status, createRequest=False, addAuthenticateHeader=False,
   if addAuthenticateHeader: r["WWW-Authenticate"] = "Basic realm=\"EZID\""
   return r
 
-def _unauthorized ():
-  return _response("error: unauthorized", addAuthenticateHeader=True)
+def _unauthorized (authenticationFailure=True):
+  if authenticationFailure:
+    s = " - authentication failure"
+  else:
+    s = ""
+  return _response("error: unauthorized" + s, addAuthenticateHeader=True)
 
 def _methodNotAllowed ():
   return _response("error: method not allowed")
@@ -183,8 +187,10 @@ def _getMetadata (request):
     auth = userauth.authenticateRequest(request)
     if type(auth) is str:
       return _response(auth)
-    elif not auth or auth.user[0] != _adminUsername:
+    elif not auth:
       return _unauthorized()
+    elif auth.user[0] != _adminUsername:
+      return _unauthorized(False)
   return _response(s, anvlBody=anvl.format(metadata))
 
 def _setMetadata (request):
@@ -275,7 +281,9 @@ def reload (request):
   auth = userauth.authenticateRequest(request)
   if type(auth) is str:
     return _response(auth)
-  elif not auth or auth.user[0] != _adminUsername:
+  elif not auth:
     return _unauthorized()
+  elif auth.user[0] != _adminUsername:
+    return _unauthorized(False)
   config.load()
   return _response("success: configuration file reloaded and caches emptied")

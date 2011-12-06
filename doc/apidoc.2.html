@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.8.1: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
 <title>The EZID API, Version 2</title>
 <style type="text/css">
 
@@ -337,6 +337,11 @@ analogous to the Python code above or, in Java 1.6 and newer,
 invalidate a session.</p>
 </li>
 </ol>
+<p>If authentication is required and credentials are either missing or
+invalid, EZID returns a 401 HTTP status code and the status line
+&quot;error: unauthorized - authentication failure&quot; (see <a class="reference internal" href="#error-handling">Error handling</a>
+below).  If authentication is successful but the request is still not
+authorized, the returned status line is simply &quot;error: unauthorized&quot;.</p>
 </div>
 <div class="section" id="request-response-bodies">
 <h1>Request &amp; response bodies</h1>
