@@ -39,7 +39,10 @@ div.menu_main div{
   margin-right: 60px;
 }
 
-
+div.menu_main a{
+  color: gray;
+  text-decoration: none;
+}
 
 div.main_menu div a:hover {
   text-decoration: underline;
@@ -50,8 +53,18 @@ div.menu_secondary{
   font-size: 110%;
 }
 
+div.menu_secondary a{
+  color: blue;
+}
+
 span.menu_current{
   font-weight: bold;
+}
+
+div.menu_main a.menu_current{
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
 }
 
 h1 {
