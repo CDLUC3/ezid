@@ -4,12 +4,16 @@ import os.path
 import socket
 import sys
 
+
+
+
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 SITE_ROOT = os.path.split(PROJECT_ROOT)[0]
 EZID_CONFIG_FILE = os.path.join(PROJECT_ROOT, "settings", "ezid.conf")
 EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))
+
 
 # Workaround for an obscure Django bug: when running under Apache (and
 # only under Apache), certain rewriting of the request URL (for
@@ -68,7 +72,8 @@ TEMPLATE_LOADERS = ("django.template.loaders.filesystem.Loader",
                     "django.template.loaders.app_directories.load_template_source")
 TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
 TEMPLATE_CONTEXT_PROCESSORS =\
-  ("django.contrib.messages.context_processors.messages",)
+  ("django.contrib.messages.context_processors.messages",
+   "django.core.context_processors.request", )
 
 INSTALLED_APPS = (
   "django.contrib.sessions",
