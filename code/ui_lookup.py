@@ -1,6 +1,8 @@
 from django.shortcuts import render_to_response
 
-d = {'1_menu': 'lookup'}
+d = { 'menu_item' : 'ui_lookup.null'}
 
 def index(request):
-  pass
+  d['menu_item'] = 'ui_lookup.index'
+  return render_to_response('lookup/index.html', d)
+

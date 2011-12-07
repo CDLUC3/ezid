@@ -1,18 +1,8 @@
 {% load menus %}
 <div class="grid_16 menu_main">
-  {% top_menu 'ui_home.index'%}
+  {% top_menu menu_item %}
 </div>
 
 <div class="grid_16 menu_secondary">
-  <span class="menu_current">Why EZID?</span>
-  &nbsp;|&nbsp;
-  <a href="">Understanding Identifiers</a>
-  &nbsp;|&nbsp;
-  <a href="">Pricing</a>
-  &nbsp;|&nbsp;
-  <a href="">Documentation</a>
-  &nbsp;|&nbsp;
-  <a href="">Outreach</a>
-  &nbsp;|&nbsp;
-  <a href="">The EZID Community</a>  
+  {% secondary_menu menu_item %}  
 </div>

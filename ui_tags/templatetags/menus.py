@@ -1,5 +1,6 @@
 from django import template
 from django.core.urlresolvers import reverse
+import string
 
 register = template.Library()
 
@@ -39,21 +40,33 @@ MENUS = (
 def top_menu(current_func):
   acc = ''
   for menu in MENUS:
-    acc += top_menu_item(menu, current_func == menu[1])
+    acc += top_menu_item(menu,
+      string.split(current_func, '.')[0] == string.split(menu[1], '.')[0])
   return acc
-    
-    
-
+  
 @register.simple_tag
 def secondary_menu(current_func):
-  pass
+  for menu in MENUS:
+    if string.split(current_func,'.')[0] == string.split(menu[1], '.')[0]: break
+  if not menu[2]: return ''
+  acc = []
+  for m in menu[2]:
+    acc.append(display_item(m,
+                string.split(current_func, '.')[1] == string.split(m[1], '.')[1]))
+  return '&nbsp;&nbsp;|&nbsp;&nbsp;'.join(acc)
+  
+  
 
 def top_menu_item(tup, is_current):
   return "<div>" + display_item(tup, is_current) + "</div>"
 
+
 def display_item(tup, is_current):
+  u = reverse(tup[1])
   if is_current:
-    return """<span class="menu_current">""" + tup[0] + """</span>"""
+    if not tup[2]:
+      return """<span class="menu_current">""" + tup[0] + """</span>"""
+    else:
+      return """<a href="%(path)s" class="menu_current">%(text)s</a>""" % {'path':u, 'text':tup[0] }
   else:
-    u = reverse(tup[1])
-    return """<a href="%(path)s">%(text)s</span></a>""" % {'path':u, 'text':tup[0] }
+    return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }

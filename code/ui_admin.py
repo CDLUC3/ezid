@@ -1,21 +1,27 @@
 from django.shortcuts import render_to_response
 
-d = {'1_menu': 'admin'}
+d = { 'menu_item' : 'ui_admin.null'}
 
 def index(request):
-  pass
+  d['menu_item'] = 'ui_admin.index'
+  return render_to_response('admin/index.html', d)
 
 def usage(request):
-  pass
+  d['menu_item'] = 'ui_admin.usage'
+  return render_to_response('admin/usage.html', d)
 
 def manage_users(request):
-  pass
+  d['menu_item'] = 'ui_admin.manage_users'
+  return render_to_response('admin/manage_users.html', d)
 
 def manage_groups(request):
-  pass
+  d['menu_item'] = 'ui_admin.manage_groups'
+  return render_to_response('admin/manage_groups.html', d)
 
 def system_status(request):
-  pass
+  d['menu_item'] = 'ui_admin.system_status'
+  return render_to_response('admin/system_status.html', d)
 
 def alert_message(request):
-  pass
+  d['menu_item'] = 'ui_admin.alert_message'
+  return render_to_response('admin/alert_message.html', d)

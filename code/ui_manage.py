@@ -1,12 +1,7 @@
 from django.shortcuts import render_to_response
 
-d = {'1_menu': 'manage'}
+d = { 'menu_item' : 'ui_manage.null'}
 
 def index(request):
-  return render_to_response('home/home.html', d)
-
-def details(request):
-  pass
-
-def understanding(request):
-  pass
+  d['menu_item'] = 'ui_manage.index'
+  return render_to_response('manage/index.html', d)
