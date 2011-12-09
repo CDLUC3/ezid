@@ -1,6 +1,5 @@
 from django.shortcuts import render_to_response
-import ui_common
-
+import ui_common as uic
 
 d = { 'menu_item' : 'ui_home.null'}
 

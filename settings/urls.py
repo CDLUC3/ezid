@@ -1,5 +1,7 @@
 import django.conf
 import django.conf.urls.defaults
+import os
+import sys
 
 def _p (urlPattern, function, kwargs=None):
   # If we're running under Apache, the site is already rooted under
@@ -77,3 +79,13 @@ if django.conf.settings.STANDALONE:
 
 handler404 = "django.views.defaults.page_not_found"
 handler500 = "django.views.defaults.server_error"
+
+#the urls.py seems to load upon the first request for a process
+#this seemed to me to be the best place for initializing common
+#settings for views that are constant (from Greg's code)
+#they are then easily available by uic.varname
+
+#PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
+#sys.path.append(os.path.join(PROJECT_ROOT, "code"))
+import ui_common as uic
+uic.loadConfig()

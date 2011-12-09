@@ -1,3 +1,4 @@
+import ui_common as uic
 from django.shortcuts import render_to_response
 
 d = { 'menu_item' : 'ui_manage.null'}

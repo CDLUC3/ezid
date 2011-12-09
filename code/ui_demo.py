@@ -1,8 +1,10 @@
-from django.shortcuts import render_to_response
+import ui_common as uic
+from django.shortcuts import render_to_response, redirect
 
 d = { 'menu_item' : 'ui_demo.null'}
 
 def index(request):
+  return redirect("ui_demo.simple")
   d['menu_item'] = 'ui_demo.index'
   return render_to_response('create/index.html', d)
 
