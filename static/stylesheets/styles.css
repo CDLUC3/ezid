@@ -158,3 +158,17 @@ div.copyright {
   line-height: 225%;
   font-size: 80%;
 }
+
+label.left {
+  margin: 10px 0 0 0;
+  float: left;
+  clear: left;
+  display: block;
+  width: 120px;  
+}
+
+div.field_right {
+  margin: 10px 0 0 0;
+  float: left;
+  width: 300px;
+}

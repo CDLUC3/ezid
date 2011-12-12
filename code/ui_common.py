@@ -36,10 +36,12 @@ def loadConfig():
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
   global adminUsername, shoulders
   ezidUrl = config.config("DEFAULT.ezid_base_url")
-  t = {}
-  for f in os.listdir(django.conf.settings.TEMPLATE_DIRS[0]):
-    if f.endswith(".html"): t[f[:-5]] = django.template.loader.get_template(f)
-  templates = t
+  templates = {}
+  _load_templates([ django.conf.settings.TEMPLATE_DIRS[0] ])
+  print templates
+  #for f in os.listdir(django.conf.settings.TEMPLATE_DIRS[0]):
+  #  if f.endswith(".html"): t[f[:-5]] = django.template.loader.get_template(f)
+  #templates = t
   try:
     f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
       "alert_message"))
@@ -64,6 +66,18 @@ def loadConfig():
     "prefix": config.config("prefix_%s.prefix" % k) }\
     for k in config.config("prefixes.keys").split(",")\
     if not k.startswith("TEST")]
+  
+#loads the templates directory recursively (dir_list is a list)
+#beginning with first list item django.conf.settings.TEMPLATE_DIRS[0]
+def _load_templates(dir_list):
+  global templates
+  my_dir = apply(os.path.join, dir_list)
+  for f in os.listdir(my_dir):
+    if os.path.isdir(os.path.join(my_dir,f)):
+      _load_templates(dir_list + [f]) #copy list so it doesn't change from called side
+    elif os.path.isfile(os.path.join(my_dir,f)) and f.endswith(".html"):
+      local_path = apply(os.path.join, dir_list[1:] + [f])
+      templates[local_path[:-5]] = django.template.loader.get_template(local_path)
 
 def render (request, template, context={}):
   c = { "session": request.session, "alertMessage": alertMessage }
@@ -113,7 +127,7 @@ def jsonResponse (data):
   r["Content-Length"] = len(ec)
   return r
 
-_redirect = django.http.HttpResponseRedirect
+redirect = django.http.HttpResponseRedirect
 
 def _error (code):
   content = templates[str(code)].render(django.template.Context())

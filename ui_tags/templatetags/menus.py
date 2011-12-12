@@ -46,9 +46,12 @@ def top_menu(current_func):
   
 @register.simple_tag
 def secondary_menu(current_func):
+  matched = False
   for menu in MENUS:
-    if string.split(current_func,'.')[0] == string.split(menu[1], '.')[0]: break
-  if not menu[2]: return ''
+    if string.split(current_func,'.')[0] == string.split(menu[1], '.')[0]:
+      matched = True
+      break
+  if not matched or not menu[2]: return ''
   acc = []
   for m in menu[2]:
     acc.append(display_item(m,

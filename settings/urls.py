@@ -70,6 +70,7 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("info/help$", "ui_info.help"),
   _p("info/contact_us$", "ui_info.contact_us"),
   _p("info/privacy$", "ui_info.privacy"),
+  _p("login$", "dispatch.d", { "function": "ui_account.login", "ssl": True }),
 )
 
 if django.conf.settings.STANDALONE:

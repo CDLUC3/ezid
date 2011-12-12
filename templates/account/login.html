@@ -1,0 +1,32 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+
+{% block title %}EZID : Login{% endblock %}
+
+{% block javascript %}
+$(document).ready(function () {
+  $("#username").keydown(clearMessages);
+  $("#password").keydown(clearMessages);
+  $("#username").focus();
+});
+{% endblock %}
+{% block content %}
+  <div class="grid_12">
+    <h1>Login</h1>
+    <form method="post" action=".">
+      <label for="username" class="left">Username</label>
+      <div class="field_right">
+        <input type="text" id="username" name="username" size="20"/>
+      </div>
+      <label for="password" class="left">Password</label>
+      <div class="field_right">
+        <input type="password" id="password" name="password" size="20"/>
+      </div>
+      <label for="login" class="left">&nbsp;</label>
+      <div class="field_right">
+        <input type="submit" id="login" name="login" value="Login" />
+      </div>
+    </form>
+    
+  </div>
+{% endblock %}
