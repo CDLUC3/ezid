@@ -5,5 +5,5 @@ d = { 'menu_item' : 'ui_lookup.null'}
 
 def index(request):
   d['menu_item'] = 'ui_lookup.index'
-  return render_to_response('lookup/index.html', d)
+  return uic.render(request, 'lookup/index', d)
 

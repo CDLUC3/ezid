@@ -5,28 +5,28 @@ d = { 'menu_item' : 'ui_home.null'}
 
 def index(request):
   d['menu_item'] = 'ui_home.index'
-  return render_to_response('home/index.html', d)
+  return uic.render(request, 'home/index', d)
 
 def community(request):
   d['menu_item'] = 'ui_home.community'  
-  return render_to_response('home/community.html', d)
+  return uic.render(request, 'home/community', d)
 
 def documentation(request):
   d['menu_item'] = 'ui_home.documentation'
-  return render_to_response('home/documentation.html', d)
+  return uic.render(request, 'home/documentation', d)
 
 def outreach(request):
   d['menu_item'] = 'ui_home.outreach' 
-  return render_to_response('home/outreach.html', d)
+  return uic.render(request, 'home/outreach', d)
 
 def pricing(request):
   d['menu_item'] = 'ui_home.pricing' 
-  return render_to_response('home/pricing.html', d)
+  return uic.render(request, 'home/pricing', d)
 
 def understanding(request):
   d['menu_item'] = 'ui_home.understanding' 
-  return render_to_response('home/understanding.html', d)
+  return uic.render(request, 'home/understanding', d)
 
 def why(request):
   d['menu_item'] = 'ui_home.why'
-  return render_to_response('home/why.html', d)
+  return uic.render(request, 'home/why', d)
