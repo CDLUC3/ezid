@@ -38,10 +38,6 @@ def loadConfig():
   ezidUrl = config.config("DEFAULT.ezid_base_url")
   templates = {}
   _load_templates([ django.conf.settings.TEMPLATE_DIRS[0] ])
-  print templates
-  #for f in os.listdir(django.conf.settings.TEMPLATE_DIRS[0]):
-  #  if f.endswith(".html"): t[f[:-5]] = django.template.loader.get_template(f)
-  #templates = t
   try:
     f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
       "alert_message"))
@@ -74,7 +70,7 @@ def _load_templates(dir_list):
   my_dir = apply(os.path.join, dir_list)
   for f in os.listdir(my_dir):
     if os.path.isdir(os.path.join(my_dir,f)):
-      _load_templates(dir_list + [f]) #copy list so it doesn't change from called side
+      _load_templates(dir_list + [f])
     elif os.path.isfile(os.path.join(my_dir,f)) and f.endswith(".html"):
       local_path = apply(os.path.join, dir_list[1:] + [f])
       templates[local_path[:-5]] = django.template.loader.get_template(local_path)
