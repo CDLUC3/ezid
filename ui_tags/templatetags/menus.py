@@ -4,34 +4,38 @@ import string
 
 register = template.Library()
 
+#this sets the menu and submenu structure along with information about its link
+#and also allows matching with current items for different display
+# structure: name, function, menu role, submenus
+
 MENUS = (
-          ("Home", "ui_home.index",
-            ( ('Why EZID?', 'ui_home.why', () ),
-              ('Understanding Identifiers', 'ui_home.understanding', () ),
-              ('Pricing', 'ui_home.pricing', () ),
-              ('Documentation', 'ui_home.documentation', () ),
-              ('Outreach', 'ui_home.outreach', () ),
-              ('Community', 'ui_home.community', () )
+          ("Home", "ui_home.index", 'public',
+            ( ('Why EZID?', 'ui_home.why', 'public', () ),
+              ('Understanding Identifiers', 'ui_home.understanding', 'public', () ),
+              ('Pricing', 'ui_home.pricing', 'public', () ),
+              ('Documentation', 'ui_home.documentation', 'public', () ),
+              ('Outreach', 'ui_home.outreach', 'public', () ),
+              ('Community', 'ui_home.community', 'public', () )
             ) 
           ),
-          ("Manage_IDs", 'ui_manage.index', ()),
-          ("Create IDs", 'ui_create.index',
-            ( ("Simple", 'ui_create.simple', ()),
-              ("Advanced", "ui_create.advanced", ())
+          ("Manage IDs", 'ui_manage.index', 'user', ()),
+          ("Create IDs", 'ui_create.index', 'user',
+            ( ("Simple", 'ui_create.simple', 'user', ()),
+              ("Advanced", "ui_create.advanced", 'user', ())
             )
           ),
-          ("Lookup ID", 'ui_lookup.index', ()),
-          ("Demo", 'ui_demo.index',
-            ( ("Simple", 'ui_demo.simple', ()),
-              ("Advanced", "ui_demo.advanced", ())
+          ("Lookup ID", 'ui_lookup.index', 'public', ()),
+          ("Demo", 'ui_demo.index', 'public',
+            ( ("Simple", 'ui_demo.simple', 'public', ()),
+              ("Advanced", "ui_demo.advanced", 'public', ())
             )
           ),
-          ("Admin", 'ui_admin.index',
-            ( ("View usage", 'ui_admin.usage', ()),
-              ("Manage user accounts", 'ui_admin.manage_users', ()),
-              ("Manage groups", 'ui_admin.manage_groups', ()),
-              ("System status", 'ui_admin.system_status', ()),
-              ("Create alert message", 'ui_admin.alert_message', ())
+          ("Admin", 'ui_admin.index', 'admin',
+            ( ("View usage", 'ui_admin.usage', 'admin', ()),
+              ("Manage user accounts", 'ui_admin.manage_users', 'admin', ()),
+              ("Manage groups", 'ui_admin.manage_groups', 'admin', ()),
+              ("System status", 'ui_admin.system_status', 'admin', ()),
+              ("Create alert message", 'ui_admin.alert_message', 'admin', ())
             )
           )
         )
@@ -51,9 +55,9 @@ def secondary_menu(current_func):
     if string.split(current_func,'.')[0] == string.split(menu[1], '.')[0]:
       matched = True
       break
-  if not matched or not menu[2]: return ''
+  if not matched or not menu[3]: return ''
   acc = []
-  for m in menu[2]:
+  for m in menu[3]:
     acc.append(display_item(m,
                 string.split(current_func, '.')[1] == string.split(m[1], '.')[1]))
   return '&nbsp;&nbsp;|&nbsp;&nbsp;'.join(acc)
@@ -67,7 +71,7 @@ def top_menu_item(tup, is_current):
 def display_item(tup, is_current):
   u = reverse(tup[1])
   if is_current:
-    if not tup[2]:
+    if not tup[3]:
       return """<span class="menu_current">""" + tup[0] + """</span>"""
     else:
       return """<a href="%(path)s" class="menu_current">%(text)s</a>""" % {'path':u, 'text':tup[0] }

@@ -13,7 +13,7 @@ $(document).ready(function () {
 {% block content %}
   <div class="grid_12">
     <h1>Login</h1>
-    <form method="post" action=".">
+    <form method="post" action="{% url ui_account.login %}">
       <label for="username" class="left">Username</label>
       <div class="field_right">
         <input type="text" id="username" name="username" size="20"/>

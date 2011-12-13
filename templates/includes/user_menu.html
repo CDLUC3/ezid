@@ -1,9 +1,14 @@
-<div class="grid_7 top_area right-links">
-  Logged in as <strong>ezid_admin</strong>
-  &nbsp;|&nbsp;
-  <a href="">My Account</a>
-  &nbsp;|&nbsp;
-  <a href="{% url ui_account.login %}">Login</a>
-  &nbsp;|&nbsp;
+<div class="grid_8 top_area right-links">
+  {% if session.auth %}
+    Logged in as <strong>{{ session.auth.user|first }}</strong>
+    &nbsp;|&nbsp;
+    <a href="">My Account</a>
+    &nbsp;|&nbsp;
+    <a href="{% url ui_account.logout %}">Logout</a>
+    &nbsp;|&nbsp;
+  {% else %}
+    <a href="{% url ui_account.login %}">Login</a>
+    &nbsp;|&nbsp;
+  {% endif %}
   <a href="">Contact Us</a>
 </div>

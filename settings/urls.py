@@ -63,14 +63,14 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("admin/manage_groups$", "ui_admin.manage_groups"),
   _p("admin/system_status$", "ui_admin.system_status"),
   _p("admin/alert_message$", "ui_admin.alert_message"),
-  _p("account/edit$", "ui_account.edit"),
-  _p("account/login$", "ui_account.login"),
-  _p("account/logout$", "ui_account.logout"),
   _p("info/about_us$", "ui_info.about_us"),
   _p("info/help$", "ui_info.help"),
   _p("info/contact_us$", "ui_info.contact_us"),
   _p("info/privacy$", "ui_info.privacy"),
-  _p("login$", "dispatch.d", { "function": "ui_account.login", "ssl": True }),
+  _p("login$", "ui_account.login"),
+  #_p("login$", "dispatch.d", { "function": "ui_account.login", "ssl": True }),
+  _p("account/edit$", "ui_account.edit"),
+  _p("account/logout$", "ui_account.logout"),
 )
 
 if django.conf.settings.STANDALONE:

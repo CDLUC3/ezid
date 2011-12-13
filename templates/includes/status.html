@@ -1,5 +1,12 @@
-<div class="grid_5 top_area status">
-  <div>
-    Place status message here...
+{% if alertMessage != "" or messages %}
+  <div class="grid_16 status">
+    {% if alertMessage != "" %}
+      <p>{{ alertMessage }}</p>
+    {% endif %}
+    {% if messages %}
+      {% for m in messages %}
+        <p class="{{ m.tags }}">{{ m }}</p>
+      {% endfor %}
+    {% endif %} 
   </div>
-</div>
+{% endif %}
