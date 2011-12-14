@@ -66,6 +66,10 @@ span.menu_current{
   font-weight: bold;
 }
 
+span.menu_disabled{
+  color: #999999;
+}
+
 div.menu_main a.menu_current{
   font-weight: bold;
   color: black;

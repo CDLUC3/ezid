@@ -1,6 +1,7 @@
 from django import template
 from django.core.urlresolvers import reverse
 import string
+import config
 
 register = template.Library()
 
@@ -41,15 +42,17 @@ MENUS = (
         )
 
 @register.simple_tag
-def top_menu(current_func):
+def top_menu(current_func, session):
+  #print type(session['auth']).__name__
+  #print session.keys()
   acc = ''
   for menu in MENUS:
-    acc += top_menu_item(menu,
+    acc += top_menu_item(menu, session,
       string.split(current_func, '.')[0] == string.split(menu[1], '.')[0])
   return acc
   
 @register.simple_tag
-def secondary_menu(current_func):
+def secondary_menu(current_func, session):
   matched = False
   for menu in MENUS:
     if string.split(current_func,'.')[0] == string.split(menu[1], '.')[0]:
@@ -58,17 +61,17 @@ def secondary_menu(current_func):
   if not matched or not menu[3]: return ''
   acc = []
   for m in menu[3]:
-    acc.append(display_item(m,
+    acc.append(display_item(m, session,
                 string.split(current_func, '.')[1] == string.split(m[1], '.')[1]))
   return '&nbsp;&nbsp;|&nbsp;&nbsp;'.join(acc)
   
   
 
-def top_menu_item(tup, is_current):
-  return "<div>" + display_item(tup, is_current) + "</div>"
+def top_menu_item(tup, session, is_current):
+  return "<div>" + display_item(tup, session, is_current) + "</div>"
 
 
-def display_item(tup, is_current):
+def display_item(tup, session, is_current):
   u = reverse(tup[1])
   if is_current:
     if not tup[3]:
@@ -76,4 +79,11 @@ def display_item(tup, is_current):
     else:
       return """<a href="%(path)s" class="menu_current">%(text)s</a>""" % {'path':u, 'text':tup[0] }
   else:
-    return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
+    if tup[2] == 'public' or (tup[2] == 'user' and session.has_key('auth')):
+      return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
+    elif tup[2] == 'user':
+      return """<span class="menu_disabled">""" + tup[0] + """</span>"""
+    elif tup[2] == 'admin' and session.has_key('auth') and config.config("ldap.admin_username") == session['auth'].user[0]:
+      return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
+    else:
+      return ''
