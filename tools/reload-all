@@ -14,7 +14,7 @@ do
   echo
   echo -n "Reload ${server} server? [y/n] "
   read yesno
-  if [ $yesno == "y" ]; then
+  if [ "$yesno" == "y" ]; then
     echo Reloading...
     $CLIENT ${server:0:1} admin:$1 reload
     if [ $? -eq 0 ]
