@@ -8,6 +8,12 @@
 # element:
 # etc.
 
+element: dc
+displayname: Dublin Core
+tooltip:
+<b><u>Dublin Core</u></b><br/>
+Dublin Core metadata
+
 element: dc.creator
 displayname: Creator
 tooltip:

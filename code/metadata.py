@@ -75,6 +75,9 @@ def _loadElements (file):
     s = s[m.end():]
   return l
 
+def elements(self):
+  self.elements
+
 _profiles = None
 
 def _loadConfig ():

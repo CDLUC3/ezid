@@ -14,6 +14,10 @@
     <script type="text/javascript" src="/ezid/static/javascripts/jquery.js"></script>
     <script type="text/javascript" src="/ezid/static/javascripts/base.js"></script>
     {% block header %}{% endblock %}
+    <script type="text/javascript">/*<![CDATA[*/
+      areMessages = {% if messages %}true{% else %}false{% endif %};
+      {% block javascript %}{% endblock %}
+    /*]]>*/</script>
   </head>
   <body>
     <div class="container_16">

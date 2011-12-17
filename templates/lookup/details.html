@@ -1,0 +1,24 @@
+{% extends "layouts/base.html" %}
+{% load metadata_tags %}
+
+{% block title %}Identifier Details{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}
+
+{% block content %}
+  <div class="grid_12">
+    <h1>Identifier Details</h1>
+    Identifier: {{ identifier }}
+    
+    <h2>About the identified object in {{ about_profile.displayName}}</h2>
+    Location: URL<br/>
+    {% for e in profile %}
+      {{ e.displayName }}: {% display_value meta_dict e %}<br/>
+    {% endfor %}
+    Name of set: random collection
+    
+    <h2>About the Identifier</h2>
+  </div>
+{% endblock %}
