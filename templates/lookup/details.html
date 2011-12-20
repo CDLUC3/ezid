@@ -10,15 +10,19 @@
 {% block content %}
   <div class="grid_12">
     <h1>Identifier Details</h1>
-    Identifier: {{ identifier }}
+    Identifier: {{ id_text }}
     
-    <h2>About the identified object in {{ about_profile.displayName}}</h2>
-    Location: URL<br/>
-    {% for e in profile %}
-      {{ e.displayName }}: {% display_value meta_dict e %}<br/>
+    <h2>About the identified object</h2>
+    Location: {% display_value identifier internal_profile.target %}<br/>
+    {% for e in current_profile.elements %}
+      {{ e.displayName }}: {% display_value identifier e %}<br/>
     {% endfor %}
-    Name of set: random collection
     
-    <h2>About the Identifier</h2>
+    <h2>About the identifier</h2>
+    Owner: {% display_value identifier internal_profile.owner %}<br/>
+    Group: {% display_value identifier internal_profile.ownergroup %}<br/>
+    Co-owners: {% display_value identifier internal_profile.coowners %}<br/>
+    Created: {% display_value identifier internal_profile.created %}<br/>
+    Last modified: {% display_value identifier internal_profile.updated %}<br/>
   </div>
 {% endblock %}

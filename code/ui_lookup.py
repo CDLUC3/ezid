@@ -31,7 +31,6 @@ def index(request):
     return uic.methodNotAllowed()
 
 def details(request, identifier):
-  print identifier
   r = ezid.getMetadata(identifier)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
@@ -43,12 +42,10 @@ def details(request, identifier):
     django.contrib.messages.error(request, "Unauthorized.")
     return uic.redirect("ui_lookup.index")
   assert s.startswith("success:")
-  d['identifier'] = s[8:].strip()
-  pro_el = metadata.getProfile('dc').elements
-  #print type(profile.elements).__name__
-  d['profile'] =  pro_el[1:]
-  d['about_profile'] = pro_el[0]
-  d['meta_dict'] = m
+  d['id_text'] = s[8:].strip()
+  d['identifier'] = m # identifier object containing metadata
+  d['internal_profile'] = metadata.getProfile('internal')
+  d['current_profile'] = metadata.getProfile('dc')
   return uic.render(request, "lookup/details", d)
 
 
