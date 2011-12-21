@@ -10,19 +10,41 @@
 {% block content %}
   <div class="grid_12">
     <h1>Identifier Details</h1>
-    Identifier: {{ id_text }}
+    <div class="left_desc">Identifier:</div>
+    <div class="right_val">{{ id_text }}</div>
+    
+    <div style="clear:both;"></div>
     
     <h2>About the identified object</h2>
-    Location: {% display_value identifier internal_profile.target %}<br/>
+    <div class="left_desc">{{internal_profile.target.displayName}}:</div>
+    <div class="right_val">{% display_value identifier internal_profile.target %}</div>
+    
+    
     {% for e in current_profile.elements %}
-      {{ e.displayName }}: {% display_value identifier e %}<br/>
+      <div class="left_desc">{{ e.displayName }}:</div>
+      <div class="right_val">{% display_value identifier e %}</div>
     {% endfor %}
     
+    <div style="clear:both;"></div>
+
+    
     <h2>About the identifier</h2>
-    Owner: {% display_value identifier internal_profile.owner %}<br/>
-    Group: {% display_value identifier internal_profile.ownergroup %}<br/>
-    Co-owners: {% display_value identifier internal_profile.coowners %}<br/>
-    Created: {% display_value identifier internal_profile.created %}<br/>
-    Last modified: {% display_value identifier internal_profile.updated %}<br/>
+    <div class="left_desc">{{internal_profile.owner.displayName}}:</div>
+    <div class="right_val">{% display_value identifier internal_profile.owner %}</div>
+    
+    <div class="left_desc">{{internal_profile.ownergroup.displayName}}:</div>
+    <div class="right_val">{% display_value identifier internal_profile.ownergroup %}</div>
+    
+    <div class="left_desc">{{internal_profile.coowners.displayName}}:</div>
+    <div class="right_val">{% display_value identifier internal_profile.coowners %}</div>
+    
+    <div class="left_desc">{{internal_profile.created.displayName}}:</div>
+    <div class="right_val">{% display_value identifier internal_profile.created %}</div>
+    
+    <div class="left_desc">{{internal_profile.updated.displayName}}:</div>
+    <div class="right_val">{% display_value identifier internal_profile.updated %}</div>
+    
+    <div class="left_desc">{{internal_profile.status.displayName}}:</div>
+    <div class="right_val">{% display_value identifier internal_profile.status %}</div>
   </div>
 {% endblock %}

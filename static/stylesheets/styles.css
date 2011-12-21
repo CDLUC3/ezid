@@ -181,3 +181,18 @@ div.field_right {
   float: left;
   width: 300px;
 }
+
+div.left_desc {
+  margin: 5px 0 0 0;
+  float: left;
+  clear: left;
+  display: block;
+  width: 120px; 
+}
+
+
+div.right_val {
+  margin: 5px 0 0 0;
+  float: left;
+  width: 500px;
+}
