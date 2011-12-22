@@ -1,10 +1,30 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Create Simple IDs{% endblock %}
+{% block title %}Create Simple ID{% endblock %}
 
 {% block content %}
   <div class="grid_12">
-    <h1>Form for simple identifier here</h1>
-    <p>A placeholder page.</p>
+    <h1>Create ID</h1>
+    <p>* Required</p>
+    <form id="create_form">
+      <h2>Step 1: Choose an identifier type.*</h2>
+        DOI
+        ARK
+      <h2>Step 2: Describe the identified object.*</h2>
+      <label for="_target" class="left">
+        {{internal_profile.target.displayName}}:
+      </label>
+      <div class="field_right">
+        <input type="text" name="_target"/>
+      </div>
+      {% for e in current_profile.elements %}
+        <label for="{{e.name}}" class="left">
+          {{e.displayName}}
+        </label>
+        <div class="field_right">
+          <input type="text" name="{{e.name}}" id="{{e.name}}"/>
+        </div>        
+      {% endfor %}
+    </form>
   </div>
 {% endblock %}
