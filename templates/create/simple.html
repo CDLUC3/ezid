@@ -1,30 +1,37 @@
 {% extends "layouts/base.html" %}
+{% load layout_extras %}
 
 {% block title %}Create Simple ID{% endblock %}
 
 {% block content %}
   <div class="grid_12">
     <h1>Create ID</h1>
-    <p>* Required</p>
-    <form id="create_form">
-      <h2>Step 1: Choose an identifier type.*</h2>
-        DOI
-        ARK
-      <h2>Step 2: Describe the identified object.*</h2>
+    <form id="create_form" target="{% url ui_create.simple %}" method="post">
+      <h2>Step 1: Choose an identifier type.</h2>
+        {% for p in session.prefixes %}
+          <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}"
+                {% selected_radio request "shoulder" forloop.counter p.prefix %} />
+          <label for="{{p.prefix}}">{% shoulder_display p %}</label><br/>
+        {% endfor %}
+      <h2>Step 2: Describe the identified object.</h2>
       <label for="_target" class="left">
         {{internal_profile.target.displayName}}:
       </label>
       <div class="field_right">
-        <input type="text" name="_target"/>
+        <input type="text" name="_target" value="{% request_value request "_target" %}"/>
       </div>
       {% for e in current_profile.elements %}
         <label for="{{e.name}}" class="left">
-          {{e.displayName}}
+          {{e.displayName}}:
         </label>
         <div class="field_right">
-          <input type="text" name="{{e.name}}" id="{{e.name}}"/>
+          <input type="text" name="{{e.name}}" id="{{e.name}}" value="{% request_value request e.name %}" />
         </div>        
       {% endfor %}
+      <label class="left">&nbsp;</label>
+      <div class="field_right">
+        <input type="submit" value="Create"/>
+      </div>
     </form>
   </div>
 {% endblock %}

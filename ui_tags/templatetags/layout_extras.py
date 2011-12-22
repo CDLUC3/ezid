@@ -5,11 +5,29 @@ register = template.Library()
       
 # a simple menu tag
 @register.simple_tag
-def menu_item(text, path, this_item, current_item):
-  if this_item == current_item:
-    return """<span class="menu_current">%(text)s</span>""" % {'text':text, }
+def request_value(request, key_name):
+  """Outputs the value of the request.REQUEST[key_name], required because
+  normal django templating will not retrieve any variables starting with an underscore
+  which all of the internal profile variables have"""
+  if key_name in request.REQUEST:
+    return request.REQUEST[key_name]
   else:
-    return """<a href="%(path)s">%(text)s</span></a>""" % {'path':path, 'text':text, }
+    return ''
+
+@register.simple_tag
+def selected_radio(request, request_item, loop_index, item_value):
+  """returns checked="checked" if this should be the currently selected
+  radio button based on matching request data or 1st item and nothing selected"""
+  if request_item in request.REQUEST and request.REQUEST[request_item] == item_value:
+    return 'checked="checked"'
+  elif request_item not in request.REQUEST and loop_index == 1:
+    return 'checked="checked"'
+  else:
+    return ''
+  
+@register.simple_tag
+def shoulder_display(prefix_dict):
+  return prefix_dict['namespace'].split()[1] + " (" + prefix_dict['prefix'] + ")"
   
 
 @register.tag

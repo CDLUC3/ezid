@@ -11,6 +11,8 @@ def index(request):
 
 def simple(request):
   d['menu_item'] = 'ui_create.simple'
+  if request.method == "POST":
+    pass
   d['current_profile'] = metadata.getProfile('dc')
   d['internal_profile'] = metadata.getProfile('internal')
   return uic.render(request, 'create/simple', d)
