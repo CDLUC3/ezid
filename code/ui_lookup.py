@@ -50,6 +50,3 @@ def details(request, identifier):
 
 
 
-
-
-
