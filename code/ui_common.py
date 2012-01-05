@@ -19,6 +19,7 @@ import metadata
 import policy
 import useradmin
 import userauth
+import django.contrib.messages
 
 ezidUrl = None
 templates = None
@@ -154,3 +155,29 @@ def getPrefixes (user, group):
   except Exception, e:
     log.otherError("ui._getPrefixes", e)
     return "error: internal server error"
+  
+def is_logged_in(request):
+  if "auth" not in request.session:
+    django.contrib.messages.error(request, "You must be logged in to view this page")
+    request.session['redirect_to'] = request.get_full_path()
+    return False
+  return True
+
+def write_profile_elements_from_form(identifier, request, profile, addl_dict = {}):
+  """writes the external profile elements for an id from a form submission,
+  only writes other elements outside of this profile if passed in as additional dictionary
+  at the end.  This might be handy for writing internal profile elements at the same time.
+  Takes identifier, request object, current_profile object and optional additional elements.
+  Returns True or False for success or failure."""
+  #winnows to matching elements from form
+  write_elements = [e.name for e in profile.elements if (e.name in request.POST and request.POST[e.name])]
+  to_write = {}
+  for e in write_elements:
+    to_write[e] = request.POST[e]
+  to_write = dict(to_write.items() + addl_dict.items())
+  s = ezid.setMetadata(identifier, request.session["auth"].user, request.session["auth"].group, to_write)
+  if s.startswith("success:"):
+    return True
+  else:
+    return False
+

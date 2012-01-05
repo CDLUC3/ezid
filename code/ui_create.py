@@ -1,5 +1,5 @@
 import ui_common as uic
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import redirect
 import django.contrib.messages
 import metadata
 import ezid
@@ -12,9 +12,7 @@ def index(request):
   return uic.render(request, 'create/index', d)
 
 def simple(request):
-  if "auth" not in request.session:
-    django.contrib.messages.error(request, "Unauthorized.")
-    return redirect("ui_home.index")
+  if uic.is_logged_in(request) == False: return redirect("ui_account.login")
   d['menu_item'] = 'ui_create.simple'
   d['current_profile'] = metadata.getProfile('dc') #default profile
   d['internal_profile'] = metadata.getProfile('internal')
@@ -25,25 +23,20 @@ def simple(request):
     if request.POST['shoulder'] not in pre_list:
       django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
       return uic.render(request, "create/simple", d)
-    write_elements = [e.name for e in d['current_profile'].elements if (e.name in request.POST and request.POST[e.name])] + ["_target"]
     
-    #any further validation before this.  If it gets past this line then the data is valid to write
-    #where to create id and write elements
+    #any validation before this point.
     s = ezid.mintIdentifier(request.POST['shoulder'], request.session["auth"].user,
         request.session["auth"].group)
     if s.startswith("success:"):
       new_id = s.split()[1]
     else:
       pass
-    to_write = {}
-    for e in write_elements:
-      to_write[e] = request.POST[e]
-    to_write['_profile'] = request.POST['current_profile']
-    s = ezid.setMetadata(new_id, request.session["auth"].user, request.session["auth"].group, to_write)
-    if s.startswith("success:"):
+    result = uic.write_profile_elements_from_form(new_id, request, d['current_profile'],
+             {'_profile': request.POST['current_profile'], '_target' : request.POST['_target']})
+    
+    if result==True:
       django.contrib.messages.success(request, "Identifier created.")
-      print s[8:].strip()
-      return redirect("ui_lookup.details", s[8:].strip())
+      return redirect("ui_lookup.details", new_id)
     else:
       pass
   return uic.render(request, 'create/simple', d)

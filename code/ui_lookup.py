@@ -14,7 +14,7 @@ def index(request):
   """
   d['menu_item'] = 'ui_lookup.index'
   if request.method == "GET":
-    return uic.render(request, "lookup/index", d)
+    return uic.render(request, 'lookup/index', d)
   elif request.method == "POST":
     if "identifier" not in request.POST: return uic.badRequest()
     id = request.POST["identifier"].strip()
@@ -45,7 +45,10 @@ def details(request, identifier):
   d['id_text'] = s[8:].strip()
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
-  d['current_profile'] = metadata.getProfile('dc')
+  if '_profile' in m:
+    d['current_profile'] = metadata.getProfile(m['_profile'])
+  else:
+    d['current_profile'] = metadata.getProfile('dc')
   return uic.render(request, "lookup/details", d)
 
 

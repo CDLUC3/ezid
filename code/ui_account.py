@@ -31,7 +31,10 @@ def login(request):
       request.session["auth"] = auth
       request.session["prefixes"] = p
       django.contrib.messages.success(request, "Login successful.")
-      return redirect('ui_home.index')
+      if 'redirect_to' in request.session and request.session['redirect_to']:
+        return redirect(request.session['redirect_to'])
+      else:
+        return redirect('ui_home.index')
     else:
       django.contrib.messages.error(request, "Login failed.")
       return uic.render(request, "account/login", d)
