@@ -6,8 +6,10 @@ import sys
 
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 SITE_ROOT = os.path.split(PROJECT_ROOT)[0]
-EZID_CONFIG_FILE = os.path.join(PROJECT_ROOT, "settings", "ezid.conf")
+SETTINGS_DIR = os.path.join(PROJECT_ROOT, "settings")
+EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "ezid.conf")
 EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
+LOGGING_CONFIG_FILE = "logging.server.conf"
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))
 
