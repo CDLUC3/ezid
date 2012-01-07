@@ -14,6 +14,16 @@ def request_value(request, key_name):
   else:
     return ''
 
+@register.simple_tag  
+def dict_value(dict, key_name):
+  """Outputs the value of the dict[key_name], required because
+  normal django templating will not retrieve any variables starting with an underscore
+  and maps hashes to dots and other ridiculous things."""
+  if key_name in dict:
+    return dict[key_name]
+  else:
+    return ''
+
 @register.simple_tag
 def selected_radio(request, request_item, loop_index, item_value):
   """returns checked="checked" if this should be the currently selected

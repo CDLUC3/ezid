@@ -47,4 +47,8 @@
     <div class="left_desc">{{internal_profile.status.displayName}}:</div>
     <div class="right_val">{% display_value identifier internal_profile.status %}</div>
   </div>
+  <div style="clear:both">&nbsp;</div>
+  <form action="{% url ui_manage.edit id_text %}" method="get">
+    <input type="submit" value="Edit" />
+  </form>
 {% endblock %}

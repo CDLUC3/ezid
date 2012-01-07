@@ -6,7 +6,7 @@
 {% block content %}
   <div class="grid_12">
     <h1>Create ID</h1>
-    <form id="create_form" target="{% url ui_create.simple %}" method="post">
+    <form id="create_form" action="{% url ui_create.simple %}" method="post">
       <h2>Step 1: Choose an identifier type.</h2>
         {% for p in session.prefixes %}
           <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}"

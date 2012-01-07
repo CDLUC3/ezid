@@ -22,34 +22,12 @@ def index(request):
     if type(r) is tuple:
       s, m = r
       assert s.startswith("success:")
-      return redirect('ui_lookup.details', s[8:].strip())
+      return redirect('ui_manage.details', s[8:].strip())
       #return redirect("/ezid/id/" + urllib.quote(s[8:].strip(), ":/"))
     else:
       django.contrib.messages.error(request, uic.formatError(r))
       return uic.render(request, "lookup/index", dict({ "identifier": id }.items() + d.items() ))
   else:
     return uic.methodNotAllowed()
-
-def details(request, identifier):
-  r = ezid.getMetadata(identifier)
-  if type(r) is str:
-    django.contrib.messages.error(request, uic.formatError(r))
-    return uic.redirect("ui_lookup.index")
-  s, m = r
-  if "_ezid_role" in m and ("auth" not in request.session or\
-    request.session["auth"].user[0] != uic.adminUsername):
-    # Special case.
-    django.contrib.messages.error(request, "Unauthorized.")
-    return uic.redirect("ui_lookup.index")
-  assert s.startswith("success:")
-  d['id_text'] = s[8:].strip()
-  d['identifier'] = m # identifier object containing metadata
-  d['internal_profile'] = metadata.getProfile('internal')
-  if '_profile' in m:
-    d['current_profile'] = metadata.getProfile(m['_profile'])
-  else:
-    d['current_profile'] = metadata.getProfile('dc')
-  return uic.render(request, "lookup/details", d)
-
 
 

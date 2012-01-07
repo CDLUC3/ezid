@@ -163,6 +163,34 @@ def is_logged_in(request):
     return False
   return True
 
+def edit_authorized_for_identifier(request, identifier, id_meta):
+  """Checks that the user is authorized for identifier"""
+  if "auth" in request.session:
+    user = request.session["auth"].user
+    group = request.session["auth"].group
+  else:
+    user = group = ("anonymous", "anonymous")
+  if "_coowners" not in id_meta:
+    coOwners = []
+  else:
+    coOwners = [(co.strip(), idmap.getUserId(co.strip()))\
+      for co in id_meta["_coowners"].value.split(";") if len(co.strip()) > 0]
+  editable = policy.authorizeUpdate(user, group, identifier,
+    (id_meta["_owner"], idmap.getUserId(id_meta["_owner"])),
+    (id_meta["_ownergroup"], idmap.getGroupId(id_meta["_ownergroup"])),
+    coOwners, [])
+  return editable
+
+# Based on existing UI code, but does this need expansion?
+# XXX is anyone logged in able to view anyone else's identifiers?
+def view_authorized_for_identifier(request, id_meta):
+  """Checks that the user is authorized to view identifier"""
+  if "_ezid_role" in id_meta and ("auth" not in request.session or\
+    request.session["auth"].user[0] != adminUsername):
+    django.contrib.messages.error(request, "Unauthorized.")
+    return False
+  return True
+
 def write_profile_elements_from_form(identifier, request, profile, addl_dict = {}):
   """writes the external profile elements for an id from a form submission,
   only writes other elements outside of this profile if passed in as additional dictionary
