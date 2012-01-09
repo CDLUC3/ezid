@@ -937,6 +937,7 @@ Run the client with no arguments for a complete usage statement.
   import re
   import sys
   import types
+  import urllib
   import urllib2
 
   server = "http://n2t.net/ezid"
@@ -1013,16 +1014,19 @@ Run the client with no arguments for a complete usage statement.
 
   if operation in ["mint", "create", "update"]:
     path = "shoulder" if operation == "mint" else "id"
-    request = urllib2.Request("%s/%s/%s" % (server, path, sys.argv[3]))
+    arg = urllib.quote(sys.argv[3], ":/")
+    request = urllib2.Request("%s/%s/%s" % (server, path, arg))
     request.get_method = lambda: "PUT" if operation == "create" else "POST"
     if len(sys.argv) > 4:
       request.add_header("Content-Type", "text/plain; charset=UTF-8")
       request.add_data(formatAnvl(sys.argv[4:]).encode("UTF-8"))
-  elif operation == "delete":
-    request = urllib2.Request("%s/id/%s" % (server, sys.argv[3]))
-    request.get_method = lambda: "DELETE"
   elif operation == "view":
-    request = urllib2.Request("%s/id/%s" % (server, sys.argv[3]))
+    id = urllib.quote(sys.argv[3], ":/")
+    request = urllib2.Request("%s/id/%s" % (server, id))
+  elif operation == "delete":
+    id = urllib.quote(sys.argv[3], ":/")
+    request = urllib2.Request("%s/id/%s" % (server, id))
+    request.get_method = lambda: "DELETE"
   elif operation in ["login", "logout"]:
     request = urllib2.Request("%s/%s" % (server, operation))
 

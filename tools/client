@@ -41,6 +41,7 @@
 import re
 import sys
 import types
+import urllib
 import urllib2
 
 knownServers = {
@@ -152,15 +153,18 @@ if (type(operations[operation]) is int and\
 
 if operation in ["mint", "create", "update"]:
   path = "shoulder" if operation == "mint" else "id"
-  request = urllib2.Request("%s/%s/%s" % (server, path, sys.argv[4]))
+  arg = urllib.quote(sys.argv[4], ":/")
+  request = urllib2.Request("%s/%s/%s" % (server, path, arg))
   request.get_method = lambda: "PUT" if operation == "create" else "POST"
   if len(sys.argv) > 5:
     request.add_header("Content-Type", "text/plain; charset=UTF-8")
     request.add_data(formatAnvl(sys.argv[5:]).encode("UTF-8"))
 elif operation == "view":
-  request = urllib2.Request("%s/id/%s" % (server, sys.argv[4]))
+  id = urllib.quote(sys.argv[4], ":/")
+  request = urllib2.Request("%s/id/%s" % (server, id))
 elif operation == "delete":
-  request = urllib2.Request("%s/id/%s" % (server, sys.argv[4]))
+  id = urllib.quote(sys.argv[4], ":/")
+  request = urllib2.Request("%s/id/%s" % (server, id))
   request.get_method = lambda: "DELETE"
 elif operation in ["login", "logout", "status"]:
   request = urllib2.Request("%s/%s" % (server, operation))
