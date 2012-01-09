@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
-# Simple EZID command line client.  The output is UTF-8 encoded.
+# Simple EZID command line client.  The output is as returned by EZID,
+# and in particular is UTF-8 encoded.
 #
 # Usage: client server credentials operation...
 #
@@ -27,6 +28,12 @@
 #     logout
 #     s[tatus]
 #     r[eload]
+#
+# In the above, if a label is "@", the associated value is treated as
+# a filename and metadata fields are read from the named
+# ANVL-formatted file.  Otherwise, if a value has the form
+# "@filename", the value is read from the named file.  In both cases,
+# the interpretation of @ can be defeated by doubling it.
 #
 # Greg Janee <gjanee@ucop.edu>
 # April 2011
@@ -100,9 +107,25 @@ class MyHTTPErrorProcessor (urllib2.HTTPErrorProcessor):
 def formatAnvl (l):
   r = []
   for i in range(0, len(l), 2):
-    k = re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), l[i])
-    v = re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), l[i+1])
-    r.append("%s: %s" % (k, v))
+    k = l[i]
+    if k == "@":
+      f = open(l[i+1])
+      r.extend(ll.strip() for ll in f.readlines())
+      f.close()
+    else:
+      if k == "@@":
+        k = "@"
+      else:
+        k = re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), k)
+      v = l[i+1]
+      if v.startswith("@@"):
+        v = v[1:]
+      elif v.startswith("@") and len(v) > 1:
+        f = open(v[1:])
+        v = f.read()
+        f.close()
+      v = re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), v)
+      r.append("%s: %s" % (k, v))
   return "\n".join(r)
 
 if len(sys.argv) < 4: usageError()
