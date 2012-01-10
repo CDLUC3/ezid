@@ -1,0 +1,160 @@
+#! /usr/bin/env python
+
+# The 'dump', 'select', and 'project' scripts form a bind database
+# query system.  The general usage is:
+#
+#    dump noid.bdb | select constraints... | project fields...
+#
+# This script dumps a noid bind database to standard output.  The
+# output is gzip-compressed.  One line is written per identifier using
+# the space-separated format
+#
+#    identifier label value label value ...
+#
+# where the identifier is qualified and field labels and values are
+# left in their encoded forms (i.e., as stored by EZID) except that
+# internal field labels are converted to their transmitted forms and
+# agent (i.e., user and group) identifiers are converted to local
+# names. For example:
+#
+#    ark:/99166/p92z12p14 _owner admin _created 1284137828 ...
+#
+# Note: the identifier itself is not encoded.  Also, note that empty
+# values are, well, empty, and hence will result in adjacent spaces.
+#
+# If the -s option is specified, shadow ARKs are included in the
+# output (in addition to and separate from the shadowed identifiers).
+# As noted above, internal field labels are converted to their
+# transmitted forms.  Thus a shadow ARK's _t field is output as the
+# shadow ARK's _target field and its _st field is output as the
+# shadowed identifier's _target field.  If the -s option is not
+# specified, shadow ARKs are not output at all.
+#
+# This script requires several EZID modules.  The PYTHONPATH
+# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
+# directory; if it doesn't, we attempt to dynamically locate it and
+# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
+# set; if it isn't, we set it to "settings.production".
+#
+# Additionally, this script assumes that LDAP is enabled, and a
+# connection to the LDAP server is required.
+#
+# Greg Janee <gjanee@ucop.edu>
+# December 2011
+
+import bsddb.db
+import gzip
+import optparse
+import os
+import sys
+
+if "DJANGO_SETTINGS_MODULE" not in os.environ:
+  os.environ["DJANGO_SETTINGS_MODULE"] = "settings.production"
+
+try:
+  import settings
+except ImportError:
+  sys.path.append(os.path.split(os.path.split(
+    os.path.abspath(__file__))[0])[0])
+  import settings
+
+# Bootstrapping: reference a(ny) Django setting to trigger the loading
+# of said settings, which causes the PYTHONPATH to be modified,
+# supporting subsequent imports.
+import django.conf
+django.conf.settings.PROJECT_ROOT
+
+# Configure the logging so that errors don't get added to the server's
+# log file.
+django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
+
+import ezidadmin
+import util
+
+labelMapping = {
+  "_o": "_owner",
+  "_g": "_ownergroup",
+  "_co": "_coowners",
+  "_c": "_created",
+  "_u": "_updated",
+  "_t": "_target",
+  "_s": "_shadows",
+  "_p": "_profile",
+  "_is": "_status"
+}
+
+p = optparse.OptionParser(usage="%prog [-s] noid.bdb")
+p.add_option("-s", action="store_true",
+  dest="includeShadowArks", default=False, help="include shadow ARKs")
+options, args = p.parse_args()
+if len(args) != 1: p.error("wrong number of arguments")
+dbfile = args[0]
+
+agentMap = { "anonymous": "anonymous" }
+groups = ezidadmin.getGroups()
+if type(groups) is str:
+  sys.stderr.write("dump: error loading EZID groups: %s\n" % groups)
+  sys.exit(1)
+for g in groups: agentMap[g["arkId"]] = g["gid"]
+users = ezidadmin.getUsers()
+if type(users) is str:
+  sys.stderr.write("dump: error loading EZID users: %s\n" % users)
+  sys.exit(1)
+for u in users: agentMap[u["arkId"]] = u["uid"]
+
+outfile = gzip.GzipFile(fileobj=sys.stdout, mode="w")
+
+def outputRecord1 (id, record):
+  outfile.write(id)
+  for k in record:
+    outfile.write(" %s %s" % (labelMapping.get(k, k), record[k]))
+  outfile.write("\n")
+
+def outputRecord (id, record):
+  if record.get("_is", "public") != "public":
+    record["_t"] = record["_t1"]
+    if "_st1" in record: record["_st"] = record["_st1"]
+  if "_t1" in record: del record["_t1"]
+  if "_st1" in record: del record["_st1"]
+  if "_s" in record:
+    su = record["_su"]
+    del record["_su"]
+    st = record["_st"]
+    del record["_st"]
+    if options.includeShadowArks: outputRecord1("ark:/" + id, record)
+    record["_u"] = su
+    record["_t"] = st
+    s = util.decode(record["_s"])
+    del record["_s"]
+    record["_shadowedby"] = util.encode3("ark:/" + id)
+    outputRecord1(s, record)
+  else:
+    outputRecord1("ark:/" + id, record)
+
+db = bsddb.db.DB()
+db.open(dbfile, flags=bsddb.db.DB_RDONLY)
+cursor = db.cursor()
+entry = cursor.first()
+lastId = None
+while entry != None:
+  k, value = entry
+  if "\t" in k:
+    id, label = k.split("\t", 1)
+    if util.validateArk(id) == id and label != ":/h":
+      assert lastId is None or id >= lastId
+      if id != lastId:
+        if lastId is not None: outputRecord(lastId, record)
+        record = {}
+      if label in ["_o", "_g"]:
+        record[label] = util.encode3(agentMap[util.decode(value)])
+      elif label == "_co":
+        record[label] = util.encode3(" ; ".join(agentMap[co.strip()]\
+          for co in util.decode(value).split(";") if len(co.strip()) > 0))
+      else:
+        record[label] = value
+      lastId = id
+  entry = cursor.next()
+if lastId is not None: outputRecord(lastId, record)
+db.close()
+
+outfile.close()
