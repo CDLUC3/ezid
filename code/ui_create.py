@@ -36,7 +36,7 @@ def simple(request):
     
     if result==True:
       django.contrib.messages.success(request, "Identifier created.")
-      return redirect("ui_lookup.details", new_id)
+      return redirect("ui_manage.details", new_id)
     else:
       pass
   return uic.render(request, 'create/simple', d)
