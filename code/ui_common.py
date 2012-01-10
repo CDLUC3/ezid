@@ -198,7 +198,7 @@ def write_profile_elements_from_form(identifier, request, profile, addl_dict = {
   Takes identifier, request object, current_profile object and optional additional elements.
   Returns True or False for success or failure."""
   #winnows to matching elements from form
-  write_elements = [e.name for e in profile.elements if (e.name in request.POST and request.POST[e.name])]
+  write_elements = [e.name for e in profile.elements if e.name in request.POST]
   to_write = {}
   for e in write_elements:
     to_write[e] = request.POST[e]
