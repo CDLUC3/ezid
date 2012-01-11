@@ -19,7 +19,7 @@
         {{internal_profile.target.displayName}}:
       </label>
       <div class="field_right">
-        <input type="text" name="_target" value="{% request_value request "_target" %}"/>
+        <input type="text" name="_target" id="_target" value="{% request_value request "_target" %}"/>
       </div>
       {% for e in current_profile.elements %}
         <label for="{{e.name}}" class="left">
@@ -36,8 +36,11 @@
       <div style="clear:both">&nbsp;</div>
       <p>
         Note: Clicking &quot;Create&quot; will create and publish this identifier immediately.
-        If you do not wish to publish this identifier now, please use the Advanced form..
+        If you do not wish to publish this identifier now, please use the Advanced form.
       </p>
     </form>
   </div>
+  <script type="text/javascript">
+    $('#_target').focus();
+  </script>
 {% endblock %}

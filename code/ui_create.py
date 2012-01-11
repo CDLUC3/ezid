@@ -24,21 +24,21 @@ def simple(request):
       django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
       return uic.render(request, "create/simple", d)
     
-    #any validation before this point.
-    s = ezid.mintIdentifier(request.POST['shoulder'], request.session["auth"].user,
-        request.session["auth"].group)
-    if s.startswith("success:"):
-      new_id = s.split()[1]
-    else:
-      pass
-    result = uic.write_profile_elements_from_form(new_id, request, d['current_profile'],
-             {'_profile': request.POST['current_profile'], '_target' : request.POST['_target']})
-    
-    if result==True:
-      django.contrib.messages.success(request, "Identifier created.")
-      return redirect("ui_manage.details", new_id)
-    else:
-      pass
+    if uic.validate_simple_metadata_form(request, d['current_profile']):
+      s = ezid.mintIdentifier(request.POST['shoulder'], request.session["auth"].user,
+          request.session["auth"].group)
+      if s.startswith("success:"):
+        new_id = s.split()[1]
+      else:
+        pass
+      result = uic.write_profile_elements_from_form(new_id, request, d['current_profile'],
+               {'_profile': request.POST['current_profile'], '_target' : request.POST['_target']})
+      
+      if result==True:
+        django.contrib.messages.success(request, "Identifier created.")
+        return redirect("ui_manage.details", new_id)
+      else:
+        pass
   return uic.render(request, 'create/simple', d)
 
 def advanced(request):

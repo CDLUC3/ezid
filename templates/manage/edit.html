@@ -36,7 +36,7 @@
         {{internal_profile.target.displayName}}:
       </label>
       <div class="field_right">
-        <input type="text" name="_target" value="{% dict_value identifier "_target" %}" />
+        <input type="text" name="_target" id="_target" value="{% form_or_dict_value identifier "_target" %}" />
       </div>
       
       {% for e in current_profile.elements %}
@@ -44,7 +44,7 @@
           {{e.displayName}}:
         </label>
         <div class="field_right">
-          <input type="text" name="{{e.name}}" id="{{e.name}}" value="{% dict_value identifier e.name %}" />
+          <input type="text" name="{{e.name}}" id="{{e.name}}" value="{% form_or_dict_value identifier e.name %}" />
         </div>        
       {% endfor %}
     
@@ -79,6 +79,7 @@
     $("#current_profile").bind("change", function(event){
       $("#edit_form").submit();
     });
+    $('#_target').focus();
   </script>
 
 {% endblock %}

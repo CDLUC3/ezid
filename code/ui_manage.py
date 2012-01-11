@@ -25,14 +25,15 @@ def edit(request, identifier):
     d['current_profile'] = metadata.getProfile(request.POST['current_profile'])
     if request.POST['current_profile'] == request.POST['original_profile']:
       #this means we're saving and going to a save confirmation page
-      # XXX add validation here
-      result = uic.write_profile_elements_from_form(identifier, request, d['current_profile'],
-               {'_profile': request.POST['current_profile'], '_target' : request.POST['_target']})
-      if result:
-        django.contrib.messages.success(request, "Identifier updated.")
-        return redirect("ui_manage.details", identifier)
-      else:
-        pass #error saving
+      if uic.validate_simple_metadata_form(request, d['current_profile']):
+        print "validated and saving"
+        result = uic.write_profile_elements_from_form(identifier, request, d['current_profile'],
+                 {'_profile': request.POST['current_profile'], '_target' : request.POST['_target']})
+        if result:
+          django.contrib.messages.success(request, "Identifier updated.")
+          return redirect("ui_manage.details", identifier)
+        else:
+          pass #error saving
   elif request.method == "GET":
     if '_profile' in m:
       d['current_profile'] = metadata.getProfile(m['_profile'])

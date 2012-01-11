@@ -20,6 +20,7 @@ import policy
 import useradmin
 import userauth
 import django.contrib.messages
+import urlparse
 
 ezidUrl = None
 templates = None
@@ -209,3 +210,17 @@ def write_profile_elements_from_form(identifier, request, profile, addl_dict = {
   else:
     return False
 
+
+def validate_simple_metadata_form(request, profile):
+  """validates a simple id metadata form, profile is more or less irrelevant now,
+  but may be useful later"""
+  is_valid = True
+  if "_target" not in request.POST:
+    django.contrib.messages.error(request, "You must enter a URL location for your identifier")
+    is_valid = False
+    
+  url = urlparse.urlparse(request.POST['_target'])
+  if not(url.scheme and url.netloc):
+    django.contrib.messages.error(request, "Please enter a location URL starting with the protocol such as http://")
+    is_valid = False
+  return is_valid
