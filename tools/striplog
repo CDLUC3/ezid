@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 # Strips EZID transaction log files, retaining just BEGIN records for
 # those transactions that successfully created or updated an
