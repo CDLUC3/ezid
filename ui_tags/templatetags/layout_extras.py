@@ -1,6 +1,7 @@
 from django import template
 from django.conf import settings
 from django.utils.html import escape
+from decorators import basictag
 
 register = template.Library()
       
@@ -15,12 +16,21 @@ def request_value(request, key_name):
   else:
     return ''
 
-@register.simple_tag  
-def dict_value(dict, key_name):
-  """Outputs the value of the dict[key_name], required because
-  normal django templating will not retrieve any variables starting with an underscore
-  and maps hashes to dots and other ridiculous things."""
-  if key_name in dict:
+#@register.simple_tag(takes_context=True)
+@register.tag
+@basictag(takes_context=True) 
+def form_or_dict_value(context, dict, key_name):
+  """Outputs the value of the dict[key_name] unless request.POST contains the data
+  for the item which then overrides the dictionary's value.
+  This both fixes problems with normal django templating which will not retrieve
+  any keys starting with an underscore and it solves the problem of re-POSTed values
+  which were getting clobbered by the stored values.  POSTed values should override
+  so people do not lose their in-process edits.
+  """
+  request = context['request']
+  if request.POST and key_name in request.POST:
+    return escape(request.POST[key_name])
+  elif key_name in dict:
     return escape(dict[key_name])
   else:
     return ''
