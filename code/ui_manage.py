@@ -17,23 +17,26 @@ def edit(request, identifier):
     django.contrib.messages.error(request, uic.formatError(r))
     return uic.redirect("ui_lookup.index")
   s, m = r
+  d['status'] = m['_status'] if '_status' in m else 'unavailable'
+  d['post_status'] = d['status']
   if not uic.edit_authorized_for_identifier(request, identifier, m): return redirect("ui_manage.details", identifier)
   d['id_text'] = s[8:].strip()
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
   if request.method == "POST":
+    d['post_status'] = request.POST['_status'] if '_status' in request.POST else 'public'
     d['current_profile'] = metadata.getProfile(request.POST['current_profile'])
     if request.POST['current_profile'] == request.POST['original_profile']:
       #this means we're saving and going to a save confirmation page
       if uic.validate_simple_metadata_form(request, d['current_profile']):
-        print "validated and saving"
         result = uic.write_profile_elements_from_form(identifier, request, d['current_profile'],
-                 {'_profile': request.POST['current_profile'], '_target' : request.POST['_target']})
+                 {'_profile': request.POST['current_profile'], '_target' : request.POST['_target'],
+                  '_status': d['post_status']})
         if result:
           django.contrib.messages.success(request, "Identifier updated.")
           return redirect("ui_manage.details", identifier)
         else:
-          pass #error saving
+          print "Could not save this identifier"
   elif request.method == "GET":
     if '_profile' in m:
       d['current_profile'] = metadata.getProfile(m['_profile'])

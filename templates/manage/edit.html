@@ -66,8 +66,24 @@
       <div class="left_desc">{{internal_profile.updated.displayName}}:</div>
       <div class="right_val">{% display_value identifier internal_profile.updated %}</div>
     
-      <div class="left_desc">{{internal_profile.status.displayName}}:</div>
-      <div class="right_val">{% display_value identifier internal_profile.status %}</div>
+      {% if status == 'public' %}
+        <div class="left_desc">{{internal_profile.status.displayName}}:</div>
+        <div class="right_val">{% display_value identifier internal_profile.status %}</div>
+      {% else %}
+        <div style="clear:both;"></div>
+        <p>
+          Do you wish to publish this identifier now? 
+          <input type="radio" name="_status" id="status_no" value="unavailable"
+          {% if post_status != 'public' %}
+            checked="checked"
+          {% endif %}
+          /><label for="status_no">No</label>
+          <input type="radio" name="_status" id="status_yes" value="public"
+            {% if post_status == 'public' %}
+              checked="checked"
+            {% endif %}/><label for="status_yes">yes</label>
+        </p>
+      {% endif %}
       
       <div style="clear:both">&nbsp;</div>
       
