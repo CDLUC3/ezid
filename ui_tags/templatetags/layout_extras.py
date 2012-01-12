@@ -5,12 +5,13 @@ from decorators import basictag
 
 register = template.Library()
       
-# a simple menu tag
-@register.simple_tag
-def request_value(request, key_name):
+@register.tag
+@basictag(takes_context=True) 
+def request_value(context, key_name):
   """Outputs the value of the request.REQUEST[key_name], required because
   normal django templating will not retrieve any variables starting with an underscore
   which all of the internal profile variables have"""
+  request = context['request']
   if key_name in request.REQUEST:
     return escape(request.REQUEST[key_name])
   else:
@@ -35,10 +36,12 @@ def form_or_dict_value(context, dict, key_name):
   else:
     return ''
 
-@register.simple_tag
-def selected_radio(request, request_item, loop_index, item_value):
+@register.tag
+@basictag(takes_context=True)
+def selected_radio(context, request_item, loop_index, item_value):
   """returns checked="checked" if this should be the currently selected
   radio button based on matching request data or 1st item and nothing selected"""
+  request = context['request']
   if request_item in request.REQUEST and request.REQUEST[request_item] == item_value:
     return 'checked="checked"'
   elif request_item not in request.REQUEST and loop_index == 1:
