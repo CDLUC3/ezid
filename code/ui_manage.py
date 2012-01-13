@@ -1,6 +1,7 @@
 import ui_common as uic
 import django.contrib.messages
 from django.shortcuts import redirect
+from django.core.urlresolvers import reverse
 import ezid
 import metadata
 
@@ -11,6 +12,7 @@ def index(request):
   return uic.render(request, 'manage/index', d)
 
 def edit(request, identifier):
+  #print request.build_absolute_uri(reverse('ui_manage.details', args=[identifier]))
   if uic.is_logged_in(request) == False: return redirect("ui_account.login")
   r = ezid.getMetadata(identifier)
   if type(r) is str:

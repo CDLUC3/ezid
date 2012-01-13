@@ -2,6 +2,7 @@ from django import template
 from django.conf import settings
 from django.utils.html import escape
 from decorators import basictag
+from django.core.urlresolvers import reverse
 
 register = template.Library()
       
@@ -52,6 +53,14 @@ def selected_radio(context, request_item, loop_index, item_value):
 @register.simple_tag
 def shoulder_display(prefix_dict):
   return escape(prefix_dict['namespace'].split()[1] + " (" + prefix_dict['prefix'] + ")")
+
+@register.tag
+@basictag(takes_context=True)
+def full_url_to_id_details(context, id_text):
+  """return full url to id details for id specified, including domain"""
+  request = context['request']
+  return request.build_absolute_uri(reverse('ui_manage.details', args=[id_text]))
+
   
 #This captures the block around with rounded corners go, can't believe what a PITA this is in django
 @register.tag(name="rounded_borders")
