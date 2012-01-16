@@ -166,8 +166,10 @@ elif operation == "delete":
   id = urllib.quote(sys.argv[4], ":/")
   request = urllib2.Request("%s/id/%s" % (server, id))
   request.get_method = lambda: "DELETE"
-elif operation in ["login", "logout", "status"]:
+elif operation in ["login", "logout"]:
   request = urllib2.Request("%s/%s" % (server, operation))
+elif operation == "status":
+  request = urllib2.Request("%s/status?subsystems=*" % server)
 elif operation == "reload":
   request = urllib2.Request("%s/admin/reload" % server)
   request.get_method = lambda: "POST"

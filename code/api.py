@@ -44,7 +44,7 @@
 #   response body: status line
 #
 # Get EZID's status:
-#   GET /ezid/status
+#   GET /ezid/status?subsystems={*|subsystemlist}
 #   response body: status line
 #
 # Reload configuration file and clear caches:
