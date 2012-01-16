@@ -65,14 +65,19 @@ import django.http
 
 import anvl
 import config
+import datacite
 import ezid
+import ezidadmin
+import noid
 import userauth
 
 _adminUsername = None
+_bindNoid = None
 
 def _loadConfig ():
-  global _adminUsername
+  global _adminUsername, _bindNoid
   _adminUsername = config.config("ldap.admin_username")
+  _bindNoid = noid.Noid(config.config("DEFAULT.bind_noid"))
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -269,9 +274,23 @@ def getStatus (request):
   Returns EZID's status.
   """
   if request.method != "GET": return _methodNotAllowed()
+  body = ""
+  if "subsystems" in request.GET:
+    l = request.GET["subsystems"]
+    if l == "*": l = "datacite,ldap,noid"
+    for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
+      if ss == "datacite":
+        body += "datacite: %s\n" % datacite.ping()
+      elif ss == "ldap":
+        body += "ldap: %s\n" % ezidadmin.pingLdap()
+      elif ss == "noid":
+        body += "noid: %s\n" % _bindNoid.ping()
+      else:
+        return _response("error: bad request - no such subsystem")
   nl = ezid.numIdentifiersLocked()
   s = "" if nl == 1 else "s"
-  return _response("success: %d identifier%s currently locked" % (nl, s))
+  return _response("success: %d identifier%s currently locked" % (nl, s),
+    anvlBody=body)
 
 def reload (request):
   """

@@ -64,6 +64,7 @@ Contents
 - `Internal metadata`_
 - `Metadata profiles`_
 - `Testing the API`_
+- `Server status`_
 - `Python example`_
 - `PHP examples`_
 - `Perl examples`_
@@ -912,6 +913,44 @@ expires.  A reserved identifier may be deleted by the owner while
 still in its reserved state, but once made public, is permanent.  As
 evidence of this orthogonality, it is possible to create reserved test
 identifiers.
+
+Server status
+-------------
+
+The status of the EZID server can be probed by issuing a GET request
+to the URL \http://n2t.net/ezid/status.  If the server is up the
+response will resemble the following:
+
+.. parsed-literal::
+
+  |rArr| GET /ezid/status HTTP/1.1
+  |rArr| Host: n2t.net
+
+  |lArr| HTTP/1.1 200 OK
+  |lArr| Content-Type: text/plain; charset=UTF-8
+  |lArr| Content-Length: 39
+  |lArr|
+  |lArr| success: 0 identifiers currently locked
+
+The status of EZID's subsystems can be probed at the same time by
+listing one or more subsystem names, separated by commas, as the value
+of the "subsystems" query parameter.  For example:
+
+.. parsed-literal::
+
+  |rArr| GET /ezid/status?subsystems=noid,ldap HTTP/1.1
+  |rArr| Host: n2t.net
+
+  |lArr| HTTP/1.1 200 OK
+  |lArr| Content-Type: text/plain; charset=UTF-8
+  |lArr| Content-Length: 58
+  |lArr|
+  |lArr| success: 0 identifiers currently locked
+  |lArr| noid: up
+  |lArr| ldap: up
+
+Use the URL \http://n2t.net/ezid/status?subsystems=* to discover
+subsystem names and probe all subsystems.
 
 Python example
 --------------

@@ -618,7 +618,10 @@ def _addStatusProbe (type, url):
     _lock.release()
   return id
 
-def _pingLdap ():
+def pingLdap ():
+  """
+  Pings the LDAP server, returning "up" or "down".
+  """
   if not _ldapEnabled: return "up"
   try:
     l = ldap.initialize(_ldapServer)
@@ -661,7 +664,7 @@ def systemStatus (id=None):
     finally:
       _lock.release()
     if type == "ldap":
-      return _pingLdap()
+      return pingLdap()
     elif type == "noid":
       return noid.Noid(url).ping()
     elif type == "datacite":
