@@ -196,3 +196,14 @@ div.right_val {
   float: left;
   width: 500px;
 }
+
+div.get_link_box {
+   display: none;
+   z-index: 5;
+   border: solid;
+   border-width: 1px;
+   border-color: black;
+   position: absolute;
+   background-color:#ffffcc;
+   padding: 10px 10px 10px 10px;  
+}

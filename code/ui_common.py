@@ -77,9 +77,6 @@ def _load_templates(dir_list):
       local_path = apply(os.path.join, dir_list[1:] + [f])
       templates[local_path[:-5]] = django.template.loader.get_template(local_path)
 
-# note, I believe there are more django-ish ways to get control of these
-# values, by writing a django middleware app instead of this way, but I
-# really want to minimize changes to the current way until more is working (sbf)
 def render(request, template, context={}):
   c = { "session": request.session, "alertMessage": alertMessage }
   c.update(context)

@@ -11,7 +11,12 @@
   <div class="grid_12">
     <h1>Identifier Details</h1>
     <div class="left_desc">Identifier:</div>
-    <div class="right_val">{{ id_text }}</div>
+    <div class="right_val">
+      <div style="float:left;padding-right:20px;">
+        {{ id_text }}
+      </div>
+      {% include "includes/get_link.html" %}  
+    </div>
     
     <div style="clear:both;"></div>
     

@@ -1,0 +1,27 @@
+{% load layout_extras %}
+<div style="float:left;">
+  <a href="#" id="get_link">Get link</a>
+    <div class="get_link_box" id="get_link_box">
+      <input type="text" id="copy_url_value" size="50" value="{% full_url_to_id_details id_text %}" readonly="true" /><br/>
+      <div style="padding-top:8px;">
+        <div style="float:right;padding-right:8px;">
+          <a href="#" id="close_box_link" style="color: blue;">
+            Close
+          </a>
+        </div>
+      </div>
+   </div>
+</div>
+<script type="text/javascript">
+  $("#get_link").bind("click", function(event){
+    $("#get_link_box").css('display','block');
+    $("#copy_url_value").focus();
+    $("#copy_url_value").select();
+    return false;
+  });
+  
+  $("#close_box_link").bind("click", function(event){
+    $("#get_link_box").css('display','none');
+    return false;
+  });
+</script>

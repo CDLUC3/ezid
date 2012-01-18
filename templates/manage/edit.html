@@ -4,6 +4,9 @@
 
 {% block title %}Edit Identifier Details{% endblock %}
 
+{% block header %}
+{% endblock %}
+
 {% block javascript %}
 
 {% endblock %}
@@ -16,19 +19,7 @@
       <div style="float:left;padding-right:20px;">
         {{ id_text }}
       </div>
-      <div style="float:left;">
-        <a href="#">Get link</a>
-          <div style="z-index: 5;
-           border: solid;
-           border-width: 1px;
-           border-color: black;
-           position: absolute;
-           background-color:#ffffcc;
-           padding: 10px 10px 10px 10px;">
-            <input type="text" id="copy_url" size="50" value="{% full_url_to_id_details id_text %}"/><br/>
-            <div style="width:99%;text-align:right;padding-top:8px;">Close</div>
-         </div>
-      </div>
+       {% include "includes/get_link.html" %}
     </div>
     
     <div style="clear:both;"></div>
@@ -109,9 +100,12 @@
   </div>
   
   <script type="text/javascript">
+    // submit form when profile changed
     $("#current_profile").bind("change", function(event){
       $("#edit_form").submit();
     });
+    
+    // set focus on the target element
     $('#_target').focus();
   </script>
 
