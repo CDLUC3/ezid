@@ -1,12 +1,12 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
 
-{% block title %}Create Simple ID{% endblock %}
+{% block title %}Create Simple Demo ID{% endblock %}
 
 {% block content %}
   <div class="grid_12">
     <h1>Create ID</h1>
-    <form id="create_form" action="{% url ui_create.simple %}" method="post">
+    <form id="create_form" action="{% url ui_demo.simple %}" method="post">
       
       {% include "includes/simple_id_type.html" %}
       
@@ -18,8 +18,8 @@
       </div>
       <div style="clear:both">&nbsp;</div>
       <p>
-        Note: Clicking &quot;Create&quot; will create and publish this identifier immediately.
-        If you do not wish to publish this identifier now, please use the Advanced form.
+        Note: Clicking &quot;Create&quot; will create and publish this test identifier immediately.
+        If you do not wish to publish this test identifier now, please use the Advanced form.
       </p>
     </form>
   </div>

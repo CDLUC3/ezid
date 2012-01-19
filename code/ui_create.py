@@ -16,6 +16,8 @@ def simple(request):
   d['menu_item'] = 'ui_create.simple'
   d['current_profile'] = metadata.getProfile('dc') #default profile
   d['internal_profile'] = metadata.getProfile('internal')
+  print uic.testPrefixes
+  d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['prefix'])
   if request.method == "POST":
     if "current_profile" not in request.POST or "shoulder" not in request.POST: uic.badRequest()
     d['current_profile'] = metadata.getProfile(request.POST['current_profile'])

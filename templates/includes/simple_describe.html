@@ -1,0 +1,22 @@
+{% load layout_extras %}
+
+<h2>Step 2: Describe the identified object.</h2>
+<input type="hidden" name="current_profile" value="{{current_profile.name}}" />
+<label for="_target" class="left">
+  {{internal_profile.target.displayName}}:
+</label>
+<div class="field_right">
+  <input type="text" name="_target" id="_target" size="35" value="{% request_value "_target" %}"/>
+</div>
+{% for e in current_profile.elements %}
+  <label for="{{e.name}}" class="left">
+    {{e.displayName}}:
+  </label>
+  <div class="field_right">
+    <input type="text" name="{{e.name}}" id="{{e.name}}" size="35" value="{% request_value e.name %}" />
+  </div>        
+{% endfor %}
+
+<script type="text/javascript">
+  $('#_target').focus();
+</script>

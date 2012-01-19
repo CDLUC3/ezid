@@ -201,7 +201,7 @@ def write_profile_elements_from_form(identifier, request, profile, addl_dict = {
   for e in write_elements:
     to_write[e] = request.POST[e]
   to_write = dict(to_write.items() + addl_dict.items())
-  s = ezid.setMetadata(identifier, request.session["auth"].user, request.session["auth"].group, to_write)
+  s = ezid.setMetadata(identifier, user_or_anon(request), group_or_anon(request), to_write)
   if s.startswith("success:"):
     return True
   else:
@@ -222,3 +222,15 @@ def validate_simple_metadata_form(request, profile):
     django.contrib.messages.error(request, "Please enter a location URL starting with the protocol such as http://")
     is_valid = False
   return is_valid
+
+def user_or_anon(request):
+  if 'auth' in request.session:
+    return request.session["auth"].user
+  else:
+    return ("anonymous", "anonymous")
+    
+def group_or_anon(request):
+  if 'auth' in request.session:
+    return request.session["auth"].group
+  else:
+    return ("anonymous", "anonymous")
