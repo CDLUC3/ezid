@@ -76,7 +76,8 @@ for r in records:
        b[1].startswith(testDoiPrefix)) or\
      ((b[0] == "mintArk" or b[0] == "createArk") and\
        b[1].startswith(testArkPrefix)) or\
-     (b[0] == "setMetadata" and (b[1].startswith("doi:" + testDoiPrefix) or\
+     ((b[0] == "setMetadata" or b[0] == "deleteIdentifier") and\
+       (b[1].startswith("doi:" + testDoiPrefix) or\
        b[1].startswith("ark:/" + testArkPrefix))):
     continue
   # Special case: on a mint transaction, tack the new identifier onto
