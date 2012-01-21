@@ -12,16 +12,16 @@ def index(request):
   return uic.render(request, 'manage/index', d)
 
 def edit(request, identifier):
-  #print request.build_absolute_uri(reverse('ui_manage.details', args=[identifier]))
-  if uic.is_logged_in(request) == False: return redirect("ui_account.login")
   r = ezid.getMetadata(identifier)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return uic.redirect("ui_lookup.index")
+  if not uic.authorizeUpdate(request, r):
+    django.contrib.messages.error(request, "You are not allowed to edit this identifier")
+    return redirect("ui_manage.details", identifier)
   s, m = r
   d['status'] = m['_status'] if '_status' in m else 'unavailable'
   d['post_status'] = d['status']
-  if not uic.edit_authorized_for_identifier(request, identifier, m): return redirect("ui_manage.details", identifier)
   d['id_text'] = s[8:].strip()
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
@@ -52,8 +52,8 @@ def details(request, identifier):
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return uic.redirect("ui_lookup.index")
+  d['allow_update'] = uic.authorizeUpdate(request, r)
   s, m = r
-  print "details: " + s
   assert s.startswith("success:")
   if not uic.view_authorized_for_identifier(request, m): return redirect("ui_lookup.index")
   d['id_text'] = s[8:].strip()

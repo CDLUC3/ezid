@@ -25,8 +25,8 @@ def simple(request):
       django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
       return uic.render(request, "demo/simple", d)
     if uic.validate_simple_metadata_form(request, d['current_profile']):
-      s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon(request),
-          uic.group_or_anon(request))
+      s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request),
+          uic.group_or_anon_tup(request))
       print s
       if s.startswith("success:"):
         new_id = s.split()[1]

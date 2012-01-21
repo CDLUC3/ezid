@@ -161,24 +161,6 @@ def is_logged_in(request):
     return False
   return True
 
-def edit_authorized_for_identifier(request, identifier, id_meta):
-  """Checks that the user is authorized for identifier"""
-  if "auth" in request.session:
-    user = request.session["auth"].user
-    group = request.session["auth"].group
-  else:
-    user = group = ("anonymous", "anonymous")
-  if "_coowners" not in id_meta:
-    coOwners = []
-  else:
-    coOwners = [(co.strip(), idmap.getUserId(co.strip()))\
-      for co in id_meta["_coowners"].value.split(";") if len(co.strip()) > 0]
-  editable = policy.authorizeUpdate(user, group, identifier,
-    (id_meta["_owner"], idmap.getUserId(id_meta["_owner"])),
-    (id_meta["_ownergroup"], idmap.getGroupId(id_meta["_ownergroup"])),
-    coOwners, [])
-  return editable
-
 # Based on existing UI code, but does this need expansion?
 # XXX is anyone logged in able to view anyone else's identifiers?
 def view_authorized_for_identifier(request, id_meta):
@@ -188,6 +170,43 @@ def view_authorized_for_identifier(request, id_meta):
     django.contrib.messages.error(request, "Unauthorized.")
     return False
   return True
+
+def authorizeCreate(request, prefix):
+  """a simple function to decide if a user (gotten from request.session)
+  is allowed to create with the prefix"""
+  return policy.authorizeCreate(user_or_anon_tup(request), group_or_anon_tup(request),
+        prefix)
+
+def authorizeUpdate(request, metadata_tup):
+  """a simple function to decide if identifier can updated/edited based in ui values.
+  It takes the request object (for session) and presumed object metadata tuple. It wraps
+  the much more complicated policy function calls so they're simple to use in multiple places
+  without repeating a lot of code."""
+  if not (type(metadata_tup) is tuple):
+    return False
+  s, m = metadata_tup
+  if not s.startswith("success:"):
+    return False
+  the_id = s[8:].strip()
+  return policy.authorizeUpdate(user_or_anon_tup(request), group_or_anon_tup(request),
+        the_id, get_user_tup(m['_owner']), get_group_tup(m['_ownergroup']),
+        get_coowners_tup(m), m)
+
+# simple function to decide if identifier can be deleted based on ui context
+def authorizeDelete(request, metadata_tup):
+  """a simple function to decide if identifier can be deleted based in ui values.
+  It takes the request object (for session) and presumed object metadata tuple. It wraps
+  the much more complicated policy function calls so they're simple to use in multiple places
+  without repeating a lot of code."""
+  if not (type(metadata_tup) is tuple):
+    return False
+  s, m = metadata_tup
+  if not s.startswith("success:"):
+    return False
+  the_id = s[8:].strip()
+  return policy.authorizeDelete(user_or_anon_tup(request), group_or_anon_tup(request),
+        the_id, get_user_tup(m['_owner']), get_group_tup(m['_ownergroup']),
+        get_coowners_tup(m))
 
 def write_profile_elements_from_form(identifier, request, profile, addl_dict = {}):
   """writes the external profile elements for an id from a form submission,
@@ -201,7 +220,7 @@ def write_profile_elements_from_form(identifier, request, profile, addl_dict = {
   for e in write_elements:
     to_write[e] = request.POST[e]
   to_write = dict(to_write.items() + addl_dict.items())
-  s = ezid.setMetadata(identifier, user_or_anon(request), group_or_anon(request), to_write)
+  s = ezid.setMetadata(identifier, user_or_anon_tup(request), group_or_anon_tup(request), to_write)
   if s.startswith("success:"):
     return True
   else:
@@ -210,7 +229,7 @@ def write_profile_elements_from_form(identifier, request, profile, addl_dict = {
 
 
 def validate_simple_metadata_form(request, profile):
-  """validates a simple id metadata form, profile is more or less irrelevant now,
+  """validates a simple id metadata form, profile is more or less irrelevant for now,
   but may be useful later"""
   is_valid = True
   if "_target" not in request.POST:
@@ -223,14 +242,32 @@ def validate_simple_metadata_form(request, profile):
     is_valid = False
   return is_valid
 
-def user_or_anon(request):
+def user_or_anon_tup(request):
+  """Gets user tuple from request.session, otherwise returns anonymous tuple"""
   if 'auth' in request.session:
     return request.session["auth"].user
   else:
     return ("anonymous", "anonymous")
     
-def group_or_anon(request):
+def group_or_anon_tup(request):
+  """Gets group tuple from request.session, otherwise returns anonymous tuple"""
   if 'auth' in request.session:
     return request.session["auth"].group
   else:
     return ("anonymous", "anonymous")
+  
+def get_user_tup(user_id):
+  """Gets user tuple from user_id"""
+  return (user_id, idmap.getUserId(user_id) )
+
+def get_group_tup(group_id):
+  """Gets group tuple from group_id"""
+  return (group_id, idmap.getGroupId(group_id))
+
+def get_coowners_tup(id_meta):
+  if "_coowners" not in id_meta:
+    return []
+  else:
+    return [get_user_tup(co.strip())\
+      for co in id_meta["_coowners"].value.split(";") if len(co.strip()) > 0]
+
