@@ -235,29 +235,34 @@ def uploadMetadata (doi, current, delta):
   m.update(delta)
   newRecord = _formRecord(doi, m)
   if newRecord == oldRecord: return None
-  o = urllib2.build_opener(_HTTPErrorProcessor)
-  r = urllib2.Request(_metadataUrl)
-  # We manually supply the HTTP Basic authorization header to avoid
-  # the doubling of the number of HTTP transactions caused by the
-  # challenge/response model.
-  r.add_header("Authorization", _datacenterAuthorization(doi))
-  r.add_header("Content-Type", "application/xml; charset=UTF-8")
-  r.add_data(newRecord.encode("UTF-8"))
-  c = None
-  try:
-    c = o.open(r)
-    assert c.read() == "OK",\
-     "unexpected return from DataCite store metadata operation"
-  except urllib2.HTTPError, e:
-    message = e.fp.read()
-    if e.code == 400 and message.startswith("[xml]"):
-      return message
+  # To hide transient network errors, we make multiple attempts.
+  for i in range(_numAttempts):
+    o = urllib2.build_opener(_HTTPErrorProcessor)
+    r = urllib2.Request(_metadataUrl)
+    # We manually supply the HTTP Basic authorization header to avoid
+    # the doubling of the number of HTTP transactions caused by the
+    # challenge/response model.
+    r.add_header("Authorization", _datacenterAuthorization(doi))
+    r.add_header("Content-Type", "application/xml; charset=UTF-8")
+    r.add_data(newRecord.encode("UTF-8"))
+    c = None
+    try:
+      c = o.open(r)
+      assert c.read() == "OK",\
+       "unexpected return from DataCite store metadata operation"
+    except urllib2.HTTPError, e:
+      message = e.fp.read()
+      if e.code == 400 and (message.startswith("[xml]") or\
+        message.startswith("ParseError")):
+        return message
+      else:
+        raise e
+    except urllib2.URLError:
+      if i == _numAttempts-1: raise
     else:
-      raise e
-  else:
-    return None
-  finally:
-    if c: c.close()
+      return None
+    finally:
+      if c: c.close()
 
 def ping ():
   """
