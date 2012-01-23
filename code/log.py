@@ -34,11 +34,13 @@ import django.conf
 import django.core.mail
 import logging
 import logging.config
+import os.path
 import traceback
 
 import util
 
-logging.config.fileConfig(django.conf.settings.EZID_CONFIG_FILE,
+logging.config.fileConfig(os.path.join(django.conf.settings.SETTINGS_DIR,
+  django.conf.settings.LOGGING_CONFIG_FILE),
   { "SITE_ROOT": django.conf.settings.SITE_ROOT })
 _log = logging.getLogger()
 
