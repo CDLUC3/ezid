@@ -487,22 +487,22 @@ def makeLdapUser (uid):
   finally:
     if l: l.unbind()
 
-def makeUser (dn, groupDn, user, group):
+def makeUser (uid, groupDn, user, group):
   """
-  Makes an existing LDAP entry an EZID user, returning None on success
-  or a string message on error.  'dn' should be the entry's DN.  The
-  entry must not already be an EZID user; must already have a uid
-  attribute; must not already have an ezidOwnerGroup attribute; and
-  may already have an arkId attribute.  'groupDn' should be the new
-  user's EZID group's LDAP entry's DN.  'user' and 'group' are used in
-  identifier creation and modification; each should be authenticated
-  (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").
+  Makes an existing LDAP entry an EZID user.  The entry is identified
+  by 'uid'.  The entry must not already be an EZID user; must already
+  have a uid attribute (of course); must not already have an
+  ezidOwnerGroup attribute; and may already have an arkId attribute.
+  'groupDn' should be the new user's EZID group's LDAP entry's DN.
+  'user' and 'group' are used in identifier creation and modification;
+  each should be authenticated (local name, persistent identifier)
+  tuples, e.g., ("dryad", "ark:/13030/foo").  Returns a 1-tuple
+  containing the entry's DN on success or a string message on error.
   """
   if not _ldapEnabled: return "Functionality unavailable."
   if not _updatesEnabled: return "Prohibited by configuration."
-  if len(dn) == 0: return "LDAP entry required."
-  if not _userDnPattern.match(dn): return "DN does not match user template."
+  if " " in uid: return "Invalid username."
+  dn = _userDnTemplate % ldap.dn.escape_dn_chars(uid)
   l = None
   try:
     l = ldap.initialize(_ldapServer)
@@ -520,8 +520,6 @@ def makeUser (dn, groupDn, user, group):
     try:
       r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass", "uid",
         "arkId", "ezidOwnerGroup"])
-    except ldap.INVALID_DN_SYNTAX:
-      return "Invalid DN."
     except ldap.NO_SUCH_OBJECT:
       return "No such LDAP entry."
     if "ezidUser" in r[0][1]["objectClass"]:
@@ -572,7 +570,7 @@ def makeUser (dn, groupDn, user, group):
     l.modify_s(dn, m)
     _cacheLdapInformation(l, dn, arkId, user, group)
     idmap.addUser(uid, arkId)
-    return None
+    return (dn,)
   except Exception, e:
     log.otherError("ezidadmin.makeUser", e)
     return "Internal server error."

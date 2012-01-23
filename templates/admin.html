@@ -106,21 +106,18 @@ make new</a></p>
 <p>Make a new EZID user.</p>
 <table class="form">
 <tr>
-<th rowspan="4" class="multiline">Username</th>
-<td class="note">Either enter new username (e.g., "jdoe"):</td>
+<th rowspan="3" class="multiline">Username</th>
+<td><input type="text" id="nu_uid" name="nu_uid" size="20"/>
+<span class="note">E.g., "jdoe"</span></td>
 </tr>
 <tr>
-<td><input type="text" id="nu_uid" name="nu_uid" size="20"/></td>
+<td><input type="radio" name="nu_existingldapuser" value="false"
+checked="checked"/>
+<span class="value">New user</span></td>
 </tr>
 <tr>
-<td class="note">Or select existing LDAP user:</td>
-</tr>
-<tr>
-<td>
-<select id="nu_userselect">
-<option selected="selected">Loading LDAP users...</option>
-</select>
-</td>
+<td><input type="radio" name="nu_existingldapuser" value="true"/>
+<span class="value">Existing LDAP user</span></td>
 </tr>
 <tr>
 <th>Group</th>
