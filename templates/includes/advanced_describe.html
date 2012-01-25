@@ -1,0 +1,35 @@
+{% load layout_extras %}
+
+<input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
+<h2>Step 4: Describe the identified object using the 
+<select name="current_profile" id="current_profile">
+  {% for prof in profiles %}
+    <option value="{{prof.name}}"
+      {% if prof.name == current_profile.name %}
+        selected="selected"
+      {% endif %}
+    >{{prof.displayName}}</option>
+  {% endfor %}
+</select>
+citation profile:</h2>
+<label for="_target" class="left">
+  {{internal_profile.target.displayName}}:
+</label>
+<div class="field_right">
+  <input type="text" name="_target" id="_target" size="35" value="{% request_value "_target" %}"/>
+</div>
+{% for e in current_profile.elements %}
+  <label for="{{e.name}}" class="left">
+    {{e.displayName}}:
+  </label>
+  <div class="field_right">
+    <input type="text" name="{{e.name}}" id="{{e.name}}" size="35" value="{% request_value e.name %}" />
+  </div>        
+{% endfor %}
+
+<script type="text/javascript">
+  // submit form when profile changed
+  $("#current_profile").bind("change", function(event){
+    $("#create_form").submit();
+  });
+</script>
