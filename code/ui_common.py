@@ -237,7 +237,7 @@ def validate_simple_metadata_form(request, profile):
     is_valid = False
     
   url = urlparse.urlparse(request.POST['_target'])
-  if not(url.scheme and url.netloc):
+  if request.POST['_target'] != '' and not(url.scheme and url.netloc):
     django.contrib.messages.error(request, "Please enter a location URL starting with the protocol such as http://")
     is_valid = False
   return is_valid

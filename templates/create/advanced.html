@@ -1,10 +1,136 @@
 {% extends "layouts/base.html" %}
+{% load layout_extras %}
 
-{% block title %}Manage IDs Advanced{% endblock %}
+{% block title %}Create Advanced ID{% endblock %}
 
 {% block content %}
   <div class="grid_12">
-    <h1>Advanced Create</h1>
-    <p>A placeholder page.</p>
+    <h1>Create ID</h1>
+    <form id="create_form" action="{% url ui_create.advanced %}" method="post">
+      
+      {% include "includes/simple_id_type.html" %}
+      
+      <div id="preview_div" style="width:180px;float:right;">
+        <h2>Identifier Preview:</h2>
+        <div id="preview_div_value">ark:/13030/c7kdhrij</div>
+      </div>
+      <div style="float:left;">
+        <div style="margin-top: 1em;">
+          <h2 style="display:inline;">Step 2: Optional: Add a custom remainder</h2>
+          &nbsp;&nbsp;&nbsp;
+          <a href="#">Guidelines</a>
+        </div>
+        <div style="padding:1em 0 0 1em;clear:both;">
+          <input type="text" name="remainder" id="remainder" size="35" value="Recommended: Leave blank"/>
+        </div>
+      </div>
+      
+      <script type="text/javascript">
+        // deal with custom remainder and previews
+        $("#remainder").bind("focus", function(event){
+          this.select();
+        });
+        
+        var remainderValue = '';
+        $(function () {
+          setInterval(checkRemainderChanged,0.25);
+        });
+        
+        function checkRemainderChanged() {
+          var currentValue = $('#remainder').val();
+          if (currentValue != remainderValue){
+            if(currentValue.length < 1 || currentValue == 'Recommended: Leave blank'){
+              $('#preview_div_value').html('');
+              $('#preview_div').css('display', 'none');
+              $('#remainder').css('font-style', 'italic');
+              $('#remainder').css('color', 'gray');
+            }else if(currentValue.indexOf(' ')>=0 || currentValue.length > 25){
+              $('#preview_div_value').html('Invalid remainder');
+              $('#preview_div').css('display', 'block');
+              $('#preview_div_value').css('color', 'red');
+              $('#remainder').css('font-style', 'normal');
+              $('#remainder').css('color', 'black');
+            }else{
+              $('#preview_div_value').html(
+                      $('#create_form input:radio[name=shoulder]:checked').val()  + $('#remainder').val());
+              $('#preview_div').css('display', 'block');
+              $('#preview_div_value').css('color', 'black');
+              $('#remainder').css('font-style', 'normal');
+              $('#remainder').css('color', 'black');
+            }
+            remainderValue = currentValue; 
+          }
+        }
+        
+        // to force recalculation of preview when shoulder radio changed
+        $('#create_form input:radio[name=shoulder]').change(function(){
+          remainderValue = (new Date()).valueOf(); // triggers as changed from old value
+        });
+        checkRemainderChanged();
+      </script>
+      
+      <div style="clear:both">&nbsp;</div>
+      <h2>Step 3: Decide</h2>
+      
+      <div style="margin:0 0 0 1em;clear:both;">
+        Do you wish to publish this identifier now? &nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="radio" name="publish" value="True" id="publish_true" 
+          {% if request.POST.publish != 'False' %}
+              checked="checked"
+          {% endif %}
+         /><label
+          for="publish_true">Yes</label>&nbsp;
+        <input type="radio" name="publish" value="False" id="publish_false"
+          {% if request.POST.publish == 'False' %}
+            checked="checked"
+          {% endif %}
+         /><label
+          for="publish_false">No</label>
+      </div>
+           
+      <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
+      <h2>Step 4: Describe the identified object using the 
+      <select name="current_profile" id="current_profile">
+        {% for prof in profiles %}
+          <option value="{{prof.name}}"
+            {% if prof.name == current_profile.name %}
+              selected="selected"
+            {% endif %}
+          >{{prof.displayName}}</option>
+        {% endfor %}
+      </select>
+      citation profile:</h2>
+      <label for="_target" class="left">
+        {{internal_profile.target.displayName}}:
+      </label>
+      <div class="field_right">
+        <input type="text" name="_target" id="_target" size="35" value="{% request_value "_target" %}"/>
+      </div>
+      {% for e in current_profile.elements %}
+        <label for="{{e.name}}" class="left">
+          {{e.displayName}}:
+        </label>
+        <div class="field_right">
+          <input type="text" name="{{e.name}}" id="{{e.name}}" size="35" value="{% request_value e.name %}" />
+        </div>        
+      {% endfor %}
+      
+      <label class="left">&nbsp;</label>
+      <div class="field_right">
+        <input type="submit" value="Create"/>
+      </div>
+      <div style="clear:both">&nbsp;</div>
+    </form>
   </div>
+  
+  <script type="text/javascript">
+    // submit form when profile changed
+    $("#current_profile").bind("change", function(event){
+      $("#create_form").submit();
+    });
+    
+    // focus on first element
+    $("#create_form :input:visible:enabled:first").focus();
+  </script>
+
 {% endblock %}
