@@ -21,7 +21,8 @@
           <a href="#">Guidelines</a>
         </div>
         <div style="padding:1em 0 0 1em;clear:both;">
-          <input type="text" name="remainder" id="remainder" size="35" value="Recommended: Leave blank"/>
+          <input type="text" name="remainder" id="remainder" size="35"
+              value="{% form_or_default "remainder" "Recommended: Leave blank" %}"/>
         </div>
       </div>
       

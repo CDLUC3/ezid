@@ -22,7 +22,7 @@ def edit(request, identifier):
   s, m = r
   d['status'] = m['_status'] if '_status' in m else 'unavailable'
   d['post_status'] = d['status']
-  d['id_text'] = s[8:].strip()
+  d['id_text'] = s.split()[1]
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
   if request.method == "POST":
@@ -56,7 +56,7 @@ def details(request, identifier):
   s, m = r
   assert s.startswith("success:")
   if not uic.view_authorized_for_identifier(request, m): return redirect("ui_lookup.index")
-  d['id_text'] = s[8:].strip()
+  d['id_text'] = s.split()[1]
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
   if '_profile' in m:

@@ -187,7 +187,7 @@ def authorizeUpdate(request, metadata_tup):
   s, m = metadata_tup
   if not s.startswith("success:"):
     return False
-  the_id = s[8:].strip()
+  the_id = s.split()[1]
   return policy.authorizeUpdate(user_or_anon_tup(request), group_or_anon_tup(request),
         the_id, get_user_tup(m['_owner']), get_group_tup(m['_ownergroup']),
         get_coowners_tup(m), m)
@@ -203,7 +203,7 @@ def authorizeDelete(request, metadata_tup):
   s, m = metadata_tup
   if not s.startswith("success:"):
     return False
-  the_id = s[8:].strip()
+  the_id = s.split()[1]
   return policy.authorizeDelete(user_or_anon_tup(request), group_or_anon_tup(request),
         the_id, get_user_tup(m['_owner']), get_group_tup(m['_ownergroup']),
         get_coowners_tup(m))
