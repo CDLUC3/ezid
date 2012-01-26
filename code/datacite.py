@@ -248,7 +248,7 @@ def uploadMetadata (doi, current, delta):
     c = None
     try:
       c = o.open(r)
-      assert c.read() == "OK",\
+      assert c.read().startswith("OK"),\
        "unexpected return from DataCite store metadata operation"
     except urllib2.HTTPError, e:
       message = e.fp.read()
