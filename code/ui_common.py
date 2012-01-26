@@ -33,6 +33,8 @@ defaultUrnUuidProfile = None
 adminUsername = None
 shoulders = None
 
+remainder_box_default = "Recommended: Leave blank"
+
 def loadConfig():
   global ezidUrl, templates, alertMessage, prefixes, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
@@ -234,12 +236,28 @@ def validate_simple_metadata_form(request, profile):
   is_valid = True
   if "_target" not in request.POST:
     django.contrib.messages.error(request, "You must enter a URL location for your identifier")
-    is_valid = False
-    
+    is_valid = False  
   url = urlparse.urlparse(request.POST['_target'])
   if request.POST['_target'] != '' and not(url.scheme and url.netloc):
     django.contrib.messages.error(request, "Please enter a location URL starting with the protocol such as http://")
     is_valid = False
+  return is_valid
+
+def validate_advanced_metadata_form(request, profile):
+  """validates an advanced metadata form, profile is more or less irrelevant for now,
+  but may be useful later"""
+  is_valid = True
+  if "_target" not in request.POST:
+    django.contrib.messages.error(request, "You must enter a URL location for your identifier")
+    is_valid = False  
+  url = urlparse.urlparse(request.POST['_target'])
+  if request.POST['_target'] != '' and not(url.scheme and url.netloc):
+    django.contrib.messages.error(request, "Please enter a location URL starting with the protocol such as http://")
+    is_valid = False
+  if request.POST['remainder'] != '' and request.POST['remainder'] != remainder_box_default and \
+      (' ' in request.POST['remainder'] or len(request.POST['remainder']) > 30):
+    django.contrib.messages.error(request, "The remainder you entered is invalid.")
+    is_valid = False       
   return is_valid
 
 def user_or_anon_tup(request):
