@@ -38,7 +38,8 @@ def edit(request, identifier):
           django.contrib.messages.success(request, "Identifier updated.")
           return redirect("ui_manage.details", identifier)
         else:
-          print "Could not save this identifier"
+          django.contrib.messages.error(request, "There was an error updating the metadata for your identifier: " + s)
+          return uic.render(request, "manage/edit", d)
   elif request.method == "GET":
     if '_profile' in m:
       d['current_profile'] = metadata.getProfile(m['_profile'])

@@ -31,14 +31,15 @@ def simple(request):
       if s.startswith("success:"):
         new_id = s.split()[1]
       else:
-        pass
+        django.contrib.messages.error(request, "There was an error creating your identifier:"  + s)
+        return uic.render(request, "demo/simple", d)
       result = uic.write_profile_elements_from_form(new_id, request, d['current_profile'],
                {'_profile': request.POST['current_profile'], '_target' : request.POST['_target']})
       if result==True:
         django.contrib.messages.success(request, "Identifier created.")
         return redirect("ui_manage.details", new_id)
       else:
-        pass
+        django.contrib.messages.error(request, "There was an error writing the metadata for your identifier: " + s)
   return uic.render(request, 'demo/simple', d)
 
 def advanced(request):
