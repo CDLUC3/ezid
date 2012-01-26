@@ -55,7 +55,6 @@ def advanced(request):
     #this means they're not just changing the profile, but are saving
     if request.POST['current_profile'] == request.POST['original_profile']:
       if "current_profile" not in request.POST or "shoulder" not in request.POST: uic.badRequest()
-      d['current_profile'] = metadata.getProfile(request.POST['current_profile'])
       pre_list = [p['prefix'] for p in request.session['prefixes']]
       if request.POST['shoulder'] not in pre_list:
         django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
