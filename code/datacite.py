@@ -101,6 +101,8 @@ def registerIdentifier (doi, targetUrl):
       message = e.fp.read()
       if e.code == 400 and message.startswith("[url]"): return message
       if e.code != 500 or i == _numAttempts-1: raise e
+    except urllib2.URLError:
+      if i == _numAttempts-1: raise
     else:
       break
     finally:
