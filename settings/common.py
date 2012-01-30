@@ -68,6 +68,8 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = "settings.urls"
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 TEMPLATE_LOADERS = ("django.template.loaders.filesystem.Loader",
                     "django.template.loaders.app_directories.load_template_source")
 TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
