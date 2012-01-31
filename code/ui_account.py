@@ -1,12 +1,30 @@
 import ui_common as uic
-import userauth
+import userauth, useradmin
 import django.contrib.messages
 from django.shortcuts import redirect
 
 d = { 'menu_item' : 'ui_null.null'}
 
 def edit(request):
-  pass
+  """Edit account information form"""
+  if "auth" not in request.session: return uic.unauthorized()
+  d['username'] = request.session['auth'].user[0]
+  
+  if request.method == "GET":
+    r = useradmin.getAccountProfile(request.session["auth"].user[0])
+    if type(r) is str:
+      django.contrib.messages.error(request, r)
+      return redirect('ui_home.index')
+    r2 = useradmin.getContactInfo(request.session["auth"].user[0])
+    if type(r2) is str:
+      django.contrib.messages.error(request, r2)
+      return redirect("ui_home.index")
+    r.update(r2)
+    d.update(r)
+    
+  elif request.method == "POST":
+    pass
+  return uic.render(request, "account/edit", d)
 
 def login(request):
   """
@@ -52,3 +70,4 @@ def logout(request):
 
 def contact(request):
   pass
+  

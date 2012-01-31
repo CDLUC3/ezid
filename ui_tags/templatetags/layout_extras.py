@@ -41,7 +41,7 @@ def form_or_dict_value(context, dict, key_name):
 @basictag(takes_context=True) 
 def form_or_default(context, key_name, default):
   """Outputs the value of the reposted value unless it doesn't exist then 
-  outpts the default value passed in.
+  outputs the default value passed in.
   """
   request = context['request']
   if request.POST and key_name in request.POST:

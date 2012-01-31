@@ -2,7 +2,7 @@
   {% if session.auth %}
     Logged in as <strong>{{ session.auth.user|first }}</strong>
     &nbsp;|&nbsp;
-    <a href="">My Account</a>
+    <a href="{% url ui_account.edit %}">My Account</a>
     &nbsp;|&nbsp;
     <a href="{% url ui_account.logout %}">Logout</a>
     &nbsp;|&nbsp;
