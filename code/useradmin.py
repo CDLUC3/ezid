@@ -207,11 +207,13 @@ def validateCoOwnerList (l, coOwnerList):
     if len(o) == 0: continue
     try:
       dn = _userDnTemplate % ldap.dn.escape_dn_chars(o)
-      r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass"])
+      r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass", "uid"])
       if "ezidUser" not in r[0][1]["objectClass"]: return None
+      assert "uid" in r[0][1], "missing required LDAP attribute, DN='%s'" % dn
+      o = r[0][1]["uid"][0].decode("UTF-8")
+      if o not in col: col.append(o)
     except ldap.NO_SUCH_OBJECT:
       return None
-    if o not in col: col.append(o)
   return col
 
 def _cacheLdapInformation (l, dn, arkId):
@@ -241,15 +243,18 @@ def setAccountProfile (username, coOwnerList):
     l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
     dn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
     r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass", "arkId",
-      "ezidCoOwners"])
+      "ezidCoOwners", "uid"])
     assert len(r) == 1 and r[0][0] == dn,\
       "unexpected return from LDAP search command, DN='%s'" % dn
     assert "ezidUser" in r[0][1]["objectClass"],\
       "not an EZID user, DN='%s'" % dn
-    assert "arkId" in r[0][1], "missing required LDAP attribute, DN='%s'" % dn
+    assert "arkId" in r[0][1] and "uid" in r[0][1],\
+      "missing required LDAP attribute, DN='%s'" % dn
     arkId = r[0][1]["arkId"][0].decode("UTF-8")
+    uid = r[0][1]["uid"][0].decode("UTF-8")
     coOwnerList = validateCoOwnerList(l, coOwnerList)
     if coOwnerList is None: return "No such EZID user."
+    if uid in coOwnerList: del coOwnerList[coOwnerList.index(uid)]
     if len(coOwnerList) > 0:
       m = [(ldap.MOD_REPLACE if "ezidCoOwners" in r[0][1] else\
         ldap.MOD_ADD, "ezidCoOwners", ",".join(coOwnerList).encode("UTF-8"))]

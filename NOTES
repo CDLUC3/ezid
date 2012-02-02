@@ -107,3 +107,11 @@ only be viewed by the EZID administrator.  To avoid coding
 complications (ezid.getMetadata is used both to service client
 requests and by EZID itself) this special access control is
 implemented in the API and UI, not in ezid.py.
+
+6. Case sensitivity of LDAP UIDs
+--------------------------------
+
+LDAP UIDs are case-insensitive.  Whenever EZID stores a UID (e.g., in
+session cookies and in co-owner lists), it always uses the UID as
+retrieved from LDAP.  In other words, when LDAP is enabled, EZID's
+behavior regarding UIDs is case-insensitive and case-preserving.
