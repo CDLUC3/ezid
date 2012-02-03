@@ -8,7 +8,7 @@
     <h1>My Account</h1>
     <h2>Account Information</h2>
     
-    <form autocomplete="off">
+    <form autocomplete="off" id="edit_form" action="{% url ui_account.edit %}" method="post" >
       <div class="left_desc">Username:</div>
       <div class="right_val">{{ username }}</div>
       
