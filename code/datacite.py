@@ -33,10 +33,12 @@ _numAttempts = None
 _datacenters = None
 _prefixes = None
 _stylesheet = None
+_pingDoi = None
+_pingTarget = None
 
 def _loadConfig ():
   global _enabled, _doiUrl, _metadataUrl, _numAttempts, _datacenters, _prefixes
-  global _stylesheet
+  global _stylesheet, _pingDoi, _pingTarget
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
@@ -52,6 +54,8 @@ def _loadConfig ():
     if config.config("prefix_%s.prefix" % k).startswith("doi:"))
   _stylesheet = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
     django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
+  _pingDoi = config.config("datacite.ping_doi")
+  _pingTarget = config.config("datacite.ping_target")
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -270,13 +274,27 @@ def ping ():
   """
   Tests the DataCite API, returning "up" or "down".
   """
-  try:
-    assert registerIdentifier("10.5072/FK2_cdl_status_check",
-      "http://www.cdlib.org/") is None
-  except Exception, e:
-    return "down"
-  else:
-    return "up"
+  if not _enabled: return "up"
+  # To hide transient network errors, we make multiple attempts.
+  for i in range(_numAttempts):
+    o = urllib2.build_opener(_HTTPErrorProcessor)
+    r = urllib2.Request(_doiUrl + "/" + _pingDoi)
+    # We manually supply the HTTP Basic authorization header to avoid
+    # the doubling of the number of HTTP transactions caused by the
+    # challenge/response model.
+    r.add_header("Authorization", _datacenterAuthorization(_pingDoi))
+    c = None
+    try:
+      c = o.open(r)
+      assert c.read() == _pingTarget
+    except urllib2.URLError:
+      if i == _numAttempts-1: return "down"
+    except:
+      return "down"
+    else:
+      return "up"
+    finally:
+      if c: c.close()
 
 def _removeEncodingDeclaration (record):
   m = _prologRE.match(record)
