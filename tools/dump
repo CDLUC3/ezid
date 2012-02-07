@@ -22,6 +22,9 @@
 # Note: the identifier itself is not encoded.  Also, note that empty
 # values are, well, empty, and hence will result in adjacent spaces.
 #
+# If the -n option is specified, agent identifier conversion is NOT
+# performed.
+#
 # If the -s option is specified, shadow ARKs are included in the
 # output (in addition to and separate from the shadowed identifiers).
 # As noted above, internal field labels are converted to their
@@ -83,24 +86,27 @@ labelMapping = {
   "_is": "_status"
 }
 
-p = optparse.OptionParser(usage="%prog [-s] noid.bdb")
+p = optparse.OptionParser(usage="%prog [-ns] noid.bdb")
+p.add_option("-n", action="store_false",
+  dest="convertAgents", default=True, help="do NOT convert agent identifiers")
 p.add_option("-s", action="store_true",
   dest="includeShadowArks", default=False, help="include shadow ARKs")
 options, args = p.parse_args()
 if len(args) != 1: p.error("wrong number of arguments")
 dbfile = args[0]
 
-agentMap = { "anonymous": "anonymous" }
-groups = ezidadmin.getGroups()
-if type(groups) is str:
-  sys.stderr.write("dump: error loading EZID groups: %s\n" % groups)
-  sys.exit(1)
-for g in groups: agentMap[g["arkId"]] = g["gid"]
-users = ezidadmin.getUsers()
-if type(users) is str:
-  sys.stderr.write("dump: error loading EZID users: %s\n" % users)
-  sys.exit(1)
-for u in users: agentMap[u["arkId"]] = u["uid"]
+if options.convertAgents:
+  agentMap = { "anonymous": "anonymous" }
+  groups = ezidadmin.getGroups()
+  if type(groups) is str:
+    sys.stderr.write("dump: error loading EZID groups: %s\n" % groups)
+    sys.exit(1)
+  for g in groups: agentMap[g["arkId"]] = g["gid"]
+  users = ezidadmin.getUsers()
+  if type(users) is str:
+    sys.stderr.write("dump: error loading EZID users: %s\n" % users)
+    sys.exit(1)
+  for u in users: agentMap[u["arkId"]] = u["uid"]
 
 outfile = gzip.GzipFile(fileobj=sys.stdout, mode="w")
 
@@ -145,9 +151,9 @@ while entry != None:
       if id != lastId:
         if lastId is not None: outputRecord(lastId, record)
         record = {}
-      if label in ["_o", "_g"]:
+      if label in ["_o", "_g"] and options.convertAgents:
         record[label] = util.encode3(agentMap[util.decode(value)])
-      elif label == "_co":
+      elif label == "_co" and options.convertAgents:
         record[label] = util.encode3(" ; ".join(agentMap[co.strip()]\
           for co in util.decode(value).split(";") if len(co.strip()) > 0))
       else:
