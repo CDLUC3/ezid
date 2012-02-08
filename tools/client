@@ -1,11 +1,15 @@
 #! /usr/bin/env python
 
-# Simple EZID command line client.  The output is as returned by EZID,
-# and in particular is UTF-8 encoded.
+# Simple EZID command line client.  The output is UTF-8 encoded.
 #
-# Usage: client server credentials operation...
+# Usage: client [options] server credentials operation...
 #
-#   server
+#   options:
+#     -d decode output
+#     -o one line per value: convert newlines to spaces
+#     -t format timestamps
+#
+#   server:
 #     l (local server, no https)
 #     d (development)
 #     s (staging)
@@ -13,12 +17,12 @@
 #     p (production)
 #     http://...
 #
-#   credentials
+#   credentials:
 #     username:password
 #     sessionid (as returned by previous login)
 #     - (none)
 #
-#   operation
+#   operation:
 #     m[int] shoulder [label value label value ...]
 #     c[reate] identifier [label value label value ...]
 #     v[iew] identifier
@@ -40,6 +44,7 @@
 
 import re
 import sys
+import time
 import types
 import urllib
 import urllib2
@@ -65,9 +70,14 @@ operations = {
   "reload" : 0
 }
 
-usageText = """Usage: client server credentials operation...
+usageText = """Usage: client [options] server credentials operation...
 
-  server
+  options:
+    -d decode output
+    -o one line per value: convert newlines to spaces
+    -t format timestamps
+
+  server:
     l (local server, no https)
     d (development)
     s (staging)
@@ -75,12 +85,12 @@ usageText = """Usage: client server credentials operation...
     p (production)
     http://...
 
-  credentials
+  credentials:
     username:password
     sessionid (as returned by previous login)
     - (none)
 
-  operation
+  operation:
     m[int] shoulder [label value label value ...]
     c[reate] identifier [label value label value ...]
     v[iew] identifier
@@ -129,6 +139,20 @@ def formatAnvl (l):
       r.append("%s: %s" % (k, v))
   return "\n".join(r)
 
+decodeOutput = False
+oneLine = False
+formatTimestamps = False
+while len(sys.argv) >= 2 and sys.argv[1].startswith("-"):
+  for c in sys.argv[1][1:]:
+    if c == "d":
+      decodeOutput = True
+    elif c == "o":
+      oneLine = True
+    elif c == "t":
+      formatTimestamps = True
+    else:
+      usageError()
+  del sys.argv[1]
 if len(sys.argv) < 4: usageError()
 server = knownServers.get(sys.argv[1], sys.argv[1])
 opener = urllib2.build_opener(MyHTTPErrorProcessor())
@@ -186,7 +210,18 @@ try:
   if not output.endswith("\n"): output += "\n"
   if operation == "login":
     output += c.info()["set-cookie"].split(";")[0].split("=")[1] + "\n"
-  print output,
 except urllib2.HTTPError, e:
   print e.code, e.msg
   print e.fp.read()
+else:
+  for l in output.splitlines():
+    if formatTimestamps and (l.startswith("_created:") or\
+      l.startswith("_updated:")):
+      ls = l.split(":")
+      l = ls[0] + ": " + time.strftime("%Y-%m-%dT%H:%M:%S",
+        time.localtime(int(ls[1])))
+    if decodeOutput:
+      l = re.sub("%([0-9a-fA-F][0-9a-fA-F])",
+        lambda m: chr(int(m.group(1), 16)), l)
+    if oneLine: l = l.replace("\n", " ").replace("\r", " ")
+    print l
