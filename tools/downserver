@@ -3,9 +3,7 @@
 # Standalone server that mimics EZID, but only indicates that the
 # system is down.  Specifically, all UI requests, regardless of HTTP
 # method, return a 200 OK status and an HTML page containing the
-# message "EZID is down for maintenance".  The /ezid/status API
-# request returns a 200 OK status and the plain text response
-# "success: EZID is down for maintenance"; all other API requests,
+# message "EZID is down for maintenance".  All API requests,
 # regardless of HTTP method, return a 500 Internal Server Error status
 # and the plain text response "error: EZID is down for maintenance".
 # In all cases, a different message may be specified on the command
@@ -94,16 +92,14 @@ class MyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
     self.wfile.write(content)
     self.wfile.flush()
   def do_GET (self):
-    if self.command == "GET" and self.path == "/ezid/status":
-      self.sendResponse(200, "text/plain", len(message)+9,
-        "success: " + message)
-    elif not isUiRequest(self.headers):
-      self.sendResponse(500, "text/plain", len(message)+7, "error: " + message)
-    elif self.command == "GET" and self.path.endswith("/logo.png") and\
-      logo is not None:
-      self.sendResponse(200, "image/png", len(logo), logo)
+    if isUiRequest(self.headers):
+      if self.command == "GET" and self.path.endswith("/logo.png") and\
+        logo is not None:
+        self.sendResponse(200, "image/png", len(logo), logo)
+      else:
+        self.sendResponse(200, "text/html", len(document), document)
     else:
-      self.sendResponse(200, "text/html", len(document), document)
+      self.sendResponse(500, "text/plain", len(message)+7, "error: " + message)
   do_DELETE = do_GET
   do_HEAD = do_GET
   do_POST = do_GET
