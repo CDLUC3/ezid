@@ -51,7 +51,8 @@ layout:
             tools/
         db/
             alert_message
-            db.sqlite3
+            django.sqlite3
+            search.sqlite3
         logs/
             transaction_log
 
@@ -90,10 +91,12 @@ The combination of the PYTHONPATH and DJANGO_SETTINGS_MODULE
 environment variables determines the location of the Django
 application.
 
-To create the initial Django database, assuming the above environment
+To create the initial databases, assuming the above environment
 variables have been set:
 
     django-admin.py syncdb
+    sqlite3 .../SITE_ROOT/db/search.sqlite3
+      < .../SITE_ROOT/PROJECT_ROOT/etc/search-schema.sql
 
 To run the built-in server:
 
