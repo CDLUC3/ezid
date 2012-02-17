@@ -34,6 +34,8 @@ CREATE TABLE identifier (
   mappedCreator TEXT                    -- erc.who, datacite.creator, etc.
 );
 
+CREATE INDEX identifierOwnerIndex ON identifier (owner);
+
 CREATE TABLE ownership (
   owner TEXT NOT NULL,
   identifier TEXT NOT NULL
@@ -41,4 +43,4 @@ CREATE TABLE ownership (
   -- UNIQUE (owner, identifier)
 );
 
-CREATE INDEX ownershipIndex ON ownership (owner);
+CREATE INDEX ownershipOwnerIndex ON ownership (owner);
