@@ -95,7 +95,8 @@ def registerIdentifier (doi, targetUrl):
     # challenge/response model.
     r.add_header("Authorization", _datacenterAuthorization(doi))
     r.add_header("Content-Type", "text/plain; charset=UTF-8")
-    r.add_data(("doi=%s\nurl=%s" % (doi, targetUrl)).encode("UTF-8"))
+    r.add_data(("doi=%s\nurl=%s" % (doi.replace("\\", "\\\\"),
+      targetUrl.replace("\\", "\\\\"))).encode("UTF-8"))
     c = None
     try:
       c = o.open(r)
