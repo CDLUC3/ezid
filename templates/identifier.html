@@ -32,9 +32,9 @@ identifier = "{{ identifier|escapejs }}";
 <tr>
 <th class="labelvalue label idlabelvalue">Identifier</th>
 <td class="labelvalue idlabelvalue">{{ identifier }}</td>
-<td rowspan="4"><img
+<td rowspan="4">{% comment %}<img
 src="https://chart.googleapis.com/chart?chs=120x120&amp;cht=qr&amp;chld=L|0&amp;chl={{ profiles.0.urlform.value|urlencode }}"
-alt="QR code"/></td>
+alt="QR code"/>{% endcomment %}</td>
 </tr>
 <tr>
 <th id="element__urlform" class="labelvalue label">
