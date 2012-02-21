@@ -212,6 +212,9 @@ _labelMapping = {
   "_is": "_status"
 }
 
+def _oneline (s):
+  return re.sub("\s", " ", s)
+
 def mintDoi (prefix, user, group, target=None, reserveOnly=False):
   """
   Mints a DOI identifier having the given scheme-less prefix, e.g.,
@@ -294,7 +297,11 @@ def createDoi (doi, user, group, target=None, reserveOnly=False):
     if not target: target = defaultTarget
     arkTarget = "%s/id/%s" % (_ezidUrl,
       urllib.quote("ark:/" + shadowArk, ":/"))
-    if not reserveOnly: datacite.registerIdentifier(doi, target)
+    if not reserveOnly:
+      message = datacite.registerIdentifier(doi, target)
+      if message is not None:
+        log.badRequest(tid)
+        return "error: bad request - element '_target': " + _oneline(message)
     _bindNoid.holdIdentifier(shadowArk)
     t = str(int(time.time()))
     d = { "_o": user[1],
@@ -672,9 +679,6 @@ def getMetadata (identifier):
   finally:
     _releaseIdentifierLock(ark)
 
-def _oneline (s):
-  return re.sub("\s", " ", s)
-
 def setMetadata (identifier, user, group, metadata):
   """
   Sets metadata elements of a given qualified identifier, e.g.,
@@ -782,7 +786,12 @@ def setMetadata (identifier, user, group, metadata):
           else:
             m = r
         elif iStatus.startswith("unavailable"):
-          m = _statusChangeUnavailableToPublic(ark, m)
+          r = _statusChangeUnavailableToPublic(ark, m)
+          if type(r) is str:
+            log.badRequest(tid)
+            return r
+          else:
+            m = r
       elif metadata["_status"] == "reserved":
         if iStatus != "reserved":
           log.badRequest(tid)
@@ -825,7 +834,12 @@ def setMetadata (identifier, user, group, metadata):
       if "_target" in metadata:
         target = metadata["_target"]
         del metadata["_target"]
-        if iStatus == "public": datacite.setTargetUrl(doi, target)
+        if iStatus == "public":
+          message = datacite.setTargetUrl(doi, target)
+          if message is not None:
+            log.badRequest(tid)
+            return "error: bad request - element '_target': " +\
+              _oneline(message)
       if len(metadata) > 0 and iStatus != "reserved":
         message = datacite.uploadMetadata(doi, m, metadata)
         if message is not None:
@@ -876,7 +890,10 @@ def _statusChangeReservedToPublic (ark, m):
     d["_st"] = m["_st1"]
     d["_st1"] = ""
     if m["_s"].startswith("doi:"):
-      datacite.registerIdentifier(m["_s"][4:], d["_st"])
+      message = datacite.registerIdentifier(m["_s"][4:], d["_st"])
+      if message is not None:
+        return "error: bad request - element '_target': " +\
+          _oneline(message)
       message = datacite.uploadMetadata(m["_s"][4:], {}, m)
       if message is not None:
         return "error: bad request - element 'datacite': " +\
@@ -897,7 +914,10 @@ def _statusChangePublicToUnavailable (ark, m, reason):
   if "_s" in m:
     d["_st1"] = m["_st"]
     d["_st"] = "%s/tombstone/id/%s" % (_ezidUrl, urllib.quote(m["_s"], ":/"))
-    if m["_s"].startswith("doi:"): datacite.setTargetUrl(m["_s"][4:], d["_st"])
+    if m["_s"].startswith("doi:"):
+      message = datacite.setTargetUrl(m["_s"][4:], d["_st"])
+      assert message is None,\
+        "unexpected error setting DOI tombstone target URL"
   _bindNoid.setElements(ark, d)
   m = m.copy()
   m.update(d)
@@ -908,7 +928,10 @@ def _statusChangeUnavailableToPublic (ark, m):
   if "_s" in m:
     d["_st"] = m["_st1"]
     d["_st1"] = ""
-    if m["_s"].startswith("doi:"): datacite.setTargetUrl(m["_s"][4:], d["_st"])
+    if m["_s"].startswith("doi:"):
+      message = datacite.setTargetUrl(m["_s"][4:], d["_st"])
+      if message is not None:
+        return "error: bad request - element '_target': " + _oneline(message)
   _bindNoid.setElements(ark, d)
   m = m.copy()
   m.update(d)

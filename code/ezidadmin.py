@@ -616,6 +616,20 @@ def _addStatusProbe (type, url):
     _lock.release()
   return id
 
+def pingLdap ():
+  """
+  Pings the LDAP server, returning "up" or "down".
+  """
+  if not _ldapEnabled: return "up"
+  try:
+    l = ldap.initialize(_ldapServer)
+    l.bind_s(_userDnTemplate % _adminUsername, _adminPassword,
+      ldap.AUTH_SIMPLE)
+    l.unbind()
+    return "up"
+  except Exception:
+    return "down"
+
 def systemStatus (id=None):
   """
   Returns system status information.  If 'id' is None, a list of
@@ -627,8 +641,9 @@ def systemStatus (id=None):
   """
   if id is None:
     probes = []
+    probes.append({ "id": _addStatusProbe("ldap", None), "name": "LDAP" })
     probes.append({ "id": _addStatusProbe("noid",
-      config.config("DEFAULT.bind_noid")), "name": "Noid binder" })
+      config.config("DEFAULT.bind_noid")), "name": "Noid \"bind\" database" })
     probes.append({ "id": _addStatusProbe("datacite", None),
       "name": "DataCite API" })
     for p in config.config("prefixes.keys").split(","):
@@ -646,7 +661,9 @@ def systemStatus (id=None):
       del _statusProbes[id]
     finally:
       _lock.release()
-    if type == "noid":
+    if type == "ldap":
+      return pingLdap()
+    elif type == "noid":
       return noid.Noid(url).ping()
     elif type == "datacite":
       return datacite.ping()

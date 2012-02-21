@@ -33,10 +33,12 @@ _numAttempts = None
 _datacenters = None
 _prefixes = None
 _stylesheet = None
+_pingDoi = None
+_pingTarget = None
 
 def _loadConfig ():
   global _enabled, _doiUrl, _metadataUrl, _numAttempts, _datacenters, _prefixes
-  global _stylesheet
+  global _stylesheet, _pingDoi, _pingTarget
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
@@ -52,6 +54,8 @@ def _loadConfig ():
     if config.config("prefix_%s.prefix" % k).startswith("doi:"))
   _stylesheet = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
     django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
+  _pingDoi = config.config("datacite.ping_doi")
+  _pingTarget = config.config("datacite.ping_target")
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -75,12 +79,12 @@ def _datacenterAuthorization (doi):
 def registerIdentifier (doi, targetUrl):
   """
   Registers a scheme-less DOI identifier (e.g., "10.5060/foo") and
-  target URL (e.g., "http://whatever...") with DataCite.  No error
-  checking is done on the inputs; in particular, it is not checked
-  that the arguments are syntactically correct, nor is it checked that
-  we have rights to the DOI prefix.
+  target URL (e.g., "http://whatever...") with DataCite.  There are
+  three possible returns: None on success; a string error message if
+  the target URL was not accepted by DataCite; or a thrown exception
+  on other error.
   """
-  if not _enabled: return
+  if not _enabled: return None
   # To deal with transient problems with the Handle system underlying
   # the DataCite service, we make multiple attempts.
   for i in range(_numAttempts):
@@ -91,25 +95,33 @@ def registerIdentifier (doi, targetUrl):
     # challenge/response model.
     r.add_header("Authorization", _datacenterAuthorization(doi))
     r.add_header("Content-Type", "text/plain; charset=UTF-8")
-    r.add_data(("doi=%s\nurl=%s" % (doi, targetUrl)).encode("UTF-8"))
+    r.add_data(("doi=%s\nurl=%s" % (doi.replace("\\", "\\\\"),
+      targetUrl.replace("\\", "\\\\"))).encode("UTF-8"))
     c = None
     try:
       c = o.open(r)
       assert c.read() == "OK",\
         "unexpected return from DataCite register DOI operation"
     except urllib2.HTTPError, e:
+      message = e.fp.read()
+      if e.code == 400 and message.startswith("[url]"): return message
       if e.code != 500 or i == _numAttempts-1: raise e
+    except urllib2.URLError:
+      if i == _numAttempts-1: raise
     else:
       break
     finally:
       if c: c.close()
+  return None
 
 def setTargetUrl (doi, targetUrl):
   """
   Sets the target URL of an existing scheme-less DOI identifier (e.g.,
-  "10.5060/foo").  No error checking is done on the inputs.
+  "10.5060/foo").  There are three possible returns: None on success;
+  a string error message if the target URL was not accepted by
+  DataCite; or a thrown exception on other error.
   """
-  registerIdentifier(doi, targetUrl)
+  return registerIdentifier(doi, targetUrl)
 
 _prologRE = re.compile("(<\?xml\s+version\s*=\s*['\"]([-\w.:]+)[\"'])" +\
   "(\s+encoding\s*=\s*['\"]([-\w.]+)[\"'])?")
@@ -224,46 +236,66 @@ def uploadMetadata (doi, current, delta):
   an XML-related problem); or a thrown exception on other error.  No
   error checking is done on the inputs.
   """
-  if not _enabled: return
+  if not _enabled: return None
   oldRecord = _formRecord(doi, current)
   m = current.copy()
   m.update(delta)
   newRecord = _formRecord(doi, m)
   if newRecord == oldRecord: return None
-  o = urllib2.build_opener(_HTTPErrorProcessor)
-  r = urllib2.Request(_metadataUrl)
-  # We manually supply the HTTP Basic authorization header to avoid
-  # the doubling of the number of HTTP transactions caused by the
-  # challenge/response model.
-  r.add_header("Authorization", _datacenterAuthorization(doi))
-  r.add_header("Content-Type", "application/xml; charset=UTF-8")
-  r.add_data(newRecord.encode("UTF-8"))
-  c = None
-  try:
-    c = o.open(r)
-    assert c.read() == "OK",\
-     "unexpected return from DataCite store metadata operation"
-  except urllib2.HTTPError, e:
-    message = e.fp.read()
-    if e.code == 400 and message.startswith("[xml]"):
-      return message
+  # To hide transient network errors, we make multiple attempts.
+  for i in range(_numAttempts):
+    o = urllib2.build_opener(_HTTPErrorProcessor)
+    r = urllib2.Request(_metadataUrl)
+    # We manually supply the HTTP Basic authorization header to avoid
+    # the doubling of the number of HTTP transactions caused by the
+    # challenge/response model.
+    r.add_header("Authorization", _datacenterAuthorization(doi))
+    r.add_header("Content-Type", "application/xml; charset=UTF-8")
+    r.add_data(newRecord.encode("UTF-8"))
+    c = None
+    try:
+      c = o.open(r)
+      assert c.read().startswith("OK"),\
+       "unexpected return from DataCite store metadata operation"
+    except urllib2.HTTPError, e:
+      message = e.fp.read()
+      if e.code == 400 and (message.startswith("[xml]") or\
+        message.startswith("ParseError")):
+        return message
+      else:
+        raise e
+    except urllib2.URLError:
+      if i == _numAttempts-1: raise
     else:
-      raise e
-  else:
-    return None
-  finally:
-    if c: c.close()
+      return None
+    finally:
+      if c: c.close()
 
 def ping ():
   """
   Tests the DataCite API, returning "up" or "down".
   """
-  try:
-    registerIdentifier("10.5072/FK2_cdl_status_check", "http://www.cdlib.org/")
-  except Exception, e:
-    return "down"
-  else:
-    return "up"
+  if not _enabled: return "up"
+  # To hide transient network errors, we make multiple attempts.
+  for i in range(_numAttempts):
+    o = urllib2.build_opener(_HTTPErrorProcessor)
+    r = urllib2.Request(_doiUrl + "/" + _pingDoi)
+    # We manually supply the HTTP Basic authorization header to avoid
+    # the doubling of the number of HTTP transactions caused by the
+    # challenge/response model.
+    r.add_header("Authorization", _datacenterAuthorization(_pingDoi))
+    c = None
+    try:
+      c = o.open(r)
+      assert c.read() == _pingTarget
+    except urllib2.URLError:
+      if i == _numAttempts-1: return "down"
+    except:
+      return "down"
+    else:
+      return "up"
+    finally:
+      if c: c.close()
 
 def _removeEncodingDeclaration (record):
   m = _prologRE.match(record)

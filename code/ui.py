@@ -530,6 +530,12 @@ def admin (request, ssl=False):
       f.close()
       _alertMessage = m
       return _render(request, "admin", { "shoulders": _shoulders })
+    elif P["operation"] == "reload":
+      config.load()
+      request.session.flush()
+      django.contrib.messages.success(request, "EZID reloaded.")
+      django.contrib.messages.success(request, "You have been logged out.")
+      return _redirect("/ezid/")
     else:
       return _badRequest()
   else:

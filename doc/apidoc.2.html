@@ -144,9 +144,12 @@ report problems:</p>
 <li><a class="reference internal" href="#identifier-status">Identifier status</a></li>
 <li><a class="reference internal" href="#internal-metadata">Internal metadata</a></li>
 <li><a class="reference internal" href="#metadata-profiles">Metadata profiles</a></li>
+<li><a class="reference internal" href="#testing-the-api">Testing the API</a></li>
+<li><a class="reference internal" href="#server-status">Server status</a></li>
 <li><a class="reference internal" href="#python-example">Python example</a></li>
 <li><a class="reference internal" href="#php-examples">PHP examples</a></li>
 <li><a class="reference internal" href="#perl-examples">Perl examples</a></li>
+<li><a class="reference internal" href="#curl-examples">cURL examples</a></li>
 </ul>
 </div>
 <div class="section" id="framework">
@@ -335,6 +338,11 @@ analogous to the Python code above or, in Java 1.6 and newer,
 invalidate a session.</p>
 </li>
 </ol>
+<p>If authentication is required and credentials are either missing or
+invalid, EZID returns a 401 HTTP status code and the status line
+&quot;error: unauthorized - authentication failure&quot; (see <a class="reference internal" href="#error-handling">Error handling</a>
+below).  If authentication is successful but the request is still not
+authorized, the returned status line is simply &quot;error: unauthorized&quot;.</p>
 </div>
 <div class="section" id="request-response-bodies">
 <h1>Request &amp; response bodies</h1>
@@ -1030,6 +1038,58 @@ YYYY-MM-DD format.</p>
 </li>
 </ol>
 </div>
+<div class="section" id="testing-the-api">
+<h1>Testing the API</h1>
+<p>EZID provides two namespaces (or &quot;shoulders&quot;) for testing purposes:
+ark:/99999/fk4 for ARK identifiers and doi:10.5072/FK2 for DOI
+identifiers.  Identifiers in these namespaces are termed &quot;test
+identifiers.&quot;  They are ordinary long-term identifiers in almost all
+respects, including resolvability, except that EZID deletes them after
+2 weeks.  An additional difference is that citation metadata for test
+identifiers is not uploaded to external search services.</p>
+<p>All user accounts are permitted to create test identifiers.  EZID also
+provides an &quot;apitest&quot; account that is permitted to create only test
+identifiers.  <a class="reference external" href="http://www.cdlib.org/services/uc3/contact.html">Contact UC3</a> for the password for this account.</p>
+<p>Test identifiers and reserved identifiers are orthogonal concepts.  A
+test identifier has a limited lifetime and is deleted by EZID when it
+expires.  A reserved identifier may be deleted by the owner while
+still in its reserved state, but once made public, is permanent.  As
+evidence of this orthogonality, it is possible to create reserved test
+identifiers.</p>
+</div>
+<div class="section" id="server-status">
+<h1>Server status</h1>
+<p>The status of the EZID server can be probed by issuing a GET request
+to the URL http://n2t.net/ezid/status.  If the server is up the
+response will resemble the following:</p>
+<pre class="literal-block">
+⇒ GET /ezid/status HTTP/1.1
+⇒ Host: n2t.net
+
+⇐ HTTP/1.1 200 OK
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 39
+⇐
+⇐ success: 0 identifiers currently locked
+</pre>
+<p>The status of EZID's subsystems can be probed at the same time by
+listing one or more subsystem names, separated by commas, as the value
+of the &quot;subsystems&quot; query parameter.  For example:</p>
+<pre class="literal-block">
+⇒ GET /ezid/status?subsystems=noid,ldap HTTP/1.1
+⇒ Host: n2t.net
+
+⇐ HTTP/1.1 200 OK
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 58
+⇐
+⇐ success: 0 identifiers currently locked
+⇐ noid: up
+⇐ ldap: up
+</pre>
+<p>Use the URL http://n2t.net/ezid/status?subsystems=* to discover
+subsystem names and probe all subsystems.</p>
+</div>
 <div class="section" id="python-example">
 <h1>Python example</h1>
 <p>Below is a command line EZID client capable of exercising all API
@@ -1049,6 +1109,7 @@ is:</p>
 import re
 import sys
 import types
+import urllib
 import urllib2
 
 server = &quot;http://n2t.net/ezid&quot;
@@ -1125,16 +1186,19 @@ if (type(operations[operation]) is int and\
 
 if operation in [&quot;mint&quot;, &quot;create&quot;, &quot;update&quot;]:
   path = &quot;shoulder&quot; if operation == &quot;mint&quot; else &quot;id&quot;
-  request = urllib2.Request(&quot;%s/%s/%s&quot; % (server, path, sys.argv[3]))
+  arg = urllib.quote(sys.argv[3], &quot;:/&quot;)
+  request = urllib2.Request(&quot;%s/%s/%s&quot; % (server, path, arg))
   request.get_method = lambda: &quot;PUT&quot; if operation == &quot;create&quot; else &quot;POST&quot;
   if len(sys.argv) &gt; 4:
     request.add_header(&quot;Content-Type&quot;, &quot;text/plain; charset=UTF-8&quot;)
     request.add_data(formatAnvl(sys.argv[4:]).encode(&quot;UTF-8&quot;))
-elif operation == &quot;delete&quot;:
-  request = urllib2.Request(&quot;%s/id/%s&quot; % (server, sys.argv[3]))
-  request.get_method = lambda: &quot;DELETE&quot;
 elif operation == &quot;view&quot;:
-  request = urllib2.Request(&quot;%s/id/%s&quot; % (server, sys.argv[3]))
+  id = urllib.quote(sys.argv[3], &quot;:/&quot;)
+  request = urllib2.Request(&quot;%s/id/%s&quot; % (server, id))
+elif operation == &quot;delete&quot;:
+  id = urllib.quote(sys.argv[3], &quot;:/&quot;)
+  request = urllib2.Request(&quot;%s/id/%s&quot; % (server, id))
+  request.get_method = lambda: &quot;DELETE&quot;
 elif operation in [&quot;login&quot;, &quot;logout&quot;]:
   request = urllib2.Request(&quot;%s/%s&quot; % (server, operation))
 
@@ -1311,6 +1375,56 @@ $r = $ua-&gt;request(POST &quot;https://n2t.net:443/ezid/id/<span class="hl2">id
   Content =&gt; encode(&quot;UTF-8&quot;, join(&quot;\n&quot;,
     map { escape($_) . &quot;: &quot; . escape($metadata{$_}) } keys %metadata)));
 print $r-&gt;code, $r-&gt;decoded_content unless $r-&gt;is_success;
+</pre>
+</div>
+<div class="section" id="curl-examples">
+<h1>cURL examples</h1>
+<p>The EZID API can be exercised using the <a class="reference external" href="http://curl.haxx.se/">cURL</a> command line tool.  The
+following examples assume metadata is UTF-8 encoded throughout.</p>
+<p>To get identifier metadata, obtaining text formatted as described in
+<a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above:</p>
+<pre class="literal-block">
+curl http://n2t.net/ezid/id/<span class="hl2">identifier</span>
+</pre>
+<p>To mint an identifier:</p>
+<pre class="literal-block">
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST https://n2t.net/ezid/shoulder/<span class="hl2">shoulder</span>
+</pre>
+<p>A single metadata element can be specified on the command line.  For
+example, to mint an identifier and specify a target URL at the same
+time:</p>
+<pre class="literal-block">
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST -H 'Content-Type: text/plain'
+  --data-binary '_target: <span class="hl2">url</span>' https://n2t.net/ezid/shoulder/<span class="hl2">shoulder</span>
+</pre>
+<p>To specify more than one metadata element, the metadata must be placed
+in a file that is formatted as described in <a class="reference internal" href="#request-response-bodies">Request &amp; response
+bodies</a>.  For example, to mint an identifier and upload metadata
+contained in a file <span class="hl1">metadata.txt</span>:</p>
+<pre class="literal-block">
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST -H 'Content-Type: text/plain'
+  --data-binary &#64;<span class="hl2">metadata.txt</span> https://n2t.net/ezid/shoulder/<span class="hl2">shoulder</span>
+</pre>
+<p>Creating an identifier is similar to minting one, except that the HTTP
+method (-X option) is changed from POST to PUT and an identifier is
+specified instead of a shoulder.  Here are the three examples above,
+but now creating an identifier:</p>
+<pre class="literal-block">
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X PUT https://n2t.net/ezid/id/<span class="hl2">identifier</span>
+
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X PUT -H 'Content-Type: text/plain'
+  --data-binary '_target: <span class="hl2">url</span>' https://n2t.net/ezid/id/<span class="hl2">identifier</span>
+
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X PUT -H 'Content-Type: text/plain'
+  --data-binary &#64;<span class="hl2">metadata.txt</span> https://n2t.net/ezid/id/<span class="hl2">identifier</span>
+</pre>
+<p>To modify identifier metadata:</p>
+<pre class="literal-block">
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST -H 'Content-Type: text/plain'
+  --data-binary '_target: <span class="hl2">url</span>' https://n2t.net/ezid/id/<span class="hl2">identifier</span>
+
+curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST -H 'Content-Type: text/plain'
+  --data-binary &#64;<span class="hl2">metadata.txt</span> https://n2t.net/ezid/id/<span class="hl2">identifier</span>
 </pre>
 </div>
 </div>

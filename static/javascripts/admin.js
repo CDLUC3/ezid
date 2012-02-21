@@ -247,12 +247,10 @@ function updateGroup () {
 }
 
 var newUserOpen = false;
-var groups2 = null;
 
 function newUser () {
   clearMessages();
   if (newUserOpen) {
-    groups2 = null;
     $("#nu_section").hide();
     $("#nu_open").hide();
     $("#nu_close").show();
@@ -261,39 +259,10 @@ function newUser () {
     $("#nu_open").show();
     $("#nu_section").show();
     $("#nu_uid").val("");
-    $("#nu_userselect").html(
-      "<option selected='selected'>Loading LDAP users...</option>");
+    $("input:radio[name=nu_existingldapuser]")[0].checked = true;
     $("#nu_groupselect").html(
       "<option selected='selected'>Loading groups...</option>");
     $("#nu_uid").select();
-    $.ajax({ url: "/ezid/admin/entries?usersOnly=true&nonEzidUsersOnly=true",
-      dataType: "json", cache: false,
-      error: function () {
-        $("#nu_userselect").html(
-          "<option selected='selected'>Loading LDAP users... failed</option>");
-        addMessage("<span class='error'>Internal server error.</span>");
-      },
-      success: function (data) {
-        if ($.isArray(data)) {
-          var s = $("#nu_userselect");
-          s.empty();
-          s.append("<option value='' selected='selected'></option>");
-          for (var i = 0; i < data.length; ++i) {
-            var o = "<option value='" + xmlEscape(data[i].dn) + "'>" +
-              xmlEscape(data[i].uid) + "</option>";
-            s.append(o);
-          }
-        } else {
-          $("#nu_userselect").html(
-            "<option selected='selected'>Loading LDAP users... " +
-            "failed</option>");
-          if (typeof(data) != "string" || data == "") {
-            data = "Internal server error.";
-          }
-          addMessage("<span class='error'>" + xmlEscape(data) + "</span>");
-        }
-      }
-    });
     $.ajax({ url: "/ezid/admin/groups", dataType: "json", cache: false,
       error: function () {
         $("#nu_groupselect").html(
@@ -302,7 +271,6 @@ function newUser () {
       },
       success: function (data) {
         if ($.isArray(data)) {
-          groups2 = data;
           var s = $("#nu_groupselect");
           s.empty();
           for (var i = 0; i < data.length; ++i) {
@@ -328,14 +296,15 @@ function newUser () {
 
 function makeUser () {
   clearMessages();
-  if ($.trim($("#nu_uid").val()) != "" && $("#nu_userselect").val() != "") {
-    addMessage("<span class='error'>Ambiguous choice.</span>");
+  if ($.trim($("#nu_uid").val()) == "") {
+    addMessage("<span class='error'>Username required.</span>");
     return false;
   }
   working(1);
   $.ajax({ type: "POST", dataType: "text", cache: false,
     data: { operation: "make_user", uid: $("#nu_uid").val(),
-      existingUserDn: $("#nu_userselect").val(),
+      existingLdapUser:
+        $("input:radio[name=nu_existingldapuser]:checked").val(),
       groupDn: $("#nu_groupselect").val() },
     error: function () {
       working(-1);
@@ -636,7 +605,7 @@ $(document).ready(function () {
   $("#mg_shoulders").change(clearMessages);
   $("#mg_form").submit(updateGroup);
   $("#nu_switch").click(newUser);
-  $("#nu_userselect").change(clearMessages);
+  $("input:radio[name=nu_existingldapuser]").change(clearMessages);
   $("#nu_groupselect").change(clearMessages);
   $("#nu_form").submit(makeUser);
   $("#mu_switch").click(function () { return manageUser(null); });

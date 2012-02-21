@@ -1,0 +1,84 @@
+#! /usr/bin/env python
+
+# The 'dump', 'select', and 'project' scripts form a bind database
+# query system.  The general usage is:
+#
+#    dump noid.bdb | select constraints... | project fields...
+#
+# This script reads identifier records from standard input as written
+# by the 'dump' and 'select' scripts and writes selected fields from
+# those records to standard output.
+#
+# Usage: project [options] fields...
+#
+# Options:
+#   -d            decode values
+#   -o            one line per identifier: convert newlines to spaces
+#   -s SEPARATOR  field separator (defaults to space)
+#   -t            format timestamps
+#   -z            gunzip the input (useful when reading from dump)
+#
+# If values are decoded, they are re-UTF-8-encoded when output.  Note
+# that identifiers themselves are never encoded.
+#
+# This script requires an EZID module.  The PYTHONPATH environment
+# variable must include the .../SITE_ROOT/PROJECT_ROOT/code directory;
+# if it doesn't, we attempt to dynamically locate it and add it.
+#
+# Greg Janee <gjanee@ucop.edu>
+# December 2011
+
+import gzip
+import optparse
+import os.path
+import sys
+import time
+
+try:
+  import util
+except ImportError:
+  sys.path.append(os.path.join(os.path.split(os.path.split(
+    os.path.abspath(__file__))[0])[0], "code"))
+  import util
+
+p = optparse.OptionParser(usage="%prog [options] fields...")
+p.add_option("-d", action="store_true", dest="decodeValues", default=False,
+  help="decode values")
+p.add_option("-o", action="store_true", dest="oneLine", default=False,
+  help="one line per identifier: convert newlines to spaces")
+p.add_option("-s", action="store", type="string", dest="separator",
+  default=" ", help="field separator (defaults to space)")
+p.add_option("-t", action="store_true", dest="formatTimestamps",
+  default=False, help="format timestamps")
+p.add_option("-z", action="store_true", dest="gunzipInput",
+  default=False, help="gunzip the input (useful when reading from dump)")
+options, fields = p.parse_args()
+
+if options.gunzipInput:
+  infile = gzip.GzipFile(fileobj=sys.stdin, mode="r")
+else:
+  infile = sys.stdin
+
+for l in infile:
+  lv = l[:-1].split(" ")
+  r = { "_id": lv[0] }
+  for i in range(1, len(lv), 2): r[util.decode(lv[i])] = lv[i+1]
+  s = ""
+  for f in fields:
+    if f in r:
+      if f in ["_created", "_updated"] and options.formatTimestamps:
+        v = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(int(r[f])))
+      elif f != "_id" and options.decodeValues:
+        v = util.decode(r[f])
+      else:
+        v = r[f]
+    else:
+      v = ""
+    if options.oneLine: v = v.replace("\n", " ").replace("\r", " ")
+    sys.stdout.write(s)
+    if type(v) is unicode:
+      sys.stdout.write(v.encode("UTF-8"))
+    else:
+      sys.stdout.write(v)
+    s = options.separator
+  sys.stdout.write("\n")

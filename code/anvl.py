@@ -70,7 +70,8 @@ def parse (s):
     elif l[0].isspace():
       if k == None:
         raise AnvlParseException, "no previous label for continuation line"
-      d[k] += " " + _decode(l).strip()
+      ll = _decode(l).strip()
+      if ll != "": d[k] += " " + ll
     else:
       if ":" not in l: raise AnvlParseException, "no colon in line"
       k, v = [_decode(w).strip() for w in l.split(":", 1)]

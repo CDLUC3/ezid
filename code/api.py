@@ -44,7 +44,7 @@
 #   response body: status line
 #
 # Get EZID's status:
-#   GET /ezid/status
+#   GET /ezid/status?subsystems={*|subsystemlist}
 #   response body: status line
 #
 # Reload configuration file and clear caches:
@@ -65,14 +65,19 @@ import django.http
 
 import anvl
 import config
+import datacite
 import ezid
+import ezidadmin
+import noid
 import userauth
 
 _adminUsername = None
+_bindNoid = None
 
 def _loadConfig ():
-  global _adminUsername
+  global _adminUsername, _bindNoid
   _adminUsername = config.config("ldap.admin_username")
+  _bindNoid = noid.Noid(config.config("DEFAULT.bind_noid"))
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -120,8 +125,12 @@ def _response (status, createRequest=False, addAuthenticateHeader=False,
   if addAuthenticateHeader: r["WWW-Authenticate"] = "Basic realm=\"EZID\""
   return r
 
-def _unauthorized ():
-  return _response("error: unauthorized", addAuthenticateHeader=True)
+def _unauthorized (authenticationFailure=True):
+  if authenticationFailure:
+    s = " - authentication failure"
+  else:
+    s = ""
+  return _response("error: unauthorized" + s, addAuthenticateHeader=True)
 
 def _methodNotAllowed ():
   return _response("error: method not allowed")
@@ -183,8 +192,10 @@ def _getMetadata (request):
     auth = userauth.authenticateRequest(request)
     if type(auth) is str:
       return _response(auth)
-    elif not auth or auth.user[0] != _adminUsername:
+    elif not auth:
       return _unauthorized()
+    elif auth.user[0] != _adminUsername:
+      return _unauthorized(False)
   return _response(s, anvlBody=anvl.format(metadata))
 
 def _setMetadata (request):
@@ -263,9 +274,23 @@ def getStatus (request):
   Returns EZID's status.
   """
   if request.method != "GET": return _methodNotAllowed()
+  body = ""
+  if "subsystems" in request.GET:
+    l = request.GET["subsystems"]
+    if l == "*": l = "datacite,ldap,noid"
+    for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
+      if ss == "datacite":
+        body += "datacite: %s\n" % datacite.ping()
+      elif ss == "ldap":
+        body += "ldap: %s\n" % ezidadmin.pingLdap()
+      elif ss == "noid":
+        body += "noid: %s\n" % _bindNoid.ping()
+      else:
+        return _response("error: bad request - no such subsystem")
   nl = ezid.numIdentifiersLocked()
   s = "" if nl == 1 else "s"
-  return _response("success: %d identifier%s currently locked" % (nl, s))
+  return _response("success: %d identifier%s currently locked" % (nl, s),
+    anvlBody=body)
 
 def reload (request):
   """
@@ -275,7 +300,9 @@ def reload (request):
   auth = userauth.authenticateRequest(request)
   if type(auth) is str:
     return _response(auth)
-  elif not auth or auth.user[0] != _adminUsername:
+  elif not auth:
     return _unauthorized()
+  elif auth.user[0] != _adminUsername:
+    return _unauthorized(False)
   config.load()
   return _response("success: configuration file reloaded and caches emptied")

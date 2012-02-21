@@ -1,0 +1,196 @@
+#! /usr/bin/env python
+
+# Reads EZID transaction log files, consolidates transaction BEGIN and
+# END records, and filters transactions as specified by command line
+# options.
+#
+# Usage: filterlog [options] files...
+#
+# Options:
+#
+#   Filter by user:
+#     -u USER   user ("none" for no user)
+#     -g GROUP  group
+#
+#   Filter by identifier type:
+#     -r        real identifier
+#     -t        test identifier
+#
+#   Filter by operation:
+#     -C        create or mint identifier
+#     -G        get metadata
+#     -S        set metadata
+#     -D        delete identifier
+#
+#   Filter by operation status:
+#     -s        success
+#     -b        bad request or unauthorized
+#     -e        internal server error (transactional or other)
+#
+# By default, all records are output.  Filter options are AND'd
+# together, but multiple options within an option group are OR'd.
+#
+# Greg Janee <gjanee@ucop.edu>
+# January 2012
+
+import optparse
+import re
+import sys
+
+testDoiPrefix = "10.5072/FK2"
+testArkPrefix = "99999/fk4"
+
+p = optparse.OptionParser(usage="%prog [options] files...")
+g = optparse.OptionGroup(p, "Filter by user")
+g.add_option("-u", action="append", type="string", dest="users",
+  help="user (\"none\" for no user)")
+g.add_option("-g", action="append", type="string", dest="groups", help="group")
+p.add_option_group(g)
+g = optparse.OptionGroup(p, "Filter by identifier type")
+g.add_option("-r", action="store_true", dest="typeReal", default=False,
+  help="real identifier")
+g.add_option("-t", action="store_true", dest="typeTest", default=False,
+  help="test identifier")
+p.add_option_group(g)
+g = optparse.OptionGroup(p, "Filter by operation")
+g.add_option("-C", action="store_true", dest="operationCreate", default=False,
+  help="create or mint identifier")
+g.add_option("-G", action="store_true", dest="operationGet", default=False,
+  help="get metadata")
+g.add_option("-S", action="store_true", dest="operationSet", default=False,
+  help="set metadata")
+g.add_option("-D", action="store_true", dest="operationDelete", default=False,
+  help="delete identifier")
+p.add_option_group(g)
+g = optparse.OptionGroup(p, "Filter by operation status")
+g.add_option("-s", action="store_true", dest="statusSuccess", default=False,
+  help="success")
+g.add_option("-b", action="store_true", dest="statusBadRequest", default=False,
+  help="bad request or unauthorized")
+g.add_option("-e", action="store_true", dest="statusError", default=False,
+  help="internal server error (transactional or other)")
+p.add_option_group(g)
+options, files = p.parse_args()
+if options.users is None: options.users = []
+if options.groups is None: options.groups = []
+
+def error (file, lineNo, message):
+  sys.stderr.write("%s, line %d: %s\n" % (file, lineNo, message))
+
+class Record:
+  def __init__ (self, file, lineNo, timestamp, beginRecord):
+    self.file = file
+    self.lineNo = lineNo
+    self.timestamp = timestamp
+    self.beginRecord = beginRecord
+    self.endRecord = None
+
+def recordHasUser (beginRecord):
+  return beginRecord[0] not in ["getMetadata", "otherError"]
+
+def userFilter (beginRecord):
+  if len(options.users) == 0 and len(options.groups) == 0: return True
+  if not recordHasUser(beginRecord) and "none" in options.users: return True
+  if recordHasUser(beginRecord) and (beginRecord[2] in options.users or\
+    beginRecord[4] in options.groups):
+    return True
+  return False
+
+def typeFilter (beginRecord):
+  if not options.typeReal and not options.typeTest: return True
+  if beginRecord[0] == "otherError": return True
+  isTestIdentifier = ((beginRecord[0] == "mintDoi" or\
+    beginRecord[0] == "createDoi") and\
+    beginRecord[1].startswith(testDoiPrefix)) or\
+    ((beginRecord[0] == "mintArk" or beginRecord[0] == "createArk") and\
+    beginRecord[1].startswith(testArkPrefix)) or\
+    ((beginRecord[0] == "getMetadata" or beginRecord[0] == "setMetadata" or\
+    beginRecord[0] == "deleteIdentifier") and\
+    (beginRecord[1].startswith("doi:" + testDoiPrefix) or\
+    beginRecord[1].startswith("ark:/" + testArkPrefix)))
+  if isTestIdentifier and options.typeTest: return True
+  if not isTestIdentifier and options.typeReal: return True
+  return False
+
+def operationFilter (beginRecord):
+  if not options.operationCreate and not options.operationGet and\
+    not options.operationSet and not options.operationDelete:
+    return True
+  if (beginRecord[0].startswith("mint") or\
+    beginRecord[0].startswith("create")) and options.operationCreate:
+    return True
+  if beginRecord[0] == "getMetadata" and options.operationGet: return True
+  if beginRecord[0] == "setMetadata" and options.operationSet: return True
+  if beginRecord[0] == "deleteIdentifier" and options.operationDelete:
+    return True
+  return False
+
+def statusFilter (endRecord):
+  if not options.statusSuccess and not options.statusBadRequest and\
+    not options.statusError:
+    return True
+  if endRecord[0] == "SUCCESS" and options.statusSuccess: return True
+  if endRecord[0] in ["BADREQUEST", "UNAUTHORIZED"] and\
+    options.statusBadRequest:
+    return True
+  if endRecord[0] == "ERROR" and options.statusError: return True
+  return False
+
+pattern = re.compile("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) " +\
+  "(([\da-fA-F]{32}) (BEGIN|END) |- ERROR )(.*)")
+
+records = []
+tidMap = {}
+
+for file in files:
+  f = open(file)
+  n = 0
+  for l in f:
+    n += 1
+    m = pattern.match(l)
+    if not m:
+      error(file, n, "unrecognized record")
+      continue
+    if m.group(2).startswith("-"):
+      r = Record(file, n, m.group(1), ["otherError"])
+      r.endRecord = ["ERROR"] + m.group(5).split(" ")
+      records.append(r)
+    else:
+      tid = m.group(3)
+      if m.group(4) == "BEGIN":
+        if tid in tidMap:
+          error(file, n, "duplicate transaction ID")
+          continue
+        r = Record(file, n, m.group(1), m.group(5).split(" "))
+        records.append(r)
+        tidMap[tid] = r
+      else:
+        if tid not in tidMap:
+          error(file, n, "no corresponding BEGIN record")
+          continue
+        if tidMap[tid].endRecord != None:
+          error(file, n, "duplicate END record")
+          continue
+        tidMap[tid].endRecord = m.group(5).split(" ")
+  f.close()
+
+records.sort(key=lambda r: r.timestamp)
+
+for r in records:
+  if r.endRecord == None:
+    error(r.file, r.lineNo, "no corresponding END record")
+    continue
+  if not userFilter(r.beginRecord): continue
+  if not typeFilter(r.beginRecord): continue
+  if not operationFilter(r.beginRecord): continue
+  if not statusFilter(r.endRecord): continue
+  if recordHasUser(r.beginRecord):
+    del r.beginRecord[3]
+    del r.beginRecord[4]
+    if len(options.users) == 1 and len(options.groups) == 0:
+      del r.beginRecord[2]
+      del r.beginRecord[2]
+    elif len(options.users) == 0 and len(options.groups) == 1:
+      del r.beginRecord[3]
+  print "%s %s -> %s" % (r.timestamp, " ".join(r.beginRecord),
+    " ".join(r.endRecord))
