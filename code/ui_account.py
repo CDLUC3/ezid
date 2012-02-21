@@ -95,6 +95,7 @@ def validate_edit_user(request):
   if request.POST['ezidCoOwners'] != '':
     coowners = [co.strip() for co in request.POST['ezidCoOwners'].split(',')]
     for coowner in coowners:
+      #import pdb; pdb.set_trace()
       try:
         idmap.getUserId(coowner)
       except AssertionError:
