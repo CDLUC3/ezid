@@ -27,7 +27,7 @@ MENUS = (
             )
           ),
           ("Lookup ID", 'ui_lookup.index', 'public', ()),
-          ("Demo", 'ui_demo.index', 'public',
+          ("Test", 'ui_demo.index', 'public',
             ( ("Simple", 'ui_demo.simple', 'public', ()),
               ("Advanced", "ui_demo.advanced", 'public', ())
             )

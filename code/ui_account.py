@@ -2,6 +2,7 @@ import ui_common as uic
 import userauth, useradmin
 import django.contrib.messages
 import idmap
+import re
 from django.shortcuts import redirect
 
 d = { 'menu_item' : 'ui_null.null'}
@@ -27,7 +28,7 @@ def edit(request):
       
   elif request.method == "POST":
     if validate_edit_user(request):
-      print "This would now save the form."
+      update_edit_user(request)
   return uic.render(request, "account/edit", d)
 
 def login(request):
@@ -92,6 +93,10 @@ def validate_edit_user(request):
       django.contrib.messages.error(request, required_fields[field] + " must be filled in.")
       valid_form = False
   
+  if not re.match('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', request.POST['mail'], re.IGNORECASE):
+    django.contrib.messages.error(request, "Please enter a valid email address.")
+    valid_form = False
+  
   if request.POST['ezidCoOwners'] != '':
     coowners = [co.strip() for co in request.POST['ezidCoOwners'].split(',')]
     for coowner in coowners:
@@ -108,11 +113,18 @@ def validate_edit_user(request):
       django.contrib.messages.error(request, "Your current password is incorrect.")
       valid_form = False
     if request.POST['pwnew'] != request.POST['pwconfirm']:
-      django.contrib.messages.error(request, "Your new and confirmed new passwords do not match.")
+      django.contrib.messages.error(request, "Your new and confirmed passwords do not match.")
       valid_form = False
     if request.POST['pwnew'] == '' or request.POST['pwconfirm'] == '':
       django.contrib.messages.error(request, "Your new password cannot be empty.")
       valid_form = False
   return valid_form
   
-  
+def update_edit_user(request):
+  uid = request.session['auth'].user[0]
+  di = {}
+  for item in ['givenName', 'sn', 'mail', 'telephoneNumber']:
+    di[item] = request.POST[item].strip()
+  r = useradmin.setContactInfo(uid, di)
+  print "line 130 " + r
+  #useradmin.setAccountProfile (uid, request.POST['ezidCoOwners'].strip())
