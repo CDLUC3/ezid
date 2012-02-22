@@ -178,6 +178,17 @@ def _getCoOwnership (user):
   finally:
     _cacheLock.release()
 
+def clearCoOwnershipCache ():
+  """
+  Clears the co-ownership cache.
+  """
+  global _coOwnershipMap
+  _cacheLock.acquire()
+  try:
+    _coOwnershipMap = None
+  finally:
+    _cacheLock.release()
+
 def insert (identifier, metadata):
   """
   Inserts an identifier in the search database.  'metadata' should be
