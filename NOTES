@@ -80,13 +80,6 @@ Caching is employed in several places:
   LDAP information
     Cached in agent identifiers for the purposes of storage redundancy
     and locality only.  Written only, never read.
-    (Known bug: LDAP does not store empty attribute values; instead,
-    it deletes attributes.  A consequence of this behavior is that if
-    an LDAP attribute, say, ezidCoOwners, has a non-empty value at
-    some point and then is cleared, and therefore deleted by LDAP,
-    then EZID will lose awareness of the very existence of the
-    attribute and will therefore leave the old attribute value cached.
-    The fix for this is to keep track of LDAP attribute deletions.)
 
 4. Identifier metadata
 ----------------------
