@@ -39,8 +39,9 @@
 # add it.  The DJANGO_SETTINGS_MODULE environment variable must be
 # set; if it isn't, we set it to "settings.production".
 #
-# Additionally, this script assumes that LDAP is enabled, and a
-# connection to the LDAP server is required.
+# Additionally, if the -n option is NOT specified, this script assumes
+# that LDAP is enabled, and a connection to the LDAP server is
+# required.
 #
 # Greg Janee <gjanee@ucop.edu>
 # December 2011
