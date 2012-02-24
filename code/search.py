@@ -62,6 +62,15 @@ def _loadConfig ():
 _loadConfig()
 config.addLoader(_loadConfig)
 
+def setDatabase (file):
+  """
+  Sets the search database file.  This function is intended to be used
+  by offline scripts only.  It must be called before any connections
+  have been opened.
+  """
+  global _searchDatabase
+  _searchDatabase = file
+
 def _getConnection ():
   global _numConnections
   _dbLock.acquire()
