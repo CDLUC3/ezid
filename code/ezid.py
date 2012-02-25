@@ -735,6 +735,7 @@ def setMetadata (identifier, user, group, metadata):
         metadata["datacite"])
     except AssertionError, e:
       return "error: bad request - element 'datacite': " + _oneline(str(e))
+  defaultTarget = "%s/id/%s" % (_ezidUrl, urllib.quote(nqidentifier, ":/"))
   tid = uuid.uuid1()
   _acquireIdentifierLock(ark)
   try:
@@ -834,6 +835,7 @@ def setMetadata (identifier, user, group, metadata):
       if "_target" in metadata:
         target = metadata["_target"]
         del metadata["_target"]
+        if not target: target = defaultTarget
         if iStatus == "public":
           message = datacite.setTargetUrl(doi, target)
           if message is not None:
@@ -853,6 +855,7 @@ def setMetadata (identifier, user, group, metadata):
       target = None
       if "_target" in metadata:
         target = metadata["_target"]
+        if not target: target = defaultTarget
         del metadata["_target"]
       if "_s" in m and m["_s"].startswith("doi:") and len(metadata) > 0 and\
         iStatus != "reserved":
@@ -866,8 +869,9 @@ def setMetadata (identifier, user, group, metadata):
       if "_u" not in metadata: metadata["_u"] = str(int(time.time()))
     elif nqidentifier.startswith("urn:uuid:"):
       if "_target" in metadata:
-        metadata["_st" if iStatus == "public" else "_st1"] =\
-          metadata["_target"]
+        target = metadata["_target"]
+        if not target: target = defaultTarget
+        metadata["_st" if iStatus == "public" else "_st1"] = target
         del metadata["_target"]
       if "_su" not in metadata: metadata["_su"] = str(int(time.time()))
     else:
