@@ -4,15 +4,13 @@ from django.shortcuts import redirect
 import ezid
 import metadata
 
-d = { 'menu_item' : 'ui_lookup.null'}
-
 def index(request):
   """
   Renders the manage page (GET) or processes a manage form submission
   (POST).  A successful management request redirects to the
   identifier's view/management page.
   """
-  d['menu_item'] = 'ui_lookup.index'
+  d = { 'menu_item' : 'ui_lookup.index' }
   if request.method == "GET":
     return uic.render(request, 'lookup/index', d)
   elif request.method == "POST":

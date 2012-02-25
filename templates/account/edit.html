@@ -19,7 +19,7 @@
           </label>
           <div class="field_right" style="width: 230px;">
             <input type="text" name="givenName" id="givenName" size="25"
-                value="{% form_or_default "givenName" givenName %}" />
+                value="{{ givenName }}" />
           </div>
         </div>
         
@@ -29,7 +29,7 @@
           </label>
           <div class="field_right" style="width: 230px;">
             <input type="text" name="sn" id="sn" size="25"
-                value="{% form_or_default "sn" sn %}" />
+                value="{{ sn }}" />
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@
       </label>
       <div class="field_right">
         <input type="text" name="telephoneNumber" id="telephoneNumber" size="25"
-            value="{% form_or_default "telephoneNumber" telephoneNumber %}" />
+            value="{{ telephoneNumber }}" />
       </div>
       
       
@@ -57,7 +57,7 @@
       </label>
       <div class="field_right">
         <input type="text" name="ezidCoOwners" id="ezidCoOwners" size="35"
-            value="{% form_or_default "ezidCoOwners" ezidCoOwners %}" />
+            value="{{ ezidCoOwners }}" />
       </div>
       <div style="float:left; margin-top: 10px; width:100px;">
         <a href="">What is this?</a>

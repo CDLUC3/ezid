@@ -35,6 +35,7 @@ shoulders = None
 
 remainder_box_default = "Recommended: Leave blank"
 
+
 def loadConfig():
   global ezidUrl, templates, alertMessage, prefixes, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
@@ -222,6 +223,7 @@ def write_profile_elements_from_form(identifier, request, profile, addl_dict = {
   for e in write_elements:
     to_write[e] = request.POST[e]
   to_write = dict(to_write.items() + addl_dict.items())
+  to_write['_target'] = fix_target(to_write['_target'])
   s = ezid.setMetadata(identifier, user_or_anon_tup(request), group_or_anon_tup(request), to_write)
   if s.startswith("success:"):
     return True
@@ -236,10 +238,9 @@ def validate_simple_metadata_form(request, profile):
   is_valid = True
   if "_target" not in request.POST:
     django.contrib.messages.error(request, "You must enter a URL location for your identifier")
-    is_valid = False  
-  url = urlparse.urlparse(request.POST['_target'])
-  if request.POST['_target'] != '' and not(url.scheme and url.netloc):
-    django.contrib.messages.error(request, "Please enter a location URL starting with the protocol such as http://")
+    is_valid = False
+  if not(url_is_valid(request.POST['_target'])):
+    django.contrib.messages.error(request, "Please enter a a valid URL")
     is_valid = False
   return is_valid
 
@@ -250,9 +251,8 @@ def validate_advanced_metadata_form(request, profile):
   if "_target" not in request.POST:
     django.contrib.messages.error(request, "You must enter a URL location for your identifier")
     is_valid = False  
-  url = urlparse.urlparse(request.POST['_target'])
-  if request.POST['_target'] != '' and not(url.scheme and url.netloc):
-    django.contrib.messages.error(request, "Please enter a location URL starting with the protocol such as http://")
+  if not(url_is_valid(request.POST['_target'])):
+    django.contrib.messages.error(request, "Please enter a valid URL")
     is_valid = False
   if request.POST['remainder'] != '' and request.POST['remainder'] != remainder_box_default and \
       (' ' in request.POST['remainder'] or len(request.POST['remainder']) > 30):
@@ -288,4 +288,30 @@ def get_coowners_tup(id_meta):
   else:
     return [get_user_tup(co.strip())\
       for co in id_meta["_coowners"].value.split(";") if len(co.strip()) > 0]
+    
+def extract(d, keys):
+  """Gets subset of dictionary based on keys in an array"""
+  return dict((k, d[k]) for k in keys if k in d)
+
+def fix_target(target):
+  """Fixes a target URL if it does not include the protocol at first so it defaults to http://"""
+  url = urlparse.urlparse(target)
+  if target != '' and not(url.scheme and url.netloc):
+    return 'http://' + target
+  else:
+    return target
+  
+def url_is_valid(target):
+  """ checks whether a url is likely valid, with our without scheme and allows for blank urls """
+  if target == '':
+    return True
+  url = urlparse.urlparse(target)
+  if url.scheme == '':
+    url = urlparse.urlparse('http://' + target)
+  netloc_regex = re.compile('^[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,4}(\:\d+)?$')
+  if not(url.scheme and url.netloc and netloc_regex.match(url.netloc)):
+    return False
+  return True
+  
+  
 

@@ -1,15 +1,14 @@
 import ui_common as uic
 
-d = {'1_menu': 'info'}
-
 def about_us(request):
-  pass
-
+  d = {'1_menu': 'info'}
+  
 def help(request):
-  pass
-
+  d = {'1_menu': 'info'}
+  
 def contact_us(request):
-  pass
-
+  d = {'1_menu': 'info'}
+  
 def privacy(request):
-  pass
+  d = {'1_menu': 'info'}
+  

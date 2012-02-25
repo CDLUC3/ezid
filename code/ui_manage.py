@@ -5,13 +5,12 @@ from django.core.urlresolvers import reverse
 import ezid
 import metadata
 
-d = { 'menu_item' : 'ui_manage.null'}
-
 def index(request):
-  d['menu_item'] = 'ui_manage.index'
+  d = { 'menu_item' : 'ui_manage.index' }
   return uic.render(request, 'manage/index', d)
 
 def edit(request, identifier):
+  d = { 'menu_item' : 'ui_manage.null'}
   r = ezid.getMetadata(identifier)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
@@ -49,6 +48,7 @@ def edit(request, identifier):
   return uic.render(request, "manage/edit", d)
 
 def details(request, identifier):
+  d = { 'menu_item' : 'ui_manage.null'}
   r = ezid.getMetadata(identifier)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))

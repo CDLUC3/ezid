@@ -4,16 +4,13 @@ import django.contrib.messages
 import metadata
 import ezid
 
-
-d = { 'menu_item' : 'ui_demo.null'}
-
 def index(request):
+  d = { 'menu_item' : 'ui_demo.index' }
   return redirect("ui_demo.simple")
-  d['menu_item'] = 'ui_demo.index'
   return uic.render(request, 'create/index', d)
 
 def simple(request):
-  d['menu_item'] = 'ui_demo.simple'
+  d = { 'menu_item' :'ui_demo.simple' }
   d['current_profile'] = metadata.getProfile('dc') #default profile
   d['internal_profile'] = metadata.getProfile('internal')
   d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['prefix'])
@@ -43,7 +40,7 @@ def simple(request):
   return uic.render(request, 'demo/simple', d)
 
 def advanced(request):
-  d['menu_item'] = 'ui_demo.advanced'
+  d = { 'menu_item' : 'ui_demo.advanced' }
   d['remainder_box_default'] = uic.remainder_box_default
   d['current_profile'] = metadata.getProfile('dc') #default profile
   d['internal_profile'] = metadata.getProfile('internal')
@@ -79,8 +76,3 @@ def advanced(request):
         else:
           django.contrib.messages.error(request, "There was an error writing the metadata for your identifier: " + s)
   return uic.render(request, 'demo/advanced', d)
-
-  
-  
-  d['menu_item'] = 'ui_demo.advanced'
-  return uic.render(request, 'create/advanced', d)

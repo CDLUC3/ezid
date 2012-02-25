@@ -5,9 +5,8 @@ import idmap
 import re
 from django.shortcuts import redirect
 
-d = { 'menu_item' : 'ui_null.null'}
-
 def edit(request):
+  d = { 'menu_item' : 'ui_null.null'}
   """Edit account information form"""
   if "auth" not in request.session: return uic.unauthorized()
   d['username'] = request.session['auth'].user[0]
@@ -27,6 +26,8 @@ def edit(request):
       d['ezidCoOwners'] = ''
       
   elif request.method == "POST":
+    d.update(uic.extract(request.POST, \
+                ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners']))
     if validate_edit_user(request):
       update_edit_user(request)
   return uic.render(request, "account/edit", d)
@@ -36,9 +37,11 @@ def login(request):
   Renders the login page (GET) or processes a login form submission
   (POST).  A successful login redirects to the home page.
   """
+  d = { 'menu_item' : 'ui_null.null'}
   if request.method == "GET":
     return uic.render(request, 'account/login', d)
   elif request.method == "POST":
+    d.update(uic.extract(request.POST, ['username', 'password']))
     if "username" not in request.POST or "password" not in request.POST:
       return uic.badRequest()
     auth = userauth.authenticate(request.POST["username"],
@@ -68,6 +71,7 @@ def logout(request):
   """
   Logs the user out and redirects to the home page.
   """
+  d = { 'menu_item' : 'ui_null.null'}
   if request.method != "GET": return uic.methodNotAllowed()
   request.session.flush()
   django.contrib.messages.success(request, "You have been logged out.")
@@ -121,10 +125,25 @@ def validate_edit_user(request):
   return valid_form
   
 def update_edit_user(request):
+  #if it's gotten here it has passed validation
   uid = request.session['auth'].user[0]
   di = {}
   for item in ['givenName', 'sn', 'mail', 'telephoneNumber']:
     di[item] = request.POST[item].strip()
   r = useradmin.setContactInfo(uid, di)
-  print "line 130 " + r
-  #useradmin.setAccountProfile (uid, request.POST['ezidCoOwners'].strip())
+  if type(r) is str: django.contrib.messages.error(request, r)
+  if request.POST['ezidCoOwners'].strip() == '':
+    r = useradmin.setAccountProfile(uid, '')
+  else:
+    r = useradmin.setAccountProfile(uid, request.POST['ezidCoOwners'].strip())
+  if type(r) is str:
+    django.contrib.messages.error(request, r)
+  else:
+    django.contrib.messages.success(request, "Your account information has been updated.")
+  
+  if request.POST['pwcurrent'].strip() != '':
+    r = useradmin.resetPassword(uid, request.POST["pwnew"].strip())
+    if type(r) is str:
+      django.contrib.messages.error(request, r)
+    else:
+      django.contrib.messages.success(request, "Your password has been updated.")

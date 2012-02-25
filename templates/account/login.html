@@ -16,11 +16,11 @@ $(document).ready(function () {
     <form method="post" action="{% url ui_account.login %}">
       <label for="username" class="left">Username</label>
       <div class="field_right">
-        <input type="text" id="username" name="username" size="20"/>
+        <input type="text" id="username" name="username" size="20" value="{{ username }}"/>
       </div>
       <label for="password" class="left">Password</label>
       <div class="field_right">
-        <input type="password" id="password" name="password" size="20"/>
+        <input type="password" id="password" name="password" size="20" value="{{ password }}"/>
       </div>
       <label for="login" class="left">&nbsp;</label>
       <div class="field_right">

@@ -3,13 +3,14 @@ from django.conf import settings
 from django.utils.html import escape
 from decorators import basictag
 from django.core.urlresolvers import reverse
+import pdb
 
 register = template.Library()
       
 @register.tag
 @basictag(takes_context=True) 
 def request_value(context, key_name):
-  """Outputs the value of the request.REQUEST[key_name], required because
+  """Outputs the value of context[key_name], required because
   normal django templating will not retrieve any variables starting with an underscore
   which all of the internal profile variables have"""
   request = context['request']
@@ -32,6 +33,7 @@ def form_or_dict_value(context, dict, key_name):
   request = context['request']
   if request.POST and key_name in request.POST:
     return escape(request.POST[key_name])
+    #return escape(request['POST'][key_name])
   elif key_name in dict:
     return escape(dict[key_name])
   else:
@@ -45,6 +47,8 @@ def form_or_default(context, key_name, default):
   """
   request = context['request']
   if request.POST and key_name in request.POST:
+    print "Outputting " + key_name
+    print request.POST
     return escape(request.POST[key_name])
   else:
     return escape(default)
