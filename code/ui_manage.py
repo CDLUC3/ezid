@@ -60,6 +60,7 @@ def details(request, identifier):
   d['id_text'] = s.split()[1]
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
+  d['target'] = d['identifier']['_target']
   if '_profile' in m:
     d['current_profile'] = metadata.getProfile(m['_profile'])
   else:

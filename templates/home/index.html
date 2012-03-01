@@ -43,12 +43,12 @@
     
     {% rounded_borders %}
       <ul class="linklist">
-        <li><a href="">Why EZID?</a></li>
-        <li><a href="">Understanding Identifiers</a></li>
-        <li><a href="">Pricing</a></li>
-        <li><a href="">Documentation</a></li>
-        <li><a href="">Outreach</a></li>
-        <li><a href="">The EZID Community</a></li>
+        <li><a href="{% url ui_home.why %}">Why EZID?</a></li>
+        <li><a href="{% url ui_home.understanding %}">Understanding Identifiers</a></li>
+        <li><a href="{% url ui_home.pricing %}">Pricing</a></li>
+        <li><a href="{% url ui_home.documentation %}">Documentation</a></li>
+        <li><a href="{% url ui_home.outreach %}">Outreach</a></li>
+        <li><a href="{% url ui_home.community %}">The EZID Community</a></li>
       </ul>
     {% endrounded_borders %}
     
