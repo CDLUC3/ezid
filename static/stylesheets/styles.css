@@ -207,3 +207,11 @@ div.get_link_box {
    background-color:#ffffcc;
    padding: 10px 10px 10px 10px;  
 }
+
+dt{
+	margin: 10px 0 5px 0;
+}
+
+dd{
+	margin: 5px 0 5px 20px;
+}
