@@ -1,0 +1,66 @@
+#! /usr/bin/env python
+
+# Performs an initial population of the search database from a noid
+# bind database.  The general procedure for building and installing
+# the search database is:
+#
+#    SR=.../SITE_ROOT
+#    PR=$SR/PROJECT_ROOT
+#
+#    sqlite3 NEWDB < $PR/etc/search-schema.sql
+#    $PR/tools/dump -n .../noid.bdb > DUMP
+#    $PR/tools/populate1 DUMP NEWDB
+#    (stop server)
+#    mv NEWDB $SR/db/search.sqlite3
+#    (start server)
+#    (deal with any fixups using populate2)
+#
+# This script requires several EZID modules.  The PYTHONPATH
+# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
+# directory; if it doesn't, we attempt to dynamically locate it and
+# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
+# set; if it isn't, we set it to "settings.production".
+#
+# Greg Janee <gjanee@ucop.edu>
+# February 2012
+
+import gzip
+import os
+import sys
+
+if "DJANGO_SETTINGS_MODULE" not in os.environ:
+  os.environ["DJANGO_SETTINGS_MODULE"] = "settings.production"
+
+try:
+  import settings
+except ImportError:
+  sys.path.append(
+    os.path.split(os.path.split(os.path.abspath(__file__))[0])[0])
+  import settings
+
+# Bootstrapping: reference a(ny) Django setting to trigger the loading
+# of said settings, which causes the PYTHONPATH to be modified,
+# supporting subsequent imports.
+import django.conf
+django.conf.settings.PROJECT_ROOT
+
+# Configure the logging so that errors don't get added to the server's
+# log file.
+django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
+
+import search
+import util
+
+if len(sys.argv) != 3:
+  sys.stderr.write("usage: populate1 dumpfile databasefile\n")
+  sys.exit(1)
+
+search.setDatabase(sys.argv[2])
+
+for l in gzip.GzipFile(filename=sys.argv[1], mode="r"):
+  lv = l[:-1].split(" ")
+  record = { "_id": lv[0] }
+  for i in range(1, len(lv), 2):
+    v = util.decode(lv[i+1]).strip()
+    if v != "": record[util.decode(lv[i])] = v
+  search.insert(record["_id"], record)

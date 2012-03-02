@@ -69,6 +69,7 @@ import datacite
 import ezid
 import ezidadmin
 import noid
+import search
 import userauth
 
 _adminUsername = None
@@ -288,9 +289,11 @@ def getStatus (request):
       else:
         return _response("error: bad request - no such subsystem")
   nl = ezid.numIdentifiersLocked()
-  s = "" if nl == 1 else "s"
-  return _response("success: %d identifier%s currently locked" % (nl, s),
-    anvlBody=body)
+  s1 = "" if nl == 1 else "s"
+  nc = search.numConnections()
+  s2 = "" if nc == 1 else "s"
+  return _response(("success: %d identifier%s currently locked, %d open " +\
+    "search database connection%s") % (nl, s1, nc, s2), anvlBody=body)
 
 def reload (request):
   """

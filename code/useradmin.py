@@ -27,6 +27,7 @@ import ezid
 import idmap
 import log
 import policy
+import search
 
 _ezidUrl = None
 _ldapEnabled = None
@@ -222,6 +223,11 @@ def _cacheLdapInformation (l, dn, arkId):
   for a in attrs:
     if a != "userPassword":
       d["ldap." + a] = " ; ".join(v.decode("UTF-8") for v in attrs[a])
+  r = ezid.getMetadata(arkId)
+  assert type(r) is tuple, "ezid.getMetadata failed: " + r
+  for k in r[1]:
+    # If an attribute has disappeared, blank out its cached value.
+    if k.startswith("ldap.") and k not in d: d[k] = ""
   # We're assuming here that the EZID administrator user and group
   # names are identical.
   user = (_adminUsername, idmap.getUserId(_adminUsername))
@@ -265,6 +271,7 @@ def setAccountProfile (username, coOwnerList):
         m = []
     if len(m) > 0: l.modify_s(dn, m)
     policy.clearCoOwnerCache(username)
+    search.clearCoOwnershipCache()
     _cacheLdapInformation(l, dn, arkId)
     return None
   except Exception, e:
