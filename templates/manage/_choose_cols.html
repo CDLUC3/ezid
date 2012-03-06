@@ -1,0 +1,15 @@
+{% load manage_form_tags %}
+
+<div class="chk_lightbox">
+	<h2>Choose Up To 5 Columns to Display:</h2>
+	<form method="get" action="{% url ui_manage.index %}">
+		<div class="chk_col_box">
+			{% column_choices field_order fields_mapped fields_selected %}
+		</div>
+		{% rewrite_hidden_except REQUEST field_order %}
+		<div class="chk_buttons">
+			<a href="">Cancel</a>&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="submit" name="submit_checks" id="submit_checks" value="Apply Changes" />
+		</div>
+	</form>
+</div>

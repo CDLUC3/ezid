@@ -4,6 +4,7 @@ from django.utils.html import escape
 from decorators import basictag
 from django.core.urlresolvers import reverse
 import pdb
+#import datetime
 
 register = template.Library()
       
@@ -69,6 +70,13 @@ def selected_radio(context, request_item, loop_index, item_value):
 @register.simple_tag
 def shoulder_display(prefix_dict):
   return escape(prefix_dict['namespace'].split()[1] + " (" + prefix_dict['prefix'] + ")")
+
+@register.simple_tag
+def search_display(dictionary, field):
+  if field in ['createTime', 'updateTime']:
+    return escape(datetime.datetime.fromtimestamp(dictionary[field]))
+  else:
+    return dictionary[field]
 
 @register.tag
 @basictag(takes_context=True)

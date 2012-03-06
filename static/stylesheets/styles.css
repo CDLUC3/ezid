@@ -215,3 +215,23 @@ dt{
 dd{
 	margin: 5px 0 5px 20px;
 }
+
+.chk_lightbox{
+	width:600px;	
+}
+
+.chk_col_box {
+	width:100%;
+	clear:both;
+}
+
+.chk_col{
+	width:200px;
+	float:left;
+}
+
+.chk_buttons{
+	clear:both;
+	text-align: right;
+	width: 500px;
+}

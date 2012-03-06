@@ -1,10 +1,32 @@
 {% extends "layouts/base.html" %}
+{% load manage_form_tags %}
 
 {% block title %}Manage IDs{% endblock %}
 
 {% block content %}
-  <div class="grid_12">
+  <div class="grid_16">
     <h1>Recent Activity</h1>
-    <p>A placeholder page for now.</p>
   </div>
+  {% if recent|length < 1  %}
+  	<div class="grid_16"><p>There are no recent results to display.</p></div>
+  {% else %}
+  	<div class="grid_8">
+    	{% for item in recent1 %}
+    		<a href="{% url ui_manage.details item.identifier %}">{{item.identifier}}</a>
+    		{% latest_modification_string item %}<br/>
+    	{% endfor %}
+    </div>
+    <div class="grid_8">
+    	{% for item in recent2 %}
+    		<a href=''>{{item.identifier}}</a>
+    		{% latest_modification_string item %}<br/>
+    	{% endfor %}
+    </div>
+  
+	  <div class="grid_16">
+	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp&nbsp;
+	  	<a href="#">Customize view</a>
+	  	{% include "manage/_choose_cols.html" %}
+	  </div>
+	{% endif %}
 {% endblock %}
