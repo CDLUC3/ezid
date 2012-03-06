@@ -40,6 +40,15 @@ def rewrite_hidden_except(request, field_order):
     if not (key in exclude):
       hidden += "<input type='hidden' name='" + escape(key) + "' value='" + escape(value) + "'/>"
   return hidden
+
+@register.simple_tag
+def header_row(fields_selected, fields_mapped, field_widths):
+  total_width = 0
+  for item in fields_selected:
+    total_width += field_widths[item]
+  return '<tr>' + ''.join([("<th style='width:" + percent_width(field_widths[x], total_width) + \
+                            "'>" + escape(fields_mapped[x]) + "</th>"  ) \
+          for x in fields_selected]) + '</tr>'
   
 
 @register.simple_tag
@@ -50,6 +59,8 @@ def latest_modification_string(dictionary):
   else:
     return "created " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']))
 
+def percent_width(item_weight, total):
+  return str(int(round(item_weight/total*1000))/10.0) + '%'
 
 def chunks(l, n):
     return [l[i:i+n] for i in range(0, len(l), n)]

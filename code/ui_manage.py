@@ -21,6 +21,9 @@ def index(request):
   d['fields_selected'] = [x for x in d['field_order'] if x in request.REQUEST ]
   if len(d['fields_selected']) < 1: d['fields_selected'] = d['field_defaults']
   d['REQUEST'] = request.REQUEST
+  d['field_widths'] = {'identifier': 1.0,  'owner': 1.0, 'coOwners': 2.0, \
+                        'createTime': 2.0, 'updateTime': 2.0, 'status' :1.0,\
+                        'mappedTitle': 3.0, 'mappedCreator' : 2.0}
   return uic.render(request, 'manage/index', d)
 
 def edit(request, identifier):
