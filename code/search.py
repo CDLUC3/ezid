@@ -293,6 +293,34 @@ def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
     if c: _closeCursor(c)
     if connection: _returnConnection(connection, poolId)
 
+def getByOwnerCount (owner, includeCoOwnership=True):
+  """
+  Returns the total number of identifiers that would be returned by a
+  comparable, limit-less call to getByOwner.
+  """
+  if includeCoOwnership:
+    col = _getCoOwnership(owner)
+    q = "SELECT COUNT(%sidentifier) FROM ownership WHERE owner = ?%s" %\
+      ("DISTINCT " if len(col) > 0 else "",
+      " OR owner = ?"*len(col))
+    p = tuple([owner] + col)
+  else:
+    q = "SELECT COUNT(*) FROM identifier WHERE owner = ?"
+    p = (owner,)
+  connection = None
+  c = None
+  try:
+    connection, poolId = _getConnection()
+    c = connection.cursor()
+    c.execute(q, p)
+    return c.fetchone()[0]
+  except sqlite3.DatabaseError, e:
+    log.otherError("search.getByOwnerCount", e)
+    return 0
+  finally:
+    if c: _closeCursor(c)
+    if connection: _returnConnection(connection, poolId)
+
 def delete (identifier):
   """
   Deletes an identifier from the search database.
