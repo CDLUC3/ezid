@@ -49,7 +49,10 @@ def header_row(fields_selected, fields_mapped, field_widths):
   return '<tr>' + ''.join([("<th style='width:" + percent_width(field_widths[x], total_width) + \
                             "'>" + escape(fields_mapped[x]) + "</th>"  ) \
           for x in fields_selected]) + '</tr>'
-  
+          
+@register.simple_tag
+def data_row(record, fields_selected, field_display_types):
+  return '<td>' + ''.join([ formatted_field(record, f, field_display_types) for f in fields_selected]) + '</td>'
 
 @register.simple_tag
 def latest_modification_string(dictionary):
@@ -58,6 +61,9 @@ def latest_modification_string(dictionary):
     return "modified " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']))
   else:
     return "created " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']))
+
+def formatted_field(record, field_name, field_display_types):
+  pass
 
 def percent_width(item_weight, total):
   return str(int(round(item_weight/total*1000))/10.0) + '%'

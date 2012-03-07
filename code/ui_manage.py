@@ -6,24 +6,37 @@ import ezid
 import metadata
 import search
 
+FIELD_ORDER = ['identifier', 'owner', 'coOwners', 'createTime', 'updateTime', 'status',\
+                'mappedTitle', 'mappedCreator']
+
+FIELDS_MAPPED = {'identifier':'ID',  'owner':'Owner', 'coOwners': 'Co-Owners', \
+                  'createTime': 'Date created', 'updateTime': 'Date last modified', 'status' :'Status',\
+                  'mappedTitle': 'Title', 'mappedCreator' : 'Creator'}
+
+FIELD_DEFAULTS = ['identifier', 'createTime', 'mappedTitle', 'mappedCreator']
+
+FIELD_WIDTHS = {'identifier': 1.0,  'owner': 1.0, 'coOwners': 2.0, \
+                'createTime': 2.0, 'updateTime': 2.0, 'status' :1.0,\
+                'mappedTitle': 3.0, 'mappedCreator' : 2.0}
+
+FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', 'coOwners': 'string', \
+                'createTime': 'datetime', 'updateTime': 'datetime', 'status' :'string',\
+                'mappedTitle': 'string', 'mappedCreator' : 'string'}
+
 def index(request):
   d = { 'menu_item' : 'ui_manage.index' }
   d['user'] = request.session['auth'].user
   d['recent'] = search.getByOwner(d['user'][1], False, 'updateTime', False, 10, 0)
   d['recent1'] = d['recent'][0:5]
   d['recent2'] = d['recent'][5:10]
-  d['field_order'] = ['identifier', 'owner', 'coOwners', 'createTime', 'updateTime', 'status',\
-                       'mappedTitle', 'mappedCreator']
-  d['fields_mapped'] = {'identifier':'ID',  'owner':'Owner', 'coOwners': 'Co-Owners', \
-                        'createTime': 'Date created', 'updateTime': 'Date last modified', 'status' :'Status',\
-                        'mappedTitle': 'Title', 'mappedCreator' : 'Creator'}
-  d['field_defaults'] = ['identifier', 'createTime', 'mappedTitle', 'mappedCreator']
-  d['fields_selected'] = [x for x in d['field_order'] if x in request.REQUEST ]
-  if len(d['fields_selected']) < 1: d['fields_selected'] = d['field_defaults']
+  d['field_order'] = FIELD_ORDER
+  d['fields_mapped'] = FIELDS_MAPPED
+  d['field_defaults'] = FIELD_DEFAULTS
+  d['fields_selected'] = [x for x in FIELD_ORDER if x in request.REQUEST ]
+  if len(d['fields_selected']) < 1: d['fields_selected'] = FIELD_DEFAULTS
   d['REQUEST'] = request.REQUEST
-  d['field_widths'] = {'identifier': 1.0,  'owner': 1.0, 'coOwners': 2.0, \
-                        'createTime': 2.0, 'updateTime': 2.0, 'status' :1.0,\
-                        'mappedTitle': 3.0, 'mappedCreator' : 2.0}
+  d['field_widths'] = FIELD_WIDTHS
+  d['field_display_types'] = FIELD_DISPLAY_TYPES
   return uic.render(request, 'manage/index', d)
 
 def edit(request, identifier):
