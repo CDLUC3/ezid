@@ -25,6 +25,7 @@ import config
 import ezidadmin
 import idmap
 import log
+import mapping
 
 _dbLock = threading.Lock()
 _cacheLock = threading.Lock()
@@ -213,6 +214,7 @@ def insert (identifier, metadata):
   updateTime = int(_get(metadata, "_updated", "_su", "_u"))
   status = _get(metadata, "_status", "_is")
   if status is None: status = "public"
+  creator, title, publisher, date = mapping.getDisplayMetadata(metadata)
   connection = None
   tainted = False
   c = None
@@ -224,7 +226,7 @@ def insert (identifier, metadata):
     c.execute("INSERT INTO identifier (identifier, owner, coOwners, " +\
       "createTime, updateTime, status, mappedTitle, mappedCreator) VALUES " +\
       "(?, ?, ?, ?, ?, ?, ?, ?)", (identifier, owner, coOwners, createTime,
-      updateTime, status, None, None))
+      updateTime, status, title, creator))
     ownerList = [owner]
     if coOwners != None:
       ownerList.extend(co.strip() for co in coOwners.split(";")\
