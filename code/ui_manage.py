@@ -6,20 +6,25 @@ import ezid
 import metadata
 import search
 
+
+# these are layout properties for the fields in the manage index page,
+# if I had realized there were going to be so many properties up front, I probably would
+# have created a field layout object with a number of peroperties instead.
+
 FIELD_ORDER = ['identifier', 'owner', 'coOwners', 'createTime', 'updateTime', 'status',\
                 'mappedTitle', 'mappedCreator']
+
+FIELD_DEFAULTS = ['identifier', 'createTime', 'mappedTitle', 'mappedCreator']
 
 FIELDS_MAPPED = {'identifier':'ID',  'owner':'Owner', 'coOwners': 'Co-Owners', \
                   'createTime': 'Date created', 'updateTime': 'Date last modified', 'status' :'Status',\
                   'mappedTitle': 'Title', 'mappedCreator' : 'Creator'}
 
-FIELD_DEFAULTS = ['identifier', 'createTime', 'mappedTitle', 'mappedCreator']
-
-FIELD_WIDTHS = {'identifier': 1.0,  'owner': 1.0, 'coOwners': 2.0, \
+FIELD_WIDTHS = {'identifier': 2.0,  'owner': 1.0, 'coOwners': 2.0, \
                 'createTime': 2.0, 'updateTime': 2.0, 'status' :1.0,\
                 'mappedTitle': 3.0, 'mappedCreator' : 2.0}
 
-FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', 'coOwners': 'string', \
+FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'owner_lookup', 'coOwners': 'string', \
                 'createTime': 'datetime', 'updateTime': 'datetime', 'status' :'string',\
                 'mappedTitle': 'string', 'mappedCreator' : 'string'}
 
@@ -97,3 +102,5 @@ def details(request, identifier):
   else:
     d['current_profile'] = metadata.getProfile('dc')
   return uic.render(request, "manage/details", d)
+
+

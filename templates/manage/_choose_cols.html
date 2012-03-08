@@ -1,6 +1,6 @@
 {% load manage_form_tags %}
 
-<div class="chk_lightbox">
+<div id="dialog" class="dialog_window">
 	<h2>Choose Up To 5 Columns to Display:</h2>
 	<form method="get" action="{% url ui_manage.index %}">
 		<div class="chk_col_box">
@@ -8,8 +8,50 @@
 		</div>
 		{% rewrite_hidden_except REQUEST field_order %}
 		<div class="chk_buttons">
-			<a href="">Cancel</a>&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="#" class="close">Cancel</a>&nbsp;&nbsp;&nbsp;&nbsp;
 			<input type="submit" name="submit_checks" id="submit_checks" value="Apply Changes" />
 		</div>
 	</form>
 </div>
+
+<script type="text/javascript">
+$(document).ready(function() { 
+	//select all the a tag with name equal to modal
+  $('a[name=modal]').click(function(e) {
+  	//Cancel the link behavior
+    e.preventDefault();
+    //Get the A tag
+    var id = $(this).attr('href');
+
+    //transition effect   
+    $('#mask').fadeIn(500);   
+    $('#mask').fadeTo("fast",0.8); 
+
+    //transition effect
+    $(id).fadeIn(200);
+ 
+    });
+     
+    //if close button is clicked
+    $('.dialog_window .close').click(function (e) {
+    	//Cancel the link behavior
+      e.preventDefault();
+      $('#mask').hide();
+      $('.dialog_window').hide();
+    });    
+     
+    //if mask is clicked
+    $('#mask').click(function () {
+      $(this).hide();
+      $('.dialog_window').hide();
+    });        
+});
+
+$(document).keyup(function(e) {
+  if(e.keyCode == 27) { // escape key
+    $('#mask').hide();
+    $('.dialog_window').hide();
+  }
+});
+ 
+</script>

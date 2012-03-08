@@ -24,18 +24,21 @@
     </div>
   
 	  <div class="grid_16">
-	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp&nbsp;
-	  	<a href="#">Customize view</a>
+	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp;&nbsp;
+	  	<a href="#dialog" name="modal">Customize view</a>
 	  	{% include "manage/_choose_cols.html" %}
 	  </div>
 	  
-	  <div style="clear:both"></div><br/>
+	  <div style="clear:both"></div>
 	    
 	  <table style="width:100%;margin:10px 20px 10px 20px;">
 	  	{% header_row fields_selected fields_mapped field_widths %}
 	  	{% for item in recent %}
-	  		
+	  	  <tr class="{% cycle 'row1' 'row2' %}">
+	  			{% data_row item fields_selected field_display_types %}
+	  		</tr>
 	  	{% endfor %}
 	  </table>
 	{% endif %}
+	<div class="mask" id="mask"></div>
 {% endblock %}

@@ -5,6 +5,8 @@ from decorators import basictag
 #from django.core.urlresolvers import reverse
 #import pdb
 import datetime
+from django.core.urlresolvers import reverse
+import idmap
 
 register = template.Library()
 
@@ -46,13 +48,13 @@ def header_row(fields_selected, fields_mapped, field_widths):
   total_width = 0
   for item in fields_selected:
     total_width += field_widths[item]
-  return '<tr>' + ''.join([("<th style='width:" + percent_width(field_widths[x], total_width) + \
+  return "<tr class='headrow'>" + ''.join([("<th style='width:" + percent_width(field_widths[x], total_width) + \
                             "'>" + escape(fields_mapped[x]) + "</th>"  ) \
           for x in fields_selected]) + '</tr>'
           
 @register.simple_tag
 def data_row(record, fields_selected, field_display_types):
-  return '<td>' + ''.join([ formatted_field(record, f, field_display_types) for f in fields_selected]) + '</td>'
+  return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types) for f in fields_selected]) + '</td>'
 
 @register.simple_tag
 def latest_modification_string(dictionary):
@@ -62,8 +64,26 @@ def latest_modification_string(dictionary):
   else:
     return "created " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']))
 
+FUNCTIONS_FOR_FORMATTING = { \
+  'string'         : lambda x: escape(x), \
+  'identifier'     : lambda x: "<a href='" + reverse('ui_manage.details', args=[x]) + "'>" + escape(x) + "</a>", \
+  'datetime'       : lambda x: escape(datetime.datetime.fromtimestamp(x).strftime("%m/%d/%Y %I:%M %p")), \
+  'owner_lookup'   : lambda x: cached_id_lookup(x) }
+
 def formatted_field(record, field_name, field_display_types):
-  pass
+  value = record[field_name]
+  formatting = field_display_types[field_name]
+  return FUNCTIONS_FOR_FORMATTING[formatting](value)
+
+cached_users = {}
+def cached_id_lookup(x):
+  if not x in cached_users:
+    try:
+      cached_users[x] = idmap.getAgent(x)[0]
+    except:
+      return 'unknown'
+  return escape(cached_users[x])
+  
 
 def percent_width(item_weight, total):
   return str(int(round(item_weight/total*1000))/10.0) + '%'
