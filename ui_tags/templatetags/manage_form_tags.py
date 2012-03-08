@@ -60,9 +60,9 @@ def data_row(record, fields_selected, field_display_types):
 def latest_modification_string(dictionary):
   """returns string of latest modification whether it's created or modified date"""
   if dictionary['createTime'] + 2 < dictionary['updateTime']:
-    return "modified " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']))
+    return "modified " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']).strftime("%m/%d/%Y %I:%M:%S %p"))
   else:
-    return "created " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']))
+    return "created " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']).strftime("%m/%d/%Y %I:%M:%S %p"))
 
 FUNCTIONS_FOR_FORMATTING = { \
   'string'         : lambda x: escape(x), \

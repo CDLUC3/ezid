@@ -30,6 +30,8 @@ FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'owner_lookup', 'co
 
 def index(request):
   d = { 'menu_item' : 'ui_manage.index' }
+  d['jquery_checked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) & set(FIELD_DEFAULTS))])
+  d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) - set(FIELD_DEFAULTS))])
   d['user'] = request.session['auth'].user
   d['recent'] = search.getByOwner(d['user'][1], False, 'updateTime', False, 10, 0)
   d['recent1'] = d['recent'][0:5]

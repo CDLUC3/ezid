@@ -1,21 +1,30 @@
 {% load manage_form_tags %}
 
 <div id="dialog" class="dialog_window">
-	<h2>Choose Up To 5 Columns to Display:</h2>
+	<h2>Choose Columns to Display:</h2>
 	<form method="get" action="{% url ui_manage.index %}">
 		<div class="chk_col_box">
 			{% column_choices field_order fields_mapped fields_selected %}
 		</div>
 		{% rewrite_hidden_except REQUEST field_order %}
-		<div class="chk_buttons">
-			<a href="#" class="close">Cancel</a>&nbsp;&nbsp;&nbsp;&nbsp;
+		<div class="chk_buttons"><br/>
+			<a href="#restore_defaults" id="restore_defaults">Restore Defaults</a>&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="#close" class="close">Cancel</a>&nbsp;&nbsp;&nbsp;&nbsp;
 			<input type="submit" name="submit_checks" id="submit_checks" value="Apply Changes" />
 		</div>
 	</form>
 </div>
 
 <script type="text/javascript">
-$(document).ready(function() { 
+$(document).ready(function() {
+	
+	// reset button checks and unchecks these
+	$('#restore_defaults').click(function(e) {
+		e.preventDefault();
+		$('{{jquery_checked}}').attr('checked', true);
+		$('{{jquery_unchecked}}').attr('checked', false);
+	});
+	
 	//select all the a tag with name equal to modal
   $('a[name=modal]').click(function(e) {
   	//Cancel the link behavior
@@ -53,5 +62,5 @@ $(document).keyup(function(e) {
     $('.dialog_window').hide();
   }
 });
- 
+
 </script>
