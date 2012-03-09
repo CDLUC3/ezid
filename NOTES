@@ -67,6 +67,14 @@ Caching is employed in several places:
     co-owner lists are modified through the account and admin
     interfaces.
 
+  search._coOwnershipMap cache
+    A dictionary that maps users to lists of other users that have
+    named them as account-level co-owners.  I.e., if users A and B
+    both name user C as an account-level co-owner, then this map will
+    contain an entry C -> [A, B].  Users are identified by ARK
+    identifiers.  Computed once on demand.  Emptied when EZID is
+    reloaded and when any account-level co-ownership list is modified.
+
   session cookies
     See above.  A session cookie is invalidated if/when a user logs
     out, but otherwise there's currently no way to invalidate a
