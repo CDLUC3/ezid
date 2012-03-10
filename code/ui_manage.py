@@ -11,22 +11,33 @@ import search
 # if I had realized there were going to be so many properties up front, I probably would
 # have created a field layout object with a number of peroperties instead.
 
+# The order to display fields both in the customize check boxes and the columns
 FIELD_ORDER = ['identifier', 'owner', 'coOwners', 'createTime', 'updateTime', 'status',\
                 'mappedTitle', 'mappedCreator']
 
+# The default selected fields for display if custom fields haven't been defined
 FIELD_DEFAULTS = ['identifier', 'createTime', 'mappedTitle', 'mappedCreator']
 
+# Column names for display for each field
 FIELDS_MAPPED = {'identifier':'ID',  'owner':'Owner', 'coOwners': 'Co-Owners', \
                   'createTime': 'Date created', 'updateTime': 'Date last modified', 'status' :'Status',\
                   'mappedTitle': 'Title', 'mappedCreator' : 'Creator'}
 
+# Weight to give each field for table display since many or few fields are present and can be customized
 FIELD_WIDTHS = {'identifier': 2.0,  'owner': 1.0, 'coOwners': 2.0, \
                 'createTime': 2.0, 'updateTime': 2.0, 'status' :1.0,\
                 'mappedTitle': 3.0, 'mappedCreator' : 2.0}
 
+#how to display each field, these are in custom tags for these display types
 FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'owner_lookup', 'coOwners': 'string', \
                 'createTime': 'datetime', 'updateTime': 'datetime', 'status' :'string',\
                 'mappedTitle': 'string', 'mappedCreator' : 'string'}
+
+# priority for the sort order if it is not set, choose the first field that exists in this order
+FIELD_DEFAULT_SORT_PRIORITY = ['identifier', 'createTime', 'updateTime', 'owner', 'mappedTitle', \
+                'mappedCreator', 'status', 'coOwners']
+
+IS_ASCENDING = {'asc': True, 'desc': False }
 
 def index(request):
   d = { 'menu_item' : 'ui_manage.index' }
@@ -44,6 +55,18 @@ def index(request):
   d['REQUEST'] = request.REQUEST
   d['field_widths'] = FIELD_WIDTHS
   d['field_display_types'] = FIELD_DISPLAY_TYPES
+  
+  #ensure sorting defaults are set
+  if 'order_by' in request.REQUEST and request.REQUEST['order_by'] in d['fields_selected']:
+    d['order_by'] = request.REQUEST['order_by']
+  else:
+    d['order_by'] = [x for x in FIELD_DEFAULT_SORT_PRIORITY if x in d['fields_selected'] ][0]
+  if 'sort' in request.REQUEST and request.REQUEST['sort'] in ['asc', 'desc']:
+    d['sort'] = request.REQUEST['sort']
+  else:
+    d['sort'] = 'asc'
+  d['results'] = search.getByOwner(d['user'][1], False, d['order_by'], IS_ASCENDING[d['sort']], 10, 0)
+  
   return uic.render(request, 'manage/index', d)
 
 def edit(request, identifier):

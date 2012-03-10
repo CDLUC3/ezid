@@ -5,6 +5,7 @@ from decorators import basictag
 #from django.core.urlresolvers import reverse
 #import pdb
 import datetime
+import urllib
 from django.core.urlresolvers import reverse
 import idmap
 
@@ -44,13 +45,34 @@ def rewrite_hidden_except(request, field_order):
   return hidden
 
 @register.simple_tag
-def header_row(fields_selected, fields_mapped, field_widths):
+def header_row(request, fields_selected, fields_mapped, field_widths, order_by, sort):
   total_width = 0
   for item in fields_selected:
     total_width += field_widths[item]
   return "<tr class='headrow'>" + ''.join([("<th style='width:" + percent_width(field_widths[x], total_width) + \
-                            "'>" + escape(fields_mapped[x]) + "</th>"  ) \
+                            "'>" + column_head(request, x, fields_mapped, order_by, sort) + "</th>"  ) \
           for x in fields_selected]) + '</tr>'
+
+#display column heading text, links, sort order that allow changing
+ORDER_BY_IMG = {'asc': '/ezid/static/images/asc.png', 'desc': '/ezid/static/images/desc.png'}
+SORT_OPPOSITE = {'asc': 'desc', 'desc': 'asc'}
+SORT_TIP = {'asc': 'Sorting in ascending order. Click to change to descending order.',
+            'desc': 'Sorgint in descending order. Click to change to ascending order.'}
+def column_head(request, field, fields_mapped, order_by, sort):
+  #if current fields is being ordered by then should show icon, also clicking link or icon will switch order
+  if field == order_by:
+    overriding_params = {'order_by': field, 'sort': SORT_OPPOSITE[sort] }
+  else:
+    overriding_params = {'order_by': field, 'sort': sort }
+  combined_params = dict(request, **overriding_params)
+  url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
+  if field == order_by:
+    sort_icon = "<a href='" + url + "' title='" + SORT_TIP[sort] + "'>" + \
+        "<img src='" + ORDER_BY_IMG[sort] + "' alt='" + SORT_TIP[sort] + "'></a>&nbsp;&nbsp;"
+  else:
+    sort_icon = ''
+  column_link = "<a href='" + url + "' title='Sort on this column'>" + escape(fields_mapped[field]) + "</a>"
+  return sort_icon + column_link
           
 @register.simple_tag
 def data_row(record, fields_selected, field_display_types):
@@ -65,7 +87,7 @@ def latest_modification_string(dictionary):
     return "created " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']).strftime("%m/%d/%Y %I:%M:%S %p"))
 
 FUNCTIONS_FOR_FORMATTING = { \
-  'string'         : lambda x: escape(x), \
+  'string'         : lambda x: string_value(x), \
   'identifier'     : lambda x: "<a href='" + reverse('ui_manage.details', args=[x]) + "'>" + escape(x) + "</a>", \
   'datetime'       : lambda x: escape(datetime.datetime.fromtimestamp(x).strftime("%m/%d/%Y %I:%M %p")), \
   'owner_lookup'   : lambda x: cached_id_lookup(x) }
@@ -74,6 +96,12 @@ def formatted_field(record, field_name, field_display_types):
   value = record[field_name]
   formatting = field_display_types[field_name]
   return FUNCTIONS_FOR_FORMATTING[formatting](value)
+
+def string_value(x):
+  if x is None:
+    return ''
+  else:
+    return escape(x)
 
 cached_users = {}
 def cached_id_lookup(x):

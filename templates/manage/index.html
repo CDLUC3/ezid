@@ -32,8 +32,8 @@
 	  <div style="clear:both"></div>
 	    
 	  <table style="width:100%;margin:10px 20px 10px 20px;">
-	  	{% header_row fields_selected fields_mapped field_widths %}
-	  	{% for item in recent %}
+	  	{% header_row REQUEST fields_selected fields_mapped field_widths order_by sort %}
+	  	{% for item in results %}
 	  	  <tr class="{% cycle 'row1' 'row2' %}">
 	  			{% data_row item fields_selected field_display_types %}
 	  		</tr>
