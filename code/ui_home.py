@@ -1,8 +1,11 @@
 from django.shortcuts import render_to_response
 import ui_common as uic
+import feedparser
 
 def index(request):
   d = { 'menu_item' : 'ui_home.index'}
+  #item = feedparser.parse('http://www.cdlib.org/cdlinfo/category/digital-preservation/feed/?s=ezid')
+  #print item['feed']['title']
   return uic.render(request, 'home/index', d)
 
 def community(request):
