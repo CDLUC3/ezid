@@ -122,6 +122,7 @@ def chunks(l, n):
   
 @register.simple_tag
 def pager_display(request, current_page, total_pages, page_size):
+  if total_pages < 2: return ''
   #half_to_first = (current_page - 1) / 2
   #half_to_last = (total_pages - current_page) / 2 + current_page
   temp_p = list(set(itertools.chain([1, 2, 3], \
