@@ -13,7 +13,7 @@ def index(request):
 def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
   if uic.is_logged_in(request) == False: return redirect("ui_account.login")
-  d['current_profile'] = metadata.getProfile('dc') #default profile
+  d['current_profile'] = metadata.getProfile('datacite') #default profile
   d['internal_profile'] = metadata.getProfile('internal')
   d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['prefix'])
   if request.method == "POST":
@@ -45,7 +45,7 @@ def advanced(request):
   d = { 'menu_item' :'ui_create.advanced' }
   if uic.is_logged_in(request) == False: return redirect("ui_account.login")
   d['remainder_box_default'] = uic.remainder_box_default
-  d['current_profile'] = metadata.getProfile('dc') #default profile
+  d['current_profile'] = metadata.getProfile('datacite') #default profile
   d['internal_profile'] = metadata.getProfile('internal')
   d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['prefix'])
   d['profiles'] = metadata.getProfiles()[1:]

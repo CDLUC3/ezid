@@ -47,3 +47,64 @@ tooltip:
 The year when the data was or will be made publicly available.  If an
 embargo period is in effect, use the year when the embargo period
 ends.
+
+element: datacite.subject
+displayname: Subject
+displaytype: text
+tooltip:
+
+element: datacite.contributor
+displayname: Contributor
+displaytype: text
+tooltip:
+
+element: datacite.date
+displayname: Date
+displaytype: text
+tooltip:
+
+element: datacite.language
+displayname: Language
+displaytype: text
+tooltip:
+
+element: datacite.resourcetype
+displayname: Resource type
+displaytype: text
+tooltip:
+
+element: datacite.alternateidentifier
+displayname: Alternate identifier
+displaytype: text
+tooltip:
+
+element: datacite.relatedidentifier
+displayname: Related identifier
+displaytype: text
+tooltip:
+
+element: datacite.size
+displayname: Size
+displaytype: text
+tooltip:
+
+element: datacite.format
+displayname: Format
+displaytype: text
+tooltip:
+
+element: datacite.version
+displayname: Version
+displaytype: text
+tooltip:
+
+element: datacite.rights
+displayname: Rights
+displaytype: text
+tooltip:
+
+element: datacite.description
+displayname: Description
+displaytype: text
+tooltip:
+
