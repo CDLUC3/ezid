@@ -25,6 +25,7 @@ import config
 import ezidadmin
 import idmap
 import log
+import mapping
 
 _dbLock = threading.Lock()
 _cacheLock = threading.Lock()
@@ -80,7 +81,17 @@ def _getConnection ():
     else:
       # Turn on auto-commit, so that a BEGIN statement can disable it
       # (sounds paradoxical, but that's how SQLite works).
-      c = sqlite3.connect(_searchDatabase, isolation_level=None)
+      # Setting check_same_thread to false allows connections to be
+      # used by different threads.  The almost nonexistent
+      # documentation on this flag is confusing.  Either the check
+      # enabled by this flag is not necessary at all, given the
+      # version of SQLite we're using (3.7), or it's not necessary
+      # given our thread/connection controls (which ensure that a
+      # connection is used by only one thread at a time, and a
+      # connection is returned to the pool only if and when no
+      # transaction is in progress).
+      c = sqlite3.connect(_searchDatabase, isolation_level=None,
+        check_same_thread=False)
       _numConnections += 1
       return (c, _poolId)
   finally:
@@ -213,6 +224,7 @@ def insert (identifier, metadata):
   updateTime = int(_get(metadata, "_updated", "_su", "_u"))
   status = _get(metadata, "_status", "_is")
   if status is None: status = "public"
+  creator, title, publisher, date = mapping.getDisplayMetadata(metadata)
   connection = None
   tainted = False
   c = None
@@ -224,7 +236,7 @@ def insert (identifier, metadata):
     c.execute("INSERT INTO identifier (identifier, owner, coOwners, " +\
       "createTime, updateTime, status, mappedTitle, mappedCreator) VALUES " +\
       "(?, ?, ?, ?, ?, ?, ?, ?)", (identifier, owner, coOwners, createTime,
-      updateTime, status, None, None))
+      updateTime, status, title, creator))
     ownerList = [owner]
     if coOwners != None:
       ownerList.extend(co.strip() for co in coOwners.split(";")\
