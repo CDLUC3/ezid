@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 import ezid
 import metadata
 import search
+import math
 
 
 # these are layout properties for the fields in the manage index page,
@@ -65,7 +66,18 @@ def index(request):
     d['sort'] = request.REQUEST['sort']
   else:
     d['sort'] = 'asc'
-  d['results'] = search.getByOwner(d['user'][1], False, d['order_by'], IS_ASCENDING[d['sort']], 10, 0)
+    
+  #p=page and ps=pagesize -- I couldn't find an auto-paging that uses our type of models and does what we want
+  #sorry, had to roll our own
+  d['p'] = 1
+  d['ps'] = 10
+  if 'p' in request.REQUEST and request.REQUEST['p'].isdigit(): d['p'] = int(request.REQUEST['p'])
+  if 'ps' in request.REQUEST and request.REQUEST['ps'].isdigit(): d['ps'] = int(request.REQUEST['ps'])
+  d['total_results'] = search.getByOwnerCount(d['user'][1], False)
+  d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
+  if d['p'] > d['total_pages']: d['p'] = d['total_pages']
+
+  d['results'] = search.getByOwner(d['user'][1], False, d['order_by'], IS_ASCENDING[d['sort']], d['ps'], (d['p']-1)*d['ps'])
   
   return uic.render(request, 'manage/index', d)
 

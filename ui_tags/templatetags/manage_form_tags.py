@@ -8,6 +8,7 @@ import datetime
 import urllib
 from django.core.urlresolvers import reverse
 import idmap
+import itertools
 
 register = template.Library()
 
@@ -118,5 +119,34 @@ def percent_width(item_weight, total):
 
 def chunks(l, n):
     return [l[i:i+n] for i in range(0, len(l), n)]
-
   
+@register.simple_tag
+def pager_display(request, current_page, total_pages, page_size):
+  #half_to_first = (current_page - 1) / 2
+  #half_to_last = (total_pages - current_page) / 2 + current_page
+  temp_p = list(set(itertools.chain([1, 2, 3], \
+                                   #[half_to_first - 1, half_to_first, half_to_first + 1], \
+                                   #[half_to_last - 1, half_to_last, half_to_last + 1], \
+                                   [current_page -1, current_page, current_page + 1], \
+                                   [total_pages - 2, total_pages - 1, total_pages])))
+  disp_pages = sorted([x for x in temp_p if x>0 and x <= total_pages])
+  p_out = ''
+  last_p = 0
+  if current_page > 1:
+    p_out += page_link(request, current_page, current_page - 1, "< prev", page_size) + ' '
+  for p in disp_pages:
+    if last_p < p - 1:
+      p_out += '... '
+    p_out += page_link(request, current_page, p, str(p), page_size) + ' '
+    last_p = p
+  if current_page < total_pages:
+    p_out += page_link(request, current_page, current_page + 1, "next >", page_size) + ' '
+  return p_out
+
+def page_link(request, current_page, this_page, link_text, page_size):
+  combined_params = dict(request, **{'p': this_page, 'ps': page_size})
+  url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
+  if current_page == this_page:
+    return "<span class='pagercurrent'>" + escape(link_text) + "</span>"
+  else:
+    return "<a href='" + url + "' class='pagerlink'>" + escape(link_text) + "</a>"

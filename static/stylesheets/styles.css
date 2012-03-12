@@ -257,6 +257,10 @@ dd{
 	width: 500px;
 }
 
+table.manage {
+	width:100%;
+	margin:10px 0px 10px 0px;
+}
 table td{
 	padding: 1px 3px 1px 3px;
 }
@@ -279,3 +283,10 @@ tr.row2{
 	background-color: #f0f0ff;
 }
 
+.pagerlink{
+	text-decoration: none;
+}
+
+.pagercurrent{
+	font-weight: bold;
+}

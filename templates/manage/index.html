@@ -30,15 +30,19 @@
 	  </div>
 	  
 	  <div style="clear:both"></div>
-	    
-	  <table style="width:100%;margin:10px 20px 10px 20px;">
-	  	{% header_row REQUEST fields_selected fields_mapped field_widths order_by sort %}
-	  	{% for item in results %}
-	  	  <tr class="{% cycle 'row1' 'row2' %}">
-	  			{% data_row item fields_selected field_display_types %}
-	  		</tr>
-	  	{% endfor %}
-	  </table>
+	  
+	  <div class="grid_16">
+	    {% pager_display REQUEST p total_pages ps %}
+		  <table class="manage">
+		  	{% header_row REQUEST fields_selected fields_mapped field_widths order_by sort %}
+		  	{% for item in results %}
+		  	  <tr class="{% cycle 'row1' 'row2' %}">
+		  			{% data_row item fields_selected field_display_types %}
+		  		</tr>
+		  	{% endfor %}
+		  </table>
+		  {% pager_display REQUEST p total_pages ps %}
+		</div>
 	{% endif %}
 	<div class="mask" id="mask"></div>
 {% endblock %}
