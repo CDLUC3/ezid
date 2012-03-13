@@ -1,11 +1,24 @@
 from django.shortcuts import render_to_response
+from django.conf import settings
+import datetime
 import ui_common as uic
 import feedparser
 
+feed_cache = () #time cache expires, title, link
+
 def index(request):
   d = { 'menu_item' : 'ui_home.index'}
-  #item = feedparser.parse('http://www.cdlib.org/cdlinfo/category/digital-preservation/feed/?s=ezid')
-  #print item['feed']['title']
+  global feed_cache
+  try:
+    if len(feed_cache) == 0 or datetime.datetime.now() > feed_cache[0]:
+      fd = feedparser.parse(settings.RSS_FEED)
+      feed_cache = (datetime.datetime.now() + datetime.timedelta(0, 60*60), \
+                    fd.entries[0].title, fd.entries[0].link)
+  except:
+    feed_cache = (datetime.datetime.now() + datetime.timedelta(0, 10*60), \
+                    'RSS Feed Unavailable', settings.RSS_FEED)
+  d['feed_cache'] = feed_cache
+  d['rss_feed'] = settings.RSS_FEED
   return uic.render(request, 'home/index', d)
 
 def community(request):

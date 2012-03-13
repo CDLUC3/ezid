@@ -11,7 +11,7 @@ def index(request):
 
 def simple(request):
   d = { 'menu_item' :'ui_demo.simple' }
-  d['current_profile'] = metadata.getProfile('datacite') #default profile
+  d['current_profile'] = metadata.getProfile('erc') #default profile
   d['internal_profile'] = metadata.getProfile('internal')
   d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['prefix'])
   if request.method == "POST":
@@ -42,7 +42,7 @@ def simple(request):
 def advanced(request):
   d = { 'menu_item' : 'ui_demo.advanced' }
   d['remainder_box_default'] = uic.remainder_box_default
-  d['current_profile'] = metadata.getProfile('datacite') #default profile
+  d['current_profile'] = metadata.getProfile('erc') #default profile
   d['internal_profile'] = metadata.getProfile('internal')
   d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['prefix'])
   d['profiles'] = metadata.getProfiles()[1:]

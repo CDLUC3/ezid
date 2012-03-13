@@ -56,7 +56,11 @@
   <div class="grid_16">
     {% rounded_borders %}
       <strong>Latest news from EZID</strong>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href=''>EZID: A Tool for Creation and Long-Term Management of Identifiers</a>
+      <a href="{{ feed_cache.2 }}" target="_blank">{{ feed_cache.1}}</a>
+      <div style="float:right;width:8em;text-align:right">
+      	<a href="{{rss_feed}}"><img src="/ezid/static/images/feed-icon-14x14.png"/></a>&nbsp;
+      	<a href="{{rss_feed}}">RSS</a>
+      </div>
     {% endrounded_borders %}
   </div>
 {% endblock %}

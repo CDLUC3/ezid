@@ -68,6 +68,8 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = "settings.urls"
 
+RSS_FEED = "http://www.cdlib.org/cdlinfo/category/digital-preservation/feed/?s=ezid"
+
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 TEMPLATE_LOADERS = ("django.template.loaders.filesystem.Loader",

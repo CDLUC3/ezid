@@ -69,7 +69,7 @@ def selected_radio(context, request_item, loop_index, item_value):
   
 @register.simple_tag
 def shoulder_display(prefix_dict):
-  return escape(prefix_dict['namespace'].split()[1] + " (" + prefix_dict['prefix'] + ")")
+  return escape(prefix_dict['namespace'] + " (" + prefix_dict['prefix'] + ")")
 
 @register.simple_tag
 def search_display(dictionary, field):
