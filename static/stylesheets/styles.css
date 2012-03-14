@@ -290,3 +290,9 @@ tr.row2{
 .pagercurrent{
 	font-weight: bold;
 }
+
+div.status .notice_message, .notice_message{
+	font-weight: bold;
+	font-size: 12pt;
+	color: #555555;
+}

@@ -1,7 +1,7 @@
 {% if alertMessage != "" or messages %}
   <div class="grid_16 status">
     {% if alertMessage != "" %}
-      <p>{{ alertMessage }}</p>
+      <p class='notice_message'>{{ alertMessage }}</p>
     {% endif %}
     {% if messages %}
       {% for m in messages %}

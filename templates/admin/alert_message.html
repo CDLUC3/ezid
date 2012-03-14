@@ -5,6 +5,35 @@
 {% block content %}
   <div class="grid_12">
     <h1>Publish Alert Message</h1>
-    <p>A placeholder page.</p>
+    <p>The alert message appears at the top of very web page in EZID.</p>
+    <form style="display:inline" method="post" action="{% url ui_admin.alert_message %}" />
+    	<input type="text" name="message" size="70" id="message" /><br/><br/>
+    	<input type="submit" value="Publish"/>
+   </form>
+   <form style="display:inline;" method="post" action="{% url ui_admin.alert_message %}" >
+   		<input type="hidden" name="remove_it" value="remove_it"/>
+   		<input type="submit" value="Remove Alert"/>
+   </form>
   </div>
+  <div class="grid_16">
+  	<h2>Preview:</h2>
+  	<div class="status">
+  		<p class='notice_message' id='update_field'></p>
+  	</div>
+  	<br/><br/>
+  </div>
+  <script type="text/javascript">
+  	$(function() {
+    var content = $('#message').val();
+
+    $('#message').keyup(function() { 
+        if ($('#message').val() != content) {
+            content = $('#message').val();
+            $('#update_field').text(content);
+        }
+    });
+});
+
+  		
+  </script>
 {% endblock %}
