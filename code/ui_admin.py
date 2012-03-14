@@ -26,20 +26,24 @@ def system_status(request):
 
 def alert_message(request):
   d = { 'menu_item' : 'ui_admin.alert_message' }
-  global alertMessage
+  #global alertMessage
+  #print 'global? alertMessage=' + alertMessage
+  print 'uic.alertMessage=' + uic.alertMessage
   if request.method == "POST":
     if 'remove_it' in request.POST and request.POST['remove_it'] == 'remove_it':
       if os.path.exists(os.path.join(django.conf.settings.SITE_ROOT, "db","alert_message")):
         os.remove(os.path.join(django.conf.settings.SITE_ROOT, "db",
                                "alert_message"))
-      alertMessage = ''
-      django.contrib.messages.success(request, "Message removed. You must reload EZID before this message disappears.")
+      #global alertMessage  
+      uic.alertMessage = ''
+      django.contrib.messages.success(request, "Message removed.")
     elif 'message' in request.POST:
       m = request.POST["message"].strip()
       f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
         "alert_message"), "w")
       f.write(m)
       f.close()
-      alertMessage = m
-      django.contrib.messages.success(request, "Message updated. You must reload EZID before this message will appear.")
+      #global alertMessage
+      uic.alertMessage = m
+      django.contrib.messages.success(request, "Message updated.")
   return uic.render(request, 'admin/alert_message', d)

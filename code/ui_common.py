@@ -35,8 +35,9 @@ shoulders = None
 
 remainder_box_default = "Recommended: Leave blank"
 
-
 def loadConfig():
+  #these aren't really globals for the whole app, but globals for ui_common
+  #outside of this module, use ui_common.varname
   global ezidUrl, templates, alertMessage, prefixes, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
   global adminUsername, shoulders
@@ -81,6 +82,7 @@ def _load_templates(dir_list):
       templates[local_path[:-5]] = django.template.loader.get_template(local_path)
 
 def render(request, template, context={}):
+  global alertMessage
   c = { "session": request.session, "alertMessage": alertMessage }
   c.update(context)
   content = templates[template].render(
