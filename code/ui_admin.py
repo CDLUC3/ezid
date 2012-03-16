@@ -23,6 +23,8 @@ def manage_groups(request):
   return uic.render(request, 'admin/manage_groups', d)
 
 def system_status(request):
+  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
+    return uic.unauthorized()
   d = { 'menu_item' :  'ui_admin.system_status' }
   d['status_list'] = ezidadmin.systemStatus(None)
   d['js_ids'] =  '[' + ','.join(["'" + x['id'] + "'" for x in d['status_list']]) + ']'
@@ -42,9 +44,9 @@ def ajax_system_status(request):
     return uic.plainTextResponse(request.GET["id"] + ":" + ezidadmin.systemStatus(request.GET["id"]))
 
 def alert_message(request):
+  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
+    return uic.unauthorized()
   d = { 'menu_item' : 'ui_admin.alert_message' }
-  #global alertMessage
-  #print 'global? alertMessage=' + alertMessage
   print 'uic.alertMessage=' + uic.alertMessage
   if request.method == "POST":
     if 'remove_it' in request.POST and request.POST['remove_it'] == 'remove_it':
