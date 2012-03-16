@@ -2,6 +2,7 @@ import ui_common as uic
 import django.contrib.messages
 import os
 import ezidadmin
+import config
 from django.shortcuts import render_to_response, redirect
 
 def index(request):
@@ -25,6 +26,12 @@ def system_status(request):
   d = { 'menu_item' :  'ui_admin.system_status' }
   d['status_list'] = ezidadmin.systemStatus(None)
   d['js_ids'] =  '[' + ','.join(["'" + x['id'] + "'" for x in d['status_list']]) + ']'
+  if request.method == "POST":
+    config.load()
+    request.session.flush()
+    django.contrib.messages.success(request, "EZID reloaded.")
+    django.contrib.messages.success(request, "You have been logged out.")
+    return uic.redirect("/ezid/")
   return uic.render(request, 'admin/system_status', d)
 
 def ajax_system_status(request):

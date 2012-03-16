@@ -5,7 +5,11 @@
 {% block content %}
   <div class="grid_12">
     <h1>System Status</h1>
-    <table>
+    <table class="status">
+    	<tr>
+    		<th>Status</th>
+    		<th>Resource</th>
+    	</tr>
     	{% for ss in status_list %}
 		  	<tr>
 		  		<td><img id='{{ss.id}}' src='/ezid/static/images/ajax-loader_gray.gif' alt='Progress indicator' /></td>
@@ -14,40 +18,52 @@
     	{% endfor %}
     </table>
   </div>
+  
+  <div class="grid_4">
+  	<div class="status_sidebox">
+  		<h2>Legend</h2>
+  		<p><img src="/ezid/static/images/good_flag.png" alt="service up">&nbsp;&nbsp;Service up</p>
+  		<p><img src="/ezid/static/images/maybe_flag.png" alt="service state unknown">&nbsp;&nbsp;Service state unknown</p>
+  		<p><img src="/ezid/static/images/fail_flag.png" alt="service down">&nbsp;&nbsp;Service down</p>
+  	</div>
+  	<br/><br/>
+  	<div class="status_sidebox" style="text-align:center">
+  		<h2>For Developer Use Only</h2>
+  		<form id="reloadit" action="{% url ui_admin.system_status %}" method="post" />
+  			<input type="submit" value="Reload EZID"/>
+  		</form>
+  		<br/>
+  	</div>
+  </div>
   <script type="text/javascript">
     $(document).ready(function(){
       {% autoescape off %}
     	var ids = {{js_ids}};
     	{% endautoescape %}
-    	$.ajaxSetup({
-  			async: false
-			});
     	for(i=0;i<ids.length;i++){
-	  		$.get(
-	  			'{% url ui_admin.ajax_system_status %}',
-	  			{'id': ids[i]},
-	  			function(data){
+	  		$.ajax({
+	  			url:			'{% url ui_admin.ajax_system_status %}' + "?id=" + escape(ids[i]),
+	  			success: 	function(data){
 	  				  var ar = data.split(':');
 	  				  var id = ar[0];
 	  				  var resp = ar[1];
-	  				  console.log(id + '=' + resp);
 	  					if(resp == 'up'){
 	  						$('#' + id).attr('src', '/ezid/static/images/good_flag.png');
 	  						$('#' + id).attr('alt', 'service up');
+	  						$('#' + id).attr('title', 'service up');
 	  					}else if(resp == 'down'){
 	  						$('#' + id).attr('src', '/ezid/static/images/fail_flag.png');
 	  						$('#' + id).attr('alt', 'service down');
+	  						$('#' + id).attr('title', 'service down');
 	  					}else{
 	  						$('#' + id).attr('src', '/ezid/static/images/maybe_flag.png');
-	  						$('#' + id).attr('alt', 'service down');
+	  						$('#' + id).attr('alt', 'service state unknown');
+	  						$('#' + id).attr('title', 'service state unknown');
 	  					}
 	   			},
-	  			'text'
-	  		);
-	  	}
-	  	$.ajaxSetup({
-  			async: false
-			});
-    });  
+	  			async:	false
+	  		});
+	  	} // end for
+    }); // end document ready  
   </script>
 {% endblock %}
