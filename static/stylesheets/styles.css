@@ -242,7 +242,7 @@ dd{
 	display: none;
 }
 .chk_col_box {
-	width:100%;
+	/*width:100%;*/
 	clear:both;
 }
 
@@ -258,7 +258,7 @@ dd{
 }
 
 table.manage {
-	width:100%;
+	/* width:100%; */
 	margin:10px 0px 10px 0px;
 }
 table td{
@@ -303,7 +303,6 @@ table.status, table.status th, table.status td{
 }
 
 div.status_sidebox {
-	width:100%;
 	border:black;
 	border-style:solid;
 	border-width:1px;

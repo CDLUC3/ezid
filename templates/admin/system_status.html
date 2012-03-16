@@ -20,6 +20,7 @@
   </div>
   
   <div class="grid_4">
+  	<br/>
   	<div class="status_sidebox">
   		<h2>Legend</h2>
   		<p><img src="/ezid/static/images/good_flag.png" alt="service up">&nbsp;&nbsp;Service up</p>
@@ -36,34 +37,45 @@
   	</div>
   </div>
   <script type="text/javascript">
+    {% autoescape off %}
+    	var service_ids = {{js_ids}};
+    {% endautoescape %}
+    var id_index = 0;
+    var interval_id = 0;
+ 
+    function displayStatus(){
+    	$.ajax({
+	  		url:			'{% url ui_admin.ajax_system_status %}' + "?id=" + escape(service_ids[id_index]),
+	  		success: 	function(data){
+	  		  var ar = data.split(':');
+	  		  var id = ar[0];
+	  		  var resp = ar[1];
+	  			if(resp == 'up'){
+	  				$('#' + id).attr('src', '/ezid/static/images/good_flag.png');
+	  				$('#' + id).attr('alt', 'service up');
+	  				$('#' + id).attr('title', 'service up');
+	  			}else if(resp == 'down'){
+	  				$('#' + id).attr('src', '/ezid/static/images/fail_flag.png');
+	  				$('#' + id).attr('alt', 'service down');
+	  				$('#' + id).attr('title', 'service down');
+	  			}else{
+	  				$('#' + id).attr('src', '/ezid/static/images/maybe_flag.png');
+	  				$('#' + id).attr('alt', 'service state unknown');
+	  				$('#' + id).attr('title', 'service state unknown');
+	  			}
+	   		},
+	  			async:	true
+	  		}); // end ajax function
+
+	  		id_index++;
+	  		if(id_index >= service_ids.length){
+	  			clearInterval(interval_id);
+	  		}
+	  }
+    
+    // have to put the status updates on a timer since Safari will not update display unless there is slack time
     $(document).ready(function(){
-      {% autoescape off %}
-    	var ids = {{js_ids}};
-    	{% endautoescape %}
-    	for(i=0;i<ids.length;i++){
-	  		$.ajax({
-	  			url:			'{% url ui_admin.ajax_system_status %}' + "?id=" + escape(ids[i]),
-	  			success: 	function(data){
-	  				  var ar = data.split(':');
-	  				  var id = ar[0];
-	  				  var resp = ar[1];
-	  					if(resp == 'up'){
-	  						$('#' + id).attr('src', '/ezid/static/images/good_flag.png');
-	  						$('#' + id).attr('alt', 'service up');
-	  						$('#' + id).attr('title', 'service up');
-	  					}else if(resp == 'down'){
-	  						$('#' + id).attr('src', '/ezid/static/images/fail_flag.png');
-	  						$('#' + id).attr('alt', 'service down');
-	  						$('#' + id).attr('title', 'service down');
-	  					}else{
-	  						$('#' + id).attr('src', '/ezid/static/images/maybe_flag.png');
-	  						$('#' + id).attr('alt', 'service state unknown');
-	  						$('#' + id).attr('title', 'service state unknown');
-	  					}
-	   			},
-	  			async:	false
-	  		});
-	  	} // end for
-    }); // end document ready  
+			interval_id = setInterval("displayStatus()", 500);
+    });
   </script>
 {% endblock %}
