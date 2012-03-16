@@ -5,6 +5,49 @@
 {% block content %}
   <div class="grid_12">
     <h1>System Status</h1>
-    <p>A placeholder page.</p>
+    <table>
+    	{% for ss in status_list %}
+		  	<tr>
+		  		<td><img id='{{ss.id}}' src='/ezid/static/images/ajax-loader_gray.gif' alt='Progress indicator' /></td>
+		  		<td>{{ss.name}}</td>
+		  	</tr>
+    	{% endfor %}
+    </table>
   </div>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      {% autoescape off %}
+    	var ids = {{js_ids}};
+    	{% endautoescape %}
+    	$.ajaxSetup({
+  			async: false
+			});
+    	for(i=0;i<ids.length;i++){
+	  		$.get(
+	  			'{% url ui_admin.ajax_system_status %}',
+	  			{'id': ids[i]},
+	  			function(data){
+	  				  var ar = data.split(':');
+	  				  var id = ar[0];
+	  				  var resp = ar[1];
+	  				  console.log(id + '=' + resp);
+	  					if(resp == 'up'){
+	  						$('#' + id).attr('src', '/ezid/static/images/good_flag.png');
+	  						$('#' + id).attr('alt', 'service up');
+	  					}else if(resp == 'down'){
+	  						$('#' + id).attr('src', '/ezid/static/images/fail_flag.png');
+	  						$('#' + id).attr('alt', 'service down');
+	  					}else{
+	  						$('#' + id).attr('src', '/ezid/static/images/maybe_flag.png');
+	  						$('#' + id).attr('alt', 'service down');
+	  					}
+	   			},
+	  			'text'
+	  		);
+	  	}
+	  	$.ajaxSetup({
+  			async: false
+			});
+    });  
+  </script>
 {% endblock %}

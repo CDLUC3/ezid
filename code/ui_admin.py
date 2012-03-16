@@ -1,6 +1,7 @@
 import ui_common as uic
 import django.contrib.messages
 import os
+import ezidadmin
 from django.shortcuts import render_to_response, redirect
 
 def index(request):
@@ -22,7 +23,16 @@ def manage_groups(request):
 
 def system_status(request):
   d = { 'menu_item' :  'ui_admin.system_status' }
+  d['status_list'] = ezidadmin.systemStatus(None)
+  d['js_ids'] =  '[' + ','.join(["'" + x['id'] + "'" for x in d['status_list']]) + ']'
   return uic.render(request, 'admin/system_status', d)
+
+def ajax_system_status(request):
+  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
+    return uic.unauthorized()
+  if request.method != "GET": return uic.methodNotAllowed()
+  if "id" in request.GET:
+    return uic.plainTextResponse(request.GET["id"] + ":" + ezidadmin.systemStatus(request.GET["id"]))
 
 def alert_message(request):
   d = { 'menu_item' : 'ui_admin.alert_message' }
