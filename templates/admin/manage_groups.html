@@ -5,6 +5,34 @@
 {% block content %}
   <div class="grid_12">
     <h1>Manage Groups</h1>
-    <p>A placeholder page.</p>
+    
+    <form id="groupform" action="{% url ui_admin.manage_groups %}" method="post">
+    	
+    	<label class="left" for="">Group handle:</label>
+    	<div class="field_right">
+    		<select id='group'>
+    			{% for g in groups %}
+    				<option value='{{g.dn}}'>{{g.gid}}</option>
+    			{% endfor %}
+    			
+    		</select>
+    	</div>
+    	
+    	<label class="left" for="">ARK identifier:</label>
+    	<div class="field_right"></div>
+    	
+    	<label class="left" for="">Description:</label>
+    	<div class="field_right"></div>
+    	
+    	<label class="left" for="">Agreement on file:</label>
+    	<div class="field_right"></div>
+    	
+    	<label class="left" for="">Users:</label>
+    	<div class="field_right"></div>
+    	
+    	<label class="left" for="">Shoulders:</label>
+    	<div class="field_right"></div>
+    		
+    </form>
   </div>
 {% endblock %}

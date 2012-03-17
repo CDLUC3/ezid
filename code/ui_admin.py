@@ -19,7 +19,11 @@ def manage_users(request):
   return uic.render(request, 'admin/manage_users', d)
 
 def manage_groups(request):
+  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
+    return uic.unauthorized()
   d = { 'menu_item' : 'ui_admin.manage_groups' }
+  d['groups'] = ezidadmin.getGroups()
+  d['groups'].sort(key=lambda i: i['gid'].lower())
   return uic.render(request, 'admin/manage_groups', d)
 
 def system_status(request):
