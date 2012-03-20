@@ -22,8 +22,55 @@ def manage_groups(request):
   if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
     return uic.unauthorized()
   d = { 'menu_item' : 'ui_admin.manage_groups' }
+  
+  # load group information
   d['groups'] = ezidadmin.getGroups()
   d['groups'].sort(key=lambda i: i['gid'].lower())
+  groups_by_dn = dict(zip([ x['dn'] for x in d['groups']], d['groups']))
+  
+  #get current group
+  if len(d['groups']) > 0:
+    if 'group' in request.REQUEST:
+      if request.REQUEST['group'] in groups_by_dn:
+        d['group'] = groups_by_dn[request.REQUEST['group']]
+      else:
+        d['group'] = d['groups'][0]
+    else:
+      d['group'] = d['groups'][0]
+  
+  # the section for saving
+  if request.method == "POST" and request.POST['group'] == request.POST['original_group']:
+    validated = True
+    P = request.POST
+    if "group" not in P or "description" not in P or\
+        "shoulderList" not in P:
+        return uic.badRequest()
+    d['group']['description'] = request.POST['description']
+    if 'agreementOnFile' in request.POST and request.POST['agreementOnFile'] == 'True':
+      d['group']['agreementOnFile'] = True
+    else:
+      d['group']['agreementOnFile'] = False
+    sels = request.POST.getlist('shoulderList')
+    if '-' in sels:
+      sels.remove('-')
+    if len(sels) < 1:
+      validated = False
+      django.contrib.messages.error(request, "You must select at least one shoulder from the shoulder list (or choose NONE).")
+    if len(sels) > 1 and ('*' in sels or 'NONE' in sels):
+      validated = False
+      django.contrib.messages.error(request, "If you select * or NONE you may not select other items in the shoulder list.")
+    if validated:
+      grp = d['group']
+      r = ezidadmin.updateGroup(grp["dn"], grp["description"].strip(),
+        grp["agreementOnFile"], ",".join(sels),
+        request.session["auth"].user, request.session["auth"].group)
+      if type(r) is str:
+        django.contrib.messages.error(request, r)
+      else:
+        django.contrib.messages.success(request, "Successfully updated group")
+  else:
+    sels = d['group']['shoulderList'].split(",")
+  d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels)
   return uic.render(request, 'admin/manage_groups', d)
 
 def system_status(request):
@@ -70,3 +117,25 @@ def alert_message(request):
       uic.alertMessage = m
       django.contrib.messages.success(request, "Message updated.")
   return uic.render(request, 'admin/alert_message', d)
+
+def select_shoulder_lists(selected_val_list):
+  """Makes list of selected and deselected shoulders in format [value, friendly label]
+  and returns (selected_list, deselected_list)"""
+  #make lists of selected and deselected shoulders
+  sorted_shoulders = sorted(uic.shoulders, key=lambda s: s['name'].lower())
+  selected_shoulders = []
+  deselected_shoulders = []
+  selected_labels = [x.strip() for x in selected_val_list]
+  for x in ['*', 'NONE']:
+    if x in selected_labels:
+      selected_shoulders.append([x, x])
+    else:
+      deselected_shoulders.append([x, x])
+  deselected_shoulders.insert(0, ['-', ''])
+  
+  for x in sorted_shoulders:
+    if x['label'] in selected_labels:
+      selected_shoulders.append([x['label'], x['name'] + " (" + x['prefix'] + ")"])
+    else:
+      deselected_shoulders.append([x['label'], x['name'] + " (" + x['prefix'] + ")"])
+  return (selected_shoulders, deselected_shoulders)
