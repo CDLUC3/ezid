@@ -18,7 +18,7 @@
     </div>
     <div class="grid_8">
     	{% for item in recent2 %}
-    		<a href=''>{{item.identifier}}</a>
+    		<a href='{% url ui_manage.details item.identifier %}'>{{item.identifier}}</a>
     		{% latest_modification_string item %}<br/>
     	{% endfor %}
     </div>

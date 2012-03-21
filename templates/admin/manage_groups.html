@@ -6,7 +6,7 @@
   <div class="grid_12">
     <h1>Manage Groups</h1>
     
-    <div class="dialog_window" id="add_new_block">
+    <div class="dialog_window" id="addnew_dialog">
     	<form id="new_group_form" action="">
     		<label class="left" for="grouphandle">Group handle:</label>
     		<div class="field_right">
@@ -15,7 +15,7 @@
     		<label class="left">&nbsp;</label>
     		<div class="field_right">
     			<input type="submit" value="Make group"/>&nbsp;&nbsp;&nbsp;&nbsp;
-    			<a href='#' class="close">Cancel</a>
+    			<a href='#close' class="close">Cancel</a>
     		</div>
     	</form>
     	<div style="clear:both;"></div>&nbsp;
@@ -33,7 +33,7 @@
     				  {% endif %}
     				>{{g.gid}}</option>
     			{% endfor %}
-    		</select>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#add_new_block" name="modal" />Create a new group</a>
+    		</select>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#addnew_dialog" name="modal" />Create a new group</a>
     		
     		<input type="hidden" name="original_group" value="{{group.dn}}" />
     	</div>
@@ -86,5 +86,5 @@
     	</div>
     </form>
   </div>
-  <script type="text/javascript" src="/ezid/static/javascripts/dialog_box.js"/>
+  <script type="text/javascript" src="/ezid/static/javascripts/dialog_box.js"></script>
 {% endblock %}
