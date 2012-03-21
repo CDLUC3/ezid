@@ -15,6 +15,8 @@
 	</form>
 </div>
 
+
+<script type="text/javascript" src="/ezid/static/javascripts/dialog_box.js"/>
 <script type="text/javascript">
 $(document).ready(function() {
 	
@@ -24,43 +26,7 @@ $(document).ready(function() {
 		$('{{jquery_checked}}').attr('checked', true);
 		$('{{jquery_unchecked}}').attr('checked', false);
 	});
-	
-	//select all the a tag with name equal to modal
-  $('a[name=modal]').click(function(e) {
-  	//Cancel the link behavior
-    e.preventDefault();
-    //Get the A tag
-    var id = $(this).attr('href');
-
-    //transition effect   
-    $('#mask').fadeIn(500);   
-    $('#mask').fadeTo("fast",0.8); 
-
-    //transition effect
-    $(id).fadeIn(200);
- 
-    });
-     
-    //if close button is clicked
-    $('.dialog_window .close').click(function (e) {
-    	//Cancel the link behavior
-      e.preventDefault();
-      $('#mask').hide();
-      $('.dialog_window').hide();
-    });    
-     
-    //if mask is clicked
-    $('#mask').click(function () {
-      $(this).hide();
-      $('.dialog_window').hide();
-    });        
-});
-
-$(document).keyup(function(e) {
-  if(e.keyCode == 27) { // escape key
-    $('#mask').hide();
-    $('.dialog_window').hide();
-  }
+        
 });
 
 </script>
