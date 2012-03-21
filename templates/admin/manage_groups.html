@@ -7,10 +7,10 @@
     <h1>Manage Groups</h1>
     
     <div class="dialog_window" id="addnew_dialog">
-    	<form id="new_group_form" action="">
+    	<form id="new_group_form" action="{% url ui_admin.add_group %}" method="post">
     		<label class="left" for="grouphandle">Group handle:</label>
     		<div class="field_right">
-    			<input type="text" id="grouphandle"/>&nbsp;&nbsp;e.g. &quot;labarchives&quot;
+    			<input type="text" id="grouphandle" name="grouphandle"/>&nbsp;&nbsp;e.g. &quot;labarchives&quot;
     		</div>
     		<label class="left">&nbsp;</label>
     		<div class="field_right">
@@ -87,4 +87,10 @@
     </form>
   </div>
   <script type="text/javascript" src="/ezid/static/javascripts/dialog_box.js"></script>
+  <script type="text/javascript">
+  	$("#group").bind("change", function(event){
+      $("#groupform").submit();
+    });
+  </script>
+
 {% endblock %}

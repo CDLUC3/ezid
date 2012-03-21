@@ -3,6 +3,8 @@ import django.contrib.messages
 import os
 import ezidadmin
 import config
+from django.utils.http import urlencode
+from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
 
 def index(request):
@@ -17,6 +19,30 @@ def usage(request):
 def manage_users(request):
   d = { 'menu_item' : 'ui_admin.manage_users' }
   return uic.render(request, 'admin/manage_users', d)
+
+def add_group(request):
+  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
+    return uic.unauthorized()
+  if request.method != "POST" or not 'grouphandle' in request.POST:
+    uic.badRequest()
+  P = request.POST
+  #print request.POST['grouphandle']
+  #successredir = reverse("ui_admin.manage_groups")  + "?" + urlencode({'group': P['grouphandle']})
+  #print successredir
+  r = ezidadmin.makeLdapGroup(P["grouphandle"].strip())
+  if type(r) is str:
+    django.contrib.messages.error(request, r)
+    return redirect("ui_admin.manage_groups")
+  dn = r[0]
+  r = ezidadmin.makeGroup(dn, P["grouphandle"].strip(), False, "NONE",
+         request.session["auth"].user, request.session["auth"].group)
+  if type(r) is str:
+    django.contrib.messages.error(request, r)
+    return redirect("ui_admin.manage_groups")
+  else:
+    django.contrib.messages.success(request, "Group successfully created.")
+    success_url = reverse("ui_admin.manage_groups") + "?" + urlencode({'group': dn})
+    return redirect(success_url)
 
 def manage_groups(request):
   if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
