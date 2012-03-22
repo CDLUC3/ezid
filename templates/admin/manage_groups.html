@@ -62,7 +62,7 @@
     	<div class="field_right" id='users'>
     		{% if group.users|length > 0 %}
     			{% for u in group.users %}
-    				<a href="{% url ui_admin.manage_users %}?user={{ u.dn }}&load=t">{{u.uid}}</a><br/>
+    				<a href="{% url ui_admin.manage_users %}?user={{ u.dn }}">{{u.uid}}</a><br/>
     			{% endfor %}
     		{% else %}
     			No users are in this group

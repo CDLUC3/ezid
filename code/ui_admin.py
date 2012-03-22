@@ -3,6 +3,7 @@ import django.contrib.messages
 import os
 import ezidadmin
 import config
+import idmap
 from django.utils.http import urlencode
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
@@ -18,6 +19,17 @@ def usage(request):
 
 def manage_users(request):
   d = { 'menu_item' : 'ui_admin.manage_users' }
+  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
+    return uic.unauthorized()
+  d['users'] = ezidadmin.getUsers()
+  d['users'].sort(key=lambda i: i['uid'].lower())
+  users_by_dn = dict(zip([ x['dn'] for x in d['users']], d['users']))
+  if 'user' in request.REQUEST and request.REQUEST['user'] in users_by_dn:
+    d['user'] = users_by_dn[request.REQUEST['user']]
+  else:
+    d['user'] = d['users'][0]
+  d['group'] = idmap.getGroupId(d['user']['groupGid'])
+    
   return uic.render(request, 'admin/manage_users', d)
 
 def add_group(request):

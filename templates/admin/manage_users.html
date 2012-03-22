@@ -5,6 +5,88 @@
 {% block content %}
   <div class="grid_12">
     <h1>Manage User Accounts</h1>
-    <p>A placeholder page.</p>
+    <form id="mu_form" action="{% url ui_admin.manage_users %}" method="post">
+    	
+    	<label class="left" for="user">Username:</label>
+    	<div class="field_right">
+    		<select id='user' name='user'>
+    			{% for u in users %}
+    				<option value='{{u.dn}}'
+    				  {% if u.dn == user.dn %}
+    				  	selected="selected"
+    				  {% endif %}
+    				>{{u.uid}}</option>
+    			{% endfor %}
+    		</select>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#addnew_dialog" name="modal" />Create a new user</a>
+    		
+    		<input type="hidden" name="original_user" value="{{user.dn}}" />
+    	</div>
+    	
+    	
+    	<label class="left" for="arkId">ARK identifier:</label>
+    	<div class="field_right">
+    		<a href="{% url ui_manage.details user.arkId %}" id="arkId">{{user.arkId}}</a>
+    	</div>
+    	
+    	<label class="left" for="group">Group:</label>
+    	<div class="field_right">
+    		<a href="{% url ui_admin.manage_groups %}?group={{ group.dn }}" id="group">{{user.groupGid}}</a>
+    	</div>
+    	
+    	<label for="mu_givenName" class="left">First name:</label>
+  		<div class="field_right">
+    		<input type="text" name="mu_givenName" id="mu_givenName" size="35" value="{{user.givenName}}" />
+  		</div>
+  		
+  		<label for="mu_sn" class="left">Last name:</label>
+  		<div class="field_right">
+    		<input type="text" name="mu_sn" id="mu_sn" size="35" value="{{user.sn}}" />
+  		</div>
+    	
+    	<label for="mu_mail" class="left">Email:</label>
+  		<div class="field_right">
+    		<input type="text" name="mu_mail" id="mu_mail" size="35" value="{{user.mail}}" />
+  		</div>
+    	
+    	<label for="mu_telephoneNumber" class="left">Phone:</label>
+  		<div class="field_right">
+    		<input type="text" name="mu_telephoneNumber" id="mu_telephoneNumber" size="35" value="{{user.telephoneNumber}}" />
+  		</div>
+    	
+    	<label class="left" for="mu_description">Description:</label>
+    	<div class="field_right">
+    		<textarea rows="4" cols='40' name="mu_description" id="mu_description">{{user.description}}</textarea>
+    	</div>
+ 
+      <label class="left" for="mu_ezidCoOwners">Co-owners:</label>
+    	<div class="field_right">
+    		<textarea rows="4" cols='40' name="mu_ezidCoOwners" id="mu_ezidCoOwners"></textarea>
+    	</div>
+    	
+ 			<label class="left">&nbsp;</label>
+    	<div class="field_right">
+    		Enter co-owners one per line in box above.
+    	</div>
+    	
+    	<label class="left" for="mu_enabled">Login enabled:</label>
+    	<div class="field_right">
+    		<input type="checkbox" name="mu_enabled" id="mu_enabled" value="True"
+    			{% if user.currentlyEnabled == 'true' %}
+    				checked="checked"
+    			{% endif %}
+    		/>  		
+    	</div>
+    	
+    	<label for="mu_userPassword" class="left">New password:</label>
+  		<div class="field_right">
+    		<input type="text" name="mu_userPassword" id="mu_userPassword" size="35" value="" />
+  		</div>
+    	
+    	<label class="left">&nbsp;</label>
+    	<div class="field_right">
+    		<input type="submit" value="Save changes"/>
+    	</div>
+    	
+    </form>
   </div>
 {% endblock %}
