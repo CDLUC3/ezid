@@ -5,7 +5,7 @@
 {% block content %}
   <div class="grid_12">
     <h1>Manage User Accounts</h1>
-    <form id="mu_form" action="{% url ui_admin.manage_users %}" method="post">
+    <form id="edit_form" action="{% url ui_admin.manage_users %}" method="post">
     	
     	<label class="left" for="user">Username:</label>
     	<div class="field_right">
@@ -33,34 +33,34 @@
     		<a href="{% url ui_admin.manage_groups %}?group={{ group.dn }}" id="group">{{user.groupGid}}</a>
     	</div>
     	
-    	<label for="mu_givenName" class="left">First name:</label>
+    	<label for="givenName" class="left">First name:</label>
   		<div class="field_right">
-    		<input type="text" name="mu_givenName" id="mu_givenName" size="35" value="{{user.givenName}}" />
+    		<input type="text" name="givenName" id="givenName" size="35" value="{{user.givenName}}" />
   		</div>
   		
-  		<label for="mu_sn" class="left">Last name:</label>
+  		<label for="sn" class="left">Last name:</label>
   		<div class="field_right">
-    		<input type="text" name="mu_sn" id="mu_sn" size="35" value="{{user.sn}}" />
+    		<input type="text" name="sn" id="sn" size="35" value="{{user.sn}}" />
   		</div>
     	
-    	<label for="mu_mail" class="left">Email:</label>
+    	<label for="mail" class="left">Email:</label>
   		<div class="field_right">
-    		<input type="text" name="mu_mail" id="mu_mail" size="35" value="{{user.mail}}" />
+    		<input type="text" name="mail" id="mail" size="35" value="{{user.mail}}" />
   		</div>
     	
-    	<label for="mu_telephoneNumber" class="left">Phone:</label>
+    	<label for="telephoneNumber" class="left">Phone:</label>
   		<div class="field_right">
-    		<input type="text" name="mu_telephoneNumber" id="mu_telephoneNumber" size="35" value="{{user.telephoneNumber}}" />
+    		<input type="text" name="telephoneNumber" id="telephoneNumber" size="35" value="{{user.telephoneNumber}}" />
   		</div>
     	
-    	<label class="left" for="mu_description">Description:</label>
+    	<label class="left" for="description">Description:</label>
     	<div class="field_right">
-    		<textarea rows="4" cols='40' name="mu_description" id="mu_description">{{user.description}}</textarea>
+    		<textarea rows="4" cols='40' name="description" id="description">{{user.description}}</textarea>
     	</div>
  
-      <label class="left" for="mu_ezidCoOwners">Co-owners:</label>
+      <label class="left" for="ezidCoOwners">Co-owners:</label>
     	<div class="field_right">
-    		<textarea rows="4" cols='40' name="mu_ezidCoOwners" id="mu_ezidCoOwners"></textarea>
+    		<textarea rows="4" cols='40' name="ezidCoOwners" id="ezidCoOwners">{{ezidCoOwners}}</textarea>
     	</div>
     	
  			<label class="left">&nbsp;</label>
@@ -68,18 +68,18 @@
     		Enter co-owners one per line in box above.
     	</div>
     	
-    	<label class="left" for="mu_enabled">Login enabled:</label>
+    	<label class="left" for="currentlyEnabled">Login enabled:</label>
     	<div class="field_right">
-    		<input type="checkbox" name="mu_enabled" id="mu_enabled" value="True"
+    		<input type="checkbox" name="currentlyEnabled" id="currentlyEnabled" value="true"
     			{% if user.currentlyEnabled == 'true' %}
     				checked="checked"
     			{% endif %}
     		/>  		
     	</div>
     	
-    	<label for="mu_userPassword" class="left">New password:</label>
+    	<label for="userPassword" class="left">New password:</label>
   		<div class="field_right">
-    		<input type="text" name="mu_userPassword" id="mu_userPassword" size="35" value="" />
+    		<input type="password" name="userPassword" id="userPassword" size="35" value="" />
   		</div>
     	
     	<label class="left">&nbsp;</label>
@@ -89,4 +89,9 @@
     	
     </form>
   </div>
+  <script type="text/javascript">
+  	$("#user").bind("change", function(event){
+      $("#edit_form").submit();
+    });
+  </script>
 {% endblock %}

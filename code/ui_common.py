@@ -8,6 +8,8 @@ import os
 import re
 import time
 import urllib
+import string
+from random import choice
 
 import config
 import datacite
@@ -315,5 +317,5 @@ def url_is_valid(target):
     return False
   return True
   
-  
-
+def random_password(size = 8):
+  return ''.join([choice(string.letters + string.digits) for i in range(size)])
