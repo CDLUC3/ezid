@@ -322,3 +322,20 @@ div.add_new_admin {
 	left: 0px;
 	display: none;
 }
+
+/* styles for the add-user table which is laid out specially */
+td.add_user_col1 {
+	padding:5px 20px 5px 10px;
+	vertical-align:middle;
+	font-size: 120%;
+	font-weight: bold;
+}
+
+td.add_user_col2 {
+	padding:5px 10px 5px 10px;
+	text-align: center;
+}
+
+td.add_user_col3 {
+	padding:5px 10px 5px 10px;
+}

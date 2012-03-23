@@ -20,7 +20,34 @@ def usage(request):
   return uic.render(request, 'admin/usage', d)
 
 def add_user(request):
-  pass
+  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
+    return uic.unauthorized()
+  if request.method != "POST" or not 'nu_uid' in request.POST or\
+      not 'nu_select_uid' in request.POST or not 'nu_group' in request.POST:
+    uic.badRequest()
+  P = request.POST
+  if P['nu_uid'] == '' and P['nu_select_uid'] == '':
+    django.contrib.messages.error(request, 'You must enter a username or choose one to add a new user')
+    return redirect("ui_admin.manage_users")
+  if P['nu_uid'] != '' and P['nu_select_uid'] != '':
+    django.contrib.messages.error(request, 'You may only enter a username or choose one to add a new user, but not both')
+    return redirect("ui_admin.manage_users")
+  uid = P['nu_uid'] or P['nu_select_uid']
+  if P["nu_uid"] != "":
+    r = ezidadmin.makeLdapUser(uid.strip())
+    if type(r) is str:
+      django.contrib.messages.error(request, r)
+      return redirect("ui_admin.manage_users")
+  r = ezidadmin.makeUser(uid.strip(), P["nu_group"],
+                         request.session["auth"].user, request.session["auth"].group)
+  if type(r) is str:
+    django.contrib.messages.error(request, r)
+    return redirect("ui_admin.manage_users")
+  else:
+    django.contrib.messages.success(request, "User successfully created")
+    success_url = reverse("ui_admin.manage_users") + "?" + urlencode({'user': r[0]})
+    return redirect(success_url)
+  
 
 def manage_users(request):
   d = { 'menu_item' : 'ui_admin.manage_users' }
@@ -33,6 +60,10 @@ def manage_users(request):
     d['user'] = users_by_dn[request.REQUEST['user']]
   else:
     d['user'] = d['users'][0]
+  if d['user']['sn'] == 'please supply':
+    d['user']['sn'] = ''
+  if d['user']['mail'] == 'please supply':
+    d['user']['mail'] = ''
   d['non_ezid_users'] = ezidadmin.getEntries(True, True)
   
   d['groups'] = ezidadmin.getGroups()
@@ -60,9 +91,6 @@ def add_group(request):
   if request.method != "POST" or not 'grouphandle' in request.POST:
     uic.badRequest()
   P = request.POST
-  #print request.POST['grouphandle']
-  #successredir = reverse("ui_admin.manage_groups")  + "?" + urlencode({'group': P['grouphandle']})
-  #print successredir
   r = ezidadmin.makeLdapGroup(P["grouphandle"].strip())
   if type(r) is str:
     django.contrib.messages.error(request, r)

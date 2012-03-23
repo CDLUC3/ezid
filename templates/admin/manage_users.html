@@ -8,19 +8,51 @@
     
     <div class="dialog_window" id="addnew_dialog">
     	<form id="new_user_form" action="{% url ui_admin.add_user %}" method="post">
-    		<!--
-    		<label class="left" for="grouphandle">Group handle:</label>
-    		<div class="field_right">
-    			<input type="text" id="grouphandle" name="grouphandle"/>&nbsp;&nbsp;e.g. &quot;labarchives&quot;
-    		</div>
-    		<label class="left">&nbsp;</label>
-    		<div class="field_right">
-    			<input type="submit" value="Make group"/>&nbsp;&nbsp;&nbsp;&nbsp;
-    			<a href='#close' class="close">Cancel</a>
-    		</div>
-    		-->
+    		
+    		<table>
+    			<tr>
+    				<td rowspan="3" class="add_user_col1" style="border-right:solid;">1</td>
+    				<td class="add_user_col2"><label for="nu_uid">Enter Username:</label></td>
+    				<td class="add_user_col3"><input type="text" id="nu_uid" name="nu_uid" size="35"/>&nbsp;&nbsp; e.g. jdoe</td>
+    			</tr>
+    			<tr>
+    				<td class="add_user_col2">- OR -</td>
+    				<td class="add_user_col3"></td>
+    			</tr>
+    			<tr>
+    				<td class="add_user_col2"><label for="nu_select_uid">Select LDAP user:</label></td>
+    				<td class="add_user_col3">
+    					<select id='nu_select_uid' name='nu_select_uid'>
+    						<option value=''></option>
+    						{% for u in non_ezid_users %}
+    							<option value='{{u.uid}}'>{{u.uid}}</option>
+    						{% endfor %}
+    					</select>
+    				</td>
+    			</tr>
+    			<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    			<tr>
+    				<td class="add_user_col1">2</td>
+    				<td class="add_user_col2">Assign user to group</td>
+    				<td class="add_user_col3">
+    					<select id='nu_group' name='nu_group'>
+    						{% for u in groups %}
+    							<option value='{{u.dn}}'>{{u.gid}}</option>
+    						{% endfor %}
+    					</select>
+    				</td>
+    			</tr>
+    			<tr>
+    				<td class="add_user_col1"></td>
+    				<td class="add_user_col2"></td>
+    				<td class="add_user_col3">
+    					<input type="submit" value="Create new user"/>&nbsp;&nbsp;&nbsp;&nbsp;
+    					<a href='#close' class="close">cancel</a>
+    				</td>
+    			</tr>
+    			
+    		</table>
     	</form>
-    	<div style="clear:both;"></div>&nbsp;
     </div>
     
     
@@ -108,6 +140,7 @@
     	
     </form>
   </div>
+  <script type="text/javascript" src="/ezid/static/javascripts/dialog_box.js"></script>
   <script type="text/javascript">
   	$("#user").bind("change", function(event){
       $("#edit_form").submit();
