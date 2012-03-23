@@ -19,6 +19,9 @@ def usage(request):
   d = { 'menu_item' : 'ui_admin.usage'}
   return uic.render(request, 'admin/usage', d)
 
+def add_user(request):
+  pass
+
 def manage_users(request):
   d = { 'menu_item' : 'ui_admin.manage_users' }
   if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
@@ -30,6 +33,10 @@ def manage_users(request):
     d['user'] = users_by_dn[request.REQUEST['user']]
   else:
     d['user'] = d['users'][0]
+  d['non_ezid_users'] = ezidadmin.getEntries(True, True)
+  
+  d['groups'] = ezidadmin.getGroups()
+  d['groups'].sort(key=lambda i: i['gid'].lower())
   d['group'] = idmap.getGroupId(d['user']['groupGid'])
   #now for saving
   if request.method == "POST" and request.POST['user'] == request.POST['original_user']:
