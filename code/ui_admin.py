@@ -186,7 +186,6 @@ def alert_message(request):
   if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
     return uic.unauthorized()
   d = { 'menu_item' : 'ui_admin.alert_message' }
-  print 'uic.alertMessage=' + uic.alertMessage
   if request.method == "POST":
     if 'remove_it' in request.POST and request.POST['remove_it'] == 'remove_it':
       if os.path.exists(os.path.join(django.conf.settings.SITE_ROOT, "db","alert_message")):
