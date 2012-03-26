@@ -44,3 +44,7 @@ def understanding(request):
 def why(request):
   d = { 'menu_item' : 'ui_home.why' }
   return uic.render(request, 'home/why', d)
+
+def contact(request):
+  d = { 'menu_item' : 'null.null' }
+  return uic.render(request, 'home/contact', d)
