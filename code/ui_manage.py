@@ -123,7 +123,6 @@ def details(request, identifier):
   d = { 'menu_item' : 'ui_manage.null'}
   r = ezid.getMetadata(identifier)
   if type(r) is str:
-    print r
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_lookup.index")
   d['allow_update'] = uic.authorizeUpdate(request, r)
