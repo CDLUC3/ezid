@@ -1,0 +1,48 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}EZID : Request password reset{% endblock %}
+
+{% block javascript %}
+$(document).ready(function () {
+  $("#username").keydown(clearMessages);
+  $("#email").keydown(clearMessages);
+  $("#username").focus();
+});
+{% endblock %}
+
+{% block content %}
+
+<div id="pwreset" class="grid_12">
+
+<h1 id="title">Request password reset</h1>
+
+<form method="post" action="{% url ui_account.pwreset %}">
+	<label for="username" class="left">
+		Username
+	</label>
+	<div class="field_right">
+		<input type="text" id="username" name="username" size="20" value="{{ username }}"/>
+	</div>
+
+	<label for="email" class="left">
+		Email address
+	</label>
+	<div class="field_right">
+		<input type="text" id="email" name="email" size="20" value="{{ email }}"/>
+	</div>
+
+	<label class="left">&nbsp;</label>
+	<div class="field_right">
+		<input type="submit" value="Send email"/>
+	</div>
+</form>
+<div style="clear:both;">&nbsp;</div>
+
+<p>You will be sent an email containing a link allowing your password
+to be reset.</p>
+<p>(<a href="{% url ui_home.contact %}">Contact
+us</a> if you don't remember your username.)</p>
+
+</div>
+
+{% endblock %}

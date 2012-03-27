@@ -3,6 +3,7 @@ import userauth, useradmin
 import django.contrib.messages
 import idmap
 import re
+import time
 from django.shortcuts import redirect
 
 def edit(request):
@@ -147,3 +148,69 @@ def update_edit_user(request):
       django.contrib.messages.error(request, r)
     else:
       django.contrib.messages.success(request, "Your password has been updated.")
+      
+def pwreset(request, pwrr, ssl=False):
+  """
+  Handles all GET and POST interactions related to password resets.
+  """
+  if pwrr:
+    r = useradmin.decodePasswordResetRequest(pwrr)
+    if not r:
+      django.contrib.messages.error(request, "Invalid password reset request.")
+      return uic.redirect("/ezid/")
+    username, t = r
+    if int(time.time())-t >= 24*60*60:
+      django.contrib.messages.error(request,
+        "Password reset request has expired.")
+      return uic.redirect("/ezid/")
+    if request.method == "GET":
+      return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
+        "username": username, 'menu_item' : 'ui_null.null' })
+    elif request.method == "POST":
+      if "password" not in request.POST or "confirm" not in request.POST:
+        return uic.badRequest()
+      password = request.POST["password"]
+      confirm = request.POST["confirm"]
+      if password != confirm:
+        django.contrib.messages.error(request,
+          "Password and confirmation do not match.")
+        return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
+          "username": username, 'menu_item' : 'ui_null.null' })
+      if password == "":
+        django.contrib.messages.error(request, "Password required.")
+        return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
+          "username": username, 'menu_item' : 'ui_null.null' })
+      r = useradmin.resetPassword(username, password)
+      if type(r) is str:
+        django.contrib.messages.error(request, r)
+        return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
+          "username": username,  'menu_item' : 'ui_null.null' })
+      else:
+        django.contrib.messages.success(request, "Password changed.")
+        return uic.redirect("/ezid/")
+    else:
+      return uic.methodNotAllowed()
+  else:
+    if request.method == "GET":
+      return uic.render(request, "account/pwreset1", {'menu_item' : 'ui_null.null'})
+    elif request.method == "POST":
+      if "username" not in request.POST or "email" not in request.POST:
+        return uic.badRequest()
+      username = request.POST["username"].strip()
+      email = request.POST["email"].strip()
+      if username == "":
+        django.contrib.messages.error(request, "Username required.")
+        return uic.render(request, "account/pwreset1", { "email": email,  'menu_item' : 'ui_null.null' })
+      if email == "":
+        django.contrib.messages.error(request, "Email address required.")
+        return uic.render(request, "account/pwreset1", { "username": username,  'menu_item' : 'ui_null.null' })
+      r = useradmin.sendPasswordResetEmail(username, email)
+      if type(r) is str:
+        django.contrib.messages.error(request, r)
+        return uic.render(request, "account/pwreset1", { "username": username,
+          "email": email,  'menu_item' : 'ui_null.null' })
+      else:
+        django.contrib.messages.success(request, "Email sent.")
+        return uic.redirect("/ezid/")
+    else:
+      return uic.methodNotAllowed()

@@ -78,6 +78,7 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   #_p("login$", "dispatch.d", { "function": "ui_account.login", "ssl": True }),
   _p("account/edit$", "ui_account.edit"),
   _p("account/logout$", "ui_account.logout"),
+  _p("pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", { "ssl": True })
 )
 
 if django.conf.settings.STANDALONE:
