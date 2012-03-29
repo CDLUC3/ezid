@@ -13,9 +13,21 @@ def index(request):
 def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
   if uic.is_logged_in(request) == False: return redirect("ui_account.login")
-  d['current_profile'] = metadata.getProfile('erc') #default profile
-  d['internal_profile'] = metadata.getProfile('internal')
   d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['prefix'])
+  
+  #selects current_profile based on parameters or profile preferred for prefix type
+  if 'current_profile' in request.REQUEST:
+    d['current_profile'] = metadata.getProfile(request.REQUEST['current_profile'])
+    if d['current_profile'] == None:
+      d['current_profile'] = metadata.getProfile('erc')
+  else:
+    if len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'):
+      d['current_profile'] = metadata.getProfile('datacite')
+    else:
+      d['current_profile'] = metadata.getProfile('erc')
+      
+  d['internal_profile'] = metadata.getProfile('internal')
+  
   if request.method == "POST":
     if "current_profile" not in request.POST or "shoulder" not in request.POST: uic.badRequest()
     d['current_profile'] = metadata.getProfile(request.POST['current_profile'])
@@ -79,4 +91,6 @@ def advanced(request):
         else:
           django.contrib.messages.error(request, "There was an error writing the metadata for your identifier: " + s)
   return uic.render(request, 'create/advanced', d)
+
+def simple_form_processing(request, d):
 
