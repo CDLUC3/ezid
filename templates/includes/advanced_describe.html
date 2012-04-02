@@ -26,10 +26,3 @@ citation profile:</h2>
     <input type="text" name="{{e.name}}" id="{{e.name}}" size="35" value="{% request_value e.name %}" />
   </div>        
 {% endfor %}
-
-<script type="text/javascript">
-  // submit form when profile changed
-  $("#current_profile").bind("change", function(event){
-    $("#create_form").submit();
-  });
-</script>

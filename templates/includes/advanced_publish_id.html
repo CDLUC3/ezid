@@ -9,7 +9,7 @@
    /><label
     for="publish_true">Yes</label>&nbsp;
   <input type="radio" name="publish" value="False" id="publish_false"
-    {% if request.POST.publish == 'False' %}
+    {% if request.REQUEST.publish == 'False' %}
       checked="checked"
     {% endif %}
    /><label

@@ -7,7 +7,6 @@ import pdb
 #import datetime
 
 register = template.Library()
-      
 @register.tag
 @basictag(takes_context=True) 
 def request_value(context, key_name):
@@ -47,10 +46,8 @@ def form_or_default(context, key_name, default):
   outputs the default value passed in.
   """
   request = context['request']
-  if request.POST and key_name in request.POST:
-    print "Outputting " + key_name
-    print request.POST
-    return escape(request.POST[key_name])
+  if key_name in request.REQUEST and request.REQUEST[key_name] != '':
+    return escape(request.REQUEST[key_name])
   else:
     return escape(default)
 
