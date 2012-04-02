@@ -12,17 +12,17 @@
   {% endfor %}
 </select>
 citation profile:</h2>
-<label for="_target" class="left">
+<label for="_target" class="left {% tooltip_class "_target" %}">
   {{internal_profile.target.displayName}}:
 </label>
 <div class="field_right">
-  <input type="text" name="_target" id="_target" size="35" value="{% request_value "_target" %}"/>
+  <input type="text" class="{% tooltip_class "_target" %}" name="_target" id="_target" size="35" value="{% request_value "_target" %}"/>
 </div>
 {% for e in current_profile.elements %}
-  <label for="{{e.name}}" class="left">
+  <label for="{{e.name}}" class="left {% tooltip_class e.name %}">
     {{e.displayName}}:
   </label>
   <div class="field_right">
-    <input type="text" name="{{e.name}}" id="{{e.name}}" size="35" value="{% request_value e.name %}" />
+    <input type="text" class="{% tooltip_class e.name %}" name="{{e.name}}" id="{{e.name}}" size="35" value="{% request_value e.name %}" />
   </div>        
 {% endfor %}

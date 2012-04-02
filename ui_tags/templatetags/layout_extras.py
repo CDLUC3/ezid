@@ -18,6 +18,11 @@ def request_value(context, key_name):
     return escape(request.REQUEST[key_name])
   else:
     return ''
+  
+@register.simple_tag
+def tooltip_class(profile_element_string):
+  return escape('element_' + profile_element_string.replace('.',''))
+
 
 #@register.simple_tag(takes_context=True)
 @register.tag

@@ -106,12 +106,12 @@ $(document).ready(function () {
 """
 
 def _writeTooltips ():
-  f = open(os.path.join(django.conf.settings.PROJECT_ROOT, "static",
+  f = open(os.path.join(django.conf.settings.PROJECT_ROOT, "static/javascripts",
     "metadata_tooltips.js"), "w")
   f.write(_header)
   for p in _profiles:
     for e in p.elements:
-      f.write("$(\"#element_%s\").tooltip({ bodyHandler: function () { " %\
+      f.write("$(\".element_%s\").tooltip({ bodyHandler: function () { " %\
         django.template.defaultfilters.slugify(e.name))
       f.write("return \"%s\"; } });\n" % e.tooltip.replace("\n", " ")\
         .replace("\\", "\\\\").replace("\"", "\\\""))

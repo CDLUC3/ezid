@@ -17,6 +17,7 @@
 
     <script type="text/javascript" src="/ezid/static/javascripts/jquery.js"></script>
     <script type="text/javascript" src="/ezid/static/javascripts/base.js"></script>
+    <script type="text/javascript" src="/ezid/static/javascripts/jquery.tooltip.js"></script>
     {% block header %}{% endblock %}
     <script type="text/javascript">/*<![CDATA[*/
       areMessages = {% if messages %}true{% else %}false{% endif %};
@@ -33,5 +34,6 @@
       
       {% include "includes/footer.html" %}
     </div>
+    <script type="text/javascript" src="/ezid/static/javascripts/metadata_tooltips.js"></script>
   </body>
 </html>
