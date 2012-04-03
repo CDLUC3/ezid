@@ -341,6 +341,15 @@ td.add_user_col3 {
 }
 
 /* tooltip popup */
-#tooltip { position: absolute; z-index: 3000; width: 30em;
-  border: 1px solid #111; background-color: #CEFFFF; padding: .5em;
-  text-align: left; font-size: 75% }
+#tooltip {
+	position: absolute;
+	z-index: 3000;
+	width: 30em;
+  border: 1px solid #111;
+  color: #ffffff; /*
+  background-color: #126694;
+  background-color: #87e4fe; */
+  background-color: #01505f;
+  padding: .5em;
+  text-align: left;
+  font-size: 90% }
