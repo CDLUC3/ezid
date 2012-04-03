@@ -4,8 +4,27 @@
 #
 # Support for searching and browsing over identifier metadata.
 #
-# Note that the functions in this module are designed to log errors,
-# but always return successfully.
+# Note that the functions in this module are designed to hide errors
+# from the caller by always returning successfully (but errors are
+# still logged).
+#
+# Regarding concurrency, our preference would be that a thread
+# requesting a lock wait (forever) until the lock is granted.
+# However, it is well nigh impossible to defeat SQLite's default
+# behavior, which is to raise an exception if the lock isn't obtained
+# within a "timely" period (by default, 5 seconds).  For example, even
+# a simple SELECT statement can timeout if a concurrent COMMIT is
+# taking too long.  Our less-than-ideal strategy is to automatically
+# re-issue requests at two key points only: when beginning a
+# transaction (when a RESERVED lock is requested, and the thread has
+# to wait until all other RESERVED and higher locks are released) and
+# when committing a transaction (when a PENDING lock is requested, and
+# the thread has to wait until all SHARED locks are released before
+# the thread can advance to an EXCLUSIVE lock).  See
+# <http://sqlite.org/lockingv3.html>.
+#
+# N.B.: it is important that cursors be closed (and closed as quickly
+# as possible), as they represent SHARED locks.
 #
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
@@ -136,7 +155,13 @@ def _begin (cursor):
       return True
 
 def _commit (cursor):
-  cursor.execute("COMMIT")
+  while True:
+    try:
+      cursor.execute("COMMIT")
+    except sqlite3.OperationalError, e:
+      if e.message != "database is locked": raise e
+    else:
+      break
 
 def _rollback (cursor):
   try:
@@ -152,6 +177,9 @@ def _closeCursor (cursor):
     cursor.close()
   except sqlite3.DatabaseError, e:
     log.otherError("search._closeCursor", e)
+    return False
+  else:
+    return True
 
 def _get (d, *keys):
   for k in keys:
@@ -245,13 +273,13 @@ def insert (identifier, metadata):
       c.execute("INSERT INTO ownership (owner, identifier) VALUES (?, ?)",
         (o, identifier))
     _commit(c)
-  except sqlite3.DatabaseError, e:
+  except Exception, e:
     log.otherError("search.insert", e)
     if begun:
-      # If we can't rollback, discard the entire connection.
       if not _rollback(c): tainted = True
   finally:
-    if c: _closeCursor(c)
+    if c:
+      if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
 _columns = ["identifier", "owner", "coOwners", "createTime", "updateTime",
@@ -287,6 +315,7 @@ def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
       sortColumn, "ASC" if ascending else "DESC", limit, offset)
     p = (owner,)
   connection = None
+  tainted = False
   c = None
   try:
     connection, poolId = _getConnection()
@@ -298,12 +327,13 @@ def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
       for i in range(len(_columns)): row[_columns[i]] = r[i]
       rows.append(row)
     return rows
-  except sqlite3.DatabaseError, e:
+  except Exception, e:
     log.otherError("search.getByOwner", e)
     return []
   finally:
-    if c: _closeCursor(c)
-    if connection: _returnConnection(connection, poolId)
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
 
 def getByOwnerCount (owner, includeCoOwnership=True):
   """
@@ -320,18 +350,20 @@ def getByOwnerCount (owner, includeCoOwnership=True):
     q = "SELECT COUNT(*) FROM identifier WHERE owner = ?"
     p = (owner,)
   connection = None
+  tainted = False
   c = None
   try:
     connection, poolId = _getConnection()
     c = connection.cursor()
     c.execute(q, p)
     return c.fetchone()[0]
-  except sqlite3.DatabaseError, e:
+  except Exception, e:
     log.otherError("search.getByOwnerCount", e)
     return 0
   finally:
-    if c: _closeCursor(c)
-    if connection: _returnConnection(connection, poolId)
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
 
 def delete (identifier):
   """
@@ -348,11 +380,11 @@ def delete (identifier):
     c.execute("DELETE FROM ownership WHERE identifier = ?", (identifier,))
     c.execute("DELETE FROM identifier WHERE identifier = ?", (identifier,))
     _commit(c)
-  except sqlite3.DatabaseError, e:
+  except Exception, e:
     log.otherError("search.delete", e)
     if begun:
-      # If we can't rollback, discard the entire connection.
       if not _rollback(c): tainted = True
   finally:
-    if c: _closeCursor(c)
+    if c:
+      if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
