@@ -6,7 +6,7 @@ import re
 import time
 from django.shortcuts import redirect
 
-def edit(request):
+def edit(request, ssl=False):
   d = { 'menu_item' : 'ui_null.null'}
   """Edit account information form"""
   if "auth" not in request.session: return uic.unauthorized()
@@ -33,7 +33,7 @@ def edit(request):
       update_edit_user(request)
   return uic.render(request, "account/edit", d)
 
-def login(request):
+def login(request, ssl=False):
   """
   Renders the login page (GET) or processes a login form submission
   (POST).  A successful login redirects to the home page.
@@ -83,7 +83,7 @@ def contact(request):
 
 
 def validate_edit_user(request):
-  """validates that the fields required to update a user are set"""
+  """validates that the fields required to update a user are set, not a view for a page"""
   valid_form = True
   fields = ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners', 'pwcurrent','pwnew', 'pwconfirm']
   
@@ -126,7 +126,7 @@ def validate_edit_user(request):
   return valid_form
   
 def update_edit_user(request):
-  #if it's gotten here it has passed validation
+  """method to update the user editing his information.  Not a view for a page"""
   uid = request.session['auth'].user[0]
   di = {}
   for item in ['givenName', 'sn', 'mail', 'telephoneNumber']:

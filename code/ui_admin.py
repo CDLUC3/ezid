@@ -10,16 +10,16 @@ from django.utils.http import urlencode
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
 
-def index(request):
+def index(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.index'}
   return redirect("ui_admin.usage")
   return uic.render(request, 'admin/index', d)
 
-def usage(request):
+def usage(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.usage'}
   return uic.render(request, 'admin/usage', d)
 
-def add_user(request):
+def add_user(request, ssl=False):
   if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
     return uic.unauthorized()
   if request.method != "POST" or not 'nu_uid' in request.POST or\
@@ -49,7 +49,7 @@ def add_user(request):
     return redirect(success_url)
   
 
-def manage_users(request):
+def manage_users(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.manage_users' }
   if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
     return uic.unauthorized()
@@ -85,7 +85,7 @@ def manage_users(request):
   d['ezidCoOwners'] = "\n".join([x.strip() for x in d['user']['ezidCoOwners'].split(',')])
   return uic.render(request, 'admin/manage_users', d)
 
-def add_group(request):
+def add_group(request, ssl=False):
   if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
     return uic.unauthorized()
   if request.method != "POST" or not 'grouphandle' in request.POST:
@@ -106,7 +106,7 @@ def add_group(request):
     success_url = reverse("ui_admin.manage_groups") + "?" + urlencode({'group': dn})
     return redirect(success_url)
 
-def manage_groups(request):
+def manage_groups(request, ssl=False):
   if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
     return uic.unauthorized()
   d = { 'menu_item' : 'ui_admin.manage_groups' }
@@ -161,7 +161,7 @@ def manage_groups(request):
   d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels)
   return uic.render(request, 'admin/manage_groups', d)
 
-def system_status(request):
+def system_status(request, ssl=False):
   if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
     return uic.unauthorized()
   d = { 'menu_item' :  'ui_admin.system_status' }
@@ -182,7 +182,7 @@ def ajax_system_status(request):
   if "id" in request.GET:
     return uic.plainTextResponse(request.GET["id"] + ":" + ezidadmin.systemStatus(request.GET["id"]))
 
-def alert_message(request):
+def alert_message(request, ssl=False):
   if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
     return uic.unauthorized()
   d = { 'menu_item' : 'ui_admin.alert_message' }
@@ -228,7 +228,7 @@ def select_shoulder_lists(selected_val_list):
   return (selected_shoulders, deselected_shoulders)
 
 def validate_edit_user(request, user_obj):
-  """validates that the fields required to update a user are set"""
+  """validates that the fields required to update a user are set, helper function"""
   valid_form = True
   
   required_fields = {'givenName': 'First name', 'sn': 'Last name', 'mail': 'Email address'}
@@ -258,7 +258,7 @@ def validate_edit_user(request, user_obj):
 
 def update_edit_user(request, user_obj):
   """Updates the user based on the request and user_object.
-  Returns setting of whether account is currentlyEnabled"""
+  Returns setting of whether account is currentlyEnabled, helper function"""
   curr_enab_state = user_obj['currentlyEnabled']
   #if it's gotten here it has passed validation
   uid = user_obj['uid']
