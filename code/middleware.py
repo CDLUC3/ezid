@@ -27,7 +27,7 @@ def _methodNotAllowed ():
     status=405)
 
 def _isUiRequest (request, view_func):
-  return view_func.__module__ == "ui" or\
+  return view_func.__module__.startswith('ui') or\
     (view_func.__module__ == "dispatch" and dispatch.isUiRequest(request))
 
 class SslMiddleware:
