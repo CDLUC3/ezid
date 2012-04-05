@@ -181,11 +181,6 @@ def _closeCursor (cursor):
   else:
     return True
 
-def _get (d, *keys):
-  for k in keys:
-    if k in d: return d[k]
-  return None
-
 def _loadCoOwnershipLdap ():
   try:
     d = {}
@@ -237,6 +232,38 @@ def clearCoOwnershipCache ():
   finally:
     _cacheLock.release()
 
+def _get (d, *keys):
+  for k in keys:
+    if k in d: return d[k]
+  return None
+
+_columns = ["identifier", "owner", "coOwners", "createTime", "updateTime",
+  "status", "mappedTitle", "mappedCreator"]
+
+def _processMetadata (identifier, metadata):
+  m = {}
+  m["identifier"] = identifier
+  m["owner"] = _get(metadata, "_owner", "_o")
+  assert m["owner"] is not None, "missing required metadata element"
+  m["coOwners"] = _get(metadata, "_coowners", "_co")
+  createTime = _get(metadata, "_created", "_c")
+  assert createTime is not None, "missing required metadata element"
+  m["createTime"] = int(createTime)
+  updateTime = _get(metadata, "_updated", "_su", "_u")
+  assert updateTime is not None, "missing required metadata element"
+  m["updateTime"] = int(updateTime)
+  m["status"] = _get(metadata, "_status", "_is")
+  if m["status"] is None: m["status"] = "public"
+  creator, title, publisher, date = mapping.getDisplayMetadata(metadata)
+  m["mappedTitle"] = title
+  m["mappedCreator"] = creator
+  return m
+
+def _rowTupleToDict (row):
+  m = {}
+  for i in range(len(_columns)): m[_columns[i]] = row[i]
+  return m
+
 def insert (identifier, metadata):
   """
   Inserts an identifier in the search database.  'metadata' should be
@@ -245,14 +272,7 @@ def insert (identifier, metadata):
   etc.) forms.  Elements _owner, _created, and _updated must be
   present.
   """
-  owner = _get(metadata, "_owner", "_o")
-  assert owner is not None, "missing required metadata element"
-  coOwners = _get(metadata, "_coowners", "_co")
-  createTime = int(_get(metadata, "_created", "_c"))
-  updateTime = int(_get(metadata, "_updated", "_su", "_u"))
-  status = _get(metadata, "_status", "_is")
-  if status is None: status = "public"
-  creator, title, publisher, date = mapping.getDisplayMetadata(metadata)
+  m = _processMetadata(identifier, metadata)
   connection = None
   tainted = False
   c = None
@@ -261,13 +281,12 @@ def insert (identifier, metadata):
     connection, poolId = _getConnection()
     c = connection.cursor()
     begun = _begin(c)
-    c.execute("INSERT INTO identifier (identifier, owner, coOwners, " +\
-      "createTime, updateTime, status, mappedTitle, mappedCreator) VALUES " +\
-      "(?, ?, ?, ?, ?, ?, ?, ?)", (identifier, owner, coOwners, createTime,
-      updateTime, status, title, creator))
-    ownerList = [owner]
-    if coOwners != None:
-      ownerList.extend(co.strip() for co in coOwners.split(";")\
+    c.execute("INSERT INTO identifier (%s) VALUES (%s)" %\
+      (", ".join(_columns), ", ".join(["?"]*len(_columns))),
+      tuple(m[k] for k in _columns))
+    ownerList = [m["owner"]]
+    if m["coOwners"] is not None:
+      ownerList.extend(co.strip() for co in m["coOwners"].split(";")\
         if len(co.strip()) > 0)
     for o in ownerList:
       c.execute("INSERT INTO ownership (owner, identifier) VALUES (?, ?)",
@@ -282,8 +301,63 @@ def insert (identifier, metadata):
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-_columns = ["identifier", "owner", "coOwners", "createTime", "updateTime",
-  "status", "mappedTitle", "mappedCreator"]
+def update (identifier, metadata):
+  """
+  Updates an identifier in the search database.  'metadata' should be
+  a dictionary of element (name, value) pairs.  Element names may be
+  given in stored (_o, _t/_st, etc.) or transmitted (_owner, _target,
+  etc.) forms.  Elements _owner, _created, and _updated must be
+  present.
+  """
+  m = _processMetadata(identifier, metadata)
+  connection = None
+  tainted = False
+  c = None
+  begun = False
+  try:
+    connection, poolId = _getConnection()
+    c = connection.cursor()
+    begun = _begin(c)
+    c.execute("SELECT %s FROM identifier WHERE identifier = ?" %\
+      ", ".join(_columns), (identifier,))
+    r = c.fetchone()
+    assert r is not None, "no such identifier in search database: " +\
+      identifier
+    r = _rowTupleToDict(r)
+    for k in _columns:
+      if m[k] == r[k]: del m[k]
+    if len(m) > 0:
+      keys = m.keys()
+      c.execute("UPDATE identifier SET %s WHERE identifier = ?" %\
+        ", ".join("%s = ?" % k for k in keys),
+        tuple([m[k] for k in keys] + [identifier]))
+      if "owner" in keys:
+        c.execute("DELETE FROM ownership WHERE owner = ? AND " +\
+          "identifier = ?", (r["owner"], identifier))
+        c.execute("INSERT INTO ownership (owner, identifier) VALUES (?, ?)",
+          (m["owner"], identifier))
+      if "coOwners" in keys:
+        rCoOwners = [co.strip() for co in (r["coOwners"] or "").split(";")\
+          if len(co.strip()) > 0]
+        mCoOwners = [co.strip() for co in (m["coOwners"] or "").split(";")\
+          if len(co.strip()) > 0]
+        for co in rCoOwners:
+          if co not in mCoOwners:
+            c.execute("DELETE FROM ownership WHERE owner = ? AND " +\
+              "identifier = ?", (co, identifier))
+        for co in mCoOwners:
+          if co not in rCoOwners:
+            c.execute("INSERT INTO ownership (owner, identifier) " +\
+              "VALUES (?, ?)", (co, identifier))
+    _commit(c)
+  except Exception, e:
+    log.otherError("search.update", e)
+    if begun:
+      if not _rollback(c): tainted = True
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
 
 def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
   ascending=False, limit=-1, offset=0):
@@ -321,12 +395,7 @@ def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
     connection, poolId = _getConnection()
     c = connection.cursor()
     c.execute(q, p)
-    rows = []
-    for r in c:
-      row = {}
-      for i in range(len(_columns)): row[_columns[i]] = r[i]
-      rows.append(row)
-    return rows
+    return [_rowTupleToDict(r) for r in c]
   except Exception, e:
     log.otherError("search.getByOwner", e)
     return []
