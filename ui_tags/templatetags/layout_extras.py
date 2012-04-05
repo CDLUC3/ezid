@@ -3,7 +3,7 @@ from django.conf import settings
 from django.utils.html import escape
 from decorators import basictag
 from django.core.urlresolvers import reverse
-import pdb
+#import pdb
 #import datetime
 
 register = template.Library()
