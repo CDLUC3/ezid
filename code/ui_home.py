@@ -19,32 +19,32 @@ def index(request):
                     'RSS Feed Unavailable', settings.RSS_FEED)
   d['feed_cache'] = feed_cache
   d['rss_feed'] = settings.RSS_FEED
-  return uic.render(request, 'home/index', d)
+  return uic.render(request, 'info/index', d)
 
 def community(request):
   d = { 'menu_item' : 'ui_home.community' } 
-  return uic.render(request, 'home/community', d)
+  return uic.render(request, 'info/community', d)
 
 def documentation(request):
   d = { 'menu_item' : 'ui_home.documentation' }
-  return uic.render(request, 'home/documentation', d)
+  return uic.render(request, 'info/documentation', d)
 
 def outreach(request):
   d = { 'menu_item' : 'ui_home.outreach' }
-  return uic.render(request, 'home/outreach', d)
+  return uic.render(request, 'info/outreach', d)
 
 def pricing(request):
   d = { 'menu_item' : 'ui_home.pricing' }
-  return uic.render(request, 'home/pricing', d)
+  return uic.render(request, 'info/pricing', d)
 
 def understanding(request):
   d = { 'menu_item' : 'ui_home.understanding' }
-  return uic.render(request, 'home/understanding', d)
+  return uic.render(request, 'info/understanding', d)
 
 def why(request):
   d = { 'menu_item' : 'ui_home.why' }
-  return uic.render(request, 'home/why', d)
+  return uic.render(request, 'info/why', d)
 
 def contact(request):
   d = { 'menu_item' : 'null.null' }
-  return uic.render(request, 'home/contact', d)
+  return uic.render(request, 'info/contact', d)
