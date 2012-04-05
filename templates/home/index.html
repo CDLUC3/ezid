@@ -1,66 +1,38 @@
-{% extends "layouts/base.html" %}
-{% load layout_extras %}
+{% extends "layouts/information.html" %}
 
 {% block title %}EZID Home{% endblock %}
 
-{% block content %}
-  <div class="grid_12">
-    <div style="margin-right: 40px;">
-      <h1>EZID (easy-eye-dee) makes it easy to create and manage unique,
-        persistent identifiers.</h1>
-      
-      <ul>
-        <li>
-          You can create identifiers for any kind of entity — physical, digital,
-          abstract, etc. For identifiers of objects on the web, you can use EZID
-          to maintain their current locations so that people who click on the
-          identifiers are correctly forwarded.</li>
-        <li>
-          You can also store citation metadata with identifiers to aid in
-          interpreting and maintaining them. Several citation formats are possible.
-        </li>
-        <li>
-          EZID supports a number of persistent identifier technologies,
-          including ARKs (Archival Resource Keys), DOIs (Digital Object
-          Identifiers), and URNs (Uniform Resource Names).
-        </li>
-        <li>
-          Visit our website for more information about EZID identifiers,
-          features, and benefits.
-        </li>
-      </ul>
-      
-      <p>
-        To operate EZID use the tabs above or the programming interface.
-        You will need a login account to create identifiers, but anyone
-        can view identifier metadata. Please contact us if you are
-        interested in setting up an account.
-      </p>
-    </div>
-  </div>
-  <div class="grid_4">
-    <h1>Learn More</h1>
-    
-    {% rounded_borders %}
-      <ul class="linklist">
-        <li><a href="{% url ui_home.why %}">Why EZID?</a></li>
-        <li><a href="{% url ui_home.understanding %}">Understanding Identifiers</a></li>
-        <li><a href="{% url ui_home.pricing %}">Pricing</a></li>
-        <li><a href="{% url ui_home.documentation %}">Documentation</a></li>
-        <li><a href="{% url ui_home.outreach %}">Outreach</a></li>
-        <li><a href="{% url ui_home.community %}">The EZID Community</a></li>
-      </ul>
-    {% endrounded_borders %}
-    
-  </div>
-  <div class="grid_16">
-    {% rounded_borders %}
-      <strong>Latest news from EZID</strong>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="{{ feed_cache.2 }}" target="_blank">{{ feed_cache.1}}</a>
-      <div style="float:right;width:8em;text-align:right">
-      	<a href="{{rss_feed}}"><img src="/ezid/static/images/feed-icon-14x14.png"/></a>&nbsp;
-      	<a href="{{rss_feed}}">RSS</a>
-      </div>
-    {% endrounded_borders %}
-  </div>
+{% block main_column %}
+  <h1>EZID (easy-eye-dee) makes it easy to create and manage unique,
+    persistent identifiers.</h1>
+  <ul>
+    <li>
+      You can create identifiers for any kind of entity — physical, digital,
+      abstract, etc. For identifiers of objects on the web, you can use EZID
+      to maintain their current locations so that people who click on the
+      identifiers are correctly forwarded.</li>
+    <li>
+      You can also store citation metadata with identifiers to aid in
+      interpreting and maintaining them. Several citation formats are possible.
+    </li>
+    <li>
+      EZID supports a number of persistent identifier technologies,
+      including ARKs (Archival Resource Keys), DOIs (Digital Object
+      Identifiers), and URNs (Uniform Resource Names).
+    </li>
+    <li>
+      Visit our website for more information about EZID identifiers,
+      features, and benefits.
+    </li>
+  </ul>
+  
+  <p>
+    To operate EZID use the tabs above or the programming interface.
+    You will need a login account to create identifiers, but anyone
+    can view identifier metadata. Please contact us if you are
+    interested in setting up an account.
+  </p>
+{% endblock %}
+{% block sidebar %}
+
 {% endblock %}

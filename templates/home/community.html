@@ -1,14 +1,11 @@
-{% extends "layouts/base.html" %}
-{% load layout_extras %}
+{% extends "layouts/information.html" %}
 
 {% block title %}EZID Community{% endblock %}
 
-{% block content %}
-  <div class="grid_12">
-	<h1 class="title">A Partial List of EZID Clients</h1>
+{% block main_column %}
+	<h1>A Partial List of EZID Clients</h1>
 
 	<dl>
-
 		<dt><a href="http://www.lib.berkeley.edu/">UC Berkeley Library (on behalf of the UC Berkeley campus)</a></dt>
 		<dd>The UCB Library licenses the EZID service for Berkeley researchers. <i>Sponsored accounts:</i></dd>
 		<dd><a href="http://opencontext.org/">Open Context</a> Open Context is a free, open access resource for the electronic publication of primary field research from archaeology and related disciplines.</dd>
@@ -61,5 +58,4 @@
 		<dd>The USGS and its collaborators Oak Ridge National Lab are providing access and management of earth science data and information to meet research and land manager needs related to ecosystems, habitats, species, climate change, and other grand science challenges. </dd>
 
 	</dl>
-  </div>
 {% endblock %}

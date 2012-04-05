@@ -353,3 +353,8 @@ td.add_user_col3 {
   padding: .5em;
   text-align: left;
   font-size: 90% }
+  
+/* additional style for main content div to work better with 2 sidebar */
+div.main_content{
+	padding-right: 40px;
+}
