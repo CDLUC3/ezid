@@ -268,6 +268,18 @@ def _rowTupleToDict (row):
   for i in range(len(_columns)): m[_columns[i]] = row[i]
   return m
 
+def _insert (identifier, m, cursor):
+  cursor.execute("INSERT INTO identifier (%s) VALUES (%s)" %\
+    (", ".join(_columns), ", ".join(["?"]*len(_columns))),
+    tuple(m[k] for k in _columns))
+  ownerList = [m["owner"]]
+  if m["coOwners"] is not None:
+    ownerList.extend(co.strip() for co in m["coOwners"].split(";")\
+      if len(co.strip()) > 0)
+  for o in ownerList:
+    cursor.execute("INSERT INTO ownership (owner, identifier) VALUES (?, ?)",
+      (o, identifier))
+
 def insert (identifier, metadata):
   """
   Inserts an identifier in the search database.  'metadata' should be
@@ -285,16 +297,7 @@ def insert (identifier, metadata):
     connection, poolId = _getConnection()
     c = connection.cursor()
     begun = _begin(c)
-    c.execute("INSERT INTO identifier (%s) VALUES (%s)" %\
-      (", ".join(_columns), ", ".join(["?"]*len(_columns))),
-      tuple(m[k] for k in _columns))
-    ownerList = [m["owner"]]
-    if m["coOwners"] is not None:
-      ownerList.extend(co.strip() for co in m["coOwners"].split(";")\
-        if len(co.strip()) > 0)
-    for o in ownerList:
-      c.execute("INSERT INTO ownership (owner, identifier) VALUES (?, ?)",
-        (o, identifier))
+    _insert(identifier, m, c)
     _commit(c)
   except Exception, e:
     log.otherError("search.insert", e)
@@ -305,13 +308,15 @@ def insert (identifier, metadata):
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def update (identifier, metadata):
+def update (identifier, metadata, insertIfNecessary=False):
   """
-  Updates an identifier in the search database.  'metadata' should be
-  a dictionary of element (name, value) pairs.  Element names may be
-  given in stored (_o, _t/_st, etc.) or transmitted (_owner, _target,
-  etc.) forms.  Elements _owner, _created, and _updated must be
-  present.
+  Updates an identifier in the search database.  The identifier must
+  already exist in the database unless insertIfNecessary is true, in
+  which case the identifier is inserted if necessary.  'metadata'
+  should be a dictionary of element (name, value) pairs.  Element
+  names may be given in stored (_o, _t/_st, etc.) or transmitted
+  (_owner, _target, etc.) forms.  Elements _owner, _created, and
+  _updated must be present.
   """
   m = _processMetadata(identifier, metadata)
   connection = None
@@ -325,8 +330,14 @@ def update (identifier, metadata):
     c.execute("SELECT %s FROM identifier WHERE identifier = ?" %\
       ", ".join(_columns), (identifier,))
     r = c.fetchone()
-    assert r is not None, "no such identifier in search database: " +\
-      identifier
+    if insertIfNecessary:
+      if r is None:
+        _insert(identifier, m, c)
+        _commit(c)
+        return
+    else:
+      assert r is not None, "no such identifier in search database: " +\
+        identifier
     r = _rowTupleToDict(r)
     for k in _columns:
       if m[k] == r[k]: del m[k]
