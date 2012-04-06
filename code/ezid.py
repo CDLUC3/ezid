@@ -38,15 +38,15 @@
 # _o     | _owner      | The identifier's owner.  The owner is stored
 #        |             | as a persistent identifier (e.g.,
 #        |             | "ark:/13030/foo") but returned as a local
-#        |             | name (e.g., "ryan").  For a shadow ARK,
-#        |             | applies to both the shadow ARK and shadowed
-#        |             | identifier.
+#        |             | name (e.g., "ryan").  The owner may also be
+#        |             | "anonymous".  For a shadow ARK, applies to
+#        |             | both the shadow ARK and shadowed identifier.
 # _g     | _ownergroup | The identifier's owner's group.  The group is
 #        |             | stored as a persistent identifier (e.g.,
 #        |             | "ark:/13030/bar") but returned as a local
-#        |             | name (e.g., "dryad").  For a shadow ARK,
-#        |             | applies to both the shadow ARK and shadowed
-#        |             | identifier.
+#        |             | name (e.g., "dryad").  The group may also be
+#        |             | "anonymous".  For a shadow ARK, applies to
+#        |             | both the shadow ARK and shadowed identifier.
 # _co    | _coowners   | The identifier's co-owners expressed as a
 #        |             | list of persistent identifiers separated by
 #        |             | semicolons (e.g., "ark:/13030/foo ;

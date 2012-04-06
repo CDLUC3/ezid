@@ -109,6 +109,9 @@ complications (ezid.getMetadata is used both to service client
 requests and by EZID itself) this special access control is
 implemented in the API and UI, not in ezid.py.
 
+The search database contains agent identifiers; see
+.../etc/search-schema.sql for a potential privacy/security hole.
+
 6. Case sensitivity of LDAP UIDs
 --------------------------------
 
