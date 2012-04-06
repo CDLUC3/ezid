@@ -7,6 +7,16 @@ from django.core.urlresolvers import reverse
 #import datetime
 
 register = template.Library()
+
+# settings value
+@register.simple_tag
+def settings_value(name):
+  """ Gets a value from the settings configuration"""
+  try:
+    return settings.__getattr__(name)
+  except AttributeError:
+    return ""
+
 @register.tag
 @basictag(takes_context=True) 
 def request_value(context, key_name):

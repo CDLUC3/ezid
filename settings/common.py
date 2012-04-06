@@ -70,6 +70,8 @@ ROOT_URLCONF = "settings.urls"
 
 RSS_FEED = "http://www.cdlib.org/cdlinfo/category/digital-preservation/feed/?s=ezid"
 
+GOOGLE_ANALYTICS_ACCOUNT = "UA-30638119-2"
+
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 TEMPLATE_LOADERS = ("django.template.loaders.filesystem.Loader",
@@ -83,7 +85,6 @@ INSTALLED_APPS = (
   "django.contrib.sessions",
   "django.contrib.messages",
   "ui_tags",
-  
 )
 
 SESSION_COOKIE_PATH = "/ezid/"
