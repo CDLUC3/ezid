@@ -234,7 +234,11 @@ def clearCoOwnershipCache ():
 
 def _get (d, *keys):
   for k in keys:
-    if k in d: return d[k]
+    if k in d:
+      if d[k] != "":
+        return d[k]
+      else:
+        return None
   return None
 
 _columns = ["identifier", "owner", "coOwners", "createTime", "updateTime",
