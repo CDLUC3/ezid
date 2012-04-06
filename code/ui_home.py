@@ -48,3 +48,7 @@ def why(request):
 def contact(request):
   d = { 'menu_item' : 'null.null' }
   return uic.render(request, 'info/contact', d)
+
+def about_us(request):
+  d = { 'menu_item' : 'null.null' }
+  return uic.render(request, 'info/about_us', d)
