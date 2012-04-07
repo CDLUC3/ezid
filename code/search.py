@@ -244,12 +244,16 @@ def _get (d, *keys):
 _columns = ["identifier", "owner", "coOwners", "createTime", "updateTime",
   "status", "mappedTitle", "mappedCreator"]
 
-def _processMetadata (identifier, metadata):
+def _processMetadata (identifier, metadata, mapLocalNames):
   m = {}
   m["identifier"] = identifier
   m["owner"] = _get(metadata, "_owner", "_o")
   assert m["owner"] is not None, "missing required metadata element"
+  if mapLocalNames: m["owner"] = idmap.getUserId(m["owner"])
   m["coOwners"] = _get(metadata, "_coowners", "_co")
+  if mapLocalNames and m["coOwners"] is not None:
+    m["coOwners"] = " ; ".join(idmap.getUserId(co.strip())\
+      for co in m["coOwners"].split(";") if len(co.strip()) > 0)
   createTime = _get(metadata, "_created", "_c")
   assert createTime is not None, "missing required metadata element"
   m["createTime"] = int(createTime)
@@ -280,15 +284,17 @@ def _insert (identifier, m, cursor):
     cursor.execute("INSERT INTO ownership (owner, identifier) VALUES (?, ?)",
       (o, identifier))
 
-def insert (identifier, metadata):
+def insert (identifier, metadata, mapLocalNames=False):
   """
   Inserts an identifier in the search database.  'metadata' should be
   a dictionary of element (name, value) pairs.  Element names may be
   given in stored (_o, _t/_st, etc.) or transmitted (_owner, _target,
   etc.) forms.  Elements _owner, _created, and _updated must be
-  present.
+  present.  If mapLocalNames is true, agent names are assumed to be in
+  local form and are mapped to ARK identifiers as required by the
+  search database schema.
   """
-  m = _processMetadata(identifier, metadata)
+  m = _processMetadata(identifier, metadata, mapLocalNames)
   connection = None
   tainted = False
   c = None
@@ -308,7 +314,8 @@ def insert (identifier, metadata):
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def update (identifier, metadata, insertIfNecessary=False):
+def update (identifier, metadata, insertIfNecessary=False,
+  mapLocalNames=False):
   """
   Updates an identifier in the search database.  The identifier must
   already exist in the database unless insertIfNecessary is true, in
@@ -316,9 +323,11 @@ def update (identifier, metadata, insertIfNecessary=False):
   should be a dictionary of element (name, value) pairs.  Element
   names may be given in stored (_o, _t/_st, etc.) or transmitted
   (_owner, _target, etc.) forms.  Elements _owner, _created, and
-  _updated must be present.
+  _updated must be present.  If mapLocalNames is true, agent names are
+  assumed to be in local form and are mapped to ARK identifiers as
+  required by the search database schema.
   """
-  m = _processMetadata(identifier, metadata)
+  m = _processMetadata(identifier, metadata, mapLocalNames)
   connection = None
   tainted = False
   c = None
