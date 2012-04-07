@@ -146,6 +146,7 @@ import idmap
 import log
 import noid
 import policy
+import search
 import util
 
 _bindNoid = None
@@ -320,6 +321,7 @@ def createDoi (doi, user, group, target=None, reserveOnly=False):
     else:
       d["_st"] = target
     _bindNoid.setElements(shadowArk, d)
+    if user[0] != "anonymous": search.insert(qdoi, d)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -418,6 +420,7 @@ def createArk (ark, user, group, target=None, reserveOnly=False):
     else:
       d["_t"] = target
     _bindNoid.setElements(ark, d)
+    if user[0] != "anonymous": search.insert(qark, d)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -504,6 +507,7 @@ def createUrnUuid (urn, user, group, target=None, reserveOnly=False):
     else:
       d["_st"] = target
     _bindNoid.setElements(shadowArk, d)
+    if user[0] != "anonymous": search.insert(qurn, d)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -879,6 +883,9 @@ def setMetadata (identifier, user, group, metadata):
     if coOwners is not None: metadata["_co"] = " ; ".join(coOwners)
     if profile is not None: metadata["_p"] = profile
     _bindNoid.setElements(ark, metadata)
+    if iUser != "anonymous":
+      m.update(metadata)
+      search.update(m.get("_s", nqidentifier), m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -1001,6 +1008,8 @@ def deleteIdentifier (identifier, user, group):
       return "error: bad request - identifier status does not support deletion"
     _bindNoid.deleteElements(ark)
     _bindNoid.releaseIdentifier(ark)
+    if m["_o"] != "anonymous":
+      search.delete(m.get("_s", nqidentifier))
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
