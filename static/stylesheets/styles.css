@@ -241,6 +241,15 @@ dd{
 	z-index:5;
 }
 
+.help_window div.close_button {
+	float: right;
+}
+
+.help_window div.close_button img {
+	width: 16px;
+	height: 16px;
+}
+
 
 #mask{
 	position: absolute;
