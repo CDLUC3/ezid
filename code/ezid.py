@@ -38,15 +38,15 @@
 # _o     | _owner      | The identifier's owner.  The owner is stored
 #        |             | as a persistent identifier (e.g.,
 #        |             | "ark:/13030/foo") but returned as a local
-#        |             | name (e.g., "ryan").  For a shadow ARK,
-#        |             | applies to both the shadow ARK and shadowed
-#        |             | identifier.
+#        |             | name (e.g., "ryan").  The owner may also be
+#        |             | "anonymous".  For a shadow ARK, applies to
+#        |             | both the shadow ARK and shadowed identifier.
 # _g     | _ownergroup | The identifier's owner's group.  The group is
 #        |             | stored as a persistent identifier (e.g.,
 #        |             | "ark:/13030/bar") but returned as a local
-#        |             | name (e.g., "dryad").  For a shadow ARK,
-#        |             | applies to both the shadow ARK and shadowed
-#        |             | identifier.
+#        |             | name (e.g., "dryad").  The group may also be
+#        |             | "anonymous".  For a shadow ARK, applies to
+#        |             | both the shadow ARK and shadowed identifier.
 # _co    | _coowners   | The identifier's co-owners expressed as a
 #        |             | list of persistent identifiers separated by
 #        |             | semicolons (e.g., "ark:/13030/foo ;
@@ -146,6 +146,7 @@ import idmap
 import log
 import noid
 import policy
+import search
 import util
 
 _bindNoid = None
@@ -320,6 +321,7 @@ def createDoi (doi, user, group, target=None, reserveOnly=False):
     else:
       d["_st"] = target
     _bindNoid.setElements(shadowArk, d)
+    if user[0] != "anonymous": search.insert(qdoi, d)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -418,6 +420,7 @@ def createArk (ark, user, group, target=None, reserveOnly=False):
     else:
       d["_t"] = target
     _bindNoid.setElements(ark, d)
+    if user[0] != "anonymous": search.insert(qark, d)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -504,6 +507,7 @@ def createUrnUuid (urn, user, group, target=None, reserveOnly=False):
     else:
       d["_st"] = target
     _bindNoid.setElements(shadowArk, d)
+    if user[0] != "anonymous": search.insert(qurn, d)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -879,6 +883,9 @@ def setMetadata (identifier, user, group, metadata):
     if coOwners is not None: metadata["_co"] = " ; ".join(coOwners)
     if profile is not None: metadata["_p"] = profile
     _bindNoid.setElements(ark, metadata)
+    if iUser != "anonymous":
+      m.update(metadata)
+      search.update(m.get("_s", nqidentifier), m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -1001,6 +1008,8 @@ def deleteIdentifier (identifier, user, group):
       return "error: bad request - identifier status does not support deletion"
     _bindNoid.deleteElements(ark)
     _bindNoid.releaseIdentifier(ark)
+    if m["_o"] != "anonymous":
+      search.delete(m.get("_s", nqidentifier))
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"

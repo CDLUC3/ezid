@@ -181,11 +181,6 @@ def _closeCursor (cursor):
   else:
     return True
 
-def _get (d, *keys):
-  for k in keys:
-    if k in d: return d[k]
-  return None
-
 def _loadCoOwnershipLdap ():
   try:
     d = {}
@@ -237,22 +232,69 @@ def clearCoOwnershipCache ():
   finally:
     _cacheLock.release()
 
-def insert (identifier, metadata):
+def _get (d, *keys):
+  for k in keys:
+    if k in d:
+      if d[k] != "":
+        return d[k]
+      else:
+        return None
+  return None
+
+_columns = ["identifier", "owner", "coOwners", "createTime", "updateTime",
+  "status", "mappedTitle", "mappedCreator"]
+
+def _processMetadata (identifier, metadata, mapLocalNames):
+  m = {}
+  m["identifier"] = identifier
+  m["owner"] = _get(metadata, "_owner", "_o")
+  assert m["owner"] is not None, "missing required metadata element"
+  if mapLocalNames: m["owner"] = idmap.getUserId(m["owner"])
+  m["coOwners"] = _get(metadata, "_coowners", "_co")
+  if mapLocalNames and m["coOwners"] is not None:
+    m["coOwners"] = " ; ".join(idmap.getUserId(co.strip())\
+      for co in m["coOwners"].split(";") if len(co.strip()) > 0)
+  createTime = _get(metadata, "_created", "_c")
+  assert createTime is not None, "missing required metadata element"
+  m["createTime"] = int(createTime)
+  updateTime = _get(metadata, "_updated", "_su", "_u")
+  assert updateTime is not None, "missing required metadata element"
+  m["updateTime"] = int(updateTime)
+  m["status"] = _get(metadata, "_status", "_is")
+  if m["status"] is None: m["status"] = "public"
+  creator, title, publisher, date = mapping.getDisplayMetadata(metadata)
+  m["mappedTitle"] = title
+  m["mappedCreator"] = creator
+  return m
+
+def _rowTupleToDict (row):
+  m = {}
+  for i in range(len(_columns)): m[_columns[i]] = row[i]
+  return m
+
+def _insert (identifier, m, cursor):
+  cursor.execute("INSERT INTO identifier (%s) VALUES (%s)" %\
+    (", ".join(_columns), ", ".join(["?"]*len(_columns))),
+    tuple(m[k] for k in _columns))
+  ownerList = [m["owner"]]
+  if m["coOwners"] is not None:
+    ownerList.extend(co.strip() for co in m["coOwners"].split(";")\
+      if len(co.strip()) > 0)
+  for o in ownerList:
+    cursor.execute("INSERT INTO ownership (owner, identifier) VALUES (?, ?)",
+      (o, identifier))
+
+def insert (identifier, metadata, mapLocalNames=False):
   """
   Inserts an identifier in the search database.  'metadata' should be
   a dictionary of element (name, value) pairs.  Element names may be
   given in stored (_o, _t/_st, etc.) or transmitted (_owner, _target,
   etc.) forms.  Elements _owner, _created, and _updated must be
-  present.
+  present.  If mapLocalNames is true, agent names are assumed to be in
+  local form and are mapped to ARK identifiers as required by the
+  search database schema.
   """
-  owner = _get(metadata, "_owner", "_o")
-  assert owner is not None, "missing required metadata element"
-  coOwners = _get(metadata, "_coowners", "_co")
-  createTime = int(_get(metadata, "_created", "_c"))
-  updateTime = int(_get(metadata, "_updated", "_su", "_u"))
-  status = _get(metadata, "_status", "_is")
-  if status is None: status = "public"
-  creator, title, publisher, date = mapping.getDisplayMetadata(metadata)
+  m = _processMetadata(identifier, metadata, mapLocalNames)
   connection = None
   tainted = False
   c = None
@@ -261,17 +303,7 @@ def insert (identifier, metadata):
     connection, poolId = _getConnection()
     c = connection.cursor()
     begun = _begin(c)
-    c.execute("INSERT INTO identifier (identifier, owner, coOwners, " +\
-      "createTime, updateTime, status, mappedTitle, mappedCreator) VALUES " +\
-      "(?, ?, ?, ?, ?, ?, ?, ?)", (identifier, owner, coOwners, createTime,
-      updateTime, status, title, creator))
-    ownerList = [owner]
-    if coOwners != None:
-      ownerList.extend(co.strip() for co in coOwners.split(";")\
-        if len(co.strip()) > 0)
-    for o in ownerList:
-      c.execute("INSERT INTO ownership (owner, identifier) VALUES (?, ?)",
-        (o, identifier))
+    _insert(identifier, m, c)
     _commit(c)
   except Exception, e:
     log.otherError("search.insert", e)
@@ -282,22 +314,91 @@ def insert (identifier, metadata):
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-_columns = ["identifier", "owner", "coOwners", "createTime", "updateTime",
-  "status", "mappedTitle", "mappedCreator"]
+def update (identifier, metadata, insertIfNecessary=False,
+  mapLocalNames=False):
+  """
+  Updates an identifier in the search database.  The identifier must
+  already exist in the database unless insertIfNecessary is true, in
+  which case the identifier is inserted if necessary.  'metadata'
+  should be a dictionary of element (name, value) pairs.  Element
+  names may be given in stored (_o, _t/_st, etc.) or transmitted
+  (_owner, _target, etc.) forms.  Elements _owner, _created, and
+  _updated must be present.  If mapLocalNames is true, agent names are
+  assumed to be in local form and are mapped to ARK identifiers as
+  required by the search database schema.
+  """
+  m = _processMetadata(identifier, metadata, mapLocalNames)
+  connection = None
+  tainted = False
+  c = None
+  begun = False
+  try:
+    connection, poolId = _getConnection()
+    c = connection.cursor()
+    begun = _begin(c)
+    c.execute("SELECT %s FROM identifier WHERE identifier = ?" %\
+      ", ".join(_columns), (identifier,))
+    r = c.fetchone()
+    if insertIfNecessary:
+      if r is None:
+        _insert(identifier, m, c)
+        _commit(c)
+        return
+    else:
+      assert r is not None, "no such identifier in search database: " +\
+        identifier
+    r = _rowTupleToDict(r)
+    for k in _columns:
+      if m[k] == r[k]: del m[k]
+    if len(m) > 0:
+      keys = m.keys()
+      c.execute("UPDATE identifier SET %s WHERE identifier = ?" %\
+        ", ".join("%s = ?" % k for k in keys),
+        tuple([m[k] for k in keys] + [identifier]))
+      if "owner" in keys:
+        c.execute("DELETE FROM ownership WHERE owner = ? AND " +\
+          "identifier = ?", (r["owner"], identifier))
+        c.execute("INSERT INTO ownership (owner, identifier) VALUES (?, ?)",
+          (m["owner"], identifier))
+      if "coOwners" in keys:
+        rCoOwners = [co.strip() for co in (r["coOwners"] or "").split(";")\
+          if len(co.strip()) > 0]
+        mCoOwners = [co.strip() for co in (m["coOwners"] or "").split(";")\
+          if len(co.strip()) > 0]
+        for co in rCoOwners:
+          if co not in mCoOwners:
+            c.execute("DELETE FROM ownership WHERE owner = ? AND " +\
+              "identifier = ?", (co, identifier))
+        for co in mCoOwners:
+          if co not in rCoOwners:
+            c.execute("INSERT INTO ownership (owner, identifier) " +\
+              "VALUES (?, ?)", (co, identifier))
+    _commit(c)
+  except Exception, e:
+    log.otherError("search.update", e)
+    if begun:
+      if not _rollback(c): tainted = True
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
 
 def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
-  ascending=False, limit=-1, offset=0):
+  ascending=False, limit=-1, offset=0, useLocalNames=True):
   """
   Returns all identifiers belonging to an EZID user.  'owner' should
-  be the user's persistent identifier, e.g., "ark:/99166/p92z12p14".
+  be the user's local name (e.g., "dryad") if 'useLocalNames' is true
+  or persistent identifier (e.g., "ark:/99166/p92z12p14") otherwise.
   The return is a list of dictionaries keyed by column name.  If
-  'includeCoOwnership' is false, only identifiers directly owned by
+  'useLocalNames' is true, returned agents are mapped to local names.
+  If 'includeCoOwnership' is false, only identifiers directly owned by
   'owner' are returned; if true, identifiers owned by 'owner' by
   virtue of co-ownership (identifier-level and account-level) are
   included as well.  'sortColumn' and 'ascending' define the ordering
   of the results.  'limit' and 'offset' have the usual SQL semantics.
   """
   assert sortColumn in _columns, "invalid sort column"
+  if useLocalNames: owner = idmap.getUserId(owner)
   if includeCoOwnership:
     col = _getCoOwnership(owner)
     q = ("SELECT %s%s FROM identifier A, ownership B ON " +\
@@ -321,12 +422,16 @@ def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
     connection, poolId = _getConnection()
     c = connection.cursor()
     c.execute(q, p)
-    rows = []
-    for r in c:
-      row = {}
-      for i in range(len(_columns)): row[_columns[i]] = r[i]
-      rows.append(row)
-    return rows
+    r = []
+    for row in c:
+      m = _rowTupleToDict(row)
+      if useLocalNames:
+        m["owner"] = idmap.getAgent(m["owner"])[0]
+        if m["coOwners"] is not None:
+          m["coOwners"] = " ; ".join(idmap.getAgent(co.strip())[0]\
+            for co in m["coOwners"].split(";") if len(co.strip()) > 0)
+      r.append(m)
+    return r
   except Exception, e:
     log.otherError("search.getByOwner", e)
     return []
@@ -335,11 +440,12 @@ def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def getByOwnerCount (owner, includeCoOwnership=True):
+def getByOwnerCount (owner, includeCoOwnership=True, useLocalNames=True):
   """
   Returns the total number of identifiers that would be returned by a
   comparable, limit-less call to getByOwner.
   """
+  if useLocalNames: owner = idmap.getUserId(owner)
   if includeCoOwnership:
     col = _getCoOwnership(owner)
     q = "SELECT COUNT(%sidentifier) FROM ownership WHERE owner = ?%s" %\
