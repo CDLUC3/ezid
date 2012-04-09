@@ -384,18 +384,21 @@ def update (identifier, metadata, insertIfNecessary=False,
     if connection: _returnConnection(connection, poolId, tainted)
 
 def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
-  ascending=False, limit=-1, offset=0):
+  ascending=False, limit=-1, offset=0, useLocalNames=True):
   """
   Returns all identifiers belonging to an EZID user.  'owner' should
-  be the user's persistent identifier, e.g., "ark:/99166/p92z12p14".
+  be the user's local name (e.g., "dryad") if 'useLocalNames' is true
+  or persistent identifier (e.g., "ark:/99166/p92z12p14") otherwise.
   The return is a list of dictionaries keyed by column name.  If
-  'includeCoOwnership' is false, only identifiers directly owned by
+  'useLocalNames' is true, returned agents are mapped to local names.
+  If 'includeCoOwnership' is false, only identifiers directly owned by
   'owner' are returned; if true, identifiers owned by 'owner' by
   virtue of co-ownership (identifier-level and account-level) are
   included as well.  'sortColumn' and 'ascending' define the ordering
   of the results.  'limit' and 'offset' have the usual SQL semantics.
   """
   assert sortColumn in _columns, "invalid sort column"
+  if useLocalNames: owner = idmap.getUserId(owner)
   if includeCoOwnership:
     col = _getCoOwnership(owner)
     q = ("SELECT %s%s FROM identifier A, ownership B ON " +\
@@ -419,7 +422,16 @@ def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
     connection, poolId = _getConnection()
     c = connection.cursor()
     c.execute(q, p)
-    return [_rowTupleToDict(r) for r in c]
+    r = []
+    for row in c:
+      m = _rowTupleToDict(row)
+      if useLocalNames:
+        m["owner"] = idmap.getAgent(m["owner"])[0]
+        if m["coOwners"] is not None:
+          m["coOwners"] = " ; ".join(idmap.getAgent(co.strip())[0]\
+            for co in m["coOwners"].split(";") if len(co.strip()) > 0)
+      r.append(m)
+    return r
   except Exception, e:
     log.otherError("search.getByOwner", e)
     return []
@@ -428,11 +440,12 @@ def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def getByOwnerCount (owner, includeCoOwnership=True):
+def getByOwnerCount (owner, includeCoOwnership=True, useLocalNames=True):
   """
   Returns the total number of identifiers that would be returned by a
   comparable, limit-less call to getByOwner.
   """
+  if useLocalNames: owner = idmap.getUserId(owner)
   if includeCoOwnership:
     col = _getCoOwnership(owner)
     q = "SELECT COUNT(%sidentifier) FROM ownership WHERE owner = ?%s" %\
