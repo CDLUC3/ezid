@@ -91,7 +91,7 @@ FUNCTIONS_FOR_FORMATTING = { \
   'string'         : lambda x: string_value(x), \
   'identifier'     : lambda x: "<a href='" + reverse('ui_manage.details', args=[x]) + "'>" + escape(x) + "</a>", \
   'datetime'       : lambda x: escape(datetime.datetime.fromtimestamp(x).strftime("%m/%d/%Y %I:%M %p")), \
-  'owner_lookup'   : lambda x: cached_id_lookup(x) }
+  'owner_lookup'   : lambda x: id_lookup(x) }
 
 def formatted_field(record, field_name, field_display_types):
   value = record[field_name]
@@ -104,14 +104,11 @@ def string_value(x):
   else:
     return escape(x)
 
-cached_users = {}
-def cached_id_lookup(x):
-  if not x in cached_users:
-    try:
-      cached_users[x] = idmap.getAgent(x)[0]
-    except:
-      return 'unknown'
-  return escape(cached_users[x])
+def id_lookup(x):
+  try:
+    return escape(idmap.getAgent(x)[0])
+  except:
+    return 'unknown'
   
 
 def percent_width(item_weight, total):

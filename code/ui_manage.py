@@ -10,7 +10,7 @@ import math
 
 # these are layout properties for the fields in the manage index page,
 # if I had realized there were going to be so many properties up front, I probably would
-# have created a field layout object with a number of peroperties instead.
+# have created a field layout object with a number of properties instead.
 
 # The order to display fields both in the customize check boxes and the columns
 FIELD_ORDER = ['identifier', 'owner', 'coOwners', 'createTime', 'updateTime', 'status',\
@@ -30,7 +30,7 @@ FIELD_WIDTHS = {'identifier': 2.0,  'owner': 1.0, 'coOwners': 2.0, \
                 'mappedTitle': 3.0, 'mappedCreator' : 2.0}
 
 #how to display each field, these are in custom tags for these display types
-FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'owner_lookup', 'coOwners': 'string', \
+FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', 'coOwners': 'string', \
                 'createTime': 'datetime', 'updateTime': 'datetime', 'status' :'string',\
                 'mappedTitle': 'string', 'mappedCreator' : 'string'}
 
@@ -138,5 +138,3 @@ def details(request, identifier):
   else:
     d['current_profile'] = metadata.getProfile('dc')
   return uic.render(request, "manage/details", d)
-
-
