@@ -2,3 +2,8 @@
 ~$
 ^settings/ezid\.conf\.shadow$
 ^static/metadata_tooltips\.js$
+^templates/info/.*
+\.project$
+\.pydevproject$
+\.DS_Store$
+\.old[0-9]*$
