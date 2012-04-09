@@ -8,7 +8,8 @@
 #    PR=$SR/PROJECT_ROOT
 #
 #    sqlite3 NEWDB < $PR/etc/search-schema.sql
-#    $PR/tools/dump -n .../noid.bdb > DUMP
+#    $PR/tools/dump -n .../noid.bdb |
+#      $PR/tools/select not _owner = anonymous > DUMP
 #    $PR/tools/populate1 DUMP NEWDB
 #    (stop server)
 #    mv NEWDB $SR/db/search.sqlite3

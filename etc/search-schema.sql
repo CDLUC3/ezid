@@ -3,9 +3,10 @@
 -- Search database schema.
 --
 -- The 'identifier' table stores all identifiers, not including shadow
--- ARKs.  Identifiers themselves are stored in qualified, normalized
--- form (e.g., "ark:/13030/foo").  Identifier attributes are not
--- encoded.  Owners and co-owners are stored as ARK identifiers (e.g.,
+-- ARKs and not including anonymously-owned identifiers.  Identifiers
+-- themselves are stored in qualified, normalized form (e.g.,
+-- "ark:/13030/foo").  Identifier attributes are not encoded.  Owners
+-- and co-owners are stored as ARK identifiers (e.g.,
 -- "ark:/99166/p92z12p14").
 --
 -- To support searching by owner, the 'ownership' table relates owners
@@ -13,6 +14,12 @@
 -- I has owner A and co-owners B and C, the table will hold tuples
 -- (A,I), (B,I), and (C,I).  Note that this table doesn't account for
 -- ownership via account-level co-ownership.
+--
+-- The search database currently contains agent identifiers.  This
+-- *may* represent a privacy/security hole in the future, but at
+-- present the information stored in the database is innocuous, and
+-- access is limited to allowing users to view only the identifiers
+-- they own.
 --
 -- Author:
 --   Greg Janee <gjanee@ucop.edu>

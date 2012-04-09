@@ -1,0 +1,90 @@
+#! /usr/bin/env python
+
+# Performs a cleanup pass to insert into or update in the search
+# database those identifiers that were touched in any way between the
+# time the populate1 script was started and the time the new database
+# was installed in the running server.  Let 'date' be the last
+# timestamp observed in the EZID transaction log before running
+# populate1.  After running populate1, the general procedure for
+# running this script is:
+#
+#    SR=.../SITE_ROOT
+#    PR=$SR/PROJECT_ROOT
+#
+#    $PR/tools/filterlog -CSD -s $SR/logs/transaction_log |
+#      awk '($1 " " $2) > "date"' | $PR/tools/populate2 2> log
+#    $PR/tools/filterlog -e log
+#
+# This script writes EZID transaction log records to standard error.
+# Bad request errors on getMetadata requests are normal.  To examine
+# the log for significant errors, filter it for internal server errors
+# as shown above.
+#
+# This script requires several EZID modules.  The PYTHONPATH
+# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
+# directory; if it doesn't, we attempt to dynamically locate it and
+# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
+# set; if it isn't, we set it to "settings.production".
+#
+# Additionally, if LDAP is enabled, a connection to the LDAP server is
+# required.
+#
+# Greg Janee <gjanee@ucop.edu>
+# April 2012
+
+import os
+import sys
+
+if "DJANGO_SETTINGS_MODULE" not in os.environ:
+  os.environ["DJANGO_SETTINGS_MODULE"] = "settings.production"
+
+try:
+  import settings
+except ImportError:
+  sys.path.append(
+    os.path.split(os.path.split(os.path.abspath(__file__))[0])[0])
+  import settings
+
+# Bootstrapping: reference a(ny) Django setting to trigger the loading
+# of said settings, which causes the PYTHONPATH to be modified,
+# supporting subsequent imports.
+import django.conf
+django.conf.settings.PROJECT_ROOT
+
+# Configure the logging so that errors don't get added to the server's
+# log file.
+django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
+
+import ezid
+import log
+import search
+import util
+
+# We don't try to "replay" the transaction log, but rather, use it
+# just to identify those identifiers touched in any way.  We then
+# probe EZID directly to get the current states of those identifiers.
+
+ids = set()
+
+for l in sys.stdin:
+  v = l.split(" ")
+  if v[2] == "createArk":
+    ids.add("ark:/" + util.decode(v[3]))
+  elif v[2] == "createDoi":
+    ids.add("doi:" + util.decode(v[3]))
+  elif v[2] == "createUrnUuid":
+    ids.add("urn:uuid:" + util.decode(v[3]))
+  elif v[2] == "setMetadata" or v[2] == "deleteIdentifier":
+    ids.add(util.decode(v[3]))
+
+for id in ids:
+  r = ezid.getMetadata(id)
+  if type(r) is tuple:
+    if r[1]["_owner"] != "anonymous":
+      if "_shadows" in r[1]: id = r[1]["_shadows"]
+      search.update(id, r[1], insertIfNecessary=True, mapLocalNames=True)
+  else:
+    if r == "error: bad request - no such identifier":
+      search.delete(id)
+    else:
+      log.otherError("populate2", Exception("ezid.getMetadata failed: " + r))
