@@ -45,7 +45,7 @@ def index(request):
   d['jquery_checked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) & set(FIELD_DEFAULTS))])
   d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) - set(FIELD_DEFAULTS))])
   d['user'] = request.session['auth'].user
-  d['recent'] = search.getByOwner(d['user'][1], False, 'updateTime', False, 10, 0)
+  d['recent'] = search.getByOwner(d['user'][0], False, 'updateTime', False, 10, 0)
   d['recent1'] = d['recent'][0:5]
   d['recent2'] = d['recent'][5:10]
   d['field_order'] = FIELD_ORDER
@@ -73,11 +73,11 @@ def index(request):
   d['ps'] = 10
   if 'p' in request.REQUEST and request.REQUEST['p'].isdigit(): d['p'] = int(request.REQUEST['p'])
   if 'ps' in request.REQUEST and request.REQUEST['ps'].isdigit(): d['ps'] = int(request.REQUEST['ps'])
-  d['total_results'] = search.getByOwnerCount(d['user'][1], False)
+  d['total_results'] = search.getByOwnerCount(d['user'][0], False)
   d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
   if d['p'] > d['total_pages']: d['p'] = d['total_pages']
 
-  d['results'] = search.getByOwner(d['user'][1], False, d['order_by'], IS_ASCENDING[d['sort']], d['ps'], (d['p']-1)*d['ps'])
+  d['results'] = search.getByOwner(d['user'][0], False, d['order_by'], IS_ASCENDING[d['sort']], d['ps'], (d['p']-1)*d['ps'])
   
   return uic.render(request, 'manage/index', d)
 
