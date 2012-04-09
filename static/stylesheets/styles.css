@@ -229,6 +229,18 @@ dd{
 	z-index:5;
 }
 
+.help_window{
+	width:400px;
+	border:solid;
+	border-width: 1px;
+	border-color: #000000;
+	padding: 10px 15px 10px 15px;
+	position: absolute;
+	display: none;
+	background:#ffffff;
+	z-index:5;
+}
+
 
 #mask{
 	position: absolute;
