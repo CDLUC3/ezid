@@ -76,7 +76,7 @@
     
       {% if status == 'public' %}
         <div class="left_desc">{{internal_profile.status.displayName}}:</div>
-        <div class="right_val">{% display_value identifier internal_profile.status %}</div>
+        <div class="right_val">{% display_value identifier internal_profile.status %}{% help_icon "public_id_help" %}</div>
       {% else %}
         <div style="clear:both;"></div>
         <p>
@@ -90,6 +90,7 @@
             {% if post_status == 'public' %}
               checked="checked"
             {% endif %}/><label for="status_yes">yes</label>
+          {% help_icon "public_id_help" %}
         </p>
       {% endif %}
       
@@ -108,5 +109,8 @@
     // set focus on the target element
     $('#_target').focus();
   </script>
+  
+  {% include "info/popup_help.html" %}
+  <script type="text/javascript" src="/ezid/static/javascripts/help_box.js"></script>
 
 {% endblock %}

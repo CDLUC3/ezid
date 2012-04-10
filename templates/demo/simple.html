@@ -17,13 +17,18 @@
         <input type="submit" value="Create"/>
       </div>
       <div style="clear:both">&nbsp;</div>
-      <p>
+      <div style="width:80%;float:left;">
         Note: Clicking &quot;Create&quot; will create this identifier immediately.
         If you do not wish to make this identifier public immediately, please use the Advanced form.
-      </p>
+      </div>
+      <div style="width:20%;float:left">
+      	{% help_icon "public_id_help" %}
+      </div>
     </form>
   </div>
   
   <script type="text/javascript" src="/ezid/static/javascripts/simple_create.js"></script>
+  {% include "info/popup_help.html" %}
+  <script type="text/javascript" src="/ezid/static/javascripts/help_box.js"></script>
 
 {% endblock %}

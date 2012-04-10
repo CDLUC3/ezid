@@ -33,6 +33,12 @@ def request_value(context, key_name):
 def tooltip_class(profile_element_string):
   return escape('element_' + profile_element_string.replace('.',''))
 
+@register.simple_tag
+def help_icon(id_of_help):
+  return '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#' + id_of_help + '" name="help_link">' + \
+    '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help"' + \
+    ' title="Click for additional help"/></a>'
+
 
 #@register.simple_tag(takes_context=True)
 @register.tag

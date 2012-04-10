@@ -57,12 +57,9 @@
       </label>
       <div class="field_right">
         <input type="text" name="ezidCoOwners" id="ezidCoOwners" size="35"
-            value="{{ ezidCoOwners }}" />
+            value="{{ ezidCoOwners }}" />{% help_icon "coowners_help" %}
       </div>
-      <div style="float:left; margin-top: 10px; width:100px;">
-        <a href="">What is this?</a>
-      </div>
-      
+
       <label class="left" style="margin: 5px 0 0 0;">&nbsp;</label>
       <div class="field_right" style="margin: 5px 0 0 0;font-size:85%;">
         Use commas to separate multiple entries.
@@ -99,4 +96,7 @@
     </form>
     
   </div>
+  
+  {% include "info/popup_help.html" %}
+  <script type="text/javascript" src="/ezid/static/javascripts/help_box.js"></script>
 {% endblock %}
