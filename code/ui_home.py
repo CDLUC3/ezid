@@ -49,6 +49,11 @@ def contact(request):
   d = { 'menu_item' : 'null.null' }
   return uic.render(request, 'info/contact', d)
 
+def the_help(request):
+  d = { 'menu_item' : 'null.null' }
+  return uic.render(request, 'info/help', d)
+
 def about_us(request):
   d = { 'menu_item' : 'null.null' }
   return uic.render(request, 'info/about_us', d)
+
