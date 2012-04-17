@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 # Expunges expired test identifiers from a noid bind database.  Usage:
 #
@@ -18,20 +18,31 @@
 #     k: print _c bindings of test identifiers to be kept
 #     e: print _c bindings of expired test identifiers
 #
-# Note that this script requires several EZID modules.  The
-# DJANGO_SETTINGS_MODULE environment variable must be set
-# appropriately (e.g., to "settings.production") and the PYTHONPATH
-# environment variable must be set to the .../SITE_ROOT/PROJECT_ROOT
-# directory.
+# This script requires several EZID modules.  The PYTHONPATH
+# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
+# directory; if it doesn't, we attempt to dynamically locate it and
+# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
+# set; if it isn't, we set it to "settings.production".
 #
 # Greg Janee <gjanee@ucop.edu>
 # April 2011
 
 import bsddb.db
+import os
 import re
 import sys
 import time
 import urllib
+
+if "DJANGO_SETTINGS_MODULE" not in os.environ:
+  os.environ["DJANGO_SETTINGS_MODULE"] = "settings.production"
+
+try:
+  import settings
+except ImportError:
+  sys.path.append(os.path.split(os.path.split(
+    os.path.abspath(__file__))[0])[0])
+  import settings
 
 # Bootstrapping: reference a(ny) Django setting to trigger the loading
 # of said settings, which causes the PYTHONPATH to be modified,
@@ -39,9 +50,14 @@ import urllib
 import django.conf
 django.conf.settings.PROJECT_ROOT
 
+# Configure the logging so that errors don't get added to the server's
+# log file.
+django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
+
 import config
 import datacite
 import noid
+import search
 import util
 
 testArkPrefix = config.config("prefix_TESTARK.prefix")[5:]
@@ -92,6 +108,7 @@ cursor = db.cursor()
 expungeList = []
 shadowedId = {}
 status = {}
+group = {}
 
 entry = cursor.first()
 while entry != None:
@@ -107,6 +124,8 @@ while entry != None:
         shadowedId[id] = util.decode(v)
       elif label == "_is":
         status[id] = util.decode(v)
+      elif label == "_g":
+        group[id] = util.decode(v)
       output("o", k, v)
     elif not id.startswith(testArkPrefix) and not id.startswith(testDoiPrefix):
       output("r", k, v)
@@ -136,6 +155,14 @@ if debug == "":
           "%s/id/%s" % (ezidUrl, urllib.quote(doi, ":/")))
       bindNoid.deleteElements(id)
       bindNoid.releaseIdentifier(id)
-    except Exception, e:
+      if group[id] != "anonymous":
+        if id.startswith(testArkPrefix):
+          qid = "ark:/" + id
+        elif id.startswith(testDoiPrefix):
+          qid = shadowedId[id]
+        else:
+          assert False
+        search.delete(qid)
+    except Exception:
       sys.stderr.write("expunge: processing %s\n" % id)
       raise
