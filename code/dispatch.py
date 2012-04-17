@@ -41,8 +41,13 @@ def d (request, function, ssl=False):
   """
   Dispatches a request to the API or UI depending on the client's
   desired content type.
+  
+  UI is now in multiple modules, so has namespacing.  API ignores
+  modules namespacing, so module name gets ignored and goes to api
+  module only.
   """
   if isUiRequest(request):
-    return getattr(ui, function)(request)
+    return reduce(getattr, function.split(".")[1:],
+                  __import__(function.partition(".")[0]))(request)
   else:
-    return getattr(api, function)(request)
+    return getattr(api, function.split(".")[1])(request)

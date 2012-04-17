@@ -4,10 +4,10 @@
     &nbsp;|&nbsp;
     <a href="{% url ui_account.edit %}">My Account</a>
     &nbsp;|&nbsp;
-    <a href="{% url ui_account.logout %}">Logout</a>
+    <a href="/ezid/logout">Logout</a>
     &nbsp;|&nbsp;
   {% else %}
-    <a href="{% url ui_account.login %}">Login</a>
+    <a href="/ezid/login">Login</a>
     &nbsp;|&nbsp;
   {% endif %}
   <a href="{% url ui_home.contact %}">Contact Us</a>

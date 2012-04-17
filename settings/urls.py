@@ -72,10 +72,10 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("admin/system_status$", "ui_admin.system_status", { "ssl": True }),
   _p("admin/ajax_system_status$", "ui_admin.ajax_system_status"),
   _p("admin/alert_message$", "ui_admin.alert_message", { "ssl": True }),
-  _p("login\/?$", "ui_account.login", { "ssl": True }),
-  #_p("login$", "dispatch.d", { "function": "ui_account.login", "ssl": True }),
+  _p("login\/?$", "dispatch.d", { "function": "ui_account.login", "ssl": True }),
+  _p("logout\/?$", "dispatch.d", { "function": "ui_account.logout"}),
   _p("account/edit$", "ui_account.edit", { "ssl": True }),
-  _p("account/logout$", "ui_account.logout"),
+ # _p("account/logout$", "ui_account.logout"),
   _p("pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", { "ssl": True })
 )
 
