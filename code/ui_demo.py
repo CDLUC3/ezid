@@ -17,7 +17,7 @@ def simple(request):
   if r == 'bad_request':
     uic.badRequest()
   elif r.startswith('created_identifier:'):
-    return redirect("ui_manage.details", r.split()[1])
+    return redirect("/ezid/id/" + r.split()[1])
   else:
     return uic.render(request, 'demo/simple', d)
 
@@ -29,6 +29,6 @@ def advanced(request):
   if r == 'bad_request':
     uic.badRequest()
   elif r.startswith('created_identifier:'):
-    return redirect("ui_manage.details", r.split()[1])
+    return redirect("/ezid/id/" + r.split()[1])
   else:
     return uic.render(request, 'demo/advanced', d)

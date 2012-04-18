@@ -22,7 +22,7 @@ def index(request):
       print s
       print m
       assert s.startswith("success:")
-      return redirect('ui_manage.details', s.split()[1])
+      return redirect('/ezid/id/' + s.split()[1])
     else:
       django.contrib.messages.error(request, uic.formatError(r))
       return uic.render(request, "lookup/index", dict({ "identifier": id }.items() + d.items() ))

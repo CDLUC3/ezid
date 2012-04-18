@@ -89,7 +89,7 @@ def edit(request, identifier):
     return uic.redirect("ui_lookup.index")
   if not uic.authorizeUpdate(request, r):
     django.contrib.messages.error(request, "You are not allowed to edit this identifier")
-    return redirect("ui_manage.details", identifier)
+    return redirect("/ezid/id/" + identifier)
   s, m = r
   d['status'] = m['_status'] if '_status' in m else 'unavailable'
   d['post_status'] = d['status']
@@ -107,7 +107,7 @@ def edit(request, identifier):
                   '_status': d['post_status']})
         if result:
           django.contrib.messages.success(request, "Identifier updated.")
-          return redirect("ui_manage.details", identifier)
+          return redirect("/ezid/id/" + identifier)
         else:
           django.contrib.messages.error(request, "There was an error updating the metadata for your identifier: " + s)
           return uic.render(request, "manage/edit", d)
