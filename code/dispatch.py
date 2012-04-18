@@ -37,17 +37,16 @@ def isUiRequest (request):
     ("HTTP_ACCEPT" in request.META and\
     _htmlWanted(request.META["HTTP_ACCEPT"]))
 
-def d (request, function, ssl=False):
+def d (request, ui_function, api_function, ssl=False):
   """
-  Dispatches a request to the API or UI depending on the client's
-  desired content type.
-  
-  UI is now in multiple modules, so has namespacing.  API ignores
-  modules namespacing, so module name gets ignored and goes to api
-  module only.
+  Dispatches a request to the API or UI functiondepending on the client's
+  desired content type.  Module and function name are now passed in
+  with those parameters and namespaced with module names like
+  {'ui_function': 'ui_catfood.meow', 'api_function': 'api.meow_meow_meow'}
   """
   if isUiRequest(request):
-    return reduce(getattr, function.split(".")[1:],
-                  __import__(function.partition(".")[0]))(request)
+    my_func = ui_function
   else:
-    return getattr(api, function.split(".")[1])(request)
+    my_func = api_function
+  return reduce(getattr, my_func.split(".")[1:],
+                  __import__(my_func.partition(".")[0]))(request)
