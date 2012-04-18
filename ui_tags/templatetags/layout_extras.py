@@ -101,7 +101,8 @@ def search_display(dictionary, field):
 def full_url_to_id_details(context, id_text):
   """return full url to id details for id specified, including domain"""
   request = context['request']
-  return request.build_absolute_uri(reverse('ui_manage.details', args=[id_text]))
+  return "http://" + request.get_host() +"/ezid/id/" + id_text
+  #return request.build_absolute_uri(reverse('ui_manage.details', args=[id_text]))
 
   
 #This captures the block around with rounded corners go, can't believe what a PITA this is in django

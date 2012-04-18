@@ -2,6 +2,7 @@ import ui_common as uic
 import django.contrib.messages
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
+from urllib import unquote
 import ezid
 import metadata
 import search
@@ -119,8 +120,10 @@ def edit(request, identifier):
   d['profiles'] = metadata.getProfiles()[1:]
   return uic.render(request, "manage/edit", d)
 
-def details(request, identifier):
+def details(request):
   d = { 'menu_item' : 'ui_manage.null'}
+  my_path = "/ezid/id/"
+  identifier = unquote(request.path[len(my_path):])
   r = ezid.getMetadata(identifier)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))

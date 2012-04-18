@@ -89,7 +89,7 @@ def latest_modification_string(dictionary):
 
 FUNCTIONS_FOR_FORMATTING = { \
   'string'         : lambda x: string_value(x), \
-  'identifier'     : lambda x: "<a href='" + reverse('ui_manage.details', args=[x]) + "'>" + escape(x) + "</a>", \
+  'identifier'     : lambda x: "<a href='/ezid/id/" + x + "'>" + escape(x) + "</a>", \
   'datetime'       : lambda x: escape(datetime.datetime.fromtimestamp(x).strftime("%m/%d/%Y %I:%M %p")), \
   'owner_lookup'   : lambda x: id_lookup(x) }
 

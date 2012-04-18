@@ -12,13 +12,13 @@
   {% else %}
   	<div class="grid_8">
     	{% for item in recent1 %}
-    		<a href="{% url ui_manage.details item.identifier %}">{{item.identifier}}</a>
+    		<a href="/ezid/id/{{ item.identifier }}">{{item.identifier}}</a>
     		{% latest_modification_string item %}<br/>
     	{% endfor %}
     </div>
     <div class="grid_8">
     	{% for item in recent2 %}
-    		<a href='{% url ui_manage.details item.identifier %}'>{{item.identifier}}</a>
+    		<a href='/ezid/id/{{ item.identifier }}'>{{item.identifier}}</a>
     		{% latest_modification_string item %}<br/>
     	{% endfor %}
     </div>
