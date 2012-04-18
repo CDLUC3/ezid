@@ -92,7 +92,7 @@ def validate_edit_user(request):
       django.contrib.messages.error(request, "Form submission error.")
       return False
   
-  required_fields = {'givenName': 'First name', 'sn': 'Last name', 'mail': 'Email address'}
+  required_fields = {'sn': 'Last name', 'mail': 'Email address'}
   for field in required_fields:
     if request.POST[field].strip() == '':
       django.contrib.messages.error(request, required_fields[field] + " must be filled in.")

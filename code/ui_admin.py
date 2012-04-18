@@ -231,7 +231,7 @@ def validate_edit_user(request, user_obj):
   """validates that the fields required to update a user are set, helper function"""
   valid_form = True
   
-  required_fields = {'givenName': 'First name', 'sn': 'Last name', 'mail': 'Email address'}
+  required_fields = {'sn': 'Last name', 'mail': 'Email address'}
   for field in required_fields:
     if user_obj[field].strip() == '':
       django.contrib.messages.error(request, required_fields[field] + " must be filled in.")
