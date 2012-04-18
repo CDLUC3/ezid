@@ -16,10 +16,19 @@
 
 <script type="text/javascript">
   // deal with custom remainder and previews
-  $("#remainder").bind("focus", function(event){
-    this.select();
-  });
-  
+  $('#remainder').focus(function() {
+    $(this).select();
+	}).mouseup(function() {
+		// this is to hack around Safari problems in which the ordering
+		// of events means that any selection made by a click gets immediately
+		// de-selected (thus the timer)
+    if ($(this).val() === '{{remainder_box_default}}')
+    {
+    	var _self = this;
+	    setTimeout(function(){ _self.select()},30)
+    }
+	});
+
   var remainderValue = '';
   $(function () {
     setInterval(checkRemainderChanged,0.25);
