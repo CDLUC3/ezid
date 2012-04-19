@@ -193,6 +193,7 @@ def alert_message(request, ssl=False):
                                "alert_message"))
       #global alertMessage  
       uic.alertMessage = ''
+      request.session['hide_alert'] = False
       django.contrib.messages.success(request, "Message removed.")
     elif 'message' in request.POST:
       m = request.POST["message"].strip()
@@ -202,6 +203,7 @@ def alert_message(request, ssl=False):
       f.close()
       #global alertMessage
       uic.alertMessage = m
+      request.session['hide_alert'] = False
       django.contrib.messages.success(request, "Message updated.")
   return uic.render(request, 'admin/alert_message', d)
 
