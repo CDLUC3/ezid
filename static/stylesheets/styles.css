@@ -13,7 +13,7 @@ div.top_area {
   height: 81px;
 }
 
-div.status{
+div#status{
   text-align: center;
   /* margin: 8px 0 0 25px; */
 }
@@ -22,13 +22,13 @@ div.right-links{
   text-align: right;
 }
 
-div.status div, div.status p{
+div#status div, div#status p{
   color: #f38e0d;
   font-weight: bold;
   font-size: 120%;
 }
 
-div.status p.error {
+div#status p.error {
   text-align: center;
   color: red;
 }
@@ -241,11 +241,11 @@ dd{
 	z-index:5;
 }
 
-.help_window div.close_button {
+.help_window div.close_button, #status div.close_button {
 	float: right;
 }
 
-.help_window div.close_button img {
+.help_window div.close_button img, #status div.close_button img {
 	width: 16px;
 	height: 16px;
 }
@@ -311,7 +311,7 @@ tr.row2{
 	font-weight: bold;
 }
 
-div.status .notice_message, .notice_message{
+div#status .notice_message, .notice_message{
 	font-weight: bold;
 	font-size: 12pt;
 	color: #555555;
@@ -378,4 +378,16 @@ td.add_user_col3 {
 /* additional style for main content div to work better with 2 sidebar */
 div.main_content{
 	padding-right: 40px;
+}
+
+#status {
+	width:400px;
+	border:solid;
+	border-width: 1px;
+	border-color: #000000;
+	padding: 10px 15px 10px 15px;
+	position: absolute;
+	display: none;
+	background:#ffffff;
+	z-index:50;
 }

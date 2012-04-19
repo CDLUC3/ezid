@@ -1,5 +1,5 @@
-{% if alertMessage != "" or messages %}
-  <div class="grid_16 status">
+<div id="status">
+	{% if alertMessage != "" or messages %}
     {% if alertMessage != "" %}
       <p class='notice_message'>{{ alertMessage }}</p>
     {% endif %}
@@ -7,6 +7,6 @@
       {% for m in messages %}
         <p class="{{ m.tags }}">{{ m }}</p>
       {% endfor %}
-    {% endif %} 
-  </div>
-{% endif %}
+    {% endif %}
+  {% endif %}
+</div>

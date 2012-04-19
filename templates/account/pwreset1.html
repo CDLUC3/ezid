@@ -2,14 +2,6 @@
 
 {% block title %}EZID : Request password reset{% endblock %}
 
-{% block javascript %}
-$(document).ready(function () {
-  $("#username").keydown(clearMessages);
-  $("#email").keydown(clearMessages);
-  $("#username").focus();
-});
-{% endblock %}
-
 {% block content %}
 
 <div id="pwreset" class="grid_12">
