@@ -58,6 +58,7 @@ def login(request, ssl=False):
       request.session["auth"] = auth
       request.session["prefixes"] = p
       django.contrib.messages.success(request, "Login successful.")
+      request.session['hide_alert'] = False
       if 'redirect_to' in request.session and request.session['redirect_to']:
         return redirect(request.session['redirect_to'])
       else:
@@ -80,6 +81,10 @@ def logout(request):
 
 def contact(request):
   pass
+
+def ajax_hide_alert(request):
+  request.session['hide_alert'] = True
+  return uic.plainTextResponse('Ok')
 
 
 def validate_edit_user(request):

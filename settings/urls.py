@@ -73,6 +73,7 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("admin/alert_message$", "ui_admin.alert_message", { "ssl": True }),
   _p("login\/?$", "dispatch.d", { "ui_function": "ui_account.login", "api_function": "api.login", "ssl": True }),
   _p("logout\/?$", "dispatch.d", { "ui_function": "ui_account.logout", "api_function": "api.logout"}),
+  _p("account/ajax_hide_alert", "ui_account.ajax_hide_alert"),
   _p("account/edit$", "ui_account.edit", { "ssl": True }),
  # _p("account/logout$", "ui_account.logout"),
   _p("pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", { "ssl": True })

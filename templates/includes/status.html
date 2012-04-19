@@ -1,12 +1,12 @@
 <div id="status">
-	{% if alertMessage != "" or messages %}
-    {% if alertMessage != "" %}
-      <p class='notice_message'>{{ alertMessage }}</p>
+  {% if alertMessage != "" %}
+    {% if not session or not "hide_alert" in session or not session.hide_alert %}
+    	<p class='notice_message'>{{ alertMessage }}</p>
     {% endif %}
-    {% if messages %}
-      {% for m in messages %}
-        <p class="{{ m.tags }}">{{ m }}</p>
-      {% endfor %}
-    {% endif %}
+  {% endif %}
+  {% if messages %}
+    {% for m in messages %}
+      <p class="{{ m.tags }}">{{ m }}</p>
+    {% endfor %}
   {% endif %}
 </div>
