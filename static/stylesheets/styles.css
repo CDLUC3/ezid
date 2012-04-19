@@ -243,6 +243,10 @@ dd{
 
 .help_window div.close_button, #status div.close_button {
 	float: right;
+	position: relative;
+	top: -8px;
+	right: -10px;
+	font-size: 70%;
 }
 
 .help_window div.close_button img, #status div.close_button img {
