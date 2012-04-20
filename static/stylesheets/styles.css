@@ -406,5 +406,20 @@ div.main_content{
 span.small_co_owners {
 	font-size: 90%;
 	color: #333333;
-	
+}
+
+h1.demo {
+	background-image:url('/ezid/static/images/demo_id_hr2.png');
+	background-repeat: repeat-x;
+	background-position:left bottom;
+	height: 2em;
+}
+
+div.demo {
+	background-image:url('/ezid/static/images/demo_bg2.png');
+	background-position:right top;
+}
+
+div.sidebar {
+	font-size: 85%;
 }

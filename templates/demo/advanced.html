@@ -4,7 +4,7 @@
 {% block title %}Create Advanced Demo ID{% endblock %}
 
 {% block content %}
-  <div class="grid_12">
+  <div class="grid_12 demo">
     <h1>Create ID</h1>
     <form id="create_form" action="{% url ui_demo.advanced %}" method="post">
       
@@ -23,6 +23,22 @@
       </div>
       <div style="clear:both">&nbsp;</div>
     </form>
+  </div>
+  <div class="grid_4 sidebar">
+  	{% rounded_borders %}
+  		<div style="padding:0px 0px 0px 10px;">
+		  	<h1>About Demo Identifiers</h1>
+		  	<p>
+		  		Demo identifiers are temporary identifiers for use in testing out the
+		  		EZID service and workflow.  They may expire in two weeks or be deleted
+		  		at any time.
+		  	</p>
+		  	<p>
+		  		Do not create demo identifiers in cases where you need a permanent
+		  		identifier for an asset.
+		  	</p>
+	  	</div>
+  		{% endrounded_borders %}  		
   </div>
 
   <script type="text/javascript" src="/ezid/static/javascripts/advanced_create.js"></script>
