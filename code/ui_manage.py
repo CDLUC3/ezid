@@ -7,6 +7,7 @@ import ezid
 import metadata
 import search
 import math
+import useradmin
 
 
 # these are layout properties for the fields in the manage index page,
@@ -31,7 +32,7 @@ FIELD_WIDTHS = {'identifier': 2.0,  'owner': 1.0, 'coOwners': 2.0, \
                 'mappedTitle': 3.0, 'mappedCreator' : 2.0}
 
 #how to display each field, these are in custom tags for these display types
-FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', 'coOwners': 'string', \
+FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', 'coOwners': 'coowners', \
                 'createTime': 'datetime', 'updateTime': 'datetime', 'status' :'string',\
                 'mappedTitle': 'string', 'mappedCreator' : 'string'}
 
@@ -46,6 +47,11 @@ def index(request):
   d['jquery_checked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) & set(FIELD_DEFAULTS))])
   d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) - set(FIELD_DEFAULTS))])
   d['user'] = request.session['auth'].user
+  r = useradmin.getAccountProfile(request.session["auth"].user[0])
+  if 'ezidCoOwners' in r:
+    d['account_co_owners'] = r['ezidCoOwners']
+  else:
+    d['account_co_owners'] = ''
   d['recent'] = search.getByOwner(d['user'][0], False, 'updateTime', False, 10, 0)
   d['recent1'] = d['recent'][0:5]
   d['recent2'] = d['recent'][5:10]

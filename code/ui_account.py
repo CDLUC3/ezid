@@ -11,9 +11,9 @@ def edit(request, ssl=False):
   """Edit account information form"""
   if "auth" not in request.session: return uic.unauthorized()
   d['username'] = request.session['auth'].user[0]
-  
   if request.method == "GET":
     r = useradmin.getAccountProfile(request.session["auth"].user[0])
+    print r
     if type(r) is str:
       django.contrib.messages.error(request, r)
       return redirect('ui_home.index')

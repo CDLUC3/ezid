@@ -401,3 +401,10 @@ div.main_content{
 	background:#ffffff;
 	z-index:50;
 }
+
+/* display of account co-owners as smaller for manage table */
+span.small_co_owners {
+	font-size: 90%;
+	color: #333333;
+	
+}

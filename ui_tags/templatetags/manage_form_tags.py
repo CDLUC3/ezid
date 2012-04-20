@@ -74,10 +74,12 @@ def column_head(request, field, fields_mapped, order_by, sort):
     sort_icon = ''
   column_link = "<a href='" + url + "' title='Sort on this column'>" + escape(fields_mapped[field]) + "</a>"
   return sort_icon + column_link
-          
+
+#need to pass in account co owners because it's obnoxiously used in the co-owners field and is added
+#to database values instead of being a purer value 
 @register.simple_tag
-def data_row(record, fields_selected, field_display_types):
-  return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types) for f in fields_selected]) + '</td>'
+def data_row(record, fields_selected, field_display_types, account_co_owners):
+  return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, account_co_owners) for f in fields_selected]) + '</td>'
 
 @register.simple_tag
 def latest_modification_string(dictionary):
@@ -88,21 +90,32 @@ def latest_modification_string(dictionary):
     return "created " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']).strftime("%m/%d/%Y %I:%M:%S %p"))
 
 FUNCTIONS_FOR_FORMATTING = { \
-  'string'         : lambda x: string_value(x), \
-  'identifier'     : lambda x: "<a href='/ezid/id/" + x + "'>" + escape(x) + "</a>", \
-  'datetime'       : lambda x: escape(datetime.datetime.fromtimestamp(x).strftime("%m/%d/%Y %I:%M %p")), \
-  'owner_lookup'   : lambda x: id_lookup(x) }
+  'string'         : lambda x, coown: string_value(x), \
+  'identifier'     : lambda x, coown: "<a href='/ezid/id/" + x + "'>" + escape(x) + "</a>", \
+  'datetime'       : lambda x, coown: escape(datetime.datetime.fromtimestamp(x).strftime("%m/%d/%Y %I:%M %p")), \
+  'owner_lookup'   : lambda x, coown: id_lookup(x), \
+  'coowners'       : lambda x, coown: co_owner_disp(x, coown) }
 
-def formatted_field(record, field_name, field_display_types):
+def formatted_field(record, field_name, field_display_types, account_co_owners):
+  print account_co_owners
   value = record[field_name]
   formatting = field_display_types[field_name]
-  return FUNCTIONS_FOR_FORMATTING[formatting](value)
+  return FUNCTIONS_FOR_FORMATTING[formatting](value, account_co_owners)
 
 def string_value(x):
   if x is None:
     return ''
   else:
     return escape(x)
+  
+def co_owner_disp(x, coown):
+  str_x = ''
+  if not x is None:
+    str_x = x
+  if str_x != '' and coown != '':
+    return escape(str_x) + "," + "<span class='account_co_owners'>" + escape(coown) + "</span>"
+  else:
+    return escape(str_x) + "<span class='small_co_owners'>" + escape(coown) + "</span>"
 
 def id_lookup(x):
   try:
