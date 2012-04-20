@@ -22,9 +22,11 @@ $(document).ready(function() {
     //transition effect
     $('#status').fadeIn(100);
     
-    window.setTimeout(function() {
- 			$('#status').fadeOut('slow');
-		}, $('#status').height() * 50);
+    if(autohide){
+    	window.setTimeout(function() {
+ 				$('#status').fadeOut('slow');
+			}, $('#status').height() * 50);
+		}
 
     
     //if close button is clicked

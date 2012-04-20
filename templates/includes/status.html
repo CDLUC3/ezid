@@ -1,7 +1,9 @@
+<script type="text/javascript">var autohide = true;</script>
 <div id="status">
   {% if alertMessage != "" %}
     {% if not session or not "hide_alert" in session or not session.hide_alert %}
     	<p class='notice_message'>{{ alertMessage }}</p>
+    	<script type="text/javascript">autohide = false;</script>
     {% endif %}
   {% endif %}
   {% if messages %}
