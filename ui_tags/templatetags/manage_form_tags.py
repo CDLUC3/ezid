@@ -97,7 +97,6 @@ FUNCTIONS_FOR_FORMATTING = { \
   'coowners'       : lambda x, coown: co_owner_disp(x, coown) }
 
 def formatted_field(record, field_name, field_display_types, account_co_owners):
-  print account_co_owners
   value = record[field_name]
   formatting = field_display_types[field_name]
   return FUNCTIONS_FOR_FORMATTING[formatting](value, account_co_owners)
