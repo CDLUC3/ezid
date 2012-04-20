@@ -76,7 +76,8 @@ def display_item(tup, session, is_current):
   u = reverse(tup[1])
   if is_current:
     if not tup[3]:
-      return """<span class="menu_current">""" + tup[0] + """</span>"""
+      #return """<span class="menu_current">""" + tup[0] + """</span>"""
+      return """<a href="%(path)s" class="menu_current">%(text)s</a>""" % {'path':u, 'text':tup[0] }
     else:
       return """<a href="%(path)s" class="menu_current">%(text)s</a>""" % {'path':u, 'text':tup[0] }
   else:

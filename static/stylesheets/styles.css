@@ -76,6 +76,12 @@ div.menu_main a.menu_current{
   text-decoration: none;
 }
 
+div.menu_secondary a.menu_current{
+  font-weight: normal;
+  color: black;
+  text-decoration: none;
+}
+
 h1 {
   margin: 15px 0 10px 0;
   font-size: 130%;
