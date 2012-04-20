@@ -91,7 +91,7 @@ def latest_modification_string(dictionary):
 
 FUNCTIONS_FOR_FORMATTING = { \
   'string'         : lambda x, coown: string_value(x), \
-  'identifier'     : lambda x, coown: "<a href='/ezid/id/" + x + "'>" + escape(x) + "</a>", \
+  'identifier'     : lambda x, coown: identifier_disp(x), \
   'datetime'       : lambda x, coown: escape(datetime.datetime.fromtimestamp(x).strftime("%m/%d/%Y %I:%M %p")), \
   'owner_lookup'   : lambda x, coown: id_lookup(x), \
   'coowners'       : lambda x, coown: co_owner_disp(x, coown) }
@@ -106,6 +106,14 @@ def string_value(x):
     return ''
   else:
     return escape(x)
+
+@register.simple_tag  
+def identifier_disp(x):
+  if x.lower().find("/fk") >= 0:
+    return "<a href='/ezid/id/" + x + "' class='fakeid'>" + escape(x) + "</a>"
+  else:
+    return "<a href='/ezid/id/" + x + "'>" + escape(x) + "</a>"
+  
   
 def co_owner_disp(x, coown):
   str_x = ''
