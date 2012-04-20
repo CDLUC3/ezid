@@ -17,7 +17,7 @@ MENUS = (
               ('Pricing', 'ui_home.pricing', 'public', () ),
               ('Documentation', 'ui_home.documentation', 'public', () ),
               ('Outreach', 'ui_home.outreach', 'public', () ),
-              ('Community', 'ui_home.community', 'public', () )
+              ("Who's using EZID?", 'ui_home.community', 'public', () )
             ) 
           ),
           ("Manage IDs", 'ui_manage.index', 'user', ()),
@@ -27,7 +27,7 @@ MENUS = (
             )
           ),
           ("Lookup ID", 'ui_lookup.index', 'public', ()),
-          ("Test", 'ui_demo.index', 'public',
+          ("Demo", 'ui_demo.index', 'public',
             ( ("Simple", 'ui_demo.simple', 'public', ()),
               ("Advanced", "ui_demo.advanced", 'public', ())
             )
