@@ -12,13 +12,13 @@
   {% else %}
   	<div class="grid_8">
     	{% for item in recent1 %}
-    		{% identifier_disp item.identifier %}
+    		{% identifier_disp item.identifier testPrefixes %}
     		{% latest_modification_string item %}<br/>
     	{% endfor %}
     </div>
     <div class="grid_8">
     	{% for item in recent2 %}
-    		{% identifier_disp item.identifier %}
+    		{% identifier_disp item.identifier testPrefixes %}
     		{% latest_modification_string item %}<br/>
     	{% endfor %}
     </div>
@@ -37,7 +37,7 @@
 		  	{% header_row REQUEST fields_selected fields_mapped field_widths order_by sort %}
 		  	{% for item in results %}
 		  	  <tr class="{% cycle 'row1' 'row2' %}">
-		  			{% data_row item fields_selected field_display_types account_co_owners %}
+		  			{% data_row item fields_selected field_display_types account_co_owners testPrefixes %}
 		  		</tr>
 		  	{% endfor %}
 		  </table>

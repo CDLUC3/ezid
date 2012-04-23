@@ -130,9 +130,9 @@ def manage_groups(request, ssl=False):
   if request.method == "POST" and request.POST['group'] == request.POST['original_group']:
     validated = True
     P = request.POST
-    if "group" not in P or "description" not in P or P['description'] == '':
+    if "group" not in P or "description" not in P:
       validated = False
-      django.contrib.messages.error(request, "You must fill in a description to save this group.")
+      django.contrib.messages.error(request, "You must submit a description to save this group.")
       #return uic.badRequest()
     d['group']['description'] = request.POST['description']
     if 'agreementOnFile' in request.POST and request.POST['agreementOnFile'] == 'True':

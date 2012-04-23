@@ -44,6 +44,7 @@ IS_ASCENDING = {'asc': True, 'desc': False }
 
 def index(request):
   d = { 'menu_item' : 'ui_manage.index' }
+  d['testPrefixes'] = uic.testPrefixes
   d['jquery_checked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) & set(FIELD_DEFAULTS))])
   d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) - set(FIELD_DEFAULTS))])
   d['user'] = request.session['auth'].user

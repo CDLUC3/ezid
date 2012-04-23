@@ -23,10 +23,6 @@ def column_choices(field_order, fields_mapped, fields_selected, no_cols=3):
   return "<div class='chk_col'>" + "</div><div class='chk_col'>".join(['<br/>'.join(\
          [make_check_tag(y, fields_mapped, fields_selected) for y in x]) \
          for x in col_arr]) + '</div>'
-  #this is the similified version of this nested list comprehension and join
-  #return '<div>' + '</div><div>'.join(['<br/>'.join(testy(x)) for x in col_arr]) + '</div>' --backup copy
-#def testy(my_list):
-#  return [make_tag(y) for y in my_list]
 
 def make_check_tag(item, friendly_names, selected):
   if item in selected:
@@ -78,8 +74,9 @@ def column_head(request, field, fields_mapped, order_by, sort):
 #need to pass in account co owners because it's obnoxiously used in the co-owners field and is added
 #to database values instead of being a purer value 
 @register.simple_tag
-def data_row(record, fields_selected, field_display_types, account_co_owners):
-  return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, account_co_owners) for f in fields_selected]) + '</td>'
+def data_row(record, fields_selected, field_display_types, account_co_owners, testPrefixes):
+  return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, account_co_owners, testPrefixes) \
+               for f in fields_selected]) + '</td>'
 
 @register.simple_tag
 def latest_modification_string(dictionary):
@@ -90,16 +87,16 @@ def latest_modification_string(dictionary):
     return "created " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']).strftime("%m/%d/%Y %I:%M:%S %p"))
 
 FUNCTIONS_FOR_FORMATTING = { \
-  'string'         : lambda x, coown: string_value(x), \
-  'identifier'     : lambda x, coown: identifier_disp(x), \
-  'datetime'       : lambda x, coown: escape(datetime.datetime.fromtimestamp(x).strftime("%m/%d/%Y %I:%M %p")), \
-  'owner_lookup'   : lambda x, coown: id_lookup(x), \
-  'coowners'       : lambda x, coown: co_owner_disp(x, coown) }
+  'string'         : lambda x, coown, tp: string_value(x), \
+  'identifier'     : lambda x, coown, tp: identifier_disp(x, tp), \
+  'datetime'       : lambda x, coown, tp: escape(datetime.datetime.fromtimestamp(x).strftime("%m/%d/%Y %I:%M %p")), \
+  'owner_lookup'   : lambda x, coown, tp: id_lookup(x), \
+  'coowners'       : lambda x, coown, tp: co_owner_disp(x, coown) }
 
-def formatted_field(record, field_name, field_display_types, account_co_owners):
+def formatted_field(record, field_name, field_display_types, account_co_owners, testPrefixes):
   value = record[field_name]
   formatting = field_display_types[field_name]
-  return FUNCTIONS_FOR_FORMATTING[formatting](value, account_co_owners)
+  return FUNCTIONS_FOR_FORMATTING[formatting](value, account_co_owners, testPrefixes)
 
 def string_value(x):
   if x is None:
@@ -108,11 +105,11 @@ def string_value(x):
     return escape(x)
 
 @register.simple_tag  
-def identifier_disp(x):
-  if x.lower().find("/fk") >= 0:
-    return "<a href='/ezid/id/" + x + "' class='fakeid'>" + escape(x) + "</a>"
-  else:
-    return "<a href='/ezid/id/" + x + "'>" + escape(x) + "</a>"
+def identifier_disp(x, testPrefixes):
+  for pre in testPrefixes:
+    if x.startswith(pre['prefix']):
+      return "<a href='/ezid/id/" + x + "' class='fakeid'>" + escape(x) + "</a>"
+  return "<a href='/ezid/id/" + x + "'>" + escape(x) + "</a>"
   
   
 def co_owner_disp(x, coown):
