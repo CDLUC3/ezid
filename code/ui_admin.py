@@ -26,20 +26,24 @@ def add_user(request, ssl=False):
       not 'nu_select_uid' in request.POST or not 'nu_group' in request.POST:
     uic.badRequest()
   P = request.POST
-  if P['nu_uid'] == '' and P['nu_select_uid'] == '':
+  uid = P['nu_uid'].strip()
+  if uid == '':
     django.contrib.messages.error(request, 'You must enter a username or choose one to add a new user')
     return redirect("ui_admin.manage_users")
-  if P['nu_uid'] != '' and P['nu_select_uid'] != '':
-    django.contrib.messages.error(request, 'You may only enter a username or choose one to add a new user, but not both')
-    return redirect("ui_admin.manage_users")
-  uid = P['nu_uid'] or P['nu_select_uid']
-  if P["nu_uid"] != "":
-    r = ezidadmin.makeLdapUser(uid.strip())
+
+  if P['nu_user_status'] == 'new_user':
+    try:
+      r = idmap.getUserId(uid)
+      if r != '':
+        django.contrib.messages.error(request, 'The new user you are trying to add already exists.')
+        return redirect("ui_admin.manage_users") 
+    except AssertionError:
+      pass
+    r = ezidadmin.makeLdapUser(uid)
     if type(r) is str:
       django.contrib.messages.error(request, r)
       return redirect("ui_admin.manage_users")
-  r = ezidadmin.makeUser(uid.strip(), P["nu_group"],
-                         request.session["auth"].user, request.session["auth"].group)
+  r = ezidadmin.makeUser(uid, P["nu_group"], request.session["auth"].user, request.session["auth"].group)   
   if type(r) is str:
     django.contrib.messages.error(request, r)
     return redirect("ui_admin.manage_users")
@@ -47,7 +51,6 @@ def add_user(request, ssl=False):
     django.contrib.messages.success(request, "User successfully created")
     success_url = reverse("ui_admin.manage_users") + "?" + urlencode({'user': r[0]})
     return redirect(success_url)
-  
 
 def manage_users(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.manage_users' }
