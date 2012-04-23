@@ -13,7 +13,7 @@ div.top_area {
   height: 81px;
 }
 
-div#status{
+div#ustatus{
   text-align: center;
   /* margin: 8px 0 0 25px; */
 }
@@ -22,13 +22,13 @@ div.right-links{
   text-align: right;
 }
 
-div#status div, div#status p{
+div#ustatus div, div#ustatus p{
   color: #f38e0d;
   font-weight: bold;
   font-size: 120%;
 }
 
-div#status p.error {
+div#ustatus p.error {
   text-align: center;
   color: red;
 }
@@ -247,7 +247,7 @@ dd{
 	z-index:5;
 }
 
-.help_window div.close_button, #status div.close_button {
+.help_window div.close_button, #ustatus div.close_button {
 	float: right;
 	position: relative;
 	top: -8px;
@@ -255,7 +255,7 @@ dd{
 	font-size: 70%;
 }
 
-.help_window div.close_button img, #status div.close_button img {
+.help_window div.close_button img, #ustatus div.close_button img {
 	width: 16px;
 	height: 16px;
 }
@@ -321,7 +321,7 @@ tr.row2{
 	font-weight: bold;
 }
 
-div#status .notice_message, .notice_message{
+div#ustatus .notice_message, .notice_message{
 	font-weight: bold;
 	font-size: 12pt;
 	color: #555555;
@@ -390,7 +390,7 @@ div.main_content{
 	padding-right: 40px;
 }
 
-#status {
+#ustatus {
 	width:400px;
 	border:solid;
 	border-width: 1px;
