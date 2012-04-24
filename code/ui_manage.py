@@ -91,6 +91,7 @@ def index(request):
 
 def edit(request, identifier):
   d = { 'menu_item' : 'ui_manage.null'}
+  d["testPrefixes"] = uic.testPrefixes
   r = ezid.getMetadata(identifier)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
@@ -129,6 +130,7 @@ def edit(request, identifier):
 
 def details(request):
   d = { 'menu_item' : 'ui_manage.null'}
+  d["testPrefixes"] = uic.testPrefixes
   my_path = "/ezid/id/"
   identifier = unquote(request.path[len(my_path):])
   r = ezid.getMetadata(identifier)

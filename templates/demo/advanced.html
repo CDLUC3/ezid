@@ -4,7 +4,7 @@
 {% block title %}Create Advanced Demo ID{% endblock %}
 
 {% block content %}
-  <div class="grid_12 demo">
+  <div class="grid_12">
     <h1>Create ID</h1>
     <form id="create_form" action="{% url ui_demo.advanced %}" method="post">
       
@@ -29,7 +29,7 @@
   		<div style="padding:0px 0px 0px 10px;">
 		  	<h1>About Demo Identifiers</h1>
 		  	<p>
-		  		Demo identifiers are temporary identifiers for use in testing out the
+		  		<span class="fakeid">Demo identifiers</span> are temporary identifiers for use in testing out the
 		  		EZID service and workflow.  They may expire in two weeks or be deleted
 		  		at any time.
 		  	</p>

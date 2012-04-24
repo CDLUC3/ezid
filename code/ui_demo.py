@@ -12,6 +12,7 @@ def index(request):
 
 def simple(request):
   d = { 'menu_item' :'ui_demo.simple' }
+  d["testPrefixes"] = uic.testPrefixes
   d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['prefix']) #must be done before calliung form processing
   r = ui_create.simple_form_processing(request, d)
   if r == 'bad_request':
@@ -23,7 +24,7 @@ def simple(request):
 
 def advanced(request):
   d = { 'menu_item' : 'ui_demo.advanced' }
-  
+  d["testPrefixes"] = uic.testPrefixes
   d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['prefix']) #must be done before calling form processing
   r = ui_create.advanced_form_processing(request, d)
   if r == 'bad_request':

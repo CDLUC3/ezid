@@ -12,6 +12,7 @@ def index(request):
 
 def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
+  d["testPrefixes"] = uic.testPrefixes
   if uic.is_logged_in(request) == False: return redirect("ui_account.login")
   d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['prefix']) #must be done before calling form processing
   r = simple_form_processing(request, d)
@@ -24,6 +25,7 @@ def simple(request):
 
 def advanced(request):
   d = { 'menu_item' :'ui_create.advanced' }
+  d["testPrefixes"] = uic.testPrefixes
   if uic.is_logged_in(request) == False: return redirect("ui_account.login")
   d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['prefix']) #must be done before calling form processing
   r = advanced_form_processing(request, d)

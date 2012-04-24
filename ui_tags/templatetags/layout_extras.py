@@ -34,6 +34,13 @@ def tooltip_class(profile_element_string):
   return escape('element_' + profile_element_string.replace('.',''))
 
 @register.simple_tag
+def identifier_display(id_text, testPrefixes):
+  for pre in testPrefixes:
+    if id_text.startswith(pre['prefix']):
+      return "<span class='fakeid'>" + escape(id_text) + "</span>"
+  return escape(id_text)
+  
+@register.simple_tag
 def help_icon(id_of_help):
   return '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#' + id_of_help + '" name="help_link">' + \
     '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help"' + \
@@ -84,9 +91,12 @@ def selected_radio(context, request_item, loop_index, item_value):
     return 'checked="checked"'
   else:
     return ''
-  
+
 @register.simple_tag
-def shoulder_display(prefix_dict):
+def shoulder_display(prefix_dict, testPrefixes):
+  for pre in testPrefixes:
+    if prefix_dict['prefix'].startswith(pre['prefix']):
+      return escape(prefix_dict['namespace']) + " (<span class='fakeid'>" + escape(prefix_dict['prefix']) + "</span>)"
   return escape(prefix_dict['namespace'] + " (" + prefix_dict['prefix'] + ")")
 
 @register.simple_tag

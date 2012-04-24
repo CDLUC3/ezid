@@ -4,5 +4,5 @@
   {% for p in prefixes %}
     <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}"
           {% selected_radio "shoulder" forloop.counter p.prefix %} />
-    <label for="{{p.prefix}}">{% shoulder_display p %}</label><br/>
+    <label for="{{p.prefix}}">{% shoulder_display p testPrefixes %}</label><br/>
   {% endfor %}
