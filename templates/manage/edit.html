@@ -13,6 +13,10 @@
 
 {% block content %}
   <div class="grid_12">
+  	<div style="float:right">
+  		<img src="https://chart.googleapis.com/chart?chs=120x120&cht=qr&chld=L|0&chl={% full_url_to_id_details_urlencoded id_text %}"
+  		   alt="QR Code for {% full_url_to_id_details id_text %}" title="QR Code for {% full_url_to_id_details id_text %}"/>
+  	</div>
     <h1>Identifier Details</h1>
     <div class="left_desc">Identifier:</div>
     <div class="right_val">
@@ -22,7 +26,7 @@
        {% include "includes/get_link.html" %}
     </div>
     
-    <div style="clear:both;"></div>
+    <div style="clear:left;"></div>
     
     <h2>About the identified object</h2>
     <form id="edit_form" action="{% url ui_manage.edit id_text %}" method="post">

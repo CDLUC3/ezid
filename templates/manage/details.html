@@ -11,8 +11,8 @@
 {% block content %}
   <div class="grid_12">
   	<div style="float:right">
-  		<img src="https://chart.googleapis.com/chart?chs=120x120&cht=qr&chld=L|0&chl={{ target|urlencode }}"
-  		   alt="QR Code for {{target}}" title="QR Code for {{target}}"/>
+  		<img src="https://chart.googleapis.com/chart?chs=120x120&cht=qr&chld=L|0&chl={% full_url_to_id_details_urlencoded id_text %}"
+  		   alt="QR Code for {% full_url_to_id_details id_text %}" title="QR Code for {% full_url_to_id_details id_text %}"/>
   	</div>
   	<div>
 	    <h1>Identifier Details</h1>

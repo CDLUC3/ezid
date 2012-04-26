@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.html import escape
 from decorators import basictag
 from django.core.urlresolvers import reverse
+import urllib
 #import pdb
 #import datetime
 
@@ -111,8 +112,15 @@ def search_display(dictionary, field):
 def full_url_to_id_details(context, id_text):
   """return full url to id details for id specified, including domain"""
   request = context['request']
-  return "http://" + request.get_host() +"/ezid/id/" + id_text
+  return escape("http://" + request.get_host() +"/ezid/id/" + id_text)
   #return request.build_absolute_uri(reverse('ui_manage.details', args=[id_text]))
+  
+@register.tag
+@basictag(takes_context=True)
+def full_url_to_id_details_urlencoded(context, id_text):
+  """return full url to id details for id specified, including domain and urlencoded"""
+  request = context['request']
+  return urllib.quote("http://" + request.get_host() +"/ezid/id/" + id_text)
 
   
 #This captures the block around with rounded corners go, can't believe what a PITA this is in django
