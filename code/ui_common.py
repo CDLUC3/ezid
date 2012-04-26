@@ -134,7 +134,7 @@ def jsonResponse (data):
 
 redirect = django.http.HttpResponseRedirect
 
-def _error (code):
+def error (code):
   content = templates[str(code)].render(django.template.Context())
   return django.http.HttpResponse(content, status=code)
 
