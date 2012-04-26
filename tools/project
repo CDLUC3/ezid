@@ -16,7 +16,7 @@
 #   -o            one line per identifier: convert newlines to spaces
 #   -s SEPARATOR  field separator (defaults to space)
 #   -t            format timestamps
-#   -z            gunzip the input (useful when reading from dump)
+#   -z            gunzip the input
 #
 # If values are decoded, they are re-UTF-8-encoded when output.  Note
 # that identifiers themselves are never encoded.
@@ -51,7 +51,7 @@ p.add_option("-s", action="store", type="string", dest="separator",
 p.add_option("-t", action="store_true", dest="formatTimestamps",
   default=False, help="format timestamps")
 p.add_option("-z", action="store_true", dest="gunzipInput",
-  default=False, help="gunzip the input (useful when reading from dump)")
+  default=False, help="gunzip the input")
 options, fields = p.parse_args()
 
 if options.gunzipInput:

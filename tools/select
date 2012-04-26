@@ -7,8 +7,8 @@
 #
 # This script reads identifier records as output by the 'dump' script,
 # applies a constraint expression to each, and writes the successful
-# records to standard output.  Whereas the input is assumed to be
-# gzip-compressed, the output is not compressed.
+# records to standard output.  If the -z option is given, the input is
+# assumed to be gzip-compressed.  The output is never compressed.
 #
 # The constraint expression is specified directly on the command line.
 # A basic constraint has the form
@@ -388,8 +388,14 @@ def consumeTimestamp (consumed, query):
   del query[0]
   return t
 
+if len(sys.argv) > 1 and sys.argv[1] == "-z":
+  gunzipInput = True
+  query = sys.argv[2:]
+else:
+  gunzipInput = False
+  query = sys.argv[1:]
+
 consumed = []
-query = sys.argv[1:]
 try:
   constraint = consumeExpression(consumed, query)
   assert len(query) == 0, "extra terms follow complete query"
@@ -406,7 +412,12 @@ except AssertionError, e:
     "QUERY:%s ***%s\n") % (e.message, c, q))
   sys.exit(1)
 
-for l in gzip.GzipFile(fileobj=sys.stdin, mode="r"):
+if gunzipInput:
+  infile = gzip.GzipFile(fileobj=sys.stdin, mode="r")
+else:
+  infile = sys.stdin
+
+for l in infile:
   lv = l[:-1].split(" ")
   record = { "_id": lv[0] }
   for i in range(1, len(lv), 2):
