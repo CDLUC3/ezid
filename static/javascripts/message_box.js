@@ -25,7 +25,7 @@ $(document).ready(function() {
     if(autohide){
     	window.setTimeout(function() {
  				$('#ustatus').fadeOut('slow');
-			}, $('#ustatus').height() * 50);
+			}, $('#ustatus').height() * 70);
 		}
 
     
