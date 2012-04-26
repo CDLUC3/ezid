@@ -19,6 +19,7 @@ def index(request):
                     'RSS Feed Unavailable', settings.RSS_FEED)
   d['feed_cache'] = feed_cache
   d['rss_feed'] = settings.RSS_FEED
+  d['ezid_home_url'] = "http://" + request.get_host() +"/ezid/"
   return uic.render(request, 'info/index', d)
 
 def community(request):
