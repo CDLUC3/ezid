@@ -3,4 +3,4 @@
 5 0 * * 0 /n2t/sw/bin/sqlite3 /n2t/apache/ezid/SITE/db/django.sqlite3 vacuum
 5 0 * * 0 /n2t/sw/bin/sqlite3 /n2t/apache/ezid/SITE/db/search.sqlite3 vacuum
 10 0 * * 0 env PYTHONPATH=/n2t/apache/ezid/SITE/PROJECT DJANGO_SETTINGS_MODULE=settings.production /n2t/sw/bin/python /n2t/apache/ezid/SITE/PROJECT/tools/expunge /noid/nd/g3/NOID/noid.bdb http://noid.cdlib.org/nd/noidu_g3
-20 0 2 * * env PYTHONPATH=/n2t/apache/ezid/SITE/PROJECT/code /n2t/sw/bin/python /n2t/apache/ezid/SITE/PROJECT/tools/stats /noid/nd/g3/NOID/noid.bdb http://stats.cdlib.org:9005
+20 0 2 * * env PYTHONPATH=/n2t/apache/ezid/SITE/PROJECT/code /n2t/sw/bin/python /n2t/apache/ezid/SITE/PROJECT/tools/dashboard /noid/nd/g3/NOID/noid.bdb http://stats.cdlib.org:9005

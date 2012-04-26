@@ -19,9 +19,9 @@
 #
 # Usage:
 #
-#   stats dbfile dashurl
-#   stats --compute-only dbfile > data
-#   stats --upload-only dashurl < data
+#   dashboard dbfile dashurl
+#   dashboard --compute-only dbfile > data
+#   dashboard --upload-only dashurl < data
 #
 #     dbfile: bind database file (noid.bdb)
 #     dashurl: dashboard base URL (http://host:port)
@@ -47,9 +47,9 @@ urnPrefix = "97720/"
 
 usageText = """Usage:
 
-  stats dbfile dashurl
-  stats --compute-only dbfile > data
-  stats --upload-only dashurl < data
+  dashboard dbfile dashurl
+  dashboard --compute-only dbfile > data
+  dashboard --upload-only dashurl < data
 
     dbfile: bind database file (noid.bdb)
     dashurl: dashboard base URL (http://host:port)

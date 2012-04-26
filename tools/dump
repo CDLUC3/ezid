@@ -5,9 +5,8 @@
 #
 #    dump noid.bdb | select constraints... | project fields...
 #
-# This script dumps a noid bind database to standard output.  The
-# output is gzip-compressed.  One line is written per identifier using
-# the space-separated format
+# This script dumps a noid bind database to standard output.  One line
+# is written per identifier using the space-separated format
 #
 #    identifier label value label value ...
 #
@@ -32,6 +31,8 @@
 # shadow ARK's _target field and its _st field is output as the
 # shadowed identifier's _target field.  If the -s option is not
 # specified, shadow ARKs are not output at all.
+#
+# If the -z option is specified, the output is gzip-compressed.
 #
 # This script requires several EZID modules.  The PYTHONPATH
 # environment variable must include the .../SITE_ROOT/PROJECT_ROOT
@@ -87,11 +88,13 @@ labelMapping = {
   "_is": "_status"
 }
 
-p = optparse.OptionParser(usage="%prog [-ns] noid.bdb")
+p = optparse.OptionParser(usage="%prog [-nsz] noid.bdb")
 p.add_option("-n", action="store_false",
   dest="convertAgents", default=True, help="do NOT convert agent identifiers")
 p.add_option("-s", action="store_true",
   dest="includeShadowArks", default=False, help="include shadow ARKs")
+p.add_option("-z", action="store_true",
+  dest="gzipOutput", default=False, help="gzip output")
 options, args = p.parse_args()
 if len(args) != 1: p.error("wrong number of arguments")
 dbfile = args[0]
@@ -109,7 +112,10 @@ if options.convertAgents:
     sys.exit(1)
   for u in users: agentMap[u["arkId"]] = u["uid"]
 
-outfile = gzip.GzipFile(fileobj=sys.stdout, mode="w")
+if options.gzipOutput:
+  outfile = gzip.GzipFile(fileobj=sys.stdout, mode="w")
+else:
+  outfile = sys.stdout
 
 def outputRecord1 (id, record):
   outfile.write(id)
