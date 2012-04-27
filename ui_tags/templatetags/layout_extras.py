@@ -133,13 +133,17 @@ def do_rounded_borders(parser, token):
 class FormatRoundedBordersNode(template.Node):
   def __init__(self,nodelist):
     self.nodelist = nodelist
-    
+
   def render(self, context):
     content = self.nodelist.render(context)
-    return """<div class="rb1"><div class="rb2"><div class="rb3"><div class="rb4">
-    <div class="rb5"><div class="rb6"><div class="rb7"><div class="rb8">
+    return """<div class="roundbox">
+        <img src="/ezid/static/images/corners/tl.gif" class="roundtl" />
+        <img src="/ezid/static/images/corners/tr.gif" class="roundtr" />
+        <img src="/ezid/static/images/corners/bl.gif" class="roundbl" />
+        <img src="/ezid/static/images/corners/br.gif" class="roundbr" />
+        <div class="roundboxpad">
     %(content)s
-    </div></div></div></div></div></div></div></div>""" % {'content':content,}
+    </div></div>""" % {'content':content,}
     
 
   

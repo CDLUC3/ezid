@@ -156,6 +156,55 @@ div.rc4 {
   background: url(/ezid/static/layout_test/corners/solid_tr.gif) 100% 0 no-repeat;
 }
 
+
+div.roundbox {
+	border-color: #b99672;
+	border-style:solid;
+	border-width:1px;
+	width:100%;
+	position: relative;
+}
+
+div.roundboxpad {
+	margin: 10px 15px 10px 15px;
+}
+
+.roundtl {
+	width: 6px;
+	height: 6px;
+	position:absolute;
+	z-index: 1;
+	top:-1px;
+	left:-1px;
+}
+
+.roundtr {
+	width: 6px;
+	height: 6px;
+	position:absolute;
+	z-index: 1;
+	top:-1px;
+	right:-1px;
+}
+
+.roundbl {
+	width: 6px;
+	height: 6px;
+	position:absolute;
+	z-index: 1;
+	bottom:-1px;
+	left:-1px;
+}
+
+.roundbr {
+	width: 6px;
+	height: 6px;
+	position:absolute;
+	z-index: 1;
+	bottom:-1px;
+	right:-1px;
+}
+
 ul.linklist {
   list-style-type: none;
   padding: 0;
