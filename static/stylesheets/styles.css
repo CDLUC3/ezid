@@ -35,6 +35,8 @@ div#ustatus p.error {
 
 div.menu_main{
   background-color: #f5f5f5;
+  /* border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px; */
  	/* background-color: #fff2e4; */
   padding: 7px 10px 7px 10px;
   font-size: 130%;
@@ -174,6 +176,9 @@ div.squarebox {
 	border-color: #b99672;
 	border-style:solid;
 	border-width:1px;
+	/*
+	border-radius: 5px 5px 5px 5px;
+	-moz-border-radius: 5px 5px 5px 5px; */
 }
 
 .roundtl {
