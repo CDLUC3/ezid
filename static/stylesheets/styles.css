@@ -34,7 +34,8 @@ div#ustatus p.error {
 }
 
 div.menu_main{
-  background-color: #f5f5f5;
+  /* background-color: #f5f5f5; */
+ 	background-color: #fff2e4;
   padding: 7px 10px 7px 10px;
   font-size: 130%;
 }
@@ -45,7 +46,7 @@ div.menu_main div{
 }
 
 div.menu_main a{
-  color: #555555;
+  color: #222222;
   text-decoration: none;
 }
 
@@ -67,7 +68,7 @@ span.menu_current{
 }
 
 span.menu_disabled{
-  color: #999999;
+  color: #777777;
 }
 
 div.menu_main a.menu_current{
@@ -165,8 +166,14 @@ div.roundbox {
 	position: relative;
 }
 
-div.roundboxpad {
+div.roundboxpad, div.squareboxpad {
 	margin: 10px 15px 10px 15px;
+}
+
+div.squarebox {
+	border-color: #b99672;
+	border-style:solid;
+	border-width:1px;
 }
 
 .roundtl {
