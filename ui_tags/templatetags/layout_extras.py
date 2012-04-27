@@ -137,10 +137,10 @@ class FormatRoundedBordersNode(template.Node):
   def render(self, context):
     content = self.nodelist.render(context)
     return """<div class="roundbox">
-        <img src="/ezid/static/images/corners/tl.gif" class="roundtl" />
-        <img src="/ezid/static/images/corners/tr.gif" class="roundtr" />
-        <img src="/ezid/static/images/corners/bl.gif" class="roundbl" />
-        <img src="/ezid/static/images/corners/br.gif" class="roundbr" />
+        <img src="/ezid/static/images/corners/tl.gif" width="6" height="6" class="roundtl" />
+        <img src="/ezid/static/images/corners/tr.gif" width="6" height="6" class="roundtr" />
+        <img src="/ezid/static/images/corners/bl.gif" width="6" height="6" class="roundbl" />
+        <img src="/ezid/static/images/corners/br.gif" width="6" height="6" class="roundbr" />
         <div class="roundboxpad">
     %(content)s
     </div></div>""" % {'content':content,}
