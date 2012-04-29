@@ -32,12 +32,13 @@ class Element (object):
   """
   A metadata element.
   """
-  def __init__ (self, name, displayName, tooltip):
+  def __init__ (self, name, displayName, displayType, tooltip):
     self.name = name
     self.displayName = displayName
+    self.displayType = displayType
     self.tooltip = tooltip
   def clone (self):
-    return Element(self.name, self.displayName, self.tooltip)
+    return Element(self.name, self.displayName, self.displayType, self.tooltip)
 
 class Profile (object):
   """
@@ -60,7 +61,8 @@ class Profile (object):
 
 _empty = re.compile("\s*$")
 _pattern = re.compile(
-  "\s*^element:([^\n]*)\ndisplayname:([^\n]*)\ntooltip:(.*?)\n\n", re.M|re.S)
+  "\s*^element:([^\n]*)\ndisplayname:([^\n]*)\ndisplaytype:([^\n]*)\n" +\
+  "tooltip:(.*?)\n\n", re.M|re.S)
 
 def _loadElements (file):
   f = open(file)
@@ -71,7 +73,7 @@ def _loadElements (file):
     m = _pattern.match(s)
     assert m, "profile parse error: " + file
     l.append(Element(m.group(1).strip(), m.group(2).strip(),
-      m.group(3).strip()))
+      m.group(3).strip(), m.group(4).strip()))
     s = s[m.end():]
   return l
 

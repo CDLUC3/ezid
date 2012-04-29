@@ -2,6 +2,7 @@
 #
 # element: ...
 # displayname: ...
+# displaytype: 'text', 'datetime', 'url', 'boolean', or 'status'
 # tooltip: ...
 # ... XHTML content ...
 #                        <-- 1+ blank lines
@@ -10,6 +11,7 @@
 
 element: erc
 displayname: ERC
+displaytype: text
 tooltip:
 <b><u>ERC</u></b><br/>
 An ANVL-formatted block of ERC (Electronic Resource Citation)
@@ -17,6 +19,7 @@ metadata.
 
 element: erc.who
 displayname: Who
+displaytype: text
 tooltip:
 <b><u>Who</u></b><br/>
 The name of an entity (person, organization, or service) responsible
@@ -34,6 +37,7 @@ sort-friendly word order).
 
 element: erc.what
 displayname: What
+displaytype: text
 tooltip:
 <b><u>What</u></b><br/>
 A name or other human-oriented identifier given to the resource.  For
@@ -45,6 +49,7 @@ the "Who" element.
 
 element: erc.when
 displayname: When
+displaytype: text
 tooltip:
 <b><u>When</u></b><br/>
 A point or period of time important in the lifecycle of the resource,

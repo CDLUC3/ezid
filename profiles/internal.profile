@@ -2,6 +2,7 @@
 #
 # element: ...
 # displayname: ...
+# displaytype: 'text', 'datetime', 'url', 'boolean', or 'status'
 # tooltip: ...
 # ... XHTML content ...
 #                        <-- 1+ blank lines
@@ -10,6 +11,7 @@
 
 element: _urlform
 displayname: URL form
+displaytype: url
 tooltip:
 <b><u>URL form of identifier</u></b><br/>
 The identifier expressed as a URL.  Following this URL in a browser
@@ -25,6 +27,7 @@ form"&gt;identifier&lt;/a&gt;</font>
 
 element: _status
 displayname: Status
+displaytype: status
 tooltip:
 <b><u>Status</u></b><br/>
 The identifier's status.  "<font face="Courier">public</font>"
@@ -37,16 +40,19 @@ for the object's unavailability may be given.
 
 element: _target
 displayname: URL
+displaytype: url
 tooltip:
 <b><u>Object location URL</u></b><br/>
 The current location (URL) of the identified object.
 
 element: _profile
 displayname: Profile
+displaytype: text
 tooltip:
 
 element: _owner
 displayname: Owner
+displaytype: text
 tooltip:
 <b><u>Owner</u></b><br/>
 The identifier's owner.  Only the owner and any account-wide or
@@ -54,12 +60,14 @@ per-identifier co-owners may modify the identifier.
 
 element: _ownergroup
 displayname: Owner group
+displaytype: text
 tooltip:
 <b><u>Owner group</u></b><br/>
 The identifier's owner group.
 
 element: _coowners
 displayname: Co-owners
+displaytype: text
 tooltip:
 <b><u>Co-owners</u></b><br/>
 The identifier's co-owners (additional users who may modify the
@@ -67,18 +75,21 @@ identifier).
 
 element: _created
 displayname: Created
+displaytype: datetime
 tooltip:
 <b><u>Created</u></b><br/>
 The UTC date and time the identifier was created.
 
 element: _updated
 displayname: Updated
+displaytype: datetime
 tooltip:
 <b><u>Updated</u></b><br/>
 The UTC date and time the identifier was last updated.
 
 element: _shadowedby
 displayname: Shadow ARK
+displaytype: text
 tooltip:
 <b><u>Shadow ARK</u></b><br/>
 An independent but related ARK identifier.  The shadow ARK has the
@@ -88,6 +99,7 @@ resolution to subcomponents of the identified object.
 
 element: _shadows
 displayname: Shadowed identifier
+displaytype: text
 tooltip:
 <b><u>Shadowed identifier</u></b><br/>
 This identifier is a "shadow ARK" that shadows another identifier.  A

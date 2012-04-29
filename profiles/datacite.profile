@@ -2,6 +2,7 @@
 #
 # element: ...
 # displayname: ...
+# displaytype: 'text', 'datetime', 'url', 'boolean', or 'status'
 # tooltip: ...
 # ... XHTML content ...
 #                        <-- 1+ blank lines
@@ -10,12 +11,14 @@
 
 element: datacite
 displayname: DataCite
+displaytype: special
 tooltip:
 <b><u>DataCite</u></b><br/>
 A complete DataCite Metadata Scheme record.
 
 element: datacite.creator
 displayname: Creator
+displaytype: text
 tooltip:
 <b><u>Creator</u></b><br/>
 The main researchers involved in producing the data, or the authors of
@@ -28,12 +31,14 @@ schemes.
 
 element: datacite.title
 displayname: Title
+displaytype: text
 tooltip:
 <b><u>Title</u></b><br/>
 A name or title by which the data or publication is known.
 
 element: datacite.publisher
 displayname: Publisher
+displaytype: text
 tooltip:
 <b><u>Publisher</u></b><br/>
 A holder of the data (e.g., an archive) or the institution which
@@ -43,6 +48,7 @@ research community.
 
 element: datacite.publicationyear
 displayname: Publication year
+displaytype: text
 tooltip:
 <b><u>Publication year</u></b><br/>
 The year when the data was or will be made publicly available.  If an

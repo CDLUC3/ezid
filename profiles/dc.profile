@@ -2,6 +2,7 @@
 #
 # element: ...
 # displayname: ...
+# displaytype: 'text', 'datetime', 'url', 'boolean', or 'status'
 # tooltip: ...
 # ... XHTML content ...
 #                        <-- 1+ blank lines
@@ -10,6 +11,7 @@
 
 element: dc.creator
 displayname: Creator
+displaytype: text
 tooltip:
 <b><u>Creator</u></b><br/>
 An entity primarily responsible for making the content of the
@@ -19,6 +21,7 @@ indicate the entity.
 
 element: dc.title
 displayname: Title
+displaytype: text
 tooltip:
 <b><u>Title</u></b><br/>
 A name given to the resource.  Typically, a Title will be a name by
@@ -26,6 +29,7 @@ which the resource is formally known.
 
 element: dc.publisher
 displayname: Publisher
+displaytype: text
 tooltip:
 <b><u>Publisher</u></b><br/>
 An entity responsible for making the resource available.  Examples of
@@ -35,6 +39,7 @@ entity.
 
 element: dc.date
 displayname: Date
+displaytype: text
 tooltip:
 <b><u>Date</u></b><br/>
 A date associated with an event in the life cycle of the resource.
