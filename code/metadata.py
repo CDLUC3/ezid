@@ -104,8 +104,8 @@ $(document).ready(function () {
 """
 
 def _writeTooltips ():
-  f = open(os.path.join(django.conf.settings.PROJECT_ROOT, "static/javascripts",
-    "metadata_tooltips.js"), "w")
+  f = open(os.path.join(django.conf.settings.PROJECT_ROOT, "static",
+    "javascripts", "metadata_tooltips.js"), "w")
   f.write(_header)
   for p in _profiles:
     for e in p.elements:

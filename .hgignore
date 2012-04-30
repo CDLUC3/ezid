@@ -1,7 +1,7 @@
 \.pyc$
 ~$
 ^settings/ezid\.conf\.shadow$
-^static/metadata_tooltips\.js$
+^static/javascripts/metadata_tooltips\.js$
 ^templates/info/.*
 \.project$
 \.pydevproject$
