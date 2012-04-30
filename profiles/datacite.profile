@@ -47,4 +47,3 @@ tooltip:
 The year when the data was or will be made publicly available.  If an
 embargo period is in effect, use the year when the embargo period
 ends.
-
