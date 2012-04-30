@@ -1,0 +1,102 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+
+{% block title %}My Account{% endblock %}
+
+{% block content %}
+  <div class="grid_12">
+    <h1>My Account</h1>
+    <h2>Account Information</h2>
+    
+    <form autocomplete="off" id="edit_form" action="{% url ui_account.edit %}" method="post" >
+      <div class="left_desc">Username:</div>
+      <div class="right_val">{{ username }}</div>
+      
+      <div>
+        <div style="float:left; width:350px;">
+          <label for="givenName" class="left">
+            First name:
+          </label>
+          <div class="field_right" style="width: 230px;">
+            <input type="text" name="givenName" id="givenName" size="25"
+                value="{{ givenName }}" />
+          </div>
+        </div>
+        
+        <div style="float:left; width: 350px;">
+          <label for="sn" class="left" style="text-align:right;">
+            Last name:&nbsp;&nbsp;&nbsp;
+          </label>
+          <div class="field_right" style="width: 230px;">
+            <input type="text" name="sn" id="sn" size="25"
+                value="{{ sn }}" />
+          </div>
+        </div>
+      </div>
+      
+      <label for="mail" class="left">
+        Email address:
+      </label>
+      <div class="field_right">
+        <input type="text" name="mail" id="mail" size="25"
+            value="{% form_or_default "mail" mail %}" />
+      </div>
+      
+      <label for="telephoneNumber" class="left">
+        Phone number:
+      </label>
+      <div class="field_right">
+        <input type="text" name="telephoneNumber" id="telephoneNumber" size="25"
+            value="{{ telephoneNumber }}" />
+      </div>
+      
+      
+      <div style="clear:both">&nbsp;</div>
+      <label for="ezidCoOwners" class="left">
+        Co-owners:
+      </label>
+      <div class="field_right">
+        <input type="text" name="ezidCoOwners" id="ezidCoOwners" size="35"
+            value="{{ ezidCoOwners }}" />{% help_icon "coowners_help" %}
+      </div>
+
+      <label class="left" style="margin: 5px 0 0 0;">&nbsp;</label>
+      <div class="field_right" style="margin: 5px 0 0 0;font-size:85%;">
+        Use commas to separate multiple entries.
+      </div>
+      <div style="clear:both">&nbsp;</div>
+      <h2>Change Password</h2>
+      
+      <label for="pwcurrent" class="left">
+        Current password:
+      </label>
+      <div class="field_right">
+        <input type="password" name="pwcurrent" id="pwcurrent" size="25" value="" autocomplete="off" />
+      </div>
+      
+      <label for="pwnew" class="left">
+        New password:
+      </label>
+      <div class="field_right">
+        <input type="password" name="pwnew" id="pwnew" size="25" value="" autocomplete="off" />
+      </div>
+     
+      <label for="pwconfirm" class="left">
+        Confirm new password:
+      </label>
+      <div class="field_right">
+        <input type="password" name="pwconfirm" id="pwconfirm" size="25" value="" autocomplete="off" />
+      </div>
+      
+      <label class="left">&nbsp;</label>
+      <div class="field_right">
+        <input type="submit" value="Save" />
+      </div>
+      <div style="clear:both">&nbsp;</div>   
+    </form>
+    
+  </div>
+  
+  {% include "info/popup_help.html" %}
+  <script type="text/javascript" src="/ezid/static/javascripts/help_box.js"></script>
+{% endblock %}

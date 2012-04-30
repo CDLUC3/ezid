@@ -1,0 +1,29 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+
+{% block title %}EZID : Login{% endblock %}
+
+{% block content %}
+  <div class="grid_12">
+    <h1>Login</h1>
+    <form method="post" action="/ezid/login">
+      <label for="username" class="left">Username</label>
+      <div class="field_right">
+        <input type="text" id="username" name="username" size="20" value="{{ username }}"/>
+      </div>
+      <label for="password" class="left">Password</label>
+      <div class="field_right">
+        <input type="password" id="password" name="password" size="20" value="{{ password }}"/>
+      </div>
+      <label for="login" class="left">&nbsp;</label>
+      <div class="field_right">
+        <input type="submit" id="login" name="login" value="Login" />
+      </div>
+    </form>
+    
+    <div style="clear:both;">&nbsp;</div>
+
+		<p>If you do not already have an account, please <a href="{% url ui_home.contact %}">contact us</a></p>
+		<p>If you have forgotten your password, request <a href="{% url ui_account.pwreset %}">a password reset</a></p>    
+  </div>
+{% endblock %}

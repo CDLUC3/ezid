@@ -1,0 +1,70 @@
+{% load layout_extras %}
+
+<div id="preview_div" style="width:180px;float:right;">
+  <h2>Identifier Preview:</h2>
+  <div id="preview_div_value"></div>
+</div>
+<div style="float:left;">
+  <div style="margin-top: 1em;">
+    <h2 style="display:inline;">Step 2: Optional: Add a custom remainder</h2>{% help_icon "remainder_guidelines" %}
+  </div>
+  <div style="padding:1em 0 0 1em;clear:both;">
+    <input type="text" name="remainder" id="remainder" size="35"
+        value="{% form_or_default "remainder" remainder_box_default %}"/>
+  </div>
+</div>
+
+<script type="text/javascript">
+  // deal with custom remainder and previews
+  $('#remainder').focus(function() {
+    $(this).select();
+	}).mouseup(function() {
+		// this is to hack around Safari problems in which the ordering
+		// of events means that any selection made by a click gets immediately
+		// de-selected (thus the timer)
+    if ($(this).val() === '{{remainder_box_default}}')
+    {
+    	var _self = this;
+	    setTimeout(function(){ _self.select()},30)
+    }
+	});
+
+  var remainderValue = '';
+  $(function () {
+    setInterval(checkRemainderChanged,0.25);
+  });
+  
+  function checkRemainderChanged() {
+    var currentValue = $('#remainder').val();
+    if (currentValue != remainderValue){
+      if(currentValue.length < 1 || currentValue == '{{ remainder_box_default }}'){
+        $('#preview_div_value').html('');
+        $('#preview_div').css('display', 'none');
+        $('#remainder').css('font-style', 'italic');
+        $('#remainder').css('color', 'gray');
+      }else if(currentValue.indexOf(' ')>=0 || currentValue.length > 25){
+        $('#preview_div_value').html('Invalid remainder');
+        $('#preview_div').css('display', 'block');
+        $('#preview_div_value').css('color', 'red');
+        $('#remainder').css('font-style', 'normal');
+        $('#remainder').css('color', 'black');
+      }else{
+        $('#preview_div_value').html(
+                $('#create_form input:radio[name=shoulder]:checked').val()  + $('#remainder').val());
+        $('#preview_div').css('display', 'block');
+        $('#preview_div_value').css('color', 'black');
+        $('#remainder').css('font-style', 'normal');
+        $('#remainder').css('color', 'black');
+      }
+      remainderValue = currentValue; 
+    }
+  }
+  
+  // to force recalculation of preview when shoulder radio changed
+  $('#create_form input:radio[name=shoulder]').change(function(){
+    remainderValue = (new Date()).valueOf(); // triggers as changed from old value
+  });
+  checkRemainderChanged();
+</script>
+
+<div style="clear:both">&nbsp;</div>

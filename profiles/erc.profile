@@ -9,14 +9,6 @@
 # element:
 # etc.
 
-element: erc
-displayname: ERC
-displaytype: text
-tooltip:
-<b><u>ERC</u></b><br/>
-An ANVL-formatted block of ERC (Electronic Resource Citation)
-metadata.
-
 element: erc.who
 displayname: Who
 displaytype: text

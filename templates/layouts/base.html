@@ -1,0 +1,54 @@
+{% load layout_extras %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>EZID: {% block title %}Identifiers made easy{% endblock %}</title>
+    
+    <link rel="stylesheet" type="text/css" media="all" href="/ezid/static/stylesheets/reset.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="/ezid/static/stylesheets/960.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="/ezid/static/stylesheets/text.css" />
+
+    <link rel="shortcut icon" href="/ezid/static/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="/ezid/static/stylesheets/styles.css"/>
+
+    <script type="text/javascript" src="/ezid/static/javascripts/jquery.js"></script>
+    <script type="text/javascript" src="/ezid/static/javascripts/base.js"></script>
+    <script type="text/javascript" src="/ezid/static/javascripts/jquery.tooltip.js"></script>
+
+    {% block header %}{% endblock %}
+    <script type="text/javascript">/*<![CDATA[*/
+      areMessages = {% if messages %}true{% else %}false{% endif %};
+      {% block javascript %}{% endblock %}
+    /*]]>*/</script>
+    
+    <script type="text/javascript">
+  		var _gaq = _gaq || [];
+  		_gaq.push(['_setAccount', '{% settings_value "GOOGLE_ANALYTICS_ACCOUNT" %}']);
+  		_gaq.push(['_trackPageview']);
+
+  		(function() {
+    		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  		})();
+		</script>
+  </head>
+  <body>
+    <div class="container_16">
+      {% include "includes/logo.html" %}
+      {% include "includes/user_menu.html" %}
+      {% include "includes/status.html" %}
+      {% include "includes/top_menu.html" %}    
+      {% block content %}{% endblock %}
+      
+      {% include "includes/footer.html" %}
+    </div>
+    <script type="text/javascript" src="/ezid/static/javascripts/metadata_tooltips.js"></script>
+    <script type="text/javascript">
+    	$('input:visible:enabled').first().focus();
+    	window.scrollTo(0, 0);
+    </script>
+    <script type="text/javascript" src="/ezid/static/javascripts/message_box.js"></script>
+</html>

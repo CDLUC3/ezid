@@ -4,6 +4,7 @@ import os.path
 import socket
 import sys
 
+
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 SITE_ROOT = os.path.split(PROJECT_ROOT)[0]
 SETTINGS_DIR = os.path.join(PROJECT_ROOT, "settings")
@@ -12,6 +13,7 @@ EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
 LOGGING_CONFIG_FILE = "logging.server.conf"
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))
+
 
 # Workaround for an obscure Django bug: when running under Apache (and
 # only under Apache), certain rewriting of the request URL (for
@@ -29,7 +31,8 @@ TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
   ("Greg Janee", "gjanee@ucop.edu"),
-  ("John Kunze", "john.kunze@ucop.edu")
+  ("John Kunze", "john.kunze@ucop.edu"),
+  ("Scott Fisher", "sfisher@ucop.edu")
 )
 MANAGERS = ADMINS
 
@@ -66,14 +69,21 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = "settings.urls"
 
-TEMPLATE_LOADERS = ("django.template.loaders.filesystem.Loader",)
+RSS_FEED = "http://www.cdlib.org/cdlinfo/category/digital-preservation/feed/?s=ezid"
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+TEMPLATE_LOADERS = ("django.template.loaders.filesystem.Loader",
+                    "django.template.loaders.app_directories.load_template_source")
 TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
 TEMPLATE_CONTEXT_PROCESSORS =\
-  ("django.contrib.messages.context_processors.messages",)
+  ("django.contrib.messages.context_processors.messages",
+   "django.core.context_processors.request", )
 
 INSTALLED_APPS = (
   "django.contrib.sessions",
-  "django.contrib.messages"
+  "django.contrib.messages",
+  "ui_tags",
 )
 
 SESSION_COOKIE_PATH = "/ezid/"

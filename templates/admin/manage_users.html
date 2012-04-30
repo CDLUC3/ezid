@@ -1,0 +1,134 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Manage User Accounts{% endblock %}
+
+{% block content %}
+  <div class="grid_12">
+    <h1>Manage User Accounts</h1>
+    
+    <div class="dialog_window" id="addnew_dialog">
+    	<form id="new_user_form" action="{% url ui_admin.add_user %}" method="post">
+    			
+				<label class="left" for="nu_uid">Username:</label>
+				<div class="field_right">
+					<input type="text" id="nu_uid" name="nu_uid" size="15"/>&nbsp;&nbsp; e.g. jdoe
+				</div>
+				
+				<label class="left" for="nu_user_status">User status:</label>
+				<div class="field_right">
+					<input id="new_user" type="radio" checked="checked" value="new_user" name="nu_user_status"/>
+					<label for="new_user">New user</label><br/>
+					
+					<input id="existing_user" type="radio" value="existing_user" name="nu_user_status"/>
+					<label for="existing_user">Existing LDAP user</label>
+				</div>
+		
+				<label class="left" for="nu_group">Group</label>
+				<div class="field_right">
+					<select id='nu_group' name='nu_group'>
+						{% for u in groups %}
+							<option value='{{u.dn}}'>{{u.gid}}</option>
+						{% endfor %}
+					</select>
+				</div>
+				
+				<label class="left">&nbsp;</label>		
+				<div class="field_right">
+					<input type="submit" value="Create new user"/>&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href='#close' class="close">cancel</a>
+				</div>
+    	</form>
+    </div>
+    
+    
+    <form id="edit_form" action="{% url ui_admin.manage_users %}" method="post">
+    	
+    	<label class="left" for="user">Username:</label>
+    	<div class="field_right">
+    		<select id='user' name='user'>
+    			{% for u in users %}
+    				<option value='{{u.dn}}'
+    				  {% if u.dn == user.dn %}
+    				  	selected="selected"
+    				  {% endif %}
+    				>{{u.uid}}</option>
+    			{% endfor %}
+    		</select>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#addnew_dialog" name="modal" />Create a new user</a>
+    		
+    		<input type="hidden" name="original_user" value="{{user.dn}}" />
+    	</div>
+    	
+    	
+    	<label class="left" for="arkId">ARK identifier:</label>
+    	<div class="field_right">
+    		<a href="/ezid/id/{{ user.arkId }}" id="arkId">{{user.arkId}}</a>
+    	</div>
+    	
+    	<label class="left" for="group">Group:</label>
+    	<div class="field_right">
+    		<a href="{% url ui_admin.manage_groups %}?group={{ group.dn }}" id="group">{{user.groupGid}}</a>
+    	</div>
+    	
+    	<label for="givenName" class="left">First name:</label>
+  		<div class="field_right">
+    		<input type="text" name="givenName" id="givenName" size="35" value="{{user.givenName}}" />
+  		</div>
+  		
+  		<label for="sn" class="left">Last name:</label>
+  		<div class="field_right">
+    		<input type="text" name="sn" id="sn" size="35" value="{{user.sn}}" />
+  		</div>
+    	
+    	<label for="mail" class="left">Email:</label>
+  		<div class="field_right">
+    		<input type="text" name="mail" id="mail" size="35" value="{{user.mail}}" />
+  		</div>
+    	
+    	<label for="telephoneNumber" class="left">Phone:</label>
+  		<div class="field_right">
+    		<input type="text" name="telephoneNumber" id="telephoneNumber" size="35" value="{{user.telephoneNumber}}" />
+  		</div>
+    	
+    	<label class="left" for="description">Description:</label>
+    	<div class="field_right">
+    		<textarea rows="4" cols='40' name="description" id="description">{{user.description}}</textarea>
+    	</div>
+ 
+      <label class="left" for="ezidCoOwners">Co-owners:</label>
+    	<div class="field_right">
+    		<textarea rows="4" cols='40' name="ezidCoOwners" id="ezidCoOwners">{{ezidCoOwners}}</textarea>
+    	</div>
+    	
+ 			<label class="left">&nbsp;</label>
+    	<div class="field_right">
+    		Enter co-owners one per line in box above.
+    	</div>
+    	
+    	<label class="left" for="currentlyEnabled">Login enabled:</label>
+    	<div class="field_right">
+    		<input type="checkbox" name="currentlyEnabled" id="currentlyEnabled" value="true"
+    			{% if user.currentlyEnabled == 'true' %}
+    				checked="checked"
+    			{% endif %}
+    		/>  		
+    	</div>
+    	
+    	<label for="userPassword" class="left">New password:</label>
+  		<div class="field_right">
+    		<input type="password" name="userPassword" id="userPassword" size="35" value="" />
+  		</div>
+    	
+    	<label class="left">&nbsp;</label>
+    	<div class="field_right">
+    		<input type="submit" value="Save changes"/>
+    	</div>
+    	
+    </form>
+  </div>
+  <script type="text/javascript" src="/ezid/static/javascripts/dialog_box.js"></script>
+  <script type="text/javascript">
+  	$("#user").bind("change", function(event){
+      $("#edit_form").submit();
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+
+{% block title %}Create Advanced ID{% endblock %}
+
+{% block content %}
+  <div class="grid_12">
+    <h1>Create Identifier</h1>
+    <form id="create_form" action="{% url ui_create.advanced %}" method="post">
+      
+      {% include "includes/simple_id_type.html" %}
+      
+      {% include "includes/advanced_remainder.html" %}
+      
+      {% include "includes/advanced_publish_id.html" %}
+           
+      {% include "includes/advanced_describe.html" %}
+      
+      <label class="left">&nbsp;</label>
+      <div class="field_right">
+        <input type="submit" value="Create"/>
+      </div>
+      <div style="clear:both">&nbsp;</div>
+    </form>
+    <p>Once created, an identifier cannot be renamed or deleted.</p>
+  </div>
+  
+  <script type="text/javascript" src="/ezid/static/javascripts/advanced_create.js"></script>
+  {% include "info/popup_help.html" %}
+  <script type="text/javascript" src="/ezid/static/javascripts/help_box.js"></script>
+
+{% endblock %}

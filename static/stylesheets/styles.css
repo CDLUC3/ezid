@@ -1,0 +1,484 @@
+.special a:visited, .special a:link, .special a:active{
+  text-decoration: none;
+  color: #0645AD; 
+}
+
+.special a:hover {
+  text-decoration: underline;
+  color: #003D9C;
+}
+
+div.top_area {
+  padding: 10px 0 10px 0;
+  height: 81px;
+}
+
+div#ustatus{
+  text-align: center;
+  /* margin: 8px 0 0 25px; */
+}
+
+div.right-links{
+  text-align: right;
+}
+
+div#ustatus div, div#ustatus p{
+  color: #f38e0d;
+  font-weight: bold;
+  font-size: 120%;
+}
+
+div#ustatus p.error {
+  text-align: center;
+  color: red;
+}
+
+div.menu_main{
+  background-color: #f5f5f5;
+  /* border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px; */
+ 	/* background-color: #fff2e4; */
+  padding: 7px 10px 7px 10px;
+  font-size: 130%;
+}
+
+div.menu_main div{
+  float: left;
+  margin-right: 60px;
+}
+
+div.menu_main a{
+  color: #222222;
+  text-decoration: none;
+}
+
+div.main_menu div a:hover {
+  text-decoration: underline;
+}
+
+div.menu_secondary{
+  padding: 15px 10px 7px 10px;
+  font-size: 110%;
+}
+
+div.menu_secondary a{
+  color: blue;
+}
+
+span.menu_current{
+  font-weight: bold;
+}
+
+span.menu_disabled{
+  color: #777777;
+}
+
+div.menu_main a.menu_current{
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+}
+
+div.menu_secondary a.menu_current{
+  font-weight: normal;
+  color: black;
+  text-decoration: none;
+}
+
+h1 {
+  margin: 15px 0 10px 0;
+  font-size: 130%;
+  font-weight: bold;
+}
+
+h2 {
+  margin: 10px 0 10px 0;
+  font-size: 115%;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 105%;
+  font-weight: bold;
+}
+
+h4 {
+  font-size: 100%;
+  font-weight: bold;
+  font-style: italic;
+}
+
+div.rb1 {
+  background: url(/ezid/static/images/corners/dot.gif) 0 0 repeat-x;
+  width: 100%;
+  }
+
+div.rb2 {
+  background: url(/ezid/static/images/corners/dot.gif) 0 100% repeat-x;
+}
+
+div.rb3 {
+  background: url(/ezid/static/images/corners/dot.gif) 0 0 repeat-y; 
+}
+
+div.rb4 {
+  background: url(/ezid/static/images/corners/dot.gif) 100% 0 repeat-y;
+}
+
+div.rb5 {
+  background: url(/ezid/static/images/corners/bl.gif) 0 100% no-repeat;
+}
+
+div.rb6 {
+  background: url(/ezid/static/images/corners/br.gif) 100% 100% no-repeat;
+}
+
+div.rb7 {
+  background: url(/ezid/static/images/corners/tl.gif) 0 0 no-repeat;
+}
+
+div.rb8 {
+  background: url(/ezid/static/images/corners/tr.gif) 100% 0 no-repeat;
+  padding:10px;
+}
+
+div.rc1 {
+  background: url(/ezid/static/layout_test/corners/solid_bl.gif) 0 100% no-repeat;
+  width: 100%;
+}
+
+div.rc2 {
+  background: url(/ezid/static/layout_test/corners/solid_br.gif) 100% 100% no-repeat;
+}
+
+div.rc3 {
+  background: url(/ezid/static/layout_test/corners/solid_tl.gif) 0 0 no-repeat;
+}
+
+div.rc4 {
+  background: url(/ezid/static/layout_test/corners/solid_tr.gif) 100% 0 no-repeat;
+}
+
+
+div.roundbox {
+	border-color: #b99672;
+	border-style:solid;
+	border-width:1px;
+	width:100%;
+	position: relative;
+}
+
+div.roundboxpad, div.squareboxpad {
+	margin: 10px 15px 10px 15px;
+}
+
+div.squarebox {
+	border-color: #b99672;
+	border-style:solid;
+	border-width:1px;
+	/*
+	border-radius: 5px 5px 5px 5px;
+	-moz-border-radius: 5px 5px 5px 5px; */
+}
+
+.roundtl {
+	width: 6px;
+	height: 6px;
+	position:absolute;
+	z-index: 1;
+	top:-1px;
+	left:-1px;
+}
+
+.roundtr {
+	width: 6px;
+	height: 6px;
+	position:absolute;
+	z-index: 1;
+	top:-1px;
+	right:-1px;
+}
+
+.roundbl {
+	width: 6px;
+	height: 6px;
+	position:absolute;
+	z-index: 1;
+	bottom:-1px;
+	left:-1px;
+}
+
+.roundbr {
+	width: 6px;
+	height: 6px;
+	position:absolute;
+	z-index: 1;
+	bottom:-1px;
+	right:-1px;
+}
+
+ul.linklist {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 0 0 0;
+}
+
+ul.linklist li {
+  padding: 0 0 0 0;
+  margin: 5px 0 5px 5px;
+}
+
+div.copyright {
+  margin: 15px 0 5px 0;
+  text-align: center;
+  line-height: 225%;
+  font-size: 80%;
+}
+
+label.left {
+  margin: 10px 0 0 0;
+  float: left;
+  clear: left;
+  display: block;
+  width: 120px;  
+}
+
+div.field_right {
+  margin: 10px 0 0 0;
+  float: left;
+  width: 300px;
+}
+
+div.left_desc {
+  margin: 5px 0 0 0;
+  float: left;
+  clear: left;
+  display: block;
+  width: 120px; 
+}
+
+
+div.right_val {
+  margin: 5px 0 0 0;
+  float: left;
+  width: 500px;
+}
+
+div.get_link_box {
+   display: none;
+   z-index: 5;
+   border: solid;
+   border-width: 1px;
+   border-color: black;
+   position: absolute;
+   background-color:#ffffcc;
+   padding: 10px 10px 10px 10px;  
+}
+
+dt{
+	margin: 10px 0 5px 0;
+}
+
+dd{
+	margin: 5px 0 5px 20px;
+}
+
+
+.dialog_window{
+	width:600px;
+	border:solid;
+	border-width: 1px;
+	border-color: #000000;
+	padding: 10px 15px 10px 15px;
+	position: absolute;
+	display: none;
+	background:#ffffff;
+	z-index:5;
+}
+
+.help_window{
+	width:400px;
+	border:solid;
+	border-width: 1px;
+	border-color: #000000;
+	padding: 10px 15px 10px 15px;
+	position: absolute;
+	display: none;
+	background:#ffffff;
+	z-index:5;
+}
+
+.help_window div.close_button, #ustatus div.close_button {
+	float: right;
+	position: relative;
+	top: -8px;
+	right: -10px;
+	font-size: 70%;
+}
+
+.help_window div.close_button img, #ustatus div.close_button img {
+	width: 16px;
+	height: 16px;
+}
+
+
+#mask{
+	position: absolute;
+	top:0px;
+	right:0px;
+	z-index:4;
+	width:100%;
+	height:500%;
+	background-color: #000000;
+	display: none;
+}
+.chk_col_box {
+	/*width:100%;*/
+	clear:both;
+}
+
+.chk_col{
+	width:200px;
+	float:left;
+}
+
+.chk_buttons{
+	clear:both;
+	text-align: right;
+	width: 500px;
+}
+
+table.manage {
+	/* width:100%; */
+	margin:10px 0px 10px 0px;
+}
+table td{
+	padding: 1px 3px 1px 3px;
+}
+
+
+table th{
+	font-weight:bold;
+	padding: 1px 3px 1px 3px;
+}
+
+tr.headrow{
+	background-color: #d7d7ff;
+}
+
+tr.row1{
+	
+}
+
+tr.row2{
+	background-color: #f0f0ff;
+}
+
+.pagerlink{
+	text-decoration: none;
+}
+
+.pagercurrent{
+	font-weight: bold;
+}
+
+div#ustatus .notice_message, .notice_message{
+	font-weight: bold;
+	font-size: 12pt;
+	color: #555555;
+}
+
+/* system status table */
+table.status, table.status th, table.status td{
+	border: 1px solid black;
+}
+
+div.status_sidebox {
+	border:black;
+	border-style:solid;
+	border-width:1px;
+	padding:10px 20px 10px 20px;
+}
+
+/* pop up box to display create a new user/group form */
+div.add_new_admin {
+	border-color: black;
+	border-width: 1px;
+	border-style: solid;
+	padding: 10px 15px 10px 15px;
+	width:500px;
+	background-color:white;
+	position: absolute;
+	z-index: 10;
+	top: 0px;
+	left: 0px;
+	display: none;
+}
+
+/* styles for the add-user table which is laid out specially */
+td.add_user_col1 {
+	padding:5px 20px 5px 10px;
+	vertical-align:middle;
+	font-size: 120%;
+	font-weight: bold;
+}
+
+td.add_user_col2 {
+	padding:5px 10px 5px 10px;
+	text-align: center;
+}
+
+td.add_user_col3 {
+	padding:5px 10px 5px 10px;
+}
+
+/* tooltip popup */
+#tooltip {
+	position: absolute;
+	z-index: 3000;
+	width: 30em;
+  border: 1px solid #111;
+  color: #ffffff; /*
+  background-color: #126694;
+  background-color: #87e4fe; */
+  background-color: #01505f;
+  padding: .5em;
+  text-align: left;
+  font-size: 90% }
+  
+/* additional style for main content div to work better with 2 sidebar */
+div.main_content{
+	padding-right: 40px;
+}
+
+#ustatus {
+	width:400px;
+	border:solid;
+	border-width: 1px;
+	border-color: #000000;
+	padding: 10px 15px 10px 15px;
+	position: absolute;
+	display: none;
+	background:#ffffff;
+	z-index:50;
+}
+
+/* display of account co-owners as smaller for manage table */
+span.small_co_owners {
+	font-size: 90%;
+	color: #333333;
+}
+
+/*
+div.demo {
+	background-image:url('/ezid/static/images/demo_bg2.png');
+	background-position:right top;
+}*/
+
+div.sidebar {
+	font-size: 85%;
+}
+
+.fakeid {
+	background-color: #ffffcc;
+}

@@ -1,0 +1,72 @@
+{% extends "layouts/base.html" %}
+{% load metadata_tags %}
+{% load layout_extras %}
+
+{% block title %}Identifier Details{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}
+
+{% block content %}
+  <div class="grid_12">
+  	<div style="float:right">
+  		<img src="https://chart.googleapis.com/chart?chs=120x120&cht=qr&chld=L|0&chl={% full_url_to_id_details_urlencoded id_text %}"
+  		   alt="QR Code for {% full_url_to_id_details id_text %}" title="QR Code for {% full_url_to_id_details id_text %}"/>
+  	</div>
+  	<div>
+	    <h1>Identifier Details</h1>
+	    <div class="left_desc">Identifier:</div>
+	    <div class="right_val" style="width:300px;">
+	      <div style="float:left;padding-right:20px;">
+	        {% identifier_display id_text testPrefixes %}
+	      </div>
+	      {% include "includes/get_link.html" %}  
+	    </div>
+	    <div style="clear:left;"></div>
+	    
+	    <h2 style="clear:left;">About the identified object</h2>
+	    <div class="left_desc {% tooltip_class "_target" %}">{{internal_profile.target.displayName}}:</div>
+	    <div class="right_val">{% display_value identifier internal_profile.target %}</div>
+	    
+	    
+	    {% for e in current_profile.elements %}
+	      <div class="left_desc {% tooltip_class e.name %}">{{ e.displayName }}:</div>
+	      <div class="right_val">{% display_value identifier e %}</div>
+	    {% endfor %}
+	    
+	    <div style="clear:both;"></div>
+	
+	    
+	    <h2>About the identifier</h2>
+	    <div class="left_desc {% tooltip_class '_owner' %}">{{internal_profile.owner.displayName}}:</div>
+	    <div class="right_val">{% display_value identifier internal_profile.owner %}</div>
+	    
+	    <div class="left_desc {% tooltip_class '_ownergroup' %}">{{internal_profile.ownergroup.displayName}}:</div>
+	    <div class="right_val">{% display_value identifier internal_profile.ownergroup %}</div>
+	    
+	    <div class="left_desc {% tooltip_class '_coowners' %}">{{internal_profile.coowners.displayName}}:</div>
+	    <div class="right_val">{% display_value identifier internal_profile.coowners %}</div>
+	    
+	    <div class="left_desc {% tooltip_class '_created' %}">{{internal_profile.created.displayName}}:</div>
+	    <div class="right_val">{% display_value identifier internal_profile.created %}</div>
+	    
+	    <div class="left_desc {% tooltip_class '_updated' %}">{{internal_profile.updated.displayName}}:</div>
+	    <div class="right_val">{% display_value identifier internal_profile.updated %}</div>
+	    
+	    <div class="left_desc {% tooltip_class '_status' %}">{{internal_profile.status.displayName}}:</div>
+	    <div class="right_val">
+	    	{% display_value identifier internal_profile.status %}{% help_icon "public_id_help" %}
+	    </div>
+	  
+	  	<div style="clear:both">&nbsp;</div>
+	  	{% if allow_update %}
+	      <form action="{% url ui_manage.edit id_text %}" method="get">
+	        <input type="submit" value="Edit" />
+	      </form>
+	    {% endif %}
+    </div>
+  </div>
+  {% include "info/popup_help.html" %}
+  <script type="text/javascript" src="/ezid/static/javascripts/help_box.js"></script>
+{% endblock %}

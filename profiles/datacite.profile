@@ -9,13 +9,6 @@
 # element:
 # etc.
 
-element: datacite
-displayname: DataCite
-displaytype: special
-tooltip:
-<b><u>DataCite</u></b><br/>
-A complete DataCite Metadata Scheme record.
-
 element: datacite.creator
 displayname: Creator
 displaytype: text
@@ -54,3 +47,4 @@ tooltip:
 The year when the data was or will be made publicly available.  If an
 embargo period is in effect, use the year when the embargo period
 ends.
+

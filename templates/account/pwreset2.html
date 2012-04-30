@@ -1,0 +1,42 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}EZID : Reset password{% endblock %}
+
+{% block content %}
+
+<div id="pwreset" class="grid_12">
+
+	<h1>Reset password</h1>
+	
+	<form method="post" action="{% url ui_account.pwreset pwrr %}">
+		<label for="username" class="left">
+			Username
+		</label>
+		<div class="field_right">
+			<input type="text" name="username" size="20" value="{{ username }}" readonly="readonly"/>
+		</div>
+	
+		<label for="password" class="left">
+			New password
+		</label>
+		<div class="field_right">
+			<input type="password" id="password" name="password" size="20"/>
+		</div>
+	
+		<label for="confirm" class="left">
+			Confirm password
+		</label>
+		<div class="field_right">
+			<input type="password" id="confirm" name="confirm" size="20"/>
+		</div>
+		
+		<label class="left">&nbsp;</label>
+		<div class="field_right">
+			<input type="submit" value="Submit"/>
+		</div>
+	
+	</form>
+	<div style="clear:both;">&nbsp;</div>
+</div>
+
+{% endblock %}

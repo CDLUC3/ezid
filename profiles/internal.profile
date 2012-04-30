@@ -26,8 +26,8 @@ form<br/>
 form"&gt;identifier&lt;/a&gt;</font>
 
 element: _status
-displayname: Status
-displaytype: status
+displayname: Published
+displaytype: is_public
 tooltip:
 <b><u>Status</u></b><br/>
 The identifier's status.  "<font face="Courier">public</font>"
@@ -39,7 +39,7 @@ but the object referenced by the identifier is not available; a reason
 for the object's unavailability may be given.
 
 element: _target
-displayname: URL
+displayname: Location
 displaytype: url
 tooltip:
 <b><u>Object location URL</u></b><br/>
@@ -59,7 +59,7 @@ The identifier's owner.  Only the owner and any account-wide or
 per-identifier co-owners may modify the identifier.
 
 element: _ownergroup
-displayname: Owner group
+displayname: Group
 displaytype: text
 tooltip:
 <b><u>Owner group</u></b><br/>
@@ -81,7 +81,7 @@ tooltip:
 The UTC date and time the identifier was created.
 
 element: _updated
-displayname: Updated
+displayname: Last modified
 displaytype: datetime
 tooltip:
 <b><u>Updated</u></b><br/>

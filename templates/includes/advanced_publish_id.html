@@ -1,0 +1,19 @@
+{% load layout_extras %}
+<h2>Step 3: Decide</h2>
+ 
+<div style="margin:0 0 0 1em;clear:both;">
+  Do you wish to make this identifier public? &nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="radio" name="publish" value="True" id="publish_true" 
+    {% if request.POST.publish != 'False' %}
+        checked="checked"
+    {% endif %}
+   /><label
+    for="publish_true">Yes</label>&nbsp;
+  <input type="radio" name="publish" value="False" id="publish_false"
+    {% if request.REQUEST.publish == 'False' %}
+      checked="checked"
+    {% endif %}
+   /><label
+    for="publish_false">No</label>
+    {% help_icon "public_id_help" %}
+</div>
