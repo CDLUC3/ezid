@@ -67,7 +67,6 @@ def manage_users(request, ssl=False):
     d['user']['sn'] = ''
   if d['user']['mail'] == 'please supply':
     d['user']['mail'] = ''
-  d['non_ezid_users'] = ezidadmin.getEntries(True, True)
   
   d['groups'] = ezidadmin.getGroups()
   d['groups'].sort(key=lambda i: i['gid'].lower())
