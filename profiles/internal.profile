@@ -62,8 +62,8 @@ element: _ownergroup
 displayname: Group
 displaytype: text
 tooltip:
-<b><u>Owner group</u></b><br/>
-The identifier's owner group.
+<b><u>Group</u></b><br/>
+The identifier owner's group.
 
 element: _coowners
 displayname: Co-owners
@@ -84,8 +84,8 @@ element: _updated
 displayname: Last modified
 displaytype: datetime
 tooltip:
-<b><u>Updated</u></b><br/>
-The UTC date and time the identifier was last updated.
+<b><u>Last modified</u></b><br/>
+The UTC date and time the identifier was last modified.
 
 element: _shadowedby
 displayname: Shadow ARK
