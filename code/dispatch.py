@@ -13,9 +13,6 @@
 #
 # -----------------------------------------------------------------------------
 
-import api
-import ui
-
 def _htmlWanted (acceptHeader):
   for mt in acceptHeader.split(","):
     if mt.split(";")[0].strip() in ["text/html", "application/xml",
@@ -37,12 +34,17 @@ def isUiRequest (request):
     ("HTTP_ACCEPT" in request.META and\
     _htmlWanted(request.META["HTTP_ACCEPT"]))
 
-def d (request, function, ssl=False):
+def d (request, apiFunction, uiFunction, ssl=False):
   """
   Dispatches a request to the API or UI depending on the client's
-  desired content type.
+  desired content type.  Each function name must be qualified with a
+  module name.
   """
   if isUiRequest(request):
-    return getattr(ui, function)(request)
+    f = uiFunction
   else:
-    return getattr(api, function)(request)
+    f = apiFunction
+  module, function = f.rsplit(".", 1)
+  # The 'ssl' argument need not be passed on, as it is only used by
+  # middleware code.
+  return getattr(__import__(module, fromlist=module), function)(request)
