@@ -1,7 +1,5 @@
 import django.conf
 import django.conf.urls.defaults
-import os
-import sys
 
 def _p (urlPattern, function, kwargs=None):
   # If we're running under Apache, the site is already rooted under
