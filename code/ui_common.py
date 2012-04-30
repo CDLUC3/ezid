@@ -294,7 +294,7 @@ def get_coowners_tup(id_meta):
     return []
   else:
     return [get_user_tup(co.strip())\
-      for co in id_meta["_coowners"].value.split(";") if len(co.strip()) > 0]
+      for co in id_meta["_coowners"].split(";") if len(co.strip()) > 0]
     
 def extract(d, keys):
   """Gets subset of dictionary based on keys in an array"""
