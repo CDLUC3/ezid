@@ -107,20 +107,26 @@ def search_display(dictionary, field):
   else:
     return dictionary[field]
 
+# This function should and will be moved to a better location.  -GJ
+def _urlForm (id):
+  if id.startswith("doi:"):
+    return "http://dx.doi.org/" + urllib.quote(id[4:], ":/")
+  elif id.startswith("ark:/") or id.startswith("urn:uuid:"):
+    return "http://n2t.net/" + urllib.quote(id, ":/")
+  else:
+    return "[None]"
+
 @register.tag
 @basictag(takes_context=True)
 def full_url_to_id_details(context, id_text):
-  """return full url to id details for id specified, including domain"""
-  request = context['request']
-  return escape("http://" + request.get_host() +"/ezid/id/" + id_text)
-  #return request.build_absolute_uri(reverse('ui_manage.details', args=[id_text]))
+  """return URL form of identifier"""
+  return _urlForm(id_text)
   
 @register.tag
 @basictag(takes_context=True)
 def full_url_to_id_details_urlencoded(context, id_text):
-  """return full url to id details for id specified, including domain and urlencoded"""
-  request = context['request']
-  return urllib.quote("http://" + request.get_host() +"/ezid/id/" + id_text)
+  """return URL form of identifier, URL-encoded"""
+  return urllib.quote(_urlForm(id_text))
 
   
 #This captures the block around with rounded corners go, can't believe what a PITA this is in django
