@@ -5,7 +5,7 @@ from common import *
 DEPLOYMENT_LEVEL = "uidev_scott"
 
 FORCE_SCRIPT_NAME = None
- 
+
 STANDALONE = True
 
 SSL = False
