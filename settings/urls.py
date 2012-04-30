@@ -15,32 +15,6 @@ def _p (urlPattern, function, kwargs=None):
   if kwargs != None: t += (kwargs,)
   return t
 
-# this is commented out
-if False:
-  urlpatterns = django.conf.urls.defaults.patterns("",
-    _p("$", "ui.home"),
-    _p("account$", "ui.account", { "ssl": True }),
-    _p("admin$", "ui.admin", { "ssl": True }),
-    _p("admin/entries$", "ui.getEntries"),
-    _p("admin/groups$", "ui.getGroups"),
-    _p("admin/reload$", "api.reload"),
-    _p("admin/systemstatus$", "ui.systemStatus"),
-    _p("admin/users$", "ui.getUsers"),
-    _p("clearhistory$", "ui.clearHistory"),
-    _p("create$", "ui.create"),
-    _p("doc/[\w.]*\\.html$", "ui.doc"),
-    _p("help$", "ui.help"),
-    _p("id/", "dispatch.d", { "function": "identifierDispatcher" }),
-    _p("login$", "dispatch.d", { "function": "login", "ssl": True }),
-    _p("logout$", "dispatch.d", { "function": "logout" }),
-    _p("manage$", "ui.manage"),
-    _p("pwreset(?P<pwrr>/.*)?$", "ui.resetPassword", { "ssl": True }),
-    _p("shoulder/", "api.mintIdentifier"),
-    _p("status$", "api.getStatus"),
-    _p("tombstone/id/", "ui.tombstone")
-  )
-#end commented out
-
 urlpatterns = django.conf.urls.defaults.patterns("",
   _p("\/?$", "ui_home.index"),
   _p("home/why$", "ui_home.why"),
@@ -53,7 +27,8 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("home/help$", "ui_home.the_help"),
   _p("home/about_us$", "ui_home.about_us"),
   _p("manage\/?$", "ui_manage.index"),
-  _p("id/", "dispatch.d", {"uiFunction": "ui_manage.details", "apiFunction": "api.identifierDispatcher"}),
+  _p("id/", "dispatch.d", { "uiFunction": "ui_manage.details",
+    "apiFunction": "api.identifierDispatcher" }),
   _p("manage/edit/(\S+)$", "ui_manage.edit"),
   _p("create\/?$", "ui_create.index"),
   _p("create/simple$", "ui_create.simple"),
@@ -71,12 +46,13 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("admin/system_status$", "ui_admin.system_status", { "ssl": True }),
   _p("admin/ajax_system_status$", "ui_admin.ajax_system_status"),
   _p("admin/alert_message$", "ui_admin.alert_message", { "ssl": True }),
-  _p("login\/?$", "dispatch.d", { "uiFunction": "ui_account.login", "apiFunction": "api.login", "ssl": True }),
-  _p("logout\/?$", "dispatch.d", { "uiFunction": "ui_account.logout", "apiFunction": "api.logout"}),
+  _p("login\/?$", "dispatch.d", { "uiFunction": "ui_account.login",
+    "apiFunction": "api.login", "ssl": True }),
+  _p("logout\/?$", "dispatch.d", { "uiFunction": "ui_account.logout",
+    "apiFunction": "api.logout" }),
   _p("account/ajax_hide_alert", "ui_account.ajax_hide_alert"),
   _p("account/edit$", "ui_account.edit", { "ssl": True }),
   _p("pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", { "ssl": True }),
-  
   _p("shoulder/", "api.mintIdentifier"),
   _p("status$", "api.getStatus"),
   _p("admin/reload$", "api.reload"),
@@ -91,13 +67,3 @@ if django.conf.settings.STANDALONE:
 
 handler404 = "django.views.defaults.page_not_found"
 handler500 = "django.views.defaults.server_error"
-
-#the urls.py seems to load upon the first request for a process
-#this seemed to me to be the best place for initializing common
-#settings for views that are constant (from Greg's code)
-#they are then easily available by uic.varname
-
-#PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
-#sys.path.append(os.path.join(PROJECT_ROOT, "code"))
-import ui_common as uic
-uic.loadConfig()
