@@ -75,11 +75,10 @@ def top_menu_item(tup, session, is_current):
 def display_item(tup, session, is_current):
   u = reverse(tup[1])
   if is_current:
-    if not tup[3]:
-      #return """<span class="menu_current">""" + tup[0] + """</span>"""
+    if tup[2] == 'public' or (tup[2] == 'user' and session.has_key('auth')):
       return """<a href="%(path)s" class="menu_current">%(text)s</a>""" % {'path':u, 'text':tup[0] }
     else:
-      return """<a href="%(path)s" class="menu_current">%(text)s</a>""" % {'path':u, 'text':tup[0] }
+      return """<span class="menu_current">""" + tup[0] + """</span>"""
   else:
     if tup[2] == 'public' or (tup[2] == 'user' and session.has_key('auth')):
       return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
