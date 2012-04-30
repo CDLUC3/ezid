@@ -10,18 +10,19 @@ from django.utils.http import urlencode
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
 
+@uic.admin_login_required
 def index(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.index'}
   return redirect("ui_admin.usage")
   return uic.render(request, 'admin/index', d)
 
+@uic.admin_login_required
 def usage(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.usage'}
   return uic.render(request, 'admin/usage', d)
 
+@uic.admin_login_required
 def add_user(request, ssl=False):
-  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
-    return uic.unauthorized()
   if request.method != "POST" or not 'nu_uid' in request.POST or\
       not 'nu_select_uid' in request.POST or not 'nu_group' in request.POST:
     uic.badRequest()
@@ -52,10 +53,9 @@ def add_user(request, ssl=False):
     success_url = reverse("ui_admin.manage_users") + "?" + urlencode({'user': r[0]})
     return redirect(success_url)
 
+@uic.admin_login_required
 def manage_users(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.manage_users' }
-  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
-    return uic.unauthorized()
   d['users'] = ezidadmin.getUsers()
   d['users'].sort(key=lambda i: i['uid'].lower())
   users_by_dn = dict(zip([ x['dn'] for x in d['users']], d['users']))
@@ -87,9 +87,8 @@ def manage_users(request, ssl=False):
   d['ezidCoOwners'] = "\n".join([x.strip() for x in d['user']['ezidCoOwners'].split(',')])
   return uic.render(request, 'admin/manage_users', d)
 
+@uic.admin_login_required
 def add_group(request, ssl=False):
-  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
-    return uic.unauthorized()
   if request.method != "POST" or not 'grouphandle' in request.POST:
     uic.badRequest()
   P = request.POST
@@ -108,9 +107,8 @@ def add_group(request, ssl=False):
     success_url = reverse("ui_admin.manage_groups") + "?" + urlencode({'group': dn})
     return redirect(success_url)
 
+@uic.admin_login_required
 def manage_groups(request, ssl=False):
-  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
-    return uic.unauthorized()
   d = { 'menu_item' : 'ui_admin.manage_groups' }
   
   # load group information
@@ -164,9 +162,8 @@ def manage_groups(request, ssl=False):
   d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels)
   return uic.render(request, 'admin/manage_groups', d)
 
+@uic.admin_login_required
 def system_status(request, ssl=False):
-  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
-    return uic.unauthorized()
   d = { 'menu_item' :  'ui_admin.system_status' }
   d['status_list'] = ezidadmin.systemStatus(None)
   d['js_ids'] =  '[' + ','.join(["'" + x['id'] + "'" for x in d['status_list']]) + ']'
@@ -178,9 +175,8 @@ def system_status(request, ssl=False):
     return uic.redirect("/ezid/")
   return uic.render(request, 'admin/system_status', d)
 
+@uic.admin_login_required
 def ajax_system_status(request):
-  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
-    return uic.unauthorized()
   if request.method != "GET": return uic.methodNotAllowed()
   if "id" in request.GET:
     return uic.plainTextResponse(request.GET["id"] + ":" + ezidadmin.systemStatus(request.GET["id"]))

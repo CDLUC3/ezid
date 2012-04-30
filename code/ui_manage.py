@@ -42,6 +42,7 @@ FIELD_DEFAULT_SORT_PRIORITY = ['identifier', 'createTime', 'updateTime', 'owner'
 
 IS_ASCENDING = {'asc': True, 'desc': False }
 
+@uic.user_login_required
 def index(request):
   d = { 'menu_item' : 'ui_manage.index' }
   d['testPrefixes'] = uic.testPrefixes

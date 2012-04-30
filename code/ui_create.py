@@ -10,10 +10,10 @@ def index(request):
   return redirect("ui_create.simple")
   return uic.render(request, 'create/index', d)
 
+@uic.user_login_required
 def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
   d["testPrefixes"] = uic.testPrefixes
-  if uic.is_logged_in(request) == False: return redirect("ui_account.login")
   d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['prefix']) #must be done before calling form processing
   r = simple_form_processing(request, d)
   if r == 'bad_request':
@@ -23,10 +23,10 @@ def simple(request):
   else:
     return uic.render(request, 'create/simple', d)
 
+@uic.user_login_required
 def advanced(request):
   d = { 'menu_item' :'ui_create.advanced' }
   d["testPrefixes"] = uic.testPrefixes
-  if uic.is_logged_in(request) == False: return redirect("ui_account.login")
   d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['prefix']) #must be done before calling form processing
   r = advanced_form_processing(request, d)
   if r == 'bad_request':
