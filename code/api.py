@@ -45,7 +45,11 @@
 #
 # Get EZID's status:
 #   GET /ezid/status?subsystems={*|subsystemlist}
-#   response body: status line
+#   response body: status line, optional additional status information
+#
+# Get EZID's version:
+#   GET /ezid/version
+#   response body: status line, version information
 #
 # Reload configuration file and clear caches:
 #   POST /ezid/admin/reload   [admin authentication required]
@@ -62,6 +66,7 @@
 # -----------------------------------------------------------------------------
 
 import django.http
+import time
 
 import anvl
 import config
@@ -294,6 +299,24 @@ def getStatus (request):
   s2 = "" if nc == 1 else "s"
   return _response(("success: %d identifier%s currently locked, %d open " +\
     "search database connection%s") % (nl, s1, nc, s2), anvlBody=body)
+
+def getVersion (request):
+  """
+  Returns EZID's version.
+  """
+  if request.method != "GET": return _methodNotAllowed()
+  sv, v = config.getVersionInfo()
+  # In theory the following body should be encoded, but no percent
+  # signs should appear anywhere.
+  body = ("startup.time: %s\n" +\
+    "startup.ezid_version: %s\n" +\
+    "startup.info_version: %s\n" +\
+    "last_reload.time: %s\n" +\
+    "last_reload.ezid_version: %s\n" +\
+    "last_reload.info_version: %s\n") %\
+    (time.asctime(time.localtime(sv[0])), sv[1], sv[2],
+    time.asctime(time.localtime(v[0])), v[1], v[2])
+  return _response("success: version information follows", anvlBody=body)
 
 def reload (request):
   """

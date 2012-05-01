@@ -31,6 +31,7 @@
 #     login
 #     logout
 #     s[tatus] [*|subsystemlist]
+#     V[ersion]
 #     r[eload]
 #
 # In the above, if a label is "@", the associated value is treated as
@@ -67,6 +68,7 @@ operations = {
   "login" : 0,
   "logout" : 0,
   "status" : lambda l: l in [0, 1],
+  "Version" : 0,
   "reload" : 0
 }
 
@@ -99,6 +101,7 @@ usageText = """Usage: client [options] server credentials operation...
     login
     logout
     s[tatus] [*|subsystemlist]
+    V[ersion]
     r[eload]
 """
 
@@ -198,6 +201,8 @@ elif operation == "status":
   else:
     s = ""
   request = urllib2.Request("%s/status%s" % (server, s))
+elif operation == "Version":
+  request = urllib2.Request("%s/version" % server)
 elif operation == "reload":
   request = urllib2.Request("%s/admin/reload" % server)
   request.get_method = lambda: "POST"
