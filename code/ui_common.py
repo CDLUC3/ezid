@@ -322,3 +322,27 @@ def url_is_valid(target):
   
 def random_password(size = 8):
   return ''.join([choice(string.letters + string.digits) for i in range(size)])
+
+def user_login_required(f):
+  """defining a decorator to require a user to be logged in"""
+  def wrap(request, *args, **kwargs):
+    if 'auth' not in request.session.keys():
+      request.session['redirect_to'] = request.get_full_path()
+      django.contrib.messages.error(request, 'You must be logged in to view this page.')
+      return django.http.HttpResponseRedirect("/ezid/login")
+    return f(request, *args, **kwargs)
+  wrap.__doc__=f.__doc__
+  wrap.__name__=f.__name__
+  return wrap
+
+def admin_login_required(f):
+  """defining a decorator to require an admin to be logged in"""
+  def wrap(request, *args, **kwargs):
+    if "auth" not in request.session or request.session["auth"].user[0] != adminUsername:
+      request.session['redirect_to'] = request.get_full_path()
+      django.contrib.messages.error(request, 'You must be logged in as an administrator to view this page.')
+      return django.http.HttpResponseRedirect("/ezid/login")
+    return f(request, *args, **kwargs)
+  wrap.__doc__=f.__doc__
+  wrap.__name__=f.__name__
+  return wrap

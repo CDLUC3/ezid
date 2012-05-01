@@ -6,15 +6,18 @@
 </div>
 <div style="float:left;">
   <div style="margin-top: 1em;">
-    <h2 style="display:inline;">Step 2: Optional: Add a custom remainder</h2>{% help_icon "remainder_guidelines" %}
+    <h2 style="display:inline;">Step 2: Optional: Enter a custom remainder (suffix)</h2>{% help_icon "remainder_guidelines" %}
   </div>
   <div style="padding:1em 0 0 1em;clear:both;">
     <input type="text" name="remainder" id="remainder" size="35"
-        value="{% form_or_default "remainder" remainder_box_default %}"/>
+        value="{% form_or_default "remainder" remainder_box_default %}" class="element_customRemainder"/>
   </div>
 </div>
 
 <script type="text/javascript">
+	$(document).ready(function () {
+		$(".element_customRemainder").tooltip({ bodyHandler: function () { return "<b><u>Custom Remainder</u></b><br/>Normally EZID creates a unique string to place after the identifier string selected in step 1 above, but you can enter your own unique string here if you are comfortable vouching for its uniqueness yourself."; } });
+	});
   // deal with custom remainder and previews
   $('#remainder').focus(function() {
     $(this).select();

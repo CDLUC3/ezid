@@ -26,7 +26,7 @@ form<br/>
 form"&gt;identifier&lt;/a&gt;</font>
 
 element: _status
-displayname: Published
+displayname: Public
 displaytype: is_public
 tooltip:
 <b><u>Status</u></b><br/>
@@ -39,7 +39,7 @@ but the object referenced by the identifier is not available; a reason
 for the object's unavailability may be given.
 
 element: _target
-displayname: Location
+displayname: Location (URL)
 displaytype: url
 tooltip:
 <b><u>Object location URL</u></b><br/>

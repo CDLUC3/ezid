@@ -12,6 +12,8 @@ def display_value(id_dictionary, element):
   if element.name in id_dictionary:
     return display_formatted(id_dictionary, element)
   else:
+    if element.name == '_coowners':
+      return 'none'
     return '[No value]'
 
 def display_formatted(id_dictionary, element):

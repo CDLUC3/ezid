@@ -1,150 +1,16 @@
+/* These styles are only used on the tombstone page, now, I think */
+
 body { text-align: center; font-family: Helvetica, sans-serif }
-
-input[type=text] { background-color: #FFF1A8 }
-input[type=password] { background-color: #FFF1A8 }
-textarea { background-color: #FFF1A8 }
 td { text-align: left }
-
-/* 40em is a magic width: it appears several places below, and if it's
-changed, it should be uniformly changed in all those places. */
-
-#header { width: 40em; margin-left: auto; margin-right: auto }
-#header tr { vertical-align: top }
-#header img { border-width: 0 }
-#logininfo { text-align: right; font-size: 75% }
-#historydiv { padding-top: .25em }
-
-#alert { margin-bottom: .25em; color: red }
-
-#messagediv .success { padding: .25em 1em; background-color: #9F9 }
-#messagediv .info { padding: .25em 1em; background-color: #FFF1A8 }
-#messagediv .error { padding: .25em 1em; background-color: #F99 }
-
-#tabs { width: 40em; margin-left: auto; margin-right: auto; font-weight: bold;
-  text-align: left }
-#tabs ul { border-bottom: 2px solid #CCC }
-#tabs li { display: inline; list-style-type: none }
-#tabs a { text-decoration: none; color: black; padding: .25em .5em 0;
-  border: 2px solid #CCC }
 #tabs a:hover { color: blue }
-#tabs a.active { border-bottom-color: white }
-#tabs a.inactive { background-color: #CCC }
-
-#content { width: 40em; margin-left: auto; margin-right: auto;
-  text-align: left }
-
-#home .bullet { margin-bottom: 1em }
-
-#createtable { border: 2px solid black; padding: 1em; margin-left: 1em;
-  border-spacing: 0 }
-#createtable #gap { width: .5em }
-#createtable th { background-color: #ADBFDB; padding-left: .5em;
-  padding-right: .5em; text-align: center }
-#createtable #identifierheader { border-bottom: 1px solid black }
-#createtable #prefixheader { font-size: 75%; font-weight: normal }
-#createtable #remainderheader { font-size: 75%; font-weight: normal;
-  border-left: 1px solid black }
-#createtable td { border: 1px solid white }
-#createtable input[type=text] { background-color: white }
-#createtable .prefix { text-align: right }
-
-#manageexample { text-decoration: underline; font-weight: bold }
-#managetable { border: 2px solid black; padding: 1em; margin-left: 1em }
-#managetable th { text-align: right; font-weight: normal }
-
-#idtable { width: 40em }
-#idtable .section { padding-top: 1em; padding-left: 1em; text-align: left;
-  font-weight: normal; font-style: oblique }
-#idtable .labelvalue { font-size: 75%; border-bottom: 2px solid white }
-#idtable .label { background-color: #ADBFDB; padding: .25em .5em;
-  text-align: right; white-space: nowrap; font-weight: bold }
-#idtable .value { padding: .25em .5em; border: 1px solid white }
-#idtable .idlabelvalue { font-size: 100%;
-  padding-left: .375em /* 75% of .5em; cf. font size */ }
 #idtable .editable:hover { background-color: #FFF1A8; border-color: black;
   cursor: text }
-#idtable .visit { padding-left: .5em }
-#idtable .editbox { width: 100%; border: 2px solid black; padding: 1em }
-#idtable textarea { width: 100% }
-#idtable .innertable { width: 100%; border-spacing: 0 }
-#idtable .innertable tr { vertical-align: baseline }
-#idtable .innertable td { text-align: left; font-size: 75% }
-#idtable #moreswitch { text-decoration: none; color: black }
 #idtable #moreswitch:hover { color: blue }
-#idtable #moreswitch span {
-  background-image: url("/ezid/static/triangles.gif"); width: 12px;
-  height: 12px; float: left; margin-top: 3px; margin-right: 2px }
-#idtable #moreswitch #more { background-position: 0 0; display: none }
-#idtable #moreswitch #less { background-position: 12px 0 }
 #idtable #moreswitch:hover #more { background-position: 0 12px }
 #idtable #moreswitch:hover #less { background-position: 12px 12px }
-#idtable #columnshifter { color: white }
-
-#tooltip { position: absolute; z-index: 3000; width: 30em;
-  border: 1px solid #111; background-color: #CEFFFF; padding: .5em;
-  text-align: left; font-size: 75% }
-
-/* For rendering DataCite metadata... */
-
-#idtable .dcms_table { border-spacing: 0 }
-#idtable .dcms_label { padding: .25em .5em; text-align: left;
-  white-space: nowrap }
-#idtable .dcms_value { padding: .25em .5em }
-#idtable .dcms_sublabel { font-size: 80% }
-#idtable .dcms_subvalue { font-size: 80% }
-#idtable .dcms_identifier { display: none }
-
-#login { text-align: center }
-#login #title { font-weight: bold }
-#login table { border: 2px solid black; margin-left: auto; margin-right: auto;
-  padding: 1em }
-#login th { text-align: right; font-weight: normal }
-
-#admin .switch { text-decoration: none; color: black; font-style: oblique }
 #admin .switch:hover { color: blue }
-#admin .switch span {
-  background-image: url("/ezid/static/triangles.gif"); width: 12px;
-  height: 12px; float: left; margin-top: 3px; margin-right: 2px }
-#admin .switch .open { background-position: 0 0; display: none }
-#admin .switch .closed { background-position: 12px 0 }
 #admin .switch:hover .open { background-position: 0 12px }
 #admin .switch:hover .closed { background-position: 12px 12px }
-#admin .section { margin-left: 1em; display: none }
-#admin .form { border: 2px solid black; padding: 1em }
-#admin .form tr { vertical-align: baseline }
-#admin .form th { text-align: right; font-weight: normal; white-space: nowrap;
-  padding-right: .25em }
-#admin .gap { width: 1em }
-#admin .value { font-size: 75% }
-#admin .note { font-size: 75%; font-style: oblique }
-#admin .shoulder { color: green }
-#admin tr.multiline { vertical-align: top }
-#admin th.multiline { border-right: 1px solid black }
-#admin #sstable { border-collapse: collapse; border: 2px solid black }
-#admin #sstable td { border: 1px solid black; padding: .25em }
-#admin .status { width: 1em; background-color: #FFF1A8 }
-#admin .up { background-color: #9F9 }
-#admin .down { background-color: #F99 }
-
-#pwreset { text-align: center }
-#pwreset #title { font-weight: bold }
-#pwreset table { border: 2px solid black; margin-left: auto;
-  margin-right: auto; padding: 1em }
-#pwreset th { text-align: right; font-weight: normal }
-
-#account { text-align: center }
-#account .heading { margin-top: 1.25em; margin-bottom: .25em;
-  font-weight: bold }
-#account table { border: 2px solid black; margin-left: auto;
-  margin-right: auto; padding: 1em }
-#account th { text-align: right; font-weight: normal; white-space: nowrap }
-#account .gap { width: 1em }
-#account .note { width: 15em; font-size: 75%; font-style: oblique }
-
-#footer { position: fixed; top: auto; bottom: 0; left: 0; right: 0;
-  padding-top: .25em; padding-bottom: .25em; background-color: #CCC;
-  font-size: 50% }
-
 #tombstone { width: 40em; margin-left: auto; margin-right: auto }
 #tombstone #title { font-size: 200%; font-weight: bold }
 #tombstone #metadata { text-align: left; border: 2px solid black;

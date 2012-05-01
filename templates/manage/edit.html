@@ -59,7 +59,10 @@
           <input type="text" class="{% tooltip_class e.name %}" name="{{e.name}}" id="{{e.name}}" size="35" value="{% form_or_dict_value identifier e.name %}" />
         </div>        
       {% endfor %}
-    
+    	<label class="left">&nbsp;</label>
+    	<div class="field_right">
+    		<input type="submit" value="Save changes" />
+    	</div>
       <div style="clear:both;"></div>
     
       <h2>About the identifier</h2>
@@ -99,8 +102,6 @@
       {% endif %}
       
       <div style="clear:both">&nbsp;</div>
-      
-      <input type="submit" value="Save changes" />
     </form>
   </div>
   
