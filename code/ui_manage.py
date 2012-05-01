@@ -24,7 +24,7 @@ FIELD_DEFAULTS = ['identifier', 'createTime', 'mappedTitle', 'mappedCreator']
 # Column names for display for each field
 FIELDS_MAPPED = {'identifier':'ID',  'owner':'Owner', 'coOwners': 'Co-Owners', \
                   'createTime': 'Date created', 'updateTime': 'Date last modified', 'status' :'Status',\
-                  'mappedTitle': 'Title', 'mappedCreator' : 'Creator'}
+                  'mappedTitle': 'Object Title', 'mappedCreator' : 'Object Creator'}
 
 # Weight to give each field for table display since many or few fields are present and can be customized
 FIELD_WIDTHS = {'identifier': 2.0,  'owner': 1.0, 'coOwners': 2.0, \
