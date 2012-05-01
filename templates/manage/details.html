@@ -36,7 +36,13 @@
 	    {% endfor %}
 	    
 	    <div style="clear:both;"></div>
-	
+	    
+	    {% if allow_update %}
+	    	<br/>
+	      	<form action="{% url ui_manage.edit id_text %}" method="get">
+	        	<input type="submit" value="Edit" />
+	      	</form><br/>
+	    {% endif %}
 	    
 	    <h2>About the identifier</h2>
 	    <div class="left_desc {% tooltip_class '_owner' %}">{{internal_profile.owner.displayName}}:</div>
@@ -60,11 +66,6 @@
 	    </div>
 	  
 	  	<div style="clear:both">&nbsp;</div>
-	  	{% if allow_update %}
-	      <form action="{% url ui_manage.edit id_text %}" method="get">
-	        <input type="submit" value="Edit" />
-	      </form>
-	    {% endif %}
     </div>
   </div>
   {% include "info/popup_help.html" %}
