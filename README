@@ -64,7 +64,6 @@ EZID requires one environment variable, DJANGO_SETTINGS_MODULE, that
 indicates the deployment level.  Possible values:
 
     settings.localdev
-    settings.uidev
     settings.development
     settings.staging
     settings.workflow
