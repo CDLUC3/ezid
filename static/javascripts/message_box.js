@@ -22,7 +22,7 @@ $(document).ready(function() {
     //transition effect
     $('#ustatus').fadeIn(100);
     
-    if(autohide){
+    if(autohide && $('#ustatus .error').length < 1){
     	window.setTimeout(function() {
  				$('#ustatus').fadeOut('slow');
 			}, $('#ustatus').height() * 70);
