@@ -53,6 +53,7 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", { "ssl": True }),
   _p("shoulder/", "api.mintIdentifier"),
   _p("status$", "api.getStatus"),
+  _p("version$", "api.getVersion"),
   _p("admin/reload$", "api.reload"),
   _p("doc/[\w.]*\\.html$", "ui.doc"),
   _p("tombstone/id/", "ui.tombstone")

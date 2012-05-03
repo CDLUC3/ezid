@@ -36,6 +36,8 @@
 import ConfigParser
 import django.conf
 import os.path
+import subprocess
+import time
 
 _loaders = []
 
@@ -48,12 +50,31 @@ def addLoader (loader):
 _config = None
 _shadowConfig = None
 _level = None
+_version = None
+_startupVersion = None
+
+def _getVersion1 (r):
+  try:
+    p = subprocess.Popen(["hg", "identify", "-inb", "-R", r],
+      stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    o = p.communicate()[0]
+    if p.returncode == 0:
+      return o.strip()
+    else:
+      return "unknown"
+  except:
+    return "unknown"
+
+def _getVersion ():
+  return (_getVersion1(django.conf.settings.PROJECT_ROOT),
+    _getVersion1(os.path.join(django.conf.settings.PROJECT_ROOT, "templates",
+      "info")))
 
 def load ():
   """
   (Re)loads the configuration file.
   """
-  global _config, _shadowConfig, _level
+  global _config, _shadowConfig, _level, _version
   config = ConfigParser.ConfigParser({
     "SITE_ROOT": django.conf.settings.SITE_ROOT,
     "PROJECT_ROOT": django.conf.settings.PROJECT_ROOT })
@@ -68,9 +89,11 @@ def load ():
     f.close()
   _shadowConfig = config
   _level = "{%s}" % django.conf.settings.DEPLOYMENT_LEVEL
+  _version = (int(time.time()),) + _getVersion()
   for l in _loaders: l()
 
 load()
+_startupVersion = _version
 
 def config (option):
   """
@@ -86,3 +109,15 @@ def config (option):
     return _shadowConfig.get(s, o)
   else:
     return _config.get(s, o)
+
+def getVersionInfo ():
+  """
+  Returns two tuples, each of the form (timestamp, ezidVersion,
+  infoVersion).  The first tuple reflects the state of EZID's
+  Mercurial repositories at the time of server startup, the second at
+  the time of the last configuration reload.  Within each tuple, the
+  first element is the startup or reload time as a Unix timestamp, the
+  second is the EZID repository's version, and the third is the info
+  repository's version.
+  """
+  return (_startupVersion, _version)
