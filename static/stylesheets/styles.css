@@ -483,3 +483,6 @@ div.sidebar {
 	background-color: #ffffcc;
 }
 
+td.label_col {
+	width: 130px;
+}
