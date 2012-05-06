@@ -4,26 +4,26 @@
 {% block title %}Manage IDs{% endblock %}
 
 {% block content %}
-  <div class="grid_16">
+  <div class="grid_12">
     <h1>Recent Activity</h1>
   </div>
   {% if recent|length < 1  %}
-  	<div class="grid_16"><p>There are no recent results to display.</p></div>
+  	<div class="grid_12"><p>There are no recent results to display.</p></div>
   {% else %}
-  	<div class="grid_8">
+  	<div class="grid_6">
     	{% for item in recent1 %}
     		{% identifier_disp item.identifier testPrefixes %}
     		{% latest_modification_string item %}<br/>
     	{% endfor %}
     </div>
-    <div class="grid_8">
+    <div class="grid_6">
     	{% for item in recent2 %}
     		{% identifier_disp item.identifier testPrefixes %}
     		{% latest_modification_string item %}<br/>
     	{% endfor %}
     </div>
   
-	  <div class="grid_16">
+	  <div class="grid_12">
 	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp;&nbsp;
 	  	<a href="#dialog" name="modal">Customize view</a>
 	  	{% include "manage/_choose_cols.html" %}
@@ -31,7 +31,7 @@
 	  
 	  <div style="clear:both"></div>
 	  
-	  <div class="grid_16">
+	  <div class="grid_12">
 	    {% pager_display REQUEST p total_pages ps %}
 		  <table class="manage">
 		  	{% header_row REQUEST fields_selected fields_mapped field_widths order_by sort %}

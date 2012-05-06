@@ -4,18 +4,18 @@
 {% block title %}EZID{% endblock %}
 
 {% block content %}
-  <div class="grid_12">
+  <div class="grid_9">
   	<div class="main_content">
   		{% block main_column %}
     	{% endblock %}
    	</div>
   </div>
-  <div class="grid_4">
+  <div class="grid_3">
   	{% block sidebar %}
   	{% endblock %}
   </div>
   {% if feed_cache %}
-	  <div class="grid_16 squarebox">
+	  <div class="grid_12 squarebox">
 	  	<div class="squareboxpad">
 	  		<div style="float:right;width:8em;text-align:right">
 	      	<a href="{{rss_feed}}"><img src="/ezid/static/images/feed-icon-14x14.png"/></a>&nbsp;

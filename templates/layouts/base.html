@@ -7,7 +7,33 @@
     <title>EZID: {% block title %}Identifiers made easy{% endblock %}</title>
     
     <link rel="stylesheet" type="text/css" media="all" href="/ezid/static/stylesheets/reset.css" />
-    <link rel="stylesheet" type="text/css" media="all" href="/ezid/static/stylesheets/960.css" />
+    
+    <noscript>
+			<link rel="stylesheet" href="/ezid/static/stylesheets/720.min.css" />
+		</noscript>
+    
+    <script type="text/javascript">
+    	// Edit to suit your needs.
+			var ADAPT_CONFIG = {
+		  // Where is your CSS?
+		  path: '/ezid/static/stylesheets/',
+		
+		  // false = Only run once, when page first loads.
+		  // true = Change on window resize and page tilt.
+		  dynamic: true,
+		
+		  // First range entry is the minimum.
+		  // Last range entry is the maximum.
+		  // Separate ranges by "to" keyword.
+		  range: [
+		    '0px    to 760px  = 720.min.css',
+		    '760px  to 980px  = 720.min.css',
+		    '980px            = 960.min.css'
+		  ]
+		};
+    	
+    </script>
+    <script type="text/javascript" src="/ezid/static/javascripts/adapt.min.js"></script>
     <link rel="stylesheet" type="text/css" media="all" href="/ezid/static/stylesheets/text.css" />
 
     <link rel="shortcut icon" href="/ezid/static/images/favicon.ico"/>
@@ -35,7 +61,7 @@
 		</script>
   </head>
   <body>
-    <div class="container_16">
+    <div class="container_12">
       {% include "includes/logo.html" %}
       {% include "includes/user_menu.html" %}
       {% include "includes/status.html" %}
