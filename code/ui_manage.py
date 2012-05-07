@@ -8,6 +8,7 @@ import metadata
 import search
 import math
 import useradmin
+import anvl
 
 
 # these are layout properties for the fields in the manage index page,
@@ -135,6 +136,7 @@ def details(request):
   my_path = "/ezid/id/"
   identifier = unquote(request.path[len(my_path):])
   r = ezid.getMetadata(identifier)
+  #import pdb; pdb.set_trace()
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_lookup.index")
@@ -150,4 +152,13 @@ def details(request):
     d['current_profile'] = metadata.getProfile(m['_profile'])
   else:
     d['current_profile'] = metadata.getProfile('dc')
+  
+  
+  print m
+  #replace erc data from anvl blob if erc and has blob
+  if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
+    keys, values = zip(*anvl.parse(d['identifier']['erc']).iteritems())
+    keys = ["erc." + i for i in keys]
+    newdict = dict(zip(keys, values))
+    d['identifier'].update(newdict)
   return uic.render(request, "manage/details", d)
