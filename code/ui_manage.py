@@ -9,6 +9,7 @@ import search
 import math
 import useradmin
 import anvl
+import datacite
 
 
 # these are layout properties for the fields in the manage index page,
@@ -152,13 +153,13 @@ def details(request):
     d['current_profile'] = metadata.getProfile(m['_profile'])
   else:
     d['current_profile'] = metadata.getProfile('dc')
-  
-  
-  print m
-  #replace erc data from anvl blob if erc and has blob
+
+  #replace erc data from anvl blob if erc and has blob special treatment for Merritt
   if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
     keys, values = zip(*anvl.parse(d['identifier']['erc']).iteritems())
     keys = ["erc." + i for i in keys]
     newdict = dict(zip(keys, values))
     d['identifier'].update(newdict)
+  if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
+    d['datacite_html'] = datacite.dcmsRecordToHtml(d['identifier']["datacite"])
   return uic.render(request, "manage/details", d)

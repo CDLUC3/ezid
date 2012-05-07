@@ -10,7 +10,7 @@
 
 {% block content %}
   <div class="grid_9">
-  	<table>
+  	<table style="margin-bottom:0px;">
   		<tr><td colspan="2"><h1>Identifier Details</h1></td></tr>
 	    
 	    <tr>
@@ -26,17 +26,18 @@
 	    <tr><td colspan=2><h2>About the identified object</h2></td></tr>
 	    
 	    <tr>
-	    	<td class='{% tooltip_class "_target" %}'>{{internal_profile.target.displayName}}:</td>
+	    	<td class='{% tooltip_class "_target" %} label_col'>{{internal_profile.target.displayName}}:</td>
 	    	<td>{% display_value identifier internal_profile.target %}</td>
 	    </tr>
 	    
-	    
-	    {% for e in current_profile.elements %}
-	    	<tr>
-	      	<td class="{% tooltip_class e.name %}">{{ e.displayName }}:</td>
-	      	<td>{% display_value identifier e %}</td>
-	     	</tr>
-	    {% endfor %}
+	    {% if not datacite_html %}
+		    {% for e in current_profile.elements %}
+		    	<tr>
+		      	<td class="{% tooltip_class e.name %}">{{ e.displayName }}:</td>
+		      	<td>{% display_value identifier e %}</td>
+		     	</tr>
+		    {% endfor %}
+	    {% endif %}
 	    
 	    {% if allow_update %}
 	    	<tr><td colspan="2" style="padding: 10px 0 10px 0;">
@@ -45,7 +46,15 @@
 	      	</form>
 	      </td></tr>
 	    {% endif %}
+	  </table>
+	  
+	  {% if datacite_html %}
+	  	{% autoescape off %}
+	  		{{datacite_html}}
+	  	{% endautoescape %}
+	  {% endif %}
 	    
+	  <table>
 	    <tr><td colspan="2"><h2>About the identifier</h2></td></tr>
 	    
 	    <tr>

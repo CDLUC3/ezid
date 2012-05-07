@@ -492,3 +492,11 @@ div.sidebar {
 td.label_col {
 	width: 130px;
 }
+
+
+/* beginning datacite metadata blob */
+table.dcms_table th {
+	font-weight: normal;
+	width: 130px;
+}
+

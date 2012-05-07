@@ -5,7 +5,7 @@
 Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
 record to an XHTML table.
 
-In a slight extension, this transform allows the record identifier to
+In a slight extension, this transform allows the record identifier tossss
 be other than a DOI.
 
 The XPath expressions are written the convoluted way they are to allow
@@ -29,7 +29,7 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='resource']">
   <table class="dcms_table">
     <tr class="dcms_element dcms_identifier">
-      <th class="dcms_label dcms_identifier">Identifier</th>
+      <th class="dcms_label dcms_identifier">Identifier:</th>
       <td class="dcms_value dcms_identifier">
         <xsl:variable name="idType"
           select="*[local-name()='identifier']/@identifierType"/>
@@ -52,7 +52,7 @@ http://creativecommons.org/licenses/BSD/
       </td>
     </tr>
     <tr class="dcms_element dcms_creators">
-      <th class="dcms_label dcms_creators">Creators</th>
+      <th class="dcms_label dcms_creators">Creators:</th>
       <td class="dcms_value dcms_creators">
         <xsl:apply-templates
           select="*[local-name()='creators']/*[local-name()='creator']"/>
@@ -61,20 +61,20 @@ http://creativecommons.org/licenses/BSD/
     <xsl:apply-templates
       select="*[local-name()='titles']/*[local-name()='title']"/>
     <tr class="dcms_element dcms_publisher">
-      <th class="dcms_label dcms_publisher">Publisher</th>
+      <th class="dcms_label dcms_publisher">Publisher:</th>
       <td class="dcms_value dcms_publisher">
         <xsl:value-of select="*[local-name()='publisher']"/>
       </td>
     </tr>
     <tr class="dcms_element dcms_publicationyear">
-      <th class="dcms_label dcms_publicationyear">Publication year</th>
+      <th class="dcms_label dcms_publicationyear">Publication year:</th>
       <td class="dcms_value dcms_publicationyear">
         <xsl:value-of select="*[local-name()='publicationYear']"/>
       </td>
     </tr>
     <xsl:if test="*[local-name()='subjects']/*[local-name()='subject']">
       <tr class="dcms_element dcms_subjects">
-        <th class="dcms_label dcms_subjects">Subjects</th>
+        <th class="dcms_label dcms_subjects">Subjects:</th>
         <td class="dcms_value dcms_subjects">
           <xsl:apply-templates
             select="*[local-name()='subjects']/*[local-name()='subject']"/>
@@ -84,7 +84,7 @@ http://creativecommons.org/licenses/BSD/
     <xsl:if
       test="*[local-name()='contributors']/*[local-name()='contributor']">
       <tr class="dcms_element dcms_contributors">
-        <th class="dcms_label dcms_contributors">Contributors</th>
+        <th class="dcms_label dcms_contributors">Contributors:</th>
         <td class="dcms_value dcms_contributors">
           <xsl:apply-templates select=
             "*[local-name()='contributors']/*[local-name()='contributor']"/>
@@ -93,7 +93,7 @@ http://creativecommons.org/licenses/BSD/
     </xsl:if>
     <xsl:if test="*[local-name()='dates']/*[local-name()='date']">
       <tr class="dcms_element dcms_dates">
-        <th class="dcms_label dcms_dates">Dates</th>
+        <th class="dcms_label dcms_dates">Dates:</th>
         <td class="dcms_value dcms_dates">
           <xsl:apply-templates
             select="*[local-name()='dates']/*[local-name()='date']"/>
@@ -102,7 +102,7 @@ http://creativecommons.org/licenses/BSD/
     </xsl:if>
     <xsl:if test="*[local-name()='language']">
       <tr class="dcms_element dcms_language">
-        <th class="dcms_label dcms_language">Language</th>
+        <th class="dcms_label dcms_language">Language:</th>
         <td class="dcms_value dcms_language">
           <xsl:value-of select="*[local-name()='language']"/>
         </td>
@@ -110,7 +110,7 @@ http://creativecommons.org/licenses/BSD/
     </xsl:if>
     <xsl:if test="*[local-name()='resourceType']">
       <tr class="dcms_element dcms_resourcetype">
-        <th class="dcms_label dcms_resourcetype">Resource type</th>
+        <th class="dcms_label dcms_resourcetype">Resource type:</th>
         <td class="dcms_value dcms_resourcetype">
           <xsl:value-of
             select="*[local-name()='resourceType']/@resourceTypeGeneral"/>
@@ -125,7 +125,7 @@ http://creativecommons.org/licenses/BSD/
     <xsl:if test="*[local-name()=concat($altId, 's')]/*[local-name()=$altId]">
       <tr class="dcms_element dcms_alternateidentifiers">
         <th class=
-          "dcms_label dcms_alternateidentifiers">Alternate identifiers</th>
+          "dcms_label dcms_alternateidentifiers">Alternate identifiers:</th>
         <td class="dcms_value dcms_alternateidentifiers">
           <xsl:apply-templates select=
             "*[local-name()=concat($altId, 's')]/*[local-name()=$altId]"/>
@@ -134,7 +134,7 @@ http://creativecommons.org/licenses/BSD/
     </xsl:if>
     <xsl:if test="*[local-name()=concat($relId, 's')]/*[local-name()=$relId]">
       <tr class="dcms_element dcms_relatedidentifiers">
-        <th class="dcms_label dcms_relatedidentifiers">Related identifiers</th>
+        <th class="dcms_label dcms_relatedidentifiers">Related identifiers:</th>
         <td class="dcms_value dcms_relatedidentifiers">
           <xsl:apply-templates select=
             "*[local-name()=concat($relId, 's')]/*[local-name()=$relId]"/>
@@ -143,7 +143,7 @@ http://creativecommons.org/licenses/BSD/
     </xsl:if>
     <xsl:if test="*[local-name()='sizes']/*[local-name()='size']">
       <tr class="dcms_element dcms_sizes">
-        <th class="dcms_label dcms_sizes">Sizes</th>
+        <th class="dcms_label dcms_sizes">Sizes:</th>
         <td class="dcms_value dcms_sizes">
           <xsl:apply-templates
             select="*[local-name()='sizes']/*[local-name()='size']"/>
@@ -152,7 +152,7 @@ http://creativecommons.org/licenses/BSD/
     </xsl:if>
     <xsl:if test="*[local-name()='formats']/*[local-name()='format']">
       <tr class="dcms_element dcms_formats">
-        <th class="dcms_label dcms_formats">Formats</th>
+        <th class="dcms_label dcms_formats">Formats:</th>
         <td class="dcms_value dcms_formats">
           <xsl:apply-templates
             select="*[local-name()='formats']/*[local-name()='format']"/>
@@ -161,7 +161,7 @@ http://creativecommons.org/licenses/BSD/
     </xsl:if>
     <xsl:if test="*[local-name()='version']">
       <tr class="dcms_element dcms_version">
-        <th class="dcms_label dcms_version">Version</th>
+        <th class="dcms_label dcms_version">Version:</th>
         <td class="dcms_value dcms_version">
           <xsl:value-of select="*[local-name()='version']"/>
         </td>
@@ -169,7 +169,7 @@ http://creativecommons.org/licenses/BSD/
     </xsl:if>
     <xsl:if test="*[local-name()='rights']">
       <tr class="dcms_element dcms_rights">
-        <th class="dcms_label dcms_rights">Rights</th>
+        <th class="dcms_label dcms_rights">Rights:</th>
         <td class="dcms_value dcms_rights">
           <xsl:value-of select="*[local-name()='rights']"/>
         </td>
@@ -218,6 +218,7 @@ http://creativecommons.org/licenses/BSD/
           <xsl:text>]</xsl:text>
         </span>
       </xsl:if>
+      <xsl:text>:</xsl:text>
     </th>
     <td class="dcms_value dcms_titles">
       <xsl:value-of select="."/>
@@ -235,7 +236,7 @@ http://creativecommons.org/licenses/BSD/
     <span class="dcms_subvalue dcms_subjects">
       <xsl:text>[</xsl:text>
       <xsl:value-of select="@subjectScheme"/>
-      <xsl:text>]</xsl:text>
+      <xsl:text>]:</xsl:text>
     </span>
   </xsl:if>
 </xsl:template>
@@ -320,11 +321,11 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='description']">
   <tr class="dcms_element dcms_descriptions">
     <th class="dcms_label dcms_descriptions">
-      <xsl:text>Description </xsl:text>
+      <xsl:text>Description</xsl:text>
       <span class="dcms_sublabel dcms_descriptions">
         <xsl:text>[</xsl:text>
         <xsl:value-of select="@descriptionType"/>
-        <xsl:text>]</xsl:text>
+        <xsl:text>]:</xsl:text>
       </span>
     </th>
     <td class="dcms_value dcms_descriptions">
