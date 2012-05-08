@@ -171,8 +171,6 @@ def is_logged_in(request):
     return False
   return True
 
-# Based on existing UI code, but does this need expansion?
-# XXX is anyone logged in able to view anyone else's identifiers?
 def view_authorized_for_identifier(request, id_meta):
   """Checks that the user is authorized to view identifier"""
   if "_ezid_role" in id_meta and ("auth" not in request.session or\
@@ -244,10 +242,10 @@ def validate_simple_metadata_form(request, profile):
   but may be useful later"""
   is_valid = True
   if "_target" not in request.POST:
-    django.contrib.messages.error(request, "You must enter a URL location for your identifier")
+    django.contrib.messages.error(request, "You must enter a location (URL) for your identifier")
     is_valid = False
   if not(url_is_valid(request.POST['_target'])):
-    django.contrib.messages.error(request, "Please enter a a valid URL")
+    django.contrib.messages.error(request, "Please enter a a valid location (URL)")
     is_valid = False
   return is_valid
 
@@ -256,14 +254,14 @@ def validate_advanced_metadata_form(request, profile):
   but may be useful later"""
   is_valid = True
   if "_target" not in request.POST:
-    django.contrib.messages.error(request, "You must enter a URL location for your identifier")
+    django.contrib.messages.error(request, "You must enter a location (URL) for your identifier")
     is_valid = False  
   if not(url_is_valid(request.POST['_target'])):
-    django.contrib.messages.error(request, "Please enter a valid URL")
+    django.contrib.messages.error(request, "Please enter a valid location (URL)")
     is_valid = False
   if request.POST['remainder'] != '' and request.POST['remainder'] != remainder_box_default and \
       (' ' in request.POST['remainder'] or len(request.POST['remainder']) > 30):
-    django.contrib.messages.error(request, "The remainder you entered is invalid.")
+    django.contrib.messages.error(request, "The remainder you entered is not valid.")
     is_valid = False       
   return is_valid
 
@@ -346,3 +344,13 @@ def admin_login_required(f):
   wrap.__doc__=f.__doc__
   wrap.__name__=f.__name__
   return wrap
+
+def identifier_has_block_data(identifier):
+  """takes full identifier with metadata and
+  returns True/False whether it has block metadata (which is an element)
+  the same as a profile name in the identifier"""
+  profiles = metadata.getProfiles()[1:]
+  for profile in profiles:
+    if profile.name in identifier:
+      return True
+  return False

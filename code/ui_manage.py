@@ -103,6 +103,9 @@ def edit(request, identifier):
     django.contrib.messages.error(request, "You are not allowed to edit this identifier")
     return redirect("/ezid/id/" + identifier)
   s, m = r
+  if uic.identifier_has_block_data(m):
+    django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
+    return redirect("/ezid/id/" + identifier)
   d['status'] = m['_status'] if '_status' in m else 'unavailable'
   d['post_status'] = d['status']
   d['id_text'] = s.split()[1]
@@ -154,7 +157,7 @@ def details(request):
   else:
     d['current_profile'] = metadata.getProfile('dc')
 
-  #replace erc data from anvl blob if erc and has blob special treatment for Merritt
+  #replace erc data from anvl blob if erc and has block--special treatment for Merritt
   if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
     keys, values = zip(*anvl.parse(d['identifier']['erc']).iteritems())
     keys = ["erc." + i for i in keys]
@@ -162,4 +165,5 @@ def details(request):
     d['identifier'].update(newdict)
   if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
     d['datacite_html'] = datacite.dcmsRecordToHtml(d['identifier']["datacite"])
+  d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
   return uic.render(request, "manage/details", d)
