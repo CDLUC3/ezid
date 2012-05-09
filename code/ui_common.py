@@ -34,6 +34,9 @@ defaultArkProfile = None
 defaultUrnUuidProfile = None
 adminUsername = None
 shoulders = None
+google_analytics_id = None
+
+
 
 remainder_box_default = "Recommended: Leave blank"
 
@@ -42,7 +45,7 @@ def _loadConfig():
   #outside of this module, use ui_common.varname
   global ezidUrl, templates, alertMessage, prefixes, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
-  global adminUsername, shoulders
+  global adminUsername, shoulders, google_analytics_id
   ezidUrl = config.config("DEFAULT.ezid_base_url")
   templates = {}
   _load_templates([ django.conf.settings.TEMPLATE_DIRS[0] ])
@@ -66,6 +69,7 @@ def _loadConfig():
   defaultArkProfile = config.config("DEFAULT.default_ark_profile")
   defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
   adminUsername = config.config("ldap.admin_username")
+  google_analytics_id = config.config("DEFAULT.google_analytics_id")
   shoulders = [{ "label": k, "name": config.config("prefix_%s.name" % k),
     "prefix": config.config("prefix_%s.prefix" % k) }\
     for k in config.config("prefixes.keys").split(",")\
@@ -87,8 +91,8 @@ _loadConfig()
 config.addLoader(_loadConfig)
   
 def render(request, template, context={}):
-  global alertMessage
-  c = { "session": request.session, "alertMessage": alertMessage }
+  global alertMessage, google_analytics_id
+  c = { "session": request.session, "alertMessage": alertMessage, "google_analytics_id": google_analytics_id }
   c.update(context)
   content = templates[template].render(
     django.template.RequestContext(request, c))
