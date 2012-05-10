@@ -80,7 +80,22 @@ def logout(request):
   return redirect("ui_home.index")
 
 def contact(request):
-  pass
+  d = { 'menu_item': 'ui_null.null'}
+  d['affiliates'] = [ ['Berkeley', 'Davis', 'Irvine', 'Los Angeles'], \
+                     ['Merced', 'Riverside', 'San Diego', 'San Francisco'], \
+                     ['Santa Barbara', 'Santa Cruz', 'Other'] ]
+  if request.method == "GET":
+    d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
+  elif request.method == "POST":
+    print "method: post"
+    for i in ['your_name', 'email', 'comment', 'hear_about']:
+      if not i in request.POST:
+        print "bad " + i
+        d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
+        return uic.render(request, 'account/contact', d)
+    d.update(uic.extract(request.POST, ['your_name', 'email', 'affiliation', 'comment', 'hear_about']))
+  print d['your_name']
+  return uic.render(request, 'account/contact', d)
 
 def ajax_hide_alert(request):
   request.session['hide_alert'] = True
