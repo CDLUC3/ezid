@@ -56,11 +56,13 @@
 		<label for="hear_about" class="left">How did you hear about us?</label>
 		<div class="field_right">
 			<select name="hear_about" id="hear_about">
-  			<option value="website">UC3 website</option>
-  			<option value="conference">Conference</option>
-  			<option value="colleagues">Colleagues</option>
-  			<option value="webinar">Webinar</option>
-  			<option value="other">Other</option>
+				{% for tup in heard %}
+					<option value="{{ tup.0 }}"
+						{% if tup.0 == hear_about %}
+							selected="selected"
+						{% endif %}
+						>{{ tup.1 }}</option>
+				{% endfor %}
 			</select>
 		</div>
 		<label class="left"></label>

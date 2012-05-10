@@ -84,6 +84,11 @@ def contact(request):
   d['affiliates'] = [ ['Berkeley', 'Davis', 'Irvine', 'Los Angeles'], \
                      ['Merced', 'Riverside', 'San Diego', 'San Francisco'], \
                      ['Santa Barbara', 'Santa Cruz', 'Other'] ]
+  d['heard']      =   ( ("website", "UC3 website"), \
+                        ("conference", "Conference"), \
+                        ("colleagues", "Colleagues"), \
+                        ("webinar", "Webinar"), \
+                        ("other", "Other") )
   if request.method == "GET":
     d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
   elif request.method == "POST":
@@ -94,7 +99,6 @@ def contact(request):
         d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
         return uic.render(request, 'account/contact', d)
     d.update(uic.extract(request.POST, ['your_name', 'email', 'affiliation', 'comment', 'hear_about']))
-  print d['your_name']
   return uic.render(request, 'account/contact', d)
 
 def ajax_hide_alert(request):
