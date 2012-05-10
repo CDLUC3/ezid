@@ -92,7 +92,6 @@ def contact(request):
   if request.method == "GET":
     d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
   elif request.method == "POST":
-    print "method: post"
     for i in ['your_name', 'email', 'comment', 'hear_about']:
       if not i in request.POST:
         print "bad " + i
