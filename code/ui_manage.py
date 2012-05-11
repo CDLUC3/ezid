@@ -159,10 +159,10 @@ def details(request):
 
   #replace erc data from anvl blob if erc and has block--special treatment for Merritt
   if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
-    keys, values = zip(*anvl.parse(d['identifier']['erc']).iteritems())
-    keys = ["erc." + i for i in keys]
-    newdict = dict(zip(keys, values))
-    d['identifier'].update(newdict)
+    try:
+      d['erc_block_list'] = anvl.parse_as_list(d['identifier']['erc'])
+    except:
+      d['erc_block_list'] = [['warning','The ERC block metadata in this identifier is not valid']]
   if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
     d['datacite_html'] = datacite.dcmsRecordToHtml(d['identifier']["datacite"])
   d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])

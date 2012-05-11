@@ -30,13 +30,22 @@
 	    	<td>{% display_value identifier internal_profile.target %}</td>
 	    </tr>
 	    
-	    {% if not datacite_html %}
+	    {% if not has_block_data %}
 		    {% for e in current_profile.elements %}
 		    	<tr>
 		      	<td class="{% tooltip_class e.name %}">{{ e.displayName }}:</td>
 		      	<td>{% display_value identifier e %}</td>
 		     	</tr>
 		    {% endfor %}
+	    {% endif %}
+	    
+	    {% if erc_block_list %}
+	    	{% for e in erc_block_list %}
+	    		<tr>
+		      	<td class="element_erc{{ e.0 }}">{{ e.0|capfirst }}:</td>
+		      	<td>{{ e.1 }}</td>
+		     	</tr>
+	    	{% endfor %}
 	    {% endif %}
 	    
 	    {% if allow_update and not has_block_data %}
@@ -56,6 +65,8 @@
 	  		{{datacite_html}}
 	  	{% endautoescape %}
 	  {% endif %}
+	  
+	  
 	    
 	  <table>
 	    <tr><td colspan="2"><h2>About the identifier</h2></td></tr>
