@@ -47,14 +47,6 @@
 		     	</tr>
 	    	{% endfor %}
 	    {% endif %}
-	    
-	    {% if allow_update and not has_block_data %}
-	    	<tr><td colspan="2" style="padding: 10px 0 10px 0;">
-	      	<form action="{% url ui_manage.edit id_text %}" method="get">
-	        	<input type="submit" value="Edit" />
-	      	</form>
-	      </td></tr>
-	    {% endif %}
 	  </table>
 	  
 	  {% if datacite_html %}
@@ -65,6 +57,26 @@
 	  		{{datacite_html}}
 	  	{% endautoescape %}
 	  {% endif %}
+	  
+	{% if allow_update %}
+  	<form action="{% url ui_manage.edit id_text %}" method="get">
+  		<table style="margin-top:7px;">
+  			<tr>
+	  			<td class="label_col">&nbsp;</td>
+	  			<td>
+		    		<input type="submit" value="Edit"
+		    			{% if has_block_data %}
+		    				disabled="disabled"
+		    			{% endif %}
+		    	 	/>
+		    	 	{% if has_block_data %}
+		    	 		{% help_icon "disabled_edit_help" %}
+		    	 	{% endif %}
+		    	</td>
+	    	</tr>
+    	</table>
+  	</form>
+	{% endif %}
 	  
 	  
 	    
