@@ -105,15 +105,19 @@ def contact(request):
       #url is hidden.  If it's filled in then probably a spam bot
       return uic.render(request, 'account/contact', d)
     emails = [x.strip() for x in uic.contact_form_email.split(',')]
-    title = request.META['DJANGO_SETTINGS_MODULE'].split('.')[1] + ": EZID contact form email"
-    message = "Name: " + P['your_name'] + "\r\n\r\n" + \
+    title = "EZID contact form email"
+    if 'HTTP_REFERER' in request.META:
+      message = 'Sent FROM: ' + request.META['HTTP_REFERER']
+    else:
+      message = ''
+    message += "Name: " + P['your_name'] + "\r\n\r\n" + \
               "Email: " + P['email'] + "\r\n\r\n"
     if 'affiliation' in P:
       message += "Institution: " +  P['affiliation'] + "\r\n\r\n"
     message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
               "Heard about from: " + P['hear_about']
     try:
-      django.core.mail.send_mail("Test Email", "test",
+      django.core.mail.send_mail(title, message,
         django.conf.settings.SERVER_EMAIL, emails)
     except:
       django.contrib.messages.error(request, "There was a problem sending your email")
