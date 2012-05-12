@@ -92,12 +92,34 @@ def contact(request):
   if request.method == "GET":
     d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
   elif request.method == "POST":
+    P = request.POST
     for i in ['your_name', 'email', 'comment', 'hear_about']:
-      if not i in request.POST:
-        print "bad " + i
+      if not i in P:
         d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
         return uic.render(request, 'account/contact', d)
     d.update(uic.extract(request.POST, ['your_name', 'email', 'affiliation', 'comment', 'hear_about']))
+    if P['comment'].strip() == '':
+      django.contrib.messages.error(request, "Please fill in a question or comment")
+      return uic.render(request, 'account/contact', d)
+    if not 'url' in P or P['url'] != '':
+      #url is hidden.  If it's filled in then probably a spam bot
+      return uic.render(request, 'account/contact', d)
+    emails = [x.strip() for x in uic.contact_form_email.split(',')]
+    title = request.META['DJANGO_SETTINGS_MODULE'].split('.')[1] + ": EZID contact form email"
+    message = "Name: " + P['your_name'] + "\r\n\r\n" + \
+              "Email: " + P['email'] + "\r\n\r\n"
+    if 'affiliation' in P:
+      message += "Institution: " +  P['affiliation'] + "\r\n\r\n"
+    message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
+              "Heard about from: " + P['hear_about']
+    try:
+      django.core.mail.send_mail("Test Email", "test",
+        django.conf.settings.SERVER_EMAIL, emails)
+    except:
+      django.contrib.messages.error(request, "There was a problem sending your email")
+      return uic.render(request, 'account/contact', d)
+    #django.core.mail.send_mail("EZID password reset request", message,
+    #  django.conf.settings.SERVER_EMAIL, [emailAddress])
   return uic.render(request, 'account/contact', d)
 
 def ajax_hide_alert(request):

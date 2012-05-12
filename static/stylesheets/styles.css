@@ -500,3 +500,12 @@ table.dcms_table th {
 	width: 130px;
 }
 
+/* a hidden field in the email form for screen scapers for
+ * a "honeypot" like spam reducer.  If this field is filled
+ * in then something is wrong since it should not be filled
+ * in by normal users.
+ */
+.trapper_keeper {
+	display:none;
+}
+
