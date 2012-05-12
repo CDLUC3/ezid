@@ -107,7 +107,7 @@ def contact(request):
     emails = [x.strip() for x in uic.contact_form_email.split(',')]
     title = "EZID contact form email"
     if 'HTTP_REFERER' in request.META:
-      message = 'Sent FROM: ' + request.META['HTTP_REFERER']
+      message = 'Sent FROM: ' + request.META['HTTP_REFERER'] +"\r\n\r\n"
     else:
       message = ''
     message += "Name: " + P['your_name'] + "\r\n\r\n" + \
@@ -119,6 +119,9 @@ def contact(request):
     try:
       django.core.mail.send_mail(title, message,
         django.conf.settings.SERVER_EMAIL, emails)
+      
+      django.contrib.messages.success(request, "Message sent")
+      d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
     except:
       django.contrib.messages.error(request, "There was a problem sending your email")
       return uic.render(request, 'account/contact', d)
