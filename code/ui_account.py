@@ -179,6 +179,7 @@ def validate_edit_user(request):
   
 def update_edit_user(request):
   """method to update the user editing his information.  Not a view for a page"""
+  account_updated = False
   uid = request.session['auth'].user[0]
   di = {}
   for item in ['givenName', 'sn', 'mail', 'telephoneNumber']:
@@ -192,14 +193,16 @@ def update_edit_user(request):
   if type(r) is str:
     django.contrib.messages.error(request, r)
   else:
-    django.contrib.messages.success(request, "Your account information has been updated.")
+    account_updated = True
+    django.contrib.messages.success(request, "Your information has been updated.")
   
   if request.POST['pwcurrent'].strip() != '':
     r = useradmin.resetPassword(uid, request.POST["pwnew"].strip())
     if type(r) is str:
       django.contrib.messages.error(request, r)
     else:
-      django.contrib.messages.success(request, "Your password has been updated.")
+      if not account_updated:
+        django.contrib.messages.success(request, "Your password has been updated.")
       
 def pwreset(request, pwrr, ssl=False):
   """
