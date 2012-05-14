@@ -34,6 +34,10 @@ defaultArkProfile = None
 defaultUrnUuidProfile = None
 adminUsername = None
 shoulders = None
+google_analytics_id = None
+contact_form_email = None
+
+
 
 remainder_box_default = "Recommended: Leave blank"
 
@@ -42,7 +46,7 @@ def _loadConfig():
   #outside of this module, use ui_common.varname
   global ezidUrl, templates, alertMessage, prefixes, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
-  global adminUsername, shoulders
+  global adminUsername, shoulders, google_analytics_id, contact_form_email
   ezidUrl = config.config("DEFAULT.ezid_base_url")
   templates = {}
   _load_templates([ django.conf.settings.TEMPLATE_DIRS[0] ])
@@ -66,6 +70,8 @@ def _loadConfig():
   defaultArkProfile = config.config("DEFAULT.default_ark_profile")
   defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
   adminUsername = config.config("ldap.admin_username")
+  google_analytics_id = config.config("DEFAULT.google_analytics_id")
+  contact_form_email = config.config("DEFAULT.contact_form_email")
   shoulders = [{ "label": k, "name": config.config("prefix_%s.name" % k),
     "prefix": config.config("prefix_%s.prefix" % k) }\
     for k in config.config("prefixes.keys").split(",")\
@@ -87,8 +93,8 @@ _loadConfig()
 config.addLoader(_loadConfig)
   
 def render(request, template, context={}):
-  global alertMessage
-  c = { "session": request.session, "alertMessage": alertMessage }
+  global alertMessage, google_analytics_id
+  c = { "session": request.session, "alertMessage": alertMessage, "google_analytics_id": google_analytics_id }
   c.update(context)
   content = templates[template].render(
     django.template.RequestContext(request, c))
@@ -171,8 +177,6 @@ def is_logged_in(request):
     return False
   return True
 
-# Based on existing UI code, but does this need expansion?
-# XXX is anyone logged in able to view anyone else's identifiers?
 def view_authorized_for_identifier(request, id_meta):
   """Checks that the user is authorized to view identifier"""
   if "_ezid_role" in id_meta and ("auth" not in request.session or\
@@ -244,10 +248,10 @@ def validate_simple_metadata_form(request, profile):
   but may be useful later"""
   is_valid = True
   if "_target" not in request.POST:
-    django.contrib.messages.error(request, "You must enter a URL location for your identifier")
+    django.contrib.messages.error(request, "You must enter a location (URL) for your identifier")
     is_valid = False
   if not(url_is_valid(request.POST['_target'])):
-    django.contrib.messages.error(request, "Please enter a a valid URL")
+    django.contrib.messages.error(request, "Please enter a a valid location (URL)")
     is_valid = False
   return is_valid
 
@@ -256,14 +260,14 @@ def validate_advanced_metadata_form(request, profile):
   but may be useful later"""
   is_valid = True
   if "_target" not in request.POST:
-    django.contrib.messages.error(request, "You must enter a URL location for your identifier")
+    django.contrib.messages.error(request, "You must enter a location (URL) for your identifier")
     is_valid = False  
   if not(url_is_valid(request.POST['_target'])):
-    django.contrib.messages.error(request, "Please enter a valid URL")
+    django.contrib.messages.error(request, "Please enter a valid location (URL)")
     is_valid = False
   if request.POST['remainder'] != '' and request.POST['remainder'] != remainder_box_default and \
       (' ' in request.POST['remainder'] or len(request.POST['remainder']) > 30):
-    django.contrib.messages.error(request, "The remainder you entered is invalid.")
+    django.contrib.messages.error(request, "The remainder you entered is not valid.")
     is_valid = False       
   return is_valid
 
@@ -346,3 +350,13 @@ def admin_login_required(f):
   wrap.__doc__=f.__doc__
   wrap.__name__=f.__name__
   return wrap
+
+def identifier_has_block_data(identifier):
+  """takes full identifier with metadata and
+  returns True/False whether it has block metadata (which is an element)
+  the same as a profile name in the identifier"""
+  profiles = metadata.getProfiles()[1:]
+  for profile in profiles:
+    if profile.name in identifier:
+      return True
+  return False

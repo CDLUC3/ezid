@@ -8,6 +8,8 @@ import metadata
 import search
 import math
 import useradmin
+import anvl
+import datacite
 
 
 # these are layout properties for the fields in the manage index page,
@@ -101,6 +103,9 @@ def edit(request, identifier):
     django.contrib.messages.error(request, "You are not allowed to edit this identifier")
     return redirect("/ezid/id/" + identifier)
   s, m = r
+  if uic.identifier_has_block_data(m):
+    django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
+    return redirect("/ezid/id/" + identifier)
   d['status'] = m['_status'] if '_status' in m else 'unavailable'
   d['post_status'] = d['status']
   d['id_text'] = s.split()[1]
@@ -135,6 +140,7 @@ def details(request):
   my_path = "/ezid/id/"
   identifier = unquote(request.path[len(my_path):])
   r = ezid.getMetadata(identifier)
+  #import pdb; pdb.set_trace()
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_lookup.index")
@@ -150,4 +156,14 @@ def details(request):
     d['current_profile'] = metadata.getProfile(m['_profile'])
   else:
     d['current_profile'] = metadata.getProfile('dc')
+
+  #replace erc data from anvl blob if erc and has block--special treatment for Merritt
+  if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
+    try:
+      d['erc_block_list'] = anvl.parse_as_list(d['identifier']['erc'])
+    except:
+      d['erc_block_list'] = [['warning','The ERC block metadata in this identifier is not valid']]
+  if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
+    d['datacite_html'] = datacite.dcmsRecordToHtml(d['identifier']["datacite"])
+  d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
   return uic.render(request, "manage/details", d)

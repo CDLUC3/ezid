@@ -10,7 +10,7 @@
 
 {% block content %}
   <div class="grid_9">
-  	<table>
+  	<table style="margin-bottom:0px;">
   		<tr><td colspan="2"><h1>Identifier Details</h1></td></tr>
 	    
 	    <tr>
@@ -26,26 +26,61 @@
 	    <tr><td colspan=2><h2>About the identified object</h2></td></tr>
 	    
 	    <tr>
-	    	<td class='{% tooltip_class "_target" %}'>{{internal_profile.target.displayName}}:</td>
+	    	<td class='{% tooltip_class "_target" %} label_col'>{{internal_profile.target.displayName}}:</td>
 	    	<td>{% display_value identifier internal_profile.target %}</td>
 	    </tr>
 	    
-	    
-	    {% for e in current_profile.elements %}
-	    	<tr>
-	      	<td class="{% tooltip_class e.name %}">{{ e.displayName }}:</td>
-	      	<td>{% display_value identifier e %}</td>
-	     	</tr>
-	    {% endfor %}
-	    
-	    {% if allow_update %}
-	    	<tr><td colspan="2" style="padding: 10px 0 10px 0;">
-	      	<form action="{% url ui_manage.edit id_text %}" method="get">
-	        	<input type="submit" value="Edit" />
-	      	</form>
-	      </td></tr>
+	    {% if not has_block_data %}
+		    {% for e in current_profile.elements %}
+		    	<tr>
+		      	<td class="{% tooltip_class e.name %}">{{ e.displayName }}:</td>
+		      	<td>{% display_value identifier e %}</td>
+		     	</tr>
+		    {% endfor %}
 	    {% endif %}
 	    
+	    {% if erc_block_list %}
+	    	{% for e in erc_block_list %}
+	    		<tr>
+		      	<td class="element_erc{{ e.0 }}">{{ e.0|capfirst }}:</td>
+		      	<td>{{ e.1 }}</td>
+		     	</tr>
+	    	{% endfor %}
+	    {% endif %}
+	  </table>
+	  
+	  {% if datacite_html %}
+	  	<style type="text/css">
+	  		tr.dcms_identifier { display: none;}
+	  	</style>
+	  	{% autoescape off %}
+	  		{{datacite_html}}
+	  	{% endautoescape %}
+	  {% endif %}
+	  
+	{% if allow_update %}
+  	<form action="{% url ui_manage.edit id_text %}" method="get">
+  		<table style="margin-top:7px;">
+  			<tr>
+	  			<td class="label_col">&nbsp;</td>
+	  			<td>
+		    		<input type="submit" value="Edit"
+		    			{% if has_block_data %}
+		    				disabled="disabled"
+		    			{% endif %}
+		    	 	/>
+		    	 	{% if has_block_data %}
+		    	 		{% help_icon "disabled_edit_help" %}
+		    	 	{% endif %}
+		    	</td>
+	    	</tr>
+    	</table>
+  	</form>
+	{% endif %}
+	  
+	  
+	    
+	  <table>
 	    <tr><td colspan="2"><h2>About the identifier</h2></td></tr>
 	    
 	    <tr>

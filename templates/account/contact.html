@@ -1,0 +1,81 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Contact us{% endblock %}
+
+{% block content %}
+
+<div id="pwreset" class="grid_12">
+
+	<h1 id="title">Contact Us</h1>
+
+	<p style="width:500px">
+		Please fill out this form if you would like more information
+		about our services or have a specific question.
+		If you have a comment we are always happy to hear feedback.
+	</p>
+
+	<form name="contact" action="{% url ui_account.contact %}" method="post">
+		<label for="your_name" class="left">Your name:</label>
+		<div class="field_right">
+			<input type="text" name="your_name" value="{{ your_name }}" maxlength="200" />
+		</div>
+		
+		<label for="url" class="trapper_keeper">Your url:</label>
+		<div class="trapper_keeper">
+			<input type="text" name="url" value="" maxlength="200" /> * Please leave blank
+		</div>
+
+		<label for="email" class="left">Your email:</label>
+		<div class="field_right">
+			<input type="text" name="email" value="{{ email }}" maxlength="200" />
+		</div>
+
+		<label for="affiliation" class="left">Your institution:</label>
+
+		<div class="field_right" style="width:400px;">
+		<table border="0" style="clear:both;width:400px;">
+			<tr>
+				{% for c in affiliates %}
+					<td valign="top" align="left">
+						{% for i in c %}
+							<input type="radio" value="{{i}}" name="affiliation"
+								{% if i == affiliation %}
+									checked="checked"
+								{% endif %}
+							 />{{i}}<br />
+						{% endfor %}
+					</td>
+				{% endfor %}
+			</tr>
+		</table>
+		</div>
+		
+		<label class="left">&nbsp;</label>
+		<div class="field_right" style="width:400px;">
+			Please indicate your question or comment:<br/>
+			<textarea rows="10" cols="50" name="comment" style="margin-bottom:16px;">{{comment}}</textarea>
+		</div>
+		
+		<div style="clear:both"></div>
+
+		<label for="hear_about" class="left">How did you hear about us?</label>
+		<div class="field_right">
+			<select name="hear_about" id="hear_about">
+				{% for tup in heard %}
+					<option value="{{ tup.0 }}"
+						{% if tup.0 == hear_about %}
+							selected="selected"
+						{% endif %}
+						>{{ tup.1 }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<label class="left"></label>
+		<div class="field_right">
+			<input type="submit" value="Submit" />
+		</div>
+
+	</form>
+</div>
+
+{% endblock %}
