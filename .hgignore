@@ -2,7 +2,6 @@
 ~$
 ^settings/ezid\.conf\.shadow$
 ^static/javascripts/metadata_tooltips\.js$
-^templates/info/.*
 \.project$
 \.pydevproject$
 \.DS_Store$
