@@ -64,7 +64,7 @@ def secondary_menu(current_func, session):
   for m in menu[3]:
     acc.append(display_item(m, session,
                 string.split(current_func, '.')[1] == string.split(m[1], '.')[1]))
-  return '&nbsp;&nbsp;|&nbsp;&nbsp;'.join(acc)
+  return '<span class="pad">|</span>'.join(acc)
   
   
 

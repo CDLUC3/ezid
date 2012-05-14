@@ -50,7 +50,7 @@ div.menu_main{
 
 div.menu_main div{
   float: left;
-  margin-right: 60px;
+  margin-right: 45px;
 }
 
 div.menu_main a{
@@ -507,5 +507,15 @@ table.dcms_table th {
  */
 .trapper_keeper {
 	display:none;
+}
+
+span.pad {
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+}
+
+span.big_pad {
+	margin-left: 1em;
+	margin-right: 1em;	
 }
 
