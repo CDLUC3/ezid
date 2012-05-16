@@ -26,21 +26,19 @@ Session cookies store the following key/value pairs:
   auth
     A userauth.AuthenticatedUser object which has 'user' and 'group'
     attributes, each of which is a tuple as described above.
-    Existence of this key indicates that the user is authenticated.
+    Presence of this key indicates that the user is authenticated.
 
   prefixes
     A list of the prefixes to which the user has access.  Each element
     of the list is a dictionary with keys 'prefix' and 'namespace',
     e.g., { "prefix": "ark:/13030/c7", "namespace": "EZID ARK" }.  Set
     and used only by the UI for rendering purposes, not access
-    control.
+    control.  Present iff the user is authenticated.
 
-  history
-    A list of previously-visited identifiers.  Each element of the
-    list is a dictionary with keys 'id' (the identifier), 'url' (the
-    relative URL of the identifier's management page), and
-    'abbreviated' (the possibly abbreviated display version of the
-    identifier).  UI only.
+  redirect_to
+    The full URL path to which the user should be redirected following
+    a successful login.  UI only.  May or may not be present; not
+    cleared.
 
 3. Caching
 ----------
@@ -78,7 +76,9 @@ Caching is employed in several places:
   session cookies
     See above.  A session cookie is invalidated if/when a user logs
     out, but otherwise there's currently no way to invalidate a
-    session cookie.
+    session cookie.  (SESSION_EXPIRE_AT_BROWSER_CLOSE is set to true,
+    but that only directs browsers to drop cookies, it doesn't
+    actually invalidate them.)
 
   idmap.py: _idMap, _groupMap, _userMap
     These dictionaries cache correspondences between agent identifiers
