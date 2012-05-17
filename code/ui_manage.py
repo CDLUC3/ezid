@@ -8,7 +8,7 @@ import metadata
 import search
 import math
 import useradmin
-import anvl
+import erc
 import datacite
 
 
@@ -134,6 +134,25 @@ def edit(request, identifier):
   d['profiles'] = metadata.getProfiles()[1:]
   return uic.render(request, "manage/edit", d)
 
+def _formatErcBlock (block):
+  try:
+    d = erc.parse(block, concatenateValues=False)
+  except erc.ErcParseException:
+    return\
+      [["warning", "The ERC block metadata in this identifier is not valid"]]
+  l = []
+  # List profile elements first, in profile order.
+  for e in metadata.getProfile("erc").elements:
+    assert e.name.startswith("erc.")
+    n = e.name[4:]
+    if n in d:
+      for v in d[n]: l.append([n, v])
+      del d[n]
+  # Now list any remaining elements.
+  for k in d:
+    for v in d[k]: l.append([k, v])
+  return l
+
 def details(request):
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
@@ -159,10 +178,7 @@ def details(request):
 
   #replace erc data from anvl blob if erc and has block--special treatment for Merritt
   if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
-    try:
-      d['erc_block_list'] = anvl.parse_as_list(d['identifier']['erc'])
-    except:
-      d['erc_block_list'] = [['warning','The ERC block metadata in this identifier is not valid']]
+    d['erc_block_list'] = _formatErcBlock(d['identifier']['erc'])
   if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
     d['datacite_html'] = datacite.dcmsRecordToHtml(d['identifier']["datacite"])
   d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])

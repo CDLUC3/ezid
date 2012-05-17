@@ -5,7 +5,7 @@
 Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
 record to an XHTML table.
 
-In a slight extension, this transform allows the record identifier tossss
+In a slight extension, this transform allows the record identifier to
 be other than a DOI.
 
 The XPath expressions are written the convoluted way they are to allow
@@ -134,7 +134,8 @@ http://creativecommons.org/licenses/BSD/
     </xsl:if>
     <xsl:if test="*[local-name()=concat($relId, 's')]/*[local-name()=$relId]">
       <tr class="dcms_element dcms_relatedidentifiers">
-        <th class="dcms_label dcms_relatedidentifiers">Related identifiers:</th>
+        <th class=
+          "dcms_label dcms_relatedidentifiers">Related identifiers:</th>
         <td class="dcms_value dcms_relatedidentifiers">
           <xsl:apply-templates select=
             "*[local-name()=concat($relId, 's')]/*[local-name()=$relId]"/>
@@ -236,7 +237,7 @@ http://creativecommons.org/licenses/BSD/
     <span class="dcms_subvalue dcms_subjects">
       <xsl:text>[</xsl:text>
       <xsl:value-of select="@subjectScheme"/>
-      <xsl:text>]:</xsl:text>
+      <xsl:text>]</xsl:text>
     </span>
   </xsl:if>
 </xsl:template>
@@ -321,7 +322,7 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='description']">
   <tr class="dcms_element dcms_descriptions">
     <th class="dcms_label dcms_descriptions">
-      <xsl:text>Description</xsl:text>
+      <xsl:text>Description </xsl:text>
       <span class="dcms_sublabel dcms_descriptions">
         <xsl:text>[</xsl:text>
         <xsl:value-of select="@descriptionType"/>

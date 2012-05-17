@@ -23,8 +23,8 @@ def usage(request, ssl=False):
 
 @uic.admin_login_required
 def add_user(request, ssl=False):
-  if request.method != "POST" or not 'nu_uid' in request.POST or\
-      not 'nu_select_uid' in request.POST or not 'nu_group' in request.POST:
+  if request.method != "POST" or not 'nu_uid' in request.POST \
+      or not 'nu_group' in request.POST:
     uic.badRequest()
   P = request.POST
   uid = P['nu_uid'].strip()

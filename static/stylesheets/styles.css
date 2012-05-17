@@ -50,7 +50,7 @@ div.menu_main{
 
 div.menu_main div{
   float: left;
-  margin-right: 60px;
+  margin-right: 45px;
 }
 
 div.menu_main a{
@@ -315,10 +315,16 @@ dd{
 }
 
 .help_window div.close_button, #ustatus div.close_button {
+	/*
 	float: right;
-	position: relative;
+	position: relative;*/
+	position: absolute;
+	z-index: 11;
+	top: 2px;
+	right: 2px;
+	/*
 	top: -8px;
-	right: -10px;
+	right: -10px; */
 	font-size: 70%;
 }
 
@@ -507,5 +513,15 @@ table.dcms_table th {
  */
 .trapper_keeper {
 	display:none;
+}
+
+span.pad {
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+}
+
+span.big_pad {
+	margin-left: 1em;
+	margin-right: 1em;	
 }
 

@@ -1,0 +1,21 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+
+{% block title %}Permanant Identifier Creation Unavailable{% endblock %}
+
+{% block content %}
+  <div class="grid_9">
+    <h1>Permanant Identifier Creation Unavailable</h1>
+    <p>
+    	You may not create any permanant identifiers because your account
+    	doesn't have any identifer types (shoulders) assigned to it.	
+    </p>
+    
+    <p>
+    	You may still create temporary identifiers with the
+    	<a href="{% url ui_demo.simple %}">demo identifier</a> functionality.
+    </p>
+    
+    <p>If you have questions, you may <a href="{% url ui_account.contact %}">contact us</a>.</p>
+  </div>
+{% endblock %}

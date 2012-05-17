@@ -148,13 +148,13 @@ def error (code):
   return django.http.HttpResponse(content, status=code)
 
 def badRequest ():
-  return _error(400)
+  return error(400)
 
 def unauthorized ():
-  return _error(401)
+  return error(401)
 
 def methodNotAllowed ():
-  return _error(405)
+  return error(405)
 
 def formatError (message):
   for p in ["error: bad request - ", "error: "]:

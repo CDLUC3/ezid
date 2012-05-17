@@ -14,7 +14,10 @@ def index(request):
 def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['prefix']) #must be done before calling form processing
+  d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['namespace'].lower()) #must be done before calling form processing
+  print d['prefixes']
+  if len(d['prefixes']) < 1:
+    return uic.render(request, 'create/no_shoulders', d)
   r = simple_form_processing(request, d)
   if r == 'bad_request':
     uic.badRequest()
@@ -27,7 +30,9 @@ def simple(request):
 def advanced(request):
   d = { 'menu_item' :'ui_create.advanced' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['prefix']) #must be done before calling form processing
+  d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['namespace'].lower()) #must be done before calling form processing
+  if len(d['prefixes']) < 1:
+    return uic.render(request, 'create/no_shoulders', d)
   r = advanced_form_processing(request, d)
   if r == 'bad_request':
     uic.badRequest()
