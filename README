@@ -44,11 +44,14 @@ layout:
             apache/
             code/
             doc/
+            etc/
             profiles/
             settings/
             static/
             templates/
+                info/ (separate distribution)
             tools/
+            ui_tags/
         db/
             alert_message
             django.sqlite3
@@ -59,6 +62,10 @@ layout:
 The names of the SITE_ROOT and PROJECT_ROOT directories are arbitrary
 (EZID automatically detects what they are), but for the remainder of
 this document we'll assume that they are literally those names.
+
+EZID requires certain static HTML files to be present in the
+.../SITE_ROOT/PROJECT_ROOT/templates/info directory.  These files are
+provided by a separate Mercurial repository.
 
 EZID requires one environment variable, DJANGO_SETTINGS_MODULE, that
 indicates the deployment level.  Possible values:
