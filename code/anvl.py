@@ -120,34 +120,3 @@ def parseConcatenate (s):
       else:
         d[k] = v
   return d
-
-def parse_as_list(s):
-  """
-  Parses an ANVL string and returns a list of lists.
-  First element in sub-list is label, second is value.
-  Labels and values are percent-decoded.
-  Raises AnvlParseException (defined in this module).
-  This can handle repeating labels by not concatenating them
-  and keeping them ordered.
-  """
-  li = []
-  k = None
-  for l in s.splitlines():
-    if len(l) == 0:
-      k = None
-    elif l[0] == "#":
-      pass
-    elif l[0].isspace():
-      if k == None:
-        raise AnvlParseException, "no previous label for continuation line"
-      ll = _decode(l).strip()
-      li[-1][-1] = (li[-1][-1] + " " + ll).strip()
-        #d[k] = (d[k] + " " + ll).strip()
-    else:
-      if ":" not in l: raise AnvlParseException, "no colon in line"
-      k, v = [_decode(w).strip() for w in l.split(":", 1)]
-      if len(k) == 0: raise AnvlParseException, "empty label"
-      #d[k] = v
-      li.append([k, v])
-  return li
-

@@ -11,7 +11,7 @@
 # supported:
 #
 #   basic ANVL/ERC syntax
-#   repeated values (they're concatenated)
+#   repeated values (they're concatenated or listed)
 #   percent encoding
 #   expansion blocks
 #   case insensitivity of labels (they're lowercased)
@@ -107,12 +107,14 @@ _spaceRE = re.compile("\s+")
 def _decodeLabel (s):
   return _spaceRE.sub("_", _decode(s).strip()).lower()
 
-def parse (s):
+def parse (s, concatenateValues=True):
   """
   Parses an ANVL/ERC record (represented as a single string) and
-  returns a dictionary of metadata element name/value pairs.  If the
-  input contains multiple records, only the first is processed.
-  Raises ErcParseException (defined in this module).
+  returns a dictionary of metadata element name/value pairs.  If
+  'concatenateValues' is true, repeated values for a given element are
+  concatenated into a single string; otherwise, they're left as a
+  list.  If the input contains multiple records, only the first is
+  processed.  Raises ErcParseException (defined in this module).
   """
   d = {}
   k = None
@@ -137,7 +139,11 @@ def parse (s):
       if k == "": raise ErcParseException, "empty label"
       if k not in d: d[k] = []
       d[k].append(v.strip())
-  for k in d:
-    d[k] = " ; ".join(v for v in [_decode(v) for v in d[k]] if v != "")
-  if "erc" in d and d["erc"] == "": del d["erc"]
+  if concatenateValues:
+    for k in d:
+      d[k] = " ; ".join(v for v in [_decode(v) for v in d[k]] if v != "")
+    if "erc" in d and d["erc"] == "": del d["erc"]
+  else:
+    for k in d: d[k] = [v for v in [_decode(v) for v in d[k]] if v != ""]
+    if "erc" in d and len(d["erc"]) == 0: del d["erc"]
   return d
