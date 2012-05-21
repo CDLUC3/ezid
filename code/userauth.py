@@ -156,7 +156,10 @@ def authenticateRequest (request):
       return "error: bad request - credentials sent over insecure channel"
     h = request.META["HTTP_AUTHORIZATION"].split()
     if len(h) != 2 or h[0] != "Basic": return None
-    s = base64.decodestring(h[1])
+    try:
+      s = base64.decodestring(h[1])
+    except:
+      return None
     if ":" not in s: return None
     r = authenticate(*s.split(":", 1))
     if type(r) is AuthenticatedUser: request.session["auth"] = r
