@@ -239,7 +239,6 @@ def write_profile_elements_from_form(identifier, request, profile, addl_dict = {
   if s.startswith("success:"):
     return True
   else:
-    print s
     return False
 
 
