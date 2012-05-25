@@ -55,9 +55,9 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   # SHARED BETWEEN UI AND API
   _p("id/", "dispatch.d", { "uiFunction": "ui_manage.details",
     "apiFunction": "api.identifierDispatcher" }),
-  _p("login/?$", "dispatch.d", { "uiFunction": "ui_account.login",
+  _p("login$", "dispatch.d", { "uiFunction": "ui_account.login",
     "apiFunction": "api.login", "ssl": True }),
-  _p("logout/?$", "dispatch.d", { "uiFunction": "ui_account.logout",
+  _p("logout$", "dispatch.d", { "uiFunction": "ui_account.logout",
     "apiFunction": "api.logout" }),
 
   # API
