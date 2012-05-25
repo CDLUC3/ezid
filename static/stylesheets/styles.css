@@ -91,24 +91,24 @@ div.menu_secondary a.menu_current{
   text-decoration: none;
 }
 
-h1 {
+h1, h1 a {
   margin: 15px 0 10px 0;
   font-size: 130%;
   font-weight: bold;
 }
 
-h2 {
+h2, h2 a {
   margin: 10px 0 10px 0;
   font-size: 115%;
   font-weight: bold;
 }
 
-h3 {
+h3, h3 a {
   font-size: 105%;
   font-weight: bold;
 }
 
-h4 {
+h4, h4 a {
   font-size: 100%;
   font-weight: bold;
   font-style: italic;
@@ -333,6 +333,15 @@ dd{
 	height: 16px;
 }
 
+div.expanding_section {
+	display: none;
+	font-size: 95%;
+	padding-left: 10px;
+}
+
+a.expanding_link {
+	text-decoration: none;
+}
 
 #mask{
 	position: absolute;
