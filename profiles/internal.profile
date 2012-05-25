@@ -49,6 +49,8 @@ element: _profile
 displayname: Profile
 displaytype: text
 tooltip:
+<b><u>Profile</u></b><br/>
+The identifier's metadata profile.
 
 element: _owner
 displayname: Owner
