@@ -19,8 +19,6 @@ def index(request):
     r = ezid.getMetadata(id)
     if type(r) is tuple:
       s, m = r
-      print s
-      print m
       assert s.startswith("success:")
       return redirect('/ezid/id/' + s.split()[1])
     else:

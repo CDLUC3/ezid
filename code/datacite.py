@@ -45,9 +45,12 @@ def _loadConfig ():
   _numAttempts = int(config.config("datacite.num_attempts"))
   _datacenters = {}
   for dc in config.config("datacite.datacenters").split(","):
+    try:
+      pw = config.config("datacenter_%s.password" % dc)
+    except:
+      pw = config.config("datacite.password")
     _datacenters[dc] = "Basic " +\
-      base64.b64encode(config.config("datacenter_%s.name" % dc) + ":" +\
-      config.config("datacenter_%s.password" % dc))
+      base64.b64encode(config.config("datacenter_%s.name" % dc) + ":" + pw)
   _prefixes = dict((config.config("prefix_%s.prefix" % k)[4:],
     config.config("prefix_%s.datacenter" % k))\
     for k in config.config("prefixes.keys").split(",")\

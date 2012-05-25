@@ -27,15 +27,6 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("home/help$", "ui_home.the_help"),
   _p("home/about_us$", "ui_home.about_us"),
   _p("home/status$", "ui_home.status"),
-  _p("home/static/(?P<path>.*)$", 'django.views.static.serve',\
-          { "document_root": django.conf.settings.INFO_STATIC } ),
-  #Line above allows Joan to serve a few image files inside her own area
-  #may want to replace this with django-staticfiles which allows apache to
-  #serve them to instead.  The mediafiles built-in only allows one directory. :-(
-  #To use django-staticfiles also probably need to install the staticfiles
-  #middleware on all servers, which people say should possibly use
-  #pip and virtualenv to keep all apps up to date when deploying.
-  #seems like a lot more overhead than necessary for only couple of small image files.
   _p("manage/?$", "ui_manage.index"),
   _p("manage/edit/(\S+)$", "ui_manage.edit"),
   _p("create/?$", "ui_create.index"),
