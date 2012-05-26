@@ -46,10 +46,6 @@ def why(request):
   d = { 'menu_item' : 'ui_home.why' }
   return uic.render(request, 'info/why', d)
 
-def contact(request):
-  d = { 'menu_item' : 'null.null' }
-  return uic.render(request, 'info/contact', d)
-
 def the_help(request):
   d = { 'menu_item' : 'null.null' }
   return uic.render(request, 'info/help', d)
