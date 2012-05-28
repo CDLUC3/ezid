@@ -181,9 +181,8 @@ def ajax_system_status(request):
   if "id" in request.GET:
     return uic.plainTextResponse(request.GET["id"] + ":" + ezidadmin.systemStatus(request.GET["id"]))
 
+@uic.admin_login_required
 def alert_message(request, ssl=False):
-  if "auth" not in request.session or request.session["auth"].user[0] != uic.adminUsername:
-    return uic.unauthorized()
   d = { 'menu_item' : 'ui_admin.alert_message' }
   if request.method == "POST":
     if 'remove_it' in request.POST and request.POST['remove_it'] == 'remove_it':

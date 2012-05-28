@@ -15,7 +15,6 @@ def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
   d["testPrefixes"] = uic.testPrefixes
   d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['namespace'].lower()) #must be done before calling form processing
-  print d['prefixes']
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   r = simple_form_processing(request, d)
