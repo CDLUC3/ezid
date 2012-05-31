@@ -104,18 +104,28 @@ class Noid (object):
     assert len(s) >= 1 and s[0].startswith("ok: 1 hold placed"),\
       "unexpected return from noid 'hold set' command"
 
-  def setElements (self, identifier, d):
+  def setElements (self, identifier, d, placeHold=False):
     """
     Binds metadata elements to a scheme-less ARK identifier, e.g.,
     "13030/foo".  The identifier is assumed to be in canonical form.
     The elements should be given in a dictionary that maps names to
     values.  Note that an identifier must have a hold placed on it
-    before any metadata can be bound.
+    before any metadata can be bound.  As a convenience and
+    optimization, if 'placeHold' is true, a hold is placed before
+    binding.
     """
-    s = self._issue("\n".join(self._command("bind", "set", [0, identifier],
-      [4, e], v) for e, v in d.items()))
+    c = [self._command("bind", "set", [0, identifier], [4, e], v)\
+      for e, v in d.items()]
+    if placeHold: c.insert(0, self._command("hold", "set", [0, identifier]))
+    s = self._issue("\n".join(c))
+    if placeHold:
+      assert len(s) >= 1 and s[0].startswith("ok: 1 hold placed"),\
+        "unexpected return from noid 'hold set' command"
+      j = 5
+    else:
+      j = 3
     for i in range(len(d)):
-      assert len(s) >= i*5+4 and s[i*5+3].startswith("Status:  ok"),\
+      assert len(s) >= i*5+j+1 and s[i*5+j].startswith("Status:  ok"),\
         "unexpected return from noid 'bind set' command"
 
   def getElements (self, identifier):

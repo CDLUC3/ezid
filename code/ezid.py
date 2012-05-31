@@ -303,7 +303,6 @@ def createDoi (doi, user, group, target=None, reserveOnly=False):
       if message is not None:
         log.badRequest(tid)
         return "error: bad request - element '_target': " + _oneline(message)
-    _bindNoid.holdIdentifier(shadowArk)
     t = str(int(time.time()))
     d = { "_o": user[1],
       "_g": group[1],
@@ -320,7 +319,7 @@ def createDoi (doi, user, group, target=None, reserveOnly=False):
       d["_st1"] = target
     else:
       d["_st"] = target
-    _bindNoid.setElements(shadowArk, d)
+    _bindNoid.setElements(shadowArk, d, True)
     if user[0] != "anonymous": search.insert(qdoi, d)
   except Exception, e:
     log.error(tid, e)
@@ -404,7 +403,6 @@ def createArk (ark, user, group, target=None, reserveOnly=False):
     if _bindNoid.identifierExists(ark):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
-    _bindNoid.holdIdentifier(ark)
     defaultTarget = "%s/id/%s" % (_ezidUrl, urllib.quote(qark, ":/"))
     if not target: target = defaultTarget
     t = str(int(time.time()))
@@ -419,7 +417,7 @@ def createArk (ark, user, group, target=None, reserveOnly=False):
       d["_t1"] = target
     else:
       d["_t"] = target
-    _bindNoid.setElements(ark, d)
+    _bindNoid.setElements(ark, d, True)
     if user[0] != "anonymous": search.insert(qark, d)
   except Exception, e:
     log.error(tid, e)
@@ -489,7 +487,6 @@ def createUrnUuid (urn, user, group, target=None, reserveOnly=False):
     if not target: target = defaultTarget
     arkTarget = "%s/id/%s" % (_ezidUrl,
       urllib.quote("ark:/" + shadowArk, ":/"))
-    _bindNoid.holdIdentifier(shadowArk)
     t = str(int(time.time()))
     d = { "_o": user[1],
       "_g": group[1],
@@ -506,7 +503,7 @@ def createUrnUuid (urn, user, group, target=None, reserveOnly=False):
       d["_st1"] = target
     else:
       d["_st"] = target
-    _bindNoid.setElements(shadowArk, d)
+    _bindNoid.setElements(shadowArk, d, True)
     if user[0] != "anonymous": search.insert(qurn, d)
   except Exception, e:
     log.error(tid, e)
