@@ -78,11 +78,6 @@ def logout(request):
   django.contrib.messages.success(request, "You have been logged out.")
   return redirect("ui_home.index")
 
-def ajax_hide_alert(request):
-  request.session['hide_alert'] = True
-  return uic.plainTextResponse('Ok')
-
-
 def validate_edit_user(request):
   """validates that the fields required to update a user are set, not a view for a page"""
   valid_form = True

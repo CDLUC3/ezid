@@ -34,13 +34,13 @@ $(document).ready(function() {
   		//Cancel the link behavior
     	e.preventDefault();
     	$('#ustatus').hide();
-    	$.post('/ezid/account/ajax_hide_alert');
+    	$.post('/ezid/ajax_hide_alert');
   	});
   	
 		$(document).keyup(function(e) {
 		  if(e.keyCode == 27) { // escape key
 		    $('#ustatus').hide();
-		    $.post('/ezid/account/ajax_hide_alert');
+		    $.post('/ezid/ajax_hide_alert');
 		  }
 		});
 	}// end if

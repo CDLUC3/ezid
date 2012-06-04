@@ -15,6 +15,10 @@ import ezid
 import datacite
 import metadata
 
+def ajax_hide_alert(request):
+  request.session['hide_alert'] = True
+  return uic.plainTextResponse('Ok')
+
 def contact(request):
   d = { 'menu_item': 'ui_null.null'}
   d['affiliates'] = [ ['Berkeley', 'Davis', 'Irvine', 'Los Angeles'], \
