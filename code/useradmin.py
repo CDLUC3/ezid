@@ -80,7 +80,8 @@ def sendPasswordResetEmail (username, emailAddress):
     t = int(time.time())
     hash = hashlib.sha1("%s|%d|%s" % (username, t,
       django.conf.settings.SECRET_KEY)).hexdigest()[::4]
-    link = "%s/pwreset/%s,%d,%s" % (_ezidUrl, urllib.quote(username), t, hash)
+    link = "%s/account/pwreset/%s,%d,%s" %\
+      (_ezidUrl, urllib.quote(username), t, hash)
     message = "You have requested to reset your EZID password.\n" +\
       "Click the link below to complete the process:\n\n" +\
       link + "\n\n" +\

@@ -47,7 +47,7 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("account/ajax_hide_alert", "ui_account.ajax_hide_alert"),
   _p("account/edit$", "ui_account.edit", { "ssl": True }),
   _p("account/contact$", "ui_account.contact"),
-  _p("pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", { "ssl": True }),
+  _p("account/pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", { "ssl": True }),
   _p("doc/[\w.]*\\.html$", "ui.doc"),
   _p("tombstone/id/", "ui.tombstone"),
 
