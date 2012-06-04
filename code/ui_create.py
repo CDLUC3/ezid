@@ -65,15 +65,17 @@ def simple_form_processing(request, d):
       return "edit_page"
     
     if uic.validate_simple_metadata_form(request, d['current_profile']):
+      callContext = [None]
       s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request),
-          uic.group_or_anon_tup(request))
+          uic.group_or_anon_tup(request), callContext=callContext)
       if s.startswith("success:"):
         new_id = s.split()[1]
       else:
         django.contrib.messages.error(request, "There was an error creating your identifier:"  + s)
         return "edit_page"
       result = uic.write_profile_elements_from_form(new_id, request, d['current_profile'],
-               {'_profile': request.POST['current_profile'], '_target' : uic.fix_target(request.POST['_target']) }) 
+               {'_profile': request.POST['current_profile'], '_target' : uic.fix_target(request.POST['_target']) },
+               callContext=callContext) 
       if result==True:
         django.contrib.messages.success(request, "Identifier created.")
         return "created_identifier: "+new_id
@@ -105,19 +107,23 @@ def advanced_form_processing(request, d):
       django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
       return 'edit_page'
     if uic.validate_advanced_metadata_form(request, d['current_profile']):
+      callContext = [None]
       if request.POST['remainder'] == '' or request.POST['remainder'] == uic.remainder_box_default:
         s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request), 
-            uic.group_or_anon_tup(request), uic.fix_target(request.POST['_target']), request.POST['publish'] == 'False')
+            uic.group_or_anon_tup(request), uic.fix_target(request.POST['_target']), request.POST['publish'] == 'False',
+            callContext=callContext)
       else:
         s = ezid.createIdentifier(request.POST['shoulder'] + request.POST['remainder'], uic.user_or_anon_tup(request),
-          uic.group_or_anon_tup(request), uic.fix_target(request.POST['_target']), request.POST['publish'] == 'False')
+          uic.group_or_anon_tup(request), uic.fix_target(request.POST['_target']), request.POST['publish'] == 'False',
+          callContext=callContext)
       if s.startswith("success:"):
         new_id = s.split()[1]
       else:
         django.contrib.messages.error(request, "There was an error creating your identifier:"  + s)
         return 'edit_page'
       result = uic.write_profile_elements_from_form(new_id, request, d['current_profile'],
-         {'_profile': request.POST['current_profile'], '_target' : uic.fix_target(request.POST['_target']) })
+         {'_profile': request.POST['current_profile'], '_target' : uic.fix_target(request.POST['_target']) },
+         callContext=callContext)
       if result==True:
         django.contrib.messages.success(request, "Identifier created.")
         return 'created_identifier: ' + new_id
