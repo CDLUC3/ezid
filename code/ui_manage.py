@@ -2,7 +2,6 @@ import ui_common as uic
 import django.contrib.messages
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
-from urllib import unquote
 import ezid
 import metadata
 import search
@@ -157,9 +156,8 @@ def details(request):
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
   my_path = "/ezid/id/"
-  identifier = unquote(request.path[len(my_path):])
+  identifier = request.path[len(my_path):]
   r = ezid.getMetadata(identifier)
-  #import pdb; pdb.set_trace()
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_lookup.index")
