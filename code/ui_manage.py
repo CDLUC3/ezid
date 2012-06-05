@@ -170,11 +170,9 @@ def details(request):
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
   d['target'] = d['identifier']['_target']
-  if '_profile' in m:
-    d['current_profile'] = metadata.getProfile(m['_profile'])
-  else:
+  d['current_profile'] = metadata.getProfile(m['_profile'])
+  if d['current_profile'] == None:
     d['current_profile'] = metadata.getProfile('dc')
-
   #replace erc data from anvl blob if erc and has block--special treatment for Merritt
   if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
     d['erc_block_list'] = _formatErcBlock(d['identifier']['erc'])
