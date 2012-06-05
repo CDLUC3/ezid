@@ -1,21 +1,7 @@
-# =============================================================================
-#
-# EZID :: ui.py
-#
-# Selected User interface things left over from ui.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2010, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
-
 import ui_common as uic
 import django.conf
 import django.contrib.messages
+import django.core.mail
 import django.http
 import django.template
 import django.template.loader
@@ -28,6 +14,60 @@ import urllib
 import ezid
 import datacite
 import metadata
+
+def ajax_hide_alert(request):
+  request.session['hide_alert'] = True
+  return uic.plainTextResponse('Ok')
+
+def contact(request):
+  d = { 'menu_item': 'ui_null.null'}
+  d['affiliates'] = [ ['Berkeley', 'Davis', 'Irvine', 'Los Angeles'], \
+                     ['Merced', 'Riverside', 'San Diego', 'San Francisco'], \
+                     ['Santa Barbara', 'Santa Cruz', 'Other'] ]
+  d['heard']      =   ( ("website", "UC3 website"), \
+                        ("conference", "Conference"), \
+                        ("colleagues", "Colleagues"), \
+                        ("webinar", "Webinar"), \
+                        ("other", "Other") )
+  if request.method == "GET":
+    d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
+  elif request.method == "POST":
+    P = request.POST
+    for i in ['your_name', 'email', 'comment', 'hear_about']:
+      if not i in P:
+        d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
+        return uic.render(request, 'contact', d)
+    d.update(uic.extract(request.POST, ['your_name', 'email', 'affiliation', 'comment', 'hear_about']))
+    if P['comment'].strip() == '':
+      django.contrib.messages.error(request, "Please fill in a question or comment")
+      return uic.render(request, 'contact', d)
+    if not 'url' in P or P['url'] != '':
+      #url is hidden.  If it's filled in then probably a spam bot
+      return uic.render(request, 'contact', d)
+    emails = [x.strip() for x in uic.contact_form_email.split(',')]
+    title = "EZID contact form email"
+    if 'HTTP_REFERER' in request.META:
+      message = 'Sent FROM: ' + request.META['HTTP_REFERER'] +"\r\n\r\n"
+    else:
+      message = ''
+    message += "Name: " + P['your_name'] + "\r\n\r\n" + \
+              "Email: " + P['email'] + "\r\n\r\n"
+    if 'affiliation' in P:
+      message += "Institution: " +  P['affiliation'] + "\r\n\r\n"
+    message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
+              "Heard about from: " + P['hear_about']
+    try:
+      django.core.mail.send_mail(title, message,
+        django.conf.settings.SERVER_EMAIL, emails)
+      
+      django.contrib.messages.success(request, "Message sent")
+      d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
+    except:
+      django.contrib.messages.error(request, "There was a problem sending your email")
+      return uic.render(request, 'contact', d)
+    #django.core.mail.send_mail("EZID password reset request", message,
+    #  django.conf.settings.SERVER_EMAIL, [emailAddress])
+  return uic.render(request, 'contact', d)
 
 def doc (request):
   """

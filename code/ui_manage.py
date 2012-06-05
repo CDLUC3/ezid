@@ -2,7 +2,6 @@ import ui_common as uic
 import django.contrib.messages
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
-from urllib import unquote
 import ezid
 import metadata
 import search
@@ -10,6 +9,7 @@ import math
 import useradmin
 import erc
 import datacite
+import urllib
 
 
 # these are layout properties for the fields in the manage index page,
@@ -98,14 +98,14 @@ def edit(request, identifier):
   r = ezid.getMetadata(identifier)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
-    return uic.redirect("ui_lookup.index")
+    return redirect("ui_lookup.index")
   if not uic.authorizeUpdate(request, r):
     django.contrib.messages.error(request, "You are not allowed to edit this identifier")
-    return redirect("/ezid/id/" + identifier)
+    return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
   s, m = r
   if uic.identifier_has_block_data(m):
     django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
-    return redirect("/ezid/id/" + identifier)
+    return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
   d['status'] = m['_status'] if '_status' in m else 'unavailable'
   d['post_status'] = d['status']
   d['id_text'] = s.split()[1]
@@ -122,7 +122,7 @@ def edit(request, identifier):
                   '_status': d['post_status']})
         if result:
           django.contrib.messages.success(request, "Identifier updated.")
-          return redirect("/ezid/id/" + identifier)
+          return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
         else:
           django.contrib.messages.error(request, "There was an error updating the metadata for your identifier: " + s)
           return uic.render(request, "manage/edit", d)
@@ -157,9 +157,8 @@ def details(request):
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
   my_path = "/ezid/id/"
-  identifier = unquote(request.path[len(my_path):])
+  identifier = request.path[len(my_path):]
   r = ezid.getMetadata(identifier)
-  #import pdb; pdb.set_trace()
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_lookup.index")

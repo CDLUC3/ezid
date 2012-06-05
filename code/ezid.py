@@ -124,6 +124,11 @@
 # by the EZID administrator, and to protect user privacy, they may be
 # viewed by the EZID administrator only.
 #
+# A number of functions in this module accept a callContext argument.
+# This can be used by callers to optimize performance across the
+# standard [mint ->] create -> setMetadata sequence of calls.  To use
+# it, pass in a one-element list [None] at the start of the sequence.
+#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
@@ -216,7 +221,8 @@ _labelMapping = {
 def _oneline (s):
   return re.sub("\s", " ", s)
 
-def mintDoi (prefix, user, group, target=None, reserveOnly=False):
+def mintDoi (prefix, user, group, target=None, reserveOnly=False,
+  callContext=None):
   """
   Mints a DOI identifier having the given scheme-less prefix, e.g.,
   "10.5060/".  'user' and 'group' should each be authenticated (local
@@ -258,9 +264,10 @@ def mintDoi (prefix, user, group, target=None, reserveOnly=False):
     return "error: internal server error"
   else:
     log.success(tid, doi)
-  return createDoi(doi, user, group, target, reserveOnly)
+  return createDoi(doi, user, group, target, reserveOnly, callContext)
 
-def createDoi (doi, user, group, target=None, reserveOnly=False):
+def createDoi (doi, user, group, target=None, reserveOnly=False,
+  callContext=None):
   """
   Creates a DOI identifier having the given scheme-less name, e.g.,
   "10.5060/foo".  The identifier must not already exist.  'user' and
@@ -303,7 +310,6 @@ def createDoi (doi, user, group, target=None, reserveOnly=False):
       if message is not None:
         log.badRequest(tid)
         return "error: bad request - element '_target': " + _oneline(message)
-    _bindNoid.holdIdentifier(shadowArk)
     t = str(int(time.time()))
     d = { "_o": user[1],
       "_g": group[1],
@@ -320,8 +326,9 @@ def createDoi (doi, user, group, target=None, reserveOnly=False):
       d["_st1"] = target
     else:
       d["_st"] = target
-    _bindNoid.setElements(shadowArk, d)
+    _bindNoid.setElements(shadowArk, d, True)
     if user[0] != "anonymous": search.insert(qdoi, d)
+    if callContext is not None: callContext[0] = d
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -331,7 +338,8 @@ def createDoi (doi, user, group, target=None, reserveOnly=False):
   finally:
     _releaseIdentifierLock(shadowArk)
 
-def mintArk (prefix, user, group, target=None, reserveOnly=False):
+def mintArk (prefix, user, group, target=None, reserveOnly=False,
+  callContext=None):
   """
   Mints an ARK identifier having the given scheme-less prefix, e.g.,
   "13030/fk4".  'user' and 'group' should each be authenticated (local
@@ -369,9 +377,10 @@ def mintArk (prefix, user, group, target=None, reserveOnly=False):
     return "error: internal server error"
   else:
     log.success(tid, ark)
-  return createArk(ark, user, group, target, reserveOnly)
+  return createArk(ark, user, group, target, reserveOnly, callContext)
 
-def createArk (ark, user, group, target=None, reserveOnly=False):
+def createArk (ark, user, group, target=None, reserveOnly=False,
+  callContext=None):
   """
   Creates an ARK identifier having the given scheme-less name, e.g.,
   "13030/bar".  The identifier must not already exist.  'user' and
@@ -404,7 +413,6 @@ def createArk (ark, user, group, target=None, reserveOnly=False):
     if _bindNoid.identifierExists(ark):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
-    _bindNoid.holdIdentifier(ark)
     defaultTarget = "%s/id/%s" % (_ezidUrl, urllib.quote(qark, ":/"))
     if not target: target = defaultTarget
     t = str(int(time.time()))
@@ -419,8 +427,9 @@ def createArk (ark, user, group, target=None, reserveOnly=False):
       d["_t1"] = target
     else:
       d["_t"] = target
-    _bindNoid.setElements(ark, d)
+    _bindNoid.setElements(ark, d, True)
     if user[0] != "anonymous": search.insert(qark, d)
+    if callContext is not None: callContext[0] = d
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -430,7 +439,8 @@ def createArk (ark, user, group, target=None, reserveOnly=False):
   finally:
     _releaseIdentifierLock(ark)
 
-def mintUrnUuid (user, group, target=None, reserveOnly=False):
+def mintUrnUuid (user, group, target=None, reserveOnly=False,
+  callContext=None):
   """
   Mints a UUID URN.  'user' and 'group' should each be authenticated
   (local name, persistent identifier) tuples, e.g., ("dryad",
@@ -448,9 +458,11 @@ def mintUrnUuid (user, group, target=None, reserveOnly=False):
     error: bad request - subreason...
     error: internal server error
   """
-  return createUrnUuid(uuid.uuid1().urn[9:], user, group, target, reserveOnly)
+  return createUrnUuid(uuid.uuid1().urn[9:], user, group, target, reserveOnly,
+    callContext)
 
-def createUrnUuid (urn, user, group, target=None, reserveOnly=False):
+def createUrnUuid (urn, user, group, target=None, reserveOnly=False,
+  callContext=None):
   """
   Creates a UUID URN identifier having the given scheme-less name,
   e.g., "f81d4fae-7dec-11d0-a765-00a0c91e6bf6".  The identifier must
@@ -489,7 +501,6 @@ def createUrnUuid (urn, user, group, target=None, reserveOnly=False):
     if not target: target = defaultTarget
     arkTarget = "%s/id/%s" % (_ezidUrl,
       urllib.quote("ark:/" + shadowArk, ":/"))
-    _bindNoid.holdIdentifier(shadowArk)
     t = str(int(time.time()))
     d = { "_o": user[1],
       "_g": group[1],
@@ -506,8 +517,9 @@ def createUrnUuid (urn, user, group, target=None, reserveOnly=False):
       d["_st1"] = target
     else:
       d["_st"] = target
-    _bindNoid.setElements(shadowArk, d)
+    _bindNoid.setElements(shadowArk, d, True)
     if user[0] != "anonymous": search.insert(qurn, d)
+    if callContext is not None: callContext[0] = d
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -517,7 +529,8 @@ def createUrnUuid (urn, user, group, target=None, reserveOnly=False):
   finally:
     _releaseIdentifierLock(shadowArk)
 
-def mintIdentifier (prefix, user, group, target=None, reserveOnly=False):
+def mintIdentifier (prefix, user, group, target=None, reserveOnly=False,
+  callContext=None):
   """
   Mints an identifier having the given qualified prefix, e.g.,
   "doi:10.5060/".  'user' and 'group' should each be authenticated
@@ -541,19 +554,19 @@ def mintIdentifier (prefix, user, group, target=None, reserveOnly=False):
     error: internal server error
   """
   if prefix.startswith("doi:"):
-    s = mintDoi(prefix[4:], user, group, target, reserveOnly)
+    s = mintDoi(prefix[4:], user, group, target, reserveOnly, callContext)
     if s.startswith("success: "):
       return "success: doi:" + s[9:]
     else:
       return s
   elif prefix.startswith("ark:/"):
-    s = mintArk(prefix[5:], user, group, target, reserveOnly)
+    s = mintArk(prefix[5:], user, group, target, reserveOnly, callContext)
     if s.startswith("success: "):
       return "success: ark:/" + s[9:]
     else:
       return s
   elif prefix == "urn:uuid:":
-    s = mintUrnUuid(user, group, target, reserveOnly)
+    s = mintUrnUuid(user, group, target, reserveOnly, callContext)
     if s.startswith("success: "):
       return "success: urn:uuid:" + s[9:]
     else:
@@ -561,7 +574,8 @@ def mintIdentifier (prefix, user, group, target=None, reserveOnly=False):
   else:
     return "error: bad request - unrecognized identifier scheme"
 
-def createIdentifier (identifier, user, group, target=None, reserveOnly=False):
+def createIdentifier (identifier, user, group, target=None, reserveOnly=False,
+  callContext=None):
   """
   Creates an identifier having the given qualified name, e.g.,
   "doi:10.5060/foo".  'user' and 'group' should each be authenticated
@@ -585,19 +599,22 @@ def createIdentifier (identifier, user, group, target=None, reserveOnly=False):
     error: internal server error
   """
   if identifier.startswith("doi:"):
-    s = createDoi(identifier[4:], user, group, target, reserveOnly)
+    s = createDoi(identifier[4:], user, group, target, reserveOnly,
+      callContext)
     if s.startswith("success: "):
       return "success: doi:" + s[9:]
     else:
       return s
   elif identifier.startswith("ark:/"):
-    s = createArk(identifier[5:], user, group, target, reserveOnly)
+    s = createArk(identifier[5:], user, group, target, reserveOnly,
+      callContext)
     if s.startswith("success: "):
       return "success: ark:/" + s[9:]
     else:
       return s
   elif identifier.startswith("urn:uuid:"):
-    s = createUrnUuid(identifier[9:], user, group, target, reserveOnly)
+    s = createUrnUuid(identifier[9:], user, group, target, reserveOnly,
+      callContext)
     if s.startswith("success: "):
       return "success: urn:uuid:" + s[9:]
     else:
@@ -683,7 +700,7 @@ def getMetadata (identifier):
   finally:
     _releaseIdentifierLock(ark)
 
-def setMetadata (identifier, user, group, metadata):
+def setMetadata (identifier, user, group, metadata, callContext=None):
   """
   Sets metadata elements of a given qualified identifier, e.g.,
   "doi:10.5060/foo".  'user' and 'group' should each be authenticated
@@ -745,10 +762,13 @@ def setMetadata (identifier, user, group, metadata):
   try:
     log.begin(tid, "setMetadata", nqidentifier, user[0], user[1], group[0],
       group[1], *[a for p in metadata.items() for a in p])
-    m = _bindNoid.getElements(ark)
-    if m is None:
-      log.badRequest(tid)
-      return "error: bad request - no such identifier"
+    if callContext is not None:
+      m = callContext[0]
+    else:
+      m = _bindNoid.getElements(ark)
+      if m is None:
+        log.badRequest(tid)
+        return "error: bad request - no such identifier"
     iUser = m["_o"]
     iGroup = m["_g"]
     if "_co" in m:

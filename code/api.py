@@ -163,11 +163,14 @@ def mintIdentifier (request):
     del metadata["_status"]
   assert request.path.startswith("/ezid/shoulder/")
   prefix = request.path[15:]
-  s = ezid.mintIdentifier(prefix, auth.user, auth.group, target, reserveOnly)
+  callContext = [None]
+  s = ezid.mintIdentifier(prefix, auth.user, auth.group, target, reserveOnly,
+    callContext)
   if not s.startswith("success:"): return _response(s)
   if len(metadata) > 0:
     identifier = s.split()[1]
-    s2 = ezid.setMetadata(identifier, auth.user, auth.group, metadata)
+    s2 = ezid.setMetadata(identifier, auth.user, auth.group, metadata,
+      callContext)
     if not s2.startswith("success:"): s = s2
   return _response(s, createRequest=True)
 
@@ -235,12 +238,14 @@ def _createIdentifier (request):
     del metadata["_status"]
   assert request.path.startswith("/ezid/id/")
   identifier = request.path[9:]
+  callContext = [None]
   s = ezid.createIdentifier(identifier, auth.user, auth.group, target,
-    reserveOnly)
+    reserveOnly, callContext)
   if not s.startswith("success:"): return _response(s)
   if len(metadata) > 0:
     identifier = s.split()[1]
-    s2 = ezid.setMetadata(identifier, auth.user, auth.group, metadata)
+    s2 = ezid.setMetadata(identifier, auth.user, auth.group, metadata,
+      callContext)
     if not s2.startswith("success:"): s = s2
   return _response(s, createRequest=True)
 
