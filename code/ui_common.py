@@ -1,6 +1,5 @@
 import django.conf
 import django.contrib.messages
-import django.core.urlresolvers
 import django.http
 import django.template
 import django.template.loader
@@ -142,12 +141,7 @@ def jsonResponse (data):
   r["Content-Length"] = len(ec)
   return r
 
-def redirect (pathOrView):
-  if not pathOrView.startswith("/") and not pathOrView.startswith("http") and\
-    "." in pathOrView:
-    # Looks like the name of a view.
-    pathOrView = django.core.urlresolvers.reverse(pathOrView)
-  return django.http.HttpResponseRedirect(pathOrView)
+redirect = django.http.HttpResponseRedirect
 
 def error (code):
   content = templates[str(code)].render(django.template.Context())

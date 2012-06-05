@@ -97,7 +97,7 @@ def edit(request, identifier):
   r = ezid.getMetadata(identifier)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
-    return uic.redirect("ui_lookup.index")
+    return redirect("ui_lookup.index")
   if not uic.authorizeUpdate(request, r):
     django.contrib.messages.error(request, "You are not allowed to edit this identifier")
     return redirect("/ezid/id/" + identifier)
