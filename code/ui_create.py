@@ -8,7 +8,6 @@ import logging
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
   return redirect("ui_create.simple")
-  return uic.render(request, 'create/index', d)
 
 @uic.user_login_required
 def simple(request):
