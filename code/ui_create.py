@@ -4,6 +4,7 @@ import django.contrib.messages
 import metadata
 import ezid
 import logging
+import urllib
 
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
@@ -20,7 +21,7 @@ def simple(request):
   if r == 'bad_request':
     uic.badRequest()
   elif r.startswith('created_identifier:'):
-    return redirect("/ezid/id/" + r.split()[1])
+    return redirect("/ezid/id/" + urllib.quote(r.split()[1], ":/"))
   else:
     return uic.render(request, 'create/simple', d)
 
@@ -35,7 +36,7 @@ def advanced(request):
   if r == 'bad_request':
     uic.badRequest()
   elif r.startswith('created_identifier:'):
-    return redirect("/ezid/id/" + r.split()[1])
+    return redirect("/ezid/id/" + urllib.quote(r.split()[1], ":/"))
   else:
     return uic.render(request, 'create/advanced', d)
 
@@ -78,7 +79,6 @@ def simple_form_processing(request, d):
       if result==True:
         django.contrib.messages.success(request, "Identifier created.")
         return "created_identifier: "+new_id
-        #return redirect("/ezid/id/" + new_id)
       else:
         django.contrib.messages.error(request, "There was an error writing the metadata for your identifier: " + s)
         return "edit_page"

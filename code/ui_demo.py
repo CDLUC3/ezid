@@ -4,6 +4,7 @@ import django.contrib.messages
 import metadata
 import ezid
 import ui_create
+import urllib
 
 def index(request):
   d = { 'menu_item' : 'ui_demo.index' }
@@ -18,7 +19,7 @@ def simple(request):
   if r == 'bad_request':
     uic.badRequest()
   elif r.startswith('created_identifier:'):
-    return redirect("/ezid/id/" + r.split()[1])
+    return redirect("/ezid/id/" + urllib.quote(r.split()[1], ":/"))
   else:
     return uic.render(request, 'demo/simple', d)
 
@@ -30,6 +31,6 @@ def advanced(request):
   if r == 'bad_request':
     uic.badRequest()
   elif r.startswith('created_identifier:'):
-    return redirect("/ezid/id/" + r.split()[1])
+    return redirect("/ezid/id/" + urllib.quote(r.split()[1], ":/"))
   else:
     return uic.render(request, 'demo/advanced', d)
