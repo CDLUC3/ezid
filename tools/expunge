@@ -32,7 +32,6 @@ import os
 import re
 import sys
 import time
-import urllib
 
 if "DJANGO_SETTINGS_MODULE" not in os.environ:
   os.environ["DJANGO_SETTINGS_MODULE"] = "settings.production"
@@ -63,7 +62,6 @@ import util
 testArkPrefix = config.config("prefix_TESTARK.prefix")[5:]
 testDoiPrefix = util.doi2shadow(config.config("prefix_TESTDOI.prefix")[4:])
 lifetime = 2*7*24*60*60 # seconds
-ezidUrl = config.config("DEFAULT.ezid_base_url")
 
 usageText = """Usage:
 
@@ -144,15 +142,12 @@ if debug == "":
   for id in expungeList:
     try:
       # We can't actually delete a DOI.  As the next best thing, we
-      # set its target URL to point back at EZID, which will return
-      # "no such identifier" after we've deleted the identifier from
-      # the bind database.
+      # set its target URL to an "invalid identifier" page.
       if id.startswith(testDoiPrefix) and\
         status.get(id, "public") != "reserved":
         doi = shadowedId[id]
         assert doi.startswith("doi:")
-        datacite.setTargetUrl(doi[4:],
-          "%s/id/%s" % (ezidUrl, urllib.quote(doi, ":/")))
+        datacite.setTargetUrl(doi[4:], "http://datacite.org/invalidDOI")
       bindNoid.deleteElements(id)
       bindNoid.releaseIdentifier(id)
       if group[id] != "anonymous":
