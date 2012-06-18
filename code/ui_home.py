@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.template import loader
 import datetime
 import ui_common as uic
 import feedparser
@@ -46,10 +47,11 @@ def why(request):
   d = { 'menu_item' : 'ui_home.why' }
   return uic.render(request, 'info/why', d)
 
-def the_help(request):
-  d = { 'menu_item' : 'null.null' }
-  return uic.render(request, 'info/help', d)
+def no_menu(request, template_name):
+  d = {'menu_item' : 'null.null'}
+  try:
+    loader.get_template('info/' + template_name + ".html")
+  except:
+    return uic.error(404)
+  return uic.render(request, 'info/' + template_name, d)
 
-def about_us(request):
-  d = { 'menu_item' : 'null.null' }
-  return uic.render(request, 'info/about_us', d)
