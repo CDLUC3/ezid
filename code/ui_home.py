@@ -48,7 +48,7 @@ def why(request):
   return uic.render(request, 'info/why', d)
 
 def no_menu(request, template_name):
-  d = {'menu_item' : 'null.null'}
+  d = {'menu_item' : 'ui_home.null'}
   try:
     loader.get_template('info/' + template_name + ".html")
   except:
