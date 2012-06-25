@@ -106,7 +106,7 @@ def edit(request, identifier):
   if uic.identifier_has_block_data(m):
     django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
     return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
-  d['status'] = m['_status'] if '_status' in m else 'unavailable'
+  d['status'] = m['_status'] if '_status' in m else 'public'
   d['post_status'] = d['status']
   d['id_text'] = s.split()[1]
   d['identifier'] = m # identifier object containing metadata
@@ -124,7 +124,7 @@ def edit(request, identifier):
           django.contrib.messages.success(request, "Identifier updated.")
           return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
         else:
-          django.contrib.messages.error(request, "There was an error updating the metadata for your identifier: " + s)
+          django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
           return uic.render(request, "manage/edit", d)
   elif request.method == "GET":
     if '_profile' in m:
