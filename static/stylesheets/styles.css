@@ -369,14 +369,14 @@ a.expanding_link {
 	width: 500px;
 }
 
-table.manage {
+table.manage, table.info {
 	/* width:100%; */
 	margin:10px 0px 10px 0px;
 }
+
 table td{
 	padding: 1px 3px 1px 3px;
 }
-
 
 table th{
 	font-weight:bold;
@@ -393,6 +393,36 @@ tr.row1{
 
 tr.row2{
 	background-color: #f0f0ff;
+}
+
+table.info td{
+	vertical-align: middle;
+}
+
+td.right {
+	text-align: right;
+}
+
+td.center {
+	text-align: center;
+}
+
+td.left {
+	text-align: left;
+}
+
+td.subrow {
+	padding-left: 10px;
+}
+
+td.subhead {
+	padding-top: 8px;
+}
+
+td div.dollar{
+	float: left;
+	width: 1em;
+	padding-left: 3em;
 }
 
 .pagerlink{
