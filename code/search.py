@@ -110,7 +110,7 @@ def _getConnection ():
       # connection is returned to the pool only if and when no
       # transaction is in progress).
       c = sqlite3.connect(_searchDatabase, isolation_level=None,
-        check_same_thread=False)
+        check_same_thread=False, timeout=30)
       _numConnections += 1
       return (c, _poolId)
   finally:
