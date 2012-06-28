@@ -863,6 +863,30 @@ __ `DataCite Metadata Scheme`_
                             publicly available.  If an embargo period
                             is in effect, use the year when the embargo
                             period ends.
+   datacite.resourcetype    The general type and, optionally, specific
+                            type of the data.  The general type must
+                            be one of the controlled vocabulary terms
+                            defined in the DataCite Metadata Scheme:
+
+                            - Collection
+                            - Dataset
+                            - Event
+                            - Film
+                            - Image
+                            - InteractiveResource
+                            - Model
+                            - PhysicalObject
+                            - Service
+                            - Software
+                            - Sound
+                            - Text
+
+                            Specific types are unconstrained.  If a
+                            specific type is given, it must be
+                            separated from the general type by a
+                            forward slash ("/"), as in:
+
+                            - Image/Photograph
    ======================== ===========================================
 
    As a special case, an entire XML document adhering to the DataCite
