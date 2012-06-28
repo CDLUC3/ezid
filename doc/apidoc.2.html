@@ -143,7 +143,12 @@ report problems:</p>
 <li><a class="reference internal" href="#shadow-arks">Shadow ARKs</a></li>
 <li><a class="reference internal" href="#identifier-status">Identifier status</a></li>
 <li><a class="reference internal" href="#internal-metadata">Internal metadata</a></li>
-<li><a class="reference internal" href="#metadata-profiles">Metadata profiles</a></li>
+<li><a class="reference internal" href="#metadata-profiles">Metadata profiles</a><ul>
+<li><a class="reference internal" href="#profile-erc">Profile &quot;erc&quot;</a></li>
+<li><a class="reference internal" href="#profile-datacite">Profile &quot;datacite&quot;</a></li>
+<li><a class="reference internal" href="#profile-dc">Profile &quot;dc&quot;</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#testing-the-api">Testing the API</a></li>
 <li><a class="reference internal" href="#server-status">Server status</a></li>
 <li><a class="reference internal" href="#python-example">Python example</a></li>
@@ -840,7 +845,7 @@ be bound to an identifier, and hence clients are free to use alternate
 citation profiles or no citation profile at all.  However, EZID's UI
 is, and its future metadata cross-walking support will be, limited to
 those profiles that it explicitly supports.</p>
-<ol class="arabic simple">
+<ol class="arabic simple" id="profile-erc">
 <li><strong>Profile &quot;erc&quot;</strong>.  These elements are drawn from <a class="reference external" href="https://wiki.ucop.edu/display/Curation/ERC">Kernel Metadata
 and Electronic Resource Citations (ERCs)</a>.  This profile aims at
 universal citations: any kind of object (digital, physical,
@@ -923,7 +928,7 @@ what: Remembrance of Things Past
 erc: who: Proust, Marcel%0Awhat: Remembrance of Things Past
 </pre>
 </blockquote>
-<ol class="arabic simple" start="2">
+<ol class="arabic simple" id="profile-datacite" start="2">
 <li><strong>Profile &quot;datacite&quot;</strong>.  These elements are drawn from the
 <a class="reference external" href="http://schema.datacite.org/">DataCite Metadata Scheme for the Publication and Citation of
 Research Data</a>.  This is the default profile for DOI identifiers.</li>
@@ -984,7 +989,7 @@ automatically and immediately uploaded to <a class="reference external" href="ht
 be made available DataCite's search system and other indexing
 services.</p>
 </blockquote>
-<ol class="arabic" start="3">
+<ol class="arabic" id="profile-dc" start="3">
 <li><p class="first"><strong>Profile &quot;dc&quot;</strong>.  These elements are drawn from the <a class="reference external" href="http://dublincore.org/documents/dces/">Dublin Core
 Metadata Element Set</a>.</p>
 <table border="1" class="docutils">
