@@ -115,9 +115,8 @@ http://creativecommons.org/licenses/BSD/
           <xsl:value-of
             select="*[local-name()='resourceType']/@resourceTypeGeneral"/>
           <xsl:if test="normalize-space(*[local-name()='resourceType']) != ''">
-            <xsl:text> (</xsl:text>
+            <xsl:text>/</xsl:text>
             <xsl:value-of select="*[local-name()='resourceType']"/>
-            <xsl:text>)</xsl:text>
           </xsl:if>
         </td>
       </tr>
