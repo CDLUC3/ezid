@@ -241,6 +241,9 @@ def write_profile_elements_from_form(identifier, request, profile, addl_dict = {
   else:
     return False
 
+_dataciteResourceTypes = ["Collection", "Dataset", "Event", "Film", "Image",
+  "InteractiveResource", "Model", "PhysicalObject", "Service", "Software",
+  "Sound", "Text"]
 
 def validate_simple_metadata_form(request, profile):
   """validates a simple id metadata form, profile is more or less irrelevant for now,
@@ -252,6 +255,11 @@ def validate_simple_metadata_form(request, profile):
   if not(url_is_valid(request.POST['_target'])):
     django.contrib.messages.error(request, "Please enter a a valid location (URL)")
     is_valid = False
+  if "datacite.resourcetype" in request.POST:
+    rt = request.POST["datacite.resourcetype"].strip()
+    if rt != "" and rt.split("/", 1)[0] not in _dataciteResourceTypes:
+      django.contrib.messages.error(request, "Invalid general resource type")
+      is_valid = False
   return is_valid
 
 def validate_advanced_metadata_form(request, profile):
@@ -268,6 +276,11 @@ def validate_advanced_metadata_form(request, profile):
       (' ' in request.POST['remainder'] or len(request.POST['remainder']) > 30):
     django.contrib.messages.error(request, "The remainder you entered is not valid.")
     is_valid = False       
+  if "datacite.resourcetype" in request.POST:
+    rt = request.POST["datacite.resourcetype"].strip()
+    if rt != "" and rt.split("/", 1)[0] not in _dataciteResourceTypes:
+      django.contrib.messages.error(request, "Invalid general resource type")
+      is_valid = False
   return is_valid
 
 def user_or_anon_tup(request):

@@ -193,10 +193,10 @@ def _interpolate (template, *args):
   return template % tuple(xml.sax.saxutils.escape(a) for a in args)
 
 _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
-<resource xmlns="http://datacite.org/schema/kernel-2.1"
+<resource xmlns="http://datacite.org/schema/kernel-2.2"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://datacite.org/schema/kernel-2.1
-    http://schema.datacite.org/meta/kernel-2.1/metadata.xsd">
+  xsi:schemaLocation="http://datacite.org/schema/kernel-2.2
+    http://schema.datacite.org/meta/kernel-2.2/metadata.xsd">
   <identifier identifierType="DOI">%s</identifier>
   <creators>
     <creator>
@@ -208,22 +208,38 @@ _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
   </titles>
   <publisher>%s</publisher>
   <publicationYear>%s</publicationYear>
-</resource>"""
+"""
+
+_resourceTypeTemplate1 = u"""  <resourceType resourceTypeGeneral="%s"/>
+"""
+
+_resourceTypeTemplate2 =\
+  u"""  <resourceType resourceTypeGeneral="%s">%s</resourceType>
+"""
 
 def _formRecord (doi, metadata):
   if metadata.get("datacite", "").strip() != "":
     return _insertEncodingDeclaration(metadata["datacite"])
   else:
     m = {}
-    for f in ["creator", "title", "publisher", "publicationyear"]:
+    for f in ["creator", "title", "publisher", "publicationyear",
+      "resourcetype"]:
       if metadata.get("datacite."+f, "").strip() != "":
         m[f] = metadata["datacite."+f]
       else:
         m[f] = "none supplied"
     if not re.match("\d{4}$", m["publicationyear"]):
       m["publicationyear"] = "0000"
-    return _interpolate(_metadataTemplate, doi, m["creator"], m["title"],
+    r = _interpolate(_metadataTemplate, doi, m["creator"], m["title"],
       m["publisher"], m["publicationyear"])
+    if m["resourcetype"] != "none supplied":
+      if "/" in m["resourcetype"]:
+        gt, st = m["resourcetype"].split("/", 1)
+        r += _interpolate(_resourceTypeTemplate2, gt.strip(), st.strip())
+      else:
+        r += _interpolate(_resourceTypeTemplate1, m["resourcetype"])
+    r += u"</resource>\n"
+    return r
 
 def uploadMetadata (doi, current, delta):
   """

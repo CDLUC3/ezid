@@ -15,10 +15,7 @@ def _p (urlPattern, function, kwargs=None):
 
 urlpatterns = django.conf.urls.defaults.patterns("",
 
-  # UI
-  #
-  # home/infopages which have views in this repo, but
-  # templates served from info_pages repository
+  # UI - RENDERED FROM TEMPLATES IN INFO REPOSITORY
   _p("/?$", "ui_home.index"),
   _p("home/why$", "ui_home.why"),
   _p("home/understanding$", "ui_home.understanding"),
@@ -26,10 +23,9 @@ urlpatterns = django.conf.urls.defaults.patterns("",
   _p("home/documentation$", "ui_home.documentation"),
   _p("home/outreach$", "ui_home.outreach"),
   _p("home/community$", "ui_home.community"),
-  #following line should work for mostly "html" template pages with no menu selected
-  _p("home/([a-z0-9_]+)$", "ui_home.no_menu"),
-  
-  # standard django pages in this repository
+  _p("home/(\w+)$", "ui_home.no_menu"),
+
+  # UI - OTHER
   _p("manage/?$", "ui_manage.index"),
   _p("manage/edit/(.*)", "ui_manage.edit"),
   _p("create/?$", "ui_create.index"),

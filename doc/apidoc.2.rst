@@ -63,6 +63,11 @@ Contents
 - `Identifier status`_
 - `Internal metadata`_
 - `Metadata profiles`_
+
+  - `Profile "erc"`_
+  - `Profile "datacite"`_
+  - `Profile "dc"`_
+
 - `Testing the API`_
 - `Server status`_
 - `Python example`_
@@ -757,6 +762,8 @@ citation profiles or no citation profile at all.  However, EZID's UI
 is, and its future metadata cross-walking support will be, limited to
 those profiles that it explicitly supports.
 
+.. _Profile "erc":
+
 1. **Profile "erc"**.  These elements are drawn from `Kernel Metadata
    and Electronic Resource Citations (ERCs)`__.  This profile aims at
    universal citations: any kind of object (digital, physical,
@@ -822,6 +829,8 @@ __ ERC_
 
      erc: who: Proust, Marcel%0Awhat: Remembrance of Things Past
 
+.. _Profile "datacite":
+
 2. **Profile "datacite"**.  These elements are drawn from the
    `DataCite Metadata Scheme for the Publication and Citation of
    Research Data`__.  This is the default profile for DOI identifiers.
@@ -854,6 +863,30 @@ __ `DataCite Metadata Scheme`_
                             publicly available.  If an embargo period
                             is in effect, use the year when the embargo
                             period ends.
+   datacite.resourcetype    The general type and, optionally, specific
+                            type of the data.  The general type must
+                            be one of the controlled vocabulary terms
+                            defined in the DataCite Metadata Scheme:
+
+                            - Collection
+                            - Dataset
+                            - Event
+                            - Film
+                            - Image
+                            - InteractiveResource
+                            - Model
+                            - PhysicalObject
+                            - Service
+                            - Software
+                            - Sound
+                            - Text
+
+                            Specific types are unconstrained.  If a
+                            specific type is given, it must be
+                            separated from the general type by a
+                            forward slash ("/"), as in:
+
+                            - Image/Photograph
    ======================== ===========================================
 
    As a special case, an entire XML document adhering to the DataCite
@@ -866,6 +899,8 @@ __ `DataCite Metadata Scheme`_
    automatically and immediately uploaded to DataCite_, where it may
    be made available DataCite's search system and other indexing
    services.
+
+.. _Profile "dc":
 
 3. **Profile "dc"**.  These elements are drawn from the `Dublin Core
    Metadata Element Set`_.

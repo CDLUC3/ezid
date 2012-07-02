@@ -47,3 +47,28 @@ tooltip:
 The year when the data was or will be made publicly available.  If an
 embargo period is in effect, use the year when the embargo period
 ends.
+
+element: datacite.resourcetype
+displayname: Resource type
+displaytype: text
+tooltip:
+<b><u>Resource type</u></b><br/>
+The general type and, optionally, specific type of the data.  The
+general type must be one of the controlled vocabulary terms defined in
+the DataCite Metadata Scheme:<br/>
+&nbsp;&nbsp;<font face="Courier">Collection</font><br/>
+&nbsp;&nbsp;<font face="Courier">Dataset</font><br/>
+&nbsp;&nbsp;<font face="Courier">Event</font><br/>
+&nbsp;&nbsp;<font face="Courier">Film</font><br/>
+&nbsp;&nbsp;<font face="Courier">Image</font><br/>
+&nbsp;&nbsp;<font face="Courier">InteractiveResource</font><br/>
+&nbsp;&nbsp;<font face="Courier">Model</font><br/>
+&nbsp;&nbsp;<font face="Courier">PhysicalObject</font><br/>
+&nbsp;&nbsp;<font face="Courier">Service</font><br/>
+&nbsp;&nbsp;<font face="Courier">Software</font><br/>
+&nbsp;&nbsp;<font face="Courier">Sound</font><br/>
+&nbsp;&nbsp;<font face="Courier">Text</font><br/>
+Specific types are unconstrained.  If a specific type is given, it
+must be separated from the general type by a forward slash ("/"), as
+in:<br/>
+&nbsp;&nbsp;<font face="Courier">Image/Photograph</font>
