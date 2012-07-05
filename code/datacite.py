@@ -225,7 +225,7 @@ def _formRecord (doi, metadata):
     for f in ["creator", "title", "publisher", "publicationyear",
       "resourcetype"]:
       if metadata.get("datacite."+f, "").strip() != "":
-        m[f] = metadata["datacite."+f]
+        m[f] = metadata["datacite."+f].strip()
       else:
         m[f] = "none supplied"
     if not re.match("\d{4}$", m["publicationyear"]):

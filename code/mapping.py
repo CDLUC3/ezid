@@ -20,7 +20,9 @@ import erc
 
 def _get (d, *keys):
   for k in keys:
-    if k in d: return d[k]
+    if k in d:
+      v = d[k].strip()
+      if v != "": return v
   return None
 
 def _text (n):
@@ -58,7 +60,7 @@ _rootTagRE =\
   re.compile("{(http://datacite\.org/schema/kernel-[^}]*)}resource$")
 
 def _displayDatacite (metadata):
-  if "datacite" in metadata:
+  if "datacite" in metadata and metadata["datacite"].strip() != "":
     try:
       root = lxml.etree.XML(metadata["datacite"])
       m = _rootTagRE.match(root.tag)
