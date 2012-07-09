@@ -190,7 +190,8 @@ def _insertEncodingDeclaration (record):
     return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + record
 
 def _interpolate (template, *args):
-  return template % tuple(xml.sax.saxutils.escape(a) for a in args)
+  return template % tuple(xml.sax.saxutils.escape(a, { "\"": "&quot;" })\
+    for a in args)
 
 _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
 <resource xmlns="http://datacite.org/schema/kernel-2.2"
@@ -225,7 +226,7 @@ def _formRecord (doi, metadata):
     for f in ["creator", "title", "publisher", "publicationyear",
       "resourcetype"]:
       if metadata.get("datacite."+f, "").strip() != "":
-        m[f] = metadata["datacite."+f]
+        m[f] = metadata["datacite."+f].strip()
       else:
         m[f] = "none supplied"
     if not re.match("\d{4}$", m["publicationyear"]):

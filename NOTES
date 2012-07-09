@@ -119,3 +119,24 @@ LDAP UIDs are case-insensitive.  Whenever EZID stores a UID (e.g., in
 session cookies and in co-owner lists), it always uses the UID as
 retrieved from LDAP.  In other words, when LDAP is enabled, EZID's
 behavior regarding UIDs is case-insensitive and case-preserving.
+
+7. Treatment of whitespace and empty values
+-------------------------------------------
+
+The main processing modules (ezid.py and noid.py) store metadata
+element names and values exactly as supplied and return them exactly
+as stored.  The API, by parsing all incoming metadata using module
+anvl.py, strips leading and trailing whitespace from both names and
+values; empty values are allowed, but not empty names.  It would seem,
+then, that leading/trailing whitespace cannot occur in values, but to
+account for metadata obtained from other sources (notably, the UI,
+which currently is not diligent about stripping whitespace), whenever
+metadata is processed EZID does *not* assume that whitespace has been
+stripped.
+
+EZID never deletes metadata names from noid.  To support a metadata
+representation that is equivalent to deletion, the test EZID uses to
+determine if an element E is "present" for the purposes of metadata
+processing is:
+
+  E in metadata and E.strip() != ""
