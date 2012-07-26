@@ -1,6 +1,6 @@
 {% load layout_extras %}
 
-<div id="preview_div" style="width:180px;float:right;">
+<div id="preview_div" style="width:180px;float:right;word-wrap:break-word;">
   <h2>Identifier Preview:</h2>
   <div id="preview_div_value"></div>
 </div>
@@ -45,7 +45,7 @@
         $('#preview_div').css('display', 'none');
         $('#remainder').css('font-style', 'italic');
         $('#remainder').css('color', 'gray');
-      }else if(currentValue.indexOf(' ')>=0 || currentValue.length > 25){
+      }else if(currentValue.indexOf(' ')>=0){
         $('#preview_div_value').html('Invalid remainder');
         $('#preview_div').css('display', 'block');
         $('#preview_div_value').css('color', 'red');
@@ -53,7 +53,7 @@
         $('#remainder').css('color', 'black');
       }else{
         $('#preview_div_value').html(
-                $('#create_form input:radio[name=shoulder]:checked').val()  + $('#remainder').val());
+        $('#create_form input:radio[name=shoulder]:checked').val()  + $('#remainder').val());
         $('#preview_div').css('display', 'block');
         $('#preview_div_value').css('color', 'black');
         $('#remainder').css('font-style', 'normal');
