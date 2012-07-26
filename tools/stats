@@ -1,0 +1,144 @@
+#! /usr/bin/env python
+
+# Computes identifier statistics and writes them to a file, thereby
+# making them available to the running EZID server for display.  The
+# 'stats' module is the runtime companion to this script.
+#
+# Usage:
+#
+#    stats -n noid.bdb outputfile
+#       Spawn a 'dump' subprocess and read from a noid bind database.
+#
+#    stats -d dumpfile outputfile
+#       Read from an uncompressed dump file.
+#
+#    stats -z dumpfile outputfile
+#       Read from a gzip-compressed dump file.
+#
+# To avoid potential race conditions with the server, this script
+# writes to outputfile.new and then only upon successful completion
+# does it rename outputfile.new to outputfile.
+#
+# The statistics consist of a single, multi-dimensional histogram that
+# counts identifiers as categorized across the dimensions: creation
+# month; owner; owner group; identifier type; and whether the
+# identifier "has metadata" or not.  The histogram does not include
+# test identifiers, but does include reserved identifiers.
+#
+# The definition of "has metadata" is: for DOIs, if the identifier has
+# metadata mappable to at least the required DataCite fields; for
+# other identifier types, if the identifier has metadata mappable to
+# the ERC who/what/when fields.
+#
+# The format of the output file is:
+#
+#    timestamp
+#    dimensions...
+#    tuple count
+#    tuple count
+#    ...
+#
+# In the above, 'timestamp' is the computation time, as a Unix
+# timestamp.  'dimensions' are the names of the histogram's
+# dimensions, separated by spaces.  The remaining lines are histogram
+# tuples (the number and order of the components corresponding to the
+# dimensions, of course) and counts, all separated by spaces.  A
+# missing tuple implicitly has a count of 0.  In tuples, agent
+# identifiers (i.e., owners and groups) are NOT converted to local
+# names.  For example:
+#
+#    1342878655
+#    month owner group type hasMetadata
+#    2011-03 ark:/99166/p92z12p14 ark:/99166/p9z60c16v ARK True 3096
+#
+# This script requires a couple EZID modules.  The PYTHONPATH
+# environment variable must include the
+# .../SITE_ROOT/PROJECT_ROOT/code directory; if it doesn't, we attempt
+# to dynamically locate it and add it.
+#
+# Greg Janee <gjanee@ucop.edu>
+# July 2012
+
+import gzip
+import os
+import os.path
+import subprocess
+import sys
+import time
+
+try:
+  import mapping
+  import util
+except ImportError:
+  sys.path.append(os.path.join(os.path.split(os.path.split(
+    os.path.abspath(__file__))[0])[0], "code"))
+  import mapping
+  import util
+
+testArkPrefix = "ark:/99999/fk4"
+testDoiPrefix = "doi:10.5072/FK2"
+
+dumpTool = os.path.join(os.path.split(os.path.abspath(__file__))[0], "dump")
+
+def timestampToMonth (t):
+  return time.strftime("%Y-%m", time.localtime(int(t)))
+
+def identifierType (id):
+  return id.split(":")[0].upper()
+
+def hasMetadata (id, m):
+  t = mapping.getDisplayMetadata(m)
+  return (id.startswith("doi:") and None not in t) or\
+    (not id.startswith("doi:") and (t[0] is not None or t[2] is not None) and\
+    t[1] is not None and t[3] is not None)
+
+usageText = """Usage:
+
+  stats -n noid.bdb outputfile
+     Spawn a 'dump' subprocess and read from a noid bind database.
+
+  stats -d dumpfile outputfile
+     Read from an uncompressed dump file.
+
+  stats -z dumpfile outputfile
+     Read from a gzip-compressed dump file.
+"""
+
+if len(sys.argv) != 4 or sys.argv[1] not in ["-n", "-d", "-z"]:
+  sys.stderr.write(usageText)
+  sys.exit(1)
+
+if sys.argv[1] == "-n":
+  pipe = subprocess.Popen([dumpTool, "-n", sys.argv[2]],
+    stdout=subprocess.PIPE)
+  infile = pipe.stdout
+elif sys.argv[1] == "-d":
+  infile = open(sys.argv[2])
+elif sys.argv[1] == "-z":
+  infile = gzip.GzipFile(filename=sys.argv[2], mode="r")
+outfile = open(sys.argv[3]+".new", "w")
+
+counts = {}
+
+for l in infile:
+  lv = l[:-1].split(" ")
+  r = { "_id": lv[0] }
+  for i in range(1, len(lv), 2): r[util.decode(lv[i])] = util.decode(lv[i+1])
+  if not r["_id"].startswith(testArkPrefix) and\
+    not r["_id"].startswith(testDoiPrefix):
+    t = (timestampToMonth(r["_created"]), r["_owner"], r["_ownergroup"],
+      identifierType(r["_id"]), str(hasMetadata(r["_id"], r)))
+    counts[t] = counts.get(t, 0) + 1
+
+if sys.argv[1] == "-n" and pipe.wait() != 0:
+  sys.stderr.write("stats: dump subprocess failed\n")
+  sys.exit(1)
+
+outfile.write("%d\n" % int(time.time()))
+outfile.write("month owner group type hasMetadata\n")
+tuples = counts.keys()
+tuples.sort() # no real reason for this, just a nicety
+for t in tuples: outfile.write("%s %d\n" % (" ".join(t), counts[t]))
+outfile.close()
+
+os.rename(sys.argv[3]+".new", sys.argv[3])
