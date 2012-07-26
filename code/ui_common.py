@@ -284,7 +284,7 @@ def validate_advanced_metadata_form(request, profile):
     django.contrib.messages.error(request, "Please enter a valid location (URL)")
     is_valid = False
   if request.POST['remainder'] != '' and request.POST['remainder'] != remainder_box_default and \
-      (' ' in request.POST['remainder'] or len(request.POST['remainder']) > 30):
+      (' ' in request.POST['remainder']):
     django.contrib.messages.error(request, "The remainder you entered is not valid.")
     is_valid = False       
   if "datacite.resourcetype" in request.POST:
