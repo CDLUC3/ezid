@@ -36,7 +36,7 @@ adminUsername = None
 shoulders = None
 google_analytics_id = None
 contact_form_email = None
-
+reload_templates = None
 
 
 remainder_box_default = "Recommended: Leave blank"
@@ -47,6 +47,7 @@ def _loadConfig():
   global ezidUrl, templates, alertMessage, prefixes, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
   global adminUsername, shoulders, google_analytics_id, contact_form_email
+  global reload_templates
   ezidUrl = config.config("DEFAULT.ezid_base_url")
   templates = {}
   _load_templates([ django.conf.settings.TEMPLATE_DIRS[0] ])
@@ -60,6 +61,9 @@ def _loadConfig():
       alertMessage = ""
     else:
       raise
+  reload_templates = hasattr(django.conf.settings, 'RELOAD_TEMPLATES')
+  if reload_templates:
+    reload_templates = django.conf.settings.RELOAD_TEMPLATES
   keys = config.config("prefixes.keys").split(",")
   prefixes = dict([config.config("prefix_%s.prefix" % k),
     config.config("prefix_%s.name" % k)] for k in keys)
@@ -93,10 +97,17 @@ _loadConfig()
 config.addLoader(_loadConfig)
   
 def render(request, template, context={}):
-  global alertMessage, google_analytics_id
+  global alertMessage, google_analytics_id, reload_templates
   c = { "session": request.session, "alertMessage": alertMessage, "google_analytics_id": google_analytics_id }
   c.update(context)
-  content = templates[template].render(
+  #this is to keep from having to restart the server every 3 seconds
+  #to see template changes in development, only reloads if set for optimal performance
+  if reload_templates:
+    templ = django.template.loader.get_template(os.path.join(\
+          django.conf.settings.TEMPLATE_DIRS[0], template) + '.html')
+  else:
+    templ = templates[template]
+  content = templ.render(
     django.template.RequestContext(request, c))
   # By setting the content type ourselves, we gain control over the
   # character encoding and can properly set the content length.
