@@ -16,9 +16,10 @@ SSL = False
 RELOAD_TEMPLATES = True
 
 #This tells a special template tag to substitute
-#one templates for another with the same filename in a different
-#customization directory.  Customization is based on host name.
-
+#one templates for another if the host name is in this dictionary
 HOST_TEMPLATE_CUSTOMIZATION = {'localhost:8001': 'purdue'}
+
+#tells contact-us mailer to mail to different address if domain in this dictionary
+HOST_EMAIL_CUSTOMIZATION = {'localhost:8001': 'scott.fisher@ucop.edu'}
 
 ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
