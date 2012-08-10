@@ -30,13 +30,25 @@ def contact(request):
     d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
   elif request.method == "POST":
     P = request.POST
-    for i in ['your_name', 'email', 'comment', 'hear_about']:
+    for i in ['your_name', 'email', 'affiliation', 'comment', 'hear_about']:
       if not i in P:
         d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
         return uic.render(request, 'contact', d)
     d.update(uic.extract(request.POST, ['your_name', 'email', 'affiliation', 'comment', 'hear_about']))
+    validated = True
+    if P['your_name'].strip() == '':
+      validated = False
+      django.contrib.messages.error(request, "Please fill in your name")
+    if P['email'].strip() == '':
+      validated = False
+      django.contrib.messages.error(request, "Please fill in your email address")
+    if P['affiliation'].strip() == '':
+      validated = False
+      django.contrib.messages.error(request, "Please fill in your institution")
     if P['comment'].strip() == '':
+      validated = False
       django.contrib.messages.error(request, "Please fill in a question or comment")
+    if validated == False:
       return uic.render(request, 'contact', d)
     if not 'url' in P or P['url'] != '':
       #url is hidden.  If it's filled in then probably a spam bot
