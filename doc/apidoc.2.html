@@ -637,6 +637,13 @@ the identifier just deleted.</p>
 <h1>Ownership model</h1>
 <p>EZID maintains ownership information about identifiers and uses that
 information to enforce access control.</p>
+<p>An identifier has an owner, which is an EZID user, and an owning
+group, which is an EZID group.  Each EZID user is a member of exactly
+one EZID group, and initially an identifier is owned by the user and
+user's group that created it.  However, the identifier's owner and
+owning group may change over time, and furthermore these ownership
+attributes may change independently so that the identifier's owning
+group may not necessarily be the owner's current group.</p>
 <p>For read access, identifiers are considered public resources, and
 their EZID metadata may be retrieved by anybody, just as anybody may
 submit the URL form of an identifier to a resolving service and be
@@ -644,25 +651,28 @@ redirected to the identifier's target URL.  But an identifier may be
 modified only by its owner.</p>
 <p>Additionally, an identifier may have one or more &quot;co-owners,&quot; which
 are users other than the owner who are allowed to modify the
-identifier.  Co-ownership can be specified in two ways.  First, it can
-be specified globally as part of a user's account profile.  For
-example, assuming a repository <span class="hl1">R</span> has an EZID account (i.e.,
-this is a special kind of EZID user representing a repository system),
-an EZID user <span class="hl1">U</span> depositing digital objects in <span class="hl1">R</span> and using
-EZID to create identifiers for those objects can name <span class="hl1">R</span> as a
-co-owner of all its identifiers, past and future, thereby allowing the
-repository to manage the objects' target URLs and other metadata.
-Visit the EZID UI and navigate to &quot;My account&quot; to specify global
-co-ownership.</p>
-<p>Second, co-ownership can be specified on a per-identifier basis by
-listing one or more users in the identifier's &quot;_coowners&quot; reserved
-metadata element; see <a class="reference internal" href="#internal-metadata">Internal metadata</a> below.  For example,
-repository <span class="hl1">R</span>, creating identifiers in EZID on behalf of EZID
-user <span class="hl1">U</span>, can name <span class="hl1">U</span> as a co-owner of those identifiers,
-thereby giving <span class="hl1">U</span> the right to modify identifiers created by the
-repository on its behalf.  Note that any time a user modifies an
-identifier that it doesn't own, EZID adds the user to the identifier's
-&quot;_coowners&quot; element.</p>
+identifier.  Co-ownership can be specified in two ways:</p>
+<ol class="arabic simple">
+<li><strong>Account-level</strong>.  It can be specified globally as part of a
+user's account profile.  For example, assuming a repository
+<span class="hl1">R</span> has an EZID account (i.e., EZID user <span class="hl1">R</span> represents a
+repository system), an EZID user <span class="hl1">U</span> depositing digital
+objects in <span class="hl1">R</span> and using EZID to create identifiers for those
+objects can name <span class="hl1">R</span> as a co-owner of all its identifiers,
+past and future, thereby allowing the repository to manage the
+objects' target URLs and other metadata.  Visit the EZID UI and
+navigate to &quot;My account&quot; to specify account-level co-ownership.</li>
+<li><strong>Identifier-level</strong>.  It can be specified on a per-identifier
+basis by listing one or more users in the identifier's &quot;_coowners&quot;
+reserved metadata element; see <a class="reference internal" href="#internal-metadata">Internal metadata</a> below.  For
+example, repository <span class="hl1">R</span>, creating identifiers in EZID on
+behalf of EZID user <span class="hl1">U</span>, can name <span class="hl1">U</span> as a co-owner of
+those identifiers, thereby giving <span class="hl1">U</span> the right to modify
+identifiers created by the repository on the user's behalf.  Note
+that any time a user modifies an identifier that it doesn't
+directly own, EZID adds the user to the identifier's &quot;_coowners&quot;
+element.</li>
+</ol>
 </div>
 <div class="section" id="shadow-arks">
 <h1>Shadow ARKs</h1>
@@ -760,7 +770,9 @@ first column indicates the element is modifiable by clients.</p>
 </tr>
 <tr><td></td>
 <td>_ownergroup</td>
-<td>The identifier's owner's group.</td>
+<td>The identifier's owning group, which is
+often but not necessarily the identifier's
+owner's current group.</td>
 <td>ucla</td>
 </tr>
 <tr><td>✓</td>

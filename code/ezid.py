@@ -41,8 +41,10 @@
 #        |             | name (e.g., "ryan").  The owner may also be
 #        |             | "anonymous".  For a shadow ARK, applies to
 #        |             | both the shadow ARK and shadowed identifier.
-# _g     | _ownergroup | The identifier's owner's group.  The group is
-#        |             | stored as a persistent identifier (e.g.,
+# _g     | _ownergroup | The identifier's owning group, which is often
+#        |             | but not necessarily the identifier's owner's
+#        |             | current group.  The group is stored as a
+#        |             | persistent identifier (e.g.,
 #        |             | "ark:/13030/bar") but returned as a local
 #        |             | name (e.g., "dryad").  The group may also be
 #        |             | "anonymous".  For a shadow ARK, applies to

@@ -591,6 +591,14 @@ Ownership model
 EZID maintains ownership information about identifiers and uses that
 information to enforce access control.
 
+An identifier has an owner, which is an EZID user, and an owning
+group, which is an EZID group.  Each EZID user is a member of exactly
+one EZID group, and initially an identifier is owned by the user and
+user's group that created it.  However, the identifier's owner and
+owning group may change over time, and furthermore these ownership
+attributes may change independently so that the identifier's owning
+group may not necessarily be the owner's current group.
+
 For read access, identifiers are considered public resources, and
 their EZID metadata may be retrieved by anybody, just as anybody may
 submit the URL form of an identifier to a resolving service and be
@@ -599,26 +607,28 @@ modified only by its owner.
 
 Additionally, an identifier may have one or more "co-owners," which
 are users other than the owner who are allowed to modify the
-identifier.  Co-ownership can be specified in two ways.  First, it can
-be specified globally as part of a user's account profile.  For
-example, assuming a repository `R`:hl1: has an EZID account (i.e.,
-this is a special kind of EZID user representing a repository system),
-an EZID user `U`:hl1: depositing digital objects in `R`:hl1: and using
-EZID to create identifiers for those objects can name `R`:hl1: as a
-co-owner of all its identifiers, past and future, thereby allowing the
-repository to manage the objects' target URLs and other metadata.
-Visit the EZID UI and navigate to "My account" to specify global
-co-ownership.
+identifier.  Co-ownership can be specified in two ways:
 
-Second, co-ownership can be specified on a per-identifier basis by
-listing one or more users in the identifier's "_coowners" reserved
-metadata element; see `Internal metadata`_ below.  For example,
-repository `R`:hl1:, creating identifiers in EZID on behalf of EZID
-user `U`:hl1:, can name `U`:hl1: as a co-owner of those identifiers,
-thereby giving `U`:hl1: the right to modify identifiers created by the
-repository on its behalf.  Note that any time a user modifies an
-identifier that it doesn't own, EZID adds the user to the identifier's
-"_coowners" element.
+1. **Account-level**.  It can be specified globally as part of a
+   user's account profile.  For example, assuming a repository
+   `R`:hl1: has an EZID account (i.e., EZID user `R`:hl1: represents a
+   repository system), an EZID user `U`:hl1: depositing digital
+   objects in `R`:hl1: and using EZID to create identifiers for those
+   objects can name `R`:hl1: as a co-owner of all its identifiers,
+   past and future, thereby allowing the repository to manage the
+   objects' target URLs and other metadata.  Visit the EZID UI and
+   navigate to "My account" to specify account-level co-ownership.
+
+2. **Identifier-level**.  It can be specified on a per-identifier
+   basis by listing one or more users in the identifier's "_coowners"
+   reserved metadata element; see `Internal metadata`_ below.  For
+   example, repository `R`:hl1:, creating identifiers in EZID on
+   behalf of EZID user `U`:hl1:, can name `U`:hl1: as a co-owner of
+   those identifiers, thereby giving `U`:hl1: the right to modify
+   identifiers created by the repository on the user's behalf.  Note
+   that any time a user modifies an identifier that it doesn't
+   directly own, EZID adds the user to the identifier's "_coowners"
+   element.
 
 Shadow ARKs
 -----------
@@ -708,7 +718,9 @@ first column indicates the element is modifiable by clients.
   |X| Element     Definition                                   Example
   === =========== ============================================ ================
   \   _owner      The identifier's owner.                      jsmith
-  \   _ownergroup The identifier's owner's group.              ucla
+  \   _ownergroup The identifier's owning group, which is      ucla
+                  often but not necessarily the identifier's
+                  owner's current group.
   |X| _coowners   The identifier's co-owners separated by      manny ; moe ;
                   semicolons (";", U+003B).  Modifiable only   jack
                   by the identifier's owner.
