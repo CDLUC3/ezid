@@ -5,6 +5,37 @@
 {% block content %}
   <div class="grid_9">
     <h1>View Usage</h1>
-    <p>A placeholder page.</p>
+    <form id="usage_form" action="{% url ui_admin.usage %}" method="post">
+    	<label class="left" for="choices">Report for:</label>
+				<div class="field_right">
+					<select id="choice" name="choice">
+						{% for c in choices %}
+							<option value="{{c.0}}"
+							{% if c.0 == choice %}
+								selected="selected"
+							{% endif %}
+							>{{c.1}}</option>
+						{% endfor %}
+					</select>
+				</div>
+    </form>
+    <div style="clear:both">&nbsp;</div>
+    
+    <table>
+    	<tr>
+    		<th>Month</th>
+    		<th>ARKs</th>
+    		<th>DOIs</th>
+    		<th>URNs</th>
+    		<th>% with metadata</th>
+    	</tr>
+    	<!-- rows here -->
+    </table>
   </div>
+  
+  <script type="text/javascript">
+  	$("#choice").bind("change", function(event){
+      $("#usage_form").submit();
+    });
+  </script>
 {% endblock %}

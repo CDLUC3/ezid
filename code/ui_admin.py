@@ -6,9 +6,11 @@ import config
 import idmap
 import re
 import useradmin
+import stats
 from django.utils.http import urlencode
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
+from django import forms
 
 @uic.admin_login_required
 def index(request, ssl=False):
@@ -19,6 +21,23 @@ def index(request, ssl=False):
 @uic.admin_login_required
 def usage(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.usage'}
+  #make select list choices
+  users = ezidadmin.getUsers()
+  users.sort(key=lambda i: i['uid'].lower())
+  groups = ezidadmin.getGroups()
+  groups.sort(key=lambda i: i['gid'].lower())
+  user_choices = [("user_" + x['arkId'], x['uid']) for x in users]
+  group_choices = [("group_" + x['arkId'], x['gid']) for x in groups]
+  d['choices'] = [("all", "All EZID")] + [('',''), ('', '-- Groups --')] + \
+      group_choices + [('',''), ('', '-- Users --')] + user_choices
+      
+  if request.method != "POST" or not('choice' in request.POST) or request.POST['choice'] == '':
+    d['choice'] = 'all'
+  else:
+    d['choice'] = request.POST['choice']
+    
+  #query all
+  
   return uic.render(request, 'admin/usage', d)
 
 @uic.admin_login_required
