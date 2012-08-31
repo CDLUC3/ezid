@@ -1026,8 +1026,17 @@ def deleteIdentifier (identifier, user, group):
       log.unauthorized(tid)
       return "error: unauthorized"
     if m.get("_is", "public") != "reserved":
-      log.badRequest(tid)
-      return "error: bad request - identifier status does not support deletion"
+      if user[0] != _adminUsername:
+        log.badRequest(tid)
+        return "error: bad request - identifier status does not support " +\
+          "deletion"
+      if m.get("_s", nqidentifier).startswith("doi:"):
+        doi = m.get("_s", nqidentifier)[4:]
+        # We can't actually delete a DOI, so we do the next best thing...
+        s = datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI")
+        assert s is None,\
+          "unexpected return from DataCite set target URL operation: " + s
+        datacite.deactivate(doi)
     _bindNoid.deleteElements(ark)
     _bindNoid.releaseIdentifier(ark)
     if m["_o"] != "anonymous":
