@@ -134,7 +134,7 @@ class Stats (object):
     constraint at all (and the total number of identifiers is
     returned), while a tuple with no Nones returns a single histogram
     value.  If useLocalNames is true, agent identifiers in
-    'constraints' are intepreted as local names and are converted to
+    'constraints' are interpreted as local names and are converted to
     agent identifiers.
     """
     assert len(constraints) == len(self._dimensions)
