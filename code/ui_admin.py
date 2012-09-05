@@ -7,10 +7,12 @@ import idmap
 import re
 import useradmin
 import stats
+import datetime
 from django.utils.http import urlencode
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
 from django import forms
+
 
 @uic.admin_login_required
 def index(request, ssl=False):
@@ -37,7 +39,15 @@ def usage(request, ssl=False):
     d['choice'] = request.POST['choice']
     
   #query all
+  user_id, group_id = None, None
+  if d['choice'].startswith('user_'):
+    user_id = d['choice'][5:]
+  elif d['choice'].startswith('group_'):
+    group_id = d['choice'][6:]
+    
+  #import pdb; pdb.set_trace() #this will enable debugging console
   
+  d['report'] = _create_stats_report(user_id, group_id)
   return uic.render(request, 'admin/usage', d)
 
 @uic.admin_login_required
@@ -330,4 +340,55 @@ def update_edit_user(request, user_obj):
         django.contrib.messages.success(request, "User has been disabled from logging in.")
   return curr_enab_state
   
+
+def _month_range_for_display(user, group):
+  """
+  Produces a list of year-month strings which goes from the earliest
+  data available for the user, group specified (use None for non) until now.
+  """
+  dates = _get_month_range(datetime.datetime(2000, 1, 1, 0, 0), datetime.datetime.now())
+  s = stats.getStats()
+  num = None
+  for date in dates:
+    #try:
+    num = s.query((date.strftime("%Y-%m"), user, group, None, None), False)
+    #except AssertionError:
+    #  num = 0
+    if num > 0: break
+  if date.strftime("%Y-%m") == datetime.datetime.now().strftime("%Y-%m") and num < 1:
+    return []
+  return [x.strftime("%Y-%m") for x in _get_month_range(date, datetime.datetime.now())]
     
+def _get_month_range(dt1, dt2):
+  """
+  Creates a month range from the month/year of date1 to month/year of date2
+  """
+  #dt1, dt2 = datetime.datetime(2005, 1, 1, 0, 0), datetime.datetime.now()
+  start_month=dt1.month
+  end_months=(dt2.year-dt1.year)*12 + dt2.month+1
+  dates=[datetime.datetime(year=yr, month=mn, day=1) for (yr, mn) in (
+          ((m - 1) / 12 + dt1.year, (m - 1) % 12 + 1) for m in range(start_month, end_months)
+      )]
+  return dates
+
+def _create_stats_report(user, group):
+  """Create a stats report based on the user and group (or None, None) for all"""
+  s = stats.getStats()
+  #stats is called like s.query((month, user, group, type, metadata), False)
+  months = _month_range_for_display(user,group)
+  rows =[]
+  for month in months:
+    arks = '{:,}'.format(s.query((month, user, group, "ARK", None), False))
+    dois = '{:,}'.format(s.query((month, user, group, "DOI", None), False))
+    urns = '{:,}'.format(0)
+    total_items = float(s.query((month, user, group, None, None), False))
+    if total_items == 0:
+      percent_meta = 'N/A'
+    else:
+      percent_meta = ("%0.2f" % (float(s.query((month, user, group, None, "True"), False)) \
+            / total_items * 100)) + "%"
+    rows.append((month, arks, dois, urns, percent_meta))
+
+  return rows
+
+     
