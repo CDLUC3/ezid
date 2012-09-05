@@ -21,6 +21,7 @@ import django.conf
 import lxml.etree
 import os.path
 import re
+import urllib
 import urllib2
 import xml.sax.saxutils
 
@@ -242,7 +243,7 @@ def _formRecord (doi, metadata):
     r += u"</resource>\n"
     return r
 
-def uploadMetadata (doi, current, delta):
+def uploadMetadata (doi, current, delta, forceUpload=False):
   """
   Uploads citation metadata for the resource identified by an existing
   scheme-less DOI identifier (e.g., "10.5060/foo") to DataCite.  This
@@ -250,18 +251,19 @@ def uploadMetadata (doi, current, delta):
   'current' and 'delta' should be dictionaries mapping metadata
   element names (e.g., "Title") to values.  'current+delta' is
   uploaded, but only if there is at least one DataCite-relevant
-  difference between it and 'current' alone.  There are three possible
-  returns: None on success; a string error message if the uploaded
-  DataCite Metadata Scheme record was not accepted by DataCite (due to
-  an XML-related problem); or a thrown exception on other error.  No
-  error checking is done on the inputs.
+  difference between it and 'current' alone (unless 'forceUpload' is
+  true).  There are three possible returns: None on success; a string
+  error message if the uploaded DataCite Metadata Scheme record was
+  not accepted by DataCite (due to an XML-related problem); or a
+  thrown exception on other error.  No error checking is done on the
+  inputs.
   """
   if not _enabled: return None
   oldRecord = _formRecord(doi, current)
   m = current.copy()
   m.update(delta)
   newRecord = _formRecord(doi, m)
-  if newRecord == oldRecord: return None
+  if newRecord == oldRecord and not forceUpload: return None
   # To hide transient network errors, we make multiple attempts.
   for i in range(_numAttempts):
     o = urllib2.build_opener(_HTTPErrorProcessor)
@@ -276,7 +278,7 @@ def uploadMetadata (doi, current, delta):
     try:
       c = o.open(r)
       assert c.read().startswith("OK"),\
-       "unexpected return from DataCite store metadata operation"
+        "unexpected return from DataCite store metadata operation"
     except urllib2.HTTPError, e:
       message = e.fp.read()
       if e.code == 400 and (message.startswith("[xml]") or\
@@ -288,6 +290,45 @@ def uploadMetadata (doi, current, delta):
       if i == _numAttempts-1: raise
     else:
       return None
+    finally:
+      if c: c.close()
+
+def deactivate (doi):
+  """
+  Deactivates an existing, scheme-less DOI identifier (e.g.,
+  "10.5060/foo") in DataCite.  This removes the identifier from
+  DataCite's search index, but has no effect on the identifier's
+  existence in the Handle system or on the ability to change the
+  identifier's target URL.  The identifier can and will be reactivated
+  by uploading new metadata to it (cf. uploadMetadata in this module).
+  Raises an exception an error.
+  """
+  if not _enabled: return
+  # The identifier must already have metadata in DataCite; in case it
+  # doesn't, upload some bogus metadata.
+  message = uploadMetadata(doi, {}, { "datacite.title": "inactive" })
+  assert message is None,\
+    "unexpected return from DataCite store metadata operation: " + message
+  # To hide transient network errors, we make multiple attempts.
+  for i in range(_numAttempts):
+    o = urllib2.build_opener(_HTTPErrorProcessor)
+    r = urllib2.Request(_metadataUrl + "/" + urllib.quote(doi))
+    # We manually supply the HTTP Basic authorization header to avoid
+    # the doubling of the number of HTTP transactions caused by the
+    # challenge/response model.
+    r.add_header("Authorization", _datacenterAuthorization(doi))
+    r.get_method = lambda: "DELETE"
+    c = None
+    try:
+      c = o.open(r)
+      assert c.read() == "OK",\
+        "unexpected return from DataCite deactivate DOI operation"
+    except urllib2.HTTPError, e:
+      if e.code != 500 or i == _numAttempts-1: raise e
+    except urllib2.URLError:
+      if i == _numAttempts-1: raise
+    else:
+      break
     finally:
       if c: c.close()
 

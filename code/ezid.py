@@ -868,7 +868,7 @@ def setMetadata (identifier, user, group, metadata, callContext=None):
             log.badRequest(tid)
             return "error: bad request - element '_target': " +\
               _oneline(message)
-      if len(metadata) > 0 and iStatus != "reserved":
+      if len(metadata) > 0 and iStatus == "public":
         message = datacite.uploadMetadata(doi, m, metadata)
         if message is not None:
           log.badRequest(tid)
@@ -884,7 +884,7 @@ def setMetadata (identifier, user, group, metadata, callContext=None):
         if not target: target = defaultTarget
         del metadata["_target"]
       if "_s" in m and m["_s"].startswith("doi:") and len(metadata) > 0 and\
-        iStatus != "reserved":
+        iStatus == "public":
         message = datacite.uploadMetadata(m["_s"][4:], m, metadata)
         if message is not None:
           log.badRequest(tid)
@@ -951,6 +951,7 @@ def _statusChangePublicToUnavailable (ark, m, reason):
       message = datacite.setTargetUrl(m["_s"][4:], d["_st"])
       assert message is None,\
         "unexpected error setting DOI tombstone target URL"
+      datacite.deactivate(m["_s"][4:])
   _bindNoid.setElements(ark, d)
   m = m.copy()
   m.update(d)
@@ -965,6 +966,10 @@ def _statusChangeUnavailableToPublic (ark, m):
       message = datacite.setTargetUrl(m["_s"][4:], d["_st"])
       if message is not None:
         return "error: bad request - element '_target': " + _oneline(message)
+      message = datacite.uploadMetadata(m["_s"][4:], {}, m, forceUpload=True)
+      if message is not None:
+        return "error: bad request - element 'datacite': " +\
+          _oneline(message)
   _bindNoid.setElements(ark, d)
   m = m.copy()
   m.update(d)
@@ -1026,8 +1031,17 @@ def deleteIdentifier (identifier, user, group):
       log.unauthorized(tid)
       return "error: unauthorized"
     if m.get("_is", "public") != "reserved":
-      log.badRequest(tid)
-      return "error: bad request - identifier status does not support deletion"
+      if user[0] != _adminUsername:
+        log.badRequest(tid)
+        return "error: bad request - identifier status does not support " +\
+          "deletion"
+      if m.get("_s", nqidentifier).startswith("doi:"):
+        doi = m.get("_s", nqidentifier)[4:]
+        # We can't actually delete a DOI, so we do the next best thing...
+        s = datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI")
+        assert s is None,\
+          "unexpected return from DataCite set target URL operation: " + s
+        datacite.deactivate(doi)
     _bindNoid.deleteElements(ark)
     _bindNoid.releaseIdentifier(ark)
     if m["_o"] != "anonymous":

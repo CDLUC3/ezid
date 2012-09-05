@@ -702,9 +702,12 @@ status transitions:
   identifier will be registered with resolvers and other external
   services.
 
-* A public identifier may be marked as unavailable.
+* A public identifier may be marked as unavailable.  At this time the
+  identifier will be removed from any external indexing services.
 
-* An unavailable identifier may be returned to public status.
+* An unavailable identifier may be returned to public status.  At this
+  time the identifier will be re-registered with resolvers and other
+  external services.
 
 Internal metadata
 -----------------
