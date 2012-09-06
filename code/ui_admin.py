@@ -44,10 +44,10 @@ def usage(request, ssl=False):
     user_id = d['choice'][5:]
   elif d['choice'].startswith('group_'):
     group_id = d['choice'][6:]
-    
-  #import pdb; pdb.set_trace() #this will enable debugging console
   
   d['report'] = _create_stats_report(user_id, group_id)
+  s = stats.getStats()
+  d['last_tally'] = datetime.datetime.fromtimestamp(s.getComputeTime()).strftime('%B %d, %Y')
   return uic.render(request, 'admin/usage', d)
 
 @uic.admin_login_required
@@ -377,18 +377,30 @@ def _create_stats_report(user, group):
   #stats is called like s.query((month, user, group, type, metadata), False)
   months = _month_range_for_display(user,group)
   rows =[]
+  t_arks, t_dois, t_urns, t_meta, t_all = 0, 0, 0, 0, 0
   for month in months:
-    arks = '{:,}'.format(s.query((month, user, group, "ARK", None), False))
-    dois = '{:,}'.format(s.query((month, user, group, "DOI", None), False))
-    urns = '{:,}'.format(0)
+    arks = s.query((month, user, group, "ARK", None), False)
+    dois = s.query((month, user, group, "DOI", None), False)
+    urns = s.query((month, user, group, "URN", None), False)
     total_items = float(s.query((month, user, group, None, None), False))
+    
+    t_arks += arks
+    t_dois += dois
+    t_urns += urns
+    t_all += total_items
+    
     if total_items == 0:
       percent_meta = 'N/A'
     else:
-      percent_meta = ("%0.2f" % (float(s.query((month, user, group, None, "True"), False)) \
-            / total_items * 100)) + "%"
-    rows.append((month, arks, dois, urns, percent_meta))
+      with_meta = float(s.query((month, user, group, None, "True"), False))
+      t_meta += with_meta
+      percent_meta = "%0.2f" % (with_meta / total_items * 100) + "%"
+    rows.append((month, '{:,}'.format(arks), '{:,}'.format(dois), \
+                  '{:,}'.format(urns), percent_meta))
 
+  if len(rows) > 0:
+    rows.append(('Total', '{:,}'.format(t_arks), '{:,}'.format(t_dois), \
+                 '{:,}'.format(t_urns), "%0.2f" % (t_meta / t_all * 100) + "%" ))
   return rows
 
      

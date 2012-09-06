@@ -32,6 +32,7 @@
     	table, th, td {border: 1px solid black;}
     </style>
     {% if report|length > 0 %}
+      <h3>Identifiers Created by Month</h3>
 	    <table>
 	    	<tr>
 	    		<th>Month</th>
@@ -51,6 +52,7 @@
 	    		</tr>
 	    	{% endfor %}
 	    </table>
+	    <p>*Statistics were last calculated on {{last_tally}}</p>
 	  {% else %}
 	  	<p>
 	  		There is no usage data for the group or user you selected.
