@@ -371,6 +371,13 @@ def _get_month_range(dt1, dt2):
       )]
   return dates
 
+def _insertCommas (n):
+  s = ""
+  while n >= 1000:
+    n, r = divmod(n, 1000)
+    s = ",%03d%s" % (r, s)
+  return "%d%s" % (n, s)
+
 def _create_stats_report(user, group):
   """Create a stats report based on the user and group (or None, None) for all"""
   s = stats.getStats()
@@ -395,12 +402,10 @@ def _create_stats_report(user, group):
       with_meta = float(s.query((month, user, group, None, "True"), False))
       t_meta += with_meta
       percent_meta = "%0.2f" % (with_meta / total_items * 100) + "%"
-    rows.append((month, '{:,}'.format(arks), '{:,}'.format(dois), \
-                  '{:,}'.format(urns), percent_meta))
+    rows.append((month, _insertCommas(arks), _insertCommas(dois), \
+                  _insertCommas(urns), percent_meta))
 
   if len(rows) > 0:
-    rows.append(('Total', '{:,}'.format(t_arks), '{:,}'.format(t_dois), \
-                 '{:,}'.format(t_urns), "%0.2f" % (t_meta / t_all * 100) + "%" ))
+    rows.append(('Total', _insertCommas(t_arks), _insertCommas(t_dois), \
+                 _insertCommas(t_urns), "%0.2f" % (t_meta / t_all * 100) + "%" ))
   return rows
-
-     
