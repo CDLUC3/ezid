@@ -34,10 +34,12 @@ def validateDoi (doi):
   # permissive in one aspect: we don't check that the suffix does
   # *not* match "./.*", which the Handbook claims is reserved (only in
   # the appendix, not in the main text, though).
-  if _doiPattern.match(doi) and doi[-1] != "\n":
-    return doi.upper()
-  else:
-    return None
+  # Update: we disallow adjacent slashes and trailing slashes because
+  # such constructs conflict with the direct embedding of identifiers
+  # in URLs (as is done in the EZID API and the dx.doi.org resolver).
+  if not _doiPattern.match(doi) or doi[-1] == "\n": return None
+  if "//" in doi or doi.endswith("/"): return None
+  return doi.upper()
 
 _arkPattern1 = re.compile("((?:\d|b)\d{4}(?:\d{4})?/)([!-~]+)$")
 _arkPattern2 = re.compile("\./|/\.")
