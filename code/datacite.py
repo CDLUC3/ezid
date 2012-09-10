@@ -74,11 +74,14 @@ class _HTTPErrorProcessor (urllib2.HTTPErrorProcessor):
   https_response = http_response
 
 def _datacenterAuthorization (doi):
-  dcl = []
+  prefix = None
+  # Select the longest matching prefix.
   for p, dc in _prefixes.items():
-    if doi.startswith(p): dcl.append(dc)
-  assert len(dcl) == 1, "ambiguous prefix or prefix not found"
-  return _datacenters[dcl[0]]
+    if doi.startswith(p) and (prefix is None or len(p) > len(prefix)):
+      prefix = p
+      datacenter = dc
+  assert prefix is not None, "prefix not found"
+  return _datacenters[datacenter]
 
 def registerIdentifier (doi, targetUrl):
   """
