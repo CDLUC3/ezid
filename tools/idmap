@@ -1,0 +1,22 @@
+#! /bin/bash
+
+# Extracts all agent identifiers from an EZID dump file
+# (gzip-compressed or not) and prints a mapping of agent identifiers
+# to local names.
+#
+# Greg Janee <gjanee@ucop.edu>
+# September 2012
+
+tooldir=`dirname $0`
+
+if [ $# -ne 1 ]; then echo "usage: $0 dumpfile"; exit 1; fi
+if [[ $1 =~ .*\.gz$ ]]; then
+  zoption="-z"
+else
+  zoption=""
+fi
+
+$tooldir/select $zoption _fields contains _ezid_role < $1 |\
+  $tooldir/project -d -s \| _id ldap.gid ldap.uid _ezid_role |\
+  awk -F \| '{ print $1, ($4 == "user"? $3 : $2), "(" $4 ")" }' |\
+  sort -k 2,2 -k 3,3r
