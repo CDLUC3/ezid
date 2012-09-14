@@ -3,12 +3,24 @@
 # The 'dump', 'select', and 'project' scripts form a bind database
 # query system.  The general usage is:
 #
-#    dump noid.bdb | select constraints... | project fields...
+#    dump noid.bdb | select constraint... | project fields...
 #
 # This script reads identifier records as output by the 'dump' script,
 # applies a constraint expression to each, and writes the successful
-# records to standard output.  If the -z option is given, the input is
-# assumed to be gzip-compressed.  The output is never compressed.
+# records to standard output.  The input may be gzip-compressed, but
+# the output is never compressed.
+#
+# Usage: select [options] constraint...
+#
+# Options:
+#   -m IDMAP      convert agent identifiers to local names using IDMAP
+#   -z            gunzip the input
+#
+# The -m option is useful when reading records in which agent
+# identifiers have *not* been converted; the specified IDMAP mapping
+# file must be one produced by the 'idmap' script.  (Agent identifiers
+# are converted only for the purpose of constraint evaluation; they
+# are unchanged on output.)
 #
 # The constraint expression is specified directly on the command line.
 # A basic constraint has the form
@@ -115,6 +127,7 @@
 # December 2011
 
 import gzip
+import optparse
 import os.path
 import re
 import sys
@@ -126,6 +139,10 @@ except ImportError:
   sys.path.append(os.path.join(os.path.split(os.path.split(
     os.path.abspath(__file__))[0])[0], "code"))
   import util
+
+# Globals defined below...
+options = None
+idmap = None
 
 def isRelationalOperator (t):
   return t in ["<", "<=", "=", ">=", ">"]
@@ -172,6 +189,8 @@ class FieldConstraint (Constraint):
         t = time.localtime(int(record[self.field]))
         v = int(time.mktime((t.tm_year, t.tm_mon, t.tm_mday, 0, 0, 0, 0,
           1, -1)))
+    elif self.field in ["_owner", "_ownergroup"] and options.idmap:
+      v = idmap.get(record[self.field], record[self.field])
     elif self.field == "_fields":
       v = record
     elif self.field == "_coowners":
@@ -180,6 +199,7 @@ class FieldConstraint (Constraint):
           if len(co.strip()) > 0]
       else:
         v = []
+      if options.idmap: v = [idmap.get(co, co) for co in v]
     else:
       if self.field not in record: return False
       v = record[self.field]
@@ -388,12 +408,20 @@ def consumeTimestamp (consumed, query):
   del query[0]
   return t
 
-if len(sys.argv) > 1 and sys.argv[1] == "-z":
-  gunzipInput = True
-  query = sys.argv[2:]
-else:
-  gunzipInput = False
-  query = sys.argv[1:]
+p = optparse.OptionParser(usage="%prog [options] constraint...")
+p.add_option("-m", action="store", type="string", dest="idmap", default=None,
+  help="map agent identifiers to local names using IDMAP")
+p.add_option("-z", action="store_true", dest="gunzipInput",
+  default=False, help="gunzip the input")
+options, query = p.parse_args()
+
+if options.idmap:
+  f = open(options.idmap)
+  idmap = {}
+  for l in f:
+    id, name, agentType = l.split()
+    idmap[id] = name
+  f.close()
 
 consumed = []
 try:
@@ -412,7 +440,7 @@ except AssertionError, e:
     "QUERY:%s ***%s\n") % (e.message, c, q))
   sys.exit(1)
 
-if gunzipInput:
+if options.gunzipInput:
   infile = gzip.GzipFile(fileobj=sys.stdin, mode="r")
 else:
   infile = sys.stdin

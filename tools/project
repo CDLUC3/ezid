@@ -3,7 +3,7 @@
 # The 'dump', 'select', and 'project' scripts form a bind database
 # query system.  The general usage is:
 #
-#    dump noid.bdb | select constraints... | project fields...
+#    dump noid.bdb | select constraint... | project fields...
 #
 # This script reads identifier records from standard input as written
 # by the 'dump' and 'select' scripts and writes selected fields from
@@ -12,14 +12,26 @@
 # Usage: project [options] fields...
 #
 # Options:
-#   -d            decode values
+#   -a            output all fields
+#   -d            decode labels and values
+#   -l            output labels
+#   -m IDMAP      convert agent identifiers to local names using IDMAP
 #   -o            one line per identifier: convert newlines to spaces
 #   -s SEPARATOR  field separator (defaults to space)
+#   -S SEPARATOR  label/value separator (defaults to =)
 #   -t            format timestamps
 #   -z            gunzip the input
 #
+# If the -a option is given, any fields specified on the command line
+# are ignored and neither the order nor the presence of fields will be
+# consistent from identifier to identifier.
+#
 # If values are decoded, they are re-UTF-8-encoded when output.  Note
 # that identifiers themselves are never encoded.
+#
+# The -m option is useful when reading records in which agent
+# identifiers have *not* been converted; the specified IDMAP mapping
+# file must be one produced by the 'idmap' script.
 #
 # This script requires an EZID module.  The PYTHONPATH environment
 # variable must include the .../SITE_ROOT/PROJECT_ROOT/code directory;
@@ -42,17 +54,34 @@ except ImportError:
   import util
 
 p = optparse.OptionParser(usage="%prog [options] fields...")
-p.add_option("-d", action="store_true", dest="decodeValues", default=False,
-  help="decode values")
+p.add_option("-a", action="store_true", dest="allFields", default=False,
+  help="output all fields")
+p.add_option("-d", action="store_true", dest="decode", default=False,
+  help="decode labels and values")
+p.add_option("-l", action="store_true", dest="outputLabels", default=False,
+  help="output labels")
+p.add_option("-m", action="store", type="string", dest="idmap", default=None,
+  help="map agent identifiers to local names using IDMAP")
 p.add_option("-o", action="store_true", dest="oneLine", default=False,
   help="one line per identifier: convert newlines to spaces")
 p.add_option("-s", action="store", type="string", dest="separator",
   default=" ", help="field separator (defaults to space)")
+p.add_option("-S", action="store", type="string", dest="labelValueSeparator",
+  default="=", help="label/value separator (defaults to =)",
+  metavar="SEPARATOR")
 p.add_option("-t", action="store_true", dest="formatTimestamps",
   default=False, help="format timestamps")
 p.add_option("-z", action="store_true", dest="gunzipInput",
   default=False, help="gunzip the input")
 options, fields = p.parse_args()
+
+if options.idmap:
+  f = open(options.idmap)
+  idmap = {}
+  for l in f:
+    id, name, agentType = l.split()
+    idmap[id] = name
+  f.close()
 
 if options.gunzipInput:
   infile = gzip.GzipFile(fileobj=sys.stdin, mode="r")
@@ -64,11 +93,23 @@ for l in infile:
   r = { "_id": lv[0] }
   for i in range(1, len(lv), 2): r[util.decode(lv[i])] = lv[i+1]
   s = ""
+  if options.allFields:
+    fields = r.keys()
+    fields.remove("_id")
+    fields.insert(0, "_id")
   for f in fields:
     if f in r:
       if f in ["_created", "_updated"] and options.formatTimestamps:
         v = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(int(r[f])))
-      elif f != "_id" and options.decodeValues:
+      elif f in ["_owner", "_ownergroup", "_coowners"] and options.idmap:
+        if f in ["_owner", "_ownergroup"]:
+          id = util.decode(r[f])
+          v = idmap.get(id, id)
+        else:
+          v = " ; ".join(idmap.get(co.strip(), co.strip())\
+            for co in util.decode(r[f]).split(";") if len(co.strip()) > 0)
+        if not options.decode: v = util.encode3(v)
+      elif f != "_id" and options.decode:
         v = util.decode(r[f])
       else:
         v = r[f]
@@ -76,6 +117,15 @@ for l in infile:
       v = ""
     if options.oneLine: v = v.replace("\n", " ").replace("\r", " ")
     sys.stdout.write(s)
+    if options.outputLabels:
+      if options.decode:
+        if type(f) is unicode:
+          sys.stdout.write(f.encode("UTF-8"))
+        else:
+          sys.stdout.write(f)
+      else:
+        sys.stdout.write(util.encode4(f))
+      sys.stdout.write(options.labelValueSeparator)
     if type(v) is unicode:
       sys.stdout.write(v.encode("UTF-8"))
     else:
