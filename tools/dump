@@ -3,7 +3,7 @@
 # The 'dump', 'select', and 'project' scripts form a bind database
 # query system.  The general usage is:
 #
-#    dump noid.bdb | select constraints... | project fields...
+#    dump noid.bdb | select constraint... | project fields...
 #
 # This script dumps a noid bind database to standard output.  One line
 # is written per identifier using the space-separated format
