@@ -1,0 +1,48 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+
+{% block title %}EZID Account Information{% endblock %}
+
+{% block content %}
+  <div class="grid_9">
+    <h1>Enter EZID Account Information</h1>
+    <form id="new_account_form" action="{% url ui_admin.new_account %}" method="post">
+    	
+    	{% for key, value in field_info.items %}
+    	  {% if value.2 == 'text' %}
+	  			<label for="{{key}}" class="left_large" title="{{value.3}}">
+	    			{{ value.1 }}:
+	  			</label>
+	  			<div class="field_right_large">
+	    			<input type="text" class="" name="{{key}}" id="{{key}}" size="35" value="{{ value.0 }}" title="{{value.3}}" />
+	  			</div>
+	  		{% else %}
+	  			{% if value.2 == 'long_text' %}
+	  				<div style="clear:both">&nbsp;</div>
+	  				<label for="{{key}}" title="{{value.3}}">
+	    				{{ value.1 }}:
+	  				</label>
+	  				<div>
+	  					<textarea name="{{key}}" id="{{key}}" rows="5" cols="50" title="{{value.3}}">{{ value.0 }}</textarea>
+	  				</div>
+	  			{% else %}
+	  				<label for="{{key}}" class="left_large" title="{{value.3}}">
+	    				{{ value.1 }}
+	  				</label>
+	  				<div class="field_right_large">
+	    				{% choices key value.0 value.2 %}
+	  				</div>
+	  			{% endif %}
+  			{% endif %}
+			{% endfor %}
+			
+			<input type="submit"/>
+			
+   	</form>	
+  </div>
+  
+  <script type="text/javascript" src="/ezid/static/javascripts/advanced_create.js"></script>
+  {% include "info/popup_help.html" %}
+  <script type="text/javascript" src="/ezid/static/javascripts/help_box.js"></script>
+
+{% endblock %}

@@ -36,6 +36,7 @@ adminUsername = None
 shoulders = None
 google_analytics_id = None
 contact_form_email = None
+new_customer_email = None
 reload_templates = None
 
 
@@ -47,7 +48,7 @@ def _loadConfig():
   global ezidUrl, templates, alertMessage, prefixes, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
   global adminUsername, shoulders, google_analytics_id, contact_form_email
-  global reload_templates
+  global new_customer_email, reload_templates
   ezidUrl = config.config("DEFAULT.ezid_base_url")
   templates = {}
   _load_templates([ django.conf.settings.TEMPLATE_DIRS[0] ])
@@ -76,6 +77,7 @@ def _loadConfig():
   adminUsername = config.config("ldap.admin_username")
   google_analytics_id = config.config("DEFAULT.google_analytics_id")
   contact_form_email = config.config("DEFAULT.contact_form_email")
+  new_customer_email = config.config("DEFAULT.new_customer_email")
   shoulders = [{ "label": k, "name": config.config("prefix_%s.name" % k),
     "prefix": config.config("prefix_%s.prefix" % k) }\
     for k in config.config("prefixes.keys").split(",")\
