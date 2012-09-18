@@ -38,11 +38,14 @@
 # a filename and metadata fields are read from the named
 # ANVL-formatted file.  Otherwise, if a value has the form
 # "@filename", the value is read from the named file.  In both cases,
-# the interpretation of @ can be defeated by doubling it.
+# the contents of the named file are assumed to be UTF-8 encoded.  And
+# in both cases, the interpretation of @ can be defeated by doubling
+# it.
 #
 # Greg Janee <gjanee@ucop.edu>
 # April 2011
 
+import codecs
 import re
 import sys
 import time
@@ -123,7 +126,7 @@ def formatAnvl (l):
   for i in range(0, len(l), 2):
     k = l[i]
     if k == "@":
-      f = open(l[i+1])
+      f = codecs.open(l[i+1], encoding="UTF-8")
       r.extend(ll.strip() for ll in f.readlines())
       f.close()
     else:
@@ -135,7 +138,7 @@ def formatAnvl (l):
       if v.startswith("@@"):
         v = v[1:]
       elif v.startswith("@") and len(v) > 1:
-        f = open(v[1:])
+        f = codecs.open(v[1:], encoding="UTF-8")
         v = f.read()
         f.close()
       v = re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), v)
