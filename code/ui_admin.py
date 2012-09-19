@@ -14,6 +14,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
 from django import forms
 from collections import *
+import json
 
 
 @uic.admin_login_required
@@ -266,7 +267,7 @@ def new_account(request, ssl=False):
     for key in field_info.keys():
       if key in request.POST:
         field_info[key][0] = request.POST[key]
-      message += field_info[key][1] + ": " + (request.POST[key] if key in request.POST else '') + "\n"
+      message += field_info[key][1] + ": " + (request.POST[key] if key in request.POST else '') + "\n\n"
     message += "----- anvl/machine readable format -----\n"
     for key in field_info.keys():
       v = (request.POST[key] if key in request.POST else '')
@@ -276,6 +277,8 @@ def new_account(request, ssl=False):
     django.core.mail.send_mail("New customer registration", message,
                                django.conf.settings.SERVER_EMAIL, emails)
     django.contrib.messages.success(request, "Form information has been emailed.")
+    d['field_info'] = field_info
+    return uic.render(request, 'admin/new_account_display', d)
   
   d['field_info'] = field_info
   return uic.render(request, 'admin/new_account', d)
