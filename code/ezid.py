@@ -55,7 +55,8 @@
 #        |             | ark:/13030/bar") but returned as a list of
 #        |             | local names (e.g., "peter ; paul").  For a
 #        |             | shadow ARK, applies to both the shadow ARK
-#        |             | and shadowed identifier.  Optional.
+#        |             | and shadowed identifier.  If the identifier
+#        |             | has no co-owners, not present.
 # _c     | _created    | The time the identifier was created expressed
 #        |             | as a Unix timestamp, e.g., "1280889190".  For
 #        |             | a shadow ARK, applies to both the shadow ARK
@@ -82,8 +83,7 @@
 #        |             | computed, not stored.
 # _p     | _profile    | The identifier's preferred metadata profile,
 #        |             | e.g., "erc".  See module 'metadata' for more
-#        |             | information on profiles.  A profile is not
-#        |             | required, nor does the presence of a profile
+#        |             | information on profiles.  A profile does not
 #        |             | place any requirements on what metadata
 #        |             | elements must be present or restrict what
 #        |             | metadata elements can be present.  By
@@ -91,28 +91,27 @@
 #        |             | are prefixed with the profile name, e.g.,
 #        |             | "erc.who".  For a shadow ARK, applies to both
 #        |             | the shadow ARK and shadowed identifier.
-# _is    | _status     | Identifier status; either "reserved",
-#        |             | "public", or "unavailable".  If
+# _is    | _status     | Identifier status.  If present, either
+#        |             | "reserved" or "unavailable"; if not present,
+#        |             | effectively has the value "public".  If
 #        |             | "unavailable", a reason may follow separated
 #        |             | by a pipe character, e.g., "unavailable |
-#        |             | withdrawn by author".  Optional, but always
-#        |             | returned; if no value is stored, "public" is
-#        |             | implied and returned.  For a shadow ARK,
-#        |             | applies to both the shadow ARK and shadowed
-#        |             | identifier.
-# _t1    |             | If the identifier status is "public", either
-#        |             | not present or empty; otherwise, if the
-#        |             | identifier status is "reserved" or
-#        |             | "unavailable", the target URL as set by the
-#        |             | client.  (In these latter cases _t is set to
-#        |             | an EZID-defined URL.)  Not returned.
+#        |             | withdrawn by author".  Always returned.  For
+#        |             | a shadow ARK, applies to both the shadow ARK
+#        |             | and shadowed identifier.
+# _t1    |             | If the identifier status is "public", not
+#        |             | present; otherwise, if the identifier status
+#        |             | is "reserved" or "unavailable", the target
+#        |             | URL as set by the client.  (In these latter
+#        |             | cases _t is set to an EZID-defined URL.)  Not
+#        |             | returned.
 # _st1   |             | Shadow ARKs only.  If the identifier status
-#        |             | is "public", either not present or empty;
-#        |             | otherwise, if the identifier status is
-#        |             | "reserved" or "unavailable", the shadowed
-#        |             | identifier's target URL as set by the client.
-#        |             | (In these latter cases _st is set to an
-#        |             | EZID-defined URL.)  Not returned.
+#        |             | is "public", not present; otherwise, if the
+#        |             | identifier status is "reserved" or
+#        |             | "unavailable", the shadowed identifier's
+#        |             | target URL as set by the client.  (In these
+#        |             | latter cases _st is set to an EZID-defined
+#        |             | URL.)  Not returned.
 #
 # Element names and values are first UTF-8 encoded, and then
 # non-graphic ASCII characters and a few other reserved characters are
@@ -304,7 +303,10 @@ def createDoi (doi, user, group, target=None, reserveOnly=False,
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     defaultTarget = "%s/id/%s" % (_ezidUrl, urllib.quote(qdoi, ":/"))
-    if not target: target = defaultTarget
+    if not target or target.strip() == "":
+      target = defaultTarget
+    else:
+      target = target.strip()
     arkTarget = "%s/id/%s" % (_ezidUrl,
       urllib.quote("ark:/" + shadowArk, ":/"))
     if not reserveOnly:
@@ -416,7 +418,10 @@ def createArk (ark, user, group, target=None, reserveOnly=False,
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     defaultTarget = "%s/id/%s" % (_ezidUrl, urllib.quote(qark, ":/"))
-    if not target: target = defaultTarget
+    if not target or target.strip() == "":
+      target = defaultTarget
+    else:
+      target = target.strip()
     t = str(int(time.time()))
     d = { "_o": user[1],
       "_g": group[1],
@@ -500,7 +505,10 @@ def createUrnUuid (urn, user, group, target=None, reserveOnly=False,
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     defaultTarget = "%s/id/%s" % (_ezidUrl, urllib.quote(qurn, ":/"))
-    if not target: target = defaultTarget
+    if not target or target.strip() == "":
+      target = defaultTarget
+    else:
+      target = target.strip()
     arkTarget = "%s/id/%s" % (_ezidUrl,
       urllib.quote("ark:/" + shadowArk, ":/"))
     t = str(int(time.time()))
@@ -663,10 +671,7 @@ def getMetadata (identifier):
     if d is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
-    if d.get("_is", "public") == "public":
-      if "_t1" in d: del d["_t1"]
-      if "_st1" in d: del d["_st1"]
-    else:
+    if d.get("_is", "public") != "public":
       d["_t"] = d["_t1"]
       del d["_t1"]
       if "_st1" in d:
@@ -854,14 +859,26 @@ def setMetadata (identifier, user, group, metadata, callContext=None):
         if user[1] not in coOwners: coOwners.append(user[1])
     profile = None
     if "_profile" in metadata:
-      profile = metadata["_profile"]
+      if metadata["_profile"].strip() != "":
+        profile = metadata["_profile"].strip()
+      else:
+        if nqidentifier.startswith("doi:"):
+          profile = _defaultDoiProfile
+        elif nqidentifier.startswith("ark:/"):
+          profile = _defaultArkProfile
+        elif nqidentifier.startswith("urn:uuid:"):
+          profile = _defaultUrnUuidProfile
+        else:
+          assert False, "unhandled case"
       del metadata["_profile"]
     if nqidentifier.startswith("doi:"):
       target = None
       if "_target" in metadata:
-        target = metadata["_target"]
+        if metadata["_target"].strip() != "":
+          target = metadata["_target"].strip()
+        else:
+          target = defaultTarget
         del metadata["_target"]
-        if not target: target = defaultTarget
         if iStatus == "public":
           message = datacite.setTargetUrl(doi, target)
           if message is not None:
@@ -880,8 +897,10 @@ def setMetadata (identifier, user, group, metadata, callContext=None):
     elif nqidentifier.startswith("ark:/"):
       target = None
       if "_target" in metadata:
-        target = metadata["_target"]
-        if not target: target = defaultTarget
+        if metadata["_target"].strip() != "":
+          target = metadata["_target"].strip()
+        else:
+          target = defaultTarget
         del metadata["_target"]
       if "_s" in m and m["_s"].startswith("doi:") and len(metadata) > 0 and\
         iStatus == "public":
@@ -895,8 +914,10 @@ def setMetadata (identifier, user, group, metadata, callContext=None):
       if "_u" not in metadata: metadata["_u"] = str(int(time.time()))
     elif nqidentifier.startswith("urn:uuid:"):
       if "_target" in metadata:
-        target = metadata["_target"]
-        if not target: target = defaultTarget
+        if metadata["_target"].strip() != "":
+          target = metadata["_target"]
+        else:
+          target = defaultTarget
         metadata["_st" if iStatus == "public" else "_st1"] = target
         del metadata["_target"]
       if "_su" not in metadata: metadata["_su"] = str(int(time.time()))
@@ -918,7 +939,7 @@ def setMetadata (identifier, user, group, metadata, callContext=None):
     _releaseIdentifierLock(ark)
 
 def _statusChangeReservedToPublic (ark, m):
-  d = { "_is": "public", "_t": m["_t1"], "_t1": "" }
+  d = { "_is": "", "_t": m["_t1"], "_t1": "" }
   if "_s" in m:
     d["_st"] = m["_st1"]
     d["_st1"] = ""
@@ -933,7 +954,11 @@ def _statusChangeReservedToPublic (ark, m):
           _oneline(message)
   _bindNoid.setElements(ark, d)
   m = m.copy()
-  m.update(d)
+  for k, v in d.items():
+    if v != "":
+      m[k] = v
+    else:
+      del m[k]
   return m
 
 def _statusChangePublicToUnavailable (ark, m, reason):
@@ -958,7 +983,7 @@ def _statusChangePublicToUnavailable (ark, m, reason):
   return m
 
 def _statusChangeUnavailableToPublic (ark, m):
-  d = { "_is": "public", "_t": m["_t1"], "_t1": "" }
+  d = { "_is": "", "_t": m["_t1"], "_t1": "" }
   if "_s" in m:
     d["_st"] = m["_st1"]
     d["_st1"] = ""
@@ -972,7 +997,11 @@ def _statusChangeUnavailableToPublic (ark, m):
           _oneline(message)
   _bindNoid.setElements(ark, d)
   m = m.copy()
-  m.update(d)
+  for k, v in d.items():
+    if v != "":
+      m[k] = v
+    else:
+      del m[k]
   return m
 
 def deleteIdentifier (identifier, user, group):
