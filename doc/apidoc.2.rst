@@ -576,8 +576,7 @@ The return is a status line.  Assuming success (see `Error handling`_
 above), the remainder of the status line echoes the canonical form of
 the identifier in question.
 
-There is currently no means to delete a metadata element, but setting
-an element's value to the empty string has much the same effect.
+To delete a metadata element, set its value to the empty string.
 
 Operation: delete identifier
 ----------------------------
