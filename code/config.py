@@ -121,3 +121,6 @@ def getVersionInfo ():
   repository's version.
   """
   return (_startupVersion, _version)
+
+# Start the newsfeed module's daemon thread by importing the module.
+import newsfeed

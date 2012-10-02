@@ -37,7 +37,7 @@ shoulders = None
 google_analytics_id = None
 contact_form_email = None
 reload_templates = None
-
+newsfeed_url = None
 
 remainder_box_default = "Recommended: Leave blank"
 
@@ -47,7 +47,7 @@ def _loadConfig():
   global ezidUrl, templates, alertMessage, prefixes, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
   global adminUsername, shoulders, google_analytics_id, contact_form_email
-  global reload_templates
+  global reload_templates, newsfeed_url
   ezidUrl = config.config("DEFAULT.ezid_base_url")
   templates = {}
   _load_templates([ django.conf.settings.TEMPLATE_DIRS[0] ])
@@ -80,6 +80,7 @@ def _loadConfig():
     "prefix": config.config("prefix_%s.prefix" % k) }\
     for k in config.config("prefixes.keys").split(",")\
     if not k.startswith("TEST")]
+  newsfeed_url = config.config("newsfeed.url")
   
 #loads the templates directory recursively (dir_list is a list)
 #beginning with first list item django.conf.settings.TEMPLATE_DIRS[0]
