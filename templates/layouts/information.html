@@ -15,15 +15,19 @@
   	{% endblock %}
   </div>
   {% if feed_cache %}
-	  <div class="grid_12 squarebox">
-	  	<div class="squareboxpad">
-	  		<div style="float:right;width:8em;text-align:right">
-	      	<a href="{{rss_feed}}"><img src="/ezid/static/images/feed-icon-14x14.png"/></a>&nbsp;
-	      	<a href="{{rss_feed}}">RSS</a>
-	      </div>
-	 			<strong>Latest news from EZID</strong>&nbsp;&nbsp;&nbsp;&nbsp;
-	      <a href="{{ feed_cache.2 }}" target="_blank">{{ feed_cache.1}}</a>
-	  	</div>
-	  </div>
-	{% endif %}
+    <div class="grid_12 squarebox">
+      <div class="squareboxpad">
+        <div style="float:right;width:8em;text-align:right">
+          <a href="{{rss_feed}}"><img src="/ezid/static/images/feed-icon-14x14.png"/></a>&nbsp;
+          <a href="{{rss_feed}}">RSS</a>
+        </div>
+        <strong>Latest news from EZID</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+        {% if feed_cache.1 %}
+          <a href="{{ feed_cache.1 }}" target="_blank">{{ feed_cache.0 }}</a>
+        {% else %}
+          {{ feed_cache.0 }}
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}
