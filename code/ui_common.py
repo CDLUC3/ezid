@@ -17,7 +17,6 @@ import ezid
 import ezidadmin
 import idmap
 import log
-import metadata
 import policy
 import useradmin
 import userauth
@@ -375,12 +374,10 @@ def admin_login_required(f):
   wrap.__name__=f.__name__
   return wrap
 
-def identifier_has_block_data(identifier):
-  """takes full identifier with metadata and
-  returns True/False whether it has block metadata (which is an element)
-  the same as a profile name in the identifier"""
-  profiles = metadata.getProfiles()[1:]
-  for profile in profiles:
-    if profile.name in identifier:
-      return True
-  return False
+def identifier_has_block_data (identifier):
+  """
+  Returns true if the identifier has block metadata, which affects
+  both the display and the editability of the metadata in the UI.
+  """
+  return (identifier["_profile"] == "erc" and "erc" in identifier) or\
+    (identifier["_profile"] == "datacite" and "datacite" in identifier)
