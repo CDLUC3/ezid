@@ -74,7 +74,7 @@ def _loadConfig():
   defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
   adminUsername = config.config("ldap.admin_username")
   google_analytics_id = config.config("DEFAULT.google_analytics_id")
-  contact_form_email = config.config("DEFAULT.contact_form_email")
+  contact_form_email = config.config("email.contact_form_email")
   shoulders = [{ "label": k, "name": config.config("prefix_%s.name" % k),
     "prefix": config.config("prefix_%s.prefix" % k) }\
     for k in config.config("prefixes.keys").split(",")\
