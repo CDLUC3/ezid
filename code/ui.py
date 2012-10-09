@@ -21,10 +21,7 @@ def ajax_hide_alert(request):
 
 def contact(request):
   d = { 'menu_item': 'ui_null.null'}
-  d['affiliates'] = [ ['Berkeley', 'Davis', 'Irvine', 'Los Angeles'], \
-                     ['Merced', 'Riverside', 'San Diego', 'San Francisco'], \
-                     ['Santa Barbara', 'Santa Cruz', 'Other'] ]
-  d['heard']      =   ( ("website", "UC3 website"), \
+  d['heard']      =   ( ("website", "University website"), \
                         ("conference", "Conference"), \
                         ("colleagues", "Colleagues"), \
                         ("webinar", "Webinar"), \

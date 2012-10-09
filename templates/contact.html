@@ -17,37 +17,22 @@
 	<form name="contact" action="{% url ui.contact %}" method="post">
 		<label for="your_name" class="left">Your name:</label>
 		<div class="field_right">
-			<input type="text" name="your_name" value="{{ your_name }}" maxlength="200" />
+			<input type="text" name="your_name" value="{{ your_name }}" maxlength="200" size="40" />
 		</div>
 		
 		<label for="url" class="trapper_keeper">Your url:</label>
 		<div class="trapper_keeper">
-			<input type="text" name="url" value="" maxlength="200" /> * Please leave blank
+			<input type="text" name="url" value="" maxlength="200" size="40" /> * Please leave blank
 		</div>
 
 		<label for="email" class="left">Your email:</label>
 		<div class="field_right">
-			<input type="text" name="email" value="{{ email }}" maxlength="200" />
+			<input type="text" name="email" value="{{ email }}" maxlength="200" size="40" />
 		</div>
 
 		<label for="affiliation" class="left">Your institution:</label>
-
-		<div class="field_right" style="width:400px;">
-		<table border="0" style="clear:both;width:400px;">
-			<tr>
-				{% for c in affiliates %}
-					<td valign="top" align="left">
-						{% for i in c %}
-							<input type="radio" value="{{i}}" name="affiliation"
-								{% if i == affiliation %}
-									checked="checked"
-								{% endif %}
-							 />{{i}}<br />
-						{% endfor %}
-					</td>
-				{% endfor %}
-			</tr>
-		</table>
+		<div class="field_right">
+			<input type="text" name="affiliation" value="{{ affiliation }}" maxlength="200" size="40" />
 		</div>
 		
 		<label class="left">&nbsp;</label>
