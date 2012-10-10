@@ -291,6 +291,26 @@ For example::
   what: Remembrance of Things Past
   when: 1922
 
+In addition, two ANVL features may be used when uploading metadata to
+EZID (but clients can safely assume that EZID will never use these
+features when returning metadata):
+
+- A line beginning with a number sign ("#", U+0023) is a comment and
+  will be ignored.
+
+- A line beginning with whitespace continues the previous line (the
+  intervening line terminator and whitespace are converted to a single
+  space).
+
+For example:
+
+.. parsed-literal ::
+
+  # The following two elements are identical:
+  who: Proust,
+    Marcel
+  who: Proust, Marcel
+
 Care must be taken to escape structural characters that appear in
 element names and values, specifically, line terminators (both
 newlines ("\\n", U+000A) and carriage returns ("\\r", U+000D)) and, in
@@ -556,8 +576,7 @@ The return is a status line.  Assuming success (see `Error handling`_
 above), the remainder of the status line echoes the canonical form of
 the identifier in question.
 
-There is currently no means to delete a metadata element, but setting
-an element's value to the empty string has much the same effect.
+To delete a metadata element, set its value to the empty string.
 
 Operation: delete identifier
 ----------------------------

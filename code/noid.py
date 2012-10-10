@@ -13,6 +13,11 @@
 # per util.validateArk.  ARK normalization provides its own encoding;
 # this module does not further encode identifiers.
 #
+# This module performs whitespace processing.  Leading and trailing
+# whitespace is stripped from both element names and values.  Empty
+# names are not allowed.  Setting an empty value causes the element to
+# be deleted; as a consequence, empty values are never returned.
+#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
@@ -114,9 +119,16 @@ class Noid (object):
     optimization, if 'placeHold' is true, a hold is placed before
     binding.
     """
-    c = [self._command("bind", "set", [0, identifier], [4, e], v)\
-      for e, v in d.items()]
-    if placeHold: c.insert(0, self._command("hold", "set", [0, identifier]))
+    c = []
+    if placeHold: c.append(self._command("hold", "set", [0, identifier]))
+    for e, v in d.items():
+      e = e.strip()
+      assert len(e) > 0, "empty label"
+      v = v.strip()
+      if v == "":
+        c.append(self._command("bind", "purge", [0, identifier], [4, e]))
+      else:
+        c.append(self._command("bind", "set", [0, identifier], [4, e], v))
     s = self._issue("\n".join(c))
     if placeHold:
       assert len(s) >= 1 and s[0].startswith("ok: 1 hold placed"),\
@@ -126,7 +138,7 @@ class Noid (object):
       j = 3
     for i in range(len(d)):
       assert len(s) >= i*5+j+1 and s[i*5+j].startswith("Status:  ok"),\
-        "unexpected return from noid 'bind set' command"
+        "unexpected return from noid 'bind set' or 'bind purge' command"
 
   def getElements (self, identifier):
     """

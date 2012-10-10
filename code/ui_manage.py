@@ -138,8 +138,7 @@ def _formatErcBlock (block):
   try:
     d = erc.parse(block, concatenateValues=False)
   except erc.ErcParseException:
-    return\
-      [["warning", "The ERC block metadata in this identifier is not valid"]]
+    return [["error", "Invalid ERC metadata block."]]
   l = []
   # List profile elements first, in profile order.
   for e in metadata.getProfile("erc").elements:
@@ -171,12 +170,13 @@ def details(request):
   d['internal_profile'] = metadata.getProfile('internal')
   d['target'] = d['identifier']['_target']
   d['current_profile'] = metadata.getProfile(m['_profile'])
-  if d['current_profile'] == None:
-    d['current_profile'] = metadata.getProfile('dc')
-  #replace erc data from anvl blob if erc and has block--special treatment for Merritt
   if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
     d['erc_block_list'] = _formatErcBlock(d['identifier']['erc'])
-  if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
-    d['datacite_html'] = datacite.dcmsRecordToHtml(d['identifier']["datacite"])
+  elif d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
+    r = datacite.dcmsRecordToHtml(d['identifier']["datacite"])
+    if r:
+      d['datacite_html'] = r
+    else:
+      d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
   d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
   return uic.render(request, "manage/details", d)

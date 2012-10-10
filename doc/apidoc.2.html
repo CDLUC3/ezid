@@ -371,6 +371,23 @@ who: Proust, Marcel
 what: Remembrance of Things Past
 when: 1922
 </pre>
+<p>In addition, two ANVL features may be used when uploading metadata to
+EZID (but clients can safely assume that EZID will never use these
+features when returning metadata):</p>
+<ul class="simple">
+<li>A line beginning with a number sign (&quot;#&quot;, U+0023) is a comment and
+will be ignored.</li>
+<li>A line beginning with whitespace continues the previous line (the
+intervening line terminator and whitespace are converted to a single
+space).</li>
+</ul>
+<p>For example:</p>
+<pre class="literal-block">
+# The following two elements are identical:
+who: Proust,
+  Marcel
+who: Proust, Marcel
+</pre>
 <p>Care must be taken to escape structural characters that appear in
 element names and values, specifically, line terminators (both
 newlines (&quot;\n&quot;, U+000A) and carriage returns (&quot;\r&quot;, U+000D)) and, in
@@ -608,8 +625,7 @@ interaction:</p>
 <p>The return is a status line.  Assuming success (see <a class="reference internal" href="#error-handling">Error handling</a>
 above), the remainder of the status line echoes the canonical form of
 the identifier in question.</p>
-<p>There is currently no means to delete a metadata element, but setting
-an element's value to the empty string has much the same effect.</p>
+<p>To delete a metadata element, set its value to the empty string.</p>
 </div>
 <div class="section" id="operation-delete-identifier">
 <h1>Operation: delete identifier</h1>

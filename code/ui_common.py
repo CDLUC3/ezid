@@ -17,7 +17,6 @@ import ezid
 import ezidadmin
 import idmap
 import log
-import metadata
 import policy
 import useradmin
 import userauth
@@ -38,7 +37,7 @@ google_analytics_id = None
 contact_form_email = None
 new_customer_email = None
 reload_templates = None
-
+newsfeed_url = None
 
 remainder_box_default = "Recommended: Leave blank"
 
@@ -48,7 +47,7 @@ def _loadConfig():
   global ezidUrl, templates, alertMessage, prefixes, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
   global adminUsername, shoulders, google_analytics_id, contact_form_email
-  global new_customer_email, reload_templates
+  global new_customer_email, reload_templates, newsfeed_url
   ezidUrl = config.config("DEFAULT.ezid_base_url")
   templates = {}
   _load_templates([ django.conf.settings.TEMPLATE_DIRS[0] ])
@@ -76,12 +75,13 @@ def _loadConfig():
   defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
   adminUsername = config.config("ldap.admin_username")
   google_analytics_id = config.config("DEFAULT.google_analytics_id")
-  contact_form_email = config.config("DEFAULT.contact_form_email")
+  contact_form_email = config.config("email.contact_form_email")
   new_customer_email = config.config("DEFAULT.new_customer_email")
   shoulders = [{ "label": k, "name": config.config("prefix_%s.name" % k),
     "prefix": config.config("prefix_%s.prefix" % k) }\
     for k in config.config("prefixes.keys").split(",")\
     if not k.startswith("TEST")]
+  newsfeed_url = config.config("newsfeed.url")
   
 #loads the templates directory recursively (dir_list is a list)
 #beginning with first list item django.conf.settings.TEMPLATE_DIRS[0]
@@ -376,12 +376,10 @@ def admin_login_required(f):
   wrap.__name__=f.__name__
   return wrap
 
-def identifier_has_block_data(identifier):
-  """takes full identifier with metadata and
-  returns True/False whether it has block metadata (which is an element)
-  the same as a profile name in the identifier"""
-  profiles = metadata.getProfiles()[1:]
-  for profile in profiles:
-    if profile.name in identifier:
-      return True
-  return False
+def identifier_has_block_data (identifier):
+  """
+  Returns true if the identifier has block metadata, which affects
+  both the display and the editability of the metadata in the UI.
+  """
+  return (identifier["_profile"] == "erc" and "erc" in identifier) or\
+    (identifier["_profile"] == "datacite" and "datacite" in identifier)
