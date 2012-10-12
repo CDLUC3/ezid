@@ -139,9 +139,14 @@ def _returnConnection (c, poolId, tainted=False):
 
 def numConnections ():
   """
-  Returns the number of open database connections.
+  Returns a tuple (number of open database connections, number of
+  connections in active use).
   """
-  return _numConnections
+  _dbLock.acquire()
+  try:
+    return (_numConnections, _numConnections-len(_pool))
+  finally:
+    _dbLock.release()
 
 def _begin (cursor):
   while True:

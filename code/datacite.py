@@ -21,12 +21,14 @@ import django.conf
 import lxml.etree
 import os.path
 import re
+import threading
 import urllib
 import urllib2
 import xml.sax.saxutils
 
 import config
 
+_lock = threading.Lock()
 _enabled = None
 _doiUrl = None
 _metadataUrl = None
@@ -36,10 +38,11 @@ _prefixes = None
 _stylesheet = None
 _pingDoi = None
 _pingTarget = None
+_numActiveOperations = None
 
 def _loadConfig ():
   global _enabled, _doiUrl, _metadataUrl, _numAttempts, _datacenters, _prefixes
-  global _stylesheet, _pingDoi, _pingTarget
+  global _stylesheet, _pingDoi, _pingTarget, _numActiveOperations
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
@@ -60,9 +63,32 @@ def _loadConfig ():
     django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
   _pingDoi = config.config("datacite.ping_doi")
   _pingTarget = config.config("datacite.ping_target")
+  _lock.acquire()
+  try:
+    _numActiveOperations = 0
+  finally:
+    _lock.release()
 
 _loadConfig()
 config.addLoader(_loadConfig)
+
+def _modifyActiveCount (delta):
+  global _numActiveOperations
+  _lock.acquire()
+  try:
+    _numActiveOperations += delta
+  finally:
+    _lock.release()
+
+def numActiveOperations ():
+  """
+  Returns the number of active operations.
+  """
+  _lock.acquire()
+  try:
+    return _numActiveOperations
+  finally:
+    _lock.release()
 
 class _HTTPErrorProcessor (urllib2.HTTPErrorProcessor):
   def http_response (self, request, response):
@@ -106,6 +132,7 @@ def registerIdentifier (doi, targetUrl):
       targetUrl.replace("\\", "\\\\"))).encode("UTF-8"))
     c = None
     try:
+      _modifyActiveCount(1)
       c = o.open(r)
       assert c.read() == "OK",\
         "unexpected return from DataCite register DOI operation"
@@ -118,6 +145,7 @@ def registerIdentifier (doi, targetUrl):
     else:
       break
     finally:
+      _modifyActiveCount(-1)
       if c: c.close()
   return None
 
@@ -279,6 +307,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
     r.add_data(newRecord.encode("UTF-8"))
     c = None
     try:
+      _modifyActiveCount(1)
       c = o.open(r)
       assert c.read().startswith("OK"),\
         "unexpected return from DataCite store metadata operation"
@@ -294,6 +323,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
     else:
       return None
     finally:
+      _modifyActiveCount(-1)
       if c: c.close()
 
 def deactivate (doi):
@@ -323,6 +353,7 @@ def deactivate (doi):
     r.get_method = lambda: "DELETE"
     c = None
     try:
+      _modifyActiveCount(1)
       c = o.open(r)
       assert c.read() == "OK",\
         "unexpected return from DataCite deactivate DOI operation"
@@ -333,6 +364,7 @@ def deactivate (doi):
     else:
       break
     finally:
+      _modifyActiveCount(-1)
       if c: c.close()
 
 def ping ():
@@ -350,6 +382,7 @@ def ping ():
     r.add_header("Authorization", _datacenterAuthorization(_pingDoi))
     c = None
     try:
+      _modifyActiveCount(1)
       c = o.open(r)
       assert c.read() == _pingTarget
     except urllib2.URLError:
@@ -359,6 +392,7 @@ def ping ():
     else:
       return "up"
     finally:
+      _modifyActiveCount(-1)
       if c: c.close()
 
 def _removeEncodingDeclaration (record):

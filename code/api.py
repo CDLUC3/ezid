@@ -66,6 +66,7 @@
 # -----------------------------------------------------------------------------
 
 import django.http
+import threading
 import time
 
 import anvl
@@ -300,10 +301,17 @@ def getStatus (request):
         return _response("error: bad request - no such subsystem")
   nl = ezid.numIdentifiersLocked()
   s1 = "" if nl == 1 else "s"
-  nc = search.numConnections()
-  s2 = "" if nc == 1 else "s"
-  return _response(("success: %d identifier%s currently locked, %d open " +\
-    "search database connection%s") % (nl, s1, nc, s2), anvlBody=body)
+  nd = datacite.numActiveOperations()
+  s2 = "" if nd == 1 else "s"
+  nc, nca = search.numConnections()
+  s3 = "" if nc == 1 else "s"
+  nt = threading.activeCount()
+  s4 = "" if nt == 1 else "s"
+  return _response(("success: %d operation%s in progress, " +\
+    "%d DataCite operation%s in progress, " +\
+    "%d search database connection%s (%d active), %d thread%s") %\
+    (nl, s1, nd, s2, nc, s3, nca, nt, s4),
+    anvlBody=body)
 
 def getVersion (request):
   """
