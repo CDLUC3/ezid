@@ -997,9 +997,9 @@ response will resemble the following:
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 39
+  |lArr| Content-Length: 33
   |lArr|
-  |lArr| success: 0 identifiers currently locked
+  |lArr| success: 2 operations in progress
 
 The status of EZID's subsystems can be probed at the same time by
 listing one or more subsystem names, separated by commas, as the value
@@ -1012,9 +1012,9 @@ of the "subsystems" query parameter.  For example:
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 58
+  |lArr| Content-Length: 52
   |lArr|
-  |lArr| success: 0 identifiers currently locked
+  |lArr| success: 2 operations in progress
   |lArr| noid: up
   |lArr| ldap: up
 
