@@ -17,6 +17,15 @@ def settings_value(name):
     return settings.__getattr__(name)
   except AttributeError:
     return ""
+  
+@register.simple_tag
+def choices(name, value, choice_string):
+  """Creates radio buttons (for simple admin email form) based on string choices separated by a pipe"""
+  choices = choice_string.split("|")
+  return "  ".join(
+          ['<input type="radio" name="' + name + '" value="' + escape(x) + '"' +
+            (' checked="checked"' if value == x else '') + '>' + escape(x) + '</input>'
+           for x in choices])
 
 @register.tag
 @basictag(takes_context=True) 
