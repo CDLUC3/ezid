@@ -1,0 +1,48 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+
+{% block title %}EZID Account Information{% endblock %}
+
+{% block content %}
+	<style>
+		label {font-weight: bold;}
+		.field_right_large {padding-left:2em;}
+	</style>
+  <div class="grid_9">
+    <h1>EZID Account Information</h1>
+    	
+    	{% for key, value in field_info.items %}
+    	  {% if value.2 == 'text' %}
+	  			<label for="{{key}}" class="left_large bb" title="{{value.3}}">
+	    			{{ value.1 }}:
+	  			</label>
+	  			<div class="field_right_large">
+	    			{{ value.0 }}
+	  			</div>
+	  		{% else %}
+	  			{% if value.2 == 'long_text' %}
+	  				<div style="clear:both">&nbsp;</div>
+	  				<label for="{{key}}" title="{{value.3}}">
+	    				{{ value.1 }}:
+	  				</label>
+	  				<div>
+	  					{{ value.0|linebreaksbr }}
+	  				</div>
+	  			{% else %}
+	  				<label for="{{key}}" class="left_large" title="{{value.3}}">
+	    				{{ value.1 }}
+	  				</label>
+	  				<div class="field_right_large">
+	    				{{ value.0 }}
+	  				</div>
+	  			{% endif %}
+  			{% endif %}
+			{% endfor %}
+			
+  </div>
+  
+  <script type="text/javascript" src="/ezid/static/javascripts/advanced_create.js"></script>
+  {% include "info/popup_help.html" %}
+  <script type="text/javascript" src="/ezid/static/javascripts/help_box.js"></script>
+
+{% endblock %}
