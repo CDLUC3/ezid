@@ -13,7 +13,7 @@ from django.utils.http import urlencode
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
 from django import forms
-from collections import import *
+from collections import *
 import json
 
 
