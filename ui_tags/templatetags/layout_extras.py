@@ -17,6 +17,15 @@ def settings_value(name):
     return settings.__getattr__(name)
   except AttributeError:
     return ""
+  
+@register.simple_tag
+def choices(name, value, choice_string):
+  """Creates radio buttons (for simple admin email form) based on string choices separated by a pipe"""
+  choices = choice_string.split("|")
+  return "  ".join(
+          ['<input type="radio" name="' + name + '" value="' + escape(x) + '"' +
+            (' checked="checked"' if value == x else '') + '>' + escape(x) + '</input>'
+           for x in choices])
 
 @register.tag
 @basictag(takes_context=True) 
@@ -29,6 +38,14 @@ def request_value(context, key_name):
     return escape(request.REQUEST[key_name])
   else:
     return ''
+  
+@register.tag
+@basictag(takes_context=True) 
+def dict_value(context, dt, key_name):
+  """Sets value to the dictionary dt[key_name]"""
+  print key_name
+  context['value'] = dt[key_name]
+  return ''
   
 @register.simple_tag
 def tooltip_class(profile_element_string):

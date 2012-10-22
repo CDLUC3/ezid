@@ -249,10 +249,24 @@ label.left {
   width: 120px;  
 }
 
+label.left_large {
+	margin: 10px 0 0 0;
+  float: left;
+  clear: left;
+  display: block;
+  width: 200px;  
+}
+
 div.field_right {
   margin: 10px 0 0 0;
   float: left;
   width: 300px;
+}
+
+div.field_right_large {
+	margin: 10px 0 0 0;
+  float: left;
+  width: 220px;
 }
 
 div.left_desc {
