@@ -233,24 +233,12 @@ def authorizeDelete(request, metadata_tup):
         the_id, get_user_tup(m['_owner']), get_group_tup(m['_ownergroup']),
         get_coowners_tup(m))
 
-def write_profile_elements_from_form(identifier, request, profile, addl_dict = {}, callContext=None):
-  """writes the external profile elements for an id from a form submission,
-  only writes other elements outside of this profile if passed in as additional dictionary
-  at the end.  This might be handy for writing internal profile elements at the same time.
-  Takes identifier, request object, current_profile object and optional additional elements.
-  Returns True or False for success or failure."""
-  #winnows to matching elements from form
-  write_elements = [e.name for e in profile.elements if e.name in request.POST]
-  to_write = {}
-  for e in write_elements:
-    to_write[e] = request.POST[e]
-  to_write = dict(to_write.items() + addl_dict.items())
-  to_write['_target'] = fix_target(to_write['_target'])
-  s = ezid.setMetadata(identifier, user_or_anon_tup(request), group_or_anon_tup(request), to_write, callContext=callContext)
-  if s.startswith("success:"):
-    return True
-  else:
-    return False
+def assembleUpdateDictionary (request, profile, additionalElements={}):
+  d = { "_profile": profile.name }
+  for e in profile.elements:
+    if e.name in request.POST: d[e.name] = request.POST[e.name]
+  d.update(additionalElements)
+  return d
 
 _dataciteResourceTypes = ["Collection", "Dataset", "Event", "Film", "Image",
   "InteractiveResource", "Model", "PhysicalObject", "Service", "Software",
