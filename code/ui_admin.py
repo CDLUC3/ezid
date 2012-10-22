@@ -278,7 +278,7 @@ def new_account(request, ssl=False):
         field_info[key][0] = request.POST[key]
         v = (request.POST[key] if key in request.POST else '')
         message += anvl.formatPair(key, v)
-    emails = [x.strip() for x in uic.new_customer_email.split(',')]
+    emails = [x.strip() for x in uic.new_account_email.split(',')]
     #print "new ezid account: " + request.POST['acct_name']
     #print message
     django.core.mail.send_mail("new ezid account: " + request.POST['acct_name'], message,
