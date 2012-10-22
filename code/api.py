@@ -275,7 +275,7 @@ def getStatus (request):
   s3 = "" if nc == 1 else "s"
   nt = threading.activeCount()
   s4 = "" if nt == 1 else "s"
-  return _response(("success: %d operation%s in progress, " +\
+  return _response(("success: %d identifier operation%s in progress, " +\
     "%d DataCite operation%s in progress, " +\
     "%d search database connection%s (%d active), %d thread%s") %\
     (nl, s1, nd, s2, nc, s3, nca, nt, s4),
