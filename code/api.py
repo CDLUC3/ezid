@@ -154,26 +154,10 @@ def mintIdentifier (request):
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
-  target = None
-  if "_target" in metadata:
-    target = metadata["_target"]
-    del metadata["_target"]
-  reserveOnly = False
-  if "_status" in metadata and metadata["_status"] == "reserved":
-    reserveOnly = True
-    del metadata["_status"]
   assert request.path.startswith("/ezid/shoulder/")
   prefix = request.path[15:]
-  callContext = [None]
-  s = ezid.mintIdentifier(prefix, auth.user, auth.group, target, reserveOnly,
-    callContext)
-  if not s.startswith("success:"): return _response(s)
-  if len(metadata) > 0:
-    identifier = s.split()[1]
-    s2 = ezid.setMetadata(identifier, auth.user, auth.group, metadata,
-      callContext)
-    if not s2.startswith("success:"): s = s2
-  return _response(s, createRequest=True)
+  return _response(ezid.mintIdentifier(prefix, auth.user, auth.group,
+    metadata), createRequest=True)
 
 def identifierDispatcher (request):
   """
@@ -229,26 +213,10 @@ def _createIdentifier (request):
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
-  target = None
-  if "_target" in metadata:
-    target = metadata["_target"]
-    del metadata["_target"]
-  reserveOnly = False
-  if "_status" in metadata and metadata["_status"] == "reserved":
-    reserveOnly = True
-    del metadata["_status"]
   assert request.path.startswith("/ezid/id/")
   identifier = request.path[9:]
-  callContext = [None]
-  s = ezid.createIdentifier(identifier, auth.user, auth.group, target,
-    reserveOnly, callContext)
-  if not s.startswith("success:"): return _response(s)
-  if len(metadata) > 0:
-    identifier = s.split()[1]
-    s2 = ezid.setMetadata(identifier, auth.user, auth.group, metadata,
-      callContext)
-    if not s2.startswith("success:"): s = s2
-  return _response(s, createRequest=True)
+  return _response(ezid.createIdentifier(identifier, auth.user, auth.group,
+    metadata), createRequest=True)
 
 def _deleteIdentifier (request):
   auth = userauth.authenticateRequest(request)
@@ -307,7 +275,7 @@ def getStatus (request):
   s3 = "" if nc == 1 else "s"
   nt = threading.activeCount()
   s4 = "" if nt == 1 else "s"
-  return _response(("success: %d operation%s in progress, " +\
+  return _response(("success: %d identifier operation%s in progress, " +\
     "%d DataCite operation%s in progress, " +\
     "%d search database connection%s (%d active), %d thread%s") %\
     (nl, s1, nd, s2, nc, s3, nca, nt, s4),

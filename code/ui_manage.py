@@ -117,10 +117,11 @@ def edit(request, identifier):
     if request.POST['current_profile'] == request.POST['original_profile']:
       #this means we're saving and going to a save confirmation page
       if uic.validate_simple_metadata_form(request, d['current_profile']):
-        result = uic.write_profile_elements_from_form(identifier, request, d['current_profile'],
-                 {'_profile': request.POST['current_profile'], '_target' : request.POST['_target'],
-                  '_status': d['post_status']})
-        if result:
+        to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
+          { '_target' : uic.fix_target(request.POST['_target']), '_status': d['post_status'] })
+        result = ezid.setMetadata(identifier, uic.user_or_anon_tup(request), uic.group_or_anon_tup(request),
+          to_write)
+        if result.startswith("success:"):
           django.contrib.messages.success(request, "Identifier updated.")
           return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
         else:

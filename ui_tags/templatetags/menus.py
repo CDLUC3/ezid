@@ -37,7 +37,8 @@ MENUS = (
               ("Manage user accounts", 'ui_admin.manage_users', 'admin', ()),
               ("Manage groups", 'ui_admin.manage_groups', 'admin', ()),
               ("System status", 'ui_admin.system_status', 'admin', ()),
-              ("Create alert message", 'ui_admin.alert_message', 'admin', ())
+              ("Create alert message", 'ui_admin.alert_message', 'admin', ()),
+              ("New account form", 'ui_admin.new_account', 'admin', ())
             )
           )
         )

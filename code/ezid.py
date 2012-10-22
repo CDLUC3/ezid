@@ -125,11 +125,6 @@
 # by the EZID administrator, and to protect user privacy, they may be
 # viewed by the EZID administrator only.
 #
-# A number of functions in this module accept a callContext argument.
-# This can be used by callers to optimize performance across the
-# standard [mint ->] create -> setMetadata sequence of calls.  To use
-# it, pass in a one-element list [None] at the start of the sequence.
-#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
@@ -222,13 +217,108 @@ _labelMapping = {
 def _oneline (s):
   return re.sub("\s", " ", s)
 
-def mintDoi (prefix, user, group, target=None, reserveOnly=False,
-  callContext=None):
+def _defaultTarget (identifier):
+  return "%s/id/%s" % (_ezidUrl, urllib.quote(identifier, ":/"))
+
+def _softUpdate (td, sd):
+  for k, v in sd.items():
+    if k not in td: td[k] = v
+
+_userSettableReservedElements = ["_coowners", "_profile", "_status", "_target"]
+
+def _validateMetadata1 (identifier, user, metadata):
+  """
+  Validates and normalizes 'metadata', a dictionary of (name, value)
+  pairs; 'metadata' is modified in place.  In the process, any
+  reserved element names are converted to their internal forms.
+  Returns None on success or a string error message.  The validations
+  performed by this function are those that can't possibly cause an
+  internal server error, and hence can be performed outside a
+  transaction.  'identifier' is the identifier in question, and should
+  be qualified and normalized, e.g., "doi:10.5060/FOO".  'user' is the
+  requesting user and should be an authenticated (local name,
+  persistent identifier) tuple, e.g., ("dryad", "ark:/13030/foo").
+  """
+  if any(map(lambda k: len(k) == 0, metadata)): return "empty element name"
+  if user[0] != _adminUsername and any(map(lambda k: k.startswith("_") and\
+    k not in _userSettableReservedElements, metadata)):
+    return "use of reserved element name"
+  if "_profile" in metadata:
+    if metadata["_profile"].strip() != "":
+      metadata["_p"] = metadata["_profile"].strip()
+    else:
+      if identifier.startswith("doi:"):
+        metadata["_p"] = _defaultDoiProfile
+      elif identifier.startswith("ark:/"):
+        metadata["_p"] = _defaultArkProfile
+      elif identifier.startswith("urn:uuid:"):
+        metadata["_p"] = _defaultUrnUuidProfile
+      else:
+        assert False, "unhandled case"
+    del metadata["_profile"]
+  if "_status" in metadata:
+    metadata["_is"] = metadata["_status"].strip()
+    m = re.match("unavailable($| *\|(.*))", metadata["_is"])
+    if m:
+      reason = (m.group(2) or "").strip()
+      if len(reason) > 0:
+        metadata["_is"] = "unavailable | " + reason
+      else:
+        metadata["_is"] = "unavailable"
+    elif metadata["_is"] not in ["public", "reserved"]:
+      return "invalid identifier status"
+    del metadata["_status"]
+  if "_target" in metadata:
+    e = "_t" if identifier.startswith("ark:/") else "_st"
+    if metadata["_target"].strip() != "":
+      metadata[e] = metadata["_target"].strip()
+    else:
+      metadata[e] = _defaultTarget(identifier)
+    del metadata["_target"]
+  # Note that the validation check here precludes updating a DataCite
+  # Metadata Scheme record via a shadow ARK (but individual DataCite
+  # elements can still be updated).
+  if "datacite" in metadata and metadata["datacite"].strip() != "":
+    try:
+      metadata["datacite"] = datacite.validateDcmsRecord(identifier,
+        metadata["datacite"])
+    except AssertionError, e:
+      return "element 'datacite': " + _oneline(str(e))
+  return None
+
+def _validateMetadata2 (owner, metadata):
+  """
+  Similar to _validateMetadata1, but performs validations and
+  normalizations that might raise an internal server error, and hence
+  must be performed inside a transaction.  'owner' should be the
+  identifier's owner expressed as a (local name, persistent
+  identifier) tuple, e.g., ("dryad", "ark:/13030/foo").
+  """
+  if "_coowners" in metadata:
+    coOwners = []
+    for co in metadata["_coowners"].split(";"):
+      co = co.strip()
+      if co in ["", "anonymous", _adminUsername]: continue
+      try:
+        id = idmap.getUserId(co)
+      except Exception, e:
+        if type(e) is exceptions.AssertionError and\
+          "unknown user" in e.message:
+          return "no such user in co-owner list"
+        else:
+          raise
+      if id != owner[1] and id not in coOwners: coOwners.append(id)
+    metadata["_co"] = " ; ".join(coOwners)
+    del metadata["_coowners"]
+  return None
+
+def mintDoi (prefix, user, group, metadata={}):
   """
   Mints a DOI identifier having the given scheme-less prefix, e.g.,
   "10.5060/".  'user' and 'group' should each be authenticated (local
   name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  If an initial target URL is not supplied, the
+  "ark:/13030/foo").  'metadata' should be a dictionary of element
+  (name, value) pairs.  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, scheme-less form of
   the new identifier, followed by the new identifier's qualified
@@ -247,8 +337,7 @@ def mintDoi (prefix, user, group, target=None, reserveOnly=False,
     return "error: bad request - unrecognized DOI prefix"
   tid = uuid.uuid1()
   try:
-    log.begin(tid, "mintDoi", prefix, user[0], user[1], group[0], group[1],
-      target or "None", str(reserveOnly))
+    log.begin(tid, "mintDoi", prefix, user[0], user[1], group[0], group[1])
     if not policy.authorizeCreate(user, group, qprefix):
       log.unauthorized(tid)
       return "error: unauthorized"
@@ -265,15 +354,15 @@ def mintDoi (prefix, user, group, target=None, reserveOnly=False,
     return "error: internal server error"
   else:
     log.success(tid, doi)
-  return createDoi(doi, user, group, target, reserveOnly, callContext)
+  return createDoi(doi, user, group, metadata)
 
-def createDoi (doi, user, group, target=None, reserveOnly=False,
-  callContext=None):
+def createDoi (doi, user, group, metadata={}):
   """
   Creates a DOI identifier having the given scheme-less name, e.g.,
   "10.5060/foo".  The identifier must not already exist.  'user' and
   'group' should each be authenticated (local name, persistent
-  identifier) tuples, e.g., ("dryad", "ark:/13030/foo").  If an
+  identifier) tuples, e.g., ("dryad", "ark:/13030/foo").  'metadata'
+  should be a dictionary of element (name, value) pairs.  If an
   initial target URL is not supplied, the identifier is given a
   self-referential target URL.  The successful return is a string that
   includes the canonical, scheme-less form of the new identifier,
@@ -291,48 +380,48 @@ def createDoi (doi, user, group, target=None, reserveOnly=False,
   if not doi: return "error: bad request - invalid DOI identifier"
   qdoi = "doi:" + doi
   shadowArk = util.doi2shadow(doi)
+  m = { "_profile": "", "_target": "" }
+  m.update(metadata)
+  r = _validateMetadata1(qdoi, user, m)
+  if type(r) is str: return "error: bad request - " + r
+  if "_is" in m:
+    if m["_is"] == "public":
+      del m["_is"]
+    elif m["_is"] != "reserved":
+      return "error: bad request - invalid identifier status at creation time"
   tid = uuid.uuid1()
   _acquireIdentifierLock(shadowArk)
   try:
     log.begin(tid, "createDoi", doi, user[0], user[1], group[0], group[1],
-      target or "None", str(reserveOnly))
+      *[a for p in metadata.items() for a in p])
+    r = _validateMetadata2(user, m)
+    if type(r) is str:
+      log.badRequest(tid)
+      return "error: bad request - " + r
     if not policy.authorizeCreate(user, group, qdoi):
       log.unauthorized(tid)
       return "error: unauthorized"
     if _bindNoid.identifierExists(shadowArk):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
-    defaultTarget = "%s/id/%s" % (_ezidUrl, urllib.quote(qdoi, ":/"))
-    if not target or target.strip() == "":
-      target = defaultTarget
-    else:
-      target = target.strip()
-    arkTarget = "%s/id/%s" % (_ezidUrl,
-      urllib.quote("ark:/" + shadowArk, ":/"))
-    if not reserveOnly:
-      message = datacite.registerIdentifier(doi, target)
-      if message is not None:
-        log.badRequest(tid)
-        return "error: bad request - element '_target': " + _oneline(message)
     t = str(int(time.time()))
-    d = { "_o": user[1],
-      "_g": group[1],
-      "_c": t,
-      "_u": t,
-      "_t": arkTarget,
-      "_s": qdoi,
-      "_su": t,
-      "_p": _defaultDoiProfile }
-    if reserveOnly:
-      d["_is"] = "reserved"
-      d["_t1"] = arkTarget
-      d["_st"] = defaultTarget
-      d["_st1"] = target
-    else:
-      d["_st"] = target
-    _bindNoid.setElements(shadowArk, d, True)
-    if user[0] != "anonymous": search.insert(qdoi, d)
-    if callContext is not None: callContext[0] = d
+    _softUpdate(m, { "_o": user[1], "_g": group[1], "_c": t, "_u": t,
+      "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qdoi })
+    if m.get("_is", "public") == "reserved":
+      m["_t1"] = m["_t"]
+      m["_st1"] = m["_st"]
+      m["_st"] = _defaultTarget(qdoi)
+    if m.get("_is", "public") == "public":
+      r = datacite.uploadMetadata(doi, {}, m)
+      if r is not None:
+        log.badRequest(tid)
+        return "error: bad request - element 'datacite': " + _oneline(r)
+      r = datacite.registerIdentifier(doi, m["_st"])
+      if r is not None:
+        log.badRequest(tid)
+        return "error: bad request - element '_target': " + _oneline(r)
+    _bindNoid.setElements(shadowArk, m, True)
+    if user[0] != "anonymous": search.insert(qdoi, m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -342,13 +431,13 @@ def createDoi (doi, user, group, target=None, reserveOnly=False,
   finally:
     _releaseIdentifierLock(shadowArk)
 
-def mintArk (prefix, user, group, target=None, reserveOnly=False,
-  callContext=None):
+def mintArk (prefix, user, group, metadata={}):
   """
   Mints an ARK identifier having the given scheme-less prefix, e.g.,
   "13030/fk4".  'user' and 'group' should each be authenticated (local
   name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  If an initial target URL is not supplied, the
+  "ark:/13030/foo").  'metadata' should be a dictionary of element
+  (name, value) pairs.  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, scheme-less form of
   the new identifier, as in:
@@ -366,8 +455,7 @@ def mintArk (prefix, user, group, target=None, reserveOnly=False,
     return "error: bad request - unrecognized ARK prefix"
   tid = uuid.uuid1()
   try:
-    log.begin(tid, "mintArk", prefix, user[0], user[1], group[0], group[1],
-      target or "None", str(reserveOnly))
+    log.begin(tid, "mintArk", prefix, user[0], user[1], group[0], group[1])
     if not policy.authorizeCreate(user, group, qprefix):
       log.unauthorized(tid)
       return "error: unauthorized"
@@ -381,15 +469,15 @@ def mintArk (prefix, user, group, target=None, reserveOnly=False,
     return "error: internal server error"
   else:
     log.success(tid, ark)
-  return createArk(ark, user, group, target, reserveOnly, callContext)
+  return createArk(ark, user, group, metadata)
 
-def createArk (ark, user, group, target=None, reserveOnly=False,
-  callContext=None):
+def createArk (ark, user, group, metadata={}):
   """
   Creates an ARK identifier having the given scheme-less name, e.g.,
   "13030/bar".  The identifier must not already exist.  'user' and
   'group' should each be authenticated (local name, persistent
-  identifier) tuples, e.g., ("dryad", "ark:/13030/foo").  If an
+  identifier) tuples, e.g., ("dryad", "ark:/13030/foo").  'metadata'
+  should be a dictionary of element (name, value) pairs.  If an
   initial target URL is not supplied, the identifier is given a
   self-referential target URL.  The successful return is a string that
   includes the canonical, scheme-less form of the new identifier, as
@@ -406,37 +494,37 @@ def createArk (ark, user, group, target=None, reserveOnly=False,
   ark = util.validateArk(ark)
   if not ark: return "error: bad request - invalid ARK identifier"
   qark = "ark:/" + ark
+  m = { "_profile": "", "_target": "" }
+  m.update(metadata)
+  r = _validateMetadata1(qark, user, m)
+  if type(r) is str: return "error: bad request - " + r
+  if "_is" in m:
+    if m["_is"] == "public":
+      del m["_is"]
+    elif m["_is"] != "reserved":
+      return "error: bad request - invalid identifier status at creation time"
   tid = uuid.uuid1()
   _acquireIdentifierLock(ark)
   try:
     log.begin(tid, "createArk", ark, user[0], user[1], group[0], group[1],
-      target or "None", str(reserveOnly))
+      *[a for p in metadata.items() for a in p])
+    r = _validateMetadata2(user, m)
+    if type(r) is str:
+      log.badRequest(tid)
+      return "error: bad request - " + r
     if not policy.authorizeCreate(user, group, qark):
       log.unauthorized(tid)
       return "error: unauthorized"
     if _bindNoid.identifierExists(ark):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
-    defaultTarget = "%s/id/%s" % (_ezidUrl, urllib.quote(qark, ":/"))
-    if not target or target.strip() == "":
-      target = defaultTarget
-    else:
-      target = target.strip()
     t = str(int(time.time()))
-    d = { "_o": user[1],
-      "_g": group[1],
-      "_c": t,
-      "_u": t,
-      "_p": _defaultArkProfile }
-    if reserveOnly:
-      d["_is"] = "reserved"
-      d["_t"] = defaultTarget
-      d["_t1"] = target
-    else:
-      d["_t"] = target
-    _bindNoid.setElements(ark, d, True)
-    if user[0] != "anonymous": search.insert(qark, d)
-    if callContext is not None: callContext[0] = d
+    _softUpdate(m, { "_o": user[1], "_g": group[1], "_c": t, "_u": t })
+    if m.get("_is", "public") == "reserved":
+      m["_t1"] = m["_t"]
+      m["_t"] = _defaultTarget(qark)
+    _bindNoid.setElements(ark, m, True)
+    if user[0] != "anonymous": search.insert(qark, m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -446,12 +534,12 @@ def createArk (ark, user, group, target=None, reserveOnly=False,
   finally:
     _releaseIdentifierLock(ark)
 
-def mintUrnUuid (user, group, target=None, reserveOnly=False,
-  callContext=None):
+def mintUrnUuid (user, group, metadata={}):
   """
   Mints a UUID URN.  'user' and 'group' should each be authenticated
   (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  If an initial target URL is not supplied, the
+  "ark:/13030/foo").  'metadata' should be a dictionary of element
+  (name, value) pairs.  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, scheme-less form of
   the new identifier, followed by the new identifier's qualified
@@ -465,17 +553,16 @@ def mintUrnUuid (user, group, target=None, reserveOnly=False,
     error: bad request - subreason...
     error: internal server error
   """
-  return createUrnUuid(uuid.uuid1().urn[9:], user, group, target, reserveOnly,
-    callContext)
+  return createUrnUuid(uuid.uuid1().urn[9:], user, group, metadata)
 
-def createUrnUuid (urn, user, group, target=None, reserveOnly=False,
-  callContext=None):
+def createUrnUuid (urn, user, group, metadata={}):
   """
   Creates a UUID URN identifier having the given scheme-less name,
   e.g., "f81d4fae-7dec-11d0-a765-00a0c91e6bf6".  The identifier must
   not already exist.  'user' and 'group' should each be authenticated
   (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  If an initial target URL is not supplied, the
+  "ark:/13030/foo").  'metadata' should be a dictionary of element
+  (name, value) pairs.  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, scheme-less form of
   the new identifier, followed by the new identifier's qualified
@@ -493,43 +580,39 @@ def createUrnUuid (urn, user, group, target=None, reserveOnly=False,
   if not urn: return "error: bad request - invalid UUID URN identifier"
   qurn = "urn:uuid:" + urn
   shadowArk = util.urnUuid2shadow(urn)
+  m = { "_profile": "", "_target": "" }
+  m.update(metadata)
+  r = _validateMetadata1(qurn, user, m)
+  if type(r) is str: return "error: bad request - " + r
+  if "_is" in m:
+    if m["_is"] == "public":
+      del m["_is"]
+    elif m["_is"] != "reserved":
+      return "error: bad request - invalid identifier status at creation time"
   tid = uuid.uuid1()
   _acquireIdentifierLock(shadowArk)
   try:
     log.begin(tid, "createUrnUuid", urn, user[0], user[1], group[0], group[1],
-      target or "None", str(reserveOnly))
+      *[a for p in metadata.items() for a in p])
+    r = _validateMetadata2(user, m)
+    if type(r) is str:
+      log.badRequest(tid)
+      return "error: bad request - " + r
     if not policy.authorizeCreate(user, group, qurn):
       log.unauthorized(tid)
       return "error: unauthorized"
     if _bindNoid.identifierExists(shadowArk):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
-    defaultTarget = "%s/id/%s" % (_ezidUrl, urllib.quote(qurn, ":/"))
-    if not target or target.strip() == "":
-      target = defaultTarget
-    else:
-      target = target.strip()
-    arkTarget = "%s/id/%s" % (_ezidUrl,
-      urllib.quote("ark:/" + shadowArk, ":/"))
     t = str(int(time.time()))
-    d = { "_o": user[1],
-      "_g": group[1],
-      "_c": t,
-      "_u": t,
-      "_t": arkTarget,
-      "_s": qurn,
-      "_su": t,
-      "_p": _defaultUrnUuidProfile }
-    if reserveOnly:
-      d["_is"] = "reserved"
-      d["_t1"] = arkTarget
-      d["_st"] = defaultTarget
-      d["_st1"] = target
-    else:
-      d["_st"] = target
-    _bindNoid.setElements(shadowArk, d, True)
-    if user[0] != "anonymous": search.insert(qurn, d)
-    if callContext is not None: callContext[0] = d
+    _softUpdate(m, { "_o": user[1], "_g": group[1], "_c": t, "_u": t,
+      "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qurn })
+    if m.get("_is", "public") == "reserved":
+      m["_t1"] = m["_t"]
+      m["_st1"] = m["_st"]
+      m["_st"] = _defaultTarget(qurn)
+    _bindNoid.setElements(shadowArk, m, True)
+    if user[0] != "anonymous": search.insert(qurn, m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -539,13 +622,13 @@ def createUrnUuid (urn, user, group, target=None, reserveOnly=False,
   finally:
     _releaseIdentifierLock(shadowArk)
 
-def mintIdentifier (prefix, user, group, target=None, reserveOnly=False,
-  callContext=None):
+def mintIdentifier (prefix, user, group, metadata={}):
   """
   Mints an identifier having the given qualified prefix, e.g.,
   "doi:10.5060/".  'user' and 'group' should each be authenticated
   (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  If an initial target URL is not supplied, the
+  "ark:/13030/foo").  'metadata' should be a dictionary of element
+  (name, value) pairs.  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, qualified form of
   the new identifier, as in:
@@ -564,19 +647,19 @@ def mintIdentifier (prefix, user, group, target=None, reserveOnly=False,
     error: internal server error
   """
   if prefix.startswith("doi:"):
-    s = mintDoi(prefix[4:], user, group, target, reserveOnly, callContext)
+    s = mintDoi(prefix[4:], user, group, metadata)
     if s.startswith("success: "):
       return "success: doi:" + s[9:]
     else:
       return s
   elif prefix.startswith("ark:/"):
-    s = mintArk(prefix[5:], user, group, target, reserveOnly, callContext)
+    s = mintArk(prefix[5:], user, group, metadata)
     if s.startswith("success: "):
       return "success: ark:/" + s[9:]
     else:
       return s
   elif prefix == "urn:uuid:":
-    s = mintUrnUuid(user, group, target, reserveOnly, callContext)
+    s = mintUrnUuid(user, group, metadata)
     if s.startswith("success: "):
       return "success: urn:uuid:" + s[9:]
     else:
@@ -584,13 +667,13 @@ def mintIdentifier (prefix, user, group, target=None, reserveOnly=False,
   else:
     return "error: bad request - unrecognized identifier scheme"
 
-def createIdentifier (identifier, user, group, target=None, reserveOnly=False,
-  callContext=None):
+def createIdentifier (identifier, user, group, metadata={}):
   """
   Creates an identifier having the given qualified name, e.g.,
   "doi:10.5060/foo".  'user' and 'group' should each be authenticated
   (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  If an initial target URL is not supplied, the
+  "ark:/13030/foo").  'metadata' should be a dictionary of element
+  (name, value) pairs.  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, qualified form of
   the new identifier, as in:
@@ -609,22 +692,19 @@ def createIdentifier (identifier, user, group, target=None, reserveOnly=False,
     error: internal server error
   """
   if identifier.startswith("doi:"):
-    s = createDoi(identifier[4:], user, group, target, reserveOnly,
-      callContext)
+    s = createDoi(identifier[4:], user, group, metadata)
     if s.startswith("success: "):
       return "success: doi:" + s[9:]
     else:
       return s
   elif identifier.startswith("ark:/"):
-    s = createArk(identifier[5:], user, group, target, reserveOnly,
-      callContext)
+    s = createArk(identifier[5:], user, group, metadata)
     if s.startswith("success: "):
       return "success: ark:/" + s[9:]
     else:
       return s
   elif identifier.startswith("urn:uuid:"):
-    s = createUrnUuid(identifier[9:], user, group, target, reserveOnly,
-      callContext)
+    s = createUrnUuid(identifier[9:], user, group, metadata)
     if s.startswith("success: "):
       return "success: urn:uuid:" + s[9:]
     else:
@@ -707,7 +787,7 @@ def getMetadata (identifier):
   finally:
     _releaseIdentifierLock(ark)
 
-def setMetadata (identifier, user, group, metadata, callContext=None):
+def setMetadata (identifier, user, group, metadata):
   """
   Sets metadata elements of a given qualified identifier, e.g.,
   "doi:10.5060/foo".  'user' and 'group' should each be authenticated
@@ -769,13 +849,10 @@ def setMetadata (identifier, user, group, metadata, callContext=None):
   try:
     log.begin(tid, "setMetadata", nqidentifier, user[0], user[1], group[0],
       group[1], *[a for p in metadata.items() for a in p])
-    if callContext is not None:
-      m = callContext[0]
-    else:
-      m = _bindNoid.getElements(ark)
-      if m is None:
-        log.badRequest(tid)
-        return "error: bad request - no such identifier"
+    m = _bindNoid.getElements(ark)
+    if m is None:
+      log.badRequest(tid)
+      return "error: bad request - no such identifier"
     iUser = m["_o"]
     iGroup = m["_g"]
     if "_co" in m:
