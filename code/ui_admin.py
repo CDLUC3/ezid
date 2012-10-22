@@ -14,7 +14,6 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
 from django import forms
 from collections import *
-import json
 
 
 @uic.admin_login_required
@@ -241,35 +240,40 @@ def alert_message(request, ssl=False):
 def new_account(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.new_account' }
   # id : [defaultvalue, label, type, help_text]
-  field_info = OrderedDict( \
-    [ ('todays_date', [datetime.datetime.now().strftime("%m/%d/%Y"), "Today's date", "text", ""]), \
-      ('submitters_name', ["", "Your name", "text", ""]), \
-      ('acct_name', ["", "Account name", "text", "Choose a name that is lowercase, 10 characters or less; no spaces.  Underscore or dash ok"]), \
-      ('acct_email', ["", "Email Address", "text", "To be associated with the account"]), \
-      ('primary_contact', ["", "Primary contact", "text", "An individual associated with this account"]), \
-      ('contact_email', ["", "Contact's email address", "text", ""]), \
-      ('contact_phone', ["", "Contact's phone number", "text", ""]), \
-      ('contact_fax', ["", "Contact's fax number", "text", ""]), \
-      ('org', ["", "Organization", "text", ""]), \
-      ('org_acroynm', ["", "Organization acronym", "text", "Suggest an acronym that is between 3-10 characters in length.  It will be used for identification purposes"]), \
-      ('org_www', ["", "Organization's web address", "text", ""]), \
-      ('mailing_address1', ["", "Address line 1", "text", ""]), \
-      ('mailing_address2', ["", "Address line 2", "text", ""]), \
-      ('mailing_city', ["", "City", "text", ""]), \
-      ('mailing_state', ["", "State", "text", ""]), \
-      ('mailing_zip', ["", "Zip code", "text", ""]), \
-      ('mailing_country', ["", "Country", "text", ""]), \
-      ('identifiers', ["", "Identifiers", "ARKs|DOIs and ARKs", "This choice affects the subscription pricing. If you have questions, please enter them below."]), \
-      ('created_before', ["", "Have you created DOIs or ARKs before?", "NO|YES", ""]), \
-      ('internal_identifiers', ["", "Do you use any internal or local identifiers?", "NO|YES", ""]), \
-      ('identifier_plans', ["", "How do you plan to use identifiers in the next year?", "long_text", ""]), \
-      ('comments', ["", "Comments or questions?", "long_text", ""]) \
-    ] )
+  field_info = { \
+      'todays_date': [datetime.datetime.now().strftime("%m/%d/%Y"), "Today's date", "text", ""], \
+      'submitters_name': ["", "Your name", "text", ""], \
+      'acct_name': ["", "Account name", "text", "Choose a name that is lowercase, 10 characters or less; no spaces.  Underscore or dash ok"], \
+      'acct_email': ["", "Email Address", "text", "To be associated with the account"], \
+      'primary_contact': ["", "Primary contact", "text", "An individual associated with this account"], \
+      'contact_email': ["", "Contact's email address", "text", ""], \
+      'contact_phone': ["", "Contact's phone number", "text", ""], \
+      'contact_fax': ["", "Contact's fax number", "text", ""], \
+      'org': ["", "Organization", "text", ""], \
+      'org_acroynm': ["", "Organization acronym", "text", "Suggest an acronym that is between 3-10 characters in length.  It will be used for identification purposes"], \
+      'org_www': ["", "Organization's web address", "text", ""], \
+      'mailing_address1': ["", "Address line 1", "text", ""], \
+      'mailing_address2': ["", "Address line 2", "text", ""], \
+      'mailing_city': ["", "City", "text", ""], \
+      'mailing_state': ["", "State", "text", ""], \
+      'mailing_zip': ["", "Zip code", "text", ""], \
+      'mailing_country': ["", "Country", "text", ""], \
+      'identifiers': ["", "Identifiers", "ARKs|DOIs and ARKs", "This choice affects the subscription pricing. If you have questions, please enter them below."], \
+      'created_before': ["", "Have you created DOIs or ARKs before?", "NO|YES", ""], \
+      'internal_identifiers': ["", "Do you use any internal or local identifiers?", "NO|YES", ""], \
+      'identifier_plans': ["", "How do you plan to use identifiers in the next year?", "long_text", ""], \
+      'comments': ["", "Comments or questions?", "long_text", ""] }
+  
+  field_order = ("todays_date submitters_name acct_name acct_email " + \
+    "primary_contact contact_email contact_phone contact_fax org " + \
+    "org_acroynm org_www mailing_address1 mailing_address2 mailing_city " + \
+    "mailing_state mailing_zip mailing_country identifiers created_before " + \
+    "internal_identifiers identifier_plans comments").split()
   
   #populate form values back into form
   if request.method == "POST":
     message = ""
-    for key in field_info.keys():
+    for key in field_order:
       if key in request.POST:
         field_info[key][0] = request.POST[key]
         v = (request.POST[key] if key in request.POST else '')
@@ -280,10 +284,10 @@ def new_account(request, ssl=False):
     django.core.mail.send_mail("new ezid account: " + request.POST['acct_name'], message,
                                django.conf.settings.SERVER_EMAIL, emails)
     django.contrib.messages.success(request, "Form information has been emailed.")
-    d['field_info'] = field_info
+    d['field_info'], d['field_order'] = field_info, field_order
     return uic.render(request, 'admin/new_account_display', d)
   
-  d['field_info'] = field_info
+  d['field_info'], d['field_order'] = field_info, field_order
   return uic.render(request, 'admin/new_account', d)
 
 def select_shoulder_lists(selected_val_list):
