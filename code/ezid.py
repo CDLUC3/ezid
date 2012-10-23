@@ -412,7 +412,7 @@ def createDoi (doi, user, group, metadata={}):
       m["_st1"] = m["_st"]
       m["_st"] = _defaultTarget(qdoi)
     if m.get("_is", "public") == "public":
-      r = datacite.uploadMetadata(doi, {}, m)
+      r = datacite.uploadMetadata(doi, {}, m, forceUpload=True)
       if r is not None:
         log.badRequest(tid)
         return "error: bad request - element 'datacite': " + _oneline(r)
@@ -1025,7 +1025,7 @@ def _statusChangeReservedToPublic (ark, m):
       if message is not None:
         return "error: bad request - element '_target': " +\
           _oneline(message)
-      message = datacite.uploadMetadata(m["_s"][4:], {}, m)
+      message = datacite.uploadMetadata(m["_s"][4:], {}, m, forceUpload=True)
       if message is not None:
         return "error: bad request - element 'datacite': " +\
           _oneline(message)

@@ -255,22 +255,21 @@ def _formRecord (doi, metadata):
     return _insertEncodingDeclaration(metadata["datacite"])
   else:
     m = {}
-    for f in ["creator", "title", "publisher", "publicationyear",
-      "resourcetype"]:
+    for f in ["creator", "title", "publisher", "publicationyear"]:
       if metadata.get("datacite."+f, "").strip() != "":
         m[f] = metadata["datacite."+f].strip()
       else:
-        m[f] = "none supplied"
-    if not re.match("\d{4}$", m["publicationyear"]):
-      m["publicationyear"] = "0000"
+        return None
+    if not re.match("\d{4}$", m["publicationyear"]): return None
     r = _interpolate(_metadataTemplate, doi, m["creator"], m["title"],
       m["publisher"], m["publicationyear"])
-    if m["resourcetype"] != "none supplied":
-      if "/" in m["resourcetype"]:
-        gt, st = m["resourcetype"].split("/", 1)
+    rt = metadata.get("datacite.resourcetype", "").strip()
+    if len(rt) > 0:
+      if "/" in rt:
+        gt, st = rt.split("/", 1)
         r += _interpolate(_resourceTypeTemplate2, gt.strip(), st.strip())
       else:
-        r += _interpolate(_resourceTypeTemplate1, m["resourcetype"])
+        r += _interpolate(_resourceTypeTemplate1, rt)
     r += u"</resource>\n"
     return r
 
@@ -289,12 +288,13 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
   thrown exception on other error.  No error checking is done on the
   inputs.
   """
-  if not _enabled: return None
   oldRecord = _formRecord(doi, current)
   m = current.copy()
   m.update(delta)
   newRecord = _formRecord(doi, m)
   if newRecord == oldRecord and not forceUpload: return None
+  if newRecord == None: return "DataCite metadata requirements not satisfied"
+  if not _enabled: return None
   # To hide transient network errors, we make multiple attempts.
   for i in range(_numAttempts):
     o = urllib2.build_opener(_HTTPErrorProcessor)
@@ -339,7 +339,9 @@ def deactivate (doi):
   if not _enabled: return
   # The identifier must already have metadata in DataCite; in case it
   # doesn't, upload some bogus metadata.
-  message = uploadMetadata(doi, {}, { "datacite.title": "inactive" })
+  message = uploadMetadata(doi, {}, { "datacite.title": "inactive",
+    "datacite.creator": "inactive", "datacite.publisher": "inactive",
+    "datacite.publicationyear": "0000" })
   assert message is None,\
     "unexpected return from DataCite store metadata operation: " + message
   # To hide transient network errors, we make multiple attempts.
