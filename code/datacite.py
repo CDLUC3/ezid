@@ -172,10 +172,11 @@ def validateDcmsRecord (identifier, record):
   the normalized record is returned or an assertion error is raised.
   Validation is limited to checking that the record is well-formed
   XML, that the record appears to be a DCMS record (by examining the
-  root element), and that the identifier embedded in the record
-  matches 'identifier'.  (In an extension to DCMS, we allow the
-  identifier to be something other than a DOI, for example, an ARK.)
-  Normalization is limited to removing any encoding declaration.
+  root element), and that the identifier type embedded in the record
+  matches that of 'identifier'.  (In an extension to DCMS, we allow
+  the identifier to be something other than a DOI, for example, an
+  ARK.)  Normalization is limited to removing any encoding
+  declaration.  'identifier' is inserted in the returned record.
   """
   m = _prologRE.match(record)
   if m:
@@ -206,9 +207,13 @@ def validateDcmsRecord (identifier, record):
     identifier = identifier[9:]
   else:
     assert False, "unrecognized identifier scheme"
-  assert i[0].attrib["identifierType"] == type and i[0].text == identifier,\
-    "identifier embedded in record does not match identifier being operated on"
-  return record
+  assert i[0].attrib["identifierType"] == type, "identifier type mismatch"
+  i[0].text = identifier
+  try:
+    return "<?xml version=\"1.0\"?>\n" +\
+      lxml.etree.tostring(root, encoding=unicode)
+  except Exception, e:
+    assert False, "XML serialization error: " + str(e)
 
 def _insertEncodingDeclaration (record):
   m = _prologRE.match(record)
