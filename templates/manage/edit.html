@@ -55,7 +55,7 @@
           {{e.displayName}}:
         </label>
         <div class="field_right">
-          <input type="text" class="{% tooltip_class e.name %}" name="{{e.name}}" id="{{e.name}}" size="35" value="{% form_or_dict_value identifier e.name %}" />
+          {% display_form_element e identifier %}
         </div>        
       {% endfor %}
     	<label class="left">&nbsp;</label>

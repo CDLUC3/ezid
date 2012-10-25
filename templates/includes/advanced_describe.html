@@ -1,4 +1,5 @@
 {% load layout_extras %}
+{% load metadata_tags %}
 
 <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
 <h2>Step 4: Describe the identified object using the 
@@ -23,6 +24,6 @@ citation profile:</h2>
     {{e.displayName}}:
   </label>
   <div class="field_right">
-    <input type="text" class="{% tooltip_class e.name %}" name="{{e.name}}" id="{{e.name}}" size="35" value="{% request_value e.name %}" />
+    {% display_form_element e %}
   </div>        
 {% endfor %}

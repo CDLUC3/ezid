@@ -1,4 +1,5 @@
 {% load layout_extras %}
+{% load metadata_tags %}
 
 <h2>Step 2: Describe the identified object.</h2>
 <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
@@ -13,6 +14,6 @@
     {{e.displayName}}:
   </label>
   <div class="field_right">
-    <input type="text" class="{% tooltip_class e.name %}" name="{{e.name}}" id="{{e.name}}" size="35" value="{% request_value e.name %}" />
+  	{% display_form_element e %}
   </div>        
 {% endfor %}

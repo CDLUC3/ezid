@@ -2,6 +2,8 @@ from django import template
 import re
 from django.utils.html import escape
 import time
+from decorators import basictag
+import layout_extras
 
 
 register = template.Library()
@@ -35,3 +37,52 @@ def display_formatted(id_dictionary, element):
       return 'No'
   else:
     return escape(id_dictionary[element.name])
+  
+@register.tag
+@basictag(takes_context=True)
+def display_form_element(context, element, id_object=None):
+  """Displays a form element as indicated in the profile.
+  Automatically pulls re-POSTed values and object (optional)"""
+  if element.displayType.startswith('text'):
+    return display_text_box(context, element, id_object)
+  elif element.displayType.startswith('select:'):
+    opts = eval(element.displayType[len('select:'):])
+    return display_select(context, element, opts, id_object)
+  return ''
+
+def display_text_box(context, element, id_object):
+  """displays a text box based on the element"""
+  return "<input type=\"text\" class=\"%s\" name=\"%s\" id=\"%s\" size=\"35\" value=\"%s\" />" \
+    % tuple([escape(x) for x in(layout_extras.tooltip_class(element.name),
+       element.name,
+       element.name,
+       _form_value(context, element.name, id_object),
+      )])
+
+def display_select(context, element, options, id_object):
+  """displays a select list based on the element"""
+  sel_part = "<select class=\"%s\" name=\"%s\" id=\"%s\">" % ( layout_extras.tooltip_class(element.name), element.name, element.name, )
+  selected = _form_value(context, element.name, id_object)
+  return sel_part + ''.join(
+      [("<option value=\"" + escape(x[0]) + "\" " + ("selected=\"selected\"" if x[0] == selected  else '') +">" + \
+        escape(x[1]) + "</option>") for x in options]) +\
+      "</select>"
+
+def _request_value(context, key_name):
+  """gets the value of context[key_name]"""
+  request = context['request']
+  if key_name in request.REQUEST:
+    return request.REQUEST[key_name]
+  else:
+    return ''
+  
+def _form_value(context, key_name, id_object):
+  """Gets a value in this priority 1) request, 2) id_object, 3) default of ''"""
+  val = ''
+  if id_object != None and key_name in id_object:
+    val = id_object[key_name]
+  request = context['request']
+  if key_name in request.REQUEST:
+    val = request.REQUEST[key_name]
+  return val
+  
