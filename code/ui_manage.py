@@ -125,6 +125,8 @@ def edit(request, identifier):
           django.contrib.messages.success(request, "Identifier updated.")
           return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
         else:
+          d['current_profile'] = metadata.getProfile(m['_profile'])
+          d['profiles'] = metadata.getProfiles()[1:]
           django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
           return uic.render(request, "manage/edit", d)
   elif request.method == "GET":
