@@ -292,7 +292,8 @@ def _formRecord (doi, metadata):
         m[f] = metadata["datacite."+f].strip()
       else:
         return None
-    if not re.match("\d{4}$", m["publicationyear"]): return None
+    if not re.match("\d{4}$", m["publicationyear"]):
+      m["publicationyear"] = "0000"
     r = _interpolate(_metadataTemplate, doi, m["creator"], m["title"],
       m["publisher"], m["publicationyear"])
     rt = metadata.get("datacite.resourcetype", "").strip()
