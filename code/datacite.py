@@ -215,6 +215,33 @@ def validateDcmsRecord (identifier, record):
   except Exception, e:
     assert False, "XML serialization error: " + str(e)
 
+# From version 2.2 of the DataCite Metadata Schema <doi:10.5438/0005>:
+_resourceTypes = ["Collection", "Dataset", "Event", "Film", "Image",
+  "InteractiveResource", "Model", "PhysicalObject", "Service", "Software",
+  "Sound", "Text"]
+
+def validateResourceType (descriptor):
+  """
+  Validates and normalizes a resource type descriptor.  By
+  "descriptor" we mean either a general resource type by itself (e.g.,
+  "Image") or a general and a specific resource type separated by a
+  slash (e.g., "Image/Photograph").  Either a normalized descriptor is
+  returned or an assertion error is raised.
+  """
+  descriptor = descriptor.strip()
+  if "/" in descriptor:
+    gt, st = descriptor.split("/", 1)
+    gt = gt.strip()
+    st = st.strip()
+    assert gt in _resourceTypes, "invalid general resource type"
+    if len(st) > 0:
+      return gt + "/" + st
+    else:
+      return gt
+  else:
+    assert descriptor in _resourceTypes, "invalid general resource type"
+    return descriptor
+
 def _insertEncodingDeclaration (record):
   m = _prologRE.match(record)
   if m:
@@ -265,7 +292,8 @@ def _formRecord (doi, metadata):
         m[f] = metadata["datacite."+f].strip()
       else:
         return None
-    if not re.match("\d{4}$", m["publicationyear"]): return None
+    if not re.match("\d{4}$", m["publicationyear"]):
+      m["publicationyear"] = "0000"
     r = _interpolate(_metadataTemplate, doi, m["creator"], m["title"],
       m["publisher"], m["publicationyear"])
     rt = metadata.get("datacite.resourcetype", "").strip()

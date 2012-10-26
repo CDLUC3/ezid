@@ -284,6 +284,13 @@ def _validateMetadata1 (identifier, user, metadata):
         metadata["datacite"])
     except AssertionError, e:
       return "element 'datacite': " + _oneline(str(e))
+  if "datacite.resourcetype" in metadata and\
+    metadata["datacite.resourcetype"].strip() != "":
+    try:
+      metadata["datacite.resourcetype"] = datacite.validateResourceType(
+        metadata["datacite.resourcetype"])
+    except AssertionError, e:
+      return "element 'datacite.resourcetype': " + str(e)
   return None
 
 def _validateMetadata2 (owner, metadata):
