@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.8.1: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
 <title>The EZID API, Version 2</title>
 <style type="text/css">
 
@@ -1042,7 +1042,9 @@ forward slash (&quot;/&quot;), as in:</p>
 Metadata Scheme schema may be bound to the metadata element
 &quot;datacite&quot;.  Care should be taken to escape line terminators and
 percent signs in the document (as is true for all metadata element
-values; see <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above).</p>
+values; see <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above).  Note that EZID
+sets the identifier embedded in the document to the identifier
+being operated on; thus it need not be specified by the client.</p>
 <p>All DataCite Metadata Scheme metadata bound to DOI identifiers is
 automatically and immediately uploaded to <a class="reference external" href="http://datacite.org/">DataCite</a>, where it may
 be made available DataCite's search system and other indexing
