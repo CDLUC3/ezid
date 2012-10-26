@@ -296,7 +296,7 @@ def _validate_datacite_metadata_form(request, profile):
   post = request.POST
   msgs = django.contrib.messages
   is_valid = True
-  if profile.name != 'datacite' or ('publish' in post and post['publish'] == False):
+  if profile.name != 'datacite' or ('publish' in post and post['publish'] == 'False'):
     return True
   if not set(['datacite.creator', 'datacite.title', 'datacite.publisher', \
       'datacite.publicationyear', 'datacite.resourcetype']).issubset(post):
