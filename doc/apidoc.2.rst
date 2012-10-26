@@ -927,7 +927,9 @@ __ `DataCite Metadata Scheme`_
    Metadata Scheme schema may be bound to the metadata element
    "datacite".  Care should be taken to escape line terminators and
    percent signs in the document (as is true for all metadata element
-   values; see `Request & response bodies`_ above).
+   values; see `Request & response bodies`_ above).  Note that EZID
+   sets the identifier embedded in the document to the identifier
+   being operated on; thus it need not be specified by the client.
 
    All DataCite Metadata Scheme metadata bound to DOI identifiers is
    automatically and immediately uploaded to DataCite_, where it may
