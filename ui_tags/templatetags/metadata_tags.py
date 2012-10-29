@@ -10,7 +10,7 @@ register = template.Library()
 
 @register.simple_tag
 def display_value(id_dictionary, element):
-  """Takes the id metadata dictionary and element."""
+  """Takes the id metadata dictionary and element object."""
   if element.name in id_dictionary:
     return display_formatted(id_dictionary, element)
   else:
@@ -19,7 +19,7 @@ def display_value(id_dictionary, element):
     return '[No value]'
 
 def display_formatted(id_dictionary, element):
-  """formats the element according to its display style"""
+  """formats the element object according to its display style"""
   if element.displayType == 'datetime':
     t = time.localtime(float(id_dictionary[element.name]))
     return time.strftime("%m/%d/%Y %I:%M %p", t)

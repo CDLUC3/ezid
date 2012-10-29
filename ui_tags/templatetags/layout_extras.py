@@ -41,11 +41,19 @@ def request_value(context, key_name):
   
 @register.tag
 @basictag(takes_context=True) 
-def dict_value(context, dt, key_name):
-  """Sets value to the dictionary dt[key_name]"""
-  print key_name
+def set_dict_value(context, dt, key_name):
+  """Sets value in the context object equal to the dictionary dt[key_name]"""
   context['value'] = dt[key_name]
   return ''
+
+@register.simple_tag
+def get_dict_value(dt, key_name):
+  """For getting dictionary values which Django templating can't handle,
+  such as those starting with underscore or with a dot in them"""
+  if key_name in dt:
+    return escape(dt[key_name])
+  else:
+    return ''
   
 @register.simple_tag
 def tooltip_class(profile_element_string):
