@@ -943,6 +943,8 @@ __ `DataCite Metadata Scheme`_
 3. **Profile "dc"**.  These elements are drawn from the `Dublin Core
    Metadata Element Set`_.
 
+..
+
    ============ =======================================================
    Element      Definition
    ============ =======================================================
@@ -963,6 +965,22 @@ __ `DataCite Metadata Scheme`_
                 Recommended best practice for encoding the date value
                 is defined in a profile of ISO 8601 and follows the
                 YYYY-MM-DD format.
+   dc.type      The nature or genre of the resource.  Recommended best
+                practice is to use a term from the DCMI Type
+                Vocabulary:
+
+                - Collection
+                - Dataset
+                - Event
+                - Image
+                - InteractiveResource
+                - MovingImage
+                - PhysicalObject
+                - Service
+                - Software
+                - Sound
+                - StillImage
+                - Text
    ============ =======================================================
 
 Metadata requirements & mapping
