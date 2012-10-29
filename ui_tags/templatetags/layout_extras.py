@@ -71,6 +71,14 @@ def help_icon(id_of_help):
   return '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#' + id_of_help + '" name="help_link">' + \
     '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help"' + \
     ' title="Click for additional help"/></a>'
+    
+@register.simple_tag
+def datacite_field_help_icon(id_of_help):
+  temp_id = id_of_help + '_help'
+  return '<div class="datacite_help">' + \
+    '<a href="#' + temp_id + '" name="help_link">' + \
+    '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help" title="Click for additional help"/>' + \
+    '</a></div>'
 
 
 #@register.simple_tag(takes_context=True)

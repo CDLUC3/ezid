@@ -269,6 +269,12 @@ div.field_right_large {
   width: 220px;
 }
 
+div.field_right_small {
+  margin: 10px 0 0 0;
+  float: left;
+  width: 30px;
+}
+
 div.left_desc {
   margin: 5px 0 0 0;
   float: left;
@@ -576,5 +582,10 @@ span.pad {
 span.big_pad {
 	margin-left: 1em;
 	margin-right: 1em;	
+}
+
+div.datacite_help {
+	float:right;
+	padding-right:40px;
 }
 

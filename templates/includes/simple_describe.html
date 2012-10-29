@@ -15,5 +15,8 @@
   </label>
   <div class="field_right">
   	{% display_form_element e %}
-  </div>        
+  	{% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
+			{% datacite_field_help_icon e.name %}
+  	{% endif %}
+  </div>
 {% endfor %}
