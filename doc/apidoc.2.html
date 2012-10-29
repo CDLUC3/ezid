@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.8.1: http://docutils.sourceforge.net/" />
 <title>The EZID API, Version 2</title>
 <style type="text/css">
 
@@ -149,6 +149,7 @@ report problems:</p>
 <li><a class="reference internal" href="#profile-dc">Profile &quot;dc&quot;</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#metadata-requirements-mapping">Metadata requirements &amp; mapping</a></li>
 <li><a class="reference internal" href="#testing-the-api">Testing the API</a></li>
 <li><a class="reference internal" href="#server-status">Server status</a></li>
 <li><a class="reference internal" href="#python-example">Python example</a></li>
@@ -754,7 +755,7 @@ creation time.</li>
 identifier will be registered with resolvers and other external
 services.</li>
 <li>A public identifier may be marked as unavailable.  At this time the
-identifier will be removed from any external indexing services.</li>
+identifier will be removed from any external services.</li>
 <li>An unavailable identifier may be returned to public status.  At this
 time the identifier will be re-registered with resolvers and other
 external services.</li>
@@ -852,16 +853,17 @@ author</td>
 </div>
 <div class="section" id="metadata-profiles">
 <h1>Metadata profiles</h1>
-<p>There is no requirement that an identifier have any citation
-(descriptive) metadata, but uploading at least minimal citation
-metadata to EZID is strongly encouraged to aid in the understanding of
-what the identifier represents and to facilitate the identifier's
-long-term maintenance.  EZID supports several citation metadata
-&quot;profiles,&quot; or standard sets of citation metadata elements.</p>
-<p>By convention, a metadata profile is referred to using a simple,
-lowercase name, e.g., &quot;erc&quot;, and elements belonging to that profile
-are referred to using the syntax &quot;<span class="hl1">profile</span>.<span class="hl1">element</span>&quot;,
-e.g., &quot;erc.who&quot;.</p>
+<p>EZID allows &quot;citation metadata&quot; to be stored with an identifier, i.e.,
+metadata that describes the object referenced by the identifier or
+that otherwise gives the meaning of the identifier.  In certain cases
+certain metadata elements are required to be present; see <a class="reference internal" href="#metadata-requirements-mapping">Metadata
+requirements &amp; mapping</a> below.  This section describes only the
+general structure and naming of citation metadata in EZID.</p>
+<p>EZID supports several citation metadata &quot;profiles,&quot; or standard sets
+of citation metadata elements.  By convention, a metadata profile is
+referred to using a simple, lowercase name, e.g., &quot;erc&quot;, and elements
+belonging to that profile are referred to using the syntax
+&quot;<span class="hl1">profile</span>.<span class="hl1">element</span>&quot;, e.g., &quot;erc.who&quot;.</p>
 <p>Currently EZID treats profiles entirely separately, and thus an
 identifier may have values for multiple metadata profiles
 simultaneously.  However, we anticipate that EZID will provide
@@ -1047,62 +1049,153 @@ sets the identifier embedded in the document to the identifier
 being operated on; thus it need not be specified by the client.</p>
 <p>All DataCite Metadata Scheme metadata bound to DOI identifiers is
 automatically and immediately uploaded to <a class="reference external" href="http://datacite.org/">DataCite</a>, where it may
-be made available DataCite's search system and other indexing
+be made available to DataCite's search system and other external
 services.</p>
 </blockquote>
-<ol class="arabic" id="profile-dc" start="3">
-<li><p class="first"><strong>Profile &quot;dc&quot;</strong>.  These elements are drawn from the <a class="reference external" href="http://dublincore.org/documents/dces/">Dublin Core
-Metadata Element Set</a>.</p>
+<ol class="arabic simple" id="profile-dc" start="3">
+<li><strong>Profile &quot;dc&quot;</strong>.  These elements are drawn from the <a class="reference external" href="http://dublincore.org/documents/dces/">Dublin Core
+Metadata Element Set</a>.</li>
+</ol>
+<!--  -->
+<blockquote>
 <table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
 <col width="82%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head"><p class="first last">Element</p>
-</th>
-<th class="head"><p class="first last">Definition</p>
-</th>
+<tr><th class="head">Element</th>
+<th class="head">Definition</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td><p class="first last">dc.creator</p>
-</td>
-<td><p class="first last">An entity primarily responsible for making the content
+<tr><td>dc.creator</td>
+<td>An entity primarily responsible for making the content
 of the resource.  Examples of a Creator include a
 person, an organization, or a service.  Typically, the
 name of a Creator should be used to indicate the
-entity.</p>
-</td>
+entity.</td>
 </tr>
-<tr><td><p class="first last">dc.title</p>
-</td>
-<td><p class="first last">A name given to the resource.  Typically, a Title will
-be a name by which the resource is formally known.</p>
-</td>
+<tr><td>dc.title</td>
+<td>A name given to the resource.  Typically, a Title will
+be a name by which the resource is formally known.</td>
 </tr>
-<tr><td><p class="first last">dc.publisher</p>
-</td>
-<td><p class="first last">An entity responsible for making the resource
+<tr><td>dc.publisher</td>
+<td>An entity responsible for making the resource
 available.  Examples of a Publisher include a person,
 an organization, or a service.  Typically, the name of
-a Publisher should be used to indicate the entity.</p>
-</td>
+a Publisher should be used to indicate the entity.</td>
 </tr>
-<tr><td><p class="first last">dc.date</p>
-</td>
-<td><p class="first last">A date associated with an event in the life cycle of
+<tr><td>dc.date</td>
+<td>A date associated with an event in the life cycle of
 the resource.  Typically, Date will be associated with
 the creation or availability of the resource.
 Recommended best practice for encoding the date value
 is defined in a profile of ISO 8601 and follows the
-YYYY-MM-DD format.</p>
+YYYY-MM-DD format.</td>
+</tr>
+<tr><td>dc.type</td>
+<td><p class="first">The nature or genre of the resource.  Recommended best
+practice is to use a term from the DCMI Type
+Vocabulary:</p>
+<ul class="last simple">
+<li>Collection</li>
+<li>Dataset</li>
+<li>Event</li>
+<li>Image</li>
+<li>InteractiveResource</li>
+<li>MovingImage</li>
+<li>PhysicalObject</li>
+<li>Service</li>
+<li>Software</li>
+<li>Sound</li>
+<li>StillImage</li>
+<li>Text</li>
+</ul>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
+</blockquote>
+</div>
+<div class="section" id="metadata-requirements-mapping">
+<h1>Metadata requirements &amp; mapping</h1>
+<p>A DOI identifier created by EZID must have title, creator, publisher,
+and publication year metadata any time its status is public (see
+<a class="reference internal" href="#identifier-status">Identifier status</a> above).  Other than that, EZID imposes no
+requirements on the presence or form of citation metadata, but
+uploading at least minimal citation metadata to EZID is strongly
+encouraged in all cases to record the identifier's meaning and to
+facilitate its long-term maintenance.  Regardless of the metadata
+profile used, population of the &quot;datacite.resourcetype&quot; element is
+encouraged to support broad categorization of identifiers.</p>
+<p>To satisfy the aforementioned DOI metadata requirements, EZID looks in
+order for:</p>
+<ol class="arabic simple">
+<li>DataCite XML metadata bound to the &quot;datacite&quot; element;</li>
+<li>Individual elements from the &quot;datacite&quot; profile as described in the
+previous section (&quot;datacite.title&quot;, etc.);</li>
+<li>Elements from other profiles that EZID is able to map to DataCite
+equivalents (e.g., element &quot;erc.who&quot; maps to &quot;datacite.creator&quot;).</li>
 </ol>
+<p>If no meaningful value is available for a required element, clients
+are encouraged to supply a standard machine-readable code drawn from
+the <a class="reference external" href="https://wiki.ucop.edu/display/Curation/ERC">Kernel Metadata and Electronic Resource Citations (ERCs)</a>
+specification.  These codes have the common syntactic form
+&quot;(:<span class="hl1">code</span>)&quot; and include:</p>
+<blockquote>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="87%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Code</th>
+<th class="head">Definition</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>(:unac)</td>
+<td>temporarily inaccessible</td>
+</tr>
+<tr><td>(:unal)</td>
+<td>unallowed; intentionally suppressed</td>
+</tr>
+<tr><td>(:unap)</td>
+<td>not applicable; makes no sense</td>
+</tr>
+<tr><td>(:unas)</td>
+<td>unassigned (e.g., untitled)</td>
+</tr>
+<tr><td>(:unav)</td>
+<td>unavailable; possibly unknown</td>
+</tr>
+<tr><td>(:unkn)</td>
+<td>known to be unknown (e.g., anonymous)</td>
+</tr>
+<tr><td>(:none)</td>
+<td>never had a value, never will</td>
+</tr>
+<tr><td>(:null)</td>
+<td>explicitly and meaningfully empty</td>
+</tr>
+<tr><td>(:tba)</td>
+<td>to be assigned or announced later</td>
+</tr>
+<tr><td>(:etal)</td>
+<td>too numerous to list (et alia)</td>
+</tr>
+<tr><td>(:at)</td>
+<td>the real value is at the given URL or identifier</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>A code may optionally be followed by the code's human-readable
+equivalent or a more specific description, as in:</p>
+<pre class="literal-block">
+who: (:unkn) anonymous donor
+</pre>
 </div>
 <div class="section" id="testing-the-api">
 <h1>Testing the API</h1>
@@ -1112,7 +1205,7 @@ identifiers.  Identifiers in these namespaces are termed &quot;test
 identifiers.&quot;  They are ordinary long-term identifiers in almost all
 respects, including resolvability, except that EZID deletes them after
 2 weeks.  An additional difference is that citation metadata for test
-identifiers is not uploaded to external search services.</p>
+identifiers is not uploaded to external services.</p>
 <p>All user accounts are permitted to create test identifiers.  EZID also
 provides an &quot;apitest&quot; account that is permitted to create only test
 identifiers.  <a class="reference external" href="http://www.cdlib.org/services/uc3/contact.html">Contact UC3</a> for the password for this account.</p>
