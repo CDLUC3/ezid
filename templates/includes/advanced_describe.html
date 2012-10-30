@@ -17,7 +17,7 @@ citation profile:</h2>
   {{internal_profile.target.displayName}}:
 </label>
 <div class="field_right">
-  <input type="text" class="{% tooltip_class "_target" %}" name="_target" id="_target" size="35" value="{% request_value "_target" %}"/>
+  <input type="text" class="{% tooltip_class "_target" %} std_form_width" name="_target" id="_target" size="35" value="{% request_value "_target" %}"/>
 </div>
 {% for e in current_profile.elements %}
   <label for="{{e.name}}" class="left {% tooltip_class e.name %}">

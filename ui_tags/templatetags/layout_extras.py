@@ -74,7 +74,7 @@ def help_icon(id_of_help):
     
 @register.simple_tag
 def datacite_field_help_icon(id_of_help):
-  temp_id = id_of_help + '_help'
+  temp_id = id_of_help.replace(".", "_") + '_help'
   return '<div class="datacite_help">' + \
     '<a href="#' + temp_id + '" name="help_link">' + \
     '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help" title="Click for additional help"/>' + \
@@ -139,6 +139,26 @@ def search_display(dictionary, field):
     return escape(datetime.datetime.fromtimestamp(dictionary[field]))
   else:
     return dictionary[field]
+  
+@register.simple_tag
+def unavailable_codes(for_field):
+  items = ( ("unac", "temporarily inaccessible"),
+            ("unal", "unallowed, suppressed intentionally"),
+            ("unap", "not applicable, makes no sense"),
+            ("unas", "value unassigned (e.g., Untitled)"),
+            ("unav", "value unavailable, possibly unknown"),
+            ("unkn", "known to be unknown (e.g., Anonymous, Inconnue)"),
+            ("none", "never had a value, never will"),
+            ("null", "explicitly and meaningfully empty"),
+            ("tba", "to be assigned or announced later"),
+            ("etal", "too numerous to list (et alia)"),
+            ("at", "the real value is at the given URL or identifier") )
+  return "<ul>" + "\n".join(
+          ["<li><a href=\"#"+ escape(x[0]) + "_" + for_field + "\" name=\"code_insert_link\">" + \
+           escape("(:" + x[0] + ")" ) + "</a> " + escape(x[1]) + "</li>" for \
+           x in items]
+          ) + "</ul>"
+    #<li><a href="#unas_datacite.creator" name="code_insert_link">(:unac)</a> temporarily inacessible</li>
 
 # This function should and will be moved to a better location.  -GJ
 def _urlForm (id):

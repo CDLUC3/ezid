@@ -589,3 +589,6 @@ div.datacite_help {
 	padding-right:40px;
 }
 
+input.std_form_width {
+	width:200px;
+}
