@@ -79,6 +79,7 @@
 	{% endif %}
 	
 	{% if not has_block_data and current_profile.name == 'datacite' %}
+		<h2>Sample citation</h2>
 	  {% get_dict_value identifier "datacite.creator" %}
 	  ({% get_dict_value identifier "datacite.publicationyear" %}):
 	  {% get_dict_value identifier "datacite.title" %}.
