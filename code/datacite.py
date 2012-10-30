@@ -347,7 +347,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
       message = e.fp.read()
       if e.code == 400 and (message.startswith("[xml]") or\
         message.startswith("ParseError")):
-        return message
+        return "element 'datacite': " + message
       else:
         raise e
     except urllib2.URLError:
