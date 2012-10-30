@@ -722,7 +722,7 @@ status transitions:
   services.
 
 * A public identifier may be marked as unavailable.  At this time the
-  identifier will be removed from any external indexing services.
+  identifier will be removed from any external services.
 
 * An unavailable identifier may be returned to public status.  At this
   time the identifier will be re-registered with resolvers and other
@@ -933,13 +933,15 @@ __ `DataCite Metadata Scheme`_
 
    All DataCite Metadata Scheme metadata bound to DOI identifiers is
    automatically and immediately uploaded to DataCite_, where it may
-   be made available DataCite's search system and other indexing
+   be made available to DataCite's search system and other external
    services.
 
 .. _Profile "dc":
 
 3. **Profile "dc"**.  These elements are drawn from the `Dublin Core
    Metadata Element Set`_.
+
+..
 
    ============ =======================================================
    Element      Definition
@@ -961,6 +963,22 @@ __ `DataCite Metadata Scheme`_
                 Recommended best practice for encoding the date value
                 is defined in a profile of ISO 8601 and follows the
                 YYYY-MM-DD format.
+   dc.type      The nature or genre of the resource.  Recommended best
+                practice is to use a term from the DCMI Type
+                Vocabulary:
+
+                - Collection
+                - Dataset
+                - Event
+                - Image
+                - InteractiveResource
+                - MovingImage
+                - PhysicalObject
+                - Service
+                - Software
+                - Sound
+                - StillImage
+                - Text
    ============ =======================================================
 
 Testing the API
@@ -972,7 +990,7 @@ identifiers.  Identifiers in these namespaces are termed "test
 identifiers."  They are ordinary long-term identifiers in almost all
 respects, including resolvability, except that EZID deletes them after
 2 weeks.  An additional difference is that citation metadata for test
-identifiers is not uploaded to external search services.
+identifiers is not uploaded to external services.
 
 All user accounts are permitted to create test identifiers.  EZID also
 provides an "apitest" account that is permitted to create only test
