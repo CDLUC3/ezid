@@ -422,7 +422,7 @@ def createDoi (doi, user, group, metadata={}):
       r = datacite.uploadMetadata(doi, {}, m, forceUpload=True)
       if r is not None:
         log.badRequest(tid)
-        return "error: bad request - element 'datacite': " + _oneline(r)
+        return "error: bad request - " + _oneline(r)
       r = datacite.registerIdentifier(doi, m["_st"])
       if r is not None:
         log.badRequest(tid)
@@ -973,8 +973,7 @@ def setMetadata (identifier, user, group, metadata):
         message = datacite.uploadMetadata(doi, m, metadata)
         if message is not None:
           log.badRequest(tid)
-          return "error: bad request - element 'datacite': " +\
-            _oneline(message)
+          return "error: bad request - " + _oneline(message)
       if target is not None:
         metadata["_st" if iStatus == "public" else "_st1"] = target
       if "_su" not in metadata: metadata["_su"] = str(int(time.time()))
@@ -991,8 +990,7 @@ def setMetadata (identifier, user, group, metadata):
         message = datacite.uploadMetadata(m["_s"][4:], m, metadata)
         if message is not None:
           log.badRequest(tid)
-          return "error: bad request - element 'datacite': " +\
-            _oneline(message)
+          return "error: bad request - " + _oneline(message)
       if target is not None:
         metadata["_t" if iStatus == "public" else "_t1"] = target
       if "_u" not in metadata: metadata["_u"] = str(int(time.time()))
@@ -1034,8 +1032,7 @@ def _statusChangeReservedToPublic (ark, m):
           _oneline(message)
       message = datacite.uploadMetadata(m["_s"][4:], {}, m, forceUpload=True)
       if message is not None:
-        return "error: bad request - element 'datacite': " +\
-          _oneline(message)
+        return "error: bad request - " + _oneline(message)
   _bindNoid.setElements(ark, d)
   m = m.copy()
   for k, v in d.items():
@@ -1077,8 +1074,7 @@ def _statusChangeUnavailableToPublic (ark, m):
         return "error: bad request - element '_target': " + _oneline(message)
       message = datacite.uploadMetadata(m["_s"][4:], {}, m, forceUpload=True)
       if message is not None:
-        return "error: bad request - element 'datacite': " +\
-          _oneline(message)
+        return "error: bad request - " + _oneline(message)
   _bindNoid.setElements(ark, d)
   m = m.copy()
   for k, v in d.items():
