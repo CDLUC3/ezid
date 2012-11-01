@@ -84,7 +84,7 @@ class Noid (object):
     # being bound to it.  That leaves presence of metadata as the
     # test.  A newly-minted identifier has no metadata, but
     # identifiers minted by EZID will always have some.  Thus this
-    # test if imperfect, but it's the least imperfect test.
+    # test is imperfect, but it's the least imperfect test.
     s = self._issue(self._command("fetch", [0, identifier]))
     assert len(s) >= 3 and s[0].startswith("id:") and\
       s[1].startswith("Circ:"), "unexpected return from noid 'fetch' command"
