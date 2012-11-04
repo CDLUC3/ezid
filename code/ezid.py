@@ -946,13 +946,8 @@ def setMetadata (identifier, user, group, metadata):
     # operating on the DOI directly or on the DOI via its shadow ARK.
     if "_s" in m and m["_s"].startswith("doi:"):
       if newStatus == "public":
-        if iStatus == "reserved":
-          m2 = m.copy()
-          m2.update(d)
-          message = datacite.uploadMetadata(m["_s"][4:], {}, m2)
-        else:
-          message = datacite.uploadMetadata(m["_s"][4:], m, d,
-            forceUpload=iStatus.startswith("unavailable"))
+        message = datacite.uploadMetadata(m["_s"][4:], m, d,
+          forceUpload=(iStatus != "public"))
         if message is not None:
           log.badRequest(tid)
           return "error: bad request - " + _oneline(message)
