@@ -12,7 +12,7 @@
     <h1>EZID Account Information</h1>
     	
     	{% for key in field_order %}
-    	  {% dict_value field_info key %}
+    	  {% set_dict_value field_info key %}
     	  {% if value.2 == 'text' %}
 	  			<label for="{{key}}" class="left_large bb" title="{{value.3}}">
 	    			{{ value.1 }}:

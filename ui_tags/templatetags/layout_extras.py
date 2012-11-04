@@ -41,11 +41,19 @@ def request_value(context, key_name):
   
 @register.tag
 @basictag(takes_context=True) 
-def dict_value(context, dt, key_name):
-  """Sets value to the dictionary dt[key_name]"""
-  print key_name
+def set_dict_value(context, dt, key_name):
+  """Sets value in the context object equal to the dictionary dt[key_name]"""
   context['value'] = dt[key_name]
   return ''
+
+@register.simple_tag
+def get_dict_value(dt, key_name):
+  """For getting dictionary values which Django templating can't handle,
+  such as those starting with underscore or with a dot in them"""
+  if key_name in dt:
+    return escape(dt[key_name])
+  else:
+    return ''
   
 @register.simple_tag
 def tooltip_class(profile_element_string):
@@ -63,6 +71,14 @@ def help_icon(id_of_help):
   return '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#' + id_of_help + '" name="help_link">' + \
     '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help"' + \
     ' title="Click for additional help"/></a>'
+    
+@register.simple_tag
+def datacite_field_help_icon(id_of_help):
+  temp_id = id_of_help.replace(".", "_") + '_help'
+  return '<div class="datacite_help">' + \
+    '<a href="#' + temp_id + '" name="help_link">' + \
+    '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help" title="Click for additional help"/>' + \
+    '</a></div>'
 
 
 #@register.simple_tag(takes_context=True)
@@ -123,6 +139,26 @@ def search_display(dictionary, field):
     return escape(datetime.datetime.fromtimestamp(dictionary[field]))
   else:
     return dictionary[field]
+  
+@register.simple_tag
+def unavailable_codes(for_field):
+  items = ( ("unac", "temporarily inaccessible"),
+            ("unal", "unallowed, suppressed intentionally"),
+            ("unap", "not applicable, makes no sense"),
+            ("unas", "value unassigned (e.g., Untitled)"),
+            ("unav", "value unavailable, possibly unknown"),
+            ("unkn", "known to be unknown (e.g., Anonymous, Inconnue)"),
+            ("none", "never had a value, never will"),
+            ("null", "explicitly and meaningfully empty"),
+            ("tba", "to be assigned or announced later"),
+            ("etal", "too numerous to list (et alia)"),
+            ("at", "the real value is at the given URL or identifier") )
+  return "<ul>" + "\n".join(
+          ["<li><a href=\"#"+ escape(x[0]) + "_" + for_field + "\" name=\"code_insert_link\">" + \
+           escape("(:" + x[0] + ")" ) + "</a> " + escape(x[1]) + "</li>" for \
+           x in items]
+          ) + "</ul>"
+    #<li><a href="#unas_datacite.creator" name="code_insert_link">(:unac)</a> temporarily inacessible</li>
 
 # This function should and will be moved to a better location.  -GJ
 def _urlForm (id):

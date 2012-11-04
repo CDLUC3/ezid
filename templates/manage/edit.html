@@ -47,7 +47,7 @@
         {{internal_profile.target.displayName}}:
       </label>
       <div class="field_right {% tooltip_class "_target" %}">
-        <input type="text" name="_target" id="_target" size="35" value="{% form_or_dict_value identifier "_target" %}" />
+        <input type="text" name="_target" id="_target" size="35" value="{% form_or_dict_value identifier "_target" %}" class="std_form_width" />
       </div>
       
       {% for e in current_profile.elements %}
@@ -55,7 +55,10 @@
           {{e.displayName}}:
         </label>
         <div class="field_right">
-          <input type="text" class="{% tooltip_class e.name %}" name="{{e.name}}" id="{{e.name}}" size="35" value="{% form_or_dict_value identifier e.name %}" />
+          {% display_form_element e identifier %}
+          {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
+						{% datacite_field_help_icon e.name %}
+  				{% endif %}
         </div>        
       {% endfor %}
     	<label class="left">&nbsp;</label>

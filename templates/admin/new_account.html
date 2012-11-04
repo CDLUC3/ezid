@@ -8,7 +8,7 @@
     <h1>Enter EZID Account Information</h1>
     <form id="new_account_form" action="{% url ui_admin.new_account %}" method="post">
     	{% for key in field_order %}
-    	  {% dict_value field_info key %}
+    	  {% set_dict_value field_info key %}
     	  {% if value.2 == 'text' %}
 	  			<label for="{{key}}" class="left_large" title="{{value.3}}">
 	    			{{ value.1 }}:
