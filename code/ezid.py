@@ -220,6 +220,9 @@ def _oneline (s):
 def _defaultTarget (identifier):
   return "%s/id/%s" % (_ezidUrl, urllib.quote(identifier, ":/"))
 
+def _tombstoneTarget (identifier):
+  return "%s/tombstone/id/%s" % (_ezidUrl, urllib.quote(identifier, ":/"))
+
 def _softUpdate (td, sd):
   for k, v in sd.items():
     if k not in td: td[k] = v
@@ -422,7 +425,7 @@ def createDoi (doi, user, group, metadata={}):
       r = datacite.uploadMetadata(doi, {}, m)
       if r is not None:
         log.badRequest(tid)
-        return "error: bad request - element 'datacite': " + _oneline(r)
+        return "error: bad request - " + _oneline(r)
       r = datacite.registerIdentifier(doi, m["_st"])
       if r is not None:
         log.badRequest(tid)
@@ -794,6 +797,14 @@ def getMetadata (identifier):
   finally:
     _releaseIdentifierLock(ark)
 
+def _fixupNonPublicTargets (d):
+  if "_t" in d:
+    d["_t1"] = d["_t"]
+    del d["_t"]
+  if "_st" in d:
+    d["_st1"] = d["_st"]
+    del d["_st"]
+
 def setMetadata (identifier, user, group, metadata):
   """
   Sets metadata elements of a given qualified identifier, e.g.,
@@ -833,24 +844,11 @@ def setMetadata (identifier, user, group, metadata):
     nqidentifier = "urn:uuid:" + urn
   else:
     return "error: bad request - unrecognized identifier scheme"
-  if len(filter(lambda k: len(k) == 0, metadata)) > 0:
-    return "error: bad request - empty element name"
-  if user[0] != _adminUsername and len(filter(lambda k: k.startswith("_") and\
-    k not in ["_coowners", "_target", "_profile", "_status"], metadata)) > 0:
-    return "error: bad request - use of reserved metadata element name"
-  # The only citation element we validate.  If more such cases arise,
-  # a more general mechanism should be emplaced.  Note that the
-  # validation check here precludes updating a DataCite Metadata
-  # Scheme record via a shadow ARK (but individual DataCite elements
-  # can still be updated).
-  metadata = metadata.copy()
-  if "datacite" in metadata and metadata["datacite"].strip() != "":
-    try:
-      metadata["datacite"] = datacite.validateDcmsRecord(nqidentifier,
-        metadata["datacite"])
-    except AssertionError, e:
-      return "error: bad request - element 'datacite': " + _oneline(str(e))
-  defaultTarget = "%s/id/%s" % (_ezidUrl, urllib.quote(nqidentifier, ":/"))
+  # 'd' will be our delta dictionary, i.e., it will hold the updates
+  # to be applied to 'm', the identifier's current metadata.
+  d = metadata.copy()
+  r = _validateMetadata1(nqidentifier, user, d)
+  if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
   _acquireIdentifierLock(ark)
   try:
@@ -860,6 +858,10 @@ def setMetadata (identifier, user, group, metadata):
     if m is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
+    r = _validateMetadata2((idmap.getAgent(m["_o"])[0], m["_o"]), d)
+    if type(r) is str:
+      log.badRequest(tid)
+      return "error: bad request - " + r
     iUser = m["_o"]
     iGroup = m["_g"]
     if "_co" in m:
@@ -873,145 +875,102 @@ def setMetadata (identifier, user, group, metadata):
       [(idmap.getAgent(co)[0], co) for co in iCoOwners], metadata.keys()):
       log.unauthorized(tid)
       return "error: unauthorized"
-    # Deal with any status change first; subsequent modifications will
-    # then be processed according to the updated status.
+    # Deal with any status change first; subsequent processing will
+    # then be performed according to the updated status.
     iStatus = m.get("_is", "public")
-    if "_status" in metadata:
-      um = re.match("unavailable($| *\|(.*))", metadata["_status"])
-      if um:
-        if iStatus == "public":
-          m = _statusChangePublicToUnavailable(ark, m, um.group(2))
-        elif iStatus.startswith("unavailable"):
-          if metadata["_status"] != iStatus:
-            reason = (um.group(2) or "").strip()
-            if len(reason) > 0:
-              status = "unavailable | " + reason
-            else:
-              status = "unavailable"
-            _bindNoid.setElements(ark, { "_is": status })
-            m["_is"] = status
-        else:
-          log.badRequest(tid)
-          return "error: bad request - invalid identifier status change"
-      elif metadata["_status"] == "public":
-        if iStatus == "reserved":
-          r = _statusChangeReservedToPublic(ark, m)
-          if type(r) is str:
-            log.badRequest(tid)
-            return r
-          else:
-            m = r
-        elif iStatus.startswith("unavailable"):
-          r = _statusChangeUnavailableToPublic(ark, m)
-          if type(r) is str:
-            log.badRequest(tid)
-            return r
-          else:
-            m = r
-      elif metadata["_status"] == "reserved":
+    if "_is" in d:
+      if d["_is"] == "reserved":
         if iStatus != "reserved":
           log.badRequest(tid)
           return "error: bad request - invalid identifier status change"
+        del d["_is"]
+        _fixupNonPublicTargets(d)
+      elif d["_is"] == "public":
+        if iStatus == "public":
+          del d["_is"]
+        else:
+          _softUpdate(d, { "_t": m["_t1"] })
+          d["_t1"] = ""
+          if "_st1" in m:
+            _softUpdate(d, { "_st": m["_st1"] })
+            d["_st1"] = ""
+          d["_is"] = ""
+      elif d["_is"].startswith("unavailable"):
+        if iStatus.startswith("unavailable"):
+          if d["_is"] == iStatus: del d["_is"]
+          _fixupNonPublicTargets(d)
+        elif iStatus == "public":
+          d["_t1"] = d.get("_t", m["_t"])
+          d["_t"] = _tombstoneTarget("ark:/" + ark)
+          if "_s" in m:
+            d["_st1"] = d.get("_st", m["_st"])
+            d["_st"] = _tombstoneTarget(m["_s"])
+        else:
+          log.badRequest(tid)
+          return "error: bad request - invalid identifier status change"
       else:
-        log.badRequest(tid)
-        return "error: bad request - invalid identifier status"
-      iStatus = m.get("_is", "public")
-      del metadata["_status"]
-    coOwners = None
-    if "_coowners" in metadata:
-      coOwners = []
-      for co in metadata["_coowners"].split(";"):
-        co = co.strip()
-        if co in ["", "anonymous", _adminUsername]: continue
-        try:
-          id = idmap.getUserId(co)
-        except Exception, e:
-          if type(e) is exceptions.AssertionError and\
-            "unknown user" in e.message:
-            log.badRequest(tid)
-            return "error: bad request - no such user in co-owner list"
-          else:
-            raise
-        if id != iUser and id not in coOwners: coOwners.append(id)
-      del metadata["_coowners"]
+        assert False, "unhandled case"
+    else:
+      if iStatus != "public": _fixupNonPublicTargets(d)
     # If the user is not the owner of the identifier, add the user to
     # the identifier's co-owner list.
     if user[1] != iUser and user[0] != _adminUsername:
-      if coOwners is None:
-        if user[1] not in iCoOwners: coOwners = iCoOwners + [user[1]]
+      if "_co" in d:
+        l = [co.strip() for co in d["_co"].split(";") if len(co.strip()) > 0]
+        if user[1] not in l: l.append(user[1])
+        d["_co"] = " ; ".join(l)
       else:
-        if user[1] not in coOwners: coOwners.append(user[1])
-    profile = None
-    if "_profile" in metadata:
-      if metadata["_profile"].strip() != "":
-        profile = metadata["_profile"].strip()
-      else:
-        if nqidentifier.startswith("doi:"):
-          profile = _defaultDoiProfile
-        elif nqidentifier.startswith("ark:/"):
-          profile = _defaultArkProfile
-        elif nqidentifier.startswith("urn:uuid:"):
-          profile = _defaultUrnUuidProfile
-        else:
-          assert False, "unhandled case"
-      del metadata["_profile"]
-    if nqidentifier.startswith("doi:"):
-      target = None
-      if "_target" in metadata:
-        if metadata["_target"].strip() != "":
-          target = metadata["_target"].strip()
-        else:
-          target = defaultTarget
-        del metadata["_target"]
-        if iStatus == "public":
-          message = datacite.setTargetUrl(doi, target)
-          if message is not None:
-            log.badRequest(tid)
-            return "error: bad request - element '_target': " +\
-              _oneline(message)
-      if len(metadata) > 0 and iStatus == "public":
-        message = datacite.uploadMetadata(doi, m, metadata)
-        if message is not None:
-          log.badRequest(tid)
-          return "error: bad request - element 'datacite': " +\
-            _oneline(message)
-      if target is not None:
-        metadata["_st" if iStatus == "public" else "_st1"] = target
-      if "_su" not in metadata: metadata["_su"] = str(int(time.time()))
-    elif nqidentifier.startswith("ark:/"):
-      target = None
-      if "_target" in metadata:
-        if metadata["_target"].strip() != "":
-          target = metadata["_target"].strip()
-        else:
-          target = defaultTarget
-        del metadata["_target"]
-      if "_s" in m and m["_s"].startswith("doi:") and len(metadata) > 0 and\
-        iStatus == "public":
-        message = datacite.uploadMetadata(m["_s"][4:], m, metadata)
-        if message is not None:
-          log.badRequest(tid)
-          return "error: bad request - element 'datacite': " +\
-            _oneline(message)
-      if target is not None:
-        metadata["_t" if iStatus == "public" else "_t1"] = target
-      if "_u" not in metadata: metadata["_u"] = str(int(time.time()))
-    elif nqidentifier.startswith("urn:uuid:"):
-      if "_target" in metadata:
-        if metadata["_target"].strip() != "":
-          target = metadata["_target"]
-        else:
-          target = defaultTarget
-        metadata["_st" if iStatus == "public" else "_st1"] = target
-        del metadata["_target"]
-      if "_su" not in metadata: metadata["_su"] = str(int(time.time()))
+        if user[1] not in iCoOwners:
+          iCoOwners.append(user[1])
+          d["_co"] = " ; ".join(iCoOwners)
+    # Update time.
+    if nqidentifier.startswith("ark:/"):
+      _softUpdate(d, { "_u": str(int(time.time())) })
     else:
-      assert False, "unhandled case"
-    if coOwners is not None: metadata["_co"] = " ; ".join(coOwners)
-    if profile is not None: metadata["_p"] = profile
-    _bindNoid.setElements(ark, metadata)
+      _softUpdate(d, { "_su": str(int(time.time())) })
+    # Easter egg: a careful reading of the above shows that it is
+    # impossible for the administrator to set certain internal
+    # elements in certain cases.  To preserve the administrator's
+    # ability to set *any* metadata, we include the totally
+    # undocumented ability below.
+    if user[0] == _adminUsername:
+      for k in d.keys():
+        if k.startswith("_") and k.endswith("!"):
+          d[k[:-1]] = d[k]
+          del d[k]
+    newStatus = d.get("_is", iStatus)
+    if newStatus == "": newStatus = "public"
+    # Perform any necessary DataCite operations.  These are more prone
+    # to failure, hence we do them first to avoid corrupting our own
+    # databases.  Note that this section is executed if we are
+    # operating on the DOI directly or on the DOI via its shadow ARK.
+    if "_s" in m and m["_s"].startswith("doi:"):
+      if newStatus == "public":
+        if iStatus == "reserved":
+          m2 = m.copy()
+          m2.update(d)
+          message = datacite.uploadMetadata(m["_s"][4:], {}, m2)
+        else:
+          message = datacite.uploadMetadata(m["_s"][4:], m, d,
+            forceUpload=iStatus.startswith("unavailable"))
+        if message is not None:
+          log.badRequest(tid)
+          return "error: bad request - " + _oneline(message)
+      if "_st" in d:
+        if iStatus == "reserved":
+          message = datacite.registerIdentifier(m["_s"][4:], d["_st"])
+        else:
+          message = datacite.setTargetUrl(m["_s"][4:], d["_st"])
+        if message is not None:
+          log.badRequest(tid)
+          return "error: bad request - element '_target': " +\
+            _oneline(message)
+      if newStatus.startswith("unavailable") and iStatus == "public":
+        datacite.deactivate(m["_s"][4:])
+    # Finally, and most importantly, update our own databases.
+    _bindNoid.setElements(ark, d)
     if iUser != "anonymous":
-      m.update(metadata)
+      m.update(d)
       search.update(m.get("_s", nqidentifier), m)
   except Exception, e:
     log.error(tid, e)
@@ -1021,72 +980,6 @@ def setMetadata (identifier, user, group, metadata):
     return "success: " + nqidentifier
   finally:
     _releaseIdentifierLock(ark)
-
-def _statusChangeReservedToPublic (ark, m):
-  d = { "_is": "", "_t": m["_t1"], "_t1": "" }
-  if "_s" in m:
-    d["_st"] = m["_st1"]
-    d["_st1"] = ""
-    if m["_s"].startswith("doi:"):
-      message = datacite.registerIdentifier(m["_s"][4:], d["_st"])
-      if message is not None:
-        return "error: bad request - element '_target': " +\
-          _oneline(message)
-      message = datacite.uploadMetadata(m["_s"][4:], {}, m)
-      if message is not None:
-        return "error: bad request - element 'datacite': " +\
-          _oneline(message)
-  _bindNoid.setElements(ark, d)
-  m = m.copy()
-  for k, v in d.items():
-    if v != "":
-      m[k] = v
-    else:
-      del m[k]
-  return m
-
-def _statusChangePublicToUnavailable (ark, m, reason):
-  reason = (reason or "").strip()
-  if len(reason) > 0:
-    status = "unavailable | " + reason
-  else:
-    status = "unavailable"
-  d = { "_is": status, "_t1": m["_t"], "_t":\
-    "%s/tombstone/id/%s" % (_ezidUrl, urllib.quote("ark:/" + ark, ":/")) }
-  if "_s" in m:
-    d["_st1"] = m["_st"]
-    d["_st"] = "%s/tombstone/id/%s" % (_ezidUrl, urllib.quote(m["_s"], ":/"))
-    if m["_s"].startswith("doi:"):
-      message = datacite.setTargetUrl(m["_s"][4:], d["_st"])
-      assert message is None,\
-        "unexpected error setting DOI tombstone target URL"
-      datacite.deactivate(m["_s"][4:])
-  _bindNoid.setElements(ark, d)
-  m = m.copy()
-  m.update(d)
-  return m
-
-def _statusChangeUnavailableToPublic (ark, m):
-  d = { "_is": "", "_t": m["_t1"], "_t1": "" }
-  if "_s" in m:
-    d["_st"] = m["_st1"]
-    d["_st1"] = ""
-    if m["_s"].startswith("doi:"):
-      message = datacite.setTargetUrl(m["_s"][4:], d["_st"])
-      if message is not None:
-        return "error: bad request - element '_target': " + _oneline(message)
-      message = datacite.uploadMetadata(m["_s"][4:], {}, m, forceUpload=True)
-      if message is not None:
-        return "error: bad request - element 'datacite': " +\
-          _oneline(message)
-  _bindNoid.setElements(ark, d)
-  m = m.copy()
-  for k, v in d.items():
-    if v != "":
-      m[k] = v
-    else:
-      del m[k]
-  return m
 
 def deleteIdentifier (identifier, user, group):
   """

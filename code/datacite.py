@@ -347,7 +347,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
       message = e.fp.read()
       if e.code == 400 and (message.startswith("[xml]") or\
         message.startswith("ParseError")):
-        return message
+        return "element 'datacite': " + message
       else:
         raise e
     except urllib2.URLError:
@@ -358,22 +358,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
       _modifyActiveCount(-1)
       if c: c.close()
 
-def deactivate (doi):
-  """
-  Deactivates an existing, scheme-less DOI identifier (e.g.,
-  "10.5060/foo") in DataCite.  This removes the identifier from
-  DataCite's search index, but has no effect on the identifier's
-  existence in the Handle system or on the ability to change the
-  identifier's target URL.  The identifier can and will be reactivated
-  by uploading new metadata to it (cf. uploadMetadata in this module).
-  Raises an exception an error.
-  """
-  if not _enabled: return
-  # The identifier must already have metadata in DataCite; in case it
-  # doesn't, upload some bogus metadata.
-  message = uploadMetadata(doi, {}, { "datacite.title": "inactive" })
-  assert message is None,\
-    "unexpected return from DataCite store metadata operation: " + message
+def _deactivate (doi):
   # To hide transient network errors, we make multiple attempts.
   for i in range(_numAttempts):
     o = urllib2.build_opener(_HTTPErrorProcessor)
@@ -398,6 +383,30 @@ def deactivate (doi):
     finally:
       _modifyActiveCount(-1)
       if c: c.close()
+
+def deactivate (doi):
+  """
+  Deactivates an existing, scheme-less DOI identifier (e.g.,
+  "10.5060/foo") in DataCite.  This removes the identifier from
+  DataCite's search index, but has no effect on the identifier's
+  existence in the Handle system or on the ability to change the
+  identifier's target URL.  The identifier can and will be reactivated
+  by uploading new metadata to it (cf. uploadMetadata in this module).
+  Raises an exception an error.
+  """
+  if not _enabled: return
+  try:
+    _deactivate(doi)
+  except urllib2.HTTPError, e:
+    if e.code == 404:
+      # The identifier must already have metadata in DataCite; in
+      # case it doesn't, upload some bogus metadata.
+      message = uploadMetadata(doi, {}, { "datacite.title": "inactive" })
+      assert message is None,\
+        "unexpected return from DataCite store metadata operation: " + message
+      _deactivate(doi)
+    else:
+      raise
 
 def ping ():
   """
