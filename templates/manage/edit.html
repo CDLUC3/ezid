@@ -100,24 +100,42 @@
 		        <td>{% display_value identifier internal_profile.status %}{% help_icon "public_id_help" %}</td>
 		      </tr>
 	      {% else %}
-	      <tr colspan="2">
-	      	<td>
+	      <tr>
+	      	<td colspan="2">
+	      		<br/>
 		        <p>
-		          Do you wish to publish this identifier now? 
+		          Do you wish to publish this identifier now?&nbsp;&nbsp;
+		          <input type="radio" name="_status" id="status_yes" value="public"
+		            {% if post_status == 'public' %}
+		              checked="checked"
+		            {% endif %}/><label for="status_yes">Yes</label>&nbsp;&nbsp;
 		          <input type="radio" name="_status" id="status_no" value="reserved"
 		          {% if post_status != 'public' %}
 		            checked="checked"
 		          {% endif %}
 		          /><label for="status_no">No</label>
-		          <input type="radio" name="_status" id="status_yes" value="public"
-		            {% if post_status == 'public' %}
-		              checked="checked"
-		            {% endif %}/><label for="status_yes">yes</label>
 		          {% help_icon "public_id_help" %}
 		        </p>
 	       	</td>
 	      </tr>
 	      {% endif %}
+	      <tr>
+	      	<td colspan="2">
+		        <p>
+		          Do you wish to allow harvesting/indexing?&nbsp;&nbsp;
+		          <input type="radio" name="_export" id="export_yes" value="yes"
+		            {% if export == 'yes' %}
+		              checked="checked"
+		            {% endif %}/><label for="export_yes">Yes</label>&nbsp;&nbsp;
+		          <input type="radio" name="_export" id="export_no" value="no"
+		          {% if export != 'yes' %}
+		            checked="checked"
+		          {% endif %}
+		          /><label for="export_no">No</label>
+		          {% help_icon "export_help" %}
+		        </p>
+	       	</td>
+	      </tr>
       </table>
     </form>
   </div>

@@ -107,12 +107,14 @@ def edit(request, identifier):
     django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
     return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
   d['status'] = m['_status'] if '_status' in m else 'public'
+  d['export'] = m['_export'] if '_export' in m else 'yes'
   d['post_status'] = d['status']
   d['id_text'] = s.split()[1]
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
   if request.method == "POST":
     d['post_status'] = request.POST['_status'] if '_status' in request.POST else 'public'
+    d['export'] = request.POST['_export'] if '_export' in request.POST else d['export']
     d['current_profile'] = metadata.getProfile(request.POST['current_profile'])
     if request.POST['current_profile'] == request.POST['original_profile']:
       #this means we're saving and going to a save confirmation page

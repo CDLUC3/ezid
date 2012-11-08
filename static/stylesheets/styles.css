@@ -592,3 +592,14 @@ div.datacite_help {
 input.std_form_width {
 	width:200px;
 }
+
+div.form_yn_question_box {
+	margin:0.5em 0 0 1em;
+	clear:both;
+	width:430px;
+}
+
+div.yn_select {
+	float: right;
+	width: 140px;
+}

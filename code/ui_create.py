@@ -101,7 +101,7 @@ def advanced_form_processing(request, d):
     if uic.validate_advanced_metadata_form(request, d['current_profile']):
       to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
         { '_target' : uic.fix_target(request.POST['_target']),
-        "_status": "public" if request.POST["publish"] == "True" else "reserved" })
+        "_status": "public" if request.POST["publish"] == "True" else "reserved"})
       if request.POST['remainder'] == '' or request.POST['remainder'] == uic.remainder_box_default:
         s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request), 
             uic.group_or_anon_tup(request), to_write)
