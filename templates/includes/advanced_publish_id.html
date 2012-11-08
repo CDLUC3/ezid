@@ -2,7 +2,7 @@
 <h2>Step 3: Decide</h2>
  
 <div class="form_yn_question_box">
-  Do you wish to make this identifier public?
+  Make this identifier public?
   <div class="yn_select">
 	  <input type="radio" name="publish" value="True" id="publish_true" 
 	    {% if request.POST.publish != 'False' %}
@@ -21,7 +21,7 @@
 </div>
 
 <div class="form_yn_question_box">
-  Do you wish to allow harvesting/indexing?
+  Allow harvesting/indexing?
   <div class="yn_select">
 	  <input type="radio" name="export" value="True" id="export_yes" 
 	    {% if request.POST.export != 'yes' %}
