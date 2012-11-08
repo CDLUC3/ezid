@@ -23,18 +23,18 @@
 <div class="form_yn_question_box">
   Do you wish to allow harvesting/indexing?
   <div class="yn_select">
-	  <input type="radio" name="indexing" value="True" id="indexing_true" 
-	    {% if request.POST.indexing != 'False' %}
+	  <input type="radio" name="export" value="True" id="export_yes" 
+	    {% if request.POST.export != 'yes' %}
 	        checked="checked"
 	    {% endif %}
 	   /><label
-	    for="indexing_true">Yes</label>&nbsp;
-	  <input type="radio" name="indexing" value="False" id="indexing_false"
-	    {% if request.REQUEST.indexing == 'False' %}
+	    for="export_yes">Yes</label>&nbsp;
+	  <input type="radio" name="export" value="False" id="export_no"
+	    {% if request.REQUEST.export == 'no' %}
 	      checked="checked"
 	    {% endif %}
 	   /><label
-	    for="indexing_false">No</label>
-	    {% help_icon "public_id_help" %}
+	    for="export_no">No</label>
+	    {% help_icon "export_help" %}
 	</div>
 </div>
