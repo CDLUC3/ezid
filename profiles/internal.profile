@@ -109,3 +109,11 @@ shadow ARK has the same owner and citation metadata as the shadowed
 identifier, but may have a different object location.  It may be used
 to provide, for example, resolution to subcomponents of the identified
 object.
+
+element: _export
+displayname: Allow harvesting/indexing?
+displaytype: boolean
+tooltip:
+<b><u>Allow harvesting/indexing?</u></b><br/>
+Determines if the identifier is publicized by exporting it to external
+indexing and harvesting services.
