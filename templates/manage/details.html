@@ -116,9 +116,9 @@
 			</tr>
 			
 			<tr>
-	    	<td class="{# tooltip_class '_export' #}">Harvesting/indexing{#internal_profile.export.displayName#}:</td>
+	    	<td class="{% tooltip_class '_export' %}">{{ internal_profile.export.displayName }}</td>
 	    	<td>
-	    		Yes{# display_value identifier internal_profile.export #}{% help_icon "export_help" %}
+	    		{% display_value identifier internal_profile.export %}{% help_icon "export_help" %}
 	    	</td>
 			</tr>
 				  

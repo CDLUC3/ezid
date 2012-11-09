@@ -26,7 +26,7 @@ def display_formatted(id_dictionary, element):
   elif element.displayType == 'url':
     return "<a href='" + id_dictionary[element.name] + "'>" + escape(id_dictionary[element.name]) + "</a>"
   elif element.displayType == 'boolean':
-    if id_dictionary[element.name].upper() == 'TRUE':
+    if id_dictionary[element.name].upper() == 'TRUE' or id_dictionary[element.name].upper() == "YES":
       return 'Yes'
     else:
       return 'No'

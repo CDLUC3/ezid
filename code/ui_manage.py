@@ -120,7 +120,8 @@ def edit(request, identifier):
       #this means we're saving and going to a save confirmation page
       if uic.validate_simple_metadata_form(request, d['current_profile']):
         to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
-          { '_target' : uic.fix_target(request.POST['_target']), '_status': d['post_status'] })
+          { '_target' : uic.fix_target(request.POST['_target']), '_status': d['post_status'],
+            '_export' : ('yes' if (not 'export' in d) or d['export'] == 'yes' else 'no') })
         result = ezid.setMetadata(identifier, uic.user_or_anon_tup(request), uic.group_or_anon_tup(request),
           to_write)
         if result.startswith("success:"):
