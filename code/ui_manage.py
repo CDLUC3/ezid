@@ -185,4 +185,5 @@ def details(request):
     else:
       d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
   d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
+  d['has_resource_type'] = True if (d['current_profile'].name == 'datacite' and 'datacite.resourcetype' in m and m['datacite.resourcetype'] != '') else False
   return uic.render(request, "manage/details", d)

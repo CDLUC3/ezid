@@ -134,7 +134,9 @@
 		  {% get_dict_value identifier "datacite.title" %}.
 		  {% get_dict_value identifier "datacite.version" %}
 		  {% get_dict_value identifier "datacite.publisher" %}.
-		  {% get_dict_value identifier "datacite.resourcetype" %}.
+		  {% if has_resource_type %}
+		  	{% get_dict_value identifier "datacite.resourcetype" %}.
+		  {% endif %}
 		  {% identifier_display id_text testPrefixes %}
 		{% endif %}
   </div>
