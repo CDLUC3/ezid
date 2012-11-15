@@ -112,6 +112,13 @@
 #        |             | target URL as set by the client.  (In these
 #        |             | latter cases _st is set to an EZID-defined
 #        |             | URL.)  Not returned.
+# _x     | _export     | Export control.  If present, has the value
+#        |             | "no"; if not present, effectively has the
+#        |             | value "yes".  Determines if the identifier is
+#        |             | publicized by exporting it to external
+#        |             | indexing and harvesting services.  Always
+#        |             | returned.  For a shadow ARK, applies to both
+#        |             | the shadow ARK and shadowed identifier.
 #
 # Element names and values are first UTF-8 encoded, and then
 # non-graphic ASCII characters and a few other reserved characters are
@@ -211,7 +218,8 @@ _labelMapping = {
   "_su": "_updated",
   "_st": "_target",
   "_p": "_profile",
-  "_is": "_status"
+  "_is": "_status",
+  "_x": "_export"
 }
 
 def _oneline (s):
@@ -227,7 +235,8 @@ def _softUpdate (td, sd):
   for k, v in sd.items():
     if k not in td: td[k] = v
 
-_userSettableReservedElements = ["_coowners", "_profile", "_status", "_target"]
+_userSettableReservedElements = ["_coowners", "_export", "_profile", "_status",
+  "_target"]
 
 def _validateMetadata1 (identifier, user, metadata):
   """
@@ -246,6 +255,10 @@ def _validateMetadata1 (identifier, user, metadata):
   if user[0] != _adminUsername and any(map(lambda k: k.startswith("_") and\
     k not in _userSettableReservedElements, metadata)):
     return "use of reserved element name"
+  if "_export" in metadata:
+    metadata["_x"] = metadata["_export"].strip().lower()
+    if metadata["_x"] not in ["yes", "no"]: return "invalid export flag value"
+    del metadata["_export"]
   if "_profile" in metadata:
     if metadata["_profile"].strip() != "":
       metadata["_p"] = metadata["_profile"].strip()
@@ -399,6 +412,7 @@ def createDoi (doi, user, group, metadata={}):
       del m["_is"]
     elif m["_is"] != "reserved":
       return "error: bad request - invalid identifier status at creation time"
+  if m.get("_x", "") == "yes": del m["_x"]
   tid = uuid.uuid1()
   _acquireIdentifierLock(shadowArk)
   try:
@@ -513,6 +527,7 @@ def createArk (ark, user, group, metadata={}):
       del m["_is"]
     elif m["_is"] != "reserved":
       return "error: bad request - invalid identifier status at creation time"
+  if m.get("_x", "") == "yes": del m["_x"]
   tid = uuid.uuid1()
   _acquireIdentifierLock(ark)
   try:
@@ -599,6 +614,7 @@ def createUrnUuid (urn, user, group, metadata={}):
       del m["_is"]
     elif m["_is"] != "reserved":
       return "error: bad request - invalid identifier status at creation time"
+  if m.get("_x", "") == "yes": del m["_x"]
   tid = uuid.uuid1()
   _acquireIdentifierLock(shadowArk)
   try:
@@ -789,6 +805,7 @@ def getMetadata (identifier):
       d["_coowners"] = " ; ".join(idmap.getAgent(id.strip())[0]\
         for id in d["_coowners"].split(";") if len(id.strip()) > 0)
     if "_status" not in d: d["_status"] = "public"
+    if "_export" not in d: d["_export"] = "yes"
     log.success(tid)
     return ("success: " + nqidentifier, d)
   except Exception, e:
@@ -928,6 +945,8 @@ def setMetadata (identifier, user, group, metadata):
       _softUpdate(d, { "_u": str(int(time.time())) })
     else:
       _softUpdate(d, { "_su": str(int(time.time())) })
+    # Export flag.
+    if d.get("_x", "") == "yes": d["_x"] = ""
     # Easter egg: a careful reading of the above shows that it is
     # impossible for the administrator to set certain internal
     # elements in certain cases.  To preserve the administrator's
@@ -940,6 +959,9 @@ def setMetadata (identifier, user, group, metadata):
           del d[k]
     newStatus = d.get("_is", iStatus)
     if newStatus == "": newStatus = "public"
+    iExport = m.get("_x", "yes")
+    newExport = d.get("_x", iExport)
+    if newExport == "": newExport = "yes"
     # Perform any necessary DataCite operations.  These are more prone
     # to failure, hence we do them first to avoid corrupting our own
     # databases.  Note that this section is executed if we are
@@ -951,8 +973,10 @@ def setMetadata (identifier, user, group, metadata):
           m2.update(d)
           message = datacite.uploadMetadata(m["_s"][4:], {}, m2)
         else:
+          forceUpload = iStatus.startswith("unavailable") or\
+            (iExport == "no" and newExport == "yes")
           message = datacite.uploadMetadata(m["_s"][4:], m, d,
-            forceUpload=iStatus.startswith("unavailable"))
+            forceUpload=forceUpload)
         if message is not None:
           log.badRequest(tid)
           return "error: bad request - " + _oneline(message)
@@ -965,7 +989,11 @@ def setMetadata (identifier, user, group, metadata):
           log.badRequest(tid)
           return "error: bad request - element '_target': " +\
             _oneline(message)
-      if newStatus.startswith("unavailable") and iStatus == "public":
+      # The following test for public DOIs may look overly general,
+      # but it's written this way to cover the case that a metadata
+      # update above caused the identifier to become active again.
+      if (newStatus.startswith("unavailable") and iStatus == "public") or\
+        (newStatus == "public" and newExport == "no"):
         datacite.deactivate(m["_s"][4:])
     # Finally, and most importantly, update our own databases.
     _bindNoid.setElements(ark, d)

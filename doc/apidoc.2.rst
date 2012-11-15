@@ -13,7 +13,6 @@
 .. _CookieManager:
    http://download.oracle.com/javase/6/docs/api/java/net/CookieManager.html
 .. _cURL: http://curl.haxx.se/
-.. _DataCite: http://datacite.org/
 .. _DataCite Metadata Scheme: http://schema.datacite.org/
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
 .. _ERC: https://wiki.ucop.edu/display/Curation/ERC
@@ -763,6 +762,10 @@ first column indicates the element is modifiable by clients.
   |X| _status     The identifier's status (see                 unavailable |
                   `Identifier status`_ above).                 withdrawn by
                                                                author
+  |X| _export     Determines if the identifier is publicized   yes
+                  by exporting it to external indexing and
+                  harvesting services.  Must be "yes" or "no";
+                  defaults to "yes".
   === =========== ============================================ ================
 
 Metadata profiles
@@ -930,11 +933,6 @@ __ `DataCite Metadata Scheme`_
    values; see `Request & response bodies`_ above).  Note that EZID
    sets the identifier embedded in the document to the identifier
    being operated on; thus it need not be specified by the client.
-
-   All DataCite Metadata Scheme metadata bound to DOI identifiers is
-   automatically and immediately uploaded to DataCite_, where it may
-   be made available to DataCite's search system and other external
-   services.
 
 .. _Profile "dc":
 
