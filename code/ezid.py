@@ -945,6 +945,7 @@ def setMetadata (identifier, user, group, metadata):
       _softUpdate(d, { "_u": str(int(time.time())) })
     else:
       _softUpdate(d, { "_su": str(int(time.time())) })
+    # Export flag.
     if d.get("_x", "") == "yes": d["_x"] = ""
     # Easter egg: a careful reading of the above shows that it is
     # impossible for the administrator to set certain internal
@@ -958,6 +959,9 @@ def setMetadata (identifier, user, group, metadata):
           del d[k]
     newStatus = d.get("_is", iStatus)
     if newStatus == "": newStatus = "public"
+    iExport = m.get("_x", "yes")
+    newExport = d.get("_x", iExport)
+    if newExport == "": newExport = "yes"
     # Perform any necessary DataCite operations.  These are more prone
     # to failure, hence we do them first to avoid corrupting our own
     # databases.  Note that this section is executed if we are
@@ -969,8 +973,10 @@ def setMetadata (identifier, user, group, metadata):
           m2.update(d)
           message = datacite.uploadMetadata(m["_s"][4:], {}, m2)
         else:
+          forceUpload = iStatus.startswith("unavailable") or\
+            (iExport == "no" and newExport == "yes")
           message = datacite.uploadMetadata(m["_s"][4:], m, d,
-            forceUpload=iStatus.startswith("unavailable"))
+            forceUpload=forceUpload)
         if message is not None:
           log.badRequest(tid)
           return "error: bad request - " + _oneline(message)
@@ -983,7 +989,11 @@ def setMetadata (identifier, user, group, metadata):
           log.badRequest(tid)
           return "error: bad request - element '_target': " +\
             _oneline(message)
-      if newStatus.startswith("unavailable") and iStatus == "public":
+      # The following test for public DOIs may look overly general,
+      # but it's written this way to cover the case that a metadata
+      # update above caused the identifier to become active again.
+      if (newStatus.startswith("unavailable") and iStatus == "public") or\
+        (newStatus == "public" and newExport == "no"):
         datacite.deactivate(m["_s"][4:])
     # Finally, and most importantly, update our own databases.
     _bindNoid.setElements(ark, d)
