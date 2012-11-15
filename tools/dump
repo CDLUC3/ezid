@@ -85,7 +85,8 @@ labelMapping = {
   "_t": "_target",
   "_s": "_shadows",
   "_p": "_profile",
-  "_is": "_status"
+  "_is": "_status",
+  "_x": "_export"
 }
 
 p = optparse.OptionParser(usage="%prog [-nsz] noid.bdb")
@@ -117,6 +118,9 @@ if options.gzipOutput:
 else:
   outfile = sys.stdout
 
+def warning (id, message):
+  sys.stderr.write("dump: warning: %s: %s\n" % (id, message))
+
 def outputRecord1 (id, record):
   outfile.write(id)
   for k in record:
@@ -125,18 +129,29 @@ def outputRecord1 (id, record):
 
 def outputRecord (id, record):
   if record.get("_is", "public") != "public":
-    record["_t"] = record["_t1"]
+    if "_t1" in record:
+      record["_t"] = record["_t1"]
+    else:
+      warning(id, "missing _t1")
     if "_st1" in record: record["_st"] = record["_st1"]
   if "_t1" in record: del record["_t1"]
   if "_st1" in record: del record["_st1"]
   if "_s" in record:
-    su = record["_su"]
-    del record["_su"]
-    st = record["_st"]
-    del record["_st"]
+    if "_su" in record:
+      su = record["_su"]
+      del record["_su"]
+    else:
+      warning(id, "missing _su")
+      su = None
+    if "_st" in record:
+      st = record["_st"]
+      del record["_st"]
+    else:
+      warning(id, "missing _st")
+      st = None
     if options.includeShadowArks: outputRecord1("ark:/" + id, record)
-    record["_u"] = su
-    record["_t"] = st
+    if su != None: record["_u"] = su
+    if st != None: record["_t"] = st
     s = util.decode(record["_s"])
     del record["_s"]
     record["_shadowedby"] = util.encode3("ark:/" + id)

@@ -647,6 +647,8 @@ def systemStatus (id=None):
       config.config("DEFAULT.bind_noid")), "name": "Noid \"bind\" database" })
     probes.append({ "id": _addStatusProbe("datacite", None),
       "name": "DataCite API" })
+    probes.append({ "id": _addStatusProbe("handlesystem", None),
+      "name": "Handle System" })
     for p in config.config("prefixes.keys").split(","):
       minter = config.config("prefix_%s.minter" % p)
       if minter != "":
@@ -668,3 +670,5 @@ def systemStatus (id=None):
       return noid.Noid(url).ping()
     elif type == "datacite":
       return datacite.ping()
+    elif type == "handlesystem":
+      return datacite.pingHandleSystem()

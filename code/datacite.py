@@ -470,6 +470,20 @@ def ping ():
       _modifyActiveCount(-1)
       if c: c.close()
 
+def pingHandleSystem ():
+  """
+  More deeply tests the DataCite API to determine if the Handle System
+  is operational.  Returns "up" or "down".
+  """
+  if not _enabled: return "up"
+  try:
+    r = setTargetUrl(_pingDoi, _pingTarget)
+    assert r == None
+  except:
+    return "down"
+  else:
+    return "up"
+
 def _removeEncodingDeclaration (record):
   m = _prologRE.match(record)
   if m and m.group(3) != None:

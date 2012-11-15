@@ -101,6 +101,8 @@
 #    _reserved             Is reserved.
 #    _unavailable          Is unavailable.
 #
+#    _exported             Is exported.
+#
 #    _shadowArk            Is a shadow ARK.
 #
 #    _anyMetadata          Has any citation (non-internal) metadata.
@@ -255,6 +257,8 @@ def replaceMacro (query):
       "_fields contains erc.what and _fields contains erc.when ) )"
   elif query[0] == "_doi":
     e = "_id =~ /doi:/"
+  elif query[0] == "_exported":
+    e = "( _export = yes or not _fields contains _export )"
   elif query[0] == "_minimumDatacite":
     e = "( _fields contains datacite or ( _fields contains " +\
       "datacite.creator and _fields contains datacite.title and _fields " +\
