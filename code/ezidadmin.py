@@ -202,13 +202,6 @@ def getGroups ():
     return "Internal server error."
   finally:
     if l: l.unbind()
-    
-def getGroup(arkid):
-  grps = getGroups()
-  for grp in grps:
-    if grp['arkId'] == arkid:
-      return grp
-  raise LookupError('ArkId does not exist for group')
 
 def getUsers ():
   """

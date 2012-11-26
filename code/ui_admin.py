@@ -102,7 +102,7 @@ def manage_users(request, ssl=False):
   d['groups'] = ezidadmin.getGroups()
   d['groups'].sort(key=lambda i: i['gid'].lower())
   d['group'] = idmap.getGroupId(d['user']['groupGid'])
-  d['group_dn'] = ezidadmin.getGroup(d['group'])['dn']
+  d['group_dn'] = d['user']['groupDn']
   #now for saving
   if request.method == "POST" and request.POST['user'] == request.POST['original_user']:
     u, p = d['user'], request.POST
