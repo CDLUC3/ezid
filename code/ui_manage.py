@@ -88,7 +88,7 @@ def index(request):
   d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
   if d['p'] > d['total_pages']: d['p'] = d['total_pages']
 
-  d['results'] = search.getByOwner(d['user'][0], False, d['order_by'], IS_ASCENDING[d['sort']], d['ps'], (d['p']-1)*d['ps'])
+  d['results'] = search.getByOwner(d['user'][0], True, d['order_by'], IS_ASCENDING[d['sort']], d['ps'], (d['p']-1)*d['ps'])
   
   return uic.render(request, 'manage/index', d)
 
