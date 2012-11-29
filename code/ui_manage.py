@@ -56,7 +56,7 @@ def index(request):
     d['account_co_owners'] = r['ezidCoOwners']
   else:
     d['account_co_owners'] = ''
-  d['recent'] = search.getByOwner(d['user'][0], True, 'updateTime', False, 10, 0)
+  d['recent'] = search.getByOwner(d['user'][0], False, 'updateTime', False, 10, 0)
   d['recent1'] = d['recent'][0:5]
   d['recent2'] = d['recent'][5:10]
   d['field_order'] = FIELD_ORDER
