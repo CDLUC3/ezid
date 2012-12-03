@@ -436,7 +436,7 @@ def createDoi (doi, user, group, metadata={}):
       m["_st1"] = m["_st"]
       m["_st"] = _defaultTarget(qdoi)
     if m.get("_is", "public") == "public":
-      r = datacite.uploadMetadata(doi, {}, m)
+      r = datacite.uploadMetadata(doi, {}, m, forceUpload=True)
       if r is not None:
         log.badRequest(tid)
         return "error: bad request - " + _oneline(r)
@@ -968,15 +968,9 @@ def setMetadata (identifier, user, group, metadata):
     # operating on the DOI directly or on the DOI via its shadow ARK.
     if "_s" in m and m["_s"].startswith("doi:"):
       if newStatus == "public":
-        if iStatus == "reserved":
-          m2 = m.copy()
-          m2.update(d)
-          message = datacite.uploadMetadata(m["_s"][4:], {}, m2)
-        else:
-          forceUpload = iStatus.startswith("unavailable") or\
-            (iExport == "no" and newExport == "yes")
-          message = datacite.uploadMetadata(m["_s"][4:], m, d,
-            forceUpload=forceUpload)
+        message = datacite.uploadMetadata(m["_s"][4:], m, d,
+          forceUpload=(iStatus != "public" or\
+          (iExport == "no" and newExport == "yes")))
         if message is not None:
           log.badRequest(tid)
           return "error: bad request - " + _oneline(message)

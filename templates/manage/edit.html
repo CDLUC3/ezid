@@ -47,7 +47,7 @@
         {{internal_profile.target.displayName}}:
       </label>
       <div class="field_right {% tooltip_class "_target" %}">
-        <input type="text" name="_target" id="_target" size="35" value="{% form_or_dict_value identifier "_target" %}" />
+        <input type="text" name="_target" id="_target" size="35" value="{% form_or_dict_value identifier "_target" %}" class="std_form_width" />
       </div>
       
       {% for e in current_profile.elements %}
@@ -55,7 +55,10 @@
           {{e.displayName}}:
         </label>
         <div class="field_right">
-          <input type="text" class="{% tooltip_class e.name %}" name="{{e.name}}" id="{{e.name}}" size="35" value="{% form_or_dict_value identifier e.name %}" />
+          {% display_form_element e identifier %}
+          {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
+						{% datacite_field_help_icon e.name %}
+  				{% endif %}
         </div>        
       {% endfor %}
     	<label class="left">&nbsp;</label>
@@ -97,24 +100,42 @@
 		        <td>{% display_value identifier internal_profile.status %}{% help_icon "public_id_help" %}</td>
 		      </tr>
 	      {% else %}
-	      <tr colspan="2">
-	      	<td>
+	      <tr>
+	      	<td colspan="2">
+	      		<br/>
 		        <p>
-		          Do you wish to publish this identifier now? 
+		          Publish this identifier now?&nbsp;&nbsp;
+		          <input type="radio" name="_status" id="status_yes" value="public"
+		            {% if post_status == 'public' %}
+		              checked="checked"
+		            {% endif %}/><label for="status_yes">Yes</label>&nbsp;&nbsp;
 		          <input type="radio" name="_status" id="status_no" value="reserved"
 		          {% if post_status != 'public' %}
 		            checked="checked"
 		          {% endif %}
 		          /><label for="status_no">No</label>
-		          <input type="radio" name="_status" id="status_yes" value="public"
-		            {% if post_status == 'public' %}
-		              checked="checked"
-		            {% endif %}/><label for="status_yes">yes</label>
 		          {% help_icon "public_id_help" %}
 		        </p>
 	       	</td>
 	      </tr>
 	      {% endif %}
+	      <tr>
+	      	<td colspan="2">
+		        <p>
+		          Allow harvesting/indexing?&nbsp;&nbsp;
+		          <input type="radio" name="_export" id="export_yes" value="yes"
+		            {% if export == 'yes' %}
+		              checked="checked"
+		            {% endif %}/><label for="export_yes">Yes</label>&nbsp;&nbsp;
+		          <input type="radio" name="_export" id="export_no" value="no"
+		          {% if export != 'yes' %}
+		            checked="checked"
+		          {% endif %}
+		          /><label for="export_no">No</label>
+		          {% help_icon "export_help" %}
+		        </p>
+	       	</td>
+	      </tr>
       </table>
     </form>
   </div>

@@ -67,6 +67,7 @@ Contents
   - `Profile "datacite"`_
   - `Profile "dc"`_
 
+- `Metadata requirements & mapping`_
 - `Testing the API`_
 - `Server status`_
 - `Python example`_
@@ -771,17 +772,18 @@ first column indicates the element is modifiable by clients.
 Metadata profiles
 -----------------
 
-There is no requirement that an identifier have any citation
-(descriptive) metadata, but uploading at least minimal citation
-metadata to EZID is strongly encouraged to aid in the understanding of
-what the identifier represents and to facilitate the identifier's
-long-term maintenance.  EZID supports several citation metadata
-"profiles," or standard sets of citation metadata elements.
+EZID allows "citation metadata" to be stored with an identifier, i.e.,
+metadata that describes the object referenced by the identifier or
+that otherwise gives the meaning of the identifier.  In certain cases
+certain metadata elements are required to be present; see `Metadata
+requirements & mapping`_ below.  This section describes only the
+general structure and naming of citation metadata in EZID.
 
-By convention, a metadata profile is referred to using a simple,
-lowercase name, e.g., "erc", and elements belonging to that profile
-are referred to using the syntax "`profile`:hl1:.\ `element`:hl1:",
-e.g., "erc.who".
+EZID supports several citation metadata "profiles," or standard sets
+of citation metadata elements.  By convention, a metadata profile is
+referred to using a simple, lowercase name, e.g., "erc", and elements
+belonging to that profile are referred to using the syntax
+"`profile`:hl1:.\ `element`:hl1:", e.g., "erc.who".
 
 Currently EZID treats profiles entirely separately, and thus an
 identifier may have values for multiple metadata profiles
@@ -978,6 +980,59 @@ __ `DataCite Metadata Scheme`_
                 - StillImage
                 - Text
    ============ =======================================================
+
+Metadata requirements & mapping
+-------------------------------
+
+A DOI identifier created by EZID must have title, creator, publisher,
+and publication year metadata any time its status is public (see
+`Identifier status`_ above).  Other than that, EZID imposes no
+requirements on the presence or form of citation metadata, but
+uploading at least minimal citation metadata to EZID is strongly
+encouraged in all cases to record the identifier's meaning and to
+facilitate its long-term maintenance.  Regardless of the metadata
+profile used, population of the "datacite.resourcetype" element is
+encouraged to support broad categorization of identifiers.
+
+To satisfy the aforementioned DOI metadata requirements, EZID looks in
+order for:
+
+1. DataCite XML metadata bound to the "datacite" element;
+2. Individual elements from the "datacite" profile as described in the
+   previous section ("datacite.title", etc.);
+3. Elements from other profiles that EZID is able to map to DataCite
+   equivalents (e.g., element "erc.who" maps to "datacite.creator").
+
+If no meaningful value is available for a required element, clients
+are encouraged to supply a standard machine-readable code drawn from
+the `Kernel Metadata and Electronic Resource Citations (ERCs)`__
+specification.  These codes have the common syntactic form
+"(:`code`:hl1:)" and include:
+
+__ ERC_
+
+  ======= ================================================
+  Code    Definition
+  ======= ================================================
+  (:unac) temporarily inaccessible
+  (:unal) unallowed; intentionally suppressed
+  (:unap) not applicable; makes no sense
+  (:unas) unassigned (e.g., untitled)
+  (:unav) unavailable; possibly unknown
+  (:unkn) known to be unknown (e.g., anonymous)
+  (:none) never had a value, never will
+  (:null) explicitly and meaningfully empty
+  (:tba)  to be assigned or announced later
+  (:etal) too numerous to list (et alia)
+  (:at)   the real value is at the given URL or identifier
+  ======= ================================================
+
+A code may optionally be followed by the code's human-readable
+equivalent or a more specific description, as in:
+
+.. parsed-literal::
+
+  who: (:unkn) anonymous donor
 
 Testing the API
 ---------------

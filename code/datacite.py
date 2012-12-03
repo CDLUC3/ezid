@@ -27,6 +27,7 @@ import urllib2
 import xml.sax.saxutils
 
 import config
+import mapping
 
 _lock = threading.Lock()
 _enabled = None
@@ -220,6 +221,12 @@ _resourceTypes = ["Collection", "Dataset", "Event", "Film", "Image",
   "InteractiveResource", "Model", "PhysicalObject", "Service", "Software",
   "Sound", "Text"]
 
+# From the DCMI Type Vocabulary
+# <http://dublincore.org/documents/dcmi-type-vocabulary/#H7>:
+_dcResourceTypes = ["Collection", "Dataset", "Event", "Image",
+  "InteractiveResource", "MovingImage", "PhysicalObject", "Service",
+  "Software", "Sound", "StillImage", "Text"]
+
 def validateResourceType (descriptor):
   """
   Validates and normalizes a resource type descriptor.  By
@@ -286,23 +293,41 @@ def _formRecord (doi, metadata):
   if metadata.get("datacite", "").strip() != "":
     return _insertEncodingDeclaration(metadata["datacite"])
   else:
-    m = {}
-    for f in ["creator", "title", "publisher", "publicationyear",
-      "resourcetype"]:
-      if metadata.get("datacite."+f, "").strip() != "":
-        m[f] = metadata["datacite."+f].strip()
+    # Python shortcoming: local variables can't be assigned to from
+    # inner scopes, so we have to make mappedMetadata a list.
+    mappedMetadata = [None]
+    def getMappedValue (element, index, label):
+      if metadata.get("datacite."+element, "").strip() != "":
+        return metadata["datacite."+element].strip()
       else:
-        m[f] = "none supplied"
-    if not re.match("\d{4}$", m["publicationyear"]):
-      m["publicationyear"] = "0000"
-    r = _interpolate(_metadataTemplate, doi, m["creator"], m["title"],
-      m["publisher"], m["publicationyear"])
-    if m["resourcetype"] != "none supplied":
-      if "/" in m["resourcetype"]:
-        gt, st = m["resourcetype"].split("/", 1)
+        if mappedMetadata[0] == None:
+          mappedMetadata[0] = mapping.getDisplayMetadata(metadata)
+        assert mappedMetadata[0][index] != None, "no " + label
+        return mappedMetadata[0][index]
+    creator = getMappedValue("creator", 0, "creator")
+    title = getMappedValue("title", 1, "title")
+    publisher = getMappedValue("publisher", 2, "publisher")
+    publicationYear = getMappedValue("publicationyear", 3, "publication year")
+    m = re.match("(\d{4})(-\d\d)?(-\d\d)?$", publicationYear)
+    if m:
+      publicationYear = m.group(1)
+    else:
+      publicationYear = "0000"
+    r = _interpolate(_metadataTemplate, doi, creator, title, publisher,
+      publicationYear)
+    if metadata.get("datacite.resourcetype", "").strip() != "":
+      rt = metadata["datacite.resourcetype"].strip()
+      if "/" in rt:
+        gt, st = rt.split("/", 1)
         r += _interpolate(_resourceTypeTemplate2, gt.strip(), st.strip())
       else:
-        r += _interpolate(_resourceTypeTemplate1, m["resourcetype"])
+        r += _interpolate(_resourceTypeTemplate1, rt)
+    elif metadata.get("_p", "") == "dc" and\
+      metadata.get("dc.type", "").strip() != "":
+      rt = metadata["dc.type"].strip()
+      if rt in _dcResourceTypes:
+        if rt in ["MovingImage", "StillImage"]: rt = "Image"
+        r += _interpolate(_resourceTypeTemplate1, rt)
     r += u"</resource>\n"
     return r
 
@@ -321,12 +346,18 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
   thrown exception on other error.  No error checking is done on the
   inputs.
   """
-  if not _enabled: return None
-  oldRecord = _formRecord(doi, current)
+  try:
+    oldRecord = _formRecord(doi, current)
+  except AssertionError:
+    oldRecord = None
   m = current.copy()
   m.update(delta)
-  newRecord = _formRecord(doi, m)
+  try:
+    newRecord = _formRecord(doi, m)
+  except AssertionError, e:
+    return "DOI metadata requirements not satisfied: " + e.message
   if newRecord == oldRecord and not forceUpload: return None
+  if not _enabled: return None
   # To hide transient network errors, we make multiple attempts.
   for i in range(_numAttempts):
     o = urllib2.build_opener(_HTTPErrorProcessor)
@@ -399,9 +430,12 @@ def deactivate (doi):
     _deactivate(doi)
   except urllib2.HTTPError, e:
     if e.code == 404:
-      # The identifier must already have metadata in DataCite; in
-      # case it doesn't, upload some bogus metadata.
-      message = uploadMetadata(doi, {}, { "datacite.title": "inactive" })
+      # The identifier must already have metadata in DataCite; in case
+      # it doesn't (as may be the case with legacy identifiers),
+      # upload some bogus metadata.
+      message = uploadMetadata(doi, {}, { "datacite.title": "inactive",
+        "datacite.creator": "inactive", "datacite.publisher": "inactive",
+        "datacite.publicationyear": "0000" })
       assert message is None,\
         "unexpected return from DataCite store metadata operation: " + message
       _deactivate(doi)
