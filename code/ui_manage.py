@@ -107,24 +107,29 @@ def edit(request, identifier):
     django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
     return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
   d['status'] = m['_status'] if '_status' in m else 'public'
+  d['export'] = m['_export'] if '_export' in m else 'yes'
   d['post_status'] = d['status']
   d['id_text'] = s.split()[1]
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
   if request.method == "POST":
     d['post_status'] = request.POST['_status'] if '_status' in request.POST else 'public'
+    d['export'] = request.POST['_export'] if '_export' in request.POST else d['export']
     d['current_profile'] = metadata.getProfile(request.POST['current_profile'])
     if request.POST['current_profile'] == request.POST['original_profile']:
       #this means we're saving and going to a save confirmation page
       if uic.validate_simple_metadata_form(request, d['current_profile']):
         to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
-          { '_target' : uic.fix_target(request.POST['_target']), '_status': d['post_status'] })
+          { '_target' : uic.fix_target(request.POST['_target']), '_status': d['post_status'],
+            '_export' : ('yes' if (not 'export' in d) or d['export'] == 'yes' else 'no') })
         result = ezid.setMetadata(identifier, uic.user_or_anon_tup(request), uic.group_or_anon_tup(request),
           to_write)
         if result.startswith("success:"):
           django.contrib.messages.success(request, "Identifier updated.")
           return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
         else:
+          d['current_profile'] = metadata.getProfile(m['_profile'])
+          d['profiles'] = metadata.getProfiles()[1:]
           django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
           return uic.render(request, "manage/edit", d)
   elif request.method == "GET":
@@ -180,4 +185,5 @@ def details(request):
     else:
       d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
   d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
+  d['has_resource_type'] = True if (d['current_profile'].name == 'datacite' and 'datacite.resourcetype' in m and m['datacite.resourcetype'] != '') else False
   return uic.render(request, "manage/details", d)

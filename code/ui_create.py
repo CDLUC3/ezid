@@ -67,7 +67,8 @@ def simple_form_processing(request, d):
     if uic.validate_simple_metadata_form(request, d['current_profile']):
       s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request),
           uic.group_or_anon_tup(request), uic.assembleUpdateDictionary(request, d['current_profile'],
-          { '_target' : uic.fix_target(request.POST['_target']) }))
+          { '_target' : uic.fix_target(request.POST['_target']),
+           '_export': 'yes' }))
       if s.startswith("success:"):
         new_id = s.split()[1]
         django.contrib.messages.success(request, "Identifier created.")
@@ -101,7 +102,8 @@ def advanced_form_processing(request, d):
     if uic.validate_advanced_metadata_form(request, d['current_profile']):
       to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
         { '_target' : uic.fix_target(request.POST['_target']),
-        "_status": "public" if request.POST["publish"] == "True" else "reserved" })
+        "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
+        "_export": ("yes" if request.POST["export"] == "yes" else "no") } )
       if request.POST['remainder'] == '' or request.POST['remainder'] == uic.remainder_box_default:
         s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request), 
             uic.group_or_anon_tup(request), to_write)

@@ -1,19 +1,40 @@
 {% load layout_extras %}
 <h2>Step 3: Decide</h2>
  
-<div style="margin:0 0 0 1em;clear:both;">
-  Do you wish to make this identifier public? &nbsp;&nbsp;&nbsp;&nbsp;
-  <input type="radio" name="publish" value="True" id="publish_true" 
-    {% if request.POST.publish != 'False' %}
-        checked="checked"
-    {% endif %}
-   /><label
-    for="publish_true">Yes</label>&nbsp;
-  <input type="radio" name="publish" value="False" id="publish_false"
-    {% if request.REQUEST.publish == 'False' %}
-      checked="checked"
-    {% endif %}
-   /><label
-    for="publish_false">No</label>
-    {% help_icon "public_id_help" %}
+<div class="form_yn_question_box">
+  Make this identifier public?
+  <div class="yn_select">
+	  <input type="radio" name="publish" value="True" id="publish_true" 
+	    {% if request.POST.publish != 'False' %}
+	        checked="checked"
+	    {% endif %}
+	   /><label
+	    for="publish_true">Yes</label>&nbsp;
+	  <input type="radio" name="publish" value="False" id="publish_false"
+	    {% if request.REQUEST.publish == 'False' %}
+	      checked="checked"
+	    {% endif %}
+	   /><label
+	    for="publish_false">No</label>
+	    {% help_icon "public_id_help" %}
+	</div>
+</div>
+
+<div class="form_yn_question_box">
+  Allow harvesting/indexing?
+  <div class="yn_select">
+	  <input type="radio" name="export" value="yes" id="export_yes" 
+	    {% if request.POST.export != 'yes' %}
+	        checked="checked"
+	    {% endif %}
+	   /><label
+	    for="export_yes">Yes</label>&nbsp;
+	  <input type="radio" name="export" value="no" id="export_no"
+	    {% if request.REQUEST.export == 'no' %}
+	      checked="checked"
+	    {% endif %}
+	   /><label
+	    for="export_no">No</label>
+	    {% help_icon "export_help" %}
+	</div>
 </div>

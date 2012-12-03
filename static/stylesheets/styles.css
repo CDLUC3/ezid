@@ -269,6 +269,12 @@ div.field_right_large {
   width: 220px;
 }
 
+div.field_right_small {
+  margin: 10px 0 0 0;
+  float: left;
+  width: 30px;
+}
+
 div.left_desc {
   margin: 5px 0 0 0;
   float: left;
@@ -578,3 +584,22 @@ span.big_pad {
 	margin-right: 1em;	
 }
 
+div.datacite_help {
+	float:right;
+	padding-right:40px;
+}
+
+input.std_form_width {
+	width:200px;
+}
+
+div.form_yn_question_box {
+	margin:0.5em 0 0 1em;
+	clear:both;
+	width:350px;
+}
+
+div.yn_select {
+	float: right;
+	width: 140px;
+}

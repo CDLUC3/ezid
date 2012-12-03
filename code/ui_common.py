@@ -250,38 +250,71 @@ def validate_simple_metadata_form(request, profile):
   """validates a simple id metadata form, profile is more or less irrelevant for now,
   but may be useful later"""
   is_valid = True
-  if "_target" not in request.POST:
-    django.contrib.messages.error(request, "You must enter a location (URL) for your identifier")
+  post = request.POST
+  msgs = django.contrib.messages
+  if "_target" not in post:
+    msgs.error(request, "You must enter a location (URL) for your identifier")
     is_valid = False
-  if not(url_is_valid(request.POST['_target'])):
-    django.contrib.messages.error(request, "Please enter a a valid location (URL)")
+  if not(url_is_valid(post['_target'])):
+    msgs.error(request, "Please enter a a valid location (URL)")
     is_valid = False
-  if "datacite.resourcetype" in request.POST:
-    rt = request.POST["datacite.resourcetype"].strip()
+  if "datacite.resourcetype" in post:
+    rt = post["datacite.resourcetype"].strip()
     if rt != "" and rt.split("/", 1)[0] not in _dataciteResourceTypes:
-      django.contrib.messages.error(request, "Invalid general resource type")
+      msgs.error(request, "Invalid general resource type")
       is_valid = False
+  if profile.name == 'datacite' and _validate_datacite_metadata_form(request, profile) == False:
+    is_valid = False
   return is_valid
 
 def validate_advanced_metadata_form(request, profile):
   """validates an advanced metadata form, profile is more or less irrelevant for now,
   but may be useful later"""
   is_valid = True
-  if "_target" not in request.POST:
-    django.contrib.messages.error(request, "You must enter a location (URL) for your identifier")
+  post = request.POST
+  msgs = django.contrib.messages
+  if "_target" not in post:
+    msgs.error(request, "You must enter a location (URL) for your identifier")
     is_valid = False  
-  if not(url_is_valid(request.POST['_target'])):
-    django.contrib.messages.error(request, "Please enter a valid location (URL)")
+  if not(url_is_valid(post['_target'])):
+    msgs.error(request, "Please enter a valid location (URL)")
     is_valid = False
-  if request.POST['remainder'] != '' and request.POST['remainder'] != remainder_box_default and \
-      (' ' in request.POST['remainder']):
-    django.contrib.messages.error(request, "The remainder you entered is not valid.")
+  if post['remainder'] != '' and post['remainder'] != remainder_box_default and \
+      (' ' in post['remainder']):
+    msgs.error(request, "The remainder you entered is not valid.")
     is_valid = False       
-  if "datacite.resourcetype" in request.POST:
-    rt = request.POST["datacite.resourcetype"].strip()
+  if "datacite.resourcetype" in post:
+    rt = post["datacite.resourcetype"].strip()
     if rt != "" and rt.split("/", 1)[0] not in _dataciteResourceTypes:
-      django.contrib.messages.error(request, "Invalid general resource type")
+      msgs.error(request, "Invalid general resource type")
       is_valid = False
+  if profile.name == 'datacite' and _validate_datacite_metadata_form(request, profile) == False:
+    is_valid = False
+  return is_valid
+
+def _validate_datacite_metadata_form(request, profile):
+  post = request.POST
+  msgs = django.contrib.messages
+  is_valid = True
+  if profile.name != 'datacite' or ('publish' in post and post['publish'] == 'False') or\
+    ('_status' in post and post['_status'] == 'reserved'):
+    return True
+  if not set(['datacite.creator', 'datacite.title', 'datacite.publisher', \
+      'datacite.publicationyear', 'datacite.resourcetype']).issubset(post):
+    msgs.error(request, "Some required form elements are missing")
+    return False
+  for x in ['datacite.creator', 'datacite.title', 'datacite.publisher']:
+    if post[x].strip() == '':
+      msgs.error(request, 'You must fill in a value for ' + x.split('.')[1] + ' or use one of the codes shown in the help.')
+      is_valid = False
+  codes = ['(:unac)', '(:unal)', '(:unap)', '(:unas)', '(:unav)', \
+           '(:unkn)', '(:none)', '(:null)', '(:tba)', '(:etal)', \
+           '(:at)']
+  if not( post['datacite.publicationyear'] in codes or \
+          re.search('^\d{4}$', post['datacite.publicationyear']) ):
+    msgs.error(request, 'You must fill in a 4-digit publication year or use one of the codes shown in the help.')
+    is_valid = False
+    
   return is_valid
 
 def user_or_anon_tup(request):
