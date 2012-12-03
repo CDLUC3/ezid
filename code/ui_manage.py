@@ -84,7 +84,7 @@ def index(request):
   d['ps'] = 10
   if 'p' in request.REQUEST and request.REQUEST['p'].isdigit(): d['p'] = int(request.REQUEST['p'])
   if 'ps' in request.REQUEST and request.REQUEST['ps'].isdigit(): d['ps'] = int(request.REQUEST['ps'])
-  d['total_results'] = search.getByOwnerCount(d['user'][0], False)
+  d['total_results'] = search.getByOwnerCount(d['user'][0], True)
   d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
   if d['p'] > d['total_pages']: d['p'] = d['total_pages']
 
