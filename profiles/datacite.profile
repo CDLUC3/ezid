@@ -50,7 +50,7 @@ ends.
 
 element: datacite.resourcetype
 displayname: Resource type
-displaytype: select: (('', '[Not Set]'), ('Collection', 'Collection'), ('Dataset', 'Dataset'), ('Event','Event'), ('Film', 'Film'), ('Image', 'Image'), ('InteractiveResource', 'InteractiveResource'), ('Model', 'Model'), ('PhysicalObject', 'PhysicalObject'), ('Service','Service'), ('Software', 'Software'), ('Sound', 'Sound'), ('Text', 'Text'))
+displaytype: select: (('', '[Not Set]'), ('Collection', 'Collection'), ('Dataset', 'Dataset'), ('Event', 'Event'), ('Film', 'Film'), ('Image', 'Image'), ('InteractiveResource', 'InteractiveResource'), ('Model', 'Model'), ('PhysicalObject', 'PhysicalObject'), ('Service', 'Service'), ('Software', 'Software'), ('Sound', 'Sound'), ('Text', 'Text'))
 tooltip:
 <b><u>Resource type</u></b><br/>
 The general type of the data.
