@@ -5,10 +5,10 @@
 
 {% block content %}
   <div class="grid_12">
-    <h1>Recent Activity</h1>
+    <h1>My Recent Activity</h1>
   </div>
-  {% if recent|length < 1  %}
-  	<div class="grid_12"><p>There are no recent results to display.</p></div>
+  {% if recent|length < 1 %}
+  	<div class="grid_12"><p>You do not have recent activity to display.</p></div>
   {% else %}
   	<div class="grid_6">
     	{% for item in recent1 %}
@@ -22,10 +22,14 @@
     		{% latest_modification_string item %}<br/>
     	{% endfor %}
     </div>
+  {% endif %}
   
+  {% if results|length < 1 %}
+  	<p>There are no recent results to display.</p>
+  {% else %}
 	  <div class="grid_12">
-	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp;&nbsp;
-	  	<a href="#dialog" name="modal">Customize view</a>
+	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp;(Includes co-owned identifiers)
+	  	&nbsp;&nbsp;&nbsp;<a href="#dialog" name="modal">Customize view</a>
 	  	{% include "manage/_choose_cols.html" %}
 	  </div>
 	  
@@ -43,7 +47,9 @@
 		  </table>
 		  {% pager_display REQUEST p total_pages ps %}
 		</div>
-		
+	{% endif %}
+	
+	{% if recent|length > 0 or results|length > 0 %}
 		<p>Any identifiers shown <span class="fakeid">with a highlight</span> are demo/temporary identifiers.</p>
 	{% endif %}
 {% endblock %}
