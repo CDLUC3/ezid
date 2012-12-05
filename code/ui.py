@@ -54,8 +54,12 @@ def contact(request):
     message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
               "Heard about from: " + P['hear_about']
     try:
+      if P['email'] != '':
+        sent_from = P['email']
+      else:
+        sent_from = django.conf.settings.SERVER_EMAIL
       django.core.mail.send_mail(title, message,
-        django.conf.settings.SERVER_EMAIL, emails)
+        sent_from, emails)
       
       django.contrib.messages.success(request, "Message sent")
       d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
