@@ -222,7 +222,14 @@ except urllib2.HTTPError, e:
   print e.code, e.msg
   print e.fp.read()
 else:
-  for l in output.splitlines():
+  output = output.splitlines()
+  if operation == "view":
+    # Just a nicety.
+    statusLine = output[0]
+    output = output[1:]
+    output.sort()
+    output.insert(0, statusLine)
+  for l in output:
     if formatTimestamps and (l.startswith("_created:") or\
       l.startswith("_updated:")):
       ls = l.split(":")
