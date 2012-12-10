@@ -35,8 +35,17 @@ def contact(request):
         d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
         return uic.render(request, 'contact', d)
     d.update(uic.extract(request.POST, ['your_name', 'email', 'affiliation', 'comment', 'hear_about']))
+    errored = False
+    if P['your_name'] == '':
+      django.contrib.messages.error(request, "Please fill in your name.")
+      errored = True
+    if P['email'] == '' or not re.match('^.+\@.+\..+$', P['email']):
+      django.contrib.messages.error(request, "Please fill in a valid email address.")
+      errored = True
     if P['comment'].strip() == '':
-      django.contrib.messages.error(request, "Please fill in a question or comment")
+      django.contrib.messages.error(request, "Please fill in a question or comment.")
+      errored = True
+    if errored:
       return uic.render(request, 'contact', d)
     if not 'url' in P or P['url'] != '':
       #url is hidden.  If it's filled in then probably a spam bot
@@ -54,8 +63,12 @@ def contact(request):
     message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
               "Heard about from: " + P['hear_about']
     try:
+      if P['email'] != '':
+        sent_from = P['email']
+      else:
+        sent_from = django.conf.settings.SERVER_EMAIL
       django.core.mail.send_mail(title, message,
-        django.conf.settings.SERVER_EMAIL, emails)
+        sent_from, emails)
       
       django.contrib.messages.success(request, "Message sent")
       d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
