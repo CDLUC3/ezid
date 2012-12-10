@@ -111,7 +111,7 @@
 #    _anyErc               Has any ERC metadata.
 #
 #    _completeErc          Has complete (who/what/when or blob) ERC metadata.
-#    _minimumDatacite      Has minimum Datacite metadata.
+#    _minimumDatacite      Has (via mapping) minimum Datacite metadata.
 #
 #    _numDataciteFields    Number of Datacite fields.
 #    _numDublinCoreFields  Number of Dublin Core fields.
@@ -253,17 +253,27 @@ def replaceMacro (query):
   elif query[0] == "_ark":
     e = "_id =~ /ark:\\//"
   elif query[0] == "_completeErc":
-    e = "( _fields contains erc or ( _fields contains erc.who and " +\
-      "_fields contains erc.what and _fields contains erc.when ) )"
+    e = "( ( _fields contains erc and erc =~ /.*^who:/ms and " +\
+      "erc =~ /.*^what:/ms and erc =~ /.*^when:/ms ) or ( _fields " +\
+      "contains erc.who and _fields contains erc.what and _fields contains " +\
+      "erc.when ) )"
   elif query[0] == "_doi":
     e = "_id =~ /doi:/"
   elif query[0] == "_exported":
     e = "( _export = yes or not _fields contains _export )"
   elif query[0] == "_minimumDatacite":
-    e = "( _fields contains datacite or ( _fields contains " +\
-      "datacite.creator and _fields contains datacite.title and _fields " +\
-      "contains datacite.publisher and _fields contains " +\
-      "datacite.publicationyear ) )"
+    e = "( _fields contains datacite or ( ( _fields contains " +\
+      "datacite.creator or ( _profile = erc and ( _fields contains erc.who " +\
+      "or ( _fields contains erc and erc =~ /.*^who:/ms ) ) ) or ( " +\
+      "_profile = dc and _fields contains dc.creator ) ) and ( _fields " +\
+      "contains datacite.title or ( _profile = erc and ( _fields contains " +\
+      "erc.what or ( _fields contains erc and erc =~ /.*^what:/ms ) ) ) or " +\
+      "( _profile = dc and _fields contains dc.title ) ) and ( _fields " +\
+      "contains datacite.publisher or ( _profile = dc and _fields contains " +\
+      "dc.publisher ) ) and ( _fields contains datacite.publicationyear " +\
+      "or ( _profile = erc and ( _fields contains erc.when or ( _fields " +\
+      "contains erc and erc =~ /.*^when:/ms ) ) ) or ( _profile = dc and " +\
+      "_fields contains dc.date ) ) ) )"
   elif query[0] == "_numDataciteFields":
     e = "_numFields /datacite($|\\.)/"
   elif query[0] == "_numDublinCoreFields":
