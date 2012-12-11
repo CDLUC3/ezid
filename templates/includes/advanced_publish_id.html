@@ -24,7 +24,7 @@
   Allow harvesting/indexing?
   <div class="yn_select">
 	  <input type="radio" name="export" value="yes" id="export_yes" 
-	    {% if request.POST.export != 'yes' %}
+	    {% if request.POST.export != 'no' %}
 	        checked="checked"
 	    {% endif %}
 	   /><label
