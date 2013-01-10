@@ -404,7 +404,15 @@ table th{
 }
 
 tr.headrow{
+
+}
+
+tr.headrow th{
 	background-color: #d7d7ff;
+	border-left: 1px;
+	border-right: 1px;
+	border-style: solid;
+	border-color: #FFFFFF;
 }
 
 tr.row1{
@@ -602,4 +610,14 @@ div.form_yn_question_box {
 div.yn_select {
 	float: right;
 	width: 140px;
+}
+
+div.order_by_col {
+	float: right;
+	width: 10px;
+	padding-top: 2px;
+}
+
+#cur_sort {
+	background-color: #C7D7C7;
 }

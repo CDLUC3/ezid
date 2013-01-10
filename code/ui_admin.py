@@ -19,7 +19,7 @@ from collections import *
 @uic.admin_login_required
 def index(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.index'}
-  return redirect("ui_admin.usage")
+  #return redirect("ui_admin.usage")
   return uic.render(request, 'admin/index', d)
 
 @uic.admin_login_required

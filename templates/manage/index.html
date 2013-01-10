@@ -50,6 +50,14 @@
 	{% endif %}
 	
 	{% if recent|length > 0 or results|length > 0 %}
-		<p>Any identifiers shown <span class="fakeid">with a highlight</span> are demo/temporary identifiers.</p>
+		<p>Any identifiers shown with a <span class="fakeid">highlight</span> are demo/temporary identifiers.</p>
 	{% endif %}
+	<script type="text/javascript">
+  	// Add class for current column heading
+	  $(document).ready(function() {
+	  	$("th:has(.order_by_col)").attr("id", "cur_sort");
+		});
+	</script>
 {% endblock %}
+
+
