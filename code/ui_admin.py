@@ -47,7 +47,10 @@ def usage(request, ssl=False):
   elif d['choice'].startswith('group_'):
     group_id = d['choice'][6:]
   
-  d['report'] = _create_stats_report(user_id, group_id)
+  d['report'] = _create_stats_report(user_id, group_id)[::-1]
+  if len(d['report']) > 0:
+    d['totals'] = d['report'][0]
+    d['report'] = d['report'][1:]
   s = stats.getStats()
   d['last_tally'] = datetime.datetime.fromtimestamp(s.getComputeTime()).strftime('%B %d, %Y')
   return uic.render(request, 'admin/usage', d)

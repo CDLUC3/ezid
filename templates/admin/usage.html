@@ -30,8 +30,27 @@
     	table th {text-align: center;}
     	table, th, td {border: 1px solid black;}
     	.pct {float: right; width: 5em;}
+    	.summ {width: 300px;}
+    	.wm {float:right; text-align: right;width: 150px;}
+    	.tot {float:right; text-align: right;width: 7em;}
     </style>
     {% if report|length > 0 %}
+    	<h3>Totals</h3>
+    	
+    	<div class="summ">
+    		<div class="wm">{{totals.2}} with metadata</div>
+    		Arks: <div class="tot">{{totals.1}}</div>
+    	</div>
+    	<div class="summ">
+    		<div class="wm">{{totals.4}} with metadata</div>
+    		DOIs: <div class="tot">{{totals.3}}</div>
+    	</div>
+    	<div class="summ">
+    		<div class="wm">{{totals.6}} with metadata</div>
+    		URNs: <div class="tot">{{totals.5}}</div>
+    	</div>
+    	<br/>
+    
       <h3>Identifiers Created by Month</h3>
 	    <table>
 	    	<tr>
@@ -60,7 +79,7 @@
 	    		</tr>
 	    	{% endfor %}
 	    </table>
-	    <p>*Statistics were last calculated on {{last_tally}}</p>
+	    <p>*Statistics were last calculated on {{last_tally}}. Percentages are of items with metadata.</p>
 	  {% else %}
 	  	<p>
 	  		There is no usage data for the group or user you selected.
