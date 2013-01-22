@@ -3,7 +3,9 @@ from django.conf import settings
 from django.utils.html import escape
 from decorators import basictag
 from django.core.urlresolvers import reverse
+from operator import itemgetter
 import urllib
+import re
 #import pdb
 #import datetime
 
@@ -127,11 +129,20 @@ def selected_radio(context, request_item, loop_index, item_value):
     return ''
 
 @register.simple_tag
-def shoulder_display(prefix_dict, testPrefixes):
+def shoulder_display(prefix_dict, testPrefixes, simple_display):
+  #import pdb; pdb.set_trace() #this will enable debugging console
+  display_prefix = ""
   for pre in testPrefixes:
     if prefix_dict['prefix'].startswith(pre['prefix']):
-      return escape(prefix_dict['namespace']) + " (<span class='fakeid'>" + escape(prefix_dict['prefix']) + "</span>)"
-  return escape(prefix_dict['namespace'] + " (" + prefix_dict['prefix'] + ")")
+      display_prefix = " (<span class='fakeid'>" + escape(prefix_dict['prefix']) + "</span>)"
+  if display_prefix == '':
+    display_prefix = " (" + prefix_dict['prefix'] + ")"
+  if simple_display == "True":
+    t = re.search('^[A-Za-z]+:', prefix_dict['prefix'])
+    t = t.group(0)[:-1].upper()
+    return escape(t) + display_prefix
+  else:
+    return escape(prefix_dict['namespace']) + display_prefix 
 
 @register.simple_tag
 def search_display(dictionary, field):
@@ -181,7 +192,37 @@ def full_url_to_id_details_urlencoded(context, id_text):
   """return URL form of identifier, URL-encoded"""
   return urllib.quote(_urlForm(id_text))
 
+#check for more than one of the same identifer type
+#NOT checking for duplicate shoulders, returns t/f
+@register.filter(name='duplicate_id_types')
+def duplicate_id_types(prefixes):
+  kinds = {}
+  for prefix in prefixes:
+    t = re.search('^[A-Za-z]+:', prefix['prefix'])
+    t = t.group(0)[:-1]
+    if t in kinds:
+      kinds[t] = kinds[t] + 1
+    else:
+      kinds[t] = 1
+  for key, value in kinds.iteritems():
+    if value > 1:
+      return True
+  return False
+
+#returns list of unique ID types such as ARK/DOI/URN with the
+#prefix information, ((prefix, prefix_obj), etc)
+#should only be called where only one prefix per type
+@register.filter(name='unique_id_types')
+def unique_id_types(prefixes):
+  kinds = {}
+  for prefix in prefixes:
+    t = re.search('^[A-Za-z]+:', prefix['prefix'])
+    t = t.group(0)[:-1]
+    kinds[t] = prefix
+  i = [(x[0].upper(), x[1],) for x in kinds.items()]
+  return sorted(i, key = itemgetter(0))
   
+
 #This captures the block around with rounded corners go, can't believe what a PITA this is in django
 @register.tag(name="rounded_borders")
 def do_rounded_borders(parser, token):
