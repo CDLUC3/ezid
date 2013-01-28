@@ -1,8 +1,16 @@
 {% load layout_extras %}
 
-<h2>Step 1: Choose an identifier type.</h2>
-  {% for p in prefixes %}
-    <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}"
-          {% selected_radio "shoulder" forloop.counter p.prefix %} />
-    <label for="{{p.prefix}}">{% shoulder_display p testPrefixes %}</label><br/>
-  {% endfor %}
+<h2>Step 1: Choose an identifier type</h2>
+  {% if prefixes|duplicate_id_types %}
+  	{% for p in prefixes %}
+    	<input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}"
+      	{% selected_radio "shoulder" forloop.counter p.prefix %} />
+   		<label for="{{p.prefix}}">{% shoulder_display p testPrefixes "False" %}</label><br/>
+  	{% endfor %}
+  {% else %}
+  	{% for p in prefixes %}
+    	<input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}"
+      	{% selected_radio "shoulder" forloop.counter p.prefix %} />
+   		<label for="{{p.prefix}}">{% shoulder_display p testPrefixes "True" %}</label><br/>
+  	{% endfor %}
+  {% endif %}

@@ -24,8 +24,8 @@ FIELD_ORDER = ['identifier', 'owner', 'coOwners', 'createTime', 'updateTime', 's
 FIELD_DEFAULTS = ['identifier', 'createTime', 'mappedTitle', 'mappedCreator']
 
 # Column names for display for each field
-FIELDS_MAPPED = {'identifier':'ID',  'owner':'Owner', 'coOwners': 'Co-Owners', \
-                  'createTime': 'Date created', 'updateTime': 'Date last modified', 'status' :'Status',\
+FIELDS_MAPPED = {'identifier':'Identifier',  'owner':'Owner', 'coOwners': 'Co-Owners', \
+                  'createTime': 'Date Created', 'updateTime': 'Date Last Modified', 'status' :'Status',\
                   'mappedTitle': 'Object Title', 'mappedCreator' : 'Object Creator'}
 
 # Weight to give each field for table display since many or few fields are present and can be customized

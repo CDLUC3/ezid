@@ -19,7 +19,7 @@ from collections import *
 @uic.admin_login_required
 def index(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.index'}
-  return redirect("ui_admin.usage")
+  #return redirect("ui_admin.usage")
   return uic.render(request, 'admin/index', d)
 
 @uic.admin_login_required
@@ -47,7 +47,10 @@ def usage(request, ssl=False):
   elif d['choice'].startswith('group_'):
     group_id = d['choice'][6:]
   
-  d['report'] = _create_stats_report(user_id, group_id)
+  d['report'] = _create_stats_report(user_id, group_id)[::-1]
+  if len(d['report']) > 0:
+    d['totals'] = d['report'][0]
+    d['report'] = d['report'][1:]
   s = stats.getStats()
   d['last_tally'] = datetime.datetime.fromtimestamp(s.getComputeTime()).strftime('%B %d, %Y')
   return uic.render(request, 'admin/usage', d)
@@ -438,31 +441,39 @@ def _insertCommas (n):
 def _create_stats_report(user, group):
   """Create a stats report based on the user and group (or None, None) for all"""
   s = stats.getStats()
-  #stats is called like s.query((month, user, group, type, metadata), False)
   months = _month_range_for_display(user,group)
   rows =[]
-  t_arks, t_dois, t_urns, t_meta, t_all = 0, 0, 0, 0, 0
+  
+  position = {'ARK': 1, 'DOI': 3, 'URN': 5}
+  id_types = ['ARK', 'DOI', 'URN']
+  tallies = {'ARK': 0, 'DOI': 0, 'URN': 0}
+  meta_tallies = {'ARK': 0.0, 'DOI': 0.0, 'URN': 0.0}
+  
   for month in months:
-    arks = s.query((month, user, group, "ARK", None), False)
-    dois = s.query((month, user, group, "DOI", None), False)
-    urns = s.query((month, user, group, "URN", None), False)
-    total_items = float(s.query((month, user, group, None, None), False))
+    a=[0]*7 #create dict of zeroes, length 7
+    a[0] = month
+    for id_type in id_types:
+      ids = s.query((month, user, group, id_type, None), False)
+      ids_w_meta = float(s.query((month, user, group, id_type, "True"), False))
+      tallies[id_type] = tallies[id_type] + ids
+      meta_tallies[id_type] = meta_tallies[id_type] + ids_w_meta
+      if ids == 0:
+        percent_meta = "0%"
+      else:
+        percent_meta = str(int((ids_w_meta / ids * 100))) + "%"
+      a[position[id_type]] = _insertCommas(ids)
+      a[position[id_type] + 1] = percent_meta
+    rows.append(a)
     
-    t_arks += arks
-    t_dois += dois
-    t_urns += urns
-    t_all += total_items
-    
-    if total_items == 0:
-      percent_meta = 'N/A'
-    else:
-      with_meta = float(s.query((month, user, group, None, "True"), False))
-      t_meta += with_meta
-      percent_meta = "%0.2f" % (with_meta / total_items * 100) + "%"
-    rows.append((month, _insertCommas(arks), _insertCommas(dois), \
-                  _insertCommas(urns), percent_meta))
-
   if len(rows) > 0:
-    rows.append(('Total', _insertCommas(t_arks), _insertCommas(t_dois), \
-                 _insertCommas(t_urns), "%0.2f" % (t_meta / t_all * 100) + "%" ))
+    a=[0]*7 #create dict of zeroes, length 7
+    a[0] = "Total"
+    for id_type in id_types:
+      if tallies[id_type] == 0:
+        percent_meta = "0%"
+      else:
+        percent_meta = str(int((meta_tallies[id_type] / tallies[id_type] * 100))) + "%"
+      a[position[id_type]] = _insertCommas(tallies[id_type])
+      a[position[id_type] + 1] = percent_meta
+    rows.append(a)
   return rows

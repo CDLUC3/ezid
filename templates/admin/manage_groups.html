@@ -71,7 +71,7 @@
     	
     	<label class="left" for="shoulderList">Shoulders:</label>
     	<div class="field_right">
-    		<select id='shoulderList' name='shoulderList' size="10" multiple="multiple">
+    		<select id='shoulderList' name='shoulderList' size="30" multiple="multiple">
 					{% for s in selected_shoulders  %}
 						<option value="{{s.0}}" selected="selected">{{s.1}}</option>
 					{% endfor %}
