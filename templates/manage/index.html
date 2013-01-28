@@ -28,7 +28,7 @@
   	<p>There are no recent results to display.</p>
   {% else %}
 	  <div class="grid_12">
-	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp;(Includes co-owned identifiers)
+	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp;(includes co-owned identifiers)
 	  	&nbsp;&nbsp;&nbsp;<a href="#dialog" name="modal">Customize view</a>
 	  	{% include "manage/_choose_cols.html" %}
 	  </div>
@@ -50,7 +50,7 @@
 	{% endif %}
 	
 	{% if recent|length > 0 or results|length > 0 %}
-		<p>Any identifiers shown with a <span class="fakeid">highlight</span> are demo/temporary identifiers.</p>
+		<p>Identifiers shown with a <span class="fakeid">highlight</span> are demo/temporary identifiers.</p>
 	{% endif %}
 	<script type="text/javascript">
   	// Add class for current column heading
