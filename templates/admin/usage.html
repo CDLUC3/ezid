@@ -38,15 +38,15 @@
     	<h3>Totals</h3>
     	
     	<div class="summ">
-    		<div class="wm">{{totals.2}} with metadata</div>
-    		Arks: <div class="tot">{{totals.1}}</div>
+    		<div class="wm">{{totals.2}} have metadata</div>
+    		ARKs: <div class="tot">{{totals.1}}</div>
     	</div>
     	<div class="summ">
-    		<div class="wm">{{totals.4}} with metadata</div>
+    		<div class="wm">{{totals.4}} have metadata</div>
     		DOIs: <div class="tot">{{totals.3}}</div>
     	</div>
     	<div class="summ">
-    		<div class="wm">{{totals.6}} with metadata</div>
+    		<div class="wm">{{totals.6}} have metadata</div>
     		URNs: <div class="tot">{{totals.5}}</div>
     	</div>
     	<br/>
@@ -79,11 +79,10 @@
 	    		</tr>
 	    	{% endfor %}
 	    </table>
-	    <p>*Statistics were last calculated on {{last_tally}}. Percentages are of items with metadata.</p>
+	    <p>*Statistics calculated on {{last_tally}}.</p>
 	  {% else %}
 	  	<p>
-	  		There is no usage data for the group or user you selected.
-	  		Please choose another group or user to see usage data.
+	  		There is no usage data for the selected group or user.
 	  	</p>
     {% endif %}
   </div>

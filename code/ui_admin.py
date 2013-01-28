@@ -458,9 +458,9 @@ def _create_stats_report(user, group):
       tallies[id_type] = tallies[id_type] + ids
       meta_tallies[id_type] = meta_tallies[id_type] + ids_w_meta
       if ids == 0:
-        percent_meta = "N/A"
+        percent_meta = "0%"
       else:
-        percent_meta = "%0.1f" % (ids_w_meta / ids * 100) + "%"
+        percent_meta = str(int((ids_w_meta / ids * 100))) + "%"
       a[position[id_type]] = _insertCommas(ids)
       a[position[id_type] + 1] = percent_meta
     rows.append(a)
@@ -470,9 +470,9 @@ def _create_stats_report(user, group):
     a[0] = "Total"
     for id_type in id_types:
       if tallies[id_type] == 0:
-        percent_meta = "N/A"
+        percent_meta = "0%"
       else:
-        percent_meta = "%0.1f" % (meta_tallies[id_type] / tallies[id_type] * 100) + "%"
+        percent_meta = str(int((meta_tallies[id_type] / tallies[id_type] * 100))) + "%"
       a[position[id_type]] = _insertCommas(tallies[id_type])
       a[position[id_type] + 1] = percent_meta
     rows.append(a)
