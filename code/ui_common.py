@@ -365,7 +365,7 @@ def url_is_valid(target):
   url = urlparse.urlparse(target)
   if url.scheme == '':
     url = urlparse.urlparse('http://' + target)
-  netloc_regex = re.compile('^[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,4}(\:\d+)?$')
+  netloc_regex = re.compile('^[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,30}(\:\d+)?$')
   if not(url.scheme and url.netloc and netloc_regex.match(url.netloc)):
     return False
   return True
