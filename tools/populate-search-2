@@ -2,17 +2,17 @@
 
 # Performs a cleanup pass to insert into or update in the search
 # database those identifiers that were touched in any way between the
-# time the populate1 script was started and the time the new database
-# was installed in the running server.  Let 'date' be the last
-# timestamp observed in the EZID transaction log before running
-# populate1.  After running populate1, the general procedure for
-# running this script is:
+# time the populate-search-1 script was started and the time the new
+# database was installed in the running server.  Let 'date' be the
+# last timestamp observed in the EZID transaction log before running
+# populate-search-1.  After running populate-search-1, the general
+# procedure for running this script is:
 #
 #    SR=.../SITE_ROOT
 #    PR=$SR/PROJECT_ROOT
 #
 #    $PR/tools/filterlog -CSD -s $SR/logs/transaction_log |
-#      awk '($1 " " $2) > "date"' | $PR/tools/populate2 2> log
+#      awk '($1 " " $2) > "date"' | $PR/tools/populate-search-2 2> log
 #    $PR/tools/filterlog -e log
 #
 # This script writes EZID transaction log records to standard error.
@@ -87,4 +87,5 @@ for id in ids:
     if r == "error: bad request - no such identifier":
       search.delete(id)
     else:
-      log.otherError("populate2", Exception("ezid.getMetadata failed: " + r))
+      log.otherError("populate-search-2",
+        Exception("ezid.getMetadata failed: " + r))

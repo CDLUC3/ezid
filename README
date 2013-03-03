@@ -57,6 +57,7 @@ layout:
             django.sqlite3
             search.sqlite3
             stats
+            store.sqlite3
         logs/
             transaction_log
 
@@ -102,6 +103,8 @@ To create the initial databases, assuming the above environment
 variables have been set:
 
     django-admin.py syncdb
+    sqlite3 .../SITE_ROOT/db/store.sqlite3
+      < .../SITE_ROOT/PROJECT_ROOT/etc/store-schema.sql
     sqlite3 .../SITE_ROOT/db/search.sqlite3
       < .../SITE_ROOT/PROJECT_ROOT/etc/search-schema.sql
 

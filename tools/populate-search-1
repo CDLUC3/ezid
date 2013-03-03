@@ -10,11 +10,17 @@
 #    sqlite3 NEWDB < $PR/etc/search-schema.sql
 #    $PR/tools/dump -n .../noid.bdb |
 #      $PR/tools/select not _owner = anonymous | gzip > DUMP
-#    $PR/tools/populate1 DUMP NEWDB
+#    $PR/tools/populate-search-1 DUMP NEWDB
 #    (stop server)
 #    mv NEWDB $SR/db/search.sqlite3
 #    (start server)
-#    (deal with any fixups using populate2)
+#    (deal with any fixups using populate-search-2)
+#
+# The search database can also be populated from a raw dump using the
+# slightly different commands:
+#
+#    $PR/tools/dump -r .../noid.bdb |
+#      $PR/tools/select not _o = anonymous | gzip > DUMP
 #
 # This script requires several EZID modules.  The PYTHONPATH
 # environment variable must include the .../SITE_ROOT/PROJECT_ROOT
@@ -53,7 +59,7 @@ import search
 import util
 
 if len(sys.argv) != 3:
-  sys.stderr.write("usage: populate1 dumpfile databasefile\n")
+  sys.stderr.write("usage: populate-search-1 dumpfile databasefile\n")
   sys.exit(1)
 
 search.setDatabase(sys.argv[2])
