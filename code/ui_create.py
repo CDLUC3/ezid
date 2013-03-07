@@ -80,19 +80,35 @@ def simple_form_processing(request, d):
 
 def advanced_form_processing(request, d):
   """takes request and context object, d['prefixes'] should be set before calling"""
+  #sets manual_profile, current_profile, current_profile_name, internal_profile,
+  #     profiles, profile_names
+  
+  #Form set up
   d['remainder_box_default'] = uic.remainder_box_default
   #selects current_profile based on parameters or profile preferred for prefix type
+  d['manual_profile'] = False
   if 'current_profile' in request.REQUEST:
-    d['current_profile'] = metadata.getProfile(request.REQUEST['current_profile'])
-    if d['current_profile'] == None:
-      d['current_profile'] = metadata.getProfile('erc')
+    if request.REQUEST['current_profile'] in uic.manual_profiles:
+      d['manual_profile'] = True
+      d['current_profile_name'] = request.REQUEST['current_profile']
+    else: 
+      d['current_profile'] = metadata.getProfile(request.REQUEST['current_profile'])
+      if d['current_profile'] == None:
+        d['current_profile'] = metadata.getProfile('erc')
   else:
     if len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'):
       d['current_profile'] = metadata.getProfile('datacite')
     else:
       d['current_profile'] = metadata.getProfile('erc')
+  if d['manual_profile'] == False:
+    d['current_profile_name'] = d['current_profile'].name
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
+  profs = [(p.name, p.displayName, ) for p in d['profiles']] + uic.manual_profiles.items()
+  d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
+  
+  
+  #Form submission for writing
   if request.method == "POST":
     if "current_profile" not in request.POST or "shoulder" not in request.POST: return 'bad_request'
     pre_list = [p['prefix'] for p in d['prefixes']]
