@@ -91,6 +91,7 @@ def advanced_form_processing(request, d):
     if request.REQUEST['current_profile'] in uic.manual_profiles:
       d['manual_profile'] = True
       d['current_profile_name'] = request.REQUEST['current_profile']
+      d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
     else: 
       d['current_profile'] = metadata.getProfile(request.REQUEST['current_profile'])
       if d['current_profile'] == None:

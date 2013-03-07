@@ -20,7 +20,9 @@ citation profile:</h2>
   <input type="text" class="{% tooltip_class "_target" %} std_form_width" name="_target" id="_target" size="35" value="{% request_value "_target" %}"/>
 </div>
 {% if manual_profile %}
-  <div style="clear:both;">Manual profile goes here.</div>
+  <div style="clear:both;">
+  	{% include manual_template %}
+  </div>
 {% else %}
 	{% for e in current_profile.elements %}
 	  <label for="{{e.name}}" class="left {% tooltip_class e.name %}">
