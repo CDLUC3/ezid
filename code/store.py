@@ -286,7 +286,7 @@ def update (identifier, metadata, insertIfNecessary=False):
     updateTime = int(metadata["_su"] if "_su" in metadata else metadata["_u"])
     c = connection.cursor()
     begun = _begin(c)
-    # N.B.: There's no race condition here due to the global
+    # N.B.: A race condition can't occur here thanks to the global
     # identifier lock in ezid.py.
     if insertIfNecessary:
       _execute(c, "SELECT COUNT(*) FROM identifier WHERE identifier = ?",
@@ -340,8 +340,8 @@ def exists (identifier):
 def get (identifier):
   """
   Returns the metadata for an identifier as a dictionary of element
-  (name, value) pairs, or None if the identifier doesn't exist in the
-  store database.  'identifier' should be an unqualified ARK
+  (name, value) pairs, or returns None if the identifier doesn't exist
+  in the store database.  'identifier' should be an unqualified ARK
   identifier, e.g., "13030/foo".  (To get a non-ARK identifier's
   metadata, reference the identifier by its shadow ARK.)
   """
@@ -411,7 +411,7 @@ def harvest (owner=None, since=None, start=None, maximum=None):
       limit = ""
     c = connection.cursor()
     _execute(c, ("SELECT identifier, metadata FROM identifier%s " +\
-      "ORDER BY identifier %s") % (constraints, limit), tuple(values))
+      "ORDER BY identifier%s") % (constraints, limit), tuple(values))
     return [(i, _deblobify(m)) for i, m in c.fetchall()]
   except Exception, e:
     log.otherError("store.harvest", e)

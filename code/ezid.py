@@ -155,6 +155,7 @@ import log
 import noid
 import policy
 import search
+import store
 import util
 
 _bindNoid = None
@@ -445,6 +446,7 @@ def createDoi (doi, user, group, metadata={}):
         log.badRequest(tid)
         return "error: bad request - element '_target': " + _oneline(r)
     _bindNoid.setElements(shadowArk, m, True)
+    store.insert(shadowArk, m)
     if user[0] != "anonymous": search.insert(qdoi, m)
   except Exception, e:
     log.error(tid, e)
@@ -549,6 +551,7 @@ def createArk (ark, user, group, metadata={}):
       m["_t1"] = m["_t"]
       m["_t"] = _defaultTarget(qark)
     _bindNoid.setElements(ark, m, True)
+    store.insert(ark, m)
     if user[0] != "anonymous": search.insert(qark, m)
   except Exception, e:
     log.error(tid, e)
@@ -638,6 +641,7 @@ def createUrnUuid (urn, user, group, metadata={}):
       m["_st1"] = m["_st"]
       m["_st"] = _defaultTarget(qurn)
     _bindNoid.setElements(shadowArk, m, True)
+    store.insert(shadowArk, m)
     if user[0] != "anonymous": search.insert(qurn, m)
   except Exception, e:
     log.error(tid, e)
@@ -991,9 +995,9 @@ def setMetadata (identifier, user, group, metadata):
         datacite.deactivate(m["_s"][4:])
     # Finally, and most importantly, update our own databases.
     _bindNoid.setElements(ark, d)
-    if iUser != "anonymous":
-      m.update(d)
-      search.update(m.get("_s", nqidentifier), m)
+    m.update(d)
+    store.update(ark, m)
+    if iUser != "anonymous": search.update(m.get("_s", nqidentifier), m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -1072,6 +1076,7 @@ def deleteIdentifier (identifier, user, group):
         datacite.deactivate(doi)
     _bindNoid.deleteElements(ark)
     _bindNoid.releaseIdentifier(ark)
+    store.delete(ark)
     if m["_o"] != "anonymous":
       search.delete(m.get("_s", nqidentifier))
   except Exception, e:

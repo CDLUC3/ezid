@@ -76,6 +76,7 @@ import ezid
 import ezidadmin
 import noid
 import search
+import store
 import userauth
 
 _adminUsername = None
@@ -273,14 +274,17 @@ def getStatus (request):
   s1 = "" if nl == 1 else "s"
   nd = datacite.numActiveOperations()
   s2 = "" if nd == 1 else "s"
-  nc, nca = search.numConnections()
-  s3 = "" if nc == 1 else "s"
+  nstc, nstca = store.numConnections()
+  s3 = "" if nstc == 1 else "s"
+  nsec, nseca = search.numConnections()
+  s4 = "" if nsec == 1 else "s"
   nt = threading.activeCount()
-  s4 = "" if nt == 1 else "s"
+  s5 = "" if nt == 1 else "s"
   return _response(("success: %d identifier operation%s in progress, " +\
     "%d DataCite operation%s in progress, " +\
+    "%d store database connection%s (%d active), " +\
     "%d search database connection%s (%d active), %d thread%s") %\
-    (nl, s1, nd, s2, nc, s3, nca, nt, s4),
+    (nl, s1, nd, s2, nstc, s3, nstca, nsec, s4, nseca, nt, s5),
     anvlBody=body)
 
 def getVersion (request):
