@@ -411,7 +411,7 @@ def harvest (owner=None, since=None, start=None, maximum=None):
       limit = ""
     c = connection.cursor()
     _execute(c, ("SELECT identifier, metadata FROM identifier%s " +\
-      "ORDER BY identifier %s") % (constraints, limit), tuple(values))
+      "ORDER BY identifier%s") % (constraints, limit), tuple(values))
     return [(i, _deblobify(m)) for i, m in c.fetchall()]
   except Exception, e:
     log.otherError("store.harvest", e)
