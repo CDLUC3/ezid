@@ -63,6 +63,8 @@
 #    _owner = gjanee or { _ownergroup = cdl and not _owner = jak }
 #
 # There are some special fields.  The _id field holds the identifier.
+# (If reading from a raw dump, unqualified identifiers are qualified
+# for the purposes of matching, but are left unqualified on output.)
 # The _fields field is an array of all metadata fields present in the
 # identifier record and can be used in conjunction with the "contains"
 # operator, as in:
@@ -473,4 +475,10 @@ for l in infile:
   for i in range(1, len(lv), 2):
     v = util.decode(lv[i+1]).strip()
     if v != "": record[util.decode(lv[i])] = v
+  if not re.match("[a-z]+:", record["_id"]):
+    # Looks like we're reading from a raw dump.
+    if "_s" in record:
+      record["_id"] = util.decode(record["_s"])
+    else:
+      record["_id"] = "ark:/" + record["_id"]
   if constraint.evaluate(record): print l,
