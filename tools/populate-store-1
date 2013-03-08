@@ -10,6 +10,7 @@
 #    sqlite3 NEWDB < $PR/etc/store-schema.sql
 #    $PR/tools/dump -rz .../noid.bdb > DUMP
 #    $PR/tools/populate-store-1 DUMP NEWDB
+#    sqlite3 NEWDB analyze
 #    (stop server)
 #    mv NEWDB $SR/db/store.sqlite3
 #    (start server)

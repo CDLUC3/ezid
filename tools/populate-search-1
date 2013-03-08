@@ -11,6 +11,7 @@
 #    $PR/tools/dump -n .../noid.bdb |
 #      $PR/tools/select not _owner = anonymous | gzip > DUMP
 #    $PR/tools/populate-search-1 DUMP NEWDB
+#    sqlite3 NEWDB analyze
 #    (stop server)
 #    mv NEWDB $SR/db/search.sqlite3
 #    (start server)
