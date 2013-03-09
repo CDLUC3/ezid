@@ -3,194 +3,257 @@
 <script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/formFunctions.js"></script>
 <script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/dom_utils.js"></script>
 
+<style>
+	.container {
+		border: solid;
+		border-width: 1px;
+		padding: 5px;
+		background:#cecece;
+	}
+	
+	.multiple {
+		border: solid;
+		border-width: 1px;
+		padding: 5px;
+		background:#ffffff;
+	}
+	
+</style>
+
 <div name="/resource" class="element">
-<label for="/resource" class="element">resource</label><div class="documentation">
-			
-	Root element of a single record. This wrapper element is for XML implementation only and is not defined in the DataCite DOI standard.
-        Note: This is the case for any wrapper element within this schema!
-			No content in this wrapper element.
+	<div name="/resource/identifier" class="element">
+		<label for="/resource/identifier" class="element">identifier</label>
+		<div class="attribute">
+			<label for="/resource/identifier/@identifierType" class="attribute">
+				identifierType :
+      </label>
+      <input type="text" name="/resource/identifier/@identifierType" class="data">
 		</div>
-<div name="/resource/identifier" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/identifier" class="element">identifier</label><div class="documentation">
-						A persistent identifier that identifies a resource.
-						Currently, only DOI is allowed.
+	</div>
+	<div name="/resource/creators" class="element container">
+		<label for="/resource/creators" class="element">creators</label>
+		<input type="button" value="+" onclick="addOne(this)" name="/resource/creators" nbelmtsadded="1" class="addButton">
+		<input type="button" value="-" onclick="removeOne(this)" name="/resource/creators" class="rmvButton">
+		<div class="multiple">
+			<div name="/resource/creators/creator[1]" class="element">
+				<label for="/resource/creators/creator[1]" class="element">creator</label>
+				<div name="/resource/creators/creator[1]/creatorName" class="element">
+					<label for="/resource/creators/creator[1]/creatorName" class="element">creatorName</label>
+					<input type="text" name="/resource/creators/creator[1]/creatorName" class="data">
+				</div>
+				<div class="optional">
+					<div name="/resource/creators/creator[1]/nameIdentifier" class="element">
+						<label for="/resource/creators/creator[1]/nameIdentifier" class="element">nameIdentifier</label>
+							<div class="attribute">
+								<label for="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="attribute">nameIdentifierScheme:</label>
+								<input type="text" name="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="data">
+							</div>
 					</div>
-<div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/identifier/@identifierType" class="attribute">identifierType :
-                    </label><input type="text" name="/resource/identifier/@identifierType" class="data">
-</div>
-</div>
-<div name="/resource/creators" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/creators" class="element">creators</label><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="button" value="+" onclick="addOne(this)" name="/resource/creators" nbelmtsadded="1" class="addButton"><input type="button" value="-" onclick="removeOne(this)" name="/resource/creators" class="rmvButton"><div class="multiple" style="border: dashed; border-width: 1px"><div name="/resource/creators/creator[1]" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/creators/creator[1]" class="element">creator</label><div class="documentation">
-									The main researchers involved working on the data, or the authors of the publication in priority order. May be a corporate/institutional or personal name.
-									Format: Family, Given.
-								</div>
-<div name="/resource/creators/creator[1]/creatorName" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/creators/creator[1]/creatorName" class="element">creatorName</label><input type="text" name="/resource/creators/creator[1]/creatorName" class="data">
-</div>
-<div class="optional"><div name="/resource/creators/creator[1]/nameIdentifier" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/creators/creator[1]/nameIdentifier" class="element">nameIdentifier</label><div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="attribute">nameIdentifierScheme :
-                    </label><input type="text" name="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="data">
-</div>
-</div></div>
-</div></div>
-</div>
-<div name="/resource/titles" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/titles" class="element">titles</label><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="button" value="+" onclick="addOne(this)" name="/resource/titles" nbelmtsadded="1" class="addButton"><input type="button" value="-" onclick="removeOne(this)" name="/resource/titles" class="rmvButton"><div class="multiple" style="border: dashed; border-width: 1px"><div name="/resource/titles/title[1]" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/titles/title[1]" class="element">title</label><div class="documentation">
-									A name or title by which a resource is known.
-								</div>
-<div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/titles/title[1]/@titleType" class="attribute">titleType :
-                    </label>
-</div>
-</div></div>
-</div>
-<div name="/resource/publisher" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/publisher" class="element">publisher</label><div class="documentation">
-						A holder of the data (including archives as appropriate) or institution which submitted the work. Any others may be listed as contributors. This property will be used to formulate the citation, so consider the prominence of the role.
-						Examples: World Data Center for Climate (WDCC); GeoForschungsZentrum Potsdam (GFZ); Geological Institute, University of Tokyo 
-						In the case of datasets, "publish" is understood to mean making the data available to the community of researchers.
+				</div>
+			</div>
+		</div>
+	</div>
+	<div name="/resource/titles" class="element container">
+		<label for="/resource/titles" class="element">titles</label>
+		<input type="button" value="+" onclick="addOne(this)" name="/resource/titles" nbelmtsadded="1" class="addButton">
+		<input type="button" value="-" onclick="removeOne(this)" name="/resource/titles" class="rmvButton">
+		<div class="multiple">
+			<div name="/resource/titles/title[1]" class="element">
+				<label for="/resource/titles/title[1]" class="element">title</label>
+				<div class="attribute">
+					<label for="/resource/titles/title[1]/@titleType" class="attribute">titleType:</label>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div name="/resource/publisher" class="element">
+		<label for="/resource/publisher" class="element">publisher</label>
+		<input type="text" name="/resource/publisher" class="data">
+	</div>
+	<div name="/resource/publicationYear" class="element">
+		<label for="/resource/publicationYear" class="element">publicationYear</label>
+		<input type="text" name="/resource/publicationYear" class="data">
+	</div>
+	<div class="optional">
+		<div name="/resource/subjects" class="element container">
+			<label for="/resource/subjects" class="element">subjects</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/subjects" class="rmvButton">
+			<div class="multiple">
+				<div name="/resource/subjects/subject[1]" class="element">
+					<label for="/resource/subjects/subject[1]" class="element">subject</label>
+					<div class="attribute">
+						<label for="/resource/subjects/subject[1]/@subjectScheme" class="attribute">subjectScheme:</label>
+						<input type="text" name="/resource/subjects/subject[1]/@subjectScheme" class="data">
 					</div>
-<input type="text" name="/resource/publisher" class="data">
-</div>
-<div name="/resource/publicationYear" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/publicationYear" class="element">publicationYear</label><div class="documentation">
-						Year when the data is made publicly available. If an embargo period has been in effect, use the date when the embargo period ends.
-						YYYY
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/contributors" class="element container">
+			<label for="/resource/contributors" class="element">contributors</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/contributors" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/contributors" class="rmvButton">
+			<div class="multiple">
+				<div name="/resource/contributors/contributor[1]" class="element">
+					<label for="/resource/contributors/contributor[1]" class="element">contributor</label>
+					<div name="/resource/contributors/contributor[1]/contributorName" class="element">
+						<label for="/resource/contributors/contributor[1]/contributorName" class="element">contributorName</label>
+						<input type="text" name="/resource/contributors/contributor[1]/contributorName" class="data">
 					</div>
-<input type="text" name="/resource/publicationYear" class="data">
-</div>
-<div class="optional"><div name="/resource/subjects" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/subjects" class="element">subjects</label><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="1" class="addButton"><input type="button" value="-" onclick="removeOne(this)" name="/resource/subjects" class="rmvButton"><div class="multiple" style="border: dashed; border-width: 1px"><div name="/resource/subjects/subject[1]" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/subjects/subject[1]" class="element">subject</label><div class="documentation">
-									Subject, keywords, classification codes, or key phrases describing the resource.
-								</div>
-<div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/subjects/subject[1]/@subjectScheme" class="attribute">subjectScheme :
-                    </label><input type="text" name="/resource/subjects/subject[1]/@subjectScheme" class="data">
-</div>
-</div></div>
-</div></div>
-<div class="optional"><div name="/resource/contributors" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/contributors" class="element">contributors</label><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="button" value="+" onclick="addOne(this)" name="/resource/contributors" nbelmtsadded="1" class="addButton"><input type="button" value="-" onclick="removeOne(this)" name="/resource/contributors" class="rmvButton"><div class="multiple" style="border: dashed; border-width: 1px"><div name="/resource/contributors/contributor[1]" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/contributors/contributor[1]" class="element">contributor</label><div class="documentation">
-									The institution or person responsible for collecting, creating, or otherwise contributing to the developement of the dataset.
-									The personal name format should be: Family, Given.
-								</div>
-<div name="/resource/contributors/contributor[1]/contributorName" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/contributors/contributor[1]/contributorName" class="element">contributorName</label><input type="text" name="/resource/contributors/contributor[1]/contributorName" class="data">
-</div>
-<div class="optional"><div name="/resource/contributors/contributor[1]/nameIdentifier" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/contributors/contributor[1]/nameIdentifier" class="element">nameIdentifier</label><div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="attribute">nameIdentifierScheme :
-                    </label><input type="text" name="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="data">
-</div>
-</div></div>
-<div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/contributors/contributor[1]/@contributorType" class="attribute">contributorType :
-                    </label>
-</div>
-</div></div>
-</div></div>
-<div class="optional"><div name="/resource/dates" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/dates" class="element">dates</label><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="button" value="+" onclick="addOne(this)" name="/resource/dates" nbelmtsadded="1" class="addButton"><input type="button" value="-" onclick="removeOne(this)" name="/resource/dates" class="rmvButton"><div class="multiple" style="border: dashed; border-width: 1px"><div name="/resource/dates/date[1]" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/dates/date[1]" class="element">date</label><div class="documentation">
-									Different dates relevant to the work.
-									YYYY or YYYY-MM-DD or any other format described in W3CDTF (http://www.w3.org/TR/NOTE-datetime) 
-								</div>
-<div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/dates/date[1]/@dateType" class="attribute">dateType :
-                    </label>
-</div>
-</div></div>
-</div></div>
-<div class="optional"><div name="/resource/language" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/language" class="element">language</label><input type="text" name="/resource/language" class="data">
-</div></div>
-<div class="optional"><div name="/resource/resourceType" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/resourceType" class="element">resourceType</label><div class="documentation">
-						The type of a resource. You may enter an additional free text description.
-					</div>
-<div class="documentation">
-							Use this attribute to choose the general type of the resource from the controlled list.
+					<div class="optional">
+						<div name="/resource/contributors/contributor[1]/nameIdentifier" class="element">
+							<label for="/resource/contributors/contributor[1]/nameIdentifier" class="element">nameIdentifier</label>
+							<div class="attribute">
+								<label for="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="attribute">nameIdentifierScheme:</label>
+								<input type="text" name="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="data">
+							</div>
 						</div>
-<div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/resourceType/@resourceTypeGeneral" class="attribute">resourceTypeGeneral :
-                    </label>
-</div>
-</div></div>
-<div class="optional"><div name="/resource/alternateIdentifiers" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/alternateIdentifiers" class="element">alternateIdentifiers</label><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="button" value="+" onclick="addOne(this)" name="/resource/alternateIdentifiers" nbelmtsadded="1" class="addButton"><input type="button" value="-" onclick="removeOne(this)" name="/resource/alternateIdentifiers" class="rmvButton"><div class="multiple" style="border: dashed; border-width: 1px"><div name="/resource/alternateIdentifiers/alternateIdentifier[1]" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/alternateIdentifiers/alternateIdentifier[1]" class="element">alternateIdentifier</label><div class="documentation">
-									An identifier other than the primary identifier applied to the resource being registered. This may be any alphanumeric string which is unique within its domain of issue. The format is open
-								</div>
-<div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/alternateIdentifiers/alternateIdentifier[1]/@alternateIdentifierType" class="attribute">alternateIdentifierType :
-                    </label><input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[1]/@alternateIdentifierType" class="data">
-</div>
-</div></div>
-</div></div>
-<div class="optional"><div name="/resource/relatedIdentifiers" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/relatedIdentifiers" class="element">relatedIdentifiers</label><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="button" value="+" onclick="addOne(this)" name="/resource/relatedIdentifiers" nbelmtsadded="1" class="addButton"><input type="button" value="-" onclick="removeOne(this)" name="/resource/relatedIdentifiers" class="rmvButton"><div class="multiple" style="border: dashed; border-width: 1px"><div name="/resource/relatedIdentifiers/relatedIdentifier[1]" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/relatedIdentifiers/relatedIdentifier[1]" class="element">relatedIdentifier</label><div class="documentation">
-									Identifiers of related resources. Use this property to indicate subsets of properties, as appropriate.
-								</div>
-<div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedIdentifierType" class="attribute">relatedIdentifierType :
-                    </label>
-</div>
-<div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" class="attribute">relationType :
-                    </label>
-</div>
-</div></div>
-</div></div>
-<div class="optional"><div name="/resource/sizes" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/sizes" class="element">sizes</label><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="button" value="+" onclick="addOne(this)" name="/resource/sizes" nbelmtsadded="1" class="addButton"><input type="button" value="-" onclick="removeOne(this)" name="/resource/sizes" class="rmvButton"><div class="multiple" style="border: dashed; border-width: 1px"><div name="/resource/sizes/size[1]" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/sizes/size[1]" class="element">size</label><div class="documentation">
-									Unstructures size information about the resource. 
-								</div>
-</div></div>
-</div></div>
-<div class="optional"><div name="/resource/formats" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/formats" class="element">formats</label><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="button" value="+" onclick="addOne(this)" name="/resource/formats" nbelmtsadded="1" class="addButton"><input type="button" value="-" onclick="removeOne(this)" name="/resource/formats" class="rmvButton"><div class="multiple" style="border: dashed; border-width: 1px"><div name="/resource/formats/format[1]" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/formats/format[1]" class="element">format</label><div class="documentation">
-									Technical format of the resource.
-									Use file extension or MIME type where possible.
-								</div>
-</div></div>
-</div></div>
-<div class="optional"><div name="/resource/version" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/version" class="element">version</label><input type="text" name="/resource/version" class="data">
-</div></div>
-<div class="optional"><div name="/resource/rights" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/rights" class="element">rights</label><div class="documentation">
-						Any rights information for this resource. Provide a rights management statement for the resource or reference a service providing such information. Include embargo information if applicable.
-						
 					</div>
-</div></div>
-<div class="optional"><div name="/resource/descriptions" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/descriptions" class="element">descriptions</label><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="1" class="addButton"><input type="button" value="-" onclick="removeOne(this)" name="/resource/descriptions" class="rmvButton"><div class="multiple" style="border: dashed; border-width: 1px"><div name="/resource/descriptions/description[1]" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/descriptions/description[1]" class="element">description</label><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><select style="height: 20px" onchange="showOptionContent(this)" name="/resource/descriptions/description[1]" class="choice"><option value="zeroOrMore 1" name="/resource/descriptions/description[1]" class="choice_option">zeroOrMore 1</option></select><div name="zeroOrMore 1" style="display: none" class="choice_content">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions/description[1]" nbelmtsadded="1" class="addButton"><input type="button" value="-" onclick="removeOne(this)" name="/resource/descriptions/description[1]" class="rmvButton"><div class="multiple" style="border: dashed; border-width: 1px"><div name="/resource/descriptions/description[1]/br[1]" class="element">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/descriptions/description[1]/br[1]" class="element">br</label><input type="text" name="/resource/descriptions/description[1]/br[1]" class="data">
-</div></div>
-</div>
-<div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/descriptions/description[1]/@descriptionType" class="attribute">descriptionType :
-                    </label>
-</div>
-</div></div>
-</div></div>
-<div class="optional"><div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/@lastMetadataUpdate" class="attribute">lastMetadataUpdate :
-                    </label><input type="text" name="/resource/@lastMetadataUpdate" class="data">
-</div></div>
-<div class="optional"><div class="attribute">
-<span class="indent">&nbsp;&nbsp;&nbsp;&nbsp;</span><label for="/resource/@metadataVersionNumber" class="attribute">metadataVersionNumber :
-                    </label><input type="text" name="/resource/@metadataVersionNumber" class="data">
-</div></div>
+					<div class="attribute">
+						<label for="/resource/contributors/contributor[1]/@contributorType" class="attribute">contributorType:</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/dates" class="element container">
+			<label for="/resource/dates" class="element">dates</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/dates" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/dates" class="rmvButton">
+			<div class="multiple">
+				<div name="/resource/dates/date[1]" class="element">
+					<label for="/resource/dates/date[1]" class="element">date</label>
+					<div class="attribute">
+						<label for="/resource/dates/date[1]/@dateType" class="attribute">dateType:</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/language" class="element">
+			<label for="/resource/language" class="element">language</label>
+			<input type="text" name="/resource/language" class="data">
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/resourceType" class="element">
+			<label for="/resource/resourceType" class="element">resourceType</label>
+			<div class="attribute">
+				<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute">resourceTypeGeneral:</label>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/alternateIdentifiers" class="element container">
+			<label for="/resource/alternateIdentifiers" class="element">alternateIdentifiers</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/alternateIdentifiers" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/alternateIdentifiers" class="rmvButton">
+			<div class="multiple">
+				<div name="/resource/alternateIdentifiers/alternateIdentifier[1]" class="element">
+					<label for="/resource/alternateIdentifiers/alternateIdentifier[1]" class="element">alternateIdentifier</label>
+					<div class="attribute">
+						<label for="/resource/alternateIdentifiers/alternateIdentifier[1]/@alternateIdentifierType" class="attribute">alternateIdentifierType:</label>
+						<input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[1]/@alternateIdentifierType" class="data">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/relatedIdentifiers" class="element container">
+			<label for="/resource/relatedIdentifiers" class="element">relatedIdentifiers</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/relatedIdentifiers" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/relatedIdentifiers" class="rmvButton">
+			<div class="multiple">
+				<div name="/resource/relatedIdentifiers/relatedIdentifier[1]" class="element">
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[1]" class="element">relatedIdentifier</label>
+					<div class="attribute">
+						<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedIdentifierType" class="attribute">relatedIdentifierType:</label>
+					</div>
+					<div class="attribute">
+						<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" class="attribute">relationType:</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/sizes" class="element container">
+			<label for="/resource/sizes" class="element">sizes</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/sizes" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/sizes" class="rmvButton">
+			<div class="multiple">
+				<div name="/resource/sizes/size[1]" class="element">
+					<label for="/resource/sizes/size[1]" class="element">size</label>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/formats" class="element container">
+			<label for="/resource/formats" class="element">formats</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/formats" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/formats" class="rmvButton">
+			<div class="multiple">
+				<div name="/resource/formats/format[1]" class="element">
+					<label for="/resource/formats/format[1]" class="element">format</label>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/version" class="element">
+			<label for="/resource/version" class="element">version</label>
+			<input type="text" name="/resource/version" class="data">
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/rights" class="element">
+			<label for="/resource/rights" class="element">rights</label>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/descriptions" class="element container">
+			<label for="/resource/descriptions" class="element">descriptions</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/descriptions" class="rmvButton">
+			<div class="multiple">
+				<div name="/resource/descriptions/description[1]" class="element">
+					<label for="/resource/descriptions/description[1]" class="element">description</label>
+					<select style="height: 20px" onchange="showOptionContent(this)" name="/resource/descriptions/description[1]" class="choice">
+						<option value="zeroOrMore 1" name="/resource/descriptions/description[1]" class="choice_option">zeroOrMore 1</option>
+					</select>
+					<div name="zeroOrMore 1" style="display: none" class="choice_content">
+						<input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions/description[1]" nbelmtsadded="1" class="addButton">
+						<input type="button" value="-" onclick="removeOne(this)" name="/resource/descriptions/description[1]" class="rmvButton">
+						<div class="multiple">
+							<div name="/resource/descriptions/description[1]/br[1]" class="element">
+								<label for="/resource/descriptions/description[1]/br[1]" class="element">br</label>
+								<input type="text" name="/resource/descriptions/description[1]/br[1]" class="data">
+							</div>
+						</div>
+					</div>
+					<div class="attribute">
+						<label for="/resource/descriptions/description[1]/@descriptionType" class="attribute">descriptionType:</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div class="attribute">
+			<label for="/resource/@lastMetadataUpdate" class="attribute">lastMetadataUpdate:</label>
+			<input type="text" name="/resource/@lastMetadataUpdate" class="data">
+		</div>
+	</div>
+	<div class="optional">
+		<div class="attribute">
+			<label for="/resource/@metadataVersionNumber" class="attribute">metadataVersionNumber:</label>
+			<input type="text" name="/resource/@metadataVersionNumber" class="data">
+		</div>
+	</div>
 </div>
