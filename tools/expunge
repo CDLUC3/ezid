@@ -57,6 +57,7 @@ import config
 import datacite
 import noid
 import search
+import store
 import util
 
 testArkPrefix = config.config("prefix_TESTARK.prefix")[5:]
@@ -150,6 +151,7 @@ if debug == "":
         datacite.setTargetUrl(doi[4:], "http://datacite.org/invalidDOI")
       bindNoid.deleteElements(id)
       bindNoid.releaseIdentifier(id)
+      store.delete(id)
       if group[id] != "anonymous":
         if id.startswith(testArkPrefix):
           qid = "ark:/" + id
