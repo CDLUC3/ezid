@@ -14,7 +14,6 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
 from django import forms
 from collections import *
-import json
 
 
 @uic.admin_login_required

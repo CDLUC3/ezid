@@ -71,8 +71,8 @@ def contact(request):
       
       django.contrib.messages.success(request, "Message sent")
       d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
-    except Exception as e:
-      django.contrib.messages.error(request, "There was a problem sending your email: " + e.strerror)
+    except:
+      django.contrib.messages.error(request, "There was a problem sending your email")
       return uic.render(request, 'contact', d)
     #django.core.mail.send_mail("EZID password reset request", message,
     #  django.conf.settings.SERVER_EMAIL, [emailAddress])
