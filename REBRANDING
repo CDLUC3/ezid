@@ -9,18 +9,19 @@ custom tag called "host_based_include" in some templates.
 To make customization work.
  
 1)  Add the domain name and contact email address information
-    to the dictionary in the deployment-level file.  Example:
+    to the dictionary in the deployment-level file (like
+    settings/development.py).  Example:
      
 		HOST_TEMPLATE_CUSTOMIZATION = {'n2t-dev-alt.cdlib.org': 'purdue'}
 
 		HOST_EMAIL_CUSTOMIZATION = {'n2t-dev-alt.cdlib.org': 'datacite@purdue.edu'}
 		 
 2)  Add a directory to the templates directory named for the organization.  In the
-    example above, this would be a templates/purdue directory.  The name
-    should match the value ("purdue") associated with the domain key
-    in the hash in step 1.
+    example above, this would be a templates/purdue directory.  The
+    directory name should match the value ("purdue") associated
+    with the domain key in the dict in step 1.
     
-    Add customization templates for each place in the code that the
+    Add a customization template for each place in the code that the
     "host_based_include" tag appears
     (search or grep to find the customization sections).
     The special templates will be the same filename (but not path) as
@@ -32,11 +33,11 @@ To make customization work.
     create a "static" directory inside the customized templates
     directory (example templates/purdue/static).
     
-    Create a symbolic link to the directory in the templates/static
+    Create a symbolic link to the directory in the static
     directory (example static/purdue points to templates/purdue/static)
     and then refer to these files under the symlinked directory in
     the code.
     
     By referring to them under the symlinked directory they are
     served statically by apache rather than being served by the
-    django script engine (which is less efficient).
+    django script engine which is less efficient.
