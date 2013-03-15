@@ -7,4 +7,4 @@ DEPLOYMENT_LEVEL = "development"
 HOST_TEMPLATE_CUSTOMIZATION = {'n2t-dev-alt.cdlib.org': 'purdue'}
 
 #tells contact-us mailer to mail to different address if domain in this dictionary
-HOST_EMAIL_CUSTOMIZATION = {'n2t-dev-alt.cdlib.org': 'sbfisher@gmail.com'}
+HOST_EMAIL_CUSTOMIZATION = {'n2t-dev-alt.cdlib.org': 'datacite@purdue.edu'}
