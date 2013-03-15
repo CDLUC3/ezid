@@ -66,6 +66,7 @@
 # -----------------------------------------------------------------------------
 
 import django.http
+import threading
 import time
 
 import anvl
@@ -75,6 +76,7 @@ import ezid
 import ezidadmin
 import noid
 import search
+import store
 import userauth
 
 _adminUsername = None
@@ -153,26 +155,10 @@ def mintIdentifier (request):
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
-  target = None
-  if "_target" in metadata:
-    target = metadata["_target"]
-    del metadata["_target"]
-  reserveOnly = False
-  if "_status" in metadata and metadata["_status"] == "reserved":
-    reserveOnly = True
-    del metadata["_status"]
   assert request.path.startswith("/ezid/shoulder/")
   prefix = request.path[15:]
-  callContext = [None]
-  s = ezid.mintIdentifier(prefix, auth.user, auth.group, target, reserveOnly,
-    callContext)
-  if not s.startswith("success:"): return _response(s)
-  if len(metadata) > 0:
-    identifier = s.split()[1]
-    s2 = ezid.setMetadata(identifier, auth.user, auth.group, metadata,
-      callContext)
-    if not s2.startswith("success:"): s = s2
-  return _response(s, createRequest=True)
+  return _response(ezid.mintIdentifier(prefix, auth.user, auth.group,
+    metadata), createRequest=True)
 
 def identifierDispatcher (request):
   """
@@ -228,26 +214,10 @@ def _createIdentifier (request):
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
-  target = None
-  if "_target" in metadata:
-    target = metadata["_target"]
-    del metadata["_target"]
-  reserveOnly = False
-  if "_status" in metadata and metadata["_status"] == "reserved":
-    reserveOnly = True
-    del metadata["_status"]
   assert request.path.startswith("/ezid/id/")
   identifier = request.path[9:]
-  callContext = [None]
-  s = ezid.createIdentifier(identifier, auth.user, auth.group, target,
-    reserveOnly, callContext)
-  if not s.startswith("success:"): return _response(s)
-  if len(metadata) > 0:
-    identifier = s.split()[1]
-    s2 = ezid.setMetadata(identifier, auth.user, auth.group, metadata,
-      callContext)
-    if not s2.startswith("success:"): s = s2
-  return _response(s, createRequest=True)
+  return _response(ezid.createIdentifier(identifier, auth.user, auth.group,
+    metadata), createRequest=True)
 
 def _deleteIdentifier (request):
   auth = userauth.authenticateRequest(request)
@@ -288,10 +258,12 @@ def getStatus (request):
   body = ""
   if "subsystems" in request.GET:
     l = request.GET["subsystems"]
-    if l == "*": l = "datacite,ldap,noid"
+    if l == "*": l = "datacite,handlesystem,ldap,noid"
     for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
       if ss == "datacite":
         body += "datacite: %s\n" % datacite.ping()
+      elif ss == "handlesystem":
+        body += "handlesystem: %s\n" % datacite.pingHandleSystem()
       elif ss == "ldap":
         body += "ldap: %s\n" % ezidadmin.pingLdap()
       elif ss == "noid":
@@ -300,10 +272,20 @@ def getStatus (request):
         return _response("error: bad request - no such subsystem")
   nl = ezid.numIdentifiersLocked()
   s1 = "" if nl == 1 else "s"
-  nc = search.numConnections()
-  s2 = "" if nc == 1 else "s"
-  return _response(("success: %d identifier%s currently locked, %d open " +\
-    "search database connection%s") % (nl, s1, nc, s2), anvlBody=body)
+  nd = datacite.numActiveOperations()
+  s2 = "" if nd == 1 else "s"
+  nstc, nstca = store.numConnections()
+  s3 = "" if nstc == 1 else "s"
+  nsec, nseca = search.numConnections()
+  s4 = "" if nsec == 1 else "s"
+  nt = threading.activeCount()
+  s5 = "" if nt == 1 else "s"
+  return _response(("success: %d identifier operation%s in progress, " +\
+    "%d DataCite operation%s in progress, " +\
+    "%d store database connection%s (%d active), " +\
+    "%d search database connection%s (%d active), %d thread%s") %\
+    (nl, s1, nd, s2, nstc, s3, nstca, nsec, s4, nseca, nt, s5),
+    anvlBody=body)
 
 def getVersion (request):
   """

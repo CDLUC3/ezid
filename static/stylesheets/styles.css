@@ -1,3 +1,21 @@
+a:link {
+	text-decoration: none;
+}
+
+a:visited {
+	text-decoration: none;
+	color: #0645AD;
+}
+
+a:active {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #CC0000;
+}
+
 ul li {
 	list-style-type: disc;
 	list-style-position: outside;
@@ -11,7 +29,8 @@ ul li {
 
 .special a:hover {
   text-decoration: underline;
-  color: #003D9C;
+  color: #CC0000;
+  /* color: #003D9C; */
 }
 
 div.top_area {
@@ -58,9 +77,11 @@ div.menu_main a{
   text-decoration: none;
 }
 
+/*
 div.main_menu div a:hover {
   text-decoration: underline;
 }
+*/
 
 div.menu_secondary{
   padding: 15px 10px 7px 10px;
@@ -69,6 +90,10 @@ div.menu_secondary{
 
 div.menu_secondary a{
   color: blue;
+}
+
+div.menu_secondary a:hover{
+	color: #cc0000;
 }
 
 span.menu_current{
@@ -269,6 +294,12 @@ div.field_right_large {
   width: 220px;
 }
 
+div.field_right_small {
+  margin: 10px 0 0 0;
+  float: left;
+  width: 30px;
+}
+
 div.left_desc {
   margin: 5px 0 0 0;
   float: left;
@@ -398,7 +429,15 @@ table th{
 }
 
 tr.headrow{
+
+}
+
+tr.headrow th{
 	background-color: #d7d7ff;
+	border-left: 1px;
+	border-right: 1px;
+	border-style: solid;
+	border-color: #FFFFFF;
 }
 
 tr.row1{
@@ -578,3 +617,32 @@ span.big_pad {
 	margin-right: 1em;	
 }
 
+div.datacite_help {
+	float:right;
+	padding-right:40px;
+}
+
+input.std_form_width {
+	width:200px;
+}
+
+div.form_yn_question_box {
+	margin:0.5em 0 0 1em;
+	clear:both;
+	width:350px;
+}
+
+div.yn_select {
+	float: right;
+	width: 140px;
+}
+
+div.order_by_col {
+	float: right;
+	width: 10px;
+	padding-top: 2px;
+}
+
+#cur_sort {
+	background-color: #C7D7C7;
+}

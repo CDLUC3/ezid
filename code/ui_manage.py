@@ -24,8 +24,8 @@ FIELD_ORDER = ['identifier', 'owner', 'coOwners', 'createTime', 'updateTime', 's
 FIELD_DEFAULTS = ['identifier', 'createTime', 'mappedTitle', 'mappedCreator']
 
 # Column names for display for each field
-FIELDS_MAPPED = {'identifier':'ID',  'owner':'Owner', 'coOwners': 'Co-Owners', \
-                  'createTime': 'Date created', 'updateTime': 'Date last modified', 'status' :'Status',\
+FIELDS_MAPPED = {'identifier':'Identifier',  'owner':'Owner', 'coOwners': 'Co-Owners', \
+                  'createTime': 'Date Created', 'updateTime': 'Date Last Modified', 'status' :'Status',\
                   'mappedTitle': 'Object Title', 'mappedCreator' : 'Object Creator'}
 
 # Weight to give each field for table display since many or few fields are present and can be customized
@@ -56,7 +56,7 @@ def index(request):
     d['account_co_owners'] = r['ezidCoOwners']
   else:
     d['account_co_owners'] = ''
-  d['recent'] = search.getByOwner(d['user'][0], False, 'updateTime', False, 10, 0)
+  d['recent'] = search.getByOwner(d['user'][0], True, 'updateTime', False, 10, 0)
   d['recent1'] = d['recent'][0:5]
   d['recent2'] = d['recent'][5:10]
   d['field_order'] = FIELD_ORDER
@@ -84,11 +84,11 @@ def index(request):
   d['ps'] = 10
   if 'p' in request.REQUEST and request.REQUEST['p'].isdigit(): d['p'] = int(request.REQUEST['p'])
   if 'ps' in request.REQUEST and request.REQUEST['ps'].isdigit(): d['ps'] = int(request.REQUEST['ps'])
-  d['total_results'] = search.getByOwnerCount(d['user'][0], False)
+  d['total_results'] = search.getByOwnerCount(d['user'][0], True)
   d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
   if d['p'] > d['total_pages']: d['p'] = d['total_pages']
 
-  d['results'] = search.getByOwner(d['user'][0], False, d['order_by'], IS_ASCENDING[d['sort']], d['ps'], (d['p']-1)*d['ps'])
+  d['results'] = search.getByOwner(d['user'][0], True, d['order_by'], IS_ASCENDING[d['sort']], d['ps'], (d['p']-1)*d['ps'])
   
   return uic.render(request, 'manage/index', d)
 
@@ -107,23 +107,29 @@ def edit(request, identifier):
     django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
     return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
   d['status'] = m['_status'] if '_status' in m else 'public'
+  d['export'] = m['_export'] if '_export' in m else 'yes'
   d['post_status'] = d['status']
   d['id_text'] = s.split()[1]
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
   if request.method == "POST":
     d['post_status'] = request.POST['_status'] if '_status' in request.POST else 'public'
+    d['export'] = request.POST['_export'] if '_export' in request.POST else d['export']
     d['current_profile'] = metadata.getProfile(request.POST['current_profile'])
     if request.POST['current_profile'] == request.POST['original_profile']:
       #this means we're saving and going to a save confirmation page
       if uic.validate_simple_metadata_form(request, d['current_profile']):
-        result = uic.write_profile_elements_from_form(identifier, request, d['current_profile'],
-                 {'_profile': request.POST['current_profile'], '_target' : request.POST['_target'],
-                  '_status': d['post_status']})
-        if result:
+        to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
+          { '_target' : uic.fix_target(request.POST['_target']), '_status': d['post_status'],
+            '_export' : ('yes' if (not 'export' in d) or d['export'] == 'yes' else 'no') })
+        result = ezid.setMetadata(identifier, uic.user_or_anon_tup(request), uic.group_or_anon_tup(request),
+          to_write)
+        if result.startswith("success:"):
           django.contrib.messages.success(request, "Identifier updated.")
           return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
         else:
+          d['current_profile'] = metadata.getProfile(m['_profile'])
+          d['profiles'] = metadata.getProfiles()[1:]
           django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
           return uic.render(request, "manage/edit", d)
   elif request.method == "GET":
@@ -179,4 +185,5 @@ def details(request):
     else:
       d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
   d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
+  d['has_resource_type'] = True if (d['current_profile'].name == 'datacite' and 'datacite.resourcetype' in m and m['datacite.resourcetype'] != '') else False
   return uic.render(request, "manage/details", d)

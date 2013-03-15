@@ -10,11 +10,18 @@
 #    sqlite3 NEWDB < $PR/etc/search-schema.sql
 #    $PR/tools/dump -n .../noid.bdb |
 #      $PR/tools/select not _owner = anonymous | gzip > DUMP
-#    $PR/tools/populate1 DUMP NEWDB
+#    $PR/tools/populate-search-1 DUMP NEWDB
+#    sqlite3 NEWDB analyze
 #    (stop server)
 #    mv NEWDB $SR/db/search.sqlite3
 #    (start server)
-#    (deal with any fixups using populate2)
+#    (deal with any fixups using populate-search-2)
+#
+# The search database can also be populated from a raw dump using the
+# slightly different commands:
+#
+#    $PR/tools/dump -r .../noid.bdb |
+#      $PR/tools/select not _o = anonymous | gzip > DUMP
 #
 # This script requires several EZID modules.  The PYTHONPATH
 # environment variable must include the .../SITE_ROOT/PROJECT_ROOT
@@ -27,6 +34,7 @@
 
 import gzip
 import os
+import re
 import sys
 
 if "DJANGO_SETTINGS_MODULE" not in os.environ:
@@ -53,7 +61,7 @@ import search
 import util
 
 if len(sys.argv) != 3:
-  sys.stderr.write("usage: populate1 dumpfile databasefile\n")
+  sys.stderr.write("usage: populate-search-1 dumpfile databasefile\n")
   sys.exit(1)
 
 search.setDatabase(sys.argv[2])
@@ -64,4 +72,10 @@ for l in gzip.GzipFile(filename=sys.argv[1], mode="r"):
   for i in range(1, len(lv), 2):
     v = util.decode(lv[i+1]).strip()
     if v != "": record[util.decode(lv[i])] = v
+  if not re.match("[a-z]+:", record["_id"]):
+    # Looks like we're reading from a raw dump.
+    if "_s" in record:
+      record["_id"] = util.decode(record["_s"])
+    else:
+      record["_id"] = "ark:/" + record["_id"]
   search.insert(record["_id"], record)

@@ -7,8 +7,8 @@
   <div class="grid_9">
     <h1>Enter EZID Account Information</h1>
     <form id="new_account_form" action="{% url ui_admin.new_account %}" method="post">
-    	
-    	{% for key, value in field_info.items %}
+    	{% for key in field_order %}
+    	  {% set_dict_value field_info key %}
     	  {% if value.2 == 'text' %}
 	  			<label for="{{key}}" class="left_large" title="{{value.3}}">
 	    			{{ value.1 }}:
@@ -18,7 +18,7 @@
 	  			</div>
 	  		{% else %}
 	  			{% if value.2 == 'long_text' %}
-	  				<div style="clear:both">&nbsp;</div>
+	  				<div style="clear:both"> </div>
 	  				<label for="{{key}}" title="{{value.3}}">
 	    				{{ value.1 }}:
 	  				</label>
@@ -44,5 +44,4 @@
   <script type="text/javascript" src="/ezid/static/javascripts/advanced_create.js"></script>
   {% include "info/popup_help.html" %}
   <script type="text/javascript" src="/ezid/static/javascripts/help_box.js"></script>
-
 {% endblock %}

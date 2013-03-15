@@ -23,15 +23,34 @@
     
     <style>
     	td.a { text-align: left; width: 7em;}
-    	td.b { text-align: right; width: 7em;}
-    	td.c { text-align: right; width: 7em;}
-    	td.d { text-align: right; width: 7em;}
-    	td.e { text-align: right; width: 7em;}
+    	td.b { text-align: right; width: 12em;}
+    	td.c { text-align: right; width: 12em;}
+    	td.d { text-align: right; width: 12em;}
     	table {border-collapse:collapse;}
     	table th {text-align: center;}
     	table, th, td {border: 1px solid black;}
+    	.pct {float: right; width: 5em;}
+    	.summ {width: 300px;}
+    	.wm {float:right; text-align: right;width: 150px;}
+    	.tot {float:right; text-align: right;width: 7em;}
     </style>
     {% if report|length > 0 %}
+    	<h3>Totals</h3>
+    	
+    	<div class="summ">
+    		<div class="wm">{{totals.2}} have metadata</div>
+    		ARKs: <div class="tot">{{totals.1}}</div>
+    	</div>
+    	<div class="summ">
+    		<div class="wm">{{totals.4}} have metadata</div>
+    		DOIs: <div class="tot">{{totals.3}}</div>
+    	</div>
+    	<div class="summ">
+    		<div class="wm">{{totals.6}} have metadata</div>
+    		URNs: <div class="tot">{{totals.5}}</div>
+    	</div>
+    	<br/>
+    
       <h3>Identifiers Created by Month</h3>
 	    <table>
 	    	<tr>
@@ -39,24 +58,31 @@
 	    		<th>ARKs</th>
 	    		<th>DOIs</th>
 	    		<th>URNs</th>
-	    		<th>% with metadata</th>
 	    	</tr>
 	    	
 	    	{% for row in report %}
 	    		<tr>
 	    			<td class="a">{{row.0}}</td>
-	    			<td class="b">{{row.1}}</td>
-	    			<td class="c">{{row.2}}</td>
-	    			<td class="d">{{row.3}}</td>
-	    			<td class="e">{{row.4}}</td>
+	    			<td class="b">
+	    				<div class="pct">({{row.2}})</div>
+	    				{{row.1}}
+	    			</td>
+	    			<td class="c">
+	    				<div class="pct">({{row.4}})</div>
+	    				{{row.3}}
+	    			</td>
+	    			  
+	    			<td class="d">
+	    				<div class="pct">({{row.6}})</div>
+	    				{{row.5}}
+	    			</td>
 	    		</tr>
 	    	{% endfor %}
 	    </table>
-	    <p>*Statistics were last calculated on {{last_tally}}</p>
+	    <p>*Statistics calculated on {{last_tally}}.</p>
 	  {% else %}
 	  	<p>
-	  		There is no usage data for the group or user you selected.
-	  		Please choose another group or user to see usage data.
+	  		There is no usage data for the selected group or user.
 	  	</p>
     {% endif %}
   </div>

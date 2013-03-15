@@ -19,7 +19,7 @@ $(document).ready(function() {
 	
 	//add close buttons to all help_window classes
 	$('.help_window').prepend('<div class="close_button"><a href="#close" class="close"><img src="/ezid/static/images/close_it.png" alt="close button" title="close button"/></a></div>');
-	//select all the a tag with name equal to help_link
+	//select all the a tag with name equal to help_link and add click functions
   $('a[name=help_link]').click(function(e) {
 
   	//Cancel the link behavior
@@ -50,6 +50,21 @@ $(document).ready(function() {
   $('.help_window .close').click(function (e) {
   	//Cancel the link behavior
     e.preventDefault();
+    $('.help_window').hide();
+  });
+  
+	//select all the a tag with name equal to code_insert_link and add click functions
+  $('a[name=code_insert_link]').click(function(e) {
+
+  	//Cancel the link behavior
+    e.preventDefault();
+    
+    var parts = $(this).attr('href').replace('#', '').split("_");
+    var code = "(:" + parts[0] + ")";
+    var field = document.getElementById(parts[1]);
+    
+    field.value = code;
+    
     $('.help_window').hide();
   });
         

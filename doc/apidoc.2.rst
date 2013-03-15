@@ -13,7 +13,6 @@
 .. _CookieManager:
    http://download.oracle.com/javase/6/docs/api/java/net/CookieManager.html
 .. _cURL: http://curl.haxx.se/
-.. _DataCite: http://datacite.org/
 .. _DataCite Metadata Scheme: http://schema.datacite.org/
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
 .. _ERC: https://wiki.ucop.edu/display/Curation/ERC
@@ -68,6 +67,7 @@ Contents
   - `Profile "datacite"`_
   - `Profile "dc"`_
 
+- `Metadata requirements & mapping`_
 - `Testing the API`_
 - `Server status`_
 - `Python example`_
@@ -722,7 +722,7 @@ status transitions:
   services.
 
 * A public identifier may be marked as unavailable.  At this time the
-  identifier will be removed from any external indexing services.
+  identifier will be removed from any external services.
 
 * An unavailable identifier may be returned to public status.  At this
   time the identifier will be re-registered with resolvers and other
@@ -763,22 +763,27 @@ first column indicates the element is modifiable by clients.
   |X| _status     The identifier's status (see                 unavailable |
                   `Identifier status`_ above).                 withdrawn by
                                                                author
+  |X| _export     Determines if the identifier is publicized   yes
+                  by exporting it to external indexing and
+                  harvesting services.  Must be "yes" or "no";
+                  defaults to "yes".
   === =========== ============================================ ================
 
 Metadata profiles
 -----------------
 
-There is no requirement that an identifier have any citation
-(descriptive) metadata, but uploading at least minimal citation
-metadata to EZID is strongly encouraged to aid in the understanding of
-what the identifier represents and to facilitate the identifier's
-long-term maintenance.  EZID supports several citation metadata
-"profiles," or standard sets of citation metadata elements.
+EZID allows "citation metadata" to be stored with an identifier, i.e.,
+metadata that describes the object referenced by the identifier or
+that otherwise gives the meaning of the identifier.  In certain cases
+certain metadata elements are required to be present; see `Metadata
+requirements & mapping`_ below.  This section describes only the
+general structure and naming of citation metadata in EZID.
 
-By convention, a metadata profile is referred to using a simple,
-lowercase name, e.g., "erc", and elements belonging to that profile
-are referred to using the syntax "`profile`:hl1:.\ `element`:hl1:",
-e.g., "erc.who".
+EZID supports several citation metadata "profiles," or standard sets
+of citation metadata elements.  By convention, a metadata profile is
+referred to using a simple, lowercase name, e.g., "erc", and elements
+belonging to that profile are referred to using the syntax
+"`profile`:hl1:.\ `element`:hl1:", e.g., "erc.who".
 
 Currently EZID treats profiles entirely separately, and thus an
 identifier may have values for multiple metadata profiles
@@ -927,17 +932,16 @@ __ `DataCite Metadata Scheme`_
    Metadata Scheme schema may be bound to the metadata element
    "datacite".  Care should be taken to escape line terminators and
    percent signs in the document (as is true for all metadata element
-   values; see `Request & response bodies`_ above).
-
-   All DataCite Metadata Scheme metadata bound to DOI identifiers is
-   automatically and immediately uploaded to DataCite_, where it may
-   be made available DataCite's search system and other indexing
-   services.
+   values; see `Request & response bodies`_ above).  Note that EZID
+   sets the identifier embedded in the document to the identifier
+   being operated on; thus it need not be specified by the client.
 
 .. _Profile "dc":
 
 3. **Profile "dc"**.  These elements are drawn from the `Dublin Core
    Metadata Element Set`_.
+
+..
 
    ============ =======================================================
    Element      Definition
@@ -959,7 +963,76 @@ __ `DataCite Metadata Scheme`_
                 Recommended best practice for encoding the date value
                 is defined in a profile of ISO 8601 and follows the
                 YYYY-MM-DD format.
+   dc.type      The nature or genre of the resource.  Recommended best
+                practice is to use a term from the DCMI Type
+                Vocabulary:
+
+                - Collection
+                - Dataset
+                - Event
+                - Image
+                - InteractiveResource
+                - MovingImage
+                - PhysicalObject
+                - Service
+                - Software
+                - Sound
+                - StillImage
+                - Text
    ============ =======================================================
+
+Metadata requirements & mapping
+-------------------------------
+
+A DOI identifier created by EZID must have title, creator, publisher,
+and publication year metadata any time its status is public (see
+`Identifier status`_ above).  Other than that, EZID imposes no
+requirements on the presence or form of citation metadata, but
+uploading at least minimal citation metadata to EZID is strongly
+encouraged in all cases to record the identifier's meaning and to
+facilitate its long-term maintenance.  Regardless of the metadata
+profile used, population of the "datacite.resourcetype" element is
+encouraged to support broad categorization of identifiers.
+
+To satisfy the aforementioned DOI metadata requirements, EZID looks in
+order for:
+
+1. DataCite XML metadata bound to the "datacite" element;
+2. Individual elements from the "datacite" profile as described in the
+   previous section ("datacite.title", etc.);
+3. Elements from other profiles that EZID is able to map to DataCite
+   equivalents (e.g., element "erc.who" maps to "datacite.creator").
+
+If no meaningful value is available for a required element, clients
+are encouraged to supply a standard machine-readable code drawn from
+the `Kernel Metadata and Electronic Resource Citations (ERCs)`__
+specification.  These codes have the common syntactic form
+"(:`code`:hl1:)" and include:
+
+__ ERC_
+
+  ======= ================================================
+  Code    Definition
+  ======= ================================================
+  (:unac) temporarily inaccessible
+  (:unal) unallowed; intentionally suppressed
+  (:unap) not applicable; makes no sense
+  (:unas) unassigned (e.g., untitled)
+  (:unav) unavailable; possibly unknown
+  (:unkn) known to be unknown (e.g., anonymous)
+  (:none) never had a value, never will
+  (:null) explicitly and meaningfully empty
+  (:tba)  to be assigned or announced later
+  (:etal) too numerous to list (et alia)
+  (:at)   the real value is at the given URL or identifier
+  ======= ================================================
+
+A code may optionally be followed by the code's human-readable
+equivalent or a more specific description, as in:
+
+.. parsed-literal::
+
+  who: (:unkn) anonymous donor
 
 Testing the API
 ---------------
@@ -970,7 +1043,7 @@ identifiers.  Identifiers in these namespaces are termed "test
 identifiers."  They are ordinary long-term identifiers in almost all
 respects, including resolvability, except that EZID deletes them after
 2 weeks.  An additional difference is that citation metadata for test
-identifiers is not uploaded to external search services.
+identifiers is not uploaded to external services.
 
 All user accounts are permitted to create test identifiers.  EZID also
 provides an "apitest" account that is permitted to create only test
@@ -997,9 +1070,9 @@ response will resemble the following:
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 39
+  |lArr| Content-Length: 33
   |lArr|
-  |lArr| success: 0 identifiers currently locked
+  |lArr| success: 2 operations in progress
 
 The status of EZID's subsystems can be probed at the same time by
 listing one or more subsystem names, separated by commas, as the value
@@ -1012,9 +1085,9 @@ of the "subsystems" query parameter.  For example:
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 58
+  |lArr| Content-Length: 52
   |lArr|
-  |lArr| success: 0 identifiers currently locked
+  |lArr| success: 2 operations in progress
   |lArr| noid: up
   |lArr| ldap: up
 

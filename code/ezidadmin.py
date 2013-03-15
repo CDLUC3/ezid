@@ -365,15 +365,13 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
     assert "gid" not in r[0][1] and "groupArkId" not in r[0][1] and\
       "agreementOnFile" not in r[0][1] and "shoulderList" not in r[0][1],\
       "unexpected LDAP attribute, DN='%s'" % dn
-    r = ezid.mintIdentifier(_agentPrefix, user, group)
+    r = ezid.mintIdentifier(_agentPrefix, user, group,
+      { "_ezid_role": "group", "_profile": "erc", "erc.who": dn,
+      "erc.what": "EZID group" })
     if r.startswith("success:"):
       arkId = r.split()[1]
     else:
       assert False, "ezid.mintIdentifier failed: " + r
-    r = ezid.setMetadata(arkId, user, group,
-      { "_ezid_role": "group", "_profile": "erc", "erc.who": dn,
-      "erc.what": "EZID group" })
-    assert r.startswith("success:"), "ezid.setMetadata failed: " + r
     l.modify_s(dn, [(ldap.MOD_ADD, "objectClass", "ezidGroup"),
       (ldap.MOD_ADD, "gid", gid.encode("UTF-8")),
       (ldap.MOD_ADD, "groupArkId", arkId.encode("UTF-8")),
@@ -560,15 +558,13 @@ def makeUser (uid, groupDn, user, group):
       assert r.startswith("success:"), "ezid.setMetadata failed: " + r
       m = []
     else:
-      r = ezid.mintIdentifier(_agentPrefix, user, group)
+      r = ezid.mintIdentifier(_agentPrefix, user, group,
+        { "_ezid_role": "user", "_profile": "erc", "erc.who": dn,
+        "erc.what": "EZID user" })
       if r.startswith("success:"):
         arkId = r.split()[1]
       else:
         assert False, "ezid.mintIdentifier failed: " + r
-      r = ezid.setMetadata(arkId, user, group,
-        { "_ezid_role": "user", "_profile": "erc", "erc.who": dn,
-        "erc.what": "EZID user" })
-      assert r.startswith("success:"), "ezid.setMetadata failed: " + r
       m = [(ldap.MOD_ADD, "arkId", arkId.encode("UTF-8"))]
     m += [(ldap.MOD_ADD, "objectClass", "ezidUser"),
       (ldap.MOD_ADD, "ezidOwnerGroup", groupDn.encode("UTF-8"))]
@@ -651,6 +647,8 @@ def systemStatus (id=None):
       config.config("DEFAULT.bind_noid")), "name": "Noid \"bind\" database" })
     probes.append({ "id": _addStatusProbe("datacite", None),
       "name": "DataCite API" })
+    probes.append({ "id": _addStatusProbe("handlesystem", None),
+      "name": "Handle System" })
     for p in config.config("prefixes.keys").split(","):
       minter = config.config("prefix_%s.minter" % p)
       if minter != "":
@@ -672,3 +670,5 @@ def systemStatus (id=None):
       return noid.Noid(url).ping()
     elif type == "datacite":
       return datacite.ping()
+    elif type == "handlesystem":
+      return datacite.pingHandleSystem()

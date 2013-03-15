@@ -1,18 +1,8 @@
 //#status messages
 $(document).ready(function() {
-	//alert($("#ustatus:not(:empty)").length);
-	//alert($('ustatus').innerHtml());
 	if ($.trim($("#ustatus").html())){
-		//$('#ustatus').prepend('<div class="close_button"><a href="#close" class="close"><img src="/ezid/static/images/close_it.png" alt="close button" title="close button"/></a></div>');
-		$('#ustatus').prepend('<div class="close_button"><a href="#close" class="close">hide message</a></div>');
-		/*var h = 0;
-		if($(window).height() < $(document).height()){
-			h = $(window).height();
-		}else{
-			h = $(document).height();
-			var y = h / 2 - $('#ustatus').height() / 2 - 100;
-		}
-		 */
+		$('#ustatus').prepend('<div class="close_button"><a href="#close" class="close"><img src="/ezid/static/images/application-exit.png" width="16" height="16" alt="close button" title="close button"/></a></div>');
+
 		var x = $(window).width() / 2 - $('#ustatus').width() / 2;
 		var y = 20;
 		
@@ -27,8 +17,7 @@ $(document).ready(function() {
  				$('#ustatus').fadeOut('slow');
 			}, $('#ustatus').height() * 70);
 		}
-
-    
+ 
     //if close button is clicked
   	$('#ustatus .close').click(function (e) {
   		//Cancel the link behavior

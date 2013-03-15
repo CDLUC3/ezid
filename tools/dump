@@ -32,6 +32,13 @@
 # shadowed identifier's _target field.  If the -s option is not
 # specified, shadow ARKs are not output at all.
 #
+# If the -r ("raw") option is specified, identifiers are output as
+# stored in noid (i.e., as unqualified ARKs); internal field labels
+# are NOT converted; and all internal fields (_t and _st, _t1, etc.)
+# are output.  Thus, the raw output exactly echoes what is stored in
+# noid.  The -r option implies the -n option; options -r and -s are
+# incompatible.
+#
 # If the -z option is specified, the output is gzip-compressed.
 #
 # This script requires several EZID modules.  The PYTHONPATH
@@ -85,18 +92,24 @@ labelMapping = {
   "_t": "_target",
   "_s": "_shadows",
   "_p": "_profile",
-  "_is": "_status"
+  "_is": "_status",
+  "_x": "_export"
 }
 
-p = optparse.OptionParser(usage="%prog [-nsz] noid.bdb")
+p = optparse.OptionParser(usage="%prog [-nrsz] noid.bdb")
 p.add_option("-n", action="store_false",
   dest="convertAgents", default=True, help="do NOT convert agent identifiers")
+p.add_option("-r", action="store_true", dest="rawOutput",
+  help="raw dump")
 p.add_option("-s", action="store_true",
   dest="includeShadowArks", default=False, help="include shadow ARKs")
 p.add_option("-z", action="store_true",
   dest="gzipOutput", default=False, help="gzip output")
 options, args = p.parse_args()
 if len(args) != 1: p.error("wrong number of arguments")
+if options.rawOutput:
+  if options.includeShadowArks: p.error("options -r and -s are incompatible")
+  options.convertAgents = False
 dbfile = args[0]
 
 if options.convertAgents:
@@ -117,32 +130,52 @@ if options.gzipOutput:
 else:
   outfile = sys.stdout
 
+def warning (id, message):
+  sys.stderr.write("dump: warning: %s: %s\n" % (id, message))
+
 def outputRecord1 (id, record):
   outfile.write(id)
   for k in record:
-    outfile.write(" %s %s" % (labelMapping.get(k, k), record[k]))
+    if options.rawOutput:
+      outfile.write(" %s %s" % (k, record[k]))
+    else:
+      outfile.write(" %s %s" % (labelMapping.get(k, k), record[k]))
   outfile.write("\n")
 
 def outputRecord (id, record):
-  if record.get("_is", "public") != "public":
-    record["_t"] = record["_t1"]
-    if "_st1" in record: record["_st"] = record["_st1"]
-  if "_t1" in record: del record["_t1"]
-  if "_st1" in record: del record["_st1"]
-  if "_s" in record:
-    su = record["_su"]
-    del record["_su"]
-    st = record["_st"]
-    del record["_st"]
-    if options.includeShadowArks: outputRecord1("ark:/" + id, record)
-    record["_u"] = su
-    record["_t"] = st
-    s = util.decode(record["_s"])
-    del record["_s"]
-    record["_shadowedby"] = util.encode3("ark:/" + id)
-    outputRecord1(s, record)
+  if options.rawOutput:
+    outputRecord1(id, record)
   else:
-    outputRecord1("ark:/" + id, record)
+    if record.get("_is", "public") != "public":
+      if "_t1" in record:
+        record["_t"] = record["_t1"]
+      else:
+        warning(id, "missing _t1")
+      if "_st1" in record: record["_st"] = record["_st1"]
+    if "_t1" in record: del record["_t1"]
+    if "_st1" in record: del record["_st1"]
+    if "_s" in record:
+      if "_su" in record:
+        su = record["_su"]
+        del record["_su"]
+      else:
+        warning(id, "missing _su")
+        su = None
+      if "_st" in record:
+        st = record["_st"]
+        del record["_st"]
+      else:
+        warning(id, "missing _st")
+        st = None
+      if options.includeShadowArks: outputRecord1("ark:/" + id, record)
+      if su != None: record["_u"] = su
+      if st != None: record["_t"] = st
+      s = util.decode(record["_s"])
+      del record["_s"]
+      record["_shadowedby"] = util.encode3("ark:/" + id)
+      outputRecord1(s, record)
+    else:
+      outputRecord1("ark:/" + id, record)
 
 db = bsddb.db.DB()
 db.open(dbfile, flags=bsddb.db.DB_RDONLY)

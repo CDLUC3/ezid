@@ -21,12 +21,15 @@ import django.conf
 import lxml.etree
 import os.path
 import re
+import threading
 import urllib
 import urllib2
 import xml.sax.saxutils
 
 import config
+import mapping
 
+_lock = threading.Lock()
 _enabled = None
 _doiUrl = None
 _metadataUrl = None
@@ -36,10 +39,11 @@ _prefixes = None
 _stylesheet = None
 _pingDoi = None
 _pingTarget = None
+_numActiveOperations = None
 
 def _loadConfig ():
   global _enabled, _doiUrl, _metadataUrl, _numAttempts, _datacenters, _prefixes
-  global _stylesheet, _pingDoi, _pingTarget
+  global _stylesheet, _pingDoi, _pingTarget, _numActiveOperations
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
@@ -60,9 +64,32 @@ def _loadConfig ():
     django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
   _pingDoi = config.config("datacite.ping_doi")
   _pingTarget = config.config("datacite.ping_target")
+  _lock.acquire()
+  try:
+    _numActiveOperations = 0
+  finally:
+    _lock.release()
 
 _loadConfig()
 config.addLoader(_loadConfig)
+
+def _modifyActiveCount (delta):
+  global _numActiveOperations
+  _lock.acquire()
+  try:
+    _numActiveOperations += delta
+  finally:
+    _lock.release()
+
+def numActiveOperations ():
+  """
+  Returns the number of active operations.
+  """
+  _lock.acquire()
+  try:
+    return _numActiveOperations
+  finally:
+    _lock.release()
 
 class _HTTPErrorProcessor (urllib2.HTTPErrorProcessor):
   def http_response (self, request, response):
@@ -106,6 +133,7 @@ def registerIdentifier (doi, targetUrl):
       targetUrl.replace("\\", "\\\\"))).encode("UTF-8"))
     c = None
     try:
+      _modifyActiveCount(1)
       c = o.open(r)
       assert c.read() == "OK",\
         "unexpected return from DataCite register DOI operation"
@@ -118,6 +146,7 @@ def registerIdentifier (doi, targetUrl):
     else:
       break
     finally:
+      _modifyActiveCount(-1)
       if c: c.close()
   return None
 
@@ -144,10 +173,11 @@ def validateDcmsRecord (identifier, record):
   the normalized record is returned or an assertion error is raised.
   Validation is limited to checking that the record is well-formed
   XML, that the record appears to be a DCMS record (by examining the
-  root element), and that the identifier embedded in the record
-  matches 'identifier'.  (In an extension to DCMS, we allow the
-  identifier to be something other than a DOI, for example, an ARK.)
-  Normalization is limited to removing any encoding declaration.
+  root element), and that the identifier type embedded in the record
+  matches that of 'identifier'.  (In an extension to DCMS, we allow
+  the identifier to be something other than a DOI, for example, an
+  ARK.)  Normalization is limited to removing any encoding
+  declaration.  'identifier' is inserted in the returned record.
   """
   m = _prologRE.match(record)
   if m:
@@ -178,9 +208,46 @@ def validateDcmsRecord (identifier, record):
     identifier = identifier[9:]
   else:
     assert False, "unrecognized identifier scheme"
-  assert i[0].attrib["identifierType"] == type and i[0].text == identifier,\
-    "identifier embedded in record does not match identifier being operated on"
-  return record
+  assert i[0].attrib["identifierType"] == type, "identifier type mismatch"
+  i[0].text = identifier
+  try:
+    return "<?xml version=\"1.0\"?>\n" +\
+      lxml.etree.tostring(root, encoding=unicode)
+  except Exception, e:
+    assert False, "XML serialization error: " + str(e)
+
+# From version 2.2 of the DataCite Metadata Schema <doi:10.5438/0005>:
+_resourceTypes = ["Collection", "Dataset", "Event", "Film", "Image",
+  "InteractiveResource", "Model", "PhysicalObject", "Service", "Software",
+  "Sound", "Text"]
+
+# From the DCMI Type Vocabulary
+# <http://dublincore.org/documents/dcmi-type-vocabulary/#H7>:
+_dcResourceTypes = ["Collection", "Dataset", "Event", "Image",
+  "InteractiveResource", "MovingImage", "PhysicalObject", "Service",
+  "Software", "Sound", "StillImage", "Text"]
+
+def validateResourceType (descriptor):
+  """
+  Validates and normalizes a resource type descriptor.  By
+  "descriptor" we mean either a general resource type by itself (e.g.,
+  "Image") or a general and a specific resource type separated by a
+  slash (e.g., "Image/Photograph").  Either a normalized descriptor is
+  returned or an assertion error is raised.
+  """
+  descriptor = descriptor.strip()
+  if "/" in descriptor:
+    gt, st = descriptor.split("/", 1)
+    gt = gt.strip()
+    st = st.strip()
+    assert gt in _resourceTypes, "invalid general resource type"
+    if len(st) > 0:
+      return gt + "/" + st
+    else:
+      return gt
+  else:
+    assert descriptor in _resourceTypes, "invalid general resource type"
+    return descriptor
 
 def _insertEncodingDeclaration (record):
   m = _prologRE.match(record)
@@ -226,23 +293,41 @@ def _formRecord (doi, metadata):
   if metadata.get("datacite", "").strip() != "":
     return _insertEncodingDeclaration(metadata["datacite"])
   else:
-    m = {}
-    for f in ["creator", "title", "publisher", "publicationyear",
-      "resourcetype"]:
-      if metadata.get("datacite."+f, "").strip() != "":
-        m[f] = metadata["datacite."+f].strip()
+    # Python shortcoming: local variables can't be assigned to from
+    # inner scopes, so we have to make mappedMetadata a list.
+    mappedMetadata = [None]
+    def getMappedValue (element, index, label):
+      if metadata.get("datacite."+element, "").strip() != "":
+        return metadata["datacite."+element].strip()
       else:
-        m[f] = "none supplied"
-    if not re.match("\d{4}$", m["publicationyear"]):
-      m["publicationyear"] = "0000"
-    r = _interpolate(_metadataTemplate, doi, m["creator"], m["title"],
-      m["publisher"], m["publicationyear"])
-    if m["resourcetype"] != "none supplied":
-      if "/" in m["resourcetype"]:
-        gt, st = m["resourcetype"].split("/", 1)
+        if mappedMetadata[0] == None:
+          mappedMetadata[0] = mapping.getDisplayMetadata(metadata)
+        assert mappedMetadata[0][index] != None, "no " + label
+        return mappedMetadata[0][index]
+    creator = getMappedValue("creator", 0, "creator")
+    title = getMappedValue("title", 1, "title")
+    publisher = getMappedValue("publisher", 2, "publisher")
+    publicationYear = getMappedValue("publicationyear", 3, "publication year")
+    m = re.match("(\d{4})(-\d\d)?(-\d\d)?$", publicationYear)
+    if m:
+      publicationYear = m.group(1)
+    else:
+      publicationYear = "0000"
+    r = _interpolate(_metadataTemplate, doi, creator, title, publisher,
+      publicationYear)
+    if metadata.get("datacite.resourcetype", "").strip() != "":
+      rt = metadata["datacite.resourcetype"].strip()
+      if "/" in rt:
+        gt, st = rt.split("/", 1)
         r += _interpolate(_resourceTypeTemplate2, gt.strip(), st.strip())
       else:
-        r += _interpolate(_resourceTypeTemplate1, m["resourcetype"])
+        r += _interpolate(_resourceTypeTemplate1, rt)
+    elif metadata.get("_p", "") == "dc" and\
+      metadata.get("dc.type", "").strip() != "":
+      rt = metadata["dc.type"].strip()
+      if rt in _dcResourceTypes:
+        if rt in ["MovingImage", "StillImage"]: rt = "Image"
+        r += _interpolate(_resourceTypeTemplate1, rt)
     r += u"</resource>\n"
     return r
 
@@ -261,12 +346,18 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
   thrown exception on other error.  No error checking is done on the
   inputs.
   """
-  if not _enabled: return None
-  oldRecord = _formRecord(doi, current)
+  try:
+    oldRecord = _formRecord(doi, current)
+  except AssertionError:
+    oldRecord = None
   m = current.copy()
   m.update(delta)
-  newRecord = _formRecord(doi, m)
+  try:
+    newRecord = _formRecord(doi, m)
+  except AssertionError, e:
+    return "DOI metadata requirements not satisfied: " + e.message
   if newRecord == oldRecord and not forceUpload: return None
+  if not _enabled: return None
   # To hide transient network errors, we make multiple attempts.
   for i in range(_numAttempts):
     o = urllib2.build_opener(_HTTPErrorProcessor)
@@ -279,6 +370,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
     r.add_data(newRecord.encode("UTF-8"))
     c = None
     try:
+      _modifyActiveCount(1)
       c = o.open(r)
       assert c.read().startswith("OK"),\
         "unexpected return from DataCite store metadata operation"
@@ -286,7 +378,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
       message = e.fp.read()
       if e.code == 400 and (message.startswith("[xml]") or\
         message.startswith("ParseError")):
-        return message
+        return "element 'datacite': " + message
       else:
         raise e
     except urllib2.URLError:
@@ -294,6 +386,33 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
     else:
       return None
     finally:
+      _modifyActiveCount(-1)
+      if c: c.close()
+
+def _deactivate (doi):
+  # To hide transient network errors, we make multiple attempts.
+  for i in range(_numAttempts):
+    o = urllib2.build_opener(_HTTPErrorProcessor)
+    r = urllib2.Request(_metadataUrl + "/" + urllib.quote(doi))
+    # We manually supply the HTTP Basic authorization header to avoid
+    # the doubling of the number of HTTP transactions caused by the
+    # challenge/response model.
+    r.add_header("Authorization", _datacenterAuthorization(doi))
+    r.get_method = lambda: "DELETE"
+    c = None
+    try:
+      _modifyActiveCount(1)
+      c = o.open(r)
+      assert c.read() == "OK",\
+        "unexpected return from DataCite deactivate DOI operation"
+    except urllib2.HTTPError, e:
+      if e.code != 500 or i == _numAttempts-1: raise e
+    except urllib2.URLError:
+      if i == _numAttempts-1: raise
+    else:
+      break
+    finally:
+      _modifyActiveCount(-1)
       if c: c.close()
 
 def deactivate (doi):
@@ -307,33 +426,21 @@ def deactivate (doi):
   Raises an exception an error.
   """
   if not _enabled: return
-  # The identifier must already have metadata in DataCite; in case it
-  # doesn't, upload some bogus metadata.
-  message = uploadMetadata(doi, {}, { "datacite.title": "inactive" })
-  assert message is None,\
-    "unexpected return from DataCite store metadata operation: " + message
-  # To hide transient network errors, we make multiple attempts.
-  for i in range(_numAttempts):
-    o = urllib2.build_opener(_HTTPErrorProcessor)
-    r = urllib2.Request(_metadataUrl + "/" + urllib.quote(doi))
-    # We manually supply the HTTP Basic authorization header to avoid
-    # the doubling of the number of HTTP transactions caused by the
-    # challenge/response model.
-    r.add_header("Authorization", _datacenterAuthorization(doi))
-    r.get_method = lambda: "DELETE"
-    c = None
-    try:
-      c = o.open(r)
-      assert c.read() == "OK",\
-        "unexpected return from DataCite deactivate DOI operation"
-    except urllib2.HTTPError, e:
-      if e.code != 500 or i == _numAttempts-1: raise e
-    except urllib2.URLError:
-      if i == _numAttempts-1: raise
+  try:
+    _deactivate(doi)
+  except urllib2.HTTPError, e:
+    if e.code == 404:
+      # The identifier must already have metadata in DataCite; in case
+      # it doesn't (as may be the case with legacy identifiers),
+      # upload some bogus metadata.
+      message = uploadMetadata(doi, {}, { "datacite.title": "inactive",
+        "datacite.creator": "inactive", "datacite.publisher": "inactive",
+        "datacite.publicationyear": "0000" })
+      assert message is None,\
+        "unexpected return from DataCite store metadata operation: " + message
+      _deactivate(doi)
     else:
-      break
-    finally:
-      if c: c.close()
+      raise
 
 def ping ():
   """
@@ -350,6 +457,7 @@ def ping ():
     r.add_header("Authorization", _datacenterAuthorization(_pingDoi))
     c = None
     try:
+      _modifyActiveCount(1)
       c = o.open(r)
       assert c.read() == _pingTarget
     except urllib2.URLError:
@@ -359,7 +467,22 @@ def ping ():
     else:
       return "up"
     finally:
+      _modifyActiveCount(-1)
       if c: c.close()
+
+def pingHandleSystem ():
+  """
+  More deeply tests the DataCite API to determine if the Handle System
+  is operational.  Returns "up" or "down".
+  """
+  if not _enabled: return "up"
+  try:
+    r = setTargetUrl(_pingDoi, _pingTarget)
+    assert r == None
+  except:
+    return "down"
+  else:
+    return "up"
 
 def _removeEncodingDeclaration (record):
   m = _prologRE.match(record)

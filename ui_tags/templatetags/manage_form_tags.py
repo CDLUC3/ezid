@@ -51,10 +51,10 @@ def header_row(request, fields_selected, fields_mapped, field_widths, order_by, 
           for x in fields_selected]) + '</tr>'
 
 #display column heading text, links, sort order that allow changing
-ORDER_BY_IMG = {'asc': '/ezid/static/images/asc.png', 'desc': '/ezid/static/images/desc.png'}
+ORDER_BY_IMG = {'asc': '/ezid/static/images/tri_up.png', 'desc': '/ezid/static/images/tri_down.png'}
 SORT_OPPOSITE = {'asc': 'desc', 'desc': 'asc'}
 SORT_TIP = {'asc': 'Sorting in ascending order. Click to change to descending order.',
-            'desc': 'Sorgint in descending order. Click to change to ascending order.'}
+            'desc': 'Sorting in descending order. Click to change to ascending order.'}
 def column_head(request, field, fields_mapped, order_by, sort):
   #if current fields is being ordered by then should show icon, also clicking link or icon will switch order
   if field == order_by:
@@ -64,8 +64,8 @@ def column_head(request, field, fields_mapped, order_by, sort):
   combined_params = dict(request, **overriding_params)
   url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
   if field == order_by:
-    sort_icon = "<a href='" + url + "' title='" + SORT_TIP[sort] + "'>" + \
-        "<img src='" + ORDER_BY_IMG[sort] + "' alt='" + SORT_TIP[sort] + "'></a>&nbsp;&nbsp;"
+    sort_icon = "<div class='order_by_col'><a href='" + url + "' title='" + SORT_TIP[sort] + "'>" + \
+        "<img src='" + ORDER_BY_IMG[sort] + "' alt='" + SORT_TIP[sort] + "'></a></div>"
   else:
     sort_icon = ''
   column_link = "<a href='" + url + "' title='Sort on this column'>" + escape(fields_mapped[field]) + "</a>"

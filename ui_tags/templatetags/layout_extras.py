@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.html import escape
 from decorators import basictag
 from django.core.urlresolvers import reverse
+from operator import itemgetter
 import django.template
 import urllib
 import re
@@ -24,7 +25,7 @@ def settings_value(name):
 def choices(name, value, choice_string):
   """Creates radio buttons (for simple admin email form) based on string choices separated by a pipe"""
   choices = choice_string.split("|")
-  return "&nbsp;&nbsp".join(
+  return "  ".join(
           ['<input type="radio" name="' + name + '" value="' + escape(x) + '"' +
             (' checked="checked"' if value == x else '') + '>' + escape(x) + '</input>'
            for x in choices])
@@ -38,6 +39,22 @@ def request_value(context, key_name):
   request = context['request']
   if key_name in request.REQUEST:
     return escape(request.REQUEST[key_name])
+  else:
+    return ''
+  
+@register.tag
+@basictag(takes_context=True) 
+def set_dict_value(context, dt, key_name):
+  """Sets value in the context object equal to the dictionary dt[key_name]"""
+  context['value'] = dt[key_name]
+  return ''
+
+@register.simple_tag
+def get_dict_value(dt, key_name):
+  """For getting dictionary values which Django templating can't handle,
+  such as those starting with underscore or with a dot in them"""
+  if key_name in dt:
+    return escape(dt[key_name])
   else:
     return ''
   
@@ -57,6 +74,14 @@ def help_icon(id_of_help):
   return '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#' + id_of_help + '" name="help_link">' + \
     '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help"' + \
     ' title="Click for additional help"/></a>'
+    
+@register.simple_tag
+def datacite_field_help_icon(id_of_help):
+  temp_id = id_of_help.replace(".", "_") + '_help'
+  return '<div class="datacite_help">' + \
+    '<a href="#' + temp_id + '" name="help_link">' + \
+    '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help" title="Click for additional help"/>' + \
+    '</a></div>'
 
 
 @register.tag
@@ -120,11 +145,20 @@ def selected_radio(context, request_item, loop_index, item_value):
     return ''
 
 @register.simple_tag
-def shoulder_display(prefix_dict, testPrefixes):
+def shoulder_display(prefix_dict, testPrefixes, simple_display):
+  #import pdb; pdb.set_trace() #this will enable debugging console
+  display_prefix = ""
   for pre in testPrefixes:
     if prefix_dict['prefix'].startswith(pre['prefix']):
-      return escape(prefix_dict['namespace']) + " (<span class='fakeid'>" + escape(prefix_dict['prefix']) + "</span>)"
-  return escape(prefix_dict['namespace'] + " (" + prefix_dict['prefix'] + ")")
+      display_prefix = " (<span class='fakeid'>" + escape(prefix_dict['prefix']) + "</span>)"
+  if display_prefix == '':
+    display_prefix = " (" + prefix_dict['prefix'] + ")"
+  if simple_display == "True":
+    t = re.search('^[A-Za-z]+:', prefix_dict['prefix'])
+    t = t.group(0)[:-1].upper()
+    return escape(t) + display_prefix
+  else:
+    return escape(prefix_dict['namespace']) + display_prefix 
 
 @register.simple_tag
 def search_display(dictionary, field):
@@ -132,6 +166,26 @@ def search_display(dictionary, field):
     return escape(datetime.datetime.fromtimestamp(dictionary[field]))
   else:
     return dictionary[field]
+  
+@register.simple_tag
+def unavailable_codes(for_field):
+  items = ( ("unac", "temporarily inaccessible"),
+            ("unal", "unallowed, suppressed intentionally"),
+            ("unap", "not applicable, makes no sense"),
+            ("unas", "value unassigned (e.g., Untitled)"),
+            ("unav", "value unavailable, possibly unknown"),
+            ("unkn", "known to be unknown (e.g., Anonymous, Inconnue)"),
+            ("none", "never had a value, never will"),
+            ("null", "explicitly and meaningfully empty"),
+            ("tba", "to be assigned or announced later"),
+            ("etal", "too numerous to list (et alia)"),
+            ("at", "the real value is at the given URL or identifier") )
+  return "<ul>" + "\n".join(
+          ["<li><a href=\"#"+ escape(x[0]) + "_" + for_field + "\" name=\"code_insert_link\">" + \
+           escape("(:" + x[0] + ")" ) + "</a> " + escape(x[1]) + "</li>" for \
+           x in items]
+          ) + "</ul>"
+    #<li><a href="#unas_datacite.creator" name="code_insert_link">(:unac)</a> temporarily inacessible</li>
 
 # This function should and will be moved to a better location.  -GJ
 def _urlForm (id):
@@ -154,6 +208,35 @@ def full_url_to_id_details_urlencoded(context, id_text):
   """return URL form of identifier, URL-encoded"""
   return urllib.quote(_urlForm(id_text))
 
+#check for more than one of the same identifer type
+#NOT checking for duplicate shoulders, returns t/f
+@register.filter(name='duplicate_id_types')
+def duplicate_id_types(prefixes):
+  kinds = {}
+  for prefix in prefixes:
+    t = re.search('^[A-Za-z]+:', prefix['prefix'])
+    t = t.group(0)[:-1]
+    if t in kinds:
+      kinds[t] = kinds[t] + 1
+    else:
+      kinds[t] = 1
+  for key, value in kinds.iteritems():
+    if value > 1:
+      return True
+  return False
+
+#returns list of unique ID types such as ARK/DOI/URN with the
+#prefix information, ((prefix, prefix_obj), etc)
+#should only be called where only one prefix per type
+@register.filter(name='unique_id_types')
+def unique_id_types(prefixes):
+  kinds = {}
+  for prefix in prefixes:
+    t = re.search('^[A-Za-z]+:', prefix['prefix'])
+    t = t.group(0)[:-1]
+    kinds[t] = prefix
+  i = [(x[0].upper(), x[1],) for x in kinds.items()]
+  return sorted(i, key = itemgetter(0))
   
 #This captures the block around which rounded corners go
 @register.tag(name="rounded_borders")

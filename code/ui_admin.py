@@ -19,7 +19,7 @@ from collections import *
 @uic.admin_login_required
 def index(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.index'}
-  return redirect("ui_admin.usage")
+  #return redirect("ui_admin.usage")
   return uic.render(request, 'admin/index', d)
 
 @uic.admin_login_required
@@ -47,7 +47,10 @@ def usage(request, ssl=False):
   elif d['choice'].startswith('group_'):
     group_id = d['choice'][6:]
   
-  d['report'] = _create_stats_report(user_id, group_id)
+  d['report'] = _create_stats_report(user_id, group_id)[::-1]
+  if len(d['report']) > 0:
+    d['totals'] = d['report'][0]
+    d['report'] = d['report'][1:]
   s = stats.getStats()
   d['last_tally'] = datetime.datetime.fromtimestamp(s.getComputeTime()).strftime('%B %d, %Y')
   return uic.render(request, 'admin/usage', d)
@@ -102,6 +105,7 @@ def manage_users(request, ssl=False):
   d['groups'] = ezidadmin.getGroups()
   d['groups'].sort(key=lambda i: i['gid'].lower())
   d['group'] = idmap.getGroupId(d['user']['groupGid'])
+  d['group_dn'] = d['user']['groupDn']
   #now for saving
   if request.method == "POST" and request.POST['user'] == request.POST['original_user']:
     u, p = d['user'], request.POST
@@ -240,46 +244,54 @@ def alert_message(request, ssl=False):
 def new_account(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.new_account' }
   # id : [defaultvalue, label, type, help_text]
-  field_info = OrderedDict( \
-    [ ('todays_date', [datetime.datetime.now().strftime("%m/%d/%Y"), "Today's date", "text", ""]), \
-      ('submitters_name', ["", "Your name", "text", ""]), \
-      ('acct_name', ["", "Account name", "text", "Choose a name that is lowercase, 10 characters or less; no spaces.  Underscore or dash ok"]), \
-      ('acct_email', ["", "Email Address", "text", "To be associated with the account"]), \
-      ('primary_contact', ["", "Primary contact", "text", "An individual associated with this account"]), \
-      ('contact_email', ["", "Contact's email address", "text", ""]), \
-      ('contact_phone', ["", "Contact's phone number", "text", ""]), \
-      ('contact_fax', ["", "Contact's fax number", "text", ""]), \
-      ('org', ["", "Organization", "text", ""]), \
-      ('org_acroynm', ["", "Organization acronym", "text", "Suggest an acronym that is between 3-10 characters in length.  It will be used for identification purposes"]), \
-      ('org_www', ["", "Organization's web address", "text", ""]), \
-      ('mailing_address', ["", "Mailing address", "long_text", ""]), \
-      ('identifiers', ["", "Identifiers", "ARKs|DOIs and ARKs", "This choice affects the subscription pricing. If you have questions, please enter them below."]), \
-      ('created_before', ["", "Have you created DOIs or ARKs before?", "NO|YES", ""]), \
-      ('internal_identifiers', ["", "Do you use any internal or local identifiers?", "NO|YES", ""]), \
-      ('identifier_plans', ["", "How do you plan to use identifiers in the next year?", "long_text", ""]), \
-      ('comments', ["", "Comments or questions?", "long_text", ""]) \
-    ] )
+  field_info = { \
+      'todays_date': [datetime.datetime.now().strftime("%m/%d/%Y"), "Today's date", "text", ""], \
+      'submitters_name': ["", "Your name", "text", ""], \
+      'acct_name': ["", "Account name", "text", "Choose a name that is lowercase, 10 characters or less; no spaces.  Underscore or dash ok"], \
+      'acct_email': ["", "Email Address", "text", "To be associated with the account"], \
+      'primary_contact': ["", "Primary contact", "text", "An individual associated with this account"], \
+      'contact_email': ["", "Contact's email address", "text", ""], \
+      'contact_phone': ["", "Contact's phone number", "text", ""], \
+      'contact_fax': ["", "Contact's fax number", "text", ""], \
+      'org': ["", "Organization", "text", ""], \
+      'org_acroynm': ["", "Organization acronym", "text", "Suggest an acronym that is between 3-10 characters in length.  It will be used for identification purposes"], \
+      'org_www': ["", "Organization's web address", "text", ""], \
+      'mailing_address1': ["", "Address line 1", "text", ""], \
+      'mailing_address2': ["", "Address line 2", "text", ""], \
+      'mailing_city': ["", "City", "text", ""], \
+      'mailing_state': ["", "State", "text", ""], \
+      'mailing_zip': ["", "Zip code", "text", ""], \
+      'mailing_country': ["", "Country", "text", ""], \
+      'identifiers': ["", "Identifiers", "ARKs|DOIs and ARKs", "This choice affects the subscription pricing. If you have questions, please enter them below."], \
+      'created_before': ["", "Have you created DOIs or ARKs before?", "NO|YES", ""], \
+      'internal_identifiers': ["", "Do you use any internal or local identifiers?", "NO|YES", ""], \
+      'identifier_plans': ["", "How do you plan to use identifiers in the next year?", "long_text", ""], \
+      'comments': ["", "Comments or questions?", "long_text", ""] }
+  
+  field_order = ("todays_date submitters_name acct_name acct_email " + \
+    "primary_contact contact_email contact_phone contact_fax org " + \
+    "org_acroynm org_www mailing_address1 mailing_address2 mailing_city " + \
+    "mailing_state mailing_zip mailing_country identifiers created_before " + \
+    "internal_identifiers identifier_plans comments").split()
   
   #populate form values back into form
   if request.method == "POST":
     message = ""
-    for key in field_info.keys():
+    for key in field_order:
       if key in request.POST:
         field_info[key][0] = request.POST[key]
-      message += field_info[key][1] + ": " + (request.POST[key] if key in request.POST else '') + "\n\n"
-    message += "----- anvl/machine readable format -----\n"
-    for key in field_info.keys():
-      v = (request.POST[key] if key in request.POST else '')
-      message += anvl.formatPair(key, v)
-    emails = [x.strip() for x in uic.new_customer_email.split(',')]
+        v = (request.POST[key] if key in request.POST else '')
+        message += anvl.formatPair(key, v)
+    emails = [x.strip() for x in uic.new_account_email.split(',')]
+    #print "new ezid account: " + request.POST['acct_name']
     #print message
-    django.core.mail.send_mail("New customer registration", message,
+    django.core.mail.send_mail("new ezid account: " + request.POST['acct_name'], message,
                                django.conf.settings.SERVER_EMAIL, emails)
     django.contrib.messages.success(request, "Form information has been emailed.")
-    d['field_info'] = field_info
+    d['field_info'], d['field_order'] = field_info, field_order
     return uic.render(request, 'admin/new_account_display', d)
   
-  d['field_info'] = field_info
+  d['field_info'], d['field_order'] = field_info, field_order
   return uic.render(request, 'admin/new_account', d)
 
 def select_shoulder_lists(selected_val_list):
@@ -429,31 +441,39 @@ def _insertCommas (n):
 def _create_stats_report(user, group):
   """Create a stats report based on the user and group (or None, None) for all"""
   s = stats.getStats()
-  #stats is called like s.query((month, user, group, type, metadata), False)
   months = _month_range_for_display(user,group)
   rows =[]
-  t_arks, t_dois, t_urns, t_meta, t_all = 0, 0, 0, 0, 0
+  
+  position = {'ARK': 1, 'DOI': 3, 'URN': 5}
+  id_types = ['ARK', 'DOI', 'URN']
+  tallies = {'ARK': 0, 'DOI': 0, 'URN': 0}
+  meta_tallies = {'ARK': 0.0, 'DOI': 0.0, 'URN': 0.0}
+  
   for month in months:
-    arks = s.query((month, user, group, "ARK", None), False)
-    dois = s.query((month, user, group, "DOI", None), False)
-    urns = s.query((month, user, group, "URN", None), False)
-    total_items = float(s.query((month, user, group, None, None), False))
+    a=[0]*7 #create dict of zeroes, length 7
+    a[0] = month
+    for id_type in id_types:
+      ids = s.query((month, user, group, id_type, None), False)
+      ids_w_meta = float(s.query((month, user, group, id_type, "True"), False))
+      tallies[id_type] = tallies[id_type] + ids
+      meta_tallies[id_type] = meta_tallies[id_type] + ids_w_meta
+      if ids == 0:
+        percent_meta = "0%"
+      else:
+        percent_meta = str(int((ids_w_meta / ids * 100))) + "%"
+      a[position[id_type]] = _insertCommas(ids)
+      a[position[id_type] + 1] = percent_meta
+    rows.append(a)
     
-    t_arks += arks
-    t_dois += dois
-    t_urns += urns
-    t_all += total_items
-    
-    if total_items == 0:
-      percent_meta = 'N/A'
-    else:
-      with_meta = float(s.query((month, user, group, None, "True"), False))
-      t_meta += with_meta
-      percent_meta = "%0.2f" % (with_meta / total_items * 100) + "%"
-    rows.append((month, _insertCommas(arks), _insertCommas(dois), \
-                  _insertCommas(urns), percent_meta))
-
   if len(rows) > 0:
-    rows.append(('Total', _insertCommas(t_arks), _insertCommas(t_dois), \
-                 _insertCommas(t_urns), "%0.2f" % (t_meta / t_all * 100) + "%" ))
+    a=[0]*7 #create dict of zeroes, length 7
+    a[0] = "Total"
+    for id_type in id_types:
+      if tallies[id_type] == 0:
+        percent_meta = "0%"
+      else:
+        percent_meta = str(int((meta_tallies[id_type] / tallies[id_type] * 100))) + "%"
+      a[position[id_type]] = _insertCommas(tallies[id_type])
+      a[position[id_type] + 1] = percent_meta
+    rows.append(a)
   return rows

@@ -33,12 +33,12 @@ MENUS = (
             )
           ),
           ("Admin", 'ui_admin.index', 'admin',
-            ( ("View usage", 'ui_admin.usage', 'admin', ()),
-              ("Manage user accounts", 'ui_admin.manage_users', 'admin', ()),
-              ("Manage groups", 'ui_admin.manage_groups', 'admin', ()),
-              ("System status", 'ui_admin.system_status', 'admin', ()),
-              ("Create alert message", 'ui_admin.alert_message', 'admin', ()),
-              ("New account form", 'ui_admin.new_account', 'admin', ())
+            ( ("Usage", 'ui_admin.usage', 'admin', ()),
+              ("Users", 'ui_admin.manage_users', 'admin', ()),
+              ("Groups", 'ui_admin.manage_groups', 'admin', ()),
+              ("Status", 'ui_admin.system_status', 'admin', ()),
+              ("Alerts", 'ui_admin.alert_message', 'admin', ()),
+              ("New account", 'ui_admin.new_account', 'admin', ())
             )
           )
         )

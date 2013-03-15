@@ -66,7 +66,7 @@
     	
     	<label class="left" for="group">Group:</label>
     	<div class="field_right">
-    		<a href="{% url ui_admin.manage_groups %}?group={{ group.dn }}" id="group">{{user.groupGid}}</a>
+    		<a href="{% url ui_admin.manage_groups %}?group={{ group_dn|urlencode }}" id="group">{{user.groupGid}}</a>
     	</div>
     	
     	<label for="givenName" class="left">First name:</label>

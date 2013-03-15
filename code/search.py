@@ -139,9 +139,14 @@ def _returnConnection (c, poolId, tainted=False):
 
 def numConnections ():
   """
-  Returns the number of open database connections.
+  Returns a tuple (number of open database connections, number of
+  connections in active use).
   """
-  return _numConnections
+  _dbLock.acquire()
+  try:
+    return (_numConnections, _numConnections-len(_pool))
+  finally:
+    _dbLock.release()
 
 def _begin (cursor):
   while True:
@@ -401,11 +406,16 @@ def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
   if useLocalNames: owner = idmap.getUserId(owner)
   if includeCoOwnership:
     col = _getCoOwnership(owner)
-    q = ("SELECT %s%s FROM identifier A, ownership B ON " +\
+    # The query below should include a DISTINCT qualifier if 'owner'
+    # is an account-level co-owner (i.e., if len(col) > 0), but for
+    # performance reasons we leave the qualifier out.  The worst that
+    # will happen is that any co-owned identifier that has been
+    # modified by 'owner' will be returned more than once (a rare
+    # occurrence and a relatively harmless glitch).
+    q = ("SELECT %s FROM identifier A, ownership B ON " +\
       "A.identifier = B.identifier WHERE B.owner = ?%s ORDER BY A.%s %s " +\
       "LIMIT %d OFFSET %d") %\
-      ("DISTINCT " if len(col) > 0 else "",
-      ", ".join("A." + c for c in _columns),
+      (", ".join("A." + c for c in _columns),
       " OR B.owner = ?"*len(col),
       sortColumn, "ASC" if ascending else "DESC", limit, offset)
     p = tuple([owner] + col)
@@ -448,9 +458,14 @@ def getByOwnerCount (owner, includeCoOwnership=True, useLocalNames=True):
   if useLocalNames: owner = idmap.getUserId(owner)
   if includeCoOwnership:
     col = _getCoOwnership(owner)
-    q = "SELECT COUNT(%sidentifier) FROM ownership WHERE owner = ?%s" %\
-      ("DISTINCT " if len(col) > 0 else "",
-      " OR owner = ?"*len(col))
+    # The query below should include a DISTINCT qualifier if 'owner'
+    # is an account-level co-owner (i.e., if len(col) > 0), but for
+    # performance reasons we leave the qualifier out.  The worst that
+    # will happen is that any co-owned identifier that has been
+    # modified by 'owner' will be counted more than once (a rare
+    # occurrence and a relatively harmless glitch).
+    q = "SELECT COUNT(*) FROM ownership WHERE owner = ?%s" %\
+      (" OR owner = ?"*len(col))
     p = tuple([owner] + col)
   else:
     q = "SELECT COUNT(*) FROM identifier WHERE owner = ?"

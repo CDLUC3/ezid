@@ -99,10 +99,12 @@ for l in infile:
     fields.insert(0, "_id")
   for f in fields:
     if f in r:
-      if f in ["_created", "_updated"] and options.formatTimestamps:
+      if f in ["_created", "_updated", "_c", "_u", "_su"] and\
+        options.formatTimestamps:
         v = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(int(r[f])))
-      elif f in ["_owner", "_ownergroup", "_coowners"] and options.idmap:
-        if f in ["_owner", "_ownergroup"]:
+      elif f in ["_owner", "_ownergroup", "_coowners", "_o", "_g", "_co"] and\
+        options.idmap:
+        if f in ["_owner", "_ownergroup", "_o", "_g"]:
           id = util.decode(r[f])
           v = idmap.get(id, id)
         else:
