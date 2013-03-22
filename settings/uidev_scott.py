@@ -17,9 +17,11 @@ RELOAD_TEMPLATES = True
 
 #This tells a special template tag to substitute
 #one templates for another if the host name is in this dictionary
-HOST_TEMPLATE_CUSTOMIZATION = {'localhost:8001': 'purdue'}
+HOST_TEMPLATE_CUSTOMIZATION = {'localhost:8001': 'purdue',
+                               'localhost:8002': 'purdue'}
 
 #tells contact-us mailer to mail to different address if domain in this dictionary
-HOST_EMAIL_CUSTOMIZATION = {'localhost:8001': 'scott.fisher@ucop.edu'}
+HOST_EMAIL_CUSTOMIZATION = {'localhost:8001': 'scott.fisher@ucop.edu',
+                            'localhost:8002': 'scott.fisher@ucop.edu'}
 
 ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
