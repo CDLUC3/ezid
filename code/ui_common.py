@@ -268,7 +268,7 @@ def validate_simple_metadata_form(request, profile):
     is_valid = False
   return is_valid
 
-def validate_advanced_metadata_form(request, profile):
+def validate_advanced_metadata_form(request, profile, manual=False):
   """validates an advanced metadata form, profile is more or less irrelevant for now,
   but may be useful later"""
   is_valid = True
@@ -289,8 +289,13 @@ def validate_advanced_metadata_form(request, profile):
     if rt != "" and rt.split("/", 1)[0] not in _dataciteResourceTypes:
       msgs.error(request, "Invalid general resource type")
       is_valid = False
-  if profile.name == 'datacite' and _validate_datacite_metadata_form(request, profile) == False:
-    is_valid = False
+  if manual==False:
+    if profile.name == 'datacite' and _validate_datacite_metadata_form(request, profile) == False:
+      is_valid = False
+  else:
+    # for manual profiles, call additional validation function as defined by profiles
+    methods = {'datacite_xml': _validate_datacite_xml}
+    is_valid = methods[profile](request)
   return is_valid
 
 def _validate_datacite_metadata_form(request, profile):
@@ -317,6 +322,10 @@ def _validate_datacite_metadata_form(request, profile):
     is_valid = False
     
   return is_valid
+
+def _validate_datacite_xml(request):
+  #this needs filling out
+  return True
 
 def user_or_anon_tup(request):
   """Gets user tuple from request.session, otherwise returns anonymous tuple"""

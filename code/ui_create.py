@@ -92,6 +92,7 @@ def advanced_form_processing(request, d):
       d['manual_profile'] = True
       d['current_profile_name'] = request.REQUEST['current_profile']
       d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
+      d['current_profile'] = d['current_profile_name']
     else: 
       d['current_profile'] = metadata.getProfile(request.REQUEST['current_profile'])
       if d['current_profile'] == None:
@@ -109,18 +110,26 @@ def advanced_form_processing(request, d):
   d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
   
   
-  #Form submission for writing
   if request.method == "POST":
     if "current_profile" not in request.POST or "shoulder" not in request.POST: return 'bad_request'
     pre_list = [p['prefix'] for p in d['prefixes']]
     if request.POST['shoulder'] not in pre_list:
       django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
       return 'edit_page'
-    if uic.validate_advanced_metadata_form(request, d['current_profile']):
-      to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
-        { '_target' : uic.fix_target(request.POST['_target']),
-        "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
-        "_export": ("yes" if request.POST["export"] == "yes" else "no") } )
+    if uic.validate_advanced_metadata_form(request, d['current_profile'], d['manual_profile']):
+      if d['manual_profile']:
+        methods = {'datacite_xml': _generate_datacite_xml}
+        return_val = methods[d['current_profile_name']](request)
+        #do something to process this manual profile
+        #then write it to EZID somehow
+        return 'edit_page' #this just terminates early for now, so garbage doesn't go in yet
+      else:
+        to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
+          { '_target' : uic.fix_target(request.POST['_target']),
+          "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
+          "_export": ("yes" if request.POST["export"] == "yes" else "no") } )
+      
+      #write out ID and metadata (one variation with special remainder, one without)
       if request.POST['remainder'] == '' or request.POST['remainder'] == uic.remainder_box_default:
         s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request), 
             uic.group_or_anon_tup(request), to_write)
@@ -135,3 +144,8 @@ def advanced_form_processing(request, d):
         django.contrib.messages.error(request, "There was an error creating your identifier:"  + s)
         return 'edit_page'
   return 'edit_page'
+
+def _generate_datacite_xml(request):
+  """This generates datacite XML from a form POST request and returns it"""
+  print request
+  return ''
