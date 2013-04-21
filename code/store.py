@@ -226,8 +226,15 @@ def _getOwnerKey (owner, connection):
     _ownerMappingLock.release()
 
 def _blobify (metadata):
-  return zlib.compress(" ".join("%s %s" % (util.encode4(k), util.encode3(v))\
-    for k, v in metadata.items()))
+  # We copy the whitespace processing performed in noid.setElements so
+  # that the store exactly matches noid.
+  l = []
+  for k, v in metadata.items():
+    k = k.strip()
+    assert len(k) > 0, "empty label"
+    v = v.strip()
+    if len(v) > 0: l.append("%s %s" % (util.encode4(k), util.encode3(v)))
+  return zlib.compress(" ".join(l))
 
 def _deblobify (blob):
   v = zlib.decompress(blob).split(" ")
