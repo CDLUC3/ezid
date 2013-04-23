@@ -445,6 +445,7 @@ def createDoi (doi, user, group, metadata={}):
       if r is not None:
         log.badRequest(tid)
         return "error: bad request - element '_target': " + _oneline(r)
+      if m.get("_x", "") == "no": datacite.deactivate(doi)
     _bindNoid.setElements(shadowArk, m, True)
     store.insert(shadowArk, m)
     if user[0] != "anonymous": search.insert(qdoi, m)
