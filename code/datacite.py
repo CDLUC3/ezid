@@ -159,6 +159,35 @@ def setTargetUrl (doi, targetUrl):
   """
   return registerIdentifier(doi, targetUrl)
 
+def getTargetUrl (doi):
+  """
+  Returns the target URL of a scheme-less DOI identifier (e.g.,
+  "10.5060/foo") as registered with DataCite, or None if the
+  identifier is not registered.
+  """
+  if not _enabled: return None
+  # To hide transient network errors, we make multiple attempts.
+  for i in range(_numAttempts):
+    o = urllib2.build_opener(_HTTPErrorProcessor)
+    r = urllib2.Request(_doiUrl + "/" + urllib.quote(doi))
+    # We manually supply the HTTP Basic authorization header to avoid
+    # the doubling of the number of HTTP transactions caused by the
+    # challenge/response model.
+    r.add_header("Authorization", _datacenterAuthorization(doi))
+    c = None
+    try:
+      _modifyActiveCount(1)
+      c = o.open(r)
+      return c.read()
+    except urllib2.HTTPError, e:
+      if e.code == 404: return None
+      if e.code != 500 or i == _numAttempts-1: raise e
+    except urllib2.URLError:
+      if i == _numAttempts-1: raise
+    finally:
+      _modifyActiveCount(-1)
+      if c: c.close()
+
 _prologRE = re.compile("(<\?xml\s+version\s*=\s*['\"]([-\w.:]+)[\"'])" +\
   "(\s+encoding\s*=\s*['\"]([-\w.]+)[\"'])?")
 _utf8RE = re.compile("UTF-?8$", re.I)
@@ -423,7 +452,7 @@ def deactivate (doi):
   existence in the Handle system or on the ability to change the
   identifier's target URL.  The identifier can and will be reactivated
   by uploading new metadata to it (cf. uploadMetadata in this module).
-  Raises an exception an error.
+  Raises an exception on error.
   """
   if not _enabled: return
   try:
