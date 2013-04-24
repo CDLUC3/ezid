@@ -438,16 +438,22 @@ def createDoi (doi, user, group, metadata={}):
       m["_st"] = _defaultTarget(qdoi)
     if m.get("_is", "public") == "public":
       r = datacite.uploadMetadata(doi, {}, m, forceUpload=True)
+      log.progress(tid, "datacite.uploadMetadata")
       if r is not None:
         log.badRequest(tid)
         return "error: bad request - " + _oneline(r)
       r = datacite.registerIdentifier(doi, m["_st"])
+      log.progress(tid, "datacite.registerIdentifier")
       if r is not None:
         log.badRequest(tid)
         return "error: bad request - element '_target': " + _oneline(r)
-      if m.get("_x", "") == "no": datacite.deactivate(doi)
+      if m.get("_x", "") == "no":
+        datacite.deactivate(doi)
+        log.progress(tid, "datacite.deactivate")
     _bindNoid.setElements(shadowArk, m, True)
+    log.progress(tid, "noid.setElements")
     store.insert(shadowArk, m)
+    log.progress(tid, "store.insert")
     if user[0] != "anonymous": search.insert(qdoi, m)
   except Exception, e:
     log.error(tid, e)
@@ -552,7 +558,9 @@ def createArk (ark, user, group, metadata={}):
       m["_t1"] = m["_t"]
       m["_t"] = _defaultTarget(qark)
     _bindNoid.setElements(ark, m, True)
+    log.progress(tid, "noid.setElements")
     store.insert(ark, m)
+    log.progress(tid, "store.insert")
     if user[0] != "anonymous": search.insert(qark, m)
   except Exception, e:
     log.error(tid, e)
@@ -642,7 +650,9 @@ def createUrnUuid (urn, user, group, metadata={}):
       m["_st1"] = m["_st"]
       m["_st"] = _defaultTarget(qurn)
     _bindNoid.setElements(shadowArk, m, True)
+    log.progress(tid, "noid.setElements")
     store.insert(shadowArk, m)
+    log.progress(tid, "store.insert")
     if user[0] != "anonymous": search.insert(qurn, m)
   except Exception, e:
     log.error(tid, e)
@@ -976,14 +986,17 @@ def setMetadata (identifier, user, group, metadata):
         message = datacite.uploadMetadata(m["_s"][4:], m, d,
           forceUpload=(iStatus != "public" or\
           (iExport == "no" and newExport == "yes")))
+        log.progress(tid, "datacite.uploadMetadata")
         if message is not None:
           log.badRequest(tid)
           return "error: bad request - " + _oneline(message)
       if "_st" in d:
         if iStatus == "reserved":
           message = datacite.registerIdentifier(m["_s"][4:], d["_st"])
+          log.progress(tid, "datacite.registerIdentifier")
         else:
           message = datacite.setTargetUrl(m["_s"][4:], d["_st"])
+          log.progress(tid, "datacite.setTargetUrl")
         if message is not None:
           log.badRequest(tid)
           return "error: bad request - element '_target': " +\
@@ -994,10 +1007,13 @@ def setMetadata (identifier, user, group, metadata):
       if (newStatus.startswith("unavailable") and iStatus == "public") or\
         (newStatus == "public" and newExport == "no"):
         datacite.deactivate(m["_s"][4:])
+        log.progress(tid, "datacite.deactivate")
     # Finally, and most importantly, update our own databases.
     _bindNoid.setElements(ark, d)
+    log.progress(tid, "noid.setElements")
     m.update(d)
     store.update(ark, m)
+    log.progress(tid, "store.update")
     if iUser != "anonymous": search.update(m.get("_s", nqidentifier), m)
   except Exception, e:
     log.error(tid, e)
@@ -1072,12 +1088,17 @@ def deleteIdentifier (identifier, user, group):
         doi = m.get("_s", nqidentifier)[4:]
         # We can't actually delete a DOI, so we do the next best thing...
         s = datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI")
+        log.progress(tid, "datacite.setTargetUrl")
         assert s is None,\
           "unexpected return from DataCite set target URL operation: " + s
         datacite.deactivate(doi)
+        log.progress(tid, "datacite.deactivate")
     _bindNoid.deleteElements(ark)
+    log.progress(tid, "noid.deleteElements")
     _bindNoid.releaseIdentifier(ark)
+    log.progress(tid, "noid.releaseIdentifier")
     store.delete(ark)
+    log.progress(tid, "store.delete")
     if m["_o"] != "anonymous":
       search.delete(m.get("_s", nqidentifier))
   except Exception, e:

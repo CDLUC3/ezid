@@ -4,11 +4,12 @@
 #
 # Logging functions.  What gets logged, where it gets logged, and how
 # log records are formatted is all determined by the configuration
-# file.  There are six record types:
+# file.  There are seven record types:
 #
 #   level  message
 #   -----  -------
 #   INFO   transactionId BEGIN function args...
+#   INFO   transactionId PROGRESS function
 #   INFO   transactionId END SUCCESS [args...]
 #   INFO   transactionId END BADREQUEST
 #   INFO   transactionId END UNAUTHORIZED
@@ -72,6 +73,12 @@ def begin (transactionId, *args):
   """
   _log.info("%s BEGIN %s" % (transactionId.hex,
     " ".join(util.encode2(a) for a in args)))
+
+def progress (transactionId, function):
+  """
+  Logs progress made as part of a transaction.
+  """
+  _log.info("%s PROGRESS %s" % (transactionId.hex, function))
 
 def success (transactionId, *args):
   """
