@@ -26,6 +26,7 @@
 #     -s        success
 #     -b        bad request or unauthorized
 #     -e        internal server error (transactional or other)
+#     -p        partial transaction
 #
 # By default, all records are output.  Filter options are AND'd
 # together, but multiple options within an option group are OR'd.
@@ -69,6 +70,8 @@ g.add_option("-b", action="store_true", dest="statusBadRequest", default=False,
   help="bad request or unauthorized")
 g.add_option("-e", action="store_true", dest="statusError", default=False,
   help="internal server error (transactional or other)")
+g.add_option("-p", action="store_true", dest="statusPartial", default=False,
+  help="partial transaction")
 p.add_option_group(g)
 options, files = p.parse_args()
 if options.users is None: options.users = []
@@ -78,12 +81,14 @@ def error (file, lineNo, message):
   sys.stderr.write("%s, line %d: %s\n" % (file, lineNo, message))
 
 class Record:
-  def __init__ (self, file, lineNo, timestamp, beginRecord):
+  def __init__ (self, file, lineNo, timestamp, beginRecord, tid=None):
     self.file = file
     self.lineNo = lineNo
     self.timestamp = timestamp
     self.beginRecord = beginRecord
+    self.progressRecords = []
     self.endRecord = None
+    self.tid = tid
 
 def recordHasUser (beginRecord):
   return beginRecord[0] not in ["getMetadata", "otherError"]
@@ -127,17 +132,18 @@ def operationFilter (beginRecord):
 
 def statusFilter (endRecord):
   if not options.statusSuccess and not options.statusBadRequest and\
-    not options.statusError:
+    not options.statusError and not options.statusPartial:
     return True
   if endRecord[0] == "SUCCESS" and options.statusSuccess: return True
   if endRecord[0] in ["BADREQUEST", "UNAUTHORIZED"] and\
     options.statusBadRequest:
     return True
   if endRecord[0] == "ERROR" and options.statusError: return True
+  if endRecord[0] == "(incomplete)" and options.statusPartial: return True
   return False
 
 pattern = re.compile("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) " +\
-  "(([\da-fA-F]{32}) (BEGIN|END) |- ERROR )(.*)")
+  "(([\da-fA-F]{32}) (BEGIN|PROGRESS|END) |- ERROR )(.*)")
 
 records = []
 tidMap = {}
@@ -161,9 +167,14 @@ for file in files:
         if tid in tidMap:
           error(file, n, "duplicate transaction ID")
           continue
-        r = Record(file, n, m.group(1), m.group(5).split(" "))
+        r = Record(file, n, m.group(1), m.group(5).split(" "), tid)
         records.append(r)
         tidMap[tid] = r
+      elif m.group(4) == "PROGRESS":
+        if tid not in tidMap:
+          error(file, n, "no corresponding BEGIN record")
+          continue
+        tidMap[tid].progressRecords.append(m.group(5))
       else:
         if tid not in tidMap:
           error(file, n, "no corresponding BEGIN record")
@@ -178,8 +189,11 @@ records.sort(key=lambda r: r.timestamp)
 
 for r in records:
   if r.endRecord == None:
-    error(r.file, r.lineNo, "no corresponding END record")
-    continue
+    if options.statusPartial:
+      r.endRecord = ["(incomplete)", "tid=" + r.tid]
+    else:
+      error(r.file, r.lineNo, "no corresponding END record")
+      continue
   if not userFilter(r.beginRecord): continue
   if not typeFilter(r.beginRecord): continue
   if not operationFilter(r.beginRecord): continue
