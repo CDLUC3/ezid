@@ -30,7 +30,7 @@ records = []
 tidMap = {}
 
 pattern = re.compile("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) " +\
-  "(([\da-fA-F]{32}) (BEGIN|END) |- ERROR )(.*)")
+  "(([\da-fA-F]{32}) (BEGIN|PROGRESS|END) |- ERROR )(.*)")
 
 for file in sys.argv[1:]:
   f = open(file)
@@ -51,7 +51,7 @@ for file in sys.argv[1:]:
       r = Record(file, n, m.group(1), m.group(5))
       records.append(r)
       tidMap[tid] = r
-    else:
+    elif m.group(4) == "END":
       if tid not in tidMap:
         error(file, n, "no corresponding BEGIN record")
         continue
@@ -59,6 +59,9 @@ for file in sys.argv[1:]:
         error(file, n, "duplicate END record")
         continue
       tidMap[tid].endRecord = m.group(5)
+    else:
+      # Ignore progress records.
+      pass
   f.close()
 
 for r in records:
