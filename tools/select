@@ -164,17 +164,17 @@ class FieldConstraint (Constraint):
         isRelationalOperator(operator) and type(value) is int
     else:
       assert type(field) is str
-      if field in ["_created", "_updated", "_c", "_u", "_su"]:
+      if field in ["_created", "_updated"]:
         assert isRelationalOperator(operator) and type(value) is tuple and\
           len(value) == 2 and type(value[0]) is int and type(value[1]) is str
-      elif field in ["_fields", "_coowners", "_co"]:
+      elif field in ["_fields", "_coowners"]:
         assert operator == "contains" and type(value) is str
       else:
         assert (isRelationalOperator(operator) and type(value) is str) or\
           (operator == "=~" and type(value).__name__ == "SRE_Pattern")
     self.field = field
     self.operator = operator
-    if field in ["_created", "_updated", "_c", "_u", "_su"]:
+    if field in ["_created", "_updated"]:
       self.value = value[0]
       self.precision = value[1]
     else:
@@ -184,30 +184,26 @@ class FieldConstraint (Constraint):
       v = 0
       for k in record:
         if not k.startswith("_") and self.field[1].match(k): v += 1
-    elif self.field == "_fields":
-      v = record
-    elif self.field not in record:
-      return False
-    elif self.field in ["_created", "_updated", "_c", "_u", "_su"]:
+    elif self.field in ["_created", "_updated"]:
       if self.precision == "YMDHMS":
         v = int(record[self.field])
       else:
         t = time.localtime(int(record[self.field]))
         v = int(time.mktime((t.tm_year, t.tm_mon, t.tm_mday, 0, 0, 0, 0,
           1, -1)))
-    elif self.field in ["_owner", "_ownergroup", "_o", "_g"] and options.idmap:
+    elif self.field in ["_owner", "_ownergroup"] and options.idmap:
       v = idmap.get(record[self.field], record[self.field])
-    elif self.field in ["_coowners", "_co"]:
+    elif self.field == "_fields":
+      v = record
+    elif self.field == "_coowners":
       if "_coowners" in record:
         v = [co.strip() for co in record["_coowners"].split(";")\
-          if len(co.strip()) > 0]
-      elif "_co" in record:
-        v = [co.strip() for co in record["_co"].split(";")\
           if len(co.strip()) > 0]
       else:
         v = []
       if options.idmap: v = [idmap.get(co, co) for co in v]
     else:
+      if self.field not in record: return False
       v = record[self.field]
     if self.operator == "<":
       return v < self.value
@@ -264,23 +260,20 @@ def replaceMacro (query):
   elif query[0] == "_doi":
     e = "_id =~ /doi:/"
   elif query[0] == "_exported":
-    e = "( _export = yes or _x = yes or ( not _fields contains _export and " +\
-      "not _fields contains _x ) )"
+    e = "( _export = yes or not _fields contains _export )"
   elif query[0] == "_minimumDatacite":
     e = "( _fields contains datacite or ( ( _fields contains " +\
-      "datacite.creator or ( ( _profile = erc or _p = erc ) and ( _fields " +\
-      "contains erc.who or ( _fields contains erc and erc =~ /.*^who:/ms ) " +\
-      ") ) or ( ( _profile = dc or _p = dc ) and _fields contains " +\
-      "dc.creator ) ) and ( _fields contains datacite.title or ( " +\
-      "( _profile = erc or _p = erc ) and ( _fields contains " +\
+      "datacite.creator or ( _profile = erc and ( _fields contains erc.who " +\
+      "or ( _fields contains erc and erc =~ /.*^who:/ms ) ) ) or ( " +\
+      "_profile = dc and _fields contains dc.creator ) ) and ( _fields " +\
+      "contains datacite.title or ( _profile = erc and ( _fields contains " +\
       "erc.what or ( _fields contains erc and erc =~ /.*^what:/ms ) ) ) or " +\
-      "( ( _profile = dc or _p = dc ) and _fields contains dc.title ) ) " +\
-      "and ( _fields contains datacite.publisher or ( ( _profile = dc or " +\
-      "_p = dc ) and _fields contains dc.publisher ) ) and ( _fields " +\
-      "contains datacite.publicationyear or ( ( _profile = erc or _p = " +\
-      "erc ) and ( _fields contains erc.when or ( _fields " +\
-      "contains erc and erc =~ /.*^when:/ms ) ) ) or ( ( _profile = dc or " +\
-      "_p = dc ) and _fields contains dc.date ) ) ) )"
+      "( _profile = dc and _fields contains dc.title ) ) and ( _fields " +\
+      "contains datacite.publisher or ( _profile = dc and _fields contains " +\
+      "dc.publisher ) ) and ( _fields contains datacite.publicationyear " +\
+      "or ( _profile = erc and ( _fields contains erc.when or ( _fields " +\
+      "contains erc and erc =~ /.*^when:/ms ) ) ) or ( _profile = dc and " +\
+      "_fields contains dc.date ) ) ) )"
   elif query[0] == "_numDataciteFields":
     e = "_numFields /datacite($|\\.)/"
   elif query[0] == "_numDublinCoreFields":
@@ -288,14 +281,13 @@ def replaceMacro (query):
   elif query[0] == "_numErcFields":
     e = "_numFields /erc($|\\.)/"
   elif query[0] == "_public":
-    e = "( _status = public or _is = public or ( not _fields contains " +\
-      "_status  and not _fields contains _is ) )"
+    e = "( _status = public or not _fields contains _status )"
   elif query[0] == "_real":
     e = "not _test"
   elif query[0] == "_reserved":
     e = "_status = reserved"
   elif query[0] == "_shadowArk":
-    e = "( _fields contains _shadows or _fields contains _s )"
+    e = "_fields contains _shadows"
   elif query[0] == "_test":
     e = "( _id =~ /ark:\\/99999\\/fk4/ or _id =~ /doi:10\\.5072\\/FK2/ or " +\
       "_id =~ /ark:\\/b5072\\/fk2/ )"
@@ -357,11 +349,11 @@ def consumeConstraint (consumed, query):
       o = consumeOperator(consumed, query, isRelationalOperator, "relational")
       r = consumeInteger(consumed, query)
     else:
-      if l in ["_created", "_updated", "_c", "_u", "_su"]:
+      if l in ["_created", "_updated"]:
         o = consumeOperator(consumed, query, isRelationalOperator,
           "relational")
         r = consumeTimestamp(consumed, query)
-      elif l in ["_fields", "_coowners", "_co"]:
+      elif l in ["_fields", "_coowners"]:
         o = consumeOperator(consumed, query, lambda o: o == "contains",
           "contains")
         r = consumeTerm(consumed, query)

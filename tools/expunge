@@ -1,10 +1,14 @@
 #! /usr/bin/env python
 
-# Expunges expired test identifiers from a noid bind database.  Usage:
+# Expunges expired test identifiers.  Identifiers are read from a noid
+# database or from the EZID store database.  Usage:
 #
 #   expunge dbpath noidurl
 #     dbpath: noid database pathname (.bdb)
 #     noidurl: noid service URL corresponding to database
+#
+#   expunge - noidurl
+#     noidurl: noid service URL
 #
 #   expunge dbpath -p [azbocrtke]
 #     print/debug mode; argument is one or more flags:
@@ -57,6 +61,7 @@ import config
 import datacite
 import noid
 import search
+import store
 import util
 
 testArkPrefix = config.config("prefix_TESTARK.prefix")[5:]
@@ -68,6 +73,9 @@ usageText = """Usage:
   expunge dbpath noidurl
     dbpath: noid database pathname (.bdb)
     noidurl: noid service URL corresponding to database
+
+  expunge - noidurl
+    noidurl: noid service URL
 
   expunge dbpath -p [azbocrtke]
     print/debug mode; argument is one or more flags:
@@ -83,7 +91,7 @@ usageText = """Usage:
 """
 
 if len(sys.argv) == 3 and sys.argv[2].startswith("http://"):
-  dbPath = sys.argv[1]
+  dbPath = sys.argv[1] if sys.argv[1] != "-" else None
   bindNoid = noid.Noid(sys.argv[2])
   debug = ""
 elif len(sys.argv) == 4 and sys.argv[2] == "-p" and\
@@ -99,44 +107,57 @@ else:
 def output (flag, k, v):
   if flag in debug: print k, "->", v
 
-db = bsddb.db.DB()
-db.open(dbPath, flags=bsddb.db.DB_RDONLY)
-cursor = db.cursor()
-
 expungeList = []
 shadowedId = {}
 status = {}
 group = {}
 
-entry = cursor.first()
-while entry != None:
-  k, v = entry
-  if "\t" not in k:
-    output("z", k, v)
-  else:
-    id, label = k.split("\t", 1)
-    if util.validateArk(id) != id:
+if dbPath:
+  db = bsddb.db.DB()
+  db.open(dbPath, flags=bsddb.db.DB_RDONLY)
+  cursor = db.cursor()
+  entry = cursor.first()
+  while entry != None:
+    k, v = entry
+    if "\t" not in k:
       output("z", k, v)
-    elif label != "_c" or not re.match("[0-9]+$", v):
-      if label == "_s":
-        shadowedId[id] = util.decode(v)
-      elif label == "_is":
-        status[id] = util.decode(v)
-      elif label == "_g":
-        group[id] = util.decode(v)
-      output("o", k, v)
-    elif not id.startswith(testArkPrefix) and not id.startswith(testDoiPrefix):
-      output("r", k, v)
     else:
-      creationTime = int(v)
-      if int(time.time())-creationTime < lifetime:
-        output("k", k, v)
+      id, label = k.split("\t", 1)
+      if util.validateArk(id) != id:
+        output("z", k, v)
+      elif label != "_c" or not re.match("[0-9]+$", v):
+        if label == "_s":
+          shadowedId[id] = util.decode(v)
+        elif label == "_is":
+          status[id] = util.decode(v)
+        elif label == "_g":
+          group[id] = util.decode(v)
+        output("o", k, v)
+      elif not id.startswith(testArkPrefix) and\
+        not id.startswith(testDoiPrefix):
+        output("r", k, v)
       else:
-        output("e", k, v)
+        creationTime = int(v)
+        if int(time.time())-creationTime < lifetime:
+          output("k", k, v)
+        else:
+          output("e", k, v)
+          expungeList.append(id)
+    entry = cursor.next()
+  db.close()
+else:
+  lastId = ""
+  while True:
+    ids = store.harvest(start=lastId, maximum=1000)
+    if len(ids) == 0: break
+    for id, m in ids:
+      if (id.startswith(testArkPrefix) or id.startswith(testDoiPrefix)) and\
+        int(time.time())-int(m["_c"]) >= lifetime:
         expungeList.append(id)
-  entry = cursor.next()
-
-db.close()
+        group[id] = m["_g"]
+        if "_is" in m: status[id] = m["_is"]
+        if "_s" in m: shadowedId[id] = m["_s"]
+    lastId = ids[-1][0]
 
 if debug == "":
   for id in expungeList:
@@ -150,6 +171,7 @@ if debug == "":
         datacite.setTargetUrl(doi[4:], "http://datacite.org/invalidDOI")
       bindNoid.deleteElements(id)
       bindNoid.releaseIdentifier(id)
+      store.delete(id)
       if group[id] != "anonymous":
         if id.startswith(testArkPrefix):
           qid = "ark:/" + id

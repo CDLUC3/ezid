@@ -11,10 +11,11 @@
 -- normalized form (e.g., "13030/foo").  Identifier owners are stored
 -- as qualified, normalized ARK identifiers (e.g.,
 -- "ark:/99166/p92z12p14").  For index efficiency the 'ownerMapping'
--- table maps identifier owners to local integer keys.  The metadata
--- for an identifier is stored as a single line of text that has been
--- UTF-8 encoded and then gzipped.  The line uses the space-separated
--- format
+-- table maps identifier owners to local integer keys.  'updateTime'
+-- is either the shadowed identifier's update time (if applicable) or
+-- the ARK identifier's update time.  The metadata for an identifier
+-- is stored as a single line of text that has been UTF-8 encoded and
+-- then gzipped.  The line uses the space-separated format
 --
 --    label value label value ...
 --
@@ -39,6 +40,7 @@ CREATE TABLE ownerMapping (
 CREATE TABLE identifier (
   identifier TEXT NOT NULL PRIMARY KEY,
   ownerKey INTEGER NOT NULL REFERENCES ownerMapping,
+  updateTime INTEGER NOT NULL,
   metadata BLOB NOT NULL
 );
 

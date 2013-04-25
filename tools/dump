@@ -22,9 +22,7 @@
 # values are, well, empty, and hence will result in adjacent spaces.
 #
 # If the -n option is specified, agent identifier conversion is NOT
-# performed.  If the -r option ("raw") is specified, internal field
-# labels are NOT converted and all internal fields (_t and _st, _t1,
-# etc.) are output.  The -r option implies the -n option.
+# performed.
 #
 # If the -s option is specified, shadow ARKs are included in the
 # output (in addition to and separate from the shadowed identifiers).
@@ -32,7 +30,13 @@
 # transmitted forms.  Thus a shadow ARK's _t field is output as the
 # shadow ARK's _target field and its _st field is output as the
 # shadowed identifier's _target field.  If the -s option is not
-# specified, shadow ARKs are not output at all.  Options -s and -r are
+# specified, shadow ARKs are not output at all.
+#
+# If the -r ("raw") option is specified, identifiers are output as
+# stored in noid (i.e., as unqualified ARKs); internal field labels
+# are NOT converted; and all internal fields (_t and _st, _t1, etc.)
+# are output.  Thus, the raw output exactly echoes what is stored in
+# noid.  The -r option implies the -n option; options -r and -s are
 # incompatible.
 #
 # If the -z option is specified, the output is gzip-compressed.
@@ -96,7 +100,7 @@ p = optparse.OptionParser(usage="%prog [-nrsz] noid.bdb")
 p.add_option("-n", action="store_false",
   dest="convertAgents", default=True, help="do NOT convert agent identifiers")
 p.add_option("-r", action="store_true", dest="rawOutput",
-  help="do NOT convert internal labels (raw output)")
+  help="raw dump")
 p.add_option("-s", action="store_true",
   dest="includeShadowArks", default=False, help="include shadow ARKs")
 p.add_option("-z", action="store_true",
@@ -140,7 +144,7 @@ def outputRecord1 (id, record):
 
 def outputRecord (id, record):
   if options.rawOutput:
-    outputRecord1("ark:/" + id, record)
+    outputRecord1(id, record)
   else:
     if record.get("_is", "public") != "public":
       if "_t1" in record:
