@@ -156,8 +156,10 @@ def _generate_datacite_xml(request):
   RESOURCE_ORDER = ["/resource/" + x for x in ['creators', 'titles', 'publisher', 'publicationYear', 'subjects', 
                     'contributors', 'dates', 'language', 'resourceType', 'alternateIdentifiers',
                     'relatedIdentifiers', 'rights', 'descriptions'] ]
-  items = sorted(items, key=lambda i: i[0].split("/")) #sort by element name
-  items = sorted(items, key=lambda i: len(i[0].split("/"))) #sort by element length
+  items = sorted(items, key=lambda i: i[0]) #sort by element name
+  #sort by first ordinal in string, will cause problems if schema gets complex enough to have more than one ordinal per xpath
+  items = sorted(items, key=lambda i: _sort_get_ordinal(i[0]))
+  #items = sorted(items, key=lambda i: len(i[0].split("/"))) #sort by element length
   items = sorted(items, key=lambda i: RESOURCE_ORDER.
                  index(re.search('^/resource/[a-zA-Z0-9\[\]]+', i[0]).group())) #sort in preferred order of sections
 
@@ -167,10 +169,6 @@ def _generate_datacite_xml(request):
       print k + "=" + v
       #print etree.tostring(r, pretty_print=True)
       #print ''
-  
-  #child = etree.Element('child')
-  #r.append(child)
-  #child.text = 'some text'
     
   print etree.tostring(r, pretty_print=True)
   return ''
@@ -214,7 +212,8 @@ def _remove_ns(str):
   return re.sub(r'^{[^}]+}', '', str)
 
 def _children_w_tag(base, tag):
-  return [child for child in base if _remove_ns(child.tag) == tag ]
+  return [ child for child in base.iter(tag) ]
+  #was [child for child in base if _remove_ns(child.tag) == tag ]
 
 def _remove_ordinal(str):
   """removes the ordinal like [1] from path element"""
@@ -235,3 +234,11 @@ def _is_attribute(str):
 def _remove_at(str):
   """removes an @ sign at beginning of string if it exists"""
   return re.sub(r'^@', '', str)
+
+def _sort_get_ordinal(str):
+  """gets the ordinal at end of element string, if it doesn't have one return 0"""
+  m = re.compile('\[([0-9]+)\]')
+  if m.search(str) == None:
+    return 0
+  else:
+    return int(m.search(str).group(1))
