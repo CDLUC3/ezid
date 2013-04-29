@@ -21,7 +21,7 @@ import re
 def generate_xml(param_items):
   """This generates and returns a limited datacite XML 2.2 document from form items.
   Pass in something like request.POST.items(), for example."""
-  r = etree.fromstring('<resource xmlns="http://datacite.org/schema/kernel-2.2"' + \
+  r = etree.fromstring(' <resource xmlns="http://datacite.org/schema/kernel-2.2"' + \
                        ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + \
                        ' xsi:schemaLocation="http://datacite.org/schema/kernel-2.2' + \
                        ' http://schema.datacite.org/meta/kernel-2.2/metadata.xsd"/>')
@@ -40,7 +40,7 @@ def generate_xml(param_items):
     if v != '':
       _create_xml_element(r, k, v)
     
-  return etree.tostring(r, pretty_print=True)
+  return etree.tostring(r, pretty_print=True, encoding="UTF-8")
 
 def _create_xml_element(root_el, path, value):
   """ creates xml element """
