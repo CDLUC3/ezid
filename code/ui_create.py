@@ -123,6 +123,7 @@ def advanced_form_processing(request, d):
       if d['manual_profile']:
         methods = {'datacite_xml': _generate_datacite_xml}
         return_val = methods[d['current_profile_name']](request)
+        return_val = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + return_val
         #do something to process this manual profile
         to_write = \
         { "_profile": "datacite", 
@@ -130,6 +131,8 @@ def advanced_form_processing(request, d):
           "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
           "_export": ("yes" if request.POST["export"] == "yes" else "no"),
           "datacite": return_val }
+        
+        print return_val
         
         #then write it to EZID somehow
         #import pdb; pdb.set_trace() #this will enable debugging console
