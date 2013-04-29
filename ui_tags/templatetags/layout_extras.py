@@ -4,6 +4,7 @@ from django.utils.html import escape
 from decorators import basictag
 from django.core.urlresolvers import reverse
 from operator import itemgetter
+import django.template
 import urllib
 import re
 #import pdb
@@ -82,6 +83,21 @@ def datacite_field_help_icon(id_of_help):
     '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help" title="Click for additional help"/>' + \
     '</a></div>'
 
+
+@register.tag
+@basictag(takes_context=True)
+def host_based_include(context, template_path):
+  """This includes a file from a different directory instead of the
+  normal specified file based on the hostname.  This allows for some
+  simple branding changes in the templates based host name differences"""
+  request = context['request']
+  if hasattr(django.conf.settings, 'HOST_TEMPLATE_CUSTOMIZATION'):
+    cust = django.conf.settings.HOST_TEMPLATE_CUSTOMIZATION
+    if request.META['HTTP_HOST'] in cust:
+      template_path = re.sub(r'^[a-zA-Z_0-9]+/',
+                       cust[request.META['HTTP_HOST']] + '/', template_path)
+  t = django.template.loader.get_template(template_path)
+  return t.render(context)
 
 #@register.simple_tag(takes_context=True)
 @register.tag
@@ -222,8 +238,7 @@ def unique_id_types(prefixes):
   i = [(x[0].upper(), x[1],) for x in kinds.items()]
   return sorted(i, key = itemgetter(0))
   
-
-#This captures the block around with rounded corners go, can't believe what a PITA this is in django
+#This captures the block around which rounded corners go
 @register.tag(name="rounded_borders")
 def do_rounded_borders(parser, token):
   nodelist = parser.parse(('endrounded_borders'))

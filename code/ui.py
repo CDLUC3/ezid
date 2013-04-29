@@ -50,7 +50,7 @@ def contact(request):
     if not 'url' in P or P['url'] != '':
       #url is hidden.  If it's filled in then probably a spam bot
       return uic.render(request, 'contact', d)
-    emails = [x.strip() for x in uic.contact_form_email.split(',')]
+    emails = __emails(request)
     title = "EZID contact form email"
     if 'HTTP_REFERER' in request.META:
       message = 'Sent FROM: ' + request.META['HTTP_REFERER'] +"\r\n\r\n"
@@ -63,12 +63,8 @@ def contact(request):
     message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
               "Heard about from: " + P['hear_about']
     try:
-      if P['email'] != '':
-        sent_from = P['email']
-      else:
-        sent_from = django.conf.settings.SERVER_EMAIL
       django.core.mail.send_mail(title, message,
-        sent_from, emails)
+        django.conf.settings.SERVER_EMAIL, emails)
       
       django.contrib.messages.success(request, "Message sent")
       d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
@@ -78,6 +74,15 @@ def contact(request):
     #django.core.mail.send_mail("EZID password reset request", message,
     #  django.conf.settings.SERVER_EMAIL, [emailAddress])
   return uic.render(request, 'contact', d)
+
+def __emails(request):
+  """gets email addresses based on environment settings and also current domain name"""
+  emails = [x.strip() for x in uic.contact_form_email.split(',')]
+  cust = django.conf.settings.HOST_EMAIL_CUSTOMIZATION
+  if request.META['HTTP_HOST'] in cust:
+    emails = [x.strip() for x in django.conf.settings.
+              HOST_EMAIL_CUSTOMIZATION[request.META['HTTP_HOST']].split(',')]
+  return emails
 
 def doc (request):
   """
