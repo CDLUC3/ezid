@@ -80,6 +80,7 @@ def parse (s):
       if ":" not in l: raise AnvlParseException, "no colon in line"
       k, v = [_decode(w).strip() for w in l.split(":", 1)]
       if len(k) == 0: raise AnvlParseException, "empty label"
+      if k in d: raise AnvlParseException, "repeated label"
       d[k] = v
   return d
 

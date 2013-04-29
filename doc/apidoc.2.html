@@ -357,9 +357,10 @@ The HTTP content type for all bodies is &quot;text/plain&quot; using UTF-8
 charset encoding.  In request bodies, if no charset encoding is
 declared in the HTTP Content-Type header, it is assumed to be UTF-8.</p>
 <p>EZID's data model for metadata is a dictionary of element name/value
-pairs.  Names and values are strings.  Leading and trailing whitespace
-in names and values is not significant.  Element values may be empty,
-but not names.</p>
+pairs.  The dictionary is single-valued: an element name may not be
+repeated.  Names and values are strings.  Leading and trailing
+whitespace in names and values is not significant.  Neither element
+names nor element values may be empty.</p>
 <p>Metadata dictionaries are serialized using a subset of <a class="reference external" href="https://wiki.ucop.edu/display/Curation/Anvl">A Name-Value
 Language (ANVL)</a> rules:</p>
 <ul class="simple">
