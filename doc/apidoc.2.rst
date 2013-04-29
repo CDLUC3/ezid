@@ -272,9 +272,10 @@ charset encoding.  In request bodies, if no charset encoding is
 declared in the HTTP Content-Type header, it is assumed to be UTF-8.
 
 EZID's data model for metadata is a dictionary of element name/value
-pairs.  Names and values are strings.  Leading and trailing whitespace
-in names and values is not significant.  Element values may be empty,
-but not names.
+pairs.  The dictionary is single-valued: an element name may not be
+repeated.  Names and values are strings.  Leading and trailing
+whitespace in names and values is not significant.  Neither element
+names nor element values may be empty.
 
 Metadata dictionaries are serialized using a subset of `A Name-Value
 Language (ANVL)`__ rules:
