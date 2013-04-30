@@ -20,13 +20,16 @@ import re
 
 def generate_xml(param_items):
   """This generates and returns a limited datacite XML 2.2 document from form items.
-  Pass in something like request.POST.items(), for example."""
+  Pass in something like request.POST, for example.  Required elements are
+  at least one creator, title, publisher and publicationYear"""
   r = etree.fromstring(' <resource xmlns="http://datacite.org/schema/kernel-2.2"' + \
                        ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + \
                        ' xsi:schemaLocation="http://datacite.org/schema/kernel-2.2' + \
                        ' http://schema.datacite.org/meta/kernel-2.2/metadata.xsd"/>')
+  
+  id_type = _id_type(param_items['shoulder'])
 
-  items = [x for x in param_items if x[0].startswith("/resource") ]
+  items = [x for x in param_items.items() if x[0].startswith("/resource") ]
   RESOURCE_ORDER = ["/resource/" + x for x in ['creators', 'titles', 'publisher', 'publicationYear', 'subjects', 
                     'contributors', 'dates', 'language', 'resourceType', 'alternateIdentifiers',
                     'relatedIdentifiers', 'rights', 'descriptions'] ]
@@ -36,11 +39,14 @@ def generate_xml(param_items):
   items = sorted(items, key=lambda i: RESOURCE_ORDER.
                  index(re.search('^/resource/[a-zA-Z0-9\[\]]+', i[0]).group())) #sort in preferred order of sections
 
+  _create_xml_element(r, '/resource/identifier/@identifierType', id_type) #must create empty element and specify type to mint
+  
   for k, v in items:
     if v != '':
       _create_xml_element(r, k, v)
     
-  return etree.tostring(r, pretty_print=True, encoding="UTF-8")
+  return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + \
+          etree.tostring(r, pretty_print=True, encoding="UTF-8")
 
 def _create_xml_element(root_el, path, value):
   """ creates xml element """
@@ -111,3 +117,10 @@ def _sort_get_ordinal(str):
     return [0]
   else:
     return [int(x) for x in m.findall(str)]
+  
+def _id_type(str):
+  m = re.compile("^[a-z]+")
+  if m.search(str) == None:
+    return ''
+  else:
+    return m.findall(str)[0].upper()

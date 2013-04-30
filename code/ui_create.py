@@ -121,22 +121,15 @@ def advanced_form_processing(request, d):
       return 'edit_page'
     if uic.validate_advanced_metadata_form(request, d['current_profile'], d['manual_profile']):
       if d['manual_profile']:
-        methods = {'datacite_xml': _generate_datacite_xml}
-        return_val = methods[d['current_profile_name']](request)
-        return_val = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + return_val
-        #do something to process this manual profile
+        methods = {'datacite_xml': datacite_xml.generate_xml}
+        return_val = methods[d['current_profile_name']](request.POST)
         to_write = \
         { "_profile": "datacite", 
           '_target' : uic.fix_target(request.POST['_target']),
           "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
           "_export": ("yes" if request.POST["export"] == "yes" else "no"),
           "datacite": return_val }
-        
-        print return_val
-        
-        #then write it to EZID somehow
-        #import pdb; pdb.set_trace() #this will enable debugging console
-        #return 'edit_page' #this just terminates early for now, so garbage doesn't go in yet
+
       else:
         to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
           { '_target' : uic.fix_target(request.POST['_target']),
@@ -161,5 +154,5 @@ def advanced_form_processing(request, d):
 
 def _generate_datacite_xml(request):
   """This generates datacite XML from a form POST request and returns it"""
-  return datacite_xml.generate_xml(request.POST.items())
+  return datacite_xml.generate_xml(request.POST)
   

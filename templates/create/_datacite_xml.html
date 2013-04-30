@@ -303,27 +303,16 @@
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/descriptions" class="rmvButton">
 			<div class="multiple">
 				<div name="/resource/descriptions/description[1]" class="element">
-					<label for="/resource/descriptions/description[1]" class="element">Abstract:</label>
+					<label for="/resource/descriptions/description[1]" class="element">Description:</label>
 					<input type="text" name="/resource/descriptions/description[1]" class="data" />
 					<div class="attribute">
 						<label for="/resource/descriptions/description[1]/@descriptionType" class="attribute">descriptionType :</label>
 						<select name="/resource/descriptions/description[2]/@descriptionType" sendselect="yes" class="choice">
+							<option value=""></option>
 							<option value="Abstract">Abstract</option>
 							<option value="SeriesInformation">Series Information</option>
 							<option value="TableOfContents">Table of Contents</option>
 							<option value="Other">Other</option>
-						</select>
-					</div>
-				</div>
-
-				<div name="/resource/descriptions/description[1]" class="element">
-					<div class="attribute">
-						<label for="/resource/descriptions/description[1]/@descriptionType" class="attribute">descriptionType :</label>
-						<select name="/resource/descriptions/description[1]/@descriptionType" sendselect="yes" class="choice">
-							<option value="Other">Other</option>
-							<option value="Abstract">Abstract</option>
-							<option value="SeriesInformation">Series Information</option>
-							<option value="TableOfContents">Table of Contents</option>
 						</select>
 					</div>
 				</div>
