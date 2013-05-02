@@ -39,6 +39,48 @@
 		font-size:inherit;
 	}
 	
+	label.sized {
+		display: box;
+		float: left;
+		clear: left;
+		width: 150px;
+	}
+	
+	input.sized, div.sized, select.sized {
+		display: box;
+		float:left;
+		clear: right;
+		width:400px;
+	}
+	
+	label.sized1 {
+		display: box;
+		float: left;
+		clear: left;
+		width: 150px;
+		margin: 4px 8px 4px 2px;
+	}
+	
+	input.sized1, div.sized1, select.sized1 {
+		display: box;
+		float:left;
+		clear: right;
+		width:400px;
+		margin: 4px 0px 4px 0px;
+	}
+	
+	input.sizedsmall1, div.sizedsmall1 {
+		display: box;
+		float:left;
+		clear: right;
+		width:80px;
+		margin: 4px 0px 4px 0px;
+	}
+	
+div.clearboth{
+	clear: both;
+}
+	
 </style>
 <br/>
 <div name="/resource" class="element">
@@ -49,17 +91,18 @@
 		<div class="multiple">
 			<div name="/resource/creators/creator[1]" class="element">
 				<div name="/resource/creators/creator[1]/creatorName" class="element">
-					<label for="/resource/creators/creator[1]/creatorName" class="element">creatorName</label>
-					<input type="text" name="/resource/creators/creator[1]/creatorName" class="data">
+					<label for="/resource/creators/creator[1]/creatorName" class="element sized">creatorName</label>
+					<input type="text" name="/resource/creators/creator[1]/creatorName" class="data sized">
 				</div>
 				<div class="optional">
 					<div name="/resource/creators/creator[1]/nameIdentifier" class="element">
-						<label for="/resource/creators/creator[1]/nameIdentifier" class="element">Name Identifier:</label>
-						<input type="text" name="/resource/creators/creator[1]/nameIdentifier" class="data" />
+						<label for="/resource/creators/creator[1]/nameIdentifier" class="element sized">Name Identifier:</label>
+						<input type="text" name="/resource/creators/creator[1]/nameIdentifier" class="data sized" />
 						<div class="attribute">
-							<label for="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="attribute">nameIdentifierScheme:</label>
-							<input type="text" name="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="data">
+							<label for="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="attribute sized">nameIdentifierScheme:</label>
+							<input type="text" name="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="data sized">
 						</div>
+						<div class="clearboth"></div>
 					</div>
 				</div>
 			</div>
@@ -71,25 +114,30 @@
 		<input type="button" value="-" onclick="removeOne(this)" name="/resource/titles" class="rmvButton">
 		<div class="multiple">
 			<div name="/resource/titles/title[1]" class="element">
-				<label for="/resource/titles/title[1]" class="element">Title:</label>
-				<input type="text" name="/resource/titles/title[1]" class="data" />
+				<label for="/resource/titles/title[1]" class="element sized">Title:</label>
+				<input type="text" name="/resource/titles/title[1]" class="data sized" />
 				<div name="/resource/titles/title[1]/@titleType" class="attribute">
-					<label for="/resource/titles/title[1]/@titleType" class="attribute">titleType:</label>
-					<input type="radio" name="/resource/titles/title[1]/@titleType" value="" class="data" checked="checked"/>Main title
-					<input type="radio" name="/resource/titles/title[1]/@titleType" value="AlternativeTitle" class="data"/>Alternative title
-					<input type="radio" name="/resource/titles/title[1]/@titleType" value="Subtitle" class="data"/>Subtitle
-					<input type="radio" name="/resource/titles/title[1]/@titleType" value="TranslatedTitle" class="data"/>Translated title
+					<label for="/resource/titles/title[1]/@titleType" class="attribute sized">titleType:</label>
+					<div class="sized">
+						<input type="radio" name="/resource/titles/title[1]/@titleType" value="" class="data" checked="checked"/>Main title
+						<input type="radio" name="/resource/titles/title[1]/@titleType" value="AlternativeTitle" class="data"/>Alternative title
+						<input type="radio" name="/resource/titles/title[1]/@titleType" value="Subtitle" class="data"/>Subtitle
+						<input type="radio" name="/resource/titles/title[1]/@titleType" value="TranslatedTitle" class="data"/>Translated title
+					</div>
+					<div class="clearboth"></div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div name="/resource/publisher" class="element">
-		<label for="/resource/publisher" class="element">publisher</label>
-		<input type="text" name="/resource/publisher" class="data">
+		<label for="/resource/publisher" class="element sized1">publisher</label>
+		<input type="text" name="/resource/publisher" class="data sized1">
+		<div class="clearboth"></div>
 	</div>
 	<div name="/resource/publicationYear" class="element">
-		<label for="/resource/publicationYear" class="element">publicationYear</label>
-		<input type="text" name="/resource/publicationYear" class="data">
+		<label for="/resource/publicationYear" class="element sized1">publicationYear</label>
+		<input type="text" name="/resource/publicationYear" class="data sizedsmall1">
+		<div class="clearboth"></div>
 	</div>
 	<div class="optional">
 		<div name="/resource/subjects" class="element container">
@@ -98,12 +146,13 @@
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/subjects" class="rmvButton">
 			<div class="multiple">
 				<div name="/resource/subjects/subject[1]" class="element">
-					<label for="/resource/subjects/subject[1]" class="element">Subject:</label>
-					<input type="text" name="/resource/subjects/subject[1]" class="data" />
+					<label for="/resource/subjects/subject[1]" class="element sized">Subject:</label>
+					<input type="text" name="/resource/subjects/subject[1]" class="data sized" />
 					<div class="attribute">
-						<label for="/resource/subjects/subject[1]/@subjectScheme" class="attribute">Subject Scheme:</label>
-						<input type="text" name="/resource/subjects/subject[1]/@subjectScheme" class="data" />
+						<label for="/resource/subjects/subject[1]/@subjectScheme" class="attribute sized">Subject Scheme:</label>
+						<input type="text" name="/resource/subjects/subject[1]/@subjectScheme" class="data sized" />
 					</div>
+					<div class="clearboth"></div>
 				</div>
 			</div>
 		</div>
@@ -116,22 +165,22 @@
 			<div class="multiple">
 				<div name="/resource/contributors/contributor[1]" class="element">
 					<div name="/resource/contributors/contributor[1]/contributorName" class="element">
-						<label for="/resource/contributors/contributor[1]/contributorName" class="element">contributorName</label>
-						<input type="text" name="/resource/contributors/contributor[1]/contributorName" class="data">
+						<label for="/resource/contributors/contributor[1]/contributorName" class="element sized">contributorName</label>
+						<input type="text" name="/resource/contributors/contributor[1]/contributorName" class="data sized">
 					</div>
 					<div class="optional">
 						<div name="/resource/contributors/contributor[1]/nameIdentifier" class="element">
-							<label for="/resource/contributors/contributor[1]/nameIdentifier" class="element">nameIdentifier</label>
-							<input type="text" name="/resource/contributors/contributor[1]/nameIdentifier" class="data" />
+							<label for="/resource/contributors/contributor[1]/nameIdentifier" class="element sized">nameIdentifier</label>
+							<input type="text" name="/resource/contributors/contributor[1]/nameIdentifier" class="data sized" />
 							<div class="attribute">
-								<label for="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="attribute">nameIdentifierScheme:</label>
-								<input type="text" name="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="data">
+								<label for="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="attribute sized">nameIdentifierScheme:</label>
+								<input type="text" name="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="data sized">
 							</div>
 						</div>
 					</div>
 					<div class="attribute">
-						<label for="/resource/contributors/contributor[1]/@contributorType" class="attribute">contributorType :</label>
-							<select name="/resource/contributors/contributor[1]/@contributorType" sendselect="yes" class="choice">
+						<label for="/resource/contributors/contributor[1]/@contributorType" class="attribute sized">contributorType :</label>
+							<select name="/resource/contributors/contributor[1]/@contributorType" sendselect="yes" class="choice sized">
 								<option value=""> </option>
 								<option value="ContactPerson">Contact Person</option>
 								<option value="DataCollector">Data Collector</option>
@@ -153,6 +202,7 @@
 								<option value="WorkPackageLeader">Work Package Leader</option>
 							</select>
 					</div>
+					<div class="clearboth"></div>
 				</div>
 			</div>
 		</div>
@@ -164,11 +214,11 @@
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/dates" class="rmvButton" />
 			<div class="multiple" style="border: solid; border-width: 1px; padding: 5px;background:#ffffff">
 				<div name="/resource/dates/date[1]" class="element">
-					<label for="/resource/dates/date[1]" class="element">Date</label>
-					<input type="text" name="/resource/dates/date[1]" class="data" />
+					<label for="/resource/dates/date[1]" class="element sized">Date</label>
+					<input type="text" name="/resource/dates/date[1]" class="data sized" />
 					<div class="attribute">
-						<label for="/resource/dates/date[1]/@dateType" class="attribute">Date Type:</label>
-						<select name="/resource/dates/date[1]/@dateType" sendselect="yes" class="choice">
+						<label for="/resource/dates/date[1]/@dateType" class="attribute sized">Date Type:</label>
+						<select name="/resource/dates/date[1]/@dateType" sendselect="yes" class="choice sized">
 							<option value/>
 							<option value="Accepted">Accepted</option>
 							<option value="Available">Available</option>
@@ -182,24 +232,25 @@
 							<option value="Valid">Valid</option>
 						</select>
 					</div>
+					<div class="clearboth"></div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="optional">
 		<div name="/resource/language" class="element">
-			<label for="/resource/language" class="element">language</label>
-			<input type="text" name="/resource/language" class="data">
+			<label for="/resource/language" class="element sized1">language</label>
+			<input type="text" name="/resource/language" class="data sized1">
 		</div>
 	</div>
 	<div class="optional">
 		<div name="/resource/resourceType" class="element">
 			<div name="/resource/resourceType" class="element">
-				<label for="/resource/resourceType" class="element">Resource Type:</label>
-				<input type="text" name="/resource/resourceType" class="data" />
+				<label for="/resource/resourceType" class="element sized1">Resource Type:</label>
+				<input type="text" name="/resource/resourceType" class="data sized1" />
 				<div class="attribute">
-					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit">Resource Type General:</label>
-					<select name="/resource/resourceType/@resourceTypeGeneral" sendselect="yes" class="choice">
+					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit sized1">Resource Type General:</label>
+					<select name="/resource/resourceType/@resourceTypeGeneral" sendselect="yes" class="choice sized1">
 						<option value/>
 						<option value="Collection">Collection</option>
 						<option value="Dataset">Dataset</option>
@@ -216,6 +267,7 @@
 					</select>
 				</div>
 			</div>
+			<div class="clearboth"></div>
 		</div>
 	</div>
 	<div class="optional">
@@ -225,13 +277,14 @@
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/alternateIdentifiers" class="rmvButton">
 			<div class="multiple" style="border: solid; border-width: 1px; padding: 5px; background: #ffffff">
 				<div name="/resource/alternateIdentifiers/alternateIdentifier[1]" class="element">
-					<label for="/resource/alternateIdentifiers/alternateIdentifier[1]" class="element">Alternate Identifier:</label>
-					<input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[1]" class="data" />
+					<label for="/resource/alternateIdentifiers/alternateIdentifier[1]" class="element sized">Alternate Identifier:</label>
+					<input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[1]" class="data sized" />
 					<div class="attribute">
-						<label for="/resource/alternateIdentifiers/alternateIdentifier[1]/@alternateIdentifierType" class="attribute">Alternate Identifier Type:</label>
-						<input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[1]/@alternateIdentifierType" class="data" />
+						<label for="/resource/alternateIdentifiers/alternateIdentifier[1]/@alternateIdentifierType" class="attribute sized">Alternate Identifier Type:</label>
+						<input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[1]/@alternateIdentifierType" class="data sized" />
 					</div>
 				</div>
+				<div class="clearboth"></div>
 			</div>
 		</div>
 	</div>
@@ -241,11 +294,11 @@
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/relatedIdentifiers" nbelmtsadded="1" class="addButton">
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/relatedIdentifiers" class="rmvButton">
 			<div class="multiple">
-				<label for="/resource/relatedIdentifiers/relatedIdentifier[1]" class="element">Related Identifier:</label>
-					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[1]" class="data" />
+				<label for="/resource/relatedIdentifiers/relatedIdentifier[1]" class="element sized">Related Identifier:</label>
+					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[1]" class="data sized" />
 					<div class="attribute">
-						<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedIdentifierType" class="attribute">Related Identifier Type:</label>
-						<select name="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedIdentifierType" sendselect="yes" class="choice">
+						<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedIdentifierType" class="attribute sized">Related Identifier Type:</label>
+						<select name="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedIdentifierType" sendselect="yes" class="choice sized">
 							<option value/>
 							<option value="ARK">ARK</option>
 							<option value="DOI">DOI</option>
@@ -264,8 +317,8 @@
 						</select>
 					</div>
 					<div class="attribute">
-						<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" class="attribute">Relation Type:</label>
-						<select name="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" sendselect="yes" class="choice">
+						<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" class="attribute sized">Relation Type:</label>
+						<select name="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" sendselect="yes" class="choice sized">
 							<option value/>
 							<option value="IsCitedBy">IsCitedBy</option>
 							<option value="Cites">Cites</option>
@@ -287,13 +340,15 @@
 							<option value="IsOriginalFormOf">IsOriginalFormOf</option>
 						</select>
 					</div>
+				<div class="clearboth"></div>
 			</div>
 		</div>
 	</div>
 	<div class="optional">
 		<div name="/resource/rights" class="element">
-			<label for="/resource/rights" class="element">Rights:</label>
-			<input type="text" name="/resource/rights" class="data" />
+			<label for="/resource/rights" class="element sized1">Rights:</label>
+			<input type="text" name="/resource/rights" class="data sized1" />
+			<div class="clearboth"></div>
 		</div>
 	</div>
 	<div class="optional">
@@ -303,11 +358,11 @@
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/descriptions" class="rmvButton">
 			<div class="multiple">
 				<div name="/resource/descriptions/description[1]" class="element">
-					<label for="/resource/descriptions/description[1]" class="element">Description:</label>
-					<input type="text" name="/resource/descriptions/description[1]" class="data" />
+					<label for="/resource/descriptions/description[1]" class="element sized">Description:</label>
+					<input type="text" name="/resource/descriptions/description[1]" class="data sized" />
 					<div class="attribute">
-						<label for="/resource/descriptions/description[1]/@descriptionType" class="attribute">descriptionType :</label>
-						<select name="/resource/descriptions/description[2]/@descriptionType" sendselect="yes" class="choice">
+						<label for="/resource/descriptions/description[1]/@descriptionType" class="attribute sized">descriptionType :</label>
+						<select name="/resource/descriptions/description[2]/@descriptionType" sendselect="yes" class="choice sized">
 							<option value=""></option>
 							<option value="Abstract">Abstract</option>
 							<option value="SeriesInformation">Series Information</option>
@@ -316,6 +371,7 @@
 						</select>
 					</div>
 				</div>
+				<div class="clearboth"></div>
 			</div>
 		</div>
 	</div>
