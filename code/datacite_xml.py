@@ -22,35 +22,35 @@ def generate_xml(param_items):
   """This generates and returns a limited datacite XML 2.2 document from form items.
   Pass in something like request.POST, for example.  Required elements are
   at least one creator, title, publisher and publicationYear"""
-  r = etree.fromstring(' <resource xmlns="http://datacite.org/schema/kernel-2.2"' + \
-                       ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + \
-                       ' xsi:schemaLocation="http://datacite.org/schema/kernel-2.2' + \
-                       ' http://schema.datacite.org/meta/kernel-2.2/metadata.xsd"/>')
+  r = etree.fromstring(u'<resource xmlns="http://datacite.org/schema/kernel-2.2"' + \
+                       u' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + \
+                       u' xsi:schemaLocation="http://datacite.org/schema/kernel-2.2' + \
+                       u' http://schema.datacite.org/meta/kernel-2.2/metadata.xsd"/>')
   
-  id_type = _id_type(param_items['shoulder'])
+  id_type = _id_type(param_items[u'shoulder'])
 
-  items = [x for x in param_items.items() if x[0].startswith("/resource") ]
-  RESOURCE_ORDER = ["/resource/" + x for x in ['creators', 'titles', 'publisher', 'publicationYear', 'subjects', 
-                    'contributors', 'dates', 'language', 'resourceType', 'alternateIdentifiers',
-                    'relatedIdentifiers', 'rights', 'descriptions'] ]
+  items = [x for x in param_items.items() if x[0].startswith(u"/resource") ]
+  RESOURCE_ORDER = [u"/resource/" + x for x in [u'creators', u'titles', u'publisher', u'publicationYear', u'subjects', 
+                    u'contributors', u'dates', u'language', u'resourceType', u'alternateIdentifiers',
+                    u'relatedIdentifiers', u'rights', u'descriptions'] ]
   items = sorted(items, key=lambda i: i[0]) #sort by element name
   #sort by ordinal(s) in string, this may not work all complex cases but should work for datacite
   items = sorted(items, key=lambda i: _sort_get_ordinal(i[0])) 
   items = sorted(items, key=lambda i: RESOURCE_ORDER.
                  index(re.search('^/resource/[a-zA-Z0-9\[\]]+', i[0]).group())) #sort in preferred order of sections
 
-  _create_xml_element(r, '/resource/identifier/@identifierType', id_type) #must create empty element and specify type to mint
+  _create_xml_element(r, u'/resource/identifier/@identifierType', id_type) #must create empty element and specify type to mint
   
   for k, v in items:
-    if v != '':
+    if v != u'':
       _create_xml_element(r, k, v)
     
-  return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + \
-          etree.tostring(r, pretty_print=True, encoding="UTF-8")
+  return u"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + \
+    etree.tostring(r, encoding=unicode, method="xml", pretty_print=True)
 
 def _create_xml_element(root_el, path, value):
   """ creates xml element """
-  split_path = path.split("/")[1:]
+  split_path = path.split(u"/")[1:]
   if split_path[0] == _remove_ns(root_el.tag):
     split_path = split_path[1:]
   _xml_create(root_el, split_path, value)
@@ -84,7 +84,7 @@ def _xml_create(base_el, path_arr, value):
 
 def _remove_ns(str):
   """ removes the horrifying namespace uri from string so can compare easily"""
-  return re.sub(r'^{[^}]+}', '', str)
+  return re.sub(r'^{[^}]+}', u'', str)
 
 def _children_w_tag(base, tag):
   return [ child for child in base.iter(tag) ]
@@ -92,11 +92,11 @@ def _children_w_tag(base, tag):
 
 def _remove_ordinal(str):
   """removes the ordinal like [1] from path element"""
-  return re.sub(r'\[[0-9]+\]$', '', str)
+  return re.sub(r'\[[0-9]+\]$', u'', str)
 
 def _has_ordinal(str):
   """sees if it has an ordinal like [1] at end of element"""
-  return str.endswith("]")
+  return str.endswith(u"]")
 
 def _get_ordinal(str):
   """gets the ordinal at end of element string like [1] and returns an integer"""
@@ -104,11 +104,11 @@ def _get_ordinal(str):
 
 def _is_attribute(str):
   """sees if this element string is an attribute"""
-  return str.startswith("@")
+  return str.startswith(u"@")
 
 def _remove_at(str):
   """removes an @ sign at beginning of string if it exists"""
-  return re.sub(r'^@', '', str)
+  return re.sub(r'^@', u'', str)
 
 def _sort_get_ordinal(str):
   """gets the ordinal(s) in the element string, if it doesn't have any return [0]"""
@@ -121,6 +121,6 @@ def _sort_get_ordinal(str):
 def _id_type(str):
   m = re.compile("^[a-z]+")
   if m.search(str) == None:
-    return ''
+    return u''
   else:
     return m.findall(str)[0].upper()
