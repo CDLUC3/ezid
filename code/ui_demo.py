@@ -37,17 +37,26 @@ def advanced(request):
     return uic.render(request, 'demo/advanced', d)
   
 def ajax_advanced(request):
-  #import pdb; pdb.set_trace() #this will enable debugging console
+  """Takes the request and processes create datacite advanced (xml) form
+  from both create/demo areas"""
   if request.is_ajax():
     d = {}
     error_msgs = []
     d["testPrefixes"] = uic.testPrefixes
-    d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['namespace'].lower())
+    if 'prefixes' in request.session:
+      d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['namespace'].lower())
+    else:
+      d['prefixes'] = []
     pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
     if request.POST['shoulder'] not in pre_list:
       error_msgs.append("Unauthorized to create with this identifier prefix.")
     error_msgs = error_msgs + uic.validate_advanced_top(request)
-    #add additional validation for bottom of form here
+    for k, v in {'/resource/creators/creator[1]/creatorName': 'creatorName',
+                 '/resource/titles/title[1]': 'title',
+                 '/resource/publisher': 'publisher',
+                 '/resource/publicationYear': 'publicationYear'}.items():
+      if (not (k in request.POST)) or request.POST[k].strip() == '':
+        error_msgs.append("Please enter a " + v)
     
     if len(error_msgs) > 0:
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
@@ -69,6 +78,7 @@ def ajax_advanced(request):
         uic.group_or_anon_tup(request), to_write)
     if s.startswith("success:"):
       new_id = s.split()[1]
+      django.contrib.messages.success(request, "Identifier created.")
       return uic.jsonResponse({'status': 'success', 'id': new_id })
     else:
       return uic.jsonResponse({'status': 'failure', 'errors': ["There was an error creating your identifier:"  + s] })

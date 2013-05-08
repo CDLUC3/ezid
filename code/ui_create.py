@@ -6,7 +6,7 @@ import ezid
 import logging
 import urllib
 import re
-from lxml import etree
+import datacite_xml
 
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
@@ -150,8 +150,4 @@ def advanced_form_processing(request, d):
         django.contrib.messages.error(request, "There was an error creating your identifier:"  + s)
         return 'edit_page'
   return 'edit_page'
-
-def _generate_datacite_xml(request):
-  """This generates datacite XML from a form POST request and returns it"""
-  return datacite_xml.generate_xml(request.POST)
   

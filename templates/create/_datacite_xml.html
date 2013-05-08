@@ -320,9 +320,14 @@
     console.log(statusText);
     console.log(resp);
     if(resp['status'] == 'failure'){
-    	alert(resp['errors'].join("\r\n"));
+    	var outstr = "";
+    	for (var i=0; i < resp['errors'].length; i++)
+    		outstr += '<p class="error">' + escapeHtml(resp['errors'][i]) + '</p>';
+    	$("#ustatus").html(outstr);
+    	showMessage(true);
+    	//alert(resp['errors'].join("<br/>"));
     }else if(resp['status'] == 'success'){
-    	alert("success, created id " + resp['id']);
+    	window.location = "/ezid/id/" + resp['id'];
     }
 	}
 </script>
