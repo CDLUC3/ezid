@@ -2,6 +2,7 @@
 <script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/form_initialization.js"></script>
 <script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/formFunctions.js"></script>
 <script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/dom_utils.js"></script>
+<script type="text/javascript" src="/ezid/static/javascripts/jquery.form.js"></script>
 
 <link type="text/css" rel="stylesheet" href="/ezid/static/stylesheets/datacite_xml.css" >
 <br/>
@@ -298,3 +299,30 @@
 		</div>
 	</div>
 </div>
+
+<!-- this form needs different handling since it's auto-generated
+	submitting by AJAX will save complete rewriting and populating
+	form on every load -->
+
+<script> 
+	// wait for the DOM to be loaded 
+  $(document).ready(function() {
+  	var options = {
+	    url:      '/ezid/demo/ajax_advanced',
+	    success:	showResponse
+		}; 
+  	
+    $('#create_form').ajaxForm(options); 
+	});
+	
+	// post-submit callback 
+	function showResponse(resp, statusText, xhr, $form)  { 
+    console.log(statusText);
+    console.log(resp);
+    if(resp['status'] == 'failure'){
+    	alert(resp['errors'].join("\r\n"));
+    }else if(resp['status'] == 'success'){
+    	alert("success, created id " + resp['id']);
+    }
+	}
+</script>

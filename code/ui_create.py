@@ -1,5 +1,4 @@
 import ui_common as uic
-import datacite_xml
 from django.shortcuts import redirect
 import django.contrib.messages
 import metadata
@@ -112,14 +111,14 @@ def advanced_form_processing(request, d):
   profs = [(p.name, p.displayName, ) for p in d['profiles']] + uic.manual_profiles.items()
   d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
   
-  
   if request.method == "POST":
     if "current_profile" not in request.POST or "shoulder" not in request.POST: return 'bad_request'
     pre_list = [p['prefix'] for p in d['prefixes']]
     if request.POST['shoulder'] not in pre_list:
       django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
       return 'edit_page'
-    if uic.validate_advanced_metadata_form(request, d['current_profile'], d['manual_profile']):
+    if uic.validate_advanced_metadata_form(request, d['current_profile']):
+      """ # no more manual profiles here for processing.
       if d['manual_profile']:
         methods = {'datacite_xml': datacite_xml.generate_xml}
         return_val = methods[d['current_profile_name']](request.POST)
@@ -129,12 +128,12 @@ def advanced_form_processing(request, d):
           "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
           "_export": ("yes" if request.POST["export"] == "yes" else "no"),
           "datacite": return_val }
-
       else:
-        to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
-          { '_target' : uic.fix_target(request.POST['_target']),
-          "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
-          "_export": ("yes" if request.POST["export"] == "yes" else "no") } )
+      """
+      to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
+        { '_target' : uic.fix_target(request.POST['_target']),
+        "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
+        "_export": ("yes" if request.POST["export"] == "yes" else "no") } )
       
       #write out ID and metadata (one variation with special remainder, one without)
       if request.POST['remainder'] == '' or request.POST['remainder'] == uic.remainder_box_default:
