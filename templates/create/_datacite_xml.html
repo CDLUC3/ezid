@@ -305,14 +305,29 @@
 	form on every load -->
 
 <script> 
-	// wait for the DOM to be loaded 
+
   $(document).ready(function() {
+  	// change form to submit by AJAX
   	var options = {
 	    url:      '/ezid/demo/ajax_advanced',
 	    success:	showResponse
-		}; 
-  	
-    $('#create_form').ajaxForm(options); 
+		};   	
+    $('#create_form').ajaxForm(options);
+    
+    /* change the behavior when adding a section to erase contents of new text boxes
+     * which the obfuscated javascript form the external library uses.
+     */
+    $('input[type=button].addButton').click(function (e)
+		{
+			if(!e.isDefaultPrevented())
+			{
+			  var items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=text].data');
+			  items.each(function() {
+			  	var $this = $(this);
+			  	$this[0].value = '';
+			  })
+			}
+		}); 
 	});
 	
 	// post-submit callback 
