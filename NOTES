@@ -50,6 +50,11 @@ Caching is employed in several places:
     the "Reload EZID" admin function causes all settings to be
     reloaded (except logging settings).
 
+  userauth._ldapCache authentication cache
+    A dictionary that maps local usernames to AuthenticatedUser
+    objects.  Loaded on demand as usernames are encountered.  Emptied
+    when EZID is reloaded.
+
   policy._groups prefix cache
     A dictionary that maps groups (identified by tuples; see above) to
     lists of prefixes.  Loaded on demand as groups are encountered.
