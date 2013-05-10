@@ -217,9 +217,9 @@
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/relatedIdentifiers" nbelmtsadded="1" class="addButton">
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/relatedIdentifiers" class="rmvButton">
 			<div class="multiple">
-				<label for="/resource/relatedIdentifiers/relatedIdentifier[1]" class="element sized">Related Identifier:</label>
+				<div class="element">
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[1]" class="element sized">Related Identifier:</label>
 					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[1]" class="data sized" />
-					<div class="attribute">
 						<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedIdentifierType" class="attribute sized">Related Identifier Type:</label>
 						<select name="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedIdentifierType" sendselect="yes" class="choice sized">
 							<option value/>
@@ -238,8 +238,6 @@
 							<option value="URL">URL</option>
 							<option value="URN">URN</option>
 						</select>
-					</div>
-					<div class="attribute">
 						<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" class="attribute sized">Relation Type:</label>
 						<select name="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" sendselect="yes" class="choice sized">
 							<option value/>
@@ -326,21 +324,25 @@
 			  	var $this = $(this);
 			  	$this[0].value = '';
 			  })
+			  items = $(e.target).parent().children('div.multiple').children('div.element').last().find('select');
+			  items.each(function() {
+			  	$(this).prop('selectedIndex', 0);
+			  })
+			  items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=radio]');
+			  if(items.length > 0)
+			  	items[0].checked = true;
 			}
 		}); 
 	});
 	
 	// post-submit callback 
-	function showResponse(resp, statusText, xhr, $form)  { 
-    console.log(statusText);
-    console.log(resp);
+	function showResponse(resp, statusText, xhr, $form)  {
     if(resp['status'] == 'failure'){
     	var outstr = "";
     	for (var i=0; i < resp['errors'].length; i++)
     		outstr += '<p class="error">' + escapeHtml(resp['errors'][i]) + '</p>';
     	$("#ustatus").html(outstr);
     	showMessage(true);
-    	//alert(resp['errors'].join("<br/>"));
     }else if(resp['status'] == 'success'){
     	window.location = "/ezid/id/" + resp['id'];
     }
