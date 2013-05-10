@@ -179,18 +179,18 @@ def identifierDispatcher (request):
 
 def _getMetadata (request):
   assert request.path.startswith("/ezid/id/")
-  r = ezid.getMetadata(request.path[9:])
-  if type(r) is str: return _response(r)
+  auth = userauth.authenticateRequest(request)
+  if type(auth) is str: return _response(auth)
+  if auth:
+    r = ezid.getMetadata(request.path[9:], auth.user, auth.group)
+  else:
+    r = ezid.getMetadata(request.path[9:])
+  if type(r) is str:
+    if r.startswith("error: unauthorized"):
+      return _unauthorized(not auth)
+    else:
+      return _response(r)
   s, metadata = r
-  if "_ezid_role" in metadata:
-    # Special case.
-    auth = userauth.authenticateRequest(request)
-    if type(auth) is str:
-      return _response(auth)
-    elif not auth:
-      return _unauthorized()
-    elif auth.user[0] != _adminUsername:
-      return _unauthorized(False)
   return _response(s, anvlBody=anvl.format(metadata))
 
 def _setMetadata (request):
@@ -250,6 +250,20 @@ def logout (request):
   request.session.flush()
   return _response("success: authentication credentials flushed")
 
+def _formatUserCountList (d):
+  if len(d) > 0:
+    l = d.items()
+    l.sort(cmp=lambda x, y: -cmp(x[1], y[1]))
+    return " (" + ", ".join("%s: %d" % i for i in l) + ")"
+  else:
+    return ""
+
+def _s (i):
+  if i == 1:
+    return ""
+  else:
+    return "s"
+
 def getStatus (request):
   """
   Returns EZID's status.
@@ -270,21 +284,21 @@ def getStatus (request):
         body += "noid: %s\n" % _bindNoid.ping()
       else:
         return _response("error: bad request - no such subsystem")
-  nl = ezid.numIdentifiersLocked()
-  s1 = "" if nl == 1 else "s"
+  activeUsers, waitingUsers = ezid.getStatus()
+  na = sum(activeUsers.values())
+  nw = sum(waitingUsers.values())
   nd = datacite.numActiveOperations()
-  s2 = "" if nd == 1 else "s"
   nstc, nstca = store.numConnections()
-  s3 = "" if nstc == 1 else "s"
   nsec, nseca = search.numConnections()
-  s4 = "" if nsec == 1 else "s"
   nt = threading.activeCount()
-  s5 = "" if nt == 1 else "s"
-  return _response(("success: %d identifier operation%s in progress, " +\
-    "%d DataCite operation%s in progress, " +\
+  return _response(("success: %d active operation%s%s, " +\
+    "%d request%s waiting%s, " +\
+    "%d active DataCite operation%s, " +\
     "%d store database connection%s (%d active), " +\
     "%d search database connection%s (%d active), %d thread%s") %\
-    (nl, s1, nd, s2, nstc, s3, nstca, nsec, s4, nseca, nt, s5),
+    (na, _s(na), _formatUserCountList(activeUsers), nw, _s(nw),
+    _formatUserCountList(waitingUsers), nd, _s(nd), nstc, _s(nstc),
+    nstca, nsec, _s(nsec), nseca, nt, _s(nt)),
     anvlBody=body)
 
 def getVersion (request):

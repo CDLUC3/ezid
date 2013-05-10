@@ -285,7 +285,7 @@ def _cacheLdapInformation (l, dn, arkId, user, group):
   for a in attrs:
     if a != "userPassword":
       d["ldap." + a] = " ; ".join(v.decode("UTF-8") for v in attrs[a])
-  r = ezid.getMetadata(arkId)
+  r = ezid.getMetadata(arkId, user, group)
   assert type(r) is tuple, "ezid.getMetadata failed: " + r
   for k in r[1]:
     # If an attribute has disappeared, blank out its cached value.
@@ -537,7 +537,7 @@ def makeUser (uid, groupDn, user, group):
       if not arkId.startswith(_agentPrefix) or\
         arkId[5:] != util.validateArk(arkId[5:]):
         return "LDAP entry has invalid ARK identifier."
-      r = ezid.getMetadata(arkId)
+      r = ezid.getMetadata(arkId, user, group)
       assert type(r) is tuple, "ezid.getMetadata failed: " + r
       assert "_ezid_role" not in r[1],\
         "LDAP entry's ARK identifier already identifies agent, DN='%s'" % dn

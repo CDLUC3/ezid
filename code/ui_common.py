@@ -190,14 +190,6 @@ def is_logged_in(request):
     return False
   return True
 
-def view_authorized_for_identifier(request, id_meta):
-  """Checks that the user is authorized to view identifier"""
-  if "_ezid_role" in id_meta and ("auth" not in request.session or\
-    request.session["auth"].user[0] != adminUsername):
-    django.contrib.messages.error(request, "Unauthorized.")
-    return False
-  return True
-
 def authorizeCreate(request, prefix):
   """a simple function to decide if a user (gotten from request.session)
   is allowed to create with the prefix"""

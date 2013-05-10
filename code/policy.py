@@ -4,9 +4,6 @@
 #
 # Authorization policy.
 #
-# All authorization-related policies are in this module except access
-# control over agent identifiers, which is in api.py and ui.py.
-#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
@@ -176,6 +173,17 @@ def clearCoOwnerCache (user):
     if user in _coOwners: del _coOwners[user]
   finally:
     _lock.release()
+
+def authorizeView (user, group, identifier, metadata):
+  """
+  Returns true if a request to view identifier metadata is authorized.
+  'user' and 'group' should each be authenticated (local name,
+  persistent identifier) tuples, e.g., ("dryad", "ark:/13030/foo").
+  'identifier' is the identifier in question; it must be qualified, as
+  in "doi:10.5060/foo".  'metadata' is the identifier's metadata as a
+  dictionary of (name, value) pairs.
+  """
+  return "_ezid_role" not in metadata or user[0] == _adminUsername
 
 def authorizeCreate (user, group, prefix):
   """

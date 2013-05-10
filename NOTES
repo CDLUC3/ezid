@@ -117,10 +117,7 @@ are termed "agent identifiers;" see ezid.py and idmap.py for more
 information.  Because potentially sensitive LDAP information is cached
 in agent identifiers (see above), not only are agent identifiers not
 revealed to clients, they are owned by the EZID administrator and can
-only be viewed by the EZID administrator.  To avoid coding
-complications (ezid.getMetadata is used both to service client
-requests and by EZID itself) this special access control is
-implemented in the API and UI, not in ezid.py.
+only be viewed by the EZID administrator.
 
 The search database contains agent identifiers; see
 .../etc/search-schema.sql for a potential privacy/security hole.
