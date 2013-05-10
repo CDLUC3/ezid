@@ -95,7 +95,11 @@ def index(request):
 def edit(request, identifier):
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
-  r = ezid.getMetadata(identifier)
+  if "auth" in request.session:
+    r = ezid.getMetadata(identifier, request.session["auth"].user,
+      request.session["auth"].group)
+  else:
+    r = ezid.getMetadata(identifier)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_lookup.index")
@@ -163,14 +167,17 @@ def details(request):
   d["testPrefixes"] = uic.testPrefixes
   my_path = "/ezid/id/"
   identifier = request.path[len(my_path):]
-  r = ezid.getMetadata(identifier)
+  if "auth" in request.session:
+    r = ezid.getMetadata(identifier, request.session["auth"].user,
+      request.session["auth"].group)
+  else:
+    r = ezid.getMetadata(identifier)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_lookup.index")
   d['allow_update'] = uic.authorizeUpdate(request, r)
   s, m = r
   assert s.startswith("success:")
-  if not uic.view_authorized_for_identifier(request, m): return redirect("ui_lookup.index")
   d['id_text'] = s.split()[1]
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')

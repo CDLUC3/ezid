@@ -65,7 +65,7 @@ def contact(request):
     try:
       django.core.mail.send_mail(title, message,
         django.conf.settings.SERVER_EMAIL, emails)
-      
+
       django.contrib.messages.success(request, "Message sent")
       d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
     except:
@@ -122,16 +122,15 @@ def tombstone (request):
   if request.method != "GET": return uic.methodNotAllowed()
   assert request.path.startswith("/ezid/tombstone/id/")
   id = request.path[19:]
-  r = ezid.getMetadata(id)
+  if "auth" in request.session:
+    r = ezid.getMetadata(id, request.session["auth"].user,
+      request.session["auth"].group)
+  else:
+    r = ezid.getMetadata(id)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return uic.redirect("/ezid/")
   s, m = r
-  if "_ezid_role" in m and ("auth" not in request.session or\
-    request.session["auth"].user[0] != uic.adminUsername):
-    # Special case.
-    django.contrib.messages.error(request, "Unauthorized.")
-    return uic.redirect("/ezid/")
   assert s.startswith("success:")
   id = s[8:].strip()
   if not m["_status"].startswith("unavailable"):
