@@ -181,3 +181,16 @@ public-but-not-exported identifier.  First, an unavailable
 identifier's target URL is overriden with a tombstone URL.  Second, a
 public-but-not-exported identifier's metadata is still uploaded to
 DataCite.
+
+8. Offline scripts
+------------------
+
+Offline scripts (expunge, stats, dashboard, etc.) do not perform
+identifier actions through the EZID API; rather, they import EZID
+modules and directly call EZID functions.  This technique generally
+shouldn't cause any problems, as SQLite locking mechanisms work across
+processes.  One exception is logging: to avoid appending to and
+possibly corrupting the running server's transaction log file, offline
+scripts use the settings/logging.offline.conf settings to log to
+standard error instead.  An implication of this is that script actions
+do not appear in the transaction log file.

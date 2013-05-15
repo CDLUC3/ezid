@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 # Computes cumulative EZID statistics and uploads them to the CDL
 # dashboard service.
@@ -19,26 +19,55 @@
 #
 # Usage:
 #
-#   dashboard dbfile dashurl
-#   dashboard --compute-only dbfile > data
+#   dashboard {-n|-s} dbfile dashurl
+#   dashboard --compute-only {-n|-s} dbfile > data
 #   dashboard --upload-only dashurl < data
 #
-#     dbfile: bind database file (noid.bdb)
+#     dbfile: bind database file (noid.bdb) (-n) or store database (-s)
 #     dashurl: dashboard base URL (http://host:port)
 #
-# Note that this script requires an EZID module; the PYTHONPATH
-# environment variable must be set accordingly.
+# If the -s argument is selected and the dbfile argument is "-", the
+# appropriate value is read from the EZID configuration file.
+#
+# This script requires several EZID modules.  The PYTHONPATH
+# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
+# directory; if it doesn't, we attempt to dynamically locate it and
+# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
+# set; if it isn't, we set it to "settings.production".
 #
 # Greg Janee <gjanee@ucop.edu>
 # November 2011
 
 import bsddb.db
 import datetime
+import os
+import os.path
 import re
 import sys
 import urllib2
 import uuid
 
+if "DJANGO_SETTINGS_MODULE" not in os.environ:
+  os.environ["DJANGO_SETTINGS_MODULE"] = "settings.production"
+
+try:
+  import settings
+except ImportError:
+  sys.path.append(os.path.split(os.path.split(
+    os.path.abspath(__file__))[0])[0])
+  import settings
+
+# Bootstrapping: reference a(ny) Django setting to trigger the loading
+# of said settings, which causes the PYTHONPATH to be modified,
+# supporting subsequent imports.
+import django.conf
+django.conf.settings.PROJECT_ROOT
+
+# Configure the logging so that errors don't get added to the server's
+# log file.
+django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
+
+import store
 import util
 
 testDoiPrefix = "b5072/fk2"
@@ -47,32 +76,51 @@ urnPrefix = "97720/"
 
 usageText = """Usage:
 
-  dashboard dbfile dashurl
-  dashboard --compute-only dbfile > data
+  dashboard {-n|-s} dbfile dashurl
+  dashboard --compute-only {-n|-s} dbfile > data
   dashboard --upload-only dashurl < data
 
-    dbfile: bind database file (noid.bdb)
+    dbfile: bind database file (noid.bdb) (-n) or store database (-s)
     dashurl: dashboard base URL (http://host:port)
 """
 
-if len(sys.argv) != 3 or (sys.argv[1] != "--compute-only" and\
-  not sys.argv[2].startswith("http://")):
+if len(sys.argv) < 3 or not (((sys.argv[1] == "-n" or sys.argv[1] == "-s") and\
+  len(sys.argv) == 4 and sys.argv[3].startswith("http://")) or\
+  (sys.argv[1] == "--compute-only" and (sys.argv[2] == "-n" or\
+  sys.argv[2] == "-s") and len(sys.argv) == 4) or\
+  (sys.argv[1] == "--upload-only" and sys.argv[2].startswith("http://") and\
+  len(sys.argv) == 3)):
   sys.stderr.write(usageText)
   sys.exit(1)
 
-doCompute = doUpload = True
-if sys.argv[1] == "--compute-only":
-  doUpload = False
+if sys.argv[1] == "-n" or sys.argv[1] == "-s":
+  doCompute = doUpload = True
+  dbType = sys.argv[1]
   dbFile = sys.argv[2]
+  dashUrl = sys.argv[3]
+elif sys.argv[1] == "--compute-only":
+  doCompute = True
+  doUpload = False
+  dbType = sys.argv[2]
+  dbFile = sys.argv[3]
 else:
-  if sys.argv[1] == "--upload-only":
-    doCompute = False
-  else:
-    dbFile = sys.argv[1]
-  slash = "" if sys.argv[2].endswith("/") else "/"
-  uploadUrl = "%s%scgi-bin/file_upload.cgi" % (sys.argv[2], slash)
+  doCompute = False
+  doUpload = True
+  dashUrl = sys.argv[2]
+
+if doCompute and dbType == "-s" and dbFile != "-":
+  if not os.path.isfile(dbFile):
+    sys.stderr.write("dashboard: %s: %s\n" % (dbFile,
+      "No such file or directory" if not os.path.exists(dbFile) else
+      "Not a regular file"))
+    sys.exit(1)
+  store.setDatabase(dbFile)
+
+if doUpload:
+  slash = "" if dashUrl.endswith("/") else "/"
+  uploadUrl = "%s%scgi-bin/file_upload.cgi" % (dashUrl, slash)
   uploadCompletionUrl = "%s%scgi-bin/file_upload_completion.cgi" %\
-    (sys.argv[2], slash)
+    (dashUrl, slash)
 
 class Counter (object):
   def __init__ (self):
@@ -93,19 +141,43 @@ def incrementMonth (month):
 
 if doCompute:
   # Gather raw counts.
-  db = bsddb.db.DB()
-  db.open(dbFile, flags=bsddb.db.DB_RDONLY)
-  cursor = db.cursor()
   counters = {}
-  entry = cursor.first()
-  while entry != None:
-    k, v = entry
-    if "\t" in k:
-      id, label = k.split("\t", 1)
-      if util.validateArk(id) == id and label == "_c" and re.match("\d+$", v):
+  if dbType == "-n":
+    db = bsddb.db.DB()
+    db.open(dbFile, flags=bsddb.db.DB_RDONLY)
+    cursor = db.cursor()
+    entry = cursor.first()
+    while entry != None:
+      k, v = entry
+      if "\t" in k:
+        id, label = k.split("\t", 1)
+        if util.validateArk(id) == id and label == "_c" and\
+          re.match("\d+$", v):
+          if not id.startswith(testArkPrefix) and\
+            not id.startswith(testDoiPrefix):
+            month = datetime.date.fromtimestamp(int(v)).replace(day=1)
+            if month in counters:
+              c = counters[month]
+            else:
+              c = Counter()
+              counters[month] = c
+            if re.match("b\d{4}/", id):
+              c.numDois += 1
+            elif id.startswith(urnPrefix):
+              c.numUrns += 1
+            else:
+              c.numArks += 1
+      entry = cursor.next()
+    db.close()
+  else:
+    lastId = ""
+    while True:
+      ids = store.harvest(start=lastId, maximum=1000)
+      if len(ids) == 0: break
+      for id, r in ids:
         if not id.startswith(testArkPrefix) and\
           not id.startswith(testDoiPrefix):
-          month = datetime.date.fromtimestamp(int(v)).replace(day=1)
+          month = datetime.date.fromtimestamp(int(r["_c"])).replace(day=1)
           if month in counters:
             c = counters[month]
           else:
@@ -117,8 +189,7 @@ if doCompute:
             c.numUrns += 1
           else:
             c.numArks += 1
-    entry = cursor.next()
-  db.close()
+      lastId = ids[-1][0]
   # Fill in any missing months.
   months = counters.keys()
   months.sort()
