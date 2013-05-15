@@ -30,7 +30,7 @@ records = []
 tidMap = {}
 
 pattern = re.compile("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) " +\
-  "(([\da-fA-F]{32}) (BEGIN|PROGRESS|END) |- ERROR )(.*)")
+  "(([\da-fA-F]{32}) (BEGIN|PROGRESS|END) |- (STATUS|ERROR) )(.*)")
 
 for file in sys.argv[1:]:
   f = open(file)
@@ -41,14 +41,14 @@ for file in sys.argv[1:]:
     if not m:
       error(file, n, "unrecognized record")
       continue
-    # Strip non-transaction errors.
+    # Strip non-transaction errors and status records.
     if m.group(2).startswith("-"): continue
     tid = m.group(3)
     if m.group(4) == "BEGIN":
       if tid in tidMap:
         error(file, n, "duplicate transaction ID")
         continue
-      r = Record(file, n, m.group(1), m.group(5))
+      r = Record(file, n, m.group(1), m.group(6))
       records.append(r)
       tidMap[tid] = r
     elif m.group(4) == "END":
@@ -58,7 +58,7 @@ for file in sys.argv[1:]:
       if tidMap[tid].endRecord != None:
         error(file, n, "duplicate END record")
         continue
-      tidMap[tid].endRecord = m.group(5)
+      tidMap[tid].endRecord = m.group(6)
     else:
       # Ignore progress records.
       pass

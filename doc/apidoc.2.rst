@@ -1071,9 +1071,9 @@ response will resemble the following:
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 33
+  |lArr| Content-Length: 19
   |lArr|
-  |lArr| success: 2 operations in progress
+  |lArr| success: EZID is up
 
 The status of EZID's subsystems can be probed at the same time by
 listing one or more subsystem names, separated by commas, as the value
@@ -1086,9 +1086,9 @@ of the "subsystems" query parameter.  For example:
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 52
+  |lArr| Content-Length: 38
   |lArr|
-  |lArr| success: 2 operations in progress
+  |lArr| success: EZID is up
   |lArr| noid: up
   |lArr| ldap: up
 

@@ -75,8 +75,6 @@ import datacite
 import ezid
 import ezidadmin
 import noid
-import search
-import store
 import userauth
 
 _adminUsername = None
@@ -250,20 +248,6 @@ def logout (request):
   request.session.flush()
   return _response("success: authentication credentials flushed")
 
-def _formatUserCountList (d):
-  if len(d) > 0:
-    l = d.items()
-    l.sort(cmp=lambda x, y: -cmp(x[1], y[1]))
-    return " (" + ", ".join("%s: %d" % i for i in l) + ")"
-  else:
-    return ""
-
-def _s (i):
-  if i == 1:
-    return ""
-  else:
-    return "s"
-
 def getStatus (request):
   """
   Returns EZID's status.
@@ -284,22 +268,7 @@ def getStatus (request):
         body += "noid: %s\n" % _bindNoid.ping()
       else:
         return _response("error: bad request - no such subsystem")
-  activeUsers, waitingUsers = ezid.getStatus()
-  na = sum(activeUsers.values())
-  nw = sum(waitingUsers.values())
-  nd = datacite.numActiveOperations()
-  nstc, nstca = store.numConnections()
-  nsec, nseca = search.numConnections()
-  nt = threading.activeCount()
-  return _response(("success: %d active operation%s%s, " +\
-    "%d request%s waiting%s, " +\
-    "%d active DataCite operation%s, " +\
-    "%d store database connection%s (%d active), " +\
-    "%d search database connection%s (%d active), %d thread%s") %\
-    (na, _s(na), _formatUserCountList(activeUsers), nw, _s(nw),
-    _formatUserCountList(waitingUsers), nd, _s(nd), nstc, _s(nstc),
-    nstca, nsec, _s(nsec), nseca, nt, _s(nt)),
-    anvlBody=body)
+  return _response("success: EZID is up", anvlBody=body)
 
 def getVersion (request):
   """
