@@ -4,7 +4,7 @@
 #
 # Logging functions.  What gets logged, where it gets logged, and how
 # log records are formatted is all determined by the configuration
-# file.  There are seven record types:
+# file.  There are eight record types:
 #
 #   level  message
 #   -----  -------
@@ -13,6 +13,7 @@
 #   INFO   transactionId END SUCCESS [args...]
 #   INFO   transactionId END BADREQUEST
 #   INFO   transactionId END UNAUTHORIZED
+#   INFO   - STATUS ...
 #   ERROR  transactionId END ERROR exception...
 #   ERROR  - ERROR caller exception...
 #
@@ -158,3 +159,9 @@ def otherError (caller, exception):
   _log.error("- ERROR %s %s%s" % (util.encode2(caller),
     util.encode1(type(exception).__name__), util.encode1(m)))
   if not django.conf.settings.DEBUG: _notifyAdmins(traceback.format_exc())
+
+def status (*args):
+  """
+  Logs the server's status.
+  """
+  _log.info("- STATUS " + " ".join(util.encode1(a) for a in args))

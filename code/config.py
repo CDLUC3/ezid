@@ -124,3 +124,6 @@ def getVersionInfo ():
 
 # Start the newsfeed module's daemon thread by importing the module.
 import newsfeed
+
+# Start the status module's daemon thread by importing the module.
+import status
