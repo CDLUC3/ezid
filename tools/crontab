@@ -1,6 +1,6 @@
 # Sample crontab
-0 0 * * 0 env PYTHONPATH=.../SITE_ROOT/PROJECT_ROOT DJANGO_SETTINGS_MODULE=settings.production .../django-admin.py cleanup
-10 0 * * 0 .../sqlite3 .../SITE_ROOT/db/django.sqlite3 vacuum
-20 0 * * 0 env PYTHONPATH=.../SITE_ROOT/PROJECT_ROOT DJANGO_SETTINGS_MODULE=settings.production .../python .../SITE_ROOT/PROJECT_ROOT/tools/expunge - -
-50 0 * * 0 env PYTHONPATH=.../SITE_ROOT/PROJECT_ROOT DJANGO_SETTINGS_MODULE=settings.production .../python .../SITE_ROOT/PROJECT_ROOT/tools/stats -s - -
-30 1 2 * * env PYTHONPATH=.../SITE_ROOT/PROJECT_ROOT/code .../python .../SITE_ROOT/PROJECT_ROOT/tools/dashboard /noid/nd/g3/NOID/noid.bdb http://stats.cdlib.org:9005
+0 0 * * 0 env PYTHONPATH=/path/to/SITE_ROOT/PROJECT_ROOT DJANGO_SETTINGS_MODULE=settings.production /path/to/django-admin.py cleanup
+10 0 * * 0 /path/to/sqlite3 /path/to/SITE_ROOT/db/django.sqlite3 vacuum
+20 0 * * 0 env PYTHONPATH=/path/to/SITE_ROOT/PROJECT_ROOT DJANGO_SETTINGS_MODULE=settings.production /path/to/python /path/to/SITE_ROOT/PROJECT_ROOT/tools/expunge - -
+50 0 * * 0 env PYTHONPATH=/path/to/SITE_ROOT/PROJECT_ROOT DJANGO_SETTINGS_MODULE=settings.production /path/to/python /path/to/SITE_ROOT/PROJECT_ROOT/tools/stats -s - -
+30 1 2 * * env PYTHONPATH=/path/to/SITE_ROOT/PROJECT_ROOT DJANGO_SETTINGS_MODULE=settings.production /path/to/python /path/to/SITE_ROOT/PROJECT_ROOT/tools/dashboard -s - http://...
