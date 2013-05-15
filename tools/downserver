@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 # Standalone server that mimics EZID, but only indicates that the
 # system is down.  Specifically, all UI requests, regardless of HTTP
