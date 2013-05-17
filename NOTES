@@ -189,8 +189,12 @@ Offline scripts (expunge, stats, dashboard, etc.) do not perform
 identifier actions through the EZID API; rather, they import EZID
 modules and directly call EZID functions.  This technique generally
 shouldn't cause any problems, as SQLite locking mechanisms work across
-processes.  One exception is logging: to avoid appending to and
-possibly corrupting the running server's transaction log file, offline
-scripts use the settings/logging.offline.conf settings to log to
-standard error instead.  An implication of this is that script actions
-do not appear in the transaction log file.
+processes, with two exceptions.  The first exception is logging: to
+avoid appending to and possibly corrupting the running server's
+transaction log file, offline scripts use the
+settings/logging.offline.conf settings to log to standard error
+instead.  An implication of this is that script actions do not appear
+in the transaction log file.  The second exception is that expunge
+actions may conflict with those of the running server.  The
+possibility is remote, nevertheless, for this reason the expunge
+script should probably be rewritten to go through the EZID API.
