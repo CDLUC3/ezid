@@ -77,12 +77,9 @@ def contact(request):
 
 def __emails(request):
   """gets email addresses based on environment settings and also current domain name"""
-  emails = [x.strip() for x in uic.contact_form_email.split(',')]
-  cust = django.conf.settings.HOST_EMAIL_CUSTOMIZATION
-  if request.META['HTTP_HOST'] in cust:
-    emails = [x.strip() for x in django.conf.settings.
-              HOST_EMAIL_CUSTOMIZATION[request.META['HTTP_HOST']].split(',')]
-  return emails
+  host = request.META.get("HTTP_HOST", "default")
+  if host not in django.conf.settings.LOCALIZATIONS: host = "default"
+  return django.conf.settings.LOCALIZATIONS[host][1]
 
 def doc (request):
   """
