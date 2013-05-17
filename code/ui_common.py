@@ -34,7 +34,6 @@ defaultUrnUuidProfile = None
 adminUsername = None
 shoulders = None
 google_analytics_id = None
-contact_form_email = None
 new_account_email = None
 reload_templates = None
 newsfeed_url = None
@@ -46,7 +45,7 @@ def _loadConfig():
   #outside of this module, use ui_common.varname
   global ezidUrl, templates, alertMessage, prefixes, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
-  global adminUsername, shoulders, google_analytics_id, contact_form_email
+  global adminUsername, shoulders, google_analytics_id
   global new_account_email, reload_templates, newsfeed_url
   ezidUrl = config.config("DEFAULT.ezid_base_url")
   templates = {}
@@ -75,7 +74,6 @@ def _loadConfig():
   defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
   adminUsername = config.config("ldap.admin_username")
   google_analytics_id = config.config("DEFAULT.google_analytics_id")
-  contact_form_email = config.config("email.contact_form_email")
   new_account_email = config.config("email.new_account_email")
   shoulders = [{ "label": k, "name": config.config("prefix_%s.name" % k),
     "prefix": config.config("prefix_%s.prefix" % k) }\

@@ -93,13 +93,13 @@
   </head>
   <body>
     <div class="container_12">
-    	{% host_based_include "includes/logo.html" %}
+    	{% host_based_include "includes/localized/_/logo.html" %}
       {% include "includes/user_menu.html" %}
       {% include "includes/status.html" %}
       {% include "includes/top_menu.html" %}    
       {% block content %}{% endblock %}
       
-      {% host_based_include "includes/footer.html" %}
+      {% host_based_include "includes/localized/_/footer.html" %}
     </div>
     <script type="text/javascript" src="/ezid/static/javascripts/metadata_tooltips.js"></script>
     <script type="text/javascript">

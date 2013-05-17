@@ -51,16 +51,16 @@ def _statusDaemon ():
         "threads=%d" % threading.activeCount(),
         "activeOperations=%d%s" % (na, _formatUserCountList(activeUsers)),
         "waitingRequests=%d%s" % (nw, _formatUserCountList(waitingUsers)),
-        "dataciteOperations=%d" % datacite.numActiveOperations(),
-        "active/storeDatabaseConnections=%d/%d" % (nstca, nstc),
-        "active/searchDatabaseConnections=%d/%d" % (nseca, nsec))
+        "activeDataciteOperations=%d" % datacite.numActiveOperations(),
+        "active/totalStoreDatabaseConnections=%d/%d" % (nstca, nstc),
+        "active/totalSearchDatabaseConnections=%d/%d" % (nseca, nsec))
     except Exception, e:
       log.otherError("status._statusDaemon", e)
     time.sleep(_reportingInterval)
 
 def _loadConfig ():
   global _reportingInterval, _threadName
-  _reportingInterval = int(config.config("DEFAULT.status_reporting_interval"))
+  _reportingInterval = int(config.config("DEFAULT.status_logging_interval"))
   _threadName = uuid.uuid1().hex
   threading.Thread(target=_statusDaemon, name=_threadName).start()
 
