@@ -36,11 +36,26 @@
 #
 # In the above, if a label is "@", the associated value is treated as
 # a filename and metadata fields are read from the named
-# ANVL-formatted file.  Otherwise, if a value has the form
-# "@filename", the value is read from the named file.  In both cases,
-# the contents of the named file are assumed to be UTF-8 encoded.  And
-# in both cases, the interpretation of @ can be defeated by doubling
-# it.
+# ANVL-formatted file.  For example, if file metadata.txt contains:
+#
+#   erc.who: Proust, Marcel
+#   erc.what: Remembrance of Things Past
+#   erc.when: 1922
+#
+# then an identifier with that metadata can be minted by invoking:
+#
+#   client p username:password mint ark:/99999/fk4 @ metadata.txt
+#
+# Otherwise, if a value has the form "@filename", a (single) value is
+# read from the named file.  For example, if file metadata.xml
+# contains a DataCite XML record, then an identifier with that record
+# as the value of the 'datacite' field can be minted by invoking:
+#
+#   client p username:password mint doi:10.5072/FK2 datacite @metadata.xml
+#
+# In both of the above cases, the contents of the named file are
+# assumed to be UTF-8 encoded.  And in both cases, the interpretation
+# of @ can be defeated by doubling it.
 #
 # Greg Janee <gjanee@ucop.edu>
 # April 2011
@@ -145,10 +160,13 @@ def formatAnvl (l):
       r.append("%s: %s" % (k, v))
   return "\n".join(r)
 
+# Process command line arguments.
+
 decodeOutput = False
 oneLine = False
 formatTimestamps = False
-while len(sys.argv) >= 2 and sys.argv[1].startswith("-"):
+while len(sys.argv) >= 2 and sys.argv[1].startswith("-") and\
+  len(sys.argv[1]) > 1:
   for c in sys.argv[1][1:]:
     if c == "d":
       decodeOutput = True
@@ -181,6 +199,8 @@ if (type(operations[operation]) is int and\
   (type(operations[operation]) is types.LambdaType and\
   not operations[operation](len(sys.argv)-4)): usageError()
 
+# Assemble the request.
+
 if operation in ["mint", "create", "update"]:
   path = "shoulder" if operation == "mint" else "id"
   arg = urllib.quote(sys.argv[4], ":/")
@@ -212,6 +232,8 @@ elif operation == "reload":
 
 if cookie: request.add_header("Cookie", cookie)
 
+# Issue the request and output the return.
+
 try:
   c = opener.open(request)
   output = c.read()
@@ -219,8 +241,10 @@ try:
   if operation == "login":
     output += c.info()["set-cookie"].split(";")[0].split("=")[1] + "\n"
 except urllib2.HTTPError, e:
-  print e.code, e.msg
-  print e.fp.read()
+  sys.stderr.write("%s %s\n" % (e.code, e.msg))
+  output = e.fp.read()
+  if not output.endswith("\n"): output += "\n"
+  sys.stderr.write(output)
 else:
   output = output.splitlines()
   if operation == "view":
