@@ -86,3 +86,5 @@ INSTALLED_APPS = (
 SESSION_COOKIE_PATH = "/ezid/"
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
+
+LOCALIZATIONS = { "default": ("cdl", ["uc3@ucop.edu"]) }

@@ -272,9 +272,10 @@ charset encoding.  In request bodies, if no charset encoding is
 declared in the HTTP Content-Type header, it is assumed to be UTF-8.
 
 EZID's data model for metadata is a dictionary of element name/value
-pairs.  Names and values are strings.  Leading and trailing whitespace
-in names and values is not significant.  Element values may be empty,
-but not names.
+pairs.  The dictionary is single-valued: an element name may not be
+repeated.  Names and values are strings.  Leading and trailing
+whitespace in names and values is not significant.  Neither element
+names nor element values may be empty.
 
 Metadata dictionaries are serialized using a subset of `A Name-Value
 Language (ANVL)`__ rules:
@@ -1070,9 +1071,9 @@ response will resemble the following:
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 33
+  |lArr| Content-Length: 19
   |lArr|
-  |lArr| success: 2 operations in progress
+  |lArr| success: EZID is up
 
 The status of EZID's subsystems can be probed at the same time by
 listing one or more subsystem names, separated by commas, as the value
@@ -1085,9 +1086,9 @@ of the "subsystems" query parameter.  For example:
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 52
+  |lArr| Content-Length: 38
   |lArr|
-  |lArr| success: 2 operations in progress
+  |lArr| success: EZID is up
   |lArr| noid: up
   |lArr| ldap: up
 

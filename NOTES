@@ -50,6 +50,11 @@ Caching is employed in several places:
     the "Reload EZID" admin function causes all settings to be
     reloaded (except logging settings).
 
+  userauth._ldapCache authentication cache
+    A dictionary that maps local usernames to AuthenticatedUser
+    objects.  Loaded on demand as usernames are encountered.  Emptied
+    when EZID is reloaded.
+
   policy._groups prefix cache
     A dictionary that maps groups (identified by tuples; see above) to
     lists of prefixes.  Loaded on demand as groups are encountered.
@@ -117,10 +122,7 @@ are termed "agent identifiers;" see ezid.py and idmap.py for more
 information.  Because potentially sensitive LDAP information is cached
 in agent identifiers (see above), not only are agent identifiers not
 revealed to clients, they are owned by the EZID administrator and can
-only be viewed by the EZID administrator.  To avoid coding
-complications (ezid.getMetadata is used both to service client
-requests and by EZID itself) this special access control is
-implemented in the API and UI, not in ezid.py.
+only be viewed by the EZID administrator.
 
 The search database contains agent identifiers; see
 .../etc/search-schema.sql for a potential privacy/security hole.
@@ -179,3 +181,20 @@ public-but-not-exported identifier.  First, an unavailable
 identifier's target URL is overriden with a tombstone URL.  Second, a
 public-but-not-exported identifier's metadata is still uploaded to
 DataCite.
+
+8. Offline scripts
+------------------
+
+Offline scripts (expunge, stats, dashboard, etc.) do not perform
+identifier actions through the EZID API; rather, they import EZID
+modules and directly call EZID functions.  This technique generally
+shouldn't cause any problems, as SQLite locking mechanisms work across
+processes, with two exceptions.  The first exception is logging: to
+avoid appending to and possibly corrupting the running server's
+transaction log file, offline scripts use the
+settings/logging.offline.conf settings to log to standard error
+instead.  An implication of this is that script actions do not appear
+in the transaction log file.  The second exception is that expunge
+actions may conflict with those of the running server.  The
+possibility is remote, nevertheless, for this reason the expunge
+script should probably be rewritten to go through the EZID API.

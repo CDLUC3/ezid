@@ -91,11 +91,10 @@ def host_based_include(context, template_path):
   normal specified file based on the hostname.  This allows for some
   simple branding changes in the templates based host name differences"""
   request = context['request']
-  if hasattr(django.conf.settings, 'HOST_TEMPLATE_CUSTOMIZATION'):
-    cust = django.conf.settings.HOST_TEMPLATE_CUSTOMIZATION
-    if request.META['HTTP_HOST'] in cust:
-      template_path = re.sub(r'^[a-zA-Z_0-9]+/',
-                       cust[request.META['HTTP_HOST']] + '/', template_path)
+  host = request.META.get("HTTP_HOST", "default")
+  if host not in django.conf.settings.LOCALIZATIONS: host = "default"
+  template_path = template_path.replace("/_/",
+    "/%s/" % django.conf.settings.LOCALIZATIONS[host][0])
   t = django.template.loader.get_template(template_path)
   return t.render(context)
 

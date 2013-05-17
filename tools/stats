@@ -15,9 +15,15 @@
 #    stats -z dumpfile outputfile
 #       Read from a gzip-compressed dump file.
 #
+#    stats -s dbfile outputfile
+#       Read from a store database.
+#
 # To avoid potential race conditions with the server, this script
 # writes to outputfile.new and then only upon successful completion
 # does it rename outputfile.new to outputfile.
+#
+# If the dbfile or outputfile arguments are "-", the appropriate
+# values are read from the EZID configuration file.
 #
 # The statistics consist of a single, multi-dimensional histogram that
 # counts identifiers as categorized across the dimensions: creation
@@ -51,10 +57,11 @@
 #    month owner group type hasMetadata
 #    2011-03 ark:/99166/p92z12p14 ark:/99166/p9z60c16v ARK True 3096
 #
-# This script requires a couple EZID modules.  The PYTHONPATH
-# environment variable must include the
-# .../SITE_ROOT/PROJECT_ROOT/code directory; if it doesn't, we attempt
-# to dynamically locate it and add it.
+# This script requires several EZID modules.  The PYTHONPATH
+# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
+# directory; if it doesn't, we attempt to dynamically locate it and
+# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
+# set; if it isn't, we set it to "settings.production".
 #
 # Greg Janee <gjanee@ucop.edu>
 # July 2012
@@ -66,14 +73,30 @@ import subprocess
 import sys
 import time
 
+if "DJANGO_SETTINGS_MODULE" not in os.environ:
+  os.environ["DJANGO_SETTINGS_MODULE"] = "settings.production"
+
 try:
-  import mapping
-  import util
+  import settings
 except ImportError:
-  sys.path.append(os.path.join(os.path.split(os.path.split(
-    os.path.abspath(__file__))[0])[0], "code"))
-  import mapping
-  import util
+  sys.path.append(os.path.split(os.path.split(
+    os.path.abspath(__file__))[0])[0])
+  import settings
+
+# Bootstrapping: reference a(ny) Django setting to trigger the loading
+# of said settings, which causes the PYTHONPATH to be modified,
+# supporting subsequent imports.
+import django.conf
+django.conf.settings.PROJECT_ROOT
+
+# Configure the logging so that errors don't get added to the server's
+# log file.
+django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
+
+import config
+import mapping
+import store
+import util
 
 testArkPrefix = "ark:/99999/fk4"
 testDoiPrefix = "doi:10.5072/FK2"
@@ -102,9 +125,12 @@ usageText = """Usage:
 
   stats -z dumpfile outputfile
      Read from a gzip-compressed dump file.
+
+  stats -s dbfile outputfile
+     Read from a store database.
 """
 
-if len(sys.argv) != 4 or sys.argv[1] not in ["-n", "-d", "-z"]:
+if len(sys.argv) != 4 or sys.argv[1] not in ["-n", "-d", "-z", "-s"]:
   sys.stderr.write(usageText)
   sys.exit(1)
 
@@ -116,19 +142,48 @@ elif sys.argv[1] == "-d":
   infile = open(sys.argv[2])
 elif sys.argv[1] == "-z":
   infile = gzip.GzipFile(filename=sys.argv[2], mode="r")
+elif sys.argv[1] == "-s":
+  infile = None
+  if sys.argv[2] != "-":
+    if not os.path.isfile(sys.argv[2]):
+      sys.stderr.write("stats: %s: %s\n" % (sys.argv[2],
+        "No such file or directory" if not os.path.exists(sys.argv[2]) else
+        "Not a regular file"))
+      sys.exit(1)
+    store.setDatabase(sys.argv[2])
+
+if sys.argv[3] == "-": sys.argv[3] = config.config("DEFAULT.stats_file")
+
 outfile = open(sys.argv[3]+".new", "w")
 
 counts = {}
 
-for l in infile:
-  lv = l[:-1].split(" ")
-  r = { "_id": lv[0] }
-  for i in range(1, len(lv), 2): r[util.decode(lv[i])] = util.decode(lv[i+1])
-  if not r["_id"].startswith(testArkPrefix) and\
-    not r["_id"].startswith(testDoiPrefix):
-    t = (timestampToMonth(r["_created"]), r["_owner"], r["_ownergroup"],
-      identifierType(r["_id"]), str(hasMetadata(r["_id"], r)))
-    counts[t] = counts.get(t, 0) + 1
+if infile:
+  for l in infile:
+    lv = l[:-1].split(" ")
+    r = { "_id": lv[0] }
+    for i in range(1, len(lv), 2): r[util.decode(lv[i])] = util.decode(lv[i+1])
+    if not r["_id"].startswith(testArkPrefix) and\
+      not r["_id"].startswith(testDoiPrefix):
+      t = (timestampToMonth(r["_created"]), r["_owner"], r["_ownergroup"],
+        identifierType(r["_id"]), str(hasMetadata(r["_id"], r)))
+      counts[t] = counts.get(t, 0) + 1
+else:
+  lastId = ""
+  while True:
+    ids = store.harvest(start=lastId, maximum=1000)
+    if len(ids) == 0: break
+    for id, r in ids:
+      if "_s" in r:
+        id = r["_s"]
+      else:
+        id = "ark:/" + id
+      if not id.startswith(testArkPrefix) and\
+        not id.startswith(testDoiPrefix):
+        t = (timestampToMonth(r["_c"]), r["_o"], r["_g"],
+          identifierType(id), str(hasMetadata(id, r)))
+        counts[t] = counts.get(t, 0) + 1
+    lastId = ids[-1][0]
 
 if sys.argv[1] == "-n" and pipe.wait() != 0:
   sys.stderr.write("stats: dump subprocess failed\n")

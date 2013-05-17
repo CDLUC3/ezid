@@ -22,6 +22,9 @@
 #     k: print _c bindings of test identifiers to be kept
 #     e: print _c bindings of expired test identifiers
 #
+# If the noidurl argument is "-", the appropriate value is read from
+# the EZID configuration file.
+#
 # This script requires several EZID modules.  The PYTHONPATH
 # environment variable must include the .../SITE_ROOT/PROJECT_ROOT
 # directory; if it doesn't, we attempt to dynamically locate it and
@@ -90,6 +93,8 @@ usageText = """Usage:
     e: print _c bindings of expired test identifiers
 """
 
+if len(sys.argv) >= 3 and sys.argv[2] == "-":
+  sys.argv[2] = config.config("DEFAULT.bind_noid")
 if len(sys.argv) == 3 and sys.argv[2].startswith("http://"):
   dbPath = sys.argv[1] if sys.argv[1] != "-" else None
   bindNoid = noid.Noid(sys.argv[2])

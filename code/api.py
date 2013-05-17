@@ -75,8 +75,6 @@ import datacite
 import ezid
 import ezidadmin
 import noid
-import search
-import store
 import userauth
 
 _adminUsername = None
@@ -100,8 +98,8 @@ def _readInput (request):
       return "error: bad request - unsupported character encoding"
     try:
       return anvl.parse(request.raw_post_data.decode("UTF-8"))
-    except anvl.AnvlParseException:
-      return "error: bad request - ANVL parse error"
+    except anvl.AnvlParseException, e:
+      return "error: bad request - ANVL parse error (%s)" % e.message
     except Exception:
       return "error: bad request - character decode error"
   else:
@@ -179,18 +177,18 @@ def identifierDispatcher (request):
 
 def _getMetadata (request):
   assert request.path.startswith("/ezid/id/")
-  r = ezid.getMetadata(request.path[9:])
-  if type(r) is str: return _response(r)
+  auth = userauth.authenticateRequest(request)
+  if type(auth) is str: return _response(auth)
+  if auth:
+    r = ezid.getMetadata(request.path[9:], auth.user, auth.group)
+  else:
+    r = ezid.getMetadata(request.path[9:])
+  if type(r) is str:
+    if r.startswith("error: unauthorized"):
+      return _unauthorized(not auth)
+    else:
+      return _response(r)
   s, metadata = r
-  if "_ezid_role" in metadata:
-    # Special case.
-    auth = userauth.authenticateRequest(request)
-    if type(auth) is str:
-      return _response(auth)
-    elif not auth:
-      return _unauthorized()
-    elif auth.user[0] != _adminUsername:
-      return _unauthorized(False)
   return _response(s, anvlBody=anvl.format(metadata))
 
 def _setMetadata (request):
@@ -270,22 +268,7 @@ def getStatus (request):
         body += "noid: %s\n" % _bindNoid.ping()
       else:
         return _response("error: bad request - no such subsystem")
-  nl = ezid.numIdentifiersLocked()
-  s1 = "" if nl == 1 else "s"
-  nd = datacite.numActiveOperations()
-  s2 = "" if nd == 1 else "s"
-  nstc, nstca = store.numConnections()
-  s3 = "" if nstc == 1 else "s"
-  nsec, nseca = search.numConnections()
-  s4 = "" if nsec == 1 else "s"
-  nt = threading.activeCount()
-  s5 = "" if nt == 1 else "s"
-  return _response(("success: %d identifier operation%s in progress, " +\
-    "%d DataCite operation%s in progress, " +\
-    "%d store database connection%s (%d active), " +\
-    "%d search database connection%s (%d active), %d thread%s") %\
-    (nl, s1, nd, s2, nstc, s3, nstca, nsec, s4, nseca, nt, s5),
-    anvlBody=body)
+  return _response("success: EZID is up", anvlBody=body)
 
 def getVersion (request):
   """

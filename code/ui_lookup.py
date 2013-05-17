@@ -17,7 +17,11 @@ def index(request):
   elif request.method == "POST":
     if "identifier" not in request.POST: return uic.badRequest()
     id = request.POST["identifier"].strip()
-    r = ezid.getMetadata(id)
+    if "auth" in request.session:
+      r = ezid.getMetadata(id, request.session["auth"].user,
+        request.session["auth"].group)
+    else:
+      r = ezid.getMetadata(id)
     if type(r) is tuple:
       s, m = r
       assert s.startswith("success:")

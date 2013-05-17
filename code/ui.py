@@ -65,7 +65,7 @@ def contact(request):
     try:
       django.core.mail.send_mail(title, message,
         django.conf.settings.SERVER_EMAIL, emails)
-      
+
       django.contrib.messages.success(request, "Message sent")
       d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
     except:
@@ -77,12 +77,9 @@ def contact(request):
 
 def __emails(request):
   """gets email addresses based on environment settings and also current domain name"""
-  emails = [x.strip() for x in uic.contact_form_email.split(',')]
-  cust = django.conf.settings.HOST_EMAIL_CUSTOMIZATION
-  if request.META['HTTP_HOST'] in cust:
-    emails = [x.strip() for x in django.conf.settings.
-              HOST_EMAIL_CUSTOMIZATION[request.META['HTTP_HOST']].split(',')]
-  return emails
+  host = request.META.get("HTTP_HOST", "default")
+  if host not in django.conf.settings.LOCALIZATIONS: host = "default"
+  return django.conf.settings.LOCALIZATIONS[host][1]
 
 def doc (request):
   """
@@ -122,16 +119,15 @@ def tombstone (request):
   if request.method != "GET": return uic.methodNotAllowed()
   assert request.path.startswith("/ezid/tombstone/id/")
   id = request.path[19:]
-  r = ezid.getMetadata(id)
+  if "auth" in request.session:
+    r = ezid.getMetadata(id, request.session["auth"].user,
+      request.session["auth"].group)
+  else:
+    r = ezid.getMetadata(id)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return uic.redirect("/ezid/")
   s, m = r
-  if "_ezid_role" in m and ("auth" not in request.session or\
-    request.session["auth"].user[0] != uic.adminUsername):
-    # Special case.
-    django.contrib.messages.error(request, "Unauthorized.")
-    return uic.redirect("/ezid/")
   assert s.startswith("success:")
   id = s[8:].strip()
   if not m["_status"].startswith("unavailable"):

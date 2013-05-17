@@ -91,7 +91,7 @@ class Record:
     self.tid = tid
 
 def recordHasUser (beginRecord):
-  return beginRecord[0] not in ["getMetadata", "otherError"]
+  return beginRecord[0] != "otherError"
 
 def userFilter (beginRecord):
   if len(options.users) == 0 and len(options.groups) == 0: return True
@@ -143,7 +143,7 @@ def statusFilter (endRecord):
   return False
 
 pattern = re.compile("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) " +\
-  "(([\da-fA-F]{32}) (BEGIN|PROGRESS|END) |- ERROR )(.*)")
+  "(([\da-fA-F]{32}) (BEGIN|PROGRESS|END) |- (STATUS|ERROR) )(.*)")
 
 records = []
 tidMap = {}
@@ -158,23 +158,27 @@ for file in files:
       error(file, n, "unrecognized record")
       continue
     if m.group(2).startswith("-"):
-      r = Record(file, n, m.group(1), ["otherError"])
-      r.endRecord = ["ERROR"] + m.group(5).split(" ")
-      records.append(r)
+      if m.group(5) == "STATUS":
+        # Ignore status records.
+        pass
+      else:
+        r = Record(file, n, m.group(1), ["otherError"])
+        r.endRecord = ["ERROR"] + m.group(6).split(" ")
+        records.append(r)
     else:
       tid = m.group(3)
       if m.group(4) == "BEGIN":
         if tid in tidMap:
           error(file, n, "duplicate transaction ID")
           continue
-        r = Record(file, n, m.group(1), m.group(5).split(" "), tid)
+        r = Record(file, n, m.group(1), m.group(6).split(" "), tid)
         records.append(r)
         tidMap[tid] = r
       elif m.group(4) == "PROGRESS":
         if tid not in tidMap:
           error(file, n, "no corresponding BEGIN record")
           continue
-        tidMap[tid].progressRecords.append(m.group(5))
+        tidMap[tid].progressRecords.append(m.group(6))
       else:
         if tid not in tidMap:
           error(file, n, "no corresponding BEGIN record")
@@ -182,7 +186,7 @@ for file in files:
         if tidMap[tid].endRecord != None:
           error(file, n, "duplicate END record")
           continue
-        tidMap[tid].endRecord = m.group(5).split(" ")
+        tidMap[tid].endRecord = m.group(6).split(" ")
   f.close()
 
 records.sort(key=lambda r: r.timestamp)

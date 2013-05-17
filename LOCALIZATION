@@ -1,0 +1,53 @@
+The EZID UI supports hostname-based customization, or "localization."
+Under localization, there are multiple versions of certain components
+(templates and static files), and the version used or returned is
+determined by the hostname in the request URL, or more specifically,
+the HTTP Host header.  Localization can be used to create branded
+instances of EZID that sport different logos, text, and contact email
+addresses.
+
+Localizations are defined by the LOCALIZATIONS variable declared
+primarily in settings/common.py and modified or augmented by the
+settings modules corresponding to the different deployment levels.
+The variable has the structure:
+
+   LOCALIZATIONS = { hostname: (key, [email_address, ...]), ... }
+
+There must be an entry for the fictitious hostname "default", which,
+as its name suggests, serves as a default in case a Host header is
+received that doesn't match any entry, or if there is no Host header
+at all.  An entry's key field is used to select localized components
+as described below.  The email addresses are the help contacts for
+that localization.
+
+Components subject to localization reside in .../localized/{key}/
+directories.  For example, if the template file logo.html nominally
+resides in templates/includes/, and if there are two localizations
+with keys "cdl" and "purdue", then there are two versions of logo.html
+at templates/includes/localized/cdl/logo.html and
+templates/includes/localized/purdue/logo.html.
+
+Within templates, localized components are referenced using the custom
+"host_based_include" tag, which has the usage:
+
+   {% host_based_include ".../localized/_/.../file" %}
+
+At runtime, the single underscore ("_") path component is replaced
+with the localization key.
+
+To create a localized version of EZID:
+
+1) Add an entry to the LOCALIZATIONS variable.
+
+2) Create versions of localized components.  Search for directories
+named "localized", or grep template files for "host_based_include"
+tags.
+
+3) Place static files under the "static" directory, following the same
+naming pattern.  For example, place static images under
+static/images/localized/{key}/.
+
+4) If running under Apache and if using SSL, then each localization
+requires its own SSL certificate.  The certificates should be
+referenced from separate <VirtualHost> sections in the SSL
+configuration file.

@@ -165,10 +165,11 @@ _defaultDoiProfile = None
 _defaultArkProfile = None
 _defaultUrnUuidProfile = None
 _adminUsername = None
+_perUserThrottle = None
 
 def _loadConfig ():
   global _bindNoid, _ezidUrl, _prefixes, _defaultDoiProfile, _defaultArkProfile
-  global _defaultUrnUuidProfile, _adminUsername
+  global _defaultUrnUuidProfile, _adminUsername, _perUserThrottle
   _bindNoid = noid.Noid(config.config("DEFAULT.bind_noid"))
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _prefixes = dict([config.config("prefix_%s.prefix" % k),
@@ -178,35 +179,72 @@ def _loadConfig ():
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
   _defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
   _adminUsername = config.config("ldap.admin_username")
+  _perUserThrottle =\
+    int(config.config("DEFAULT.concurrent_operations_per_user"))
 
 _loadConfig()
 config.addLoader(_loadConfig)
 
 # Simple locking mechanism to ensure that, in a multi-threaded
 # environment, no given identifier is operated on by two threads
-# simultaneously.
+# simultaneously.  Additionally, we enforce a per-user throttle on
+# concurrent operations.  _activeUsers maps local usernames to the
+# number of operations currently being performed by that user.  For
+# status reporting purposes, _waitingUsers similarly maps local
+# usernames to numbers of waiting requests.
 
 _lockedIdentifiers = set()
+_activeUsers = {}
+_waitingUsers = {}
 _lock = threading.Condition()
 
-def _acquireIdentifierLock (identifier):
+def _incrementCount (d, k):
+  d[k] = d.get(k, 0) + 1
+
+def _decrementCount (d, k):
+  if d[k] == 1:
+    del d[k]
+  else:
+    d[k] = d[k] - 1
+
+def _acquireIdentifierLock (identifier, user):
   _lock.acquire()
-  while identifier in _lockedIdentifiers: _lock.wait()
+  while True:
+    while identifier in _lockedIdentifiers:
+      _incrementCount(_waitingUsers, user)
+      _lock.wait()
+      _decrementCount(_waitingUsers, user)
+    if _activeUsers.get(user, 0) >= _perUserThrottle:
+      _incrementCount(_waitingUsers, user)
+      _lock.wait()
+      _decrementCount(_waitingUsers, user)
+    else:
+      _incrementCount(_activeUsers, user)
+      break
   _lockedIdentifiers.add(identifier)
   _lock.release()
 
-def _releaseIdentifierLock (identifier):
+def _releaseIdentifierLock (identifier, user):
   _lock.acquire()
   _lockedIdentifiers.remove(identifier)
+  _decrementCount(_activeUsers, user)
   _lock.notifyAll()
   _lock.release()
 
-def numIdentifiersLocked ():
+def getStatus ():
   """
-  Returns the number of identifiers currently locked (and thus being
-  operated on).
+  Returns a tuple of two dictionaries.  The first dictionary maps
+  local usernames to the number of operations currently being
+  performed by that user; the sum of the dictionary values is the
+  total number of operations currently being performed.  The second
+  dictionary similarly maps local usernames to numbers of waiting
+  requests.
   """
-  return len(_lockedIdentifiers)
+  _lock.acquire()
+  try:
+    return (_activeUsers.copy(), _waitingUsers.copy())
+  finally:
+    _lock.release()
 
 _labelMapping = {
   "_o": "_owner",
@@ -415,7 +453,7 @@ def createDoi (doi, user, group, metadata={}):
       return "error: bad request - invalid identifier status at creation time"
   if m.get("_x", "") == "yes": del m["_x"]
   tid = uuid.uuid1()
-  _acquireIdentifierLock(shadowArk)
+  _acquireIdentifierLock(shadowArk, user[0])
   try:
     log.begin(tid, "createDoi", doi, user[0], user[1], group[0], group[1],
       *[a for p in metadata.items() for a in p])
@@ -462,7 +500,7 @@ def createDoi (doi, user, group, metadata={}):
     log.success(tid)
     return "success: " + doi + " | ark:/" + shadowArk
   finally:
-    _releaseIdentifierLock(shadowArk)
+    _releaseIdentifierLock(shadowArk, user[0])
 
 def mintArk (prefix, user, group, metadata={}):
   """
@@ -538,7 +576,7 @@ def createArk (ark, user, group, metadata={}):
       return "error: bad request - invalid identifier status at creation time"
   if m.get("_x", "") == "yes": del m["_x"]
   tid = uuid.uuid1()
-  _acquireIdentifierLock(ark)
+  _acquireIdentifierLock(ark, user[0])
   try:
     log.begin(tid, "createArk", ark, user[0], user[1], group[0], group[1],
       *[a for p in metadata.items() for a in p])
@@ -569,7 +607,7 @@ def createArk (ark, user, group, metadata={}):
     log.success(tid)
     return "success: " + ark
   finally:
-    _releaseIdentifierLock(ark)
+    _releaseIdentifierLock(ark, user[0])
 
 def mintUrnUuid (user, group, metadata={}):
   """
@@ -628,7 +666,7 @@ def createUrnUuid (urn, user, group, metadata={}):
       return "error: bad request - invalid identifier status at creation time"
   if m.get("_x", "") == "yes": del m["_x"]
   tid = uuid.uuid1()
-  _acquireIdentifierLock(shadowArk)
+  _acquireIdentifierLock(shadowArk, user[0])
   try:
     log.begin(tid, "createUrnUuid", urn, user[0], user[1], group[0], group[1],
       *[a for p in metadata.items() for a in p])
@@ -661,7 +699,7 @@ def createUrnUuid (urn, user, group, metadata={}):
     log.success(tid)
     return "success: " + urn + " | ark:/" + shadowArk
   finally:
-    _releaseIdentifierLock(shadowArk)
+    _releaseIdentifierLock(shadowArk, user[0])
 
 def mintIdentifier (prefix, user, group, metadata={}):
   """
@@ -753,10 +791,13 @@ def createIdentifier (identifier, user, group, metadata={}):
   else:
     return "error: bad request - unrecognized identifier scheme"
 
-def getMetadata (identifier):
+def getMetadata (identifier, user=None, group=None):
   """
   Returns all metadata for a given qualified identifier, e.g.,
-  "doi:10.5060/foo".  The successful return is a pair (status,
+  "doi:10.5060/foo".  If 'user' and 'group' are supplied, they should
+  each be authenticated (local name, persistent identifier) tuples,
+  e.g., ("dryad", "ark:/13030/foo"); if not supplied, the request is
+  treated as anonymous.  The successful return is a pair (status,
   dictionary) where 'status' is a string that includes the canonical,
   qualified form of the identifier, as in:
 
@@ -765,6 +806,7 @@ def getMetadata (identifier):
   and 'dictionary' contains element (name, value) pairs.  Unsuccessful
   returns include the strings:
 
+    error: unauthorized
     error: bad request - subreason...
     error: internal server error
   """
@@ -784,14 +826,20 @@ def getMetadata (identifier):
     nqidentifier = "urn:uuid:" + urn
   else:
     return "error: bad request - unrecognized identifier scheme"
+  if user == None: user = ("anonymous", "anonymous")
+  if group == None: group = ("anonymous", "anonymous")
   tid = uuid.uuid1()
-  _acquireIdentifierLock(ark)
+  _acquireIdentifierLock(ark, user[0])
   try:
-    log.begin(tid, "getMetadata", nqidentifier)
+    log.begin(tid, "getMetadata", nqidentifier, user[0], user[1], group[0],
+      group[1])
     d = _bindNoid.getElements(ark)
     if d is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
+    if not policy.authorizeView(user, group, nqidentifier, d):
+      log.unauthorized(tid)
+      return "error: unauthorized"
     if d.get("_is", "public") != "public":
       d["_t"] = d["_t1"]
       del d["_t1"]
@@ -827,7 +875,7 @@ def getMetadata (identifier):
     log.error(tid, e)
     return "error: internal server error"
   finally:
-    _releaseIdentifierLock(ark)
+    _releaseIdentifierLock(ark, user[0])
 
 def _fixupNonPublicTargets (d):
   if "_t" in d:
@@ -846,11 +894,11 @@ def setMetadata (identifier, user, group, metadata):
   (name, value) pairs.  If an element being set already exists, it is
   overwritten, if not, it is created; existing elements not set are
   left unchanged.  Of the reserved metadata elements, only
-  "_coowners", "_target", "_profile", and "_status" may be set (unless
-  the user is the EZID administrator, in which case the other reserved
-  metadata elements may be set using their stored forms).  The
-  successful return is a string that includes the canonical, qualified
-  form of the identifier, as in:
+  "_coowners", "_target", "_profile", "_status", and "_export" may be
+  set (unless the user is the EZID administrator, in which case the
+  other reserved metadata elements may be set using their stored
+  forms).  The successful return is a string that includes the
+  canonical, qualified form of the identifier, as in:
 
     success: doi:10.5060/FOO
 
@@ -882,7 +930,7 @@ def setMetadata (identifier, user, group, metadata):
   r = _validateMetadata1(nqidentifier, user, d)
   if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
-  _acquireIdentifierLock(ark)
+  _acquireIdentifierLock(ark, user[0])
   try:
     log.begin(tid, "setMetadata", nqidentifier, user[0], user[1], group[0],
       group[1], *[a for p in metadata.items() for a in p])
@@ -1022,7 +1070,7 @@ def setMetadata (identifier, user, group, metadata):
     log.success(tid)
     return "success: " + nqidentifier
   finally:
-    _releaseIdentifierLock(ark)
+    _releaseIdentifierLock(ark, user[0])
 
 def deleteIdentifier (identifier, user, group):
   """
@@ -1058,7 +1106,7 @@ def deleteIdentifier (identifier, user, group):
   else:
     return "error: bad request - unrecognized identifier scheme"
   tid = uuid.uuid1()
-  _acquireIdentifierLock(ark)
+  _acquireIdentifierLock(ark, user[0])
   try:
     log.begin(tid, "deleteIdentifier", nqidentifier, user[0], user[1],
       group[0], group[1])
@@ -1108,4 +1156,4 @@ def deleteIdentifier (identifier, user, group):
     log.success(tid)
     return "success: " + nqidentifier
   finally:
-    _releaseIdentifierLock(ark)
+    _releaseIdentifierLock(ark, user[0])

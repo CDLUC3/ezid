@@ -17,6 +17,7 @@ import base64
 import django.conf
 import ldap
 import re
+import threading
 
 import config
 import log
@@ -24,13 +25,18 @@ import util
 
 _ldapEnabled = None
 _ldapServer = None
+_lock = threading.Lock()
+_ldapCache = None
 _userDnTemplate = None
 _users = None
 
 def _loadConfig ():
-  global _ldapEnabled, _ldapServer, _userDnTemplate, _users
+  global _ldapEnabled, _ldapServer, _ldapCache, _userDnTemplate, _users
   _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
   _ldapServer = config.config("ldap.server")
+  _lock.acquire()
+  _ldapCache = {}
+  _lock.release()
   _userDnTemplate = config.config("ldap.user_dn_template")
   groupIds = dict([k, config.config("group_%s.id" % k)]\
     for k in config.config("groups.keys").split(","))
@@ -87,6 +93,11 @@ def _authenticateLdap (username, password):
     except ldap.UNWILLING_TO_PERFORM:
       # E.g., server won't accept empty password.
       return None
+    _lock.acquire()
+    try:
+      if username in _ldapCache: return _ldapCache[username]
+    finally:
+      _lock.release()
     ua = _getAttributes(l, userDn)
     if "ezidUser" not in ua["objectClass"]: return None
     uid = ua["uid"]
@@ -113,8 +124,14 @@ def _authenticateLdap (username, password):
       "invalid ARK identifier, DN='%s'" % groupDn
     assert userArkId != groupArkId,\
       "overloaded ARK identifier, DN='%s'" % userDn
-    return AuthenticatedUser((uid, userArkId, userDn),
+    au = AuthenticatedUser((uid, userArkId, userDn),
       (gid, groupArkId, groupDn))
+    _lock.acquire()
+    try:
+      _ldapCache[username] = au
+    finally:
+      _lock.release()
+    return au
   except Exception, e:
     log.otherError("userauth._authenticateLdap", e)
     return "error: internal server error"
