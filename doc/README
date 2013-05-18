@@ -7,5 +7,5 @@ Whenever the documentation is changed, rebuild the HTML version and
 check both the reStructuredText source and HTML derivative into
 Mercurial.
 
-Note that all .html files in this directory (and only the .html files)
-are externally visible.
+Note that all .html and .py files in this directory (and only those
+files) are externally visible.

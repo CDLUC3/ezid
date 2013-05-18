@@ -108,7 +108,10 @@ def doc (request):
           content = re.sub("<!-- superseded warning placeholder -->",
             "<p class='warning'>THIS VERSION IS SUPERSEDED BY A NEWER " +\
             "VERSION</p>", content)
-    return uic.staticHtmlResponse(content)
+    if file.endswith(".html"):
+      return uic.staticHtmlResponse(content)
+    else:
+      return uic.staticTextResponse(content)
   else:
     return uic.error(404)
 

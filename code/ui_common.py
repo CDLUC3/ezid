@@ -122,6 +122,12 @@ def staticHtmlResponse (content):
   r["Content-Length"] = len(content)
   return r
 
+def staticTextResponse (content):
+  r = django.http.HttpResponse(content,
+    content_type="text/plain; charset=UTF-8")
+  r["Content-Length"] = len(content)
+  return r
+
 def plainTextResponse (message):
   r = django.http.HttpResponse(message, content_type="text/plain")
   r["Content-Length"] = len(message)
