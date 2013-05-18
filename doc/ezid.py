@@ -3,20 +3,12 @@
 # Simple EZID command line client.  The output is UTF-8 encoded and by
 # default is left in %-encoded form.
 #
-# Usage: client [options] server credentials operation...
+# Usage: ezid.py [options] credentials operation...
 #
 #   options:
 #     -d decode output
 #     -o one line per value: convert newlines to spaces
 #     -t format timestamps
-#
-#   server:
-#     l (local server, no https)
-#     d (development)
-#     s (staging)
-#     w (workflow)
-#     p (production)
-#     http://...
 #
 #   credentials:
 #     username:password
@@ -32,8 +24,6 @@
 #     login
 #     logout
 #     s[tatus] [*|subsystemlist]
-#     V[ersion]
-#     r[eload]
 #
 # In the above, if a label is "@", the associated value is treated as
 # a filename and metadata fields are read from the named
@@ -45,14 +35,14 @@
 #
 # then an identifier with that metadata can be minted by invoking:
 #
-#   client p username:password mint ark:/99999/fk4 @ metadata.txt
+#   ezid.py p username:password mint ark:/99999/fk4 @ metadata.txt
 #
 # Otherwise, if a value has the form "@filename", a (single) value is
 # read from the named file.  For example, if file metadata.xml
 # contains a DataCite XML record, then an identifier with that record
 # as the value of the 'datacite' field can be minted by invoking:
 #
-#   client p username:password mint doi:10.5072/FK2 datacite @metadata.xml
+#   ezid.py p username:password mint doi:10.5072/FK2 datacite @metadata.xml
 #
 # In both of the above cases, the contents of the named file are
 # assumed to be UTF-8 encoded.  And in both cases, the interpretation
@@ -70,10 +60,10 @@ import urllib
 import urllib2
 
 knownServers = {
-  "l" : "http://localhost:8000/ezid",
-  "d" : "http://n2t-dev.cdlib.org/ezid",
-  "s" : "http://n2t-stage.cdlib.org/ezid",
-  "w" : "http://n2t-wf.cdlib.org/ezid",
+  "l" : "REDACTED",
+  "d" : "REDACTED",
+  "s" : "REDACTED",
+  "w" : "REDACTED",
   "p" : "http://n2t.net/ezid"
 }
 
@@ -86,25 +76,15 @@ operations = {
   "delete" : 1,
   "login" : 0,
   "logout" : 0,
-  "status" : lambda l: l in [0, 1],
-  "Version" : 0,
-  "reload" : 0
+  "status" : lambda l: l in [0, 1]
 }
 
-usageText = """Usage: client [options] server credentials operation...
+usageText = """Usage: ezid.py [options] credentials operation...
 
   options:
     -d decode output
     -o one line per value: convert newlines to spaces
     -t format timestamps
-
-  server:
-    l (local server, no https)
-    d (development)
-    s (staging)
-    w (workflow)
-    p (production)
-    http://...
 
   credentials:
     username:password
@@ -120,8 +100,6 @@ usageText = """Usage: client [options] server credentials operation...
     login
     logout
     s[tatus] [*|subsystemlist]
-    V[ersion]
-    r[eload]
 """
 
 def usageError ():
@@ -178,6 +156,9 @@ while len(sys.argv) >= 2 and sys.argv[1].startswith("-") and\
     else:
       usageError()
   del sys.argv[1]
+# Mimic the selection of the production server (server selection is
+# not supported in this public version of the code).
+sys.argv.insert(1, "p")
 if len(sys.argv) < 4: usageError()
 server = knownServers.get(sys.argv[1], sys.argv[1])
 opener = urllib2.build_opener(MyHTTPErrorProcessor())
@@ -225,11 +206,6 @@ elif operation == "status":
   else:
     s = ""
   request = urllib2.Request("%s/status%s" % (server, s))
-elif operation == "Version":
-  request = urllib2.Request("%s/version" % server)
-elif operation == "reload":
-  request = urllib2.Request("%s/admin/reload" % server)
-  request.get_method = lambda: "POST"
 
 if cookie: request.add_header("Cookie", cookie)
 
