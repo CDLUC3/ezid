@@ -1101,8 +1101,8 @@ Python example
 --------------
 
 ezid.py_ is a command line tool, written in Python, that is capable of
-exercising all API functions.  This tool serves as an example of how
-to use the API, but it's also useful in its own right as an easy,
+exercising all API functions.  It serves as an example of how to use
+the API from Python, but it's also useful in its own right as an easy,
 scriptable means of accessing EZID functionality.  The general usage
 is:
 

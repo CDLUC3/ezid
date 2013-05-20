@@ -79,7 +79,7 @@ operations = {
   "status" : lambda l: l in [0, 1]
 }
 
-usageText = """Usage: ezid.py [options] credentials operation...
+usageText = """Usage: %s [options] credentials operation...
 
   options:
     -d decode output
@@ -103,7 +103,7 @@ usageText = """Usage: ezid.py [options] credentials operation...
 """
 
 def usageError ():
-  sys.stderr.write(usageText)
+  sys.stderr.write(usageText % sys.argv[0])
   sys.exit(1)
 
 class MyHTTPErrorProcessor (urllib2.HTTPErrorProcessor):
