@@ -80,14 +80,16 @@ displayname: Created
 displaytype: datetime
 tooltip:
 <b><u>Created</u></b><br/>
-The UTC date and time the identifier was created.
+The date and time the identifier was created in the
+{{django.conf.settings.TIME_ZONE}} time zone.
 
 element: _updated
 displayname: Last modified
 displaytype: datetime
 tooltip:
 <b><u>Last modified</u></b><br/>
-The UTC date and time the identifier was last modified.
+The date and time the identifier was last modified in the
+{{django.conf.settings.TIME_ZONE}} time zone.
 
 element: _shadowedby
 displayname: Shadow ARK
