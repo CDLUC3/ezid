@@ -72,8 +72,12 @@ def _loadElements (file):
   while not _empty.match(s):
     m = _pattern.match(s)
     assert m, "profile parse error: " + file
+    # This is a bit of a hack to get template-like variable inclusion
+    # functionality in tooltip text.
+    tooltip = m.group(4).strip()
+    tooltip = re.sub("\{\{(.*?)\}\}", lambda m: eval(m.group(1)), tooltip)
     l.append(Element(m.group(1).strip(), m.group(2).strip(),
-      m.group(3).strip(), m.group(4).strip()))
+      m.group(3).strip(), tooltip))
     s = s[m.end():]
   return l
 
