@@ -16,6 +16,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.conf
 import os
 import threading
 import time
@@ -28,6 +29,7 @@ import log
 import search
 import store
 
+_enabled = None
 _reportingInterval = None
 _threadName = None
 
@@ -40,7 +42,7 @@ def _formatUserCountList (d):
     return ""
 
 def _statusDaemon ():
-  while threading.currentThread().getName() == _threadName:
+  while _enabled and threading.currentThread().getName() == _threadName:
     try:
       activeUsers, waitingUsers = ezid.getStatus()
       na = sum(activeUsers.values())
@@ -59,10 +61,14 @@ def _statusDaemon ():
     time.sleep(_reportingInterval)
 
 def _loadConfig ():
-  global _reportingInterval, _threadName
-  _reportingInterval = int(config.config("DEFAULT.status_logging_interval"))
-  _threadName = uuid.uuid1().hex
-  threading.Thread(target=_statusDaemon, name=_threadName).start()
+  global _enabled, _reportingInterval, _threadName
+  _enabled = django.conf.settings.DAEMON_THREADS_ENABLED
+  if _enabled:
+    _reportingInterval = int(config.config("DEFAULT.status_logging_interval"))
+    _threadName = uuid.uuid1().hex
+    t = threading.Thread(target=_statusDaemon, name=_threadName)
+    t.setDaemon(True)
+    t.start()
 
 _loadConfig()
 config.addLoader(_loadConfig)
