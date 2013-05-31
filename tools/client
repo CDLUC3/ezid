@@ -1,13 +1,14 @@
 #! /usr/bin/env python
 
-# Simple EZID command line client.  The output is UTF-8 encoded and by
-# default is left in %-encoded form.
+# EZID command line client.  The output is Unicode, with the encoding
+# being determined by the platform.  By default, ANVL responses
+# (currently, that's all responses) are left in %-encoded form.
 #
 # Usage: client [options] server credentials operation...
 #
 #   options:
-#     -d decode output
-#     -o one line per value: convert newlines to spaces
+#     -d decode ANVL responses
+#     -o one line per ANVL value: convert newlines to spaces
 #     -t format timestamps
 #
 #   server:
@@ -24,10 +25,10 @@
 #     - (none)
 #
 #   operation:
-#     m[int] shoulder [label value label value ...]
-#     c[reate] identifier [label value label value ...]
+#     m[int] shoulder [element value ...]
+#     c[reate] identifier [element value ...]
 #     v[iew] identifier
-#     u[pdate] identifier [label value label value ...]
+#     u[pdate] identifier [element value ...]
 #     d[elete] identifier
 #     login
 #     logout
@@ -35,8 +36,8 @@
 #     V[ersion]
 #     r[eload]
 #
-# In the above, if a label is "@", the associated value is treated as
-# a filename and metadata fields are read from the named
+# In the above, if an element is "@", the subsequent value is treated
+# as a filename and metadata elements are read from the named
 # ANVL-formatted file.  For example, if file metadata.txt contains:
 #
 #   erc.who: Proust, Marcel
@@ -50,7 +51,7 @@
 # Otherwise, if a value has the form "@filename", a (single) value is
 # read from the named file.  For example, if file metadata.xml
 # contains a DataCite XML record, then an identifier with that record
-# as the value of the 'datacite' field can be minted by invoking:
+# as the value of the 'datacite' element can be minted by invoking:
 #
 #   client p username:password mint doi:10.5072/FK2 datacite @metadata.xml
 #
@@ -59,9 +60,10 @@
 # of @ can be defeated by doubling it.
 #
 # Greg Janee <gjanee@ucop.edu>
-# April 2011
+# May 2013
 
 import codecs
+import optparse
 import re
 import sys
 import time
@@ -69,33 +71,33 @@ import types
 import urllib
 import urllib2
 
-knownServers = {
-  "l" : "http://localhost:8000/ezid",
-  "d" : "http://n2t-dev.cdlib.org/ezid",
-  "s" : "http://n2t-stage.cdlib.org/ezid",
-  "w" : "http://n2t-wf.cdlib.org/ezid",
-  "p" : "http://n2t.net/ezid"
+KNOWN_SERVERS = {
+  "l": "http://localhost:8000/ezid",
+  "d": "http://n2t-dev.cdlib.org/ezid",
+  "s": "http://n2t-stage.cdlib.org/ezid",
+  "w": "http://n2t-wf.cdlib.org/ezid",
+  "p": "http://n2t.net/ezid"
 }
 
-operations = {
-  # operation : number of arguments
-  "mint" : lambda l: l%2 == 1,
-  "create" : lambda l: l%2 == 1,
-  "view" : 1,
-  "update" : lambda l: l%2 == 1,
-  "delete" : 1,
-  "login" : 0,
-  "logout" : 0,
-  "status" : lambda l: l in [0, 1],
-  "Version" : 0,
-  "reload" : 0
+OPERATIONS = {
+  # operation: number of arguments (possibly variable)
+  "mint": lambda l: l%2 == 1,
+  "create": lambda l: l%2 == 1,
+  "view": 1,
+  "update": lambda l: l%2 == 1,
+  "delete": 1,
+  "login": 0,
+  "logout": 0,
+  "status": lambda l: l in [0, 1],
+  "Version": 0,
+  "reload": 0
 }
 
-usageText = """Usage: client [options] server credentials operation...
+USAGE_TEXT = """Usage: client [options] server credentials operation...
 
   options:
-    -d decode output
-    -o one line per value: convert newlines to spaces
+    -d decode ANVL responses
+    -o one line per ANVL value: convert newlines to spaces
     -t format timestamps
 
   server:
@@ -112,10 +114,10 @@ usageText = """Usage: client [options] server credentials operation...
     - (none)
 
   operation:
-    m[int] shoulder [label value label value ...]
-    c[reate] identifier [label value label value ...]
+    m[int] shoulder [element value ...]
+    c[reate] identifier [element value ...]
     v[iew] identifier
-    u[pdate] identifier [label value label value ...]
+    u[pdate] identifier [element value ...]
     d[elete] identifier
     login
     logout
@@ -124,9 +126,16 @@ usageText = """Usage: client [options] server credentials operation...
     r[eload]
 """
 
-def usageError ():
-  sys.stderr.write(usageText)
-  sys.exit(1)
+# Global variables that are initialized farther down.
+
+_options = None
+_server = None
+_opener = None
+_cookie = None
+
+class MyHelpFormatter (optparse.IndentedHelpFormatter):
+  def format_usage (self, usage):
+    return USAGE_TEXT
 
 class MyHTTPErrorProcessor (urllib2.HTTPErrorProcessor):
   def http_response (self, request, response):
@@ -137,20 +146,20 @@ class MyHTTPErrorProcessor (urllib2.HTTPErrorProcessor):
       return urllib2.HTTPErrorProcessor.http_response(self, request, response)
   https_response = http_response
 
-def formatAnvl (l):
-  r = []
-  for i in range(0, len(l), 2):
-    k = l[i]
+def formatAnvlRequest (args):
+  request = []
+  for i in range(0, len(args), 2):
+    k = args[i]
     if k == "@":
-      f = codecs.open(l[i+1], encoding="UTF-8")
-      r.extend(ll.strip() for ll in f.readlines())
+      f = codecs.open(args[i+1], encoding="UTF-8")
+      request += [l.strip("\r\n") for l in f.readlines()]
       f.close()
     else:
       if k == "@@":
         k = "@"
       else:
         k = re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), k)
-      v = l[i+1]
+      v = args[i+1]
       if v.startswith("@@"):
         v = v[1:]
       elif v.startswith("@") and len(v) > 1:
@@ -158,110 +167,141 @@ def formatAnvl (l):
         v = f.read()
         f.close()
       v = re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), v)
-      r.append("%s: %s" % (k, v))
-  return "\n".join(r)
+      request.append("%s: %s" % (k, v))
+  return "\n".join(request)
+
+def encode (id):
+  return urllib.quote(id, ":/")
+
+def issueRequest (path, method, data=None, returnHeaders=False):
+  request = urllib2.Request("%s/%s" % (_server, path))
+  request.get_method = lambda: method
+  if data:
+    request.add_header("Content-Type", "text/plain; charset=UTF-8")
+    request.add_data(data.encode("UTF-8"))
+  if _cookie: request.add_header("Cookie", _cookie)
+  try:
+    connection = _opener.open(request)
+    response = connection.read()
+    if returnHeaders:
+      return response.decode("UTF-8"), connection.info()
+    else:
+      return response.decode("UTF-8")
+  except urllib2.HTTPError, e:
+    sys.stderr.write("%s %s\n" % (e.code, e.msg))
+    response = e.fp.read()
+    if not response.endswith("\n"): response += "\n"
+    sys.stderr.write(response)
+    sys.exit(1)
+
+def printAnvlResponse (response, sortLines=False):
+  response = response.splitlines()
+  if sortLines and len(response) >= 1:
+    statusLine = response[0]
+    response = response[1:]
+    response.sort()
+    response.insert(0, statusLine)
+  for line in response:
+    if _options.formatTimestamps and (line.startswith("_created:") or\
+      line.startswith("_updated:")):
+      ls = line.split(":")
+      line = ls[0] + ": " + time.strftime("%Y-%m-%dT%H:%M:%S",
+        time.localtime(int(ls[1])))
+    if _options.decode:
+      line = re.sub("%([0-9a-fA-F][0-9a-fA-F])",
+        lambda m: chr(int(m.group(1), 16)), line)
+    if _options.oneLine: line = line.replace("\n", " ").replace("\r", " ")
+    print line
 
 # Process command line arguments.
 
-decodeOutput = False
-oneLine = False
-formatTimestamps = False
-while len(sys.argv) >= 2 and sys.argv[1].startswith("-") and\
-  len(sys.argv[1]) > 1:
-  for c in sys.argv[1][1:]:
-    if c == "d":
-      decodeOutput = True
-    elif c == "o":
-      oneLine = True
-    elif c == "t":
-      formatTimestamps = True
-    else:
-      usageError()
-  del sys.argv[1]
-if len(sys.argv) < 4: usageError()
-server = knownServers.get(sys.argv[1], sys.argv[1])
-opener = urllib2.build_opener(MyHTTPErrorProcessor())
-if ":" in sys.argv[2]:
-  if server.startswith("http:") and sys.argv[1] != "l":
-    server = "https" + server[4:]
+parser = optparse.OptionParser(formatter=MyHelpFormatter())
+parser.add_option("-d", action="store_true", dest="decode", default=False)
+parser.add_option("-o", action="store_true", dest="oneLine", default=False)
+parser.add_option("-t", action="store_true", dest="formatTimestamps",
+  default=False)
+parser.disable_interspersed_args()
+
+_options, args = parser.parse_args()
+if len(args) < 3: parser.error("insufficient arguments")
+
+_server = KNOWN_SERVERS.get(args[0], args[0])
+
+_opener = urllib2.build_opener(MyHTTPErrorProcessor())
+if ":" in args[1]:
+  # Credentials must be sent over SSL, unless running locally.
+  if _server.startswith("http:") and args[0] != "l":
+    _server = "https" + _server[4:]
   h = urllib2.HTTPBasicAuthHandler()
-  h.add_password("EZID", server, *sys.argv[2].split(":", 1))
-  opener.add_handler(h)
-  cookie = None
-elif sys.argv[2] != "-":
-  cookie = "sessionid=" + sys.argv[2]
-else:
-  cookie = None
-operation = [o for o in operations if o.startswith(sys.argv[3])]
-if len(operation) != 1: usageError()
+  h.add_password("EZID", _server, *args[1].split(":", 1))
+  _opener.add_handler(h)
+elif args[1] != "-":
+  _cookie = "sessionid=" + args[1]
+
+operation = filter(lambda o: o.startswith(args[2]), OPERATIONS)
+if len(operation) != 1: parser.error("unrecognized or ambiguous operation")
 operation = operation[0]
-if (type(operations[operation]) is int and\
-  len(sys.argv)-4 != operations[operation]) or\
-  (type(operations[operation]) is types.LambdaType and\
-  not operations[operation](len(sys.argv)-4)): usageError()
 
-# Assemble the request.
+args = args[3:]
 
-if operation in ["mint", "create", "update"]:
-  path = "shoulder" if operation == "mint" else "id"
-  arg = urllib.quote(sys.argv[4], ":/")
-  request = urllib2.Request("%s/%s/%s" % (server, path, arg))
-  request.get_method = lambda: "PUT" if operation == "create" else "POST"
-  if len(sys.argv) > 5:
-    request.add_header("Content-Type", "text/plain; charset=UTF-8")
-    request.add_data(formatAnvl(sys.argv[5:]).encode("UTF-8"))
-elif operation == "view":
-  id = urllib.quote(sys.argv[4], ":/")
-  request = urllib2.Request("%s/id/%s" % (server, id))
-elif operation == "delete":
-  id = urllib.quote(sys.argv[4], ":/")
-  request = urllib2.Request("%s/id/%s" % (server, id))
-  request.get_method = lambda: "DELETE"
-elif operation in ["login", "logout"]:
-  request = urllib2.Request("%s/%s" % (server, operation))
-elif operation == "status":
-  if len(sys.argv) > 4:
-    s = "?subsystems=" + sys.argv[4]
+if (type(OPERATIONS[operation]) is int and\
+  len(args) != OPERATIONS[operation]) or\
+  (type(OPERATIONS[operation]) is types.LambdaType and\
+  not OPERATIONS[operation](len(args))):
+  parser.error("incorrect number of arguments for operation")
+
+# Perform the operation.
+
+if operation == "mint":
+  shoulder = args[0]
+  if len(args) > 1:
+    data = formatAnvlRequest(args[1:])
   else:
-    s = ""
-  request = urllib2.Request("%s/status%s" % (server, s))
+    data = None
+  response = issueRequest("shoulder/"+encode(shoulder), "POST", data)
+  printAnvlResponse(response)
+elif operation == "create":
+  id = args[0]
+  if len(args) > 1:
+    data = formatAnvlRequest(args[1:])
+  else:
+    data = None
+  response = issueRequest("id/"+encode(id), "PUT", data)
+  printAnvlResponse(response)
+elif operation == "view":
+  id = args[0]
+  response = issueRequest("id/"+encode(id), "GET")
+  printAnvlResponse(response, sortLines=True)
+elif operation == "update":
+  id = args[0]
+  if len(args) > 1:
+    data = formatAnvlRequest(args[1:])
+  else:
+    data = None
+  response = issueRequest("id/"+encode(id), "POST", data)
+  printAnvlResponse(response)
+elif operation == "delete":
+  id = args[0]
+  response = issueRequest("id/"+encode(id), "DELETE")
+  printAnvlResponse(response)
+elif operation == "login":
+  response, headers = issueRequest("login", "GET", returnHeaders=True)
+  response += "\nsessionid: %s\n" %\
+    headers["set-cookie"].split(";")[0].split("=")[1]
+  printAnvlResponse(response)
+elif operation == "logout":
+  response = issueRequest("logout", "GET")
+  printAnvlResponse(response)
+elif operation == "status":
+  if len(args) > 0:
+    subsystems = "?subsystems=" + args[0]
+  else:
+    subsystems = ""
+  response = issueRequest("status"+subsystems, "GET")
+  printAnvlResponse(response)
 elif operation == "Version":
-  request = urllib2.Request("%s/version" % server)
+  response = issueRequest("version", "GET")
+  printAnvlResponse(response)
 elif operation == "reload":
-  request = urllib2.Request("%s/admin/reload" % server)
-  request.get_method = lambda: "POST"
-
-if cookie: request.add_header("Cookie", cookie)
-
-# Issue the request and output the return.
-
-try:
-  c = opener.open(request)
-  output = c.read()
-  if not output.endswith("\n"): output += "\n"
-  if operation == "login":
-    output += c.info()["set-cookie"].split(";")[0].split("=")[1] + "\n"
-except urllib2.HTTPError, e:
-  sys.stderr.write("%s %s\n" % (e.code, e.msg))
-  output = e.fp.read()
-  if not output.endswith("\n"): output += "\n"
-  sys.stderr.write(output)
-else:
-  output = output.splitlines()
-  if operation == "view":
-    # Just a nicety.
-    statusLine = output[0]
-    output = output[1:]
-    output.sort()
-    output.insert(0, statusLine)
-  for l in output:
-    if formatTimestamps and (l.startswith("_created:") or\
-      l.startswith("_updated:")):
-      ls = l.split(":")
-      l = ls[0] + ": " + time.strftime("%Y-%m-%dT%H:%M:%S",
-        time.localtime(int(ls[1])))
-    if decodeOutput:
-      l = re.sub("%([0-9a-fA-F][0-9a-fA-F])",
-        lambda m: chr(int(m.group(1), 16)), l)
-    if oneLine: l = l.replace("\n", " ").replace("\r", " ")
-    print l
+  response = issueRequest("admin/reload", "POST")
+  printAnvlResponse(response)
