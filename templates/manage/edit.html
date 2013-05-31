@@ -105,11 +105,13 @@
 		            {% if pub_status == 'public' %}
 		              checked="checked"
 		            {% endif %}/><label for="_status_public">public</label>&nbsp;&nbsp;
-		            
-		        <input type="radio" name="_status" id="_status_unavailable" value="unavailable"
-		            {% if pub_status == 'unavailable' %}
-		              checked="checked"
-		            {% endif %}/><label for="_status_unavailable">unavailable</label>&nbsp;&nbsp;
+		        
+		        {% if pub_status != 'reserved' %}    
+			        <input type="radio" name="_status" id="_status_unavailable" value="unavailable"
+			            {% if pub_status == 'unavailable' %}
+			              checked="checked"
+			            {% endif %}/><label for="_status_unavailable">unavailable</label>&nbsp;&nbsp;
+		        {% endif %}
 		        {% help_icon "public_id_help" %}
 		      </td>
 		    </tr>
