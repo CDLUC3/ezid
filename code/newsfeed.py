@@ -16,6 +16,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.conf
 import threading
 import time
 import uuid
@@ -24,6 +25,7 @@ import config
 import feedparser
 import log
 
+_enabled = None
 _lock = threading.Lock()
 _noItem = ("No news available", None)
 _url = None
@@ -33,7 +35,7 @@ _item = None
 
 def _newsDaemon ():
   global _item
-  while threading.currentThread().getName() == _threadName:
+  while _enabled and threading.currentThread().getName() == _threadName:
     try:
       feed = feedparser.parse(_url)
       if len(feed.entries) > 0:
@@ -51,18 +53,22 @@ def _newsDaemon ():
     time.sleep(_pollingInterval)
 
 def _loadConfig ():
-  global _url, _pollingInterval, _threadName, _item
-  _url = config.config("newsfeed.url")
-  _pollingInterval = int(config.config("newsfeed.polling_interval"))
-  _lock.acquire()
-  try:
+  global _enabled, _url, _pollingInterval, _threadName, _item
+  _enabled = django.conf.settings.DAEMON_THREADS_ENABLED
+  if _enabled:
+    _url = config.config("newsfeed.url")
+    _pollingInterval = int(config.config("newsfeed.polling_interval"))
+    _lock.acquire()
+    try:
+      _item = _noItem
+      _threadName = uuid.uuid1().hex
+      t = threading.Thread(target=_newsDaemon, name=_threadName)
+      t.setDaemon(True)
+      t.start()
+    finally:
+      _lock.release()
+  else:
     _item = _noItem
-    _threadName = uuid.uuid1().hex
-    t = threading.Thread(target=_newsDaemon, name=_threadName)
-    t.setDaemon(True)
-    t.start()
-  finally:
-    _lock.release()
 
 _loadConfig()
 config.addLoader(_loadConfig)
