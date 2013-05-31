@@ -94,31 +94,46 @@
 		      <td>{% display_value identifier internal_profile.updated %}</td>
 		    </tr>
 		    
-	      {% if status == 'public' %}
-		      <tr>
-		        <td>{{internal_profile.status.displayName}}:</td>
-		        <td>{% display_value identifier internal_profile.status %}{% help_icon "public_id_help" %}</td>
-		      </tr>
-	      {% else %}
-	      <tr>
-	      	<td colspan="2">
-	      		<br/>
-		        <p>
-		          Publish this identifier now?&nbsp;&nbsp;
-		          <input type="radio" name="_status" id="status_yes" value="public"
-		            {% if post_status == 'public' %}
+		   	<tr>
+		    	<td class='{% tooltip_class "_status" %}'>{{internal_profile.status.displayName}}:</td>
+		      <td>
+		     		{% if pub_status == 'reserved' %}
+			      	<input type="radio" name="_status" id="_status_reserved"
+			      		value="reserved" checked="checked" /><label for="_status_reserved">reserved</label>&nbsp;&nbsp;
+						{% endif %}		            
+		        <input type="radio" name="_status" id="_status_public" value="public"
+		            {% if pub_status == 'public' %}
 		              checked="checked"
-		            {% endif %}/><label for="status_yes">Yes</label>&nbsp;&nbsp;
-		          <input type="radio" name="_status" id="status_no" value="reserved"
-		          {% if post_status != 'public' %}
-		            checked="checked"
-		          {% endif %}
-		          /><label for="status_no">No</label>
-		          {% help_icon "public_id_help" %}
-		        </p>
-	       	</td>
-	      </tr>
-	      {% endif %}
+		            {% endif %}/><label for="_status_public">public</label>&nbsp;&nbsp;
+		            
+		        <input type="radio" name="_status" id="_status_unavailable" value="unavailable"
+		            {% if pub_status == 'unavailable' %}
+		              checked="checked"
+		            {% endif %}/><label for="_status_unavailable">unavailable</label>&nbsp;&nbsp;
+		        {% help_icon "public_id_help" %}
+		      </td>
+		    </tr>
+		    
+		    <tr id="unavailable_reason_row"
+		    	{% if pub_status == 'unavailable' %}
+		    		style="display: visible;"
+		    	{% else %}
+		    		style="display: none;"
+		    	{% endif %}
+		    		>
+		    	<td>Unavailable reason:</td>
+		      <td>
+						<input type="text" name="stat_reason" id="stat_reason" size="35"
+						{% if stat_reason %}
+							value="{{stat_reason}}"
+						{% else %}
+							value=""
+						{% endif %}
+						
+						class="std_form_width" />
+		      </td>
+		    </tr>
+		    
 	      <tr>
 	      	<td colspan="2">
 		        <p>
@@ -148,6 +163,14 @@
     // submit form when profile changed
     $("#current_profile").bind("change", function(event){
       $("#edit_form").submit();
+    });
+    
+   	$("[name='_status']").bind("change", function(event){
+   		if ($('#_status_unavailable').is(':checked')) {
+    		$("#unavailable_reason_row").show();
+			} else {
+    		$("#unavailable_reason_row").hide();
+			} 
     });
   </script>
   

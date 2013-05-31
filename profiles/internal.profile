@@ -26,8 +26,8 @@ form<br/>
 form"&gt;identifier&lt;/a&gt;</font>
 
 element: _status
-displayname: Public
-displaytype: is_public
+displayname: Status
+displaytype: string
 tooltip:
 <b><u>Status</u></b><br/>
 The identifier's status.  "<font face="Courier">public</font>"
