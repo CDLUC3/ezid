@@ -20,7 +20,7 @@
 	</div>
 </div>
 
-<div class="form_yn_question_box">
+<div class="form_yn_question_box" id="harv_index">
   Allow harvesting/indexing?
   <div class="yn_select">
 	  <input type="radio" name="export" value="yes" id="export_yes" 
@@ -38,3 +38,19 @@
 	    {% help_icon "export_help" %}
 	</div>
 </div>
+
+<script type="application/javascript">
+	function setHidden(){
+  	if ($('#publish_true').is(':checked')) {
+ 			// public
+  		$("#harv_index").show();
+		}else{
+			// reserved
+			$("#harv_index").hide();
+		}
+  }
+	$("[name='publish']").bind("change", function(){
+		setHidden();
+  });
+  setHidden();
+</script>

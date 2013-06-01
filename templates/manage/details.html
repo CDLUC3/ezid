@@ -124,12 +124,14 @@
 				</tr>
 			{% endif %}
 			
-			<tr>
-	    	<td class="{% tooltip_class '_export' %}">{{ internal_profile.export.displayName }}</td>
-	    	<td>
-	    		{% display_value identifier internal_profile.export %}{% help_icon "export_help" %}
-	    	</td>
-			</tr>
+			{% if pub_status == 'public' %}
+				<tr>
+		    	<td class="{% tooltip_class '_export' %}">{{ internal_profile.export.displayName }}</td>
+		    	<td>
+		    		{% display_value identifier internal_profile.export %}{% help_icon "export_help" %}
+		    	</td>
+				</tr>
+			{% endif %}
 				  
   	</table>
   </div>

@@ -136,7 +136,7 @@
 		      </td>
 		    </tr>
 		    
-	      <tr>
+	      <tr id="indexing_row">
 	      	<td colspan="2">
 		        <p>
 		          Allow harvesting/indexing?&nbsp;&nbsp;
@@ -166,14 +166,25 @@
     $("#current_profile").bind("change", function(event){
       $("#edit_form").submit();
     });
-    
-   	$("[name='_status']").bind("change", function(event){
-   		if ($('#_status_unavailable').is(':checked')) {
+    function setHidden(){
+    	if ($('#_status_unavailable').is(':checked')) {
+   			// unavailable
     		$("#unavailable_reason_row").show();
-			} else {
+    		$("#indexing_row").hide();
+			} else if ($('#_status_reserved').is(':checked')) {
+				// reserved
     		$("#unavailable_reason_row").hide();
-			} 
+    		$("#indexing_row").hide();
+			}else{
+				// public
+				$("#unavailable_reason_row").hide();
+				$("#indexing_row").show();
+			}
+    }
+		$("[name='_status']").bind("change", function(){
+			setHidden();
     });
+    setHidden();
   </script>
   
   {% include "info/popup_help.html" %}
