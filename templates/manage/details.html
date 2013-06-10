@@ -111,16 +111,27 @@
 	    <tr>
 	    	<td class="{% tooltip_class '_status' %}">{{internal_profile.status.displayName}}:</td>
 	    	<td>
-	    		{% display_value identifier internal_profile.status %}{% help_icon "public_id_help" %}
+	    		{{pub_status}}{% help_icon "public_id_help" %}
 	    	</td>
 			</tr>
 			
-			<tr>
-	    	<td class="{% tooltip_class '_export' %}">{{ internal_profile.export.displayName }}</td>
-	    	<td>
-	    		{% display_value identifier internal_profile.export %}{% help_icon "export_help" %}
-	    	</td>
-			</tr>
+			{% if stat_reason %}
+				<tr>
+		    	<td>&nbsp;</td>
+		    	<td>
+		    		{{ stat_reason }}
+		    	</td>
+				</tr>
+			{% endif %}
+			
+			{% if pub_status == 'public' %}
+				<tr>
+		    	<td class="{% tooltip_class '_export' %}">{{ internal_profile.export.displayName }}</td>
+		    	<td>
+		    		{% display_value identifier internal_profile.export %}{% help_icon "export_help" %}
+		    	</td>
+				</tr>
+			{% endif %}
 				  
   	</table>
   </div>
