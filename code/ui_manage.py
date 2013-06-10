@@ -112,6 +112,7 @@ def edit(request, identifier):
     return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
   t_stat = [x.strip() for x in m['_status'].split("|", 1)]
   d['pub_status'] = t_stat[0]
+  d['orig_status'] = t_stat[0]
   d['stat_reason'] = None
   if t_stat[0] == 'unavailable' and len(t_stat) > 1:
     d['stat_reason'] = t_stat[1]

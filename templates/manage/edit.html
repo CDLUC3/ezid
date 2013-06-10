@@ -97,16 +97,20 @@
 		   	<tr>
 		    	<td class='{% tooltip_class "_status" %}'>{{internal_profile.status.displayName}}:</td>
 		      <td>
-		     		{% if pub_status == 'reserved' %}
+		     		{% if orig_status == 'reserved' %}
 			      	<input type="radio" name="_status" id="_status_reserved"
-			      		value="reserved" checked="checked" /><label for="_status_reserved">reserved</label>&nbsp;&nbsp;
+			      		value="reserved"
+			      		{% if pub_status == 'reserved' %}
+			      			checked="checked"
+			      		{% endif %}
+			      		 /><label for="_status_reserved">reserved</label>&nbsp;&nbsp;
 						{% endif %}		            
 		        <input type="radio" name="_status" id="_status_public" value="public"
 		            {% if pub_status == 'public' %}
 		              checked="checked"
 		            {% endif %}/><label for="_status_public">public</label>&nbsp;&nbsp;
 		        
-		        {% if pub_status != 'reserved' %}    
+		        {% if orig_status != 'reserved' %}    
 			        <input type="radio" name="_status" id="_status_unavailable" value="unavailable"
 			            {% if pub_status == 'unavailable' %}
 			              checked="checked"
