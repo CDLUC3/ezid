@@ -2,7 +2,8 @@
 
 # DataCite Metadata Store (MDS) administration tool.  Currently
 # supports creating and viewing datacenters only.  Run with no
-# arguments for usage.
+# arguments for usage.  Operations require the password associated
+# with the datacenter's allocator.
 #
 # Caution: creating and updating a datacenter are the same operation.
 # If it is creation that is really desired, check first that the
@@ -17,7 +18,6 @@ import sys
 import urllib2
 
 URL = "https://mds.datacite.org/datacentre"
-ALLOCATOR = "CDL"
 CONTACT_NAME = "Greg Janee"
 CONTACT_EMAIL = "gjanee@ucop.edu"
 
@@ -36,12 +36,12 @@ opener = None
 usageText = """Usage: mdsadmin password operation...
 
   operation:
-    c[reate] symbol prefixes...
-    v[iew] symbol
+    c[reate] allocator.datacenter name prefixes...
+    v[iew] allocator.datacenter
 
   operation examples:
-    create FOO 10.1234 10.5678
-    view FOO
+    create FOO.BAR 'The FuBar Institute' 10.1234 10.5678
+    view FOO.BAR
 """
 
 def usageError ():
@@ -49,14 +49,16 @@ def usageError ():
   sys.exit(1)
 
 def validateSymbol (symbol):
-  if re.match("[A-Z][-A-Z0-9]{0,6}[A-Z0-9]$", symbol, re.I):
-    return symbol.upper()
+  m = re.match("([A-Z][-A-Z0-9]{0,6}[A-Z0-9])\.([A-Z][-A-Z0-9]{0,6}[A-Z0-9])$",
+    symbol, re.I)
+  if m:
+    return (m.group(1).upper(), m.group(2).upper())
   else:
     sys.stderr.write("mdsadmin: invalid datacenter symbol\n")
     sys.exit(1)
 
 def validatePrefix (prefix):
-  if re.match("10\.\d\d\d\d$", prefix):
+  if re.match("10\.\d{4,5}$", prefix):
     return prefix
   else:
     sys.stderr.write("mdsadmin: invalid prefix\n")
@@ -90,10 +92,10 @@ def formatDatacenter (record):
   format("created", "created")
   return "\n".join(o)
 
-def viewDatacenter (symbol):
+def viewDatacenter (allocator, datacenter):
   try:
-    c = opener.open(urllib2.Request("%s?symbol=%s.%s" % (URL, ALLOCATOR,
-      symbol)))
+    c = opener.open(urllib2.Request("%s?symbol=%s.%s" % (URL, allocator,
+      datacenter)))
     record = c.read()
     c.close()
   except urllib2.HTTPError, e:
@@ -109,16 +111,16 @@ createTemplate = """<?xml version="1.0"?>
   <domains>*</domains>
   <isActive>true</isActive>
   <name>%%s</name>
-%%s  <symbol>%s.%%s</symbol>
+%%s  <symbol>%%s.%%s</symbol>
 </datacentre>
-""" % (CONTACT_EMAIL, CONTACT_NAME, ALLOCATOR)
+""" % (CONTACT_EMAIL, CONTACT_NAME)
 
-def createDatacenter (symbol, prefixes):
+def createDatacenter (allocator, datacenter, name, prefixes):
   request = urllib2.Request(URL)
   request.add_header("Content-Type", "application/xml; charset=UTF-8")
-  request.add_data(createTemplate % (symbol,
+  request.add_data(createTemplate % (name,
     "".join("  <prefixes><prefix>%s</prefix></prefixes>\n" % p\
-    for p in prefixes), symbol))
+    for p in prefixes), allocator, datacenter))
   request.get_method = lambda: "PUT"
   try:
     c = opener.open(request)
@@ -131,22 +133,24 @@ def createDatacenter (symbol, prefixes):
   print
   print formatDatacenter(record),
 
-if len(sys.argv) < 3: usageError()
-
-opener = urllib2.build_opener(MyHTTPErrorProcessor())
-h = urllib2.HTTPBasicAuthHandler()
-h.add_password("mds.datacite.org", URL, ALLOCATOR, sys.argv[1])
-opener.add_handler(h)
+if len(sys.argv) < 4: usageError()
 
 operation = filter(lambda o: o.startswith(sys.argv[2]), ["create", "view"])
 if len(operation) != 1: usageError()
 
+allocator, datacenter = validateSymbol(sys.argv[3])
+
+opener = urllib2.build_opener(MyHTTPErrorProcessor())
+h = urllib2.HTTPBasicAuthHandler()
+h.add_password("mds.datacite.org", URL, allocator, sys.argv[1])
+opener.add_handler(h)
+
 if operation[0] == "view":
   if len(sys.argv) != 4: usageError()
-  viewDatacenter(validateSymbol(sys.argv[3]))
+  viewDatacenter(allocator, datacenter)
 elif operation[0] == "create":
-  if len(sys.argv) < 5: usageError()
-  createDatacenter(validateSymbol(sys.argv[3]),
-    [validatePrefix(p) for p in sys.argv[4:]])
+  if len(sys.argv) < 6: usageError()
+  createDatacenter(allocator, datacenter, sys.argv[4],
+    [validatePrefix(p) for p in sys.argv[5:]])
 else:
   usageError()
