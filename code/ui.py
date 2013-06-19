@@ -64,7 +64,7 @@ def contact(request):
               "Heard about from: " + P['hear_about']
     try:
       django.core.mail.send_mail(title, message,
-        django.conf.settings.SERVER_EMAIL, emails)
+        P['email'], emails)
 
       django.contrib.messages.success(request, "Message sent")
       d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
