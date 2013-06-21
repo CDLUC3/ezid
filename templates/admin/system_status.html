@@ -37,15 +37,42 @@
   	</div>
   </div>
   <script type="text/javascript">
-    $('.update_status').each(function() {
-    	$('#' + this.id).load('{% url ui_admin.ajax_system_status %}' + "?id=" + this.id)
-    	$('#' + this.id).show(); // this is to keep Safari repainting and not freezing while ajax is continuously loading
-    });
-    
-    function updateUI () {
-   		// change ui state
-   		document.setTimeout( updateUI, 1 );
+  	function preload(arrayOfImages) {
+	    $(arrayOfImages).each(function(){
+	        $('<img/>')[0].src = this;
+	    });
 		}
+  
+    $(document).ready(function() {
+    	preload([
+    		'/ezid/static/images/good_flag.png',
+    		'/ezid/static/images/fail_flag.png',
+    		'/ezid/static/images/maybe_flag.png',
+    		'/ezid/static/images/ajax-loader_gray.gif'
+			]); //must preload images or Safari doesn't refresh images on page until it gets un-busy with all requests sometimes
+			
+	    setTimeout(function() { // set timeout also needed for Safari and page reload, doesn't happen on new navigation to page in most cases
+		    $('.update_status').each(function() {
+		    	$.ajax({
+			  		url:			'{% url ui_admin.ajax_system_status %}' + "?id=" + escape(this.id),
+			  		success: 	function(data){
+			  		  var ar = data.split(':');
+			  		  var id = ar[0];
+			  		  var resp = ar[1];
+			  			if(resp == 'up'){
+			  				$('#' + id).html("<img src='/ezid/static/images/good_flag.png' alt='service up' title='service up' />");
+			  			}else if(resp == 'down'){
+			  				$('#' + id).html("<img src='/ezid/static/images/fail_flag.png' alt='service down' title='service down' />");
+			  			}else{
+			  				$('#' + id).html("<img src='/ezid/static/images/maybe_flag.png' alt='service state unknown' title='service state unknown' />");
+			  			}
+			  			$('#' + id).show();  // this is to keep Safari repainting and not freezing while ajax is continuously loading
+			   		},
+			  			async:	true
+			  		}); // end ajax function
+		    });
+	    }, 1500);
+    });
   	
   </script>
 {% endblock %}
