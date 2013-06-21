@@ -217,7 +217,15 @@ def system_status(request, ssl=False):
 def ajax_system_status(request):
   if request.method != "GET": return uic.methodNotAllowed()
   if "id" in request.GET:
-    return uic.plainTextResponse(request.GET["id"] + ":" + ezidadmin.systemStatus(request.GET["id"]))
+    status = ezidadmin.systemStatus(request.GET["id"])
+    if status == 'up':
+      d = "<img src='/ezid/static/images/good_flag.png' alt='service up' title='service up' />"
+    elif status == 'down':
+      d = "<img src='/ezid/static/images/fail_flag.png' alt='service down' title='service down' />"
+    else:
+      d = "<img src='/ezid/static/images/maybe_flag.png' alt='service state unknown' title='service state unknown' />"
+    return uic.plainTextResponse(d)
+    #return uic.plainTextResponse(request.GET["id"] + ":" + ezidadmin.systemStatus(request.GET["id"]))
 
 @uic.admin_login_required
 def alert_message(request, ssl=False):
