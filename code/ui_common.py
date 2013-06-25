@@ -211,9 +211,11 @@ def authorizeUpdate(request, metadata_tup):
   if not s.startswith("success:"):
     return False
   the_id = s.split()[1]
+  #just gets the updating items found on the edit screen
+  to_update = [x for x in m.keys() if not (x.startswith('_') and not x in ['_status','_target', '_profile']) ]
   return policy.authorizeUpdate(user_or_anon_tup(request), group_or_anon_tup(request),
         the_id, get_user_tup(m['_owner']), get_group_tup(m['_ownergroup']),
-        get_coowners_tup(m), m)
+        get_coowners_tup(m), to_update)
 
 # simple function to decide if identifier can be deleted based on ui context
 def authorizeDelete(request, metadata_tup):
