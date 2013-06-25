@@ -189,7 +189,6 @@ def details(request):
   assert s.startswith("success:")
   d['id_text'] = s.split()[1]
   d['identifier'] = m # identifier object containing metadata
-  #import pdb; pdb.set_trace() #this will enable debugging console
   d['internal_profile'] = metadata.getProfile('internal')
   d['target'] = d['identifier']['_target']
   d['current_profile'] = metadata.getProfile(m['_profile'])

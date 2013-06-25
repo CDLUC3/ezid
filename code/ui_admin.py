@@ -217,7 +217,8 @@ def system_status(request, ssl=False):
 def ajax_system_status(request):
   if request.method != "GET": return uic.methodNotAllowed()
   if "id" in request.GET:
-    return uic.plainTextResponse(request.GET["id"] + ":" + ezidadmin.systemStatus(request.GET["id"]))
+    status = ezidadmin.systemStatus(request.GET["id"])
+    return uic.plainTextResponse(request.GET["id"] + ":" + status)
 
 @uic.admin_login_required
 def alert_message(request, ssl=False):
