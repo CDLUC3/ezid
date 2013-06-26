@@ -119,6 +119,7 @@ def edit(request, identifier):
     d['stat_reason'] = t_stat[1]
   d['export'] = m['_export'] if '_export' in m else 'yes'
   d['id_text'] = s.split()[1]
+  d['is_doi'] = True if d['id_text'].startswith('doi') else False
   d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
   if request.method == "POST":
