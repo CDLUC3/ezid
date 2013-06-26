@@ -48,13 +48,6 @@
       </label>
       <div class="field_right {% tooltip_class "_target" %}">
         <input type="text" name="_target" id="_target" size="35" value="{% form_or_dict_value identifier "_target" %}" class="std_form_width" />
-        {% if is_doi %}
-	        <div id="doi_target_delay" class="datacite_help">
-						<a href="#datacite_delay_help" name="help_link">
-							<img src="/ezid/static/images/info_icon2.png" alt="Click for additional information" title="Click for additional information"/>
-						</a>
-					</div>
-				{% endif %}
       </div>
       
       {% for e in current_profile.elements %}
