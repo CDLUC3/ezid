@@ -30,6 +30,16 @@
 	    	<td>{% display_value identifier internal_profile.target %}</td>
 	    </tr>
 	    
+	    {% if recent_creation %}
+	    	<tr>
+			    <td class="label_col">&nbsp;</td>
+			    <td style="color:red">
+			      target URL change may take up to 30 minutes to take effect
+			    </td>
+		    </tr>
+	    
+	    {% endif %}
+	    
 	    {% if not has_block_data %}
 		    {% for e in current_profile.elements %}
 		    	<tr>
