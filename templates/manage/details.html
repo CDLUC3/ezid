@@ -23,13 +23,6 @@
 		    </td>
 	    </tr>
 	    
-	    <tr><td colspan=2><h2>About the identified object</h2></td></tr>
-	    
-	    <tr>
-	    	<td class='{% tooltip_class "_target" %} label_col'>{{internal_profile.target.displayName}}:</td>
-	    	<td>{% display_value identifier internal_profile.target %}</td>
-	    </tr>
-	    
 	    {% if recent_creation %}
 	    	<tr>
 			    <td class="label_col">&nbsp;</td>
@@ -47,6 +40,13 @@
 			    </tr>
 		    {% endif %}
 	    {% endif %}
+	    
+	    <tr><td colspan=2><h2>About the identified object</h2></td></tr>
+	    
+	    <tr>
+	    	<td class='{% tooltip_class "_target" %} label_col'>{{internal_profile.target.displayName}}:</td>
+	    	<td>{% display_value identifier internal_profile.target %}</td>
+	    </tr>
 	    
 	    {% if not has_block_data %}
 		    {% for e in current_profile.elements %}
