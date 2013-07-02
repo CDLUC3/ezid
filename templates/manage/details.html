@@ -34,10 +34,18 @@
 	    	<tr>
 			    <td class="label_col">&nbsp;</td>
 			    <td style="color:red">
-			      target URL change may take up to 30 minutes to take effect
+			      (takes up to 30 minutes for link to work)
 			    </td>
 		    </tr>
-	    
+		  {% else %}
+		    {% if recent_update %}
+			    <tr>
+				    <td class="label_col">&nbsp;</td>
+				    <td style="color:red">
+				      (takes up to 30 minutes for link to work)
+				    </td>
+			    </tr>
+		    {% endif %}
 	    {% endif %}
 	    
 	    {% if not has_block_data %}

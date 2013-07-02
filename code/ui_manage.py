@@ -195,6 +195,8 @@ def details(request):
   d['current_profile'] = metadata.getProfile(m['_profile'])
   d['recent_creation'] = identifier.startswith('doi') and \
         (time.time() - float(d['identifier']['_created']) < 60 * 30)
+  d['recent_update'] = identifier.startswith('doi') and \
+        (time.time() - float(d['identifier']['_updated']) < 60 * 30)
   if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
     d['erc_block_list'] = _formatErcBlock(d['identifier']['erc'])
   elif d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
