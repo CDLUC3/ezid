@@ -15,7 +15,7 @@
 
 import re
 
-_doiPattern = re.compile("10\.\d{4}/[!->@-~]+$")
+_doiPattern = re.compile("10\.\d{4,5}/[!->@-~]+$")
 def validateDoi (doi):
   """
   If the supplied string (e.g., "10.5060/foo") is a syntactically
@@ -25,7 +25,7 @@ def validateDoi (doi):
   # Our validation is generally more restrictive than what is allowed
   # by the DOI Handbook <doi:10.1000/186>, though not in any way that
   # should be limiting in practice.  The Handbook allows virtually any
-  # prefix; we allow only four digits.  The Handbook allows all
+  # prefix; we allow only 4 or 5 digits.  The Handbook allows all
   # printable Unicode characters in the suffix; we allow all graphic
   # ASCII characters except (?).  (Question marks are excluded to
   # eliminate any possible confusion over whether a dx.doi.org-style
@@ -41,7 +41,7 @@ def validateDoi (doi):
   if "//" in doi or doi.endswith("/"): return None
   return doi.upper()
 
-_arkPattern1 = re.compile("((?:\d|b)\d{4}(?:\d{4})?/)([!-~]+)$")
+_arkPattern1 = re.compile("((?:\d{5}(?:\d{4})?|[bc]\d{4})/)([!-~]+)$")
 _arkPattern2 = re.compile("\./|/\.")
 _arkPattern3 = re.compile("([./])[./]+")
 _arkPattern4 = re.compile("^[./]|[./]$")
@@ -73,9 +73,9 @@ def validateArk (ark):
   # Our validation diverges from the ARK specification
   # <http://wiki.ucop.edu/display/Curation/ARK> in that it is not as
   # restrictive: we allow all graphic ASCII characters; we place no
-  # limit on length; we allow the first character to be a 'b'; and we
-  # allow variant paths to be intermixed with component paths.  All
-  # these relaxations are intended to support shadow ARKs and
+  # limit on length; we allow the first character to be alphabetic;
+  # and we allow variant paths to be intermixed with component paths.
+  # All these relaxations are intended to support shadow ARKs and
   # relatively direct transformation of DOIs into shadow ARKs.  The
   # normalizations performed here follow the rules given in the
   # specification except that we don't re-order variant paths, which
@@ -146,8 +146,16 @@ def doi2shadow (doi):
   # Update: to prevent different DOIs from mapping to the same shadow
   # ARK, we percent-encode characters (and only those characters) that
   # would otherwise be removed by the ARK normalization process.
-  p = "b" + doi[3:8]
-  s = doi[8:].replace("%", "%25").replace("-", "%2d").lower()
+  if doi[7] == "/":
+    i = 8
+    p = "b" + doi[3:i]
+  else:
+    i = 9
+    if doi[3] == "1":
+      p = "c" + doi[4:i]
+    else:
+      assert False, "unhandled case"
+  s = doi[i:].replace("%", "%25").replace("-", "%2d").lower()
   s = _arkPattern4.sub(lambda c: "%%%02x" % ord(c.group(0)), s)
   s = _arkPattern3.sub(_percentEncodeCdr, s)
   a = validateArk(p + s)
@@ -162,7 +170,13 @@ def shadow2doi (ark):
   This function is intended to be used for noid-minted ARK identifiers
   only; it is not in general the inverse of doi2shadow.
   """
-  return ("10." + ark[1:]).upper()
+  if ark[0] == "b":
+    doi = "10." + ark[1:]
+  elif ark[0] == "c":
+    doi = "10.1" + ark[1:]
+  else:
+    assert False, "unhandled case"
+  return doi.upper()
 
 _urnUuidShadowArkPrefix = "97720/"
 def urnUuid2shadow (urn):
