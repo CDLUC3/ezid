@@ -285,8 +285,14 @@ def _cacheLdapInformation (l, dn, arkId, user, group):
   for a in attrs:
     if a != "userPassword":
       d["ldap." + a] = " ; ".join(v.decode("UTF-8") for v in attrs[a])
-  r = ezid.getMetadata(arkId, user, group)
-  assert type(r) is tuple, "ezid.getMetadata failed: " + r
+  # We're somewhat forgiving if the agent identifier doesn't exist, as
+  # we might be running in a non-production environment.
+  try:
+    r = ezid.getMetadata(arkId, user, group)
+    assert type(r) is tuple, "ezid.getMetadata failed: " + r
+  except AssertionError, e:
+    log.otherError("ezidadmin._cacheLdapInformation", e)
+    return
   for k in r[1]:
     # If an attribute has disappeared, blank out its cached value.
     if k.startswith("ldap.") and k not in d: d[k] = ""
