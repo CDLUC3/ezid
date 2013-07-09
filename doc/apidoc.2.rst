@@ -754,9 +754,11 @@ first column indicates the element is modifiable by clients.
   \   _updated    The time the identifier was last modified    1300913550
                   expressed as a Unix timestamp.
   |X| _target     The identifier's target URL.  Defaults to the identifier's
-                  EZID URL.  That is, the default target URL for
-                  identifier `foo`:hl1: is the self-referential URL
-                  \http://n2t.net/ezid/id/`foo`:hl1:.
+                  EZID URL.  That is, the default target URL for identifier
+                  `foo`:hl1: is the self-referential URL
+                  \http://n2t.net/ezid/id/`foo`:hl1:.  Note that creating or
+                  updating the target URL of a DOI identifier may take up to
+                  30 minutes to take effect in the Handle System.
   --- ----------- -------------------------------------------------------------
   \   _shadows    Shadow ARKs only.  The shadowed identifier.  doi:10.9999/TEST
   \   _shadowedby Shadowed identifiers only.  The identifier's ark:/b9999/test

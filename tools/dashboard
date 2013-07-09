@@ -162,7 +162,7 @@ if doCompute:
             else:
               c = Counter()
               counters[month] = c
-            if re.match("b\d{4}/", id):
+            if re.match("[bc]\d{4}/", id):
               c.numDois += 1
             elif id.startswith(urnPrefix):
               c.numUrns += 1
@@ -184,7 +184,7 @@ if doCompute:
           else:
             c = Counter()
             counters[month] = c
-          if re.match("b\d{4}/", id):
+          if re.match("[bc]\d{4}/", id):
             c.numDois += 1
           elif id.startswith(urnPrefix):
             c.numUrns += 1
