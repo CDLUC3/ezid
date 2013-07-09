@@ -15,7 +15,7 @@
 
 import re
 
-_doiPattern = re.compile("10\.\d{4,5}/[!->@-~]+$")
+_doiPattern = re.compile("10\.[1-9]\d{3,4}/[!->@-~]+$")
 def validateDoi (doi):
   """
   If the supplied string (e.g., "10.5060/foo") is a syntactically
@@ -41,7 +41,7 @@ def validateDoi (doi):
   if "//" in doi or doi.endswith("/"): return None
   return doi.upper()
 
-_arkPattern1 = re.compile("((?:\d{5}(?:\d{4})?|[bc]\d{4})/)([!-~]+)$")
+_arkPattern1 = re.compile("((?:\d{5}(?:\d{4})?|[b-k]\d{4})/)([!-~]+)$")
 _arkPattern2 = re.compile("\./|/\.")
 _arkPattern3 = re.compile("([./])[./]+")
 _arkPattern4 = re.compile("^[./]|[./]$")
@@ -151,10 +151,7 @@ def doi2shadow (doi):
     p = "b" + doi[3:i]
   else:
     i = 9
-    if doi[3] == "1":
-      p = "c" + doi[4:i]
-    else:
-      assert False, "unhandled case"
+    p = chr(ord("c")+ord(doi[3])-ord("1")) + doi[4:i]
   s = doi[i:].replace("%", "%25").replace("-", "%2d").lower()
   s = _arkPattern4.sub(lambda c: "%%%02x" % ord(c.group(0)), s)
   s = _arkPattern3.sub(_percentEncodeCdr, s)
@@ -172,10 +169,8 @@ def shadow2doi (ark):
   """
   if ark[0] == "b":
     doi = "10." + ark[1:]
-  elif ark[0] == "c":
-    doi = "10.1" + ark[1:]
   else:
-    assert False, "unhandled case"
+    doi = "10." + chr(ord("1")+ord(ark[0])-ord("c")) + ark[1:]
   return doi.upper()
 
 _urnUuidShadowArkPrefix = "97720/"
