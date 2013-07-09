@@ -53,7 +53,8 @@ def _loadConfig ():
     try:
       pw = config.config("datacenter_%s.password" % dc)
     except:
-      pw = config.config("datacite.password")
+      pw = config.config("allocator_%s.password" %\
+        config.config("datacenter_%s.name" % dc).split(".")[0])
     _datacenters[dc] = "Basic " +\
       base64.b64encode(config.config("datacenter_%s.name" % dc) + ":" + pw)
   _prefixes = dict((config.config("prefix_%s.prefix" % k)[4:],
