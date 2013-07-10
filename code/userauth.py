@@ -183,3 +183,13 @@ def authenticateRequest (request):
     return r
   else:
     return None
+
+def clearLdapCache (username):
+  """
+  Clears the LDAP cache for a username.
+  """
+  _lock.acquire()
+  try:
+    if username in _ldapCache: del _ldapCache[username]
+  finally:
+    _lock.release()
