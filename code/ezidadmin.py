@@ -26,11 +26,13 @@ import uuid
 
 import config
 import datacite
+import django_util
 import ezid
 import idmap
 import log
 import noid
 import policy
+import userauth
 import util
 
 _ldapEnabled = None
@@ -610,6 +612,54 @@ def disableUser (username):
     return None
   except Exception, e:
     log.otherError("ezidadmin.disableUser", e)
+    return "Internal server error."
+  finally:
+    if l: l.unbind()
+
+def changeGroup (uid, newGroupDn, user, group):
+  """
+  Changes the group membership of an existing EZID user.  The user is
+  identified by 'uid' (e.g., "dryad").  'newGroupDn' should be the new
+  group's LDAP entry's DN.  'user' and 'group' are used in identifier
+  modification; each should be authenticated (local name, persistent
+  identifier) tuples, e.g., ("dryad", "ark:/13030/foo").  Returns None
+  on success or a string message on error.
+  """
+  if not _ldapEnabled: return "Functionality unavailable."
+  if not _updatesEnabled: return "Prohibited by configuration."
+  if " " in uid: return "Invalid username."
+  dn = _userDnTemplate % ldap.dn.escape_dn_chars(uid)
+  l = None
+  try:
+    l = ldap.initialize(_ldapServer)
+    # The modify operation below requires binding as a privileged LDAP
+    # user.
+    l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
+    try:
+      r = l.search_s(newGroupDn, ldap.SCOPE_BASE, attrlist=["objectClass"])
+    except ldap.NO_SUCH_OBJECT:
+      # UI controls should prevent this from ever happening.
+      return "No such group LDAP entry."
+    if "ezidGroup" not in r[0][1]["objectClass"]:
+      # Ditto.
+      return "Group LDAP entry is not an EZID group."
+    try:
+      r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass", "arkId"])
+    except ldap.NO_SUCH_OBJECT:
+      # Ditto.
+      return "No such LDAP entry."
+    if "ezidUser" not in r[0][1]["objectClass"]:
+      # Ditto.
+      return "User LDAP entry is not an EZID user."
+    arkId = r[0][1]["arkId"][0].decode("UTF-8")
+    l.modify_s(dn, [(ldap.MOD_REPLACE, "ezidOwnerGroup",
+      newGroupDn.encode("UTF-8"))])
+    userauth.clearLdapCache(uid)
+    django_util.deleteSessions(uid)
+    _cacheLdapInformation(l, dn, arkId, user, group)
+    return None
+  except Exception, e:
+    log.otherError("ezidadmin.changeGroup", e)
     return "Internal server error."
   finally:
     if l: l.unbind()

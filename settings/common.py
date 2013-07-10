@@ -69,6 +69,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = "settings.urls"
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 604800
 
 TEMPLATE_LOADERS =\
   ("django.template.loaders.filesystem.Loader",
