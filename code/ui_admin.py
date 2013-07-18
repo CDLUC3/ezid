@@ -112,11 +112,17 @@ def manage_users(request, ssl=False):
   #now for saving
   if request.method == "POST" and request.POST['user'] == request.POST['original_user']:
     u, p = d['user'], request.POST
+    d['group_dn'] = p['group_dn']
     u['givenName'], u['sn'], u['mail'], u['telephoneNumber'], u['description'] = \
       p['givenName'], p['sn'], p['mail'], p['telephoneNumber'], p['description']
     u['ezidCoOwners'] = ','.join([x.strip() for x in p['ezidCoOwners'].strip().split("\n")])
     if validate_edit_user(request, u):
       d['user']['currentlyEnabled'] = update_edit_user(request, u)
+      #if group has changed, update
+      if p['group_dn'] != u['groupDn']:
+        res = ezidadmin.changeGroup(u['uid'], p['group_dn'], \
+                request.session["auth"].user, request.session["auth"].group)
+        #TODO: add some error handling for odd things that could happen here.
     else:
       if 'currentlyEnabled' in request.POST and request.POST['currentlyEnabled'].lower() == 'true':
         d['user']['currentlyEnabled'] = 'true'
