@@ -122,7 +122,8 @@ def manage_users(request, ssl=False):
       if p['group_dn'] != u['groupDn']:
         res = ezidadmin.changeGroup(u['uid'], p['group_dn'], \
                 request.session["auth"].user, request.session["auth"].group)
-        #TODO: add some error handling for odd things that could happen here.
+        if type(res) == str:
+          django.contrib.messages.error(request, res)
     else:
       if 'currentlyEnabled' in request.POST and request.POST['currentlyEnabled'].lower() == 'true':
         d['user']['currentlyEnabled'] = 'true'
