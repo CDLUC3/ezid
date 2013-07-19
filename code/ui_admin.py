@@ -328,17 +328,16 @@ def select_shoulder_lists(selected_val_list):
 
 def validate_edit_user(request, user_obj):
   """validates that the fields required to update a user are set, helper function"""
-  valid_form = True
+  er = django.contrib.messages.error
+  post = request.POST
   
   required_fields = {'sn': 'Last name', 'mail': 'Email address'}
   for field in required_fields:
     if user_obj[field].strip() == '':
-      django.contrib.messages.error(request, required_fields[field] + " must be filled in.")
-      valid_form = False
+      er(request, required_fields[field] + " must be filled in.")
   
   if not re.match('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', user_obj['mail'], re.IGNORECASE):
-    django.contrib.messages.error(request, "Please enter a valid email address.")
-    valid_form = False
+    er(request, "Please enter a valid email address.")
   
   if user_obj['ezidCoOwners'] != '':
     coowners = [co.strip() for co in user_obj['ezidCoOwners'].split(',')]
@@ -346,14 +345,16 @@ def validate_edit_user(request, user_obj):
       try:
         idmap.getUserId(coowner)
       except AssertionError:
-        django.contrib.messages.error(request, coowner + " is not a correct handle for a co-owner.")
-        valid_form = False
+        er(request, coowner + " is not a correct handle for a co-owner.")
   
-  if not request.POST['userPassword'].strip() == '':
-    if len(request.POST['userPassword'].strip()) < 6:
-      django.contrib.messages.error(request, "Please use a password length of at least 6 characters.")
-      valid_form = False
-  return valid_form
+  if not post['userPassword'].strip() == '':
+    if len(post['userPassword'].strip()) < 6:
+      er(request, "Please use a password length of at least 6 characters.")
+
+  if post['telephoneNumber'] != '' and (not re.match(r'^[0-9\.\-() +]+$', post['telephoneNumber'], re.IGNORECASE)):
+    er(request, "Please enter a valid phone number.")
+    
+  return  len(django.contrib.messages.api.get_messages(request)) < 1
 
 def update_edit_user(request, user_obj):
   """Updates the user based on the request and user_object.
