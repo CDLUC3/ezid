@@ -15,10 +15,23 @@ object class ezidUser:
     The user's ARK identifier, e.g., "ark:/99166/p9bg2h891".  Must
     begin with "ark:/" and must be in canonical form.
   ezidOwnerGroup
-    The DN of the user's owner group, e.g.,
-    "ou=CDL,ou=ezid-groups,ou=uc3,dc=cdlib,dc=org".  An LDAP entry may
-    be both an EZID user and an EZID group, and this attribute may be
-    self-referential.
+    The DN of the user's group, e.g.,
+    "o=cdl,ou=ezid-groups,ou=uc3,dc=cdlib,dc=org".  An LDAP entry may
+    be both an EZID user and an EZID group, and thus this attribute
+    may be self-referential.
+  shoulderList
+    List of labels of the identifier shoulders to which the user has
+    access, or "*" indicating all shoulders, or "NONE" indicating no
+    shoulders.  The labels must be separated by spaces and/or commas,
+    e.g., "ezidark,eziddoi".  The list is interpreted relative to the
+    user's group's shoulder list, and must be a subset of that list.
+    Optional; if not present, the value is implicitly "*".
+  isEzidGroupAdministrator
+    Optional boolean flag; if present and true, indicates the user is
+    an administrator of its group.
+  isEzidRealmAdministrator
+    Optional boolean flag; if present and true, indicates the user is
+    an administrator of its group's realm.
   ezidCoOwners
     List of uids of EZID users that may modify this user's
     identifiers.  The uids must be separated by spaces and/or commas,
@@ -32,12 +45,22 @@ object class ezidGroup:
     The group's ARK identifier, e.g., "ark:/99166/p96q1sg5w".  Must
     begin with "ark:/" and must be in canonical form.  The user and
     group identifiers for a given user must be different.
+  ezidRealm
+    The DN of the group's realm, e.g.,
+    "o=cdl,ou=ezid-realms,ou=uc3,dc=cdlib,dc=org".
   shoulderList
     List of labels of the identifier shoulders to which the group has
-    access, or "NONE".  The labels must be separated by spaces and/or
-    commas, e.g., "ezidark,eziddoi".
+    access, or "*" indicating all shoulders (reserved for the EZID
+    administrator), or "NONE" indicating no shoulders.  The labels
+    must be separated by spaces and/or commas, e.g.,
+    "ezidark,eziddoi".
   agreementOnFile
     Optional boolean flag; not used by EZID itself.
+
+object class ezidRealm:
+  Describes an EZID realm.  Attributes:
+  name
+    The realm name, e.g., "CDL".
 
 Now for the caveats.  EZID assumes that user DNs can be formed by
 inserting usernames into a common template (thus assuming that all
@@ -46,16 +69,20 @@ users share some structural parent).
 Also, for password and user account (or "profile") management, EZID
 assumes that users are of structural class inetOrgPerson, specifically
 that users have passwords and have the standard LDAP attributes
-givenName, sn, cn, mail, telephoneNumber, and description.  Groups are
-assumed to have a description attribute (such as is supplied by the
-organization and organizationalUnit structural classes).
+givenName, sn, cn, mail, telephoneNumber, and description.  Groups and
+realms are assumed to have a description attribute (such as is
+supplied by the organization and organizationalUnit structural
+classes).
 
 Appendix
 --------
 
-The formal LDIF declarations are as follows (note that the uid
-attribute is predefined):
+The formal LDIF declarations are as follows (note that the uid and
+name attributes are predefined):
 
+dn: cn=schema
+changetype: modify
+add: attributeTypes
 attributeTypes: (
   gid-oid
   NAME 'gid'
@@ -66,7 +93,11 @@ attributeTypes: (
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
   SINGLE-VALUE
   USAGE userApplications )
+-
 
+dn: cn=schema
+changetype: modify
+add: attributeTypes
 attributeTypes: (
   arkId-oid
   NAME 'arkId'
@@ -77,7 +108,11 @@ attributeTypes: (
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
   SINGLE-VALUE
   USAGE userApplications )
+-
 
+dn: cn=schema
+changetype: modify
+add: attributeTypes
 attributeTypes: (
   groupArkId-oid
   NAME 'groupArkId'
@@ -89,17 +124,25 @@ attributeTypes: (
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
   SINGLE-VALUE
   USAGE userApplications )
+-
 
+dn: cn=schema
+changetype: modify
+add: attributeTypes
 attributeTypes: (
   ezidOwnerGroup-oid
   NAME 'ezidOwnerGroup'
-  DESC 'EZID owner group'
+  DESC 'EZID group to which user belongs'
   EQUALITY distinguishedNameMatch
   SUBSTR caseIgnoreSubstringsMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.12
   SINGLE-VALUE
   USAGE userApplications )
+-
 
+dn: cn=schema
+changetype: modify
+add: attributeTypes
 attributeTypes: (
   ezidCoOwners-oid
   NAME 'ezidCoOwners'
@@ -110,7 +153,25 @@ attributeTypes: (
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
   SINGLE-VALUE
   USAGE userApplications )
+-
 
+dn: cn=schema
+changetype: modify
+add: attributeTypes
+attributeTypes: (
+  ezidRealm-attr-oid
+  NAME 'ezidRealm'
+  DESC 'EZID realm to which group belongs'
+  EQUALITY distinguishedNameMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.12
+  SINGLE-VALUE
+  USAGE userApplications )
+-
+
+dn: cn=schema
+changetype: modify
+add: attributeTypes
 attributeTypes: (
   shoulderList-oid
   NAME 'shoulderList'
@@ -121,16 +182,50 @@ attributeTypes: (
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
   SINGLE-VALUE
   USAGE userApplications )
+-
 
+dn: cn=schema
+changetype: modify
+add: attributeTypes
 attributeTypes: (
-  agreementOnFile-oid
-  NAME 'agreementOnFile'
-  DESC 'Present and true if an agreement is on file'
+  isEzidGroupAdministrator-oid
+  NAME 'isEzidGroupAdministrator'
+  DESC 'If present and true, the user is an administrator of its EZID group'
   EQUALITY booleanMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
   SINGLE-VALUE
   USAGE userApplications )
+-
 
+dn: cn=schema
+changetype: modify
+add: attributeTypes
+attributeTypes: (
+  isEzidRealmAdministrator-oid
+  NAME 'isEzidRealmAdministrator'
+  DESC 'If present and true, the user is an administrator of its EZID realm'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE
+  USAGE userApplications )
+-
+
+dn: cn=schema
+changetype: modify
+add: attributeTypes
+attributeTypes: (
+  agreementOnFile-oid
+  NAME 'agreementOnFile'
+  DESC 'If present and true, an agreement is on file'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE
+  USAGE userApplications )
+-
+
+dn: cn=schema
+changetype: modify
+add: objectClasses
 objectClasses: (
   ezidUser-oid
   NAME 'ezidUser'
@@ -138,13 +233,31 @@ objectClasses: (
   SUP top
   AUXILIARY
   MUST ( objectClass $ arkId $ uid $ ezidOwnerGroup )
-  MAY ezidCoOwners )
+  MAY ( shoulderList $ isEzidGroupAdministrator $ isEzidRealmAdministrator $
+    ezidCoOwners ) )
+-
 
+dn: cn=schema
+changetype: modify
+add: objectClasses
 objectClasses: (
   ezidGroup-oid
   NAME 'ezidGroup'
   DESC 'EZID group'
   SUP top
   AUXILIARY
-  MUST ( objectClass $ shoulderList )
+  MUST ( objectClass $ ezidRealm $ shoulderList )
   MAY ( groupArkId $ arkId $ uid $ gid $ agreementOnFile ) )
+-
+
+dn: cn=schema
+changetype: modify
+add: objectClasses
+objectClasses: (
+  ezidRealm-oid
+  NAME 'ezidRealm'
+  DESC 'EZID realm'
+  SUP top
+  AUXILIARY
+  MUST ( objectClass $ name ) )
+-
