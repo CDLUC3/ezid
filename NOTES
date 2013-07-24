@@ -53,7 +53,8 @@ Caching is employed in several places:
   userauth._ldapCache authentication cache
     A dictionary that maps local usernames to AuthenticatedUser
     objects.  Loaded on demand as usernames are encountered.  Emptied
-    when EZID is reloaded.
+    when EZID is reloaded.  Also, individual entries are removed when
+    users change groups.
 
   policy._groups prefix cache
     A dictionary that maps groups (identified by tuples; see above) to

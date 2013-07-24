@@ -64,7 +64,7 @@ def contact(request):
               "Heard about from: " + P['hear_about']
     try:
       django.core.mail.send_mail(title, message,
-        django.conf.settings.SERVER_EMAIL, emails)
+        P['email'], emails)
 
       django.contrib.messages.success(request, "Message sent")
       d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
@@ -108,7 +108,10 @@ def doc (request):
           content = re.sub("<!-- superseded warning placeholder -->",
             "<p class='warning'>THIS VERSION IS SUPERSEDED BY A NEWER " +\
             "VERSION</p>", content)
-    return uic.staticHtmlResponse(content)
+    if file.endswith(".html"):
+      return uic.staticHtmlResponse(content)
+    else:
+      return uic.staticTextResponse(content)
   else:
     return uic.error(404)
 

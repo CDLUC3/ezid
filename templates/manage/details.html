@@ -23,6 +23,24 @@
 		    </td>
 	    </tr>
 	    
+	    {% if recent_creation %}
+	    	<tr>
+			    <td class="label_col">&nbsp;</td>
+			    <td style="color:red">
+			      (takes up to 30 minutes for link to work)
+			    </td>
+		    </tr>
+		  {% else %}
+		    {% if recent_update %}
+			    <tr>
+				    <td class="label_col">&nbsp;</td>
+				    <td style="color:red">
+				      (takes up to 30 minutes for link to be updated)
+				    </td>
+			    </tr>
+		    {% endif %}
+	    {% endif %}
+	    
 	    <tr><td colspan=2><h2>About the identified object</h2></td></tr>
 	    
 	    <tr>
@@ -111,16 +129,27 @@
 	    <tr>
 	    	<td class="{% tooltip_class '_status' %}">{{internal_profile.status.displayName}}:</td>
 	    	<td>
-	    		{% display_value identifier internal_profile.status %}{% help_icon "public_id_help" %}
+	    		{{pub_status}}{% help_icon "public_id_help" %}
 	    	</td>
 			</tr>
 			
-			<tr>
-	    	<td class="{% tooltip_class '_export' %}">{{ internal_profile.export.displayName }}</td>
-	    	<td>
-	    		{% display_value identifier internal_profile.export %}{% help_icon "export_help" %}
-	    	</td>
-			</tr>
+			{% if stat_reason %}
+				<tr>
+		    	<td>&nbsp;</td>
+		    	<td>
+		    		{{ stat_reason }}
+		    	</td>
+				</tr>
+			{% endif %}
+			
+			{% if pub_status == 'public' %}
+				<tr>
+		    	<td class="{% tooltip_class '_export' %}">{{ internal_profile.export.displayName }}</td>
+		    	<td>
+		    		{% display_value identifier internal_profile.export %}{% help_icon "export_help" %}
+		    	</td>
+				</tr>
+			{% endif %}
 				  
   	</table>
   </div>

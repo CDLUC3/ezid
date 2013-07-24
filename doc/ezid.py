@@ -4,20 +4,12 @@
 # being determined by the platform.  By default, ANVL responses
 # (currently, that's all responses) are left in %-encoded form.
 #
-# Usage: client [options] server credentials operation...
+# Usage: ezid.py [options] credentials operation...
 #
 #   options:
 #     -d decode ANVL responses
 #     -o one line per ANVL value: convert newlines to spaces
 #     -t format timestamps
-#
-#   server:
-#     l (local server, no https)
-#     d (development)
-#     s (staging)
-#     w (workflow)
-#     p (production)
-#     http://...
 #
 #   credentials:
 #     username:password
@@ -33,8 +25,6 @@
 #     login
 #     logout
 #     s[tatus] [*|subsystemlist]
-#     V[ersion]
-#     r[eload]
 #
 # In the above, if an element is "@", the subsequent value is treated
 # as a filename and metadata elements are read from the named
@@ -46,14 +36,14 @@
 #
 # then an identifier with that metadata can be minted by invoking:
 #
-#   client p username:password mint ark:/99999/fk4 @ metadata.txt
+#   ezid.py username:password mint ark:/99999/fk4 @ metadata.txt
 #
 # Otherwise, if a value has the form "@filename", a (single) value is
 # read from the named file.  For example, if file metadata.xml
 # contains a DataCite XML record, then an identifier with that record
 # as the value of the 'datacite' element can be minted by invoking:
 #
-#   client p username:password mint doi:10.5072/FK2 datacite @metadata.xml
+#   ezid.py username:password mint doi:10.5072/FK2 datacite @metadata.xml
 #
 # In both of the above cases, the contents of the named file are
 # assumed to be UTF-8 encoded.  And in both cases, the interpretation
@@ -73,9 +63,9 @@ import urllib2
 
 KNOWN_SERVERS = {
   "l": "http://localhost:8000/ezid",
-  "d": "http://n2t-dev.cdlib.org/ezid",
-  "s": "http://n2t-stage.cdlib.org/ezid",
-  "w": "http://n2t-wf.cdlib.org/ezid",
+  "d": "REDACTED",
+  "s": "REDACTED",
+  "w": "REDACTED",
   "p": "http://n2t.net/ezid"
 }
 
@@ -88,25 +78,15 @@ OPERATIONS = {
   "delete": 1,
   "login": 0,
   "logout": 0,
-  "status": lambda l: l in [0, 1],
-  "Version": 0,
-  "reload": 0
+  "status": lambda l: l in [0, 1]
 }
 
-USAGE_TEXT = """Usage: client [options] server credentials operation...
+USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
 
   options:
     -d decode ANVL responses
     -o one line per ANVL value: convert newlines to spaces
     -t format timestamps
-
-  server:
-    l (local server, no https)
-    d (development)
-    s (staging)
-    w (workflow)
-    p (production)
-    http://...
 
   credentials:
     username:password
@@ -122,8 +102,6 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
     login
     logout
     s[tatus] [*|subsystemlist]
-    V[ersion]
-    r[eload]
 """
 
 # Global variables that are initialized farther down.
@@ -223,6 +201,9 @@ parser.add_option("-t", action="store_true", dest="formatTimestamps",
 parser.disable_interspersed_args()
 
 _options, args = parser.parse_args()
+# Simulate selection of the production server (server selection is not
+# supported in this public version of the code).
+args.insert(0, "p")
 if len(args) < 3: parser.error("insufficient arguments")
 
 _server = KNOWN_SERVERS.get(args[0], args[0])
@@ -298,10 +279,4 @@ elif operation == "status":
   else:
     subsystems = ""
   response = issueRequest("status"+subsystems, "GET")
-  printAnvlResponse(response)
-elif operation == "Version":
-  response = issueRequest("version", "GET")
-  printAnvlResponse(response)
-elif operation == "reload":
-  response = issueRequest("admin/reload", "POST")
   printAnvlResponse(response)

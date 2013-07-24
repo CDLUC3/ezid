@@ -52,7 +52,10 @@ def usage(request, ssl=False):
     d['totals'] = d['report'][0]
     d['report'] = d['report'][1:]
   s = stats.getStats()
-  d['last_tally'] = datetime.datetime.fromtimestamp(s.getComputeTime()).strftime('%B %d, %Y')
+  last_calc = datetime.datetime.fromtimestamp(s.getComputeTime())
+  d['last_tally'] = last_calc.strftime('%B %d, %Y')
+  d['yearly'] = _year_totals(user_id, group_id, last_calc)
+  
   return uic.render(request, 'admin/usage', d)
 
 @uic.admin_login_required
@@ -214,7 +217,8 @@ def system_status(request, ssl=False):
 def ajax_system_status(request):
   if request.method != "GET": return uic.methodNotAllowed()
   if "id" in request.GET:
-    return uic.plainTextResponse(request.GET["id"] + ":" + ezidadmin.systemStatus(request.GET["id"]))
+    status = ezidadmin.systemStatus(request.GET["id"])
+    return uic.plainTextResponse(request.GET["id"] + ":" + status)
 
 @uic.admin_login_required
 def alert_message(request, ssl=False):
@@ -404,7 +408,7 @@ def update_edit_user(request, user_obj):
 def _month_range_for_display(user, group):
   """
   Produces a list of year-month strings which goes from the earliest
-  data available for the user, group specified (use None for non) until now.
+  data available for the user, group specified (use None for none) until now.
   """
   dates = _get_month_range(datetime.datetime(2000, 1, 1, 0, 0), datetime.datetime.now())
   s = stats.getStats()
@@ -431,7 +435,7 @@ def _get_month_range(dt1, dt2):
       )]
   return dates
 
-def _insertCommas (n):
+def _insertCommas(n):
   s = ""
   while n >= 1000:
     n, r = divmod(n, 1000)
@@ -477,3 +481,46 @@ def _create_stats_report(user, group):
       a[position[id_type] + 1] = percent_meta
     rows.append(a)
   return rows
+
+def _monthdelta(date, delta):
+  m, y = (date.month+delta) % 12, date.year + ((date.month)+delta-1) // 12
+  if not m: m = 12
+  d = min(date.day, [31,
+      29 if y%4==0 and not y%400==0 else 28,31,30,31,30,31,31,30,31,30,31][m-1])
+  return date.replace(day=d,month=m, year=y)
+
+def _year_totals(user, group, last_calc):
+  """creates totals for the previous year (only whole months
+  for which stats have been calculated)"""
+  dt_start = datetime.datetime(last_calc.year - 1, last_calc.month, last_calc.day)
+  dt_end = _monthdelta(last_calc, -1)
+  months = [x.strftime("%Y-%m") for x in _get_month_range(dt_start, dt_end)]
+  tot = 0
+  meta = 0
+  s = stats.getStats()
+  id_types = ['ARK', 'DOI', 'URN']
+  id_totals = dict((key, 0) for key in id_types)
+  id_meta = dict((key, 0) for key in id_types)
+  
+  for month in months:
+    tot = tot + s.query((month, user, group, None, None), False)
+    meta = meta + s.query((month, user, group, None, "True"), False)
+    for t in id_types:
+      id_totals[t] = id_totals[t] + s.query((month, user, group, t, None), False)
+      id_meta[t] = id_meta[t] + s.query((month, user, group, t, "True"), False)
+
+  return_vals = {'text': "Totals from " + months[0] + " through " + months[-1],
+                 'totals': _insertCommas(tot)}
+  for t in id_types:
+    return_vals[t+'_total'] = _insertCommas(id_totals[t])
+    if id_totals[t] == 0:
+      return_vals[t+'_percent'] = '0%'
+    else:
+      return_vals[t+'_percent'] = str(int((float(id_meta[t]) / id_totals[t] * 100.0))) + "%"
+  if tot == 0:
+    return_vals['tot_percent'] = '0%'
+  else:
+    return_vals['tot_percent'] = str(int((float(meta) / tot * 100.0))) + "%"
+  return return_vals
+  
+  

@@ -64,8 +64,9 @@ import django.conf
 django.conf.settings.PROJECT_ROOT
 
 # Configure the logging so that errors don't get added to the server's
-# log file.
+# log file.  Also, disable daemon threads.
 django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
+django.conf.settings.DAEMON_THREADS_ENABLED = False
 
 import store
 import util
@@ -161,7 +162,7 @@ if doCompute:
             else:
               c = Counter()
               counters[month] = c
-            if re.match("b\d{4}/", id):
+            if re.match("[b-k]\d{4}/", id):
               c.numDois += 1
             elif id.startswith(urnPrefix):
               c.numUrns += 1
@@ -183,7 +184,7 @@ if doCompute:
           else:
             c = Counter()
             counters[month] = c
-          if re.match("b\d{4}/", id):
+          if re.match("[b-k]\d{4}/", id):
             c.numDois += 1
           elif id.startswith(urnPrefix):
             c.numUrns += 1

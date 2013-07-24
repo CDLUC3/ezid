@@ -156,6 +156,7 @@ report problems:</p>
 <li><a class="reference internal" href="#php-examples">PHP examples</a></li>
 <li><a class="reference internal" href="#perl-examples">Perl examples</a></li>
 <li><a class="reference internal" href="#curl-examples">cURL examples</a></li>
+<li><a class="reference internal" href="#batch-processing">Batch processing</a></li>
 </ul>
 </div>
 <div class="section" id="framework">
@@ -481,6 +482,21 @@ line of the form &quot;error: <span class="hl1">reason</span>&quot;.  For exampl
 ⇐ Content-Length: 39
 ⇐
 ⇐ error: bad request - no such identifier
+</pre>
+<p>Some programming libraries make it a little difficult to read the
+content following an error status code.  For example, from Java, it is
+necessary to explicitly switch between the input and error streams
+based on the status code:</p>
+<pre class="literal-block">
+java.net.HttpURLConnection c;
+java.io.InputStream s;
+...
+if (c.getResponseCode() &lt; 400) {
+  s = c.getInputStream();
+} else {
+  s = c.getErrorStream();
+}
+// read from s...
 </pre>
 </div>
 <div class="section" id="operation-get-identifier-metadata">
@@ -819,9 +835,11 @@ expressed as a Unix timestamp.</td>
 <tr><td>✓</td>
 <td>_target</td>
 <td colspan="2">The identifier's target URL.  Defaults to the identifier's
-EZID URL.  That is, the default target URL for
-identifier <span class="hl1">foo</span> is the self-referential URL
-http://n2t.net/ezid/id/<span class="hl1">foo</span>.</td>
+EZID URL.  That is, the default target URL for identifier
+<span class="hl1">foo</span> is the self-referential URL
+http://n2t.net/ezid/id/<span class="hl1">foo</span>.  Note that creating or
+updating the target URL of a DOI identifier may take up to
+30 minutes to take effect in the Handle System.</td>
 </tr>
 <tr><td></td>
 <td>_shadows</td>
@@ -1256,128 +1274,62 @@ subsystem names and probe all subsystems.</p>
 </div>
 <div class="section" id="python-example">
 <h1>Python example</h1>
-<p>Below is a command line EZID client capable of exercising all API
-functions.  Printed output is left UTF-8 encoded.  The general usage
+<p><a class="reference external" href="ezid.py">ezid.py</a> is a command line tool, written in Python, that is capable of
+exercising all API functions.  It serves as an example of how to use
+the API from Python, but it's also useful in its own right as an easy,
+scriptable means of accessing EZID functionality.  The general usage
 is:</p>
 <pre class="literal-block">
-% client <span class="hl2">credentials</span> <span class="hl2">operation</span> <span class="hl2">[arguments...]</span>
+% ezid.py <span class="hl2">credentials</span> <span class="hl2">operation</span> <span class="hl2">[arguments...]</span>
 </pre>
-<p>For example, to view an identifier:</p>
+<p>Run the tool with no command line arguments for a complete usage
+statement; additional documentation is in the source code.  To give a
+flavor of the tool's usage and capabilities here, a few examples
+follow.</p>
+<p>To mint a test ARK identifier and supply initial metadata:</p>
 <pre class="literal-block">
-% client - view ark:/99999/fk4cz3dh0
+% ezid.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 erc.who 'Proust, Marcel' \
+    erc.what 'Remembrance of Things Past' erc.when 1922
+success: ark:/99999/fk4gt78tq
 </pre>
-<p>Run the client with no arguments for a complete usage statement.</p>
+<p>To get identifier metadata:</p>
 <pre class="literal-block">
-#! /usr/bin/python
-
-import re
-import sys
-import types
-import urllib
-import urllib2
-
-server = &quot;http://n2t.net/ezid&quot;
-
-operations = {
-  # operation : number of arguments
-  &quot;mint&quot; : lambda l: l%2 == 1,
-  &quot;create&quot; : lambda l: l%2 == 1,
-  &quot;view&quot; : 1,
-  &quot;update&quot; : lambda l: l%2 == 1,
-  &quot;delete&quot; : 1,
-  &quot;login&quot; : 0,
-  &quot;logout&quot; : 0
-}
-
-usageText = &quot;&quot;&quot;Usage: client credentials operation...
-
-  credentials
-    username:password
-    sessionid (as returned by previous login)
-    - (none)
-
-  operation
-    m[int] shoulder [label value label value ...]
-    c[reate] identifier [label value label value ...]
-    v[iew] identifier
-    u[pdate] identifier [label value label value ...]
-    d[elete] identifier
-    login
-    logout
-&quot;&quot;&quot;
-
-def usageError ():
-  sys.stderr.write(usageText)
-  sys.exit(1)
-
-class MyHTTPErrorProcessor (urllib2.HTTPErrorProcessor):
-  def http_response (self, request, response):
-    # Bizarre that Python leaves this out.
-    if response.code == 201:
-      return response
-    else:
-      return urllib2.HTTPErrorProcessor.http_response(self, request,
-        response)
-  https_response = http_response
-
-def formatAnvl (l):
-  r = []
-  for i in range(0, len(l), 2):
-    k = re.sub(&quot;[%:\r\n]&quot;, lambda c: &quot;%%%02X&quot; % ord(c.group(0)), l[i])
-    v = re.sub(&quot;[%\r\n]&quot;, lambda c: &quot;%%%02X&quot; % ord(c.group(0)), l[i+1])
-    r.append(&quot;%s: %s&quot; % (k, v))
-  return &quot;\n&quot;.join(r)
-
-if len(sys.argv) &lt; 3: usageError()
-opener = urllib2.build_opener(MyHTTPErrorProcessor())
-if &quot;:&quot; in sys.argv[1]:
-  server = &quot;https&quot; + server[4:]
-  h = urllib2.HTTPBasicAuthHandler()
-  h.add_password(&quot;EZID&quot;, server, *sys.argv[1].split(&quot;:&quot;, 1))
-  opener.add_handler(h)
-  cookie = None
-elif sys.argv[1] != &quot;-&quot;:
-  cookie = &quot;sessionid=&quot; + sys.argv[1]
-else:
-  cookie = None
-operation = [o for o in operations if o.startswith(sys.argv[2])]
-if len(operation) != 1: usageError()
-operation = operation[0]
-if (type(operations[operation]) is int and\
-  len(sys.argv)-3 != operations[operation]) or\
-  (type(operations[operation]) is types.LambdaType and\
-  not operations[operation](len(sys.argv)-3)): usageError()
-
-if operation in [&quot;mint&quot;, &quot;create&quot;, &quot;update&quot;]:
-  path = &quot;shoulder&quot; if operation == &quot;mint&quot; else &quot;id&quot;
-  arg = urllib.quote(sys.argv[3], &quot;:/&quot;)
-  request = urllib2.Request(&quot;%s/%s/%s&quot; % (server, path, arg))
-  request.get_method = lambda: &quot;PUT&quot; if operation == &quot;create&quot; else &quot;POST&quot;
-  if len(sys.argv) &gt; 4:
-    request.add_header(&quot;Content-Type&quot;, &quot;text/plain; charset=UTF-8&quot;)
-    request.add_data(formatAnvl(sys.argv[4:]).encode(&quot;UTF-8&quot;))
-elif operation == &quot;view&quot;:
-  id = urllib.quote(sys.argv[3], &quot;:/&quot;)
-  request = urllib2.Request(&quot;%s/id/%s&quot; % (server, id))
-elif operation == &quot;delete&quot;:
-  id = urllib.quote(sys.argv[3], &quot;:/&quot;)
-  request = urllib2.Request(&quot;%s/id/%s&quot; % (server, id))
-  request.get_method = lambda: &quot;DELETE&quot;
-elif operation in [&quot;login&quot;, &quot;logout&quot;]:
-  request = urllib2.Request(&quot;%s/%s&quot; % (server, operation))
-
-if cookie: request.add_header(&quot;Cookie&quot;, cookie)
-
-try:
-  c = opener.open(request)
-  output = c.read()
-  if not output.endswith(&quot;\n&quot;): output += &quot;\n&quot;
-  if operation == &quot;login&quot;:
-    output += c.info()[&quot;set-cookie&quot;].split(&quot;;&quot;)[0].split(&quot;=&quot;)[1] + &quot;\n&quot;
-  print output,
-except urllib2.HTTPError, e:
-  print e.code, e.msg
-  print e.fp.read()
+% ezid.py -dt - view ark:/99999/fk4gt78tq
+success: ark:/99999/fk4gt78tq
+_created: 2013-05-17T18:17:14
+_export: yes
+_owner: <span class="hl2">user</span>
+_ownergroup: <span class="hl2">group</span>
+_profile: erc
+_status: public
+_target: http://n2t.net/ezid/id/ark:/99999/fk4gt78tq
+_updated: 2013-05-17T18:17:14
+erc.what: Remembrance of Things Past
+erc.when: 1922
+erc.who: Proust, Marcel
+</pre>
+<p>The tool provides two mechanisms in addition to the command line for
+supplying metadata.  If a metadata element name is an at-sign (&quot;&#64;&quot;,
+U+0040), the subsequent value is treated as a filename and metadata
+elements are read from the named ANVL-formatted file.  For example, if
+file metadata.txt contains:</p>
+<pre class="literal-block">
+erc.who: Proust, Marcel
+erc.what: Remembrance of Things Past
+erc.when: 1922
+</pre>
+<p>Then a test ARK identifier with that metadata can be minted by
+invoking:</p>
+<pre class="literal-block">
+% ezid.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 &#64; metadata.txt
+</pre>
+<p>And if a metadata element value has the form &quot;&#64;<span class="hl1">filename</span>&quot;, the
+named file is read and treated as a single value.  For example, if
+file metadata.xml contains a DataCite XML document, then a test DOI
+identifier with that document as the value of the &quot;datacite&quot; element
+can be minted by invoking:</p>
+<pre class="literal-block">
+% ezid.py <span class="hl2">username</span>:<span class="hl2">password</span> mint doi:10.5072/FK2 datacite &#64;metadata.xml
 </pre>
 </div>
 <div class="section" id="php-examples">
@@ -1589,6 +1541,20 @@ curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X P
 
 curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X POST -H 'Content-Type: text/plain'
   --data-binary &#64;<span class="hl2">metadata.txt</span> https://n2t.net/ezid/id/<span class="hl2">identifier</span>
+</pre>
+</div>
+<div class="section" id="batch-processing">
+<h1>Batch processing</h1>
+<p>The EZID API does not support batch operations on identifiers, but it
+is possible to achieve much the same result using the Python command
+line tool (see <a class="reference internal" href="#python-example">Python example</a> above) combined with some shell
+scripting.  For example, to mint 100 test ARK identifiers and print
+the identifiers:</p>
+<pre class="literal-block">
+#! /bin/bash
+for i in {1..100}; do
+  ezid.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 | awk '{ print $2 }'
+done
 </pre>
 </div>
 </div>

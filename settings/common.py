@@ -57,6 +57,7 @@ SECRET_KEY = "ah2l_w1)ejdxor=0198d$1k$9gdqccsza@4@lqiii2%@!2)m1u"
 
 STANDALONE = False
 SSL = True
+DAEMON_THREADS_ENABLED = True
 
 MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
@@ -68,6 +69,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = "settings.urls"
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 604800
 
 TEMPLATE_LOADERS =\
   ("django.template.loaders.filesystem.Loader",
