@@ -118,11 +118,13 @@
 								<option value="RegistrationAgency">Registration Agency</option>
 								<option value="RegistrationAuthority">Registration Authority</option>
 								<option value="RelatedPerson">Related Person</option>
+								<option value="ResearchGroup">Research Group</option>
 								<option value="RightsHolder">Rights Holder</option>
 								<option value="Researcher">Researcher</option>
 								<option value="Sponsor">Sponsor</option>
 								<option value="Supervisor">Supervisor</option>
 								<option value="WorkPackageLeader">Work Package Leader</option>
+								<option value="Other">Other</option>
 							</select>
 					</div>
 					<div class="clearboth"></div>
@@ -145,11 +147,10 @@
 							<option value/>
 							<option value="Accepted">Accepted</option>
 							<option value="Available">Available</option>
+							<option value="Collected">Collected</option>
 							<option value="Copyrighted">Copyrighted</option>
 							<option value="Created">Created</option>
-							<option value="EndDate">End date</option>
 							<option value="Issued">Issued</option>
-							<option value="StartDate">Start date</option>
 							<option value="Submitted">Submitted</option>
 							<option value="Updated">Updated</option>
 							<option value="Valid">Valid</option>
@@ -175,10 +176,10 @@
 					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit sized1">Resource Type General:</label>
 					<select name="/resource/resourceType/@resourceTypeGeneral" sendselect="yes" class="choice sized1">
 						<option value/>
+						<option value="Audiovisual">Audiovisual</option>
 						<option value="Collection">Collection</option>
 						<option value="Dataset">Dataset</option>
 						<option value="Event">Event</option>
-						<option value="Film">Film</option>
 						<option value="Image">Image</option>
 						<option value="InteractiveResource">Interactive Resource</option>
 						<option value="Model">Model</option>
@@ -186,7 +187,9 @@
 						<option value="Service">Service</option>
 						<option value="Software">Software</option>
 						<option value="Sound">Sound</option>
-						<option value="Text">Text</option>					
+						<option value="Text">Text</option>
+						<option value="Workflow">Workflow</option>
+						<option value="Other">Other</option>		
 					</select>
 				</div>
 			</div>
@@ -233,6 +236,7 @@
 							<option value="ISTC">ISTC</option>
 							<option value="LISSN">LISSN</option>
 							<option value="LSID">LSID</option>
+							<option value="PMID">PMID</option>
 							<option value="PURL">PURL</option>
 							<option value="UPC">UPC</option>
 							<option value="URL">URL</option>
@@ -259,6 +263,9 @@
 							<option value="Compiles">Compiles</option>
 							<option value="IsVariantFormOf">IsVariantFormOf</option>
 							<option value="IsOriginalFormOf">IsOriginalFormOf</option>
+							<option value="IsIdenticalTo">IsIdenticalTo</option>
+							<option value="HasMetadata">HasMetadata</option>
+							<option value="IsMetadataFor">IsMetadataFor</option>
 						</select>
 					</div>
 				<div class="clearboth"></div>
@@ -288,6 +295,7 @@
 							<option value="Abstract">Abstract</option>
 							<option value="SeriesInformation">Series Information</option>
 							<option value="TableOfContents">Table of Contents</option>
+							<option value="Methods">Methods</option>
 							<option value="Other">Other</option>
 						</select>
 					</div>
