@@ -417,6 +417,23 @@ line of the form "error: `reason`:hl1:".  For example:
   |lArr|
   |lArr| error: bad request - no such identifier
 
+Some programming libraries make it a little difficult to read the
+content following an error status code.  For example, from Java, it is
+necessary to explicitly switch between the input and error streams
+based on the status code:
+
+.. parsed-literal::
+
+  java.net.HttpURLConnection c;
+  java.io.InputStream s;
+  ...
+  if (c.getResponseCode() < 400) {
+    s = c.getInputStream();
+  } else {
+    s = c.getErrorStream();
+  }
+  // read from s...
+
 Operation: get identifier metadata
 ----------------------------------
 

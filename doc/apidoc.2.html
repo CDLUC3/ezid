@@ -483,6 +483,21 @@ line of the form &quot;error: <span class="hl1">reason</span>&quot;.  For exampl
 ⇐
 ⇐ error: bad request - no such identifier
 </pre>
+<p>Some programming libraries make it a little difficult to read the
+content following an error status code.  For example, from Java, it is
+necessary to explicitly switch between the input and error streams
+based on the status code:</p>
+<pre class="literal-block">
+java.net.HttpURLConnection c;
+java.io.InputStream s;
+...
+if (c.getResponseCode() &lt; 400) {
+  s = c.getInputStream();
+} else {
+  s = c.getErrorStream();
+}
+// read from s...
+</pre>
 </div>
 <div class="section" id="operation-get-identifier-metadata">
 <h1>Operation: get identifier metadata</h1>
