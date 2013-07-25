@@ -62,7 +62,7 @@ def ajax_advanced(request):
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
       
     return_val = datacite_xml.generate_xml(request.POST)
-    import pdb; pdb.set_trace() #this will enable debugging console
+    #print return_val #for debugging
     to_write = \
     { "_profile": "datacite", 
       '_target' : uic.fix_target(request.POST['_target']),
