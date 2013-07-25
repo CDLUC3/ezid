@@ -25,6 +25,10 @@
 							<label for="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="attribute sized">nameIdentifierScheme:</label>
 							<input type="text" name="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="data sized">
 						</div>
+						<div class="attribute">
+							<label for="/resource/creators/creator[1]/nameIdentifier/@schemeURI" class="attribute sized">schemeURI:</label>
+							<input type="text" name="/resource/creators/creator[1]/nameIdentifier/@schemeURI" class="data sized">
+						</div>
 						<div class="clearboth"></div>
 					</div>
 				</div>
@@ -75,6 +79,10 @@
 						<label for="/resource/subjects/subject[1]/@subjectScheme" class="attribute sized">Subject Scheme:</label>
 						<input type="text" name="/resource/subjects/subject[1]/@subjectScheme" class="data sized" />
 					</div>
+					<div class="attribute">
+						<label for="/resource/subjects/subject[1]/@schemeURI" class="attribute sized">schemeURI:</label>
+						<input type="text" name="/resource/subjects/subject[1]/@schemeURI" class="data sized">
+					</div>
 					<div class="clearboth"></div>
 				</div>
 			</div>
@@ -98,6 +106,10 @@
 							<div class="attribute">
 								<label for="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="attribute sized">nameIdentifierScheme:</label>
 								<input type="text" name="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="data sized">
+							</div>
+							<div class="attribute">
+								<label for="/resource/contributors/contributor[1]/nameIdentifier/@schemeURI" class="attribute sized">schemeURI:</label>
+								<input type="text" name="/resource/contributors/contributor[1]/nameIdentifier/@schemeURI" class="data sized">
 							</div>
 						</div>
 					</div>
@@ -189,7 +201,7 @@
 						<option value="Sound">Sound</option>
 						<option value="Text">Text</option>
 						<option value="Workflow">Workflow</option>
-						<option value="Other">Other</option>		
+						<option value="Other">Other</option>
 					</select>
 				</div>
 			</div>
@@ -245,40 +257,55 @@
 						<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" class="attribute sized">Relation Type:</label>
 						<select name="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" sendselect="yes" class="choice sized">
 							<option value/>
-							<option value="IsCitedBy">IsCitedBy</option>
 							<option value="Cites">Cites</option>
-							<option value="IsSupplementTo">IsSupplementTo</option>
-							<option value="IsSupplementedBy">IsSupplementedBy</option>
-							<option value="IsContinuedBy">IsContinuedBy</option>
-							<option value="Continues">Continues</option>
-							<option value="IsNewVersionOf">IsNewVersionOf</option>
-							<option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
-							<option value="IsPartOf">IsPartOf</option>
-							<option value="HasPart">HasPart</option>
-							<option value="IsReferencedBy">IsReferencedBy</option>
-							<option value="References">References</option>
-							<option value="IsDocumentedBy">IsDocumentedBy</option>
-							<option value="Documents">Documents</option>
-							<option value="IsCompiledBy">IsCompiledBy</option>
 							<option value="Compiles">Compiles</option>
-							<option value="IsVariantFormOf">IsVariantFormOf</option>
-							<option value="IsOriginalFormOf">IsOriginalFormOf</option>
-							<option value="IsIdenticalTo">IsIdenticalTo</option>
+							<option value="Continues">Continues</option>
+							<option value="Documents">Documents</option>
 							<option value="HasMetadata">HasMetadata</option>
+							<option value="HasPart">HasPart</option>
+							<option value="IsCitedBy">IsCitedBy</option>
+							<option value="IsCompiledBy">IsCompiledBy</option>
+							<option value="IsContinuedBy">IsContinuedBy</option>
+							<option value="IsDocumentedBy">IsDocumentedBy</option>
+							<option value="IsIdenticalTo">IsIdenticalTo</option>
 							<option value="IsMetadataFor">IsMetadataFor</option>
+							<option value="IsPartOf">IsPartOf</option>
+							<option value="IsNewVersionOf">IsNewVersionOf</option>
+							<option value="IsOriginalFormOf">IsOriginalFormOf</option>
+							<option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
+							<option value="IsReferencedBy">IsReferencedBy</option>
+							<option value="IsSupplementedBy">IsSupplementedBy</option>
+							<option value="IsSupplementTo">IsSupplementTo</option>
+							<option value="IsVariantFormOf">IsVariantFormOf</option>
+							<option value="References">References</option>
 						</select>
 					</div>
 				<div class="clearboth"></div>
 			</div>
 		</div>
 	</div>
+	
 	<div class="optional">
-		<div name="/resource/rights" class="element">
-			<label for="/resource/rights" class="element sized1">Rights:</label>
-			<input type="text" name="/resource/rights" class="data sized1" />
-			<div class="clearboth"></div>
+		<div name="/resource/rightsList" class="element container">
+			<label for="/resource/rightsList" class="element">Rights List</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/rightsList" nbelmtsadded="1" class="addButton" />
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/rightsList" class="rmvButton" />
+			<div class="multiple" style="border: solid; border-width: 1px; padding: 5px;background:#ffffff">
+				<div name="/resource/rightsList/rights[1]" class="element">
+					<label for="/resource/rightsList/rights[1]" class="element sized">Rights</label>
+					<input type="text" name="/resource/rightsList/rights[1]" class="data sized" />
+					
+					<div class="attribute">
+						<label for="/resource/rightsList/rights[1]/@rightsURI" class="attribute sized">rightsURI:</label>
+						<input type="text" name="/resource/rightsList/rights[1]/@rightsURI" class="data sized">
+					</div>
+					
+					<div class="clearboth"></div>
+				</div>
+			</div>
 		</div>
 	</div>
+	
 	<div class="optional">
 		<div name="/resource/descriptions" class="element container">
 			<label for="/resource/descriptions" class="element">descriptions</label>
@@ -301,6 +328,31 @@
 					</div>
 				</div>
 				<div class="clearboth"></div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="optional">
+		<div name="/resource/geoLocations" class="element container">
+			<label for="/resource/geoLocations" class="element">geoLocations</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/geoLocations" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/geoLocations" class="rmvButton">
+			<div class="multiple">
+				<div name="/resource/geoLocations/geoLocation[1]" class="element">
+					<div name="/resource/geoLocations/geoLocation[1]/geoLocationPoint" class="element">
+						<label for="/resource/geoLocations/geoLocation[1]/geoLocationPoint" class="element sized">geoLocation Point</label>
+						<input type="text" name="/resource/geoLocations/geoLocation[1]/geoLocationPoint" class="data sized">
+					</div>
+					<div name="/resource/geoLocations/geoLocation[1]/geoLocationBox" class="element">
+						<label for="/resource/geoLocations/geoLocation[1]/geoLocationBox" class="element sized">geoLocation Box</label>
+						<input type="text" name="/resource/geoLocations/geoLocation[1]/geoLocationBox" class="data sized">
+					</div>
+					<div name="/resource/geoLocations/geoLocation[1]/geoLocationPlace" class="element">
+						<label for="/resource/geoLocations/geoLocation[1]/geoLocationPlace" class="element sized">geoLocation Place</label>
+						<input type="text" name="/resource/geoLocations/geoLocation[1]/geoLocationPlace" class="data sized">
+					</div>
+					<div class="clearboth"></div>
+				</div>
 			</div>
 		</div>
 	</div>

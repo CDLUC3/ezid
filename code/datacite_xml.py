@@ -10,7 +10,7 @@
 #   Scott Fisher <sfisher@ucop.edu>
 #
 # License:
-#   Copyright (c) 2010, Regents of the University of California
+#   Copyright (c) 2013, Regents of the University of California
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
@@ -19,20 +19,20 @@ from lxml import etree
 import re
 
 def generate_xml(param_items):
-  """This generates and returns a limited datacite XML 2.2 document from form items.
+  """This generates and returns a limited datacite XML d document from form items.
   Pass in something like request.POST, for example.  Required elements are
   at least one creator, title, publisher and publicationYear"""
-  r = etree.fromstring(u'<resource xmlns="http://datacite.org/schema/kernel-2.2"' + \
+  r = etree.fromstring(u'<resource xmlns="http://datacite.org/schema/kernel-3"' + \
                        u' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + \
-                       u' xsi:schemaLocation="http://datacite.org/schema/kernel-2.2' + \
-                       u' http://schema.datacite.org/meta/kernel-2.2/metadata.xsd"/>')
+                       u' xsi:schemaLocation="http://datacite.org/schema/kernel-3' + \
+                       u' http://schema.datacite.org/meta/kernel-3/metadata.xsd"/>')
   
   id_type = _id_type(param_items[u'shoulder'])
 
   items = [x for x in param_items.items() if x[0].startswith(u"/resource") ]
   RESOURCE_ORDER = [u"/resource/" + x for x in [u'creators', u'titles', u'publisher', u'publicationYear', u'subjects', 
                     u'contributors', u'dates', u'language', u'resourceType', u'alternateIdentifiers',
-                    u'relatedIdentifiers', u'rights', u'descriptions'] ]
+                    u'relatedIdentifiers', u'rightsList', u'descriptions', u'geoLocations'] ]
   items = sorted(items, key=lambda i: i[0]) #sort by element name
   #sort by ordinal(s) in string, this may not work all complex cases but should work for datacite
   items = sorted(items, key=lambda i: _sort_get_ordinal(i[0])) 
