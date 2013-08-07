@@ -39,7 +39,7 @@ reload_templates = None
 newsfeed_url = None
 
 remainder_box_default = "Recommended: Leave blank"
-manual_profiles = {'datacite_xml': 'DataCite Expanded'}
+manual_profiles = {'datacite_xml': 'DataCite Recommended'}
 
 def _loadConfig():
   #these aren't really globals for the whole app, but globals for ui_common

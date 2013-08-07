@@ -331,11 +331,13 @@ http://creativecommons.org/licenses/BSD/
 </xsl:template>
 
 <xsl:template match="*[local-name()='geoLocations']">
-	<xsl:apply-templates
-          select="*[local-name()='geoLocation']"/>
+	<xsl:apply-templates select="*[local-name()='geoLocation']"/>
 </xsl:template>
 
 <xsl:template match="*[local-name()='geoLocation']">
+	<xsl:if test="position() != 1">
+		<br/>
+	</xsl:if>    
   <xsl:if test="*[local-name()='geoLocationPlace']">
     <span class="dcms_subvalue dcms_geolocationplace"><xsl:value-of select="*[local-name()='geoLocationPlace']"/></span>
   </xsl:if>
@@ -345,6 +347,8 @@ http://creativecommons.org/licenses/BSD/
     	<span class="dcms_subvalue dcms_geolocationpoint">
 	    	point=<xsl:value-of select="*[local-name()='geoLocationPoint']"/>
 	    </span>
+	    <xsl:if test="*[local-name()='geoLocationBox']">; 
+	    </xsl:if>
 	  </xsl:if>
 	  <xsl:if test="*[local-name()='geoLocationBox']">
 	  	<span class="dcms_subvalue dcms_geolocationbox">
