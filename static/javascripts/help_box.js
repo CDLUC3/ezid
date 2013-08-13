@@ -28,14 +28,15 @@ $(document).ready(function() {
     var id = $(this).attr('href');
     var bl = $(id);
     
+    var pos = $(e.target).offset();
     
     // option for putting above and centered on clicked link
-    var x = e.pageX - bl.width() / 2;
-    var y = e.pageY - bl.height() - 50;
+    var x = pos.left - bl.width() / 2;
+    var y = pos.top - bl.height() - 50;
     if (y < 1){
     	// option for putting below and right of clicked link
-    	var x = e.pageX; // left/right
-    	var y = e.pageY + 20; // up/down
+    	var x = pos.left; // left/right
+    	var y = pos.top + 20; // up/down
     }
     
     bl.css('position', 'absolute');
