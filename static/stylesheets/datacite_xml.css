@@ -71,6 +71,11 @@
 		margin: 4px 0px 4px 0px;
 	}
 	
+	div.container>div.helpico {
+		float:right;
+		width:50px;
+	}
+	
 div.clearboth{
 	clear: both;
 }

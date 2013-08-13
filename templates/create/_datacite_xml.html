@@ -1,3 +1,4 @@
+{% load layout_extras %}
 <script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/extras.js"></script>
 <script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/form_initialization.js"></script>
 <script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/formFunctions.js"></script>
@@ -11,6 +12,7 @@
 		<label for="/resource/creators" class="element">Creator</label>
 		<input type="button" value="+" onclick="addOne(this)" name="/resource/creators" nbelmtsadded="1" class="addButton">
 		<input type="button" value="-" onclick="removeOne(this)" name="/resource/creators" class="rmvButton">
+		<div class="helpico">{% help_icon "dcxml_creators_help" %}</div>
 		<div class="multiple">
 			<div name="/resource/creators/creator[1]" class="element">
 				<div name="/resource/creators/creator[1]/creatorName" class="element">
@@ -39,6 +41,7 @@
 		<label for="/resource/titles" class="element">Title</label>
 		<input type="button" value="+" onclick="addOne(this)" name="/resource/titles" nbelmtsadded="1" class="addButton">
 		<input type="button" value="-" onclick="removeOne(this)" name="/resource/titles" class="rmvButton">
+		<div class="helpico">{% help_icon "dcxml_titles_help" %}</div>
 		<div class="multiple">
 			<div name="/resource/titles/title[1]" class="element">
 				<label for="/resource/titles/title[1]" class="element sized">Title:</label>
@@ -71,6 +74,7 @@
 			<label for="/resource/subjects" class="element">Subject</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="1" class="addButton">
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/subjects" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_subjects_help" %}</div>
 			<div class="multiple">
 				<div name="/resource/subjects/subject[1]" class="element">
 					<label for="/resource/subjects/subject[1]" class="element sized">Subject:</label>
@@ -93,6 +97,7 @@
 			<label for="/resource/contributors" class="element">Contributor</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/contributors" nbelmtsadded="1" class="addButton">
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/contributors" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_contributors_help" %}</div>
 			<div class="multiple">
 				<div name="/resource/contributors/contributor[1]" class="element">
 					<div name="/resource/contributors/contributor[1]/contributorName" class="element">
@@ -149,6 +154,7 @@
 			<label for="/resource/dates" class="element">Date</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/dates" nbelmtsadded="1" class="addButton" />
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/dates" class="rmvButton" />
+			<div class="helpico">{% help_icon "dcxml_dates_help" %}</div>
 			<div class="multiple" style="border: solid; border-width: 1px; padding: 5px;background:#ffffff">
 				<div name="/resource/dates/date[1]" class="element">
 					<label for="/resource/dates/date[1]" class="element sized">Date:</label>
@@ -213,6 +219,7 @@
 			<label for="/resource/alternateIdentifiers" class="element">Alternate Identifier</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/alternateIdentifiers" nbelmtsadded="1" class="addButton">
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/alternateIdentifiers" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_alt_ids_help" %}</div>
 			<div class="multiple" style="border: solid; border-width: 1px; padding: 5px; background: #ffffff">
 				<div name="/resource/alternateIdentifiers/alternateIdentifier[1]" class="element">
 					<label for="/resource/alternateIdentifiers/alternateIdentifier[1]" class="element sized">Identifier:</label>
@@ -231,6 +238,7 @@
 			<label for="/resource/relatedIdentifiers" class="element">Related Identifier</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/relatedIdentifiers" nbelmtsadded="1" class="addButton">
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/relatedIdentifiers" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_rel_ids_help" %}</div>
 			<div class="multiple">
 				<div class="element">
 					<label for="/resource/relatedIdentifiers/relatedIdentifier[1]" class="element sized">Identifier:</label>
@@ -290,6 +298,7 @@
 			<label for="/resource/rightsList" class="element">Rights</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/rightsList" nbelmtsadded="1" class="addButton" />
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/rightsList" class="rmvButton" />
+			<div class="helpico">{% help_icon "dcxml_rights_help" %}</div>
 			<div class="multiple" style="border: solid; border-width: 1px; padding: 5px;background:#ffffff">
 				<div name="/resource/rightsList/rights[1]" class="element">
 					<label for="/resource/rightsList/rights[1]" class="element sized">Rights:</label>
@@ -311,6 +320,7 @@
 			<label for="/resource/descriptions" class="element">Description</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="1" class="addButton">
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/descriptions" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_descriptions_help" %}</div>
 			<div class="multiple">
 				<div name="/resource/descriptions/description[1]" class="element">
 					<label for="/resource/descriptions/description[1]" class="element sized">Description:</label>
@@ -337,6 +347,7 @@
 			<label for="/resource/geoLocations" class="element">Geolocation</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/geoLocations" nbelmtsadded="1" class="addButton">
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/geoLocations" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_geolocations_help" %}</div>
 			<div class="multiple">
 				<div name="/resource/geoLocations/geoLocation[1]" class="element">
 					<div name="/resource/geoLocations/geoLocation[1]/geoLocationPoint" class="element">
@@ -357,6 +368,8 @@
 		</div>
 	</div>
 </div>
+
+{% include "info/datacite_xml_help.html" %}
 
 <!-- this form needs different handling since it's auto-generated
 	submitting by AJAX will save complete rewriting and populating
