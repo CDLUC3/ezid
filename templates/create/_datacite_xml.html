@@ -59,14 +59,15 @@
 			</div>
 		</div>
 	</div>
+	<div class="clearboth" style="margin-top:5px;"></div>
 	<div name="/resource/publisher" class="element">
 		<label for="/resource/publisher" class="element sized1">Publisher</label>
-		<input type="text" name="/resource/publisher" class="data sized1">
+		<input type="text" name="/resource/publisher" class="data sized1"> {% help_icon "dcxml_publisher_help" %}
 		<div class="clearboth"></div>
 	</div>
 	<div name="/resource/publicationYear" class="element">
 		<label for="/resource/publicationYear" class="element sized1">Publication Year</label>
-		<input type="text" name="/resource/publicationYear" class="data sizedsmall1">
+		<input type="text" name="/resource/publicationYear" class="data sizedsmall1"> {% help_icon "dcxml_publication_year_help" %}
 		<div class="clearboth"></div>
 	</div>
 	<div class="optional">
@@ -179,12 +180,14 @@
 			</div>
 		</div>
 	</div>
+	<div class="clearboth" style="margin-top:5px;"></div>
 	<div class="optional">
 		<div name="/resource/language" class="element">
 			<label for="/resource/language" class="element sized1">Language</label>
 			<input type="text" name="/resource/language" class="data sized1">
 		</div>
 	</div>
+	<div class="clearboth"></div>
 	<div class="optional">
 		<div name="/resource/resourceType" class="element">
 			<div name="/resource/resourceType" class="element">
@@ -206,10 +209,11 @@
 						<option value="Text">Text</option>
 						<option value="Workflow">Workflow</option>
 						<option value="Other">Other</option>
-					</select>
+					</select> {% help_icon "dcxml_resource_type_general_help" %}
 				</div>
+				<div class="clearboth"></div>
 				<label for="/resource/resourceType" class="element sized1">Resource Type Description</label>
-				<input type="text" name="/resource/resourceType" class="data sized1" />
+				<input type="text" name="/resource/resourceType" class="data sized1" /> {% help_icon "dcxml_resource_type_help" %}
 			</div>
 			<div class="clearboth"></div>
 		</div>
