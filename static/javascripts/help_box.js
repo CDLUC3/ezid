@@ -32,7 +32,7 @@ $(document).ready(function() {
     
     // option for putting above and centered on clicked link
     var x = pos.left - bl.width() / 2;
-    var y = pos.top - bl.height() - 50;
+    var y = pos.top - bl.height() - 25;
     if (y < 1){
     	// option for putting below and right of clicked link
     	var x = pos.left; // left/right

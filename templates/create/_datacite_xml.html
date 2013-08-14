@@ -71,6 +71,62 @@
 		<div class="clearboth"></div>
 	</div>
 	<div class="optional">
+		<div name="/resource/resourceType" class="element">
+			<div name="/resource/resourceType" class="element">
+				<div class="attribute">
+					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit sized1">Resource Type</label>
+					<select name="/resource/resourceType/@resourceTypeGeneral" sendselect="yes" class="choice sized1">
+						<option value/>
+						<option value="Audiovisual">Audiovisual</option>
+						<option value="Collection">Collection</option>
+						<option value="Dataset">Dataset</option>
+						<option value="Event">Event</option>
+						<option value="Image">Image</option>
+						<option value="InteractiveResource">Interactive Resource</option>
+						<option value="Model">Model</option>
+						<option value="PhysicalObject">Physical Object</option>
+						<option value="Service">Service</option>
+						<option value="Software">Software</option>
+						<option value="Sound">Sound</option>
+						<option value="Text">Text</option>
+						<option value="Workflow">Workflow</option>
+						<option value="Other">Other</option>
+					</select> {% help_icon "dcxml_resource_type_general_help" %}
+				</div>
+				<div class="clearboth"></div>
+				<label for="/resource/resourceType" class="element sized1">Resource Type Description</label>
+				<input type="text" name="/resource/resourceType" class="data sized1" /> {% help_icon "dcxml_resource_type_help" %}
+			</div>
+			<div class="clearboth"></div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/descriptions" class="element container">
+			<label for="/resource/descriptions" class="element">Description</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/descriptions" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_descriptions_help" %}</div>
+			<div class="multiple">
+				<div name="/resource/descriptions/description[1]" class="element">
+					<label for="/resource/descriptions/description[1]" class="element sized">Description:</label>
+					<input type="text" name="/resource/descriptions/description[1]" class="data sized" />
+					<div class="attribute">
+						<label for="/resource/descriptions/description[1]/@descriptionType" class="attribute sized">Type:</label>
+						<select name="/resource/descriptions/description[1]/@descriptionType" sendselect="yes" class="choice sized">
+							<option value=""></option>
+							<option value="Abstract">Abstract</option>
+							<option value="SeriesInformation">Series Information</option>
+							<option value="TableOfContents">Table of Contents</option>
+							<option value="Methods">Methods</option>
+							<option value="Other">Other</option>
+						</select>
+					</div>
+				</div>
+				<div class="clearboth"></div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
 		<div name="/resource/subjects" class="element container">
 			<label for="/resource/subjects" class="element">Subject</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="1" class="addButton">
@@ -189,36 +245,6 @@
 	</div>
 	<div class="clearboth"></div>
 	<div class="optional">
-		<div name="/resource/resourceType" class="element">
-			<div name="/resource/resourceType" class="element">
-				<div class="attribute">
-					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit sized1">Resource Type</label>
-					<select name="/resource/resourceType/@resourceTypeGeneral" sendselect="yes" class="choice sized1">
-						<option value/>
-						<option value="Audiovisual">Audiovisual</option>
-						<option value="Collection">Collection</option>
-						<option value="Dataset">Dataset</option>
-						<option value="Event">Event</option>
-						<option value="Image">Image</option>
-						<option value="InteractiveResource">Interactive Resource</option>
-						<option value="Model">Model</option>
-						<option value="PhysicalObject">Physical Object</option>
-						<option value="Service">Service</option>
-						<option value="Software">Software</option>
-						<option value="Sound">Sound</option>
-						<option value="Text">Text</option>
-						<option value="Workflow">Workflow</option>
-						<option value="Other">Other</option>
-					</select> {% help_icon "dcxml_resource_type_general_help" %}
-				</div>
-				<div class="clearboth"></div>
-				<label for="/resource/resourceType" class="element sized1">Resource Type Description</label>
-				<input type="text" name="/resource/resourceType" class="data sized1" /> {% help_icon "dcxml_resource_type_help" %}
-			</div>
-			<div class="clearboth"></div>
-		</div>
-	</div>
-	<div class="optional">
 		<div name="/resource/alternateIdentifiers" class="element container">
 			<label for="/resource/alternateIdentifiers" class="element">Alternate Identifier</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/alternateIdentifiers" nbelmtsadded="1" class="addButton">
@@ -315,33 +341,6 @@
 					
 					<div class="clearboth"></div>
 				</div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="optional">
-		<div name="/resource/descriptions" class="element container">
-			<label for="/resource/descriptions" class="element">Description</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="1" class="addButton">
-			<input type="button" value="-" onclick="removeOne(this)" name="/resource/descriptions" class="rmvButton">
-			<div class="helpico">{% help_icon "dcxml_descriptions_help" %}</div>
-			<div class="multiple">
-				<div name="/resource/descriptions/description[1]" class="element">
-					<label for="/resource/descriptions/description[1]" class="element sized">Description:</label>
-					<input type="text" name="/resource/descriptions/description[1]" class="data sized" />
-					<div class="attribute">
-						<label for="/resource/descriptions/description[1]/@descriptionType" class="attribute sized">Type:</label>
-						<select name="/resource/descriptions/description[1]/@descriptionType" sendselect="yes" class="choice sized">
-							<option value=""></option>
-							<option value="Abstract">Abstract</option>
-							<option value="SeriesInformation">Series Information</option>
-							<option value="TableOfContents">Table of Contents</option>
-							<option value="Methods">Methods</option>
-							<option value="Other">Other</option>
-						</select>
-					</div>
-				</div>
-				<div class="clearboth"></div>
 			</div>
 		</div>
 	</div>
