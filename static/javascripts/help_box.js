@@ -26,22 +26,49 @@ $(document).ready(function() {
     e.preventDefault();
     //Get the A tag
     var id = $(this).attr('href');
-    var bl = $(id);
+    var helpbox = $(id);
     
-    var pos = $(e.target).offset();
+    var icon = $(e.target);
     
-    // option for putting above and centered on clicked link
-    var x = pos.left - bl.width() / 2;
-    var y = pos.top - bl.height() - 25;
-    if (y < 1){
-    	// option for putting below and right of clicked link
-    	var x = pos.left; // left/right
-    	var y = pos.top + 20; // up/down
+    var icon_pos = icon.offset();
+    
+    var scrolltop = $(document).scrollTop();
+    var scrollbottom = scrolltop + $(window).height();
+    var offset_from_icon = 12;
+    
+    var icon_center_top = icon_pos.top + icon.outerHeight() / 2;
+    		
+   	var helpbox_full_height = helpbox.outerHeight();
+    
+    console.log("icon_center_top=" + icon_center_top);		
+    console.log("helpbox_full_height=" + helpbox_full_height);	
+    
+    if(icon_center_top - helpbox_full_height > scrolltop ){
+    	// display above icon
+    	var top = icon_center_top - helpbox_full_height - offset_from_icon;
+    }else if(icon_center_top + helpbox_full_height < scrolltop + $(window).height()){
+    	// display below icon
+    	var top = icon_center_top + offset_from_icon;
+    }else{
+    	// display above icon
+    	var top = icon_center_top - helpbox_full_height - offset_from_icon;
     }
+    if(top < 1) top = 1;
     
-    bl.css('position', 'absolute');
-    bl.css( 'top', y);
-    bl.css( 'left', x); 
+    var helpbox_full_width = helpbox.outerWidth();
+    
+    var icon_center_left = icon_pos.left + icon.outerWidth()/2;
+
+    var left = icon_center_left - helpbox_full_width / 2;
+
+    if(left + helpbox_full_width > $(window).scrollLeft() + $(window).width() ){
+    	left = $(window).scrollLeft() + $(window).width() - helpbox_full_width;
+    }
+    if(left<1) left = 1;
+    
+    helpbox.css('position', 'absolute');
+    helpbox.css( 'top', top);
+    helpbox.css( 'left', left); 
     //transition effect
     $(id).fadeIn(100);
  
