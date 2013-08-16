@@ -212,3 +212,28 @@ def details(request):
   d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
   d['has_resource_type'] = True if (d['current_profile'].name == 'datacite' and 'datacite.resourcetype' in m and m['datacite.resourcetype'] != '') else False
   return uic.render(request, "manage/details", d)
+
+def datacite_xml(request, identifier):
+  d = { 'menu_item' : 'ui_manage.null'}
+  if "auth" in request.session:
+    r = ezid.getMetadata(identifier, request.session["auth"].user,
+      request.session["auth"].group)
+  else:
+    r = ezid.getMetadata(identifier)
+  if type(r) is str:
+    django.contrib.messages.error(request, uic.formatError(r))
+    return redirect("ui_lookup.index")
+  s, m = r
+  assert s.startswith("success:")
+  d['identifier'] = m
+  d['current_profile'] = metadata.getProfile(m['_profile'])
+  if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
+    content = d['identifier']["datacite"]
+  
+  #content = "poop on you " + identifier
+  # By setting the content type ourselves, we gain control over the
+  # character encoding and can properly set the content length.
+  ec = content.encode("UTF-8")
+  r = django.http.HttpResponse(ec, content_type="application/xml; charset=UTF-8")
+  r["Content-Length"] = len(ec)
+  return r
