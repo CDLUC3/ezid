@@ -75,11 +75,11 @@
 			<div name="/resource/resourceType" class="element">
 				<div class="attribute">
 					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit sized1">Resource Type</label>
-					<select name="/resource/resourceType/@resourceTypeGeneral" sendselect="yes" class="choice sized1">
+					<select name="/resource/resourceType/@resourceTypeGeneral" id="resource_type_general" sendselect="yes" class="choice sized1">
 						<option value/>
 						<option value="Audiovisual">Audiovisual</option>
 						<option value="Collection">Collection</option>
-						<option value="Dataset">Dataset</option>
+						<option value="Dataset" selected="selected">Dataset</option>
 						<option value="Event">Event</option>
 						<option value="Image">Image</option>
 						<option value="InteractiveResource">Interactive Resource</option>
@@ -95,26 +95,26 @@
 				</div>
 				<div class="clearboth"></div>
 				<label for="/resource/resourceType" class="element sized1">Resource Type Description</label>
-				<input type="text" name="/resource/resourceType" class="data sized1" /> {% help_icon "dcxml_resource_type_help" %}
+				<input type="text" name="/resource/resourceType" class="data sized1" id="resource_type" /> {% help_icon "dcxml_resource_type_help" %}
 			</div>
 			<div class="clearboth"></div>
 		</div>
 	</div>
 	<div class="optional">
 		<div name="/resource/descriptions" class="element container">
-			<label for="/resource/descriptions" class="element">Description</label>
+			<label for="/resource/descriptions" class="element">Abstract</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="1" class="addButton">
 			<input type="button" value="-" onclick="removeOne(this)" name="/resource/descriptions" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_descriptions_help" %}</div>
 			<div class="multiple">
 				<div name="/resource/descriptions/description[1]" class="element">
-					<label for="/resource/descriptions/description[1]" class="element sized">Description:</label>
+					<label for="/resource/descriptions/description[1]" class="element sized">More descriptive information:</label>
 					<input type="text" name="/resource/descriptions/description[1]" class="data sized" />
 					<div class="attribute">
 						<label for="/resource/descriptions/description[1]/@descriptionType" class="attribute sized">Type:</label>
 						<select name="/resource/descriptions/description[1]/@descriptionType" sendselect="yes" class="choice sized">
 							<option value=""></option>
-							<option value="Abstract">Abstract</option>
+							<option value="Abstract" selected="selected">Abstract</option>
 							<option value="SeriesInformation">Series Information</option>
 							<option value="TableOfContents">Table of Contents</option>
 							<option value="Methods">Methods</option>
@@ -234,13 +234,6 @@
 					<div class="clearboth"></div>
 				</div>
 			</div>
-		</div>
-	</div>
-	<div class="clearboth" style="margin-top:5px;"></div>
-	<div class="optional">
-		<div name="/resource/language" class="element">
-			<label for="/resource/language" class="element sized1">Language</label>
-			<input type="text" name="/resource/language" class="data sized1">
 		</div>
 	</div>
 	<div class="clearboth"></div>
@@ -381,11 +374,10 @@
 {% include "info/datacite_xml_help.html" %}
 
 <!-- this form needs different handling since it's auto-generated
-	submitting by AJAX will save complete rewriting and populating
-	form on every load -->
+	submitting by AJAX will avoid complete rewriting page and repopulating
+	form on every page load -->
 
-<script> 
-
+<script type="text/javascript">
   $(document).ready(function() {
   	// change form to submit by AJAX
   	var options = {
@@ -414,7 +406,19 @@
 			  if(items.length > 0)
 			  	items[0].checked = true;
 			}
-		}); 
+		});
+		
+		//* set the resourceType to the same as resourceTypeGeneral
+		$(':submit').click(function(e)
+		{
+			var gen = $('#resource_type_general').val();
+			var res_type = $('#resource_type').val();			
+			console.log('general=' + gen);
+			console.log('res_type=' + res_type);
+			if(gen != '' && res_type == ''){
+				$('#resource_type').val(gen);
+			}
+		});
 	});
 	
 	// post-submit callback 

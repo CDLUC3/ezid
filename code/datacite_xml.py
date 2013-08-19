@@ -19,7 +19,7 @@ from lxml import etree
 import re
 
 def generate_xml(param_items):
-  """This generates and returns a limited datacite XML d document from form items.
+  """This generates and returns a limited datacite XML document from form items.
   Pass in something like request.POST, for example.  Required elements are
   at least one creator, title, publisher and publicationYear"""
   r = etree.fromstring(u'<resource xmlns="http://datacite.org/schema/kernel-3"' + \
@@ -31,11 +31,11 @@ def generate_xml(param_items):
 
   items = [x for x in param_items.items() if x[0].startswith(u"/resource") ]
   RESOURCE_ORDER = [u"/resource/" + x for x in [u'creators', u'titles', u'publisher', u'publicationYear', u'subjects', 
-                    u'contributors', u'dates', u'language', u'resourceType', u'alternateIdentifiers',
+                    u'contributors', u'dates', u'resourceType', u'alternateIdentifiers',
                     u'relatedIdentifiers', u'rightsList', u'descriptions', u'geoLocations'] ]
-  items = sorted(items, key=lambda i: i[0]) #sort by element name
+  items = sorted(items, key=lambda i: i[0]) #sort by element name of params
   #sort by ordinal(s) in string, this may not work all complex cases but should work for datacite
-  items = sorted(items, key=lambda i: _sort_get_ordinal(i[0])) 
+  items = sorted(items, key=lambda i: _sort_get_ordinal(i[0])) #sort by ordinal
   items = sorted(items, key=lambda i: RESOURCE_ORDER.
                  index(re.search('^/resource/[a-zA-Z0-9\[\]]+', i[0]).group())) #sort in preferred order of sections
 

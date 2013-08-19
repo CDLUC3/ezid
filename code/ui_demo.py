@@ -51,10 +51,10 @@ def ajax_advanced(request):
     if request.POST['shoulder'] not in pre_list:
       error_msgs.append("Unauthorized to create with this identifier prefix.")
     error_msgs = error_msgs + uic.validate_advanced_top(request)
-    for k, v in {'/resource/creators/creator[1]/creatorName': 'creatorName',
+    for k, v in {'/resource/creators/creator[1]/creatorName': 'creator name',
                  '/resource/titles/title[1]': 'title',
                  '/resource/publisher': 'publisher',
-                 '/resource/publicationYear': 'publicationYear'}.items():
+                 '/resource/publicationYear': 'publication year'}.items():
       if (not (k in request.POST)) or request.POST[k].strip() == '':
         error_msgs.append("Please enter a " + v)
     
