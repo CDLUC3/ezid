@@ -7,6 +7,7 @@
 	.container>label, .element>label, .boldit{
 		font-weight: bold;
 		font-size: larger;
+		margin-top:3px;
 	}
 	
 	.multiple {
@@ -14,6 +15,8 @@
 		border-width: 1px;
 		padding: 5px;
 		background:#ffffff;
+		clear:both;
+		margin-top:5px;
 	}
 	
 	.addButton {
@@ -38,6 +41,7 @@
 		float: left;
 		clear: left;
 		width: 150px;
+		margin-top:3px;
 	}
 	
 	input.sized, div.sized, select.sized {
@@ -45,6 +49,7 @@
 		float:left;
 		clear: right;
 		width:400px;
+		margin-top:3px;
 	}
 	
 	label.sized1 {
