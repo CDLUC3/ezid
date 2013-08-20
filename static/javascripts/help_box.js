@@ -38,10 +38,7 @@ $(document).ready(function() {
     
     var icon_center_top = icon_pos.top + icon.outerHeight() / 2;
     		
-   	var helpbox_full_height = helpbox.outerHeight();
-    
-    console.log("icon_center_top=" + icon_center_top);		
-    console.log("helpbox_full_height=" + helpbox_full_height);	
+   	var helpbox_full_height = helpbox.outerHeight();	
     
     if(icon_center_top - helpbox_full_height > scrolltop ){
     	// display above icon
