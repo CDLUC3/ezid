@@ -6,7 +6,8 @@ import ezid
 import ui_create
 import urllib
 import datacite_xml
-
+import os
+from lxml import etree
 def index(request):
   d = { 'menu_item' : 'ui_demo.index' }
   return redirect("ui_demo.simple")
@@ -60,8 +61,31 @@ def ajax_advanced(request):
     
     if len(error_msgs) > 0:
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
-      
+    
     return_val = datacite_xml.generate_xml(request.POST)
+    
+    # *** validate against XSD ***
+    cleansed_xml = return_val.replace('encoding="UTF-8"', '', 1)
+    xsd_doc = etree.parse(os.path.abspath(os.path.dirname(__name__)) + \
+                           "/ezid/xsd/datacite3-kernel/metadata.xsd")
+    xsd = etree.XMLSchema(xsd_doc)
+    parser = etree.XMLParser(ns_clean=True, recover=True)
+    xml = etree.fromstring(cleansed_xml, parser)
+    
+    # must add something like <identifier identifierType="DOI">10.5072/FK25Q56C6</identifier>
+    # because it will not validate until it's present, even though we haven't minted
+    # an identifier yet, but want to validate as though we had
+    el = xml.find('{http://datacite.org/schema/kernel-3}identifier')
+    el.attrib['identifierType'] = 'DOI'
+    el.text = '10.5072/FK25Q56C6'
+    
+    if not xsd.validate(xml):
+      error_msgs.append("XML validation errors occurred for the values you entered:")
+      for x in [x.message for x in xsd.error_log]:
+        error_msgs.append(x)
+      return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
+    # *** end validate against XSD ***
+
     #print return_val #for debugging
     to_write = \
     { "_profile": "datacite", 
