@@ -66,8 +66,8 @@ def ajax_advanced(request):
     
     # *** validate against XSD ***
     cleansed_xml = return_val.replace('encoding="UTF-8"', '', 1)
-    xsd_doc = etree.parse(os.path.abspath(os.path.dirname(__name__)) + \
-                           "/ezid/xsd/datacite3-kernel/metadata.xsd")
+    xsd_doc = etree.parse(django.conf.settings.PROJECT_ROOT + \
+                           "/xsd/datacite3-kernel/metadata.xsd")
     xsd = etree.XMLSchema(xsd_doc)
     parser = etree.XMLParser(ns_clean=True, recover=True)
     xml = etree.fromstring(cleansed_xml, parser)
