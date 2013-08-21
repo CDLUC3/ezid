@@ -60,6 +60,10 @@ def ajax_advanced(request):
       if (not (k in request.POST)) or request.POST[k].strip() == '':
         error_msgs.append("Please enter a " + v)
     
+    if ('/resource/publicationYear' in request.POST) and \
+              not re.compile('^\d{4}$').match(request.POST['/resource/publicationYear']):
+      error_msgs.append("Please enter a four digit year for the publication year.")
+    
     if len(error_msgs) > 0:
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
     
