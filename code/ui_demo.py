@@ -7,6 +7,7 @@ import ui_create
 import urllib
 import datacite_xml
 import os
+import re
 from lxml import etree
 def index(request):
   d = { 'menu_item' : 'ui_demo.index' }
@@ -81,7 +82,7 @@ def ajax_advanced(request):
     
     if not xsd.validate(xml):
       error_msgs.append("XML validation errors occurred for the values you entered:")
-      for x in [x.message for x in xsd.error_log]:
+      for x in [re.sub("{http://.*}", '', x.message) for x in xsd.error_log]:
         error_msgs.append(x)
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
     # *** end validate against XSD ***
