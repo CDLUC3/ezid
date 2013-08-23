@@ -179,7 +179,15 @@ def _translate_errors(err_in):
                 "^Element\\ 'geoLocationPoint':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ list\\ type\\ 'point'\\.$":
                   '',
                 "^Element\\ 'geoLocationPoint':\\ \\[facet\\ 'maxLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '.+?';\\ this\\ exceeds\\ the\\ allowed\\ maximum\\ length\\ of\\ '2'\\.$":
-                  'Geolocation points must be made up of two numbers separated by a space.'
+                  'Geolocation points must be made up of two numbers separated by a space.',
+                "^Element\\ 'geoLocationBox':\\ \\[facet\\ 'minLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '.+?';\\ this\\ underruns\\ the\\ allowed\\ minimum\\ length\\ of\\ '4'\\.$":
+                  'A Geolocation Box must contain 4 numbers.',
+                "^Element\\ 'geoLocationBox':\\ \\[facet\\ 'maxLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '5';\\ this\\ exceeds\\ the\\ allowed\\ maximum\\ length\\ of\\ '4'\\.$":
+                  'A Geolocation Box must contain 4 numbers.',
+                "^Element\\ 'geoLocationBox':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ list\\ type\\ 'box'\\.$":
+                  '',
+                "^Element\\ 'geoLocationBox':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ atomic\\ type\\ 'xs:double'\\.$":
+                  'A Geolocation Box must use only decimal numbers for coordinates.'
                 }
   
   
