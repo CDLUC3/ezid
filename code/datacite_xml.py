@@ -150,49 +150,54 @@ def validate_document(xml_doc, xsd_path, err_msgs):
     return False
   return True
 
+
+
+"""Lists of errors for error translation from lxml/libxml2 to the interface"""
+EXACT_ERRS = {"Element 'contributor': The attribute 'contributorType' is required but missing.":
+    "Contributor Type is required if you fill in contributor information.",
+  "Element 'description': The attribute 'descriptionType' is required but missing.":
+    "If descriptive information is present in the Abstract section, a type must be selected.",
+  "Element 'contributor': Missing child element(s). Expected is ( contributorName ).":
+    "Contributor Name is required if you fill in contributor information.",
+  "Element 'nameIdentifier': This element is not expected. Expected is ( contributorName ).":
+    "Contributor Name is required if you fill in contributor information.",
+  "Element 'date': The attribute 'dateType' is required but missing.":
+    "Date Type is required if you fill in a Date.",
+  "Element 'alternateIdentifier': The attribute 'alternateIdentifierType' is required but missing.":
+    "The Alternate Identifier Type is required if you fill in an Alternate Identifier.",
+  "Element 'relatedIdentifier': The attribute 'relatedIdentifierType' is required but missing.":
+    "The Related Identifier Type is required if you fill in a Related Identifier.",
+  "Element 'relatedIdentifier': The attribute 'relationType' is required but missing.":
+    "Related Identifier: Relation Type is required if you fill in a Related Identifier.",
+  "Element 'geoLocationPoint': [facet 'minLength'] The value has a length of '1'; this underruns the allowed minimum length of '2'.":
+    "Geolocation points must be made up of two numbers separated by a space.",
+  "Element 'resourceType': The attribute 'resourceTypeGeneral' is required but missing.":
+    "A Resource Type is required if you fill in the Resource Type Description."}
+  
+REGEX_ERRS = {"^Element\\ 'geoLocationPoint':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ atomic\\ type\\ 'xs:double'\\.$":
+    'A Geolocation Point must use only decimal numbers for coordinates.',
+  "^Element\\ 'geoLocationPoint':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ list\\ type\\ 'point'\\.$":
+    '',
+  "^Element\\ 'geoLocationPoint':\\ \\[facet\\ 'maxLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '.+?';\\ this\\ exceeds\\ the\\ allowed\\ maximum\\ length\\ of\\ '2'\\.$":
+    'Geolocation points must be made up of two numbers separated by a space.',
+  "^Element\\ 'geoLocationBox':\\ \\[facet\\ 'minLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '.+?';\\ this\\ underruns\\ the\\ allowed\\ minimum\\ length\\ of\\ '4'\\.$":
+    'A Geolocation Box must contain 4 numbers.',
+  "^Element\\ 'geoLocationBox':\\ \\[facet\\ 'maxLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '5';\\ this\\ exceeds\\ the\\ allowed\\ maximum\\ length\\ of\\ '4'\\.$":
+    'A Geolocation Box must contain 4 numbers.',
+  "^Element\\ 'geoLocationBox':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ list\\ type\\ 'box'\\.$":
+    '',
+  "^Element\\ 'geoLocationBox':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ atomic\\ type\\ 'xs:double'\\.$":
+    'A Geolocation Box must use only decimal numbers for coordinates.'
+  }
+
 def _translate_errors(err_in):
-  """translates the errors returned by lxml and libxml2 into more
-  readable errors by users.  If no translation, then passes it through"""
+  """translates the errors returned by lxml and libxml2 after validation into more
+  readable errors for users.  If no translation, then passes it through"""
   errs_copy = copy.copy(err_in)
   errs_out = []
-  exact_errs = {"Element 'contributor': The attribute 'contributorType' is required but missing.":
-                  "Contributor Type is required if you fill in contributor information.",
-                "Element 'description': The attribute 'descriptionType' is required but missing.":
-                  "If descriptive information is present in the Abstract section, a type must be selected.",
-                "Element 'contributor': Missing child element(s). Expected is ( contributorName ).":
-                  "Contributor Name is required if you fill in contributor information.",
-                "Element 'nameIdentifier': This element is not expected. Expected is ( contributorName ).":
-                  "Contributor Name is required if you fill in contributor information.",
-                "Element 'date': The attribute 'dateType' is required but missing.":
-                  "Date Type is required if you fill in a Date.",
-                "Element 'alternateIdentifier': The attribute 'alternateIdentifierType' is required but missing.":
-                  "The Alternate Identifier Type is required if you fill in an Alternate Identifier.",
-                "Element 'relatedIdentifier': The attribute 'relatedIdentifierType' is required but missing.":
-                  "The Related Identifier Type is required if you fill in a Related Identifier.",
-                "Element 'relatedIdentifier': The attribute 'relationType' is required but missing.":
-                  "You Related Identifier Relation Type is required if you fill in a Related Identifier.",
-                "Element 'geoLocationPoint': [facet 'minLength'] The value has a length of '1'; this underruns the allowed minimum length of '2'.":
-                  "Geolocation points must be made up of two numbers separated by a space."}
-  
-  regex_errs = {"^Element\\ 'geoLocationPoint':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ atomic\\ type\\ 'xs:double'\\.$":
-                  'A Geolocation Point must use only decimal numbers for coordinates.',
-                "^Element\\ 'geoLocationPoint':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ list\\ type\\ 'point'\\.$":
-                  '',
-                "^Element\\ 'geoLocationPoint':\\ \\[facet\\ 'maxLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '.+?';\\ this\\ exceeds\\ the\\ allowed\\ maximum\\ length\\ of\\ '2'\\.$":
-                  'Geolocation points must be made up of two numbers separated by a space.',
-                "^Element\\ 'geoLocationBox':\\ \\[facet\\ 'minLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '.+?';\\ this\\ underruns\\ the\\ allowed\\ minimum\\ length\\ of\\ '4'\\.$":
-                  'A Geolocation Box must contain 4 numbers.',
-                "^Element\\ 'geoLocationBox':\\ \\[facet\\ 'maxLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '5';\\ this\\ exceeds\\ the\\ allowed\\ maximum\\ length\\ of\\ '4'\\.$":
-                  'A Geolocation Box must contain 4 numbers.',
-                "^Element\\ 'geoLocationBox':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ list\\ type\\ 'box'\\.$":
-                  '',
-                "^Element\\ 'geoLocationBox':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ atomic\\ type\\ 'xs:double'\\.$":
-                  'A Geolocation Box must use only decimal numbers for coordinates.'
-                }
-  
   
   # add translation of any exact errors
-  for key, value in exact_errs.iteritems():
+  for key, value in EXACT_ERRS.iteritems():
     if key in errs_copy:
       errs_out.append(value)
       errs_copy.remove(key)
@@ -200,7 +205,7 @@ def _translate_errors(err_in):
   # add translation of any regex matches for errors
   temp_trans = {}
   for err in errs_copy:
-    for key, value in regex_errs.iteritems():
+    for key, value in REGEX_ERRS.iteritems():
       a = re.compile(key)
       if a.match(err):
         temp_trans[err] = value
