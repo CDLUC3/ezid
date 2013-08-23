@@ -17,7 +17,9 @@
 
 from lxml import etree
 import re
+import copy
 
+# this section generates the XML document based on form with XPATH expressions
 def generate_xml(param_items):
   """This generates and returns a limited datacite XML document from form items.
   Pass in something like request.POST, for example.  Required elements are
@@ -124,3 +126,83 @@ def _id_type(str):
     return u''
   else:
     return m.findall(str)[0].upper()
+  
+def validate_document(xml_doc, xsd_path, err_msgs):
+  """Validates the document agains the XSD and adds
+  error messages to the err_msgs array if things go wrong"""
+  cleansed_xml = xml_doc.replace('encoding="UTF-8"', '', 1)  
+  xsd_doc = etree.parse(xsd_path)
+  xsd = etree.XMLSchema(xsd_doc)
+  parser = etree.XMLParser(ns_clean=True, recover=True)
+  xml = etree.fromstring(cleansed_xml, parser)
+  
+  # must add something like <identifier identifierType="DOI">10.5072/FK25Q56C6</identifier>
+  # because it will not validate until it's present, even though we haven't minted
+  # an identifier yet, but want to validate as though we had
+  el = xml.find('{http://datacite.org/schema/kernel-3}identifier')
+  el.attrib['identifierType'] = 'DOI'
+  el.text = '10.5072/FK25Q56C6'
+  
+  if not xsd.validate(xml):
+    #err_msgs.append("XML validation errors occurred for the values you entered:")
+    simple_errors = [re.sub("\\{http://[^ ]+?\\}", '', x.message) for x in xsd.error_log] #removes namespace crap
+    err_msgs.extend(_translate_errors(simple_errors))
+    return False
+  return True
+
+def _translate_errors(err_in):
+  """translates the errors returned by lxml and libxml2 into more
+  readable errors by users.  If no translation, then passes it through"""
+  errs_copy = copy.copy(err_in)
+  errs_out = []
+  exact_errs = {"Element 'contributor': The attribute 'contributorType' is required but missing.":
+                  "Contributor Type is required if you fill in contributor information.",
+                "Element 'description': The attribute 'descriptionType' is required but missing.":
+                  "If descriptive information is present in the Abstract section, a type must be selected.",
+                "Element 'contributor': Missing child element(s). Expected is ( contributorName ).":
+                  "Contributor Name is required if you fill in contributor information.",
+                "Element 'nameIdentifier': This element is not expected. Expected is ( contributorName ).":
+                  "Contributor Name is required if you fill in contributor information.",
+                "Element 'date': The attribute 'dateType' is required but missing.":
+                  "Date Type is required if you fill in a Date.",
+                "Element 'alternateIdentifier': The attribute 'alternateIdentifierType' is required but missing.":
+                  "The Alternate Identifier Type is required if you fill in an Alternate Identifier.",
+                "Element 'relatedIdentifier': The attribute 'relatedIdentifierType' is required but missing.":
+                  "The Related Identifier Type is required if you fill in a Related Identifier.",
+                "Element 'relatedIdentifier': The attribute 'relationType' is required but missing.":
+                  "You Related Identifier Relation Type is required if you fill in a Related Identifier.",
+                "Element 'geoLocationPoint': [facet 'minLength'] The value has a length of '1'; this underruns the allowed minimum length of '2'.":
+                  "Geolocation points must be made up of two numbers separated by a space."}
+  
+  regex_errs = {"^Element\\ 'geoLocationPoint':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ atomic\\ type\\ 'xs:double'\\.$":
+                  'A Geolocation Point must use only decimal numbers for coordinates.',
+                "^Element\\ 'geoLocationPoint':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ list\\ type\\ 'point'\\.$":
+                  '',
+                "^Element\\ 'geoLocationPoint':\\ \\[facet\\ 'maxLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '.+?';\\ this\\ exceeds\\ the\\ allowed\\ maximum\\ length\\ of\\ '2'\\.$":
+                  'Geolocation points must be made up of two numbers separated by a space.'
+                }
+  
+  
+  # add translation of any exact errors
+  for key, value in exact_errs.iteritems():
+    if key in errs_copy:
+      errs_out.append(value)
+      errs_copy.remove(key)
+      
+  # add translation of any regex matches for errors
+  temp_trans = {}
+  for err in errs_copy:
+    for key, value in regex_errs.iteritems():
+      a = re.compile(key)
+      if a.match(err):
+        temp_trans[err] = value
+        break
+  
+  for key, value in temp_trans.iteritems():
+    errs_out.append(value)
+    errs_copy.remove(key)
+ 
+  # add any untranslated errors
+  for err in errs_copy:
+    errs_out.append(err)
+  return [x for x in errs_out if x]

@@ -69,27 +69,10 @@ def ajax_advanced(request):
     
     return_val = datacite_xml.generate_xml(request.POST)
     
-    # *** validate against XSD ***
-    cleansed_xml = return_val.replace('encoding="UTF-8"', '', 1)
-    xsd_doc = etree.parse(django.conf.settings.PROJECT_ROOT + \
-                           "/xsd/datacite3-kernel/metadata.xsd")
-    xsd = etree.XMLSchema(xsd_doc)
-    parser = etree.XMLParser(ns_clean=True, recover=True)
-    xml = etree.fromstring(cleansed_xml, parser)
-    
-    # must add something like <identifier identifierType="DOI">10.5072/FK25Q56C6</identifier>
-    # because it will not validate until it's present, even though we haven't minted
-    # an identifier yet, but want to validate as though we had
-    el = xml.find('{http://datacite.org/schema/kernel-3}identifier')
-    el.attrib['identifierType'] = 'DOI'
-    el.text = '10.5072/FK25Q56C6'
-    
-    if not xsd.validate(xml):
-      error_msgs.append("XML validation errors occurred for the values you entered:")
-      for x in [re.sub("{http://.*}", '', x.message) for x in xsd.error_log]:
-        error_msgs.append(x)
+    # validate against XSD and get better errors
+    xsd_path = django.conf.settings.PROJECT_ROOT + "/xsd/datacite3-kernel/metadata.xsd"
+    if datacite_xml.validate_document(return_val, xsd_path, error_msgs) == False:
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
-    # *** end validate against XSD ***
 
     #print return_val #for debugging
     to_write = \
