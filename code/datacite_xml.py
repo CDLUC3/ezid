@@ -128,9 +128,12 @@ def _id_type(str):
     return m.findall(str)[0].upper()
   
 def validate_document(xml_doc, xsd_path, err_msgs):
-  """Validates the document agains the XSD and adds
+  """Validates the document against the XSD and adds
   error messages to the err_msgs array if things go wrong"""
-  cleansed_xml = xml_doc.replace('encoding="UTF-8"', '', 1)  
+  p = re.compile(r'(<\?xml.+?)(encoding="UTF-8")(.*?\?>)')
+  cleansed_xml = p.sub(r'\1\3', xml_doc)
+  p = re.compile(r'(<resource.+?)(xsi:schemaLocation=".+?")(.*?>)')
+  cleansed_xml = p.sub(r'\1\3', cleansed_xml)
   xsd_doc = etree.parse(xsd_path)
   xsd = etree.XMLSchema(xsd_doc)
   parser = etree.XMLParser(ns_clean=True, recover=True)
