@@ -170,11 +170,17 @@ EXACT_ERRS = {"Element 'contributor': The attribute 'contributorType' is require
   "Element 'relatedIdentifier': The attribute 'relatedIdentifierType' is required but missing.":
     "The Related Identifier Type is required if you fill in a Related Identifier.",
   "Element 'relatedIdentifier': The attribute 'relationType' is required but missing.":
-    "Related Identifier: Relation Type is required if you fill in a Related Identifier.",
+    "Relation Type is required if you fill in a Related Identifier.",
   "Element 'geoLocationPoint': [facet 'minLength'] The value has a length of '1'; this underruns the allowed minimum length of '2'.":
     "Geolocation points must be made up of two numbers separated by a space.",
   "Element 'resourceType': The attribute 'resourceTypeGeneral' is required but missing.":
-    "A Resource Type is required if you fill in the Resource Type Description."}
+    "A Resource Type is required if you fill in the Resource Type Description.",
+  "Element 'nameIdentifier': The attribute 'nameIdentifierScheme' is required but missing.":
+    "An Identifier Scheme must be filled in if you specify a Scheme URI.",
+  "Element 'nameIdentifier': '' is not a valid value of the atomic type 'nonemptycontentStringType'.":
+    "A Name Identifier must be filled in if you specify an Identifier Scheme or Scheme URI.",
+  "Element 'nameIdentifier': [facet 'minLength'] The value has a length of '0'; this underruns the allowed minimum length of '1'.":
+    ""}
   
 REGEX_ERRS = {r"^Element 'geoLocationPoint': '.+?' is not a valid value of the atomic type 'xs:double'\.$":
     'A Geolocation Point must use only decimal numbers for coordinates.',

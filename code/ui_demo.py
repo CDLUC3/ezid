@@ -63,6 +63,11 @@ def ajax_advanced(request):
     if ('/resource/publicationYear' in request.POST) and \
               not re.compile('^\d{4}$').match(request.POST['/resource/publicationYear']):
       error_msgs.append("Please enter a four digit year for the publication year.")
+      
+    for k, v in request.POST.iteritems():
+      if v:
+        if re.match(r'^/resource/dates/date\[\d+?\]$', k ) and not re.match(r'^\d{4}', v ):
+          error_msgs.append("Please ensure your date is numeric and in the correct format.")
     
     if len(error_msgs) > 0:
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })

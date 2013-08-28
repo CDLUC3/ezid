@@ -230,7 +230,6 @@ def datacite_xml(request, identifier):
   if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
     content = d['identifier']["datacite"]
   
-  #content = "poop on you " + identifier
   # By setting the content type ourselves, we gain control over the
   # character encoding and can properly set the content length.
   ec = content.encode("UTF-8")
