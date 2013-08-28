@@ -7,29 +7,31 @@ import time
 from django.shortcuts import redirect
 
 def edit(request, ssl=False):
-  d = { 'menu_item' : 'ui_null.null'}
   """Edit account information form"""
+  d = { 'menu_item' : 'ui_null.null'}
   if "auth" not in request.session: return uic.unauthorized()
   d['username'] = request.session['auth'].user[0]
-  if request.method == "GET":
-    r = useradmin.getAccountProfile(request.session["auth"].user[0])
-    if type(r) is str:
-      django.contrib.messages.error(request, r)
-      return redirect('ui_home.index')
-    r2 = useradmin.getContactInfo(request.session["auth"].user[0])
-    if type(r2) is str:
-      django.contrib.messages.error(request, r2)
-      return redirect("ui_home.index")
-    r.update(r2)
-    d.update(r)
-    if not 'ezidCoOwners' in d:
-      d['ezidCoOwners'] = ''
+  #used to do the following only for GET, but needed for post also to compare what has changed
+  r = useradmin.getAccountProfile(request.session["auth"].user[0])
+  if type(r) is str:
+    django.contrib.messages.error(request, r)
+    return redirect('ui_home.index')
+  r2 = useradmin.getContactInfo(request.session["auth"].user[0])
+  if type(r2) is str:
+    django.contrib.messages.error(request, r2)
+    return redirect("ui_home.index")
+  r.update(r2)
+  d.update(r)
+  if not 'ezidCoOwners' in d:
+    d['ezidCoOwners'] = ''
       
-  elif request.method == "POST":
-    d.update(uic.extract(request.POST, \
-                ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners']))
+  if request.method == "POST":
+    orig_vals = uic.extract(d, ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners'])
+    form_vals = uic.extract(request.POST, \
+                ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners'])
+    d.update(form_vals)
     if validate_edit_user(request):
-      update_edit_user(request)
+      update_edit_user(request, orig_vals != form_vals)
   return uic.render(request, "account/edit", d)
 
 def login(request, ssl=False):
@@ -121,9 +123,8 @@ def validate_edit_user(request):
       valid_form = False
   return valid_form
   
-def update_edit_user(request):
+def update_edit_user(request, basic_info_changed):
   """method to update the user editing his information.  Not a view for a page"""
-  account_updated = False
   uid = request.session['auth'].user[0]
   di = {}
   for item in ['givenName', 'sn', 'mail', 'telephoneNumber']:
@@ -137,16 +138,14 @@ def update_edit_user(request):
   if type(r) is str:
     django.contrib.messages.error(request, r)
   else:
-    account_updated = True
-    django.contrib.messages.success(request, "Your information has been updated.")
+    if basic_info_changed: django.contrib.messages.success(request, "Your information has been updated.")
   
   if request.POST['pwcurrent'].strip() != '':
     r = useradmin.resetPassword(uid, request.POST["pwnew"].strip())
     if type(r) is str:
       django.contrib.messages.error(request, r)
     else:
-      if not account_updated:
-        django.contrib.messages.success(request, "Your password has been updated.")
+      django.contrib.messages.success(request, "Your password has been updated.")
       
 def pwreset(request, pwrr, ssl=False):
   """

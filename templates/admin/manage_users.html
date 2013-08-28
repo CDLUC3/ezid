@@ -7,7 +7,7 @@
     <h1>Manage User Accounts</h1>
     
     <div class="dialog_window" id="addnew_dialog">
-    	<form id="new_user_form" action="{% url ui_admin.add_user %}" method="post">
+    	<form id="new_user_form" action="{% url ui_admin.add_user %}" method="post" autocomplete="off">
     			
 				<label class="left" for="nu_uid">Username:</label>
 				<div class="field_right">
@@ -66,8 +66,22 @@
     	
     	<label class="left" for="group">Group:</label>
     	<div class="field_right">
+				<select id='group_dn' name='group_dn'>
+					{% for u in groups %}
+						<option value='{{u.dn}}'
+						{% if u.dn == group_dn %}
+							selected='selected'
+						{% endif %}
+						>{{u.gid}}</option>
+					{% endfor %}
+				</select>
+			</div>
+			
+			<!--
+    	<div class="field_right">
     		<a href="{% url ui_admin.manage_groups %}?group={{ group_dn|urlencode }}" id="group">{{user.groupGid}}</a>
     	</div>
+    	-->
     	
     	<label for="givenName" class="left">First name:</label>
   		<div class="field_right">
