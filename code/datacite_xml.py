@@ -154,7 +154,6 @@ def validate_document(xml_doc, xsd_path, err_msgs):
   return True
 
 
-
 """Lists of errors for error translation from lxml/libxml2 to the interface"""
 EXACT_ERRS = {"Element 'contributor': The attribute 'contributorType' is required but missing.":
     "Contributor Type is required if you fill in contributor information.",
@@ -177,19 +176,19 @@ EXACT_ERRS = {"Element 'contributor': The attribute 'contributorType' is require
   "Element 'resourceType': The attribute 'resourceTypeGeneral' is required but missing.":
     "A Resource Type is required if you fill in the Resource Type Description."}
   
-REGEX_ERRS = {"^Element\\ 'geoLocationPoint':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ atomic\\ type\\ 'xs:double'\\.$":
+REGEX_ERRS = {r"^Element 'geoLocationPoint': '.+?' is not a valid value of the atomic type 'xs:double'\.$":
     'A Geolocation Point must use only decimal numbers for coordinates.',
-  "^Element\\ 'geoLocationPoint':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ list\\ type\\ 'point'\\.$":
+  r"^Element 'geoLocationPoint': '.+?' is not a valid value of the list type 'point'\.$":
     '',
-  "^Element\\ 'geoLocationPoint':\\ \\[facet\\ 'maxLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '.+?';\\ this\\ exceeds\\ the\\ allowed\\ maximum\\ length\\ of\\ '2'\\.$":
+  r"^Element 'geoLocationPoint': \[facet 'maxLength'\] The value has a length of '.+?'; this exceeds the allowed maximum length of '2'\.$":
     'Geolocation points must be made up of two numbers separated by a space.',
-  "^Element\\ 'geoLocationBox':\\ \\[facet\\ 'minLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '.+?';\\ this\\ underruns\\ the\\ allowed\\ minimum\\ length\\ of\\ '4'\\.$":
+  r"^Element 'geoLocationBox': \[facet 'minLength'\] The value has a length of '.+?'; this underruns the allowed minimum length of '4'\.$":
     'A Geolocation Box must contain 4 numbers.',
-  "^Element\\ 'geoLocationBox':\\ \\[facet\\ 'maxLength'\\]\\ The\\ value\\ has\\ a\\ length\\ of\\ '5';\\ this\\ exceeds\\ the\\ allowed\\ maximum\\ length\\ of\\ '4'\\.$":
+  r"^Element 'geoLocationBox': \[facet 'maxLength'\] The value has a length of '5'; this exceeds the allowed maximum length of '4'\.$":
     'A Geolocation Box must contain 4 numbers.',
-  "^Element\\ 'geoLocationBox':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ list\\ type\\ 'box'\\.$":
+  r"^Element 'geoLocationBox': '.+?' is not a valid value of the list type 'box'\.$":
     '',
-  "^Element\\ 'geoLocationBox':\\ '.+?'\\ is\\ not\\ a\\ valid\\ value\\ of\\ the\\ atomic\\ type\\ 'xs:double'\\.$":
+  r"^Element 'geoLocationBox': '.+?' is not a valid value of the atomic type 'xs:double'\.$":
     'A Geolocation Box must use only decimal numbers for coordinates.'
   }
 
@@ -221,4 +220,4 @@ def _translate_errors(err_in):
   # add any untranslated errors
   for err in errs_copy:
     errs_out.append(err)
-  return [x for x in errs_out if x]
+  return list(set([x for x in errs_out if x]))
