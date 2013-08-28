@@ -1,5 +1,5 @@
 //#status messages
-$(document).ready(showMessage());
+$(document).ready(function() { showMessage(); });
 
 function showMessage(top_window){
 	top_window = typeof top_window !== 'undefined' ? top_window : false;
