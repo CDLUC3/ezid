@@ -183,19 +183,19 @@ EXACT_ERRS = {"Element 'contributor': The attribute 'contributorType' is require
     ""}
   
 REGEX_ERRS = {r"^Element 'geoLocationPoint': '.+?' is not a valid value of the atomic type 'xs:double'\.$":
-    'A Geolocation Point must use only decimal numbers for coordinates.',
+    'A Geolocation Point must use only decimal numbers for longitude and latitude.',
   r"^Element 'geoLocationPoint': '.+?' is not a valid value of the list type 'point'\.$":
     '',
   r"^Element 'geoLocationPoint': \[facet 'maxLength'\] The value has a length of '.+?'; this exceeds the allowed maximum length of '2'\.$":
     'Geolocation points must be made up of two numbers separated by a space.',
   r"^Element 'geoLocationBox': \[facet 'minLength'\] The value has a length of '.+?'; this underruns the allowed minimum length of '4'\.$":
-    'A Geolocation Box must contain 4 numbers.',
+    'A Geolocation Box must contain 4 numbers separated by spaces.',
   r"^Element 'geoLocationBox': \[facet 'maxLength'\] The value has a length of '5'; this exceeds the allowed maximum length of '4'\.$":
-    'A Geolocation Box must contain 4 numbers.',
+    'A Geolocation Box must contain 4 numbers separated by spaces.',
   r"^Element 'geoLocationBox': '.+?' is not a valid value of the list type 'box'\.$":
     '',
   r"^Element 'geoLocationBox': '.+?' is not a valid value of the atomic type 'xs:double'\.$":
-    'A Geolocation Box must use only decimal numbers for coordinates.'
+    'A Geolocation Box must use only decimal numbers for longitudes and latitudes.'
   }
 
 def _translate_errors(err_in):
