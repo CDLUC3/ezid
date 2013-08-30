@@ -478,7 +478,7 @@ def _create_stats_report(user, group):
     rows.append(a)
     
   if len(rows) > 0:
-    a=[0]*7 #create dict of zeroes, length 7
+    a=[0]*9 #create list of zeroes, length 7
     a[0] = "Total"
     for id_type in id_types:
       if tallies[id_type] == 0:
@@ -487,6 +487,9 @@ def _create_stats_report(user, group):
         percent_meta = str(int((meta_tallies[id_type] / tallies[id_type] * 100))) + "%"
       a[position[id_type]] = _insertCommas(tallies[id_type])
       a[position[id_type] + 1] = percent_meta
+    grand_tot_items = sum(tallies.values())
+    a[8] = str(int(sum(meta_tallies.values()) / grand_tot_items * 100)) + "%"
+    a[7] = _insertCommas(grand_tot_items)
     rows.append(a)
   return rows
 
