@@ -26,13 +26,46 @@ def edit(request, ssl=False):
     d['ezidCoOwners'] = ''
       
   if request.method == "POST":
-    orig_vals = uic.extract(d, ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners'])
     form_vals = uic.extract(request.POST, \
                 ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners'])
     d.update(form_vals)
-    if validate_edit_user(request):
-      update_edit_user(request, orig_vals != form_vals)
+    if _validate_edit_user(request):
+      _update_edit_user(request)
   return uic.render(request, "account/edit", d)
+
+def change_pwd(request, ssl=False):
+  """Change the password form"""
+  d = { 'menu_item' : 'ui_null.null'}
+  if "auth" not in request.session: return uic.unauthorized()
+  
+  if request.method == "POST":
+    d['pwcurrent'] = request.POST['pwcurrent']
+    d['pwnew'] = request.POST['pwnew']
+    d['pwconfirm'] = request.POST['pwconfirm']
+    if not request.POST['pwcurrent'].strip() == '':
+      uid = request.session['auth'].user[0]
+      auth = userauth.authenticate(uid, request.POST["pwcurrent"])
+      if type(auth) is str or not auth:
+        django.contrib.messages.error(request, "Your current password is incorrect.")
+      if request.POST['pwnew'] != request.POST['pwconfirm']:
+        django.contrib.messages.error(request, "Your new and confirmed passwords do not match.")
+      if request.POST['pwnew'] == '' or request.POST['pwconfirm'] == '':
+        django.contrib.messages.error(request, "Your new password cannot be empty.")
+      if len(django.contrib.messages.api.get_messages(request)) > 0:
+        return uic.render(request, "account/change_pwd", d)
+    
+      r = useradmin.resetPassword(uid, request.POST["pwnew"].strip())
+      if type(r) is str:
+        django.contrib.messages.error(request, r)
+      else:
+        django.contrib.messages.success(request, "Your password has been updated.")
+  return uic.render(request, "account/change_pwd", d)
+
+def user_stats(request, ssl=False):
+  """display user stats"""
+  d = { 'menu_item' : 'ui_null.null'}
+  if "auth" not in request.session: return uic.unauthorized()
+  return uic.render(request, "account/user_stats", d)
 
 def login(request, ssl=False):
   """
@@ -80,10 +113,12 @@ def logout(request):
   django.contrib.messages.success(request, "You have been logged out.")
   return redirect("ui_home.index")
 
-def validate_edit_user(request):
+def _validate_edit_user(request):
   """validates that the fields required to update a user are set, not a view for a page"""
-  valid_form = True
-  fields = ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners', 'pwcurrent','pwnew', 'pwconfirm']
+  er = django.contrib.messages.error
+  post = request.POST
+  
+  fields = ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners']
   
   for field in fields:
     if not field in request.POST:
@@ -92,39 +127,26 @@ def validate_edit_user(request):
   
   required_fields = {'sn': 'Last name', 'mail': 'Email address'}
   for field in required_fields:
-    if request.POST[field].strip() == '':
-      django.contrib.messages.error(request, required_fields[field] + " must be filled in.")
-      valid_form = False
+    if post[field].strip() == '':
+      er(request, required_fields[field] + " must be filled in.")
+  if len(django.contrib.messages.api.get_messages(request)) > 0:
+    return False
   
-  if not re.match('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', request.POST['mail'], re.IGNORECASE):
-    django.contrib.messages.error(request, "Please enter a valid email address.")
-    valid_form = False
+  if not re.match('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', post['mail'], re.IGNORECASE):
+    er(request, "Please enter a valid email address.")
   
-  if request.POST['ezidCoOwners'] != '':
-    coowners = [co.strip() for co in request.POST['ezidCoOwners'].split(',')]
+  if post['ezidCoOwners'] != '':
+    coowners = [co.strip() for co in post['ezidCoOwners'].split(',')]
     for coowner in coowners:
-      #import pdb; pdb.set_trace()
       try:
         idmap.getUserId(coowner)
       except AssertionError:
-        django.contrib.messages.error(request, coowner + " is not a correct username for a co-owner.")
-        valid_form = False
+        er(request, coowner + " is not a correct username for a co-owner.")
+        
+  return len(django.contrib.messages.api.get_messages(request)) < 1
   
-  if not request.POST['pwcurrent'].strip() == '':
-    auth = userauth.authenticate(request.session['auth'].user[0], request.POST["pwcurrent"])
-    if type(auth) is str or not auth:
-      django.contrib.messages.error(request, "Your current password is incorrect.")
-      valid_form = False
-    if request.POST['pwnew'] != request.POST['pwconfirm']:
-      django.contrib.messages.error(request, "Your new and confirmed passwords do not match.")
-      valid_form = False
-    if request.POST['pwnew'] == '' or request.POST['pwconfirm'] == '':
-      django.contrib.messages.error(request, "Your new password cannot be empty.")
-      valid_form = False
-  return valid_form
-  
-def update_edit_user(request, basic_info_changed):
-  """method to update the user editing his information.  Not a view for a page"""
+def _update_edit_user(request):
+  """method to update the user editing his information"""
   uid = request.session['auth'].user[0]
   di = {}
   for item in ['givenName', 'sn', 'mail', 'telephoneNumber']:
@@ -138,14 +160,7 @@ def update_edit_user(request, basic_info_changed):
   if type(r) is str:
     django.contrib.messages.error(request, r)
   else:
-    if basic_info_changed: django.contrib.messages.success(request, "Your information has been updated.")
-  
-  if request.POST['pwcurrent'].strip() != '':
-    r = useradmin.resetPassword(uid, request.POST["pwnew"].strip())
-    if type(r) is str:
-      django.contrib.messages.error(request, r)
-    else:
-      django.contrib.messages.success(request, "Your password has been updated.")
+    django.contrib.messages.success(request, "Your information has been updated.")
       
 def pwreset(request, pwrr, ssl=False):
   """

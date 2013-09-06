@@ -116,7 +116,7 @@ def manage_users(request, ssl=False):
     u['givenName'], u['sn'], u['mail'], u['telephoneNumber'], u['description'] = \
       p['givenName'], p['sn'], p['mail'], p['telephoneNumber'], p['description']
     u['ezidCoOwners'] = ','.join([x.strip() for x in p['ezidCoOwners'].strip().split("\n")])
-    if validate_edit_user(request, u):
+    if _validate_edit_user(request, u):
       d['user']['currentlyEnabled'] = update_edit_user(request, u)
       #if group has changed, update
       if p['group_dn'] != u['groupDn']:
@@ -327,7 +327,7 @@ def select_shoulder_lists(selected_val_list):
       deselected_shoulders.append([x['label'], x['name'] + " (" + x['prefix'] + ")"])
   return (selected_shoulders, deselected_shoulders)
 
-def validate_edit_user(request, user_obj):
+def _validate_edit_user(request, user_obj):
   """validates that the fields required to update a user are set, helper function"""
   er = django.contrib.messages.error
   post = request.POST

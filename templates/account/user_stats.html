@@ -1,0 +1,35 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+
+{% block title %}Usage{% endblock %}
+
+{% block content %}
+  <div class="grid_12 menu_secondary" id="submenu">
+		<a href="/ezid/account/edit">Account Information</a>
+		<span class="pad">|</span>
+		<a href="/ezid/account/change_pwd">Change Password</a>
+		<span class="pad">|</span>
+		<a href="/ezid/account/user_stats" class="menu_current">Usage</a>
+	</div>
+	
+	<script type="text/javascript">
+	  /* function to move this submenu into the space of the normal position.
+	   * This could go away after reworking the menu structure to allow different
+	   * types of submenus.  This submenu is problematic since the "my account"
+	   * area doesn't have a menu item in the main menu categories.
+	   */
+		$(function() {
+     var first = $('.menu_secondary').first();
+     var second = $('#submenu');
+     first.html(second.html());
+     second.remove();
+    });
+		
+	</script>
+  <div class="grid_12">
+    <h1>Usage</h1>
+  </div>
+  
+  {% include "info/popup_help.html" %}
+  <script type="text/javascript" src="/ezid/static/javascripts/help_box.js"></script>
+{% endblock %}

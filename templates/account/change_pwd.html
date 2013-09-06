@@ -1,0 +1,63 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+
+{% block title %}Change Password{% endblock %}
+
+{% block content %}
+  <div class="grid_12 menu_secondary" id="submenu">
+		<a href="/ezid/account/edit">Account Information</a>
+		<span class="pad">|</span>
+		<a href="/ezid/account/change_pwd" class="menu_current">Change Password</a>
+		<span class="pad">|</span>
+		<a href="/ezid/account/user_stats">Usage</a>
+	</div>
+	
+	<script type="text/javascript">
+	  /* function to move this submenu into the space of the normal position.
+	   * This could go away after reworking the menu structure to allow different
+	   * types of submenus.  This submenu is problematic since the "my account"
+	   * area doesn't have a menu item in the main menu categories.
+	   */
+		$(function() {
+     var first = $('.menu_secondary').first();
+     var second = $('#submenu');
+     first.html(second.html());
+     second.remove();
+    });
+		
+	</script>
+  <div class="grid_12">
+    <h1>Change Password</h1>
+    
+    <form autocomplete="off" id="edit_form" action="{% url ui_account.change_pwd %}" method="post" >
+      
+      <label for="pwcurrent" class="left">
+        Current password:
+      </label>
+      <div class="field_right">
+        <input type="password" name="pwcurrent" id="pwcurrent" size="25" value="{{pwcurrent}}" autocomplete="off" />
+      </div>
+      
+      <label for="pwnew" class="left">
+        New password:
+      </label>
+      <div class="field_right">
+        <input type="password" name="pwnew" id="pwnew" size="25" value="{{pwnew}}" autocomplete="off" />
+      </div>
+     
+      <label for="pwconfirm" class="left">
+        Confirm new password:
+      </label>
+      <div class="field_right">
+        <input type="password" name="pwconfirm" id="pwconfirm" size="25" value="{{pwconfirm}}" autocomplete="off" />
+      </div>
+      
+      <label class="left">&nbsp;</label>
+      <div class="field_right">
+        <input type="submit" value="Save" />
+      </div>
+      <div style="clear:both">&nbsp;</div>   
+    </form>
+    
+  </div>
+{% endblock %}
