@@ -4,6 +4,7 @@ import django.contrib.messages
 import idmap
 import re
 import time
+from ui_support.reporting import Report
 from django.shortcuts import redirect
 
 def edit(request, ssl=False):
@@ -65,6 +66,23 @@ def user_stats(request, ssl=False):
   """display user stats"""
   d = { 'menu_item' : 'ui_null.null'}
   if "auth" not in request.session: return uic.unauthorized()
+    
+  d['currentUrl'] = request.get_full_path()
+  d['username'] = request.session['auth'].user[0]
+  
+  user_id = request.session['auth'].user[1]
+  group_id = None
+  report_obj = Report(user_id, group_id)
+
+  d['full_table'] = report_obj.full_table()
+  if len(d['full_table']) > 0:
+    d['totals'] = report_obj.totals()
+    #d['year_table'] = report_obj.year_table() -- not used
+    d['year_totals'] = report_obj.year_totals()
+    d['report_obj'] = report_obj.year_date_range_text()
+    d['yearly_date_range_text'] = report_obj.year_date_range_text()
+    d['last_tally'] = report_obj.computeTime().strftime('%B %d, %Y')
+  
   return uic.render(request, "account/user_stats", d)
 
 def login(request, ssl=False):
