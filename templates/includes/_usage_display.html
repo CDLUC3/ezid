@@ -22,10 +22,12 @@
 		<div class="wm">{{totals.DOI_percent}} have metadata</div>
 		DOIs: <div class="tot">{{totals.DOI}}</div>
 	</div>
-	<div class="summ">
-		<div class="wm">{{totals.URN_percent}} have metadata</div>
-		URNs: <div class="tot">{{totals.URN}}</div>
-	</div>
+	<!--
+		<div class="summ">
+			<div class="wm">{{totals.URN_percent}} have metadata</div>
+			URNs: <div class="tot">{{totals.URN}}</div>
+		</div>
+	-->
 	<div class="summ">
 		<div class="wm">{{totals.total_percent}} have metadata</div>
 		Totals: <div class="tot">{{totals.total}}</div>
@@ -41,10 +43,12 @@
 		<div class="wm">{{year_totals.DOI_percent}} have metadata</div>
 		DOIs: <div class="tot">{{year_totals.DOI}}</div>
 	</div>
-	<div class="summ">
-		<div class="wm">{{year_totals.URN_percent}} have metadata</div>
-		URNs: <div class="tot">{{year_totals.URN}}</div>
-	</div>
+	<!--
+		<div class="summ">
+			<div class="wm">{{year_totals.URN_percent}} have metadata</div>
+			URNs: <div class="tot">{{year_totals.URN}}</div>
+		</div>
+	-->
 	<div class="summ">
 		<div class="wm">{{year_totals.total_percent}} have metadata</div>
 		Total: <div class="tot">{{year_totals.total}}</div>
@@ -57,7 +61,7 @@
   		<th>Month</th>
   		<th>ARKs</th>
   		<th>DOIs</th>
-  		<th>URNs</th>
+  		<!-- <th>URNs</th> -->
   	</tr>
   	
   	{% for row in full_table %}
@@ -71,11 +75,12 @@
   				<div class="pct">({{row.DOI_percent}})</div>
   				{{row.DOI}}
   			</td>
-  			  
+  			<!--  
   			<td class="d">
   				<div class="pct">({{row.URN_percent}})</div>
   				{{row.URN}}
   			</td>
+  			-->
   		</tr>
   	{% endfor %}
   </table>
