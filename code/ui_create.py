@@ -110,6 +110,7 @@ def advanced_form_processing(request, d):
   d['profiles'] = metadata.getProfiles()[1:]
   profs = [(p.name, p.displayName, ) for p in d['profiles']] + uic.manual_profiles.items()
   d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
+  d['profile_names'].remove(('datacite', 'DataCite')) #not shown in advanced.
   
   if request.method == "POST":
     if "current_profile" not in request.POST or "shoulder" not in request.POST: return 'bad_request'
