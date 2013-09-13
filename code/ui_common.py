@@ -395,6 +395,27 @@ def admin_login_required(f):
   wrap.__name__=f.__name__
   return wrap
 
+def stats_authorization_required(f):
+  """defining a decorator to require a user to be able to see only the stats they are allowed"""
+  def wrap(request, *args, **kwargs):
+    if "auth" not in request.session: #must be logged in
+      request.session['redirect_to'] = request.get_full_path()
+      django.contrib.messages.error(request, 'You must be logged in to view this page.')
+      return django.http.HttpResponseRedirect("/ezid/login")
+    if request.session["auth"].user[0] != adminUsername: #or can only see your own if not admin
+      m = re.findall('^(user_|group_)(.*)$', request.GET['choice'])
+      if len(m) == 0:
+        return django.http.HttpResponseRedirect(request.META['HTTP_REFERER'])
+      else:
+        agent_name = idmap.getAgent(m[0][1])[0]
+        if m[0][0] != 'user_' or agent_name != request.session["auth"].user[0]:
+          django.contrib.messages.error(request, 'You can only view your own usage.')
+          return django.http.HttpResponseRedirect(request.META['HTTP_REFERER'])
+    return f(request, *args, **kwargs)
+  wrap.__doc__=f.__doc__
+  wrap.__name__=f.__name__
+  return wrap
+
 def identifier_has_block_data (identifier):
   """
   Returns true if the identifier has block metadata, which affects

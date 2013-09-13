@@ -9,12 +9,15 @@ import useradmin
 import stats
 import datetime
 import anvl
+import StringIO
+import csv
 from ui_support.reporting import Report
 from django.utils.http import urlencode
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
 from django import forms
 from collections import *
+from time import localtime, strftime
 
 
 @uic.admin_login_required
@@ -62,6 +65,46 @@ def usage(request, ssl=False):
     d['last_tally'] = report_obj.computeTime().strftime('%B %d, %Y')
   
   return uic.render(request, 'admin/usage', d)
+
+@uic.stats_authorization_required
+def csv_usage(request, ssl=False):
+  if request.method != "GET" or not('choice' in request.GET) or request.GET['choice'] == '':
+    choice = 'all'
+  else:
+    choice = request.GET['choice']
+    
+  #query all
+  report_text = "all usage"
+  agent_name = "all"
+  user_id, group_id = None, None
+  if choice.startswith('user_'):
+    user_id = choice[5:]
+    agent_name = idmap.getAgent(user_id)[0]
+    report_text = "usage by " + idmap.getAgent(user_id)[0]
+  elif choice.startswith('group_'):
+    group_id = choice[6:]
+    agent_name = idmap.getAgent(group_id)[0]
+    report_text = "usage by " + agent_name
+    
+  report_obj = Report(user_id, group_id)
+  table = report_obj.full_numbers()
+  
+  head_row = "Year-Month, ARKs, ARKs with metadata, DOIs, DOIs with metadata\r\n"
+  
+  si = StringIO.StringIO()
+  dw = csv.DictWriter(si, delimiter=',', extrasaction='ignore', fieldnames=['month', 'ARK', 'ARK_meta', 'DOI', 'DOI_meta'])
+  #import pdb; pdb.set_trace() #this will enable debugging console
+  for row in table:
+    dw.writerow(row)
+    
+  content = report_text + "\r\n\r\n" + head_row + si.getvalue()
+  # By setting the content type ourselves, we gain control over the
+  # character encoding and can properly set the content length.
+  ec = content.encode("UTF-8")
+  r = django.http.HttpResponse(ec, content_type="text/plain; charset=UTF-8")
+  r['Content-Disposition'] = 'attachment; filename="' + agent_name + '_' + strftime("%Y-%m-%d", localtime()) + '.csv"'
+  r["Content-Length"] = len(ec)
+  return r
 
 @uic.admin_login_required
 def add_user(request, ssl=False):

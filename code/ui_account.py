@@ -69,6 +69,7 @@ def user_stats(request, ssl=False):
     
   d['currentUrl'] = request.get_full_path()
   d['username'] = request.session['auth'].user[0]
+  d['choice'] = 'user_' + request.session['auth'].user[1]
   
   user_id = request.session['auth'].user[1]
   group_id = None

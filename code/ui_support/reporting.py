@@ -63,6 +63,25 @@ class Report:
       rows.append(a)
     return rows
   
+  def full_numbers(self):
+    """get the numbers (number created, number with metadata) for each type but for
+    output as numbers rather than formatted strings.  For CSV or other uses"""
+    s = stats.getStats()
+    months = _month_range_for_display(self.user_id, self.group_id)
+    rows =[]
+    
+    id_types = ['ARK', 'DOI', 'URN']
+    
+    for month in months:
+      a={}
+      a['month'] = month
+      for id_type in id_types:
+        a[id_type] = s.query((month, self.user_id, self.group_id, id_type, None), False)
+        a[id_type + '_meta'] = s.query((month, self.user_id, self.group_id, id_type, "True"), False)
+      rows.append(a)
+    return rows
+    
+  
   def totals(self):
     """Get totals for each identifier type, percent and grand totals"""
     s = stats.getStats()
