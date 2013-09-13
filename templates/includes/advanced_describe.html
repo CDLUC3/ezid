@@ -2,17 +2,21 @@
 {% load metadata_tags %}
 
 <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
-<h2>Step 4: Describe the identified object using the 
-<select name="current_profile" id="current_profile">
-  {% for prof in profile_names %}
-    <option value="{{prof.0}}"
-      {% if prof.0 == current_profile_name %}
-        selected="selected"
-      {% endif %}
-    >{{prof.1}}</option>
-  {% endfor %}
-</select>
-citation profile:</h2>
+<div style="margin-top: 1em;">
+	<h2 style="display:inline;">Step 4: Describe the identified object using the 
+	<select name="current_profile" id="current_profile">
+	  {% for prof in profile_names %}
+	    <option value="{{prof.0}}"
+	      {% if prof.0 == current_profile_name %}
+	        selected="selected"
+	      {% endif %}
+	    >{{prof.1}}</option>
+	  {% endfor %}
+	</select>
+	citation profile:
+	</h2>{% help_icon "which_profile" %}
+</div>
+<div class="clearboth"></div>
 <label for="_target" class="left {% tooltip_class "_target" %}">
   {{internal_profile.target.displayName}}:
 </label>
