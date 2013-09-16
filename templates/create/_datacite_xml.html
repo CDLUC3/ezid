@@ -9,14 +9,14 @@
 <br/>
 <div name="/resource" class="element">
 	<div name="/resource/creators" class="element container">
-		<label for="/resource/creators" class="element">Creator*</label>
+		<label for="/resource/creators" class="element"><span title="Creator is a required section">Creator*</span></label>
 		<input type="button" value="+" onclick="addOne(this)" name="/resource/creators" nbelmtsadded="1" class="addButton">
 		<input type="button" value="-" onclick="removeOne(this)" name="/resource/creators" class="rmvButton">
 		<div class="helpico">{% help_icon "dcxml_creators_help" %}</div>
 		<div class="multiple">
 			<div name="/resource/creators/creator[1]" class="element">
 				<div name="/resource/creators/creator[1]/creatorName" class="element">
-					<label for="/resource/creators/creator[1]/creatorName" class="element sized">Name:*</label>
+					<label for="/resource/creators/creator[1]/creatorName" class="element sized"><span title="Name is a required element">Name:*</span></label>
 					<input type="text" name="/resource/creators/creator[1]/creatorName" class="data sized">
 				</div>
 				<div class="optional">
@@ -38,13 +38,13 @@
 		</div>
 	</div>
 	<div name="/resource/titles" class="element container">
-		<label for="/resource/titles" class="element">Title*</label>
+		<label for="/resource/titles" class="element"><span title="Title is a required section">Title*</span></label>
 		<input type="button" value="+" onclick="addOne(this)" name="/resource/titles" nbelmtsadded="1" class="addButton">
 		<input type="button" value="-" onclick="removeOne(this)" name="/resource/titles" class="rmvButton">
 		<div class="helpico">{% help_icon "dcxml_titles_help" %}</div>
 		<div class="multiple">
 			<div name="/resource/titles/title[1]" class="element">
-				<label for="/resource/titles/title[1]" class="element sized">Title:*</label>
+				<label for="/resource/titles/title[1]" class="element sized"><span title="Title is a required element">Title:*</span></label>
 				<input type="text" name="/resource/titles/title[1]" class="data sized" />
 				<div name="/resource/titles/title[1]/@titleType" class="attribute">
 					<label for="/resource/titles/title[1]/@titleType" class="attribute sized">Type:</label>
@@ -61,12 +61,12 @@
 	</div>
 	<div class="clearboth" style="margin-top:5px;"></div>
 	<div name="/resource/publisher" class="element">
-		<label for="/resource/publisher" class="element sized1">Publisher*</label>
+		<label for="/resource/publisher" class="element sized1 smallertext"><span title="Publisher is a required element">Publisher*</span></label>
 		<input type="text" name="/resource/publisher" class="data sized1"> {% help_icon "dcxml_publisher_help" %}
 		<div class="clearboth"></div>
 	</div>
 	<div name="/resource/publicationYear" class="element">
-		<label for="/resource/publicationYear" class="element sized1">Publication Year*</label>
+		<label for="/resource/publicationYear" class="element sized1 smallertext"<span title="Publication Year is a required element">Publication Year*</span></label>
 		<input type="text" name="/resource/publicationYear" class="data sizedsmall1"> {% help_icon "dcxml_publication_year_help" %}
 		<div class="clearboth"></div>
 	</div>
@@ -74,7 +74,7 @@
 		<div name="/resource/resourceType" class="element">
 			<div name="/resource/resourceType" class="element">
 				<div class="attribute">
-					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit sized1">Resource Type</label>
+					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit sized1 smallertext">Resource Type</label>
 					<select name="/resource/resourceType/@resourceTypeGeneral" id="resource_type_general" sendselect="yes"
 					  class="choice sized1">
 						<option value/>
@@ -95,10 +95,8 @@
 					</select> {% help_icon "dcxml_resource_type_general_help" %}
 				</div>
 				<div class="clearboth"></div>
-				<label for="/resource/resourceType" class="element sized1">Resource Type Description</label>
-				<div style="padding-top:1em;">
-					<input type="text" name="/resource/resourceType" class="data sized1" id="resource_type" /> {% help_icon "dcxml_resource_type_help" %}
-				</div>
+				<label for="/resource/resourceType" class="element sized1 smallertext">Resource Type Description</label>				
+				<input type="text" name="/resource/resourceType" class="data sized1" id="resource_type" /> {% help_icon "dcxml_resource_type_help" %}
 			</div>
 			<div class="clearboth"></div>
 		</div>
