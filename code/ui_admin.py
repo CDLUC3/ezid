@@ -255,7 +255,7 @@ def manage_groups(request, ssl=False):
   else:
     sels = d['group']['shoulderList'].split(",")
     shoulder_list = uic.get_shoulders(request.session)
-  d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels, shoulder_list)
+  d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels, shoulder_list, d['admin_level'])
   return uic.render(request, 'admin/manage_groups', d)
 
 @uic.ezid_admin_required
@@ -356,7 +356,7 @@ def new_account(request, ssl=False):
   d['field_info'], d['field_order'] = field_info, field_order
   return uic.render(request, 'admin/new_account', d)
 
-def select_shoulder_lists(selected_val_list, shoulder_list):
+def select_shoulder_lists(selected_val_list, shoulder_list, admin_level):
   """Makes list of selected and deselected shoulders in format [value, friendly label]
   and returns (selected_list, deselected_list)"""
   #make lists of selected and deselected shoulders
@@ -364,7 +364,11 @@ def select_shoulder_lists(selected_val_list, shoulder_list):
   selected_shoulders = []
   deselected_shoulders = []
   selected_labels = [x.strip() for x in selected_val_list]
-  for x in ['*', 'NONE']:
+  if admin_level == 'admin':
+    extras = ['*', 'NONE']
+  else:
+    extras = ['NONE']
+  for x in extras:
     if x in selected_labels:
       selected_shoulders.append([x, x])
     else:

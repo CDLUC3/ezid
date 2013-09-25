@@ -82,6 +82,9 @@
     		{% endif %}
     	</div>
     	
+    	{% if admin_level != 'admin' %}
+    		<div style="display:none">
+    	{% endif %}
     	<label class="left" for="shoulderList">Shoulders:</label>
     	<div class="field_right">
     		<select id='shoulderList' name='shoulderList' size="30" multiple="multiple">
@@ -93,6 +96,10 @@
 					{% endfor %}
     		</select>
     	</div>
+    	{% if admin_level != 'admin' %}
+    		</div>
+    	{% endif %}
+    	
     	<label class="left">&nbsp;</label>
     	<div class="field_right">
     		<input type="submit" value="Save changes"/>
