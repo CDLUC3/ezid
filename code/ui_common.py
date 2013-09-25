@@ -414,15 +414,23 @@ def stats_authorization_required(f):
       request.session['redirect_to'] = request.get_full_path()
       django.contrib.messages.error(request, 'You must be logged in to view this page.')
       return django.http.HttpResponseRedirect("/ezid/login")
-    if request.session["auth"].user[0] != adminUsername: #or can only see your own if not admin
-      m = re.findall('^(user_|group_)(.*)$', request.GET['choice'])
-      if len(m) == 0:
+    admin_lvl = admin_level(request.session)
+    if admin_lvl == 'none':
+      allowed = 'user_' + request.session['auth'].user[1]
+      if 'choice' not in request.GET or request.GET['choice'] != allowed:
+        django.contrib.messages.error(request, 'You may only download statistics for youself.')
         return django.http.HttpResponseRedirect(request.META['HTTP_REFERER'])
-      else:
-        agent_name = idmap.getAgent(m[0][1])[0]
-        if m[0][0] != 'user_' or agent_name != request.session["auth"].user[0]:
-          django.contrib.messages.error(request, 'You can only view your own usage.')
-          return django.http.HttpResponseRedirect(request.META['HTTP_REFERER'])
+    else:
+      users = get_users(request.session)
+      groups = get_groups(request.session)
+      users = ['user_' + u['arkId'] for u in users]
+      groups = ['group_' + g['arkId'] for g in groups]
+      allowed = users + groups
+      if 'choice' not in request.GET:
+        return django.http.HttpResponseRedirect(request.META['HTTP_REFERER'])
+      elif request.GET['choice'] not in allowed:
+        django.contrib.messages.error(request, 'You may not download statistics for the item you requested.')
+        return django.http.HttpResponseRedirect(request.META['HTTP_REFERER'])
     return f(request, *args, **kwargs)
   wrap.__doc__=f.__doc__
   wrap.__name__=f.__name__
