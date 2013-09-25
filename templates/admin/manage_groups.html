@@ -6,34 +6,45 @@
   <div class="grid_9">
     <h1>Manage Groups</h1>
     
-    <div class="dialog_window" id="addnew_dialog">
-    	<form id="new_group_form" action="{% url ui_admin.add_group %}" method="post">
-    		<label class="left" for="grouphandle">Group handle:</label>
-    		<div class="field_right">
-    			<input type="text" id="grouphandle" name="grouphandle"/>&nbsp;&nbsp;e.g. &quot;labarchives&quot;
-    		</div>
-    		<label class="left">&nbsp;</label>
-    		<div class="field_right">
-    			<input type="submit" value="Make group"/>&nbsp;&nbsp;&nbsp;&nbsp;
-    			<a href='#close' class="close">Cancel</a>
-    		</div>
-    	</form>
-    	<div style="clear:both;"></div>&nbsp;
-    </div>
+    {% if admin_level == 'admin' or admin_level == 'realm_admin' %}
+	    <div class="dialog_window" id="addnew_dialog">
+	    	<form id="new_group_form" action="{% url ui_admin.add_group %}" method="post">
+	    		<label class="left" for="grouphandle">Group handle:</label>
+	    		<div class="field_right">
+	    			<input type="text" id="grouphandle" name="grouphandle"/>&nbsp;&nbsp;e.g. &quot;labarchives&quot;
+	    		</div>
+	    		<label class="left">&nbsp;</label>
+	    		<div class="field_right">
+	    			<input type="submit" value="Make group"/>&nbsp;&nbsp;&nbsp;&nbsp;
+	    			<a href='#close' class="close">Cancel</a>
+	    		</div>
+	    	</form>
+	    	<div style="clear:both;"></div>&nbsp;
+	    </div>
+		{% endif %}
     
     <form id="groupform" action="{% url ui_admin.manage_groups %}" method="post">
     	
     	<label class="left" for="group">Group handle:</label>
     	<div class="field_right">
-    		<select id='group' name='group'>
-    			{% for g in groups %}
-    				<option value='{{g.dn}}'
-    				  {% if g.dn == group.dn %}
-    				  	selected="selected"
-    				  {% endif %}
-    				>{{g.gid}}</option>
-    			{% endfor %}
-    		</select>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#addnew_dialog" name="modal" />Create a new group</a>
+    		{% if groups|length == 1 %}
+    		  {{ groups.0.gid}}
+    		  <input type="hidden" name='group' value="{{groups.0.dn}}"/>
+    		{% else %}
+	    		<select id='group' name='group'>
+	    			{% for g in groups %}
+	    				<option value='{{g.dn}}'
+	    				  {% if g.dn == group.dn %}
+	    				  	selected="selected"
+	    				  {% endif %}
+	    				>{{g.gid}}</option>
+	    			{% endfor %}
+	    		</select>
+	    	{% endif %}
+    		&nbsp;&nbsp;&nbsp;&nbsp;
+    		{% if admin_level == 'admin' or admin_level == 'realm_admin' %}
+    			<a href="#addnew_dialog" name="modal" />Create a new group</a>
+    		{% endif %}
     		
     		<input type="hidden" name="original_group" value="{{group.dn}}" />
     	</div>
@@ -49,6 +60,7 @@
     		<textarea rows="4" cols='40' name="description" id="description">{{group.description}}</textarea>
     	</div>
     	
+    	{% if admin_level != 'admin' %}<div style="display: none">{% endif %}
     	<label class="left" for="agreementOnFile">Agreement on file:</label>
     	<div class="field_right">
     		<input type="checkbox" name="agreementOnFile" id="agreementOnFile" value="True"
@@ -57,6 +69,7 @@
     			{% endif %}
     		/>  		
     	</div>
+    	{% if admin_level != 'admin' %}</div>{% endif %}
     	
     	<label class="left" for="users">Users:</label>
     	<div class="field_right" id='users'>

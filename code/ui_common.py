@@ -383,10 +383,22 @@ def user_login_required(f):
   wrap.__name__=f.__name__
   return wrap
 
-def admin_login_required(f):
+def ezid_admin_required(f):
   """defining a decorator to require an admin to be logged in"""
   def wrap(request, *args, **kwargs):
     if "auth" not in request.session or request.session["auth"].user[0] != adminUsername:
+      request.session['redirect_to'] = request.get_full_path()
+      django.contrib.messages.error(request, 'You must be logged in as an administrator to view this page.')
+      return django.http.HttpResponseRedirect("/ezid/login")
+    return f(request, *args, **kwargs)
+  wrap.__doc__=f.__doc__
+  wrap.__name__=f.__name__
+  return wrap
+
+def flexible_admin_required(f):
+  """defining a decorator to require an admin to be logged in"""
+  def wrap(request, *args, **kwargs):
+    if "auth" not in request.session:
       request.session['redirect_to'] = request.get_full_path()
       django.contrib.messages.error(request, 'You must be logged in as an administrator to view this page.')
       return django.http.HttpResponseRedirect("/ezid/login")
@@ -423,3 +435,72 @@ def identifier_has_block_data (identifier):
   """
   return (identifier["_profile"] == "erc" and "erc" in identifier) or\
     (identifier["_profile"] == "datacite" and "datacite" in identifier)
+    
+def admin_level(session):
+  """get the level of admin for the current user. if mulitple levels of admin
+  return the highest"""
+  # 'admin' -- only EZID administrative users will have these menus displayed
+  # 'group_admin' -- only group administrative users will have these menu displayed
+  # 'realm_admin' -- only realm administrators will have these menus displayed
+  if 'auth' not in session: return 'none'
+  if config.config("ldap.admin_username") == session['auth'].user[0]: # EZID admin
+    return 'admin'
+  elif False == True: #some random undefined test for realm admin
+    return 'realm_admin'
+  elif session['auth'].user[0] == 'sfisher': #some random undefined test for group admin
+    return 'group_admin'
+  else:
+    return 'none'
+  
+def get_users(session):
+  """get the users this person is allowed to see and returns the LDAP-style
+  array of dicts the same as ezidadmin.getUsers() returns"""
+  if 'auth' not in session: return None
+  admin_lvl = admin_level(session)
+  if admin_lvl == 'none': return [ezidadmin.get_user(session['auth'].user[0])] #you can see yourself
+  if admin_lvl == 'group_admin':
+    gid = ezidadmin.get_user(session['auth'].user[0])['groupGid']
+    return ezidadmin.users_in_group(gid)
+  elif admin_lvl == 'realm_admin':
+    pass #no idea how the realm will be done at this point
+  elif admin_lvl == 'admin':
+    return ezidadmin.getUsers()
+  else:
+    return None
+  
+def get_groups(session):
+  """get the groups this person is allowed to see and returns the LDAP-style
+  array of dicts the same as ezidadmin.getGroups() returns"""
+  if 'auth' not in session: return None
+  admin_lvl = admin_level(session)
+  if admin_lvl == 'none':
+    return None
+  elif admin_lvl == 'group_admin':
+    gid = ezidadmin.get_user(session['auth'].user[0])['groupGid']
+    return [ezidadmin.get_group(gid)]
+  elif admin_lvl == 'realm_admin':
+    pass #don't know how realms will be set up
+  elif admin_lvl == 'admin':
+    groups = ezidadmin.getGroups()
+    groups.sort(key=lambda i: i['gid'].lower())
+    return groups
+
+def get_shoulders(session):
+  """gets the groups this admin user is allowed to see"""
+  if 'auth' not in session: return None
+  admin_lvl = admin_level(session)
+  if admin_lvl == 'none':
+    return None
+  elif admin_lvl == 'group_admin':
+    gid = ezidadmin.get_user(session['auth'].user[0])['groupGid']
+    grp = ezidadmin.get_group(gid)
+    sels = grp['shoulderList'].split(",")
+    sorted_shoulders = sorted(shoulders, key=lambda s: s['name'].lower())
+    sorted_shoulders = [x for x in sorted_shoulders\
+                        if x['label'] in sels ]
+    return sorted_shoulders
+  elif admin_lvl == 'realm_admin':
+    pass #don't know how realms will be set up
+  elif admin_lvl == 'admin':
+    sorted_shoulders = sorted(uic.shoulders, key=lambda s: s['name'].lower())
+    return sorted_shoulders

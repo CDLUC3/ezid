@@ -20,27 +20,31 @@ from collections import *
 from time import localtime, strftime
 
 
-@uic.admin_login_required
+@uic.flexible_admin_required
 def index(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.index'}
   #return redirect("ui_admin.usage")
   return uic.render(request, 'admin/index', d)
 
-@uic.admin_login_required
+@uic.flexible_admin_required
 def usage(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.usage'}
   #make select list choices
-  users = ezidadmin.getUsers()
-  users.sort(key=lambda i: i['uid'].lower())
-  groups = ezidadmin.getGroups()
-  groups.sort(key=lambda i: i['gid'].lower())
+  groups = uic.get_groups(request.session)
+  
+  users = uic.get_users(request.session)
+
   user_choices = [("user_" + x['arkId'], x['uid']) for x in users]
   group_choices = [("group_" + x['arkId'], x['gid']) for x in groups]
-  d['choices'] = [("all", "All EZID")] + [('',''), ('', '-- Groups --')] + \
+  if uic.admin_level(request.session) == 'admin':
+    d['choices'] = [("all", "All EZID")] + [('',''), ('', '-- Groups --')] + \
       group_choices + [('',''), ('', '-- Users --')] + user_choices
+  elif len(group_choices) == 1:
+    d['choices'] = [ (group_choices[0][0], group_choices[0][1] + ' group') ] + \
+      [('',''), ('', '-- Users --')] + user_choices
       
   if request.method != "POST" or not('choice' in request.POST) or request.POST['choice'] == '':
-    d['choice'] = 'all'
+    d['choice'] = d['choices'][0][0]
   else:
     d['choice'] = request.POST['choice']
     
@@ -93,7 +97,6 @@ def csv_usage(request, ssl=False):
   
   si = StringIO.StringIO()
   dw = csv.DictWriter(si, delimiter=',', extrasaction='ignore', fieldnames=['month', 'ARK', 'ARK_meta', 'DOI', 'DOI_meta'])
-  #import pdb; pdb.set_trace() #this will enable debugging console
   for row in table:
     dw.writerow(row)
     
@@ -106,7 +109,7 @@ def csv_usage(request, ssl=False):
   r["Content-Length"] = len(ec)
   return r
 
-@uic.admin_login_required
+@uic.flexible_admin_required
 def add_user(request, ssl=False):
   if request.method != "POST" or not 'nu_uid' in request.POST \
       or not 'nu_group' in request.POST:
@@ -138,11 +141,10 @@ def add_user(request, ssl=False):
     success_url = reverse("ui_admin.manage_users") + "?" + urlencode({'user': r[0]})
     return redirect(success_url)
 
-@uic.admin_login_required
+@uic.flexible_admin_required
 def manage_users(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.manage_users' }
-  d['users'] = ezidadmin.getUsers()
-  d['users'].sort(key=lambda i: i['uid'].lower())
+  d['users'] = uic.get_users(request.session)
   users_by_dn = dict(zip([ x['dn'] for x in d['users']], d['users']))
   if 'user' in request.REQUEST and request.REQUEST['user'] in users_by_dn:
     d['user'] = users_by_dn[request.REQUEST['user']]
@@ -153,8 +155,7 @@ def manage_users(request, ssl=False):
   if d['user']['mail'] == 'please supply':
     d['user']['mail'] = ''
   
-  d['groups'] = ezidadmin.getGroups()
-  d['groups'].sort(key=lambda i: i['gid'].lower())
+  d['groups'] = uic.get_groups(request.session)
   d['group'] = idmap.getGroupId(d['user']['groupGid'])
   d['group_dn'] = d['user']['groupDn']
   #now for saving
@@ -180,7 +181,7 @@ def manage_users(request, ssl=False):
   d['ezidCoOwners'] = "\n".join([x.strip() for x in d['user']['ezidCoOwners'].split(',')])
   return uic.render(request, 'admin/manage_users', d)
 
-@uic.admin_login_required
+@uic.flexible_admin_required
 def add_group(request, ssl=False):
   if request.method != "POST" or not 'grouphandle' in request.POST:
     uic.badRequest()
@@ -200,13 +201,14 @@ def add_group(request, ssl=False):
     success_url = reverse("ui_admin.manage_groups") + "?" + urlencode({'group': dn})
     return redirect(success_url)
 
-@uic.admin_login_required
+@uic.flexible_admin_required
 def manage_groups(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.manage_groups' }
   
+  d['admin_level'] = uic.admin_level(request.session)
+  
   # load group information
-  d['groups'] = ezidadmin.getGroups()
-  d['groups'].sort(key=lambda i: i['gid'].lower())
+  d['groups'] = uic.get_groups(request.session)
   groups_by_dn = dict(zip([ x['dn'] for x in d['groups']], d['groups']))
   
   #get current group
@@ -252,10 +254,11 @@ def manage_groups(request, ssl=False):
         django.contrib.messages.success(request, "Successfully updated group")
   else:
     sels = d['group']['shoulderList'].split(",")
-  d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels)
+    shoulder_list = uic.get_shoulders(request.session)
+  d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels, shoulder_list)
   return uic.render(request, 'admin/manage_groups', d)
 
-@uic.admin_login_required
+@uic.ezid_admin_required
 def system_status(request, ssl=False):
   d = { 'menu_item' :  'ui_admin.system_status' }
   d['status_list'] = ezidadmin.systemStatus(None)
@@ -268,14 +271,14 @@ def system_status(request, ssl=False):
     return uic.redirect("/ezid/")
   return uic.render(request, 'admin/system_status', d)
 
-@uic.admin_login_required
+@uic.ezid_admin_required
 def ajax_system_status(request):
   if request.method != "GET": return uic.methodNotAllowed()
   if "id" in request.GET:
     status = ezidadmin.systemStatus(request.GET["id"])
     return uic.plainTextResponse(request.GET["id"] + ":" + status)
 
-@uic.admin_login_required
+@uic.ezid_admin_required
 def alert_message(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.alert_message' }
   if request.method == "POST":
@@ -299,7 +302,7 @@ def alert_message(request, ssl=False):
       django.contrib.messages.success(request, "Message updated.")
   return uic.render(request, 'admin/alert_message', d)
 
-@uic.admin_login_required
+@uic.ezid_admin_required
 def new_account(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.new_account' }
   # id : [defaultvalue, label, type, help_text]
@@ -353,11 +356,11 @@ def new_account(request, ssl=False):
   d['field_info'], d['field_order'] = field_info, field_order
   return uic.render(request, 'admin/new_account', d)
 
-def select_shoulder_lists(selected_val_list):
+def select_shoulder_lists(selected_val_list, shoulder_list):
   """Makes list of selected and deselected shoulders in format [value, friendly label]
   and returns (selected_list, deselected_list)"""
   #make lists of selected and deselected shoulders
-  sorted_shoulders = sorted(uic.shoulders, key=lambda s: s['name'].lower())
+  sorted_shoulders = shoulder_list
   selected_shoulders = []
   deselected_shoulders = []
   selected_labels = [x.strip() for x in selected_val_list]

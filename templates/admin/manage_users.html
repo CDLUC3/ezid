@@ -23,13 +23,18 @@
 					<label for="existing_user">Existing LDAP user</label>
 				</div>
 		
-				<label class="left" for="nu_group">Group</label>
+				<label class="left" for="nu_group">Group:</label>
 				<div class="field_right">
+					{% if groups|length == 1 %}
+						{{groups.0.gid}}
+						<input type="hidden" name="group_dn" value="{{groups.0.dn}}"/>
+					{% else %}
 					<select id='nu_group' name='nu_group'>
 						{% for u in groups %}
 							<option value='{{u.dn}}'>{{u.gid}}</option>
 						{% endfor %}
 					</select>
+					{% endif %}
 				</div>
 				
 				<label class="left">&nbsp;</label>		
@@ -66,15 +71,20 @@
     	
     	<label class="left" for="group">Group:</label>
     	<div class="field_right">
-				<select id='group_dn' name='group_dn'>
-					{% for u in groups %}
-						<option value='{{u.dn}}'
-						{% if u.dn == group_dn %}
-							selected='selected'
-						{% endif %}
-						>{{u.gid}}</option>
-					{% endfor %}
-				</select>
+    		{% if groups|length == 1 %}
+    		  {{ groups.0.gid }}
+    			<input type="hidden" name="group_dn" value="groups.0.dn" />
+    		{% else %}
+					<select id='group_dn' name='group_dn'>
+						{% for u in groups %}
+							<option value='{{u.dn}}'
+							{% if u.dn == group_dn %}
+								selected='selected'
+							{% endif %}
+							>{{u.gid}}</option>
+						{% endfor %}
+					</select>
+				{% endif %}
 			</div>
 			
 			<!--

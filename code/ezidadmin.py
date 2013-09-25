@@ -728,3 +728,23 @@ def systemStatus (id=None):
       return datacite.ping()
     elif type == "handlesystem":
       return datacite.pingHandleSystem()
+
+
+def get_user(userid):
+  """get a user's full LDAP-style information by the LDAP userid such as 'gjanee'"""
+  users = getUsers()
+  users = dict(zip([ x['uid'] for x in users], users)) #key by uid
+  return users[userid]
+
+def get_group(groupid):
+  """get a group's full LDAP-style information by LDAP groupid such as 'cdl'"""
+  groups = getGroups()
+  groups = dict(zip([ x['gid'] for x in groups], groups)) #key by gid
+  return groups[groupid]
+
+def users_in_group(groupid):
+  """get a groups list of LDAP-style users by LDAP groupid such as 'cdl'"""
+  gg =  get_group('cdl')
+  u = [get_user(x['uid']) for x in gg['users']]
+  u.sort(key=lambda i: i['uid'].lower())
+  return u
