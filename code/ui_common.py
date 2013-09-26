@@ -455,7 +455,7 @@ def admin_level(session):
     return 'admin'
   elif False == True: #some random undefined test for realm admin
     return 'realm_admin'
-  elif session['auth'].user[0] == 'sfisher': #some random undefined test for group admin
+  elif session['auth'].user[0] in ['sfisher', 'jstarr', 'gjanee', 'jak']: #some random undefined test for group admin
     return 'group_admin'
   else:
     return 'none'
