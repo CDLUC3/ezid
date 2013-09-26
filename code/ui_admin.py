@@ -132,7 +132,12 @@ def add_user(request, ssl=False):
     if type(r) is str:
       django.contrib.messages.error(request, r)
       return redirect("ui_admin.manage_users")
-  r = ezidadmin.makeUser(uid, P["nu_group"], request.session["auth"].user, request.session["auth"].group)   
+  #changing the following line because it doesn't work and no one but an admin can make a user, but we want to let others
+  #r = ezidadmin.makeUser(uid, P["nu_group"], request.session["auth"].user, request.session["auth"].group)# this doesn't work execpt with admin user: gives error RROR ezidadmin.makeUser AssertionError: ezid.mintIdentifier failed: error: unauthorized
+  grp = (uic.adminUsername, idmap.getGroupId(uic.adminUsername) )
+  usr = (uic.adminUsername, idmap.getUserId(uic.adminUsername) )
+  #import pdb; pdb.set_trace() #this will enable debugging console
+  r = ezidadmin.makeUser(uid, P["nu_group"], usr, grp) 
   if type(r) is str:
     django.contrib.messages.error(request, r)
     return redirect("ui_admin.manage_users")
@@ -168,7 +173,7 @@ def manage_users(request, ssl=False):
     if _validate_edit_user(request, u):
       d['user']['currentlyEnabled'] = update_edit_user(request, u)
       #if group has changed, update
-      if p['group_dn'] != u['groupDn']:
+      if unicode(p['group_dn']) != unicode(u['groupDn']):  #what is this??
         res = ezidadmin.changeGroup(u['uid'], p['group_dn'], \
                 request.session["auth"].user, request.session["auth"].group)
         if type(res) == str:
@@ -254,7 +259,7 @@ def manage_groups(request, ssl=False):
         django.contrib.messages.success(request, "Successfully updated group")
   else:
     sels = d['group']['shoulderList'].split(",")
-    shoulder_list = uic.get_shoulders(request.session)
+  shoulder_list = uic.get_shoulders(request.session)
   d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels, shoulder_list, d['admin_level'])
   return uic.render(request, 'admin/manage_groups', d)
 
@@ -447,7 +452,7 @@ def update_edit_user(request, user_obj):
     saved_login_enabled = True
   else:
     saved_login_enabled = False
-    
+
   if form_login_enabled != saved_login_enabled:
     if form_login_enabled == True:
       if len(request.POST['userPassword'].strip()) < 1:
@@ -457,7 +462,7 @@ def update_edit_user(request, user_obj):
           django.contrib.messages.error(request, r)
         else:
           curr_enab_state = 'true'
-          django.contrib.messages.success(request, "The user's acount has been activated and the password set to " + temp_pwd)  
+          django.contrib.messages.error(request, "The user's acount has been activated and the password set to " + temp_pwd)  
     else:
       r = ezidadmin.disableUser(uid)
       if type(r) is str:

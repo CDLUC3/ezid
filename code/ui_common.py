@@ -398,7 +398,7 @@ def ezid_admin_required(f):
 def flexible_admin_required(f):
   """defining a decorator to require an admin to be logged in"""
   def wrap(request, *args, **kwargs):
-    if "auth" not in request.session:
+    if "auth" not in request.session or admin_level(request.session) == 'none':
       request.session['redirect_to'] = request.get_full_path()
       django.contrib.messages.error(request, 'You must be logged in as an administrator to view this page.')
       return django.http.HttpResponseRedirect("/ezid/login")
