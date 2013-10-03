@@ -644,3 +644,7 @@ div.order_by_col {
 div.help_window dt {
 	font-weight: bold;
 }
+
+.required {
+	color: red;
+}
