@@ -5,6 +5,7 @@ import metadata
 import ezid
 import logging
 import urllib
+import re
 
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
@@ -115,6 +116,7 @@ def advanced_form_processing(request, d):
         django.contrib.messages.success(request, "Identifier created.")
         return 'created_identifier: ' + new_id
       else:
-        django.contrib.messages.error(request, "There was an error creating your identifier:"  + s)
+        err_msg = re.search(r'^error: .+?- (.+)$', s).group(1)
+        django.contrib.messages.error(request, "There was an error creating your identifier: "  + err_msg)
         return 'edit_page'
   return 'edit_page'
