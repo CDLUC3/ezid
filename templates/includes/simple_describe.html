@@ -1,7 +1,9 @@
 {% load layout_extras %}
 {% load metadata_tags %}
 
-<h2>Step 2: Describe the identified object</h2>
+<br/>
+<h2 style="display: inline;">Step 2: Describe the identified object</h2>{% help_icon "relevant_mouseovers" %}
+<div class="clearboth"></div>
 <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
 <label for="_target" class="left {% tooltip_class "_target" %}">
   {{internal_profile.target.displayName}}:
