@@ -640,3 +640,7 @@ div.order_by_col {
 #cur_sort {
 	background-color: #C7D7C7;
 }
+
+div.info_stanza {
+	margin:0.5em 0 0.5em 0;
+}
