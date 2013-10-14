@@ -1,15 +1,17 @@
 #! /usr/bin/env python
 
-# EZID command line client.  The output is Unicode, with the encoding
-# being determined by the platform.  By default, ANVL responses
-# (currently, that's all responses) are left in %-encoded form.
+# EZID command line client.  The output is Unicode, with the character
+# encoding being determined by the platform unless the -e option is
+# used.  By default, ANVL responses (currently, that's all responses)
+# are left in %-encoded form.
 #
 # Usage: ezid.py [options] credentials operation...
 #
 #   options:
-#     -d decode ANVL responses
-#     -o one line per ANVL value: convert newlines to spaces
-#     -t format timestamps
+#     -d          decode ANVL responses
+#     -e ENCODING output character encoding
+#     -o          one line per ANVL value: convert newlines to spaces
+#     -t          format timestamps
 #
 #   credentials:
 #     username:password
@@ -84,9 +86,10 @@ OPERATIONS = {
 USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
 
   options:
-    -d decode ANVL responses
-    -o one line per ANVL value: convert newlines to spaces
-    -t format timestamps
+    -d          decode ANVL responses
+    -e ENCODING output character encoding
+    -o          one line per ANVL value: convert newlines to spaces
+    -t          format timestamps
 
   credentials:
     username:password
@@ -189,12 +192,16 @@ def printAnvlResponse (response, sortLines=False):
       line = re.sub("%([0-9a-fA-F][0-9a-fA-F])",
         lambda m: chr(int(m.group(1), 16)), line)
     if _options.oneLine: line = line.replace("\n", " ").replace("\r", " ")
-    print line
+    if _options.outputEncoding != None:
+      print line.encode(_options.outputEncoding)
+    else:
+      print line
 
 # Process command line arguments.
 
 parser = optparse.OptionParser(formatter=MyHelpFormatter())
 parser.add_option("-d", action="store_true", dest="decode", default=False)
+parser.add_option("-e", action="store", dest="outputEncoding", default=None)
 parser.add_option("-o", action="store_true", dest="oneLine", default=False)
 parser.add_option("-t", action="store_true", dest="formatTimestamps",
   default=False)

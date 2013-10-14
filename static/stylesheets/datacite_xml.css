@@ -1,0 +1,93 @@
+	.container {
+		/* border: solid;
+		border-width: 1px; */
+		padding: 5px;
+		background:#ffffff;
+		/* background:#cecece; */
+	}
+	.container>label, .element>label, .boldit{
+		font-weight: bold;
+		font-size: larger;
+		margin-top:3px;
+	}
+	
+	.multiple {
+		/*
+		border: solid;
+		border-width: 1px;
+		*/
+		padding: 5px;
+		background:#ffffff;
+		clear:both;
+		margin-top:5px;
+	}
+	
+	.addButton {
+		float:right;
+		width: 30px;
+		margin-right: 80px;
+	}
+	
+	.rmvButton {
+		float:right;
+		width: 30px;
+		margin-right: 5px;
+	}
+	
+	.container .element>label{
+		font-weight: normal;
+		font-size:inherit;
+	}
+	
+	label.sized {
+		display: box;
+		float: left;
+		clear: left;
+		width: 200px;
+		margin-top:3px;
+	}
+	
+	input.sized, div.sized, select.sized {
+		display: box;
+		float:left;
+		clear: right;
+		width:400px;
+		margin-top:3px;
+	}
+	
+	label.sized1 {
+		display: box;
+		float: left;
+		clear: left;
+		width: 200px;
+		margin: 4px 8px 4px 2px;
+	}
+	
+	label.smallertext {
+		font-size: 10pt;
+	}
+	
+	input.sized1, div.sized1, select.sized1 {
+		display: box;
+		float:left;
+		clear: right;
+		width:400px;
+		margin: 4px 0px 4px 0px;
+	}
+	
+	input.sizedsmall1, div.sizedsmall1 {
+		display: box;
+		float:left;
+		clear: right;
+		width:80px;
+		margin: 4px 0px 4px 0px;
+	}
+	
+	div.container>div.helpico {
+		float:right;
+		width:50px;
+	}
+	
+div.clearboth{
+	clear: both;
+}

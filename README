@@ -39,6 +39,7 @@ layout:
         PROJECT_ROOT/
             (this software distribution:)
             LDAP
+            LOCALIZATION
             NOTES
             README
             apache/
@@ -52,6 +53,7 @@ layout:
                 info/ (separate distribution)
             tools/
             ui_tags/
+            xsd/
         db/
             alert_message
             django.sqlite3

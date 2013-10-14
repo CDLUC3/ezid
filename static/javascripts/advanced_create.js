@@ -12,15 +12,21 @@ $(document).ready(function() {
 			}else{
 				$('#current_profile').val('erc');
 			}
-			$('#create_form').attr('method', 'get');
-			$('#create_form').submit();
+			var frm = $('#create_form');
+			frm.attr('action', location.pathname);
+			frm.unbind('submit');
+			frm.attr('method', 'get');
+			frm.submit();
 		}
 		orig_val = e.target.value;
 	});
 	
 	// submit form when profile changed
   $("#current_profile").bind("change", function(event){
-  	$('#create_form').attr('method', 'get');
-    $("#create_form").submit();
+  	var frm = $('#create_form');
+		frm.attr('action', location.pathname);
+		frm.unbind('submit');
+  	frm.attr('method', 'get');
+    frm.submit();
   });
 });

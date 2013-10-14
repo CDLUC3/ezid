@@ -640,3 +640,11 @@ div.order_by_col {
 #cur_sort {
 	background-color: #C7D7C7;
 }
+
+div.help_window dt {
+	font-weight: bold;
+}
+
+.required {
+	color: red;
+}
