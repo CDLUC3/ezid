@@ -145,7 +145,6 @@ def selected_radio(context, request_item, loop_index, item_value):
 
 @register.simple_tag
 def shoulder_display(prefix_dict, testPrefixes, simple_display):
-  #import pdb; pdb.set_trace() #this will enable debugging console
   display_prefix = ""
   for pre in testPrefixes:
     if prefix_dict['prefix'].startswith(pre['prefix']):

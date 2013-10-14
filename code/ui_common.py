@@ -39,6 +39,7 @@ reload_templates = None
 newsfeed_url = None
 
 remainder_box_default = "Recommended: Leave blank"
+manual_profiles = {'datacite_xml': 'DataCite'}
 
 def _loadConfig():
   #these aren't really globals for the whole app, but globals for ui_common
@@ -265,27 +266,33 @@ def validate_simple_metadata_form(request, profile):
     is_valid = False
   return is_valid
 
-def validate_advanced_metadata_form(request, profile):
-  """validates an advanced metadata form, profile is more or less irrelevant for now,
-  but may be useful later"""
-  is_valid = True
+def validate_advanced_top(request):
+  """validates advanced form top and returns list of error messages if any"""
+  err_msgs = []
   post = request.POST
-  msgs = django.contrib.messages
   if "_target" not in post:
-    msgs.error(request, "You must enter a location (URL) for your identifier")
-    is_valid = False  
+    err_msgs.append("You must enter a location (URL) for your identifier") 
   if not(url_is_valid(post['_target'])):
-    msgs.error(request, "Please enter a valid location (URL)")
-    is_valid = False
+    err_msgs.append("Please enter a valid location (URL)")
   if post['remainder'] != '' and post['remainder'] != remainder_box_default and \
       (' ' in post['remainder']):
-    msgs.error(request, "The remainder you entered is not valid.")
-    is_valid = False       
+    err_msgs.append("The remainder you entered is not valid.")     
   if "datacite.resourcetype" in post:
     rt = post["datacite.resourcetype"].strip()
     if rt != "" and rt.split("/", 1)[0] not in _dataciteResourceTypes:
-      msgs.error(request, "Invalid general resource type")
-      is_valid = False
+      err_msgs.append("Invalid general resource type")
+  return err_msgs
+  
+def validate_advanced_metadata_form(request, profile):
+  """validates an advanced metadata form, profile is more or less irrelevant for now,
+  but may be useful later"""
+  err_msgs = validate_advanced_top(request)
+  if len(err_msgs) > 0: #add any error messages to the request from top part
+    is_valid = False
+    for em in err_msgs:
+      django.contrib.messages.error(request, em)
+  else:
+    is_valid = True
   if profile.name == 'datacite' and _validate_datacite_metadata_form(request, profile) == False:
     is_valid = False
   return is_valid
