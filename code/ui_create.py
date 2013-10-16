@@ -6,6 +6,7 @@ import ezid
 import logging
 import urllib
 import re
+import datacite_xml
 
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
@@ -81,19 +82,36 @@ def simple_form_processing(request, d):
 
 def advanced_form_processing(request, d):
   """takes request and context object, d['prefixes'] should be set before calling"""
+  #sets manual_profile, current_profile, current_profile_name, internal_profile,
+  #     profiles, profile_names
+  
+  #Form set up
   d['remainder_box_default'] = uic.remainder_box_default
   #selects current_profile based on parameters or profile preferred for prefix type
+  d['manual_profile'] = False
   if 'current_profile' in request.REQUEST:
-    d['current_profile'] = metadata.getProfile(request.REQUEST['current_profile'])
-    if d['current_profile'] == None:
-      d['current_profile'] = metadata.getProfile('erc')
+    if request.REQUEST['current_profile'] in uic.manual_profiles:
+      d['manual_profile'] = True
+      d['current_profile_name'] = request.REQUEST['current_profile']
+      d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
+      d['current_profile'] = d['current_profile_name']
+    else: 
+      d['current_profile'] = metadata.getProfile(request.REQUEST['current_profile'])
+      if d['current_profile'] == None:
+        d['current_profile'] = metadata.getProfile('erc')
   else:
     if len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'):
       d['current_profile'] = metadata.getProfile('datacite')
     else:
       d['current_profile'] = metadata.getProfile('erc')
+  if d['manual_profile'] == False:
+    d['current_profile_name'] = d['current_profile'].name
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
+  profs = [(p.name, p.displayName, ) for p in d['profiles']] + uic.manual_profiles.items()
+  d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
+  d['profile_names'].remove(('datacite', 'DataCite')) #not shown in advanced.
+  
   if request.method == "POST":
     if "current_profile" not in request.POST or "shoulder" not in request.POST: return 'bad_request'
     pre_list = [p['prefix'] for p in d['prefixes']]
@@ -101,10 +119,24 @@ def advanced_form_processing(request, d):
       django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
       return 'edit_page'
     if uic.validate_advanced_metadata_form(request, d['current_profile']):
+      """ # no more manual profiles here for processing.
+      if d['manual_profile']:
+        methods = {'datacite_xml': datacite_xml.generate_xml}
+        return_val = methods[d['current_profile_name']](request.POST)
+        to_write = \
+        { "_profile": "datacite", 
+          '_target' : uic.fix_target(request.POST['_target']),
+          "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
+          "_export": ("yes" if request.POST["export"] == "yes" else "no"),
+          "datacite": return_val }
+      else:
+      """
       to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
         { '_target' : uic.fix_target(request.POST['_target']),
         "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
         "_export": ("yes" if request.POST["export"] == "yes" else "no") } )
+      
+      #write out ID and metadata (one variation with special remainder, one without)
       if request.POST['remainder'] == '' or request.POST['remainder'] == uic.remainder_box_default:
         s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request), 
             uic.group_or_anon_tup(request), to_write)
@@ -120,3 +152,4 @@ def advanced_form_processing(request, d):
         django.contrib.messages.error(request, "There was an error creating your identifier: "  + err_msg)
         return 'edit_page'
   return 'edit_page'
+  

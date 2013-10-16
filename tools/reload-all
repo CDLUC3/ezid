@@ -9,6 +9,9 @@ if [ $# -ne 1 ]; then echo usage: $0 password; exit 1; fi
 
 CLIENT=`dirname $0`/client
 
+METADATA="datacite.title test datacite.creator test datacite.publisher\
+ test datacite.publicationyear test"
+
 for server in development staging workflow production
 do
   echo
@@ -21,7 +24,7 @@ do
     then
       echo Testing...
       $CLIENT ${server:0:1} admin:$1 m ark:/99999/fk4
-      $CLIENT ${server:0:1} admin:$1 m doi:10.5072/FK2
+      $CLIENT ${server:0:1} admin:$1 m doi:10.5072/FK2 $METADATA
     fi
   fi
 done

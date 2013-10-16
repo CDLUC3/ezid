@@ -641,6 +641,14 @@ div.order_by_col {
 	background-color: #C7D7C7;
 }
 
+div.help_window dt {
+	font-weight: bold;
+}
+
+.required {
+	color: red;
+}
+
 div.info_stanza {
 	margin:0.5em 0 0.5em 0;
 }

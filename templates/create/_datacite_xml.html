@@ -1,0 +1,436 @@
+{% load layout_extras %}
+<script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/extras.js"></script>
+<script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/form_initialization.js"></script>
+<script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/formFunctions.js"></script>
+<script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/dom_utils.js"></script>
+<script type="text/javascript" src="/ezid/static/javascripts/jquery.form.js"></script>
+
+<link type="text/css" rel="stylesheet" href="/ezid/static/stylesheets/datacite_xml.css" >
+<br/>
+<div name="/resource" class="element">
+	<div name="/resource/creators" class="element container">
+		<label for="/resource/creators" class="element"><span title="Creator is a required section">Creator</span> <span class="required">*</span></label>
+		<input type="button" value="+" onclick="addOne(this)" name="/resource/creators" nbelmtsadded="1" class="addButton">
+		<input type="button" value="-" onclick="removeOne(this)" name="/resource/creators" class="rmvButton">
+		<div class="helpico">{% help_icon "dcxml_creators_help" %}</div>
+		<div class="multiple">
+			<div name="/resource/creators/creator[1]" class="element">
+				<div name="/resource/creators/creator[1]/creatorName" class="element">
+					<label for="/resource/creators/creator[1]/creatorName" class="element sized"><span title="Name is a required element">Name:</span> <span class="required">*</span></label>
+					<input type="text" name="/resource/creators/creator[1]/creatorName" class="data sized">
+				</div>
+				<div class="optional">
+					<div name="/resource/creators/creator[1]/nameIdentifier" class="element">
+						<label for="/resource/creators/creator[1]/nameIdentifier" class="element sized">Name Identifier:</label>
+						<input type="text" name="/resource/creators/creator[1]/nameIdentifier" class="data sized" />
+						<div class="attribute">
+							<label for="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="attribute sized">Identifier Scheme:</label>
+							<input type="text" name="/resource/creators/creator[1]/nameIdentifier/@nameIdentifierScheme" class="data sized">
+						</div>
+						<div class="attribute">
+							<label for="/resource/creators/creator[1]/nameIdentifier/@schemeURI" class="attribute sized">Scheme URI:</label>
+							<input type="text" name="/resource/creators/creator[1]/nameIdentifier/@schemeURI" class="data sized">
+						</div>
+						<div class="clearboth"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div name="/resource/titles" class="element container">
+		<label for="/resource/titles" class="element"><span title="Title is a required section">Title</span> <span class="required">*</span></label>
+		<input type="button" value="+" onclick="addOne(this)" name="/resource/titles" nbelmtsadded="1" class="addButton">
+		<input type="button" value="-" onclick="removeOne(this)" name="/resource/titles" class="rmvButton">
+		<div class="helpico">{% help_icon "dcxml_titles_help" %}</div>
+		<div class="multiple">
+			<div name="/resource/titles/title[1]" class="element">
+				<label for="/resource/titles/title[1]" class="element sized"><span title="Title is a required element">Title:</span> <span class="required">*</span></label>
+				<input type="text" name="/resource/titles/title[1]" class="data sized" />
+				<div name="/resource/titles/title[1]/@titleType" class="attribute">
+					<label for="/resource/titles/title[1]/@titleType" class="attribute sized">Type:</label>
+					<div class="sized">
+						<input type="radio" name="/resource/titles/title[1]/@titleType" value="" class="data" checked="checked"/>Main title
+						<input type="radio" name="/resource/titles/title[1]/@titleType" value="AlternativeTitle" class="data"/>Alternative title
+						<input type="radio" name="/resource/titles/title[1]/@titleType" value="Subtitle" class="data"/>Subtitle
+						<input type="radio" name="/resource/titles/title[1]/@titleType" value="TranslatedTitle" class="data"/>Translated title
+					</div>
+					<div class="clearboth"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clearboth" style="margin-top:5px;"></div>
+	<div name="/resource/publisher" class="element">
+		<label for="/resource/publisher" class="element sized1 smallertext"><span title="Publisher is a required element">Publisher:</span> <span class="required">*</span></label>
+		<input type="text" name="/resource/publisher" class="data sized1"> {% help_icon "dcxml_publisher_help" %}
+		<div class="clearboth"></div>
+	</div>
+	<div name="/resource/publicationYear" class="element">
+		<label for="/resource/publicationYear" class="element sized1 smallertext"><span title="Publication Year is a required element">Publication Year:</span> <span class="required">*</span></label>
+		<input type="text" name="/resource/publicationYear" class="data sizedsmall1"> {% help_icon "dcxml_publication_year_help" %}
+		<div class="clearboth"></div>
+	</div>
+	<div class="optional">
+		<div name="/resource/resourceType" class="element">
+			<div name="/resource/resourceType" class="element">
+				<div class="attribute">
+					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit sized1 smallertext">Resource Type:</label>
+					<select name="/resource/resourceType/@resourceTypeGeneral" id="resource_type_general" sendselect="yes"
+					  class="choice sized1">
+						<option value/>
+						<option value="Audiovisual">Audiovisual</option>
+						<option value="Collection">Collection</option>
+						<option value="Dataset" selected="selected">Dataset</option>
+						<option value="Event">Event</option>
+						<option value="Image">Image</option>
+						<option value="InteractiveResource">Interactive Resource</option>
+						<option value="Model">Model</option>
+						<option value="PhysicalObject">Physical Object</option>
+						<option value="Service">Service</option>
+						<option value="Software">Software</option>
+						<option value="Sound">Sound</option>
+						<option value="Text">Text</option>
+						<option value="Workflow">Workflow</option>
+						<option value="Other">Other</option>
+					</select> {% help_icon "dcxml_resource_type_general_help" %}
+				</div>
+				<div class="clearboth"></div>
+				<label for="/resource/resourceType" class="element sized1 smallertext">Resource Type Description:</label>				
+				<input type="text" name="/resource/resourceType" class="data sized1" id="resource_type" /> {% help_icon "dcxml_resource_type_help" %}
+			</div>
+			<div class="clearboth"></div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/descriptions" class="element container">
+			<label for="/resource/descriptions" class="element">Abstract</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/descriptions" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_descriptions_help" %}</div>
+			<div class="multiple">
+				<div name="/resource/descriptions/description[1]" class="element">
+					<label for="/resource/descriptions/description[1]" class="element sized">Descriptive information:</label>
+					<input type="text" name="/resource/descriptions/description[1]" class="data sized" />
+					<div class="attribute">
+						<label for="/resource/descriptions/description[1]/@descriptionType" class="attribute sized">Type:</label>
+						<select name="/resource/descriptions/description[1]/@descriptionType" sendselect="yes" class="choice sized">
+							<option value=""></option>
+							<option value="Abstract" selected="selected">Abstract</option>
+							<option value="SeriesInformation">Series Information</option>
+							<option value="TableOfContents">Table of Contents</option>
+							<option value="Methods">Methods</option>
+							<option value="Other">Other</option>
+						</select>
+					</div>
+				</div>
+				<div class="clearboth"></div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/subjects" class="element container">
+			<label for="/resource/subjects" class="element">Subject</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/subjects" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_subjects_help" %}</div>
+			<div class="multiple">
+				<div name="/resource/subjects/subject[1]" class="element">
+					<label for="/resource/subjects/subject[1]" class="element sized">Subject:</label>
+					<input type="text" name="/resource/subjects/subject[1]" class="data sized" />
+					<div class="attribute">
+						<label for="/resource/subjects/subject[1]/@subjectScheme" class="attribute sized">Scheme:</label>
+						<input type="text" name="/resource/subjects/subject[1]/@subjectScheme" class="data sized" />
+					</div>
+					<div class="attribute">
+						<label for="/resource/subjects/subject[1]/@schemeURI" class="attribute sized">Scheme URI:</label>
+						<input type="text" name="/resource/subjects/subject[1]/@schemeURI" class="data sized">
+					</div>
+					<div class="clearboth"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/contributors" class="element container">
+			<label for="/resource/contributors" class="element">Contributor</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/contributors" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/contributors" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_contributors_help" %}</div>
+			<div class="multiple">
+				<div name="/resource/contributors/contributor[1]" class="element">
+					<div name="/resource/contributors/contributor[1]/contributorName" class="element">
+						<label for="/resource/contributors/contributor[1]/contributorName" class="element sized">Name:</label>
+						<input type="text" name="/resource/contributors/contributor[1]/contributorName" class="data sized">
+					</div>
+					<div class="optional">
+						<div name="/resource/contributors/contributor[1]/nameIdentifier" class="element">
+							<label for="/resource/contributors/contributor[1]/nameIdentifier" class="element sized">Name Identifier:</label>
+							<input type="text" name="/resource/contributors/contributor[1]/nameIdentifier" class="data sized" />
+							<div class="attribute">
+								<label for="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="attribute sized">Name Identifier Scheme:</label>
+								<input type="text" name="/resource/contributors/contributor[1]/nameIdentifier/@nameIdentifierScheme" class="data sized">
+							</div>
+							<div class="attribute">
+								<label for="/resource/contributors/contributor[1]/nameIdentifier/@schemeURI" class="attribute sized">Scheme URI:</label>
+								<input type="text" name="/resource/contributors/contributor[1]/nameIdentifier/@schemeURI" class="data sized">
+							</div>
+						</div>
+					</div>
+					<div class="attribute">
+						<label for="/resource/contributors/contributor[1]/@contributorType" class="attribute sized">Contributor Type:</label>
+							<select name="/resource/contributors/contributor[1]/@contributorType" sendselect="yes" class="choice sized">
+								<option value=""> </option>
+								<option value="ContactPerson">Contact Person</option>
+								<option value="DataCollector">Data Collector</option>
+								<option value="DataManager">Data Manager</option>
+								<option value="Distributor">Distributor</option>
+								<option value="Editor">Editor</option>
+								<option value="Funder">Funder</option>
+								<option value="HostingInstitution">Hosting Institution</option>
+								<option value="Producer">Producer</option>
+								<option value="ProjectLeader">Project Leader</option>
+								<option value="ProjectMember">Project Member</option>
+								<option value="RegistrationAgency">Registration Agency</option>
+								<option value="RegistrationAuthority">Registration Authority</option>
+								<option value="RelatedPerson">Related Person</option>
+								<option value="ResearchGroup">Research Group</option>
+								<option value="RightsHolder">Rights Holder</option>
+								<option value="Researcher">Researcher</option>
+								<option value="Sponsor">Sponsor</option>
+								<option value="Supervisor">Supervisor</option>
+								<option value="WorkPackageLeader">Work Package Leader</option>
+								<option value="Other">Other</option>
+							</select>
+					</div>
+					<div class="clearboth"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/dates" class="element container">
+			<label for="/resource/dates" class="element">Date</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/dates" nbelmtsadded="1" class="addButton" />
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/dates" class="rmvButton" />
+			<div class="helpico">{% help_icon "dcxml_dates_help" %}</div>
+			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px;background:#ffffff */">
+				<div name="/resource/dates/date[1]" class="element">
+					<label for="/resource/dates/date[1]" class="element sized">Date:</label>
+					<input type="text" name="/resource/dates/date[1]" class="data sized" />
+					<div class="attribute">
+						<label for="/resource/dates/date[1]/@dateType" class="attribute sized">Date Type:</label>
+						<select name="/resource/dates/date[1]/@dateType" sendselect="yes" class="choice sized">
+							<option value/>
+							<option value="Accepted">Accepted</option>
+							<option value="Available">Available</option>
+							<option value="Collected">Collected</option>
+							<option value="Copyrighted">Copyrighted</option>
+							<option value="Created">Created</option>
+							<option value="Issued">Issued</option>
+							<option value="Submitted">Submitted</option>
+							<option value="Updated">Updated</option>
+							<option value="Valid">Valid</option>
+						</select>
+					</div>
+					<div class="clearboth"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clearboth"></div>
+	<div class="optional">
+		<div name="/resource/alternateIdentifiers" class="element container">
+			<label for="/resource/alternateIdentifiers" class="element">Alternate Identifier</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/alternateIdentifiers" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/alternateIdentifiers" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_alt_ids_help" %}</div>
+			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px; background: #ffffff */">
+				<div name="/resource/alternateIdentifiers/alternateIdentifier[1]" class="element">
+					<label for="/resource/alternateIdentifiers/alternateIdentifier[1]" class="element sized">Identifier:</label>
+					<input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[1]" class="data sized" />
+					<div class="attribute">
+						<label for="/resource/alternateIdentifiers/alternateIdentifier[1]/@alternateIdentifierType" class="attribute sized">Identifier Type:</label>
+						<input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[1]/@alternateIdentifierType" class="data sized" />
+					</div>
+				</div>
+				<div class="clearboth"></div>
+			</div>
+		</div>
+	</div>
+	<div class="optional">
+		<div name="/resource/relatedIdentifiers" class="element container">
+			<label for="/resource/relatedIdentifiers" class="element">Related Identifier</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/relatedIdentifiers" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/relatedIdentifiers" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_rel_ids_help" %}</div>
+			<div class="multiple">
+				<div class="element">
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[1]" class="element sized">Identifier:</label>
+					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[1]" class="data sized" />
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedIdentifierType" class="attribute sized">Identifier Type:</label>
+					<select name="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedIdentifierType" sendselect="yes" class="choice sized">
+						<option value/>
+						<option value="ARK">ARK</option>
+						<option value="DOI">DOI</option>
+						<option value="EAN13">EAN13</option>
+						<option value="EISSN">eISSN</option>
+						<option value="Handle">Handle</option>
+						<option value="ISBN">ISBN</option>
+						<option value="ISSN">ISSN</option>
+						<option value="ISTC">ISTC</option>
+						<option value="LISSN">LISSN</option>
+						<option value="LSID">LSID</option>
+						<option value="PMID">PMID</option>
+						<option value="PURL">PURL</option>
+						<option value="UPC">UPC</option>
+						<option value="URL">URL</option>
+						<option value="URN">URN</option>
+					</select>
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" class="attribute sized">Relation Type:</label>
+					<select name="/resource/relatedIdentifiers/relatedIdentifier[1]/@relationType" sendselect="yes" class="choice sized">
+						<option value/>
+						<option value="Cites">Cites</option>
+						<option value="Compiles">Compiles</option>
+						<option value="Continues">Continues</option>
+						<option value="Documents">Documents</option>
+						<option value="HasMetadata">HasMetadata</option>
+						<option value="HasPart">HasPart</option>
+						<option value="IsCitedBy">IsCitedBy</option>
+						<option value="IsCompiledBy">IsCompiledBy</option>
+						<option value="IsContinuedBy">IsContinuedBy</option>
+						<option value="IsDocumentedBy">IsDocumentedBy</option>
+						<option value="IsIdenticalTo">IsIdenticalTo</option>
+						<option value="IsMetadataFor">IsMetadataFor</option>
+						<option value="IsPartOf">IsPartOf</option>
+						<option value="IsNewVersionOf">IsNewVersionOf</option>
+						<option value="IsOriginalFormOf">IsOriginalFormOf</option>
+						<option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
+						<option value="IsReferencedBy">IsReferencedBy</option>
+						<option value="IsSupplementedBy">IsSupplementedBy</option>
+						<option value="IsSupplementTo">IsSupplementTo</option>
+						<option value="IsVariantFormOf">IsVariantFormOf</option>
+						<option value="References">References</option>
+					</select>
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedMetadataScheme" class="element sized">Related Metadata Scheme:</label>
+					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[1]/@relatedMetadataScheme" class="data sized" />
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@schemeURI" class="element sized">Scheme URI:</label>
+					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[1]/@schemeURI" class="data sized" />
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[1]/@schemeType" class="element sized">Scheme Type:</label>
+					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[1]/@schemeType" class="data sized" />
+				</div>
+				<div class="clearboth"></div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="optional">
+		<div name="/resource/rightsList" class="element container">
+			<label for="/resource/rightsList" class="element">Rights</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/rightsList" nbelmtsadded="1" class="addButton" />
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/rightsList" class="rmvButton" />
+			<div class="helpico">{% help_icon "dcxml_rights_help" %}</div>
+			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px;background:#ffffff */">
+				<div name="/resource/rightsList/rights[1]" class="element">
+					<label for="/resource/rightsList/rights[1]" class="element sized">Rights:</label>
+					<input type="text" name="/resource/rightsList/rights[1]" class="data sized" />
+					
+					<div class="attribute">
+						<label for="/resource/rightsList/rights[1]/@rightsURI" class="attribute sized">URI:</label>
+						<input type="text" name="/resource/rightsList/rights[1]/@rightsURI" class="data sized">
+					</div>
+					
+					<div class="clearboth"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="optional">
+		<div name="/resource/geoLocations" class="element container">
+			<label for="/resource/geoLocations" class="element">Geolocation</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/geoLocations" nbelmtsadded="1" class="addButton">
+			<input type="button" value="-" onclick="removeOne(this)" name="/resource/geoLocations" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_geolocations_help" %}</div>
+			<div class="multiple">
+				<div name="/resource/geoLocations/geoLocation[1]" class="element">
+					<div name="/resource/geoLocations/geoLocation[1]/geoLocationPoint" class="element">
+						<label for="/resource/geoLocations/geoLocation[1]/geoLocationPoint" class="element sized">Point:</label>
+						<input type="text" name="/resource/geoLocations/geoLocation[1]/geoLocationPoint" class="data sized">
+					</div>
+					<div name="/resource/geoLocations/geoLocation[1]/geoLocationBox" class="element">
+						<label for="/resource/geoLocations/geoLocation[1]/geoLocationBox" class="element sized">Box:</label>
+						<input type="text" name="/resource/geoLocations/geoLocation[1]/geoLocationBox" class="data sized">
+					</div>
+					<div name="/resource/geoLocations/geoLocation[1]/geoLocationPlace" class="element">
+						<label for="/resource/geoLocations/geoLocation[1]/geoLocationPlace" class="element sized">Place:</label>
+						<input type="text" name="/resource/geoLocations/geoLocation[1]/geoLocationPlace" class="data sized">
+					</div>
+					<div class="clearboth"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<label class="element sized">&nbsp;</label><div><span class="required">*</span> required item</div>
+{% include "info/datacite_xml_help.html" %}
+
+<!-- this form needs different handling since it's auto-generated
+	submitting by AJAX will avoid complete rewriting page and repopulating
+	form on every page load -->
+
+<script type="text/javascript">
+  $(document).ready(function() {
+  	// change form to submit by AJAX
+  	var options = {
+	    url:      '/ezid/demo/ajax_advanced',
+	    success:	showResponse
+		};   	
+    $('#create_form').ajaxForm(options);
+    
+    /* change the behavior when adding a section to erase contents of new text boxes
+     * which the obfuscated javascript form the external library uses.
+     */
+    $('input[type=button].addButton').click(function (e)
+		{
+			if(!e.isDefaultPrevented())
+			{
+			  var items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=text].data');
+			  items.each(function() {
+			  	var $this = $(this);
+			  	$this[0].value = '';
+			  })
+			  items = $(e.target).parent().children('div.multiple').children('div.element').last().find('select');
+			  items.each(function() {
+			  	$(this).prop('selectedIndex', 0);
+			  })
+			  items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=radio]');
+			  if(items.length > 0)
+			  	items[0].checked = true;
+			}
+		});
+		
+		//* set the resourceType to the same as resourceTypeGeneral
+		$(':submit').click(function(e)
+		{
+			var gen = $('#resource_type_general').val();
+			var res_type = $('#resource_type').val();			
+			if(gen != '' && res_type == ''){
+				$('#resource_type').val(gen);
+			}
+		});
+	});
+	
+	// post-submit callback 
+	function showResponse(resp, statusText, xhr, $form)  {
+    if(resp['status'] == 'failure'){
+    	var outstr = "";
+    	for (var i=0; i < resp['errors'].length; i++)
+    		outstr += '<p class="error">' + escapeHtml(resp['errors'][i]) + '</p>';
+    	$("#ustatus").html(outstr);
+    	showMessage(true);
+    }else if(resp['status'] == 'success'){
+    	window.location = "/ezid/id/" + resp['id'];
+    }
+	}
+</script>
