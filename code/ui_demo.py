@@ -50,6 +50,11 @@ def ajax_advanced(request):
     else:
       d['prefixes'] = []
     pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
+    for x in ['shoulder', 'remainder', '_target', 'publish', 'export']:
+      if x not in request.POST:
+        error_msgs.append("A required form element was not submitted.")
+        return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
+    
     if request.POST['shoulder'] not in pre_list:
       error_msgs.append("Unauthorized to create with this identifier prefix.")
     error_msgs = error_msgs + uic.validate_advanced_top(request)
