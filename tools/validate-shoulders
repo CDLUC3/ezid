@@ -2,7 +2,7 @@
 
 # Validates a shoulder file.  Usage:
 #
-#    validate-shoulder-file [-p password] file shoulders...
+#    validate-shoulders [-p password] file shoulders...
 #
 # Any shoulders defined in the file that are also listed on the
 # command line are operationally tested.  Note that testing DOI
@@ -47,7 +47,7 @@ exitStatus = 0
 
 def error (message):
   global exitStatus
-  sys.stderr.write("validate-shoulder-file: %s\n" % message)
+  sys.stderr.write("validate-shoulders: %s\n" % message)
   exitStatus = 1
 
 def fatal (message):
