@@ -81,8 +81,9 @@ class Entry (dict):
   A shoulder file entry.  This is a dictionary that maps field names
   to values (the entry key is stored under field name "key"), but for
   convenience fields can also be accessed as attributes.
-  Additionally, for field F, Entry.lineNum.F returns the line number
-  at which F was defined.
+  Additionally, for field F, Entry.lineNum.F is the line number at
+  which F was defined (internal to this module only; lineNum
+  attributes are removed by the parser when returned).
   """
   def __init__ (self, _createLineNum=True):
     if _createLineNum: self.lineNum = Entry(False)
@@ -144,8 +145,9 @@ def _validateShoulder (entry, errors, warnings):
         "non-DOI shoulder has datacenter"))
   for field in ["is_supershoulder", "is_subshoulder"]:
     if field in entry:
-      mytest(entry[field] in ["true", "false"], "invalid boolean value",
-        entry.lineNum[field])
+      if mytest(entry[field] in ["true", "false"], "invalid boolean value",
+        entry.lineNum[field]):
+        entry[field] = (entry[field] == "true")
   return returnValue[0]
 
 def _validateEntry (entry, errors, warnings):
@@ -208,8 +210,8 @@ def _globalValidations (entries, errors, warnings):
       shoulders[i+1].lineNum.key, errors)
     if shoulders[i+1].key.startswith(shoulders[i].key) and\
       len(shoulders[i+1].key) > len(shoulders[i].key):
-      if shoulders[i].get("is_supershoulder", "false") == "false" and\
-        shoulders[i+1].get("is_subshoulder", "false") == "false":
+      if not shoulders[i].get("is_supershoulder", False) and\
+        not shoulders[i+1].get("is_subshoulder", False):
         warnings.append((shoulders[i].lineNum.key,
           "shoulder is proper prefix of another shoulder"))
   def qualifiedName (shoulder):
@@ -230,4 +232,5 @@ def parse (fileContent):
   warnings = []
   entries = _read(fileContent, errors, warnings)
   _globalValidations(entries, errors, warnings)
+  for e in entries: del e.lineNum
   return (entries, errors, warnings)

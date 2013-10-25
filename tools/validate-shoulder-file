@@ -96,7 +96,7 @@ def testMinter (shoulder, minter):
 def testDatacenter (shoulder, datacenter):
   pipe = subprocess.Popen([os.path.join(thisDir, "mdsadmin"), options.password,
     "view", datacenter], stdout=subprocess.PIPE)
-  output, unused = pipe.communicate()
+  output = pipe.communicate()[0]
   if pipe.wait() != 0:
     error("shoulder '%s': mdsadmin command failed" % shoulder)
     return
