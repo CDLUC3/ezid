@@ -58,6 +58,7 @@ layout:
             alert_message
             django.sqlite3
             search.sqlite3
+            shoulders_cache.txt
             stats
             store.sqlite3
         logs/
