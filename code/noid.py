@@ -31,6 +31,8 @@ import urllib2
 
 import util
 
+_lengthLimit = 10000
+
 class Noid (object):
 
   def __init__ (self, server):
@@ -128,7 +130,17 @@ class Noid (object):
       if v == "":
         c.append(self._command("bind", "purge", [0, identifier], [4, e]))
       else:
-        c.append(self._command("bind", "set", [0, identifier], [4, e], v))
+        venc = util.encode3(v)
+        if len(venc) <= _lengthLimit:
+          c.append(self._command("bind", "set", [0, identifier], [4, e],
+            [0, venc]))
+        else:
+          command = "set"
+          while len(venc) > 0:
+            c.append(self._command("bind", command, [0, identifier], [4, e],
+              [0, venc[:_lengthLimit]]))
+            venc = venc[_lengthLimit:]
+            command = "append"
     s = self._issue("\n".join(c))
     if placeHold:
       assert len(s) >= 1 and s[0].startswith("ok: 1 hold placed"),\
@@ -138,7 +150,7 @@ class Noid (object):
       j = 3
     for i in range(len(d)):
       assert len(s) >= i*5+j+1 and s[i*5+j].startswith("Status:  ok"),\
-        "unexpected return from noid 'bind set' or 'bind purge' command"
+        "unexpected return from noid 'bind set/append/purge' command"
 
   def getElements (self, identifier):
     """
