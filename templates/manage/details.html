@@ -167,7 +167,7 @@
 		  {% if has_resource_type %}
 		  	{% get_dict_value identifier "datacite.resourcetype" %}.
 		  {% endif %}
-		  <a href="http://dx.doi.org/{{id_text}}">{% identifier_display id_text testPrefixes %}</a>
+		  {% active_id_display id_text testPrefixes %}
 		{% endif %}
   </div>
   {% include "info/popup_help.html" %}

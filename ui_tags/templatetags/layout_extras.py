@@ -68,6 +68,13 @@ def identifier_display(id_text, testPrefixes):
     if id_text.startswith(pre['prefix']):
       return "<span class='fakeid'>" + escape(id_text) + "</span>"
   return escape(id_text)
+
+@register.simple_tag
+def active_id_display(id_text, testPrefixes):
+  for pre in testPrefixes:
+    if id_text.startswith(pre['prefix']):
+      return "<span class='fakeid'>" + '<a href="' + _urlForm(id_text) + '">' + _urlForm(id_text) + '</a></span>'
+  return '<a href="' + _urlForm(id_text) + '">' + _urlForm(id_text) + '</a>'
   
 @register.simple_tag
 def help_icon(id_of_help):
