@@ -153,10 +153,15 @@ get swallowed).
     <Directory /path/to/SITE_ROOT/PROJECT_ROOT/apache>
     Order deny,allow
     Allow from all
-    WSGIApplicationGroup ezid
+    WSGIApplicationGroup %{GLOBAL}
     WSGIProcessGroup site-1
     WSGIPassAuthorization on
     </Directory>
+
+For somewhat mysterious reasons the application group *must* be
+"%{GLOBAL}" and not an arbitrary name such as "ezid".  This is because
+lxml is incompatible with mod_wsgi's use of Python sub-interpreters
+(even though EZID is being run as a separate daemon process).
 
 5. Add an alias so that static files are served by Apache, not Django.
 
