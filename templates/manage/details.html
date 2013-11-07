@@ -155,8 +155,6 @@
   	</table>
   </div>
   <div class="grid_3">
-  	<img src="https://chart.googleapis.com/chart?chs=120x120&cht=qr&chld=L|0&chl={% full_url_to_id_details_urlencoded id_text %}"
-  		   alt="QR Code for {% full_url_to_id_details id_text %}" title="QR Code for {% full_url_to_id_details id_text %}"/>
   	{% if not has_block_data and current_profile.name == 'datacite' %}
 			<h2 style="margin-top: 2em;">Citation Preview</h2>
 		  {% get_dict_value identifier "datacite.creator" %}
