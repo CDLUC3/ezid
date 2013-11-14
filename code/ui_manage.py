@@ -22,7 +22,7 @@ FIELD_ORDER = ['identifier', 'owner', 'coOwners', 'createTime', 'updateTime', 's
                 'mappedTitle', 'mappedCreator']
 
 # The default selected fields for display if custom fields haven't been defined
-FIELD_DEFAULTS = ['identifier', 'createTime', 'mappedTitle', 'mappedCreator']
+FIELD_DEFAULTS = ['identifier', 'updateTime', 'mappedTitle', 'mappedCreator']
 
 # Column names for display for each field
 FIELDS_MAPPED = {'identifier':'Identifier',  'owner':'Owner', 'coOwners': 'Co-Owners', \
@@ -40,7 +40,7 @@ FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', 'coOwners
                 'mappedTitle': 'string', 'mappedCreator' : 'string'}
 
 # priority for the sort order if it is not set, choose the first field that exists in this order
-FIELD_DEFAULT_SORT_PRIORITY = ['identifier', 'createTime', 'updateTime', 'owner', 'mappedTitle', \
+FIELD_DEFAULT_SORT_PRIORITY = ['updateTime', 'identifier', 'createTime', 'owner', 'mappedTitle', \
                 'mappedCreator', 'status', 'coOwners']
 
 IS_ASCENDING = {'asc': True, 'desc': False }
@@ -77,7 +77,7 @@ def index(request):
   if 'sort' in request.REQUEST and request.REQUEST['sort'] in ['asc', 'desc']:
     d['sort'] = request.REQUEST['sort']
   else:
-    d['sort'] = 'asc'
+    d['sort'] = 'desc'
     
   #p=page and ps=pagesize -- I couldn't find an auto-paging that uses our type of models and does what we want
   #sorry, had to roll our own
