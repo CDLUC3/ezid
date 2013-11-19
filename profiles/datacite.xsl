@@ -178,16 +178,16 @@ http://creativecommons.org/licenses/BSD/
     </xsl:if>
     <xsl:apply-templates
       select="*[local-name()='descriptions']/*[local-name()='description']"/>
-      
-  	<xsl:if test="*[local-name()='geoLocations']">
-  	  <tr class="dcms_element dcms_geoLocations">
-      <th class="dcms_label dcms_geoLocations">Geolocations:</th>
-      <td class="dcms_value dcms_geoLocations">
-        <xsl:apply-templates select=
-          "*[local-name()='geoLocations']"/>
-      </td>
-    </tr>
-  	</xsl:if>	
+    <xsl:if
+      test="*[local-name()='geoLocations']/*[local-name()='geoLocation']">
+      <tr class="dcms_element dcms_geolocations">
+        <th class="dcms_label dcms_geolocations">Geolocations:</th>
+        <td class="dcms_value dcms_geolocations">
+          <xsl:apply-templates select=
+            "*[local-name()='geoLocations']/*[local-name()='geoLocation']"/>
+        </td>
+      </tr>
+    </xsl:if>
   </table>
 </xsl:template>
 
@@ -315,6 +315,20 @@ http://creativecommons.org/licenses/BSD/
   </span>
 </xsl:template>
 
+<xsl:template match="*[local-name()='size']">
+  <xsl:if test="position() != 1">
+    <xsl:text>; </xsl:text>
+  </xsl:if>
+  <xsl:value-of select="."/>
+</xsl:template>
+
+<xsl:template match="*[local-name()='format']">
+  <xsl:if test="position() != 1">
+    <xsl:text>; </xsl:text>
+  </xsl:if>
+  <xsl:value-of select="."/>
+</xsl:template>
+
 <xsl:template match="*[local-name()='rights']">
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
@@ -328,49 +342,6 @@ http://creativecommons.org/licenses/BSD/
       <xsl:text>]</xsl:text>
     </span>
   </xsl:if>
-</xsl:template>
-
-<xsl:template match="*[local-name()='geoLocations']">
-	<xsl:apply-templates select="*[local-name()='geoLocation']"/>
-</xsl:template>
-
-<xsl:template match="*[local-name()='geoLocation']">
-	<xsl:if test="position() != 1">
-		<br/>
-	</xsl:if>    
-  <xsl:if test="*[local-name()='geoLocationPlace']">
-    <span class="dcms_subvalue dcms_geolocationplace"><xsl:value-of select="*[local-name()='geoLocationPlace']"/></span>
-  </xsl:if>
-  [
-  	
-    <xsl:if test="*[local-name()='geoLocationPoint']">
-    	<span class="dcms_subvalue dcms_geolocationpoint">
-	    	point=<xsl:value-of select="*[local-name()='geoLocationPoint']"/>
-	    </span>
-	    <xsl:if test="*[local-name()='geoLocationBox']">; 
-	    </xsl:if>
-	  </xsl:if>
-	  <xsl:if test="*[local-name()='geoLocationBox']">
-	  	<span class="dcms_subvalue dcms_geolocationbox">
-	    	box=<xsl:value-of select="*[local-name()='geoLocationBox']"/>
-	    </span>
-	  </xsl:if>
-  ]
-  
-</xsl:template>
-
-<xsl:template match="*[local-name()='size']">
-  <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
-  </xsl:if>
-  <xsl:value-of select="."/>
-</xsl:template>
-
-<xsl:template match="*[local-name()='format']">
-  <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
-  </xsl:if>
-  <xsl:value-of select="."/>
 </xsl:template>
 
 <xsl:template match="*[local-name()='description']">
@@ -387,6 +358,53 @@ http://creativecommons.org/licenses/BSD/
       <xsl:apply-templates/>
     </td>
   </tr>
+</xsl:template>
+
+<xsl:template match="*[local-name()='geoLocation']">
+  <!-- We assume the location has at least one of point/box/place,
+       though the schema requires nothing. -->
+  <xsl:if test="position() != 1">
+    <xsl:text>; </xsl:text>
+  </xsl:if>
+  <xsl:choose>
+    <xsl:when test="*[local-name()='geoLocationPlace']">
+      <xsl:value-of select="*[local-name()='geoLocationPlace']"/>
+      <xsl:if test="*[local-name()='geoLocationPoint'] or
+        *[local-name()='geoLocationBox']">
+        <xsl:text> </xsl:text>
+        <span class="dcms_subvalue dcms_geolocations">
+          <xsl:text>[</xsl:text>
+          <xsl:if test="*[local-name()='geoLocationPoint']">
+            <xsl:text>point </xsl:text>
+            <xsl:value-of select="*[local-name()='geoLocationPoint']"/>
+          </xsl:if>
+          <xsl:if test="*[local-name()='geoLocationBox']">
+            <xsl:if test="*[local-name()='geoLocationPoint']">
+              <xsl:text>; </xsl:text>
+            </xsl:if>
+            <xsl:text>box </xsl:text>
+            <xsl:value-of select="*[local-name()='geoLocationBox']"/>
+          </xsl:if>
+          <xsl:text>]</xsl:text>
+        </span>
+      </xsl:if>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:text>[</xsl:text>
+      <xsl:if test="*[local-name()='geoLocationPoint']">
+        <xsl:text>point </xsl:text>
+        <xsl:value-of select="*[local-name()='geoLocationPoint']"/>
+      </xsl:if>
+      <xsl:if test="*[local-name()='geoLocationBox']">
+        <xsl:if test="*[local-name()='geoLocationPoint']">
+          <xsl:text>; </xsl:text>
+        </xsl:if>
+        <xsl:text>box </xsl:text>
+        <xsl:value-of select="*[local-name()='geoLocationBox']"/>
+      </xsl:if>
+      <xsl:text>]</xsl:text>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="*[local-name()='br']">
