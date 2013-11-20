@@ -22,7 +22,7 @@ FIELD_ORDER = ['identifier', 'owner', 'coOwners', 'createTime', 'updateTime', 's
                 'mappedTitle', 'mappedCreator']
 
 # The default selected fields for display if custom fields haven't been defined
-FIELD_DEFAULTS = ['identifier', 'createTime', 'mappedTitle', 'mappedCreator']
+FIELD_DEFAULTS = ['identifier', 'updateTime', 'mappedTitle', 'mappedCreator']
 
 # Column names for display for each field
 FIELDS_MAPPED = {'identifier':'Identifier',  'owner':'Owner', 'coOwners': 'Co-Owners', \
@@ -40,7 +40,7 @@ FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', 'coOwners
                 'mappedTitle': 'string', 'mappedCreator' : 'string'}
 
 # priority for the sort order if it is not set, choose the first field that exists in this order
-FIELD_DEFAULT_SORT_PRIORITY = ['identifier', 'createTime', 'updateTime', 'owner', 'mappedTitle', \
+FIELD_DEFAULT_SORT_PRIORITY = ['updateTime', 'identifier', 'createTime', 'owner', 'mappedTitle', \
                 'mappedCreator', 'status', 'coOwners']
 
 IS_ASCENDING = {'asc': True, 'desc': False }
@@ -57,10 +57,8 @@ def index(request):
     d['account_co_owners'] = r['ezidCoOwners']
   else:
     d['account_co_owners'] = ''
-  d['recent'] = search.getByOwner(d['user'][0], True, 'updateTime', False, 10, 0)
-  d['recent1'] = d['recent'][0:5]
-  d['recent2'] = d['recent'][5:10]
   d['field_order'] = FIELD_ORDER
+  d['field_norewrite'] = FIELD_ORDER + ['includeCoowned']
   d['fields_mapped'] = FIELDS_MAPPED
   d['field_defaults'] = FIELD_DEFAULTS
   d['fields_selected'] = [x for x in FIELD_ORDER if x in request.REQUEST ]
@@ -70,6 +68,9 @@ def index(request):
   d['field_display_types'] = FIELD_DISPLAY_TYPES
   
   #ensure sorting defaults are set
+  d['includeCoowned'] = True
+  if 'submit_checks' in request.REQUEST and not ('includeCoowned' in request.REQUEST):
+    d['includeCoowned'] = False    
   if 'order_by' in request.REQUEST and request.REQUEST['order_by'] in d['fields_selected']:
     d['order_by'] = request.REQUEST['order_by']
   else:
@@ -77,7 +78,7 @@ def index(request):
   if 'sort' in request.REQUEST and request.REQUEST['sort'] in ['asc', 'desc']:
     d['sort'] = request.REQUEST['sort']
   else:
-    d['sort'] = 'asc'
+    d['sort'] = 'desc'
     
   #p=page and ps=pagesize -- I couldn't find an auto-paging that uses our type of models and does what we want
   #sorry, had to roll our own
@@ -89,7 +90,7 @@ def index(request):
   d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
   if d['p'] > d['total_pages']: d['p'] = d['total_pages']
 
-  d['results'] = search.getByOwner(d['user'][0], True, d['order_by'], IS_ASCENDING[d['sort']], d['ps'], (d['p']-1)*d['ps'])
+  d['results'] = search.getByOwner(d['user'][0], d['includeCoowned'], d['order_by'], IS_ASCENDING[d['sort']], d['ps'], (d['p']-1)*d['ps'])
   
   return uic.render(request, 'manage/index', d)
 

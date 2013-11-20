@@ -6,7 +6,14 @@
 		<div class="chk_col_box">
 			{% column_choices field_order fields_mapped fields_selected %}
 		</div>
-		{% rewrite_hidden_except REQUEST field_order %}
+		{% rewrite_hidden_except REQUEST field_norewrite %}
+		<div style="clear:both"></div><br/>
+		<h2>Other Options:</h2>	
+		<input type="checkbox" id="includeCoowned" name="includeCoowned" value="t"
+		{% if includeCoowned %}
+			checked="checked" 
+		{% endif %} \>
+		<label for="includeCoowned">include co-owned identifiers</label>
 		<div class="chk_buttons"><br/>
 			<a href="#restore_defaults" id="restore_defaults">Restore Defaults</a>&nbsp;&nbsp;&nbsp;&nbsp;
 			<a href="#close" class="close">Cancel</a>&nbsp;&nbsp;&nbsp;&nbsp;
