@@ -4,31 +4,18 @@
 {% block title %}Manage IDs{% endblock %}
 
 {% block content %}
-  <div class="grid_12">
-    <h1>My Recent Activity</h1>
-  </div>
-  {% if recent|length < 1 %}
-  	<div class="grid_12"><p>You do not have recent activity to display.</p></div>
-  {% else %}
-  	<div class="grid_6">
-    	{% for item in recent1 %}
-    		{% identifier_disp item.identifier testPrefixes %}
-    		{% latest_modification_string item %}<br/>
-    	{% endfor %}
-    </div>
-    <div class="grid_6">
-    	{% for item in recent2 %}
-    		{% identifier_disp item.identifier testPrefixes %}
-    		{% latest_modification_string item %}<br/>
-    	{% endfor %}
-    </div>
-  {% endif %}
   
   {% if results|length < 1 %}
   	<p>There are no recent results to display.</p>
   {% else %}
 	  <div class="grid_12">
-	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp;(includes co-owned identifiers)
+	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp;
+	  	{% if includeCoowned %}
+	  		(includes co-owned identifiers)
+	  	{% else %}
+				(does not include co-owned identifiers)
+			{% endif %} 
+	  	
 	  	&nbsp;&nbsp;&nbsp;<a href="#dialog" name="modal">Customize view</a>
 	  	{% include "manage/_choose_cols.html" %}
 	  </div>

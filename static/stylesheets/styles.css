@@ -648,3 +648,7 @@ div.help_window dt {
 .required {
 	color: red;
 }
+
+div.info_stanza {
+	margin:0.5em 0 0.5em 0;
+}
