@@ -18,6 +18,7 @@ import django.conf
 import ldap
 import re
 import threading
+import time
 
 import config
 import log
@@ -25,15 +26,20 @@ import util
 
 _ldapEnabled = None
 _ldapServer = None
+_numAttempts = None
+_reattemptDelay = None
 _lock = threading.Lock()
 _ldapCache = None
 _userDnTemplate = None
 _users = None
 
 def _loadConfig ():
-  global _ldapEnabled, _ldapServer, _ldapCache, _userDnTemplate, _users
+  global _ldapEnabled, _ldapServer, _numAttempts, _reattemptDelay, _ldapCache
+  global _userDnTemplate, _users
   _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
   _ldapServer = config.config("ldap.server")
+  _numAttempts = int(config.config("ldap.num_attempts"))
+  _reattemptDelay = float(config.config("ldap.reattempt_delay"))
   _lock.acquire()
   _ldapCache = {}
   _lock.release()
@@ -86,13 +92,25 @@ def _authenticateLdap (username, password):
   try:
     l = ldap.initialize(_ldapServer)
     userDn = _userDnTemplate % _escape(username)
-    try:
-      l.bind_s(userDn, password, ldap.AUTH_SIMPLE)
-    except ldap.INVALID_CREDENTIALS:
-      return None
-    except ldap.UNWILLING_TO_PERFORM:
-      # E.g., server won't accept empty password.
-      return None
+    # We don't do retries on every LDAP interaction, but the following
+    # 'bind' is the most frequently executed LDAP call, and the most
+    # likely place in EZID where a down/inaccessible LDAP server will
+    # be encountered and can easily be recovered from.
+    for i in range(_numAttempts):
+      try:
+        l.bind_s(userDn, password, ldap.AUTH_SIMPLE)
+      except ldap.INVALID_CREDENTIALS:
+        return None
+      except ldap.UNWILLING_TO_PERFORM:
+        # E.g., server won't accept empty password.
+        return None
+      except ldap.SERVER_DOWN:
+        if i == _numAttempts-1:
+          raise
+        else:
+          time.sleep(_reattemptDelay)
+      else:
+        break
     _lock.acquire()
     try:
       if username in _ldapCache: return _ldapCache[username]
