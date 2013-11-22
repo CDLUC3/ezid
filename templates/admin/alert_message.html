@@ -6,11 +6,11 @@
   <div class="grid_9">
     <h1>Create Alert Message</h1>
     <p>The alert message appears at the top of very web page in EZID.</p>
-    <form style="display:inline" method="post" action="{% url ui_admin.alert_message %}" >
+    <form style="display:inline" method="post" action="{% url "ui_admin.alert_message" %}" >
     	<input type="text" name="message" size="70" id="message" value="{{ alertMessage }}" /><br/><br/>
     	<input type="submit" value="Publish"/>
    </form>
-   <form style="display:inline;" method="post" action="{% url ui_admin.alert_message %}" >
+   <form style="display:inline;" method="post" action="{% url "ui_admin.alert_message" %}" >
    		<input type="hidden" name="remove_it" value="remove_it"/>
    		<input type="submit" value="Remove Alert"/>
    </form>

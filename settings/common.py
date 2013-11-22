@@ -73,7 +73,7 @@ SESSION_COOKIE_AGE = 604800
 
 TEMPLATE_LOADERS =\
   ("django.template.loaders.filesystem.Loader",
-   "django.template.loaders.app_directories.load_template_source")
+   "django.template.loaders.app_directories.Loader")
 TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
 TEMPLATE_CONTEXT_PROCESSORS =\
   ("django.contrib.messages.context_processors.messages",

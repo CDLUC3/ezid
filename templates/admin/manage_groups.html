@@ -7,7 +7,7 @@
     <h1>Manage Groups</h1>
     
     <div class="dialog_window" id="addnew_dialog">
-    	<form id="new_group_form" action="{% url ui_admin.add_group %}" method="post">
+    	<form id="new_group_form" action="{% url "ui_admin.add_group" %}" method="post">
     		<label class="left" for="grouphandle">Group handle:</label>
     		<div class="field_right">
     			<input type="text" id="grouphandle" name="grouphandle"/>&nbsp;&nbsp;e.g. &quot;labarchives&quot;
@@ -21,7 +21,7 @@
     	<div style="clear:both;"></div>&nbsp;
     </div>
     
-    <form id="groupform" action="{% url ui_admin.manage_groups %}" method="post">
+    <form id="groupform" action="{% url "ui_admin.manage_groups" %}" method="post">
     	
     	<label class="left" for="group">Group handle:</label>
     	<div class="field_right">
@@ -62,7 +62,7 @@
     	<div class="field_right" id='users'>
     		{% if group.users|length > 0 %}
     			{% for u in group.users %}
-    				<a href="{% url ui_admin.manage_users %}?user={{ u.dn|urlencode }}">{{u.uid}}</a><br/>
+    				<a href="{% url "ui_admin.manage_users" %}?user={{ u.dn|urlencode }}">{{u.uid}}</a><br/>
     			{% endfor %}
     		{% else %}
     			No users are in this group

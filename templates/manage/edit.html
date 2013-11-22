@@ -28,7 +28,7 @@
     <div style="clear:left;"></div>
     
     <h2>About the identified object</h2>
-    <form id="edit_form" action="{% url ui_manage.edit id_text %}" method="post">
+    <form id="edit_form" action="{% url "ui_manage.edit" id_text %}" method="post">
       <!-- original profile is the profile that was loaded before possibly being changed from drop-down list -->
       <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
       <p>Describe the identified object using the 
