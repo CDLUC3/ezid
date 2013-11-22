@@ -117,18 +117,15 @@ def _writeTooltips ():
         django.template.defaultfilters.slugify(e.name))
       f.write("return \"%s\"; } });\n" % e.tooltip.replace("\n", " ")\
         .replace("\\", "\\\\").replace("\"", "\\\""))
-  f.write("});\n\n")
-  # I also need to write the values in a raw form for retrieval for the popup window code.
-  # It works differently, but someone wants to see these there, also. Aargh.
-  
+  f.write("});\n")
+  # For popup windows...
   f.write("var all_help_tooltip_text = {};\n")
-  
   for p in _profiles:
     for e in p.elements:
-      f.write("all_help_tooltip_text['element_%s'] = \"%s\";\n" % \
-              (django.template.defaultfilters.slugify(e.name), \
-               e.tooltip.replace("\n", " ").replace("\\", "\\\\").replace("\"", "\\\"") ,) )
-  f.write("\n")
+      f.write("all_help_tooltip_text[\"element_%s\"] = \"%s\";\n" %\
+        (django.template.defaultfilters.slugify(e.name),
+        e.tooltip.replace("\n", " ").replace("\\", "\\\\")
+        .replace("\"", "\\\"")))
   f.close()
 
 _writeTooltips()
