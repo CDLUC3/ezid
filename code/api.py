@@ -97,7 +97,7 @@ def _readInput (request):
       ct[1][8:].upper() != "UTF-8":
       return "error: bad request - unsupported character encoding"
     try:
-      return anvl.parse(request.raw_post_data.decode("UTF-8"))
+      return anvl.parse(request.body.decode("UTF-8"))
     except anvl.AnvlParseException, e:
       return "error: bad request - ANVL parse error (%s)" % e.message
     except Exception:
