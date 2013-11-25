@@ -33,6 +33,17 @@ import util
 
 _lengthLimit = 10000
 
+# For temporary debugging of noid failures.  A caution against leaving
+# the following flag true: if large numbers of errors are encountered,
+# it may defeat log._notifyAdmins's attempts to limit the number of
+# emails sent.
+_includeExtendedErrorInfo = True
+def _extendedErrorInfo (lines):
+  if _includeExtendedErrorInfo:
+    return ", output follows\n" + "".join(lines)
+  else:
+    return ""
+
 class Noid (object):
 
   def __init__ (self, server):
@@ -89,7 +100,8 @@ class Noid (object):
     # test is imperfect, but it's the least imperfect test.
     s = self._issue(self._command("fetch", [0, identifier]))
     assert len(s) >= 3 and s[0].startswith("id:") and\
-      s[1].startswith("Circ:"), "unexpected return from noid 'fetch' command"
+      s[1].startswith("Circ:"),\
+      "unexpected return from noid 'fetch' command" + _extendedErrorInfo(s)
     return not s[2].startswith("note: no elements bound under")
 
   def mintIdentifier (self):
@@ -99,7 +111,7 @@ class Noid (object):
     """
     s = self._issue(self._command("mint", "1"))
     assert len(s) >= 1 and s[0].startswith("id:"),\
-      "unexpected return from noid 'mint' command"
+      "unexpected return from noid 'mint' command" + _extendedErrorInfo(s)
     return s[0][3:].strip()
 
   def holdIdentifier (self, identifier):
@@ -109,7 +121,7 @@ class Noid (object):
     """
     s = self._issue(self._command("hold", "set", [0, identifier]))
     assert len(s) >= 1 and s[0].startswith("ok: 1 hold placed"),\
-      "unexpected return from noid 'hold set' command"
+      "unexpected return from noid 'hold set' command" + _extendedErrorInfo(s)
 
   def setElements (self, identifier, d, placeHold=False):
     """
@@ -144,13 +156,15 @@ class Noid (object):
     s = self._issue("\n".join(c))
     if placeHold:
       assert len(s) >= 1 and s[0].startswith("ok: 1 hold placed"),\
-        "unexpected return from noid 'hold set' command"
+        "unexpected return from noid 'hold set' command" +\
+        _extendedErrorInfo(s)
       j = 5
     else:
       j = 3
     for i in range(len(d)):
       assert len(s) >= i*5+j+1 and s[i*5+j].startswith("Status:  ok"),\
-        "unexpected return from noid 'bind set/append/purge' command"
+        "unexpected return from noid 'bind set/append/purge' command" +\
+        _extendedErrorInfo(s)
 
   def getElements (self, identifier):
     """
@@ -162,7 +176,8 @@ class Noid (object):
     # See the comment under identifierExists above.
     s = self._issue(self._command("fetch", [0, identifier]))
     assert len(s) >= 3 and s[0].startswith("id:") and\
-      s[1].startswith("Circ:"), "unexpected return from noid 'fetch' command"
+      s[1].startswith("Circ:"),\
+      "unexpected return from noid 'fetch' command" + _extendedErrorInfo(s)
     if s[2].startswith("note: no elements bound under"):
       return None
     else:
@@ -190,7 +205,8 @@ class Noid (object):
       [4, e]) for e in d))
     for i in range(len(d)):
       assert len(s) >= i*5+4 and s[i*5+3].startswith("Status:  ok"),\
-        "unexpected return from noid 'bind delete' command"
+        "unexpected return from noid 'bind delete' command" +\
+        _extendedErrorInfo(s)
 
   def releaseIdentifier (self, identifier):
     """
@@ -201,7 +217,8 @@ class Noid (object):
     """
     s = self._issue(self._command("hold", "release", [0, identifier]))
     assert len(s) >= 1 and s[0].startswith("ok: 1 hold placed"),\
-      "unexpected return from noid 'hold release' command"
+      "unexpected return from noid 'hold release' command" +\
+      _extendedErrorInfo(s)
 
   def ping (self):
     """
