@@ -68,8 +68,10 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = "settings.urls"
 
+SESSION_COOKIE_PATH = "/ezid/"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 604800
+SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
 
 TEMPLATE_LOADERS =\
   ("django.template.loaders.filesystem.Loader",
@@ -84,8 +86,6 @@ INSTALLED_APPS = (
   "django.contrib.messages",
   "ui_tags"
 )
-
-SESSION_COOKIE_PATH = "/ezid/"
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
