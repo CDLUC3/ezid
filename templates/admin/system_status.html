@@ -30,7 +30,7 @@
   	<br/><br/>
   	<div class="status_sidebox" style="text-align:center">
   		<h2>For Developer Use Only</h2>
-  		<form id="reloadit" action="{% url ui_admin.system_status %}" method="post" >
+  		<form id="reloadit" action="{% url "ui_admin.system_status" %}" method="post" >
   			<input type="submit" value="Reload EZID"/>
   		</form>
   		<br/>
@@ -54,7 +54,7 @@
 	    setTimeout(function() { // set timeout also needed for Safari and page reload, doesn't happen on new navigation to page in most cases
 		    $('.update_status').each(function() {
 		    	$.ajax({
-			  		url:			'{% url ui_admin.ajax_system_status %}' + "?id=" + escape(this.id),
+			  		url:			'{% url "ui_admin.ajax_system_status" %}' + "?id=" + escape(this.id),
 			  		success: 	function(data){
 			  		  var ar = data.split(':');
 			  		  var id = ar[0];

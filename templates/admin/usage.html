@@ -5,7 +5,7 @@
 {% block content %}
   <div class="grid_9">
     <h1>View Usage</h1>
-    <form id="usage_form" action="{% url ui_admin.usage %}" method="post">
+    <form id="usage_form" action="{% url "ui_admin.usage" %}" method="post">
     	<label class="left" for="choices">Report for:</label>
 				<div class="field_right">
 					<select id="choice" name="choice">

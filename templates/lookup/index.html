@@ -8,7 +8,7 @@
     <p>View and manage an existing long-term identifier.<br/>
       Be sure to include the identifier's scheme (e.g., <strong>doi:</strong>10.1234/foo).</p>
       
-    <form method="post" action="{% url ui_lookup.index %}">
+    <form method="post" action="{% url "ui_lookup.index" %}">
       <input type="text" id="identifier" name="identifier" size="40"
         {% if identifier %}value="{{ identifier }}"{% endif %}/>
       <input type="submit" value="View"/>

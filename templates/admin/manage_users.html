@@ -7,7 +7,7 @@
     <h1>Manage User Accounts</h1>
     
     <div class="dialog_window" id="addnew_dialog">
-    	<form id="new_user_form" action="{% url ui_admin.add_user %}" method="post" autocomplete="off">
+    	<form id="new_user_form" action="{% url "ui_admin.add_user" %}" method="post" autocomplete="off">
     			
 				<label class="left" for="nu_uid">Username:</label>
 				<div class="field_right">
@@ -41,7 +41,7 @@
     </div>
     
     
-    <form id="edit_form" action="{% url ui_admin.manage_users %}" method="post">
+    <form id="edit_form" action="{% url "ui_admin.manage_users" %}" method="post">
     	
     	<label class="left" for="user">Username:</label>
     	<div class="field_right">
@@ -79,7 +79,7 @@
 			
 			<!--
     	<div class="field_right">
-    		<a href="{% url ui_admin.manage_groups %}?group={{ group_dn|urlencode }}" id="group">{{user.groupGid}}</a>
+    		<a href="{% url "ui_admin.manage_groups" %}?group={{ group_dn|urlencode }}" id="group">{{user.groupGid}}</a>
     	</div>
     	-->
     	

@@ -1,5 +1,5 @@
 import django.conf
-import django.conf.urls.defaults
+import django.conf.urls
 
 def _p (urlPattern, function, kwargs=None):
   # If we're running under Apache, the site is already rooted under
@@ -13,7 +13,7 @@ def _p (urlPattern, function, kwargs=None):
   if kwargs != None: t += (kwargs,)
   return t
 
-urlpatterns = django.conf.urls.defaults.patterns("",
+urlpatterns = django.conf.urls.patterns("",
 
   # UI - RENDERED FROM TEMPLATES IN INFO REPOSITORY
   _p("/?$", "ui_home.index"),
@@ -71,7 +71,7 @@ urlpatterns = django.conf.urls.defaults.patterns("",
 )
 
 if django.conf.settings.STANDALONE:
-  urlpatterns += django.conf.urls.defaults.patterns("",
+  urlpatterns += django.conf.urls.patterns("",
     ("^ezid/static/(?P<path>.*)$", "django.views.static.serve",
     { "document_root": django.conf.settings.MEDIA_ROOT }))
 

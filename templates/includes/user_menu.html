@@ -2,7 +2,7 @@
   {% if session.auth %}
     Logged in as <strong>{{ session.auth.user|first }}</strong>
     <span class="pad">|</span>
-    <a href="{% url ui_account.edit %}">My Account</a>
+    <a href="{% url "ui_account.edit" %}">My Account</a>
     <span class="pad">|</span>
     <a href="/ezid/logout">Logout</a>
     <span class="pad">|</span>
@@ -10,5 +10,5 @@
     <a href="/ezid/login">Login</a>
     <span class="pad">|</span>
   {% endif %}
-  <a href="{% url ui.contact %}">Contact Us</a>
+  <a href="{% url "ui.contact" %}">Contact Us</a>
 </div>

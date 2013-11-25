@@ -2,7 +2,7 @@
 
 <div id="dialog" class="dialog_window">
 	<h2>Choose Columns to Display:</h2>
-	<form method="get" action="{% url ui_manage.index %}">
+	<form method="get" action="{% url "ui_manage.index" %}">
 		<div class="chk_col_box">
 			{% column_choices field_order fields_mapped fields_selected %}
 		</div>
