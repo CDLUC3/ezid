@@ -25,8 +25,8 @@ Those are the core prerequisites for running EZID standalone.  But
 EZID is of little value unless there are some other, external servers
 running: a Noid <http://wiki.ucop.edu/display/Curation/NOID> server
 for storing metadata; additional Noid servers for minting identifiers;
-DataCite services for creating DOI identifiers; and an LDAP server, if
-LDAP authentication is used.
+a shoulder server (optional); DataCite services for creating DOI
+identifiers; and an LDAP server, if LDAP authentication is used.
 
 General layout and configuration
 ================================
