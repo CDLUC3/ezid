@@ -13,7 +13,7 @@
 # cookies may be used.  Methods provided:
 #
 # Mint an identifier:
-#   POST /ezid/shoulder/{prefix}   [authentication required]
+#   POST /ezid/shoulder/{shoulder}   [authentication required]
 #   request body: optional metadata
 #   response body: status line
 #
@@ -154,8 +154,8 @@ def mintIdentifier (request):
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
   assert request.path.startswith("/ezid/shoulder/")
-  prefix = request.path[15:]
-  return _response(ezid.mintIdentifier(prefix, auth.user, auth.group,
+  shoulder = request.path[15:]
+  return _response(ezid.mintIdentifier(shoulder, auth.user, auth.group,
     metadata), createRequest=True)
 
 def identifierDispatcher (request):
