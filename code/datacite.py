@@ -28,39 +28,29 @@ import xml.sax.saxutils
 
 import config
 import mapping
+import shoulder
 
 _lock = threading.Lock()
 _enabled = None
 _doiUrl = None
 _metadataUrl = None
 _numAttempts = None
-_datacenters = None
-_prefixes = None
+_allocators = None
 _stylesheet = None
 _pingDoi = None
 _pingTarget = None
 _numActiveOperations = None
 
 def _loadConfig ():
-  global _enabled, _doiUrl, _metadataUrl, _numAttempts, _datacenters, _prefixes
+  global _enabled, _doiUrl, _metadataUrl, _numAttempts, _allocators
   global _stylesheet, _pingDoi, _pingTarget, _numActiveOperations
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
   _numAttempts = int(config.config("datacite.num_attempts"))
-  _datacenters = {}
-  for dc in config.config("datacite.datacenters").split(","):
-    try:
-      pw = config.config("datacenter_%s.password" % dc)
-    except:
-      pw = config.config("allocator_%s.password" %\
-        config.config("datacenter_%s.name" % dc).split(".")[0])
-    _datacenters[dc] = "Basic " +\
-      base64.b64encode(config.config("datacenter_%s.name" % dc) + ":" + pw)
-  _prefixes = dict((config.config("prefix_%s.prefix" % k)[4:],
-    config.config("prefix_%s.datacenter" % k))\
-    for k in config.config("prefixes.keys").split(",")\
-    if config.config("prefix_%s.prefix" % k).startswith("doi:"))
+  _allocators = {}
+  for a in config.config("datacite.allocators").split(","):
+    _allocators[a] = config.config("allocator_%s.password" % a)
   _stylesheet = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
     django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
   _pingDoi = config.config("datacite.ping_doi")
@@ -102,14 +92,13 @@ class _HTTPErrorProcessor (urllib2.HTTPErrorProcessor):
   https_response = http_response
 
 def _datacenterAuthorization (doi):
-  prefix = None
-  # Select the longest matching prefix.
-  for p, dc in _prefixes.items():
-    if doi.startswith(p) and (prefix is None or len(p) > len(prefix)):
-      prefix = p
-      datacenter = dc
-  assert prefix is not None, "prefix not found"
-  return _datacenters[datacenter]
+  s = shoulder.getLongestMatch("doi:" + doi)
+  # Should never happen.
+  assert s is not None, "shoulder not found"
+  a = s.datacenter.split(".")[0]
+  p = _allocators.get(a, None)
+  assert p is not None, "no such allocator: " + a
+  return "Basic " + base64.b64encode(s.datacenter + ":" + p)
 
 def registerIdentifier (doi, targetUrl):
   """

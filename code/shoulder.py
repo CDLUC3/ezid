@@ -142,18 +142,20 @@ def getAll ():
   return _shoulders.values()
 
 @_loadAndLock
-def getAllMatches (prefix):
+def getAllMatches (identifier):
   """
-  Returns a list of all shoulders beginning with 'prefix'.
+  Returns a list of all shoulders that match 'identifier', i.e., that
+  are a prefix of 'identifier'.
   """
-  return [s for s in _shoulders.itervalues() if s.key.startswith(prefix)]
+  return [s for s in _shoulders.itervalues() if identifier.startswith(s.key)]
 
-def getLongestMatch (prefix):
+def getLongestMatch (identifier):
   """
-  Returns the longest shoulder beginning with 'prefix', or None.
+  Returns the longest shoulder that matches 'identifier', i.e., that
+  is a prefix of 'identifier'.
   """
   lm = None
-  for s in getAllMatches(prefix):
+  for s in getAllMatches(identifier):
     if lm is None or len(s.key) > len(lm.key): lm = s
   return lm
 
