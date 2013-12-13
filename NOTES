@@ -58,10 +58,10 @@ Caching is employed in several places:
 
   policy._groups shoulder cache
     A dictionary that maps groups (identified by tuples; see above) to
-    lists of shoulders.  Loaded on demand as groups are encountered.
-    Emptied when EZID is reloaded.  Also, individual entries are
-    removed when shoulder lists are modified through the admin
-    interface.
+    lists of shoulders (shoulder_parser.Entry objects).  Loaded on
+    demand as groups are encountered.  Emptied when EZID is reloaded.
+    Also, individual entries are removed when shoulder lists are
+    modified through the admin interface.
 
   policy._coOwners cache
     A dictionary that maps users (identified by simple names) to

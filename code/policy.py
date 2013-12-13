@@ -14,15 +14,15 @@
 # -----------------------------------------------------------------------------
 
 import ldap
-import re
 import threading
 
 import config
+import log
+import shoulder
 import useradmin
 
 _lock = threading.Lock()
-_prefixes = None
-_nonTestLabels = None
+_testShoulders = None
 _groups = None
 _coOwners = None
 _ldapEnabled = None
@@ -32,14 +32,11 @@ _adminUsername = None
 _adminPassword = None
 
 def _loadConfig ():
-  global _prefixes, _nonTestLabels, _groups, _coOwners, _ldapEnabled
+  global _testShoulders, _groups, _coOwners, _ldapEnabled
   global _ldapServer, _userDnTemplate, _adminUsername, _adminPassword
   _lock.acquire()
   try:
-    _prefixes = dict([k, config.config("prefix_%s.prefix" % k)]\
-      for k in config.config("prefixes.keys").split(","))
-    _nonTestLabels = ",".join(k for k in\
-      config.config("prefixes.keys").split(",") if not k.startswith("TEST"))
+    _testShoulders = None
     _groups = {}
     _coOwners = {}
     _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
@@ -53,7 +50,20 @@ def _loadConfig ():
 _loadConfig()
 config.addLoader(_loadConfig)
 
-def _loadPrefixesLdap (group):
+def _lookupShoulders (group, shoulderText):
+  if shoulderText == "NONE": return []
+  l = []
+  for s in shoulderText.split():
+    try:
+      entry = shoulder.getExactMatch(s)
+      assert entry != None, "group '%s' has undefined shoulder: %s" %\
+        (group[0], s)
+      if entry not in l: l.append(entry)
+    except AssertionError, e:
+      log.otherError("policy._lookupShoulders", e)
+  return l
+
+def _loadShouldersLdap (group):
   l = None
   try:
     l = ldap.initialize(_ldapServer)
@@ -66,50 +76,48 @@ def _loadPrefixesLdap (group):
       "unexpected return from LDAP search command, DN='%s'" % group[2]
     # Although not documented anywhere, it appears that returned
     # values are UTF-8 encoded.
-    return r[0][1]["shoulderList"][0].decode("UTF-8")
+    return _lookupShoulders(group, r[0][1]["shoulderList"][0].decode("UTF-8"))
   finally:
     if l: l.unbind()
 
-def _loadPrefixesLocal (group):
-  return config.config("group_%s.prefixes" % group[0])
+def _loadShouldersLocal (group):
+  return _lookupShoulders(group,
+    config.config("group_%s.shoulders" % group[0]))
 
-def _loadPrefixes (group):
+def _loadShoulders (group):
   if group[0] == _adminUsername:
-    l = _nonTestLabels
+    return [s for s in shoulder.getAll() if not s.is_test_shoulder]
   elif group[0] == "anonymous":
-    l = "NONE"
-  elif _ldapEnabled:
-    l = _loadPrefixesLdap(group)
-  else:
-    l = _loadPrefixesLocal(group)
-  if l == "NONE":
     return []
+  elif _ldapEnabled:
+    return _loadShouldersLdap(group)
   else:
-    return [_prefixes[k] for k in re.split("[, ]+", l) if len(k) > 0]
+    return _loadShouldersLocal(group)
 
-def _getPrefixes (group):
+def _getShoulders (group):
   _lock.acquire()
   try:
     if group in _groups:
       return _groups[group]
     else:
-      _groups[group] = _loadPrefixes(group)
+      _groups[group] = _loadShoulders(group)
       return _groups[group]
   finally:
     _lock.release()
 
-def getPrefixes (user, group):
+def getShoulders (user, group):
   """
-  Returns a list of the prefixes available to a user not including the
-  test prefixes.  'user' and 'group' should each be authenticated
+  Returns a list of the shoulders available to a user not including
+  the test shoulders.  'user' and 'group' should each be authenticated
   (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  Throws an exception on error.
+  "ark:/13030/foo").  Each shoulder is described by a
+  shoulder_parser.Entry object.  Throws an exception on error.
   """
-  return _getPrefixes(group)[:]
+  return _getShoulders(group)[:]
 
-def clearPrefixCache (group):
+def clearShoulderCache (group):
   """
-  Clears the prefix cache for a group.  'group' should be a simple
+  Clears the shoulder cache for a group.  'group' should be a simple
   group name, e.g., "dryad".
   """
   _lock.acquire()
@@ -118,6 +126,30 @@ def clearPrefixCache (group):
       if g[0] == group:
         del _groups[g]
         break
+  finally:
+    _lock.release()
+
+def _getTestShoulders ():
+  global _testShoulders
+  _lock.acquire()
+  try:
+    if _testShoulders is None:
+      _testShoulders = []
+      s = shoulder.getArkTestShoulder()
+      try:
+        assert s is not None, "no ARK test shoulder"
+      except AssertionError, e:
+        log.otherError("policy._getTestShoulders", e)
+      else:
+        _testShoulders.append(s)
+      s = shoulder.getDoiTestShoulder()
+      try:
+        assert s is not None, "no DOI test shoulder"
+      except AssertionError, e:
+        log.otherError("policy._getTestShoulders", e)
+      else:
+        _testShoulders.append(s)
+    return _testShoulders
   finally:
     _lock.release()
 
@@ -185,18 +217,19 @@ def authorizeView (user, group, identifier, metadata):
   """
   return "_ezid_role" not in metadata or user[0] == _adminUsername
 
-def authorizeCreate (user, group, prefix):
+def authorizeCreate (user, group, identifier):
   """
   Returns true if a request to mint or create an identifier is
   authorized.  'user' and 'group' should each be authenticated (local
   name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  'prefix' may be a complete identifier or just a
-  prefix of one; in either case it must be qualified, e.g.,
+  "ark:/13030/foo").  'identifier' may be a complete identifier or
+  just a shoulder; in either case it must be qualified, e.g.,
   "doi:10.5060/".  Throws an exception on error.
   """
-  if prefix.startswith(_prefixes["TESTARK"]): return True
-  if prefix.startswith(_prefixes["TESTDOI"]): return True
-  if any(map(lambda p: prefix.startswith(p), _getPrefixes(group))): return True
+  if any(map(lambda s: identifier.startswith(s.key), _getTestShoulders())):
+    return True
+  if any(map(lambda s: identifier.startswith(s.key), _getShoulders(group))):
+    return True
   return False
 
 def authorizeUpdate (rUser, rGroup, identifier, iUser, iGroup, iCoOwners,
