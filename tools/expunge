@@ -68,8 +68,9 @@ import search
 import store
 import util
 
-testArkPrefix = config.config("prefix_TESTARK.prefix")[5:]
-testDoiPrefix = util.doi2shadow(config.config("prefix_TESTDOI.prefix")[4:])
+testArkPrefix = config.config("shoulders.ark_test")[5:]
+testDoiPrefix = util.doi2shadow(config.config("shoulders.doi_test")[4:])
+sys.exit()
 lifetime = 2*7*24*60*60 # seconds
 
 usageText = """Usage:
