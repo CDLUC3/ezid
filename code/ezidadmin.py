@@ -32,6 +32,7 @@ import idmap
 import log
 import noid
 import policy
+import shoulder
 import userauth
 import util
 
@@ -46,15 +47,14 @@ _adminUsername = None
 _adminPassword = None
 _ldapAdminDn = None
 _ldapAdminPassword = None
-_shoulders = None
-_agentPrefix = None
+_agentShoulder = None
 _lock = threading.Lock()
 _statusProbes = None
 
 def _loadConfig ():
   global _ldapEnabled, _updatesEnabled, _ldapServer, _baseDn, _userDnTemplate
   global _userDnPattern, _groupDnTemplate, _adminUsername, _adminPassword
-  global _ldapAdminDn, _ldapAdminPassword, _shoulders, _agentPrefix
+  global _ldapAdminDn, _ldapAdminPassword, _agentShoulder
   global _statusProbes
   _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
   _updatesEnabled = (config.config("ldap.updates_enabled").lower() == "true")
@@ -69,10 +69,8 @@ def _loadConfig ():
   _adminPassword = config.config("ldap.admin_password")
   _ldapAdminDn = config.config("ldap.ldap_admin_dn")
   _ldapAdminPassword = config.config("ldap.ldap_admin_password")
-  _shoulders = [k for k in config.config("prefixes.keys").split(",")\
-    if not k.startswith("TEST")]
-  _agentPrefix = config.config("prefix_cdlagent.prefix")
-  assert _agentPrefix.startswith("ark:/")
+  _agentShoulder = config.config("shoulders.agent")
+  assert _agentShoulder.startswith("ark:/")
   _lock.acquire()
   try:
     _statusProbes = {}
@@ -82,16 +80,26 @@ def _loadConfig ():
 _loadConfig()
 config.addLoader(_loadConfig)
 
-def _validateShoulderList (sl):
-  # Returns a normalized shoulder list in string form, or None.
+def _validateShoulderList (dn, sl, swallowErrors=True):
   if sl == "NONE": return sl
   l = []
-  for s in re.split("[, ]+", sl):
-    if len(s) == 0: continue
-    if s not in _shoulders: return None
-    if s not in l: l.append(s)
-  if len(l) == 0: return None
-  return ",".join(l)
+  for s in sl.split():
+    try:
+      assert shoulder.getExactMatch(s) != None,\
+        "undefined shoulder: %s, DN='%s'" % (s, dn)
+      if s not in l: l.append(s)
+    except AssertionError, e:
+      if swallowErrors:
+        log.otherError("ezidadmin._validateShoulderList", e)
+      else:
+        return None
+  if len(l) > 0:
+    return " ".join(l)
+  else:
+    if swallowErrors:
+      return "NONE"
+    else:
+      return None
 
 def getEntries (usersOnly=False, nonEzidUsersOnly=False):
   """
@@ -169,8 +177,7 @@ def getGroups ():
         assert d["shoulderList"] == "*",\
           "invalid EZID administrator shoulder list"
       else:
-        d["shoulderList"] = _validateShoulderList(d["shoulderList"])
-        assert d["shoulderList"] != None, "invalid shoulder list, DN='%s'" % dn
+        d["shoulderList"] = _validateShoulderList(dn, d["shoulderList"])
       if "description" in attrs:
         d["description"] = attrs["description"][0].decode("UTF-8")
       else:
@@ -350,7 +357,7 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
   if len(gid) == 0: return "Group name required."
   if " " in gid: return "Invalid group name."
   if len(shoulderList) == 0: return "Shoulder list required."
-  shoulderList = _validateShoulderList(shoulderList)
+  shoulderList = _validateShoulderList(dn, shoulderList, swallowErrors=False)
   if shoulderList == None: return "Unrecognized shoulder."
   groups = getGroups()
   if type(groups) is str: return groups
@@ -373,7 +380,7 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
     assert "gid" not in r[0][1] and "groupArkId" not in r[0][1] and\
       "agreementOnFile" not in r[0][1] and "shoulderList" not in r[0][1],\
       "unexpected LDAP attribute, DN='%s'" % dn
-    r = ezid.mintIdentifier(_agentPrefix, user, group,
+    r = ezid.mintIdentifier(_agentShoulder, user, group,
       { "_ezid_role": "group", "_profile": "erc", "erc.who": dn,
       "erc.what": "EZID group" })
     if r.startswith("success:"):
@@ -412,7 +419,7 @@ def updateGroup (dn, description, agreementOnFile, shoulderList, user, group):
   if dn == _groupDnTemplate % _adminUsername:
     if shoulderList != "*": return "Administrator shoulder list must be '*'."
   else:
-    shoulderList = _validateShoulderList(shoulderList)
+    shoulderList = _validateShoulderList(dn, shoulderList, swallowErrors=False)
     if shoulderList == None: return "Unrecognized shoulder."
   l = None
   try:
@@ -452,7 +459,7 @@ def updateGroup (dn, description, agreementOnFile, shoulderList, user, group):
         gid = r[0][1]["gid"][0].decode("UTF-8")
       else:
         gid = r[0][1]["uid"][0].decode("UTF-8")
-      policy.clearPrefixCache(gid)
+      policy.clearShoulderCache(gid)
     arkId = r[0][1]["groupArkId" if "groupArkId" in r[0][1] else "arkId"]\
       [0].decode("UTF-8")
     _cacheLdapInformation(l, dn, arkId, user, group)
@@ -542,7 +549,7 @@ def makeUser (uid, groupDn, user, group):
       "unexpected LDAP attribute, DN='%s'" % dn
     if "arkId" in r[0][1]:
       arkId = r[0][1]["arkId"][0].decode("UTF-8")
-      if not arkId.startswith(_agentPrefix) or\
+      if not arkId.startswith(_agentShoulder) or\
         arkId[5:] != util.validateArk(arkId[5:]):
         return "LDAP entry has invalid ARK identifier."
       r = ezid.getMetadata(arkId, user, group)
@@ -566,7 +573,7 @@ def makeUser (uid, groupDn, user, group):
       assert r.startswith("success:"), "ezid.setMetadata failed: " + r
       m = []
     else:
-      r = ezid.mintIdentifier(_agentPrefix, user, group,
+      r = ezid.mintIdentifier(_agentShoulder, user, group,
         { "_ezid_role": "user", "_profile": "erc", "erc.who": dn,
         "erc.what": "EZID user" })
       if r.startswith("success:"):
@@ -609,6 +616,7 @@ def disableUser (username):
     if "ezidUser" not in r[0][1]["objectClass"]: return "No such user."
     if "userPassword" in r[0][1]:
       l.modify_s(dn, [(ldap.MOD_DELETE, "userPassword", None)])
+    django_util.deleteSessions(username)
     return None
   except Exception, e:
     log.otherError("ezidadmin.disableUser", e)
@@ -705,12 +713,10 @@ def systemStatus (id=None):
       "name": "DataCite API" })
     probes.append({ "id": _addStatusProbe("handlesystem", None),
       "name": "Handle System" })
-    for p in config.config("prefixes.keys").split(","):
-      minter = config.config("prefix_%s.minter" % p)
-      if minter != "":
-        probes.append({ "id": _addStatusProbe("noid", minter),
-          "name": "%s (%s) minter" % (config.config("prefix_%s.name" % p),
-          config.config("prefix_%s.prefix" % p)) })
+    for s in shoulder.getAll():
+      if s.minter != "":
+        probes.append({ "id": _addStatusProbe("noid", s.minter),
+          "name": "%s (%s) minter" % (s.name, s.key) })
     return probes
   else:
     _lock.acquire()
