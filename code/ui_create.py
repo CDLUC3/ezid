@@ -7,6 +7,7 @@ import logging
 import urllib
 import re
 import datacite_xml
+import policy
 
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
@@ -16,7 +17,10 @@ def index(request):
 def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['namespace'].lower()) #must be done before calling form processing
+  d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.key }\
+    for s in policy.getShoulders(request.session["auth"].user,
+    request.session["auth"].group)],
+    key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   r = simple_form_processing(request, d)
@@ -31,7 +35,10 @@ def simple(request):
 def advanced(request):
   d = { 'menu_item' :'ui_create.advanced' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['namespace'].lower()) #must be done before calling form processing
+  d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.key }\
+    for s in policy.getShoulders(request.session["auth"].user,
+    request.session["auth"].group)],
+    key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   r = advanced_form_processing(request, d)

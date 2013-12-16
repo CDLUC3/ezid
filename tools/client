@@ -192,9 +192,10 @@ def issueRequest (path, method, data=None, returnHeaders=False):
       return response.decode("UTF-8")
   except urllib2.HTTPError, e:
     sys.stderr.write("%s %s\n" % (e.code, e.msg))
-    response = e.fp.read()
-    if not response.endswith("\n"): response += "\n"
-    sys.stderr.write(response)
+    if e.fp != None:
+      response = e.fp.read()
+      if not response.endswith("\n"): response += "\n"
+      sys.stderr.write(response)
     sys.exit(1)
 
 def printAnvlResponse (response, sortLines=False):

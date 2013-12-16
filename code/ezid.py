@@ -155,12 +155,12 @@ import log
 import noid
 import policy
 import search
+import shoulder
 import store
 import util
 
 _bindNoid = None
 _ezidUrl = None
-_prefixes = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
 _defaultUrnUuidProfile = None
@@ -168,13 +168,10 @@ _adminUsername = None
 _perUserThrottle = None
 
 def _loadConfig ():
-  global _bindNoid, _ezidUrl, _prefixes, _defaultDoiProfile, _defaultArkProfile
+  global _bindNoid, _ezidUrl, _defaultDoiProfile, _defaultArkProfile
   global _defaultUrnUuidProfile, _adminUsername, _perUserThrottle
   _bindNoid = noid.Noid(config.config("DEFAULT.bind_noid"))
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
-  _prefixes = dict([config.config("prefix_%s.prefix" % k),
-    noid.Noid(config.config("prefix_%s.minter" % k))]\
-    for k in config.config("prefixes.keys").split(","))
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
   _defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
@@ -376,7 +373,7 @@ def _validateMetadata2 (owner, metadata):
 
 def mintDoi (prefix, user, group, metadata={}):
   """
-  Mints a DOI identifier having the given scheme-less prefix, e.g.,
+  Mints a DOI identifier under the given scheme-less shoulder, e.g.,
   "10.5060/".  'user' and 'group' should each be authenticated (local
   name, persistent identifier) tuples, e.g., ("dryad",
   "ark:/13030/foo").  'metadata' should be a dictionary of element
@@ -395,20 +392,21 @@ def mintDoi (prefix, user, group, metadata={}):
     error: internal server error
   """
   qprefix = "doi:" + prefix
-  if qprefix not in _prefixes:
-    return "error: bad request - unrecognized DOI prefix"
+  s = shoulder.getExactMatch(qprefix)
+  if s is None: return "error: bad request - unrecognized DOI shoulder"
   tid = uuid.uuid1()
   try:
     log.begin(tid, "mintDoi", prefix, user[0], user[1], group[0], group[1])
     if not policy.authorizeCreate(user, group, qprefix):
       log.unauthorized(tid)
       return "error: unauthorized"
-    if _prefixes[qprefix].server == "":
+    if s.minter == "":
       log.badRequest(tid)
-      return "error: bad request - no minter for namespace"
-    shadowArk = _prefixes[qprefix].mintIdentifier()
+      return "error: bad request - no minter for shoulder"
+    shadowArk = noid.Noid(s.minter).mintIdentifier()
     doi = util.shadow2doi(shadowArk)
-    assert doi.startswith(prefix), "minted DOI does not match requested prefix"
+    assert doi.startswith(prefix),\
+      "minted DOI does not match requested shoulder"
     assert util.doi2shadow(doi) == shadowArk,\
       "minted DOI does not map back to minted shadow ARK"
   except Exception, e:
@@ -421,7 +419,7 @@ def mintDoi (prefix, user, group, metadata={}):
 def createDoi (doi, user, group, metadata={}):
   """
   Creates a DOI identifier having the given scheme-less name, e.g.,
-  "10.5060/foo".  The identifier must not already exist.  'user' and
+  "10.5060/FOO".  The identifier must not already exist.  'user' and
   'group' should each be authenticated (local name, persistent
   identifier) tuples, e.g., ("dryad", "ark:/13030/foo").  'metadata'
   should be a dictionary of element (name, value) pairs.  If an
@@ -504,7 +502,7 @@ def createDoi (doi, user, group, metadata={}):
 
 def mintArk (prefix, user, group, metadata={}):
   """
-  Mints an ARK identifier having the given scheme-less prefix, e.g.,
+  Mints an ARK identifier under the given scheme-less shoulder, e.g.,
   "13030/fk4".  'user' and 'group' should each be authenticated (local
   name, persistent identifier) tuples, e.g., ("dryad",
   "ark:/13030/foo").  'metadata' should be a dictionary of element
@@ -522,19 +520,20 @@ def mintArk (prefix, user, group, metadata={}):
     error: internal server error
   """
   qprefix = "ark:/" + prefix
-  if qprefix not in _prefixes:
-    return "error: bad request - unrecognized ARK prefix"
+  s = shoulder.getExactMatch(qprefix)
+  if s is None: return "error: bad request - unrecognized ARK shoulder"
   tid = uuid.uuid1()
   try:
     log.begin(tid, "mintArk", prefix, user[0], user[1], group[0], group[1])
     if not policy.authorizeCreate(user, group, qprefix):
       log.unauthorized(tid)
       return "error: unauthorized"
-    if _prefixes[qprefix].server == "":
+    if s.minter == "":
       log.badRequest(tid)
-      return "error: bad request - no minter for namespace"
-    ark = _prefixes[qprefix].mintIdentifier()
-    assert ark.startswith(prefix), "minted ARK does not match requested prefix"
+      return "error: bad request - no minter for shoulder"
+    ark = noid.Noid(s.minter).mintIdentifier()
+    assert ark.startswith(prefix),\
+      "minted ARK does not match requested shoulder"
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -703,7 +702,7 @@ def createUrnUuid (urn, user, group, metadata={}):
 
 def mintIdentifier (prefix, user, group, metadata={}):
   """
-  Mints an identifier having the given qualified prefix, e.g.,
+  Mints an identifier under the given qualified shoulder, e.g.,
   "doi:10.5060/".  'user' and 'group' should each be authenticated
   (local name, persistent identifier) tuples, e.g., ("dryad",
   "ark:/13030/foo").  'metadata' should be a dictionary of element

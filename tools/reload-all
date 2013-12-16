@@ -5,7 +5,7 @@
 # Greg Janee <gjanee@ucop.edu>
 # December 2011
 
-if [ $# -ne 1 ]; then echo usage: $0 password; exit 1; fi
+if [ $# -ne 1 ]; then echo "usage: $0 password"; exit 1; fi
 
 CLIENT=`dirname $0`/client
 
@@ -15,16 +15,16 @@ METADATA="datacite.title test datacite.creator test datacite.publisher\
 for server in development staging workflow production
 do
   echo
-  echo -n "Reload ${server} server? [y/n] "
+  echo -n "Reload $server server? [y/n] "
   read yesno
   if [ "$yesno" == "y" ]; then
     echo Reloading...
-    $CLIENT ${server:0:1} admin:$1 reload
+    $CLIENT ${server:0:1} admin:"$1" reload
     if [ $? -eq 0 ]
     then
       echo Testing...
-      $CLIENT ${server:0:1} admin:$1 m ark:/99999/fk4
-      $CLIENT ${server:0:1} admin:$1 m doi:10.5072/FK2 $METADATA
+      $CLIENT ${server:0:1} admin:"$1" m ark:/99999/fk4
+      $CLIENT ${server:0:1} admin:"$1" m doi:10.5072/FK2 $METADATA
     fi
   fi
 done

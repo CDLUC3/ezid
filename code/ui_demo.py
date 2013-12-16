@@ -8,6 +8,7 @@ import urllib
 import datacite_xml
 import os
 import re
+import policy
 from lxml import etree
 def index(request):
   d = { 'menu_item' : 'ui_demo.index' }
@@ -45,8 +46,11 @@ def ajax_advanced(request):
     d = {}
     error_msgs = []
     d["testPrefixes"] = uic.testPrefixes
-    if 'prefixes' in request.session:
-      d['prefixes'] = sorted(request.session['prefixes'], key=lambda p: p['namespace'].lower())
+    if 'auth' in request.session:
+      d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.key }\
+        for s in policy.getShoulders(request.session["auth"].user,
+        request.session["auth"].group)],
+        key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
     else:
       d['prefixes'] = []
     pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]

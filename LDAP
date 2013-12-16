@@ -33,9 +33,9 @@ object class ezidGroup:
     begin with "ark:/" and must be in canonical form.  The user and
     group identifiers for a given user must be different.
   shoulderList
-    List of labels of the identifier shoulders to which the group has
-    access, or "NONE".  The labels must be separated by spaces and/or
-    commas, e.g., "ezidark,eziddoi".
+    List of the identifier shoulders to which the group has access, or
+    "NONE".  The shoulders must be separated by spaces, e.g.,
+    "ark:/13030/c7 doi:10.5060/D2".
   agreementOnFile
     Optional boolean flag; not used by EZID itself.
 
@@ -114,7 +114,7 @@ attributeTypes: (
 attributeTypes: (
   shoulderList-oid
   NAME 'shoulderList'
-  DESC 'List of identifier shoulder labels separated by spaces and/or commas'
+  DESC 'List of identifier shoulders separated by spaces'
   EQUALITY caseExactMatch
   ORDERING caseExactOrderingMatch
   SUBSTR caseExactSubstringsMatch

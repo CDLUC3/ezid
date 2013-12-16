@@ -164,7 +164,8 @@ def shoulder_display(prefix_dict, testPrefixes, simple_display):
     t = t.group(0)[:-1].upper()
     return escape(t) + display_prefix
   else:
-    return escape(prefix_dict['namespace']) + display_prefix 
+    type = prefix_dict['prefix'].split(":")[0].upper()
+    return escape(prefix_dict['namespace'] + ' ' + type) + display_prefix 
 
 @register.simple_tag
 def search_display(dictionary, field):
