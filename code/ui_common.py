@@ -18,6 +18,7 @@ import ezidadmin
 import idmap
 import log
 import policy
+import shoulder
 import useradmin
 import userauth
 import django.contrib.messages
@@ -26,7 +27,6 @@ import urlparse
 ezidUrl = None
 templates = None
 alertMessage = None
-prefixes = None
 testPrefixes = None
 defaultDoiProfile = None
 defaultArkProfile = None
@@ -44,7 +44,7 @@ manual_profiles = {'datacite_xml': 'DataCite'}
 def _loadConfig():
   #these aren't really globals for the whole app, but globals for ui_common
   #outside of this module, use ui_common.varname
-  global ezidUrl, templates, alertMessage, prefixes, testPrefixes
+  global ezidUrl, templates, alertMessage, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
   global adminUsername, shoulders, google_analytics_id
   global new_account_email, reload_templates, newsfeed_url
@@ -64,22 +64,19 @@ def _loadConfig():
   reload_templates = hasattr(django.conf.settings, 'RELOAD_TEMPLATES')
   if reload_templates:
     reload_templates = django.conf.settings.RELOAD_TEMPLATES
-  keys = config.config("prefixes.keys").split(",")
-  prefixes = dict([config.config("prefix_%s.prefix" % k),
-    config.config("prefix_%s.name" % k)] for k in keys)
-  testPrefixes = [{ "namespace": config.config("prefix_%s.name" % k),
-    "prefix": config.config("prefix_%s.prefix" % k) }\
-    for k in keys if k.startswith("TEST")]
+  testPrefixes = []
+  p = shoulder.getArkTestShoulder()
+  if p != None: testPrefixes.append({ "namespace": p.name, "prefix": p.key })
+  p = shoulder.getDoiTestShoulder()
+  if p != None: testPrefixes.append({ "namespace": p.name, "prefix": p.key })
   defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   defaultArkProfile = config.config("DEFAULT.default_ark_profile")
   defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
   adminUsername = config.config("ldap.admin_username")
   google_analytics_id = config.config("DEFAULT.google_analytics_id")
   new_account_email = config.config("email.new_account_email")
-  shoulders = [{ "label": k, "name": config.config("prefix_%s.name" % k),
-    "prefix": config.config("prefix_%s.prefix" % k) }\
-    for k in config.config("prefixes.keys").split(",")\
-    if not k.startswith("TEST")]
+  shoulders = [{ "name": s.name, "prefix": s.key }\
+    for s in shoulder.getAll() if not s.is_test_shoulder]
   newsfeed_url = config.config("newsfeed.url")
   
 #loads the templates directory recursively (dir_list is a list)
@@ -182,10 +179,10 @@ def formatError (message):
 
 def getPrefixes (user, group):
   try:
-    return [{ "namespace": prefixes.get(p, "?"), "prefix": p }\
-      for p in policy.getPrefixes(user, group)]
+    return [{ "namespace": s.name, "prefix": s.key }\
+      for s in policy.getShoulders(user, group)]
   except Exception, e:
-    log.otherError("ui._getPrefixes", e)
+    log.otherError("ui_common.getPrefixes", e)
     return "error: internal server error"
   
 def is_logged_in(request):

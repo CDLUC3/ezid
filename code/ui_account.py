@@ -52,12 +52,7 @@ def login(request, ssl=False):
       django.contrib.messages.error(request, uic.formatError(auth))
       return uic.render(request, 'account/login', d)
     if auth:
-      p = uic.getPrefixes(auth.user, auth.group)
-      if type(p) is str:
-        django.contrib.messages.error(request, uic.formatError(p))
-        return uic.render(request, 'account/login', d)
       request.session["auth"] = auth
-      request.session["prefixes"] = p
       django.contrib.messages.success(request, "Login successful.")
       #request.session['hide_alert'] = False
       if 'redirect_to' in request.session and request.session['redirect_to']:
