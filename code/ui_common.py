@@ -32,7 +32,6 @@ defaultDoiProfile = None
 defaultArkProfile = None
 defaultUrnUuidProfile = None
 adminUsername = None
-shoulders = None
 google_analytics_id = None
 new_account_email = None
 reload_templates = None
@@ -46,7 +45,7 @@ def _loadConfig():
   #outside of this module, use ui_common.varname
   global ezidUrl, templates, alertMessage, testPrefixes
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
-  global adminUsername, shoulders, google_analytics_id
+  global adminUsername, google_analytics_id
   global new_account_email, reload_templates, newsfeed_url
   ezidUrl = config.config("DEFAULT.ezid_base_url")
   templates = {}
@@ -75,8 +74,6 @@ def _loadConfig():
   adminUsername = config.config("ldap.admin_username")
   google_analytics_id = config.config("DEFAULT.google_analytics_id")
   new_account_email = config.config("email.new_account_email")
-  shoulders = [{ "name": s.name, "prefix": s.key }\
-    for s in shoulder.getAll() if not s.is_test_shoulder]
   newsfeed_url = config.config("newsfeed.url")
   
 #loads the templates directory recursively (dir_list is a list)

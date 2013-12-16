@@ -5,6 +5,7 @@ import ezidadmin
 import config
 import idmap
 import re
+import shoulder
 import useradmin
 import stats
 import datetime
@@ -196,14 +197,14 @@ def manage_groups(request, ssl=False):
     if validated:
       grp = d['group']
       r = ezidadmin.updateGroup(grp["dn"], grp["description"].strip(),
-        grp["agreementOnFile"], ",".join(sels),
+        grp["agreementOnFile"], " ".join(sels),
         request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:
         django.contrib.messages.error(request, r)
       else:
         django.contrib.messages.success(request, "Successfully updated group")
   else:
-    sels = d['group']['shoulderList'].split(",")
+    sels = d['group']['shoulderList'].split()
   d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels)
   return uic.render(request, 'admin/manage_groups', d)
 
@@ -309,7 +310,11 @@ def select_shoulder_lists(selected_val_list):
   """Makes list of selected and deselected shoulders in format [value, friendly label]
   and returns (selected_list, deselected_list)"""
   #make lists of selected and deselected shoulders
-  sorted_shoulders = sorted(uic.shoulders, key=lambda s: s['name'].lower())
+  sorted_shoulders = sorted([{\
+    "name": s.name+" "+s.key.split(":")[0].upper(), "prefix": s.key,
+    "label": s.key }\
+    for s in shoulder.getAll() if not s.is_test_shoulder],
+    key=lambda p: (p['name'] + ' ' + p['prefix']).lower())
   selected_shoulders = []
   deselected_shoulders = []
   selected_labels = [x.strip() for x in selected_val_list]
