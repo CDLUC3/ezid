@@ -44,7 +44,8 @@ SEND_BROKEN_LINK_EMAILS = True
 DATABASES = {
   "default": {
     "ENGINE": "django.db.backends.sqlite3",
-    "NAME": os.path.join(SITE_ROOT, "db", "django.sqlite3")
+    "NAME": os.path.join(SITE_ROOT, "db", "django.sqlite3"),
+    "OPTIONS": { "timeout": 60 }
   }
 }
 
