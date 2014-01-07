@@ -61,7 +61,7 @@ def validatePrefix (prefix):
   if re.match("10\.\d{4,5}$", prefix):
     return prefix
   else:
-    sys.stderr.write("mdsadmin: invalid prefix\n")
+    sys.stderr.write("mdsadmin: invalid prefix: %s\n" % prefix)
     sys.exit(1)
 
 def nodeText (node):

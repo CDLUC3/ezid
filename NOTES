@@ -1,4 +1,4 @@
-Design notes...
+Architecture notes...
 
 1. Internal identification of users and groups
 ----------------------------------------------
@@ -80,11 +80,14 @@ Caching is employed in several places:
     reloaded and when any account-level co-ownership list is modified.
 
   session cookies
-    See above.  A session cookie is invalidated if/when a user logs
-    out, but otherwise there's currently no way to invalidate a
-    session cookie.  (SESSION_EXPIRE_AT_BROWSER_CLOSE is set to true,
-    but that only directs browsers to drop cookies, it doesn't
-    actually invalidate them.)
+    See above.  With a couple caveats, a session cookie is deleted if
+    and only if a user explicitly logs out
+    (SESSION_EXPIRE_AT_BROWSER_CLOSE is set to true, but that only
+    directs browsers to drop cookies, it doesn't have any server-side
+    effect).  First caveat: expired cookies are deleted by a weekly
+    cron job.  Second caveat: all of a user's session cookies are
+    deleted if the user's account is disabled or if the user's group
+    changes.
 
   idmap.py: _idMap, _groupMap, _userMap
     These dictionaries cache correspondences between agent identifiers
@@ -199,3 +202,82 @@ in the transaction log file.  The second exception is that expunge
 actions may conflict with those of the running server.  The
 possibility is remote, nevertheless, for this reason the expunge
 script should probably be rewritten to go through the EZID API.
+
+9. Log file formats
+-------------------
+
+There are two slightly different log file formats.  The transaction
+log written by the running server (by module log.py) stores start,
+progress, and end records for every transaction, for both read and
+write operations, both successful and not, as well as server error and
+server status records.  But for space efficiency, historical
+transaction logs are converted to a more compact form.  The striplog
+tool strips out all records, retaining only records for transactions
+that successfully minted, created, or modified non-test identifiers.
+Furthermore, the multiple records comprising a transaction are
+collapsed into a single record.  For example, the following two
+transactions (records have been wrapped here for clarity):
+
+  2014-01-06 20:58:11,383 4ec86f4a775811e3bdd610ddb1cf39e7 BEGIN mintArk
+    13030/c7 gjanee ark:/99166/p92z12p14 cdl ark:/99166/p9z60c16v
+  2014-01-06 20:58:11,715 4ec86f4a775811e3bdd610ddb1cf39e7 END SUCCESS
+    13030/c7b56d41k
+  2014-01-06 20:58:11,715 4efb1a59775811e3a95e10ddb1cf39e7 BEGIN createArk
+    13030/c7b56d41k gjanee ark:/99166/p92z12p14 cdl ark:/99166/p9z60c16v
+    erc.what An%20example
+  2014-01-06 20:58:12,338 4efb1a59775811e3a95e10ddb1cf39e7 PROGRESS
+    noid.setElements
+  2014-01-06 20:58:12,342 4efb1a59775811e3a95e10ddb1cf39e7 PROGRESS
+    store.insert
+  2014-01-06 20:58:12,345 4efb1a59775811e3a95e10ddb1cf39e7 END SUCCESS
+
+get compacted into:
+
+  2014-01-06 20:58:11,383 mintArk 13030/c7 gjanee ark:/99166/p92z12p14 cdl
+    ark:/99166/p9z60c16v -> 13030/c7b56d41k
+  2014-01-06 20:58:11,715 createArk 13030/c7b56d41k gjanee
+    ark:/99166/p92z12p14 cdl ark:/99166/p9z60c16v erc.what An%20example
+
+Note that record arguments in both types of log files are separated by
+single spaces, and thus an empty argument will result in adjacent
+spaces.
+
+10. Database dump formats
+-------------------------
+
+There are two slightly different database dump formats.  A "raw" dump
+(produced by 'dump -r' and 'dump-store -r') lists identifiers as
+stored in the bind or store database: in unqualified form, with shadow
+ARKs representing non-ARK identifiers, using internal labels, with all
+internal labels included.  Here's an example identifier record
+(wrapped here for clarity):
+
+  99999/fk4030wkq _is reserved _p erc
+    _o ark:/99166/p92z12p14 _g ark:/99166/p9z60c16v
+    _c 1389071897 _u 1389071897
+    _t1 http://a.target/
+    _t http://n2t.net/ezid/id/ark:/99999/fk4030wkq
+
+A "normal" dump (produced by 'dump -n' and 'dump-store -n', or
+converted from a raw dump by 'convert-dump -n') uses a record
+representation that is more human-readable and more easily processed.
+It lists identifiers in qualified form, with non-ARK identifiers
+representing themselves, using external labels, with internal labels
+related to identifier status omitted.  The same example in normal
+form:
+
+  ark:/99999/fk4030wkq _status reserved _profile erc
+    _owner ark:/99166/p92z12p14 _ownergroup ark:/99166/p9z60c16v
+    _created 1389071897 _updated 1389071897
+    _target http://a.target/
+
+A normal dump may optionally have agent identifiers converted to local
+names (by omitting the '-n' option in the above commands), as in:
+
+  ark:/99999/fk4030wkq _status reserved _profile erc
+    _owner gjanee _ownergroup cdl
+    _created 1389071897 _updated 1389071897
+    _target http://a.target/
+
+The select and project tools are intended to work on normal dumps,
+though certain operations work on raw dumps as well.
