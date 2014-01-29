@@ -1,6 +1,7 @@
 import ldap
 import os
 import os.path
+import random
 import socket
 import sys
 
@@ -46,7 +47,24 @@ TIME_ZONE = "America/Los_Angeles"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "static")
 MEDIA_URL = "static/"
 
-SECRET_KEY = "ah2l_w1)ejdxor=0198d$1k$9gdqccsza@4@lqiii2%@!2)m1u"
+def _loadSecretKey ():
+  try:
+    f = open(os.path.join(SITE_ROOT, "db", "secret_key"))
+    k = f.read().strip()
+    f.close()
+  except IOError:
+    rng = random.SystemRandom()
+    alphabet = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
+    k = "".join(rng.choice(alphabet) for i in range(50))
+    try:
+      f = open(os.path.join(SITE_ROOT, "db", "secret_key"), "w")
+      f.write(k + "\n")
+      f.close()
+    except IOError:
+      pass
+  return k
+
+SECRET_KEY = _loadSecretKey()
 
 MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
