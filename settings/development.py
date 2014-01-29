@@ -2,5 +2,5 @@ from common import *
 
 DEPLOYMENT_LEVEL = "development"
 
-ALLOWED_HOSTS = ["n2t-dev.cdlib.org", "n2t-dev-alt.cdlib.org"]
-LOCALIZATIONS["n2t-dev-alt.cdlib.org"] = ("purdue", ["scott.fisher@ucop.edu"])
+ALLOWED_HOSTS = ["ezid-dev.cdlib.org", "ezid-dev-alt.cdlib.org"]
+LOCALIZATIONS["ezid-dev-alt.cdlib.org"] = ("purdue", ["gjanee@ucop.edu"])

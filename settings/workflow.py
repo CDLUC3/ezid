@@ -4,4 +4,4 @@ DEPLOYMENT_LEVEL = "workflow"
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["n2t-wf.cdlib.org"]
+ALLOWED_HOSTS = ["ezid-wf.cdlib.org"]
