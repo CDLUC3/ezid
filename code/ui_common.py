@@ -378,7 +378,7 @@ def user_login_required(f):
     if 'auth' not in request.session.keys():
       request.session['redirect_to'] = request.get_full_path()
       django.contrib.messages.error(request, 'You must be logged in to view this page.')
-      return django.http.HttpResponseRedirect("/ezid/login")
+      return django.http.HttpResponseRedirect("/login")
     return f(request, *args, **kwargs)
   wrap.__doc__=f.__doc__
   wrap.__name__=f.__name__
@@ -390,7 +390,7 @@ def admin_login_required(f):
     if "auth" not in request.session or request.session["auth"].user[0] != adminUsername:
       request.session['redirect_to'] = request.get_full_path()
       django.contrib.messages.error(request, 'You must be logged in as an administrator to view this page.')
-      return django.http.HttpResponseRedirect("/ezid/login")
+      return django.http.HttpResponseRedirect("/login")
     return f(request, *args, **kwargs)
   wrap.__doc__=f.__doc__
   wrap.__name__=f.__name__
