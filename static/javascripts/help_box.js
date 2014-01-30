@@ -18,7 +18,7 @@
 $(document).ready(function() {
 	
 	//add close buttons to all help_window classes
-	$('.help_window').prepend('<div class="close_button"><a href="#close" class="close"><img src="/ezid/static/images/close_it.png" alt="close button" title="close button"/></a></div>');
+	$('.help_window').prepend('<div class="close_button"><a href="#close" class="close"><img src="/static/images/close_it.png" alt="close button" title="close button"/></a></div>');
 	//select all the a tag with name equal to help_link and add click functions
   $('a[name=help_link]').click(function(e) {
 
