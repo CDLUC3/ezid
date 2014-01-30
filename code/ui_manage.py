@@ -107,11 +107,11 @@ def edit(request, identifier):
     return redirect("ui_lookup.index")
   if not uic.authorizeUpdate(request, r):
     django.contrib.messages.error(request, "You are not allowed to edit this identifier")
-    return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
+    return redirect("/id/" + urllib.quote(identifier, ":/"))
   s, m = r
   if uic.identifier_has_block_data(m):
     django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
-    return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
+    return redirect("/id/" + urllib.quote(identifier, ":/"))
   t_stat = [x.strip() for x in m['_status'].split("|", 1)]
   d['pub_status'] = t_stat[0]
   d['orig_status'] = t_stat[0]
@@ -141,7 +141,7 @@ def edit(request, identifier):
           to_write)
         if result.startswith("success:"):
           django.contrib.messages.success(request, "Identifier updated.")
-          return redirect("/ezid/id/" + urllib.quote(identifier, ":/"))
+          return redirect("/id/" + urllib.quote(identifier, ":/"))
         else:
           d['current_profile'] = metadata.getProfile(m['_profile'])
           d['profiles'] = metadata.getProfiles()[1:]
@@ -176,8 +176,8 @@ def _formatErcBlock (block):
 def details(request):
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
-  my_path = "/ezid/id/"
-  identifier = request.path[len(my_path):]
+  my_path = "/id/"
+  identifier = request.path_info[len(my_path):]
   if "auth" in request.session:
     r = ezid.getMetadata(identifier, request.session["auth"].user,
       request.session["auth"].group)
