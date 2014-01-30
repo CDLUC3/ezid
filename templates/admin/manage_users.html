@@ -61,7 +61,7 @@
     	
     	<label class="left" for="arkId">ARK identifier:</label>
     	<div class="field_right">
-    		<a href="/ezid/id/{{ user.arkId }}" id="arkId">{{user.arkId}}</a>
+    		<a href="/id/{{ user.arkId }}" id="arkId">{{user.arkId}}</a>
     	</div>
     	
     	<label class="left" for="group">Group:</label>
@@ -139,7 +139,7 @@
     	
     </form>
   </div>
-  <script type="text/javascript" src="/ezid/static/javascripts/dialog_box.js"></script>
+  <script type="text/javascript" src="/static/javascripts/dialog_box.js"></script>
   <script type="text/javascript">
   	$("#user").bind("change", function(event){
       $("#edit_form").submit();
