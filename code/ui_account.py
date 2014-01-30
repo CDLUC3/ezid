@@ -150,12 +150,12 @@ def pwreset(request, pwrr, ssl=False):
     r = useradmin.decodePasswordResetRequest(pwrr)
     if not r:
       django.contrib.messages.error(request, "Invalid password reset request.")
-      return uic.redirect("/ezid/")
+      return uic.redirect("/")
     username, t = r
     if int(time.time())-t >= 24*60*60:
       django.contrib.messages.error(request,
         "Password reset request has expired.")
-      return uic.redirect("/ezid/")
+      return uic.redirect("/")
     if request.method == "GET":
       return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
         "username": username, 'menu_item' : 'ui_null.null' })
@@ -180,7 +180,7 @@ def pwreset(request, pwrr, ssl=False):
           "username": username,  'menu_item' : 'ui_null.null' })
       else:
         django.contrib.messages.success(request, "Password changed.")
-        return uic.redirect("/ezid/")
+        return uic.redirect("/")
     else:
       return uic.methodNotAllowed()
   else:
@@ -204,6 +204,6 @@ def pwreset(request, pwrr, ssl=False):
           "email": email,  'menu_item' : 'ui_null.null' })
       else:
         django.contrib.messages.success(request, "Email sent.")
-        return uic.redirect("/ezid/")
+        return uic.redirect("/")
     else:
       return uic.methodNotAllowed()
