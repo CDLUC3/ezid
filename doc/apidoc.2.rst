@@ -28,9 +28,9 @@ The EZID API, Version 2
 
 .. class:: smallfont
 
-| **This version:** http://n2t.net/ezid/doc/apidoc.2.html
-| **Latest version:** http://n2t.net/ezid/doc/apidoc.html
-| **Previous version:** http://n2t.net/ezid/doc/apidoc.1.html
+| **This version:** http://ezid.cdlib.org/doc/apidoc.2.html
+| **Latest version:** http://ezid.cdlib.org/doc/apidoc.html
+| **Previous version:** http://ezid.cdlib.org/doc/apidoc.1.html
 
 EZID (easy-eye-dee) provides an easy way to obtain, describe, and
 manage long-term identifiers for digital objects.  It can be accessed
@@ -82,12 +82,12 @@ Framework
 
 The EZID API is available from the base URL
 
-  http://n2t.net/ezid
+  http://ezid.cdlib.org
 
 Interaction is via REST-style_ HTTP web services.  The API's central
 design principle is to treat an identifier as a kind of web resource.
 Specifically, identifier `foo`:hl1: is represented as a resource at
-URL \http://n2t.net/ezid/id/`foo`:hl1:.  In this document we will
+URL \http://ezid.cdlib.org/id/`foo`:hl1:.  In this document we will
 refer to this URL as the identifier's "EZID URL."  A client
 manipulates an identifier by performing HTTP operations on its EZID
 URL: PUT to create the identifier, GET to view it, and POST to modify
@@ -101,31 +101,31 @@ identifiers:
 
 .. class:: leftheaders
 
-========== =================================================
+========== ===================================================
 Identifier `doi:10.nnnn/suffix`:hl1:
 URL form   \http://dx.doi.org/`10.nnnn/suffix`:hl1:
-EZID URL   \http://n2t.net/ezid/id/`doi:10.nnnn/suffix`:hl1:
-========== =================================================
+EZID URL   \http://ezid.cdlib.org/id/`doi:10.nnnn/suffix`:hl1:
+========== ===================================================
 
 For ARK identifiers:
 
 .. class:: leftheaders
 
-========== ================================================
+========== ===================================================
 Identifier `ark:/nnnnn/suffix`:hl1:
 URL form   \http://n2t.net/`ark:/nnnnn/suffix`:hl1:
-EZID URL   \http://n2t.net/ezid/id/`ark:/nnnnn/suffix`:hl1:
-========== ================================================
+EZID URL   \http://ezid.cdlib.org/id/`ark:/nnnnn/suffix`:hl1:
+========== ===================================================
 
 For URN identifiers:
 
 .. class:: leftheaders
 
-========== ================================================
+========== ===================================================
 Identifier `urn:nid:suffix`:hl1:
 URL form   \http://n2t.net/`urn:nid:suffix`:hl1:
-EZID URL   \http://n2t.net/ezid/id/`urn:nid:suffix`:hl1:
-========== ================================================
+EZID URL   \http://ezid.cdlib.org/id/`urn:nid:suffix`:hl1:
+========== ===================================================
 
 API vs. UI
 ----------
@@ -147,7 +147,7 @@ follows::
 
   import java.net.*;
 
-  URL u = new URL("http://n2t.net/ezid/...");
+  URL u = new URL("http://ezid.cdlib.org/...");
   URLConnection c = u.openConnection();
   c.setRequestProperty("Accept", "text/plain");
   c.connect();
@@ -160,7 +160,7 @@ methods of authentication:
 
 1. **HTTP Basic authentication over SSL**.  With this method, the
    client connects to EZID using HTTPS URLs (i.e.,
-   \https://n2t.net/ezid/...) and supplies HTTP Basic
+   \https://ezid.cdlib.org/...) and supplies HTTP Basic
    authentication credentials on every request.  HTTPS URLs *must* be
    used.  The authentication realm is "EZID".  For example,
    credentials can be added manually in Python as follows:
@@ -168,7 +168,7 @@ methods of authentication:
    .. parsed-literal::
 
      import base64, urllib2
-     r = urllib2.Request("\https://n2t.net/ezid/...")
+     r = urllib2.Request("\https://ezid.cdlib.org/...")
      r.add_header("Authorization", "Basic " + \
      base64.b64encode("`username`:hl2::`password`:hl2:"))
 
@@ -179,10 +179,10 @@ methods of authentication:
 
      import urllib2
      h = urllib2.HTTPBasicAuthHandler()
-     h.add_password("EZID", "\https://n2t.net/ezid/", "`username`:hl2:", \
+     h.add_password("EZID", "\https://ezid.cdlib.org/", "`username`:hl2:", \
      "`password`:hl2:")
      o = urllib2.build_opener(h)
-     o.open("\https://n2t.net/ezid/...")
+     o.open("\https://ezid.cdlib.org/...")
 
    The downside of using higher-level authentication mechanisms is
    that they often do not supply credentials initially, but only in
@@ -197,7 +197,7 @@ methods of authentication:
      import java.net.*;
      import org.apache.commons.codec.binary.*;
 
-     URL u = new URL("\https://n2t.net/ezid/...);
+     URL u = new URL("\https://ezid.cdlib.org/...);
      URLConnection c = u.openConnection();
      c.setRequestProperty("Accept", "text/plain");
      c.setRequestProperty("Authorization", "Basic " +
@@ -221,7 +221,7 @@ methods of authentication:
      Authenticator.setDefault(new MyAuthenticator());
 
 2. **One-time login over SSL**.  Perform a GET operation on
-   \https://n2t.net/ezid/login and supply HTTP Basic credentials as
+   \https://ezid.cdlib.org/login and supply HTTP Basic credentials as
    above.  In response, EZID returns a session cookie.  Remaining
    requests can be made over plain HTTP as long as the session cookie
    is supplied in an HTTP Cookie header.  Here's an example
@@ -229,8 +229,8 @@ methods of authentication:
 
    .. parsed-literal::
 
-     |rArr| GET /ezid/login HTTP/1.1
-     |rArr| Host: n2t.net
+     |rArr| GET /login HTTP/1.1
+     |rArr| Host: ezid.cdlib.org
      |rArr| Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=
 
      |lArr| HTTP/1.1 200 OK
@@ -246,17 +246,17 @@ methods of authentication:
    .. parsed-literal::
 
      import urllib2
-     c = urllib2.urlopen("\https://n2t.net/ezid/login")
+     c = urllib2.urlopen("\https://ezid.cdlib.org/login")
      `cookie`:hl2: = c.headers["Set-Cookie"].split(";")[0]
      ...
-     r = urllib2.Request("\http://n2t.net/ezid/...")
+     r = urllib2.Request("\http://ezid.cdlib.org/...")
      r.add_header("Cookie", `cookie`:hl2:)
 
    In Java, cookies can be manually captured and set using code
    analogous to the Python code above or, in Java 1.6 and newer,
    CookieManager_ can be used to manage cookies.
 
-   Perform a GET operation on \http://n2t.net/ezid/logout to
+   Perform a GET operation on \http://ezid.cdlib.org/logout to
    invalidate a session.
 
 If authentication is required and credentials are either missing or
@@ -408,8 +408,8 @@ line of the form "error: `reason`:hl1:".  For example:
 
 .. parsed-literal::
 
-  |rArr| GET /ezid/id/ark:/99999/bogus HTTP/1.1
-  |rArr| Host: n2t.net
+  |rArr| GET /id/ark:/99999/bogus HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
 
   |lArr| HTTP/1.1 400 BAD REQUEST
   |lArr| Content-Type: text/plain; charset=UTF-8
@@ -443,8 +443,8 @@ identifier's EZID URL.  Here is a sample interaction:
 
 .. parsed-literal::
 
-  |rArr| GET /ezid/id/ark:/99999/fk4cz3dh0 HTTP/1.1
-  |rArr| Host: n2t.net
+  |rArr| GET /id/ark:/99999/fk4cz3dh0 HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
@@ -496,8 +496,8 @@ Here's a sample interaction creating an ARK identifier:
 
 .. parsed-literal::
 
-  |rArr| PUT /ezid/id/ark:/99999/fk4test HTTP/1.1
-  |rArr| Host: n2t.net
+  |rArr| PUT /id/ark:/99999/fk4test HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
   |rArr| Content-Type: text/plain; charset=UTF-8
   |rArr| Content-Length: 30
   |rArr|
@@ -521,8 +521,8 @@ creating a DOI identifier:
 
 .. parsed-literal::
 
-  |rArr| PUT /ezid/id/doi:10.9999/test HTTP/1.1
-  |rArr| Host: n2t.net
+  |rArr| PUT /id/doi:10.9999/test HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
 
   |lArr| HTTP/1.1 201 CREATED
   |lArr| Content-Type: text/plain; charset=UTF-8
@@ -538,13 +538,13 @@ instead of supplying a complete identifier, the client specifies only
 a namespace (or "shoulder") that forms the identifier's prefix, and
 EZID generates an opaque, random string for the identifier's suffix.
 An identifier can be minted by sending a POST request to the URL
-\http://n2t.net/ezid/shoulder/`shoulder`:hl1: where `shoulder`:hl1: is
-the desired namespace.  For example:
+\http://ezid.cdlib.org/shoulder/`shoulder`:hl1: where `shoulder`:hl1:
+is the desired namespace.  For example:
 
 .. parsed-literal::
 
-  |rArr| POST /ezid/shoulder/`ark:/13030/c7`:hl2: HTTP/1.1
-  |rArr| Host: n2t.net
+  |rArr| POST /shoulder/`ark:/13030/c7`:hl2: HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
   |rArr| Content-Type: text/plain; charset=UTF-8
   |rArr| Content-Length: 30
   |rArr|
@@ -579,8 +579,8 @@ interaction:
 
 .. parsed-literal::
 
-  |rArr| POST /ezid/id/ark:/99999/fk4cz3dh0 HTTP/1.1
-  |rArr| Host: n2t.net
+  |rArr| POST /id/ark:/99999/fk4cz3dh0 HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
   |rArr| Content-Type: text/plain; charset=UTF-8
   |rArr| Content-Length: 30
   |rArr|
@@ -611,8 +611,8 @@ Here's a sample interaction:
 
 .. parsed-literal::
 
-  |rArr| DELETE /ezid/id/ark:/99999/fk4cz3dh0 HTTP/1.1
-  |rArr| Host: n2t.net
+  |rArr| DELETE /id/ark:/99999/fk4cz3dh0 HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
@@ -773,7 +773,7 @@ first column indicates the element is modifiable by clients.
   |X| _target     The identifier's target URL.  Defaults to the identifier's
                   EZID URL.  That is, the default target URL for identifier
                   `foo`:hl1: is the self-referential URL
-                  \http://n2t.net/ezid/id/`foo`:hl1:.  Note that creating or
+                  \http://ezid.cdlib.org/id/`foo`:hl1:.  Note that creating or
                   updating the target URL of a DOI identifier may take up to
                   30 minutes to take effect in the Handle System.
   --- ----------- -------------------------------------------------------------
@@ -1082,13 +1082,13 @@ Server status
 -------------
 
 The status of the EZID server can be probed by issuing a GET request
-to the URL \http://n2t.net/ezid/status.  If the server is up the
+to the URL \http://ezid.cdlib.org/status.  If the server is up the
 response will resemble the following:
 
 .. parsed-literal::
 
-  |rArr| GET /ezid/status HTTP/1.1
-  |rArr| Host: n2t.net
+  |rArr| GET /status HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
@@ -1102,8 +1102,8 @@ of the "subsystems" query parameter.  For example:
 
 .. parsed-literal::
 
-  |rArr| GET /ezid/status?subsystems=noid,ldap HTTP/1.1
-  |rArr| Host: n2t.net
+  |rArr| GET /status?subsystems=noid,ldap HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
@@ -1113,7 +1113,7 @@ of the "subsystems" query parameter.  For example:
   |lArr| noid: up
   |lArr| ldap: up
 
-Use the URL \http://n2t.net/ezid/status?subsystems=* to discover
+Use the URL \http://ezid.cdlib.org/status?subsystems=* to discover
 subsystem names and probe all subsystems.
 
 Python example
@@ -1155,7 +1155,7 @@ To get identifier metadata:
   _ownergroup: `group`:hl2:
   _profile: erc
   _status: public
-  _target: \http://n2t.net/ezid/id/ark:/99999/fk4gt78tq
+  _target: \http://ezid.cdlib.org/id/ark:/99999/fk4gt78tq
   _updated: 2013-05-17T18:17:14
   erc.what: Remembrance of Things Past
   erc.when: 1922
@@ -1205,7 +1205,7 @@ Get identifier metadata:
   <?php
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, \
-  '\http://n2t.net/ezid/id/`identifier`:hl2:');
+  '\http://ezid.cdlib.org/id/`identifier`:hl2:');
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   $output = curl_exec($ch);
   print curl_getinfo($ch, CURLINFO_HTTP_CODE) . "\\n";
@@ -1223,7 +1223,7 @@ Create identifier:
   `element2`:hl2:: `value2`:hl2:';
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, \
-  '\https://n2t.net/ezid/id/`identifier`:hl2:');
+  '\https://ezid.cdlib.org/id/`identifier`:hl2:');
   curl_setopt($ch, CURLOPT_USERPWD, \
   '`username`:hl2::`password`:hl2:');
   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -1248,7 +1248,7 @@ Mint identifier:
   `element2`:hl2:: `value2`:hl2:';
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, \
-  '\https://n2t.net/ezid/shoulder/`shoulder`:hl2:');
+  '\https://ezid.cdlib.org/shoulder/`shoulder`:hl2:');
   curl_setopt($ch, CURLOPT_USERPWD, \
   '`username`:hl2::`password`:hl2:');
   curl_setopt($ch, CURLOPT_POST, true);
@@ -1271,7 +1271,7 @@ Modify identifier:
   $input = '_target: `url`:hl2:';
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, \
-  '\https://n2t.net/ezid/id/`identifier`:hl2:');
+  '\https://ezid.cdlib.org/id/`identifier`:hl2:');
   curl_setopt($ch, CURLOPT_USERPWD, \
   '`username`:hl2::`password`:hl2:');
   curl_setopt($ch, CURLOPT_POST, true);
@@ -1301,7 +1301,7 @@ hash, `%metadata`:hl1:\ :
   use LWP::UserAgent;
 
   $ua = LWP::UserAgent->new;
-  $r = $ua->get("http://n2t.net/ezid/id/`identifier`:hl2:");
+  $r = $ua->get("http://ezid.cdlib.org/id/`identifier`:hl2:");
   if ($r->is_success) {
     ($statusline, $m) = split(/\\n/, $r->decoded_content, 2);
     %metadata = map { map { s/%([0-9A-F]{2})/pack("C", hex($1))/egi; $_ }
@@ -1329,9 +1329,9 @@ hash, `%metadata`:hl1:\ :
     "`element1`:hl2:" => "`value1`:hl2:",
     "`element2`:hl2:" => "`value2`:hl2:" );
   $ua = LWP::UserAgent->new;
-  $ua->credentials("n2t.net:443", "EZID", "`username`:hl2:", \
+  $ua->credentials("ezid.cdlib.org:443", "EZID", "`username`:hl2:", \
   "`password`:hl2:");
-  $r = $ua->request(PUT "\https://n2t.net:443/ezid/id/`identifier`:hl2:",
+  $r = $ua->request(PUT "\https://ezid.cdlib.org:443/id/`identifier`:hl2:",
     "Content-Type" => "text/plain; charset=UTF-8",
     Content => encode("UTF-8", join("\\n",
       map { escape($_) . ": " . escape($metadata{$_}) } keys %metadata)));
@@ -1346,9 +1346,10 @@ obtaining a new identifier, `$identifier`:hl1:\ :
   use LWP::UserAgent;
 
   $ua = LWP::UserAgent->new;
-  $ua->credentials("n2t.net:443", "EZID", "`username`:hl2:", \
+  $ua->credentials("ezid.cdlib.org:443", "EZID", "`username`:hl2:", \
   "`password`:hl2:");
-  $r = $ua->request(POST "\https://n2t.net:443/ezid/shoulder/`shoulder`:hl2:",
+  $r = $ua->request(POST "\https://ezid.cdlib.org:443/\
+  shoulder/`shoulder`:hl2:",
     "Content-Type" => "text/plain; charset=UTF-8");
   if ($r->is_success) {
     $identifier = $r->decoded_content =~ m/success: ([^ ]*)/ && $1;
@@ -1372,9 +1373,9 @@ To modify an identifier using values from a hash, `%metadata`:hl1:\ :
 
   %metadata = ( "_target" => "`url`:hl2:" );
   $ua = LWP::UserAgent->new;
-  $ua->credentials("n2t.net:443", "EZID", "`username`:hl2:", \
+  $ua->credentials("ezid.cdlib.org:443", "EZID", "`username`:hl2:", \
   "`password`:hl2:");
-  $r = $ua->request(POST "\https://n2t.net:443/ezid/id/`identifier`:hl2:",
+  $r = $ua->request(POST "\https://ezid.cdlib.org:443/id/`identifier`:hl2:",
     "Content-Type" => "text/plain; charset=UTF-8",
     Content => encode("UTF-8", join("\\n",
       map { escape($_) . ": " . escape($metadata{$_}) } keys %metadata)));
@@ -1391,13 +1392,13 @@ To get identifier metadata, obtaining text formatted as described in
 
 .. parsed-literal::
 
-  curl \http://n2t.net/ezid/id/`identifier`:hl2:
+  curl \http://ezid.cdlib.org/id/`identifier`:hl2:
 
 To mint an identifier:
 
 .. parsed-literal::
 
-  curl -u `username`:hl2::`password`:hl2: -X POST \https://n2t.net/ezid/\
+  curl -u `username`:hl2::`password`:hl2: -X POST \https://ezid.cdlib.org/\
   shoulder/`shoulder`:hl2:
 
 A single metadata element can be specified on the command line.  For
@@ -1407,7 +1408,7 @@ time:
 .. parsed-literal::
 
   curl -u `username`:hl2::`password`:hl2: -X POST -H 'Content-Type: text/plain'
-    --data-binary '_target: `url`:hl2:' \https://n2t.net/ezid/shoulder/\
+    --data-binary '_target: `url`:hl2:' \https://ezid.cdlib.org/shoulder/\
   `shoulder`:hl2:
 
 To specify more than one metadata element, the metadata must be placed
@@ -1418,7 +1419,7 @@ contained in a file `metadata.txt`:hl1:\ :
 .. parsed-literal::
 
   curl -u `username`:hl2::`password`:hl2: -X POST -H 'Content-Type: text/plain'
-    --data-binary @\ `metadata.txt`:hl2: \https://n2t.net/ezid/shoulder/\
+    --data-binary @\ `metadata.txt`:hl2: \https://ezid.cdlib.org/shoulder/\
   `shoulder`:hl2:
 
 Creating an identifier is similar to minting one, except that the HTTP
@@ -1428,15 +1429,15 @@ but now creating an identifier:
 
 .. parsed-literal::
 
-  curl -u `username`:hl2::`password`:hl2: -X PUT \https://n2t.net/ezid/id/\
+  curl -u `username`:hl2::`password`:hl2: -X PUT \https://ezid.cdlib.org/id/\
   `identifier`:hl2:
 
   curl -u `username`:hl2::`password`:hl2: -X PUT -H 'Content-Type: text/plain'
-    --data-binary '_target: `url`:hl2:' \https://n2t.net/ezid/id/\
+    --data-binary '_target: `url`:hl2:' \https://ezid.cdlib.org/id/\
   `identifier`:hl2:
 
   curl -u `username`:hl2::`password`:hl2: -X PUT -H 'Content-Type: text/plain'
-    --data-binary @\ `metadata.txt`:hl2: \https://n2t.net/ezid/id/\
+    --data-binary @\ `metadata.txt`:hl2: \https://ezid.cdlib.org/id/\
   `identifier`:hl2:
 
 To modify identifier metadata:
@@ -1444,11 +1445,11 @@ To modify identifier metadata:
 .. parsed-literal::
 
   curl -u `username`:hl2::`password`:hl2: -X POST -H 'Content-Type: text/plain'
-    --data-binary '_target: `url`:hl2:' \https://n2t.net/ezid/id/\
+    --data-binary '_target: `url`:hl2:' \https://ezid.cdlib.org/id/\
   `identifier`:hl2:
 
   curl -u `username`:hl2::`password`:hl2: -X POST -H 'Content-Type: text/plain'
-    --data-binary @\ `metadata.txt`:hl2: \https://n2t.net/ezid/id/\
+    --data-binary @\ `metadata.txt`:hl2: \https://ezid.cdlib.org/id/\
   `identifier`:hl2:
 
 Batch processing
