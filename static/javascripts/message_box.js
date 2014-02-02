@@ -6,7 +6,7 @@ function showMessage(top_window){
 	// if top_windows is true, set at top of window, otherwise, top of page
 	if ($.trim($("#ustatus").html())){
 		if($('#ustatus .close').length<1){ 
-			$('#ustatus').prepend('<div class="close_button"><a href="#close" class="close"><img src="/ezid/static/images/application-exit.png" width="16" height="16" alt="close button" title="close button"/></a></div>');
+			$('#ustatus').prepend('<div class="close_button"><a href="#close" class="close"><img src="/static/images/application-exit.png" width="16" height="16" alt="close button" title="close button"/></a></div>');
 		}
 		var x = $(window).width() / 2 - $('#ustatus').width() / 2;
 
@@ -38,13 +38,13 @@ function showMessage(top_window){
   		//Cancel the link behavior
     	e.preventDefault();
     	$('#ustatus').hide();
-    	$.post('/ezid/ajax_hide_alert');
+    	$.post('/ajax_hide_alert');
   	});
   	
 		$(document).keyup(function(e) {
 		  if(e.keyCode == 27) { // escape key
 		    $('#ustatus').hide();
-		    $.post('/ezid/ajax_hide_alert');
+		    $.post('/ajax_hide_alert');
 		  }
 		});
 	}// end if

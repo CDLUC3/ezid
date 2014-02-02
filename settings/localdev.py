@@ -4,8 +4,6 @@ from common import *
 
 DEPLOYMENT_LEVEL = "localdev"
 
-FORCE_SCRIPT_NAME = None
-
 STANDALONE = True
 SSL = False
 

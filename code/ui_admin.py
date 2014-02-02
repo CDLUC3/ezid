@@ -218,7 +218,7 @@ def system_status(request, ssl=False):
     request.session.flush()
     django.contrib.messages.success(request, "EZID reloaded.")
     django.contrib.messages.success(request, "You have been logged out.")
-    return uic.redirect("/ezid/")
+    return uic.redirect("/")
   return uic.render(request, 'admin/system_status', d)
 
 @uic.admin_login_required
@@ -258,6 +258,7 @@ def new_account(request, ssl=False):
   # id : [defaultvalue, label, type, help_text]
   field_info = { \
       'todays_date': [datetime.datetime.now().strftime("%m/%d/%Y"), "Today's date", "text", ""], \
+      'realm': ["", "Realm", "text", ""], \
       'submitters_name': ["", "Your name", "text", ""], \
       'acct_name': ["", "Account name", "text", "Choose a name that is lowercase, 10 characters or less; no spaces.  Underscore or dash ok"], \
       'acct_email': ["", "Email Address", "text", "To be associated with the account"], \
@@ -280,7 +281,7 @@ def new_account(request, ssl=False):
       'identifier_plans': ["", "How do you plan to use identifiers in the next year?", "long_text", ""], \
       'comments': ["", "Comments or questions?", "long_text", ""] }
   
-  field_order = ("todays_date submitters_name acct_name acct_email " + \
+  field_order = ("todays_date realm submitters_name acct_name acct_email " + \
     "primary_contact contact_email contact_phone contact_fax org " + \
     "org_acroynm org_www mailing_address1 mailing_address2 mailing_city " + \
     "mailing_state mailing_zip mailing_country identifiers created_before " + \

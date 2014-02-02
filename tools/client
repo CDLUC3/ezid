@@ -74,11 +74,11 @@ import urllib
 import urllib2
 
 KNOWN_SERVERS = {
-  "l": "http://localhost:8000/ezid",
-  "d": "http://n2t-dev.cdlib.org/ezid",
-  "s": "http://n2t-stage.cdlib.org/ezid",
-  "w": "http://n2t-wf.cdlib.org/ezid",
-  "p": "http://n2t.net/ezid"
+  "l": "http://localhost:8000",
+  "d": "http://ezid-dev.cdlib.org",
+  "s": "http://ezid-stg.cdlib.org",
+  "w": "http://ezid-wf.cdlib.org",
+  "p": "http://ezid.cdlib.org"
 }
 
 OPERATIONS = {

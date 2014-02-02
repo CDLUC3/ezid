@@ -1,11 +1,11 @@
 {% load layout_extras %}
-<script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/extras.js"></script>
-<script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/form_initialization.js"></script>
-<script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/formFunctions.js"></script>
-<script type="text/javascript" src="/ezid/static/javascripts/rng_to_html/dom_utils.js"></script>
-<script type="text/javascript" src="/ezid/static/javascripts/jquery.form.js"></script>
+<script type="text/javascript" src="/static/javascripts/rng_to_html/extras.js"></script>
+<script type="text/javascript" src="/static/javascripts/rng_to_html/form_initialization.js"></script>
+<script type="text/javascript" src="/static/javascripts/rng_to_html/formFunctions.js"></script>
+<script type="text/javascript" src="/static/javascripts/rng_to_html/dom_utils.js"></script>
+<script type="text/javascript" src="/static/javascripts/jquery.form.js"></script>
 
-<link type="text/css" rel="stylesheet" href="/ezid/static/stylesheets/datacite_xml.css" >
+<link type="text/css" rel="stylesheet" href="/static/stylesheets/datacite_xml.css" >
 <br/>
 <div name="/resource" class="element">
 	<div name="/resource/creators" class="element container">
@@ -383,7 +383,7 @@
   $(document).ready(function() {
   	// change form to submit by AJAX
   	var options = {
-	    url:      '/ezid/demo/ajax_advanced',
+	    url:      '/demo/ajax_advanced',
 	    success:	showResponse
 		};   	
     $('#create_form').ajaxForm(options);
@@ -430,7 +430,7 @@
     	$("#ustatus").html(outstr);
     	showMessage(true);
     }else if(resp['status'] == 'success'){
-    	window.location = "/ezid/id/" + resp['id'];
+    	window.location = "/id/" + resp['id'];
     }
 	}
 </script>

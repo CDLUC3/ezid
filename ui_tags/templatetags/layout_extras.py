@@ -80,7 +80,7 @@ def active_id_display(id_text, testPrefixes):
 @register.simple_tag
 def help_icon(id_of_help):
   return '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#' + id_of_help + '" name="help_link">' + \
-    '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help"' + \
+    '<img src="/static/images/help_icon.gif" alt="Click for additional help"' + \
     ' title="Click for additional help"/></a>'
     
 @register.simple_tag
@@ -88,7 +88,7 @@ def datacite_field_help_icon(id_of_help):
   temp_id = id_of_help.replace(".", "_") + '_help'
   return '<div class="datacite_help">' + \
     '<a href="#' + temp_id + '" name="help_link">' + \
-    '<img src="/ezid/static/images/help_icon.gif" alt="Click for additional help" title="Click for additional help"/>' + \
+    '<img src="/static/images/help_icon.gif" alt="Click for additional help" title="Click for additional help"/>' + \
     '</a></div>'
 
 
@@ -259,10 +259,10 @@ class FormatRoundedBordersNode(template.Node):
   def render(self, context):
     content = self.nodelist.render(context)
     return """<div class="roundbox">
-        <img src="/ezid/static/images/corners/tl.gif" width="6" height="6" class="roundtl" />
-        <img src="/ezid/static/images/corners/tr.gif" width="6" height="6" class="roundtr" />
-        <img src="/ezid/static/images/corners/bl.gif" width="6" height="6" class="roundbl" />
-        <img src="/ezid/static/images/corners/br.gif" width="6" height="6" class="roundbr" />
+        <img src="/static/images/corners/tl.gif" width="6" height="6" class="roundtl" />
+        <img src="/static/images/corners/tr.gif" width="6" height="6" class="roundtr" />
+        <img src="/static/images/corners/bl.gif" width="6" height="6" class="roundbl" />
+        <img src="/static/images/corners/br.gif" width="6" height="6" class="roundbr" />
         <div class="roundboxpad">
     %(content)s
     </div></div>""" % {'content':content,}

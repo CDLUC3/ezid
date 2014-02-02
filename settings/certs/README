@@ -1,0 +1,2 @@
+The hash format seems to have changed between OpenSSL 0.9.8 and 1.0.1,
+so we include symbolic links for each version.

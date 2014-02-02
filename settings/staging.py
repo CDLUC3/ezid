@@ -4,4 +4,4 @@ DEPLOYMENT_LEVEL = "staging"
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["n2t-stage.cdlib.org"]
+ALLOWED_HOSTS = ["ezid-stg.cdlib.org"]

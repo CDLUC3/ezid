@@ -12,7 +12,7 @@
     	</tr>
     	{% for ss in status_list %}
 		  	<tr>
-		  		<td id='{{ss.id}}' class="update_status"><img src='/ezid/static/images/ajax-loader_gray.gif' alt='Progress indicator' /></td>
+		  		<td id='{{ss.id}}' class="update_status"><img src='/static/images/ajax-loader_gray.gif' alt='Progress indicator' /></td>
 		  		<td>{{ss.name}}</td>
 		  	</tr>
     	{% endfor %}
@@ -23,9 +23,9 @@
   	<br/>
   	<div class="status_sidebox">
   		<h2>Legend</h2>
-  		<p><img src="/ezid/static/images/good_flag.png" alt="service up">&nbsp;&nbsp;Service up</p>
-  		<p><img src="/ezid/static/images/maybe_flag.png" alt="service state unknown">&nbsp;&nbsp;Service state unknown</p>
-  		<p><img src="/ezid/static/images/fail_flag.png" alt="service down">&nbsp;&nbsp;Service down</p>
+  		<p><img src="/static/images/good_flag.png" alt="service up">&nbsp;&nbsp;Service up</p>
+  		<p><img src="/static/images/maybe_flag.png" alt="service state unknown">&nbsp;&nbsp;Service state unknown</p>
+  		<p><img src="/static/images/fail_flag.png" alt="service down">&nbsp;&nbsp;Service down</p>
   	</div>
   	<br/><br/>
   	<div class="status_sidebox" style="text-align:center">
@@ -45,10 +45,10 @@
   
     $(document).ready(function() {
     	preload([
-    		'/ezid/static/images/good_flag.png',
-    		'/ezid/static/images/fail_flag.png',
-    		'/ezid/static/images/maybe_flag.png',
-    		'/ezid/static/images/ajax-loader_gray.gif'
+    		'/static/images/good_flag.png',
+    		'/static/images/fail_flag.png',
+    		'/static/images/maybe_flag.png',
+    		'/static/images/ajax-loader_gray.gif'
 			]); //must preload images or Safari doesn't refresh images on page until it gets un-busy with all requests sometimes
 			
 	    setTimeout(function() { // set timeout also needed for Safari and page reload, doesn't happen on new navigation to page in most cases
@@ -60,11 +60,11 @@
 			  		  var id = ar[0];
 			  		  var resp = ar[1];
 			  			if(resp == 'up'){
-			  				$('#' + id).html("<img src='/ezid/static/images/good_flag.png' alt='service up' title='service up' />");
+			  				$('#' + id).html("<img src='/static/images/good_flag.png' alt='service up' title='service up' />");
 			  			}else if(resp == 'down'){
-			  				$('#' + id).html("<img src='/ezid/static/images/fail_flag.png' alt='service down' title='service down' />");
+			  				$('#' + id).html("<img src='/static/images/fail_flag.png' alt='service down' title='service down' />");
 			  			}else{
-			  				$('#' + id).html("<img src='/ezid/static/images/maybe_flag.png' alt='service state unknown' title='service state unknown' />");
+			  				$('#' + id).html("<img src='/static/images/maybe_flag.png' alt='service state unknown' title='service state unknown' />");
 			  			}
 			  			$('#' + id).show();  // this is to keep Safari repainting and not freezing while ajax is continuously loading
 			   		},

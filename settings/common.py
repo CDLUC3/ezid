@@ -1,9 +1,11 @@
 import ldap
 import os
 import os.path
+import random
 import socket
 import sys
 
+# EZID-specific paths...
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 SITE_ROOT = os.path.split(PROJECT_ROOT)[0]
 SETTINGS_DIR = os.path.join(PROJECT_ROOT, "settings")
@@ -12,14 +14,6 @@ EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
 LOGGING_CONFIG_FILE = "logging.server.conf"
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))
-
-# Workaround for an obscure Django bug: when running under Apache (and
-# only under Apache), certain rewriting of the request URL (for
-# example, replacement of double slashes with single slashes) messes
-# up Django's URL processing, causing HttpRequest.path to not match
-# the urlpattern corresponding to the invoked callback function.  See
-# django.core.handlers.base.get_script_name.
-FORCE_SCRIPT_NAME = "/ezid"
 
 ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, os.path.join(PROJECT_ROOT,
   "settings", "certs"))
@@ -53,11 +47,24 @@ TIME_ZONE = "America/Los_Angeles"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "static")
 MEDIA_URL = "static/"
 
-SECRET_KEY = "ah2l_w1)ejdxor=0198d$1k$9gdqccsza@4@lqiii2%@!2)m1u"
+def _loadSecretKey ():
+  try:
+    f = open(os.path.join(SITE_ROOT, "db", "secret_key"))
+    k = f.read().strip()
+    f.close()
+  except IOError:
+    rng = random.SystemRandom()
+    alphabet = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
+    k = "".join(rng.choice(alphabet) for i in range(50))
+    try:
+      f = open(os.path.join(SITE_ROOT, "db", "secret_key"), "w")
+      f.write(k + "\n")
+      f.close()
+    except IOError:
+      pass
+  return k
 
-STANDALONE = False
-SSL = True
-DAEMON_THREADS_ENABLED = True
+SECRET_KEY = _loadSecretKey()
 
 MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
@@ -68,9 +75,9 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = "settings.urls"
 
-SESSION_COOKIE_PATH = "/ezid/"
+SESSION_COOKIE_PATH = "/"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 604800
+SESSION_COOKIE_AGE = 7*86400
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
 
 TEMPLATE_LOADERS =\
@@ -89,4 +96,8 @@ INSTALLED_APPS = (
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
-LOCALIZATIONS = { "default": ("cdl", ["uc3@ucop.edu"]) }
+# EZID-specific settings...
+STANDALONE = False
+SSL = True
+DAEMON_THREADS_ENABLED = True
+LOCALIZATIONS = { "default": ("cdl", ["ezid@ucop.edu"]) }
