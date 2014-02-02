@@ -100,4 +100,4 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 STANDALONE = False
 SSL = True
 DAEMON_THREADS_ENABLED = True
-LOCALIZATIONS = { "default": ("cdl", ["uc3@ucop.edu"]) }
+LOCALIZATIONS = { "default": ("cdl", ["ezid@ucop.edu"]) }
