@@ -256,7 +256,7 @@ internal labels included.  Here's an example identifier record
     _o ark:/99166/p92z12p14 _g ark:/99166/p9z60c16v
     _c 1389071897 _u 1389071897
     _t1 http://a.target/
-    _t http://n2t.net/ezid/id/ark:/99999/fk4030wkq
+    _t http://ezid.cdlib.org/id/ark:/99999/fk4030wkq
 
 A "normal" dump (produced by 'dump -n' and 'dump-store -n', or
 converted from a raw dump by 'convert-dump -n') uses a record

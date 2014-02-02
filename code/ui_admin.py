@@ -218,7 +218,7 @@ def system_status(request, ssl=False):
     request.session.flush()
     django.contrib.messages.success(request, "EZID reloaded.")
     django.contrib.messages.success(request, "You have been logged out.")
-    return uic.redirect("/ezid/")
+    return uic.redirect("/")
   return uic.render(request, 'admin/system_status', d)
 
 @uic.admin_login_required

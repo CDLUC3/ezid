@@ -36,17 +36,17 @@
     	
     <title>EZID: {% block title %}Identifiers made easy{% endblock %}</title>
     
-    <link rel="stylesheet" type="text/css" media="all" href="/ezid/static/stylesheets/reset.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="/static/stylesheets/reset.css" />
     
     <noscript>
-			<link rel="stylesheet" href="/ezid/static/stylesheets/720.min.css" />
+			<link rel="stylesheet" href="/static/stylesheets/720.min.css" />
 		</noscript>
     
     <script type="text/javascript">
     	// Edit to suit your needs.
 			var ADAPT_CONFIG = {
 		  // Where is your CSS?
-		  path: '/ezid/static/stylesheets/',
+		  path: '/static/stylesheets/',
 		
 		  // false = Only run once, when page first loads.
 		  // true = Change on window resize and page tilt.
@@ -63,16 +63,16 @@
 		};
     	
     </script>
-    <script type="text/javascript" src="/ezid/static/javascripts/adapt.min.js"></script>
-    <link rel="stylesheet" type="text/css" media="all" href="/ezid/static/stylesheets/text.css" />
+    <script type="text/javascript" src="/static/javascripts/adapt.min.js"></script>
+    <link rel="stylesheet" type="text/css" media="all" href="/static/stylesheets/text.css" />
 
-    <link rel="shortcut icon" href="/ezid/static/images/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="/ezid/static/stylesheets/styles.css"/>
+    <link rel="shortcut icon" href="/static/images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/styles.css"/>
 
-    <script type="text/javascript" src="/ezid/static/javascripts/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="/ezid/static/javascripts/jquery-migrate-1.1.0.min.js"></script>
+    <script type="text/javascript" src="/static/javascripts/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/static/javascripts/jquery-migrate-1.1.0.min.js"></script>
     <!-- this migrate plugin is required to make the tooltip script work since it hasn't been upgraded in a while -->
-    <script type="text/javascript" src="/ezid/static/javascripts/jquery.tooltip.js"></script>
+    <script type="text/javascript" src="/static/javascripts/jquery.tooltip.js"></script>
 
     {% block header %}{% endblock %}
     <script type="text/javascript">/*<![CDATA[*/
@@ -92,7 +92,7 @@
 	  		})();
 			</script>
 		{% endif %}
-		<script type="text/javascript" src="/ezid/static/javascripts/message_box.js"></script>
+		<script type="text/javascript" src="/static/javascripts/message_box.js"></script>
   </head>
   <body>
     <div class="container_12">
@@ -104,7 +104,7 @@
       
       {% host_based_include "includes/localized/_/footer.html" %}
     </div>
-    <script type="text/javascript" src="/ezid/static/javascripts/metadata_tooltips.js"></script>
+    <script type="text/javascript" src="/static/javascripts/metadata_tooltips.js"></script>
     <script type="text/javascript">
     	$('input:visible:enabled').first().focus();
     	window.scrollTo(0, 0);

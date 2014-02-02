@@ -13,46 +13,46 @@
 # cookies may be used.  Methods provided:
 #
 # Mint an identifier:
-#   POST /ezid/shoulder/{shoulder}   [authentication required]
+#   POST /shoulder/{shoulder}   [authentication required]
 #   request body: optional metadata
 #   response body: status line
 #
 # Create an identifier:
-#   PUT /ezid/id/{identifier}   [authentication required]
+#   PUT /id/{identifier}   [authentication required]
 #   request body: optional metadata
 #   response body: status line
 #
 # View an identifier:
-#   GET /ezid/id/{identifier}
+#   GET /id/{identifier}
 #   response body: status line, metadata
 #
 # Update an identifier:
-#   POST /ezid/id/{identifier}   [authentication required]
+#   POST /id/{identifier}   [authentication required]
 #   request body: optional metadata
 #   response body: status line
 #
 # Delete an identifier:
-#   DELETE /ezid/id/{identifier}   [authentication required]
+#   DELETE /id/{identifier}   [authentication required]
 #   response body: status line
 #
 # Login to obtain session cookie, nothing else:
-#   GET /ezid/login   [authentication required]
+#   GET /login   [authentication required]
 #   response body: status line
 #
 # Logout:
-#   GET /ezid/logout
+#   GET /logout
 #   response body: status line
 #
 # Get EZID's status:
-#   GET /ezid/status?subsystems={*|subsystemlist}
+#   GET /status?subsystems={*|subsystemlist}
 #   response body: status line, optional additional status information
 #
 # Get EZID's version:
-#   GET /ezid/version
+#   GET /version
 #   response body: status line, version information
 #
 # Reload configuration file and clear caches:
-#   POST /ezid/admin/reload   [admin authentication required]
+#   POST /admin/reload   [admin authentication required]
 #   request body: empty
 #   response body: status line
 #
@@ -153,8 +153,8 @@ def mintIdentifier (request):
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
-  assert request.path.startswith("/ezid/shoulder/")
-  shoulder = request.path[15:]
+  assert request.path_info.startswith("/shoulder/")
+  shoulder = request.path_info[10:]
   return _response(ezid.mintIdentifier(shoulder, auth.user, auth.group,
     metadata), createRequest=True)
 
@@ -176,13 +176,13 @@ def identifierDispatcher (request):
     return _methodNotAllowed()
 
 def _getMetadata (request):
-  assert request.path.startswith("/ezid/id/")
+  assert request.path_info.startswith("/id/")
   auth = userauth.authenticateRequest(request)
   if type(auth) is str: return _response(auth)
   if auth:
-    r = ezid.getMetadata(request.path[9:], auth.user, auth.group)
+    r = ezid.getMetadata(request.path_info[4:], auth.user, auth.group)
   else:
-    r = ezid.getMetadata(request.path[9:])
+    r = ezid.getMetadata(request.path_info[4:])
   if type(r) is str:
     if r.startswith("error: unauthorized"):
       return _unauthorized(not auth)
@@ -199,8 +199,8 @@ def _setMetadata (request):
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
-  assert request.path.startswith("/ezid/id/")
-  identifier = request.path[9:]
+  assert request.path_info.startswith("/id/")
+  identifier = request.path_info[4:]
   return _response(ezid.setMetadata(identifier, auth.user, auth.group,
     metadata))
 
@@ -212,8 +212,8 @@ def _createIdentifier (request):
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
-  assert request.path.startswith("/ezid/id/")
-  identifier = request.path[9:]
+  assert request.path_info.startswith("/id/")
+  identifier = request.path_info[4:]
   return _response(ezid.createIdentifier(identifier, auth.user, auth.group,
     metadata), createRequest=True)
 
@@ -223,8 +223,8 @@ def _deleteIdentifier (request):
     return _response(auth)
   elif not auth:
     return _unauthorized()
-  assert request.path.startswith("/ezid/id/")
-  identifier = request.path[9:]
+  assert request.path_info.startswith("/id/")
+  identifier = request.path_info[4:]
   return _response(ezid.deleteIdentifier(identifier, auth.user, auth.group))
 
 def login (request):

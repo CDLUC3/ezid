@@ -51,7 +51,7 @@ def header_row(request, fields_selected, fields_mapped, field_widths, order_by, 
           for x in fields_selected]) + '</tr>'
 
 #display column heading text, links, sort order that allow changing
-ORDER_BY_IMG = {'asc': '/ezid/static/images/tri_up.png', 'desc': '/ezid/static/images/tri_down.png'}
+ORDER_BY_IMG = {'asc': '/static/images/tri_up.png', 'desc': '/static/images/tri_down.png'}
 SORT_OPPOSITE = {'asc': 'desc', 'desc': 'asc'}
 SORT_TIP = {'asc': 'Sorting in ascending order. Click to change to descending order.',
             'desc': 'Sorting in descending order. Click to change to ascending order.'}
@@ -108,8 +108,8 @@ def string_value(x):
 def identifier_disp(x, testPrefixes):
   for pre in testPrefixes:
     if x.startswith(pre['prefix']):
-      return "<a href='/ezid/id/" + x + "' class='fakeid'>" + escape(x) + "</a>"
-  return "<a href='/ezid/id/" + x + "'>" + escape(x) + "</a>"
+      return "<a href='/id/" + x + "' class='fakeid'>" + escape(x) + "</a>"
+  return "<a href='/id/" + x + "'>" + escape(x) + "</a>"
   
   
 def co_owner_disp(x, coown):

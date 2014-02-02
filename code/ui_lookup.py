@@ -25,7 +25,7 @@ def index(request):
     if type(r) is tuple:
       s, m = r
       assert s.startswith("success:")
-      return redirect('/ezid/id/' + urllib.quote(s.split()[1], ":/"))
+      return redirect('/id/' + urllib.quote(s.split()[1], ":/"))
     else:
       django.contrib.messages.error(request, uic.formatError(r))
       return uic.render(request, "lookup/index", dict({ "identifier": id }.items() + d.items() ))

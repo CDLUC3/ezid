@@ -86,9 +86,9 @@ def doc (request):
   Renders UTF-8 encoded HTML documentation.
   """
   if request.method != "GET": return uic.methodNotAllowed()
-  assert request.path.startswith("/ezid/doc/")
+  assert request.path_info.startswith("/doc/")
   file = os.path.join(django.conf.settings.PROJECT_ROOT, "doc",
-    request.path[10:])
+    request.path_info[5:])
   if os.path.exists(file):
     f = open(file)
     content = f.read()
@@ -120,8 +120,8 @@ def tombstone (request):
   Renders a tombstone (i.e., unavailable identifier) page.
   """
   if request.method != "GET": return uic.methodNotAllowed()
-  assert request.path.startswith("/ezid/tombstone/id/")
-  id = request.path[19:]
+  assert request.path_info.startswith("/tombstone/id/")
+  id = request.path_info[14:]
   if "auth" in request.session:
     r = ezid.getMetadata(id, request.session["auth"].user,
       request.session["auth"].group)
@@ -129,12 +129,12 @@ def tombstone (request):
     r = ezid.getMetadata(id)
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
-    return uic.redirect("/ezid/")
+    return uic.redirect("/")
   s, m = r
   assert s.startswith("success:")
   id = s[8:].strip()
   if not m["_status"].startswith("unavailable"):
-    return uic.redirect("/ezid/id/%s" % urllib.quote(id, ":/"))
+    return uic.redirect("/id/%s" % urllib.quote(id, ":/"))
   if "|" in m["_status"]:
     reason = "Not available: " + m["_status"].split("|", 1)[1].strip()
   else:
@@ -157,5 +157,5 @@ def tombstone (request):
         md.append({ "label": e.displayName,
           "value": v if v != "" else "(no value)" })
   return uic.render(request, "tombstone", { "identifier": id,
-    "identifierLink": "/ezid/id/%s" % urllib.quote(id, ":/"),
+    "identifierLink": "/id/%s" % urllib.quote(id, ":/"),
     "reason": reason, "htmlMode": htmlMode, "metadata": md })

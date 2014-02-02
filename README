@@ -58,6 +58,7 @@ layout:
             alert_message
             django.sqlite3
             search.sqlite3
+            secret_key
             shoulders_cache.txt
             stats
             store.sqlite3
@@ -115,7 +116,7 @@ To run the built-in server:
 
     django-admin.py runserver
 
-The server is hosted at http://localhost:8000/ezid/.
+The server is hosted at http://localhost:8000/.
 
 Running under Apache
 ====================
@@ -123,7 +124,7 @@ Running under Apache
 To run EZID under Apache and mod_wsgi, only the DJANGO_SETTINGS_MODULE
 environment variable need be set.  Five sets of directives are
 required in Apache's httpd.conf.  The following assume that EZID is
-hosted at http://{host}/ezid/.
+hosted at http://{host}/.
 
 1. Load mod_wsgi.
 
@@ -138,7 +139,7 @@ arbitrary.
 
 3. Map EZID URLs to mod_wsgi+Django.
 
-    WSGIScriptAlias /ezid /path/to/SITE_ROOT/PROJECT_ROOT/apache/django.wsgi
+    WSGIScriptAlias / /path/to/SITE_ROOT/PROJECT_ROOT/apache/django.wsgi
 
 4. Add the following directives.  If SSL is used to protect the login
 page, the WSGIApplicationGroup directive is needed to avoid creating
@@ -151,7 +152,7 @@ to pass through HTTP Basic authentication credentials (otherwise, they
 get swallowed).
 
     <Directory /path/to/SITE_ROOT/PROJECT_ROOT/apache>
-    Order deny,allow
+    Order Allow,Deny
     Allow from all
     WSGIApplicationGroup %{GLOBAL}
     WSGIProcessGroup site-1
@@ -165,9 +166,9 @@ lxml is incompatible with mod_wsgi's use of Python sub-interpreters
 
 5. Add an alias so that static files are served by Apache, not Django.
 
-    Alias /ezid/static /path/to/SITE_ROOT/PROJECT_ROOT/static
+    Alias /static /path/to/SITE_ROOT/PROJECT_ROOT/static
 
     <Directory /path/to/SITE_ROOT/PROJECT_ROOT/static>
-    Order deny,allow
+    Order Allow,Deny
     Allow from all
     </Directory>
