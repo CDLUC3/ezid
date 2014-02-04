@@ -1331,7 +1331,7 @@ hash, `%metadata`:hl1:\ :
   $ua = LWP::UserAgent->new;
   $ua->credentials("ezid.cdlib.org:443", "EZID", "`username`:hl2:", \
   "`password`:hl2:");
-  $r = $ua->request(PUT "\https://ezid.cdlib.org:443/id/`identifier`:hl2:",
+  $r = $ua->request(PUT "\https://ezid.cdlib.org/id/`identifier`:hl2:",
     "Content-Type" => "text/plain; charset=UTF-8",
     Content => encode("UTF-8", join("\\n",
       map { escape($_) . ": " . escape($metadata{$_}) } keys %metadata)));
@@ -1348,8 +1348,7 @@ obtaining a new identifier, `$identifier`:hl1:\ :
   $ua = LWP::UserAgent->new;
   $ua->credentials("ezid.cdlib.org:443", "EZID", "`username`:hl2:", \
   "`password`:hl2:");
-  $r = $ua->request(POST "\https://ezid.cdlib.org:443/\
-  shoulder/`shoulder`:hl2:",
+  $r = $ua->request(POST "\https://ezid.cdlib.org/shoulder/`shoulder`:hl2:",
     "Content-Type" => "text/plain; charset=UTF-8");
   if ($r->is_success) {
     $identifier = $r->decoded_content =~ m/success: ([^ ]*)/ && $1;
@@ -1375,7 +1374,7 @@ To modify an identifier using values from a hash, `%metadata`:hl1:\ :
   $ua = LWP::UserAgent->new;
   $ua->credentials("ezid.cdlib.org:443", "EZID", "`username`:hl2:", \
   "`password`:hl2:");
-  $r = $ua->request(POST "\https://ezid.cdlib.org:443/id/`identifier`:hl2:",
+  $r = $ua->request(POST "\https://ezid.cdlib.org/id/`identifier`:hl2:",
     "Content-Type" => "text/plain; charset=UTF-8",
     Content => encode("UTF-8", join("\\n",
       map { escape($_) . ": " . escape($metadata{$_}) } keys %metadata)));
