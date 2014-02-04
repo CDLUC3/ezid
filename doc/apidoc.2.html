@@ -1449,7 +1449,7 @@ sub escape {
   &quot;<span class="hl2">element2</span>&quot; =&gt; &quot;<span class="hl2">value2</span>&quot; );
 $ua = LWP::UserAgent-&gt;new;
 $ua-&gt;credentials(&quot;ezid.cdlib.org:443&quot;, &quot;EZID&quot;, &quot;<span class="hl2">username</span>&quot;, &quot;<span class="hl2">password</span>&quot;);
-$r = $ua-&gt;request(PUT &quot;https://ezid.cdlib.org:443/id/<span class="hl2">identifier</span>&quot;,
+$r = $ua-&gt;request(PUT &quot;https://ezid.cdlib.org/id/<span class="hl2">identifier</span>&quot;,
   &quot;Content-Type&quot; =&gt; &quot;text/plain; charset=UTF-8&quot;,
   Content =&gt; encode(&quot;UTF-8&quot;, join(&quot;\n&quot;,
     map { escape($_) . &quot;: &quot; . escape($metadata{$_}) } keys %metadata)));
@@ -1463,7 +1463,7 @@ use LWP::UserAgent;
 
 $ua = LWP::UserAgent-&gt;new;
 $ua-&gt;credentials(&quot;ezid.cdlib.org:443&quot;, &quot;EZID&quot;, &quot;<span class="hl2">username</span>&quot;, &quot;<span class="hl2">password</span>&quot;);
-$r = $ua-&gt;request(POST &quot;https://ezid.cdlib.org:443/shoulder/<span class="hl2">shoulder</span>&quot;,
+$r = $ua-&gt;request(POST &quot;https://ezid.cdlib.org/shoulder/<span class="hl2">shoulder</span>&quot;,
   &quot;Content-Type&quot; =&gt; &quot;text/plain; charset=UTF-8&quot;);
 if ($r-&gt;is_success) {
   $identifier = $r-&gt;decoded_content =~ m/success: ([^ ]*)/ &amp;&amp; $1;
@@ -1486,7 +1486,7 @@ sub escape {
 %metadata = ( &quot;_target&quot; =&gt; &quot;<span class="hl2">url</span>&quot; );
 $ua = LWP::UserAgent-&gt;new;
 $ua-&gt;credentials(&quot;ezid.cdlib.org:443&quot;, &quot;EZID&quot;, &quot;<span class="hl2">username</span>&quot;, &quot;<span class="hl2">password</span>&quot;);
-$r = $ua-&gt;request(POST &quot;https://ezid.cdlib.org:443/id/<span class="hl2">identifier</span>&quot;,
+$r = $ua-&gt;request(POST &quot;https://ezid.cdlib.org/id/<span class="hl2">identifier</span>&quot;,
   &quot;Content-Type&quot; =&gt; &quot;text/plain; charset=UTF-8&quot;,
   Content =&gt; encode(&quot;UTF-8&quot;, join(&quot;\n&quot;,
     map { escape($_) . &quot;: &quot; . escape($metadata{$_}) } keys %metadata)));
