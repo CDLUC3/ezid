@@ -188,12 +188,15 @@ config.addLoader(_loadConfig)
 # concurrent operations.  _activeUsers maps local usernames to the
 # number of operations currently being performed by that user.  For
 # status reporting purposes, _waitingUsers similarly maps local
-# usernames to numbers of waiting requests.
+# usernames to numbers of waiting requests.  If _paused is true, no
+# new locks are granted, but the mechanism otherwise operates
+# normally.
 
 _lockedIdentifiers = set()
 _activeUsers = {}
 _waitingUsers = {}
 _lock = threading.Condition()
+_paused = False
 
 def _incrementCount (d, k):
   d[k] = d.get(k, 0) + 1
@@ -207,7 +210,7 @@ def _decrementCount (d, k):
 def _acquireIdentifierLock (identifier, user):
   _lock.acquire()
   while True:
-    while identifier in _lockedIdentifiers:
+    while _paused or identifier in _lockedIdentifiers:
       _incrementCount(_waitingUsers, user)
       _lock.wait()
       _decrementCount(_waitingUsers, user)
@@ -240,6 +243,19 @@ def getStatus ():
   _lock.acquire()
   try:
     return (_activeUsers.copy(), _waitingUsers.copy())
+  finally:
+    _lock.release()
+
+def pause (newValue):
+  """
+  Sets or unsets the paused flag.  If the server is paused, no new
+  identifier locks are granted and all requests are forced to wait.
+  """
+  global _paused
+  _lock.acquire()
+  try:
+    _paused = newValue
+    if not _paused: _lock.notifyAll()
   finally:
     _lock.release()
 

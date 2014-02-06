@@ -54,6 +54,7 @@ urlpatterns = django.conf.urls.patterns("",
   ("^shoulder/", "api.mintIdentifier"),
   ("^status$", "api.getStatus"),
   ("^version$", "api.getVersion"),
+  ("^admin/pause$", "api.pause"),
   ("^admin/reload$", "api.reload")
 
 )

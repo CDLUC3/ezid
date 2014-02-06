@@ -64,10 +64,6 @@ import urllib
 import urllib2
 
 KNOWN_SERVERS = {
-  "l": "http://localhost:8000",
-  "d": "REDACTED",
-  "s": "REDACTED",
-  "w": "REDACTED",
   "p": "http://ezid.cdlib.org"
 }
 
@@ -154,7 +150,8 @@ def formatAnvlRequest (args):
 def encode (id):
   return urllib.quote(id, ":/")
 
-def issueRequest (path, method, data=None, returnHeaders=False):
+def issueRequest (path, method, data=None, returnHeaders=False,
+  streamOutput=False):
   request = urllib2.Request("%s/%s" % (_server, path))
   request.get_method = lambda: method
   if data:
@@ -163,11 +160,16 @@ def issueRequest (path, method, data=None, returnHeaders=False):
   if _cookie: request.add_header("Cookie", _cookie)
   try:
     connection = _opener.open(request)
-    response = connection.read()
-    if returnHeaders:
-      return response.decode("UTF-8"), connection.info()
+    if streamOutput:
+      while True:
+        sys.stdout.write(connection.read(1))
+        sys.stdout.flush()
     else:
-      return response.decode("UTF-8")
+      response = connection.read()
+      if returnHeaders:
+        return response.decode("UTF-8"), connection.info()
+      else:
+        return response.decode("UTF-8")
   except urllib2.HTTPError, e:
     sys.stderr.write("%s %s\n" % (e.code, e.msg))
     if e.fp != None:
