@@ -611,7 +611,7 @@ def disableUser (username):
         attrlist=["objectClass", "userPassword"])
     except ldap.NO_SUCH_OBJECT:
       return "No such user."
-    assert len(r) == 1 and r[0][0] == dn,\
+    assert len(r) == 1 and r[0][0].lower() == dn.lower(),\
       "unexpected return from LDAP search command, DN='%s'" % dn
     if "ezidUser" not in r[0][1]["objectClass"]: return "No such user."
     if "userPassword" in r[0][1]:

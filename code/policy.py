@@ -70,7 +70,7 @@ def _loadShouldersLdap (group):
     l.bind_s(_userDnTemplate % _adminUsername, _adminPassword,
       ldap.AUTH_SIMPLE)
     r = l.search_s(group[2], ldap.SCOPE_BASE)
-    assert len(r) == 1 and r[0][0] == group[2] and\
+    assert len(r) == 1 and r[0][0].lower() == group[2].lower() and\
       "ezidGroup" in r[0][1]["objectClass"] and\
       len(r[0][1]["shoulderList"]) == 1,\
       "unexpected return from LDAP search command, DN='%s'" % group[2]
@@ -162,7 +162,7 @@ def _loadCoOwnersLdap (user):
     dn = _userDnTemplate % ldap.dn.escape_dn_chars(user)
     r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass",
       "ezidCoOwners"])
-    assert len(r) == 1 and r[0][0] == dn and\
+    assert len(r) == 1 and r[0][0].lower() == dn.lower() and\
       "ezidUser" in r[0][1]["objectClass"],\
       "unexpected return from LDAP search command, DN='%s'" % dn
     if "ezidCoOwners" in r[0][1]:
