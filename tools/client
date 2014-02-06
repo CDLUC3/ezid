@@ -36,6 +36,7 @@
 #     logout
 #     s[tatus] [*|subsystemlist]
 #     V[ersion]
+#     p[ause] {on|off}
 #     r[eload]
 #
 # In the above, if an element is "@", the subsequent value is treated
@@ -92,6 +93,7 @@ OPERATIONS = {
   "logout": 0,
   "status": lambda l: l in [0, 1],
   "Version": 0,
+  "pause": 1,
   "reload": 0
 }
 
@@ -126,6 +128,7 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
     logout
     s[tatus] [*|subsystemlist]
     V[ersion]
+    p[ause] {on|off}
     r[eload]
 """
 
@@ -176,7 +179,8 @@ def formatAnvlRequest (args):
 def encode (id):
   return urllib.quote(id, ":/")
 
-def issueRequest (path, method, data=None, returnHeaders=False):
+def issueRequest (path, method, data=None, returnHeaders=False,
+  streamOutput=False):
   request = urllib2.Request("%s/%s" % (_server, path))
   request.get_method = lambda: method
   if data:
@@ -185,11 +189,16 @@ def issueRequest (path, method, data=None, returnHeaders=False):
   if _cookie: request.add_header("Cookie", _cookie)
   try:
     connection = _opener.open(request)
-    response = connection.read()
-    if returnHeaders:
-      return response.decode("UTF-8"), connection.info()
+    if streamOutput:
+      while True:
+        sys.stdout.write(connection.read(1))
+        sys.stdout.flush()
     else:
-      return response.decode("UTF-8")
+      response = connection.read()
+      if returnHeaders:
+        return response.decode("UTF-8"), connection.info()
+      else:
+        return response.decode("UTF-8")
   except urllib2.HTTPError, e:
     sys.stderr.write("%s %s\n" % (e.code, e.msg))
     if e.fp != None:
@@ -310,6 +319,13 @@ elif operation == "status":
 elif operation == "Version":
   response = issueRequest("version", "GET")
   printAnvlResponse(response)
+elif operation == "pause":
+  onOff = args[0]
+  if onOff.lower() == "on":
+    issueRequest("admin/pause?hold=on", "GET", streamOutput=True)
+  else:
+    response = issueRequest("admin/pause?hold="+onOff, "GET")
+    printAnvlResponse(response)
 elif operation == "reload":
   response = issueRequest("admin/reload", "POST")
   printAnvlResponse(response)

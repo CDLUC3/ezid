@@ -71,7 +71,7 @@ def sendPasswordResetEmail (username, emailAddress):
       r = l.search_s(dn, ldap.SCOPE_BASE)
     except ldap.NO_SUCH_OBJECT:
       return "No such user."
-    assert len(r) == 1 and r[0][0] == dn,\
+    assert len(r) == 1 and r[0][0].lower() == dn.lower(),\
       "unexpected return from LDAP search command, DN='%s'" % dn
     if "ezidUser" not in r[0][1]["objectClass"]: return "No such user."
     if "mail" not in r[0][1] or\
@@ -125,7 +125,7 @@ def resetPassword (username, password):
       r = l.search_s(dn, ldap.SCOPE_BASE)
     except ldap.NO_SUCH_OBJECT:
       return "No such user."
-    assert len(r) == 1 and r[0][0] == dn,\
+    assert len(r) == 1 and r[0][0].lower() == dn.lower(),\
       "unexpected return from LDAP search command, DN='%s'" % dn
     if "ezidUser" not in r[0][1]["objectClass"]: return "No such user."
     l.passwd_s(dn, None, password)
@@ -149,7 +149,7 @@ def getAccountProfile (username):
       ldap.AUTH_SIMPLE)
     dn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
     r = l.search_s(dn, ldap.SCOPE_BASE)
-    assert len(r) == 1 and r[0][0] == dn,\
+    assert len(r) == 1 and r[0][0].lower() == dn.lower(),\
       "unexpected return from LDAP search command, DN='%s'" % dn
     assert "ezidUser" in r[0][1]["objectClass"],\
       "not an EZID user, DN='%s'" % dn
@@ -178,7 +178,7 @@ def getContactInfo (username):
       ldap.AUTH_SIMPLE)
     dn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
     r = l.search_s(dn, ldap.SCOPE_BASE)
-    assert len(r) == 1 and r[0][0] == dn,\
+    assert len(r) == 1 and r[0][0].lower() == dn.lower(),\
       "unexpected return from LDAP search command, DN='%s'" % dn
     assert "ezidUser" in r[0][1]["objectClass"],\
       "not an EZID user, DN='%s'" % dn
@@ -257,7 +257,7 @@ def setAccountProfile (username, coOwnerList):
     dn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
     r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass", "arkId",
       "ezidCoOwners", "uid"])
-    assert len(r) == 1 and r[0][0] == dn,\
+    assert len(r) == 1 and r[0][0].lower() == dn.lower(),\
       "unexpected return from LDAP search command, DN='%s'" % dn
     assert "ezidUser" in r[0][1]["objectClass"],\
       "not an EZID user, DN='%s'" % dn
@@ -309,7 +309,7 @@ def setContactInfo (username, d):
     l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
     dn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
     r = l.search_s(dn, ldap.SCOPE_BASE)
-    assert len(r) == 1 and r[0][0] == dn,\
+    assert len(r) == 1 and r[0][0].lower() == dn.lower(),\
       "unexpected return from LDAP search command, DN='%s'" % dn
     assert "ezidUser" in r[0][1]["objectClass"],\
       "not an EZID user, DN='%s'" % dn

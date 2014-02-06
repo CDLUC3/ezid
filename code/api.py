@@ -51,6 +51,12 @@
 #   GET /version
 #   response body: status line, version information
 #
+# Pause the server:
+#   GET /admin/pause?hold={on|off}   [admin authentication required]
+#   request body: empty
+#   response body: status line followed by server status records
+#     streamed back indefinitely
+#
 # Reload configuration file and clear caches:
 #   POST /admin/reload   [admin authentication required]
 #   request body: empty
@@ -287,6 +293,51 @@ def getVersion (request):
     (time.asctime(time.localtime(sv[0])), sv[1], sv[2],
     time.asctime(time.localtime(v[0])), v[1], v[2])
   return _response("success: version information follows", anvlBody=body)
+
+def _formatUserCountList (d):
+  if len(d) > 0:
+    l = d.items()
+    l.sort(cmp=lambda x, y: -cmp(x[1], y[1]))
+    return " (" + " ".join("%s=%d" % i for i in l) + ")"
+  else:
+    return ""
+
+def _statusLineGenerator ():
+  yield "success: server paused\n"
+  while True:
+    activeUsers, waitingUsers = ezid.getStatus()
+    na = sum(activeUsers.values())
+    nw = sum(waitingUsers.values())
+    s = "STATUS activeOperations=%d%s waitingRequests=%d%s\n" %\
+      (na, _formatUserCountList(activeUsers), nw,
+      _formatUserCountList(waitingUsers))
+    yield s.encode("UTF-8")
+    time.sleep(3)
+
+def pause (request):
+  """
+  Pauses or unpauses the server.  If the server is paused, server
+  status records are streamed back to the client indefinitely.
+  """
+  if request.method != "GET": return _methodNotAllowed()
+  auth = userauth.authenticateRequest(request)
+  if type(auth) is str:
+    return _response(auth)
+  elif not auth:
+    return _unauthorized()
+  elif auth.user[0] != _adminUsername:
+    return _unauthorized(False)
+  if "hold" not in request.GET:
+    return _response("error: bad request - no 'hold' parameter")
+  if request.GET["hold"].lower() == "on":
+    ezid.pause(True)
+    return django.http.StreamingHttpResponse(_statusLineGenerator(),
+      content_type="text/plain; charset=UTF-8")
+  elif request.GET["hold"].lower() == "off":
+    ezid.pause(False)
+    return _response("success: server unpaused")
+  else:
+    return _response("error: bad request - invalid 'hold' parameter")
 
 def reload (request):
   """
