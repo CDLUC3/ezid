@@ -130,7 +130,7 @@ def _validateShoulder (entry, errors, warnings):
   if "date" in entry:
     mytest(re.match("\d{4}\.\d{2}\.\d{2}$", entry.date), "invalid date",
       entry.lineNum.date)
-  mytest(entry.minter == "" or entry.minter.startswith("http://"),
+  mytest(entry.minter == "" or re.match("https?://", entry.minter),
     "invalid minter", entry.lineNum.minter)
   if entry.key.startswith("doi:"):
     if mytest("datacenter" in entry, "missing DOI shoulder datacenter",
