@@ -30,7 +30,7 @@ import django_util
 import ezid
 import idmap
 import log
-import noid
+import noid_egg
 import noid_nog
 import policy
 import shoulder
@@ -708,8 +708,8 @@ def systemStatus (id=None):
   if id is None:
     probes = []
     probes.append({ "id": _addStatusProbe("ldap", None), "name": "LDAP" })
-    probes.append({ "id": _addStatusProbe("noid",
-      config.config("DEFAULT.bind_noid")), "name": "Noid \"bind\" database" })
+    probes.append({ "id": _addStatusProbe("noid_egg", None),
+      "name": "Noid \"bind\" database" })
     probes.append({ "id": _addStatusProbe("datacite", None),
       "name": "DataCite API" })
     probes.append({ "id": _addStatusProbe("handlesystem", None),
@@ -729,8 +729,8 @@ def systemStatus (id=None):
       _lock.release()
     if type == "ldap":
       return pingLdap()
-    elif type == "noid":
-      return noid.Noid(url).ping()
+    elif type == "noid_egg":
+      return noid_egg.ping()
     elif type == "noid_nog":
       return noid_nog.Minter(url).ping()
     elif type == "datacite":

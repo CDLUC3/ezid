@@ -152,7 +152,7 @@ import config
 import datacite
 import idmap
 import log
-import noid
+import noid_egg
 import noid_nog
 import policy
 import search
@@ -160,7 +160,6 @@ import shoulder
 import store
 import util
 
-_bindNoid = None
 _ezidUrl = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
@@ -169,9 +168,8 @@ _adminUsername = None
 _perUserThrottle = None
 
 def _loadConfig ():
-  global _bindNoid, _ezidUrl, _defaultDoiProfile, _defaultArkProfile
+  global _ezidUrl, _defaultDoiProfile, _defaultArkProfile
   global _defaultUrnUuidProfile, _adminUsername, _perUserThrottle
-  _bindNoid = noid.Noid(config.config("DEFAULT.bind_noid"))
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
@@ -479,7 +477,7 @@ def createDoi (doi, user, group, metadata={}):
     if not policy.authorizeCreate(user, group, qdoi):
       log.unauthorized(tid)
       return "error: unauthorized"
-    if _bindNoid.identifierExists(shadowArk):
+    if noid_egg.identifierExists(shadowArk):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
@@ -503,8 +501,8 @@ def createDoi (doi, user, group, metadata={}):
       if m.get("_x", "") == "no":
         datacite.deactivate(doi)
         log.progress(tid, "datacite.deactivate")
-    _bindNoid.setElements(shadowArk, m, True)
-    log.progress(tid, "noid.setElements")
+    noid_egg.setElements(shadowArk, m)
+    log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
     log.progress(tid, "store.insert")
     if user[0] != "anonymous": search.insert(qdoi, m)
@@ -603,7 +601,7 @@ def createArk (ark, user, group, metadata={}):
     if not policy.authorizeCreate(user, group, qark):
       log.unauthorized(tid)
       return "error: unauthorized"
-    if _bindNoid.identifierExists(ark):
+    if noid_egg.identifierExists(ark):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
@@ -611,8 +609,8 @@ def createArk (ark, user, group, metadata={}):
     if m.get("_is", "public") == "reserved":
       m["_t1"] = m["_t"]
       m["_t"] = _defaultTarget(qark)
-    _bindNoid.setElements(ark, m, True)
-    log.progress(tid, "noid.setElements")
+    noid_egg.setElements(ark, m)
+    log.progress(tid, "noid_egg.setElements")
     store.insert(ark, m)
     log.progress(tid, "store.insert")
     if user[0] != "anonymous": search.insert(qark, m)
@@ -693,7 +691,7 @@ def createUrnUuid (urn, user, group, metadata={}):
     if not policy.authorizeCreate(user, group, qurn):
       log.unauthorized(tid)
       return "error: unauthorized"
-    if _bindNoid.identifierExists(shadowArk):
+    if noid_egg.identifierExists(shadowArk):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
@@ -703,8 +701,8 @@ def createUrnUuid (urn, user, group, metadata={}):
       m["_t1"] = m["_t"]
       m["_st1"] = m["_st"]
       m["_st"] = _defaultTarget(qurn)
-    _bindNoid.setElements(shadowArk, m, True)
-    log.progress(tid, "noid.setElements")
+    noid_egg.setElements(shadowArk, m)
+    log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
     log.progress(tid, "store.insert")
     if user[0] != "anonymous": search.insert(qurn, m)
@@ -849,7 +847,7 @@ def getMetadata (identifier, user=None, group=None):
   try:
     log.begin(tid, "getMetadata", nqidentifier, user[0], user[1], group[0],
       group[1])
-    d = _bindNoid.getElements(ark)
+    d = noid_egg.getElements(ark)
     if d is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
@@ -950,7 +948,7 @@ def setMetadata (identifier, user, group, metadata):
   try:
     log.begin(tid, "setMetadata", nqidentifier, user[0], user[1], group[0],
       group[1], *[a for p in metadata.items() for a in p])
-    m = _bindNoid.getElements(ark)
+    m = noid_egg.getElements(ark)
     if m is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
@@ -1073,8 +1071,8 @@ def setMetadata (identifier, user, group, metadata):
         datacite.deactivate(m["_s"][4:])
         log.progress(tid, "datacite.deactivate")
     # Finally, and most importantly, update our own databases.
-    _bindNoid.setElements(ark, d)
-    log.progress(tid, "noid.setElements")
+    noid_egg.setElements(ark, d)
+    log.progress(tid, "noid_egg.setElements")
     m.update(d)
     store.update(ark, m)
     log.progress(tid, "store.update")
@@ -1126,7 +1124,7 @@ def deleteIdentifier (identifier, user, group):
   try:
     log.begin(tid, "deleteIdentifier", nqidentifier, user[0], user[1],
       group[0], group[1])
-    m = _bindNoid.getElements(ark)
+    m = noid_egg.getElements(ark)
     if m is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
@@ -1157,10 +1155,8 @@ def deleteIdentifier (identifier, user, group):
           "unexpected return from DataCite set target URL operation: " + s
         datacite.deactivate(doi)
         log.progress(tid, "datacite.deactivate")
-    _bindNoid.deleteElements(ark)
-    log.progress(tid, "noid.deleteElements")
-    _bindNoid.releaseIdentifier(ark)
-    log.progress(tid, "noid.releaseIdentifier")
+    noid_egg.deleteIdentifier(ark)
+    log.progress(tid, "noid_egg.deleteIdentifier")
     store.delete(ark)
     log.progress(tid, "store.delete")
     if m["_o"] != "anonymous":
