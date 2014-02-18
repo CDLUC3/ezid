@@ -99,7 +99,12 @@ def viewDatacenter (allocator, datacenter):
     record = c.read()
     c.close()
   except urllib2.HTTPError, e:
-    sys.stderr.write("%d %s\n%s\n" % (e.code, e.msg, e.fp.read()))
+    if e.fp != None:
+      s = e.fp.read()
+      if not s.endswith("\n"): s += "\n"
+    else:
+      s = ""
+    sys.stderr.write("%d %s\n%s" % (e.code, e.msg, s))
     sys.exit(1)
   except Exception, e:
     sys.stderr.write("mdsadmin: %s\n" % str(e))
@@ -130,7 +135,12 @@ def createDatacenter (allocator, datacenter, name, prefixes):
     record = c.read()
     c.close()
   except urllib2.HTTPError, e:
-    sys.stderr.write("%d %s\n%s\n" % (e.code, e.msg, e.fp.read()))
+    if e.fp != None:
+      s = e.fp.read()
+      if not s.endswith("\n"): s += "\n"
+    else:
+      s = ""
+    sys.stderr.write("%d %s\n%s" % (e.code, e.msg, s))
     sys.exit(1)
   except Exception, e:
     sys.stderr.write("mdsadmin: %s\n" % str(e))
