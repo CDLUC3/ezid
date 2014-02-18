@@ -161,6 +161,7 @@ import store
 import util
 
 _ezidUrl = None
+_noidEnabled = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
 _defaultUrnUuidProfile = None
@@ -168,9 +169,10 @@ _adminUsername = None
 _perUserThrottle = None
 
 def _loadConfig ():
-  global _ezidUrl, _defaultDoiProfile, _defaultArkProfile
+  global _ezidUrl, _noidEnabled, _defaultDoiProfile, _defaultArkProfile
   global _defaultUrnUuidProfile, _adminUsername, _perUserThrottle
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
+  _noidEnabled = (config.config("binder.enabled").lower() == "true")
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
   _defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
@@ -386,6 +388,18 @@ def _validateMetadata2 (owner, metadata):
     del metadata["_coowners"]
   return None
 
+def _identifierExists (identifier):
+  if _noidEnabled:
+    return noid_egg.identifierExists(identifier)
+  else:
+    return store.exists(identifier)
+
+def _getElements (identifier):
+  if _noidEnabled:
+    return noid_egg.getElements(identifier)
+  else:
+    return store.get(identifier)
+
 def mintDoi (prefix, user, group, metadata={}):
   """
   Mints a DOI identifier under the given scheme-less shoulder, e.g.,
@@ -477,7 +491,7 @@ def createDoi (doi, user, group, metadata={}):
     if not policy.authorizeCreate(user, group, qdoi):
       log.unauthorized(tid)
       return "error: unauthorized"
-    if noid_egg.identifierExists(shadowArk):
+    if _identifierExists(shadowArk):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
@@ -601,7 +615,7 @@ def createArk (ark, user, group, metadata={}):
     if not policy.authorizeCreate(user, group, qark):
       log.unauthorized(tid)
       return "error: unauthorized"
-    if noid_egg.identifierExists(ark):
+    if _identifierExists(ark):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
@@ -691,7 +705,7 @@ def createUrnUuid (urn, user, group, metadata={}):
     if not policy.authorizeCreate(user, group, qurn):
       log.unauthorized(tid)
       return "error: unauthorized"
-    if noid_egg.identifierExists(shadowArk):
+    if _identifierExists(shadowArk):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
@@ -847,7 +861,7 @@ def getMetadata (identifier, user=None, group=None):
   try:
     log.begin(tid, "getMetadata", nqidentifier, user[0], user[1], group[0],
       group[1])
-    d = noid_egg.getElements(ark)
+    d = _getElements(ark)
     if d is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
@@ -948,7 +962,7 @@ def setMetadata (identifier, user, group, metadata):
   try:
     log.begin(tid, "setMetadata", nqidentifier, user[0], user[1], group[0],
       group[1], *[a for p in metadata.items() for a in p])
-    m = noid_egg.getElements(ark)
+    m = _getElements(ark)
     if m is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
@@ -1124,7 +1138,7 @@ def deleteIdentifier (identifier, user, group):
   try:
     log.begin(tid, "deleteIdentifier", nqidentifier, user[0], user[1],
       group[0], group[1])
-    m = noid_egg.getElements(ark)
+    m = _getElements(ark)
     if m is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
