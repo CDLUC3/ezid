@@ -150,8 +150,8 @@ if doCompute:
     entry = cursor.first()
     while entry != None:
       k, v = entry
-      if "\t" in k:
-        id, label = k.split("\t", 1)
+      if "|" in k:
+        id, label = k.split("|", 1)
         if util.validateArk(id) == id and label == "_c" and\
           re.match("\d+$", v):
           if not id.startswith(testArkPrefix) and\

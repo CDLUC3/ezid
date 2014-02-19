@@ -185,9 +185,9 @@ entry = cursor.first()
 lastId = None
 while entry != None:
   k, value = entry
-  if "\t" in k:
-    id, label = k.split("\t", 1)
-    if util.validateArk(id) == id and label != ":/h":
+  if "|" in k:
+    id, label = k.split("|", 1)
+    if util.validateArk(id) == id and not label.startswith("__"):
       assert lastId is None or id >= lastId
       if id != lastId:
         if lastId is not None: outputRecord(lastId, record)
