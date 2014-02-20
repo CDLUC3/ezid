@@ -3,12 +3,8 @@
 # Expunges expired test identifiers.  Identifiers are read from a noid
 # database or from the EZID store database.  Usage:
 #
-#   expunge dbpath noidurl
+#   expunge {dbpath|-}
 #     dbpath: noid database pathname (.bdb)
-#     noidurl: noid service URL corresponding to database
-#
-#   expunge - noidurl
-#     noidurl: noid service URL
 #
 #   expunge dbpath -p [azbocrtke]
 #     print/debug mode; argument is one or more flags:
@@ -22,8 +18,8 @@
 #     k: print _c bindings of test identifiers to be kept
 #     e: print _c bindings of expired test identifiers
 #
-# If the noidurl argument is "-", the appropriate value is read from
-# the EZID configuration file.
+# The URL of the noid egg service is read from the EZID configuration
+# file, as is the location of the EZID store database.
 #
 # This script requires several EZID modules.  The PYTHONPATH
 # environment variable must include the .../SITE_ROOT/PROJECT_ROOT
@@ -63,7 +59,7 @@ django.conf.settings.DAEMON_THREADS_ENABLED = False
 
 import config
 import datacite
-import noid
+import noid_egg
 import search
 import store
 import util
@@ -74,12 +70,8 @@ lifetime = 2*7*24*60*60 # seconds
 
 usageText = """Usage:
 
-  expunge dbpath noidurl
+  expunge {dbpath|-}
     dbpath: noid database pathname (.bdb)
-    noidurl: noid service URL corresponding to database
-
-  expunge - noidurl
-    noidurl: noid service URL
 
   expunge dbpath -p [azbocrtke]
     print/debug mode; argument is one or more flags:
@@ -94,11 +86,8 @@ usageText = """Usage:
     e: print _c bindings of expired test identifiers
 """
 
-if len(sys.argv) >= 3 and sys.argv[2] == "-":
-  sys.argv[2] = config.config("DEFAULT.bind_noid")
-if len(sys.argv) == 3 and sys.argv[2].startswith("http://"):
+if len(sys.argv) == 2:
   dbPath = sys.argv[1] if sys.argv[1] != "-" else None
-  bindNoid = noid.Noid(sys.argv[2])
   debug = ""
 elif len(sys.argv) == 4 and sys.argv[2] == "-p" and\
   re.match("[azbocrtke]+$", sys.argv[3]):
@@ -125,10 +114,10 @@ if dbPath:
   entry = cursor.first()
   while entry != None:
     k, v = entry
-    if "\t" not in k:
+    if "|" not in k:
       output("z", k, v)
     else:
-      id, label = k.split("\t", 1)
+      id, label = k.split("|", 1)
       if util.validateArk(id) != id:
         output("z", k, v)
       elif label != "_c" or not re.match("[0-9]+$", v):
@@ -175,8 +164,7 @@ if debug == "":
         doi = shadowedId[id]
         assert doi.startswith("doi:")
         datacite.setTargetUrl(doi[4:], "http://datacite.org/invalidDOI")
-      bindNoid.deleteElements(id)
-      bindNoid.releaseIdentifier(id)
+      noid_egg.deleteIdentifier(id)
       store.delete(id)
       if group[id] != "anonymous":
         if id.startswith(testArkPrefix):
