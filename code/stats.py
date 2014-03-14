@@ -7,7 +7,8 @@
 # The computed statistics consist of a single, multi-dimensional
 # histogram that counts identifiers as categorized across various
 # dimensions.  This module is written to be independent of the actual
-# dimensions, but in fact the dimensions are:
+# dimensions (except for variable _defaultDimensions), but in fact the
+# dimensions are:
 #
 #    name          description
 #    -----------   -----------------------------------------------------
@@ -36,11 +37,13 @@
 import errno
 import os
 import threading
+import time
 
 import config
 import idmap
 import log
 
+_defaultDimensions = ["month", "owner", "group", "type", "hasMetadata"]
 _lock = threading.Lock()
 _statsFile = None
 _statsFileMtime = None
@@ -76,7 +79,7 @@ def _loadStats ():
     # It's OK if the stats file doesn't exist.
     if not (isinstance(e, OSError) and e.errno == errno.ENOENT):
       log.otherError("stats._loadStats", e)
-    _stats = Stats(0, [], {})
+    _stats = Stats(int(time.time()), _defaultDimensions, {})
   finally:
     _lock.release()
 

@@ -155,7 +155,10 @@ def advanced_form_processing(request, d):
         django.contrib.messages.success(request, "Identifier created.")
         return 'created_identifier: ' + new_id
       else:
-        err_msg = re.search(r'^error: .+?- (.+)$', s).group(1)
+        if "-" in s:
+          err_msg = re.search(r'^error: .+?- (.+)$', s).group(1)
+        else:
+          err_msg = re.search(r'^error: (.+)$', s).group(1)
         django.contrib.messages.error(request, "There was an error creating your identifier: "  + err_msg)
         return 'edit_page'
   return 'edit_page'
