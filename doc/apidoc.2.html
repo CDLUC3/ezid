@@ -155,6 +155,7 @@ report problems:</p>
 <li><a class="reference internal" href="#python-example">Python example</a></li>
 <li><a class="reference internal" href="#php-examples">PHP examples</a></li>
 <li><a class="reference internal" href="#perl-examples">Perl examples</a></li>
+<li><a class="reference internal" href="#java-examples">Java examples</a></li>
 <li><a class="reference internal" href="#curl-examples">cURL examples</a></li>
 <li><a class="reference internal" href="#batch-processing">Batch processing</a></li>
 </ul>
@@ -1491,6 +1492,161 @@ $r = $ua-&gt;request(POST &quot;https://ezid.cdlib.org/id/<span class="hl2">iden
   Content =&gt; encode(&quot;UTF-8&quot;, join(&quot;\n&quot;,
     map { escape($_) . &quot;: &quot; . escape($metadata{$_}) } keys %metadata)));
 print $r-&gt;code, $r-&gt;decoded_content unless $r-&gt;is_success;
+</pre>
+</div>
+<div class="section" id="java-examples">
+<h1>Java examples</h1>
+<p>A number of Java code snippets have been presented above.  In the
+example below we combine them all into a runnable, end-to-end program
+that mints a test identifier and then retrieves and prints the
+identifier's metadata.</p>
+<pre class="literal-block">
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+class harness {
+
+    static String SERVER = &quot;https://ezid.cdlib.org&quot;;
+    static String USERNAME = &quot;<span class="hl2">username</span>&quot;;
+    static String PASSWORD = &quot;<span class="hl2">password</span>&quot;;
+
+    static class MyAuthenticator extends Authenticator {
+        protected PasswordAuthentication getPasswordAuthentication () {
+            return new PasswordAuthentication(
+                USERNAME, PASSWORD.toCharArray());
+        }
+    }
+
+    static class Response {
+
+        int responseCode;
+        String status;
+        String statusLineRemainder;
+        HashMap&lt;String, String&gt; metadata;
+
+        public String toString () {
+            StringBuffer b = new StringBuffer();
+            b.append(&quot;responseCode=&quot;);
+            b.append(responseCode);
+            b.append(&quot;\nstatus=&quot;);
+            b.append(status);
+            b.append(&quot;\nstatusLineRemainder=&quot;);
+            b.append(statusLineRemainder);
+            b.append(&quot;\nmetadata&quot;);
+            if (metadata != null) {
+                b.append(&quot; follows\n&quot;);
+                Iterator&lt;Map.Entry&lt;String, String&gt;&gt; i =
+                    metadata.entrySet().iterator();
+                while (i.hasNext()) {
+                    Map.Entry&lt;String, String&gt; e = i.next();
+                    b.append(e.getKey() + &quot;: &quot; + e.getValue() + &quot;\n&quot;);
+                }
+            } else {
+                b.append(&quot;=null\n&quot;);
+            }
+            return b.toString();
+        }
+
+    }
+
+    static String encode (String s) {
+        return s.replace(&quot;%&quot;, &quot;%25&quot;).replace(&quot;\n&quot;, &quot;%0A&quot;).
+            replace(&quot;\r&quot;, &quot;%0D&quot;).replace(&quot;:&quot;, &quot;%3A&quot;);
+    }
+
+    static String toAnvl (HashMap&lt;String, String&gt; metadata) {
+        Iterator&lt;Map.Entry&lt;String, String&gt;&gt; i =
+            metadata.entrySet().iterator();
+        StringBuffer b = new StringBuffer();
+        while (i.hasNext()) {
+            Map.Entry&lt;String, String&gt; e = i.next();
+            b.append(encode(e.getKey()) + &quot;: &quot; +
+                     encode(e.getValue()) + &quot;\n&quot;);
+        }
+        return b.toString();
+    }
+
+    static String decode (String s) {
+        StringBuffer b = new StringBuffer();
+        int i;
+        while ((i = s.indexOf(&quot;%&quot;)) &gt;= 0) {
+            b.append(s.substring(0, i));
+            b.append((char)
+                     Integer.parseInt(s.substring(i+1, i+3), 16));
+            s = s.substring(i+3);
+        }
+        b.append(s);
+        return b.toString();
+    }
+
+    static String[] parseAnvlLine (String line) {
+        String[] kv = line.split(&quot;:&quot;, 2);
+        kv[0] = decode(kv[0]).trim();
+        kv[1] = decode(kv[1]).trim();
+        return kv;
+    }
+
+    static Response issueRequest (
+        String method, String path, HashMap&lt;String, String&gt; metadata)
+        throws Exception {
+        HttpURLConnection c = (HttpURLConnection)
+            (new URL(SERVER + &quot;/&quot; + path)).openConnection();
+        c.setRequestMethod(method);
+        c.setRequestProperty(&quot;Accept&quot;, &quot;text/plain&quot;);
+        if (metadata != null) {
+            c.setDoOutput(true);
+            c.setRequestProperty(&quot;Content-Type&quot;,
+                                 &quot;text/plain; charset=UTF-8&quot;);
+            OutputStreamWriter w =
+                new OutputStreamWriter(c.getOutputStream(), &quot;UTF-8&quot;);
+            w.write(toAnvl(metadata));
+            w.flush();
+        }
+        Response r = new Response();
+        r.responseCode = c.getResponseCode();
+        InputStream is = r.responseCode &lt; 400? c.getInputStream() :
+            c.getErrorStream();
+        if (is != null) {
+            BufferedReader br = new BufferedReader(
+                new InputStreamReader(is, &quot;UTF-8&quot;));
+            String[] kv = parseAnvlLine(br.readLine());
+            r.status = kv[0];
+            r.statusLineRemainder = kv[1];
+            HashMap&lt;String, String&gt; d = new HashMap&lt;String, String&gt;();
+            String l;
+            while ((l = br.readLine()) != null) {
+                kv = parseAnvlLine(l);
+                d.put(kv[0], kv[1]);
+            }
+            if (d.size() &gt; 0) r.metadata = d;
+        }
+        return r;
+    }
+
+    public static void main (String[] args) throws Exception {
+
+        Authenticator.setDefault(new MyAuthenticator());
+
+        // Sample POST request.
+        System.out.println(&quot;Issuing POST request...&quot;);
+        HashMap&lt;String, String&gt; metadata =
+            new HashMap&lt;String, String&gt;();
+        metadata.put(&quot;erc.what&quot;, &quot;a test&quot;);
+        Response r = issueRequest(
+            &quot;POST&quot;, &quot;shoulder/ark:/99999/fk4&quot;, metadata);
+        System.out.print(r);
+
+        // Sample GET request.
+        System.out.println(&quot;\nIssuing GET request...&quot;);
+        String id = r.statusLineRemainder;
+        r = issueRequest(&quot;GET&quot;, &quot;id/&quot; + URLEncoder.encode(id, &quot;UTF-8&quot;),
+                         null);
+        System.out.print(r);
+
+    }
+
+}
 </pre>
 </div>
 <div class="section" id="curl-examples">
