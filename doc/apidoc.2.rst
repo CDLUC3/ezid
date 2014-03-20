@@ -74,7 +74,7 @@ Contents
 - `Python example`_
 - `PHP examples`_
 - `Perl examples`_
-- `Java examples`_
+- `Java example`_
 - `cURL examples`_
 - `Batch processing`_
 
@@ -1381,8 +1381,8 @@ To modify an identifier using values from a hash, `%metadata`:hl1:\ :
       map { escape($_) . ": " . escape($metadata{$_}) } keys %metadata)));
   print $r->code, $r->decoded_content unless $r->is_success;
 
-Java examples
--------------
+Java example
+------------
 
 A number of Java code snippets have been presented above.  In the
 example below we combine them all into a runnable, end-to-end program
