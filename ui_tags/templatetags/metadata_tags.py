@@ -1,5 +1,6 @@
 from django import template
 import re
+from django.conf import settings
 from django.utils.html import escape
 import time
 from decorators import basictag
@@ -22,7 +23,7 @@ def display_formatted(id_dictionary, element):
   """formats the element object according to its display style"""
   if element.displayType == 'datetime':
     t = time.localtime(float(id_dictionary[element.name]))
-    return time.strftime("%m/%d/%Y %I:%M %p", t)
+    return time.strftime(settings.TIME_FORMAT_UI_METADATA, t)
   elif element.displayType == 'url':
     return "<a href='" + id_dictionary[element.name] + "'>" + escape(id_dictionary[element.name]) + "</a>"
   elif element.displayType == 'boolean':
@@ -85,4 +86,3 @@ def _form_value(context, key_name, id_object):
   if key_name in request.REQUEST:
     val = request.REQUEST[key_name]
   return val
-  

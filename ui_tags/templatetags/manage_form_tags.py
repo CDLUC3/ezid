@@ -1,5 +1,5 @@
 from django import template
-#from django.conf import settings
+from django.conf import settings
 from django.utils.html import escape
 from decorators import basictag
 #from django.core.urlresolvers import reverse
@@ -78,18 +78,10 @@ def data_row(record, fields_selected, field_display_types, account_co_owners, te
   return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, account_co_owners, testPrefixes) \
                for f in fields_selected]) + '</td>'
 
-@register.simple_tag
-def latest_modification_string(dictionary):
-  """returns string of latest modification whether it's created or modified date"""
-  if dictionary['createTime'] + 2 < dictionary['updateTime']:
-    return "modified " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']).strftime("%m/%d/%Y %I:%M:%S %p"))
-  else:
-    return "created " + escape(datetime.datetime.fromtimestamp(dictionary['updateTime']).strftime("%m/%d/%Y %I:%M:%S %p"))
-
 FUNCTIONS_FOR_FORMATTING = { \
   'string'         : lambda x, coown, tp: string_value(x), \
   'identifier'     : lambda x, coown, tp: identifier_disp(x, tp), \
-  'datetime'       : lambda x, coown, tp: escape(datetime.datetime.fromtimestamp(x).strftime("%m/%d/%Y %I:%M %p")), \
+  'datetime'       : lambda x, coown, tp: escape(datetime.datetime.fromtimestamp(x).strftime(settings.TIME_FORMAT_UI_METADATA)), \
   'owner_lookup'   : lambda x, coown, tp: id_lookup(x), \
   'coowners'       : lambda x, coown, tp: co_owner_disp(x, coown) }
 
