@@ -4,12 +4,18 @@
 #
 # Interface to the "egg" (binder) portion of noid.
 #
-# Note that metadata elements (both names and values) are stored in
-# noid in encoded form; see util.encode{3,4} and util.decode.
+# A note on encodings.  Identifiers and metadata elements (both names
+# and values) are sent to noid in encoded form; see util.encode{3,4}.
+# Metadata elements received from noid are UTF-8-encoded and utilize
+# percent-encoding.  Though this received encoding does not exactly
+# match the transmitted encoding, the decoding performed by
+# util.decode is nevertheless compatible and so we use it.  (Consider
+# a Python Unicode value u"Greg%Jan\xe9e".  This is sent as
+# "Greg%25Jan%C3%A9e" but received back as "Greg%25Jan\xc3\xa9e",
+# which, when percent- and UTF-8-decoded, yields the original value.)
 #
 # This module assumes that identifiers have already been normalized
-# per util.validateArk.  ARK normalization provides its own encoding;
-# this module does not further encode identifiers.
+# per util.validateArk.
 #
 # This module performs whitespace processing.  Leading and trailing
 # whitespace is stripped from both element names and values.  Empty
@@ -56,10 +62,10 @@ def _issue (method, operations):
     l = []
     for o in operations:
       # o = (identifier, operation [,element [, value]])
-      l.append("@.%s%s" % (o[1], " @"*(len(o)-2)))
-      l.append(o[0])
-      if len(o) > 2: l.append(util.encode4(o[2]))
-      if len(o) > 3: l.append(util.encode3(o[3]))
+      s = ":hx%% %s.%s" % (util.encode4(o[0]), o[1])
+      if len(o) > 2: s += " " + util.encode4(o[2])
+      if len(o) > 3: s += " " + util.encode3(o[3])
+      l.append(s)
     r.add_data("\n".join(l))
   c = None
   try:
