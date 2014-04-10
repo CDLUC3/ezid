@@ -81,7 +81,7 @@ def data_row(record, fields_selected, field_display_types, account_co_owners, te
 FUNCTIONS_FOR_FORMATTING = { \
   'string'         : lambda x, coown, tp: string_value(x), \
   'identifier'     : lambda x, coown, tp: identifier_disp(x, tp), \
-  'datetime'       : lambda x, coown, tp: escape(datetime.datetime.fromtimestamp(x).strftime(settings.TIME_FORMAT_UI_METADATA)), \
+  'datetime'       : lambda x, coown, tp: escape(datetime.datetime.utcfromtimestamp(x).strftime(settings.TIME_FORMAT_UI_METADATA)) + " UTC", \
   'owner_lookup'   : lambda x, coown, tp: id_lookup(x), \
   'coowners'       : lambda x, coown, tp: co_owner_disp(x, coown) }
 
