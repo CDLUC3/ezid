@@ -22,8 +22,8 @@ def display_value(id_dictionary, element):
 def display_formatted(id_dictionary, element):
   """formats the element object according to its display style"""
   if element.displayType == 'datetime':
-    t = time.localtime(float(id_dictionary[element.name]))
-    return time.strftime(settings.TIME_FORMAT_UI_METADATA, t)
+    t = time.gmtime(float(id_dictionary[element.name]))
+    return time.strftime(settings.TIME_FORMAT_UI_METADATA, t) + " UTC"
   elif element.displayType == 'url':
     return "<a href='" + id_dictionary[element.name] + "'>" + escape(id_dictionary[element.name]) + "</a>"
   elif element.displayType == 'boolean':
