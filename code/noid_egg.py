@@ -184,3 +184,16 @@ def ping ():
     return "up"
   except Exception:
     return "down"
+
+_decodePattern = re.compile("\^([0-9a-fA-F][0-9a-fA-F])?")
+
+def _decodeRewriter (m):
+  assert len(m.group(0)) == 3, "circumflex decode error"
+  return chr(int(m.group(0)[1:], 16))
+
+def decodeRaw (s):
+  """
+  Decodes an identifier or metadata element name as stored internally
+  in noid.  Raises AssertionError and UnicodeDecodeError.
+  """
+  return _decodePattern.sub(_decodeRewriter, s).decode("UTF-8")

@@ -82,6 +82,7 @@ django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
 django.conf.settings.DAEMON_THREADS_ENABLED = False
 
 import ezidadmin
+import noid_egg
 import util
 
 labelMapping = {
@@ -138,9 +139,10 @@ def outputRecord1 (id, record):
   outfile.write(id)
   for k in record:
     if options.rawOutput:
-      outfile.write(" %s %s" % (k, record[k]))
+      outfile.write(" %s %s" % (util.encode4(k), util.encode3(record[k])))
     else:
-      outfile.write(" %s %s" % (labelMapping.get(k, k), record[k]))
+      outfile.write(" %s %s" % (util.encode4(labelMapping.get(k, k)),
+        util.encode3(record[k])))
   outfile.write("\n")
 
 def outputRecord (id, record):
@@ -171,9 +173,9 @@ def outputRecord (id, record):
       if options.includeShadowArks: outputRecord1("ark:/" + id, record)
       if su != None: record["_u"] = su
       if st != None: record["_t"] = st
-      s = util.decode(record["_s"])
+      s = record["_s"]
       del record["_s"]
-      record["_shadowedby"] = util.encode3("ark:/" + id)
+      record["_shadowedby"] = "ark:/" + id
       outputRecord1(s, record)
     else:
       outputRecord1("ark:/" + id, record)
@@ -187,16 +189,19 @@ while entry != None:
   k, value = entry
   if "|" in k:
     id, label = k.split("|", 1)
+    id = noid_egg.decodeRaw(id)
+    label = noid_egg.decodeRaw(label)
+    value = value.decode("UTF-8")
     if util.validateArk(id) == id and not label.startswith("__"):
       assert lastId is None or id >= lastId
       if id != lastId:
         if lastId is not None: outputRecord(lastId, record)
         record = {}
       if label in ["_o", "_g"] and options.convertAgents:
-        record[label] = util.encode3(agentMap[util.decode(value)])
+        record[label] = agentMap[value]
       elif label == "_co" and options.convertAgents:
-        record[label] = util.encode3(" ; ".join(agentMap[co.strip()]\
-          for co in util.decode(value).split(";") if len(co.strip()) > 0))
+        record[label] = " ; ".join(agentMap[co.strip()]\
+          for co in value.split(";") if len(co.strip()) > 0)
       else:
         record[label] = value
       lastId = id
