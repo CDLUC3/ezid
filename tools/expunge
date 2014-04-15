@@ -118,15 +118,18 @@ if dbPath:
       output("z", k, v)
     else:
       id, label = k.split("|", 1)
+      id = noid_egg.decodeRaw(id)
+      label = noid_egg.decodeRaw(label)
+      v = v.decode("UTF-8")
       if util.validateArk(id) != id:
         output("z", k, v)
       elif label != "_c" or not re.match("[0-9]+$", v):
         if label == "_s":
-          shadowedId[id] = util.decode(v)
+          shadowedId[id] = v
         elif label == "_is":
-          status[id] = util.decode(v)
+          status[id] = v
         elif label == "_g":
-          group[id] = util.decode(v)
+          group[id] = v
         output("o", k, v)
       elif not id.startswith(testArkPrefix) and\
         not id.startswith(testDoiPrefix):
