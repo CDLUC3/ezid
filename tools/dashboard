@@ -68,6 +68,7 @@ django.conf.settings.PROJECT_ROOT
 django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
 django.conf.settings.DAEMON_THREADS_ENABLED = False
 
+import noid_egg
 import store
 import util
 
@@ -152,6 +153,9 @@ if doCompute:
       k, v = entry
       if "|" in k:
         id, label = k.split("|", 1)
+        id = noid_egg.decodeRaw(id)
+        label = noid_egg.decodeRaw(label)
+        v = v.decode("UTF-8")
         if util.validateArk(id) == id and label == "_c" and\
           re.match("\d+$", v):
           if not id.startswith(testArkPrefix) and\
