@@ -153,6 +153,7 @@ import datacite
 import idmap
 import log
 import noid
+import noid_nog
 import policy
 import search
 import shoulder
@@ -419,7 +420,7 @@ def mintDoi (prefix, user, group, metadata={}):
     if s.minter == "":
       log.badRequest(tid)
       return "error: bad request - no minter for shoulder"
-    shadowArk = noid.Noid(s.minter).mintIdentifier()
+    shadowArk = noid_nog.Minter(s.minter).mintIdentifier()
     doi = util.shadow2doi(shadowArk)
     assert doi.startswith(prefix),\
       "minted DOI does not match requested shoulder"
@@ -547,7 +548,7 @@ def mintArk (prefix, user, group, metadata={}):
     if s.minter == "":
       log.badRequest(tid)
       return "error: bad request - no minter for shoulder"
-    ark = noid.Noid(s.minter).mintIdentifier()
+    ark = noid_nog.Minter(s.minter).mintIdentifier()
     assert ark.startswith(prefix),\
       "minted ARK does not match requested shoulder"
   except Exception, e:

@@ -31,6 +31,7 @@ import ezid
 import idmap
 import log
 import noid
+import noid_nog
 import policy
 import shoulder
 import userauth
@@ -715,7 +716,7 @@ def systemStatus (id=None):
       "name": "Handle System" })
     for s in shoulder.getAll():
       if s.minter != "":
-        probes.append({ "id": _addStatusProbe("noid", s.minter),
+        probes.append({ "id": _addStatusProbe("noid_nog", s.minter),
           "name": "%s (%s) minter" % (s.name, s.key) })
     return probes
   else:
@@ -730,6 +731,8 @@ def systemStatus (id=None):
       return pingLdap()
     elif type == "noid":
       return noid.Noid(url).ping()
+    elif type == "noid_nog":
+      return noid_nog.Minter(url).ping()
     elif type == "datacite":
       return datacite.ping()
     elif type == "handlesystem":
