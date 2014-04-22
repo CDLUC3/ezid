@@ -3,4 +3,7 @@ from common import *
 DEPLOYMENT_LEVEL = "development"
 
 ALLOWED_HOSTS = ["ezid-dev.cdlib.org", "ezid-dev-alt.cdlib.org"]
-LOCALIZATIONS["ezid-dev-alt.cdlib.org"] = ("jisc-edina", ["edina@ed.ac.uk"])
+
+# Select one localization below to be triggered by the alt hostname:
+# LOCALIZATIONS["ezid-dev-alt.cdlib.org"] = ("purdue", ["gjanee@ucop.edu"])
+LOCALIZATIONS["ezid-dev-alt.cdlib.org"] = ("jisc-edina", ["gjanee@ucop.edu"])
