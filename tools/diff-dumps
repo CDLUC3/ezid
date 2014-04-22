@@ -11,11 +11,23 @@
 # If a filename ends with ".gz", the dump is assumed to be
 # gzip-compressed.
 #
+# This script requires an EZID module.  The PYTHONPATH environment
+# variable must include the .../SITE_ROOT/PROJECT_ROOT/code directory;
+# if it doesn't, we attempt to dynamically locate it and add it.
+#
 # Greg Janee <gjanee@ucop.edu>
 # April 2013
 
 import gzip
+import os.path
 import sys
+
+try:
+  import util
+except ImportError:
+  sys.path.append(os.path.join(os.path.split(os.path.split(
+    os.path.abspath(__file__))[0])[0], "code"))
+  import util
 
 if len(sys.argv) != 3:
   sys.stderr.write("Usage: diff-dumps dump1 dump2\n")
@@ -35,7 +47,7 @@ def nextRecord (file):
     l = file.next()
     lv = l[:-1].split(" ")
     d = {}
-    for i in range(1, len(lv), 2): d[lv[i]] = lv[i+1]
+    for i in range(1, len(lv), 2): d[util.decode(lv[i])] = util.decode(lv[i+1])
     return lv[0], d
   except StopIteration:
     return None, None
