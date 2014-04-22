@@ -43,6 +43,7 @@ DATABASES = {
 }
 
 TIME_ZONE = "America/Los_Angeles"
+TIME_FORMAT_UI_METADATA = "%Y-%m-%d %H:%M:%S"
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "static")
 MEDIA_URL = "static/"
