@@ -27,6 +27,9 @@
 # add it.  The DJANGO_SETTINGS_MODULE environment variable must be
 # set; if it isn't, we set it to "settings.production".
 #
+# Interim modification: we account for the fact that identifiers are
+# prefixed with "ark:/" when stored in noid.
+#
 # Greg Janee <gjanee@ucop.edu>
 # April 2011
 
@@ -121,26 +124,28 @@ if dbPath:
       id = noid_egg.decodeRaw(id)
       label = noid_egg.decodeRaw(label)
       v = v.decode("UTF-8")
-      if util.validateArk(id) != id:
+      if not id.startswith("ark:/") or util.validateArk(id[5:]) != id[5:]:
         output("z", k, v)
-      elif label != "_c" or not re.match("[0-9]+$", v):
-        if label == "_s":
-          shadowedId[id] = v
-        elif label == "_is":
-          status[id] = v
-        elif label == "_g":
-          group[id] = v
-        output("o", k, v)
-      elif not id.startswith(testArkPrefix) and\
-        not id.startswith(testDoiPrefix):
-        output("r", k, v)
       else:
-        creationTime = int(v)
-        if int(time.time())-creationTime < lifetime:
-          output("k", k, v)
+        id = id[5:]
+        if label != "_c" or not re.match("[0-9]+$", v):
+          if label == "_s":
+            shadowedId[id] = v
+          elif label == "_is":
+            status[id] = v
+          elif label == "_g":
+            group[id] = v
+          output("o", k, v)
+        elif not id.startswith(testArkPrefix) and\
+          not id.startswith(testDoiPrefix):
+          output("r", k, v)
         else:
-          output("e", k, v)
-          expungeList.append(id)
+          creationTime = int(v)
+          if int(time.time())-creationTime < lifetime:
+            output("k", k, v)
+          else:
+            output("e", k, v)
+            expungeList.append(id)
     entry = cursor.next()
   db.close()
 else:

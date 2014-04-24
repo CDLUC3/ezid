@@ -35,6 +35,9 @@
 # add it.  The DJANGO_SETTINGS_MODULE environment variable must be
 # set; if it isn't, we set it to "settings.production".
 #
+# Interim modification: we account for the fact that identifiers are
+# prefixed with "ark:/" when stored in noid.
+#
 # Greg Janee <gjanee@ucop.edu>
 # November 2011
 
@@ -156,8 +159,9 @@ if doCompute:
         id = noid_egg.decodeRaw(id)
         label = noid_egg.decodeRaw(label)
         v = v.decode("UTF-8")
-        if util.validateArk(id) == id and label == "_c" and\
-          re.match("\d+$", v):
+        if id.startswith("ark:/") and util.validateArk(id[5:]) == id[5:] and\
+          label == "_c" and re.match("\d+$", v):
+          id = id[5:]
           if not id.startswith(testArkPrefix) and\
             not id.startswith(testDoiPrefix):
             month = datetime.date.fromtimestamp(int(v)).replace(day=1)

@@ -51,6 +51,9 @@
 # that LDAP is enabled, and a connection to the LDAP server is
 # required.
 #
+# Interim modification: we account for the fact that identifiers are
+# prefixed with "ark:/" when stored in noid.
+#
 # Greg Janee <gjanee@ucop.edu>
 # December 2011
 
@@ -192,7 +195,9 @@ while entry != None:
     id = noid_egg.decodeRaw(id)
     label = noid_egg.decodeRaw(label)
     value = value.decode("UTF-8")
-    if util.validateArk(id) == id and not label.startswith("__"):
+    if id.startswith("ark:/") and util.validateArk(id[5:]) == id[5:] and\
+      not label.startswith("__"):
+      id = id[5:]
       assert lastId is None or id >= lastId
       if id != lastId:
         if lastId is not None: outputRecord(lastId, record)

@@ -14,6 +14,9 @@
 # "Greg%25Jan%C3%A9e" but received back as "Greg%25Jan\xc3\xa9e",
 # which, when percent- and UTF-8-decoded, yields the original value.)
 #
+# Interim modification: identifiers are prefixed with "ark:/" when
+# stored in noid.
+#
 # This module assumes that identifiers have already been normalized
 # per util.validateArk.
 #
@@ -62,7 +65,7 @@ def _issue (method, operations):
     l = []
     for o in operations:
       # o = (identifier, operation [,element [, value]])
-      s = ":hx%% %s.%s" % (util.encode4(o[0]), o[1])
+      s = ":hx%% ark:/%s.%s" % (util.encode4(o[0]), o[1])
       if len(o) > 2: s += " " + util.encode4(o[2])
       if len(o) > 3: s += " " + util.encode3(o[3])
       l.append(s)
