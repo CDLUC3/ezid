@@ -23,10 +23,11 @@ OpenLDAP <http://www.openldap.org/> and python-ldap
 
 Those are the core prerequisites for running EZID standalone.  But
 EZID is of little value unless there are some other, external servers
-running: a Noid <http://wiki.ucop.edu/display/Curation/NOID> server
-for storing metadata; additional Noid servers for minting identifiers;
-a shoulder server (optional); DataCite services for creating DOI
-identifiers; and an LDAP server, if LDAP authentication is used.
+running: a Noid <http://wiki.ucop.edu/display/Curation/NOID> "egg"
+server for storing metadata; additional Noid "nog" servers for minting
+identifiers; a shoulder server (optional); DataCite services for
+creating DOI identifiers; and an LDAP server, if LDAP authentication
+is used.
 
 General layout and configuration
 ================================

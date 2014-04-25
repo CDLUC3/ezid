@@ -47,8 +47,7 @@ django.conf.settings.PROJECT_ROOT
 django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
 django.conf.settings.DAEMON_THREADS_ENABLED = False
 
-import config
-import noid
+import noid_egg
 import store
 import util
 
@@ -81,10 +80,8 @@ for l in sys.stdin:
       sys.stderr.write(("populate-store-2: unrecognized identifier " +\
         "scheme: %s\n") % id)
 
-bindNoid = noid.Noid(config.config("DEFAULT.bind_noid"))
-
 for id in ids:
-  r = bindNoid.getElements(id)
+  r = noid_egg.getElements(id)
   if r != None:
     store.update(id, r, insertIfNecessary=True)
   else:

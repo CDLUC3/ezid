@@ -205,20 +205,20 @@ def encode2 (s):
   """
   return _encode(_pattern2, s)
 
-_pattern3 = re.compile("[%'\"\\\\]|[^!-~]")
+_pattern3 = re.compile("[%'\"\\\\&@|;()[\\]=]|[^!-~]")
 def encode3 (s):
   """
-  Like encode2, but percent-encodes ('), ("), and (\) as well.  This
-  form of encoding is used for noid arguments other than element
-  names.
+  Like encode2, but percent-encodes ('), ("), (\), (&), (@), (|), (;)
+  ((), ()), ([), (]), and (=) as well.  This form of encoding is used
+  for noid element values.
   """
   return _encode(_pattern3, s)
 
-_pattern4 = re.compile("[%'\"\\\\:]|[^!-~]")
+_pattern4 = re.compile("[%'\"\\\\&@|;()[\\]=:<]|[^!-~]")
 def encode4 (s):
   """
-  Like encode3, but percent-encodes (:) as well.  This form of
-  encoding is used for noid element names.
+  Like encode3, but percent-encodes (:) and (<) as well.  This form of
+  encoding is used for noid identifiers and noid element names.
   """
   return _encode(_pattern4, s)
 

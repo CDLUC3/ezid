@@ -80,16 +80,14 @@ import config
 import datacite
 import ezid
 import ezidadmin
-import noid
+import noid_egg
 import userauth
 
 _adminUsername = None
-_bindNoid = None
 
 def _loadConfig ():
-  global _adminUsername, _bindNoid
+  global _adminUsername
   _adminUsername = config.config("ldap.admin_username")
-  _bindNoid = noid.Noid(config.config("DEFAULT.bind_noid"))
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -271,7 +269,7 @@ def getStatus (request):
       elif ss == "ldap":
         body += "ldap: %s\n" % ezidadmin.pingLdap()
       elif ss == "noid":
-        body += "noid: %s\n" % _bindNoid.ping()
+        body += "noid: %s\n" % noid_egg.ping()
       else:
         return _response("error: bad request - no such subsystem")
   return _response("success: EZID is up", anvlBody=body)
