@@ -4,7 +4,8 @@
 # must both be raw dumps or both be normal dumps, must both use local
 # agent identifiers or both use ARK agent identifiers, etc.  In both
 # files the records must be ordered by identifier, as they are when
-# produced by 'dump' and 'dump-store'.  Usage:
+# produced by 'dump-store'.  (Dump files produced by 'dump' must be
+# sorted first.)  Usage:
 #
 #    diff-dumps dump1 dump2
 #

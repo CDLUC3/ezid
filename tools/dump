@@ -21,6 +21,8 @@
 # Note: the identifier itself is not encoded.  Also, note that empty
 # values are, well, empty, and hence will result in adjacent spaces.
 #
+# Note: identifiers are NOT written in lexicographic order.
+#
 # If the -n option is specified, agent identifier conversion is NOT
 # performed.
 #
@@ -198,7 +200,10 @@ while entry != None:
     if id.startswith("ark:/") and util.validateArk(id[5:]) == id[5:] and\
       not label.startswith("__"):
       id = id[5:]
-      assert lastId is None or id >= lastId
+      # The fundamental assumption of this loop is that bindings
+      # (binding = identifier + "|" + label) are stored in
+      # lexicographic order.  But that doesn't imply that identifiers
+      # themselves are returned in lexicographic order.
       if id != lastId:
         if lastId is not None: outputRecord(lastId, record)
         record = {}
