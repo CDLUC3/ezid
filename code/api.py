@@ -52,10 +52,10 @@
 #   response body: status line, version information
 #
 # Pause the server:
-#   GET /admin/pause?hold={on|off}   [admin authentication required]
+#   GET /admin/pause?op={on|idlewait|off}   [admin authentication required]
 #   request body: empty
-#   response body: status line followed by server status records
-#     streamed back indefinitely
+#   response body: status line; for op=on, followed by server status
+#     records streamed back indefinitely
 #
 # Reload configuration file and clear caches:
 #   POST /admin/reload   [admin authentication required]
@@ -306,9 +306,10 @@ def _statusLineGenerator ():
     activeUsers, waitingUsers, isPaused = ezid.getStatus()
     na = sum(activeUsers.values())
     nw = sum(waitingUsers.values())
-    s = "STATUS activeOperations=%d%s waitingRequests=%d%s\n" %\
-      (na, _formatUserCountList(activeUsers), nw,
-      _formatUserCountList(waitingUsers))
+    s = "STATUS %s activeOperations=%d%s waitingRequests=%d%s\n" %\
+      ("paused" if isPaused else "running",
+      na, _formatUserCountList(activeUsers),
+      nw, _formatUserCountList(waitingUsers))
     yield s.encode("UTF-8")
     time.sleep(3)
 
@@ -325,17 +326,24 @@ def pause (request):
     return _unauthorized()
   elif auth.user[0] != _adminUsername:
     return _unauthorized(False)
-  if "hold" not in request.GET:
-    return _response("error: bad request - no 'hold' parameter")
-  if request.GET["hold"].lower() == "on":
+  if "op" not in request.GET:
+    return _response("error: bad request - no 'op' parameter")
+  if request.GET["op"].lower() == "on":
     ezid.pause(True)
     return django.http.StreamingHttpResponse(_statusLineGenerator(),
       content_type="text/plain; charset=UTF-8")
-  elif request.GET["hold"].lower() == "off":
+  elif request.GET["op"].lower() == "idlewait":
+    ezid.pause(True)
+    while True:
+      activeUsers, waitingUsers, isPaused = ezid.getStatus()
+      if len(activeUsers) == 0: break
+      time.sleep(1)
+    return _response("success: server paused and idle")
+  elif request.GET["op"].lower() == "off":
     ezid.pause(False)
     return _response("success: server unpaused")
   else:
-    return _response("error: bad request - invalid 'hold' parameter")
+    return _response("error: bad request - invalid 'op' parameter")
 
 def reload (request):
   """
