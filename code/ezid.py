@@ -234,29 +234,33 @@ def _releaseIdentifierLock (identifier, user):
 
 def getStatus ():
   """
-  Returns a tuple of two dictionaries.  The first dictionary maps
-  local usernames to the number of operations currently being
-  performed by that user; the sum of the dictionary values is the
-  total number of operations currently being performed.  The second
-  dictionary similarly maps local usernames to numbers of waiting
-  requests.
+  Returns a tuple consisting of two dictionaries and a boolean flag.
+  The first dictionary maps local usernames to the number of
+  operations currently being performed by that user; the sum of the
+  dictionary values is the total number of operations currently being
+  performed.  The second dictionary similarly maps local usernames to
+  numbers of waiting requests.  The boolean flag indicates if the
+  server is currently paused.
   """
   _lock.acquire()
   try:
-    return (_activeUsers.copy(), _waitingUsers.copy())
+    return (_activeUsers.copy(), _waitingUsers.copy(), _paused)
   finally:
     _lock.release()
 
 def pause (newValue):
   """
-  Sets or unsets the paused flag.  If the server is paused, no new
-  identifier locks are granted and all requests are forced to wait.
+  Sets or unsets the paused flag and returns the flag's previous
+  value.  If the server is paused, no new identifier locks are granted
+  and all requests are forced to wait.
   """
   global _paused
   _lock.acquire()
   try:
+    oldValue = _paused
     _paused = newValue
     if not _paused: _lock.notifyAll()
+    return oldValue
   finally:
     _lock.release()
 

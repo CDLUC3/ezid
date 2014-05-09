@@ -711,9 +711,7 @@ def systemStatus (id=None):
     probes.append({ "id": _addStatusProbe("noid_egg", None),
       "name": "Noid \"bind\" database" })
     probes.append({ "id": _addStatusProbe("datacite", None),
-      "name": "DataCite API" })
-    probes.append({ "id": _addStatusProbe("handlesystem", None),
-      "name": "Handle System" })
+      "name": "DataCite API and Handle System" })
     for s in shoulder.getAll():
       if s.minter != "":
         probes.append({ "id": _addStatusProbe("noid_nog", s.minter),
@@ -735,5 +733,3 @@ def systemStatus (id=None):
       return noid_nog.Minter(url).ping()
     elif type == "datacite":
       return datacite.ping()
-    elif type == "handlesystem":
-      return datacite.pingHandleSystem()

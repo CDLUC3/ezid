@@ -44,13 +44,14 @@ def _formatUserCountList (d):
 def _statusDaemon ():
   while _enabled and threading.currentThread().getName() == _threadName:
     try:
-      activeUsers, waitingUsers = ezid.getStatus()
+      activeUsers, waitingUsers, isPaused = ezid.getStatus()
       na = sum(activeUsers.values())
       nw = sum(waitingUsers.values())
       nstc, nstca = store.numConnections()
       nsec, nseca = search.numConnections()
       log.status("pid=%d" % os.getpid(),
         "threads=%d" % threading.activeCount(),
+        "paused" if isPaused else "running",
         "activeOperations=%d%s" % (na, _formatUserCountList(activeUsers)),
         "waitingRequests=%d%s" % (nw, _formatUserCountList(waitingUsers)),
         "activeDataciteOperations=%d" % datacite.numActiveOperations(),
