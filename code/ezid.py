@@ -250,14 +250,17 @@ def getStatus ():
 
 def pause (newValue):
   """
-  Sets or unsets the paused flag.  If the server is paused, no new
-  identifier locks are granted and all requests are forced to wait.
+  Sets or unsets the paused flag and returns the flag's previous
+  value.  If the server is paused, no new identifier locks are granted
+  and all requests are forced to wait.
   """
   global _paused
   _lock.acquire()
   try:
+    oldValue = _paused
     _paused = newValue
     if not _paused: _lock.notifyAll()
+    return oldValue
   finally:
     _lock.release()
 

@@ -355,5 +355,13 @@ def reload (request):
     return _unauthorized()
   elif auth.user[0] != _adminUsername:
     return _unauthorized(False)
-  config.load()
+  try:
+    oldValue = ezid.pause(True)
+    # Wait for the system to become quiescent.
+    while True:
+      if len(ezid.getStatus()[0]) == 0: break
+      time.sleep(1)
+    config.load()
+  finally:
+    ezid.pause(oldValue)
   return _response("success: configuration file reloaded and caches emptied")
