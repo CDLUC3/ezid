@@ -463,7 +463,21 @@ def deactivate (doi):
 
 def ping ():
   """
-  Tests the DataCite API, returning "up" or "down".
+  Tests the DataCite API (as well as the underlying Handle System),
+  returning "up" or "down".
+  """
+  if not _enabled: return "up"
+  try:
+    r = setTargetUrl(_pingDoi, _pingTarget)
+    assert r == None
+  except:
+    return "down"
+  else:
+    return "up"
+
+def pingDataciteOnly ():
+  """
+  Tests the DataCite API (only), returning "up" or "down".
   """
   if not _enabled: return "up"
   # To hide transient network errors, we make multiple attempts.
@@ -488,20 +502,6 @@ def ping ():
     finally:
       _modifyActiveCount(-1)
       if c: c.close()
-
-def pingHandleSystem ():
-  """
-  More deeply tests the DataCite API to determine if the Handle System
-  is operational.  Returns "up" or "down".
-  """
-  if not _enabled: return "up"
-  try:
-    r = setTargetUrl(_pingDoi, _pingTarget)
-    assert r == None
-  except:
-    return "down"
-  else:
-    return "up"
 
 def _removeEncodingDeclaration (record):
   m = _prologRE.match(record)

@@ -260,12 +260,10 @@ def getStatus (request):
   body = ""
   if "subsystems" in request.GET:
     l = request.GET["subsystems"]
-    if l == "*": l = "datacite,handlesystem,ldap,noid"
+    if l == "*": l = "datacite,ldap,noid"
     for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
       if ss == "datacite":
         body += "datacite: %s\n" % datacite.ping()
-      elif ss == "handlesystem":
-        body += "handlesystem: %s\n" % datacite.pingHandleSystem()
       elif ss == "ldap":
         body += "ldap: %s\n" % ezidadmin.pingLdap()
       elif ss == "noid":
