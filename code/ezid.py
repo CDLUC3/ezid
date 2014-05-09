@@ -234,16 +234,17 @@ def _releaseIdentifierLock (identifier, user):
 
 def getStatus ():
   """
-  Returns a tuple of two dictionaries.  The first dictionary maps
-  local usernames to the number of operations currently being
-  performed by that user; the sum of the dictionary values is the
-  total number of operations currently being performed.  The second
-  dictionary similarly maps local usernames to numbers of waiting
-  requests.
+  Returns a tuple consisting of two dictionaries and a boolean flag.
+  The first dictionary maps local usernames to the number of
+  operations currently being performed by that user; the sum of the
+  dictionary values is the total number of operations currently being
+  performed.  The second dictionary similarly maps local usernames to
+  numbers of waiting requests.  The boolean flag indicates if the
+  server is currently paused.
   """
   _lock.acquire()
   try:
-    return (_activeUsers.copy(), _waitingUsers.copy())
+    return (_activeUsers.copy(), _waitingUsers.copy(), _paused)
   finally:
     _lock.release()
 

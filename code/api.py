@@ -303,7 +303,7 @@ def _formatUserCountList (d):
 def _statusLineGenerator ():
   yield "success: server paused\n"
   while True:
-    activeUsers, waitingUsers = ezid.getStatus()
+    activeUsers, waitingUsers, isPaused = ezid.getStatus()
     na = sum(activeUsers.values())
     nw = sum(waitingUsers.values())
     s = "STATUS activeOperations=%d%s waitingRequests=%d%s\n" %\
