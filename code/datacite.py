@@ -39,11 +39,11 @@ _allocators = None
 _stylesheet = None
 _pingDoi = None
 _pingTarget = None
-_numActiveOperations = None
+_numActiveOperations = 0
 
 def _loadConfig ():
   global _enabled, _doiUrl, _metadataUrl, _numAttempts, _allocators
-  global _stylesheet, _pingDoi, _pingTarget, _numActiveOperations
+  global _stylesheet, _pingDoi, _pingTarget
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
@@ -55,11 +55,6 @@ def _loadConfig ():
     django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
   _pingDoi = config.config("datacite.ping_doi")
   _pingTarget = config.config("datacite.ping_target")
-  _lock.acquire()
-  try:
-    _numActiveOperations = 0
-  finally:
-    _lock.release()
 
 _loadConfig()
 config.addLoader(_loadConfig)
