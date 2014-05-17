@@ -52,10 +52,10 @@
 #   response body: status line, version information
 #
 # Pause the server:
-#   GET /admin/pause?op={on|idlewait|off}   [admin authentication required]
+#   GET /admin/pause?op={on|off|idlewait|monitor}   [admin auth required]
 #   request body: empty
-#   response body: status line; for op=on, followed by server status
-#     records streamed back indefinitely
+#   response body: status line followed by, for op=on and op=monitor,
+#     server status records streamed back indefinitely
 #
 # Reload configuration file and clear caches:
 #   POST /admin/reload   [admin authentication required]
@@ -298,8 +298,8 @@ def _formatUserCountList (d):
   else:
     return ""
 
-def _statusLineGenerator ():
-  yield "success: server paused\n"
+def _statusLineGenerator (includeSuccessLine):
+  if includeSuccessLine: yield "success: server paused\n"
   while True:
     activeUsers, waitingUsers, isPaused = ezid.getStatus()
     na = sum(activeUsers.values())
@@ -328,7 +328,7 @@ def pause (request):
     return _response("error: bad request - no 'op' parameter")
   if request.GET["op"].lower() == "on":
     ezid.pause(True)
-    return django.http.StreamingHttpResponse(_statusLineGenerator(),
+    return django.http.StreamingHttpResponse(_statusLineGenerator(True),
       content_type="text/plain; charset=UTF-8")
   elif request.GET["op"].lower() == "idlewait":
     ezid.pause(True)
@@ -340,6 +340,9 @@ def pause (request):
   elif request.GET["op"].lower() == "off":
     ezid.pause(False)
     return _response("success: server unpaused")
+  elif request.GET["op"].lower() == "monitor":
+    return django.http.StreamingHttpResponse(_statusLineGenerator(False),
+      content_type="text/plain; charset=UTF-8")
   else:
     return _response("error: bad request - invalid 'op' parameter")
 

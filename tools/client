@@ -36,7 +36,7 @@
 #     logout
 #     s[tatus] [*|subsystemlist]
 #     V[ersion]
-#     p[ause] {on|idlewait|off}
+#     p[ause] {on|off|idlewait|monitor}
 #     r[eload]
 #
 # In the above, if an element is "@", the subsequent value is treated
@@ -128,7 +128,7 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
     logout
     s[tatus] [*|subsystemlist]
     V[ersion]
-    p[ause] {on|idlewait|off}
+    p[ause] {on|off|idlewait|monitor}
     r[eload]
 """
 
@@ -321,8 +321,8 @@ elif operation == "Version":
   printAnvlResponse(response)
 elif operation == "pause":
   op = args[0]
-  if op.lower() == "on":
-    issueRequest("admin/pause?op=on", "GET", streamOutput=True)
+  if op.lower() in ["on", "monitor"]:
+    issueRequest("admin/pause?op="+op, "GET", streamOutput=True)
   else:
     response = issueRequest("admin/pause?op="+op, "GET")
     printAnvlResponse(response)
