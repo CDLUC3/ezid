@@ -16,6 +16,7 @@ import lxml.etree
 import re
 import sys
 import urllib2
+import xml.sax.saxutils
 
 URL = "https://mds.datacite.org/datacentre"
 CONTACT_NAME = "Greg Janee"
@@ -126,7 +127,7 @@ createTemplate = """<?xml version="1.0"?>
 def createDatacenter (allocator, datacenter, name, prefixes):
   request = urllib2.Request(URL)
   request.add_header("Content-Type", "application/xml; charset=UTF-8")
-  request.add_data(createTemplate % (name,
+  request.add_data(createTemplate % (xml.sax.saxutils.escape(name),
     "".join("  <prefixes><prefix>%s</prefix></prefixes>\n" % p\
     for p in prefixes), allocator, datacenter))
   request.get_method = lambda: "PUT"
