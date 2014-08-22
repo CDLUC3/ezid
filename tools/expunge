@@ -63,7 +63,6 @@ django.conf.settings.DAEMON_THREADS_ENABLED = False
 import config
 import datacite
 import noid_egg
-import search
 import store
 import util
 
@@ -174,14 +173,6 @@ if debug == "":
         datacite.setTargetUrl(doi[4:], "http://datacite.org/invalidDOI")
       noid_egg.deleteIdentifier(id)
       store.delete(id)
-      if group[id] != "anonymous":
-        if id.startswith(testArkPrefix):
-          qid = "ark:/" + id
-        elif id.startswith(testDoiPrefix):
-          qid = shadowedId[id]
-        else:
-          assert False
-        search.delete(qid)
     except Exception:
       sys.stderr.write("expunge: processing %s\n" % id)
       raise

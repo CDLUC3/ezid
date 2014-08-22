@@ -122,8 +122,8 @@ def getVersionInfo ():
   """
   return (_startupVersion, _version)
 
-# Start the newsfeed module's daemon thread by importing the module.
-import newsfeed
-
-# Start the status module's daemon thread by importing the module.
-import status
+# Start daemon threads by importing their modules.
+if django.conf.settings.DAEMON_THREADS_ENABLED:
+  import newsfeed
+  import status
+  import backproc

@@ -66,4 +66,4 @@ for l in gzip.GzipFile(filename=sys.argv[1], mode="r"):
   for i in range(1, len(lv), 2):
     v = util.decode(lv[i+1]).strip()
     if v != "": record[util.decode(lv[i])] = v
-  store.insert(id, record)
+  store.insert(id, record, updateUpdateQueue=False)
