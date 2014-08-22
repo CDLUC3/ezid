@@ -155,7 +155,6 @@ import log
 import noid_egg
 import noid_nog
 import policy
-import search
 import shoulder
 import store
 import util
@@ -522,8 +521,6 @@ def createDoi (doi, user, group, metadata={}):
     noid_egg.setElements(shadowArk, m)
     log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
-    log.progress(tid, "store.insert")
-    if user[0] != "anonymous": search.insert(qdoi, m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -630,8 +627,6 @@ def createArk (ark, user, group, metadata={}):
     noid_egg.setElements(ark, m)
     log.progress(tid, "noid_egg.setElements")
     store.insert(ark, m)
-    log.progress(tid, "store.insert")
-    if user[0] != "anonymous": search.insert(qark, m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -722,8 +717,6 @@ def createUrnUuid (urn, user, group, metadata={}):
     noid_egg.setElements(shadowArk, m)
     log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
-    log.progress(tid, "store.insert")
-    if user[0] != "anonymous": search.insert(qurn, m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -1093,8 +1086,6 @@ def setMetadata (identifier, user, group, metadata):
     log.progress(tid, "noid_egg.setElements")
     m.update(d)
     store.update(ark, m)
-    log.progress(tid, "store.update")
-    if iUser != "anonymous": search.update(m.get("_s", nqidentifier), m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -1176,9 +1167,6 @@ def deleteIdentifier (identifier, user, group):
     noid_egg.deleteIdentifier(ark)
     log.progress(tid, "noid_egg.deleteIdentifier")
     store.delete(ark)
-    log.progress(tid, "store.delete")
-    if m["_o"] != "anonymous":
-      search.delete(m.get("_s", nqidentifier))
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"

@@ -56,7 +56,8 @@ def _statusDaemon ():
         "waitingRequests=%d%s" % (nw, _formatUserCountList(waitingUsers)),
         "activeDataciteOperations=%d" % datacite.numActiveOperations(),
         "active/totalStoreDatabaseConnections=%d/%d" % (nstca, nstc),
-        "active/totalSearchDatabaseConnections=%d/%d" % (nseca, nsec))
+        "active/totalSearchDatabaseConnections=%d/%d" % (nseca, nsec),
+        "updateQueueLength=%d" % store.getUpdateQueueLength())
     except Exception, e:
       log.otherError("status._statusDaemon", e)
     time.sleep(_reportingInterval)
