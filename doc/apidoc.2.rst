@@ -790,6 +790,10 @@ first column indicates the element is modifiable by clients.
                   by exporting it to external indexing and
                   harvesting services.  Must be "yes" or "no";
                   defaults to "yes".
+  \   _datacenter DOIs only.  The DataCite datacenter at which CDL.CDL
+                  the identifier is registered (or will be
+                  registered, in the case of a reserved
+                  identifier).
   === =========== ============================================ ================
 
 Metadata profiles

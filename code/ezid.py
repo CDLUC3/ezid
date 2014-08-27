@@ -119,6 +119,10 @@
 #        |             | indexing and harvesting services.  Always
 #        |             | returned.  For a shadow ARK, applies to both
 #        |             | the shadow ARK and shadowed identifier.
+# _d     | _datacenter | DOIs only.  The DataCite datacenter at which
+#        |             | the identifier is registered, e.g.,
+#        |             | "CDL.DRYAD" (or will be registered, in the
+#        |             | case of a reserved identifier).
 #
 # Element names and values are first UTF-8 encoded, and then
 # non-graphic ASCII characters and a few other reserved characters are
@@ -275,7 +279,8 @@ _labelMapping = {
   "_st": "_target",
   "_p": "_profile",
   "_is": "_status",
-  "_x": "_export"
+  "_x": "_export",
+  "_d": "_datacenter"
 }
 
 def _oneline (s):
@@ -498,8 +503,12 @@ def createDoi (doi, user, group, metadata={}):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
+    s = shoulder.getLongestMatch(qdoi)
+    # Should never happen.
+    assert s is not None, "shoulder not found"
     _softUpdate(m, { "_o": user[1], "_g": group[1], "_c": t, "_u": t,
-      "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qdoi })
+      "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qdoi,
+      "_d": s.datacenter })
     if m.get("_is", "public") == "reserved":
       m["_t1"] = m["_t"]
       m["_st1"] = m["_st"]

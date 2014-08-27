@@ -117,3 +117,11 @@ tooltip:
 <b><u>Allow harvesting/indexing?</u></b><br/>
 Determines if the identifier is publicized by exporting it to external
 indexing and harvesting services.
+
+element: _datacenter
+displayname: Datacenter
+displaytype: text
+tooltip:
+<b><u>Datacenter</u></b><br/>
+The DataCite datacenter at which the identifier is registered (or will
+be registered, in the case of a reserved identifier).
