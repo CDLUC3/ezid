@@ -80,16 +80,14 @@ displayname: Created
 displaytype: datetime
 tooltip:
 <b><u>Created</u></b><br/>
-The date and time the identifier was created in the
-{{django.conf.settings.TIME_ZONE}} time zone.
+The date and time the identifier was created.
 
 element: _updated
 displayname: Last modified
 displaytype: datetime
 tooltip:
 <b><u>Last modified</u></b><br/>
-The date and time the identifier was last modified in the
-{{django.conf.settings.TIME_ZONE}} time zone.
+The date and time the identifier was last modified.
 
 element: _shadowedby
 displayname: Shadow ARK
@@ -119,3 +117,11 @@ tooltip:
 <b><u>Allow harvesting/indexing?</u></b><br/>
 Determines if the identifier is publicized by exporting it to external
 indexing and harvesting services.
+
+element: _datacenter
+displayname: Datacenter
+displaytype: text
+tooltip:
+<b><u>Datacenter</u></b><br/>
+The DataCite datacenter at which the identifier is registered (or will
+be registered, in the case of a reserved identifier).
