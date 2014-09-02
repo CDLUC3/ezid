@@ -1,0 +1,17 @@
+{% for subject in datacite_obj_subjects.subject %}
+                        <div class="multiple">
+                                <div name="/resource/subjects/subject[{{ forloop.counter }}]" class="element">
+                                        <label for="/resource/subjects/subject[{{ forloop.counter }}]" class="element sized">Subject:</label>
+                                        <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]" value="{{ subject }}" class="data sized" />
+                                        <div class="attribute">
+                                                <label for="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" class="attribute sized">Scheme:</label>
+                                                <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" value="{{ subject.attrib.subjectScheme }}" class="data sized" />
+                                        </div>
+                                        <div class="attribute">
+                                                <label for="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" class="attribute sized">Scheme URI:</label>
+                                                <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" value="{{ subject.attrib.schemeURI }}" class="data sized">
+                                        </div>
+                                        <div class="clearboth"></div>
+                                </div>
+                        </div>
+{% endfor %}

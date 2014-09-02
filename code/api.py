@@ -81,6 +81,7 @@ import datacite
 import ezid
 import ezidadmin
 import noid_egg
+import store
 import userauth
 
 _adminUsername = None
@@ -304,10 +305,12 @@ def _statusLineGenerator (includeSuccessLine):
     activeUsers, waitingUsers, isPaused = ezid.getStatus()
     na = sum(activeUsers.values())
     nw = sum(waitingUsers.values())
-    s = "STATUS %s activeOperations=%d%s waitingRequests=%d%s\n" %\
+    ql = store.getUpdateQueueLength()
+    s = ("STATUS %s activeOperations=%d%s waitingRequests=%d%s " +\
+      "updateQueueLength=%d\n") %\
       ("paused" if isPaused else "running",
       na, _formatUserCountList(activeUsers),
-      nw, _formatUserCountList(waitingUsers))
+      nw, _formatUserCountList(waitingUsers), ql)
     yield s.encode("UTF-8")
     time.sleep(3)
 

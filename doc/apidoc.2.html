@@ -875,6 +875,14 @@ harvesting services.  Must be &quot;yes&quot; or &quot;no&quot;;
 defaults to &quot;yes&quot;.</td>
 <td>yes</td>
 </tr>
+<tr><td></td>
+<td>_datacenter</td>
+<td>DOIs only.  The DataCite datacenter at which
+the identifier is registered (or will be
+registered, in the case of a reserved
+identifier).</td>
+<td>CDL.CDL</td>
+</tr>
 </tbody>
 </table>
 </blockquote>
@@ -1068,7 +1076,7 @@ forward slash (&quot;/&quot;), as in:</p>
 </tr>
 </tbody>
 </table>
-<p>As a special case, an entire XML document adhering to the DataCite
+<p>Alternatively, an entire XML document adhering to the DataCite
 Metadata Scheme schema may be bound to the metadata element
 &quot;datacite&quot;.  Care should be taken to escape line terminators and
 percent signs in the document (as is true for all metadata element
@@ -1432,8 +1440,13 @@ if ($r-&gt;is_success) {
   print $r-&gt;code, $r-&gt;decoded_content;
 }
 </pre>
-<p>To create an identifier, supplying initial metadata values from a
-hash, <span class="hl1">%metadata</span>:</p>
+<p>The following example creates an identifier, supplying initial
+metadata values from a hash, <span class="hl1">%metadata</span>.  Note that LWP is
+particular about how https URLs are expressed.  In an LWP request the
+protocol should be included but not a port number
+(&quot;https://ezid.cdlib.org/...&quot;), but conversely when supplying
+credentials the https port number should be included but not a
+protocol (&quot;ezid.cdlib.org:443&quot;).</p>
 <pre class="literal-block">
 use Encode;
 use HTTP::Request::Common;

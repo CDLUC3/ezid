@@ -790,6 +790,10 @@ first column indicates the element is modifiable by clients.
                   by exporting it to external indexing and
                   harvesting services.  Must be "yes" or "no";
                   defaults to "yes".
+  \   _datacenter DOIs only.  The DataCite datacenter at which CDL.CDL
+                  the identifier is registered (or will be
+                  registered, in the case of a reserved
+                  identifier).
   === =========== ============================================ ================
 
 Metadata profiles
@@ -951,7 +955,7 @@ __ `DataCite Metadata Scheme`_
                             - Image/Photograph
    ======================== ===========================================
 
-   As a special case, an entire XML document adhering to the DataCite
+   Alternatively, an entire XML document adhering to the DataCite
    Metadata Scheme schema may be bound to the metadata element
    "datacite".  Care should be taken to escape line terminators and
    percent signs in the document (as is true for all metadata element
@@ -1311,8 +1315,13 @@ hash, `%metadata`:hl1:\ :
     print $r->code, $r->decoded_content;
   }
 
-To create an identifier, supplying initial metadata values from a
-hash, `%metadata`:hl1:\ :
+The following example creates an identifier, supplying initial
+metadata values from a hash, `%metadata`:hl1:.  Note that LWP is
+particular about how https URLs are expressed.  In an LWP request the
+protocol should be included but not a port number
+("\https://ezid.cdlib.org/..."), but conversely when supplying
+credentials the https port number should be included but not a
+protocol ("ezid.cdlib.org:443").
 
 .. parsed-literal::
 

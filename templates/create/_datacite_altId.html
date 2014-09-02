@@ -1,0 +1,13 @@
+{% for altId in datacite_obj_alternateIdentifiers.alternateIdentifier %}
+			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px; background: #ffffff */">
+				<div name="/resource/alternateIdentifiers/alternateIdentifier[{{ forloop.counter }}]" class="element">
+					<label for="/resource/alternateIdentifiers/alternateIdentifier[{{ forloop.counter }}]" class="element sized">Identifier:</label>
+					<input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[{{ forloop.counter }}]" value="{{ altId }}" class="data sized" />
+					<div class="attribute">
+						<label for="/resource/alternateIdentifiers/alternateIdentifier[{{ forloop.counter }}]/@alternateIdentifierType" class="attribute sized">Identifier Type:</label>
+						<input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[{{ forloop.counter }}]/@alternateIdentifierType" value="{{ altId.attrib.alternateIdentifierType }}" class="data sized" />
+					</div>
+				</div>
+				<div class="clearboth"></div>
+			</div>
+{% endfor %}

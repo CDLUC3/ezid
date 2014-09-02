@@ -119,6 +119,10 @@
 #        |             | indexing and harvesting services.  Always
 #        |             | returned.  For a shadow ARK, applies to both
 #        |             | the shadow ARK and shadowed identifier.
+# _d     | _datacenter | DOIs only.  The DataCite datacenter at which
+#        |             | the identifier is registered, e.g.,
+#        |             | "CDL.DRYAD" (or will be registered, in the
+#        |             | case of a reserved identifier).
 #
 # Element names and values are first UTF-8 encoded, and then
 # non-graphic ASCII characters and a few other reserved characters are
@@ -155,7 +159,6 @@ import log
 import noid_egg
 import noid_nog
 import policy
-import search
 import shoulder
 import store
 import util
@@ -276,7 +279,8 @@ _labelMapping = {
   "_st": "_target",
   "_p": "_profile",
   "_is": "_status",
-  "_x": "_export"
+  "_x": "_export",
+  "_d": "_datacenter"
 }
 
 def _oneline (s):
@@ -499,8 +503,12 @@ def createDoi (doi, user, group, metadata={}):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
+    s = shoulder.getLongestMatch(qdoi)
+    # Should never happen.
+    assert s is not None, "shoulder not found"
     _softUpdate(m, { "_o": user[1], "_g": group[1], "_c": t, "_u": t,
-      "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qdoi })
+      "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qdoi,
+      "_d": s.datacenter })
     if m.get("_is", "public") == "reserved":
       m["_t1"] = m["_t"]
       m["_st1"] = m["_st"]
@@ -522,8 +530,6 @@ def createDoi (doi, user, group, metadata={}):
     noid_egg.setElements(shadowArk, m)
     log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
-    log.progress(tid, "store.insert")
-    if user[0] != "anonymous": search.insert(qdoi, m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -630,8 +636,6 @@ def createArk (ark, user, group, metadata={}):
     noid_egg.setElements(ark, m)
     log.progress(tid, "noid_egg.setElements")
     store.insert(ark, m)
-    log.progress(tid, "store.insert")
-    if user[0] != "anonymous": search.insert(qark, m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -722,8 +726,6 @@ def createUrnUuid (urn, user, group, metadata={}):
     noid_egg.setElements(shadowArk, m)
     log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
-    log.progress(tid, "store.insert")
-    if user[0] != "anonymous": search.insert(qurn, m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -1093,8 +1095,6 @@ def setMetadata (identifier, user, group, metadata):
     log.progress(tid, "noid_egg.setElements")
     m.update(d)
     store.update(ark, m)
-    log.progress(tid, "store.update")
-    if iUser != "anonymous": search.update(m.get("_s", nqidentifier), m)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -1176,9 +1176,6 @@ def deleteIdentifier (identifier, user, group):
     noid_egg.deleteIdentifier(ark)
     log.progress(tid, "noid_egg.deleteIdentifier")
     store.delete(ark)
-    log.progress(tid, "store.delete")
-    if m["_o"] != "anonymous":
-      search.delete(m.get("_s", nqidentifier))
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"

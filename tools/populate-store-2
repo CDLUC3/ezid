@@ -83,6 +83,6 @@ for l in sys.stdin:
 for id in ids:
   r = noid_egg.getElements(id)
   if r != None:
-    store.update(id, r, insertIfNecessary=True)
+    store.update(id, r, insertIfNecessary=True, updateUpdateQueue=False)
   else:
-    store.delete(id)
+    store.delete(id, updateUpdateQueue=False)

@@ -1,0 +1,20 @@
+{% for descr in datacite_obj_descriptions.description %}
+			<div class="multiple">
+				<div name="/resource/descriptions/description[{{ forloop.counter }}]" class="element">
+					<label for="/resource/descriptions/description[{{ forloop.counter }}]" class="element sized">Descriptive information:</label>
+					<input type="text" name="/resource/descriptions/description[1]" value="{{ descr }}" class="data sized" />
+					<div class="attribute">
+						<label for="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" class="attribute sized">Type:</label>
+						<select name="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" sendselect="yes" class="choice sized">
+							<option value=""></option>
+							<option value="Abstract"{% if descr.attrib.descriptionType == "Abstract" or descr.attrib.descriptionType == "" %} selected="selected"{% endif %}>Abstract</option>
+							<option value="SeriesInformation"{% if descr.attrib.descriptionType == "SeriesInformation" %} selected="selected"{% endif %}>Series Information</option>
+							<option value="TableOfContents"{% if descr.attrib.descriptionType == "TableOfContents" %} selected="selected"{% endif %}>Table of Contents</option>
+							<option value="Methods"{% if descr.attrib.descriptionType == "Methods" %} selected="selected"{% endif %}>Methods</option>
+							<option value="Other"{% if descr.attrib.descriptionType == "Other" %} selected="selected"{% endif %}>Other</option>
+						</select>
+					</div>
+				</div>
+				<div class="clearboth"></div>
+			</div>
+{% endfor %}

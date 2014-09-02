@@ -1,0 +1,15 @@
+{% for rights in datacite_obj_rightsList.rights %}
+			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px;background:#ffffff */">
+				<div name="/resource/rightsList/rights[{{ forloop.counter }}]" class="element">
+					<label for="/resource/rightsList/rights[{{ forloop.counter }}]" class="element sized">Rights:</label>
+					<input type="text" name="/resource/rightsList/rights[{{ forloop.counter }}]" value="{{ rights }}" class="data sized" />
+					
+					<div class="attribute">
+						<label for="/resource/rightsList/rights[{{ forloop.counter }}]/@rightsURI" class="attribute sized">URI:</label>
+						<input type="text" name="/resource/rightsList/rights[{{ forloop.counter }}]/@rightsURI" value="{{ rights.attrib.rightsURI }}" class="data sized">
+					</div>
+					
+					<div class="clearboth"></div>
+				</div>
+			</div>
+{% endfor %}

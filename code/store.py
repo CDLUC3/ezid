@@ -4,7 +4,7 @@
 #
 # Identifier metadata storage.  The store database serves as a backup
 # for the primary "bind" noid database.  It also supports identifier
-# harvesting.
+# harvesting and background processing.
 #
 # Note that the functions in this module are designed to hide errors
 # from the caller by always returning successfully (but errors are
@@ -242,7 +242,7 @@ def _deblobify (blob):
   for i in range(0, len(v), 2): d[util.decode(v[i])] = util.decode(v[i+1])
   return d
 
-def insert (identifier, metadata):
+def insert (identifier, metadata, updateUpdateQueue=True):
   """
   Inserts an identifier in the store database.  'identifier' should be
   an unqualified ARK identifier, e.g., "13030/foo".  (To insert a
@@ -258,11 +258,15 @@ def insert (identifier, metadata):
     connection, poolId = _getConnection()
     key = _getOwnerKey(metadata["_o"], connection)
     updateTime = int(metadata["_su"] if "_su" in metadata else metadata["_u"])
+    blob = _blobify(metadata)
     c = connection.cursor()
     begun = _begin(c)
     _execute(c, "INSERT INTO identifier (identifier, ownerKey, updateTime, " +\
       "metadata) VALUES (?, ?, ?, ?)",
-      (identifier, key, updateTime, buffer(_blobify(metadata))))
+      (identifier, key, updateTime, buffer(blob)))
+    if updateUpdateQueue:
+      _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
+        "operation) VALUES (NULL, ?, ?, 0)", (identifier, buffer(blob)))
     _commit(c)
   except Exception, e:
     log.otherError("store.insert", e)
@@ -273,7 +277,8 @@ def insert (identifier, metadata):
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def update (identifier, metadata, insertIfNecessary=False):
+def update (identifier, metadata, insertIfNecessary=False,
+  updateUpdateQueue=True):
   """
   Updates an identifier in the store database.  If 'insertIfNecessary'
   is true, the identifier is inserted if not already in the database.
@@ -291,6 +296,7 @@ def update (identifier, metadata, insertIfNecessary=False):
     connection, poolId = _getConnection()
     key = _getOwnerKey(metadata["_o"], connection)
     updateTime = int(metadata["_su"] if "_su" in metadata else metadata["_u"])
+    blob = _blobify(metadata)
     c = connection.cursor()
     begun = _begin(c)
     # N.B.: A race condition can't occur here thanks to the global
@@ -304,11 +310,15 @@ def update (identifier, metadata, insertIfNecessary=False):
     if doInsert:
       _execute(c, "INSERT INTO identifier (identifier, ownerKey, " +\
         "updateTime, metadata) VALUES (?, ?, ?, ?)",
-        (identifier, key, updateTime, buffer(_blobify(metadata))))
+        (identifier, key, updateTime, buffer(blob)))
     else:
       _execute(c, "UPDATE identifier SET ownerKey = ?, updateTime = ?, " +\
         "metadata = ? WHERE identifier = ?",
-        (key, updateTime, buffer(_blobify(metadata)), identifier))
+        (key, updateTime, buffer(blob), identifier))
+    if updateUpdateQueue:
+      _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
+        "operation) VALUES (NULL, ?, ?, ?)",
+        (identifier, buffer(blob), 0 if doInsert else 1))
     _commit(c)
   except Exception, e:
     log.otherError("store.update", e)
@@ -429,7 +439,7 @@ def harvest (owner=None, since=None, start=None, maximum=None):
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def delete (identifier):
+def delete (identifier, updateUpdateQueue=True):
   """
   Deletes an identifier from the store database.  'identifier' should
   be an unqualified ARK identifier, e.g., "13030/foo".  (To delete a
@@ -443,10 +453,102 @@ def delete (identifier):
     connection, poolId = _getConnection()
     c = connection.cursor()
     begun = _begin(c)
-    _execute(c, "DELETE FROM identifier WHERE identifier = ?", (identifier,))
+    _execute(c, "SELECT metadata FROM identifier WHERE identifier = ?",
+      (identifier,))
+    r = c.fetchall()
+    if len(r) > 0:
+      blob = r[0][0]
+      _execute(c, "DELETE FROM identifier WHERE identifier = ?", (identifier,))
+      if updateUpdateQueue:
+        _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
+          "operation) VALUES (NULL, ?, ?, 2)",
+          (identifier, buffer(blob)))
     _commit(c)
   except Exception, e:
     log.otherError("store.delete", e)
+    tainted = True
+    if begun: _rollback(c)
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
+
+def _operationCodeToString (code):
+  if code == 0:
+    return "create"
+  elif code == 1:
+    return "modify"
+  elif code == 2:
+    return "delete"
+  else:
+    assert False, "unrecognized operation code"
+
+def getUpdateQueue ():
+  """
+  Returns the update queue as a list of (sequence number, identifier,
+  metadata, operation) tuples.  The list is in sequence order.  In all
+  cases 'identifier' is an unqualified ARK identifier, e.g.,
+  "13030/foo".  'metadata' is a dictionary of element (name, value)
+  pairs.  'operation' is one of the strings "create", "modify", or
+  "delete".
+  """
+  connection = None
+  tainted = False
+  c = None
+  try:
+    connection, poolId = _getConnection()
+    c = connection.cursor()
+    _execute(c, "SELECT seq, identifier, metadata, operation FROM " +\
+      "updateQueue ORDER BY seq")
+    return [(r[0], r[1], _deblobify(r[2]), _operationCodeToString(r[3]))\
+      for r in c.fetchall()]
+  except Exception, e:
+    log.otherError("store.getUpdateQueue", e)
+    tainted = True
+    return []
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
+
+def getUpdateQueueLength ():
+  """
+  Returns the length of the update queue.
+  """
+  connection = None
+  tainted = False
+  c = None
+  try:
+    connection, poolId = _getConnection()
+    c = connection.cursor()
+    _execute(c, "SELECT COUNT(*) FROM updateQueue")
+    return c.fetchone()[0]
+  except Exception, e:
+    log.otherError("store.getUpdateQueueLength", e)
+    tainted = True
+    return 0
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
+
+def deleteFromUpdateQueue (seq):
+  """
+  Deletes an entry from the update queue.  The entry is identified by
+  sequence number.
+  """
+  connection = None
+  tainted = False
+  c = None
+  begun = False
+  try:
+    connection, poolId = _getConnection()
+    c = connection.cursor()
+    begun = _begin(c)
+    _execute(c, "DELETE FROM updateQueue WHERE seq = ?", (seq,))
+    _commit(c)
+  except Exception, e:
+    log.otherError("store.deleteFromUpdateQueue", e)
     tainted = True
     if begun: _rollback(c)
   finally:
