@@ -7,7 +7,8 @@
   <div class="grid_9">
     <h1>Create Identifier</h1>
     <form id="create_form" action="{% url "ui_create.advanced" %}" method="post">
-      
+      <input name="action" id="action"  type="hidden" value="create"/>      
+
       {% include "includes/simple_id_type.html" %}
       
       {% include "includes/advanced_remainder.html" %}

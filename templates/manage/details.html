@@ -66,17 +66,11 @@
 	    	{% endfor %}
 	    {% endif %}
 	  </table>
-	  
-	  {% if datacite_html %}
-	  	<style type="text/css">
-	  		tr.dcms_identifier { display: none;}
-	  	</style>
-	  	{% autoescape off %}
-	  		{{datacite_html}}
-	  	{% endautoescape %}
-	  	<a href="/manage/datacite_xml/{{ id_text }}" target="_blank" style="position:relative;top:-10px;">See the DataCite XML Metadata record in a new window</a>
-	  {% endif %}
-	  
+
+	  {% if has_block_data and datacite_obj %}
+	    {% include "includes/details_datacite.html" %}  
+	  {% endif %} 
+	 
 	{% if allow_update %}
   	<form action="{% url "ui_manage.edit" id_text %}" method="get">
   		<table style="margin-top:7px;">
@@ -84,13 +78,7 @@
 	  			<td class="label_col">&nbsp;</td>
 	  			<td>
 		    		<input type="submit" value="Edit"
-		    			{% if has_block_data %}
-		    				disabled="disabled"
-		    			{% endif %}
 		    	 	/>
-		    	 	{% if has_block_data %}
-		    	 		{% help_icon "disabled_edit_help" %}
-		    	 	{% endif %}
 		    	</td>
 	    	</tr>
     	</table>
@@ -158,6 +146,7 @@
   	{% if not has_block_data and current_profile.name == 'datacite' %}
 			<h2 style="margin-top: 2em;">Citation Preview</h2>
 		  {% get_dict_value identifier "datacite.creator" %}
+		  {% get_dict_value identifier "datacite.creator[0]" %}
 		  ({% get_dict_value identifier "datacite.publicationyear" %}):
 		  {% get_dict_value identifier "datacite.title" %}.
 		  {% get_dict_value identifier "datacite.version" %}

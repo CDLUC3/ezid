@@ -8,6 +8,8 @@ import urllib
 import re
 import datacite_xml
 import policy
+import os.path
+from lxml import objectify
 
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
@@ -100,6 +102,15 @@ def advanced_form_processing(request, d):
     if request.REQUEST['current_profile'] in uic.manual_profiles:
       d['manual_profile'] = True
       d['current_profile_name'] = request.REQUEST['current_profile']
+      f = open(os.path.join(
+        django.conf.settings.PROJECT_ROOT, "static", "datacite_emptyRecord.xml"))
+      obj = objectify.parse(f).getroot()
+      f.close()
+      if obj:
+        d['datacite_obj'] = obj
+      else:
+        django.contrib.messages.error(request, "Unable to render empty datacite form using "\
+          "file: " + er)
       d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
       d['current_profile'] = d['current_profile_name']
     else: 
@@ -118,7 +129,7 @@ def advanced_form_processing(request, d):
   profs = [(p.name, p.displayName, ) for p in d['profiles']] + uic.manual_profiles.items()
   d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
   d['profile_names'].remove(('datacite', 'DataCite')) #not shown in advanced.
-  
+ 
   if request.method == "POST":
     if "current_profile" not in request.POST or "shoulder" not in request.POST: return 'bad_request'
     pre_list = [p['prefix'] for p in d['prefixes']]
@@ -126,17 +137,9 @@ def advanced_form_processing(request, d):
       django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
       return 'edit_page'
     if uic.validate_advanced_metadata_form(request, d['current_profile']):
-      """ # no more manual profiles here for processing.
-      if d['manual_profile']:
-        methods = {'datacite_xml': datacite_xml.generate_xml}
-        return_val = methods[d['current_profile_name']](request.POST)
-        to_write = \
-        { "_profile": "datacite", 
-          '_target' : uic.fix_target(request.POST['_target']),
-          "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
-          "_export": ("yes" if request.POST["export"] == "yes" else "no"),
-          "datacite": return_val }
-      else:
+      """ # For advanced DOI's, this is handled via _datacite_xml.html
+            template by ui_demo.ajax_advanced
+          No more manual profiles here for processing.
       """
       to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
         { '_target' : uic.fix_target(request.POST['_target']),

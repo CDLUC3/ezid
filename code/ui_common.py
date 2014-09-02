@@ -268,8 +268,8 @@ def validate_advanced_top(request):
     err_msgs.append("You must enter a location (URL) for your identifier") 
   if not(url_is_valid(post['_target'])):
     err_msgs.append("Please enter a valid location (URL)")
-  if post['remainder'] != '' and post['remainder'] != remainder_box_default and \
-      (' ' in post['remainder']):
+  if post['action'] == 'create' and \
+      post['remainder'] != remainder_box_default and (' ' in post['remainder']):
     err_msgs.append("The remainder you entered is not valid.")     
   if "datacite.resourcetype" in post:
     rt = post["datacite.resourcetype"].strip()
@@ -279,7 +279,8 @@ def validate_advanced_top(request):
   
 def validate_advanced_metadata_form(request, profile):
   """validates an advanced metadata form, profile is more or less irrelevant for now,
-  but may be useful later"""
+  but may be useful later
+  Advanced Datacite DOI XML Blobs validation is done in ui_demo.ajax_advanced"""
   err_msgs = validate_advanced_top(request)
   if len(err_msgs) > 0: #add any error messages to the request from top part
     is_valid = False

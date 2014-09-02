@@ -7,7 +7,7 @@ from operator import itemgetter
 import django.template
 import urllib
 import re
-#import pdb
+from lxml import etree, objectify
 #import datetime
 
 register = template.Library()
@@ -266,6 +266,73 @@ class FormatRoundedBordersNode(template.Node):
         <div class="roundboxpad">
     %(content)s
     </div></div>""" % {'content':content,}
-    
 
-  
+
+''' -------------------------------------------------------------------
+For editing (and creating) DataCite advanced DOI elements: If object representing
+XML blob does not have element we're looking for, load an empty one
+    -------------------------------------------------------------------'''    
+@register.inclusion_tag('create/_datacite_description.html')
+def datacite_get_descriptions(datacite_obj, datacite_obj_empty):
+  # import pdb; pdb.set_trace()
+  if hasattr(datacite_obj, 'descriptions'):
+    datacite_obj_descriptions = datacite_obj.descriptions
+  else:
+    datacite_obj_descriptions = datacite_obj_empty.descriptions
+  return {'datacite_obj_descriptions': datacite_obj_descriptions}
+
+@register.inclusion_tag('create/_datacite_subject.html')
+def datacite_get_subjects(datacite_obj, datacite_obj_empty):
+  if hasattr(datacite_obj, 'subjects'):
+    datacite_obj_subjects = datacite_obj.subjects
+  else:
+    datacite_obj_subjects = datacite_obj_empty.subjects
+  return {'datacite_obj_subjects': datacite_obj_subjects}
+
+@register.inclusion_tag('create/_datacite_contributor.html')
+def datacite_get_contributors(datacite_obj, datacite_obj_empty):
+    if hasattr(datacite_obj, 'contributors'):
+        datacite_obj_contributors = datacite_obj.contributors
+    else:
+        datacite_obj_contributors = datacite_obj_empty.contributors
+    return {'datacite_obj_contributors': datacite_obj_contributors}
+
+@register.inclusion_tag('create/_datacite_date.html')
+def datacite_get_dates(datacite_obj, datacite_obj_empty):
+    if hasattr(datacite_obj, 'dates'):
+        datacite_obj_dates = datacite_obj.dates
+    else:
+        datacite_obj_dates = datacite_obj_empty.dates
+    return {'datacite_obj_dates': datacite_obj_dates}
+
+@register.inclusion_tag('create/_datacite_altId.html')
+def datacite_get_altIds(datacite_obj, datacite_obj_empty):
+    if hasattr(datacite_obj, 'alternateIdentifiers'):
+        datacite_obj_alternateIdentifiers = datacite_obj.alternateIdentifiers
+    else:
+        datacite_obj_alternateIdentifiers = datacite_obj_empty.alternateIdentifiers
+    return {'datacite_obj_alternateIdentifiers': datacite_obj_alternateIdentifiers}
+
+@register.inclusion_tag('create/_datacite_relId.html')
+def datacite_get_relIds(datacite_obj, datacite_obj_empty):
+    if hasattr(datacite_obj, 'relatedIdentifiers'):
+        datacite_obj_relatedIdentifiers = datacite_obj.relatedIdentifiers
+    else:
+        datacite_obj_relatedIdentifiers = datacite_obj_empty.relatedIdentifiers
+    return {'datacite_obj_relatedIdentifiers': datacite_obj_relatedIdentifiers}
+
+@register.inclusion_tag('create/_datacite_rights.html')
+def datacite_get_rights(datacite_obj, datacite_obj_empty):
+    if hasattr(datacite_obj, 'rightsList'):
+        datacite_obj_rightsList = datacite_obj.rightsList
+    else:
+        datacite_obj_rightsList = datacite_obj_empty.rightsList
+    return {'datacite_obj_rightsList': datacite_obj_rightsList}
+
+@register.inclusion_tag('create/_datacite_geoLoc.html')
+def datacite_get_geoLoc(datacite_obj, datacite_obj_empty):
+    if hasattr(datacite_obj, 'geoLocations'):
+        datacite_obj_geoLocations = datacite_obj.geoLocations
+    else:
+        datacite_obj_geoLocations = datacite_obj_empty.geoLocations
+    return {'datacite_obj_geoLocations': datacite_obj_geoLocations}

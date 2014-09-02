@@ -102,3 +102,4 @@ STANDALONE = False
 SSL = True
 DAEMON_THREADS_ENABLED = True
 LOCALIZATIONS = { "default": ("cdl", ["ezid@ucop.edu"]) }
+# LOCALIZATIONS = { "default": ("cdl", ["andy.mardesich@ucop.edu"]) }

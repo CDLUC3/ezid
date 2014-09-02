@@ -11,6 +11,8 @@ import erc
 import datacite
 import urllib
 import time
+import os.path
+from lxml import etree, objectify
 
 
 # these are layout properties for the fields in the manage index page,
@@ -109,9 +111,9 @@ def edit(request, identifier):
     django.contrib.messages.error(request, "You are not allowed to edit this identifier")
     return redirect("/id/" + urllib.quote(identifier, ":/"))
   s, m = r
-  if uic.identifier_has_block_data(m):
-    django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
-    return redirect("/id/" + urllib.quote(identifier, ":/"))
+  # if uic.identifier_has_block_data(m):
+  #  django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
+  #  return redirect("/id/" + urllib.quote(identifier, ":/"))
   t_stat = [x.strip() for x in m['_status'].split("|", 1)]
   d['pub_status'] = t_stat[0]
   d['orig_status'] = t_stat[0]
@@ -121,6 +123,7 @@ def edit(request, identifier):
   d['export'] = m['_export'] if '_export' in m else 'yes'
   d['id_text'] = s.split()[1]
   d['identifier'] = m # identifier object containing metadata
+  d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
   d['internal_profile'] = metadata.getProfile('internal')
   if request.method == "POST":
     d['pub_status'] = (request.POST['_status'] if '_status' in request.POST else d['pub_status'])
@@ -152,6 +155,21 @@ def edit(request, identifier):
       d['current_profile'] = metadata.getProfile(m['_profile'])
     else:
       d['current_profile'] = metadata.getProfile('dc')
+    if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
+      d['current_profile'] = 'datacite_xml'
+      datacite_obj = objectify.fromstring(d['identifier']["datacite"])
+      if datacite_obj:
+        d['datacite_obj'] = datacite_obj 
+        d['manual_profile'] = True
+        d['manual_template'] = 'create/_datacite_xml.html'
+        ''' Also feed in a whole, empty XML record so that elements can be properly
+            displayed in form fields on manage/edit page ''' 
+        f = open(os.path.join(
+            django.conf.settings.PROJECT_ROOT, "static", "datacite_emptyRecord.xml"))
+        d['datacite_obj_empty'] = objectify.parse(f).getroot()
+        f.close()
+      else:
+        d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
   d['profiles'] = metadata.getProfiles()[1:]
   return uic.render(request, "manage/edit", d)
 
@@ -201,9 +219,9 @@ def details(request):
   if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
     d['erc_block_list'] = _formatErcBlock(d['identifier']['erc'])
   elif d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
-    r = datacite.dcmsRecordToHtml(d['identifier']["datacite"])
+    r = objectify.fromstring(d['identifier']["datacite"])
     if r:
-      d['datacite_html'] = r
+      d['datacite_obj'] = r
     else:
       d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
   t_stat = [x.strip() for x in d['identifier']['_status'].split("|", 1)]

@@ -28,8 +28,6 @@ def generate_xml(param_items):
                        u' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + \
                        u' xsi:schemaLocation="http://datacite.org/schema/kernel-3' + \
                        u' http://schema.datacite.org/meta/kernel-3/metadata.xsd"/>')
-  
-  id_type = _id_type(param_items[u'shoulder'])
 
   items = [x for x in param_items.items() if x[0].startswith(u"/resource") ]
   RESOURCE_ORDER = [u"/resource/" + x for x in [u'creators', u'titles', u'publisher', u'publicationYear', u'subjects', 
@@ -41,6 +39,11 @@ def generate_xml(param_items):
   items = sorted(items, key=lambda i: RESOURCE_ORDER.
                  index(re.search('^/resource/[a-zA-Z0-9\[\]]+', i[0]).group())) #sort in preferred order of sections
 
+  if (param_items['action'] and param_items['action'] == 'create'):
+    id_type = _id_type(param_items[u'shoulder'])
+  else:
+    _create_xml_element(r, u'/resource/identifier', param_items[u'identifier']) 
+    id_type = _id_type(param_items[u'identifier'])
   _create_xml_element(r, u'/resource/identifier/@identifierType', id_type) #must create empty element and specify type to mint
   
   for k, v in items:
