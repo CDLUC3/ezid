@@ -280,7 +280,7 @@ def validate_advanced_top(request):
 def validate_advanced_metadata_form(request, profile):
   """validates an advanced metadata form, profile is more or less irrelevant for now,
   but may be useful later
-  Advanced Datacite DOI XML Blobs validation is done in ui_demo.ajax_advanced"""
+  Advanced Datacite DOI XML Blobs validation is done in ui_create.ajax_advanced"""
   err_msgs = validate_advanced_top(request)
   if len(err_msgs) > 0: #add any error messages to the request from top part
     is_valid = False

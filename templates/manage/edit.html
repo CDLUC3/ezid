@@ -64,8 +64,8 @@
         <div class="field_right">
           {% display_form_element e identifier %}
           {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
-						{% datacite_field_help_icon e.name %}
-  				{% endif %}
+		{% datacite_field_help_icon e.name %}
+  	  {% endif %}
         </div>        
         {% endfor %}
       {% endif %}
@@ -174,10 +174,10 @@
   </div>
   
   <script type="text/javascript">
-    // submit form when profile changed
-    $("#current_profile").bind("change", function(event){
-      $("#edit_form").submit();
-    });
+        // submit form when profile changed
+          $("#current_profile").bind("change", function(event){
+            $("#edit_form").submit();
+          });
     function setHidden(){
     	if ($('#_status_unavailable').is(':checked')) {
    			// unavailable

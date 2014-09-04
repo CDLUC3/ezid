@@ -2,7 +2,7 @@
 			<div class="multiple">
 				<div name="/resource/descriptions/description[{{ forloop.counter }}]" class="element">
 					<label for="/resource/descriptions/description[{{ forloop.counter }}]" class="element sized">Descriptive information:</label>
-					<input type="text" name="/resource/descriptions/description[1]" value="{{ descr }}" class="data sized" />
+					<input type="text" name="/resource/descriptions/description[{{ forloop.counter }}]" value="{{ descr }}" class="data sized" />
 					<div class="attribute">
 						<label for="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" class="attribute sized">Type:</label>
 						<select name="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" sendselect="yes" class="choice sized">

@@ -125,6 +125,7 @@ def edit(request, identifier):
   d['identifier'] = m # identifier object containing metadata
   d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
   d['internal_profile'] = metadata.getProfile('internal')
+  d['profiles'] = metadata.getProfiles()[1:]
   if request.method == "POST":
     d['pub_status'] = (request.POST['_status'] if '_status' in request.POST else d['pub_status'])
     d['stat_reason'] = (request.POST['stat_reason'] if 'stat_reason' in request.POST else d['stat_reasons'])
@@ -147,7 +148,6 @@ def edit(request, identifier):
           return redirect("/id/" + urllib.quote(identifier, ":/"))
         else:
           d['current_profile'] = metadata.getProfile(m['_profile'])
-          d['profiles'] = metadata.getProfiles()[1:]
           django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
           return uic.render(request, "manage/edit", d)
   elif request.method == "GET":
@@ -157,6 +157,10 @@ def edit(request, identifier):
       d['current_profile'] = metadata.getProfile('dc')
     if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
       d['current_profile'] = 'datacite_xml'
+      # [TODO: Enhance advanced DOI ERC profile to allow for elements ERC + datacite.publisher or 
+      #    ERC + dc.publisher.] For now, just hide this profile. 
+      if d['id_text'].startswith("doi:"):
+        d['profiles'][:] = [x for x in d['profiles'] if not x.name == 'erc']
       datacite_obj = objectify.fromstring(d['identifier']["datacite"])
       if datacite_obj:
         d['datacite_obj'] = datacite_obj 
@@ -170,7 +174,6 @@ def edit(request, identifier):
         f.close()
       else:
         d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
-  d['profiles'] = metadata.getProfiles()[1:]
   return uic.render(request, "manage/edit", d)
 
 def _formatErcBlock (block):

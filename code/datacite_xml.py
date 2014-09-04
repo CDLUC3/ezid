@@ -30,9 +30,11 @@ def generate_xml(param_items):
                        u' http://schema.datacite.org/meta/kernel-3/metadata.xsd"/>')
 
   items = [x for x in param_items.items() if x[0].startswith(u"/resource") ]
-  RESOURCE_ORDER = [u"/resource/" + x for x in [u'creators', u'titles', u'publisher', u'publicationYear', u'subjects', 
-                    u'contributors', u'dates', u'resourceType', u'alternateIdentifiers',
-                    u'relatedIdentifiers', u'rightsList', u'descriptions', u'geoLocations'] ]
+  RESOURCE_ORDER = [u"/resource/" + x for x in [u'creators', u'titles', u'publisher', 
+                    u'publicationYear', u'language', u'version', u'subjects', 
+                    u'contributors', u'formats', u'dates', u'resourceType', u'alternateIdentifiers',
+                    u'relatedIdentifiers', u'rightsList', u'descriptions', u'geoLocations',
+                    u'sizes'] ]
   items = sorted(items, key=lambda i: i[0]) #sort by element name of params
   #sort by ordinal(s) in string, this may not work all complex cases but should work for datacite
   items = sorted(items, key=lambda i: _sort_get_ordinal(i[0])) #sort by ordinal

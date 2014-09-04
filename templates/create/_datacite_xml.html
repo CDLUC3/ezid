@@ -82,6 +82,26 @@
 		<input type="text" name="/resource/publicationYear" value="{{ datacite_obj.publicationYear }}" class="data sizedsmall1"> {% help_icon "dcxml_publication_year_help" %}
 		<div class="clearboth"></div>
 	</div>
+
+{% if datacite_obj.language %}
+	<div class="optional">
+		<div name="/resource/language" class="element">
+			<label for="/resource/language" class="element sized1 smallertext">Language:</label>
+			<input type="text" name="/resource/language" value="{{ datacite_obj.language }}" class="data sized1"> {% help_icon "dcxml_language_help" %}
+			<div class="clearboth"></div>
+		</div>
+	</div>
+{% endif %}
+
+{% if datacite_obj.version %}
+	<div class="optional">
+		<div name="/resource/version" class="element">
+			<label for="/resource/version" class="element sized1 smallertext">Version:</label>
+			<input type="text" name="/resource/version" value="{{ datacite_obj.version }}" class="data sized1"> {% help_icon "dcxml_version_help" %}
+			<div class="clearboth"></div>
+		</div>
+	</div>
+{% endif %}
 	<div class="optional">
 		<div name="/resource/resourceType" class="element">
 			<div name="/resource/resourceType" class="element">
@@ -140,6 +160,25 @@
 		{% datacite_get_contributors datacite_obj datacite_obj_empty %}
 		</div>
 	</div>
+{% if datacite_obj.formats.format %}
+	<div class="optional">
+		<div name="/resource/formats" class="element container">
+			<label for="/resource/formats" class="element">Format:</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/formats" nbelmtsadded="{% if datacite_obj.formats.format|length < "1" %}1{% else %}{{ datacite_obj.formats.format|length }}{% endif %}" class="addButton">
+			<input type="button" value="-" name="/resource/formats" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_formats_help" %}</div>
+{% for format in datacite_obj.formats.format %}
+			<div class="multiple">
+				<div name="/resource/formats/format[{{ forloop.counter }}]" class="element">
+					<label for="/resource/formats/format[{{ forloop.counter }}]" class="element sized">Format:</label>
+					<input type="text" name="/resource/formats/format[{{ forloop.counter }}]" value="{{ format }}" class="data sized" />
+				</div>
+			</div>
+			<div class="clearboth"></div>
+{% endfor %}
+		</div>
+	</div>
+{% endif %}
 	<div class="optional">
 		<div name="/resource/dates" class="element container">
 			<label for="/resource/dates" class="element">Date</label>
@@ -188,6 +227,25 @@
 		{% datacite_get_geoLoc datacite_obj datacite_obj_empty %}
 		</div>
 	</div>
+{% if datacite_obj.sizes.size %}
+	<div class="optional">
+		<div name="/resource/sizes" class="element container">
+			<label for="/resource/sizes" class="element">Size:</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/sizes" nbelmtsadded="{% if datacite_obj.sizes.size|length < "1" %}1{% else %}{{ datacite_obj.sizes.size|length }}{% endif %}" class="addButton">
+			<input type="button" value="-" name="/resource/sizes" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_sizes_help" %}</div>
+	{% for size in datacite_obj.sizes.size %}
+			<div class="multiple">
+				<div name="/resource/sizes/size[{{ forloop.counter }}]" class="element">
+					<label for="/resource/sizes/size[{{ forloop.counter }}]" class="element sized">Size:</label>
+					<input type="text" name="/resource/sizes/size[{{ forloop.counter }}]" value="{{ size }}" class="data sized" />
+				</div>
+			</div>
+			<div class="clearboth"></div>
+{% endfor %}
+		</div>
+	</div>
+{% endif %}
 </div>
 
 <label class="element sized">&nbsp;</label><div><span class="required">*</span> required item</div>
@@ -201,7 +259,7 @@
   $(document).ready(function() {
   	// change form to submit by AJAX
   	var options = {
-	    url:      '/demo/ajax_advanced',
+	    url:      '/create/ajax_advanced',
 	    success:	showResponse
 		};   	
     $('#create_form').ajaxForm(options);
