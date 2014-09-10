@@ -127,6 +127,7 @@ def edit(request, identifier):
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
   if request.method == "POST":
+    # datacite_xml editing uses ui_create.ajax_advanced, so doesn't use this step.
     d['pub_status'] = (request.POST['_status'] if '_status' in request.POST else d['pub_status'])
     d['stat_reason'] = (request.POST['stat_reason'] if 'stat_reason' in request.POST else d['stat_reasons'])
     d['export'] = request.POST['_export'] if '_export' in request.POST else d['export']
@@ -156,11 +157,11 @@ def edit(request, identifier):
     else:
       d['current_profile'] = metadata.getProfile('dc')
     if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
-      d['current_profile'] = 'datacite_xml'
+      # There is no datacite_xml ezid profile. Just use 'datacite'
       # [TODO: Enhance advanced DOI ERC profile to allow for elements ERC + datacite.publisher or 
       #    ERC + dc.publisher.] For now, just hide this profile. 
       if d['id_text'].startswith("doi:"):
-        d['profiles'][:] = [x for x in d['profiles'] if not x.name == 'erc']
+        d['profiles'][:] = [p for p in d['profiles'] if not x.name == 'erc']
       datacite_obj = objectify.fromstring(d['identifier']["datacite"])
       if datacite_obj:
         d['datacite_obj'] = datacite_obj 

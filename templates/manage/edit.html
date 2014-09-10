@@ -33,18 +33,7 @@
       <input name="action" id="action"  type="hidden" value="edit"/>
       <input name="identifier" id="identifier"  type="hidden" value="{{ id_text }}"/>
       <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
-      <p>Describe the identified object using the 
-      <select name="current_profile" id="current_profile">
-        {% for prof in profiles %}
-          <option value="{{prof.name}}"
-            {% if prof.name == current_profile.name %}
-              selected="selected"
-            {% endif %}
-          >{{prof.displayName}}</option>
-        {% endfor %}
-      </select>
-      citation profile.</p>
-      
+      <p>This identified object uses the <strong>{{ current_profile.displayName }}</strong> citation profile.</p>
       <label for="_target" class="left {% tooltip_class "_target" %}">
         {{internal_profile.target.displayName}}:
       </label>
