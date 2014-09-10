@@ -11,7 +11,7 @@
 
 	<div name="/resource/creators" class="element container">
 		<label for="/resource/creators" class="element"><span title="Creator is a required section">Creator</span> <span class="required">*</span></label>
-		<input type="button" value="+" onclick="addOne(this)" name="/resource/creators" nbelmtsadded="{% if datacite_obj.creators.creator|length < "1" %}1{% else %}{{ datacite_obj.creators.creator|length }}{% endif %}" class="addButton">
+		<input type="button" value="+" onclick="addOne(this)" name="/resource/creators" nbelmtsadded="{% if datacite_obj.creators.creator|length < 1 %}1{% else %}{{ datacite_obj.creators.creator|length }}{% endif %}" class="addButton">
 		<input type="button" value="-" name="/resource/creators" class="rmvButton">
 		<div class="helpico">{% help_icon "dcxml_creators_help" %}</div>
 	{% for creator in datacite_obj.creators.creator %}
@@ -46,7 +46,7 @@
 	</div>
 	<div name="/resource/titles" class="element container">
 		<label for="/resource/titles" class="element"><span title="Title is a required section">Title</span> <span class="required">*</span></label>
-		<input type="button" value="+" onclick="addOne(this)" name="/resource/titles" nbelmtsadded="{% if datacite_obj.titles.title|length < "1" %}1{% else %}{{ datacite_obj.titles.title|length }}{% endif %}" class="addButton">
+		<input type="button" value="+" onclick="addOne(this)" name="/resource/titles" nbelmtsadded="{% if datacite_obj.titles.title|length < 1 %}1{% else %}{{ datacite_obj.titles.title|length }}{% endif %}" class="addButton">
 		<input type="button" value="-" name="/resource/titles" class="rmvButton">
 		<div class="helpico">{% help_icon "dcxml_titles_help" %}</div>
 	{% for title in datacite_obj.titles.title %} 
@@ -136,7 +136,7 @@
 	<div class="optional">
 		<div name="/resource/descriptions" class="element container">
 			<label for="/resource/descriptions" class="element">Abstract</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="{% if datacite_obj.descriptions.description|length < "1" %}1{% else %}{{ datacite_obj.descriptions.description|length }}{% endif %}" class="addButton">
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="{% if datacite_obj.descriptions.description|length < 1 %}1{% else %}{{ datacite_obj.descriptions.description|length }}{% endif %}" class="addButton">
 			<input type="button" value="-" name="/resource/descriptions" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_descriptions_help" %}</div>
 		{% datacite_get_descriptions datacite_obj datacite_obj_empty %}
@@ -145,7 +145,7 @@
 	<div class="optional">
 		<div name="/resource/subjects" class="element container">
 			<label for="/resource/subjects" class="element">Subject</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="{% if datacite_obj.subjects.subject|length < "1" %}1{% else %}{{ datacite_obj.subjects.subject|length }}{% endif %}" class="addButton">
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="{% if datacite_obj.subjects.subject|length < 1 %}1{% else %}{{ datacite_obj.subjects.subject|length }}{% endif %}" class="addButton">
 			<input type="button" value="-" name="/resource/subjects" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_subjects_help" %}</div>
 		{% datacite_get_subjects datacite_obj datacite_obj_empty %}
@@ -154,7 +154,7 @@
 	<div class="optional">
 		<div name="/resource/contributors" class="element container">
 			<label for="/resource/contributors" class="element">Contributor</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/contributors" nbelmtsadded="{% if datacite_obj.contributors.contributor|length < "1" %}1{% else %}{{ datacite_obj.contributors.contributor|length }}{% endif %}" class="addButton">
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/contributors" nbelmtsadded="{% if datacite_obj.contributors.contributor|length < 1 %}1{% else %}{{ datacite_obj.contributors.contributor|length }}{% endif %}" class="addButton">
 			<input type="button" value="-" name="/resource/contributors" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_contributors_help" %}</div>
 		{% datacite_get_contributors datacite_obj datacite_obj_empty %}
@@ -164,7 +164,7 @@
 	<div class="optional">
 		<div name="/resource/formats" class="element container">
 			<label for="/resource/formats" class="element">Format:</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/formats" nbelmtsadded="{% if datacite_obj.formats.format|length < "1" %}1{% else %}{{ datacite_obj.formats.format|length }}{% endif %}" class="addButton">
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/formats" nbelmtsadded="{% if datacite_obj.formats.format|length < 1 %}1{% else %}{{ datacite_obj.formats.format|length }}{% endif %}" class="addButton">
 			<input type="button" value="-" name="/resource/formats" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_formats_help" %}</div>
 {% for format in datacite_obj.formats.format %}
@@ -182,7 +182,7 @@
 	<div class="optional">
 		<div name="/resource/dates" class="element container">
 			<label for="/resource/dates" class="element">Date</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/dates" nbelmtsadded="{% if datacite_obj.dates.date|length < "1" %}1{% else %}{{ datacite_obj.dates.date|length }}{% endif %}" class="addButton" />
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/dates" nbelmtsadded="{% if datacite_obj.dates.date|length < 1 %}1{% else %}{{ datacite_obj.dates.date|length }}{% endif %}" class="addButton" />
 			<input type="button" value="-" name="/resource/dates" class="rmvButton" />
 			<div class="helpico">{% help_icon "dcxml_dates_help" %}</div>
 		{% datacite_get_dates datacite_obj datacite_obj_empty %}
@@ -192,7 +192,7 @@
 	<div class="optional">
 		<div name="/resource/alternateIdentifiers" class="element container">
 			<label for="/resource/alternateIdentifiers" class="element">Alternate Identifier</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/alternateIdentifiers" nbelmtsadded="{% if datacite_obj.alternateIdentifiers.alternateIdentifier|length < "1" %}1{% else %}{{ datacite_obj.alternateIdentifiers.alternateIdentifier|length }}{% endif %}" class="addButton">
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/alternateIdentifiers" nbelmtsadded="{% if datacite_obj.alternateIdentifiers.alternateIdentifier|length < 1 %}1{% else %}{{ datacite_obj.alternateIdentifiers.alternateIdentifier|length }}{% endif %}" class="addButton">
 			<input type="button" value="-" name="/resource/alternateIdentifiers" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_alt_ids_help" %}</div>
 		{% datacite_get_altIds datacite_obj datacite_obj_empty %}
@@ -201,7 +201,7 @@
 	<div class="optional">
 		<div name="/resource/relatedIdentifiers" class="element container">
 			<label for="/resource/relatedIdentifiers" class="element">Related Identifier</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/relatedIdentifiers" nbelmtsadded="{% if datacite_obj.relatedIdentifiers.relatedIdentifier|length < "1" %}1{% else %}{{ datacite_obj.relatedIdentifiers.relatedIdentifier|length }}{% endif %}" class="addButton">
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/relatedIdentifiers" nbelmtsadded="{% if datacite_obj.relatedIdentifiers.relatedIdentifier|length < 1 %}1{% else %}{{ datacite_obj.relatedIdentifiers.relatedIdentifier|length }}{% endif %}" class="addButton">
 			<input type="button" value="-" name="/resource/relatedIdentifiers" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_rel_ids_help" %}</div>
 		{% datacite_get_relIds datacite_obj datacite_obj_empty %}
@@ -211,7 +211,7 @@
 	<div class="optional">
 		<div name="/resource/rightsList" class="element container">
 			<label for="/resource/rightsList" class="element">Rights</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/rightsList" nbelmtsadded="{% if datacite_obj.rightsList.rights|length < "1" %}1{% else %}{{ datacite_obj.rightsList.rights|length }}{% endif %}" class="addButton" />
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/rightsList" nbelmtsadded="{% if datacite_obj.rightsList.rights|length < 1 %}1{% else %}{{ datacite_obj.rightsList.rights|length }}{% endif %}" class="addButton" />
 			<input type="button" value="-" name="/resource/rightsList" class="rmvButton" />
 			<div class="helpico">{% help_icon "dcxml_rights_help" %}</div>
 		{% datacite_get_rights datacite_obj datacite_obj_empty %}
@@ -221,7 +221,7 @@
 	<div class="optional">
 		<div name="/resource/geoLocations" class="element container">
 			<label for="/resource/geoLocations" class="element">Geolocation</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/geoLocations" nbelmtsadded="{% if datacite_obj.geoLocations.geoLocation|length < "1" %}1{% else %}{{ datacite_obj.geoLocations.geoLocation|length }}{% endif %}" class="addButton">
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/geoLocations" nbelmtsadded="{% if datacite_obj.geoLocations.geoLocation|length < 1 %}1{% else %}{{ datacite_obj.geoLocations.geoLocation|length }}{% endif %}" class="addButton">
 			<input type="button" value="-" name="/resource/geoLocations" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_geolocations_help" %}</div>
 		{% datacite_get_geoLoc datacite_obj datacite_obj_empty %}
@@ -231,7 +231,7 @@
 	<div class="optional">
 		<div name="/resource/sizes" class="element container">
 			<label for="/resource/sizes" class="element">Size:</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/sizes" nbelmtsadded="{% if datacite_obj.sizes.size|length < "1" %}1{% else %}{{ datacite_obj.sizes.size|length }}{% endif %}" class="addButton">
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/sizes" nbelmtsadded="{% if datacite_obj.sizes.size|length < 1 %}1{% else %}{{ datacite_obj.sizes.size|length }}{% endif %}" class="addButton">
 			<input type="button" value="-" name="/resource/sizes" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_sizes_help" %}</div>
 	{% for size in datacite_obj.sizes.size %}
