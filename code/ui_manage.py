@@ -161,7 +161,7 @@ def edit(request, identifier):
       # [TODO: Enhance advanced DOI ERC profile to allow for elements ERC + datacite.publisher or 
       #    ERC + dc.publisher.] For now, just hide this profile. 
       if d['id_text'].startswith("doi:"):
-        d['profiles'][:] = [p for p in d['profiles'] if not x.name == 'erc']
+        d['profiles'][:] = [p for p in d['profiles'] if not p.name == 'erc']
       datacite_obj = objectify.fromstring(d['identifier']["datacite"])
       if datacite_obj:
         d['datacite_obj'] = datacite_obj 
