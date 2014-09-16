@@ -1,0 +1,224 @@
+#! /usr/bin/env python
+
+# Verifies the integrity of a raw dump file (and, by inference, the
+# database from which it was obtained).  Usage:
+#
+#    verify-dump dumpfile baseurl
+#
+# If the filename ends with ".gz", the dump is assumed to be
+# gzip-compressed.  'baseurl' should be the EZID base URL associated
+# with the dump (i.e., the value of configuration parameter
+# DEFAULT.base_url), e.g., "http://ezid.cdlib.org".
+#
+# Limitations: this script doesn't check the values of _t (_target)
+# and _p (_profile) fields.  Also, it doesn't check any citation
+# metadata fields, and in particular, doesn't check that metadata
+# requirements are met.
+#
+# This script requires an EZID module.  The PYTHONPATH environment
+# variable must include the .../SITE_ROOT/PROJECT_ROOT/code directory;
+# if it doesn't, we attempt to dynamically locate it and add it.
+#
+# Greg Janee <gjanee@ucop.edu>
+# September 2014
+
+import datetime
+import gzip
+import os
+import re
+import sys
+import time
+import types
+import urllib
+
+try:
+  import util
+except ImportError:
+  sys.path.append(os.path.join(os.path.split(os.path.split(
+    os.path.abspath(__file__))[0])[0], "code"))
+  import util
+
+FIELDS = {
+  # name: presence (True=required, False=disallowed, None=optional)
+  "_o": True,
+  "_g": True,
+  "_co": None,
+  "_c": True,
+  "_u": True,
+  "_t": True,
+  "_s": lambda i, r: not isArk(i),
+  "_su": lambda i, r: "_s" in r,
+  "_st": lambda i, r: "_s" in r,
+  "_p": True,
+  "_is": None,
+  "_t1": lambda i, r: "_is" in r,
+  "_st1": lambda i, r: "_is" in r and "_s" in r,
+  "_x": None,
+  "_d": lambda i, r: isDoi(i),
+  "_ezid_role": None
+}
+
+URN_PREFIX = util.urnUuid2shadow("")
+
+# The following constants could and should be obtained from the user
+# system, but we hardcode them here so that this script can be run
+# without loading the entire EZID infrastructure.
+ADMIN_USER_ID = "ark:/99166/p9kw57h4w"
+ADMIN_GROUP_ID = "ark:/99166/p9g44hq02"
+
+EPOCH = int(time.mktime(datetime.date(2010, 7, 1).timetuple()))
+NOW = int(time.time())
+
+_baseurl = None
+_seenIdentifiers = set()
+_referencedAgents = {}
+_agents = {}
+
+def isDoi (identifier):
+  return re.match("[a-z]", identifier) != None
+
+def isUrn (identifier):
+  return identifier.startswith(URN_PREFIX)
+
+def isArk (identifier):
+  return not isDoi(identifier) and not isUrn(identifier)
+
+def defaultTarget (identifier):
+  return "%s/id/%s" % (_baseurl, urllib.quote(identifier, ":/"))
+
+def tombstoneTarget (identifier):
+  return "%s/tombstone/id/%s" % (_baseurl, urllib.quote(identifier, ":/"))
+
+def verifyAgentReference (identifier, role):
+  if identifier == "anonymous": return
+  assert identifier.startswith("ark:/") and\
+    util.validateArk(identifier[5:]) == identifier[5:],\
+    "invalid agent reference: " + identifier
+  if identifier in _referencedAgents:
+    assert _referencedAgents[identifier] == role,\
+      "agent referenced as both user and group: " + identifier
+  else:
+    _referencedAgents[identifier] = role
+
+def verifyTimestamp (timestamp):
+  try:
+    t = int(timestamp)
+  except ValueError:
+    assert False, "invalid timestamp: " + timestamp
+  assert EPOCH < t and t < NOW, "timestamp out of range: " + timestamp
+
+def verifyIdentifier (identifier, record):
+  # identifier form
+  assert util.validateArk(identifier) == identifier,\
+    "invalid identifier: " + identifier
+  # duplicates
+  assert identifier not in _seenIdentifiers,\
+    "duplicate identifier: " + identifier
+  _seenIdentifiers.add(identifier)
+  # basic field presence/absence
+  for f in record:
+    if f.startswith("_"):
+      assert f in FIELDS, "unrecognized reserved field: " + f
+  for f, p in FIELDS.items():
+    if (type(p) is bool and p) or\
+      (type(p) is types.LambdaType and p(identifier, record)):
+      assert f in record, "missing required field: " + f
+    elif (type(p) is bool and not p) or\
+      (type(p) is types.LambdaType and not p(identifier, record)):
+      assert f not in record, "disallowed field present: " + f
+  # ownership
+  verifyAgentReference(record["_o"], "user")
+  verifyAgentReference(record["_g"], "group")
+  assert (record["_o"] == "anonymous" and record["_g"] == "anonymous") or\
+    (record["_o"] != "anonymous" and record["_g"] != "anonymous"),\
+    "invalid anonymous ownership"
+  if "_co" in record:
+    for co in [i.strip() for i in record["_co"].split(";")\
+      if len(i.strip()) > 0]:
+      verifyAgentReference(co, "user")
+      assert co not in ["anonymous", record["_o"], ADMIN_USER_ID],\
+        "invalid co-owner: " + co
+  # timestamps
+  verifyTimestamp(record["_c"])
+  verifyTimestamp(record["_u"])
+  assert int(record["_u"]) >= int(record["_c"]),\
+    "update time precedes create time"
+  # shadow ARKs
+  if "_s" in record:
+    verifyTimestamp(record["_su"])
+    assert int(record["_su"]) >= int(record["_c"]),\
+      "shadowed update time precedes create time"
+  # status
+  if "_is" in record:
+    assert record["_is"] == "reserved" or\
+      re.match("unavailable($| \| [^\s])", record["_is"]),\
+      "invalid status: " + record["_is"]
+    if record["_is"] == "reserved":
+      t = defaultTarget
+    else:
+      t = tombstoneTarget
+    assert record["_t"] == t("ark:/" + identifier),\
+      "invalid target URL for non-public status: " + record["_t"]
+    if "_s" in record:
+      assert record["_st"] == t(record["_s"]),\
+        "invalid shadowed target URL for non-public status: " + record["_st"]
+  # export flag
+  assert "_x" not in record or record["_x"] == "no",\
+    "invalid export flag value: " + record["_x"]
+  # DOIs
+  if isDoi(identifier):
+    assert re.match("[-A-Z0-9]+\.[-A-Z0-9]+$", record["_d"]),\
+      "invalid datacenter: " + record["_d"]
+  # agent identifiers
+  if "_ezid_role" in record:
+    assert isArk(identifier), "agent identifier is not an ARK: " + identifier
+    assert record["_ezid_role"] in ["user", "group"],\
+      "invalid agent role: " + record["_ezid_role"]
+    assert record["_o"] == ADMIN_USER_ID and record["_g"] == ADMIN_GROUP_ID,\
+      "agent identifier is not owned by admin: user=%s group=%s" %\
+      (record["_o"], record["_g"])
+    assert "_co" not in record, "agent identifier has co-owners"
+    assert record["_t"] == defaultTarget("ark:/" + identifier),\
+      "agent identifier has non-default target URL: " + record["_t"]
+    assert "_is" not in record, "agent identifier is not public"
+    assert "_x" not in record, "agent identifier is not exported"
+    _agents["ark:/" + identifier] = record["_ezid_role"]
+
+if len(sys.argv) != 3:
+  sys.stderr.write("Usage: verify-dump dumpfile baseurl\n")
+  sys.exit(1)
+
+if sys.argv[1].endswith(".gz"):
+  infile = gzip.GzipFile(filename=sys.argv[1], mode="r")
+else:
+  infile = open(sys.argv[1])
+
+_baseurl = sys.argv[2]
+
+n = 0
+for l in infile:
+  n += 1
+  id = None
+  try:
+    assert l[-1] == "\n", "syntax error: does not end with newline"
+    ls = l[:-1].split(" ")
+    assert len(ls)%2 == 1, "syntax error: incorrect number of tokens"
+    id = ls[0]
+    r = {}
+    for i in range(1, len(ls), 2):
+      f = util.decode(ls[i])
+      assert f.strip() == f and len(f) > 0, "syntax error: invalid field name"
+      v = util.decode(ls[i+1])
+      assert v.strip() == v and len(v) > 0, "syntax error: invalid field value"
+      assert f not in r, "duplicate field name: " + f
+      r[f] = v
+    verifyIdentifier(id, r)
+  except Exception, e:
+    print "record %d%s: %s" % (n, " (%s)" % id if id != None else "", str(e))
+
+for a, r in _referencedAgents.items():
+  try:
+    assert a in _agents, "no record for referenced agent: " + a
+    assert r == _agents[a], "mismatched declared/referential role: " + a
+  except Exception, e:
+    print str(e)
