@@ -9,12 +9,11 @@
 # In all cases, a different message may be specified on the command
 # line.  Usage:
 #
-#    downserver host port [message]
+#    downserver [-ssl keyfile certfile] host port [message]
 #
 # If a file logo.png is found in the same directory as this script,
-# the image is inserted in the HTML page.
-#
-# Limitation: SSL is not handled in any way.
+# the image is inserted in the HTML page.  If the -ssl option is
+# given, an https server is created.
 #
 # Greg Janee <gjanee@ucop.edu>
 # September 2011
@@ -23,6 +22,7 @@ import BaseHTTPServer
 import os.path
 import re
 import SocketServer
+import ssl
 import sys
 import xml.sax.saxutils
 
@@ -48,9 +48,24 @@ Pacific time.</p>
 </html>
 """
 
-if len(sys.argv) not in [3, 4] or not re.match("\d+$", sys.argv[2]):
-  sys.stderr.write("Usage: downserver host port [message]\n")
+def usageError ():
+  sys.stderr.write("Usage: downserver [-ssl keyfile certfile] host port " +\
+    "[message]\n")
   sys.exit(1)
+
+if len(sys.argv) >= 2 and sys.argv[1] == "-ssl":
+  if len(sys.argv) < 4: usageError()
+  https = True
+  keyfile = sys.argv[2]
+  certfile = sys.argv[3]
+  del sys.argv[3]
+  del sys.argv[2]
+  del sys.argv[1]
+else:
+  https = False
+
+if len(sys.argv) not in [3, 4] or not re.match("\d+$", sys.argv[2]):
+  usageError()
 host = sys.argv[1]
 port = int(sys.argv[2])
 if len(sys.argv) == 4:
@@ -109,4 +124,7 @@ class MyServer (SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
   pass
 
 server = MyServer((host, port), MyHandler)
+if https:
+  server.socket = ssl.wrap_socket(server.socket, keyfile=keyfile,
+    certfile=certfile, server_side=True)
 server.serve_forever()
