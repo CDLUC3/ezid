@@ -2,7 +2,6 @@ import ui_common as uic
 import django.contrib.messages
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
-import chardet
 import ezid
 import metadata
 import search
@@ -226,11 +225,7 @@ def details(request):
   if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
     d['erc_block_list'] = _formatErcBlock(d['identifier']['erc'])
   elif d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
-    datacite_block = d['identifier']["datacite"]
-    # encoding = chardet.detect(datacite_block)['encoding']
-    # if encoding != 'utf-8':
-    #   datacite_block = datacite_block.decode(encoding, 'replace').encode('utf-8')
-    r = objectify.fromstring(datacite_block)
+    r = objectify.fromstring(d['identifier']["datacite"])
     if r:
       d['datacite_obj'] = r
     else:

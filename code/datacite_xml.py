@@ -21,13 +21,15 @@ import copy
 
 # Order for XML elements. Schema specifies a sequence in some cases (geoLocations).
 RESOURCE_ORDER = ['resource', 'creators', 'creator', 'creatorName',
-  'nameIdentifier', '@nameIdentifierScheme', '@schemeURI',
   'titles', 'publisher', 'publicationYear', 'language', 'version', 'resourceType',
   'descriptions', '@descriptionType', 'subjects', '@subjectScheme', 'contributors', 
   'contributorName', '@contributorType', 'formats', 'dates', 'alternateIdentifiers',
   'relatedIdentifiers', '@relationType', '@relatedIdentifierType', '@relatedMetadataScheme', 
-  '@schemeType', 'rightsList', '@rightsURI', 
-  'geoLocations', 'geoLocationPoint', 'geoLocationBox', 'geoLocationPlace', 'sizes']
+  '@schemeType', 'rightsList', '@rightsURI', 'sizes', 'geoLocations',
+  # This order is important 
+  'geoLocationPoint', 'geoLocationBox', 'geoLocationPlace', 
+  # it's important that nameIdentifier comes after contributorName
+  'nameIdentifier', '@nameIdentifierScheme', '@schemeURI',]
 
 def splitPath (p):
   # Splits the first "chunk" off an xpath:
