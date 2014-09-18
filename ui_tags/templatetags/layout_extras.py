@@ -274,27 +274,46 @@ XML blob does not have element we're looking for, load an empty one
     -------------------------------------------------------------------'''    
 @register.inclusion_tag('create/_datacite_altId.html')
 def datacite_get_altIds(datacite_obj, datacite_obj_empty):
-    if hasattr(datacite_obj, 'alternateIdentifiers'):
-        datacite_obj_alternateIdentifiers = datacite_obj.alternateIdentifiers
-    else:
-        datacite_obj_alternateIdentifiers = datacite_obj_empty.alternateIdentifiers
-    return {'datacite_obj_alternateIdentifiers': datacite_obj_alternateIdentifiers}
+  if hasattr(datacite_obj, 'alternateIdentifiers'):
+      datacite_obj_alternateIdentifiers = datacite_obj.alternateIdentifiers
+  else:
+      datacite_obj_alternateIdentifiers = datacite_obj_empty.alternateIdentifiers
+  num_altIds = len(datacite_obj_alternateIdentifiers.alternateIdentifier) 
+  num_altIds = num_altIids if num_altIds > 1 else 1
+  return {'datacite_obj_alternateIdentifiers': 
+          datacite_obj_alternateIdentifiers, 'num_altIds': num_altIds}
 
 @register.inclusion_tag('create/_datacite_contributor.html')
 def datacite_get_contributors(datacite_obj, datacite_obj_empty):
-    if hasattr(datacite_obj, 'contributors'):
-        datacite_obj_contributors = datacite_obj.contributors
-    else:
-        datacite_obj_contributors = datacite_obj_empty.contributors
-    return {'datacite_obj_contributors': datacite_obj_contributors}
+  if hasattr(datacite_obj, 'contributors'):
+      datacite_obj_contributors = datacite_obj.contributors
+  else:
+      datacite_obj_contributors = datacite_obj_empty.contributors
+  num_contributors = len(datacite_obj_contributors.contributor) 
+  num_contributors = num_contributors if num_contributors > 1 else 1
+  return {'datacite_obj_contributors': datacite_obj_contributors, 
+          'num_contributors': num_contributors}
+
+@register.inclusion_tag('create/_datacite_creator.html')
+def datacite_get_creators(datacite_obj, datacite_obj_empty):
+  if hasattr(datacite_obj, 'creators'):
+    datacite_obj_creators = datacite_obj.creators
+  else:
+    datacite_obj_creators = datacite_obj_empty.creators
+  num_creators = len(datacite_obj_creators.creator) 
+  num_creators = num_creators if num_creators > 1 else 1
+  return {'datacite_obj_creators': datacite_obj_creators, 
+          'num_creators': num_creators}
 
 @register.inclusion_tag('create/_datacite_date.html')
 def datacite_get_dates(datacite_obj, datacite_obj_empty):
-    if hasattr(datacite_obj, 'dates'):
-        datacite_obj_dates = datacite_obj.dates
-    else:
-        datacite_obj_dates = datacite_obj_empty.dates
-    return {'datacite_obj_dates': datacite_obj_dates}
+  if hasattr(datacite_obj, 'dates'):
+      datacite_obj_dates = datacite_obj.dates
+  else:
+      datacite_obj_dates = datacite_obj_empty.dates
+  num_dates = len(datacite_obj_dates.date) 
+  num_dates = num_dates if num_dates > 1 else 1
+  return {'datacite_obj_dates': datacite_obj_dates, 'num_dates': num_dates}
 
 @register.inclusion_tag('create/_datacite_description.html')
 def datacite_get_descriptions(datacite_obj, datacite_obj_empty):
@@ -302,31 +321,65 @@ def datacite_get_descriptions(datacite_obj, datacite_obj_empty):
     datacite_obj_descriptions = datacite_obj.descriptions
   else:
     datacite_obj_descriptions = datacite_obj_empty.descriptions
-  return {'datacite_obj_descriptions': datacite_obj_descriptions}
+  num_descriptions = len(datacite_obj_descriptions.description) 
+  num_descriptions = num_descriptions if num_descriptions > 1 else 1
+  return {'datacite_obj_descriptions': datacite_obj_descriptions, 
+          'num_descriptions': num_descriptions}
+
+@register.inclusion_tag('create/_datacite_format.html')
+def datacite_get_formats(datacite_obj, datacite_obj_empty):
+  if hasattr(datacite_obj, 'formats'):
+    datacite_obj_formats = datacite_obj.formats
+  else:
+    datacite_obj_formats = datacite_obj_empty.formats
+  num_formats = len(datacite_obj_formats.format)
+  num_formats = num_formats if num_formats > 1 else 1
+  return {'datacite_obj_formats': datacite_obj_formats, 
+          'num_formats': num_formats}
 
 @register.inclusion_tag('create/_datacite_geoLoc.html')
 def datacite_get_geoLoc(datacite_obj, datacite_obj_empty):
-    if hasattr(datacite_obj, 'geoLocations'):
-        datacite_obj_geoLocations = datacite_obj.geoLocations
-    else:
-        datacite_obj_geoLocations = datacite_obj_empty.geoLocations
-    return {'datacite_obj_geoLocations': datacite_obj_geoLocations}
+  if hasattr(datacite_obj, 'geoLocations'):
+    datacite_obj_geoLocations = datacite_obj.geoLocations
+  else:
+    datacite_obj_geoLocations = datacite_obj_empty.geoLocations
+  num_geoLocations = len(datacite_obj_geoLocations.geoLocation)
+  num_geoLocations = num_geoLocations if num_geoLocations > 1 else 1
+  return {'datacite_obj_geoLocations': datacite_obj_geoLocations,
+          'num_geoLocations': num_geoLocations}
 
 @register.inclusion_tag('create/_datacite_relId.html')
 def datacite_get_relIds(datacite_obj, datacite_obj_empty):
-    if hasattr(datacite_obj, 'relatedIdentifiers'):
-        datacite_obj_relatedIdentifiers = datacite_obj.relatedIdentifiers
-    else:
-        datacite_obj_relatedIdentifiers = datacite_obj_empty.relatedIdentifiers
-    return {'datacite_obj_relatedIdentifiers': datacite_obj_relatedIdentifiers}
+  if hasattr(datacite_obj, 'relatedIdentifiers'):
+    datacite_obj_relatedIdentifiers = datacite_obj.relatedIdentifiers
+  else:
+    datacite_obj_relatedIdentifiers = datacite_obj_empty.relatedIdentifiers
+  num_relIds = len(datacite_obj_relatedIdentifiers.relatedIdentifier)
+  num_relIds = num_relIids if num_relIds > 1 else 1
+  return {'datacite_obj_relatedIdentifiers': datacite_obj_relatedIdentifiers,
+         'num_relIds': num_relIds}
 
 @register.inclusion_tag('create/_datacite_rights.html')
 def datacite_get_rights(datacite_obj, datacite_obj_empty):
-    if hasattr(datacite_obj, 'rightsList'):
-        datacite_obj_rightsList = datacite_obj.rightsList
-    else:
-        datacite_obj_rightsList = datacite_obj_empty.rightsList
-    return {'datacite_obj_rightsList': datacite_obj_rightsList}
+  if hasattr(datacite_obj, 'rightsList'):
+    datacite_obj_rightsList = datacite_obj.rightsList
+  else:
+    datacite_obj_rightsList = datacite_obj_empty.rightsList
+  num_rights = len(datacite_obj_rightsList.rights)
+  num_rights = num_rights if num_rights > 1 else 1
+  return {'datacite_obj_rightsList': datacite_obj_rightsList, 
+          'num_rights': num_rights}
+
+@register.inclusion_tag('create/_datacite_size.html')
+def datacite_get_sizes(datacite_obj, datacite_obj_empty):
+  if hasattr(datacite_obj, 'sizes'):
+    datacite_obj_sizes = datacite_obj.sizes
+  else:
+    datacite_obj_sizes = datacite_obj_empty.sizes
+  num_sizes = len(datacite_obj_sizes.size) 
+  num_sizes = num_sizes if num_sizes > 1 else 1
+  return {'datacite_obj_sizes': datacite_obj_sizes, 
+          'num_sizes': num_sizes}
 
 @register.inclusion_tag('create/_datacite_subject.html')
 def datacite_get_subjects(datacite_obj, datacite_obj_empty):
@@ -334,5 +387,17 @@ def datacite_get_subjects(datacite_obj, datacite_obj_empty):
     datacite_obj_subjects = datacite_obj.subjects
   else:
     datacite_obj_subjects = datacite_obj_empty.subjects
-  return {'datacite_obj_subjects': datacite_obj_subjects}
+  num_subjects = len(datacite_obj_subjects.subject) 
+  num_subjects = num_subjects if num_subjects > 1 else 1
+  return {'datacite_obj_subjects': datacite_obj_subjects, 
+          'num_subjects': num_subjects}
 
+@register.inclusion_tag('create/_datacite_title.html')
+def datacite_get_titles(datacite_obj, datacite_obj_empty):
+  if hasattr(datacite_obj, 'titles'):
+    datacite_obj_titles = datacite_obj.titles
+  else:
+    datacite_obj_titles = datacite_obj_empty.titles
+  num_titles = len(datacite_obj_titles.title) 
+  num_titles = num_titles if num_titles > 1 else 1
+  return {'datacite_obj_titles': datacite_obj_titles, 'num_titles': num_titles}

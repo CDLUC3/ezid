@@ -1,3 +1,10 @@
+{% load layout_extras %}
+	<div class="optional">
+		<div name="/resource/dates" class="element container">
+			<label for="/resource/dates" class="element">Date</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/dates" nbelmtsadded="{{ num_dates }}" class="addButton" />
+			<input type="button" value="-" name="/resource/dates" class="rmvButton" />
+			<div class="helpico">{% help_icon "dcxml_dates_help" %}</div>
 {% for date in datacite_obj_dates.date %}
 			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px;background:#ffffff */">
 				<div name="/resource/dates/date[{{ forloop.counter }}]" class="element">
@@ -22,4 +29,5 @@
 				</div>
 			</div>
 {% endfor %}
-
+		</div>
+	</div>

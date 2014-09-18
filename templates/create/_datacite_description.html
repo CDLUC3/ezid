@@ -1,3 +1,10 @@
+{% load layout_extras %}
+	<div class="optional">
+		<div name="/resource/descriptions" class="element container">
+			<label for="/resource/descriptions" class="element">Abstract</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="{{ num_descriptions }}" class="addButton">
+			<input type="button" value="-" name="/resource/descriptions" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_descriptions_help" %}</div>
 {% for descr in datacite_obj_descriptions.description %}
 			<div class="multiple">
 				<div name="/resource/descriptions/description[{{ forloop.counter }}]" class="element">
@@ -18,3 +25,5 @@
 				<div class="clearboth"></div>
 			</div>
 {% endfor %}
+		</div>
+	</div>

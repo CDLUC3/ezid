@@ -1,3 +1,10 @@
+{% load layout_extras %}
+	<div class="optional" >
+		<div name="/resource/contributors" class="element container">
+			<label for="/resource/contributors" class="element">Contributor</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/contributors" nbelmtsadded="{{ num_contributors }}" class="addButton">
+			<input type="button" value="-" name="/resource/contributors" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_contributors_help" %}</div>
 {% for contributor in datacite_obj_contributors.contributor %}
 			<div class="multiple">
 				<div name="/resource/contributors/contributor[{{ forloop.counter }}]" class="element">
@@ -49,3 +56,5 @@
 				</div>
 			</div>
 {% endfor %}
+		</div>
+	</div>

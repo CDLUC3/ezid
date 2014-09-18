@@ -1,3 +1,10 @@
+{% load layout_extras %}
+	<div class="optional">
+		<div name="/resource/geoLocations" class="element container">
+			<label for="/resource/geoLocations" class="element">Geolocation</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/geoLocations" nbelmtsadded="{{ num_geoLocations }}" class="addButton">
+			<input type="button" value="-" name="/resource/geoLocations" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_geolocations_help" %}</div>
 {% for geoLoc in datacite_obj_geoLocations.geoLocation %}
 			<div class="multiple">
 				<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]" class="element">
@@ -17,3 +24,5 @@
 				</div>
 			</div>
 {% endfor %}
+		</div>
+	</div>

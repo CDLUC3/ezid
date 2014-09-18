@@ -1,3 +1,10 @@
+{% load layout_extras %}
+	<div class="optional">
+		<div name="/resource/rightsList" class="element container">
+			<label for="/resource/rightsList" class="element">Rights</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/rightsList" nbelmtsadded="{{ num_rights }}" class="addButton" />
+			<input type="button" value="-" name="/resource/rightsList" class="rmvButton" />
+			<div class="helpico">{% help_icon "dcxml_rights_help" %}</div>
 {% for rights in datacite_obj_rightsList.rights %}
 			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px;background:#ffffff */">
 				<div name="/resource/rightsList/rights[{{ forloop.counter }}]" class="element">
@@ -13,3 +20,5 @@
 				</div>
 			</div>
 {% endfor %}
+		</div>
+	</div>

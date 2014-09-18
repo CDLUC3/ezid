@@ -1,3 +1,10 @@
+{% load layout_extras %}	
+	<div class="optional">
+		<div name="/resource/relatedIdentifiers" class="element container">
+			<label for="/resource/relatedIdentifiers" class="element">Related Identifier</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/relatedIdentifiers" nbelmtsadded="{{ num_relIds }}" class="addButton">
+			<input type="button" value="-" name="/resource/relatedIdentifiers" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_rel_ids_help" %}</div>
 {% for relId in datacite_obj_relatedIdentifiers.relatedIdentifier %}
 			<div class="multiple">
 				<div class="element">
@@ -57,3 +64,5 @@
 				<div class="clearboth"></div>
 			</div>
 {% endfor %}
+		</div>
+	</div>
