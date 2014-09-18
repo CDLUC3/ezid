@@ -218,7 +218,6 @@ def ajax_advanced(request):
     #  if v:
     #    if re.match(r'^/resource/dates/date\[\d+?\]$', k ) and not re.match(r'^\d{4}', v ):
     #      error_msgs.append("Please ensure your date is numeric and in the correct format.")
-    
     if len(error_msgs) > 0:
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
 

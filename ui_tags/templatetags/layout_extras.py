@@ -279,7 +279,7 @@ def datacite_get_altIds(datacite_obj, datacite_obj_empty):
   else:
       datacite_obj_alternateIdentifiers = datacite_obj_empty.alternateIdentifiers
   num_altIds = len(datacite_obj_alternateIdentifiers.alternateIdentifier) 
-  num_altIds = num_altIids if num_altIds > 1 else 1
+  num_altIds = num_altIds if num_altIds > 1 else 1
   return {'datacite_obj_alternateIdentifiers': 
           datacite_obj_alternateIdentifiers, 'num_altIds': num_altIds}
 
@@ -355,7 +355,7 @@ def datacite_get_relIds(datacite_obj, datacite_obj_empty):
   else:
     datacite_obj_relatedIdentifiers = datacite_obj_empty.relatedIdentifiers
   num_relIds = len(datacite_obj_relatedIdentifiers.relatedIdentifier)
-  num_relIds = num_relIids if num_relIds > 1 else 1
+  num_relIds = num_relIds if num_relIds > 1 else 1
   return {'datacite_obj_relatedIdentifiers': datacite_obj_relatedIdentifiers,
          'num_relIds': num_relIds}
 
