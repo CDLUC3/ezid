@@ -11,7 +11,7 @@
 # non-test DOIs whose status is not reserved, and projecting qualified
 # identifier names and target URLs, i.e., by using the command:
 #
-#    select _id =~ '/b/' and not _id =~ '/b5072\/fk2/' and
+#    select _id =~ '/[a-z]/' and not _id =~ '/b5072\/fk2/' and
 #       not _is = reserved | project -d _s _st
 #
 # This script requires an EZID module.  The PYTHONPATH environment
