@@ -10,12 +10,12 @@
 				<div name="/resource/contributors/contributor[{{ forloop.counter }}]" class="element">
 					<div name="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" class="element">
 						<label for="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" class="element sized">Name:</label>
-						<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" value="{{ contributor.contributorName }}" class="data sized">
+						<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" value="{{ contributor.contributorName.text|default_if_none:"" }}" class="data sized">
 					</div>
 					<div class="optional">
 						<div name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" class="element">
 							<label for="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" class="element sized">Name Identifier:</label>
-							<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" value="{{ contributor.nameIdentifier }}" class="data sized" />
+							<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" value="{{ contributor.nameIdentifier.text|default_if_none:"" }}" class="data sized" />
 							<div class="attribute">
 								<label for="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" class="attribute sized">Name Identifier Scheme:</label>
 								<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" value="{{ contributor.nameIdentifier.attrib.nameIdentifierScheme }}" class="data sized">

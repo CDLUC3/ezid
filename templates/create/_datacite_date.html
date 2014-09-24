@@ -9,7 +9,7 @@
 			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px;background:#ffffff */">
 				<div name="/resource/dates/date[{{ forloop.counter }}]" class="element">
 					<label for="/resource/dates/date[{{ forloop.counter }}]" class="element sized">Date:</label>
-					<input type="text" name="/resource/dates/date[{{ forloop.counter }}]" value="{{ date }}" class="data sized" />
+					<input type="text" name="/resource/dates/date[{{ forloop.counter }}]" value="{{ date.text|default_if_none:"" }}" class="data sized" />
 					<div class="attribute">
 						<label for="/resource/dates/date[{{ forloop.counter }}]/@dateType" class="attribute sized">Date Type:</label>
 						<select name="/resource/dates/date[{{ forloop.counter }}]/@dateType" sendselect="yes" class="choice sized">

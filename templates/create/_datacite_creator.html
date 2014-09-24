@@ -13,12 +13,12 @@
 					 <span class="required">*</span>
 					{% endif %}
 					</label>
-					<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/creatorName" value="{{ creator.creatorName }}" class="data sized">
+					<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/creatorName" value="{{ creator.creatorName.text|default_if_none:"" }}" class="data sized">
 				</div>
 				<div class="optional">
 					<div name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" class="element">
 						<label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" class="element sized">Name Identifier:</label>
-						<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" value="{{ creator.nameIdentifier }}" class="data sized" />
+						<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" value="{{ creator.nameIdentifier.text|default_if_none:"" }}" class="data sized" />
 						<div class="attribute">
 							<label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" class="attribute sized">Identifier Scheme:</label>
 							<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" value="{{ creator.nameIdentifier.attrib.nameIdentifierScheme }}" class="data sized">

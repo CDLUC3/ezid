@@ -15,17 +15,17 @@
 
 	{% datacite_get_titles datacite_obj datacite_obj_empty %}
 
-	<div class="clearboth" style="margin-top:5px;"></div>
+	<!-- div class="clearboth" style="margin-top:5px;"></div -->
 
 	<div name="/resource/publisher" class="element">
 		<label for="/resource/publisher" class="element sized1 smallertext"><span title="Publisher is a required element">Publisher:</span> <span class="required">*</span>
 </label>
-		<input type="text" name="/resource/publisher" value="{{ datacite_obj.publisher }}" class="data sized1"> {% help_icon "dcxml_publisher_help" %}
+		<input type="text" name="/resource/publisher" value="{{ datacite_obj.publisher.text|default_if_none:"" }}" class="data sized1"> {% help_icon "dcxml_publisher_help" %}
 		<div class="clearboth"></div>
 	</div>
 	<div name="/resource/publicationYear" class="element">
 		<label for="/resource/publicationYear" class="element sized1 smallertext"><span title="Publication Year is a required element">Publication Year:</span> <span class="required">*</span> </label>
-		<input type="text" name="/resource/publicationYear" value="{{ datacite_obj.publicationYear }}" class="data sizedsmall1"> {% help_icon "dcxml_publication_year_help" %}
+		<input type="text" name="/resource/publicationYear" value="{{ datacite_obj.publicationYear.text|default_if_none:"" }}" class="data sizedsmall1"> {% help_icon "dcxml_publication_year_help" %}
 		<div class="clearboth"></div>
 	</div>
 
@@ -33,21 +33,12 @@
 	<div class="optional">
 		<div name="/resource/language" class="element">
 			<label for="/resource/language" class="element sized1 smallertext">Language:</label>
-			<input type="text" name="/resource/language" value="{{ datacite_obj.language }}" class="data sized1"> {% help_icon "dcxml_language_help" %}
+			<input type="text" name="/resource/language" value="{{ datacite_obj.language.text|default_if_none:"" }}" class="data sized1"> {% help_icon "dcxml_language_help" %}
 			<div class="clearboth"></div>
 		</div>
 	</div>
 {% endif %}
 
-{% if datacite_obj.version %}
-	<div class="optional">
-		<div name="/resource/version" class="element">
-			<label for="/resource/version" class="element sized1 smallertext">Version:</label>
-			<input type="text" name="/resource/version" value="{{ datacite_obj.version }}" class="data sized1"> {% help_icon "dcxml_version_help" %}
-			<div class="clearboth"></div>
-		</div>
-	</div>
-{% endif %}
 	<div class="optional">
 		<div name="/resource/resourceType" class="element">
 			<div name="/resource/resourceType" class="element">
@@ -74,7 +65,7 @@
 				</div>
 				<div class="clearboth"></div>
 				<label for="/resource/resourceType" class="element sized1 smallertext">Resource Type Description:</label>				
-				<input type="text" name="/resource/resourceType" value="{{ datacite_obj.resourceType }}" class="data sized1" id="resource_type" /> {% help_icon "dcxml_resource_type_help" %}
+				<input type="text" name="/resource/resourceType" value="{{ datacite_obj.resourceType.text|default_if_none:"" }}" class="data sized1" id="resource_type" /> {% help_icon "dcxml_resource_type_help" %}
 			</div>
 			<div class="clearboth"></div>
 		</div>
@@ -86,8 +77,6 @@
 
 	{% datacite_get_contributors datacite_obj datacite_obj_empty %}
 
-	{% datacite_get_formats datacite_obj datacite_obj_empty %}
-
 	{% datacite_get_dates datacite_obj datacite_obj_empty %}
 
 	<div class="clearboth"></div>
@@ -96,11 +85,24 @@
 
 	{% datacite_get_relIds datacite_obj datacite_obj_empty %}
 	
+	{% datacite_get_sizes datacite_obj datacite_obj_empty %}
+
+	{% datacite_get_formats datacite_obj datacite_obj_empty %}
+
+{% if datacite_obj.version %}
+	<div class="optional">
+		<div name="/resource/version" class="element container">
+			<label for="/resource/version" class="element sized1">Version:</label>
+			<input type="text" name="/resource/version" value="{{ datacite_obj.version.text|default_if_none:"" }}" class="data sized1"> {% help_icon "dcxml_version_help" %}
+			<div class="clearboth"></div>
+		</div>
+	</div>
+{% endif %}
+
 	{% datacite_get_rights datacite_obj datacite_obj_empty %}
 	
 	{% datacite_get_geoLoc datacite_obj datacite_obj_empty %}
 
-	{% datacite_get_sizes datacite_obj datacite_obj_empty %}
 </div>
 
 <label class="element sized">&nbsp;</label><div><span class="required">*</span> required item</div>

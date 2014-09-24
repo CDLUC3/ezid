@@ -9,7 +9,7 @@
 			<div class="multiple">
 				<div class="element">
 					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]" class="element sized">Identifier:</label>
-					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]" value="{{ relId }}"  class="data sized" />
+					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]" value="{{ relId.text|default_if_none:"" }}"  class="data sized" />
 					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedIdentifierType" class="attribute sized">Identifier Type:</label>
 					<select name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedIdentifierType" sendselect="yes" class="choice sized">
 						<option value=""></option>

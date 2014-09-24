@@ -78,7 +78,7 @@ def generate_xml(param_items):
     _create_xml_element(r, u'/resource/identifier', param_items[u'identifier']) 
     id_type = _id_type(param_items[u'identifier'])
   _create_xml_element(r, u'/resource/identifier/@identifierType', id_type) #must create empty element and specify type to mint
-  
+ 
   for k, v in items:
     if v != u'':
       _create_xml_element(r, k, v)

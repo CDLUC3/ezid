@@ -225,9 +225,9 @@ def details(request):
   if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
     d['erc_block_list'] = _formatErcBlock(d['identifier']['erc'])
   elif d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
-    r = objectify.fromstring(d['identifier']["datacite"])
+    r = datacite.dcmsRecordToHtml(d['identifier']["datacite"])
     if r:
-      d['datacite_obj'] = r
+      d['datacite_html'] = r
     else:
       d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
   t_stat = [x.strip() for x in d['identifier']['_status'].split("|", 1)]

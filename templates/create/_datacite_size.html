@@ -10,7 +10,7 @@
 			<div class="multiple">
 				<div name="/resource/sizes/size[{{ forloop.counter }}]" class="element">
 					<label for="/resource/sizes/size[{{ forloop.counter }}]" class="element sized">Size:</label>
-					<input type="text" name="/resource/sizes/size[{{ forloop.counter }}]" value="{{ size }}" class="data sized" />
+					<input type="text" name="/resource/sizes/size[{{ forloop.counter }}]" value="{{ size.text|default_if_none:"" }}" class="data sized" />
 				</div>
 			</div>
 			<div class="clearboth"></div>

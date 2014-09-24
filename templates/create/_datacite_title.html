@@ -10,7 +10,7 @@
 				<label for="/resource/titles/title[{{ forloop.counter }}]" class="element sized"><span title="Title is a required element">Title:</span>
 		{% if forloop.first %}<span class="required">*</span>{% endif %}
 				</label>
-				<input type="text" name="/resource/titles/title[{{ forloop.counter }}]" value="{{ title }}" class="data sized" />
+				<input type="text" name="/resource/titles/title[{{ forloop.counter }}]" value="{{ title.text|default_if_none:"" }}" class="data sized" />
 				<div name="/resource/titles/title[{{ forloop.counter }}]/@titleType" class="attribute">
 					<label for="/resource/titles/title[{{ forloop.counter }}]/@titleType" class="attribute sized">Type:</label>
 					<div class="sized">
