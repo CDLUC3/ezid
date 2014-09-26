@@ -91,7 +91,7 @@
 
 {% if datacite_obj.version %}
 	<div class="optional">
-		<div name="/resource/version" class="element container">
+		<div name="/resource/version" class="element">
 			<label for="/resource/version" class="element sized1">Version:</label>
 			<input type="text" name="/resource/version" value="{{ datacite_obj.version.text|default_if_none:"" }}" class="data sized1"> {% help_icon "dcxml_version_help" %}
 			<div class="clearboth"></div>
@@ -126,23 +126,23 @@
      * which the obfuscated javascript form the external library uses.
      */
     $('input[type=button].addButton').click(function (e)
+	{
+		if(!e.isDefaultPrevented())
 		{
-			if(!e.isDefaultPrevented())
-			{
-			  var items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=text].data');
-			  items.each(function() {
-			  	var $this = $(this);
-			  	$this[0].value = '';
-			  })
-			  items = $(e.target).parent().children('div.multiple').children('div.element').last().find('select');
-			  items.each(function() {
-			  	$(this).prop('selectedIndex', 0);
-			  })
-			  items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=radio]');
-			  if(items.length > 0)
-			  	items[0].checked = true;
-			}
-		});
+		  var items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=text].data');
+		  items.each(function() {
+		  	var $this = $(this);
+		  	$this[0].value = '';
+		  })
+		  items = $(e.target).parent().children('div.multiple').children('div.element').last().find('select');
+		  items.each(function() {
+		  	$(this).prop('selectedIndex', 0);
+		  })
+		  items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=radio]');
+		  if(items.length > 0)
+		  	items[0].checked = true;
+		  }
+	});
 		
 		//* set the resourceType to the same as resourceTypeGeneral
 		$(':submit').click(function(e)
@@ -153,24 +153,50 @@
 				$('#resource_type').val(gen);
 			}
 		});
-	});
+});
+
 
 	$('input[type=button].rmvButton').click(function (e)  {
 	/* Confirmation step before user removes an element */
 		var continue_removal = confirm ("Please confirm you want to remove last item.");
-		if (continue_removal) { removeOne(e.target) } 
+		if (continue_removal) { 
+			var addButton = getPreviousSiblingElement(e.target, "input");
+			var nbElementsAdded = parseInt(addButton.getAttribute("nbelmtsadded"));
+			// The element to remove is the last <div class="multiple"> brother element of the removeButton
+			var parentNode = e.target.parentNode;
+			var divTag = getLastChildElementByTagAndAtt(parentNode, "div", "class", "multiple");
+			/* If only one element remains, then set element's items to empty 
+			 * This differs from external javascript library, which only hides
+			 * the element.                                        */
+			if (nbElementsAdded == 1) {
+			  var items = $(divTag).find('input[type=text].data');
+			  items.each(function() {
+			    var $this = $(this);
+			    $this[0].value = '';
+			  })
+			  items = $(divTag).find('select');
+			  items.each(function() {
+			    $(this).prop('selectedIndex', 0);
+			  })
+			  items = $(divTag).find('input[type=radio]');
+			  if(items.length > 0)
+			    items[0].checked = true;
+			} else {
+				removeOne(e.target); 
+			}
+		}
 	});
 	
 	// post-submit callback 
 	function showResponse(resp, statusText, xhr, $form)  {
-    if(resp['status'] == 'failure'){
-    	var outstr = "";
-    	for (var i=0; i < resp['errors'].length; i++)
-    		outstr += '<p class="error">' + escapeHtml(resp['errors'][i]) + '</p>';
-    	$("#ustatus").html(outstr);
-    	showMessage(true);
-    }else if(resp['status'] == 'success'){
-    	window.location = "/id/" + resp['id'];
-    }
+		if(resp['status'] == 'failure'){
+			var outstr = "";
+			for (var i=0; i < resp['errors'].length; i++)
+				outstr += '<p class="error">' + escapeHtml(resp['errors'][i]) + '</p>';
+			$("#ustatus").html(outstr);
+			showMessage(true);
+		}else if(resp['status'] == 'success'){
+			window.location = "/id/" + resp['id'];
+		}
 	}
 </script>
