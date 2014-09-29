@@ -30,6 +30,8 @@
     <h2>About the identified object</h2>
     <form id="edit_form" action="{% url "ui_manage.edit" id_text %}" method="post">
       <!-- original profile is the profile that was loaded before possibly being changed from drop-down list -->
+      <input name="action" id="action"  type="hidden" value="edit"/>
+      <input name="identifier" id="identifier"  type="hidden" value="{{ id_text }}"/>
       <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
       <p>This identified object uses the <strong>{{ current_profile.displayName }}</strong> citation profile.</p>
       <label for="_target" class="left {% tooltip_class "_target" %}">
@@ -38,8 +40,13 @@
       <div class="field_right {% tooltip_class "_target" %}">
         <input type="text" name="_target" id="_target" size="35" value="{% form_or_dict_value identifier "_target" %}" class="std_form_width" />
       </div>
-      
-      {% for e in current_profile.elements %}
+
+      {% if manual_profile %}
+        <div style="clear:both;">
+        {% include manual_template %}
+        </div>
+      {% else %}
+        {% for e in current_profile.elements %}
         <label for="{{e.name}}" class="left {% tooltip_class e.name %}">
           {{e.displayName}}:
         </label>
@@ -49,13 +56,14 @@
 		{% datacite_field_help_icon e.name %}
   	  {% endif %}
         </div>        
-      {% endfor %}
+        {% endfor %}
+      {% endif %}
+
     	<label class="left">&nbsp;</label>
     	<div class="field_right">
     		<input type="submit" value="Save changes" />
     	</div>
       <div style="clear:both;"></div>
-    
       <h2>About the identifier</h2>
       <table>
       	<tr>
