@@ -39,6 +39,7 @@ import re
 import sys
 
 testDoiPrefix = "10.5072/FK2"
+testDoiShadowPrefix = "b5072/fk2"
 testArkPrefix = "99999/fk4"
 
 p = optparse.OptionParser(usage="%prog [options] files...")
@@ -112,6 +113,7 @@ def typeFilter (beginRecord):
     ((beginRecord[0] == "getMetadata" or beginRecord[0] == "setMetadata" or\
     beginRecord[0] == "deleteIdentifier") and\
     (beginRecord[1].startswith("doi:" + testDoiPrefix) or\
+    beginRecord[1].startswith("ark:/" + testDoiShadowPrefix) or\
     beginRecord[1].startswith("ark:/" + testArkPrefix)))
   if isTestIdentifier and options.typeTest: return True
   if not isTestIdentifier and options.typeReal: return True
