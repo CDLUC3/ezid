@@ -1,0 +1,22 @@
+{% load layout_extras %}
+	<div class="optional">
+		<div name="/resource/alternateIdentifiers" class="element container">
+			<label for="/resource/alternateIdentifiers" class="element">Alternate Identifier</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/alternateIdentifiers" nbelmtsadded="{{ num_altIds }}" class="addButton">
+			<input type="button" value="-" name="/resource/alternateIdentifiers" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_alt_ids_help" %}</div>
+{% for altId in datacite_obj_alternateIdentifiers.alternateIdentifier %}
+			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px; background: #ffffff */">
+				<div name="/resource/alternateIdentifiers/alternateIdentifier[{{ forloop.counter }}]" class="element">
+					<label for="/resource/alternateIdentifiers/alternateIdentifier[{{ forloop.counter }}]" class="element sized">Identifier:</label>
+					<input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[{{ forloop.counter }}]" value="{{ altId.text|default_if_none:"" }}" class="data sized" />
+					<div class="attribute">
+						<label for="/resource/alternateIdentifiers/alternateIdentifier[{{ forloop.counter }}]/@alternateIdentifierType" class="attribute sized">Identifier Type:</label>
+						<input type="text" name="/resource/alternateIdentifiers/alternateIdentifier[{{ forloop.counter }}]/@alternateIdentifierType" value="{{ altId.attrib.alternateIdentifierType }}" class="data sized" />
+					</div>
+				</div>
+				<div class="clearboth"></div>
+			</div>
+{% endfor %}
+		</div>
+	</div>

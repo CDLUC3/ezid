@@ -31,18 +31,7 @@
     <form id="edit_form" action="{% url "ui_manage.edit" id_text %}" method="post">
       <!-- original profile is the profile that was loaded before possibly being changed from drop-down list -->
       <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
-      <p>Describe the identified object using the 
-      <select name="current_profile" id="current_profile">
-        {% for prof in profiles %}
-          <option value="{{prof.name}}"
-            {% if prof.name == current_profile.name %}
-              selected="selected"
-            {% endif %}
-          >{{prof.displayName}}</option>
-        {% endfor %}
-      </select>
-      citation profile.</p>
-      
+      <p>This identified object uses the <strong>{{ current_profile.displayName }}</strong> citation profile.</p>
       <label for="_target" class="left {% tooltip_class "_target" %}">
         {{internal_profile.target.displayName}}:
       </label>
@@ -57,8 +46,8 @@
         <div class="field_right">
           {% display_form_element e identifier %}
           {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
-						{% datacite_field_help_icon e.name %}
-  				{% endif %}
+		{% datacite_field_help_icon e.name %}
+  	  {% endif %}
         </div>        
       {% endfor %}
     	<label class="left">&nbsp;</label>
@@ -166,10 +155,10 @@
   </div>
   
   <script type="text/javascript">
-    // submit form when profile changed
-    $("#current_profile").bind("change", function(event){
-      $("#edit_form").submit();
-    });
+        // submit form when profile changed
+          $("#current_profile").bind("change", function(event){
+            $("#edit_form").submit();
+          });
     function setHidden(){
     	if ($('#_status_unavailable').is(':checked')) {
    			// unavailable

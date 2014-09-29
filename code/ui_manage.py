@@ -11,6 +11,8 @@ import erc
 import datacite
 import urllib
 import time
+import os.path
+from lxml import etree, objectify
 
 
 # these are layout properties for the fields in the manage index page,
@@ -109,9 +111,9 @@ def edit(request, identifier):
     django.contrib.messages.error(request, "You are not allowed to edit this identifier")
     return redirect("/id/" + urllib.quote(identifier, ":/"))
   s, m = r
-  if uic.identifier_has_block_data(m):
-    django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
-    return redirect("/id/" + urllib.quote(identifier, ":/"))
+  # if uic.identifier_has_block_data(m):
+  #  django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
+  #  return redirect("/id/" + urllib.quote(identifier, ":/"))
   t_stat = [x.strip() for x in m['_status'].split("|", 1)]
   d['pub_status'] = t_stat[0]
   d['orig_status'] = t_stat[0]
@@ -121,38 +123,60 @@ def edit(request, identifier):
   d['export'] = m['_export'] if '_export' in m else 'yes'
   d['id_text'] = s.split()[1]
   d['identifier'] = m # identifier object containing metadata
+  d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
   d['internal_profile'] = metadata.getProfile('internal')
+  d['profiles'] = metadata.getProfiles()[1:]
   if request.method == "POST":
+    # datacite_xml editing uses ui_create.ajax_advanced, so doesn't use this step.
     d['pub_status'] = (request.POST['_status'] if '_status' in request.POST else d['pub_status'])
     d['stat_reason'] = (request.POST['stat_reason'] if 'stat_reason' in request.POST else d['stat_reasons'])
     d['export'] = request.POST['_export'] if '_export' in request.POST else d['export']
-    d['current_profile'] = metadata.getProfile(request.POST['current_profile'])
-    if request.POST['current_profile'] == request.POST['original_profile']:
-      #this means we're saving and going to a save confirmation page
-      if request.POST['_status'] == 'unavailable':
-        stts = request.POST['_status'] + " | " + request.POST['stat_reason']
+    ''' Profiles could previously be switched in edit template, thus generating
+        posibly two differing profiles (current vs original). So we previously did a 
+        check here to confirm current_profile equals original profile before saving.''' 
+    d['current_profile'] = metadata.getProfile(request.POST['original_profile'])
+    #this means we're saving and going to a save confirmation page
+    if request.POST['_status'] == 'unavailable':
+      stts = request.POST['_status'] + " | " + request.POST['stat_reason']
+    else:
+      stts = request.POST['_status']
+    if uic.validate_simple_metadata_form(request, d['current_profile']):
+      to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
+        { '_target' : uic.fix_target(request.POST['_target']), '_status': stts,
+          '_export' : ('yes' if (not 'export' in d) or d['export'] == 'yes' else 'no') })
+      result = ezid.setMetadata(identifier, uic.user_or_anon_tup(request), uic.group_or_anon_tup(request),
+        to_write)
+      if result.startswith("success:"):
+        django.contrib.messages.success(request, "Identifier updated.")
+        return redirect("/id/" + urllib.quote(identifier, ":/"))
       else:
-        stts = request.POST['_status']
-      if uic.validate_simple_metadata_form(request, d['current_profile']):
-        to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
-          { '_target' : uic.fix_target(request.POST['_target']), '_status': stts,
-            '_export' : ('yes' if (not 'export' in d) or d['export'] == 'yes' else 'no') })
-        result = ezid.setMetadata(identifier, uic.user_or_anon_tup(request), uic.group_or_anon_tup(request),
-          to_write)
-        if result.startswith("success:"):
-          django.contrib.messages.success(request, "Identifier updated.")
-          return redirect("/id/" + urllib.quote(identifier, ":/"))
-        else:
-          d['current_profile'] = metadata.getProfile(m['_profile'])
-          d['profiles'] = metadata.getProfiles()[1:]
-          django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
-          return uic.render(request, "manage/edit", d)
+        d['current_profile'] = metadata.getProfile(m['_profile'])
+        django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
+        return uic.render(request, "manage/edit", d)
   elif request.method == "GET":
     if '_profile' in m:
       d['current_profile'] = metadata.getProfile(m['_profile'])
     else:
       d['current_profile'] = metadata.getProfile('dc')
-  d['profiles'] = metadata.getProfiles()[1:]
+    if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
+      # There is no datacite_xml ezid profile. Just use 'datacite'
+      # [TODO: Enhance advanced DOI ERC profile to allow for elements ERC + datacite.publisher or 
+      #    ERC + dc.publisher.] For now, just hide this profile. 
+      if d['id_text'].startswith("doi:"):
+        d['profiles'][:] = [p for p in d['profiles'] if not p.name == 'erc']
+      datacite_obj = objectify.fromstring(d['identifier']["datacite"])
+      if datacite_obj:
+        d['datacite_obj'] = datacite_obj 
+        d['manual_profile'] = True
+        d['manual_template'] = 'create/_datacite_xml.html'
+        ''' Also feed in a whole, empty XML record so that elements can be properly
+            displayed in form fields on manage/edit page ''' 
+        f = open(os.path.join(
+            django.conf.settings.PROJECT_ROOT, "static", "datacite_emptyRecord.xml"))
+        d['datacite_obj_empty'] = objectify.parse(f).getroot()
+        f.close()
+      else:
+        d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
   return uic.render(request, "manage/edit", d)
 
 def _formatErcBlock (block):

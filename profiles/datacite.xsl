@@ -72,6 +72,29 @@ http://creativecommons.org/licenses/BSD/
         <xsl:value-of select="*[local-name()='publicationYear']"/>
       </td>
     </tr>
+    <xsl:if test="*[local-name()='language']">
+      <tr class="dcms_element dcms_language">
+        <th class="dcms_label dcms_language">Language:</th>
+        <td class="dcms_value dcms_language">
+          <xsl:value-of select="*[local-name()='language']"/>
+        </td>
+      </tr>
+    </xsl:if>
+    <xsl:if test="*[local-name()='resourceType']">
+      <tr class="dcms_element dcms_resourcetype">
+        <th class="dcms_label dcms_resourcetype">Resource type:</th>
+        <td class="dcms_value dcms_resourcetype">
+          <xsl:value-of
+            select="*[local-name()='resourceType']/@resourceTypeGeneral"/>
+          <xsl:if test="normalize-space(*[local-name()='resourceType']) != ''">
+            <xsl:text>/</xsl:text>
+            <xsl:value-of select="*[local-name()='resourceType']"/>
+          </xsl:if>
+        </td>
+      </tr>
+    </xsl:if>
+    <xsl:apply-templates
+      select="*[local-name()='descriptions']/*[local-name()='description']"/>
     <xsl:if test="*[local-name()='subjects']/*[local-name()='subject']">
       <tr class="dcms_element dcms_subjects">
         <th class="dcms_label dcms_subjects">Subjects:</th>
@@ -97,27 +120,6 @@ http://creativecommons.org/licenses/BSD/
         <td class="dcms_value dcms_dates">
           <xsl:apply-templates
             select="*[local-name()='dates']/*[local-name()='date']"/>
-        </td>
-      </tr>
-    </xsl:if>
-    <xsl:if test="*[local-name()='language']">
-      <tr class="dcms_element dcms_language">
-        <th class="dcms_label dcms_language">Language:</th>
-        <td class="dcms_value dcms_language">
-          <xsl:value-of select="*[local-name()='language']"/>
-        </td>
-      </tr>
-    </xsl:if>
-    <xsl:if test="*[local-name()='resourceType']">
-      <tr class="dcms_element dcms_resourcetype">
-        <th class="dcms_label dcms_resourcetype">Resource type:</th>
-        <td class="dcms_value dcms_resourcetype">
-          <xsl:value-of
-            select="*[local-name()='resourceType']/@resourceTypeGeneral"/>
-          <xsl:if test="normalize-space(*[local-name()='resourceType']) != ''">
-            <xsl:text>/</xsl:text>
-            <xsl:value-of select="*[local-name()='resourceType']"/>
-          </xsl:if>
         </td>
       </tr>
     </xsl:if>
@@ -176,8 +178,6 @@ http://creativecommons.org/licenses/BSD/
         </td>
       </tr>
     </xsl:if>
-    <xsl:apply-templates
-      select="*[local-name()='descriptions']/*[local-name()='description']"/>
     <xsl:if
       test="*[local-name()='geoLocations']/*[local-name()='geoLocation']">
       <tr class="dcms_element dcms_geolocations">

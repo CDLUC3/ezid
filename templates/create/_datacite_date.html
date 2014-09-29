@@ -1,0 +1,33 @@
+{% load layout_extras %}
+	<div class="optional">
+		<div name="/resource/dates" class="element container">
+			<label for="/resource/dates" class="element">Date</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/dates" nbelmtsadded="{{ num_dates }}" class="addButton" />
+			<input type="button" value="-" name="/resource/dates" class="rmvButton" />
+			<div class="helpico">{% help_icon "dcxml_dates_help" %}</div>
+{% for date in datacite_obj_dates.date %}
+			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px;background:#ffffff */">
+				<div name="/resource/dates/date[{{ forloop.counter }}]" class="element">
+					<label for="/resource/dates/date[{{ forloop.counter }}]" class="element sized">Date:</label>
+					<input type="text" name="/resource/dates/date[{{ forloop.counter }}]" value="{{ date.text|default_if_none:"" }}" class="data sized" />
+					<div class="attribute">
+						<label for="/resource/dates/date[{{ forloop.counter }}]/@dateType" class="attribute sized">Date Type:</label>
+						<select name="/resource/dates/date[{{ forloop.counter }}]/@dateType" sendselect="yes" class="choice sized">
+							<option value=""></option>
+							<option value="Accepted"{% if date.attrib.dateType == "Accepted"%} selected="selected"{% endif %}>Accepted</option>
+							<option value="Available"{% if date.attrib.dateType == "Available"%} selected="selected"{% endif %}>Available</option>
+							<option value="Collected"{% if date.attrib.dateType == "Collected"%} selected="selected"{% endif %}>Collected</option>
+							<option value="Copyrighted"{% if date.attrib.dateType == "Copyrighted"%} selected="selected"{% endif %}>Copyrighted</option>
+							<option value="Created"{% if date.attrib.dateType == "Created"%} selected="selected"{% endif %}>Created</option>
+							<option value="Issued"{% if date.attrib.dateType == "Issued"%} selected="selected"{% endif %}>Issued</option>
+							<option value="Submitted"{% if date.attrib.dateType == "Submitted"%} selected="selected"{% endif %}>Submitted</option>
+							<option value="Updated"{% if date.attrib.dateType == "Updated"%} selected="selected"{% endif %}>Updated</option>
+							<option value="Valid"{% if date.attrib.dateType == "Valid"%} selected="selected"{% endif %}>Valid</option>
+						</select>
+					</div>
+					<div class="clearboth"></div>
+				</div>
+			</div>
+{% endfor %}
+		</div>
+	</div>

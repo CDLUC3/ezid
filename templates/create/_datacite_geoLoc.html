@@ -1,0 +1,28 @@
+{% load layout_extras %}
+	<div class="optional">
+		<div name="/resource/geoLocations" class="element container">
+			<label for="/resource/geoLocations" class="element">Geolocation</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/geoLocations" nbelmtsadded="{{ num_geoLocations }}" class="addButton">
+			<input type="button" value="-" name="/resource/geoLocations" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_geolocations_help" %}</div>
+{% for geoLoc in datacite_obj_geoLocations.geoLocation %}
+			<div class="multiple">
+				<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]" class="element">
+					<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPoint" class="element">
+						<label for="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPoint" class="element sized">Point:</label>
+						<input type="text" name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPoint"{% if geoLoc.geoLocationPoint %} value="{{ geoLoc.geoLocationPoint.text|default_if_none:"" }}"{% endif %} class="data sized">
+					</div>
+					<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationBox" class="element">
+						<label for="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationBox" class="element sized">Box:</label>
+						<input type="text" name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationBox"{% if geoLoc.geoLocationBox %} value="{{ geoLoc.geoLocationBox.text|default_if_none:"" }}"{% endif %} class="data sized">
+					</div>
+					<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPlace" class="element">
+						<label for="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPlace" class="element sized">Place:</label>
+						<input type="text" name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPlace"{% if geoLoc.geoLocationPlace %} value="{{ geoLoc.geoLocationPlace.text|default_if_none:"" }}"{% endif %} class="data sized">
+					</div>
+					<div class="clearboth"></div>
+				</div>
+			</div>
+{% endfor %}
+		</div>
+	</div>
