@@ -93,10 +93,8 @@ http://creativecommons.org/licenses/BSD/
         </td>
       </tr>
     </xsl:if>
-    <xsl:if test="*[local-name()='descriptions']/*[local-name()='description'][text()]">
-      <xsl:apply-templates
-        select="*[local-name()='descriptions']/*[local-name()='description']"/>
-    </xsl:if>
+    <xsl:apply-templates
+      select="*[local-name()='descriptions']/*[local-name()='description']"/>
     <xsl:if test="*[local-name()='subjects']/*[local-name()='subject']">
       <tr class="dcms_element dcms_subjects">
         <th class="dcms_label dcms_subjects">Subjects:</th>
@@ -357,7 +355,7 @@ http://creativecommons.org/licenses/BSD/
       </span>
     </th>
     <td class="dcms_value dcms_descriptions">
-       <xsl:value-of select="."/>
+      <xsl:apply-templates/>
     </td>
   </tr>
 </xsl:template>
