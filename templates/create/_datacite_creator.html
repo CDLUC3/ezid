@@ -1,0 +1,37 @@
+{% load layout_extras %}
+	<div name="/resource/creators" class="element container">
+		<label for="/resource/creators" class="element"><span title="Creator is a required section">Creator</span> <span class="required">*</span></label>
+		<input type="button" value="+" onclick="addOne(this)" name="/resource/creators" nbelmtsadded="{{ num_creators }}" class="addButton">
+		<input type="button" value="-" name="/resource/creators" class="rmvButton">
+		<div class="helpico">{% help_icon "dcxml_creators_help" %}</div>
+	{% for creator in datacite_obj_creators.creator %}
+		<div class="multiple">
+			<div name="/resource/creators/creator[{{ forloop.counter }}]" class="element">
+				<div name="/resource/creators/creator[{{ forloop.counter }}]/creatorName" class="element">
+					<label for="/resource/creators/creator[{{ forloop.counter }}]/creatorName" class="element sized"><span title="Name is a required element">Name:</span>
+					{% if forloop.first %}
+					 <span class="required">*</span>
+					{% endif %}
+					</label>
+					<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/creatorName" value="{{ creator.creatorName.text|default_if_none:"" }}" class="data sized">
+				</div>
+				<div class="optional">
+					<div name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" class="element">
+						<label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" class="element sized">Name Identifier:</label>
+						<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" value="{{ creator.nameIdentifier.text|default_if_none:"" }}" class="data sized" />
+						<div class="attribute">
+							<label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" class="attribute sized">Identifier Scheme:</label>
+							<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" value="{{ creator.nameIdentifier.attrib.nameIdentifierScheme }}" class="data sized">
+						</div>
+						<div class="attribute">
+							<label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@schemeURI" class="attribute sized">Scheme URI:</label>
+							<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@schemeURI" value="{{ creator.nameIdentifier.attrib.schemeURI }}" class="data sized">
+						</div>
+						<div class="clearboth"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+

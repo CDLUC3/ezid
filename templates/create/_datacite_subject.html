@@ -1,0 +1,26 @@
+{% load layout_extras %}
+	<div class="optional">
+		<div name="/resource/subjects" class="element container">
+			<label for="/resource/subjects" class="element">Subject</label>
+			<input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="{{ num_subjects }}" class="addButton">
+			<input type="button" value="-" name="/resource/subjects" class="rmvButton">
+			<div class="helpico">{% help_icon "dcxml_subjects_help" %}</div>
+{% for subject in datacite_obj_subjects.subject %}
+                        <div class="multiple">
+                                <div name="/resource/subjects/subject[{{ forloop.counter }}]" class="element">
+                                        <label for="/resource/subjects/subject[{{ forloop.counter }}]" class="element sized">Subject:</label>
+                                        <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]" value="{{ subject.text|default_if_none:"" }}" class="data sized" />
+                                        <div class="attribute">
+                                                <label for="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" class="attribute sized">Scheme:</label>
+                                                <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" value="{{ subject.attrib.subjectScheme }}" class="data sized" />
+                                        </div>
+                                        <div class="attribute">
+                                                <label for="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" class="attribute sized">Scheme URI:</label>
+                                                <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" value="{{ subject.attrib.schemeURI }}" class="data sized">
+                                        </div>
+                                        <div class="clearboth"></div>
+                                </div>
+                        </div>
+{% endfor %}
+		</div>
+	</div>

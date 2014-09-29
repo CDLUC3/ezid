@@ -13,6 +13,7 @@ import re
 import sys
 
 testDoiPrefix = "10.5072/FK2"
+testDoiShadowPrefix = "b5072/fk2"
 testArkPrefix = "99999/fk4"
 
 def error (file, lineNo, message):
@@ -81,6 +82,7 @@ for r in records:
        b[1].startswith(testArkPrefix)) or\
      ((b[0] == "setMetadata" or b[0] == "deleteIdentifier") and\
        (b[1].startswith("doi:" + testDoiPrefix) or\
+       b[1].startswith("ark:/" + testDoiShadowPrefix) or\
        b[1].startswith("ark:/" + testArkPrefix))):
     continue
   # Special case: on a mint transaction, tack the new identifier onto

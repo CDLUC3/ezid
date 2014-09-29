@@ -19,6 +19,46 @@ from lxml import etree
 import re
 import copy
 
+# Order for XML elements. Schema specifies a sequence in some cases (geoLocations).
+RESOURCE_ORDER = ['resource', 'creators', 'creator', 'creatorName',
+  'titles', 'publisher', 'publicationYear', 'language', 'version', 'resourceType',
+  'descriptions', '@descriptionType', 'subjects', '@subjectScheme', 'contributors', 
+  'contributorName', '@contributorType', 'formats', 'dates', 'alternateIdentifiers',
+  'relatedIdentifiers', '@relationType', '@relatedIdentifierType', '@relatedMetadataScheme', 
+  '@schemeType', 'rightsList', '@rightsURI', 'sizes', 'geoLocations',
+  # This order is important 
+  'geoLocationPoint', 'geoLocationBox', 'geoLocationPlace', 
+  # it's important that nameIdentifier comes after contributorName
+  'nameIdentifier', '@nameIdentifierScheme', '@schemeURI',]
+
+def splitPath (p):
+  # Splits the first "chunk" off an xpath:
+  # "/x/y" -> ("x", "/y")
+  # "/x[n]/y" -> ("x", "[n]/y")
+  # "[n]/y" -> (n, "/y")
+  # "/x" -> ("x", "")
+  # "[n]" -> (n, "")
+  if p.startswith("/"):
+    m = re.match("/([^/\[]+)", p)
+    return (m.group(1), p[len(m.group(0)):])
+  else:
+    m = re.match("\[([^\]]*)\]", p)
+    return (int(m.group(1)), p[len(m.group(0)):])
+
+def compareXpaths (a, b):
+  while len(a) > 0 and len(b) > 0:
+    if a.startswith("/") and b.startswith("/"):
+      x, a = splitPath(a)
+      y, b = splitPath(b)
+      if x != y: return cmp(RESOURCE_ORDER.index(x), RESOURCE_ORDER.index(y))
+    elif a.startswith("[") and b.startswith("["):
+      m, a = splitPath(a)
+      n, b = splitPath(b)
+      if m != n: return cmp(m, n)
+    else:
+      return cmp(a, b)
+  return cmp(a, b)
+
 # this section generates the XML document based on form with XPATH expressions
 def generate_xml(param_items):
   """This generates and returns a limited datacite XML document from form items.
@@ -28,25 +68,20 @@ def generate_xml(param_items):
                        u' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + \
                        u' xsi:schemaLocation="http://datacite.org/schema/kernel-3' + \
                        u' http://schema.datacite.org/meta/kernel-3/metadata.xsd"/>')
-  
-  id_type = _id_type(param_items[u'shoulder'])
 
   items = [x for x in param_items.items() if x[0].startswith(u"/resource") ]
-  RESOURCE_ORDER = [u"/resource/" + x for x in [u'creators', u'titles', u'publisher', u'publicationYear', u'subjects', 
-                    u'contributors', u'dates', u'resourceType', u'alternateIdentifiers',
-                    u'relatedIdentifiers', u'rightsList', u'descriptions', u'geoLocations'] ]
-  items = sorted(items, key=lambda i: i[0]) #sort by element name of params
-  #sort by ordinal(s) in string, this may not work all complex cases but should work for datacite
-  items = sorted(items, key=lambda i: _sort_get_ordinal(i[0])) #sort by ordinal
-  items = sorted(items, key=lambda i: RESOURCE_ORDER.
-                 index(re.search('^/resource/[a-zA-Z0-9\[\]]+', i[0]).group())) #sort in preferred order of sections
+  items = sorted(items, cmp=compareXpaths, key=lambda i: i[0])
 
+  if (param_items['action'] and param_items['action'] == 'create'):
+    id_type = _id_type(param_items[u'shoulder'])
+  else:
+    _create_xml_element(r, u'/resource/identifier', param_items[u'identifier']) 
+    id_type = _id_type(param_items[u'identifier'])
   _create_xml_element(r, u'/resource/identifier/@identifierType', id_type) #must create empty element and specify type to mint
-  
+ 
   for k, v in items:
     if v != u'':
       _create_xml_element(r, k, v)
-    
   return u"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + \
     etree.tostring(r, encoding=unicode, method="xml", pretty_print=True)
 
@@ -145,7 +180,6 @@ def validate_document(xml_doc, xsd_path, err_msgs):
   el = xml.find('{http://datacite.org/schema/kernel-3}identifier')
   el.attrib['identifierType'] = 'DOI'
   el.text = '10.5072/FK25Q56C6'
-  
   if not xsd.validate(xml):
     #err_msgs.append("XML validation errors occurred for the values you entered:")
     simple_errors = [re.sub("\\{http://[^ ]+?\\}", '', x.message) for x in xsd.error_log] #removes namespace crap

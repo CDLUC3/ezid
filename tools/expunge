@@ -1,10 +1,15 @@
 #! /usr/bin/env python
 
 # Expunges expired test identifiers.  Identifiers are read from a noid
-# database or from the EZID store database.  Usage:
+# database or from the EZID store database; expired identifiers are
+# expunged by deleting them from the corresponding (live) EZID system.
+# Usage:
 #
 #   expunge {dbpath|-}
 #     dbpath: noid database pathname (.bdb)
+#
+# This script can also be used to dump a noid database.  The output is
+# UTF-8 encoded.  Alternate usage:
 #
 #   expunge dbpath -p [azbocrtke]
 #     print/debug mode; argument is one or more flags:
@@ -18,17 +23,11 @@
 #     k: print _c bindings of test identifiers to be kept
 #     e: print _c bindings of expired test identifiers
 #
-# The URL of the noid egg service is read from the EZID configuration
-# file, as is the location of the EZID store database.
-#
 # This script requires several EZID modules.  The PYTHONPATH
 # environment variable must include the .../SITE_ROOT/PROJECT_ROOT
 # directory; if it doesn't, we attempt to dynamically locate it and
 # add it.  The DJANGO_SETTINGS_MODULE environment variable must be
 # set; if it isn't, we set it to "settings.production".
-#
-# Interim modification: we account for the fact that identifiers are
-# prefixed with "ark:/" when stored in noid.
 #
 # Greg Janee <gjanee@ucop.edu>
 # April 2011
@@ -38,6 +37,8 @@ import os
 import re
 import sys
 import time
+import urllib
+import urllib2
 
 if "DJANGO_SETTINGS_MODULE" not in os.environ:
   os.environ["DJANGO_SETTINGS_MODULE"] = "settings.production"
@@ -61,7 +62,6 @@ django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
 django.conf.settings.DAEMON_THREADS_ENABLED = False
 
 import config
-import datacite
 import noid_egg
 import store
 import util
@@ -69,6 +69,9 @@ import util
 testArkPrefix = config.config("shoulders.ark_test")[5:]
 testDoiPrefix = util.doi2shadow(config.config("shoulders.doi_test")[4:])
 lifetime = 2*7*24*60*60 # seconds
+baseUrl = config.config("DEFAULT.ezid_base_url")
+if baseUrl.startswith("http:"): baseUrl = "https:" + baseUrl[5:]
+adminPassword = config.config("ldap.admin_password")
 
 usageText = """Usage:
 
@@ -102,12 +105,9 @@ else:
   sys.exit(1)
 
 def output (flag, k, v):
-  if flag in debug: print k, "->", v
+  if flag in debug: print ("%s -> %s" % (k, v)).encode("UTF-8")
 
 expungeList = []
-shadowedId = {}
-status = {}
-group = {}
 
 if dbPath:
   db = bsddb.db.DB()
@@ -128,12 +128,6 @@ if dbPath:
       else:
         id = id[5:]
         if label != "_c" or not re.match("[0-9]+$", v):
-          if label == "_s":
-            shadowedId[id] = v
-          elif label == "_is":
-            status[id] = v
-          elif label == "_g":
-            group[id] = v
           output("o", k, v)
         elif not id.startswith(testArkPrefix) and\
           not id.startswith(testDoiPrefix):
@@ -156,23 +150,42 @@ else:
       if (id.startswith(testArkPrefix) or id.startswith(testDoiPrefix)) and\
         int(time.time())-int(m["_c"]) >= lifetime:
         expungeList.append(id)
-        group[id] = m["_g"]
-        if "_is" in m: status[id] = m["_is"]
-        if "_s" in m: shadowedId[id] = m["_s"]
     lastId = ids[-1][0]
+
+opener = urllib2.build_opener()
+h = urllib2.HTTPBasicAuthHandler()
+h.add_password("EZID", baseUrl, "admin", adminPassword)
+opener.add_handler(h)
+
+def deleteIdentifier (identifier):
+  # Though we read identifiers directly (from a noid database or EZID
+  # store database), to avoid conflicts with the corresponding running
+  # system we don't delete identifiers directly, but ask the system to
+  # do so.
+  r = urllib2.Request("%s/id/%s" % (baseUrl, urllib.quote(identifier, ":/")))
+  r.get_method = lambda: "DELETE"
+  c = None
+  try:
+    c = opener.open(r)
+    s = c.read()
+    assert s.startswith("success:"), "unexpected response received: " + s
+  except urllib2.HTTPError, e:
+    if e.fp != None:
+      try:
+        m = e.fp.read()
+      except Exception:
+        pass
+      else:
+        if not e.msg.endswith("\n"): e.msg += "\n"
+        e.msg += m
+    raise e
+  finally:
+    if c: c.close()
 
 if debug == "":
   for id in expungeList:
     try:
-      # We can't actually delete a DOI.  As the next best thing, we
-      # set its target URL to an "invalid identifier" page.
-      if id.startswith(testDoiPrefix) and\
-        status.get(id, "public") != "reserved":
-        doi = shadowedId[id]
-        assert doi.startswith("doi:")
-        datacite.setTargetUrl(doi[4:], "http://datacite.org/invalidDOI")
-      noid_egg.deleteIdentifier(id)
-      store.delete(id)
+      deleteIdentifier("ark:/" + id)
     except Exception:
       sys.stderr.write("expunge: processing %s\n" % id)
       raise
