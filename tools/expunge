@@ -8,6 +8,9 @@
 #   expunge {dbpath|-}
 #     dbpath: noid database pathname (.bdb)
 #
+# This script can also be used to dump a noid database.  The output is
+# UTF-8 encoded.  Alternate usage:
+#
 #   expunge dbpath -p [azbocrtke]
 #     print/debug mode; argument is one or more flags:
 #     a: print all entries (a=z+b)
@@ -102,7 +105,7 @@ else:
   sys.exit(1)
 
 def output (flag, k, v):
-  if flag in debug: print k, "->", v
+  if flag in debug: print ("%s -> %s" % (k, v)).encode("UTF-8")
 
 expungeList = []
 
