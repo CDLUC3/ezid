@@ -4,6 +4,7 @@ from django.utils.html import escape
 from decorators import basictag
 from django.core.urlresolvers import reverse
 from operator import itemgetter
+import config 
 import django.template
 import urllib
 import re
@@ -197,9 +198,9 @@ def unavailable_codes(for_field):
 # This function should and will be moved to a better location.  -GJ
 def _urlForm (id):
   if id.startswith("doi:"):
-    return "http://dx.doi.org/" + urllib.quote(id[4:], ":/")
+    return "%s/%s" % (config.config("resolver.doi"), urllib.quote(id[4:], ":/"))
   elif id.startswith("ark:/") or id.startswith("urn:uuid:"):
-    return "http://n2t.net/" + urllib.quote(id, ":/")
+    return "%s/%s" % (config.config("resolver.ark"), urllib.quote(id, ":/"))
   else:
     return "[None]"
 
