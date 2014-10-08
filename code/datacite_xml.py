@@ -59,6 +59,19 @@ def compareXpaths (a, b):
       return cmp(a, b)
   return cmp(a, b)
 
+# Description element has a decriptionType attribute which is automatically
+#   populated in the template. Remove this element if description itself is empty.
+# Just doing this for the first instance
+def _removeEmptyDescriptions(items):
+  index_descr = [x[0] for x in items].index(u'/resource/descriptions/description[1]') 
+  index_descrType = (
+    [x[0] for x in items].index(u'/resource/descriptions/description[1]/@descriptionType') 
+  )
+  if re.match("^\s*$", items[index_descr][1]):
+    del items[index_descr]
+    del items[index_descrType]
+  return items
+
 # this section generates the XML document based on form with XPATH expressions
 def generate_xml(param_items):
   """This generates and returns a limited datacite XML document from form items.
@@ -70,6 +83,7 @@ def generate_xml(param_items):
                        u' http://schema.datacite.org/meta/kernel-3/metadata.xsd"/>')
 
   items = [x for x in param_items.items() if x[0].startswith(u"/resource") ]
+  items = _removeEmptyDescriptions(items)
   items = sorted(items, cmp=compareXpaths, key=lambda i: i[0])
 
   if (param_items['action'] and param_items['action'] == 'create'):
@@ -78,7 +92,7 @@ def generate_xml(param_items):
     _create_xml_element(r, u'/resource/identifier', param_items[u'identifier']) 
     id_type = _id_type(param_items[u'identifier'])
   _create_xml_element(r, u'/resource/identifier/@identifierType', id_type) #must create empty element and specify type to mint
- 
+
   for k, v in items:
     if v != u'':
       _create_xml_element(r, k, v)
