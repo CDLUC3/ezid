@@ -63,9 +63,10 @@ def _backprocDaemon ():
 
 def _loadConfig ():
   global _enabled, _idleSleep, _threadName
-  _enabled = django.conf.settings.DAEMON_THREADS_ENABLED
+  _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
+    config.config("daemons.backproc_enabled").lower() == "true"
   if _enabled:
-    _idleSleep = int(config.config("DEFAULT.background_processing_idle_sleep"))
+    _idleSleep = int(config.config("daemons.background_processing_idle_sleep"))
     _threadName = uuid.uuid1().hex
     t = threading.Thread(target=_backprocDaemon, name=_threadName)
     t.setDaemon(True)
