@@ -48,7 +48,7 @@ def _updateSearchDatabase (identifier, operation, metadata):
 def _backprocDaemon ():
   while _enabled and threading.currentThread().getName() == _threadName:
     try:
-      l = store.getUpdateQueue()
+      l = store.getUpdateQueue(maximum=1000)
       if len(l) > 0:
         for seq, identifier, metadata, operation in l:
           if not _enabled or\
