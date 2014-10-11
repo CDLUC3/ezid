@@ -54,7 +54,8 @@ def _newsDaemon ():
 
 def _loadConfig ():
   global _enabled, _url, _pollingInterval, _threadName, _item
-  _enabled = django.conf.settings.DAEMON_THREADS_ENABLED
+  _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
+    config.config("daemons.newsfeed_enabled").lower() == "true"
   if _enabled:
     _url = config.config("newsfeed.url")
     _pollingInterval = int(config.config("newsfeed.polling_interval"))

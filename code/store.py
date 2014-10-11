@@ -483,14 +483,15 @@ def _operationCodeToString (code):
   else:
     assert False, "unrecognized operation code"
 
-def getUpdateQueue ():
+def getUpdateQueue (maximum=None):
   """
   Returns the update queue as a list of (sequence number, identifier,
   metadata, operation) tuples.  The list is in sequence order.  In all
   cases 'identifier' is an unqualified ARK identifier, e.g.,
   "13030/foo".  'metadata' is a dictionary of element (name, value)
   pairs.  'operation' is one of the strings "create", "modify", or
-  "delete".
+  "delete".  'maximum' can be used to limit the number of tuples
+  returned.
   """
   connection = None
   tainted = False
@@ -498,8 +499,12 @@ def getUpdateQueue ():
   try:
     connection, poolId = _getConnection()
     c = connection.cursor()
+    if maximum != None:
+      limit = " LIMIT %d" % maximum
+    else:
+      limit = ""
     _execute(c, "SELECT seq, identifier, metadata, operation FROM " +\
-      "updateQueue ORDER BY seq")
+      "updateQueue ORDER BY seq" + limit)
     return [(r[0], r[1], _deblobify(r[2]), _operationCodeToString(r[3]))\
       for r in c.fetchall()]
   except Exception, e:
