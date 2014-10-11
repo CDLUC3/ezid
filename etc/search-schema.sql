@@ -51,3 +51,4 @@ CREATE TABLE ownership (
 );
 
 CREATE INDEX ownershipOwnerIndex ON ownership (owner);
+CREATE INDEX ownershipIdentifierIndex ON ownership (identifier);
