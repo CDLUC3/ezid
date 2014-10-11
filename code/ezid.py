@@ -161,6 +161,7 @@ import noid_nog
 import policy
 import shoulder
 import store
+import userauth
 import util
 
 _ezidUrl = None
@@ -169,17 +170,25 @@ _defaultDoiProfile = None
 _defaultArkProfile = None
 _defaultUrnUuidProfile = None
 _adminUsername = None
+_adminPassword = None
+_adminAuthenticatedUser = None
 _perUserThrottle = None
 
 def _loadConfig ():
   global _ezidUrl, _noidEnabled, _defaultDoiProfile, _defaultArkProfile
-  global _defaultUrnUuidProfile, _adminUsername, _perUserThrottle
+  global _defaultUrnUuidProfile, _adminUsername, _adminPassword
+  global _adminAuthenticatedUser, _perUserThrottle
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _noidEnabled = (config.config("binder.enabled").lower() == "true")
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
   _defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
   _adminUsername = config.config("ldap.admin_username")
+  if config.config("ldap.enabled").lower() == "true":
+    _adminPassword = config.config("ldap.admin_password")
+  else:
+    _adminPassword = config.config("user_%s.password" % _adminUsername)
+  _adminAuthenticatedUser = None
   _perUserThrottle =\
     int(config.config("DEFAULT.concurrent_operations_per_user"))
 
@@ -1184,3 +1193,51 @@ def deleteIdentifier (identifier, user, group):
     return "success: " + nqidentifier
   finally:
     _releaseIdentifierLock(ark, user[0])
+
+def asAdmin (function, *args):
+  """
+  Calls 'function' defined in this module (e.g., ezid.setMetadata)
+  with the given arguments, using EZID administrator credentials.  The
+  given arguments should omit the 'user' and 'group' arguments the
+  function nominally accepts.  If the administrator credentials can't
+  be obtained, the string "error: internal server error" is returned.
+  """
+  global _adminAuthenticatedUser
+  # We're careful below in getting and caching the administrator
+  # credentials.  There's still the possibility of a race condition
+  # with _loadConfig, though.
+  auth = _adminAuthenticatedUser
+  if auth == None:
+    try:
+      auth = userauth.authenticate(_adminUsername, _adminPassword)
+      assert type(auth) is userauth.AuthenticatedUser,\
+        "authentication failure: " + (auth if type(auth) is str else\
+        "credentials not accepted")
+    except Exception, e:
+      log.otherError("ezid.asAdmin", e)
+      return "error: internal server error"
+    _adminAuthenticatedUser = auth
+  if function == mintDoi:
+    return mintDoi(args[0], auth.user, auth.group, *args[1:])
+  elif function == createDoi:
+    return createDoi(args[0], auth.user, auth.group, *args[1:])
+  elif function == mintArk:
+    return mintArk(args[0], auth.user, auth.group, *args[1:])
+  elif function == createArk:
+    return createArk(args[0], auth.user, auth.group, *args[1:])
+  elif function == mintUrnUuid:
+    return mintUrnUuid(auth.user, auth.group, *args)
+  elif function == createUrnUuid:
+    return createUrnUuid(args[0], auth.user, auth.group, *args[1:])
+  elif function == mintIdentifier:
+    return mintIdentifier(args[0], auth.user, auth.group, *args[1:])
+  elif function == createIdentifier:
+    return createIdentifier(args[0], auth.user, auth.group, *args[1:])
+  elif function == getMetadata:
+    return getMetadata(args[0], auth.user, auth.group)
+  elif function == setMetadata:
+    return setMetadata(args[0], auth.user, auth.group, *args[1:])
+  elif function == deleteIdentifier:
+    return deleteIdentifier(args[0], auth.user, auth.group)
+  else:
+    assert False, "unhandled case"
