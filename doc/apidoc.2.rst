@@ -794,6 +794,13 @@ first column indicates the element is modifiable by clients.
                   the identifier is registered (or will be
                   registered, in the case of a reserved
                   identifier).
+  |X| _crossref   If returned, indicates that the identifier   yes |
+                  is registered with CrossRef (or, in the case successfully
+                  of a reserved identifier, will be            registered
+                  registered), and also indicates the status
+                  of the registration process.  When setting,
+                  must be set to "yes" or "no".  See
+                  CrossRef above for more information.
   === =========== ============================================ ================
 
 Metadata profiles

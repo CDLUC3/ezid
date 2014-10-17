@@ -55,6 +55,7 @@ FIELDS = {
   "_st1": lambda i, r: "_is" in r and "_s" in r,
   "_x": None,
   "_d": lambda i, r: isDoi(i),
+  "_cr": lambda i, r: None if isDoi(i) else False,
   "_ezid_role": None
 }
 
@@ -68,6 +69,10 @@ ADMIN_GROUP_ID = "ark:/99166/p9g44hq02"
 
 EPOCH = int(time.mktime(datetime.date(2010, 7, 1).timetuple()))
 NOW = int(time.time())
+
+CROSSREF_VALUES = re.compile("yes \| (awaiting status change to public$|" \
+  "registration in progress$|successfully registered$|" +\
+  "registered with warning \| [^ ]|registration failure \| [^ ])")
 
 _baseurl = None
 _seenIdentifiers = set()
@@ -124,7 +129,7 @@ def verifyIdentifier (identifier, record):
       (type(p) is types.LambdaType and p(identifier, record)):
       assert f in record, "missing required field: " + f
     elif (type(p) is bool and not p) or\
-      (type(p) is types.LambdaType and not p(identifier, record)):
+      (type(p) is types.LambdaType and p(identifier, record) == False):
       assert f not in record, "disallowed field present: " + f
   # ownership
   verifyAgentReference(record["_o"], "user")
@@ -169,6 +174,12 @@ def verifyIdentifier (identifier, record):
   if isDoi(identifier):
     assert re.match("[-A-Z0-9]+\.[-A-Z0-9]+$", record["_d"]),\
       "invalid datacenter: " + record["_d"]
+  # CrossRef flag
+  if "_cr" in record:
+    assert CROSSREF_VALUES.match(record["_cr"]),\
+      "invalid _crossref value: " + record["_cr"]
+    assert "_x" not in record, "identifier registered with CrossRef " +\
+      "is not exported"
   # agent identifiers
   if "_ezid_role" in record:
     assert isArk(identifier), "agent identifier is not an ARK: " + identifier

@@ -60,7 +60,9 @@ labelMapping = {
   "_s": "_shadows",
   "_p": "_profile",
   "_is": "_status",
-  "_x": "_export"
+  "_x": "_export",
+  "_d": "_datacenter",
+  "_cr": "_crossref"
 }
 
 p = optparse.OptionParser(usage="%prog [-nsz]")

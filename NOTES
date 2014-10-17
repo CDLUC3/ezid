@@ -280,3 +280,25 @@ names (by omitting the '-n' option in the above commands), as in:
 
 The select and project tools are intended to work on normal dumps,
 though certain operations work on raw dumps as well.
+
+11. CrossRef
+------------
+
+CrossRef does not provide an 'active' flag like DataCite does, and
+this limits our ability to implement identifier status changes.  Our
+next-best-thing approach is as follows:
+
+  - The _crossref element may be set and unset while the identifier is
+    reserved.
+
+  - If the _crossref element is set, the identifier must be exported.
+
+  - When the identifier is made public, it is registered with
+    CrossRef.  And once the identifier is public, the _crossref
+    element may not be unset.
+
+  - If the identifier's status is set to unavailable, the identifier
+    remains registered with CrossRef, but its target URL is set to the
+    tombstone URL and the resource title is set to "WITHDRAWN".  If
+    the identifier is deleted (by the EZID administrator), same thing,
+    but the target URL is set to http://datacite.org/invalidDOI.

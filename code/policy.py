@@ -274,3 +274,6 @@ def authorizeDelete (rUser, rGroup, identifier, iUser, iGroup, iCoOwners):
     return True
   else:
     return False
+
+def authorizeCrossref (user, group, identifier):
+  return True
