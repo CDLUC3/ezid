@@ -67,7 +67,7 @@ class Minter (object):
     finally:
       if c: c.close()
     assert len(s) >= 2 and s[0].startswith("id:") and\
-      s[1] == "nog-status: 0\n",\
+      s[-2] == "nog-status: 0\n",\
       "unexpected return from minter, output follows\n" + "".join(s)
     return s[0][3:].strip()
 

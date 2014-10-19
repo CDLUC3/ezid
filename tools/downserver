@@ -4,16 +4,22 @@
 # system is down.  Specifically, all UI requests, regardless of HTTP
 # method, return a 200 OK status and an HTML page containing the
 # message "EZID is down for maintenance".  All API requests,
-# regardless of HTTP method, return a 500 Internal Server Error status
+# regardless of HTTP method, return a 503 Service Unavailable status
 # and the plain text response "error: EZID is down for maintenance".
-# In all cases, a different message may be specified on the command
-# line.  Usage:
+# Additionally, API requests return a Retry-After header.  In all
+# cases, a different message may be specified on the command line.
+# Usage:
 #
-#    downserver [-ssl keyfile certfile] host port [message]
+#    downserver [-ssl keyfile certfile] host port downtime [message]
+#
+# 'host' and 'port' are the hostname (or IP address) and port the
+# server should listen on.  'downtime' is the number of seconds it is
+# anticipated that EZID will be down; it is used to compute
+# Retry-After headers.  If the '-ssl' option is given, an https server
+# is created.
 #
 # If a file logo.png is found in the same directory as this script,
-# the image is inserted in the HTML page.  If the -ssl option is
-# given, an https server is created.
+# the image is inserted in HTML pages.
 #
 # Greg Janee <gjanee@ucop.edu>
 # September 2011
@@ -24,6 +30,7 @@ import re
 import SocketServer
 import ssl
 import sys
+import time
 import xml.sax.saxutils
 
 document = """<?xml version="1.0"?>
@@ -50,7 +57,7 @@ Pacific time.</p>
 
 def usageError ():
   sys.stderr.write("Usage: downserver [-ssl keyfile certfile] host port " +\
-    "[message]\n")
+    "downtime [message]\n")
   sys.exit(1)
 
 if len(sys.argv) >= 2 and sys.argv[1] == "-ssl":
@@ -64,12 +71,14 @@ if len(sys.argv) >= 2 and sys.argv[1] == "-ssl":
 else:
   https = False
 
-if len(sys.argv) not in [3, 4] or not re.match("\d+$", sys.argv[2]):
+if len(sys.argv) not in [4, 5] or not re.match("\d+$", sys.argv[2]) or not\
+  re.match("\d+$", sys.argv[3]):
   usageError()
 host = sys.argv[1]
 port = int(sys.argv[2])
-if len(sys.argv) == 4:
-  message = sys.argv[3]
+downtime = int(sys.argv[3])
+if len(sys.argv) == 5:
+  message = sys.argv[4]
 else:
   message = "EZID is down for maintenance"
 
@@ -84,6 +93,8 @@ else:
   logoLink = ""
 
 document = document % (logoLink, xml.sax.saxutils.escape(message))
+
+startTime = int(time.time())
 
 # The following two functions are copied from dispatch.py:
 
@@ -103,6 +114,9 @@ class MyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
     self.send_response(status)
     self.send_header("Content-Type", type)
     self.send_header("Content-Length", length)
+    if status == 503:
+      d = startTime + downtime - int(time.time())
+      if d > 0: self.send_header("Retry-After", str(d))
     self.end_headers()
     self.wfile.write(content)
     self.wfile.flush()
@@ -114,7 +128,7 @@ class MyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
       else:
         self.sendResponse(200, "text/html", len(document), document)
     else:
-      self.sendResponse(500, "text/plain", len(message)+7, "error: " + message)
+      self.sendResponse(503, "text/plain", len(message)+7, "error: " + message)
   do_DELETE = do_GET
   do_HEAD = do_GET
   do_POST = do_GET
