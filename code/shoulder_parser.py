@@ -49,6 +49,10 @@
 #       an extension of) another shoulder.  Useful for silencing
 #       warnings related to subshoulders.
 #
+#    crossref
+#       Must be "true" or "false"; if "true", indicates the shoulder
+#       supports CrossRef registration.
+#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
@@ -71,7 +75,8 @@ _fields = {
     "minter": True,
     "datacenter": False,
     "is_supershoulder": False,
-    "is_subshoulder": False }
+    "is_subshoulder": False,
+    "crossref": False }
 }
 
 _shoulderManagers = ["ezid", "oca", "other"]
@@ -139,10 +144,19 @@ def _validateShoulder (entry, errors, warnings):
         re.match("[A-Z][-A-Z0-9]{0,6}[A-Z0-9]\.[A-Z][-A-Z0-9]{0,6}[A-Z0-9]$",
         entry.datacenter), "invalid datacenter syntax",
         entry.lineNum.datacenter)
+    if "crossref" in entry:
+      if mytest(entry.crossref in ["true", "false"],
+        "invalid boolean value", entry.lineNum.crossref):
+        entry["crossref"] = (entry.crossref == "true")
+    else:
+      entry["crossref"] = False
   else:
     if "datacenter" in entry:
       warnings.append((entry.lineNum.datacenter,
         "non-DOI shoulder has datacenter"))
+    if "crossref" in entry:
+      warnings.append((entry.lineNum.crossref,
+        "CrossRef registration only supported by DOIs"))
   for field in ["is_supershoulder", "is_subshoulder"]:
     if field in entry:
       if mytest(entry[field] in ["true", "false"], "invalid boolean value",
