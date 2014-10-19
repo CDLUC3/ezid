@@ -8,6 +8,9 @@
 #
 # Options:
 #
+#     -v        print transaction IDs
+#     -w        print progress records for selected transactions
+#
 #   Filter by user:
 #     -u USER   user ("none" for no user)
 #     -g GROUP  group
@@ -43,6 +46,10 @@ testDoiShadowPrefix = "b5072/fk2"
 testArkPrefix = "99999/fk4"
 
 p = optparse.OptionParser(usage="%prog [options] files...")
+p.add_option("-v", action="store_true", dest="printTids", default=False,
+  help="print transaction IDs")
+p.add_option("-w", action="store_true", dest="printProgressRecords",
+  default=False, help="print progress records for selected transactions")
 g = optparse.OptionGroup(p, "Filter by user")
 g.add_option("-u", action="append", type="string", dest="users",
   help="user (\"none\" for no user)")
@@ -212,5 +219,14 @@ for r in records:
       del r.beginRecord[2]
     elif len(options.users) == 0 and len(options.groups) == 1:
       del r.beginRecord[3]
-  print "%s %s -> %s" % (r.timestamp, " ".join(r.beginRecord),
+  if options.printTids:
+    if r.tid != None:
+      tid = " " + r.tid
+    else:
+      tid = " -"
+  else:
+    tid = ""
+  print "%s%s %s -> %s" % (r.timestamp, tid, " ".join(r.beginRecord),
     " ".join(r.endRecord))
+  if options.printProgressRecords:
+    for pr in r.progressRecords: print "\t" + pr
