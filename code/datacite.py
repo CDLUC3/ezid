@@ -126,7 +126,7 @@ def registerIdentifier (doi, targetUrl):
       message = e.fp.read()
       if e.code == 400 and message.startswith("[url]"): return message
       if e.code != 500 or i == _numAttempts-1: raise e
-    except urllib2.URLError:
+    except:
       if i == _numAttempts-1: raise
     else:
       break
@@ -167,7 +167,7 @@ def getTargetUrl (doi):
     except urllib2.HTTPError, e:
       if e.code == 404: return None
       if e.code != 500 or i == _numAttempts-1: raise e
-    except urllib2.URLError:
+    except:
       if i == _numAttempts-1: raise
     finally:
       _modifyActiveCount(-1)
@@ -395,7 +395,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
         return "element 'datacite': " + message
       else:
         raise e
-    except urllib2.URLError:
+    except:
       if i == _numAttempts-1: raise
     else:
       return None
@@ -421,7 +421,7 @@ def _deactivate (doi):
         "unexpected return from DataCite deactivate DOI operation"
     except urllib2.HTTPError, e:
       if e.code != 500 or i == _numAttempts-1: raise e
-    except urllib2.URLError:
+    except:
       if i == _numAttempts-1: raise
     else:
       break
@@ -488,10 +488,8 @@ def pingDataciteOnly ():
       _modifyActiveCount(1)
       c = o.open(r)
       assert c.read() == _pingTarget
-    except urllib2.URLError:
-      if i == _numAttempts-1: return "down"
     except:
-      return "down"
+      if i == _numAttempts-1: return "down"
     else:
       return "up"
     finally:
