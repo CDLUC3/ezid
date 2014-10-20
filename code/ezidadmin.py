@@ -140,10 +140,11 @@ def getGroups ():
   occurs.  Each group is represented as a dictionary with keys 'dn',
   'gid' (selected from LDAP attributes gid or uid), 'arkId' (selected
   from LDAP attributes groupArkId or arkId), 'shoulderList',
-  'description', 'agreementOnFile' (a boolean), and 'users'.  The
-  latter is a list of the group's users; each user is represented as a
-  dictionary with keys 'dn' and 'uid'.  User lists are ordered by uid;
-  the list of groups as a whole is ordered by gid.
+  'description', 'agreementOnFile' (a boolean), 'crossrefEnabled'
+  (boolean), 'crossrefMail' (email addresses separated by ", "), and
+  'users'.  The latter is a list of the group's users; each user is
+  represented as a dictionary with keys 'dn' and 'uid'.  User lists
+  are ordered by uid; the list of groups as a whole is ordered by gid.
   """
   if not _ldapEnabled: return "Functionality unavailable."
   l = None
@@ -187,6 +188,15 @@ def getGroups ():
         d["agreementOnFile"] = (attrs["agreementOnFile"][0].lower() == "true")
       else:
         d["agreementOnFile"] = False
+      if "crossrefEnabled" in attrs:
+        d["crossrefEnabled"] = (attrs["crossrefEnabled"][0].lower() == "true")
+      else:
+        d["crossrefEnabled"] = False
+      if "crossrefMail" in attrs:
+        d["crossrefMail"] = ", ".join(
+          m.decode("UTF-8") for m in attrs["crossrefMail"])
+      else:
+        d["crossrefMail"] = ""
       d["users"] = []
       groups[dn] = d
     r = l.search_s(_baseDn, ldap.SCOPE_SUBTREE, "(objectClass=ezidUser)",
@@ -347,10 +357,12 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
   Makes an existing LDAP entry an EZID group, returning None on
   success or a string message on error.  'dn' should be the entry's
   DN; the entry must not already be an EZID group, nor may it already
-  have any EZID group attributes (gid, groupArkId, agreementOnFile, or
-  shoulderList).  'user' and 'group' are used in identifier creation
-  and modification; each should be authenticated (local name,
-  persistent identifier) tuples, e.g., ("dryad", "ark:/13030/foo").
+  have any EZID group attributes (gid, groupArkId, agreementOnFile,
+  shoulderList, crossrefEnabled, or crossrefMail).  'user' and 'group'
+  are used in identifier creation and modification; each should be
+  authenticated (local name, persistent identifier) tuples, e.g.,
+  ("dryad", "ark:/13030/foo").  N.B.: for now the crossrefEnabled and
+  crossrefMail attributes can only be set using updateGroup, below.
   """
   if not _ldapEnabled: return "Functionality unavailable."
   if not _updatesEnabled: return "Prohibited by configuration."
@@ -371,7 +383,8 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
     l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
     try:
       r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass", "gid",
-        "groupArkId", "agreementOnFile", "shoulderList"])
+        "groupArkId", "agreementOnFile", "shoulderList",
+        "crossrefEnabled", "crossrefMail"])
     except ldap.INVALID_DN_SYNTAX:
       return "Invalid DN."
     except ldap.NO_SUCH_OBJECT:
@@ -379,7 +392,8 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
     if "ezidGroup" in r[0][1]["objectClass"]:
       return "LDAP entry is already an EZID group."
     assert "gid" not in r[0][1] and "groupArkId" not in r[0][1] and\
-      "agreementOnFile" not in r[0][1] and "shoulderList" not in r[0][1],\
+      "agreementOnFile" not in r[0][1] and "shoulderList" not in r[0][1] and\
+      "crossrefEnabled" not in r[0][1] and "crossrefMail" not in r[0][1],\
       "unexpected LDAP attribute, DN='%s'" % dn
     r = ezid.mintIdentifier(_agentShoulder, user, group,
       { "_ezid_role": "group", "_profile": "erc", "erc.who": dn,
@@ -403,7 +417,8 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
   finally:
     if l: l.unbind()
 
-def updateGroup (dn, description, agreementOnFile, shoulderList, user, group):
+def updateGroup (dn, description, agreementOnFile, shoulderList,
+  crossrefEnabled, crossrefMail, user, group):
   """
   Updates an EZID group, returning None on success or a string message
   on error.  'dn' should be the group's LDAP entry's DN.  'user' and
@@ -431,7 +446,7 @@ def updateGroup (dn, description, agreementOnFile, shoulderList, user, group):
     try:
       r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass",
         "agreementOnFile", "shoulderList", "uid", "gid", "arkId",
-        "groupArkId", "description"])
+        "groupArkId", "description", "crossrefEnabled", "crossrefMail"])
     except ldap.NO_SUCH_OBJECT:
       # UI controls should prevent this from ever happening.
       return "No such LDAP entry."
@@ -450,10 +465,20 @@ def updateGroup (dn, description, agreementOnFile, shoulderList, user, group):
         dm = [(ldap.MOD_DELETE, "description", None)]
       else:
         dm = []
+    crm = [m.strip().encode("UTF-8")\
+      for m in crossrefMail.split(",") if len(m.strip()) > 0]
+    if len(crm) > 0:
+      dm.append((ldap.MOD_REPLACE if "crossrefMail" in r[0][1] else\
+        ldap.MOD_ADD, "crossrefMail", crm))
+    else:
+      if "crossrefMail" in r[0][1]:
+        dm.append((ldap.MOD_DELETE, "crossrefMail", None))
     l.modify_s(dn,
       [(ldap.MOD_REPLACE, "shoulderList", shoulderList.encode("UTF-8")),
       (ldap.MOD_REPLACE if "agreementOnFile" in r[0][1] else ldap.MOD_ADD,
-      "agreementOnFile", "true" if agreementOnFile else "false")] + dm)
+      "agreementOnFile", "true" if agreementOnFile else "false"),
+      (ldap.MOD_REPLACE if "crossrefEnabled" in r[0][1] else ldap.MOD_ADD,
+      "crossrefEnabled", "true" if crossrefEnabled else "false")] + dm)
     oldShoulderList = r[0][1]["shoulderList"][0].decode("UTF-8")
     if shoulderList != oldShoulderList:
       if "gid" in r[0][1]:
