@@ -195,7 +195,6 @@ http://creativecommons.org/licenses/BSD/
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
     <br/>
-    <xsl:apply-templates select='br'/>
   </xsl:if>
   <xsl:value-of select="*[local-name()='creatorName']"/>
   <xsl:apply-templates select="*[local-name()='nameIdentifier']">
