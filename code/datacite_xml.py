@@ -29,7 +29,7 @@ RESOURCE_ORDER = ['resource', 'creators', 'creator', 'creatorName',
   # This order is important 
   'geoLocationPoint', 'geoLocationBox', 'geoLocationPlace', 
   # it's important that nameIdentifier comes after contributorName
-  'nameIdentifier', '@nameIdentifierScheme', '@schemeURI',]
+  'nameIdentifier', '@nameIdentifierScheme', '@schemeURI','affiliation']
 
 def splitPath (p):
   # Splits the first "chunk" off an xpath:

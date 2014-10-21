@@ -32,6 +32,7 @@
 								<option value=""></option>
 								<option value="ContactPerson"{% if contributor.attrib.contributorType == "ContactPerson"%} selected="selected"{% endif %}>Contact Person</option>
 								<option value="DataCollector"{% if contributor.attrib.contributorType == "DataCollector"%} selected="selected"{% endif %}>Data Collector</option>
+								<option value="DataCurator"{% if contributor.attrib.contributorType == "DataCurator"%} selected="selected"{% endif %}>Data Curator</option>
 								<option value="DataManager"{% if contributor.attrib.contributorType == "DataManager"%} selected="selected"{% endif %}>Data Manager</option>
 								<option value="Distributor"{% if contributor.attrib.contributorType == "Distributor"%} selected="selected"{% endif %}>Distributor</option>
 								<option value="Editor"{% if contributor.attrib.contributorType == "Editor"%} selected="selected"{% endif %}>Editor</option>
@@ -51,6 +52,10 @@
 								<option value="WorkPackageLeader"{% if contributor.attrib.contributorType == "WorkPackageLeader"%} selected="selected"{% endif %}>Work Package Leader</option>
 								<option value="Other"{% if contributor.attrib.contributorType == "Other"%} selected="selected"{% endif %}>Other</option>
 							</select>
+					</div>
+					<div name="/resource/contributors/contributor[{{ forloop.counter }}]/affiliation" class="element">
+						<label for="/resource/contributors/contributor[{{ forloop.counter }}]/affiliation" class="element sized">Affiliation:</label>
+						<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/affiliation" value="{{ contributor.affiliation.text|default_if_none:"" }}" class="data sized">
 					</div>
 					<div class="clearboth"></div>
 				</div>

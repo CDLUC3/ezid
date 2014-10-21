@@ -27,8 +27,12 @@
 							<label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@schemeURI" class="attribute sized">Scheme URI:</label>
 							<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@schemeURI" value="{{ creator.nameIdentifier.attrib.schemeURI }}" class="data sized">
 						</div>
-						<div class="clearboth"></div>
 					</div>
+					<div name="/resource/creators/creator[{{ forloop.counter }}]/affiliation" class="element">
+						<label for="/resource/creators/creator[{{ forloop.counter }}]/affiliation" class="element sized">Affiliation:</label>
+						<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/affiliation" value="{{ creator.affiliation.text|default_if_none:"" }}" class="data sized" />
+					</div>
+					<div class="clearboth"></div>
 				</div>
 			</div>
 		</div>
