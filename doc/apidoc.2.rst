@@ -12,7 +12,10 @@
 .. _cookielib: http://docs.python.org/library/cookielib.html
 .. _CookieManager:
    http://download.oracle.com/javase/6/docs/api/java/net/CookieManager.html
+.. _CrossRef: http://www.crossref.org/
+.. _CrossRef Deposit Schema: http://help.crossref.org/deposit_schema
 .. _cURL: http://curl.haxx.se/
+.. _DataCite: http://www.datacite.org/
 .. _DataCite Metadata Scheme: http://schema.datacite.org/
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
 .. _ERC: https://wiki.ucop.edu/display/Curation/ERC
@@ -67,8 +70,10 @@ Contents
   - `Profile "erc"`_
   - `Profile "datacite"`_
   - `Profile "dc"`_
+  - `Profile "crossref"`_
 
 - `Metadata requirements & mapping`_
+- `CrossRef registration`_
 - `Testing the API`_
 - `Server status`_
 - `Python example`_
@@ -278,7 +283,9 @@ EZID's data model for metadata is a dictionary of element name/value
 pairs.  The dictionary is single-valued: an element name may not be
 repeated.  Names and values are strings.  Leading and trailing
 whitespace in names and values is not significant.  Neither element
-names nor element values may be empty.
+names nor element values may be empty.  (When modifying an identifier,
+an uploaded empty value is treated as a command to delete the element
+entirely.)
 
 Metadata dictionaries are serialized using a subset of `A Name-Value
 Language (ANVL)`__ rules:
@@ -563,6 +570,10 @@ Authentication is required to mint an identifier; namespace permission
 is required; and permissions can be viewed in the EZID UI under the
 Create tab.  The request and response bodies are identical.
 
+EZID automatically embeds the newly-minted identifier in certain types
+of uploaded metadata.  See `Metadata profiles`_ below for when this is
+performed.
+
 Operation: modify identifier
 ----------------------------
 
@@ -800,7 +811,8 @@ first column indicates the element is modifiable by clients.
                   registered), and also indicates the status
                   of the registration process.  When setting,
                   must be set to "yes" or "no".  See
-                  CrossRef above for more information.
+                  `CrossRef registration`_ below for more
+                  information.
   === =========== ============================================ ================
 
 Metadata profiles
@@ -964,11 +976,29 @@ __ `DataCite Metadata Scheme`_
 
    Alternatively, an entire XML document adhering to the DataCite
    Metadata Scheme schema may be bound to the metadata element
-   "datacite".  Care should be taken to escape line terminators and
-   percent signs in the document (as is true for all metadata element
-   values; see `Request & response bodies`_ above).  Note that EZID
-   sets the identifier embedded in the document to the identifier
-   being operated on; thus it need not be specified by the client.
+   "datacite".  Note that EZID sets the identifier embedded in the
+   document to the identifier being operated on; thus it need not be
+   specified by the client.  The <identifier> element must still be
+   included in the document, though, so the XML document may resemble:
+
+   .. parsed-literal::
+
+     <?xml version="1.0"?>
+     <resource xmlns="\http://datacite.org/schema/kernel-3"
+       xmlns:xsi="\http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="...">
+       <identifier identifierType="DOI">(:tba)</identifier>
+       ...
+     </resource>
+
+   Care should be taken to escape line terminators and percent signs
+   in the document (as is true for all metadata element values; see
+   `Request & response bodies`_ above).  Once properly escaped, the
+   uploaded metadata will resemble:
+
+   .. parsed-literal::
+
+     datacite: <?xml version="1.0"?>%0A<resource...
 
 .. _Profile "dc":
 
@@ -1015,6 +1045,16 @@ __ `DataCite Metadata Scheme`_
                 - Text
    ============ =======================================================
 
+.. _Profile "crossref":
+
+4. **Profile "crossref"**.  This profile consists of a single element,
+"crossref", whose value is CrossRef deposit metadata (an XML
+document).  Care should be taken to escape line terminators and
+percent signs in the document (as is true for all metadata element
+values; see `Request & response bodies`_ above).  See `CrossRef
+registration`_ below for more information on usage of this profile and
+element.
+
 Metadata requirements & mapping
 -------------------------------
 
@@ -1034,7 +1074,8 @@ order for:
 1. DataCite XML metadata bound to the "datacite" element;
 2. Individual elements from the "datacite" profile as described in the
    previous section ("datacite.title", etc.);
-3. Elements from other profiles that EZID is able to map to DataCite
+3. CrossRef deposit metadata bound to the "crossref" element;
+4. Elements from other profiles that EZID is able to map to DataCite
    equivalents (e.g., element "erc.who" maps to "datacite.creator").
 
 If no meaningful value is available for a required element, clients
@@ -1068,6 +1109,112 @@ equivalent or a more specific description, as in:
 
   who: (:unkn) anonymous donor
 
+CrossRef registration
+---------------------
+
+A DOI identifier may be registered with `CrossRef`_ in addition to
+being registered with `DataCite`_, thereby making it available to
+CrossRef's indexing and linking services.  To take advantage of this,
+both the identifier shoulder and the user making the request must be
+enabled for CrossRef registration by an EZID administrator.  In
+addition, the user must have an account with CrossRef.
+
+Once registered, an identifier cannot be removed from CrossRef.  If
+the identifier's status is set to unavailable (recall `Identifier
+status`_, above), EZID will prepend "WITHDRAWN" to the title of the
+resource associated with the identifier, but the identifier remains in
+CrossRef's systems.
+
+Registering an identifier with CrossRef requires three steps:
+
+1. Set the "_crossref" reserved metadata element to "yes".
+2. Supply CrossRef deposit metadata as the value of the "crossref"
+   element.
+3. Set the "_profile" reserved metadata element to "crossref" to be
+   able to view the metadata in the EZID UI.
+
+These steps are discussed in more detail next.
+
+CrossRef registration is asynchronous.  Registration is requested by,
+in a create, mint, or modify identifier request, setting the
+"_crossref" reserved metadata element to "yes".  (Registration may be
+removed from reserved identifiers, and reserved identifiers only, by
+setting "_crossref" to "no".)  In responses, the "_crossref" element
+has the value "yes" followed by a pipe character ("|", U+007C)
+followed by the status of the registration, e.g., "yes | registration
+in progress" or "yes | successfully registered".  The status of the
+registration is updated automatically by EZID and may be polled by the
+client.  If a warning or error occurred during registration, the
+status is followed by another pipe character and the message received
+from CrossRef, e.g., "yes | registration failure | xml error...".
+Warnings and errors may also be viewed in the EZID UI and may also be
+emailed to a specified mailbox.  Warnings and errors can be removed
+only by submitting new metadata and re-registering identifiers.
+
+CrossRef deposit metadata should adhere to the `CrossRef Deposit
+Schema`_, version 4.3.0 or later.  The metadata should consist of the
+immediate child element of a <body> element, i.e., one of the
+following elements:
+
+- <journal>
+- <book>
+- <conference>
+- <sa_component>
+- <dissertation>
+- <report-paper>
+- <standard>
+- <database>
+
+(If an outer element such as <doi_batch> or <body> is nevertheless
+supplied, it will be stripped off.)
+
+Although the CrossRef deposit schema is quite flexible, and supports
+batch operations, EZID requires that the deposit metadata specify a
+single DOI identifier, i.e., a single <doi_data> element.  This
+element should contain <doi> and <resource> subelements, which may be
+left empty.  EZID fills the <doi> element with the identifier in
+question and the <resource> element with the target URL.  Here is an
+abridged example of deposit metadata:
+
+.. parsed-literal::
+
+  <?xml version="1.0"?>
+  <book xmlns="\http://www.crossref.org/schema/4.3.4"
+    xmlns:xsi="\http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="\http://www.crossref.org/schema/4.3.4
+    \http://www.crossref.org/schema/deposit/crossref4.3.4.xsd"
+    book_type="monograph">
+    <book_metadata>
+      <contributors>
+        <person_name contributor_role="author" sequence="first">
+          <given_name>Marcel</given_name>
+          <surname>Proust</surname>
+        </person_name>
+      </contributors>
+      <titles>
+        <title>Remembrance of Things Past</title>
+      </titles>
+      ...
+      <doi_data>
+        <doi>(:tba)</doi>
+        <resource>(:tba)</resource>
+      </doi_data>
+    </book_metadata>
+  </book>
+
+In supplying an XML document as the value of element "crossref", care
+should be taken to escape line terminators and percent signs in the
+document (as is true for all metadata element values; see `Request &
+response bodies`_ above).  Putting it all together, uploaded metadata
+in a CrossRef registration request will resemble:
+
+.. parsed-literal::
+
+  _crossref: yes
+  _profile: crossref
+  _target: \http://...
+  crossref: <?xml version="1.0"?>%0A<book...
+
 Testing the API
 ---------------
 
@@ -1076,8 +1223,14 @@ ark:/99999/fk4 for ARK identifiers and doi:10.5072/FK2 for DOI
 identifiers.  Identifiers in these namespaces are termed "test
 identifiers."  They are ordinary long-term identifiers in almost all
 respects, including resolvability, except that EZID deletes them after
-2 weeks.  An additional difference is that citation metadata for test
-identifiers is not uploaded to external services.
+2 weeks.
+
+Test DOI identifiers resolve through the universal DOI resolver
+(\http://dx.doi.org/), but do not appear in any of DataCite's other
+systems.  Test DOI identifiers registered with CrossRef appear only in
+CrossRef's test server (\http://test.crossref.org/), and are prefixed
+there with 10.9876.  For example, test identifier doi:10.5072/FK2TEST
+will appear as doi:10.9876/10.5072/FK2TEST in CrossRef.
 
 All user accounts are permitted to create test identifiers.  EZID also
 provides an "apitest" account that is permitted to create only test
