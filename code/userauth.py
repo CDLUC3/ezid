@@ -90,13 +90,15 @@ def _getAttributes (server, dn):
 def _authenticateLdap (username, password):
   l = None
   try:
-    l = ldap.initialize(_ldapServer)
     userDn = _userDnTemplate % _escape(username)
     # We don't do retries on every LDAP interaction, but the following
     # 'bind' is the most frequently executed LDAP call, and the most
     # likely place in EZID where a down/inaccessible LDAP server will
     # be encountered and can easily be recovered from.
     for i in range(_numAttempts):
+      # On network error the LDAP object gets boogered, so it must be
+      # re-created on each attempt.
+      l = ldap.initialize(_ldapServer)
       try:
         l.bind_s(userDn, password, ldap.AUTH_SIMPLE)
       except ldap.INVALID_CREDENTIALS:
