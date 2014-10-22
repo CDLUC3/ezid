@@ -479,13 +479,11 @@ def updateGroup (dn, description, agreementOnFile, shoulderList,
       "agreementOnFile", "true" if agreementOnFile else "false"),
       (ldap.MOD_REPLACE if "crossrefEnabled" in r[0][1] else ldap.MOD_ADD,
       "crossrefEnabled", "true" if crossrefEnabled else "false")] + dm)
-    oldShoulderList = r[0][1]["shoulderList"][0].decode("UTF-8")
-    if shoulderList != oldShoulderList:
-      if "gid" in r[0][1]:
-        gid = r[0][1]["gid"][0].decode("UTF-8")
-      else:
-        gid = r[0][1]["uid"][0].decode("UTF-8")
-      policy.clearShoulderCache(gid)
+    if "gid" in r[0][1]:
+      gid = r[0][1]["gid"][0].decode("UTF-8")
+    else:
+      gid = r[0][1]["uid"][0].decode("UTF-8")
+    policy.clearGroupCache(gid)
     arkId = r[0][1]["groupArkId" if "groupArkId" in r[0][1] else "arkId"]\
       [0].decode("UTF-8")
     _cacheLdapInformation(l, dn, arkId, user, group)
