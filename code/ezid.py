@@ -161,6 +161,7 @@ import urllib
 import uuid
 
 import config
+import crossref
 import datacite
 import idmap
 import log
@@ -386,6 +387,11 @@ def _validateMetadata1 (identifier, user, metadata):
         metadata["datacite.resourcetype"])
     except AssertionError, e:
       return "element 'datacite.resourcetype': " + str(e)
+  if "crossref" in metadata and metadata["crossref"].strip() != "":
+    try:
+      metadata["crossref"] = crossref.validateBody(metadata["crossref"])
+    except AssertionError, e:
+      return "element 'crossref': " + _oneline(str(e))
   if "_crossref" in metadata:
     # On input, we allow values "yes" and "no".  Subsequent checks
     # will place limits on when those values can be specified.  Note
