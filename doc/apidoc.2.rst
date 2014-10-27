@@ -1114,10 +1114,10 @@ CrossRef registration
 
 A DOI identifier may be registered with `CrossRef`_ in addition to
 being registered with `DataCite`_, thereby making it available to
-CrossRef's indexing and linking services.  To take advantage of this,
-both the identifier shoulder and the user making the request must be
-enabled for CrossRef registration by an EZID administrator.  In
-addition, the user must have an account with CrossRef.
+CrossRef's indexing and linking services.  **Note:** to take advantage
+of this, both the identifier shoulder and the user making the request
+must be enabled for CrossRef registration by an EZID administrator.
+In addition, the user must have an account with CrossRef.
 
 Once registered, an identifier cannot be removed from CrossRef.  If
 the identifier's status is set to unavailable (recall `Identifier
