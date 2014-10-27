@@ -16,19 +16,37 @@
 import lxml.etree
 import re
 import time
+import urllib
+import urllib2
 import uuid
 
 import config
+import log
 import shoulder
 
+_enabled = None
 _depositorName = None
 _depositorEmail = None
+_realServer = None
+_testServer = None
+_depositUrl = None
+_resultsUrl = None
+_username = None
+_password = None
 _doiTestShoulder = None
 
 def _loadConfig ():
-  global _depositorName, _depositorEmail, _doiTestShoulder
+  global _enabled, _depositorName, _depositorEmail, _realServer, _testServer
+  global _depositUrl, _resultsUrl, _username, _password, _doiTestShoulder
+  _enabled = (config.config("crossref.enabled").lower() == "true")
   _depositorName = config.config("crossref.depositor_name")
   _depositorEmail = config.config("crossref.depositor_email")
+  _realServer = config.config("crossref.real_server")
+  _testServer = config.config("crossref.test_server")
+  _depositUrl = config.config("crossref.deposit_url")
+  _resultsUrl = config.config("crossref.results_url")
+  _username = config.config("crossref.username")
+  _password = config.config("crossref.password")
   s = shoulder.getDoiTestShoulder()
   if s != None:
     assert s.key.startswith("doi:")
@@ -138,6 +156,9 @@ def validateBody (body):
   except Exception, e:
     assert False, "XML serialization error: " + str(e)
 
+def _isTestIdentifier (doi):
+  return doi.startswith(_doiTestShoulder)
+
 def _buildDeposit (body, registrant, doi, targetUrl):
   """
   Builds a CrossRef metadata submission document.  'body' should be a
@@ -179,11 +200,10 @@ def _buildDeposit (body, registrant, doi, targetUrl):
   lxml.etree.SubElement(head, q("registrant")).text = registrant
   e = lxml.etree.SubElement(root, q("body"))
   del body.attrib[_schemaLocation]
-  if doi.startswith(_doiTestShoulder):
-    doiElement.text = _crossrefTestPrefix + doi
+  if _isTestIdentifier(doi): doiElement.text = _crossrefTestPrefix + doi
   e.append(body)
   d2 = _addDeclaration(lxml.etree.tostring(root, encoding="unicode"))
-  return (d1, d2, batchId)
+  return (d2, d1, batchId)
 
 def _multipartBody (*parts):
   """
@@ -214,3 +234,134 @@ def _multipartBody (*parts):
       body.append(p[3])
   body.append("--%s--" % boundary)
   return ("\r\n".join(body), boundary)
+
+def _wrapException (context, exception):
+  m = str(exception)
+  if len(m) > 0: m = ": " + m
+  return Exception("CrossRef error: %s: %s%s" % (context,
+    type(exception).__name__, m))
+
+def _submitDeposit (deposit, batchId, doi):
+  """
+  Submits a CrossRef metadata submission document as built by
+  _buildDeposit above.  Returns True on success, False on (internal)
+  error.  'doi' is the identifier in question.
+  """
+  if not _enabled: return True
+  body, boundary = _multipartBody(("operation", "doMDUpload"),
+    ("login_id", _username), ("login_passwd", _password),
+    ("fname", batchId + ".xml", "application/xml; charset=UTF-8",
+    deposit.encode("UTF-8")))
+  url = _depositUrl % (_testServer if _isTestIdentifier(doi) else _realServer)
+  try:
+    c = None
+    try:
+      c = urllib2.urlopen(urllib2.Request(url, body,
+        { "Content-Type": "multipart/form-data; boundary=" + boundary }))
+      r = c.read()
+      assert "Your batch submission was successfully received." in r,\
+        "unexpected return from metadata submission: " + r
+    except urllib2.HTTPError, e:
+      if e.fp != None:
+        try:
+          m = e.fp.read()
+        except Exception:
+          pass
+        else:
+          if not e.msg.endswith("\n"): e.msg += "\n"
+          e.msg += m
+      raise e
+    finally:
+      if c: c.close()
+  except Exception, e:
+    log.otherError("crossref._submitDeposit",
+      _wrapException("error submitting deposit, doi %s, batch %s" %\
+      (doi, batchId), e))
+    return False
+  else:
+    return True
+
+def _pollDepositStatus (batchId, doi):
+  """
+  Polls the status of the metadata submission identified by 'batchId'.
+  'doi' is the identifier in question.  The return is one of the
+  tuples:
+
+    ("submitted", message)
+      'message' further indicates the status within CrossRef, e.g.,
+      "in_process".  The status may also be, somewhat confusingly,
+      "unknown_submission", even though the submission has taken
+      place.
+    ("completed successfully", None)
+    ("completed with warning", message)
+    ("completed with failure", message)
+    ("unknown", None)
+      An error occurred retrieving the status.
+
+  In each case, 'message' may be a multi-line string.  In the case of
+  a conflict warning, 'message' has the form:
+
+    CrossRef message
+    conflict_id=1423608
+    in conflict with: 10.5072/FK2TEST1
+    in conflict with: 10.5072/FK2TEST2
+    ...
+  """
+  if not _enabled: return ("completed successfully", None)
+  url = _resultsUrl % (_testServer if _isTestIdentifier(doi) else _realServer)
+  try:
+    c = None
+    try:
+      c = urllib2.urlopen("%s?%s" % (url,
+        urllib.urlencode({ "usr": _username, "pwd": _password,
+        "file_name": batchId + ".xml", "type": "result" })))
+      response = c.read()
+    except urllib2.HTTPError, e:
+      if e.fp != None:
+        try:
+          m = e.fp.read()
+        except Exception:
+          pass
+        else:
+          if not e.msg.endswith("\n"): e.msg += "\n"
+          e.msg += m
+      raise e
+    finally:
+      if c: c.close()
+    try:
+      # We leave the returned XML undecoded, and let lxml decode it
+      # based on the embedded encoding declaration.
+      root = lxml.etree.XML(response)
+    except Exception, e:
+      assert False, "XML parse error: " + str(e)
+    assert root.tag == "doi_batch_diagnostic",\
+      "unexpected response root element: " + root.tag
+    assert "status" in root.attrib,\
+      "missing doi_batch_diagnostic/status attribute"
+    if root.attrib["status"] != "completed":
+      return ("submitted", root.attrib["status"])
+    else:
+      d = root.findall("record_diagnostic")
+      assert len(d) == 1, ("<doi_batch_diagnostic> element contains %s " +\
+        "<record_diagnostic> element") % _notOne(len(d))
+      d = d[0]
+      assert "status" in d.attrib, "missing record_diagnostic/status attribute"
+      if d.attrib["status"] == "Success":
+        return ("completed successfully", None)
+      elif d.attrib["status"] in ["Warning", "Failure"]:
+        m = d.findall("msg")
+        assert len(m) == 1, ("<record_diagnostic> element contains %s " +\
+          "<msg> element") % _notOne(len(m))
+        m = m[0].text
+        e = d.find("conflict_id")
+        if e != None: m += "\nconflict_id=" + e.text
+        for e in d.xpath("dois_in_conflict/doi"):
+          m += "\nin conflict with: " + e.text
+        return ("completed with %s" % d.attrib["status"].lower(), m)
+      else:
+        assert False, "unexpected status value: " + d.attrib["status"]
+  except Exception, e:
+    log.otherError("crossref._pollDepositStatus",
+      _wrapException("error polling deposit status, doi %s, batch %s" %\
+      (doi, batchId), e))
+    return ("unknown", None)
