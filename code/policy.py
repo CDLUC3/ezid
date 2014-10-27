@@ -104,11 +104,6 @@ def _loadGroupLocal (group):
 
 def _loadGroup (group):
   if group[0] == _adminUsername:
-    # There's a bug lurking in here.  The intention is that all
-    # shoulders are always available to the administrator.  But if a
-    # shoulder is added to the shoulder database, there's nothing to
-    # trigger the administrator's cached shoulder list to be cleared.
-    # Not a biggie, but annoying.
     return ([s for s in shoulder.getAll() if not s.is_test_shoulder],
       True, [])
   elif group[0] == "anonymous":
