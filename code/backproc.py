@@ -50,7 +50,7 @@ def _updateCrossrefQueue (identifier, operation, metadata):
   if "_cr" not in metadata: return
   if metadata.get("_is", "public") == "reserved": return
   assert "_s" in metadata and metadata["_s"].startswith("doi:")
-  crossref.insertIdentifier(metadata["_s"], operation, metadata)
+  crossref.enqueueIdentifier(metadata["_s"], operation, metadata)
 
 def _backprocDaemon ():
   while _enabled and threading.currentThread().getName() == _threadName:

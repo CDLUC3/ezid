@@ -61,7 +61,7 @@ class CrossrefQueue (django.db.models.Model):
   UNKNOWN = "?"
   status = django.db.models.CharField(max_length=1,
     choices=[(UNSUBMITTED, "awaiting submission"), (SUBMITTED, "submitted"),
-    (WARNING, "registered with warning"), (FAILURE, "registration failure"),
+    (WARNING, "registered with warning"), (FAILURE, "registration failed"),
     (UNKNOWN, "unknown")], default=UNSUBMITTED, db_index=True)
   # The status of the submission.
 

@@ -13,6 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.db.models
 import lxml.etree
 import re
 import time
@@ -384,9 +385,9 @@ def _deblobify (blob):
   for i in range(0, len(v), 2): d[util.decode(v[i])] = util.decode(v[i+1])
   return d
 
-def insertIdentifier (identifier, operation, metadata):
+def enqueueIdentifier (identifier, operation, metadata):
   """
-  Inserts an identifier in the CrossRef queue.  'identifier' should be
+  Adds an identifier to the CrossRef queue.  'identifier' should be
   the normalized, qualified identifier, e.g., "doi:10.5060/FOO".
   'operation' is the identifier operation as reported by the store
   module.  'metadata' is the identifier's metadata dictionary.
@@ -395,3 +396,16 @@ def insertIdentifier (identifier, operation, metadata):
     metadata=_blobify(metadata),
     operation=ezidapp.models.CrossrefQueue.operationLabelToCode(operation))
   e.save()
+
+def getQueueStatistics ():
+  """
+  Returns a 5-tuple containing the numbers of identifiers in the
+  CrossRef queue by status: (awaiting submission, submitted,
+  registered with warning, registration failed, unknown).
+  """
+  q = ezidapp.models.CrossrefQueue.objects.values("status").\
+    annotate(django.db.models.Count("status"))
+  d = {}
+  for r in q: d[r["status"]] = r["status__count"]
+  return (d.get("U", 0), d.get("S", 0), d.get("W", 0), d.get("F", 0),
+    d.get("?", 0))
