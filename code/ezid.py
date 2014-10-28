@@ -526,9 +526,13 @@ def createDoi (doi, user, group, metadata={}):
       return "error: bad request - invalid identifier status at creation time"
   if m.get("_x", "") == "yes": del m["_x"]
   if m.get("_cr", "") == "no": del m["_cr"]
-  if "_cr" in m and "_x" in m:
-    return "error: bad request - identifier registered with CrossRef " +\
-      "must be exported"
+  if "_cr" in m:
+    if "_x" in m:
+      return "error: bad request - identifier registered with CrossRef " +\
+        "must be exported"
+    if "_is" not in m and "crossref" not in m:
+      return "error: bad request - CrossRef registration requires " +\
+        "'crossref' deposit metadata"
   tid = uuid.uuid1()
   _acquireIdentifierLock(shadowArk, user[0])
   try:
@@ -1140,12 +1144,18 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
         if k.startswith("_") and k.endswith("!"):
           d[k[:-1]] = d[k]
           del d[k]
-    # Export/CrossRef dependency.
+    # CrossRef-related requirements.
     if (("_cr" in d and d["_cr"].startswith("yes")) or\
-      ("_cr" not in d and "_cr" in m)) and newExport != "yes":
-      log.badRequest(tid)
-      return "error: bad request - identifier registered with CrossRef " +\
-        "must be exported"
+      ("_cr" not in d and "_cr" in m)):
+      if newExport != "yes":
+        log.badRequest(tid)
+        return "error: bad request - identifier registered with CrossRef " +\
+          "must be exported"
+      if newStatus != "reserved" and not (("crossref" in d and\
+        d["crossref"].strip() != "") or ("crossref" not in d and\
+        "crossref" in m)):
+        return "error: bad request - CrossRef registration requires " +\
+          "'crossref' deposit metadata"
     # Perform any necessary DataCite operations.  These are more prone
     # to failure, hence we do them first to avoid corrupting our own
     # databases.  Note that this section is executed if we are
