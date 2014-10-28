@@ -22,6 +22,7 @@ import time
 import uuid
 
 import config
+import crossref
 import log
 import search
 import store
@@ -45,6 +46,12 @@ def _updateSearchDatabase (identifier, operation, metadata):
   else:
     assert False, "unrecognized operation"
 
+def _updateCrossrefQueue (identifier, operation, metadata):
+  if "_cr" not in metadata: return
+  if metadata.get("_is", "public") == "reserved": return
+  assert "_s" in metadata and metadata["_s"].startswith("doi:")
+  crossref.insertIdentifier(metadata["_s"], operation, metadata)
+
 def _backprocDaemon ():
   while _enabled and threading.currentThread().getName() == _threadName:
     try:
@@ -55,6 +62,7 @@ def _backprocDaemon ():
             threading.currentThread().getName() != _threadName:
             break
           _updateSearchDatabase(identifier, operation, metadata)
+          _updateCrossrefQueue(identifier, operation, metadata)
           store.deleteFromUpdateQueue(seq)
       else:
         time.sleep(_idleSleep)

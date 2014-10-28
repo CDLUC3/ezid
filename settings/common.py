@@ -92,6 +92,7 @@ TEMPLATE_CONTEXT_PROCESSORS =\
 INSTALLED_APPS = (
   "django.contrib.sessions",
   "django.contrib.messages",
+  "ezidapp",
   "ui_tags"
 )
 

@@ -19,10 +19,13 @@ import time
 import urllib
 import urllib2
 import uuid
+import zlib
 
+import ezidapp.models
 import config
 import log
 import shoulder
+import util
 
 _enabled = None
 _depositorName = None
@@ -365,3 +368,30 @@ def _pollDepositStatus (batchId, doi):
       _wrapException("error polling deposit status, doi %s, batch %s" %\
       (doi, batchId), e))
     return ("unknown", None)
+
+def _blobify (metadata):
+  l = []
+  for k, v in metadata.items():
+    assert len(k) > 0, "empty label"
+    assert len(v) > 0, "empty value"
+    l.append(util.encode4(k))
+    l.append(util.encode3(v))
+  return zlib.compress(" ".join(l))
+
+def _deblobify (blob):
+  v = zlib.decompress(blob).split(" ")
+  d = {}
+  for i in range(0, len(v), 2): d[util.decode(v[i])] = util.decode(v[i+1])
+  return d
+
+def insertIdentifier (identifier, operation, metadata):
+  """
+  Inserts an identifier in the CrossRef queue.  'identifier' should be
+  the normalized, qualified identifier, e.g., "doi:10.5060/FOO".
+  'operation' is the identifier operation as reported by the store
+  module.  'metadata' is the identifier's metadata dictionary.
+  """
+  e = ezidapp.models.CrossrefQueue(identifier=identifier, owner=metadata["_o"],
+    metadata=_blobify(metadata),
+    operation=ezidapp.models.CrossrefQueue.operationLabelToCode(operation))
+  e.save()
