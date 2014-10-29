@@ -73,7 +73,7 @@ _tagRE =\
   re.compile("\{(http://www\.crossref\.org/schema/(4\.3\.\d))\}([-\w.]+)$")
 _rootTags = ["journal", "book", "conference", "sa_component", "dissertation",
   "report-paper", "standard", "database"]
-_crossrefTestPrefix = "10.9876/"
+_crossrefTestPrefix = "10.15697/"
 
 def _notOne (n):
   if n == 0:

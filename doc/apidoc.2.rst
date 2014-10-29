@@ -1229,8 +1229,8 @@ Test DOI identifiers resolve through the universal DOI resolver
 (\http://dx.doi.org/), but do not appear in any of DataCite's other
 systems.  Test DOI identifiers registered with CrossRef appear only in
 CrossRef's test server (\http://test.crossref.org/), and are prefixed
-there with 10.9876.  For example, test identifier doi:10.5072/FK2TEST
-will appear as doi:10.9876/10.5072/FK2TEST in CrossRef.
+there with 10.15697.  For example, test identifier doi:10.5072/FK2TEST
+will appear as doi:10.15697/10.5072/FK2TEST in CrossRef.
 
 All user accounts are permitted to create test identifiers.  EZID also
 provides an "apitest" account that is permitted to create only test
