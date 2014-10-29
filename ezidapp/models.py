@@ -58,11 +58,10 @@ class CrossrefQueue (django.db.models.Model):
   SUBMITTED = "S"
   WARNING = "W"
   FAILURE = "F"
-  UNKNOWN = "?"
   status = django.db.models.CharField(max_length=1,
     choices=[(UNSUBMITTED, "awaiting submission"), (SUBMITTED, "submitted"),
-    (WARNING, "registered with warning"), (FAILURE, "registration failed"),
-    (UNKNOWN, "unknown")], default=UNSUBMITTED, db_index=True)
+    (WARNING, "registered with warning"), (FAILURE, "registration failed")],
+    default=UNSUBMITTED, db_index=True)
   # The status of the submission.
 
   message = django.db.models.TextField(blank=True)

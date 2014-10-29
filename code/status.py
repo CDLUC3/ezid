@@ -60,8 +60,8 @@ def _statusDaemon ():
         "storeDbConnections:active/total=%d/%d" % (nstca, nstc),
         "searchDbConnections:active/total=%d/%d" % (nseca, nsec),
         "updateQueueLength=%d" % store.getUpdateQueueLength(),
-        "crossrefQueue:total/unsubmitted/submitted/unknown=%d/%d/%d/%d" %\
-        (sum(cqs), cqs[0], cqs[1], cqs[4]))
+        "crossrefQueue:archived/unsubmitted/submitted=%d/%d/%d" %\
+        (cqs[2]+cqs[3], cqs[0], cqs[1]))
     except Exception, e:
       log.otherError("status._statusDaemon", e)
     time.sleep(_reportingInterval)

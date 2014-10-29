@@ -399,13 +399,12 @@ def enqueueIdentifier (identifier, operation, metadata):
 
 def getQueueStatistics ():
   """
-  Returns a 5-tuple containing the numbers of identifiers in the
+  Returns a 4-tuple containing the numbers of identifiers in the
   CrossRef queue by status: (awaiting submission, submitted,
-  registered with warning, registration failed, unknown).
+  registered with warning, registration failed).
   """
   q = ezidapp.models.CrossrefQueue.objects.values("status").\
     annotate(django.db.models.Count("status"))
   d = {}
   for r in q: d[r["status"]] = r["status__count"]
-  return (d.get("U", 0), d.get("S", 0), d.get("W", 0), d.get("F", 0),
-    d.get("?", 0))
+  return (d.get("U", 0), d.get("S", 0), d.get("W", 0), d.get("F", 0))
