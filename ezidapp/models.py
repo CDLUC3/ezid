@@ -26,7 +26,7 @@ class CrossrefQueue (django.db.models.Model):
   # Order of insertion into this table; also, the order in which
   # identifier operations occurred.
 
-  identifier = django.db.models.CharField(max_length=256)
+  identifier = django.db.models.CharField(max_length=256, db_index=True)
   # The identifier in qualified, normalized form, e.g.,
   # "doi:10.5060/FOO".  Always a DOI.
 
