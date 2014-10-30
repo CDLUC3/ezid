@@ -13,17 +13,21 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.conf
 import django.db.models
 import lxml.etree
 import re
+import threading
 import time
 import urllib
 import urllib2
 import uuid
 import zlib
 
+import ezid
 import ezidapp.models
 import config
+import idmap
 import log
 import shoulder
 import util
@@ -38,11 +42,15 @@ _resultsUrl = None
 _username = None
 _password = None
 _doiTestShoulder = None
+_threadName = None
+_idleSleep = None
 
 def _loadConfig ():
   global _enabled, _depositorName, _depositorEmail, _realServer, _testServer
   global _depositUrl, _resultsUrl, _username, _password, _doiTestShoulder
-  _enabled = (config.config("crossref.enabled").lower() == "true")
+  global _threadName, _idleSleep
+  _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
+    config.config("crossref.enabled").lower() == "true"
   _depositorName = config.config("crossref.depositor_name")
   _depositorEmail = config.config("crossref.depositor_email")
   _realServer = config.config("crossref.real_server")
@@ -58,9 +66,12 @@ def _loadConfig ():
   else:
     # Shoulder never happen.
     _doiTestShoulder = "10.????"
-
-_loadConfig()
-config.addLoader(_loadConfig)
+  _idleSleep = int(config.config("daemons.crossref_processing_idle_sleep"))
+  if _enabled:
+    _threadName = uuid.uuid1().hex
+    t = threading.Thread(target=_daemonThread, name=_threadName)
+    t.setDaemon(True)
+    t.start()
 
 _prologRE = re.compile("<\?xml\s+version\s*=\s*['\"]([-\w.:]+)[\"']" +\
   "(\s+encoding\s*=\s*['\"]([-\w.]+)[\"'])?" +\
@@ -408,3 +419,118 @@ def getQueueStatistics ():
   d = {}
   for r in q: d[r["status"]] = r["status__count"]
   return (d.get("U", 0), d.get("S", 0), d.get("W", 0), d.get("F", 0))
+
+class _AbortException (Exception):
+  pass
+
+def _checkAbort ():
+  # This function provides a handy way to abort processing if the
+  # daemon is disabled or if a new daemon thread is started by a
+  # configuration reload.  It doesn't entirely eliminate potential
+  # race conditions between two daemon threads, but it should make
+  # conflicts very unlikely.
+  if not _enabled or threading.currentThread().getName() != _threadName:
+    raise _AbortException()
+
+def _queue ():
+  _checkAbort()
+  return ezidapp.models.CrossrefQueue
+
+def _doDeposit (r):
+  m = _deblobify(r.metadata)
+  submission, body, batchId = _buildDeposit(m["crossref"],
+    idmap.getAgent(r.owner)[0], r.identifier[4:], m["_st"])
+  if _submitDeposit(submission, batchId, r.identifier[4:]):
+    r.status = ezidapp.models.CrossrefQueue.SUBMITTED
+    r.batchId = batchId
+    r.submitTime = int(time.time())
+    _checkAbort()
+    r.save()
+
+def _oneline (s):
+  return re.sub("\s", " ", s)
+
+def _doPoll (r):
+  t = _pollDepositStatus(r.batchId, r.identifier[4:])
+  if t[0] == "submitted":
+    r.message = t[1]
+    _checkAbort()
+    r.save()
+  elif t[0].startswith("completed"):
+    if r.operation != ezidapp.models.CrossrefQueue.DELETE:
+      if t[0] == "completed successfully":
+        m = "successfully registered"
+      else:
+        m = _oneline(t[1]).strip()
+        if len(m) == 0: m = "(unknown reason)"
+        if t[0] == "completed with warning":
+          m = "registered with warning | " + m
+        else:
+          m = "registration failure | " + m
+      _checkAbort()
+      s = ezid.asAdmin(ezid.setMetadata, r.identifier,
+        { "_cr": "yes | " + m }, False)
+      assert s.startswith("success:"), "ezid.setMetadata failed: " + s
+    if t[0] == "completed successfully":
+      _checkAbort()
+      r.delete()
+    else:
+      # If the operation was DELETE, a CrossRef error or warning will
+      # leave an entry in the queue that refers to a nonexistent
+      # identifier.  Hard to say whether that's better than ignoring
+      # the CrossRef problem or not.
+      if t[0] == "complete with warning":
+        r.status = ezidapp.models.CrossrefQueue.WARNING
+      else:
+        r.status = ezidapp.models.CrossrefQueue.FAILURE
+      r.message = t[1]
+      _checkAbort()
+      r.save()
+  else:
+    pass
+
+def _daemonThread ():
+  maxSeq = None
+  while True:
+    time.sleep(_idleSleep)
+    try:
+      # First, a quick test to avoid retrieving the entire table if
+      # nothing needs to be done.  Note that in the loop below, if any
+      # entry is deleted or if any identifier is processed, maxSeq is
+      # set to None, thus forcing another round of processing.
+      if maxSeq != None:
+        if _queue().objects.aggregate(
+          django.db.models.Max("seq"))["seq__max"] == maxSeq:
+          continue
+      # Hopefully the queue will not grow so large that the following
+      # query will cause a burden.
+      query = _queue().objects.all().order_by("seq")
+      if len(query) > 0:
+        maxSeq = query[len(query)-1].seq
+      else:
+        maxSeq = None
+      for r in query:
+        # If there are multiple entries for this identifier, we are
+        # necessarily looking at the first, i.e., the earliest, and
+        # the others must represent subsequent modifications.  Hence
+        # we simply delete this entry regardless of its status.
+        if _queue().objects.filter(identifier=r.identifier).count() > 1:
+          r.delete()
+          maxSeq = None
+        else:
+          if r.status == ezidapp.models.CrossrefQueue.UNSUBMITTED:
+            _doDeposit(r)
+            maxSeq = None
+          elif r.status == ezidapp.models.CrossrefQueue.SUBMITTED:
+            _doPoll(r)
+            maxSeq = None
+          else:
+            pass
+    except _AbortException:
+      break
+    except Exception, e:
+      log.otherError("crossref._daemonThread", e)
+      maxSeq = None
+
+_loadConfig()
+config.addLoader(_loadConfig)
