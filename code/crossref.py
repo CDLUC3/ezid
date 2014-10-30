@@ -14,6 +14,7 @@
 # -----------------------------------------------------------------------------
 
 import django.conf
+import django.core.mail
 import django.db.models
 import lxml.etree
 import re
@@ -29,7 +30,9 @@ import ezidapp.models
 import config
 import idmap
 import log
+import policy
 import shoulder
+import userauth
 import util
 
 _enabled = None
@@ -44,11 +47,12 @@ _password = None
 _doiTestShoulder = None
 _threadName = None
 _idleSleep = None
+_ezidUrl = None
 
 def _loadConfig ():
   global _enabled, _depositorName, _depositorEmail, _realServer, _testServer
   global _depositUrl, _resultsUrl, _username, _password, _doiTestShoulder
-  global _threadName, _idleSleep
+  global _threadName, _idleSleep, _ezidUrl
   _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
     config.config("crossref.enabled").lower() == "true"
   _depositorName = config.config("crossref.depositor_name")
@@ -72,6 +76,7 @@ def _loadConfig ():
     t = threading.Thread(target=_daemonThread, name=_threadName)
     t.setDaemon(True)
     t.start()
+  _ezidUrl = config.config("DEFAULT.ezid_base_url")
 
 _prologRE = re.compile("<\?xml\s+version\s*=\s*['\"]([-\w.:]+)[\"']" +\
   "(\s+encoding\s*=\s*['\"]([-\w.]+)[\"'])?" +\
@@ -447,6 +452,30 @@ def _doDeposit (r):
     _checkAbort()
     r.save()
 
+def _sendEmail (emailAddresses, r):
+  if r.status == ezidapp.models.CrossrefQueue.WARNING:
+    s = "warning"
+  else:
+    s = "error"
+  l = "%s/id/%s" % (_ezidUrl, urllib.quote(r.identifier, ":/"))
+  m = ("EZID received a%s %s in registering an identifier of yours with\n" +\
+    "CrossRef.\n\n" +\
+    "Identifier: %s\n" +\
+    "Status: %s\n" +\
+    "CrossRef message: %s\n\n" +\
+    "The identifier can be viewed in EZID at:\n" +
+    "%s\n\n" +\
+    "You are receiving this message because your account is configured to\n" +\
+    "receive CrossRef errors and warnings.  This is an automated email.\n" +\
+    "Please do not reply.\n") %\
+    ("n" if s == "error" else "", s, r.identifier, r.get_status_display(),
+    r.message if r.message != "" else "(unknown reason)", l)
+  try:
+    django.core.mail.send_mail("CrossRef registration " + s, m,
+      django.conf.settings.SERVER_EMAIL, emailAddresses)
+  except Exception, e:
+    raise _wrapException("error sending email", e)
+
 def _oneline (s):
   return re.sub("\s", " ", s)
 
@@ -475,15 +504,20 @@ def _doPoll (r):
       _checkAbort()
       r.delete()
     else:
-      # If the operation was DELETE, a CrossRef error or warning will
-      # leave an entry in the queue that refers to a nonexistent
-      # identifier.  Hard to say whether that's better than ignoring
-      # the CrossRef problem or not.
       if t[0] == "completed with warning":
         r.status = ezidapp.models.CrossrefQueue.WARNING
       else:
         r.status = ezidapp.models.CrossrefQueue.FAILURE
       r.message = t[1]
+      au = userauth.getAuthenticatedUser(idmap.getAgent(r.owner)[0])
+      emailAddresses = policy.getCrossrefInfo(au.user, au.group)[1]
+      if len(emailAddresses) > 0:
+        _checkAbort()
+        _sendEmail(emailAddresses, r)
+      # If the operation was DELETE, a CrossRef error or warning will
+      # leave an entry in the queue that refers to a nonexistent
+      # identifier.  Hard to say whether that's better than ignoring
+      # the CrossRef problem or not.
       _checkAbort()
       r.save()
   else:
