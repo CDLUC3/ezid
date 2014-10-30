@@ -45,6 +45,7 @@ _resultsUrl = None
 _username = None
 _password = None
 _doiTestShoulder = None
+_daemonEnabled = None
 _threadName = None
 _idleSleep = None
 _ezidUrl = None
@@ -52,9 +53,8 @@ _ezidUrl = None
 def _loadConfig ():
   global _enabled, _depositorName, _depositorEmail, _realServer, _testServer
   global _depositUrl, _resultsUrl, _username, _password, _doiTestShoulder
-  global _threadName, _idleSleep, _ezidUrl
-  _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
-    config.config("crossref.enabled").lower() == "true"
+  global _daemonEnabled, _threadName, _idleSleep, _ezidUrl
+  _enabled = (config.config("crossref.enabled").lower() == "true")
   _depositorName = config.config("crossref.depositor_name")
   _depositorEmail = config.config("crossref.depositor_email")
   _realServer = config.config("crossref.real_server")
@@ -71,7 +71,9 @@ def _loadConfig ():
     # Shoulder never happen.
     _doiTestShoulder = "10.????"
   _idleSleep = int(config.config("daemons.crossref_processing_idle_sleep"))
-  if _enabled:
+  _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
+    config.config("daemons.crossref_enabled").lower() == "true")
+  if _daemonEnabled:
     _threadName = uuid.uuid1().hex
     t = threading.Thread(target=_daemonThread, name=_threadName)
     t.setDaemon(True)
@@ -434,7 +436,7 @@ def _checkAbort ():
   # configuration reload.  It doesn't entirely eliminate potential
   # race conditions between two daemon threads, but it should make
   # conflicts very unlikely.
-  if not _enabled or threading.currentThread().getName() != _threadName:
+  if not _daemonEnabled or threading.currentThread().getName() != _threadName:
     raise _AbortException()
 
 def _queue ():
