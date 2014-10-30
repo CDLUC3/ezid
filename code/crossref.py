@@ -479,7 +479,7 @@ def _doPoll (r):
       # leave an entry in the queue that refers to a nonexistent
       # identifier.  Hard to say whether that's better than ignoring
       # the CrossRef problem or not.
-      if t[0] == "complete with warning":
+      if t[0] == "completed with warning":
         r.status = ezidapp.models.CrossrefQueue.WARNING
       else:
         r.status = ezidapp.models.CrossrefQueue.FAILURE
