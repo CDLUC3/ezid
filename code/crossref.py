@@ -460,21 +460,21 @@ def _sendEmail (emailAddresses, r):
   else:
     s = "error"
   l = "%s/id/%s" % (_ezidUrl, urllib.quote(r.identifier, ":/"))
-  m = ("EZID received a%s %s in registering an identifier of yours with\n" +\
+  m = ("EZID received a%s %s in registering an identifier of yours with " +\
     "CrossRef.\n\n" +\
-    "Identifier: %s\n" +\
-    "Status: %s\n" +\
+    "Identifier: %s\n\n" +\
+    "Status: %s\n\n" +\
     "CrossRef message: %s\n\n" +\
     "The identifier can be viewed in EZID at:\n" +
     "%s\n\n" +\
-    "You are receiving this message because your account is configured to\n" +\
-    "receive CrossRef errors and warnings.  This is an automated email.\n" +\
+    "You are receiving this message because your account is configured to " +\
+    "receive CrossRef errors and warnings.  This is an automated email.  " +\
     "Please do not reply.\n") %\
     ("n" if s == "error" else "", s, r.identifier, r.get_status_display(),
     r.message if r.message != "" else "(unknown reason)", l)
   try:
     django.core.mail.send_mail("CrossRef registration " + s, m,
-      django.conf.settings.SERVER_EMAIL, emailAddresses)
+      django.conf.settings.SERVER_EMAIL, emailAddresses, fail_silently=True)
   except Exception, e:
     raise _wrapException("error sending email", e)
 
