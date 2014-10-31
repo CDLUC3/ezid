@@ -2,7 +2,8 @@
 
 # Reads EZID transaction log files, consolidates transaction BEGIN and
 # END records, and filters transactions as specified by command line
-# options.
+# options.  If no files are specified, records are read from standard
+# input.
 #
 # Usage: filterlog [options] files...
 #
@@ -84,6 +85,7 @@ p.add_option_group(g)
 options, files = p.parse_args()
 if options.users is None: options.users = []
 if options.groups is None: options.groups = []
+if len(files) == 0: files = [None]
 
 def error (file, lineNo, message):
   sys.stderr.write("%s, line %d: %s\n" % (file, lineNo, message))
@@ -158,7 +160,10 @@ records = []
 tidMap = {}
 
 for file in files:
-  f = open(file)
+  if file != None:
+    f = open(file)
+  else:
+    f = sys.stdin
   n = 0
   for l in f:
     n += 1

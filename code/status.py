@@ -23,6 +23,7 @@ import time
 import uuid
 
 import config
+import crossref
 import datacite
 import ezid
 import log
@@ -49,15 +50,18 @@ def _statusDaemon ():
       nw = sum(waitingUsers.values())
       nstc, nstca = store.numConnections()
       nsec, nseca = search.numConnections()
+      cqs = crossref.getQueueStatistics()
       log.status("pid=%d" % os.getpid(),
         "threads=%d" % threading.activeCount(),
         "paused" if isPaused else "running",
         "activeOperations=%d%s" % (na, _formatUserCountList(activeUsers)),
         "waitingRequests=%d%s" % (nw, _formatUserCountList(waitingUsers)),
         "activeDataciteOperations=%d" % datacite.numActiveOperations(),
-        "active/totalStoreDatabaseConnections=%d/%d" % (nstca, nstc),
-        "active/totalSearchDatabaseConnections=%d/%d" % (nseca, nsec),
-        "updateQueueLength=%d" % store.getUpdateQueueLength())
+        "storeDbConnections:active/total=%d/%d" % (nstca, nstc),
+        "searchDbConnections:active/total=%d/%d" % (nseca, nsec),
+        "updateQueueLength=%d" % store.getUpdateQueueLength(),
+        "crossrefQueue:archived/unsubmitted/submitted=%d/%d/%d" %\
+        (cqs[2]+cqs[3], cqs[0], cqs[1]))
     except Exception, e:
       log.otherError("status._statusDaemon", e)
     time.sleep(_reportingInterval)
