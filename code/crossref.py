@@ -248,6 +248,17 @@ def _buildDeposit (body, registrant, doi, targetUrl, withdrawTitles=False,
   d2 = _addDeclaration(lxml.etree.tostring(root, encoding="unicode"))
   return (d2, d1, batchId)
 
+def replaceTbas (body, doi, targetUrl):
+  """
+  Fills in the (:tba) portions of CrossRef deposit metadata with the
+  given arguments.  'body' should be a CrossRef <body> child element
+  as a Unicode string, and is assumed to have been validated and
+  normalized per validateBody above.  'doi' should be a scheme-less
+  DOI identifier (e.g., "10.5060/FOO").  The return is a Unicode
+  string.
+  """
+  return _buildDeposit(body, None, doi, targetUrl, bodyOnly=True)
+
 def _multipartBody (*parts):
   """
   Builds a multipart/form-data (RFC 2388) document out of a list of

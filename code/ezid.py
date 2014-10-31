@@ -584,6 +584,14 @@ def createDoi (doi, user, group, metadata={}):
       if m.get("_x", "") == "no":
         datacite.deactivate(doi)
         log.progress(tid, "datacite.deactivate")
+      if "crossref" in m:
+        # Before storing CrossRef metadata, fill in the (:tba)
+        # sections that were introduced in the
+        # validation/normalization process, but only if the identifier
+        # is public.  Unfortunately, doing this with the current code
+        # architecture requires that the metadata be re-parsed and
+        # re-serialized.
+        m["crossref"] = crossref.replaceTbas(m["crossref"], doi, m["_st"])
     noid_egg.setElements(shadowArk, m)
     log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
@@ -1187,6 +1195,15 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
         (newStatus == "public" and newExport == "no"):
         datacite.deactivate(m["_s"][4:])
         log.progress(tid, "datacite.deactivate")
+      # If the identifier is a DOI with CrossRef metadata, make sure
+      # the embedded identifier and target URL sections are
+      # up-to-date, but only if the identifier is not reserved.
+      # Unfortunately, doing this with the current code architecture
+      # requires that the metadata be re-parsed and re-serialized.
+      crm = d.get("crossref", m.get("crossref", None))
+      if crm != None and newStatus != "reserved" and (iStatus == "reserved" or
+        "crossref" in d or "_st" in d):
+        d["crossref"] = crossref.replaceTbas(crm, doi, d.get("_st", m["_st"]))
     # Finally, and most importantly, update our own databases.
     noid_egg.setElements(ark, d)
     log.progress(tid, "noid_egg.setElements")
