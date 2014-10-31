@@ -21,6 +21,12 @@ import log
 import shoulder
 import useradmin
 
+# Below, _groups maps groups (identified by 2- or 3-tuples; see NOTES)
+# to 3-tuples (shoulders, crossrefEnabled, crossrefMail).  In the
+# latter, 'shoulders' is a list of shoulder_parser.Entry objects.
+# 'crossrefEnabled' is a boolean.  'crossrefMail' is a list of string
+# email addresses.
+
 _lock = threading.Lock()
 _testShoulders = None
 _groups = None
@@ -63,7 +69,7 @@ def _lookupShoulders (group, shoulderText):
       log.otherError("policy._lookupShoulders", e)
   return l
 
-def _loadShouldersLdap (group):
+def _loadGroupLdap (group):
   l = None
   try:
     l = ldap.initialize(_ldapServer)
@@ -76,32 +82,50 @@ def _loadShouldersLdap (group):
       "unexpected return from LDAP search command, DN='%s'" % group[2]
     # Although not documented anywhere, it appears that returned
     # values are UTF-8 encoded.
-    return _lookupShoulders(group, r[0][1]["shoulderList"][0].decode("UTF-8"))
+    sl = _lookupShoulders(group, r[0][1]["shoulderList"][0].decode("UTF-8"))
+    if "crossrefEnabled" in r[0][1]:
+      ce = (r[0][1]["crossrefEnabled"][0].lower() == "true")
+    else:
+      ce = False
+    if "crossrefMail" in r[0][1]:
+      cml = [m.decode("UTF-8") for m in r[0][1]["crossrefMail"]]
+    else:
+      cml = []
+    return (sl, ce, cml)
   finally:
     if l: l.unbind()
 
-def _loadShouldersLocal (group):
-  return _lookupShoulders(group,
-    config.config("group_%s.shoulders" % group[0]))
+def _loadGroupLocal (group):
+  return (_lookupShoulders(group,
+    config.config("group_%s.shoulders" % group[0])),
+    config.config("group_%s.crossref_enabled" % group[0]).lower() == "true",
+    [m for m in config.config("group_%s.crossref_mail" % group[0]).split(",")\
+    if len(m) > 0])
 
-def _loadShoulders (group):
+def _loadGroup (group):
   if group[0] == _adminUsername:
-    return [s for s in shoulder.getAll() if not s.is_test_shoulder]
+    return ([s for s in shoulder.getAll() if not s.is_test_shoulder],
+      True, [])
   elif group[0] == "anonymous":
-    return []
+    return ([], False, [])
   elif _ldapEnabled:
-    return _loadShouldersLdap(group)
+    return _loadGroupLdap(group)
   else:
-    return _loadShouldersLocal(group)
+    return _loadGroupLocal(group)
 
 def _getShoulders (group):
   _lock.acquire()
   try:
-    if group in _groups:
-      return _groups[group]
-    else:
-      _groups[group] = _loadShoulders(group)
-      return _groups[group]
+    if group not in _groups: _groups[group] = _loadGroup(group)
+    return _groups[group][0]
+  finally:
+    _lock.release()
+
+def _getCrossrefInfo (group):
+  _lock.acquire()
+  try:
+    if group not in _groups: _groups[group] = _loadGroup(group)
+    return (_groups[group][1], _groups[group][2])
   finally:
     _lock.release()
 
@@ -115,9 +139,20 @@ def getShoulders (user, group):
   """
   return _getShoulders(group)[:]
 
-def clearShoulderCache (group):
+def getCrossrefInfo (user, group):
   """
-  Clears the shoulder cache for a group.  'group' should be a simple
+  Returns a 2-tuple (crossrefEnabled, crossrefMail) for a user.
+  'user' and 'group' should each be authenticated (local name,
+  persistent identifier) tuples, e.g., ("dryad", "ark:/13030/foo").
+  'crossrefEnabled' is a boolean.  'crossrefMail' is a list of string
+  email addresses.  Throws an exception on error.
+  """
+  ci = _getCrossrefInfo(group)
+  return (ci[0], ci[1][:])
+
+def clearGroupCache (group):
+  """
+  Clears the group cache for a group.  'group' should be a simple
   group name, e.g., "dryad".
   """
   _lock.acquire()
@@ -274,3 +309,18 @@ def authorizeDelete (rUser, rGroup, identifier, iUser, iGroup, iCoOwners):
     return True
   else:
     return False
+
+def authorizeCrossref (user, group, identifier):
+  """
+  Returns true if a request to register an identifier with CrossRef is
+  authorized.  'user' and 'group' identify the requester and should
+  each be authenticated (local name, persistent identifier) tuples,
+  e.g., ("dryad", "ark:/13030/foo").  'identifier' is the identifier
+  in question; it must be qualified, as in "doi:10.5060/foo".  Throws
+  an exception on error.
+  """
+  s = shoulder.getLongestMatch(identifier)
+  # Should never happen.
+  assert s is not None, "shoulder not found"
+  return (user[0] == _adminUsername or _getCrossrefInfo(group)[0]) and\
+    identifier.startswith("doi:") and s.crossref

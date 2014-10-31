@@ -31,11 +31,13 @@ _reattemptDelay = None
 _lock = threading.Lock()
 _ldapCache = None
 _userDnTemplate = None
+_adminUsername = None
+_adminPassword = None
 _users = None
 
 def _loadConfig ():
   global _ldapEnabled, _ldapServer, _numAttempts, _reattemptDelay, _ldapCache
-  global _userDnTemplate, _users
+  global _userDnTemplate, _adminUsername, _adminPassword, _users
   _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
   _ldapServer = config.config("ldap.server")
   _numAttempts = int(config.config("ldap.num_attempts"))
@@ -44,6 +46,8 @@ def _loadConfig ():
   _ldapCache = {}
   _lock.release()
   _userDnTemplate = config.config("ldap.user_dn_template")
+  _adminUsername = config.config("ldap.admin_username")
+  _adminPassword = config.config("ldap.admin_password")
   groupIds = dict([k, config.config("group_%s.id" % k)]\
     for k in config.config("groups.keys").split(","))
   _users = dict([k, (config.config("user_%s.password" % k),
@@ -87,10 +91,15 @@ def _getAttributes (server, dn):
       r[a] = r[a][0]
   return r
 
-def _authenticateLdap (username, password):
+def _authenticateLdap (username, password, authenticateAsAdmin=False):
+  # The 'authenticateAsAdmin' argument is a bit of a hack to support
+  # 'getAuthenticatedUser' below, which itself is an interim solution.
   l = None
   try:
-    userDn = _userDnTemplate % _escape(username)
+    if authenticateAsAdmin:
+      userDn = _userDnTemplate % _escape(_adminUsername)
+    else:
+      userDn = _userDnTemplate % _escape(username)
     # We don't do retries on every LDAP interaction, but the following
     # 'bind' is the most frequently executed LDAP call, and the most
     # likely place in EZID where a down/inaccessible LDAP server will
@@ -118,6 +127,7 @@ def _authenticateLdap (username, password):
       if username in _ldapCache: return _ldapCache[username]
     finally:
       _lock.release()
+    if authenticateAsAdmin: userDn = _userDnTemplate % _escape(username)
     ua = _getAttributes(l, userDn)
     if "ezidUser" not in ua["objectClass"]: return None
     uid = ua["uid"]
@@ -158,9 +168,9 @@ def _authenticateLdap (username, password):
   finally:
     if l: l.unbind()
 
-def _authenticateLocal (username, password):
+def _authenticateLocal (username, password, bypass=False):
   u = _users.get(username, None)
-  if u and password == u[0]:
+  if u and (bypass or password == u[0]):
     return AuthenticatedUser((username, u[1]), (u[2], u[3]))
   else:
     return None
@@ -203,6 +213,25 @@ def authenticateRequest (request):
     return r
   else:
     return None
+
+def getAuthenticatedUser (username):
+  """
+  Returns an AuthenticatedUser object for a username.  Throws an
+  exception on error.  The need for this function will go away when
+  EZID has a proper user model.
+  """
+  if _ldapEnabled:
+    _lock.acquire()
+    try:
+      if username in _ldapCache: return _ldapCache[username]
+    finally:
+      _lock.release()
+    au = _authenticateLdap(username, _adminPassword, authenticateAsAdmin=True)
+    assert type(au) is AuthenticatedUser, "user lookup failed"
+  else:
+    au = _authenticateLocal(username, None, bypass=True)
+    assert au is not None, "username not found"
+  return au
 
 def clearLdapCache (username):
   """

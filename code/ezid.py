@@ -123,6 +123,14 @@
 #        |             | the identifier is registered, e.g.,
 #        |             | "CDL.DRYAD" (or will be registered, in the
 #        |             | case of a reserved identifier).
+# _cr    | _crossref   | DOIs only.  If present, indicates that the
+#        |             | identifier is registered with CrossRef (or,
+#        |             | in the case of a reserved identifier, will be
+#        |             | registered), and also indicates the status of
+#        |             | the registration process.  Syntactically, has
+#        |             | the value "yes" followed by a pipe character
+#        |             | followed by a status message, e.g., "yes |
+#        |             | successfully registered".
 #
 # Element names and values are first UTF-8 encoded, and then
 # non-graphic ASCII characters and a few other reserved characters are
@@ -153,6 +161,7 @@ import urllib
 import uuid
 
 import config
+import crossref
 import datacite
 import idmap
 import log
@@ -289,7 +298,8 @@ _labelMapping = {
   "_p": "_profile",
   "_is": "_status",
   "_x": "_export",
-  "_d": "_datacenter"
+  "_d": "_datacenter",
+  "_cr": "_crossref"
 }
 
 def _oneline (s):
@@ -306,7 +316,7 @@ def _softUpdate (td, sd):
     if k not in td: td[k] = v
 
 _userSettableReservedElements = ["_coowners", "_export", "_profile", "_status",
-  "_target"]
+  "_target", "_crossref"]
 
 def _validateMetadata1 (identifier, user, metadata):
   """
@@ -377,6 +387,25 @@ def _validateMetadata1 (identifier, user, metadata):
         metadata["datacite.resourcetype"])
     except AssertionError, e:
       return "element 'datacite.resourcetype': " + str(e)
+  if "crossref" in metadata and metadata["crossref"].strip() != "":
+    try:
+      metadata["crossref"] = crossref.validateBody(metadata["crossref"])
+    except AssertionError, e:
+      return "element 'crossref': " + _oneline(str(e))
+  if "_crossref" in metadata:
+    # On input, we allow values "yes" and "no".  Subsequent checks
+    # will place limits on when those values can be specified.  Note
+    # that the stored value for _cr is different and computed.  Subtle
+    # point: when EZID internally sets _cr to computed values, it does
+    # so by referencing the element as "_cr" (which it can do since it
+    # acts as the EZID administrator), thereby bypassing this
+    # validation entirely.
+    if not identifier.startswith("doi:"):
+      return "only DOI identifiers can be registered with CrossRef"
+    metadata["_cr"] = metadata["_crossref"].strip().lower()
+    if metadata["_cr"] not in ["yes", "no"]:
+      return "element '_crossref': invalid input value"
+    del metadata["_crossref"]
   return None
 
 def _validateMetadata2 (owner, metadata):
@@ -496,6 +525,14 @@ def createDoi (doi, user, group, metadata={}):
     elif m["_is"] != "reserved":
       return "error: bad request - invalid identifier status at creation time"
   if m.get("_x", "") == "yes": del m["_x"]
+  if m.get("_cr", "") == "no": del m["_cr"]
+  if "_cr" in m:
+    if "_x" in m:
+      return "error: bad request - identifier registered with CrossRef " +\
+        "must be exported"
+    if "_is" not in m and "crossref" not in m:
+      return "error: bad request - CrossRef registration requires " +\
+        "'crossref' deposit metadata"
   tid = uuid.uuid1()
   _acquireIdentifierLock(shadowArk, user[0])
   try:
@@ -508,6 +545,17 @@ def createDoi (doi, user, group, metadata={}):
     if not policy.authorizeCreate(user, group, qdoi):
       log.unauthorized(tid)
       return "error: unauthorized"
+    if "_cr" in m:
+      if not policy.authorizeCrossref(user, group, qdoi):
+        # Technically it's an authorization error, but it makes more
+        # sense to clients to receive a bad request.
+        log.badRequest(tid)
+        return "error: bad request - CrossRef registration is not enabled " +\
+          "for user and shoulder"
+      if "_is" in m: # reserved
+        m["_cr"] = "yes | awaiting status change to public"
+      else:
+        m["_cr"] = "yes | registration in progress"
     if _identifierExists(shadowArk):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
@@ -536,6 +584,14 @@ def createDoi (doi, user, group, metadata={}):
       if m.get("_x", "") == "no":
         datacite.deactivate(doi)
         log.progress(tid, "datacite.deactivate")
+      if "crossref" in m:
+        # Before storing CrossRef metadata, fill in the (:tba)
+        # sections that were introduced in the
+        # validation/normalization process, but only if the identifier
+        # is public.  Unfortunately, doing this with the current code
+        # architecture requires that the metadata be re-parsed and
+        # re-serialized.
+        m["crossref"] = crossref.replaceTbas(m["crossref"], doi, m["_st"])
     noid_egg.setElements(shadowArk, m)
     log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
@@ -928,7 +984,7 @@ def _fixupNonPublicTargets (d):
     d["_st1"] = d["_st"]
     del d["_st"]
 
-def setMetadata (identifier, user, group, metadata):
+def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
   """
   Sets metadata elements of a given qualified identifier, e.g.,
   "doi:10.5060/foo".  'user' and 'group' should each be authenticated
@@ -940,7 +996,8 @@ def setMetadata (identifier, user, group, metadata):
   "_coowners", "_target", "_profile", "_status", and "_export" may be
   set (unless the user is the EZID administrator, in which case the
   other reserved metadata elements may be set using their stored
-  forms).  The successful return is a string that includes the
+  forms).  The "_crossref" element may be set only in certain
+  situations.  The successful return is a string that includes the
   canonical, qualified form of the identifier, as in:
 
     success: doi:10.5060/FOO
@@ -1035,6 +1092,8 @@ def setMetadata (identifier, user, group, metadata):
         assert False, "unhandled case"
     else:
       if iStatus != "public": _fixupNonPublicTargets(d)
+    newStatus = d.get("_is", iStatus)
+    if newStatus == "": newStatus = "public"
     # If the user is not the owner of the identifier, add the user to
     # the identifier's co-owner list.
     if user[1] != iUser and user[0] != _adminUsername:
@@ -1053,6 +1112,36 @@ def setMetadata (identifier, user, group, metadata):
       _softUpdate(d, { "_su": str(int(time.time())) })
     # Export flag.
     if d.get("_x", "") == "yes": d["_x"] = ""
+    iExport = m.get("_x", "yes")
+    newExport = d.get("_x", iExport)
+    if newExport == "": newExport = "yes"
+    # CrossRef flag.
+    if "_cr" in d:
+      if d["_cr"] == "no":
+        if newStatus != "reserved":
+          log.badRequest(tid)
+          return "error: bad request - CrossRef registration can be " +\
+            "removed only from reserved identifiers"
+        d["_cr"] = ""
+      else:
+        # The new value might be "yes", or it might be a computed value.
+        if "_cr" in m:
+          if d["_cr"] == "yes": del d["_cr"]
+        else:
+          if not policy.authorizeCrossref(user, group, nqidentifier):
+            # Technically it's an authorization error, but it makes more
+            # sense to clients to receive a bad request.
+            log.badRequest(tid)
+            return "error: bad request - CrossRef registration is not " +\
+              "enabled for user and shoulder"
+          if newStatus == "reserved":
+            d["_cr"] = "yes | awaiting status change to public"
+          else:
+            d["_cr"] = "yes | registration in progress"
+    else:
+      if "_cr" in m and newStatus != "reserved":
+        # The update will trigger a CrossRef update.
+        d["_cr"] = "yes | registration in progress"
     # Easter egg: a careful reading of the above shows that it is
     # impossible for the administrator to set certain internal
     # elements in certain cases.  To preserve the administrator's
@@ -1063,11 +1152,18 @@ def setMetadata (identifier, user, group, metadata):
         if k.startswith("_") and k.endswith("!"):
           d[k[:-1]] = d[k]
           del d[k]
-    newStatus = d.get("_is", iStatus)
-    if newStatus == "": newStatus = "public"
-    iExport = m.get("_x", "yes")
-    newExport = d.get("_x", iExport)
-    if newExport == "": newExport = "yes"
+    # CrossRef-related requirements.
+    if (("_cr" in d and d["_cr"].startswith("yes")) or\
+      ("_cr" not in d and "_cr" in m)):
+      if newExport != "yes":
+        log.badRequest(tid)
+        return "error: bad request - identifier registered with CrossRef " +\
+          "must be exported"
+      if newStatus != "reserved" and not (("crossref" in d and\
+        d["crossref"].strip() != "") or ("crossref" not in d and\
+        "crossref" in m)):
+        return "error: bad request - CrossRef registration requires " +\
+          "'crossref' deposit metadata"
     # Perform any necessary DataCite operations.  These are more prone
     # to failure, hence we do them first to avoid corrupting our own
     # databases.  Note that this section is executed if we are
@@ -1099,11 +1195,20 @@ def setMetadata (identifier, user, group, metadata):
         (newStatus == "public" and newExport == "no"):
         datacite.deactivate(m["_s"][4:])
         log.progress(tid, "datacite.deactivate")
+      # If the identifier is a DOI with CrossRef metadata, make sure
+      # the embedded identifier and target URL sections are
+      # up-to-date, but only if the identifier is not reserved.
+      # Unfortunately, doing this with the current code architecture
+      # requires that the metadata be re-parsed and re-serialized.
+      crm = d.get("crossref", m.get("crossref", None))
+      if crm != None and newStatus != "reserved" and (iStatus == "reserved" or
+        "crossref" in d or "_st" in d):
+        d["crossref"] = crossref.replaceTbas(crm, doi, d.get("_st", m["_st"]))
     # Finally, and most importantly, update our own databases.
     noid_egg.setElements(ark, d)
     log.progress(tid, "noid_egg.setElements")
     m.update(d)
-    store.update(ark, m)
+    store.update(ark, m, updateUpdateQueue=updateUpdateQueue)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
