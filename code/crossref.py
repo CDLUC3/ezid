@@ -181,7 +181,21 @@ def validateBody (body):
 def _isTestIdentifier (doi):
   return doi.startswith(_doiTestShoulder)
 
-def _buildDeposit (body, registrant, doi, targetUrl):
+# In the CrossRef deposit schema, version 4.3.4, the <doi_data>
+# element can occur in 20 different places.  An analysis shows that
+# the resource title corresponding to the DOI being defined can be
+# found by one or more of the following XPaths relative to the
+# <doi_data> element.
+
+_titlePaths = [
+  "../N:titles/N:title",
+  "../N:titles/N:original_language_title",
+  "../N:proceedings_title",
+  "../N:full_title",
+  "../N:abbrev_title"]
+
+def _buildDeposit (body, registrant, doi, targetUrl, withdrawTitles=False,
+  bodyOnly=False):
   """
   Builds a CrossRef metadata submission document.  'body' should be a
   CrossRef <body> child element as a Unicode string, and is assumed to
@@ -194,6 +208,9 @@ def _buildDeposit (body, registrant, doi, targetUrl):
   element, and 'batchId' is the submission batch identifier.  If 'doi'
   is a test identifier, it is prefixed with _crossrefTestPrefix in
   'document' only.
+  Options: if 'withdrawTitles' is true, the title(s) corresponding to
+  the DOI being defined are prepended with "WITHDRAWN:" (in 'document'
+  only).  If 'bodyOnly' is true, only the body is returned.
   """
   body = lxml.etree.XML(body)
   m = _tagRE.match(body.tag)
@@ -205,6 +222,7 @@ def _buildDeposit (body, registrant, doi, targetUrl):
   doiElement.text = doi
   doiData.find("N:resource", namespaces=ns).text = targetUrl
   d1 = _addDeclaration(lxml.etree.tostring(body, encoding="unicode"))
+  if bodyOnly: return d1
   def q (elementName):
     return "{%s}%s" % (namespace, elementName)
   root = lxml.etree.Element(q("doi_batch"), version=version)
@@ -223,6 +241,9 @@ def _buildDeposit (body, registrant, doi, targetUrl):
   e = lxml.etree.SubElement(root, q("body"))
   del body.attrib[_schemaLocation]
   if _isTestIdentifier(doi): doiElement.text = _crossrefTestPrefix + doi
+  if withdrawTitles:
+    for p in _titlePaths:
+      for t in doiData.xpath(p, namespaces=ns): t.text = "WITHDRAWN: " + t.text
   e.append(body)
   d2 = _addDeclaration(lxml.etree.tostring(root, encoding="unicode"))
   return (d2, d1, batchId)
@@ -445,8 +466,14 @@ def _queue ():
 
 def _doDeposit (r):
   m = _deblobify(r.metadata)
+  if r.operation == ezidapp.models.CrossrefQueue.DELETE:
+    url = "http://datacite.org/invalidDOI"
+  else:
+    url = m["_st"]
   submission, body, batchId = _buildDeposit(m["crossref"],
-    idmap.getAgent(r.owner)[0], r.identifier[4:], m["_st"])
+    idmap.getAgent(r.owner)[0], r.identifier[4:], url,
+    withdrawTitles=(r.operation == ezidapp.models.CrossrefQueue.DELETE or\
+    m.get("_is", "public").startswith("unavailable")))
   if _submitDeposit(submission, batchId, r.identifier[4:]):
     r.status = ezidapp.models.CrossrefQueue.SUBMITTED
     r.batchId = batchId
