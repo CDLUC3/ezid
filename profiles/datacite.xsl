@@ -194,9 +194,13 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='creator']">
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
+    <br/>
   </xsl:if>
   <xsl:value-of select="*[local-name()='creatorName']"/>
   <xsl:apply-templates select="*[local-name()='nameIdentifier']">
+    <xsl:with-param name="contextclass">dcms_creators</xsl:with-param>
+  </xsl:apply-templates>
+  <xsl:apply-templates select="*[local-name()='affiliation']">
     <xsl:with-param name="contextclass">dcms_creators</xsl:with-param>
   </xsl:apply-templates>
 </xsl:template>
@@ -212,6 +216,20 @@ http://creativecommons.org/licenses/BSD/
     <xsl:text>[</xsl:text>
     <xsl:value-of select="@nameIdentifierScheme"/>
     <xsl:text>=</xsl:text>
+    <xsl:value-of select="."/>
+    <xsl:text>]</xsl:text>
+  </xsl:element>
+</xsl:template>
+
+<xsl:template match="*[local-name()='affiliation']">
+  <xsl:param name="contextclass"/>
+  <xsl:text> </xsl:text>
+  <xsl:element name="span">
+    <xsl:attribute name="class">
+      <xsl:text>dcms_subvalue </xsl:text>
+      <xsl:value-of select="$contextclass"/>
+    </xsl:attribute>
+    <xsl:text>[</xsl:text>
     <xsl:value-of select="."/>
     <xsl:text>]</xsl:text>
   </xsl:element>
@@ -240,6 +258,7 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='subject']">
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
+    <br/>
   </xsl:if>
   <xsl:value-of select="."/>
   <xsl:if test="@subjectScheme">
@@ -255,6 +274,7 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='contributor']">
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
+    <br/>
   </xsl:if>
   <!-- The schema says the content type is mixed, but we ignore any
        free-floating text. -->
@@ -268,11 +288,15 @@ http://creativecommons.org/licenses/BSD/
     <xsl:value-of select="@contributorType"/>
     <xsl:text>]</xsl:text>
   </span>
+  <xsl:apply-templates select="*[local-name()='affiliation']">
+    <xsl:with-param name="contextclass">dcms_contributors</xsl:with-param>
+  </xsl:apply-templates>
 </xsl:template>
 
 <xsl:template match="*[local-name()='date']">
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
+    <br/>
   </xsl:if>
   <xsl:value-of select="."/>
   <xsl:text> </xsl:text>
@@ -286,6 +310,7 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='alternateIdentifier']">
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
+    <br/>
   </xsl:if>
   <xsl:value-of select="."/>
   <xsl:text> </xsl:text>
@@ -299,6 +324,7 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='relatedIdentifier']">
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
+    <br/>
   </xsl:if>
   <xsl:value-of select="."/>
   <xsl:text> </xsl:text>
@@ -318,6 +344,7 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='size']">
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
+    <br/>
   </xsl:if>
   <xsl:value-of select="."/>
 </xsl:template>
@@ -325,6 +352,7 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='format']">
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
+    <br/>
   </xsl:if>
   <xsl:value-of select="."/>
 </xsl:template>
@@ -332,6 +360,7 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='rights']">
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
+    <br/>
   </xsl:if>
   <xsl:value-of select="."/>
   <xsl:if test="@rightsURI">
@@ -365,6 +394,7 @@ http://creativecommons.org/licenses/BSD/
        though the schema requires nothing. -->
   <xsl:if test="position() != 1">
     <xsl:text>; </xsl:text>
+    <br/>
   </xsl:if>
   <xsl:choose>
     <xsl:when test="*[local-name()='geoLocationPlace']">
