@@ -85,6 +85,24 @@ http://creativecommons.org/licenses/BSD/
       </xsl:otherwise>
     </xsl:choose>
   </titles>
+  <xsl:variable name="dd" select=
+    "../*[local-name()='database_date']/*[local-name()='publication_date']"/>
+  <xsl:choose>
+    <xsl:when test="$datacite.publicationyear != '(:unav)'">
+      <publicationYear>
+        <xsl:value-of select="$datacite.publicationyear"/>
+      </publicationYear>
+    </xsl:when>
+    <xsl:when test="../*[local-name()='publication_date']">
+      <xsl:apply-templates select="../*[local-name()='publication_date'][1]"/>
+    </xsl:when>
+    <xsl:when test="$dd">
+      <xsl:apply-templates select="$dd[1]"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <publicationYear>0000</publicationYear>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="*[local-name()='titles']">
@@ -128,6 +146,12 @@ http://creativecommons.org/licenses/BSD/
   <title>
     <xsl:value-of select="."/>
   </title>
+</xsl:template>
+
+<xsl:template match="*[local-name()='publication_date']">
+  <publicationYear>
+    <xsl:value-of select="*[local-name()='year']"/>
+  </publicationYear>
 </xsl:template>
 
 <!-- Prevent any other output. -->
