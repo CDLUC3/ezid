@@ -14,6 +14,16 @@ document.  It attempts to always generate a valid output record; where
 suitable conversion values aren't found, the (:unav) code is inserted
 instead.
 
+A general limitation of this transform is that it does not look higher
+in the document tree for conversion values that are logically
+inherited by lower levels.  For example, a <content_item> within a
+<book> does not inherit the book's publisher or publication date,
+though logically it should.  In defense of this limitation, the
+higher-level inherited values need not always be specified, and may be
+completely absent such as in the case of a <sa_component>.  In short,
+this transform simply does not have the benefit of the backing of
+CrossRef's database.
+
 This transform accepts the following optional external parameters:
 
   datacite.creator
@@ -85,6 +95,19 @@ http://creativecommons.org/licenses/BSD/
       </xsl:otherwise>
     </xsl:choose>
   </titles>
+  <xsl:choose>
+    <xsl:when test="$datacite.publisher != '(:unav)'">
+      <publisher>
+        <xsl:value-of select="$datacite.publisher"/>
+      </publisher>
+    </xsl:when>
+    <xsl:when test="../*[local-name()='publisher']">
+      <xsl:apply-templates select="../*[local-name()='publisher'][1]"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <publisher>(:unav)</publisher>
+    </xsl:otherwise>
+  </xsl:choose>
   <xsl:variable name="dd" select=
     "../*[local-name()='database_date']/*[local-name()='publication_date']"/>
   <xsl:choose>
@@ -146,6 +169,16 @@ http://creativecommons.org/licenses/BSD/
   <title>
     <xsl:value-of select="."/>
   </title>
+</xsl:template>
+
+<xsl:template match="*[local-name()='publisher']">
+  <publisher>
+    <xsl:if test="*[local-name()='publisher_place']">
+      <xsl:value-of select="*[local-name()='publisher_place']"/>
+      <xsl:text>: </xsl:text>
+    </xsl:if>
+    <xsl:value-of select="*[local-name()='publisher_name']"/>
+  </publisher>
 </xsl:template>
 
 <xsl:template match="*[local-name()='publication_date']">
