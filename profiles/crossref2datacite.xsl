@@ -72,9 +72,11 @@ http://creativecommons.org/licenses/BSD/
 </xsl:template>
 
 <xsl:template match="*[local-name()='doi_data']">
+  <!-- identifier -->
   <identifier identifierType="DOI">
     <xsl:value-of select="*[local-name()='doi']"/>
   </identifier>
+  <!-- title -->
   <titles>
     <xsl:choose>
       <xsl:when test="$datacite.title != '(:unav)'">
@@ -95,6 +97,7 @@ http://creativecommons.org/licenses/BSD/
       </xsl:otherwise>
     </xsl:choose>
   </titles>
+  <!-- publisher -->
   <xsl:choose>
     <xsl:when test="$datacite.publisher != '(:unav)'">
       <publisher>
@@ -108,6 +111,7 @@ http://creativecommons.org/licenses/BSD/
       <publisher>(:unav)</publisher>
     </xsl:otherwise>
   </xsl:choose>
+  <!-- publication year -->
   <xsl:variable name="dd" select=
     "../*[local-name()='database_date']/*[local-name()='publication_date']"/>
   <xsl:choose>
@@ -125,6 +129,119 @@ http://creativecommons.org/licenses/BSD/
     <xsl:otherwise>
       <publicationYear>0000</publicationYear>
     </xsl:otherwise>
+  </xsl:choose>
+  <!-- resource type -->
+  <xsl:choose>
+    <xsl:when test="$datacite.resourcetype != '(:unav)'">
+      <xsl:choose>
+        <xsl:when test="contains($datacite.resourcetype, '/')">
+          <xsl:element name="resourceType">
+            <xsl:attribute name="resourceTypeGeneral">
+              <xsl:value-of
+                select="substring-before($datacite.resourcetype, '/')"/>
+            </xsl:attribute>
+            <xsl:value-of
+              select="substring-after($datacite.resourcetype, '/')"/>
+          </xsl:element>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:element name="resourceType">
+            <xsl:attribute name="resourceTypeGeneral">
+              <xsl:value-of select="$datacite.resourcetype"/>
+            </xsl:attribute>
+          </xsl:element>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'book_metadata'">
+      <resourceType resourceTypeGeneral="Text">book</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'book_series_metadata'">
+      <resourceType
+        resourceTypeGeneral="Text">book, one in a series</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'book_set_metadata'">
+      <resourceType
+        resourceTypeGeneral="Text">book, one of a set</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'component'">
+      <xsl:if test="../*[local-name()='format']/@mime_type">
+        <xsl:variable name="mt" select="substring-before(
+          ../*[local-name()='format']/@mime_type, '/')"/>
+        <xsl:element name="resourceType">
+          <xsl:attribute name="resourceTypeGeneral">
+            <xsl:choose>
+              <xsl:when test="$mt = 'audio'">Sound</xsl:when>
+              <xsl:when test="$mt = 'image'">Image</xsl:when>
+              <xsl:when test="$mt = 'model'">Model</xsl:when>
+              <xsl:when test="$mt = 'text'">Text</xsl:when>
+              <xsl:when test="$mt = 'video'">Audiovisual</xsl:when>
+              <xsl:otherwise>Other</xsl:otherwise>
+            </xsl:choose>
+          </xsl:attribute>
+          <xsl:value-of select="../*[local-name()='format']/@mime_type"/>
+        </xsl:element>
+      </xsl:if>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'conference_paper'">
+      <resourceType resourceTypeGeneral="Text">conference paper</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'content_item'">
+      <resourceType resourceTypeGeneral="Text">book content item</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'database_metadata'">
+      <resourceType resourceTypeGeneral="Dataset">database</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'dataset'">
+      <resourceType resourceTypeGeneral="Dataset">dataset</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'dissertation'">
+      <resourceType resourceTypeGeneral="Text">dissertation</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'journal_article'">
+      <resourceType resourceTypeGeneral="Text">journal article</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'journal_issue'">
+      <resourceType resourceTypeGeneral="Text">journal issue</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'journal_metadata'">
+      <resourceType resourceTypeGeneral="Text">journal</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'journal_volume'">
+      <resourceType resourceTypeGeneral="Text">journal volume</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'proceedings_metadata'">
+      <resourceType resourceTypeGeneral="Text">proceedings</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'proceedings_series_metadata'">
+      <resourceType
+        resourceTypeGeneral="Text">proceedings, one in a series</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'report-paper_metadata'">
+      <resourceType resourceTypeGeneral="Text">report-paper</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'report-paper_series_metadata'">
+      <resourceType
+        resourceTypeGeneral="Text">report-paper, one in a series</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'series_metadata'">
+      <resourceType resourceTypeGeneral="Text">
+        <xsl:choose>
+          <xsl:when test="local-name(../..) =
+            'book_series_metadata'">book series</xsl:when>
+          <xsl:when test="local-name(../..) =
+            'proceedings_series_metadata'">proceedings series</xsl:when>
+          <xsl:when test="local-name(../..) =
+            'report-paper_series_metadata'">report-paper series</xsl:when>
+        </xsl:choose>
+      </resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'set_metadata'">
+      <resourceType resourceTypeGeneral="Text">book set</resourceType>
+    </xsl:when>
+    <xsl:when test="local-name(..) = 'standard_metadata'">
+      <resourceType resourceTypeGeneral="Text">standard</resourceType>
+    </xsl:when>
   </xsl:choose>
 </xsl:template>
 
