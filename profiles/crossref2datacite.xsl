@@ -25,6 +25,7 @@ does not have the benefit of the backing of CrossRef's database.
 
 This transform accepts the following optional external parameters:
 
+  _id
   datacite.creator
   datacite.title
   datacite.publisher
@@ -55,6 +56,7 @@ http://creativecommons.org/licenses/BSD/
   xmlns="http://datacite.org/schema/kernel-3"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
+<xsl:param name="_id" select="'(:unav)'"/>
 <xsl:param name="datacite.creator" select="'(:unav)'"/>
 <xsl:param name="datacite.title" select="'(:unav)'"/>
 <xsl:param name="datacite.publisher" select="'(:unav)'"/>
@@ -73,7 +75,14 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='doi_data']">
   <!-- identifier -->
   <identifier identifierType="DOI">
-    <xsl:value-of select="*[local-name()='doi']"/>
+    <xsl:choose>
+      <xsl:when test="$_id != '(:unav)'">
+        <xsl:value-of select="$_id"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="*[local-name()='doi']"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </identifier>
   <!-- creator -->
   <creators>
