@@ -125,7 +125,7 @@ def advanced_form_processing(request, d):
   if d['manual_profile'] == False:
     d['current_profile_name'] = d['current_profile'].name
   d['internal_profile'] = metadata.getProfile('internal')
-  d['profiles'] = metadata.getProfiles()[1:]
+  d['profiles'] = [p for p in metadata.getProfiles()[1:] if p.editable]
   profs = [(p.name, p.displayName, ) for p in d['profiles']] + uic.manual_profiles.items()
   d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
   # not shown in advanced.
