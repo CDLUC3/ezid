@@ -15,14 +15,13 @@ suitable conversion values aren't found, the (:unav) code is inserted
 instead.
 
 A general limitation of this transform is that it does not look higher
-in the document tree for conversion values that are logically
-inherited by lower levels.  For example, a <content_item> within a
-<book> does not inherit the book's publisher or publication date,
-though logically it should.  In defense of this limitation, the
-higher-level inherited values need not always be specified, and may be
-completely absent such as in the case of a <sa_component>.  In short,
-this transform simply does not have the benefit of the backing of
-CrossRef's database.
+in the document tree for conversion values that are inherited by lower
+levels.  For example, a <content_item> within a <book> does not
+inherit the book's publisher or publication date, though it probably
+should.  In defense of this limitation, the higher-level inherited
+values need not always be specified, and may be completely absent such
+as in the case of a <sa_component>.  In short, this transform simply
+does not have the benefit of the backing of CrossRef's database.
 
 This transform accepts the following optional external parameters:
 
@@ -76,6 +75,32 @@ http://creativecommons.org/licenses/BSD/
   <identifier identifierType="DOI">
     <xsl:value-of select="*[local-name()='doi']"/>
   </identifier>
+  <!-- creator -->
+  <creators>
+    <xsl:choose>
+      <xsl:when test="$datacite.creator != '(:unav)'">
+        <creator>
+          <creatorName>
+            <xsl:value-of select="$datacite.creator"/>
+          </creatorName>
+        </creator>
+      </xsl:when>
+      <xsl:when test="../*[local-name()='contributors']">
+        <xsl:apply-templates select="../*[local-name()='contributors']/
+          *[@sequence='first']"/>
+        <xsl:apply-templates select="../*[local-name()='contributors']/
+          *[@sequence='additional']"/>
+      </xsl:when>
+      <xsl:when test="../*[local-name()='person_name']">
+        <xsl:apply-templates select="../*[local-name()='person_name']"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <creator>
+          <creatorName>(:unav)</creatorName>
+        </creator>
+      </xsl:otherwise>
+    </xsl:choose>
+  </creators>
   <!-- title -->
   <titles>
     <xsl:choose>
@@ -243,6 +268,43 @@ http://creativecommons.org/licenses/BSD/
       <resourceType resourceTypeGeneral="Text">standard</resourceType>
     </xsl:when>
   </xsl:choose>
+</xsl:template>
+
+<xsl:template match="*[local-name()='organization']">
+  <creator>
+    <creatorName>
+      <xsl:value-of select="."/>
+    </creatorName>
+  </creator>
+</xsl:template>
+
+<xsl:template match="*[local-name()='person_name']">
+  <creator>
+    <creatorName>
+      <xsl:value-of select="*[local-name()='surname']"/>
+      <xsl:if test="*[local-name()='given_name']">
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="*[local-name()='given_name']"/>
+      </xsl:if>
+      <xsl:if test="*[local-name()='suffix']">
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="*[local-name()='suffix']"/>
+      </xsl:if>
+    </creatorName>
+    <xsl:if test="*[local-name()='ORCID']">
+      <nameIdentifier nameIdentifierScheme="ORCID"
+        schemeURI="http://orcid.org">
+        <xsl:value-of select="*[local-name()='ORCID']"/>
+      </nameIdentifier>
+    </xsl:if>
+    <xsl:apply-templates select="*[local-name()='affiliation']"/>
+  </creator>
+</xsl:template>
+
+<xsl:template match="*[local-name()='affiliation']">
+  <affiliation>
+    <xsl:value-of select="."/>
+  </affiliation>
 </xsl:template>
 
 <xsl:template match="*[local-name()='titles']">
