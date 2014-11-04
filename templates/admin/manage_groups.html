@@ -58,15 +58,6 @@
     		/>  		
     	</div>
     	
-    	<label class="left" for="crossrefEnabled">CrossRef Enabled:</label>
-    	<div class="field_right">
-    		<input type="checkbox" name="crossrefEnabled" id="crossrefEnabled" value="True"
-    			{% if group.crossrefEnabled %}
-    				checked="checked"
-    			{% endif %}
-    		/>  		
-    	</div>
-
     	<label class="left" for="users">Users:</label>
     	<div class="field_right" id='users'>
     		{% if group.users|length > 0 %}
