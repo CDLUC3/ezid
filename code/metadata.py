@@ -47,12 +47,13 @@ class Profile (object):
   Furthermore, a leading underscore is added to an element name if
   necessary.
   """
-  def __init__ (self, name, displayName, elements):
+  def __init__ (self, name, displayName, editable, elements):
     self.name = name
     self.displayName = displayName
+    self.editable = editable
     self.elements = elements
   def clone (self):
-    return Profile(self.name, self.displayName,
+    return Profile(self.name, self.displayName, self.editable,
       [e.clone() for e in self.elements])
   def __getitem__ (self, name):
     for e in self.elements:
@@ -87,6 +88,7 @@ def _loadConfig ():
   global _profiles
   profiles = [Profile(config.config("profile_%s.name" % k),
     config.config("profile_%s.display_name" % k),
+    config.config("profile_%s.editable" % k).lower() == "true",
     _loadElements(config.config("profile_%s.file" % k)))\
     for k in config.config("profiles.keys").split(",")]
   names = set()
