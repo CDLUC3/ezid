@@ -399,6 +399,13 @@ def _pollDepositStatus (batchId, doi):
       assert len(d) == 1, ("<doi_batch_diagnostic> element contains %s " +\
         "<record_diagnostic> element") % _notOne(len(d))
       d = d[0]
+      # Sanity check.
+      e = d.findall("doi")
+      assert len(e) == 1, ("<record_diagnostic> element contains %s " +\
+        "<doi> element") % _notOne(len(e))
+      e = e[0]
+      assert e.text == (_crossrefTestPrefix + doi if _isTestIdentifier(doi)\
+        else doi), "<record_diagnostic> DOI mismatch"
       assert "status" in d.attrib, "missing record_diagnostic/status attribute"
       if d.attrib["status"] == "Success":
         return ("completed successfully", None)
