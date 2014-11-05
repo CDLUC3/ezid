@@ -1208,11 +1208,12 @@ encouraged to support broad categorization of identifiers.</p>
 order for:</p>
 <ol class="arabic simple">
 <li>DataCite XML metadata bound to the &quot;datacite&quot; element;</li>
-<li>Individual elements from the &quot;datacite&quot; profile as described in the
-previous section (&quot;datacite.title&quot;, etc.);</li>
-<li>CrossRef deposit metadata bound to the &quot;crossref&quot; element;</li>
-<li>Elements from other profiles that EZID is able to map to DataCite
-equivalents (e.g., element &quot;erc.who&quot; maps to &quot;datacite.creator&quot;).</li>
+<li>Individual elements from the &quot;datacite&quot; profile as described in
+<a class="reference internal" href="#profile-datacite">Profile &quot;datacite&quot;</a> (&quot;datacite.title&quot;, etc.); and lastly</li>
+<li>Elements from the identifier's preferred metadata profile (see
+<a class="reference internal" href="#metadata-profiles">Metadata profiles</a> above) that EZID is able to map to DataCite
+equivalents.  For example, if the preferred profile is &quot;erc&quot;, then
+EZID will map element &quot;erc.who&quot; to &quot;datacite.creator&quot;.</li>
 </ol>
 <p>If no meaningful value is available for a required element, clients
 are encouraged to supply a standard machine-readable code drawn from
@@ -1291,8 +1292,9 @@ CrossRef's systems.</p>
 <li>Set the &quot;_crossref&quot; reserved metadata element to &quot;yes&quot;.</li>
 <li>Supply CrossRef deposit metadata as the value of the &quot;crossref&quot;
 element.</li>
-<li>Set the &quot;_profile&quot; reserved metadata element to &quot;crossref&quot; to be
-able to view the metadata in the EZID UI.</li>
+<li>Set the &quot;_profile&quot; reserved metadata element to &quot;crossref&quot; to
+support DataCite metadata mapping and to be able to view the
+metadata in the EZID UI.</li>
 </ol>
 <p>These steps are discussed in more detail next.</p>
 <p>CrossRef registration is asynchronous.  Registration is requested by,
@@ -1361,8 +1363,20 @@ abridged example of deposit metadata:</p>
 <p>In supplying an XML document as the value of element &quot;crossref&quot;, care
 should be taken to escape line terminators and percent signs in the
 document (as is true for all metadata element values; see <a class="reference internal" href="#request-response-bodies">Request &amp;
-response bodies</a> above).  Putting it all together, uploaded metadata
-in a CrossRef registration request will resemble:</p>
+response bodies</a> above).</p>
+<p>If the identifier's preferred metadata profile is &quot;crossref&quot;, EZID
+automatically creates a DataCite Metadata Scheme record from the
+CrossRef deposit metadata to satisfy DOI metadata requirements (recall
+<a class="reference internal" href="#metadata-requirements-mapping">Metadata requirements &amp; mapping</a> above).  Where conversion values
+are missing (e.g., a journal does not have a creator) EZID supplies
+the code &quot;(:unav)&quot;.  This automatic conversion can be overriden by
+supplying an entire DataCite Metadata Scheme XML record as the value
+of the &quot;datacite&quot; element (see <a class="reference internal" href="#profile-datacite">Profile &quot;datacite&quot;</a> above).
+Additionally, individual DataCite elements (e.g., &quot;datacite.title&quot;)
+may be specified to override selected portions of the automatic
+conversion.</p>
+<p>Putting it all together, uploaded metadata in a CrossRef registration
+request will resemble:</p>
 <pre class="literal-block">
 _crossref: yes
 _profile: crossref
