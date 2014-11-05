@@ -193,7 +193,7 @@ http://creativecommons.org/licenses/BSD/
 
 <xsl:template match="*[local-name()='creator']">
   <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
+    <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
   <xsl:value-of select="*[local-name()='creatorName']"/>
@@ -257,7 +257,7 @@ http://creativecommons.org/licenses/BSD/
 
 <xsl:template match="*[local-name()='subject']">
   <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
+    <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
   <xsl:value-of select="."/>
@@ -273,7 +273,7 @@ http://creativecommons.org/licenses/BSD/
 
 <xsl:template match="*[local-name()='contributor']">
   <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
+    <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
   <!-- The schema says the content type is mixed, but we ignore any
@@ -295,7 +295,7 @@ http://creativecommons.org/licenses/BSD/
 
 <xsl:template match="*[local-name()='date']">
   <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
+    <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
   <xsl:value-of select="."/>
@@ -309,7 +309,7 @@ http://creativecommons.org/licenses/BSD/
 
 <xsl:template match="*[local-name()='alternateIdentifier']">
   <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
+    <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
   <xsl:value-of select="."/>
@@ -323,7 +323,7 @@ http://creativecommons.org/licenses/BSD/
 
 <xsl:template match="*[local-name()='relatedIdentifier']">
   <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
+    <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
   <xsl:value-of select="."/>
@@ -343,7 +343,7 @@ http://creativecommons.org/licenses/BSD/
 
 <xsl:template match="*[local-name()='size']">
   <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
+    <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
   <xsl:value-of select="."/>
@@ -351,7 +351,7 @@ http://creativecommons.org/licenses/BSD/
 
 <xsl:template match="*[local-name()='format']">
   <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
+    <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
   <xsl:value-of select="."/>
@@ -359,7 +359,7 @@ http://creativecommons.org/licenses/BSD/
 
 <xsl:template match="*[local-name()='rights']">
   <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
+    <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
   <xsl:value-of select="."/>
@@ -393,7 +393,7 @@ http://creativecommons.org/licenses/BSD/
   <!-- We assume the location has at least one of point/box/place,
        though the schema requires nothing. -->
   <xsl:if test="position() != 1">
-    <xsl:text>; </xsl:text>
+    <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
   <xsl:choose>
