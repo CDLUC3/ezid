@@ -953,10 +953,10 @@ __ `DataCite Metadata Scheme`_
                             be one of the controlled vocabulary terms
                             defined in the DataCite Metadata Scheme:
 
+                            - Audiovisual
                             - Collection
                             - Dataset
                             - Event
-                            - Film
                             - Image
                             - InteractiveResource
                             - Model
@@ -965,6 +965,8 @@ __ `DataCite Metadata Scheme`_
                             - Software
                             - Sound
                             - Text
+                            - Workflow
+                            - Other
 
                             Specific types are unconstrained.  If a
                             specific type is given, it must be
