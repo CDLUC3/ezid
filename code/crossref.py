@@ -73,12 +73,12 @@ def _loadConfig ():
   _idleSleep = int(config.config("daemons.crossref_processing_idle_sleep"))
   _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
     config.config("daemons.crossref_enabled").lower() == "true")
+  _ezidUrl = config.config("DEFAULT.ezid_base_url")
   if _daemonEnabled:
     _threadName = uuid.uuid1().hex
     t = threading.Thread(target=_daemonThread, name=_threadName)
     t.setDaemon(True)
     t.start()
-  _ezidUrl = config.config("DEFAULT.ezid_base_url")
 
 _prologRE = re.compile("<\?xml\s+version\s*=\s*['\"]([-\w.:]+)[\"']" +\
   "(\s+encoding\s*=\s*['\"]([-\w.]+)[\"'])?" +\
