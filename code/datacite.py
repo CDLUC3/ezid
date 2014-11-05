@@ -233,10 +233,11 @@ def validateDcmsRecord (identifier, record):
   except Exception, e:
     assert False, "XML serialization error: " + str(e)
 
-# From version 2.2 of the DataCite Metadata Schema <doi:10.5438/0005>:
-_resourceTypes = ["Collection", "Dataset", "Event", "Film", "Image",
+# From version 3.1 of the DataCite Metadata Schema
+# <http://schema.datacite.org/meta/kernel-3/>:
+_resourceTypes = ["Audiovisual", "Collection", "Dataset", "Event", "Image",
   "InteractiveResource", "Model", "PhysicalObject", "Service", "Software",
-  "Sound", "Text"]
+  "Sound", "Text", "Workflow", "Other"]
 
 # From the DCMI Type Vocabulary
 # <http://dublincore.org/documents/dcmi-type-vocabulary/#H7>:
@@ -282,10 +283,10 @@ def _interpolate (template, *args):
     for a in args)
 
 _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
-<resource xmlns="http://datacite.org/schema/kernel-2.2"
+<resource xmlns="http://datacite.org/schema/kernel-3"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://datacite.org/schema/kernel-2.2
-    http://schema.datacite.org/meta/kernel-2.2/metadata.xsd">
+  xsi:schemaLocation="http://datacite.org/schema/kernel-3
+    http://schema.datacite.org/meta/kernel-3/metadata.xsd">
   <identifier identifierType="DOI">%s</identifier>
   <creators>
     <creator>
@@ -361,7 +362,10 @@ def _formRecord (doi, metadata):
       metadata.get("dc.type", "").strip() != "":
       rt = metadata["dc.type"].strip()
       if rt in _dcResourceTypes:
-        if rt in ["MovingImage", "StillImage"]: rt = "Image"
+        if rt == "MovingImage":
+          rt = "Audiovisual"
+        elif rt == "StillImage":
+          rt = "Image"
         r += _interpolate(_resourceTypeTemplate1, rt)
     r += u"</resource>\n"
     return r
