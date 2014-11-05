@@ -318,6 +318,8 @@ def _softUpdate (td, sd):
 _userSettableReservedElements = ["_coowners", "_export", "_profile", "_status",
   "_target", "_crossref"]
 
+_crossrefDoiRE = re.compile("doi:10\.[1-9]\d{3,4}/[-\w.;()/]+$")
+
 def _validateMetadata1 (identifier, user, metadata):
   """
   Validates and normalizes 'metadata', a dictionary of (name, value)
@@ -402,6 +404,9 @@ def _validateMetadata1 (identifier, user, metadata):
     # validation entirely.
     if not identifier.startswith("doi:"):
       return "only DOI identifiers can be registered with CrossRef"
+    # CrossRef imposes additional restrictions on DOI syntax.
+    if not _crossrefDoiRE.match(identifier):
+      return "identifier does not meet CrossRef syntax requirements"
     metadata["_cr"] = metadata["_crossref"].strip().lower()
     if metadata["_cr"] not in ["yes", "no"]:
       return "element '_crossref': invalid input value"
