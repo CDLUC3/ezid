@@ -73,12 +73,12 @@ def _loadConfig ():
   _idleSleep = int(config.config("daemons.crossref_processing_idle_sleep"))
   _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
     config.config("daemons.crossref_enabled").lower() == "true")
+  _ezidUrl = config.config("DEFAULT.ezid_base_url")
   if _daemonEnabled:
     _threadName = uuid.uuid1().hex
     t = threading.Thread(target=_daemonThread, name=_threadName)
     t.setDaemon(True)
     t.start()
-  _ezidUrl = config.config("DEFAULT.ezid_base_url")
 
 _prologRE = re.compile("<\?xml\s+version\s*=\s*['\"]([-\w.:]+)[\"']" +\
   "(\s+encoding\s*=\s*['\"]([-\w.]+)[\"'])?" +\
@@ -399,6 +399,13 @@ def _pollDepositStatus (batchId, doi):
       assert len(d) == 1, ("<doi_batch_diagnostic> element contains %s " +\
         "<record_diagnostic> element") % _notOne(len(d))
       d = d[0]
+      # Sanity check.
+      e = d.findall("doi")
+      assert len(e) == 1, ("<record_diagnostic> element contains %s " +\
+        "<doi> element") % _notOne(len(e))
+      e = e[0]
+      assert e.text == (_crossrefTestPrefix + doi if _isTestIdentifier(doi)\
+        else doi), "<record_diagnostic> DOI mismatch"
       assert "status" in d.attrib, "missing record_diagnostic/status attribute"
       if d.attrib["status"] == "Success":
         return ("completed successfully", None)
