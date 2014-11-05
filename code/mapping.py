@@ -16,6 +16,7 @@
 import lxml.etree
 import re
 
+import datacite
 import erc
 
 def _get (d, *keys):
@@ -93,6 +94,16 @@ def _displayDatacite (metadata):
   else:
     return _displayDataciteItemized(metadata)
 
+def _displayCrossref (metadata):
+  if "crossref" in metadata and metadata["crossref"].strip() != "":
+    try:
+      r = datacite.crossrefToDatacite(metadata["crossref"].strip())
+      return _displayDatacite({ "datacite": r })
+    except:
+      return (None, None, None, None)
+  else:
+    return (None, None, None, None)
+
 def getDisplayMetadata (metadata):
   """
   Given 'metadata', a dictionary of element (name, value) pairs,
@@ -105,5 +116,7 @@ def getDisplayMetadata (metadata):
     return _displayDublinCore(metadata)
   elif p == "datacite":
     return _displayDatacite(metadata)
+  elif p == "crossref":
+    return _displayCrossref(metadata)
   else:
     return _displayErc(metadata)

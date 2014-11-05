@@ -37,13 +37,14 @@ _metadataUrl = None
 _numAttempts = None
 _allocators = None
 _stylesheet = None
+_crossrefTransform = None
 _pingDoi = None
 _pingTarget = None
 _numActiveOperations = 0
 
 def _loadConfig ():
   global _enabled, _doiUrl, _metadataUrl, _numAttempts, _allocators
-  global _stylesheet, _pingDoi, _pingTarget
+  global _stylesheet, _crossrefTransform, _pingDoi, _pingTarget
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
@@ -53,6 +54,8 @@ def _loadConfig ():
     _allocators[a] = config.config("allocator_%s.password" % a)
   _stylesheet = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
     django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
+  _crossrefTransform = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
+    django.conf.settings.PROJECT_ROOT, "profiles", "crossref2datacite.xsl")))
   _pingDoi = config.config("datacite.ping_doi")
   _pingTarget = config.config("datacite.ping_target")
 
@@ -303,9 +306,31 @@ _resourceTypeTemplate2 =\
   u"""  <resourceType resourceTypeGeneral="%s">%s</resourceType>
 """
 
+def _extractPublicationYear (year):
+  m = re.match("(\d{4})(-\d\d)?(-\d\d)?$", year)
+  if m:
+    return m.group(1)
+  else:
+    return "0000"
+
 def _formRecord (doi, metadata):
   if metadata.get("datacite", "").strip() != "":
     return _insertEncodingDeclaration(metadata["datacite"])
+  elif metadata.get("_p", "") == "crossref" and\
+    metadata.get("crossref", "").strip() != "":
+    overrides = { "_id": doi }
+    for e in ["creator", "title", "publisher", "publicationyear",
+      "resourcetype"]:
+      if metadata.get("datacite."+e, "").strip() != "":
+        overrides["datacite."+e] = metadata["datacite."+e].strip()
+    if "datacite.publicationyear" in overrides:
+      overrides["datacite.publicationyear"] =\
+        _extractPublicationYear(overrides["datacite.publicationyear"])
+    try:
+      return _insertEncodingDeclaration(crossrefToDatacite(
+        metadata["crossref"].strip(), overrides))
+    except Exception, e:
+      assert False, "CrossRef to DataCite metadata conversion error: " + str(e)
   else:
     # Python shortcoming: local variables can't be assigned to from
     # inner scopes, so we have to make mappedMetadata a list.
@@ -321,12 +346,8 @@ def _formRecord (doi, metadata):
     creator = getMappedValue("creator", 0, "creator")
     title = getMappedValue("title", 1, "title")
     publisher = getMappedValue("publisher", 2, "publisher")
-    publicationYear = getMappedValue("publicationyear", 3, "publication year")
-    m = re.match("(\d{4})(-\d\d)?(-\d\d)?$", publicationYear)
-    if m:
-      publicationYear = m.group(1)
-    else:
-      publicationYear = "0000"
+    publicationYear = _extractPublicationYear(
+      getMappedValue("publicationyear", 3, "publication year"))
     r = _interpolate(_metadataTemplate, doi, creator, title, publisher,
       publicationYear)
     if metadata.get("datacite.resourcetype", "").strip() != "":
@@ -516,3 +537,20 @@ def dcmsRecordToHtml (record):
     return r
   except:
     return None
+
+def crossrefToDatacite (record, overrides={}):
+  """
+  Converts a CrossRef Deposit Schema
+  <http://help.crossref.org/deposit_schema> document to a DataCite
+  Metadata Scheme <http://schema.datacite.org/> record.  'overrides'
+  is a dictionary of individual metadata element names (e.g.,
+  "datacite.title") and values that override the conversion values
+  that would normally be drawn from the input document.  Throws an
+  exception on error.
+  """
+  d = {}
+  for k, v in overrides.items():
+    d[k] = lxml.etree.XSLT.strparam(v)
+  return lxml.etree.tostring(_crossrefTransform(
+    lxml.etree.XML(_removeEncodingDeclaration(record)), **d),
+    encoding=unicode)
