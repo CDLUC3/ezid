@@ -235,9 +235,9 @@ def assembleUpdateDictionary (request, profile, additionalElements={}):
   d.update(additionalElements)
   return d
 
-_dataciteResourceTypes = ["Collection", "Dataset", "Event", "Film", "Image",
+_dataciteResourceTypes = ["Audiovisual", "Collection", "Dataset", "Event", "Image",
   "InteractiveResource", "Model", "PhysicalObject", "Service", "Software",
-  "Sound", "Text"]
+  "Sound", "Text", "Workflow", "Other"]
 
 def validate_simple_metadata_form(request, profile):
   """validates a simple id metadata form, profile is more or less irrelevant for now,
