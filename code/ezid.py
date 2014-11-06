@@ -1208,7 +1208,8 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
       crm = d.get("crossref", m.get("crossref", None))
       if crm != None and newStatus != "reserved" and (iStatus == "reserved" or
         "crossref" in d or "_st" in d):
-        d["crossref"] = crossref.replaceTbas(crm, doi, d.get("_st", m["_st"]))
+        d["crossref"] = crossref.replaceTbas(crm, m["_s"][4:],
+          d.get("_st", m["_st"]))
     # Finally, and most importantly, update our own databases.
     noid_egg.setElements(ark, d)
     log.progress(tid, "noid_egg.setElements")
