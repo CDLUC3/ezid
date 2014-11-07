@@ -22,6 +22,7 @@ import lxml.etree
 import os.path
 import re
 import threading
+import time
 import urllib
 import urllib2
 import xml.sax.saxutils
@@ -35,6 +36,8 @@ _enabled = None
 _doiUrl = None
 _metadataUrl = None
 _numAttempts = None
+_reattemptDelay = None
+_timeout = None
 _allocators = None
 _stylesheet = None
 _crossrefTransform = None
@@ -43,12 +46,15 @@ _pingTarget = None
 _numActiveOperations = 0
 
 def _loadConfig ():
-  global _enabled, _doiUrl, _metadataUrl, _numAttempts, _allocators
-  global _stylesheet, _crossrefTransform, _pingDoi, _pingTarget
+  global _enabled, _doiUrl, _metadataUrl, _numAttempts, _reattemptDelay
+  global _timeout, _allocators, _stylesheet, _crossrefTransform, _pingDoi
+  global _pingTarget
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
   _numAttempts = int(config.config("datacite.num_attempts"))
+  _reattemptDelay = int(config.config("datacite.reattempt_delay"))
+  _timeout = int(config.config("datacite.timeout"))
   _allocators = {}
   for a in config.config("datacite.allocators").split(","):
     _allocators[a] = config.config("allocator_%s.password" % a)
@@ -122,7 +128,7 @@ def registerIdentifier (doi, targetUrl):
     c = None
     try:
       _modifyActiveCount(1)
-      c = o.open(r)
+      c = o.open(r, timeout=_timeout)
       assert c.read() == "OK",\
         "unexpected return from DataCite register DOI operation"
     except urllib2.HTTPError, e:
@@ -136,6 +142,7 @@ def registerIdentifier (doi, targetUrl):
     finally:
       _modifyActiveCount(-1)
       if c: c.close()
+    time.sleep(_reattemptDelay)
   return None
 
 def setTargetUrl (doi, targetUrl):
@@ -165,7 +172,7 @@ def getTargetUrl (doi):
     c = None
     try:
       _modifyActiveCount(1)
-      c = o.open(r)
+      c = o.open(r, timeout=_timeout)
       return c.read()
     except urllib2.HTTPError, e:
       if e.code == 404: return None
@@ -175,6 +182,7 @@ def getTargetUrl (doi):
     finally:
       _modifyActiveCount(-1)
       if c: c.close()
+    time.sleep(_reattemptDelay)
 
 _prologRE = re.compile("(<\?xml\s+version\s*=\s*['\"]([-\w.:]+)[\"'])" +\
   "(\s+encoding\s*=\s*['\"]([-\w.]+)[\"'])?")
@@ -410,7 +418,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
     c = None
     try:
       _modifyActiveCount(1)
-      c = o.open(r)
+      c = o.open(r, timeout=_timeout)
       assert c.read().startswith("OK"),\
         "unexpected return from DataCite store metadata operation"
     except urllib2.HTTPError, e:
@@ -418,8 +426,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
       if e.code == 400 and (message.startswith("[xml]") or\
         message.startswith("ParseError")):
         return "element 'datacite': " + message
-      else:
-        raise e
+      if e.code != 500 or i == _numAttempts-1: raise e
     except:
       if i == _numAttempts-1: raise
     else:
@@ -427,6 +434,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
     finally:
       _modifyActiveCount(-1)
       if c: c.close()
+    time.sleep(_reattemptDelay)
 
 def _deactivate (doi):
   # To hide transient network errors, we make multiple attempts.
@@ -441,7 +449,7 @@ def _deactivate (doi):
     c = None
     try:
       _modifyActiveCount(1)
-      c = o.open(r)
+      c = o.open(r, timeout=_timeout)
       assert c.read() == "OK",\
         "unexpected return from DataCite deactivate DOI operation"
     except urllib2.HTTPError, e:
@@ -453,6 +461,7 @@ def _deactivate (doi):
     finally:
       _modifyActiveCount(-1)
       if c: c.close()
+    time.sleep(_reattemptDelay)
 
 def deactivate (doi):
   """
@@ -511,7 +520,7 @@ def pingDataciteOnly ():
     c = None
     try:
       _modifyActiveCount(1)
-      c = o.open(r)
+      c = o.open(r, timeout=_timeout)
       assert c.read() == _pingTarget
     except:
       if i == _numAttempts-1: return "down"
@@ -520,6 +529,7 @@ def pingDataciteOnly ():
     finally:
       _modifyActiveCount(-1)
       if c: c.close()
+    time.sleep(_reattemptDelay)
 
 def _removeEncodingDeclaration (record):
   m = _prologRE.match(record)
