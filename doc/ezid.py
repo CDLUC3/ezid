@@ -208,7 +208,6 @@ parser.add_option("-e", action="store", dest="outputEncoding", default=None)
 parser.add_option("-o", action="store_true", dest="oneLine", default=False)
 parser.add_option("-t", action="store_true", dest="formatTimestamps",
   default=False)
-parser.disable_interspersed_args()
 
 _options, args = parser.parse_args()
 # Simulate selection of the production server (server selection is not

@@ -160,7 +160,6 @@ def getTargetUrl (doi):
   "10.5060/foo") as registered with DataCite, or None if the
   identifier is not registered.
   """
-  if not _enabled: return None
   # To hide transient network errors, we make multiple attempts.
   for i in range(_numAttempts):
     o = urllib2.build_opener(_HTTPErrorProcessor)
@@ -322,7 +321,16 @@ def _extractPublicationYear (year):
   else:
     return "0000"
 
-def _formRecord (doi, metadata):
+def formRecord (doi, metadata):
+  """
+  Forms an XML record for upload to DataCite, employing metadata
+  mapping if necessary.  'doi' should be a scheme-less DOI identifier
+  (e.g., "10.5060/FOO").  'metadata' should be the identifier's
+  metadata as a dictionary of (name, value) pairs.  Returns an XML
+  document as a Unicode string.  The document contains a UTF-8
+  encoding declaration, but is not in fact encoded.  Raises an
+  assertion error on missing metadata.
+  """
   if metadata.get("datacite", "").strip() != "":
     return _insertEncodingDeclaration(metadata["datacite"])
   elif metadata.get("_p", "") == "crossref" and\
@@ -394,13 +402,13 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
   inputs.
   """
   try:
-    oldRecord = _formRecord(doi, current)
+    oldRecord = formRecord(doi, current)
   except AssertionError:
     oldRecord = None
   m = current.copy()
   m.update(delta)
   try:
-    newRecord = _formRecord(doi, m)
+    newRecord = formRecord(doi, m)
   except AssertionError, e:
     return "DOI metadata requirements not satisfied: " + e.message
   if newRecord == oldRecord and not forceUpload: return None
