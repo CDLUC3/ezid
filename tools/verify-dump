@@ -180,6 +180,9 @@ def verifyIdentifier (identifier, record):
       "invalid _crossref value: " + record["_cr"]
     assert "_x" not in record, "identifier registered with CrossRef " +\
       "is not exported"
+    assert record.get("_is", "public") == "reserved" or\
+      "crossref" in record, "identifier registered with CrossRef " +\
+      "has no 'crossref' metadata"
   # agent identifiers
   if "_ezid_role" in record:
     assert isArk(identifier), "agent identifier is not an ARK: " + identifier
