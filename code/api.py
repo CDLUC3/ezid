@@ -85,10 +85,12 @@ import store
 import userauth
 
 _adminUsername = None
+_idlewaitSleep = None
 
 def _loadConfig ():
-  global _adminUsername
+  global _adminUsername, _idlewaitSleep
   _adminUsername = config.config("ldap.admin_username")
+  _idlewaitSleep = float(config.config("DEFAULT.idlewait_sleep"))
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -338,7 +340,7 @@ def pause (request):
     while True:
       activeUsers, waitingUsers, isPaused = ezid.getStatus()
       if len(activeUsers) == 0: break
-      time.sleep(1)
+      time.sleep(_idlewaitSleep)
     return _response("success: server paused and idle")
   elif request.GET["op"].lower() == "off":
     ezid.pause(False)
@@ -366,7 +368,7 @@ def reload (request):
     # Wait for the system to become quiescent.
     while True:
       if len(ezid.getStatus()[0]) == 0: break
-      time.sleep(1)
+      time.sleep(_idlewaitSleep)
     config.load()
   finally:
     ezid.pause(oldValue)
