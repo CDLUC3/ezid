@@ -195,7 +195,7 @@ def verifyIdentifier (identifier, record):
     assert record["_t"] == defaultTarget("ark:/" + identifier),\
       "agent identifier has non-default target URL: " + record["_t"]
     assert "_is" not in record, "agent identifier is not public"
-    assert "_x" not in record, "agent identifier is not exported"
+    assert "_x" in record, "agent identifier is exported"
     _agents["ark:/" + identifier] = record["_ezid_role"]
 
 if len(sys.argv) != 3:
