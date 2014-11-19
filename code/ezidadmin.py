@@ -397,7 +397,7 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
       "unexpected LDAP attribute, DN='%s'" % dn
     r = ezid.mintIdentifier(_agentShoulder, user, group,
       { "_ezid_role": "group", "_profile": "erc", "erc.who": dn,
-      "erc.what": "EZID group" })
+      "erc.what": "EZID group", "_export": "no" })
     if r.startswith("success:"):
       arkId = r.split()[1]
     else:
@@ -585,7 +585,7 @@ def makeUser (uid, groupDn, user, group):
       else:
         what = "EZID user"
       d = { "_ezid_role": "user", "_profile": "erc", "erc.who": dn,
-        "erc.what": what }
+        "erc.what": what, "_export": "no" }
       if r[1]["_owner"] != _adminUsername:
         # We're assuming here that the EZID administrator user and
         # group names are identical.  In changing identifier
@@ -599,7 +599,7 @@ def makeUser (uid, groupDn, user, group):
     else:
       r = ezid.mintIdentifier(_agentShoulder, user, group,
         { "_ezid_role": "user", "_profile": "erc", "erc.who": dn,
-        "erc.what": "EZID user" })
+        "erc.what": "EZID user", "_export": "no" })
       if r.startswith("success:"):
         arkId = r.split()[1]
       else:
