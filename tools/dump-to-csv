@@ -1,0 +1,102 @@
+#! /usr/bin/env python
+
+# Reads from standard input and writes to standard output, converting
+# a normal (i.e., non-raw) dump to a CSV file.  The focus of this
+# script is on extracting only some common and useful metadata fields;
+# there's no attempt to create complete representations of identifiers
+# in CSV form.  The CSV columns are:
+#
+#    column name          populated from
+#    -----------          --------------
+#    identifier
+#    ownergroup           _ownergroup
+#    owner                _owner
+#    status               _status ("reserved", "public", or "unavailable")
+#    exported             _export ("exported" or "")
+#    created              _created (YYYY-MM-DDTHH:MM:SSZ)
+#    updated              _updated (YYYY-MM-DDTHH:MM:SSZ)
+#    citation creator     see mapping.getDisplayMetadata
+#    citation title       see mapping.getDisplayMetadata
+#    citation publisher   see mapping.getDisplayMetadata
+#    citation date        see mapping.getDisplayMetadata
+#    target URL           _target
+#
+# The CSV file is UTF-8 encoded.
+#
+# This script requires several EZID modules.  The PYTHONPATH
+# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
+# directory; if it doesn't, we attempt to dynamically locate it and
+# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
+# set; if it isn't, we set it to "settings.production".
+#
+# Greg Janee <gjanee@ucop.edu>
+# November 2014
+
+import csv
+import os
+import re
+import sys
+import time
+
+if "DJANGO_SETTINGS_MODULE" not in os.environ:
+  os.environ["DJANGO_SETTINGS_MODULE"] = "settings.production"
+
+try:
+  import settings
+except ImportError:
+  sys.path.append(os.path.split(os.path.split(
+    os.path.abspath(__file__))[0])[0])
+  import settings
+
+# Bootstrapping: reference a(ny) Django setting to trigger the loading
+# of said settings, which causes the PYTHONPATH to be modified,
+# supporting subsequent imports.
+import django.conf
+django.conf.settings.PROJECT_ROOT
+
+# Configure the logging so that errors don't get added to the server's
+# log file.  Also, disable daemon threads.
+django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
+django.conf.settings.DAEMON_THREADS_ENABLED = False
+
+import mapping
+import util
+
+def encode (s):
+  # There seems to be no way to safely encode a multi-line value in CSV.
+  if s != None:
+    return re.sub("\s", " ", s).encode("UTF-8")
+  else:
+    return ""
+
+def formatTime (t):
+  return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
+
+def formatStatus (s):
+  if s.startswith("unavailable"):
+    return "unavailable"
+  else:
+    return s
+
+def formatExport (e):
+  if e == "yes":
+    return "exported"
+  else:
+    return ""
+
+f = csv.writer(sys.stdout)
+f.writerow(["identifier", "ownergroup", "owner", "status", "exported",
+  "created", "updated", "citation creator", "citation title",
+  "citation publisher", "citation date", "target URL"])
+
+for l in sys.stdin:
+  lv = l[:-1].split(" ")
+  id = lv[0]
+  r = {}
+  for i in range(1, len(lv), 2): r[util.decode(lv[i])] = util.decode(lv[i+1])
+  dm = mapping.getDisplayMetadata(r)
+  f.writerow([encode(e) for e in [id, r["_ownergroup"], r["_owner"],
+    formatStatus(r.get("_status", "public")),
+    formatExport(r.get("_export", "yes")),
+    formatTime(int(r["_created"])), formatTime(int(r["_updated"])),
+    dm[0], dm[1], dm[2], dm[3], r["_target"]]])
