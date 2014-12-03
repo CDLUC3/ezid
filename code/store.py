@@ -30,6 +30,7 @@ import zlib
 
 import config
 import log
+import oai
 import util
 
 # Notes on the database connection pool: The pool stores connections
@@ -257,13 +258,14 @@ def insert (identifier, metadata, updateUpdateQueue=True):
   try:
     connection, poolId = _getConnection()
     key = _getOwnerKey(metadata["_o"], connection)
-    updateTime = int(metadata["_su"] if "_su" in metadata else metadata["_u"])
+    updateTime = max(int(metadata["_u"]), int(metadata.get("_su", 0)))
     blob = _blobify(metadata)
+    visible = oai.isVisible(metadata.get("_s", "ark:/" + identifier), metadata)
     c = connection.cursor()
     begun = _begin(c)
     _execute(c, "INSERT INTO identifier (identifier, ownerKey, updateTime, " +\
-      "metadata) VALUES (?, ?, ?, ?)",
-      (identifier, key, updateTime, buffer(blob)))
+      "metadata, oaiVisible) VALUES (?, ?, ?, ?, ?)",
+      (identifier, key, updateTime, buffer(blob), int(visible)))
     if updateUpdateQueue:
       _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
         "operation) VALUES (NULL, ?, ?, 0)", (identifier, buffer(blob)))
@@ -295,8 +297,9 @@ def update (identifier, metadata, insertIfNecessary=False,
   try:
     connection, poolId = _getConnection()
     key = _getOwnerKey(metadata["_o"], connection)
-    updateTime = int(metadata["_su"] if "_su" in metadata else metadata["_u"])
+    updateTime = max(int(metadata["_u"]), int(metadata.get("_su", 0)))
     blob = _blobify(metadata)
+    visible = oai.isVisible(metadata.get("_s", "ark:/" + identifier), metadata)
     c = connection.cursor()
     begun = _begin(c)
     # N.B.: A race condition can't occur here thanks to the global
@@ -309,12 +312,12 @@ def update (identifier, metadata, insertIfNecessary=False,
       doInsert = False
     if doInsert:
       _execute(c, "INSERT INTO identifier (identifier, ownerKey, " +\
-        "updateTime, metadata) VALUES (?, ?, ?, ?)",
-        (identifier, key, updateTime, buffer(blob)))
+        "updateTime, metadata, oaiVisible) VALUES (?, ?, ?, ?, ?)",
+        (identifier, key, updateTime, buffer(blob), int(visible)))
     else:
       _execute(c, "UPDATE identifier SET ownerKey = ?, updateTime = ?, " +\
-        "metadata = ? WHERE identifier = ?",
-        (key, updateTime, buffer(blob), identifier))
+        "metadata = ?, oaiVisible = ? WHERE identifier = ?",
+        (key, updateTime, buffer(blob), int(visible), identifier))
     if updateUpdateQueue:
       _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
         "operation) VALUES (NULL, ?, ?, ?)",
