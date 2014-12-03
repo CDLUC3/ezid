@@ -332,6 +332,30 @@ def update (identifier, metadata, insertIfNecessary=False,
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
+def migrate (identifier, metadata):
+  connection = None
+  tainted = False
+  c = None
+  begun = False
+  try:
+    connection, poolId = _getConnection()
+    updateTime = max(int(metadata["_u"]), int(metadata.get("_su", 0)))
+    visible = oai.isVisible(metadata.get("_s", "ark:/" + identifier), metadata)
+    c = connection.cursor()
+    begun = _begin(c)
+    _execute(c, "UPDATE identifier SET updateTime = ?, " +\
+      "oaiVisible = ? WHERE identifier = ?",
+      (updateTime, int(visible), identifier))
+    _commit(c)
+  except Exception, e:
+    log.otherError("store.migrate", e)
+    tainted = True
+    if begun: _rollback(c)
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
+
 def exists (identifier):
   """
   Returns true if an identifier exists in the store database.
