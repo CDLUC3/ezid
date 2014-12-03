@@ -1,0 +1,34 @@
+#! /usr/bin/env python
+
+import os
+import sys
+
+assert "DJANGO_SETTINGS_MODULE" in os.environ
+
+try:
+  import settings
+except ImportError:
+  sys.path.append(os.path.split(os.path.split(
+    os.path.abspath(__file__))[0])[0])
+  import settings
+
+# Bootstrapping: reference a(ny) Django setting to trigger the loading
+# of said settings, which causes the PYTHONPATH to be modified,
+# supporting subsequent imports.
+import django.conf
+django.conf.settings.PROJECT_ROOT
+
+# Configure the logging so that errors don't get added to the server's
+# log file.  Also, disable daemon threads.
+django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
+django.conf.settings.DAEMON_THREADS_ENABLED = False
+
+import store
+
+lastId = ""
+while True:
+  ids = store.harvest(start=lastId, maximum=1000)
+  if len(ids) == 0: break
+  for id, record in ids:
+    store.migrate(id, record)
+  lastId = ids[-1][0]

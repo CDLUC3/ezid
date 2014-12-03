@@ -12,16 +12,19 @@
 -- as qualified, normalized ARK identifiers (e.g.,
 -- "ark:/99166/p92z12p14").  For index efficiency the 'ownerMapping'
 -- table maps identifier owners to local integer keys.  'updateTime'
--- is either the shadowed identifier's update time (if applicable) or
--- the ARK identifier's update time.  The metadata for an identifier
--- is stored as a single line of text that has been UTF-8 encoded and
--- then gzipped.  The line uses the space-separated format
+-- is the maximum (i.e., the later) of the shadowed identifier's
+-- update time (if applicable) and the ARK identifier's update time.
+-- The metadata for an identifier is stored as a single line of text
+-- that has been UTF-8 encoded and then gzipped.  The line uses the
+-- space-separated format
 --
 --    label value label value ...
 --
 -- where field labels and values are encoded as they are in noid
 -- (util.encode4 for labels and util.encode3 for values).  Note that
--- empty values will result in adjacent spaces in the line.
+-- empty values will result in adjacent spaces in the line.  If
+-- 'oaiVisible' is true, the identifier is visible in the OAI-PMH
+-- feed.
 --
 -- Author:
 --   Greg Janee <gjanee@ucop.edu>
@@ -41,10 +44,12 @@ CREATE TABLE identifier (
   identifier TEXT NOT NULL PRIMARY KEY,
   ownerKey INTEGER NOT NULL REFERENCES ownerMapping,
   updateTime INTEGER NOT NULL,
-  metadata BLOB NOT NULL
+  metadata BLOB NOT NULL,
+  oaiVisible INTEGER NOT NULL -- boolean
 );
 
 CREATE INDEX identifierOwnerIndex ON identifier (ownerKey, identifier ASC);
+CREATE INDEX identifierOaiIndex ON identifier (oaiVisible, updateTime ASC);
 
 -- The following queue supports asynchronous identifier processing.
 -- Identifiers are inserted intra-transaction by the 'store' module
