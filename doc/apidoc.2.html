@@ -160,6 +160,7 @@ report problems:</p>
 <li><a class="reference internal" href="#java-example">Java example</a></li>
 <li><a class="reference internal" href="#curl-examples">cURL examples</a></li>
 <li><a class="reference internal" href="#batch-processing">Batch processing</a></li>
+<li><a class="reference internal" href="#oai-pmh-harvesting">OAI-PMH harvesting</a></li>
 </ul>
 </div>
 <div class="section" id="framework">
@@ -1887,6 +1888,23 @@ for i in {1..100}; do
   ezid.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 | awk '{ print $2 }'
 done
 </pre>
+</div>
+<div class="section" id="oai-pmh-harvesting">
+<h1>OAI-PMH harvesting</h1>
+<p>EZID supports harvesting of identifiers and metadata via <a class="reference external" href="http://www.openarchives.org/OAI/openarchivesprotocol.html">The Open
+Archives Initiative Protocol for Metadata Harvesting (OAI-PMH)</a>,
+version 2.0.  The base URL for OAI-PMH access is</p>
+<blockquote>
+<a class="reference external" href="http://ezid.cdlib.org/oai">http://ezid.cdlib.org/oai</a></blockquote>
+<p>Only public, exported, non-test identifiers that have non-default
+target URLs and at least creator, title, and date citation metadata
+(in <a class="reference internal" href="#profile-erc">ERC</a> terms, who/what/when metadata) are made available through
+OAI-PMH.</p>
+<p>In returning identifier metadata, EZID maps citation metadata from the
+identifier's preferred metadata profile to one of two delivery
+formats: <a class="reference external" href="http://dublincore.org/documents/dces/">Dublin Core</a> (as required by the protocol) or <a class="reference external" href="http://schema.datacite.org/">DataCite</a>.
+In the latter case, older DataCite XML metadata records stored in EZID
+are converted to version 3 of the DataCite schema for uniformity.</p>
 </div>
 </div>
 </body>
