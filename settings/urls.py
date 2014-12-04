@@ -55,7 +55,10 @@ urlpatterns = django.conf.urls.patterns("",
   ("^status$", "api.getStatus"),
   ("^version$", "api.getVersion"),
   ("^admin/pause$", "api.pause"),
-  ("^admin/reload$", "api.reload")
+  ("^admin/reload$", "api.reload"),
+
+  # OAI
+  ("^oai$", "oai.dispatch")
 
 )
 

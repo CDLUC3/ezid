@@ -332,30 +332,6 @@ def update (identifier, metadata, insertIfNecessary=False,
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def migrate (identifier, metadata):
-  connection = None
-  tainted = False
-  c = None
-  begun = False
-  try:
-    connection, poolId = _getConnection()
-    updateTime = max(int(metadata["_u"]), int(metadata.get("_su", 0)))
-    visible = oai.isVisible(metadata.get("_s", "ark:/" + identifier), metadata)
-    c = connection.cursor()
-    begun = _begin(c)
-    _execute(c, "UPDATE identifier SET updateTime = ?, " +\
-      "oaiVisible = ? WHERE identifier = ?",
-      (updateTime, int(visible), identifier))
-    _commit(c)
-  except Exception, e:
-    log.otherError("store.migrate", e)
-    tainted = True
-    if begun: _rollback(c)
-  finally:
-    if c:
-      if not _closeCursor(c): tainted = True
-    if connection: _returnConnection(connection, poolId, tainted)
-
 def exists (identifier):
   """
   Returns true if an identifier exists in the store database.
@@ -461,6 +437,29 @@ def harvest (owner=None, since=None, start=None, maximum=None):
     log.otherError("store.harvest", e)
     tainted = True
     return []
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
+
+def oaiGetEarliestUpdateTime ():
+  """
+  Returns the earliest update time among those identifiers visible in
+  the OAI-PMH feed.
+  """
+  connection = None
+  tainted = False
+  c = None
+  try:
+    connection, poolId = _getConnection()
+    c = connection.cursor()
+    _execute(c, "SELECT MIN(updateTime) FROM identifier WHERE oaiVisible = 1")
+    t = c.fetchone()[0]
+    return t if t is not None else 0
+  except Exception, e:
+    log.otherError("store.oaiGetEarliestUpdateTime", e)
+    tainted = True
+    return 0
   finally:
     if c:
       if not _closeCursor(c): tainted = True
