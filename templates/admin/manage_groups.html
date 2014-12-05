@@ -57,7 +57,29 @@
     			{% endif %}
     		/>  		
     	</div>
-    	
+
+        <label class="left" for="crossrefEnabled">CrossRef Enabled:</label>
+        <div class="field_right">
+                <input type="checkbox" name="crossrefEnabled" id="crossrefEnabled" value="True"
+                        {% if group.crossrefEnabled %}
+                                checked="checked"
+                        {% endif %}
+                />
+        </div>
+    
+        <div
+          {% if group.crossrefEnabled %}
+            style="display: visible;"
+          {% else %}
+            style="display: none;"
+          {% endif %}
+        >
+          <label class="left" for="crossrefMail">CrossRef Email Addresses:</label>
+          <div class="field_right">
+                <input type="text" name="crossrefMail" id="crossrefMail" size="30" value="{{ group.crossrefMail }}" /> <br/>(Separate email addresses with commas)
+          </div>
+        </div>
+
     	<label class="left" for="users">Users:</label>
     	<div class="field_right" id='users'>
     		{% if group.users|length > 0 %}
