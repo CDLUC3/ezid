@@ -392,7 +392,7 @@ def harvest (owner=None, since=None, start=None, maximum=None):
   Returns a list of all identifiers in the store database in
   lexicographic order; each identifier is returned as a tuple
   (identifier, metadata).  In the tuple, 'identifier' is an
-  unqualified ARK and metadata is a dictionary of element (name,
+  unqualified ARK and 'metadata' is a dictionary of element (name,
   value) pairs.  If 'owner' is supplied, it should be a user
   persistent identifier (e.g., "ark:/99166/foo"), and only that user's
   identifiers are returned.  If 'since' is supplied, it should be a
@@ -460,6 +460,67 @@ def oaiGetEarliestUpdateTime ():
     log.otherError("store.oaiGetEarliestUpdateTime", e)
     tainted = True
     return 0
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
+
+def oaiGetTotalCount ():
+  """
+  Returns the number of identifiers visible in the OAI-PMH feed.
+  """
+  connection = None
+  tainted = False
+  c = None
+  try:
+    connection, poolId = _getConnection()
+    c = connection.cursor()
+    _execute(c, "SELECT COUNT(*) FROM identifier WHERE oaiVisible = 1")
+    return c.fetchone()[0]
+  except Exception, e:
+    log.otherError("store.oaiGetTotalCount", e)
+    tainted = True
+    return 0
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
+
+def oaiHarvest (from_, until, maximum):
+  """
+  Returns a list of the identifiers in the store database in
+  increasing order of update time; each identifier is returned as a
+  tuple (identifier, updateTime, metadata).  In a tuple, 'identifier'
+  is an unqualified ARK, 'updateTime' is a Unix timestamp, and
+  'metadata' is a dictionary of element (name, value) pairs.  'from_'
+  should be a Unix timestamp, and only identifiers updated more
+  recently than that are returned.  'until' may be a Unix timestamp or
+  None; if not None, only identifiers whose update time is less than
+  or equal to that are returned.  In other words, identifiers whose
+  update time is in the range (from, until] are returned.  'maximum'
+  is the maximum number of identifiers to return, and must be
+  specified.
+  """
+  connection = None
+  tainted = False
+  c = None
+  try:
+    connection, poolId = _getConnection()
+    if until != None:
+      untilClause = " AND updateTime <= ?"
+      values = (from_, until, maximum)
+    else:
+      untilClause = ""
+      values = (from_, maximum)
+    c = connection.cursor()
+    _execute(c, ("SELECT identifier, updateTime, metadata FROM identifier " +\
+      "WHERE oaiVisible = 1 AND updateTime > ?%s ORDER BY updateTime ASC " +\
+      "LIMIT ?") % untilClause, values)
+    return [(i, ut, _deblobify(m)) for i, ut, m in c.fetchall()]
+  except Exception, e:
+    log.otherError("store.oaiHarvest", e)
+    tainted = True
+    return []
   finally:
     if c:
       if not _closeCursor(c): tainted = True
