@@ -67,7 +67,7 @@
                 />
         </div>
     
-        <div
+        <div name="crossrefMail_div"
           {% if group.crossrefEnabled %}
             style="display: visible;"
           {% else %}
@@ -113,6 +113,18 @@
   	$("#group").bind("change", function(event){
       $("#groupform").submit();
     });
+
+    function setHidden(){
+        if ($('#crossrefEnabled').is(':checked')) {
+                $("#crossrefMail_div").show();
+        }else{
+                $("#crossrefMail_div").hide();
+        }
+    }
+                $("[name='crossrefEnabled']").bind("change", function(){
+                        setHidden();
+    });
+    setHidden();
   </script>
 
 {% endblock %}
