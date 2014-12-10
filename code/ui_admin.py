@@ -194,13 +194,16 @@ def manage_groups(request, ssl=False):
     if len(sels) > 1 and ('*' in sels or 'NONE' in sels):
       validated = False
       django.contrib.messages.error(request, "If you select * or NONE you may not select other items in the shoulder list.")
+    emails = request.POST['crossrefMail'].split(",")
+    for email in emails: 
+      if not _is_email_valid(email):
+        django.contrib.messages.error(request, email + " is not a valid email address. Please enter a valid email address.")
+        validated = False
     if validated:
       grp = d['group']
       r = ezidadmin.updateGroup(grp["dn"], grp["description"].strip(),
         grp["agreementOnFile"], " ".join(sels),
-        # TBD: the following two CrossRef-related arguments should be
-        # supplied by the form
-        False, "",
+        request.POST['crossrefEnabled'], request.POST['crossrefMail'],
         request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:
         django.contrib.messages.error(request, r)
@@ -346,7 +349,7 @@ def validate_edit_user(request, user_obj):
     if user_obj[field].strip() == '':
       er(request, required_fields[field] + " must be filled in.")
   
-  if not re.match('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', user_obj['mail'], re.IGNORECASE):
+  if not _is_email_valid(user_obj['mail']):
     er(request, "Please enter a valid email address.")
   
   if user_obj['ezidCoOwners'] != '':
@@ -542,5 +545,10 @@ def _year_totals(user, group, last_calc):
   else:
     return_vals['tot_percent'] = str(int((float(meta) / tot * 100.0))) + "%"
   return return_vals
-  
+ 
+def _is_email_valid(email):
+  if not re.match('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', email, re.IGNORECASE):
+    return False
+  else: return True
+    
   
