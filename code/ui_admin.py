@@ -194,8 +194,8 @@ def manage_groups(request, ssl=False):
     if len(sels) > 1 and ('*' in sels or 'NONE' in sels):
       validated = False
       django.contrib.messages.error(request, "If you select * or NONE you may not select other items in the shoulder list.")
-    emails = request.POST['crossrefMail'].split(",")
-    for email in emails: 
+    emails = [x.strip() for x in request.POST['crossrefMail'].split(',')]
+    for email in emails:
       if not _is_email_valid(email):
         django.contrib.messages.error(request, email + " is not a valid email address. Please enter a valid email address.")
         validated = False
@@ -550,5 +550,4 @@ def _is_email_valid(email):
   if not re.match('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', email, re.IGNORECASE):
     return False
   else: return True
-    
-  
+ 
