@@ -180,12 +180,17 @@ def manage_groups(request, ssl=False):
       validated = False
       django.contrib.messages.error(request, "You must submit a description to save this group.")
       #return uic.badRequest()
-    d['group']['description'] = request.POST['description']
-    if 'agreementOnFile' in request.POST and request.POST['agreementOnFile'] == 'True':
-      d['group']['agreementOnFile'] = True
+    grp = d['group']
+    grp['description'] = P['description']
+    if 'agreementOnFile' in P and P['agreementOnFile'] == 'True':
+      grp['agreementOnFile'] = True
     else:
-      d['group']['agreementOnFile'] = False
-    sels = request.POST.getlist('shoulderList')
+      grp['agreementOnFile'] = False
+    if 'crossrefEnabled' in P and P['crossrefEnabled'] == 'True':
+      grp['crossrefEnabled'] = True
+    else:
+      grp['crossrefEnabled'] = False
+    sels = P.getlist('shoulderList')
     if '-' in sels:
       sels.remove('-')
     if len(sels) < 1:
@@ -194,16 +199,19 @@ def manage_groups(request, ssl=False):
     if len(sels) > 1 and ('*' in sels or 'NONE' in sels):
       validated = False
       django.contrib.messages.error(request, "If you select * or NONE you may not select other items in the shoulder list.")
-    emails = [x.strip() for x in request.POST['crossrefMail'].split(',')]
-    for email in emails:
-      if not _is_email_valid(email):
-        django.contrib.messages.error(request, email + " is not a valid email address. Please enter a valid email address.")
-        validated = False
+    # emails = [x.strip() for x in request.POST['crossrefMail'].split(',')]
+    if grp['crossrefEnabled']:
+      for email in [x.strip() for x in P['crossrefMail'].split(',')\
+        if len(x.strip()) > 0]:
+    # if emails.strip() != '':
+      # for email in emails:
+          if not _is_email_valid(email):
+            django.contrib.messages.error(request, email + " is not a valid email address. Please enter a valid email address.")
+            validated = False
     if validated:
-      grp = d['group']
       r = ezidadmin.updateGroup(grp["dn"], grp["description"].strip(),
         grp["agreementOnFile"], " ".join(sels),
-        request.POST['crossrefEnabled'], request.POST['crossrefMail'],
+        grp["crossrefEnabled"], P['crossrefMail'],
         request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:
         django.contrib.messages.error(request, r)
