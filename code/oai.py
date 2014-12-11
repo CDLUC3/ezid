@@ -14,7 +14,10 @@
 #
 # -----------------------------------------------------------------------------
 
+import calendar
+import django.conf
 import django.http
+import hashlib
 import lxml.etree
 import threading
 import time
@@ -29,15 +32,18 @@ _enabled = None
 _baseUrl = None
 _repositoryName = None
 _adminEmail = None
+_batchSize = None
 _lock = threading.Lock()
 _testShoulders = None
 
 def _loadConfig ():
-  global _enabled, _baseUrl, _repositoryName, _adminEmail, _testShoulders
+  global _enabled, _baseUrl, _repositoryName, _adminEmail, _batchSize
+  global _testShoulders
   _enabled = (config.config("oai.enabled").lower() == "true")
   _baseUrl = config.config("DEFAULT.ezid_base_url")
   _repositoryName = config.config("oai.repository_name")
   _adminEmail = config.config("oai.admin_email")
+  _batchSize = int(config.config("oai.batch_size"))
   _lock.acquire()
   _testShoulders = None
   _lock.release()
@@ -92,6 +98,16 @@ def _q (elementName):
 def _formatTime (t):
   return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
 
+def _parseTime (s):
+  try:
+    try:
+      t = time.strptime(s, "%Y-%m-%d")
+    except:
+      t = time.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
+    return calendar.timegm(t)
+  except:
+    return None
+
 def _buildResponse (oaiRequest, body):
   root = lxml.etree.Element(_q("OAI-PMH"),
     nsmap={ None: "http://www.openarchives.org/OAI/2.0/" })
@@ -143,23 +159,54 @@ _arguments = {
 }
 
 def _buildRequest (request):
-  if len(request.REQUEST.getlist("verb")) != 1: return _error(None, "badVerb")
+  if len(request.REQUEST.getlist("verb")) != 1:
+    return _error(None, "badVerb", "no verb or multiple verbs")
   verb = request.REQUEST["verb"]
-  if verb not in _arguments: return _error(None, "badVerb")
+  if verb not in _arguments:
+    return _error(None, "badVerb", "illegal verb")
   r = (verb, {})
   exclusive = False
   for k in request.REQUEST:
     if k == "verb": continue
-    if len(request.REQUEST.getlist(k)) > 1: return _error(None, "badArgument")
-    if k not in _arguments[verb]: return _error(None, "badArgument")
+    if k not in _arguments[verb]:
+      return _error(None, "badArgument", "illegal argument: " + k)
+    if len(request.REQUEST.getlist(k)) > 1:
+      return _error(None, "badArgument", "multiple values for argument: " + k)
     if _arguments[verb][k] == "X":
-      if len(request.REQUEST.keys()) > 2: return _error(None, "badArgument")
+      if len(request.REQUEST.keys()) > 2:
+        return _error(None, "badArgument", "argument is not exclusive: " + k)
       exclusive = True
     r[1][k] = request.REQUEST[k]
   if not exclusive:
     for k, rox in _arguments[verb].items():
-      if rox == "R" and k not in r[1]: return _error(None, "badArgument")
+      if rox == "R" and k not in r[1]:
+        return _error(None, "badArgument", "missing required argument: " + k)
   return r
+
+def _buildResumptionToken (from_, until, prefix, cursor, total):
+  # The semantics of a resumption token: return identifiers whose
+  # update times are in the range (from_, until].  'until' may be None.
+  if until is not None:
+    until = str(until)
+  else:
+    until = ""
+  hash = hashlib.sha1("%d,%s,%s,%d,%d,%s" % (from_, until, prefix, cursor,
+    total, django.conf.settings.SECRET_KEY)).hexdigest()[::4]
+  return "%d,%s,%s,%d,%d,%s" % (from_, until, prefix, cursor, total, hash)
+
+def _unpackResumptionToken (token):
+  try:
+    from_, until, prefix, cursor, total, hash1 = token.split(",")
+    hash2 = hashlib.sha1("%s,%s,%s,%s,%s,%s" % (from_, until, prefix, cursor,
+      total, django.conf.settings.SECRET_KEY)).hexdigest()[::4]
+    assert hash1 == hash2
+    if len(until) > 0:
+      until = int(until)
+    else:
+      until = None
+    return (int(from_), until, prefix, int(cursor), int(total))
+  except:
+    return None
 
 def _doIdentify (oaiRequest):
   e = lxml.etree.Element(_q("Identify"))
@@ -171,6 +218,86 @@ def _doIdentify (oaiRequest):
     _formatTime(store.oaiGetEarliestUpdateTime())
   lxml.etree.SubElement(e, _q("deletedRecord")).text = "no"
   lxml.etree.SubElement(e, _q("granularity")).text = "YYYY-MM-DDThh:mm:ssZ"
+  return _buildResponse(oaiRequest, e)
+
+def _doListIdentifiers (oaiRequest, batchSize):
+  if "resumptionToken" in oaiRequest[1]:
+    r = _unpackResumptionToken(oaiRequest[1]["resumptionToken"])
+    if r == None: return _error(oaiRequest, "badResumptionToken")
+    from_, until, prefix, cursor, total = r
+  else:
+    prefix = oaiRequest[1]["metadataPrefix"]
+    if prefix not in ["oai_dc", "datacite"]:
+      return _error(oaiRequest, "cannotDisseminateFormat")
+    if "set" in oaiRequest[1]: return _error(oaiRequest, "noSetHierarchy")
+    if "from" in oaiRequest[1]:
+      from_ = _parseTime(oaiRequest[1]["from"])
+      if from_ == None:
+        return _error(oaiRequest, "badArgument", "illegal 'from' UTCdatetime")
+      # In OAI-PMH, from_ is inclusive, but for us it's exclusive, ergo...
+      from_ -= 1
+    else:
+      from_ = 0
+    if "until" in oaiRequest[1]:
+      until = _parseTime(oaiRequest[1]["until"])
+      if until == None:
+        return _error(oaiRequest, "badArgument", "illegal 'until' UTCdatetime")
+      if "from" in oaiRequest[1] and from_ >= until:
+        return _error(oaiRequest, "badArgument", "'until' precedes 'from'")
+    else:
+      until = None
+    cursor = 0
+    total = None
+  ids = store.oaiHarvest(from_, until, batchSize)
+  # Note a bug in the protocol itself: if a resumption token was
+  # supplied, we are required to return a (possibly empty) token, but
+  # the only way to return a resumption token is to return at least
+  # one record.  By design, if we receive a resumption token there
+  # should be at least one record remaining, no problemo.  But interim
+  # database modifications can cause there to be none, in which case
+  # we are left with no legal response.
+  if len(ids) == 0: return _error(oaiRequest, "noRecordsMatch")
+  # Our algorithm is as follows.  If we received fewer records than we
+  # requested, then the harvest must be complete.  Otherwise, there
+  # may be more records.  In that case, let T be the update time of
+  # the last identifier received, and let I be the last identifier
+  # received whose update time strictly precedes T.  Then in this
+  # batch we return identifiers up through and including I, and use
+  # I's update time as the exclusive lower bound in the new resumption
+  # token.  Identifier update times in EZID are almost (but not quite)
+  # unique, and hence if the batch size is 100 we will typically
+  # return 99 identifiers; the 100th identifier will be returned as
+  # the first identifier in the next request.  What if every
+  # identifier in the batch has update time T?  Realistically that has
+  # no chance of happening, but for theoretical purity we repeat the
+  # process using a larger batch size.  In the limiting case the batch
+  # size would get so large that it would encompass every remaining
+  # identifier.
+  if len(ids) == batchSize:
+    last = None
+    for i in range(len(ids)-2, -1, -1):
+      if ids[i][1] < ids[-1][1]:
+        last = i
+        break
+    if last == None:
+      # Truly exceptional case.
+      return _doListIdentifiers(oaiRequest, batchSize*2)
+  else:
+    last = len(ids)-1
+  e = lxml.etree.Element(_q("ListIdentifiers"))
+  for i in range(last+1):
+    h = lxml.etree.SubElement(e, _q("header"))
+    lxml.etree.SubElement(h, _q("identifier")).text =\
+      ids[i][2].get("_s", "ark:/" + ids[i][0])
+    lxml.etree.SubElement(h, _q("datestamp")).text = _formatTime(ids[i][1])
+  if "resumptionToken" in oaiRequest[1] or len(ids) == batchSize:
+    if total == None: total = store.oaiGetTotalCount()
+    rt = lxml.etree.SubElement(e, _q("resumptionToken"))
+    rt.attrib["cursor"] = str(cursor)
+    rt.attrib["completeListSize"] = str(total)
+    if len(ids) == batchSize:
+      rt.text = _buildResumptionToken(ids[last][1], until, prefix,
+        cursor+last+1, total)
   return _buildResponse(oaiRequest, e)
 
 def _doListMetadataFormats (oaiRequest):
@@ -196,6 +323,9 @@ def _doListSets (oaiRequest):
     return _error(oaiRequest, "noSetHierarchy")
 
 def dispatch (request):
+  """
+  OAI-PMH request dispatcher.
+  """
   if not _enabled:
     return django.http.HttpResponse("service unavailable", status=503,
       content_type="text/plain")
@@ -205,6 +335,8 @@ def dispatch (request):
   else:
     if oaiRequest[0] == "Identify":
       r = _doIdentify(oaiRequest)
+    elif oaiRequest[0] == "ListIdentifiers":
+      r = _doListIdentifiers(oaiRequest, _batchSize)
     elif oaiRequest[0] == "ListMetadataFormats":
       r = _doListMetadataFormats(oaiRequest)
     elif oaiRequest[0] == "ListSets":
