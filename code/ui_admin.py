@@ -190,6 +190,7 @@ def manage_groups(request, ssl=False):
       grp['crossrefEnabled'] = True
     else:
       grp['crossrefEnabled'] = False
+    grp['crossrefMail'] = P['crossrefMail']
     sels = P.getlist('shoulderList')
     if '-' in sels:
       sels.remove('-')
@@ -200,7 +201,7 @@ def manage_groups(request, ssl=False):
       validated = False
       django.contrib.messages.error(request, "If you select * or NONE you may not select other items in the shoulder list.")
     if grp['crossrefEnabled']:
-      for email in [x.strip() for x in P['crossrefMail'].split(',')\
+      for email in [x.strip() for x in grp['crossrefMail'].split(',')\
         if len(x.strip()) > 0]:
           if not _is_email_valid(email):
             django.contrib.messages.error(request, email + " is not a valid email address. Please enter a valid email address.")
@@ -208,7 +209,7 @@ def manage_groups(request, ssl=False):
     if validated:
       r = ezidadmin.updateGroup(grp["dn"], grp["description"].strip(),
         grp["agreementOnFile"], " ".join(sels),
-        grp["crossrefEnabled"], P['crossrefMail'],
+        grp["crossrefEnabled"], grp['crossrefMail'],
         request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:
         django.contrib.messages.error(request, r)
