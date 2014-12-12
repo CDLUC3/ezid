@@ -291,7 +291,7 @@ def _doListIdentifiers (oaiRequest, batchSize):
       ids[i][2].get("_s", "ark:/" + ids[i][0])
     lxml.etree.SubElement(h, _q("datestamp")).text = _formatTime(ids[i][1])
   if "resumptionToken" in oaiRequest[1] or len(ids) == batchSize:
-    if total == None: total = store.oaiGetTotalCount()
+    if total == None: total = store.oaiGetCount(from_, until)
     rt = lxml.etree.SubElement(e, _q("resumptionToken"))
     rt.attrib["cursor"] = str(cursor)
     rt.attrib["completeListSize"] = str(total)

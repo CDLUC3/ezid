@@ -465,20 +465,28 @@ def oaiGetEarliestUpdateTime ():
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def oaiGetTotalCount ():
+def oaiGetCount (from_, until):
   """
-  Returns the number of identifiers visible in the OAI-PMH feed.
+  Returns the number of identifiers visible in the OAI-PMH feed having
+  an update time in the range (from_, until].  'until' may be None.
   """
   connection = None
   tainted = False
   c = None
   try:
     connection, poolId = _getConnection()
+    if until != None:
+      untilClause = " AND updateTime <= ?"
+      values = (from_, until)
+    else:
+      untilClause = ""
+      values = (from_,)
     c = connection.cursor()
-    _execute(c, "SELECT COUNT(*) FROM identifier WHERE oaiVisible = 1")
+    _execute(c, "SELECT COUNT(*) FROM identifier WHERE oaiVisible = 1 " +\
+      "AND updateTime > ?" + untilClause, values)
     return c.fetchone()[0]
   except Exception, e:
-    log.otherError("store.oaiGetTotalCount", e)
+    log.otherError("store.oaiGetCount", e)
     tainted = True
     return 0
   finally:
