@@ -329,6 +329,9 @@ def dispatch (request):
   if not _enabled:
     return django.http.HttpResponse("service unavailable", status=503,
       content_type="text/plain")
+  if request.method not in ["GET", "POST"]:
+    return django.http.HttpResponse("method not allowed", status=405,
+      content_type="text/plain")
   oaiRequest = _buildRequest(request)
   if type(oaiRequest) is str:
     r = oaiRequest
@@ -343,4 +346,7 @@ def dispatch (request):
       r = _doListSets(oaiRequest)
     else:
       assert False, "unhandled case"
-  return django.http.HttpResponse(r, content_type="text/xml; charset=UTF-8")
+  response = django.http.HttpResponse(r,
+    content_type="text/xml; charset=UTF-8")
+  response["Content-Length"] = len(r)
+  return response
