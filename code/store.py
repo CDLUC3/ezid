@@ -359,11 +359,15 @@ def exists (identifier):
 
 def get (identifier):
   """
-  Returns the metadata for an identifier as a dictionary of element
-  (name, value) pairs, or returns None if the identifier doesn't exist
-  in the store database.  'identifier' should be an unqualified ARK
-  identifier, e.g., "13030/foo".  (To get a non-ARK identifier's
-  metadata, reference the identifier by its shadow ARK.)
+  Returns a tuple (metadata, updateTime, oaiVisible) for an
+  identifier, or returns None if the identifier doesn't exist in the
+  store database.  In a tuple, 'metadata' is the identifier's
+  metadata as a dictionary of element (name, value) pairs,
+  'updateTime' is the identifier's latest update time (see the
+  database schema), and 'oaiVisible' is a boolean indicating if the
+  identifier is visible in the OAI-PMH feed.  'identifier' should be
+  an unqualified ARK identifier, e.g., "13030/foo".  (To get a non-ARK
+  identifier's metadata, reference the identifier by its shadow ARK.)
   """
   connection = None
   tainted = False
@@ -371,11 +375,11 @@ def get (identifier):
   try:
     connection, poolId = _getConnection()
     c = connection.cursor()
-    _execute(c, "SELECT metadata FROM identifier WHERE identifier = ?",
-      (identifier,))
+    _execute(c, "SELECT metadata, updateTime, oaiVisible FROM identifier " +\
+      "WHERE identifier = ?", (identifier,))
     r = c.fetchall()
     if len(r) > 0:
-      return _deblobify(r[0][0])
+      return (_deblobify(r[0][0]), r[0][1], bool(r[0][2]))
     else:
       return None
   except Exception, e:
