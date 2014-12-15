@@ -1115,6 +1115,9 @@ included in the document, though, so the XML document may resemble:</p>
   ...
 &lt;/resource&gt;
 </pre>
+<p>If an XML document is bound to a non-DOI identifier then, in an
+extension to the DataCite schema, the identifier type in the
+document must be set to &quot;ARK&quot; or &quot;URN:UUID&quot; as appropriate.</p>
 <p>Care should be taken to escape line terminators and percent signs
 in the document (as is true for all metadata element values; see
 <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above).  Once properly escaped, the
@@ -1891,20 +1894,23 @@ done
 </div>
 <div class="section" id="oai-pmh-harvesting">
 <h1>OAI-PMH harvesting</h1>
-<p>EZID supports harvesting of identifiers and metadata via <a class="reference external" href="http://www.openarchives.org/OAI/openarchivesprotocol.html">The Open
-Archives Initiative Protocol for Metadata Harvesting (OAI-PMH)</a>,
-version 2.0.  The base URL for OAI-PMH access is</p>
+<p>EZID supports harvesting of identifiers and citation metadata via <a class="reference external" href="http://www.openarchives.org/OAI/openarchivesprotocol.html">The
+Open Archives Initiative Protocol for Metadata Harvesting
+(OAI-PMH)</a>, version 2.0.  The base URL for OAI-PMH access is</p>
 <blockquote>
 <a class="reference external" href="http://ezid.cdlib.org/oai">http://ezid.cdlib.org/oai</a></blockquote>
 <p>Only public, exported, non-test identifiers that have non-default
 target URLs and at least creator, title, and date citation metadata
 (in <a class="reference internal" href="#profile-erc">ERC</a> terms, who/what/when metadata) are made available through
 OAI-PMH.</p>
-<p>In returning identifier metadata, EZID maps citation metadata from the
-identifier's preferred metadata profile to one of two delivery
-formats: <a class="reference external" href="http://dublincore.org/documents/dces/">Dublin Core</a> (as required by the protocol) or <a class="reference external" href="http://schema.datacite.org/">DataCite</a>.
-In the latter case, older DataCite XML metadata records stored in EZID
-are converted to version 3 of the DataCite schema for uniformity.</p>
+<p>In returning an identifier's metadata, EZID maps citation metadata
+from the identifier's preferred metadata profile (see <a class="reference internal" href="#metadata-profiles">Metadata
+profiles</a> above) to one of two delivery formats: <a class="reference external" href="http://dublincore.org/documents/dces/">Dublin Core</a> (as
+required by the protocol) or <a class="reference external" href="http://schema.datacite.org/">DataCite</a>.  In the latter case, older
+DataCite XML metadata records stored in EZID are converted to version
+3 of the DataCite schema for uniformity.  Note that, in an extension
+to the DataCite schema, the identifier type for non-DOI identifiers is
+set to &quot;ARK&quot; or &quot;URN:UUID&quot; as appropriate.</p>
 </div>
 </div>
 </body>
