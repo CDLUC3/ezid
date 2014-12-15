@@ -24,9 +24,11 @@ import time
 import urllib
 
 import config
+import datacite
 import mapping
 import shoulder
 import store
+import util
 
 _enabled = None
 _baseUrl = None
@@ -208,6 +210,57 @@ def _unpackResumptionToken (token):
   except:
     return None
 
+def _buildDublinCoreRecord (identifier, metadata):
+  root = lxml.etree.Element(
+    "{http://www.openarchives.org/OAI/2.0/oai_dc/}dc",
+    nsmap={ "oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/",
+    "dc": "http://purl.org/dc/elements/1.1/" })
+  root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
+    "http://www.openarchives.org/OAI/2.0/oai_dc/ " +\
+    "http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
+  def q (elementName):
+    return "{http://purl.org/dc/elements/1.1/}" + elementName
+  lxml.etree.SubElement(root, q("identifier")).text = identifier
+  for k, v in zip(["creator", "title", "publisher", "date"],
+    mapping.getDisplayMetadata(metadata)):
+    if v != None: lxml.etree.SubElement(root, q(k)).text = v
+  return root
+
+def _doGetRecord (oaiRequest):
+  id = oaiRequest[1]["identifier"]
+  if id.startswith("ark:/"):
+    id = util.validateArk(id[5:])
+    if id == None: return _error(oaiRequest, "idDoesNotExist")
+  elif id.startswith("doi:"):
+    id = util.validateDoi(id[4:])
+    if id == None: return _error(oaiRequest, "idDoesNotExist")
+    id = util.doi2shadow(id)
+  elif id.startswith("urn:uuid:"):
+    id = util.validateUrnUuid(id[9:])
+    if id == None: return _error(oaiRequest, "idDoesNotExist")
+    id = util.urnUuid2shadow(id)
+  else:
+    return _error(oaiRequest, "idDoesNotExist")
+  m = store.get(id)
+  if m == None: return _error(oaiRequest, "idDoesNotExist")
+  metadata, updateTime, oaiVisible = m
+  if not oaiVisible: return _error(oaiRequest, "idDoesNotExist")
+  if oaiRequest[1]["metadataPrefix"] == "oai_dc":
+    me = _buildDublinCoreRecord(oaiRequest[1]["identifier"], metadata)
+  elif oaiRequest[1]["metadataPrefix"] == "datacite":
+    me = datacite.upgradeDcmsRecord(datacite.formRecord(
+      oaiRequest[1]["identifier"], metadata, supplyMissing=True),
+      returnString=False)
+  else:
+    return _error(oaiRequest, "cannotDisseminateFormat")
+  root = lxml.etree.Element(_q("GetRecord"))
+  r = lxml.etree.SubElement(root, _q("record"))
+  h = lxml.etree.SubElement(r, _q("header"))
+  lxml.etree.SubElement(h, _q("identifier")).text = oaiRequest[1]["identifier"]
+  lxml.etree.SubElement(h, _q("datestamp")).text = _formatTime(updateTime)
+  lxml.etree.SubElement(r, _q("metadata")).append(me)
+  return _buildResponse(oaiRequest, root)
+
 def _doIdentify (oaiRequest):
   e = lxml.etree.Element(_q("Identify"))
   lxml.etree.SubElement(e, _q("repositoryName")).text = _repositoryName
@@ -336,7 +389,9 @@ def dispatch (request):
   if type(oaiRequest) is str:
     r = oaiRequest
   else:
-    if oaiRequest[0] == "Identify":
+    if oaiRequest[0] == "GetRecord":
+      r = _doGetRecord(oaiRequest)
+    elif oaiRequest[0] == "Identify":
       r = _doIdentify(oaiRequest)
     elif oaiRequest[0] == "ListIdentifiers":
       r = _doListIdentifiers(oaiRequest, _batchSize)
