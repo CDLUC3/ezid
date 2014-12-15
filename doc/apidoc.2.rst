@@ -21,6 +21,7 @@
 .. _ERC: https://wiki.ucop.edu/display/Curation/ERC
 .. _ezid.py: ezid.py
 .. _libwww-perl: http://search.cpan.org/dist/libwww-perl/
+.. _OAI-PMH: http://www.openarchives.org/OAI/openarchivesprotocol.html
 .. _percent-encoding: http://en.wikipedia.org/wiki/Percent-encoding
 .. _REST-style: http://oreilly.com/catalog/9780596529260
 
@@ -82,6 +83,7 @@ Contents
 - `Java example`_
 - `cURL examples`_
 - `Batch processing`_
+- `OAI-PMH harvesting`_
 
 Framework
 ---------
@@ -993,6 +995,10 @@ __ `DataCite Metadata Scheme`_
        ...
      </resource>
 
+   If an XML document is bound to a non-DOI identifier then, in an
+   extension to the DataCite schema, the identifier type in the
+   document must be set to "ARK" or "\URN:UUID" as appropriate.
+
    Care should be taken to escape line terminators and percent signs
    in the document (as is true for all metadata element values; see
    `Request & response bodies`_ above).  Once properly escaped, the
@@ -1812,3 +1818,33 @@ the identifiers:
     ezid.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 | \
   awk '{ print $2 }'
   done
+
+OAI-PMH harvesting
+------------------
+
+EZID supports harvesting of identifiers and citation metadata via `The
+Open Archives Initiative Protocol for Metadata Harvesting
+(OAI-PMH)`__, version 2.0.  The base URL for OAI-PMH access is
+
+__ OAI-PMH_
+
+  http://ezid.cdlib.org/oai
+
+Only public, exported, non-test identifiers that have non-default
+target URLs and at least creator, title, and date citation metadata
+(in ERC__ terms, who/what/when metadata) are made available through
+OAI-PMH.
+
+__ `Profile "erc"`_
+
+In returning an identifier's metadata, EZID maps citation metadata
+from the identifier's preferred metadata profile (see `Metadata
+profiles`_ above) to one of two delivery formats: `Dublin Core`__ (as
+required by the protocol) or DataCite__.  In the latter case, older
+DataCite XML metadata records stored in EZID are converted to version
+3 of the DataCite schema for uniformity.  Note that, in an extension
+to the DataCite schema, the identifier type for non-DOI identifiers is
+set to "ARK" or "\URN:UUID" as appropriate.
+
+__ `Dublin Core Metadata Element Set`_
+__ `DataCite Metadata Scheme`_

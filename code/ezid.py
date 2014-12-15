@@ -449,7 +449,11 @@ def _getElements (identifier):
   if _noidEnabled:
     return noid_egg.getElements(identifier)
   else:
-    return store.get(identifier)
+    r = store.get(identifier)
+    if r != None:
+      return r[0]
+    else:
+      return None
 
 def mintDoi (prefix, user, group, metadata={}):
   """

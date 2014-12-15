@@ -332,30 +332,6 @@ def update (identifier, metadata, insertIfNecessary=False,
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def migrate (identifier, metadata):
-  connection = None
-  tainted = False
-  c = None
-  begun = False
-  try:
-    connection, poolId = _getConnection()
-    updateTime = max(int(metadata["_u"]), int(metadata.get("_su", 0)))
-    visible = oai.isVisible(metadata.get("_s", "ark:/" + identifier), metadata)
-    c = connection.cursor()
-    begun = _begin(c)
-    _execute(c, "UPDATE identifier SET updateTime = ?, " +\
-      "oaiVisible = ? WHERE identifier = ?",
-      (updateTime, int(visible), identifier))
-    _commit(c)
-  except Exception, e:
-    log.otherError("store.migrate", e)
-    tainted = True
-    if begun: _rollback(c)
-  finally:
-    if c:
-      if not _closeCursor(c): tainted = True
-    if connection: _returnConnection(connection, poolId, tainted)
-
 def exists (identifier):
   """
   Returns true if an identifier exists in the store database.
@@ -383,11 +359,15 @@ def exists (identifier):
 
 def get (identifier):
   """
-  Returns the metadata for an identifier as a dictionary of element
-  (name, value) pairs, or returns None if the identifier doesn't exist
-  in the store database.  'identifier' should be an unqualified ARK
-  identifier, e.g., "13030/foo".  (To get a non-ARK identifier's
-  metadata, reference the identifier by its shadow ARK.)
+  Returns a tuple (metadata, updateTime, oaiVisible) for an
+  identifier, or returns None if the identifier doesn't exist in the
+  store database.  In a tuple, 'metadata' is the identifier's
+  metadata as a dictionary of element (name, value) pairs,
+  'updateTime' is the identifier's latest update time (see the
+  database schema), and 'oaiVisible' is a boolean indicating if the
+  identifier is visible in the OAI-PMH feed.  'identifier' should be
+  an unqualified ARK identifier, e.g., "13030/foo".  (To get a non-ARK
+  identifier's metadata, reference the identifier by its shadow ARK.)
   """
   connection = None
   tainted = False
@@ -395,11 +375,11 @@ def get (identifier):
   try:
     connection, poolId = _getConnection()
     c = connection.cursor()
-    _execute(c, "SELECT metadata FROM identifier WHERE identifier = ?",
-      (identifier,))
+    _execute(c, "SELECT metadata, updateTime, oaiVisible FROM identifier " +\
+      "WHERE identifier = ?", (identifier,))
     r = c.fetchall()
     if len(r) > 0:
-      return _deblobify(r[0][0])
+      return (_deblobify(r[0][0]), r[0][1], bool(r[0][2]))
     else:
       return None
   except Exception, e:
@@ -416,7 +396,7 @@ def harvest (owner=None, since=None, start=None, maximum=None):
   Returns a list of all identifiers in the store database in
   lexicographic order; each identifier is returned as a tuple
   (identifier, metadata).  In the tuple, 'identifier' is an
-  unqualified ARK and metadata is a dictionary of element (name,
+  unqualified ARK and 'metadata' is a dictionary of element (name,
   value) pairs.  If 'owner' is supplied, it should be a user
   persistent identifier (e.g., "ark:/99166/foo"), and only that user's
   identifiers are returned.  If 'since' is supplied, it should be a
@@ -459,6 +439,98 @@ def harvest (owner=None, since=None, start=None, maximum=None):
     return [(i, _deblobify(m)) for i, m in c.fetchall()]
   except Exception, e:
     log.otherError("store.harvest", e)
+    tainted = True
+    return []
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
+
+def oaiGetEarliestUpdateTime ():
+  """
+  Returns the earliest update time among those identifiers visible in
+  the OAI-PMH feed.
+  """
+  connection = None
+  tainted = False
+  c = None
+  try:
+    connection, poolId = _getConnection()
+    c = connection.cursor()
+    _execute(c, "SELECT MIN(updateTime) FROM identifier WHERE oaiVisible = 1")
+    t = c.fetchone()[0]
+    return t if t is not None else 0
+  except Exception, e:
+    log.otherError("store.oaiGetEarliestUpdateTime", e)
+    tainted = True
+    return 0
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
+
+def oaiGetCount (from_, until):
+  """
+  Returns the number of identifiers visible in the OAI-PMH feed having
+  an update time in the range (from_, until].  'until' may be None.
+  """
+  connection = None
+  tainted = False
+  c = None
+  try:
+    connection, poolId = _getConnection()
+    if until != None:
+      untilClause = " AND updateTime <= ?"
+      values = (from_, until)
+    else:
+      untilClause = ""
+      values = (from_,)
+    c = connection.cursor()
+    _execute(c, "SELECT COUNT(*) FROM identifier WHERE oaiVisible = 1 " +\
+      "AND updateTime > ?" + untilClause, values)
+    return c.fetchone()[0]
+  except Exception, e:
+    log.otherError("store.oaiGetCount", e)
+    tainted = True
+    return 0
+  finally:
+    if c:
+      if not _closeCursor(c): tainted = True
+    if connection: _returnConnection(connection, poolId, tainted)
+
+def oaiHarvest (from_, until, maximum):
+  """
+  Returns a list of the identifiers in the store database in
+  increasing order of update time; each identifier is returned as a
+  tuple (identifier, updateTime, metadata).  In a tuple, 'identifier'
+  is an unqualified ARK, 'updateTime' is a Unix timestamp, and
+  'metadata' is a dictionary of element (name, value) pairs.  'from_'
+  should be a Unix timestamp, and only identifiers updated more
+  recently than that are returned.  'until' may be a Unix timestamp or
+  None; if not None, only identifiers whose update time is less than
+  or equal to that are returned.  In other words, identifiers whose
+  update time is in the range (from, until] are returned.  'maximum'
+  is the maximum number of identifiers to return, and must be
+  specified.
+  """
+  connection = None
+  tainted = False
+  c = None
+  try:
+    connection, poolId = _getConnection()
+    if until != None:
+      untilClause = " AND updateTime <= ?"
+      values = (from_, until, maximum)
+    else:
+      untilClause = ""
+      values = (from_, maximum)
+    c = connection.cursor()
+    _execute(c, ("SELECT identifier, updateTime, metadata FROM identifier " +\
+      "WHERE oaiVisible = 1 AND updateTime > ?%s ORDER BY updateTime ASC " +\
+      "LIMIT ?") % untilClause, values)
+    return [(i, ut, _deblobify(m)) for i, ut, m in c.fetchall()]
+  except Exception, e:
+    log.otherError("store.oaiHarvest", e)
     tainted = True
     return []
   finally:

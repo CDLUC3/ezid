@@ -189,7 +189,7 @@ def doComparison (doi, metadata):
         # Re-create what we uploaded.  This is slightly complicated by
         # the fact that the schema version of our internal template
         # was incremented from 2.2 to 3 at some point.
-        ezidMetadata = datacite.formRecord(doi, metadata)
+        ezidMetadata = datacite.formRecord("doi:" + doi, metadata)
         if ezidMetadata != mdsMetadata:
           mdsMetadata = mdsMetadata.replace(
             "http://datacite.org/schema/kernel-2.2",

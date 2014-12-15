@@ -294,7 +294,7 @@ _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://datacite.org/schema/kernel-3
     http://schema.datacite.org/meta/kernel-3/metadata.xsd">
-  <identifier identifierType="DOI">%s</identifier>
+  <identifier identifierType="%s">%s</identifier>
   <creators>
     <creator>
       <creatorName>%s</creatorName>
@@ -315,27 +315,40 @@ _resourceTypeTemplate2 =\
 """
 
 def _extractPublicationYear (year):
-  m = re.match("(\d{4})(-\d\d)?(-\d\d)?$", year)
+  m = re.match("(\d{4})(-\d\d(-\d\d(T\d\d:\d\d:\d\dZ?)?)?)?$", year)
   if m:
     return m.group(1)
   else:
     return "0000"
 
-def formRecord (doi, metadata):
+def formRecord (identifier, metadata, supplyMissing=False):
   """
   Forms an XML record for upload to DataCite, employing metadata
-  mapping if necessary.  'doi' should be a scheme-less DOI identifier
-  (e.g., "10.5060/FOO").  'metadata' should be the identifier's
+  mapping if necessary.  'identifier' should be a qualified identifier
+  (e.g., "doi:10.5060/FOO").  'metadata' should be the identifier's
   metadata as a dictionary of (name, value) pairs.  Returns an XML
   document as a Unicode string.  The document contains a UTF-8
-  encoding declaration, but is not in fact encoded.  Raises an
-  assertion error on missing metadata.
+  encoding declaration, but is not in fact encoded.  If
+  'supplyMissing' is true, the "(:unav)" code is supplied for missing
+  required metadata fields; otherwise, missing metadata results in an
+  assertion error being raised.
   """
+  if identifier.startswith("doi:"):
+    idType = "DOI"
+    idBody = identifier[4:]
+  elif identifier.startswith("ark:/"):
+    idType = "ARK"
+    idBody = identifier[5:]
+  elif identifier.startswith("urn:uuid:"):
+    idType = "URN:UUID"
+    idBody = identifier[9:]
+  else:
+    assert False, "unhandled case"
   if metadata.get("datacite", "").strip() != "":
     return _insertEncodingDeclaration(metadata["datacite"])
   elif metadata.get("_p", "") == "crossref" and\
     metadata.get("crossref", "").strip() != "":
-    overrides = { "_id": doi }
+    overrides = { "_idType": idType, "_id": idBody }
     for e in ["creator", "title", "publisher", "publicationyear",
       "resourcetype"]:
       if metadata.get("datacite."+e, "").strip() != "":
@@ -358,15 +371,20 @@ def formRecord (doi, metadata):
       else:
         if mappedMetadata[0] == None:
           mappedMetadata[0] = mapping.getDisplayMetadata(metadata)
-        assert mappedMetadata[0][index] != None, "no " + label
-        return mappedMetadata[0][index]
+        if mappedMetadata[0][index] != None:
+          return mappedMetadata[0][index]
+        else:
+          if supplyMissing:
+            return "(:unav)"
+          else:
+            assert False, "no " + label
     creator = getMappedValue("creator", 0, "creator")
     title = getMappedValue("title", 1, "title")
     publisher = getMappedValue("publisher", 2, "publisher")
     publicationYear = _extractPublicationYear(
       getMappedValue("publicationyear", 3, "publication year"))
-    r = _interpolate(_metadataTemplate, doi, creator, title, publisher,
-      publicationYear)
+    r = _interpolate(_metadataTemplate, idType, idBody, creator, title,
+      publisher, publicationYear)
     if metadata.get("datacite.resourcetype", "").strip() != "":
       rt = metadata["datacite.resourcetype"].strip()
       if "/" in rt:
@@ -402,13 +420,13 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
   inputs.
   """
   try:
-    oldRecord = formRecord(doi, current)
+    oldRecord = formRecord("doi:" + doi, current)
   except AssertionError:
     oldRecord = None
   m = current.copy()
   m.update(delta)
   try:
-    newRecord = formRecord(doi, m)
+    newRecord = formRecord("doi:" + doi, m)
   except AssertionError, e:
     return "DOI metadata requirements not satisfied: " + e.message
   if newRecord == oldRecord and not forceUpload: return None
@@ -576,3 +594,49 @@ def crossrefToDatacite (record, overrides={}):
   return lxml.etree.tostring(_crossrefTransform(
     lxml.etree.XML(_removeEncodingDeclaration(record)), **d),
     encoding=unicode)
+
+_schemaVersionRE =\
+  re.compile("{http://datacite\.org/schema/kernel-([^}]*)}resource$")
+
+def upgradeDcmsRecord (record, returnString=True):
+  """
+  Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
+  record (supplied as an unencoded Unicode string) to the latest
+  version of the schema (currently, version 3).  If 'returnString' is
+  true, the record is returned as an unencoded Unicode string, in
+  which case the record has no XML declaration.  Otherwise, an
+  lxml.etree.Element object is returned.  In both cases, the root
+  element's xsi:schemaLocation attribute is set or added as necessary.
+  """
+  root = lxml.etree.XML(_removeEncodingDeclaration(record))
+  root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
+    "http://datacite.org/schema/kernel-3 " +\
+    "http://schema.datacite.org/meta/kernel-3/metadata.xsd"
+  m = _schemaVersionRE.match(root.tag)
+  if m.group(1) == "3":
+    # Nothing to do.
+    if returnString:
+      return lxml.etree.tostring(root, encoding=unicode)
+    else:
+      return root
+  def changeNamespace (node):
+    # The order is important here: parent before children.
+    node.tag = "{http://datacite.org/schema/kernel-3}" + node.tag.split("}")[1]
+    for child in node: changeNamespace(child)
+  changeNamespace(root)
+  ns = { "N": "http://datacite.org/schema/kernel-3" }
+  for e in root.xpath("//N:resourceType", namespaces=ns):
+    if e.attrib["resourceTypeGeneral"] == "Film":
+      e.attrib["resourceTypeGeneral"] = "Audiovisual"
+  # There's no way to assign new types to start and end dates, so just
+  # delete them.
+  for e in root.xpath("//N:date", namespaces=ns):
+    if e.attrib["dateType"] in ["StartDate", "EndDate"]:
+      e.getparent().remove(e)
+  for e in root.xpath("//N:dates", namespaces=ns):
+    if len(e) == 0: e.getparent().remove(e)
+  lxml.etree.cleanup_namespaces(root)
+  if returnString:
+    return lxml.etree.tostring(root, encoding=unicode)
+  else:
+    return root
