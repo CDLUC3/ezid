@@ -321,15 +321,17 @@ def _extractPublicationYear (year):
   else:
     return "0000"
 
-def formRecord (doi, metadata):
+def formRecord (doi, metadata, supplyMissing=False):
   """
   Forms an XML record for upload to DataCite, employing metadata
   mapping if necessary.  'doi' should be a scheme-less DOI identifier
   (e.g., "10.5060/FOO").  'metadata' should be the identifier's
   metadata as a dictionary of (name, value) pairs.  Returns an XML
   document as a Unicode string.  The document contains a UTF-8
-  encoding declaration, but is not in fact encoded.  Raises an
-  assertion error on missing metadata.
+  encoding declaration, but is not in fact encoded.  If
+  'supplyMissing' is true, the "(:unav)" code is supplied for missing
+  required metadata fields; otherwise, missing metadata results in an
+  assertion error being raised.
   """
   if metadata.get("datacite", "").strip() != "":
     return _insertEncodingDeclaration(metadata["datacite"])
@@ -358,8 +360,13 @@ def formRecord (doi, metadata):
       else:
         if mappedMetadata[0] == None:
           mappedMetadata[0] = mapping.getDisplayMetadata(metadata)
-        assert mappedMetadata[0][index] != None, "no " + label
-        return mappedMetadata[0][index]
+        if mappedMetadata[0][index] != None:
+          return mappedMetadata[0][index]
+        else:
+          if supplyMissing:
+            return "(:unav)"
+          else:
+            assert False, "no " + label
     creator = getMappedValue("creator", 0, "creator")
     title = getMappedValue("title", 1, "title")
     publisher = getMappedValue("publisher", 2, "publisher")
