@@ -273,7 +273,7 @@ def _doIdentify (oaiRequest):
   lxml.etree.SubElement(e, _q("granularity")).text = "YYYY-MM-DDThh:mm:ssZ"
   return _buildResponse(oaiRequest, e)
 
-def _doListIdentifiers (oaiRequest, batchSize):
+def _doHarvest (oaiRequest, batchSize, includeMetadata):
   if "resumptionToken" in oaiRequest[1]:
     r = _unpackResumptionToken(oaiRequest[1]["resumptionToken"])
     if r == None: return _error(oaiRequest, "badResumptionToken")
@@ -334,15 +334,28 @@ def _doListIdentifiers (oaiRequest, batchSize):
         break
     if last == None:
       # Truly exceptional case.
-      return _doListIdentifiers(oaiRequest, batchSize*2)
+      return _doHarvest(oaiRequest, batchSize*2, includeMetadata)
   else:
     last = len(ids)-1
-  e = lxml.etree.Element(_q("ListIdentifiers"))
+  e = lxml.etree.Element(_q(oaiRequest[0]))
   for i in range(last+1):
-    h = lxml.etree.SubElement(e, _q("header"))
-    lxml.etree.SubElement(h, _q("identifier")).text =\
-      ids[i][2].get("_s", "ark:/" + ids[i][0])
+    if includeMetadata:
+      r = lxml.etree.SubElement(e, _q("record"))
+      h = lxml.etree.SubElement(r, _q("header"))
+    else:
+      h = lxml.etree.SubElement(e, _q("header"))
+    id = ids[i][2].get("_s", "ark:/" + ids[i][0])
+    lxml.etree.SubElement(h, _q("identifier")).text = id
     lxml.etree.SubElement(h, _q("datestamp")).text = _formatTime(ids[i][1])
+    if includeMetadata:
+      if prefix == "oai_dc":
+        me = _buildDublinCoreRecord(id, ids[i][2])
+      elif prefix == "datacite":
+        me = datacite.upgradeDcmsRecord(datacite.formRecord(id, ids[i][2],
+          supplyMissing=True), returnString=False)
+      else:
+        assert False, "unhandled case"
+      lxml.etree.SubElement(r, _q("metadata")).append(me)
   if "resumptionToken" in oaiRequest[1] or len(ids) == batchSize:
     if total == None: total = store.oaiGetCount(from_, until)
     rt = lxml.etree.SubElement(e, _q("resumptionToken"))
@@ -394,9 +407,11 @@ def dispatch (request):
     elif oaiRequest[0] == "Identify":
       r = _doIdentify(oaiRequest)
     elif oaiRequest[0] == "ListIdentifiers":
-      r = _doListIdentifiers(oaiRequest, _batchSize)
+      r = _doHarvest(oaiRequest, _batchSize, includeMetadata=False)
     elif oaiRequest[0] == "ListMetadataFormats":
       r = _doListMetadataFormats(oaiRequest)
+    elif oaiRequest[0] == "ListRecords":
+      r = _doHarvest(oaiRequest, _batchSize, includeMetadata=True)
     elif oaiRequest[0] == "ListSets":
       r = _doListSets(oaiRequest)
     else:
