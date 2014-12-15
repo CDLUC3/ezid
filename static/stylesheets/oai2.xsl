@@ -157,17 +157,13 @@ p.intro {
 <xsl:template match="/">
 <html>
   <head>
-    <title>OAI 2.0 Request Results</title>
+    <title>EZID OAI-PMH 2.0 Request Results</title>
     <style><xsl:call-template name="style"/></style>
   </head>
   <body>
-    <h1>OAI 2.0 Request Results</h1>
+    <h1><a href="/">EZID</a> OAI-PMH 2.0 Request Results</h1>
     <xsl:call-template name="quicklinks"/>
-    <p class="intro">You are viewing an HTML version of the XML OAI response. To see the underlying XML use your web browsers view source option. More information about this XSLT is at the <a href="#moreinfo">bottom of the page</a>.</p>
     <xsl:apply-templates select="/oai:OAI-PMH" />
-    <xsl:call-template name="quicklinks"/>
-    <h2><a name="moreinfo">About the XSLT</a></h2>
-    <p>An XSLT file has converted the <a href="http://www.openarchives.org">OAI-PMH 2.0</a> responses into XHTML which looks nice in a browser which supports XSLT such as Mozilla, Firebird and Internet Explorer. The XSLT file was created by <a href="http://www.ecs.soton.ac.uk/people/cjg">Christopher Gutteridge</a> at the University of Southampton as part of the <a href="http://www.eprints.org/software/">GNU EPrints system</a>, and is freely redistributable under the <a href="http://www.gnu.org">GPL</a>.</p><p>If you want to use the XSL file on your own OAI interface you may but due to the way XSLT works you must install the XSL file on the same server as the OAI script, you can't just link to this copy.</p><p>For more information or to download the XSL file please see the <a href="http://software.eprints.org/xslt.php">OAI to XHTML XSLT homepage</a>.</p>
 
   </body>
 </html>
