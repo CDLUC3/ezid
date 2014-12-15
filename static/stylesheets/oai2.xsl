@@ -487,7 +487,7 @@ p.intro {
     <td class="value">
       <xsl:value-of select="oai:identifier"/>
       <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier={oai:identifier}">oai_dc</a>
-      <xsl:text> </xsl:text><a class="link" href="?verb=ListMetadataFormats&amp;identifier={oai:identifier}">formats</a>
+      <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix=datacite&amp;identifier={oai:identifier}">datacite</a>
     </td></tr>
     <tr><td class="key">Datestamp</td>
     <td class="value"><xsl:value-of select="oai:datestamp"/></td></tr>
@@ -541,6 +541,15 @@ p.intro {
 
 <xsl:template match="oai:metadata/*" priority='-100'>
   <h3>Unknown Metadata Format</h3>
+  <div class="xmlSource">
+    <xsl:apply-templates select="." mode='xmlMarkup' />
+  </div>
+</xsl:template>
+
+<!-- datacite record -->
+
+<xsl:template match="datacite:resource"  xmlns:datacite="http://datacite.org/schema/kernel-3" >
+  <h3>DataCite Metadata Scheme (datacite)</h3>
   <div class="xmlSource">
     <xsl:apply-templates select="." mode='xmlMarkup' />
   </div>
