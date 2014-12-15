@@ -576,3 +576,49 @@ def crossrefToDatacite (record, overrides={}):
   return lxml.etree.tostring(_crossrefTransform(
     lxml.etree.XML(_removeEncodingDeclaration(record)), **d),
     encoding=unicode)
+
+_schemaVersionRE =\
+  re.compile("{http://datacite\.org/schema/kernel-([^}]*)}resource$")
+
+def upgradeDcmsRecord (record, returnString=True):
+  """
+  Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
+  record (supplied as an unencoded Unicode string) to the latest
+  version of the schema (currently, version 3).  If 'returnString' is
+  true, the record is returned as an unencoded Unicode string, in
+  which case the record has no XML declaration.  Otherwise, an
+  lxml.etree.Element object is returned.  In both cases, the root
+  element's xsi:schemaLocation attribute is set or added as necessary.
+  """
+  root = lxml.etree.XML(_removeEncodingDeclaration(record))
+  root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
+    "http://datacite.org/schema/kernel-3 " +\
+    "http://schema.datacite.org/meta/kernel-3/metadata.xsd"
+  m = _schemaVersionRE.match(root.tag)
+  if m.group(1) == "3":
+    # Nothing to do.
+    if returnString:
+      return lxml.etree.tostring(root, encoding=unicode)
+    else:
+      return root
+  def changeNamespace (node):
+    # The order is important here: parent before children.
+    node.tag = "{http://datacite.org/schema/kernel-3}" + node.tag.split("}")[1]
+    for child in node: changeNamespace(child)
+  changeNamespace(root)
+  ns = { "N": "http://datacite.org/schema/kernel-3" }
+  for e in root.xpath("//N:resourceType", namespaces=ns):
+    if e.attrib["resourceTypeGeneral"] == "Film":
+      e.attrib["resourceTypeGeneral"] = "Audiovisual"
+  # There's no way to assign new types to start and end dates, so just
+  # delete them.
+  for e in root.xpath("//N:date", namespaces=ns):
+    if e.attrib["dateType"] in ["StartDate", "EndDate"]:
+      e.getparent().remove(e)
+  for e in root.xpath("//N:dates", namespaces=ns):
+    if len(e) == 0: e.getparent().remove(e)
+  lxml.etree.cleanup_namespaces(root)
+  if returnString:
+    return lxml.etree.tostring(root, encoding=unicode)
+  else:
+    return root
