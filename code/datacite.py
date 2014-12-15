@@ -294,7 +294,7 @@ _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://datacite.org/schema/kernel-3
     http://schema.datacite.org/meta/kernel-3/metadata.xsd">
-  <identifier identifierType="DOI">%s</identifier>
+  <identifier identifierType="%s">%s</identifier>
   <creators>
     <creator>
       <creatorName>%s</creatorName>
@@ -321,11 +321,11 @@ def _extractPublicationYear (year):
   else:
     return "0000"
 
-def formRecord (doi, metadata, supplyMissing=False):
+def formRecord (identifier, metadata, supplyMissing=False):
   """
   Forms an XML record for upload to DataCite, employing metadata
-  mapping if necessary.  'doi' should be a scheme-less DOI identifier
-  (e.g., "10.5060/FOO").  'metadata' should be the identifier's
+  mapping if necessary.  'identifier' should be a qualified identifier
+  (e.g., "doi:10.5060/FOO").  'metadata' should be the identifier's
   metadata as a dictionary of (name, value) pairs.  Returns an XML
   document as a Unicode string.  The document contains a UTF-8
   encoding declaration, but is not in fact encoded.  If
@@ -333,11 +333,22 @@ def formRecord (doi, metadata, supplyMissing=False):
   required metadata fields; otherwise, missing metadata results in an
   assertion error being raised.
   """
+  if identifier.startswith("doi:"):
+    idType = "DOI"
+    idBody = identifier[4:]
+  elif identifier.startswith("ark:/"):
+    idType = "ARK"
+    idBody = identifier[5:]
+  elif identifier.startswith("urn:uuid:"):
+    idType = "URN:UUID"
+    idBody = identifier[9:]
+  else:
+    assert False, "unhandled case"
   if metadata.get("datacite", "").strip() != "":
     return _insertEncodingDeclaration(metadata["datacite"])
   elif metadata.get("_p", "") == "crossref" and\
     metadata.get("crossref", "").strip() != "":
-    overrides = { "_id": doi }
+    overrides = { "_idType": idType, "_id": idBody }
     for e in ["creator", "title", "publisher", "publicationyear",
       "resourcetype"]:
       if metadata.get("datacite."+e, "").strip() != "":
@@ -372,8 +383,8 @@ def formRecord (doi, metadata, supplyMissing=False):
     publisher = getMappedValue("publisher", 2, "publisher")
     publicationYear = _extractPublicationYear(
       getMappedValue("publicationyear", 3, "publication year"))
-    r = _interpolate(_metadataTemplate, doi, creator, title, publisher,
-      publicationYear)
+    r = _interpolate(_metadataTemplate, idType, idBody, creator, title,
+      publisher, publicationYear)
     if metadata.get("datacite.resourcetype", "").strip() != "":
       rt = metadata["datacite.resourcetype"].strip()
       if "/" in rt:
@@ -409,13 +420,13 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
   inputs.
   """
   try:
-    oldRecord = formRecord(doi, current)
+    oldRecord = formRecord("doi:" + doi, current)
   except AssertionError:
     oldRecord = None
   m = current.copy()
   m.update(delta)
   try:
-    newRecord = formRecord(doi, m)
+    newRecord = formRecord("doi:" + doi, m)
   except AssertionError, e:
     return "DOI metadata requirements not satisfied: " + e.message
   if newRecord == oldRecord and not forceUpload: return None
