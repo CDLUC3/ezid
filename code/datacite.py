@@ -315,7 +315,7 @@ _resourceTypeTemplate2 =\
 """
 
 def _extractPublicationYear (year):
-  m = re.match("(\d{4})(-\d\d)?(-\d\d)?$", year)
+  m = re.match("(\d{4})(-\d\d(-\d\d(T\d\d:\d\d:\d\dZ?)?)?)?$", year)
   if m:
     return m.group(1)
   else:
