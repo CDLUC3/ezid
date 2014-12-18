@@ -22,10 +22,11 @@ import shoulder
 import useradmin
 
 # Below, _groups maps groups (identified by 2- or 3-tuples; see NOTES)
-# to 3-tuples (shoulders, crossrefEnabled, crossrefMail).  In the
-# latter, 'shoulders' is a list of shoulder_parser.Entry objects.
-# 'crossrefEnabled' is a boolean.  'crossrefMail' is a list of string
-# email addresses.
+# to 4-tuples (shoulders, crossrefEnabled, crossrefMail,
+# crossrefSendMailOnError).  In the latter, 'shoulders' is a list of
+# shoulder_parser.Entry objects.  'crossrefEnabled' and
+# 'crossrefSendMailOnError' are booleans.  'crossrefMail' is a list of
+# string email addresses.
 
 _lock = threading.Lock()
 _testShoulders = None
@@ -91,7 +92,11 @@ def _loadGroupLdap (group):
       cml = [m.decode("UTF-8") for m in r[0][1]["crossrefMail"]]
     else:
       cml = []
-    return (sl, ce, cml)
+    if "crossrefSendMailOnError" in r[0][1]:
+      csm = (r[0][1]["crossrefSendMailOnError"][0].lower() == "true")
+    else:
+      csm = False
+    return (sl, ce, cml, csm)
   finally:
     if l: l.unbind()
 
@@ -100,14 +105,16 @@ def _loadGroupLocal (group):
     config.config("group_%s.shoulders" % group[0])),
     config.config("group_%s.crossref_enabled" % group[0]).lower() == "true",
     [m for m in config.config("group_%s.crossref_mail" % group[0]).split(",")\
-    if len(m) > 0])
+    if len(m) > 0],
+    config.config("group_%s.crossref_send_mail_on_error" % group[0]).\
+    lower() == "true")
 
 def _loadGroup (group):
   if group[0] == _adminUsername:
     return ([s for s in shoulder.getAll() if not s.is_test_shoulder],
-      True, [])
+      True, [], False)
   elif group[0] == "anonymous":
-    return ([], False, [])
+    return ([], False, [], False)
   elif _ldapEnabled:
     return _loadGroupLdap(group)
   else:
@@ -125,7 +132,7 @@ def _getCrossrefInfo (group):
   _lock.acquire()
   try:
     if group not in _groups: _groups[group] = _loadGroup(group)
-    return (_groups[group][1], _groups[group][2])
+    return _groups[group][1:]
   finally:
     _lock.release()
 
@@ -141,14 +148,15 @@ def getShoulders (user, group):
 
 def getCrossrefInfo (user, group):
   """
-  Returns a 2-tuple (crossrefEnabled, crossrefMail) for a user.
-  'user' and 'group' should each be authenticated (local name,
-  persistent identifier) tuples, e.g., ("dryad", "ark:/13030/foo").
-  'crossrefEnabled' is a boolean.  'crossrefMail' is a list of string
-  email addresses.  Throws an exception on error.
+  Returns a 3-tuple (crossrefEnabled, crossrefMail,
+  crossrefSendMailOnError) for a user.  'user' and 'group' should each
+  be authenticated (local name, persistent identifier) tuples, e.g.,
+  ("dryad", "ark:/13030/foo").  'crossrefEnabled' and
+  'crossrefSendMailOnError' are booleans.  'crossrefMail' is a list of
+  string email addresses.  Throws an exception on error.
   """
   ci = _getCrossrefInfo(group)
-  return (ci[0], ci[1][:])
+  return (ci[0], ci[1][:], ci[2])
 
 def clearGroupCache (group):
   """

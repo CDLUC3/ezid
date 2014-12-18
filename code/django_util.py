@@ -24,4 +24,7 @@ def deleteSessions (username):
   for s in sessions:
     d = s.get_decoded()
     if "auth" in d and d["auth"].user[0] == username: toDelete.append(s.pk)
-  sessions.filter(pk__in=toDelete).delete()
+  # We'll hit an SQLite limit if we try to delete too many at once.
+  while len(toDelete) > 0:
+    sessions.filter(pk__in=toDelete[:900]).delete()
+    toDelete = toDelete[900:]

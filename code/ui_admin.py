@@ -198,9 +198,9 @@ def manage_groups(request, ssl=False):
       grp = d['group']
       r = ezidadmin.updateGroup(grp["dn"], grp["description"].strip(),
         grp["agreementOnFile"], " ".join(sels),
-        # TBD: the following two CrossRef-related arguments should be
+        # TBD: the following three CrossRef-related arguments should be
         # supplied by the form
-        False, "",
+        False, "", False,
         request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:
         django.contrib.messages.error(request, r)

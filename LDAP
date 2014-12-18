@@ -55,7 +55,11 @@ object class ezidGroup:
     to register identifiers with CrossRef.
   crossrefMail
     Optional.  The email address(es) to which CrossRef errors and
-    warnings should be sent.
+    warnings (if crossrefSendMailOnError is true) and other reports
+    should be sent.
+  crossrefSendMailOnError
+    Optional boolean flag; if present and true, errors and warnings
+    received from CrossRef are mailed.
   ezidRealm
     The DN of the group's EZID realm.  Not yet used by EZID.
 
@@ -175,6 +179,15 @@ attributeTypes: (
   USAGE userApplications )
 
 attributeTypes: (
+  crossrefSendMailOnError-oid
+  NAME 'crossrefSendMailOnError'
+  DESC 'If true, errors and warnings received from CrossRef are mailed'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE
+  USAGE userApplications )
+
+attributeTypes: (
   isEzidGroupAdministrator-oid
   NAME 'isEzidGroupAdministrator'
   DESC 'If present and true, the user is an administrator of its EZID group'
@@ -220,7 +233,7 @@ objectClasses: (
   AUXILIARY
   MUST ( objectClass $ shoulderList )
   MAY ( groupArkId $ arkId $ uid $ gid $ agreementOnFile $ crossrefEnabled $
-    crossrefMail $ ezidRealm ) )
+    crossrefMail $ crossrefSendMailOnError $ ezidRealm ) )
 
 objectClasses: (
   ezidRealm-oid
