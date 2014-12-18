@@ -295,8 +295,12 @@ def _doHarvest (oaiRequest, batchSize, includeMetadata):
       until = _parseTime(oaiRequest[1]["until"])
       if until == None:
         return _error(oaiRequest, "badArgument", "illegal 'until' UTCdatetime")
-      if "from" in oaiRequest[1] and from_ >= until:
-        return _error(oaiRequest, "badArgument", "'until' precedes 'from'")
+      if "from" in oaiRequest[1]:
+        if len(oaiRequest[1]["from"]) != len(oaiRequest[1]["until"]):
+          return _error(oaiRequest, "badArgument",
+            "incommensurate UTCdatetime granularities")
+        if from_ >= until:
+          return _error(oaiRequest, "badArgument", "'until' precedes 'from'")
     else:
       until = None
     cursor = 0
