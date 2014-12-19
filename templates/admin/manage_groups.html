@@ -78,6 +78,14 @@
           <div class="field_right">
                 <input type="text" name="crossrefMail" id="crossrefMail" size="30" value="{{ group.crossrefMail }}" /> <br/>(Separate email addresses with commas)
           </div>
+          <label class="left" for="crossrefSendMailOnError">Send Mail On CrossRef Error:</label>
+          <div class="field_right">
+                <input type="checkbox" name="crossrefSendMailOnError" id="crossrefSendMailOnError" value="True"
+                        {% if group.crossrefSendMailOnError %}
+                                checked="checked"
+                        {% endif %}
+                />
+          </div>
         </div>
 
     	<label class="left" for="users">Users:</label>

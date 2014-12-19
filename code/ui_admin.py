@@ -190,6 +190,10 @@ def manage_groups(request, ssl=False):
       grp['crossrefEnabled'] = True
     else:
       grp['crossrefEnabled'] = False
+    if 'crossrefSendMailOnError' in P and P['crossrefSendMailOnError'] == 'True':
+      grp['crossrefSendMailOnError'] = True
+    else:
+      grp['crossrefSendMailOnError'] = False
     grp['crossrefMail'] = P['crossrefMail']
     sels = P.getlist('shoulderList')
     if '-' in sels:
@@ -212,7 +216,7 @@ def manage_groups(request, ssl=False):
         # TBD: the following three CrossRef-related arguments should be
         # supplied by the form
         # False, "", False,
-        grp["crossrefEnabled"], grp['crossrefMail'], False,
+        grp["crossrefEnabled"], grp['crossrefMail'], grp['crossrefSendMailOnError'],
         request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:
         django.contrib.messages.error(request, r)
