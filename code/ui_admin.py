@@ -180,12 +180,22 @@ def manage_groups(request, ssl=False):
       validated = False
       django.contrib.messages.error(request, "You must submit a description to save this group.")
       #return uic.badRequest()
-    d['group']['description'] = request.POST['description']
-    if 'agreementOnFile' in request.POST and request.POST['agreementOnFile'] == 'True':
-      d['group']['agreementOnFile'] = True
+    grp = d['group']
+    grp['description'] = P['description']
+    if 'agreementOnFile' in P and P['agreementOnFile'] == 'True':
+      grp['agreementOnFile'] = True
     else:
-      d['group']['agreementOnFile'] = False
-    sels = request.POST.getlist('shoulderList')
+      grp['agreementOnFile'] = False
+    if 'crossrefEnabled' in P and P['crossrefEnabled'] == 'True':
+      grp['crossrefEnabled'] = True
+    else:
+      grp['crossrefEnabled'] = False
+    if 'crossrefSendMailOnError' in P and P['crossrefSendMailOnError'] == 'True':
+      grp['crossrefSendMailOnError'] = True
+    else:
+      grp['crossrefSendMailOnError'] = False
+    grp['crossrefMail'] = P['crossrefMail']
+    sels = P.getlist('shoulderList')
     if '-' in sels:
       sels.remove('-')
     if len(sels) < 1:
@@ -194,13 +204,16 @@ def manage_groups(request, ssl=False):
     if len(sels) > 1 and ('*' in sels or 'NONE' in sels):
       validated = False
       django.contrib.messages.error(request, "If you select * or NONE you may not select other items in the shoulder list.")
+    if grp['crossrefEnabled']:
+      for email in [x.strip() for x in grp['crossrefMail'].split(',')\
+        if len(x.strip()) > 0]:
+          if not _is_email_valid(email):
+            django.contrib.messages.error(request, email + " is not a valid email address. Please enter a valid email address.")
+            validated = False
     if validated:
-      grp = d['group']
       r = ezidadmin.updateGroup(grp["dn"], grp["description"].strip(),
         grp["agreementOnFile"], " ".join(sels),
-        # TBD: the following three CrossRef-related arguments should be
-        # supplied by the form
-        False, "", False,
+        grp["crossrefEnabled"], grp['crossrefMail'], grp['crossrefSendMailOnError'],
         request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:
         django.contrib.messages.error(request, r)
@@ -346,7 +359,7 @@ def validate_edit_user(request, user_obj):
     if user_obj[field].strip() == '':
       er(request, required_fields[field] + " must be filled in.")
   
-  if not re.match('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', user_obj['mail'], re.IGNORECASE):
+  if not _is_email_valid(user_obj['mail']):
     er(request, "Please enter a valid email address.")
   
   if user_obj['ezidCoOwners'] != '':
@@ -542,5 +555,9 @@ def _year_totals(user, group, last_calc):
   else:
     return_vals['tot_percent'] = str(int((float(meta) / tot * 100.0))) + "%"
   return return_vals
-  
-  
+ 
+def _is_email_valid(email):
+  if not re.match('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', email, re.IGNORECASE):
+    return False
+  else: return True
+ 
