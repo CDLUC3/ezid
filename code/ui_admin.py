@@ -213,9 +213,6 @@ def manage_groups(request, ssl=False):
     if validated:
       r = ezidadmin.updateGroup(grp["dn"], grp["description"].strip(),
         grp["agreementOnFile"], " ".join(sels),
-        # TBD: the following three CrossRef-related arguments should be
-        # supplied by the form
-        # False, "", False,
         grp["crossrefEnabled"], grp['crossrefMail'], grp['crossrefSendMailOnError'],
         request.session["auth"].user, request.session["auth"].group)
       if type(r) is str:
