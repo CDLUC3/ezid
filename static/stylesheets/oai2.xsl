@@ -159,6 +159,7 @@ p.intro {
   <head>
     <title>EZID OAI-PMH 2.0 Request Results</title>
     <style><xsl:call-template name="style"/></style>
+    <link rel="shortcut icon" type="image/png" href="/static/images/favicon.ico"/>
   </head>
   <body>
     <h1><a href="/">EZID</a> OAI-PMH 2.0 Request Results</h1>
