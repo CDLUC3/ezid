@@ -1,15 +1,7 @@
 import ui_common as uic
 from django.shortcuts import redirect
-import django.contrib.messages
-import metadata
-import ezid
 import ui_create
 import urllib
-import datacite_xml
-import os
-import re
-import policy
-from lxml import etree
 def index(request):
   d = { 'menu_item' : 'ui_demo.index' }
   return redirect("ui_demo.simple")
