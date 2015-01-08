@@ -380,10 +380,7 @@ def formRecord (identifier, metadata, supplyMissing=False):
             assert False, "no " + label
     creator = getMappedValue("creator", 0, "creator")
     title = getMappedValue("title", 1, "title")
-    try:
-      publisher = getMappedValue("publisher", 2, "publisher")
-    except:
-      publisher = '' 
+    publisher = getMappedValue("publisher", 2, "publisher")
     publicationYear = _extractPublicationYear(
       getMappedValue("publicationyear", 3, "publication year"))
     r = _interpolate(_metadataTemplate, idType, idBody, creator, title,
