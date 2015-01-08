@@ -99,31 +99,21 @@ def index(request):
 def edit(request, identifier):
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
-  if "auth" in request.session:
-    r = ezid.getMetadata(identifier, request.session["auth"].user,
-      request.session["auth"].group)
-  else:
-    r = ezid.getMetadata(identifier)
-  if type(r) is str:
-    django.contrib.messages.error(request, uic.formatError(r))
-    return redirect("ui_lookup.index")
+  r = _getLatestMetadata(identifier, request)
   if not uic.authorizeUpdate(request, r):
     django.contrib.messages.error(request, "You are not allowed to edit this identifier")
     return redirect("/id/" + urllib.quote(identifier, ":/"))
-  s, m = r
-  # if uic.identifier_has_block_data(m):
-  #  django.contrib.messages.error(request, "You may not edit this identifier outside of the EZID API")
-  #  return redirect("/id/" + urllib.quote(identifier, ":/"))
-  t_stat = [x.strip() for x in m['_status'].split("|", 1)]
+  s, id_metadata = r 
+  d['identifier'] = id_metadata 
+  t_stat = [x.strip() for x in id_metadata['_status'].split("|", 1)]
   d['pub_status'] = t_stat[0]
   d['orig_status'] = t_stat[0]
   d['stat_reason'] = None
   if t_stat[0] == 'unavailable' and len(t_stat) > 1:
     d['stat_reason'] = t_stat[1]
-  d['export'] = m['_export'] if '_export' in m else 'yes'
+  d['export'] = id_metadata['_export'] if '_export' in id_metadata else 'yes'
   d['id_text'] = s.split()[1]
-  d['identifier'] = m # identifier object containing metadata
-  d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
+  d['has_block_data'] = uic.identifier_has_block_data(id_metadata)
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
   if request.method == "POST":
@@ -140,31 +130,40 @@ def edit(request, identifier):
       stts = request.POST['_status'] + " | " + request.POST['stat_reason']
     else:
       stts = request.POST['_status']
+    # If converting simple to advanced, let's validate fields first
     if uic.validate_simple_metadata_form(request, d['current_profile']):
-      to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
-        { '_target' : uic.fix_target(request.POST['_target']), '_status': stts,
-          '_export' : ('yes' if (not 'export' in d) or d['export'] == 'yes' else 'no') })
-      result = ezid.setMetadata(identifier, uic.user_or_anon_tup(request), uic.group_or_anon_tup(request),
-        to_write)
-      if result.startswith("success:"):
-        django.contrib.messages.success(request, "Identifier updated.")
-        return redirect("/id/" + urllib.quote(identifier, ":/"))
-      else:
-        d['current_profile'] = metadata.getProfile(m['_profile'])
-        django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
+      result = _updateMetadata(request, d, stts)
+      if not result.startswith("success:"):
+        d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
+        _alertMessageUpdateError(request)
         return uic.render(request, "manage/edit", d)
-  elif request.method == "GET":
-    if '_profile' in m:
-      d['current_profile'] = metadata.getProfile(m['_profile'])
+      else:
+        if 'simpleToAdvanced' in request.POST:
+          # simpleToAdvanced button was selected 
+          result = _updateMetadata(request, d, stts, 
+            datacite.formRecord(identifier, id_metadata))
+          if not result.startswith("success:"):
+            _alertMessageUpdateError(request)
+          else:
+            s, id_metadata = _getLatestMetadata(identifier, request)
+            d['has_block_data'] = uic.identifier_has_block_data(id_metadata)
+            _alertMessageUpdateSuccess(request)
+          return uic.render(request, "manage/edit", d)
+        else:
+          _alertMessageUpdateSuccess(request)
+          return redirect("/id/" + urllib.quote(identifier, ":/"))
+  elif request.method == "GET": 
+    if '_profile' in id_metadata:
+      d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
     else:
       d['current_profile'] = metadata.getProfile('dc')
-    if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
+    if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
       # There is no datacite_xml ezid profile. Just use 'datacite'
       # [TODO: Enhance advanced DOI ERC profile to allow for elements ERC + datacite.publisher or 
       #    ERC + dc.publisher.] For now, just hide this profile. 
       if d['id_text'].startswith("doi:"):
         d['profiles'][:] = [p for p in d['profiles'] if not p.name == 'erc']
-      datacite_obj = objectify.fromstring(d['identifier']["datacite"])
+      datacite_obj = objectify.fromstring(id_metadata["datacite"])
       if datacite_obj:
         d['datacite_obj'] = datacite_obj 
         d['manual_profile'] = True
@@ -178,6 +177,35 @@ def edit(request, identifier):
       else:
         d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
   return uic.render(request, "manage/edit", d)
+
+def _getLatestMetadata(identifier, request):
+  if "auth" in request.session:
+    r = ezid.getMetadata(identifier, request.session["auth"].user,
+      request.session["auth"].group)
+  else:
+    r = ezid.getMetadata(identifier)
+  if type(r) is str:
+    django.contrib.messages.error(request, uic.formatError(r))
+    return redirect("ui_lookup.index")
+  return r
+
+def _updateMetadata(request, d, stts, advanced_datacite=None):
+  """
+  Returns ezid.setMetadata (successful return is the identifier string)
+  """
+  metadata_dict = { '_target' : uic.fix_target(request.POST['_target']), '_status': stts,
+      '_export' : ('yes' if (not 'export' in d) or d['export'] == 'yes' else 'no')}
+  if advanced_datacite: 
+    metadata_dict['datacite'] = advanced_datacite 
+  to_write = uic.assembleUpdateDictionary(request, d['current_profile'], metadata_dict)
+  return ezid.setMetadata(d['id_text'], uic.user_or_anon_tup(request), 
+    uic.group_or_anon_tup(request), to_write)
+
+def _alertMessageUpdateError(request):
+  django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
+
+def _alertMessageUpdateSuccess(request):
+  django.contrib.messages.success(request, "Identifier updated.")
 
 def _formatErcBlock (block):
   try:
@@ -202,58 +230,45 @@ def details(request):
   d["testPrefixes"] = uic.testPrefixes
   my_path = "/id/"
   identifier = request.path_info[len(my_path):]
-  if "auth" in request.session:
-    r = ezid.getMetadata(identifier, request.session["auth"].user,
-      request.session["auth"].group)
-  else:
-    r = ezid.getMetadata(identifier)
-  if type(r) is str:
-    django.contrib.messages.error(request, uic.formatError(r))
-    return redirect("ui_lookup.index")
+  r = _getLatestMetadata(identifier, request)
   d['allow_update'] = uic.authorizeUpdate(request, r)
-  s, m = r
+  s, id_metadata = r
   assert s.startswith("success:")
+  d['identifier'] = id_metadata 
   d['id_text'] = s.split()[1]
-  d['identifier'] = m # identifier object containing metadata
   d['internal_profile'] = metadata.getProfile('internal')
-  d['target'] = d['identifier']['_target']
-  d['current_profile'] = metadata.getProfile(m['_profile'])
+  d['target'] = id_metadata['_target']
+  d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
   d['recent_creation'] = identifier.startswith('doi') and \
-        (time.time() - float(d['identifier']['_created']) < 60 * 30)
+        (time.time() - float(id_metadata['_created']) < 60 * 30)
   d['recent_update'] = identifier.startswith('doi') and \
-        (time.time() - float(d['identifier']['_updated']) < 60 * 30)
-  if d['current_profile'].name == 'erc' and 'erc' in d['identifier']:
-    d['erc_block_list'] = _formatErcBlock(d['identifier']['erc'])
-  elif d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
-    r = datacite.dcmsRecordToHtml(d['identifier']["datacite"])
+        (time.time() - float(id_metadata['_updated']) < 60 * 30)
+  if d['current_profile'].name == 'erc' and 'erc' in id_metadata:
+    d['erc_block_list'] = _formatErcBlock(id_metadata['erc'])
+  elif d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
+    r = datacite.dcmsRecordToHtml(id_metadata["datacite"])
     if r:
       d['datacite_html'] = r
     else:
       d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
-  t_stat = [x.strip() for x in d['identifier']['_status'].split("|", 1)]
+  t_stat = [x.strip() for x in id_metadata['_status'].split("|", 1)]
   d['pub_status'] = t_stat[0]
   if t_stat[0] == 'unavailable' and len(t_stat) > 1:
     d['stat_reason'] = t_stat[1] 
-  d['has_block_data'] = uic.identifier_has_block_data(d['identifier'])
-  d['has_resource_type'] = True if (d['current_profile'].name == 'datacite' and 'datacite.resourcetype' in m and m['datacite.resourcetype'] != '') else False
+  d['has_block_data'] = uic.identifier_has_block_data(id_metadata)
+  d['has_resource_type'] = True if (d['current_profile'].name == 'datacite' \
+    and 'datacite.resourcetype' in id_metadata \
+    and id_metadata['datacite.resourcetype'] != '') else False
   return uic.render(request, "manage/details", d)
 
 def datacite_xml(request, identifier):
   d = { 'menu_item' : 'ui_manage.null'}
-  if "auth" in request.session:
-    r = ezid.getMetadata(identifier, request.session["auth"].user,
-      request.session["auth"].group)
-  else:
-    r = ezid.getMetadata(identifier)
-  if type(r) is str:
-    django.contrib.messages.error(request, uic.formatError(r))
-    return redirect("ui_lookup.index")
-  s, m = r
+  s, id_metadata = _getLatestMetadata(identifier, request)
   assert s.startswith("success:")
-  d['identifier'] = m
-  d['current_profile'] = metadata.getProfile(m['_profile'])
-  if d['current_profile'].name == 'datacite' and 'datacite' in d['identifier']:
-    content = d['identifier']["datacite"]
+  d['identifier'] = id_metadata 
+  d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
+  if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
+    content = id_metadata["datacite"]
   
   # By setting the content type ourselves, we gain control over the
   # character encoding and can properly set the content length.

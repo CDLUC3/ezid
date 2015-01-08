@@ -12,9 +12,13 @@
 {% endblock %}
 
 {% block content %}
+  <form id="edit_form" action="{% url "ui_manage.edit" id_text %}" method="post">
+    <!-- original profile is the profile that was loaded before possibly being changed from drop-down list -->
+    <input name="action" id="action"  type="hidden" value="edit"/>
+    <input name="identifier" id="identifier"  type="hidden" value="{{ id_text }}"/>
+    <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
   <div class="grid_9">
   	<div style="float:right">
-  		
   	</div>
     <h1>Identifier Details</h1>
     <div class="left_desc">Identifier:</div>
@@ -28,11 +32,6 @@
     <div style="clear:left;"></div>
     
     <h2>About the identified object</h2>
-    <form id="edit_form" action="{% url "ui_manage.edit" id_text %}" method="post">
-      <!-- original profile is the profile that was loaded before possibly being changed from drop-down list -->
-      <input name="action" id="action"  type="hidden" value="edit"/>
-      <input name="identifier" id="identifier"  type="hidden" value="{{ id_text }}"/>
-      <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
       <p>This identified object uses the <strong>{{ current_profile.displayName }}</strong> citation profile.</p>
       <label for="_target" class="left {% tooltip_class "_target" %}">
         {{internal_profile.target.displayName}}:
@@ -64,6 +63,7 @@
     		<input type="submit" value="Save changes" />
     	</div>
       <div style="clear:both;"></div>
+
       <h2>About the identifier</h2>
       <table>
       	<tr>
@@ -157,10 +157,25 @@
 	       	</td>
 	      </tr>
       </table>
-    </form>
   </div>
   <div class="grid_3">
+    <br/><br/><br/><br/><br/><br/>
+    {% if not manual_profile %}
+      <div class="squarebox">
+        <div class="squareboxpad">
+        <p>
+          {% if not manual_profile and current_profile.name == "datacite" %}
+            <input type="submit" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Add more information to the record." class="link-lookalike"/>
+          {% elif not manual_profile and current_profile.name != "datacite" %}
+            Would you like to add more information to the record? 
+            <input type="submit" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Convert to the DataCite citation profile." class="link-lookalike"/> {% help_icon "which_profile" %} 
+          {% endif %}
+        </p>
+        </div>
+      </div>
+    {% endif %}
   </div>
+  </form>
   
   <script type="text/javascript">
         // submit form when profile changed
