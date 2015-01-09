@@ -18,7 +18,6 @@
     <input name="identifier" id="identifier"  type="hidden" value="{{ id_text }}"/>
     <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
     <input name="simpleToAdvanced" id="simpleToAdvanced"  type="hidden" value="False"/>
-    <!-- current profile updated via JavaScript when converting from simple to advanced ID -->
   <div class="grid_9">
   	<div style="float:right">
   	</div>
@@ -168,7 +167,6 @@
           {% if not manual_profile and current_profile.name == "datacite" %}
             <input id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Add more information to the record" onclick="profileSimpleToAdvanced(event);" class="link-lookalike"/>
           {% elif not manual_profile and current_profile.name != "datacite" %}
-            <!-- span style="float:left;margin-left:8px">Would you like to add more information to the record?</span --> 
             Would you like to add more information to the record?
             <input id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Convert to the DataCite citation profile" onclick="profileSimpleToAdvanced(event);" class="link-lookalike"/> <span style="position:relative;top:-50px;left:83%"> {% help_icon "which_profile" %} </span> 
           {% endif %}
