@@ -17,6 +17,8 @@
     <input name="action" id="action"  type="hidden" value="edit"/>
     <input name="identifier" id="identifier"  type="hidden" value="{{ id_text }}"/>
     <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
+    <input name="simpleToAdvanced" id="simpleToAdvanced"  type="hidden" value="False"/>
+    <!-- current profile updated via JavaScript when converting from simple to advanced ID -->
   <div class="grid_9">
   	<div style="float:right">
   	</div>
@@ -60,7 +62,7 @@
 
     	<label class="left">&nbsp;</label>
     	<div class="field_right">
-    		<input type="submit" value="Save changes" />
+          <input type="submit" value="Save changes"/>
     	</div>
       <div style="clear:both;"></div>
 
@@ -163,14 +165,13 @@
     {% if not manual_profile %}
       <div class="squarebox">
         <div class="squareboxpad">
-        <p>
           {% if not manual_profile and current_profile.name == "datacite" %}
-            <input type="submit" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Add more information to the record." class="link-lookalike"/>
+            <input id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Add more information to the record" onclick="profileSimpleToAdvanced(event);" class="link-lookalike"/>
           {% elif not manual_profile and current_profile.name != "datacite" %}
-            Would you like to add more information to the record? 
-            <input type="submit" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Convert to the DataCite citation profile." class="link-lookalike"/> {% help_icon "which_profile" %} 
+            <!-- span style="float:left;margin-left:8px">Would you like to add more information to the record?</span --> 
+            Would you like to add more information to the record?
+            <input id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Convert to the DataCite citation profile" onclick="profileSimpleToAdvanced(event);" class="link-lookalike"/> <span style="position:relative;top:-50px;left:83%"> {% help_icon "which_profile" %} </span> 
           {% endif %}
-        </p>
         </div>
       </div>
     {% endif %}
@@ -182,6 +183,11 @@
           $("#current_profile").bind("change", function(event){
             $("#edit_form").submit();
           });
+    function profileSimpleToAdvanced(e){
+        e.preventDefault();
+        $("input[type=hidden][name=simpleToAdvanced]").val('True');
+        $('#edit_form').submit();
+    }
     function setHidden(){
     	if ($('#_status_unavailable').is(':checked')) {
    			// unavailable

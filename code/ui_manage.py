@@ -96,6 +96,72 @@ def index(request):
   
   return uic.render(request, 'manage/index', d)
 
+def _getLatestMetadata(identifier, request):
+  if "auth" in request.session:
+    r = ezid.getMetadata(identifier, request.session["auth"].user,
+      request.session["auth"].group)
+  else:
+    r = ezid.getMetadata(identifier)
+  if type(r) is str:
+    django.contrib.messages.error(request, uic.formatError(r))
+    return redirect("ui_lookup.index")
+  return r
+
+def _updateMetadata(request, d, stts, _id_metadata=None):
+  """
+  Takes data from form fields in /manage/edit and applies them to IDs metadata
+  If _id_metadata is specified, converts record to advanced datacite 
+  Returns ezid.setMetadata (successful return is the identifier string)
+  Also removes tags related to old profile if converting to advanced datacite
+  """
+  metadata_dict = { '_target' : uic.fix_target(request.POST['_target']), '_status': stts,
+      '_export' : ('yes' if (not 'export' in d) or d['export'] == 'yes' else 'no')}
+  if _id_metadata: 
+    metadata_dict['datacite'] = datacite.formRecord(d['id_text'], _id_metadata, True)
+    metadata_dict['_profile'] = 'datacite' 
+    # Old tag cleanup
+    if _id_metadata.get("_profile", "") == "datacite": 
+      metadata_dict['datacite.creator'] = ''; metadata_dict['datacite.publisher'] = '' 
+      metadata_dict['datacite.publicationyear'] = ''; metadata_dict['datacite.title'] = '' 
+      metadata_dict['datacite.type'] = '' 
+    if _id_metadata.get("_profile", "") == "dc": 
+      metadata_dict['dc.creator'] = ''; metadata_dict['dc.date'] = '' 
+      metadata_dict['dc.publisher'] = ''; metadata_dict['dc.title'] = '' 
+      metadata_dict['dc.type'] = '' 
+    if _id_metadata.get("_profile", "") == "erc": 
+      metadata_dict['erc.who'] = ''; metadata_dict['erc.what'] = '' 
+      metadata_dict['erc.when'] = '' 
+  to_write = uic.assembleUpdateDictionary(request, d['current_profile'], metadata_dict)
+  return ezid.setMetadata(d['id_text'], uic.user_or_anon_tup(request), 
+    uic.group_or_anon_tup(request), to_write)
+
+def _alertMessageUpdateError(request):
+  django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
+
+def _alertMessageUpdateSuccess(request):
+  django.contrib.messages.success(request, "Identifier updated.")
+
+def _addDataciteXmlToDict(id_metadata, d):
+  # There is no datacite_xml ezid profile. Just use 'datacite'
+  # [TODO: Enhance advanced DOI ERC profile to allow for elements ERC + datacite.publisher or 
+  #    ERC + dc.publisher.] For now, just hide this profile. 
+  if d['id_text'].startswith("doi:"):
+    d['profiles'][:] = [p for p in d['profiles'] if not p.name == 'erc']
+  datacite_obj = objectify.fromstring(id_metadata["datacite"])
+  if datacite_obj:
+    d['datacite_obj'] = datacite_obj 
+    d['manual_profile'] = True
+    d['manual_template'] = 'create/_datacite_xml.html'
+    ''' Also feed in a whole, empty XML record so that elements can be properly
+        displayed in form fields on manage/edit page ''' 
+    f = open(os.path.join(
+        django.conf.settings.PROJECT_ROOT, "static", "datacite_emptyRecord.xml"))
+    d['datacite_obj_empty'] = objectify.parse(f).getroot()
+    f.close()
+  else:
+    d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
+  return d
+
 def edit(request, identifier):
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
@@ -113,7 +179,6 @@ def edit(request, identifier):
     d['stat_reason'] = t_stat[1]
   d['export'] = id_metadata['_export'] if '_export' in id_metadata else 'yes'
   d['id_text'] = s.split()[1]
-  d['has_block_data'] = uic.identifier_has_block_data(id_metadata)
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
   if request.method == "POST":
@@ -130,7 +195,7 @@ def edit(request, identifier):
       stts = request.POST['_status'] + " | " + request.POST['stat_reason']
     else:
       stts = request.POST['_status']
-    # If converting simple to advanced, let's validate fields first
+    # Even if converting from simple to advanced, let's validate fields first
     if uic.validate_simple_metadata_form(request, d['current_profile']):
       result = _updateMetadata(request, d, stts)
       if not result.startswith("success:"):
@@ -138,15 +203,16 @@ def edit(request, identifier):
         _alertMessageUpdateError(request)
         return uic.render(request, "manage/edit", d)
       else:
-        if 'simpleToAdvanced' in request.POST:
+        if 'simpleToAdvanced' in request.POST and request.POST['simpleToAdvanced'] == 'True':
           # simpleToAdvanced button was selected 
-          result = _updateMetadata(request, d, stts, 
-            datacite.formRecord(identifier, id_metadata))
+          result = _updateMetadata(request, d, stts, id_metadata)
+          s, id_metadata = _getLatestMetadata(identifier, request)
           if not result.startswith("success:"):
             _alertMessageUpdateError(request)
           else:
-            s, id_metadata = _getLatestMetadata(identifier, request)
-            d['has_block_data'] = uic.identifier_has_block_data(id_metadata)
+            d['identifier'] = id_metadata
+            d['current_profile'] = metadata.getProfile('datacite')
+            d = _addDataciteXmlToDict(id_metadata, d)
             _alertMessageUpdateSuccess(request)
           return uic.render(request, "manage/edit", d)
         else:
@@ -158,54 +224,8 @@ def edit(request, identifier):
     else:
       d['current_profile'] = metadata.getProfile('dc')
     if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
-      # There is no datacite_xml ezid profile. Just use 'datacite'
-      # [TODO: Enhance advanced DOI ERC profile to allow for elements ERC + datacite.publisher or 
-      #    ERC + dc.publisher.] For now, just hide this profile. 
-      if d['id_text'].startswith("doi:"):
-        d['profiles'][:] = [p for p in d['profiles'] if not p.name == 'erc']
-      datacite_obj = objectify.fromstring(id_metadata["datacite"])
-      if datacite_obj:
-        d['datacite_obj'] = datacite_obj 
-        d['manual_profile'] = True
-        d['manual_template'] = 'create/_datacite_xml.html'
-        ''' Also feed in a whole, empty XML record so that elements can be properly
-            displayed in form fields on manage/edit page ''' 
-        f = open(os.path.join(
-            django.conf.settings.PROJECT_ROOT, "static", "datacite_emptyRecord.xml"))
-        d['datacite_obj_empty'] = objectify.parse(f).getroot()
-        f.close()
-      else:
-        d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
+      d = _addDataciteXmlToDict(id_metadata, d)
   return uic.render(request, "manage/edit", d)
-
-def _getLatestMetadata(identifier, request):
-  if "auth" in request.session:
-    r = ezid.getMetadata(identifier, request.session["auth"].user,
-      request.session["auth"].group)
-  else:
-    r = ezid.getMetadata(identifier)
-  if type(r) is str:
-    django.contrib.messages.error(request, uic.formatError(r))
-    return redirect("ui_lookup.index")
-  return r
-
-def _updateMetadata(request, d, stts, advanced_datacite=None):
-  """
-  Returns ezid.setMetadata (successful return is the identifier string)
-  """
-  metadata_dict = { '_target' : uic.fix_target(request.POST['_target']), '_status': stts,
-      '_export' : ('yes' if (not 'export' in d) or d['export'] == 'yes' else 'no')}
-  if advanced_datacite: 
-    metadata_dict['datacite'] = advanced_datacite 
-  to_write = uic.assembleUpdateDictionary(request, d['current_profile'], metadata_dict)
-  return ezid.setMetadata(d['id_text'], uic.user_or_anon_tup(request), 
-    uic.group_or_anon_tup(request), to_write)
-
-def _alertMessageUpdateError(request):
-  django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
-
-def _alertMessageUpdateSuccess(request):
-  django.contrib.messages.success(request, "Identifier updated.")
 
 def _formatErcBlock (block):
   try:

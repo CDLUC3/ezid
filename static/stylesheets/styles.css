@@ -202,11 +202,14 @@ div.squarebox {
 }
 
 .link-lookalike {
+  display: inline-block; 
   background: none;
   border: none;
   font-size: 115%;
   white-space: normal;
   text-align: left;
+  margin-top:5px;
+  margin-left:-10px;
   text-decoration: none;
   color: #0645AD; 
 }
