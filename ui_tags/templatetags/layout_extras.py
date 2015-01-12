@@ -351,7 +351,8 @@ def datacite_get_geoLoc(datacite_obj, datacite_obj_empty):
 
 @register.inclusion_tag('create/_datacite_relId.html')
 def datacite_get_relIds(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'relatedIdentifiers'):
+  if hasattr(datacite_obj, 'relatedIdentifiers') and\
+    hasattr(datacite_obj.relatedIdentifiers, 'relatedIdentifier'):
     datacite_obj_relatedIdentifiers = datacite_obj.relatedIdentifiers
   else:
     datacite_obj_relatedIdentifiers = datacite_obj_empty.relatedIdentifiers
