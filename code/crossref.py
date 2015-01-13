@@ -486,11 +486,19 @@ def _doDeposit (r):
     withdrawTitles=(r.operation == ezidapp.models.CrossrefQueue.DELETE or\
     m.get("_is", "public").startswith("unavailable")))
   if _submitDeposit(submission, batchId, r.identifier[4:]):
-    r.status = ezidapp.models.CrossrefQueue.SUBMITTED
-    r.batchId = batchId
-    r.submitTime = int(time.time())
-    _checkAbort()
-    r.save()
+    if r.operation == ezidapp.models.CrossrefQueue.DELETE:
+      # Well this is awkard.  If the identifier was deleted, there's
+      # no point in polling for the status... if anything goes wrong,
+      # there's no correction that could possibly be made, as the
+      # identifier no longer exists as far as EZID is concerned.
+      _checkAbort()
+      r.delete()
+    else:
+      r.status = ezidapp.models.CrossrefQueue.SUBMITTED
+      r.batchId = batchId
+      r.submitTime = int(time.time())
+      _checkAbort()
+      r.save()
 
 def _sendEmail (emailAddresses, r):
   if r.status == ezidapp.models.CrossrefQueue.WARNING:
@@ -526,6 +534,8 @@ def _doPoll (r):
     _checkAbort()
     r.save()
   elif t[0].startswith("completed"):
+    # Deleted identifiers aren't retained in the queue, but just to
+    # make it clear...
     if r.operation != ezidapp.models.CrossrefQueue.DELETE:
       if t[0] == "completed successfully":
         m = "successfully registered"
@@ -554,10 +564,6 @@ def _doPoll (r):
       if len(emailAddresses) > 0:
         _checkAbort()
         _sendEmail(emailAddresses, r)
-      # If the operation was DELETE, a CrossRef error or warning will
-      # leave an entry in the queue that refers to a nonexistent
-      # identifier.  Hard to say whether that's better than ignoring
-      # the CrossRef problem or not.
       _checkAbort()
       r.save()
   else:
