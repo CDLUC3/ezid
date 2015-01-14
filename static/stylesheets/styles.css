@@ -22,17 +22,6 @@ ul li {
 	margin-left: 45px;
 }
 
-.special a:visited, .special a:link, .special a:active{
-  text-decoration: none;
-  color: #0645AD; 
-}
-
-.special a:hover {
-  text-decoration: underline;
-  color: #CC0000;
-  /* color: #003D9C; */
-}
-
 div.top_area {
   padding: 10px 0 10px 0;
   // height: 92px;
@@ -210,6 +199,23 @@ div.squarebox {
 	/*
 	border-radius: 5px 5px 5px 5px;
 	-moz-border-radius: 5px 5px 5px 5px; */
+}
+
+.link-lookalike {
+  background: none;
+  border: none;
+  font-size: 115%;
+  white-space: normal;
+  text-align: left;
+  margin-left:-10px;
+  margin-right:15px;
+  text-decoration: none;
+  color: #0645AD; 
+}
+
+.link-lookalike:hover {
+  text-decoration: underline;
+  color: #CC0000;
 }
 
 .roundtl {

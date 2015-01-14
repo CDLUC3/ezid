@@ -5,16 +5,18 @@
 
 {% block content %}
   
-  {% if results|length < 1 %}
-  	<p>There are no recent results to display.</p>
-  {% else %}
 	  <div class="grid_12">
 	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp;
+  {% if results|length < 1 %}
+		<p>There are no recent results to display.<br/>
+		<br/><br/><br/><br/><br/><br/><br/><br/><br/></p>
+	  </div>
+  {% else %}
 	  	{% if includeCoowned %}
 	  		(includes co-owned identifiers)
 	  	{% else %}
 				(does not include co-owned identifiers)
-			{% endif %} 
+		{% endif %} 
 	  	
 	  	&nbsp;&nbsp;&nbsp;<a href="#dialog" name="modal">Customize view</a>
 	  	{% include "manage/_choose_cols.html" %}
@@ -34,11 +36,13 @@
 		  </table>
 		  {% pager_display REQUEST p total_pages ps %}
 		</div>
-	{% endif %}
-	
-	{% if recent|length > 0 or results|length > 0 %}
+  {% endif %}
+
+  {% if results|length > 0 %}
+	  <div class="grid_12">
 		<p>Identifiers shown with a <span class="fakeid">highlight</span> are demo/temporary identifiers.</p>
-	{% endif %}
+	  </div>
+  {% endif %}
 	<script type="text/javascript">
   	// Add class for current column heading
 	  $(document).ready(function() {

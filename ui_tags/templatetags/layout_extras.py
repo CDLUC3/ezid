@@ -275,7 +275,8 @@ XML blob does not have element we're looking for, load an empty one
     -------------------------------------------------------------------'''    
 @register.inclusion_tag('create/_datacite_altId.html')
 def datacite_get_altIds(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'alternateIdentifiers'):
+  if hasattr(datacite_obj, 'alternateIdentifiers') and\
+      hasattr(datacite_obj.alternateIdentifiers, 'alternateIdentifier'):
       datacite_obj_alternateIdentifiers = datacite_obj.alternateIdentifiers
   else:
       datacite_obj_alternateIdentifiers = datacite_obj_empty.alternateIdentifiers
@@ -286,7 +287,8 @@ def datacite_get_altIds(datacite_obj, datacite_obj_empty):
 
 @register.inclusion_tag('create/_datacite_contributor.html')
 def datacite_get_contributors(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'contributors'):
+  if hasattr(datacite_obj, 'contributors') and\
+      hasattr(datacite_obj.contributors, 'contributor'):
       datacite_obj_contributors = datacite_obj.contributors
   else:
       datacite_obj_contributors = datacite_obj_empty.contributors
@@ -308,7 +310,7 @@ def datacite_get_creators(datacite_obj, datacite_obj_empty):
 
 @register.inclusion_tag('create/_datacite_date.html')
 def datacite_get_dates(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'dates'):
+  if hasattr(datacite_obj, 'dates') and hasattr(datacite_obj.dates, 'date'):
       datacite_obj_dates = datacite_obj.dates
   else:
       datacite_obj_dates = datacite_obj_empty.dates
@@ -318,7 +320,8 @@ def datacite_get_dates(datacite_obj, datacite_obj_empty):
 
 @register.inclusion_tag('create/_datacite_description.html')
 def datacite_get_descriptions(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'descriptions'):
+  if hasattr(datacite_obj, 'descriptions') and\
+    hasattr(datacite_obj.descriptions, 'description'):
     datacite_obj_descriptions = datacite_obj.descriptions
   else:
     datacite_obj_descriptions = datacite_obj_empty.descriptions
@@ -329,7 +332,8 @@ def datacite_get_descriptions(datacite_obj, datacite_obj_empty):
 
 @register.inclusion_tag('create/_datacite_format.html')
 def datacite_get_formats(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'formats'):
+  if hasattr(datacite_obj, 'formats') and\
+    hasattr(datacite_obj.formats, 'format'):
     datacite_obj_formats = datacite_obj.formats
   else:
     datacite_obj_formats = datacite_obj_empty.formats
@@ -340,7 +344,8 @@ def datacite_get_formats(datacite_obj, datacite_obj_empty):
 
 @register.inclusion_tag('create/_datacite_geoLoc.html')
 def datacite_get_geoLoc(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'geoLocations'):
+  if hasattr(datacite_obj, 'geoLocations') and\
+    hasattr(datacite_obj.geoLocations, 'geoLocation'):
     datacite_obj_geoLocations = datacite_obj.geoLocations
   else:
     datacite_obj_geoLocations = datacite_obj_empty.geoLocations
@@ -363,7 +368,8 @@ def datacite_get_relIds(datacite_obj, datacite_obj_empty):
 
 @register.inclusion_tag('create/_datacite_rights.html')
 def datacite_get_rights(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'rightsList'):
+  if hasattr(datacite_obj, 'rightsList') and\
+    hasattr(datacite_obj.rightsList, 'rights'):
     datacite_obj_rightsList = datacite_obj.rightsList
   else:
     datacite_obj_rightsList = datacite_obj_empty.rightsList
@@ -374,7 +380,7 @@ def datacite_get_rights(datacite_obj, datacite_obj_empty):
 
 @register.inclusion_tag('create/_datacite_size.html')
 def datacite_get_sizes(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'sizes'):
+  if hasattr(datacite_obj, 'sizes') and hasattr(datacite_obj.sizes, 'size'):
     datacite_obj_sizes = datacite_obj.sizes
   else:
     datacite_obj_sizes = datacite_obj_empty.sizes
@@ -385,7 +391,8 @@ def datacite_get_sizes(datacite_obj, datacite_obj_empty):
 
 @register.inclusion_tag('create/_datacite_subject.html')
 def datacite_get_subjects(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'subjects'):
+  if hasattr(datacite_obj, 'subjects') and\
+    hasattr(datacite_obj.subjects, 'subject'):
     datacite_obj_subjects = datacite_obj.subjects
   else:
     datacite_obj_subjects = datacite_obj_empty.subjects
