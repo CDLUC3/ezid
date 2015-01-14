@@ -560,10 +560,10 @@ def _doPoll (r):
         r.status = ezidapp.models.CrossrefQueue.FAILURE
       r.message = t[1]
       au = userauth.getAuthenticatedUser(idmap.getAgent(r.owner)[0])
-      emailAddresses = policy.getCrossrefInfo(au.user, au.group)[1]
-      if len(emailAddresses) > 0:
+      info = policy.getCrossrefInfo(au.user, au.group)
+      if info[2] and len(info[1]) > 0:
         _checkAbort()
-        _sendEmail(emailAddresses, r)
+        _sendEmail(info[1], r)
       _checkAbort()
       r.save()
   else:
