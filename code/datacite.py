@@ -346,7 +346,7 @@ def formRecord (identifier, metadata, supplyMissing=False):
     assert False, "unhandled case"
   if metadata.get("datacite", "").strip() != "":
     return _insertEncodingDeclaration(metadata["datacite"])
-  elif metadata.get("_p", "") == "crossref" and\
+  elif metadata.get("_p", metadata.get("_profile", "")) == "crossref" and\
     metadata.get("crossref", "").strip() != "":
     overrides = { "_idType": idType, "_id": idBody }
     for e in ["creator", "title", "publisher", "publicationyear",
@@ -392,7 +392,7 @@ def formRecord (identifier, metadata, supplyMissing=False):
         r += _interpolate(_resourceTypeTemplate2, gt.strip(), st.strip())
       else:
         r += _interpolate(_resourceTypeTemplate1, rt)
-    elif metadata.get("_p", "") == "dc" and\
+    elif metadata.get("_p", metadata.get("_profile", "")) == "dc" and\
       metadata.get("dc.type", "").strip() != "":
       rt = metadata["dc.type"].strip()
       if rt in _dcResourceTypes:

@@ -38,6 +38,8 @@ import django.core.mail
 import logging
 import logging.config
 import os.path
+import re
+import sys
 import threading
 import time
 import traceback
@@ -102,6 +104,38 @@ def unauthorized (transactionId):
   """
   _log.info("%s END UNAUTHORIZED" % transactionId.hex)
 
+def _extractRaiser (tbList):
+  # Given a list of traceback frames, returns the qualified name of
+  # the EZID function that raised the exception.  We try to identify
+  # the "best" function to return.  Let F be the most recent function
+  # in the traceback that is in EZID's code base.  We return F unless
+  # F is an internal function (begins with an underscore), in which
+  # case we return the next most recent function that is public and in
+  # the same module as F.
+  if tbList == None or len(tbList) == 0: return "(unknown)"
+  def moduleName (path):
+    m = re.match(".*/(.*?)\.py$", path)
+    if m:
+      return m.group(1)
+    else:
+      return "(unknown)"
+  j = None
+  for i in range(len(tbList)-1, -1, -1):
+    if tbList[i][0].startswith(django.conf.settings.PROJECT_ROOT):
+      if tbList[i][2].startswith("_"):
+        if j == None or moduleName(tbList[i][0]) == moduleName(tbList[j][0]):
+          j = i
+        else:
+          break
+      else:
+        if j == None or moduleName(tbList[i][0]) == moduleName(tbList[j][0]):
+          j = i
+        break
+    else:
+      if j != None: break
+  if j == None: j = -1
+  return "%s.%s" % (moduleName(tbList[j][0]), tbList[j][2])
+
 def _notifyAdmins (error):
   t = int(time.time())
   suppress = False
@@ -146,7 +180,10 @@ def error (transactionId, exception):
   if len(m) > 0: m = ": " + m
   _log.error("%s END ERROR %s%s" % (transactionId.hex,
     util.encode1(type(exception).__name__), util.encode1(m)))
-  if not django.conf.settings.DEBUG: _notifyAdmins(traceback.format_exc())
+  if not django.conf.settings.DEBUG:
+    _notifyAdmins("Exception raised in %s:\n%s%s\n\n%s" %\
+      (_extractRaiser(traceback.extract_tb(sys.exc_info()[2])),
+      type(exception).__name__, m, traceback.format_exc()))
 
 def otherError (caller, exception):
   """
@@ -158,7 +195,9 @@ def otherError (caller, exception):
   if len(m) > 0: m = ": " + m
   _log.error("- ERROR %s %s%s" % (util.encode2(caller),
     util.encode1(type(exception).__name__), util.encode1(m)))
-  if not django.conf.settings.DEBUG: _notifyAdmins(traceback.format_exc())
+  if not django.conf.settings.DEBUG:
+    _notifyAdmins("Exception raised in %s:\n%s%s\n\n%s" %\
+      (caller, type(exception).__name__, m, traceback.format_exc()))
 
 def status (*args):
   """
