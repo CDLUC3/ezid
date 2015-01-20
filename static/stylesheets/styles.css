@@ -162,24 +162,6 @@ div.rb8 {
   padding:10px;
 }
 
-div.rc1 {
-  background: url(/static/layout_test/corners/solid_bl.gif) 0 100% no-repeat;
-  width: 100%;
-}
-
-div.rc2 {
-  background: url(/static/layout_test/corners/solid_br.gif) 100% 100% no-repeat;
-}
-
-div.rc3 {
-  background: url(/static/layout_test/corners/solid_tl.gif) 0 0 no-repeat;
-}
-
-div.rc4 {
-  background: url(/static/layout_test/corners/solid_tr.gif) 100% 0 no-repeat;
-}
-
-
 div.roundbox {
 	border-color: #b99672;
 	border-style:solid;
