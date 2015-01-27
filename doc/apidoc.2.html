@@ -160,6 +160,7 @@ report problems:</p>
 <li><a class="reference internal" href="#java-example">Java example</a></li>
 <li><a class="reference internal" href="#curl-examples">cURL examples</a></li>
 <li><a class="reference internal" href="#batch-processing">Batch processing</a></li>
+<li><a class="reference internal" href="#batch-download">Batch download</a></li>
 <li><a class="reference internal" href="#oai-pmh-harvesting">OAI-PMH harvesting</a></li>
 </ul>
 </div>
@@ -1880,17 +1881,287 @@ curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -X P
 </div>
 <div class="section" id="batch-processing">
 <h1>Batch processing</h1>
-<p>The EZID API does not support batch operations on identifiers, but it
-is possible to achieve much the same result using the Python command
-line tool (see <a class="reference internal" href="#python-example">Python example</a> above) combined with some shell
-scripting.  For example, to mint 100 test ARK identifiers and print
-the identifiers:</p>
+<p>The EZID API does not support batch operations on identifiers (other
+than batch downloading and harvesting of metadata, described in the
+next two sections), but it is possible to achieve much the same result
+using the Python command line tool (see <a class="reference internal" href="#python-example">Python example</a> above)
+combined with some shell scripting.  For example, to mint 100 test ARK
+identifiers and print the identifiers:</p>
 <pre class="literal-block">
 #! /bin/bash
 for i in {1..100}; do
   ezid.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 | awk '{ print $2 }'
 done
 </pre>
+</div>
+<div class="section" id="batch-download">
+<h1>Batch download</h1>
+<p>The metadata for all identifiers matching a set of constraints can be
+downloaded in one batch operation.  Authentication is required, and
+the scope of the identifiers that can be downloaded in this way is
+implicitly restricted to those that are owned or co-owned by the
+requestor.</p>
+<p>Batch download and harvesting (see <a class="reference internal" href="#oai-pmh-harvesting">OAI-PMH harvesting</a> below) are
+similar but different operations.  With batch download, the
+identifiers returned are restricted to those owned or co-owned by the
+requestor as noted above, but within that scope it is possible to
+download <em>all</em> identifiers, including reserved, unavailable, and test
+identifiers.  By contrast, with harvesting, no authentication is
+required and the identifiers returned are not restricted by ownership,
+but only those identifiers that are public and exported and that
+satisfy several other quality criteria are returned.</p>
+<p><strong>Subsections</strong></p>
+<ul class="simple">
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#download-formats">Download formats</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+</ul>
+<p id="overview"><strong>Overview</strong></p>
+<p>The batch download process is asynchronous.  A download is requested
+by issuing a GET request to</p>
+<blockquote>
+<a class="reference external" href="http://ezid.cdlib.org/download_request">http://ezid.cdlib.org/download_request</a></blockquote>
+<p>The request must include one GET query parameter, &quot;format&quot;, specifying
+the download format, and may include additional query parameters (see
+<a class="reference internal" href="#parameters">Parameters</a> below) specifying search criteria and download format and
+notification options.  The return is a status line indicating either
+error (see <a class="reference internal" href="#error-handling">Error handling</a> above) or success.  If successful, the
+status line includes a URL from which the download can be retrieved.
+Here's a sample interaction:</p>
+<pre class="literal-block">
+⇒ GET /download_request?format=xml HTTP/1.1
+⇒ Host: ezid.cdlib.org
+
+⇐ HTTP/1.1 200 OK
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 57
+⇐
+⇐ success: http://ezid.cdlib.org/download/da543b91a0.xml.gz
+</pre>
+<p>The download will not be available immediately, but clients can poll
+the returned URL; the server returns HTTP status code 404 (Not Found)
+if the download is not yet ready.  As part of the request, clients can
+also specify an email address to which a notification will be sent
+when the download becomes available.  Downloads are retained for one
+week.</p>
+<p id="download-formats"><strong>Download formats</strong></p>
+<p>Identifier metadata is returned in one of three formats; which format
+is determined by the &quot;format&quot; query parameter.  In all cases, the text
+encoding is UTF-8 and the metadata is compressed with <a class="reference external" href="http://www.gzip.org/">gzip</a>.</p>
+<ol class="arabic">
+<li><p class="first"><strong>Format &quot;anvl&quot;</strong>.  This format is effectively the concatenation of
+performing a get metadata operation (see <a class="reference internal" href="#operation-get-identifier-metadata">Operation: get identifier
+metadata</a> above) on each selected identifier.  Metadata is
+returned in ANVL format and employs percent-encoding as described
+in <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a>.  The metadata for an identifier is
+preceded by a header line that contains two colons (&quot;:&quot;, U+003A)
+followed by the identifier.  Blocks of metadata are separated by
+blank lines.  For example:</p>
+<pre class="literal-block">
+:: ark:/99999/fk4gt78tq
+_created: 1300812337
+_export: yes
+_owner: apitest
+_ownergroup: apitest
+_profile: erc
+_status: public
+_target: http://www.gutenberg.org/ebooks/7178
+_updated: 1300913550
+erc.what: Remembrance of Things Past
+erc.when: 1922
+erc.who: Proust, Marcel
+
+:: doi:10.5072/FK2S75905Q
+_created: 1421276359
+_datacenter: CDL.CDL
+_export: yes
+_owner: apitest
+_ownergroup: apitest
+_profile: datacite
+_shadowedby: ark:/b5072/fk2s75905q
+_status: public
+_target: http://www.gutenberg.org/ebooks/26014
+_updated: 1421276359
+datacite: &lt;?xml version=&quot;1.0&quot;?&gt;%0A&lt;resource xmlns=&quot;http://...
+</pre>
+</li>
+<li><p class="first"><strong>Format &quot;csv&quot;</strong>.  Metadata is returned as an Excel-compatible
+<a class="reference external" href="http://en.wikipedia.org/wiki/Comma-separated_values">Comma-separated values (CSV)</a> table, one row per selected
+identifier.  A header row lists column names.  The columns to
+return must be specified using one or more &quot;column&quot; query
+parameters; the order of columns in the table matches the parameter
+order.  The columns that can be returned include all internal EZID
+metadata elements (refer to <a class="reference internal" href="#internal-metadata">Internal metadata</a>) and all citation
+metadata elements (refer to <a class="reference internal" href="#metadata-profiles">Metadata profiles</a>).  Additionally,
+the following columns may be requested:</p>
+<ul>
+<li><p class="first">_id</p>
+<p>The identifier.</p>
+</li>
+<li><p class="first">_mappedCreator, _mappedTitle, _mappedPublisher, _mappedDate</p>
+<p>Creator, title, publisher, and date citation metadata as mapped
+from the identifier's preferred metadata profile.</p>
+</li>
+<li><p class="first">erc.who, erc.what, erc.when</p>
+<p>These columns return metadata bound to the eponymous elements, or
+metadata embedded in an ANVL document that is bound to the &quot;erc&quot;
+element.</p>
+</li>
+</ul>
+<p>Continuing with the previous example, if the query parameters are</p>
+<pre class="literal-block">
+format=csv&amp;column=_id&amp;column=_owner&amp;column=erc.when&amp;column=_mappedCreator
+</pre>
+<p>then the following table will be returned:</p>
+<pre class="literal-block">
+_id,_owner,erc.when,_mappedCreator
+ark:/99999/fk4gt78tq,apitest,1922,&quot;Proust, Marcel&quot;
+doi:10.5072/FK2S75905Q,apitest,,Montagu Browne
+</pre>
+<p>Note that for the CSV format only, line terminators in metadata
+values (both newlines (&quot;\n&quot;, U+000A) and carriage returns (&quot;\r&quot;,
+U+000D)) are converted to spaces.</p>
+</li>
+<li><p class="first"><strong>Format &quot;xml&quot;</strong>.  Metadata is returned as a single XML document.
+The root element, &lt;records&gt;, contains a &lt;record&gt; element for each
+selected identifier, and within each &lt;record&gt; element are &lt;element&gt;
+elements for each of the identifier's metadata elements.  Thus the
+returned document will have the structure:</p>
+<pre class="literal-block">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;records&gt;
+  &lt;record identifier=&quot;<span class="hl2">identifier</span>&quot;&gt;
+    &lt;element name=&quot;<span class="hl2">name</span>&quot;&gt;<span class="hl2">value</span> &lt;/element&gt;
+    ...
+  &lt;/record&gt;
+  ...
+&lt;/records&gt;
+</pre>
+<p>As a special case, XML metadata bound to a &quot;datacite&quot; or &quot;crossref&quot;
+element is directly embedded in the containing &lt;element&gt; element,
+i.e., the metadata will appear as an XML subelement and not as a
+string value.</p>
+<p>Continuing with the previous example, the return in XML format
+would be:</p>
+<pre class="literal-block">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;records&gt;
+  &lt;record identifier=&quot;ark:/99999/fk4gt78tq&quot;&gt;
+    &lt;element name=&quot;_created&quot;&gt;1300812337&lt;/element&gt;
+    &lt;element name=&quot;_export&quot;&gt;yes&lt;/element&gt;
+    &lt;element name=&quot;_owner&quot;&gt;apitest&lt;/element&gt;
+    &lt;element name=&quot;_ownergroup&quot;&gt;apitest&lt;/element&gt;
+    &lt;element name=&quot;_profile&quot;&gt;erc&lt;/element&gt;
+    &lt;element name=&quot;_status&quot;&gt;public&lt;/element&gt;
+    &lt;element name=&quot;_target&quot;&gt;http://www.gutenberg.org/ebooks/7178&lt;/element&gt;
+    &lt;element name=&quot;_updated&quot;&gt;1300913550&lt;/element&gt;
+    &lt;element name=&quot;erc.what&quot;&gt;Remembrance of Things Past&lt;/element&gt;
+    &lt;element name=&quot;erc.when&quot;&gt;1922&lt;/element&gt;
+    &lt;element name=&quot;erc.who&quot;&gt;Proust, Marcel&lt;/element&gt;
+  &lt;/record&gt;
+  &lt;record identifier=&quot;doi:10.5072/FK2S75905Q&quot;&gt;
+    &lt;element name=&quot;_created&quot;&gt;1421276359&lt;/element&gt;
+    &lt;element name=&quot;_datacenter&quot;&gt;CDL.CDL&lt;/element&gt;
+    &lt;element name=&quot;_export&quot;&gt;yes&lt;/element&gt;
+    &lt;element name=&quot;_owner&quot;&gt;apitest&lt;/element&gt;
+    &lt;element name=&quot;_ownergroup&quot;&gt;apitest&lt;/element&gt;
+    &lt;element name=&quot;_profile&quot;&gt;datacite&lt;/element&gt;
+    &lt;element name=&quot;_shadowedby&quot;&gt;ark:/b5072/fk2s75905q&lt;/element&gt;
+    &lt;element name=&quot;_status&quot;&gt;public&lt;/element&gt;
+    &lt;element name=&quot;_target&quot;&gt;http://www.gutenberg.org/ebooks/26014&lt;/element&gt;
+    &lt;element name=&quot;_updated&quot;&gt;1421276359&lt;/element&gt;
+    &lt;element name=&quot;datacite&quot;&gt;
+      &lt;resource xmlns=&quot;http://datacite.org/schema/kernel-3&quot;&gt;
+        &lt;identifier identifierType=&quot;DOI&quot;&gt;10.5072/FK2S75905Q&lt;/identifier&gt;
+        &lt;creators&gt;
+          &lt;creator&gt;
+            &lt;creatorName&gt;Montagu Browne&lt;/creatorName&gt;
+          &lt;/creator&gt;
+        &lt;/creators&gt;
+        &lt;titles&gt;
+          &lt;title&gt;Practical Taxidermy&lt;/title&gt;
+        &lt;/titles&gt;
+        &lt;publisher&gt;Charles Scribner's Sons&lt;/publisher&gt;
+        &lt;publicationYear&gt;1884&lt;/publicationYear&gt;
+        &lt;resourceType resourceTypeGeneral=&quot;Text&quot;/&gt;
+      &lt;/resource&gt;
+    &lt;/element&gt;
+  &lt;/record&gt;
+&lt;/records&gt;
+</pre>
+</li>
+</ol>
+<p id="parameters"><strong>Parameters</strong></p>
+<p>Unless otherwise noted, parameters are optional and <em>not</em> repeatable.</p>
+<ul>
+<li><p class="first">format={anvl|csv|xml} <em>(required)</em></p>
+<p>The download format, as described above.</p>
+</li>
+<li><p class="first">column=<span class="hl1">c</span> <em>(repeatable)</em></p>
+<p>Return column <span class="hl1">c</span>.  Applies to the &quot;csv&quot; format only, in which
+case at least one column is required.</p>
+</li>
+<li><p class="first">notify=<span class="hl1">address</span> <em>(repeatable)</em></p>
+<p>Send an email message to <span class="hl1">address</span> when the download becomes
+available.</p>
+</li>
+<li><p class="first">convertTimestamps={yes|no}</p>
+<p>If yes, convert Unix timestamp values bound to the &quot;_created&quot; and
+&quot;_updated&quot; internal metadata elements to ISO 8601
+YYYY-MM-DDTHH:MM:SSZ format.</p>
+</li>
+</ul>
+<p>The remaining parameters are search constraints.  Search constraints
+are ANDed together, but search constraint parameters that are repeated
+have the effect of creating a logical OR of the selected values.  For
+example, parameter &quot;status&quot; can take on three possible values,
+&quot;reserved&quot;, &quot;public&quot;, or &quot;unavailable&quot;.  If no &quot;status&quot; parameter is
+specified, there is no constraint on identifier status; if
+&quot;status=reserved&quot; is specified, then only reserved identifiers are
+returned; and if &quot;status=reserved&amp;status=public&quot; is specified, then
+reserved and public identifiers are returned (but not unavailable
+identifiers).</p>
+<ul>
+<li><p class="first">createdAfter=<span class="hl1">t</span></p>
+<p>Return identifiers created on or after time <span class="hl1">t</span>.  The time may
+be given as a Unix timestamp or in ISO 8601 YYYY-MM-DDTHH:MM:SSZ
+format.  Note that lower time bounds are inclusive.</p>
+</li>
+<li><p class="first">createdBefore=<span class="hl1">t</span></p>
+<p>Return identifiers created before time <span class="hl1">t</span>.  The time may be
+given as a Unix timestamp or in ISO 8601 YYYY-MM-DDTHH:MM:SSZ
+format.  Note that upper time bounds are exclusive.</p>
+</li>
+<li><p class="first">crossref={yes|no}</p>
+<p>Return identifiers that either are or are not registered with
+CrossRef.</p>
+</li>
+<li><p class="first">exported={yes|no}</p>
+<p>Return identifiers that either are or are not exported.</p>
+</li>
+<li><p class="first">owner=<span class="hl1">user</span> (<em>repeatable</em>)</p>
+<p>Return identifiers owned by <span class="hl1">user</span>.</p>
+</li>
+<li><p class="first">ownergroup=<span class="hl1">group</span> <em>(repeatable)</em></p>
+<p>Return identifiers owned by group <span class="hl1">group</span>.</p>
+</li>
+<li><p class="first">permanence={test|real}</p>
+<p>Return only test identifiers or only real identifiers.</p>
+</li>
+<li><p class="first">profile=<span class="hl1">p</span> <em>(repeatable)</em></p>
+<p>Return identifiers whose preferred metadata profile is <span class="hl1">p</span>.</p>
+</li>
+<li><p class="first">status={reserved|public|unavailable} <em>(repeatable)</em></p>
+<p>Return identifiers having the specified status.</p>
+</li>
+<li><p class="first">type={ark|doi|urn} <em>(repeatable)</em></p>
+<p>Return identifiers of the specified type.</p>
+</li>
+<li><p class="first">updatedAfter=<span class="hl1">t</span>, updatedBefore=<span class="hl1">t</span></p>
+<p>Constraints against update time; see the comparable &quot;createdAfter&quot;
+and &quot;createdBefore&quot; parameters above.</p>
+</li>
+</ul>
 </div>
 <div class="section" id="oai-pmh-harvesting">
 <h1>OAI-PMH harvesting</h1>
@@ -1903,6 +2174,8 @@ Open Archives Initiative Protocol for Metadata Harvesting
 target URLs and at least creator, title, and date citation metadata
 (in <a class="reference internal" href="#profile-erc">ERC</a> terms, who/what/when metadata) are made available through
 OAI-PMH.</p>
+<p>Harvesting and batch download are similar but different operations;
+see <a class="reference internal" href="#batch-download">Batch download</a> for the differences.</p>
 <p>In returning an identifier's metadata, EZID maps citation metadata
 from the identifier's preferred metadata profile (see <a class="reference internal" href="#metadata-profiles">Metadata
 profiles</a> above) to one of two delivery formats: <a class="reference external" href="http://dublincore.org/documents/dces/">Dublin Core</a> (as
