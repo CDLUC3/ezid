@@ -15,6 +15,8 @@
 
 import django.db.models
 
+import util
+
 class CrossrefQueue (django.db.models.Model):
   # Describes identifiers that are either awaiting submission to
   # CrossRef or in the process of being (re-)submitted to CrossRef.
@@ -26,11 +28,13 @@ class CrossrefQueue (django.db.models.Model):
   # Order of insertion into this table; also, the order in which
   # identifier operations occurred.
 
-  identifier = django.db.models.CharField(max_length=256, db_index=True)
+  identifier = django.db.models.CharField(
+    max_length=util.maximumIdentifierLength, db_index=True)
   # The identifier in qualified, normalized form, e.g.,
   # "doi:10.5060/FOO".  Always a DOI.
 
-  owner = django.db.models.CharField(max_length=256, db_index=True)
+  owner = django.db.models.CharField(max_length=util.maximumIdentifierLength,
+    db_index=True)
   # The identifier's owner, referenced by the owner's persistent
   # identifier, e.g., "ark:/99166/p92z12p14".
 
@@ -77,3 +81,83 @@ class CrossrefQueue (django.db.models.Model):
   submitTime = django.db.models.IntegerField(blank=True, null=True)
   # Once submitted, the time the submission took place as a Unix
   # timestamp.
+
+class DownloadQueue (django.db.models.Model):
+  # Holds batch download requests.  Since the download processor is
+  # single-threaded, if there are multiple entries, only the first
+  # entry is "in progress."
+
+  seq = django.db.models.AutoField(primary_key=True)
+  # Order of insertion into this table; also, the order in which
+  # requests are processed.
+
+  requestTime = django.db.models.IntegerField()
+  # The time the request was made, as a Unix timestamp.  Not used by
+  # EZID, but useful for status monitoring.
+
+  requestor = django.db.models.CharField(
+    max_length=util.maximumIdentifierLength)
+  # The requesting user, referenced by the user's persistent
+  # identifier, e.g., "ark:/99166/p92z12p14".
+
+  coOwners = django.db.models.TextField(blank=True)
+  # A list of zero or more persistent identifiers of users for which
+  # the requestor is a co-owner, e.g.,
+  # "ark:/99166/p9jm23f63,ark:/99166/p99k45t25".  I.e., if the
+  # requestor is R and user U has named R as a co-owner, then U is in
+  # the list.  The list is computed at the time the request is made
+  # and not changed thereafter.
+
+  ANVL = "A"
+  CSV = "C"
+  XML = "X"
+  format = django.db.models.CharField(max_length=1,
+    choices=[(ANVL, "ANVL"), (CSV, "CSV"), (XML, "XML")])
+  # The download format.
+
+  columns = django.db.models.TextField(blank=True)
+  # For the CSV format only, the columns to return, e.g.,
+  # "_id,erc.what".  Column names are separated by commas; names are
+  # percent-encoded.
+
+  constraints = django.db.models.TextField(blank=True)
+  # Search constraints.  Each constraint has the form
+  # "parameter=value"; constraints are separated by commas; multiple
+  # values for a parameter are consolidated and separated by commas;
+  # constraints are percent-encoded and values within constraints are
+  # percent-encoded.  Example: "type=ark%2Cdoi,permanence=test".
+
+  options = django.db.models.TextField(blank=True)
+  # Download options, using the same syntax as 'constraints' above.
+  # Example: "convertTimestamps=yes".
+
+  notify = django.db.models.TextField(blank=True)
+  # Notification email addresses separated by commas, e.g.,
+  # "me@this.com,you@that.com"; addresses are percent-encoded.
+
+  CREATE = "C"
+  HARVEST = "H"
+  COMPRESS = "Z"
+  DELETE = "D"
+  MOVE = "M"
+  NOTIFY = "N"
+  stage = django.db.models.CharField(max_length=1,
+    choices=[(CREATE, "create"), (HARVEST, "harvest"), (COMPRESS, "compress"),
+    (DELETE, "delete"), (MOVE, "move"), (NOTIFY, "notify")], default=CREATE)
+  # The current processing stage.
+
+  filename = django.db.models.CharField(max_length=10, blank=True)
+  # The filename root, e.g., "da543b91a0".
+
+  currentOwner = django.db.models.CharField(
+    max_length=util.maximumIdentifierLength, blank=True)
+  # The owner currently being harvested (either 'requestor' above or
+  # one of the users in 'coOwners').  HARVEST stage only.
+
+  lastId = django.db.models.CharField(max_length=util.maximumIdentifierLength,
+    blank=True)
+  # The last identifier processed.  HARVEST stage only.
+
+  fileSize = django.db.models.IntegerField(blank=True, null=True)
+  # The size of the file in bytes after the last flush.  HARVEST stage
+  # only.
