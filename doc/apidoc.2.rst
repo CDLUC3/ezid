@@ -2072,12 +2072,12 @@ Unless otherwise noted, parameters are optional and *not* repeatable.
   YYYY-MM-DDTHH:MM:SSZ format.
 
 The remaining parameters are search constraints.  Search constraints
-are ANDed together, but search constraint parameters that are repeated
-have the effect of creating a logical OR of the selected values.  For
-example, parameter "status" can take on three possible values,
-"reserved", "public", or "unavailable".  If no "status" parameter is
-specified, there is no constraint on identifier status; if
-"status=reserved" is specified, then only reserved identifiers are
+are logically ANDed together, but search constraint parameters that
+are repeated have the effect of creating a logical OR of the selected
+values.  For example, parameter "status" can take on three possible
+values, "reserved", "public", or "unavailable".  If no "status"
+parameter is specified, there is no constraint on identifier status;
+if "status=reserved" is specified, then only reserved identifiers are
 returned; and if "status=reserved&status=public" is specified, then
 reserved and public identifiers are returned (but not unavailable
 identifiers).
@@ -2103,13 +2103,15 @@ identifiers).
 
   Return identifiers that either are or are not exported.
 
-- owner=\ `user`:hl1: (*repeatable*)
+- owner=\ `u`:hl1: (*repeatable*)
 
-  Return identifiers owned by `user`:hl1:.
+  Return identifiers owned by user `u`:hl1:, where `u`:hl1: is an EZID
+  username, e.g., "apitest".
 
-- ownergroup=\ `group`:hl1: *(repeatable)*
+- ownergroup=\ `g`:hl1: *(repeatable)*
 
-  Return identifiers owned by group `group`:hl1:.
+  Return identifiers owned by group `g`:hl1:, where `g`:hl1: is an
+  EZID group name, e.g., "cdl".
 
 - permanence={test|real}
 

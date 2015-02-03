@@ -2112,12 +2112,12 @@ YYYY-MM-DDTHH:MM:SSZ format.</p>
 </li>
 </ul>
 <p>The remaining parameters are search constraints.  Search constraints
-are ANDed together, but search constraint parameters that are repeated
-have the effect of creating a logical OR of the selected values.  For
-example, parameter &quot;status&quot; can take on three possible values,
-&quot;reserved&quot;, &quot;public&quot;, or &quot;unavailable&quot;.  If no &quot;status&quot; parameter is
-specified, there is no constraint on identifier status; if
-&quot;status=reserved&quot; is specified, then only reserved identifiers are
+are logically ANDed together, but search constraint parameters that
+are repeated have the effect of creating a logical OR of the selected
+values.  For example, parameter &quot;status&quot; can take on three possible
+values, &quot;reserved&quot;, &quot;public&quot;, or &quot;unavailable&quot;.  If no &quot;status&quot;
+parameter is specified, there is no constraint on identifier status;
+if &quot;status=reserved&quot; is specified, then only reserved identifiers are
 returned; and if &quot;status=reserved&amp;status=public&quot; is specified, then
 reserved and public identifiers are returned (but not unavailable
 identifiers).</p>
@@ -2139,11 +2139,13 @@ CrossRef.</p>
 <li><p class="first">exported={yes|no}</p>
 <p>Return identifiers that either are or are not exported.</p>
 </li>
-<li><p class="first">owner=<span class="hl1">user</span> (<em>repeatable</em>)</p>
-<p>Return identifiers owned by <span class="hl1">user</span>.</p>
+<li><p class="first">owner=<span class="hl1">u</span> (<em>repeatable</em>)</p>
+<p>Return identifiers owned by user <span class="hl1">u</span>, where <span class="hl1">u</span> is an EZID
+username, e.g., &quot;apitest&quot;.</p>
 </li>
-<li><p class="first">ownergroup=<span class="hl1">group</span> <em>(repeatable)</em></p>
-<p>Return identifiers owned by group <span class="hl1">group</span>.</p>
+<li><p class="first">ownergroup=<span class="hl1">g</span> <em>(repeatable)</em></p>
+<p>Return identifiers owned by group <span class="hl1">g</span>, where <span class="hl1">g</span> is an
+EZID group name, e.g., &quot;cdl&quot;.</p>
 </li>
 <li><p class="first">permanence={test|real}</p>
 <p>Return only test identifiers or only real identifiers.</p>
