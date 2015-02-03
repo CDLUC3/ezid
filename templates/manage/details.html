@@ -74,9 +74,13 @@
 		{% autoescape off %}
 			{{datacite_html}}
 		{% endautoescape %}
-	    <a href="/manage/datacite_xml/{{ id_text }}" target="_blank" style="position:relative;top:-10px;">See the DataCite XML Metadata record in a new window</a>
+	    <p><a href="/manage/display_xml/{{ id_text }}" target="_blank">See the DataCite XML Metadata record in a new window</a></p>
 	{% endif %}
 	 
+	{% if has_crossref_metadata %}
+	    <p><a href="/manage/display_xml/{{ id_text }}" target="_blank" style="position:relative;top:10px;">See the CrossRef XML Metadata record in a new window</a></p>
+	{% endif %}
+
 	{% if allow_update %}
   	<form action="{% url "ui_manage.edit" id_text %}" method="get">
   		<table style="margin-top:7px;">

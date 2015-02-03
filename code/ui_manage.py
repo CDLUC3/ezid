@@ -271,6 +271,9 @@ def details(request):
       d['datacite_html'] = r
     else:
       d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
+  if d['current_profile'].name == 'crossref' and 'crossref' in id_metadata and \
+    id_metadata['crossref'].strip() != "":
+    d['has_crossref_metadata'] = True 
   t_stat = [x.strip() for x in id_metadata['_status'].split("|", 1)]
   d['pub_status'] = t_stat[0]
   if t_stat[0] == 'unavailable' and len(t_stat) > 1:
@@ -281,7 +284,10 @@ def details(request):
     and id_metadata['datacite.resourcetype'] != '') else False
   return uic.render(request, "manage/details", d)
 
-def datacite_xml(request, identifier):
+def display_xml(request, identifier):
+  """
+  Used for displaying DataCite or CrossRef XML
+  """
   d = { 'menu_item' : 'ui_manage.null'}
   s, id_metadata = _getLatestMetadata(identifier, request)
   assert s.startswith("success:")
@@ -289,6 +295,8 @@ def datacite_xml(request, identifier):
   d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
   if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
     content = id_metadata["datacite"]
+  elif d['current_profile'].name == 'crossref' and 'crossref' in id_metadata:
+    content = id_metadata["crossref"]
   
   # By setting the content type ourselves, we gain control over the
   # character encoding and can properly set the content length.

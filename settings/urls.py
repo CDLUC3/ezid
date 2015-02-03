@@ -16,7 +16,7 @@ urlpatterns = django.conf.urls.patterns("",
   # UI - OTHER
   ("^manage/?$", "ui_manage.index"),
   ("^manage/edit/(.*)", "ui_manage.edit"),
-  ("^manage/datacite_xml/(.*)", "ui_manage.datacite_xml"),
+  ("^manage/display_xml/(.*)", "ui_manage.display_xml"),
   ("^create/?$", "ui_create.index"),
   ("^create/simple$", "ui_create.simple"),
   ("^create/advanced$", "ui_create.advanced"),
