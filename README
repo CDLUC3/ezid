@@ -63,6 +63,8 @@ layout:
             shoulders_cache.txt
             stats
             store.sqlite3
+        download/
+            public/
         logs/
             transaction_log
 
@@ -166,11 +168,19 @@ For somewhat mysterious reasons the application group *must* be
 lxml is incompatible with mod_wsgi's use of Python sub-interpreters
 (even though EZID is being run as a separate daemon process).
 
-5. Add an alias so that static files are served by Apache, not Django.
+5. Add aliases so that static files are served by Apache, not Django.
 
     Alias /static /path/to/SITE_ROOT/PROJECT_ROOT/static
 
     <Directory /path/to/SITE_ROOT/PROJECT_ROOT/static>
     Order Allow,Deny
     Allow from all
+    </Directory>
+
+    Alias /download /path/to/SITE_ROOT/download/public
+
+    <Directory /path/to/SITE_ROOT/download/public>
+    Order Allow,Deny
+    Allow from all
+    Options -Indexes
     </Directory>
