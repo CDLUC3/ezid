@@ -101,8 +101,8 @@ class DownloadQueue (django.db.models.Model):
   # identifier, e.g., "ark:/99166/p92z12p14".
 
   coOwners = django.db.models.TextField(blank=True)
-  # A list of zero or more persistent identifiers of users for which
-  # the requestor is a co-owner, e.g.,
+  # A comma-separated list of zero or more persistent identifiers of
+  # users for which the requestor is a co-owner, e.g.,
   # "ark:/99166/p9jm23f63,ark:/99166/p99k45t25".  I.e., if the
   # requestor is R and user U has named R as a co-owner, then U is in
   # the list.  The list is computed at the time the request is made
@@ -116,24 +116,23 @@ class DownloadQueue (django.db.models.Model):
   # The download format.
 
   columns = django.db.models.TextField(blank=True)
-  # For the CSV format only, the columns to return, e.g.,
-  # "_id,erc.what".  Column names are separated by commas; names are
-  # percent-encoded.
+  # For the CSV format only, a list of the columns to return, e.g.,
+  # "LS_id,Serc.what".  Encoded per download._encode.
 
   constraints = django.db.models.TextField(blank=True)
-  # Search constraints.  Each constraint has the form
-  # "parameter=value"; constraints are separated by commas; multiple
-  # values for a parameter are consolidated and separated by commas;
-  # constraints are percent-encoded and values within constraints are
-  # percent-encoded.  Example: "type=ark%2Cdoi,permanence=test".
+  # A dictionary of zero or more search constraints.  Multiple
+  # constraints against a parameter are consolidated into a single
+  # constraint against a list of values.  Example:
+  # "DStype=LSark%2CSdoi,Spermanence=Stest".  Encoded per
+  # download._encode.
 
   options = django.db.models.TextField(blank=True)
-  # Download options, using the same syntax as 'constraints' above.
-  # Example: "convertTimestamps=yes".
+  # A dictionary of download options, e.g.,
+  # "DSconvertTimestamps=BTrue".  Encoded per download._encode.
 
   notify = django.db.models.TextField(blank=True)
-  # Notification email addresses separated by commas, e.g.,
-  # "me@this.com,you@that.com"; addresses are percent-encoded.
+  # A list of zero or more notification email addresses, e.g.,
+  # "LSme@this.com,Syou@that.com".  Encoded per download._encode.
 
   CREATE = "C"
   HARVEST = "H"
