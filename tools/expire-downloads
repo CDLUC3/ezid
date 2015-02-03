@@ -1,0 +1,19 @@
+#! /bin/bash
+
+# Deletes expired batch downloads.
+#
+# Greg Janee <gjanee@ucop.edu>
+# February 2015
+
+shopt -s nullglob
+
+DOWNLOADDIR=`dirname $0`/../../download/public
+LIFETIME=$((86400 * 7))
+NOW=$(date +%s)
+
+for f in $DOWNLOADDIR/*; do
+  t=$(stat -c %Y $f)
+  if [ $(($NOW - $t)) -gt $LIFETIME ]; then
+    rm $f
+  fi
+done
