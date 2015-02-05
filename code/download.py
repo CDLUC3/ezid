@@ -25,6 +25,7 @@ import config
 import ezidapp
 import idmap
 import log
+import search
 
 _ezidUrl = None
 
@@ -210,8 +211,8 @@ def enqueueRequest (auth, request):
     requestor = auth.user[1]
     filename = _generateFilename(requestor)
     r = ezidapp.models.DownloadQueue(requestTime=int(time.time()),
-      requestor=requestor, coOwners="", format=format,
-      columns=_encode(columns), constraints=_encode(d),
+      requestor=requestor, coOwners=",".join(search.getCoOwnership(requestor)),
+      format=format, columns=_encode(columns), constraints=_encode(d),
       options=_encode(options), notify=_encode(notify), filename=filename)
     r.save()
     return "success: %s/download/%s.%s.gz" % (_ezidUrl, filename,
