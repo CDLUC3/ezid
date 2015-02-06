@@ -19,6 +19,7 @@ import django.core.mail
 import exceptions
 import hashlib
 import os
+import os.path
 import re
 import threading
 import time
@@ -278,6 +279,20 @@ def _wrapException (context, exception):
   return Exception("batch download error: %s: %s%s" % (context,
     type(exception).__name__, m))
 
+def _moveFile (r):
+  def path (directory):
+    return os.path.join(directory,
+      "%s.%s.gz" % (r.filename, _suffix[r.format]))
+  _checkAbort()
+  try:
+    os.rename(path(django.conf.settings.DOWNLOAD_WORK_DIR),
+      path(django.conf.settings.DOWNLOAD_PUBLIC_DIR))
+  except Exception, e:
+    raise _wrapException("error moving file", e)
+  else:
+    r.stage = ezidapp.models.DownloadQueue.NOTIFY
+    r.save()
+
 def _notifyRequestor (r):
   emailAddresses = _decode(r.notify)
   if len(emailAddresses) > 0:
@@ -303,7 +318,9 @@ def _daemonThread ():
       r = ezidapp.models.DownloadQueue.objects.all().order_by("seq")[:1]
       if len(r) == 0: continue
       r = r[0]
-      if r.stage == ezidapp.models.DownloadQueue.NOTIFY:
+      if r.stage == ezidapp.models.DownloadQueue.MOVE:
+        _moveFile(r)
+      elif r.stage == ezidapp.models.DownloadQueue.NOTIFY:
         _notifyRequestor(r)
       else:
         assert False, "unhandled case"
