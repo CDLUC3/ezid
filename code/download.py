@@ -17,8 +17,9 @@ import calendar
 import django.conf
 import exceptions
 import hashlib
-import os.path
+import os
 import re
+import threading
 import time
 
 import config
@@ -28,10 +29,21 @@ import log
 import search
 
 _ezidUrl = None
+_usedFilenames = None
+_lock = threading.Lock()
 
 def _loadConfig ():
-  global _ezidUrl
+  global _ezidUrl, _usedFilenames
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
+  _lock.acquire()
+  try:
+    if _usedFilenames == None:
+      _usedFilenames = [r.filename for r in\
+        ezidapp.models.DownloadQueue.objects.all()] +\
+        [f.split(".")[0] for f in\
+        os.listdir(django.conf.settings.DOWNLOAD_PUBLIC_DIR)]
+  finally:
+    _lock.release()
 
 _suffix = {
   "anvl": "txt",
@@ -152,8 +164,16 @@ _parameters = {
 }
 
 def _generateFilename (requestor):
-  return hashlib.sha1("%s,%s,%s" % (requestor, str(time.time()),
-    django.conf.settings.SECRET_KEY)).hexdigest()[::4]
+  while True:
+    f = hashlib.sha1("%s,%s,%s" % (requestor, str(time.time()),
+      django.conf.settings.SECRET_KEY)).hexdigest()[::4]
+    _lock.acquire()
+    try:
+      if f not in _usedFilenames:
+        _usedFilenames.append(f)
+        return f
+    finally:
+      _lock.release()
 
 def enqueueRequest (auth, request):
   """
