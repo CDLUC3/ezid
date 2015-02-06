@@ -279,7 +279,18 @@ def _wrapException (context, exception):
   return Exception("batch download error: %s: %s%s" % (context,
     type(exception).__name__, m))
 
-def _moveFile (r):
+def _deleteUncompressedFile (r):
+  _checkAbort()
+  try:
+    os.unlink(os.path.join(django.conf.settings.DOWNLOAD_WORK_DIR,
+      "%s.%s" % (r.filename, _suffix[r.format])))
+  except Exception, e:
+    raise _wrapException("error deleting uncompressed file", e)
+  else:
+    r.stage = ezidapp.models.DownloadQueue.MOVE
+    r.save()
+
+def _moveCompressedFile (r):
   def path (directory):
     return os.path.join(directory,
       "%s.%s.gz" % (r.filename, _suffix[r.format]))
@@ -318,8 +329,10 @@ def _daemonThread ():
       r = ezidapp.models.DownloadQueue.objects.all().order_by("seq")[:1]
       if len(r) == 0: continue
       r = r[0]
-      if r.stage == ezidapp.models.DownloadQueue.MOVE:
-        _moveFile(r)
+      if r.stage == ezidapp.models.DownloadQueue.DELETE:
+        _deleteUncompressedFile(r)
+      elif r.stage == ezidapp.models.DownloadQueue.MOVE:
+        _moveCompressedFile(r)
       elif r.stage == ezidapp.models.DownloadQueue.NOTIFY:
         _notifyRequestor(r)
       else:
