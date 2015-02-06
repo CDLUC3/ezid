@@ -15,6 +15,7 @@
 
 import calendar
 import django.conf
+import django.core.mail
 import exceptions
 import hashlib
 import os
@@ -271,6 +272,29 @@ def _checkAbort ():
   if not _daemonEnabled or threading.currentThread().getName() != _threadName:
     raise _AbortException()
 
+def _wrapException (context, exception):
+  m = str(exception)
+  if len(m) > 0: m = ": " + m
+  return Exception("batch download error: %s: %s%s" % (context,
+    type(exception).__name__, m))
+
+def _notifyRequestor (r):
+  emailAddresses = _decode(r.notify)
+  if len(emailAddresses) > 0:
+    m = ("The batch download you requested is available at:\n\n" +\
+      "%s/download/%s.%s.gz\n\n" +\
+      "The download will be deleted in 1 week.\n" +\
+      "This is an automated email.  Please do not reply.\n") %\
+      (_ezidUrl, r.filename, _suffix[r.format])
+    _checkAbort()
+    try:
+      django.core.mail.send_mail("EZID batch download available", m,
+        django.conf.settings.SERVER_EMAIL, emailAddresses, fail_silently=True)
+    except Exception, e:
+      raise _wrapException("error sending email", e)
+  _checkAbort()
+  r.delete()
+
 def _daemonThread ():
   while True:
     time.sleep(_idleSleep)
@@ -279,6 +303,10 @@ def _daemonThread ():
       r = ezidapp.models.DownloadQueue.objects.all().order_by("seq")[:1]
       if len(r) == 0: continue
       r = r[0]
+      if r.stage == ezidapp.models.DownloadQueue.NOTIFY:
+        _notifyRequestor(r)
+      else:
+        assert False, "unhandled case"
     except _AbortException:
       break
     except Exception, e:
