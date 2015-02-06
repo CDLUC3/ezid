@@ -124,6 +124,8 @@ def getVersionInfo ():
 
 # Start daemon threads by importing their modules.
 if django.conf.settings.DAEMON_THREADS_ENABLED:
+  import backproc
+  import crossref
+  import download
   import newsfeed
   import status
-  import backproc

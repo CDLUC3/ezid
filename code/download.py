@@ -21,6 +21,7 @@ import os
 import re
 import threading
 import time
+import uuid
 
 import config
 import ezidapp
@@ -31,9 +32,12 @@ import search
 _ezidUrl = None
 _usedFilenames = None
 _lock = threading.Lock()
+_daemonEnabled = None
+_threadName = None
+_idleSleep = None
 
 def _loadConfig ():
-  global _ezidUrl, _usedFilenames
+  global _ezidUrl, _usedFilenames, _daemonEnabled, _threadName, _idleSleep
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _lock.acquire()
   try:
@@ -44,6 +48,14 @@ def _loadConfig ():
         os.listdir(django.conf.settings.DOWNLOAD_PUBLIC_DIR)]
   finally:
     _lock.release()
+  _idleSleep = int(config.config("daemons.download_processing_idle_sleep"))
+  _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
+    config.config("daemons.download_enabled").lower() == "true")
+  if _daemonEnabled:
+    _threadName = uuid.uuid1().hex
+    t = threading.Thread(target=_daemonThread, name=_threadName)
+    t.setDaemon(True)
+    t.start()
 
 _suffix = {
   "anvl": "txt",
@@ -240,6 +252,30 @@ def enqueueRequest (auth, request):
   except Exception, e:
     log.otherError("download.enqueueRequest", e)
     return "error: internal server error"
+
+class _AbortException (Exception):
+  pass
+
+def _checkAbort ():
+  # This function provides a handy way to abort processing if the
+  # daemon is disabled or if a new daemon thread is started by a
+  # configuration reload.  It doesn't entirely eliminate potential
+  # race conditions between two daemon threads, but it should make
+  # conflicts very unlikely.
+  if not _daemonEnabled or threading.currentThread().getName() != _threadName:
+    raise _AbortException()
+
+def _daemonThread ():
+  while True:
+    time.sleep(_idleSleep)
+    try:
+      r = ezidapp.models.DownloadQueue.objects.all().order_by("seq")[:1]
+      if len(r) == 0: continue
+      r = r[0]
+    except _AbortException:
+      break
+    except Exception, e:
+      log.otherError("download._daemonThread", e)
 
 _loadConfig()
 config.addLoader(_loadConfig)
