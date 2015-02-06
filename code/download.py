@@ -253,6 +253,12 @@ def enqueueRequest (auth, request):
     log.otherError("download.enqueueRequest", e)
     return "error: internal server error"
 
+def getQueueLength ():
+  """
+  Returns the length of the batch download queue.
+  """
+  return ezidapp.models.DownloadQueue.objects.count()
+
 class _AbortException (Exception):
   pass
 
