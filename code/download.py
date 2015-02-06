@@ -275,6 +275,7 @@ def _daemonThread ():
   while True:
     time.sleep(_idleSleep)
     try:
+      _checkAbort()
       r = ezidapp.models.DownloadQueue.objects.all().order_by("seq")[:1]
       if len(r) == 0: continue
       r = r[0]
