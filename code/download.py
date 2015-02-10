@@ -250,6 +250,7 @@ def enqueueRequest (auth, request):
     requestor = auth.user[1]
     filename = _generateFilename(requestor)
     r = ezidapp.models.DownloadQueue(requestTime=int(time.time()),
+      rawRequest=request.GET.urlencode(),
       requestor=requestor, coOwners=",".join(search.getCoOwnership(requestor)),
       format=format, columns=_encode(columns), constraints=_encode(d),
       options=_encode(options), notify=_encode(notify), filename=filename)

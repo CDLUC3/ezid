@@ -95,6 +95,9 @@ class DownloadQueue (django.db.models.Model):
   # The time the request was made, as a Unix timestamp.  Not used by
   # EZID, but useful for status monitoring.
 
+  rawRequest = django.db.models.TextField()
+  # The raw request, i.e., the urlencoded query string.
+
   requestor = django.db.models.CharField(
     max_length=util.maximumIdentifierLength)
   # The requesting user, referenced by the user's persistent
