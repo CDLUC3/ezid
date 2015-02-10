@@ -343,9 +343,44 @@ def _createFile (r):
   finally:
     if f: f.close()
 
+def _harvest1 (r, f):
+  pass
+
 def _harvest (r):
-  r.stage = ezidapp.models.DownloadQueue.COMPRESS
-  r.save()
+  f = None
+  try:
+    try:
+      assert os.path.getsize(_path(r, 1)) >= r.fileSize, "file is short"
+      f = open(_path(r, 1), "r+b")
+      f.seek(r.fileSize)
+      f.truncate()
+    except Exception, e:
+      raise _wrapException("error re-opening/seeking/truncating file", e)
+    constraints = _decode(r.constraints)
+    owners = [r.requestor] +\
+      [co for co in r.coOwners.split(",") if len(co) > 0]
+    for i, owner in enumerate(owners[owners.index(r.currentOwner):]):
+      _checkAbort()
+      if i > 0:
+        r.currentOwner = owner
+        r.lastId = ""
+        r.save()
+      # A potentially major optimization: there's no point in
+      # harvesting an owner if the owner is going to be excluded by a
+      # constraint.
+      if "owner" not in constraints or owner in constraints["owner"]:
+        _harvest1(r, f)
+    _checkAbort()
+    if r.format == "xml":
+      try:
+        f.write("</records>")
+        _flushFile(f)
+      except Exception, e:
+        raise _wrapException("error writing file footer", e)
+    r.stage = ezidapp.models.DownloadQueue.COMPRESS
+    r.save()
+  finally:
+    if f: f.close()
 
 def _compressFile (r):
   infile = None
