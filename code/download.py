@@ -14,6 +14,7 @@
 # -----------------------------------------------------------------------------
 
 import calendar
+import csv
 import django.conf
 import django.core.mail
 import exceptions
@@ -21,6 +22,7 @@ import hashlib
 import os
 import os.path
 import re
+import subprocess
 import threading
 import time
 import uuid
@@ -37,9 +39,11 @@ _lock = threading.Lock()
 _daemonEnabled = None
 _threadName = None
 _idleSleep = None
+_gzipCommand = None
 
 def _loadConfig ():
   global _ezidUrl, _usedFilenames, _daemonEnabled, _threadName, _idleSleep
+  global _gzipCommand
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _lock.acquire()
   try:
@@ -51,6 +55,7 @@ def _loadConfig ():
   finally:
     _lock.release()
   _idleSleep = int(config.config("daemons.download_processing_idle_sleep"))
+  _gzipCommand = config.config("DEFAULT.gzip_command")
   _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
     config.config("daemons.download_enabled").lower() == "true")
   if _daemonEnabled:
@@ -279,11 +284,89 @@ def _wrapException (context, exception):
   return Exception("batch download error: %s: %s%s" % (context,
     type(exception).__name__, m))
 
-def _deleteUncompressedFile (r):
-  _checkAbort()
+def _path (r, i):
+  # i=1: uncompressed work file
+  # i=2: compressed work file
+  # i=3: compressed delivery file
+  # i=4: request sidecar file
+  if i in [1, 2]:
+    d = django.conf.settings.DOWNLOAD_WORK_DIR
+  else:
+    d = django.conf.settings.DOWNLOAD_PUBLIC_DIR
+  if i != 4:
+    s = _suffix[r.format]
+  else:
+    s = "request"
+  if i in [2, 3]:
+    z = ".gz"
+  else:
+    z = ""
+  return os.path.join(d, "%s.%s%s" % (r.filename, s, z))
+
+def _csvEncode (s):
+  return _oneline(s).encode("UTF-8")
+
+def _fileSize (path):
+  return os.stat(path).st_size
+
+def _createFile (r):
+  f = None
   try:
-    os.unlink(os.path.join(django.conf.settings.DOWNLOAD_WORK_DIR,
-      "%s.%s" % (r.filename, _suffix[r.format])))
+    f = open(_path(r, 1), "w")
+    if r.format == "csv":
+      w = csv.writer(f)
+      w.writerow([_csvEncode(c) for c in _decode(r.columns)])
+      f.flush()
+    elif r.format == "xml":
+      f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<records>")
+      f.flush()
+    # We don't know exactly what the CSV writer wrote, so we must
+    # probe the file to find its size.
+    n = _fileSize(_path(r, 1))
+  except Exception, e:
+    raise _wrapException("error creating file", e)
+  else:
+    r.stage = ezidapp.models.DownloadQueue.HARVEST
+    r.currentOwner = r.requestor
+    r.fileSize = n
+    r.save()
+  finally:
+    if f: f.close()
+
+def _harvest (r):
+  r.stage = ezidapp.models.DownloadQueue.COMPRESS
+  r.save()
+
+def _compressFile (r):
+  infile = None
+  outfile = None
+  try:
+    infile = open(_path(r, 1))
+    # The gzip command may be long-lived, and a new daemon thread may
+    # be created by a server restart or reload while gzip is still
+    # running, in which case we don't try to kill the old process, but
+    # simply delete its output file and let it die a natural death.
+    if os.path.exists(_path(r, 2)): os.unlink(_path(r, 2))
+    outfile = open(_path(r, 2), "w")
+    p = subprocess.Popen([_gzipCommand], stdin=infile, stdout=outfile,
+      stderr=subprocess.PIPE, close_fds=True, env={})
+    stderr = p.communicate()[1]
+    _checkAbort()
+    assert p.returncode == 0 and stderr == "",\
+      "gzip command returned status code %d, stderr '%s'" % (p.returncode,
+      stderr)
+  except Exception, e:
+    raise _wrapException("error compressing file", e)
+  else:
+    r.stage = ezidapp.models.DownloadQueue.DELETE
+    r.save()
+  finally:
+    if infile: infile.close()
+    if outfile: outfile.close()
+
+def _deleteUncompressedFile (r):
+  try:
+    os.unlink(_path(r, 1))
   except Exception, e:
     raise _wrapException("error deleting uncompressed file", e)
   else:
@@ -291,15 +374,10 @@ def _deleteUncompressedFile (r):
     r.save()
 
 def _moveCompressedFile (r):
-  def path (directory):
-    return os.path.join(directory,
-      "%s.%s.gz" % (r.filename, _suffix[r.format]))
-  _checkAbort()
   try:
-    os.rename(path(django.conf.settings.DOWNLOAD_WORK_DIR),
-      path(django.conf.settings.DOWNLOAD_PUBLIC_DIR))
+    os.rename(_path(r, 2), _path(r, 3))
   except Exception, e:
-    raise _wrapException("error moving file", e)
+    raise _wrapException("error moving compressed file", e)
   else:
     r.stage = ezidapp.models.DownloadQueue.NOTIFY
     r.save()
@@ -312,13 +390,11 @@ def _notifyRequestor (r):
       "The download will be deleted in 1 week.\n" +\
       "This is an automated email.  Please do not reply.\n") %\
       (_ezidUrl, r.filename, _suffix[r.format])
-    _checkAbort()
     try:
       django.core.mail.send_mail("EZID batch download available", m,
         django.conf.settings.SERVER_EMAIL, emailAddresses, fail_silently=True)
     except Exception, e:
       raise _wrapException("error sending email", e)
-  _checkAbort()
   r.delete()
 
 def _daemonThread ():
@@ -329,7 +405,14 @@ def _daemonThread ():
       r = ezidapp.models.DownloadQueue.objects.all().order_by("seq")[:1]
       if len(r) == 0: continue
       r = r[0]
-      if r.stage == ezidapp.models.DownloadQueue.DELETE:
+      _checkAbort()
+      if r.stage == ezidapp.models.DownloadQueue.CREATE:
+        _createFile(r)
+      elif r.stage == ezidapp.models.DownloadQueue.HARVEST:
+        _harvest(r)
+      elif r.stage == ezidapp.models.DownloadQueue.COMPRESS:
+        _compressFile(r)
+      elif r.stage == ezidapp.models.DownloadQueue.DELETE:
         _deleteUncompressedFile(r)
       elif r.stage == ezidapp.models.DownloadQueue.MOVE:
         _moveCompressedFile(r)
