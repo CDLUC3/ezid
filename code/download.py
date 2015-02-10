@@ -315,23 +315,24 @@ def _path (r, i):
 def _csvEncode (s):
   return _oneline(s).encode("UTF-8")
 
-def _fileSize (path):
-  return os.stat(path).st_size
+def _flushFile (f):
+  f.flush()
+  os.fsync(f.fileno())
 
 def _createFile (r):
   f = None
   try:
-    f = open(_path(r, 1), "w")
+    f = open(_path(r, 1), "wb")
     if r.format == "csv":
       w = csv.writer(f)
       w.writerow([_csvEncode(c) for c in _decode(r.columns)])
-      f.flush()
+      _flushFile(f)
     elif r.format == "xml":
       f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<records>")
-      f.flush()
+      _flushFile(f)
     # We don't know exactly what the CSV writer wrote, so we must
     # probe the file to find its size.
-    n = _fileSize(_path(r, 1))
+    n = f.tell()
   except Exception, e:
     raise _wrapException("error creating file", e)
   else:
