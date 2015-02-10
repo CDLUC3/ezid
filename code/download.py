@@ -4,6 +4,14 @@
 #
 # Batch download.
 #
+# Downloads are created by a single daemon thread.  The download
+# creation process is designed to be restartable at any point: if the
+# server is restarted, the current download resumes where it left off.
+#
+# When the server is reloaded, a new daemon thread gets created.  Race
+# conditions exist between the old and new threads while the old
+# thread still exists, but actual conflicts should be very unlikely.
+#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
@@ -28,7 +36,7 @@ import time
 import uuid
 
 import config
-import ezidapp
+import ezidapp.models
 import idmap
 import log
 import search
