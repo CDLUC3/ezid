@@ -384,6 +384,15 @@ def _moveCompressedFile (r):
     r.save()
 
 def _notifyRequestor (r):
+  f = None
+  try:
+    f = open(_path(r, 4), "w")
+    f.write("%s\n%s\n" % (idmap.getAgent(r.requestor)[0],
+      r.rawRequest.encode("UTF-8")))
+  except Exception, e:
+    raise _wrapException("error writing sidecar file", e)
+  finally:
+    if f: f.close()
   emailAddresses = _decode(r.notify)
   if len(emailAddresses) > 0:
     m = ("The batch download you requested is available at:\n\n" +\
