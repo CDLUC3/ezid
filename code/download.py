@@ -398,12 +398,15 @@ def _notifyRequestor (r):
   r.delete()
 
 def _daemonThread ():
+  doSleep = True
   while True:
-    time.sleep(_idleSleep)
+    if doSleep: time.sleep(_idleSleep)
     try:
       _checkAbort()
       r = ezidapp.models.DownloadQueue.objects.all().order_by("seq")[:1]
-      if len(r) == 0: continue
+      if len(r) == 0:
+        doSleep = True
+        continue
       r = r[0]
       _checkAbort()
       if r.stage == ezidapp.models.DownloadQueue.CREATE:
@@ -420,10 +423,12 @@ def _daemonThread ():
         _notifyRequestor(r)
       else:
         assert False, "unhandled case"
+      doSleep = False
     except _AbortException:
       break
     except Exception, e:
       log.otherError("download._daemonThread", e)
+      doSleep = True
 
 _loadConfig()
 config.addLoader(_loadConfig)
