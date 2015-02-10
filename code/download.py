@@ -375,7 +375,7 @@ def _compressFile (r):
 
 def _deleteUncompressedFile (r):
   try:
-    os.unlink(_path(r, 1))
+    if os.path.exists(_path(r, 1)): os.unlink(_path(r, 1))
   except Exception, e:
     raise _wrapException("error deleting uncompressed file", e)
   else:
@@ -384,7 +384,10 @@ def _deleteUncompressedFile (r):
 
 def _moveCompressedFile (r):
   try:
-    os.rename(_path(r, 2), _path(r, 3))
+    if os.path.exists(_path(r, 2)):
+      os.rename(_path(r, 2), _path(r, 3))
+    else:
+      assert os.path.exists(_path(r, 3)), "file has disappeared"
   except Exception, e:
     raise _wrapException("error moving compressed file", e)
   else:
