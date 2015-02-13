@@ -34,6 +34,7 @@ import subprocess
 import threading
 import time
 import uuid
+import xml.sax.saxutils
 
 import anvl
 import config
@@ -351,6 +352,31 @@ def _writeAnvl (f, id, record):
   f.write(":: %s\n" % id)
   f.write(anvl.format(record).encode("UTF-8"))
 
+def _xmlEscape (s):
+  return xml.sax.saxutils.escape(s, { "\"": "&quot;" })
+
+_prologRE = re.compile("<\?xml\s+version\s*=\s*['\"][-\w.:]+[\"']" +\
+  "(\s+encoding\s*=\s*['\"][-\w.]+[\"'])?" +\
+  "(\s+standalone\s*=\s*['\"](yes|no)[\"'])?\s*\?>\s*")
+
+def _removeProlog (document):
+  m = _prologRE.match(document)
+  if m:
+    return document[len(m.group(0)):]
+  else:
+    return document
+
+def _writeXml (f, id, record):
+  f.write("<record identifier=\"%s\">" % _xmlEscape(id))
+  for k, v in record.items():
+    if k in ["datacite", "crossref"]:
+      v = _removeProlog(v)
+    else:
+      v = _xmlEscape(v)
+    f.write(("<element name=\"%s\">%s</element>" %\
+      (_xmlEscape(k), v)).encode("UTF-8"))
+  f.write("</record>")
+
 def _harvest1 (r, f):
   options = _decode(r.options)
   while True:
@@ -369,6 +395,8 @@ def _harvest1 (r, f):
         _checkAbort()
         if r.format == "anvl":
           _writeAnvl(f, nqidentifier, record)
+        elif r.format == "xml":
+          _writeXml(f, nqidentifier, record)
         else:
           assert False, "unhandled case"
       _flushFile(f)
