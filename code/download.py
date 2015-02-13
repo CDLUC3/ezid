@@ -35,11 +35,14 @@ import threading
 import time
 import uuid
 
+import anvl
 import config
+import ezid
 import ezidapp.models
 import idmap
 import log
 import search
+import store
 
 _ezidUrl = None
 _usedFilenames = None
@@ -343,8 +346,37 @@ def _createFile (r):
   finally:
     if f: f.close()
 
+def _writeAnvl (f, id, record):
+  if f.tell() > 0: f.write("\n")
+  f.write(":: %s\n" % id)
+  f.write(anvl.format(record).encode("UTF-8"))
+
 def _harvest1 (r, f):
-  pass
+  options = _decode(r.options)
+  while True:
+    _checkAbort()
+    ids = store.harvest(owner=r.currentOwner, start=r.lastId, maximum=1000)
+    if len(ids) == 0: break
+    try:
+      for id, record in ids:
+        nqidentifier = record.get("_s", "ark:/" + id)
+        ezid.convertMetadataDictionary(record, id)
+        if options["convertTimestamps"]:
+          record["_created"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
+            time.gmtime(int(record["_created"])))
+          record["_updated"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
+            time.gmtime(int(record["_updated"])))
+        _checkAbort()
+        if r.format == "anvl":
+          _writeAnvl(f, nqidentifier, record)
+        else:
+          assert False, "unhandled case"
+      _flushFile(f)
+    except Exception, e:
+      raise _wrapException("error writing file", e)
+    r.lastId = ids[-1][0]
+    r.fileSize = f.tell()
+    r.save()
 
 def _harvest (r):
   f = None
