@@ -348,6 +348,40 @@ def _createFile (r):
   finally:
     if f: f.close()
 
+def _satisfiesConstraints (id, record, constraints):
+  for k, v in constraints.items():
+    if k == "createdAfter":
+      if int(record["_created"]) < v: return False
+    elif k == "createdBefore":
+      if int(record["_created"]) >= v: return False
+    elif k == "crossref":
+      c = record.get("_crossref", "no").startswith("yes")
+      if v^c: return False
+    elif k == "exported":
+      e = (record["_export"] == "yes")
+      if v^e: return False
+    elif k == "owner":
+      if idmap.getUserId(record["_owner"]) not in v: return False
+    elif k == "ownergroup":
+      if idmap.getGroupId(record["_ownergroup"]) not in v: return False
+    elif k == "permanence":
+      pass
+    elif k == "profile":
+      if record["_profile"] not in v: return False
+    elif k == "status":
+      s = record["_status"]
+      if s.startswith("unavailable"): s = "unavailable"
+      if s not in v: return False
+    elif k == "type":
+      if id.split(":", 1)[0] not in v: return False
+    elif k == "updatedAfter":
+      if int(record["_updated"]) < v: return False
+    elif k == "updatedBefore":
+      if int(record["_updated"]) >= v: return False
+    else:
+      assert False, "unhandled case"
+  return True
+
 def _writeAnvl (f, id, record):
   if f.tell() > 0: f.write("\n")
   f.write(":: %s\n" % id)
@@ -403,6 +437,7 @@ def _writeXml (f, id, record):
 
 def _harvest1 (r, f):
   columns = _decode(r.columns)
+  constraints = _decode(r.constraints)
   options = _decode(r.options)
   while True:
     _checkAbort()
@@ -412,20 +447,22 @@ def _harvest1 (r, f):
       for id, record in ids:
         nqidentifier = record.get("_s", "ark:/" + id)
         ezid.convertMetadataDictionary(record, id)
-        if options["convertTimestamps"]:
-          record["_created"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
-            time.gmtime(int(record["_created"])))
-          record["_updated"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
-            time.gmtime(int(record["_updated"])))
-        _checkAbort()
-        if r.format == "anvl":
-          _writeAnvl(f, nqidentifier, record)
-        elif r.format == "csv":
-          _writeCsv(f, nqidentifier, record, columns)
-        elif r.format == "xml":
-          _writeXml(f, nqidentifier, record)
-        else:
-          assert False, "unhandled case"
+        if _satisfiesConstraints(nqidentifier, record, constraints):
+          if options["convertTimestamps"]:
+            record["_created"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
+              time.gmtime(int(record["_created"])))
+            record["_updated"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
+              time.gmtime(int(record["_updated"])))
+          _checkAbort()
+          if r.format == "anvl":
+            _writeAnvl(f, nqidentifier, record)
+          elif r.format == "csv":
+            _writeCsv(f, nqidentifier, record, columns)
+          elif r.format == "xml":
+            _writeXml(f, nqidentifier, record)
+          else:
+            assert False, "unhandled case"
+      _checkAbort()
       _flushFile(f)
     except Exception, e:
       raise _wrapException("error writing file", e)
