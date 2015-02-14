@@ -42,6 +42,7 @@ import ezid
 import ezidapp.models
 import idmap
 import log
+import mapping
 import search
 import store
 
@@ -352,6 +353,29 @@ def _writeAnvl (f, id, record):
   f.write(":: %s\n" % id)
   f.write(anvl.format(record).encode("UTF-8"))
 
+_metadataMappings = {
+  "_mappedCreator": 0,
+  "_mappedTitle": 1,
+  "_mappedPublisher": 2,
+  "_mappedDate": 3
+}
+
+def _writeCsv (f, id, record, columns):
+  w = csv.writer(f)
+  l = []
+  mappedMetadata = None
+  for c in columns:
+    if c == "_id":
+      l.append(id)
+    elif c in _metadataMappings:
+      if mappedMetadata == None:
+        mappedMetadata = mapping.getDisplayMetadata(record)
+      l.append(mappedMetadata[_metadataMappings[c]] if\
+        mappedMetadata[_metadataMappings[c]] != None else "")
+    else:
+      l.append(record.get(c, ""))
+  w.writerow([_csvEncode(c) for c in l])
+
 def _xmlEscape (s):
   return xml.sax.saxutils.escape(s, { "\"": "&quot;" })
 
@@ -378,6 +402,7 @@ def _writeXml (f, id, record):
   f.write("</record>")
 
 def _harvest1 (r, f):
+  columns = _decode(r.columns)
   options = _decode(r.options)
   while True:
     _checkAbort()
@@ -395,6 +420,8 @@ def _harvest1 (r, f):
         _checkAbort()
         if r.format == "anvl":
           _writeAnvl(f, nqidentifier, record)
+        elif r.format == "csv":
+          _writeCsv(f, nqidentifier, record, columns)
         elif r.format == "xml":
           _writeXml(f, nqidentifier, record)
         else:
