@@ -1948,12 +1948,6 @@ encoding is UTF-8 and the metadata is compressed with gzip_.
      Creator, title, publisher, and date citation metadata as mapped
      from the identifier's preferred metadata profile.
 
-   - erc.who, erc.what, erc.when
-
-     These columns return metadata bound to the eponymous elements, or
-     metadata embedded in an ANVL document that is bound to the "erc"
-     element.
-
    Continuing with the previous example, if the query parameters are
 
    ::
