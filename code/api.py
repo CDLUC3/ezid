@@ -63,8 +63,8 @@
 #   response body: status line
 #
 # Request a batch download:
-#   GET /download_request?parameters...   [authentication required]
-#   request body: empty
+#   POST /download_request   [authentication required]
+#   request body: application/x-www-form-urlencoded
 #   response body: status line
 #
 # Author:
@@ -384,7 +384,7 @@ def batchDownloadRequest (request):
   """
   Enqueues a batch download request.
   """
-  if request.method != "GET": return _methodNotAllowed()
+  if request.method != "POST": return _methodNotAllowed()
   auth = userauth.authenticateRequest(request)
   if type(auth) is str:
     return _response(auth)
