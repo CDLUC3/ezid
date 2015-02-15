@@ -15,6 +15,8 @@
 
 import re
 
+maximumIdentifierLength = 256
+
 _doiPattern = re.compile("10\.[1-9]\d{3,4}/[!->@-~]+$")
 def validateDoi (doi):
   """
@@ -39,6 +41,10 @@ def validateDoi (doi):
   # in URLs (as is done in the EZID API and the dx.doi.org resolver).
   if not _doiPattern.match(doi) or doi[-1] == "\n": return None
   if "//" in doi or doi.endswith("/"): return None
+  # We should probably test the length of the shadow ARK as well (it
+  # may be longer than the DOI due to extra percent encoding), but
+  # don't at present.
+  if len(doi) > maximumIdentifierLength-4: return None
   return doi.upper()
 
 _arkPattern1 = re.compile("((?:\d{5}(?:\d{4})?|[b-k]\d{4})/)([!-~]+)$")
@@ -99,6 +105,7 @@ def validateArk (ark):
     s = _arkPattern5.sub(_normalizeArkPercentEncoding, s)
   except AssertionError:
     return None
+  if len(p)+len(s) > maximumIdentifierLength-5: return None
   return p+s
 
 _urnUuidPattern = re.compile("[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",

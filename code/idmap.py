@@ -107,6 +107,8 @@ def getGroupId (group):
   _lock.acquire()
   try:
     if _groupMap is None: _loadIds()
+    # Module download relies on the formatting of the following error
+    # message.
     assert group in _groupMap, "unknown group: " + group
     return _groupMap[group]
   finally:
@@ -121,7 +123,8 @@ def getUserId (user):
   _lock.acquire()
   try:
     if _userMap is None: _loadIds()
-    # Module ezid relies on the formatting of the following error message.
+    # Modules ezid and download rely on the formatting of the
+    # following error message.
     assert user in _userMap, "unknown user: " + user
     return _userMap[user]
   finally:

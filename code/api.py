@@ -62,6 +62,11 @@
 #   request body: empty
 #   response body: status line
 #
+# Request a batch download:
+#   POST /download_request   [authentication required]
+#   request body: application/x-www-form-urlencoded
+#   response body: status line
+#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
@@ -78,6 +83,7 @@ import time
 import anvl
 import config
 import datacite
+import download
 import ezid
 import ezidadmin
 import noid_egg
@@ -373,3 +379,15 @@ def reload (request):
   finally:
     ezid.pause(oldValue)
   return _response("success: configuration file reloaded and caches emptied")
+
+def batchDownloadRequest (request):
+  """
+  Enqueues a batch download request.
+  """
+  if request.method != "POST": return _methodNotAllowed()
+  auth = userauth.authenticateRequest(request)
+  if type(auth) is str:
+    return _response(auth)
+  elif not auth:
+    return _unauthorized()
+  return _response(download.enqueueRequest(auth, request))
