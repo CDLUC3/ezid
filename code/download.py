@@ -483,6 +483,8 @@ def _harvest1 (r, f):
             assert False, "unhandled case"
       _checkAbort()
       _flushFile(f)
+    except _AbortException:
+      raise
     except Exception, e:
       raise _wrapException("error writing file", e)
     r.lastId = ids[-1][0]
@@ -543,6 +545,8 @@ def _compressFile (r):
     assert p.returncode == 0 and stderr == "",\
       "gzip command returned status code %d, stderr '%s'" % (p.returncode,
       stderr)
+  except _AbortException:
+    raise
   except Exception, e:
     raise _wrapException("error compressing file", e)
   else:
