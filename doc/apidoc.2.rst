@@ -16,7 +16,7 @@
    http://download.oracle.com/javase/6/docs/api/java/net/CookieManager.html
 .. _CrossRef: http://www.crossref.org/
 .. _CrossRef Deposit Schema: http://help.crossref.org/deposit_schema
-.. _cURL: http://curl.haxx.se/
+.. _curl: http://curl.haxx.se/
 .. _DataCite: http://www.datacite.org/
 .. _DataCite Metadata Scheme: http://schema.datacite.org/
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
@@ -84,9 +84,15 @@ Contents
 - `PHP examples`_
 - `Perl examples`_
 - `Java example`_
-- `cURL examples`_
+- `curl examples`_
 - `Batch processing`_
 - `Batch download`_
+
+  - Overview_
+  - `Download formats`_
+  - Parameters_
+  - `Using curl to request a download`_
+
 - `OAI-PMH harvesting`_
 
 Framework
@@ -1735,10 +1741,10 @@ identifier's metadata.
 
   }
 
-cURL examples
+curl examples
 -------------
 
-The EZID API can be exercised using the cURL_ command line tool.  The
+The EZID API can be exercised using the curl_ command line tool.  The
 following examples assume metadata is UTF-8 encoded throughout.
 
 To get identifier metadata, obtaining text formatted as described in
@@ -1848,28 +1854,34 @@ satisfy several other quality criteria are returned.
 - Overview_
 - `Download formats`_
 - Parameters_
+- `Using curl to request a download`_
 
 .. _Overview:
 
 **Overview**
 
 The batch download process is asynchronous.  A download is requested
-by issuing a GET request to
+by issuing a POST request to
 
   http://ezid.cdlib.org/download_request
 
-The request must include one GET query parameter, "format", specifying
-the download format, and may include additional query parameters (see
-Parameters_ below) specifying search criteria and download format and
-notification options.  The return is a status line indicating either
-error (see `Error handling`_ above) or success.  If successful, the
-status line includes a URL from which the download can be retrieved.
-Here's a sample interaction:
+The content type of the request body must be
+"application/x-www-form-urlencoded" and the body must include one POST
+parameter, "format", specifying the download format, and may include
+additional parameters (see Parameters_ below) specifying search
+criteria and download format and notification options.  The return is
+a status line indicating either error (see `Error handling`_ above) or
+success.  If successful, the status line includes a URL from which the
+download can be retrieved.  Here's a sample interaction:
 
 .. parsed-literal::
 
-  |rArr| GET /download_request?format=xml HTTP/1.1
+  |rArr| POST /download_request HTTP/1.1
   |rArr| Host: ezid.cdlib.org
+  |rArr| Content-Type: application/x-www-form-urlencoded
+  |rArr| Content-Length: 19
+  |rArr|
+  |rArr| format=xml&type=ark
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
@@ -1889,7 +1901,7 @@ week.
 **Download formats**
 
 Identifier metadata is returned in one of three formats; which format
-is determined by the "format" query parameter.  In all cases, the text
+is determined by the "format" parameter.  In all cases, the text
 encoding is UTF-8 and the metadata is compressed with gzip_.
 
 1. **Format "anvl"**.  This format is effectively the concatenation of
@@ -1932,12 +1944,12 @@ encoding is UTF-8 and the metadata is compressed with gzip_.
 2. **Format "csv"**.  Metadata is returned as an Excel-compatible
    `Comma-separated values (CSV)`_ table, one row per selected
    identifier.  A header row lists column names.  The columns to
-   return must be specified using one or more "column" query
-   parameters; the order of columns in the table matches the parameter
-   order.  The columns that can be returned include all internal EZID
-   metadata elements (refer to `Internal metadata`_) and all citation
-   metadata elements (refer to `Metadata profiles`_).  Additionally,
-   the following columns may be requested:
+   return must be specified using one or more "column" parameters; the
+   order of columns in the table matches the parameter order.  The
+   columns that can be returned include all internal EZID metadata
+   elements (refer to `Internal metadata`_) and all citation metadata
+   elements (refer to `Metadata profiles`_).  Additionally, the
+   following columns may be requested:
 
    - _id
 
@@ -1948,7 +1960,7 @@ encoding is UTF-8 and the metadata is compressed with gzip_.
      Creator, title, publisher, and date citation metadata as mapped
      from the identifier's preferred metadata profile.
 
-   Continuing with the previous example, if the query parameters are
+   Continuing with the previous example, if the parameters are
 
    ::
 
@@ -2127,6 +2139,21 @@ identifiers).
 
   Constraints against update time; see the comparable "createdAfter"
   and "createdBefore" parameters above.
+
+.. _`Using curl to request a download`:
+
+**Using curl to request a download**
+
+A batch download can easily be requested with the curl_ command line
+tool.  Use curl's "-d" option to specify parameters, and use the https
+form of the request URL to securely send authentication credentials.
+For example:
+
+.. parsed-literal::
+
+  curl -u `username`:hl2::`password`:hl2: -d format=anvl -d type=ark \
+  -d type=doi
+    -d permanence=real \https://ezid.cdlib.org/download_request
 
 OAI-PMH harvesting
 ------------------
