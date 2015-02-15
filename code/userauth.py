@@ -92,8 +92,6 @@ def _getAttributes (server, dn):
   return r
 
 def _authenticateLdap (username, password, authenticateAsAdmin=False):
-  # The 'authenticateAsAdmin' argument is a bit of a hack to support
-  # 'getAuthenticatedUser' below, which itself is an interim solution.
   l = None
   try:
     if authenticateAsAdmin:
@@ -128,7 +126,13 @@ def _authenticateLdap (username, password, authenticateAsAdmin=False):
     finally:
       _lock.release()
     if authenticateAsAdmin: userDn = _userDnTemplate % _escape(username)
-    ua = _getAttributes(l, userDn)
+    try:
+      ua = _getAttributes(l, userDn)
+    except ldap.NO_SUCH_OBJECT:
+      if authenticateAsAdmin:
+        return None
+      else:
+        raise
     if "ezidUser" not in ua["objectClass"]: return None
     uid = ua["uid"]
     assert " " not in uid, "invalid character in uid, DN='%s'" % userDn
@@ -180,15 +184,28 @@ def authenticate (username, password):
   Authenticates a username and password.  Returns an AuthenticatedUser
   object (defined in this module) if the authentication was
   successful, None if unsuccessful, or a string message if an error
-  occurred.
+  occurred.  Easter egg: if the username has the form "@user" and the
+  EZID administrator password is given, and if username "user" exists,
+  then an AuthenticatedUser object for "user" is returned.
   """
+  if username.startswith("@"):
+    username = username[1:]
+    sudo =  True
+  else:
+    sudo = False
   username = username.strip()
   if username == "": return "error: bad request - username required"
   password = password.strip()
   if _ldapEnabled:
-    return _authenticateLdap(username, password)
+    return _authenticateLdap(username, password, authenticateAsAdmin=sudo)
   else:
-    return _authenticateLocal(username, password)
+    if sudo:
+      if _authenticateLocal(_adminUsername, password) != None:
+        return _authenticateLocal(username, None, bypass=True)
+      else:
+        None
+    else:
+      return _authenticateLocal(username, password)
 
 def authenticateRequest (request):
   """

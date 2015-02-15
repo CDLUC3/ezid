@@ -899,6 +899,44 @@ def createIdentifier (identifier, user, group, metadata={}):
   else:
     return "error: bad request - unrecognized identifier scheme"
 
+def convertMetadataDictionary (d, ark, shadowArkView=False):
+  """
+  Converts a metadata dictionary from internal form (i.e., as stored)
+  to external form (i.e., as returned to clients).  The dictionary is
+  modified in place.  'ark' is the unqualified ARK identifier (e.g.,
+  "13030/foo") to which the metadata belongs.  If the dictionary is
+  for a non-ARK identifier and 'shadowArkView' is true, the dictionary
+  is converted to reflect the shadow ARK; otherwise, it reflects the
+  shadowed identifier.
+  """
+  if d.get("_is", "public") != "public":
+    d["_t"] = d["_t1"]
+    del d["_t1"]
+    if "_st1" in d:
+      d["_st"] = d["_st1"]
+      del d["_st1"]
+  if "_s" in d:
+    if shadowArkView:
+      del d["_su"]
+      del d["_st"]
+    else:
+      del d["_u"]
+      del d["_t"]
+      del d["_s"]
+      d["_shadowedby"] = "ark:/" + ark
+  for k in filter(lambda k: k.startswith("_"), d):
+    if k in _labelMapping:
+      d[_labelMapping[k]] = d[k]
+      del d[k]
+  d["_owner"] = idmap.getAgent(d["_owner"])[0]
+  d["_ownergroup"] = idmap.getAgent(d["_ownergroup"])[0]
+  if "_coowners" in d:
+    # Semicolons are not valid characters in ARK identifiers.
+    d["_coowners"] = " ; ".join(idmap.getAgent(id.strip())[0]\
+      for id in d["_coowners"].split(";") if len(id.strip()) > 0)
+  if "_status" not in d: d["_status"] = "public"
+  if "_export" not in d: d["_export"] = "yes"
+
 def getMetadata (identifier, user=None, group=None):
   """
   Returns all metadata for a given qualified identifier, e.g.,
@@ -948,35 +986,7 @@ def getMetadata (identifier, user=None, group=None):
     if not policy.authorizeView(user, group, nqidentifier, d):
       log.unauthorized(tid)
       return "error: unauthorized"
-    if d.get("_is", "public") != "public":
-      d["_t"] = d["_t1"]
-      del d["_t1"]
-      if "_st1" in d:
-        d["_st"] = d["_st1"]
-        del d["_st1"]
-    if nqidentifier.startswith("ark:/"):
-      for k in filter(lambda k: k.startswith("_"), d):
-        if k in ["_su", "_st"]:
-          del d[k]
-        elif k in _labelMapping:
-          d[_labelMapping[k]] = d[k]
-          del d[k]
-    else:
-      for k in filter(lambda k: k.startswith("_"), d):
-        if k in ["_u", "_t", "_s"]:
-          del d[k]
-        elif k in _labelMapping:
-          d[_labelMapping[k]] = d[k]
-          del d[k]
-      d["_shadowedby"] = "ark:/" + ark
-    d["_owner"] = idmap.getAgent(d["_owner"])[0]
-    d["_ownergroup"] = idmap.getAgent(d["_ownergroup"])[0]
-    if "_coowners" in d:
-      # Semicolons are not valid characters in ARK identifiers.
-      d["_coowners"] = " ; ".join(idmap.getAgent(id.strip())[0]\
-        for id in d["_coowners"].split(";") if len(id.strip()) > 0)
-    if "_status" not in d: d["_status"] = "public"
-    if "_export" not in d: d["_export"] = "yes"
+    convertMetadataDictionary(d, ark, nqidentifier.startswith("ark:/"))
     log.success(tid)
     return ("success: " + nqidentifier, d)
   except Exception, e:

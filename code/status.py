@@ -25,6 +25,7 @@ import uuid
 import config
 import crossref
 import datacite
+import download
 import ezid
 import log
 import search
@@ -51,6 +52,7 @@ def _statusDaemon ():
       nstc, nstca = store.numConnections()
       nsec, nseca = search.numConnections()
       cqs = crossref.getQueueStatistics()
+      dql = download.getQueueLength()
       log.status("pid=%d" % os.getpid(),
         "threads=%d" % threading.activeCount(),
         "paused" if isPaused else "running",
@@ -61,7 +63,8 @@ def _statusDaemon ():
         "searchDbConnections:active/total=%d/%d" % (nseca, nsec),
         "updateQueueLength=%d" % store.getUpdateQueueLength(),
         "crossrefQueue:archived/unsubmitted/submitted=%d/%d/%d" %\
-        (cqs[2]+cqs[3], cqs[0], cqs[1]))
+        (cqs[2]+cqs[3], cqs[0], cqs[1]),
+        "downloadQueueLength=%d" % dql)
     except Exception, e:
       log.otherError("status._statusDaemon", e)
     time.sleep(_reportingInterval)

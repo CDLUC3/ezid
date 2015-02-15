@@ -7,6 +7,8 @@
 
 .. _ANVL: https://wiki.ucop.edu/display/Curation/Anvl
 .. _Apache Commons Codec: http://commons.apache.org/codec/
+.. _Comma-separated values (CSV):
+   http://en.wikipedia.org/wiki/Comma-separated_values
 .. _Contact UC3: http://www.cdlib.org/services/uc3/contact.html
 .. _content negotiation: http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html
 .. _cookielib: http://docs.python.org/library/cookielib.html
@@ -14,12 +16,13 @@
    http://download.oracle.com/javase/6/docs/api/java/net/CookieManager.html
 .. _CrossRef: http://www.crossref.org/
 .. _CrossRef Deposit Schema: http://help.crossref.org/deposit_schema
-.. _cURL: http://curl.haxx.se/
+.. _curl: http://curl.haxx.se/
 .. _DataCite: http://www.datacite.org/
 .. _DataCite Metadata Scheme: http://schema.datacite.org/
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
 .. _ERC: https://wiki.ucop.edu/display/Curation/ERC
 .. _ezid.py: ezid.py
+.. _gzip: http://www.gzip.org/
 .. _libwww-perl: http://search.cpan.org/dist/libwww-perl/
 .. _OAI-PMH: http://www.openarchives.org/OAI/openarchivesprotocol.html
 .. _percent-encoding: http://en.wikipedia.org/wiki/Percent-encoding
@@ -81,8 +84,15 @@ Contents
 - `PHP examples`_
 - `Perl examples`_
 - `Java example`_
-- `cURL examples`_
+- `curl examples`_
 - `Batch processing`_
+- `Batch download`_
+
+  - Overview_
+  - `Download formats`_
+  - Parameters_
+  - `Using curl to request a download`_
+
 - `OAI-PMH harvesting`_
 
 Framework
@@ -1182,9 +1192,10 @@ Although the CrossRef deposit schema is quite flexible, and supports
 batch operations, EZID requires that the deposit metadata specify a
 single DOI identifier, i.e., a single <doi_data> element.  This
 element should contain <doi> and <resource> subelements, which may be
-left empty.  EZID fills the <doi> element with the identifier in
-question and the <resource> element with the target URL.  Here is an
-abridged example of deposit metadata:
+left empty.  EZID replaces the contents of the <doi> element (if any)
+with the identifier in question and the contents of the <resource>
+element with the target URL.  Here is an abridged example of deposit
+metadata:
 
 .. parsed-literal::
 
@@ -1731,10 +1742,10 @@ identifier's metadata.
 
   }
 
-cURL examples
+curl examples
 -------------
 
-The EZID API can be exercised using the cURL_ command line tool.  The
+The EZID API can be exercised using the curl_ command line tool.  The
 following examples assume metadata is UTF-8 encoded throughout.
 
 To get identifier metadata, obtaining text formatted as described in
@@ -1805,11 +1816,12 @@ To modify identifier metadata:
 Batch processing
 ----------------
 
-The EZID API does not support batch operations on identifiers, but it
-is possible to achieve much the same result using the Python command
-line tool (see `Python example`_ above) combined with some shell
-scripting.  For example, to mint 100 test ARK identifiers and print
-the identifiers:
+The EZID API does not support batch operations on identifiers (other
+than batch downloading and harvesting of metadata, described in the
+next two sections), but it is possible to achieve much the same result
+using the Python command line tool (see `Python example`_ above)
+combined with some shell scripting.  For example, to mint 100 test ARK
+identifiers and print the identifiers:
 
 .. parsed-literal::
 
@@ -1818,6 +1830,331 @@ the identifiers:
     ezid.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 | \
   awk '{ print $2 }'
   done
+
+Batch download
+--------------
+
+The metadata for all identifiers matching a set of constraints can be
+downloaded in one batch operation.  Authentication is required, and
+the scope of the identifiers that can be downloaded in this way is
+implicitly restricted to those that are owned or co-owned by the
+requestor.
+
+Batch download and harvesting (see `OAI-PMH harvesting`_ below) are
+similar but different operations.  With batch download, the
+identifiers returned are restricted to those owned or co-owned by the
+requestor as noted above, but within that scope it is possible to
+download *all* identifiers, including reserved, unavailable, and test
+identifiers.  By contrast, with harvesting, no authentication is
+required and the identifiers returned are not restricted by ownership,
+but only those identifiers that are public and exported and that
+satisfy several other quality criteria are returned.
+
+**Subsections**
+
+- Overview_
+- `Download formats`_
+- Parameters_
+- `Using curl to request a download`_
+
+.. _Overview:
+
+**Overview**
+
+The batch download process is asynchronous.  A download is requested
+by issuing a POST request to
+
+  http://ezid.cdlib.org/download_request
+
+The content type of the request body must be
+"application/x-www-form-urlencoded" and the body must include one POST
+parameter, "format", specifying the download format, and may include
+additional parameters (see Parameters_ below) specifying search
+criteria and download format and notification options.  The return is
+a status line indicating either error (see `Error handling`_ above) or
+success.  If successful, the status line includes a URL from which the
+download can be retrieved.  Here's a sample interaction:
+
+.. parsed-literal::
+
+  |rArr| POST /download_request HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
+  |rArr| Content-Type: application/x-www-form-urlencoded
+  |rArr| Content-Length: 19
+  |rArr|
+  |rArr| format=xml&type=ark
+
+  |lArr| HTTP/1.1 200 OK
+  |lArr| Content-Type: text/plain; charset=UTF-8
+  |lArr| Content-Length: 57
+  |lArr|
+  |lArr| success: \http://ezid.cdlib.org/download/da543b91a0.xml.gz
+
+The download will not be available immediately, but clients can poll
+the returned URL; the server returns HTTP status code 404 (Not Found)
+if the download is not yet ready.  As part of the request, clients can
+also specify an email address to which a notification will be sent
+when the download becomes available.  Downloads are retained for one
+week.
+
+.. _`Download formats`:
+
+**Download formats**
+
+Identifier metadata is returned in one of three formats; which format
+is determined by the "format" parameter.  In all cases, the text
+encoding is UTF-8 and the metadata is compressed with gzip_.
+
+1. **Format "anvl"**.  This format is effectively the concatenation of
+   performing a get metadata operation (see `Operation: get identifier
+   metadata`_ above) on each selected identifier.  Metadata is
+   returned in ANVL format and employs percent-encoding as described
+   in `Request & response bodies`_.  The metadata for an identifier is
+   preceded by a header line that contains two colons (":", U+003A)
+   followed by the identifier.  Blocks of metadata are separated by
+   blank lines.  For example:
+
+   ::
+
+     :: ark:/99999/fk4gt78tq
+     _created: 1300812337
+     _export: yes
+     _owner: apitest
+     _ownergroup: apitest
+     _profile: erc
+     _status: public
+     _target: http://www.gutenberg.org/ebooks/7178
+     _updated: 1300913550
+     erc.what: Remembrance of Things Past
+     erc.when: 1922
+     erc.who: Proust, Marcel
+
+     :: doi:10.5072/FK2S75905Q
+     _created: 1421276359
+     _datacenter: CDL.CDL
+     _export: yes
+     _owner: apitest
+     _ownergroup: apitest
+     _profile: datacite
+     _shadowedby: ark:/b5072/fk2s75905q
+     _status: public
+     _target: http://www.gutenberg.org/ebooks/26014
+     _updated: 1421276359
+     datacite: <?xml version="1.0"?>%0A<resource xmlns="http://...
+
+2. **Format "csv"**.  Metadata is returned as an Excel-compatible
+   `Comma-separated values (CSV)`_ table, one row per selected
+   identifier.  A header row lists column names.  The columns to
+   return must be specified using one or more "column" parameters; the
+   order of columns in the table matches the parameter order.  The
+   columns that can be returned include all internal EZID metadata
+   elements (refer to `Internal metadata`_) and all citation metadata
+   elements (refer to `Metadata profiles`_).  Additionally, the
+   following columns may be requested:
+
+   - _id
+
+     The identifier.
+
+   - _mappedCreator, _mappedTitle, _mappedPublisher, _mappedDate
+
+     Creator, title, publisher, and date citation metadata as mapped
+     from the identifier's preferred metadata profile.
+
+   Continuing with the previous example, if the parameters are
+
+   ::
+
+     format=csv&column=_id&column=_owner&column=erc.when&column=_mappedCreator
+
+   then the following table will be returned:
+
+   ::
+
+     _id,_owner,erc.when,_mappedCreator
+     ark:/99999/fk4gt78tq,apitest,1922,"Proust, Marcel"
+     doi:10.5072/FK2S75905Q,apitest,,Montagu Browne
+
+   Note that for the CSV format only, line terminators in metadata
+   values (both newlines ("\\n", U+000A) and carriage returns ("\\r",
+   U+000D)) are converted to spaces.
+
+3. **Format "xml"**.  Metadata is returned as a single XML document.
+   The root element, <records>, contains a <record> element for each
+   selected identifier, and within each <record> element are <element>
+   elements for each of the identifier's metadata elements.  Thus the
+   returned document will have the structure:
+
+   .. parsed-literal::
+
+     <?xml version="1.0" encoding="UTF-8"?>
+     <records>
+       <record identifier="`identifier`:hl2:">
+         <element name="`name`:hl2:">\ `value`:hl2: </element>
+         ...
+       </record>
+       ...
+     </records>
+
+   As a special case, XML metadata bound to a "datacite" or "crossref"
+   element is directly embedded in the containing <element> element,
+   i.e., the metadata will appear as an XML subelement and not as a
+   string value.
+
+   Continuing with the previous example, the return in XML format
+   would be:
+
+   .. parsed-literal ::
+
+     <?xml version="1.0" encoding="UTF-8"?>
+     <records>
+       <record identifier="ark:/99999/fk4gt78tq">
+         <element name="_created">1300812337</element>
+         <element name="_export">yes</element>
+         <element name="_owner">apitest</element>
+         <element name="_ownergroup">apitest</element>
+         <element name="_profile">erc</element>
+         <element name="_status">public</element>
+         <element name="_target">http://www.gutenberg.org/ebooks/7178</element>
+         <element name="_updated">1300913550</element>
+         <element name="erc.what">Remembrance of Things Past</element>
+         <element name="erc.when">1922</element>
+         <element name="erc.who">Proust, Marcel</element>
+       </record>
+       <record identifier="doi:10.5072/FK2S75905Q">
+         <element name="_created">1421276359</element>
+         <element name="_datacenter">CDL.CDL</element>
+         <element name="_export">yes</element>
+         <element name="_owner">apitest</element>
+         <element name="_ownergroup">apitest</element>
+         <element name="_profile">datacite</element>
+         <element name="_shadowedby">ark:/b5072/fk2s75905q</element>
+         <element name="_status">public</element>
+         <element name="_target">http://www.gutenberg.org/ebooks/26014\
+     </element>
+         <element name="_updated">1421276359</element>
+         <element name="datacite">
+           <resource xmlns="http://datacite.org/schema/kernel-3">
+             <identifier identifierType="DOI">10.5072/FK2S75905Q</identifier>
+             <creators>
+               <creator>
+                 <creatorName>Montagu Browne</creatorName>
+               </creator>
+             </creators>
+             <titles>
+               <title>Practical Taxidermy</title>
+             </titles>
+             <publisher>Charles Scribner's Sons</publisher>
+             <publicationYear>1884</publicationYear>
+             <resourceType resourceTypeGeneral="Text"/>
+           </resource>
+         </element>
+       </record>
+     </records>
+
+.. _Parameters:
+
+**Parameters**
+
+Unless otherwise noted, parameters are optional and *not* repeatable.
+
+- format={anvl|csv|xml} *(required)*
+
+  The download format, as described above.
+
+- column=\ `c`:hl1: *(repeatable)*
+
+  Return column `c`:hl1:.  Applies to the "csv" format only, in which
+  case at least one column is required.
+
+- notify=\ `address`:hl1: *(repeatable)*
+
+  Send an email message to `address`:hl1: when the download becomes
+  available.
+
+- convertTimestamps={yes|no}
+
+  If yes, convert Unix timestamp values bound to the "_created" and
+  "_updated" internal metadata elements to ISO 8601
+  YYYY-MM-DDTHH:MM:SSZ format.
+
+The remaining parameters are search constraints.  Search constraints
+are logically ANDed together, but search constraint parameters that
+are repeated have the effect of creating a logical OR of the selected
+values.  For example, parameter "status" can take on three possible
+values, "reserved", "public", or "unavailable".  If no "status"
+parameter is specified, there is no constraint on identifier status;
+if "status=reserved" is specified, then only reserved identifiers are
+returned; and if "status=reserved&status=public" is specified, then
+reserved and public identifiers are returned (but not unavailable
+identifiers).
+
+- createdAfter=\ `t`:hl1:
+
+  Return identifiers created on or after time `t`:hl1:.  The time may
+  be given as a Unix timestamp or in ISO 8601 YYYY-MM-DDTHH:MM:SSZ
+  format.  Note that lower time bounds are inclusive.
+
+- createdBefore=\ `t`:hl1:
+
+  Return identifiers created before time `t`:hl1:.  The time may be
+  given as a Unix timestamp or in ISO 8601 YYYY-MM-DDTHH:MM:SSZ
+  format.  Note that upper time bounds are exclusive.
+
+- crossref={yes|no}
+
+  Return identifiers that either are or are not registered with
+  CrossRef.
+
+- exported={yes|no}
+
+  Return identifiers that either are or are not exported.
+
+- owner=\ `u`:hl1: (*repeatable*)
+
+  Return identifiers owned by user `u`:hl1:, where `u`:hl1: is an EZID
+  username, e.g., "apitest".
+
+- ownergroup=\ `g`:hl1: *(repeatable)*
+
+  Return identifiers owned by group `g`:hl1:, where `g`:hl1: is an
+  EZID group name, e.g., "cdl".
+
+- permanence={test|real}
+
+  Return only test identifiers or only real identifiers.
+
+- profile=\ `p`:hl1: *(repeatable)*
+
+  Return identifiers whose preferred metadata profile is `p`:hl1:.
+
+- status={reserved|public|unavailable} *(repeatable)*
+
+  Return identifiers having the specified status.
+
+- type={ark|doi|urn} *(repeatable)*
+
+  Return identifiers of the specified type.
+
+- updatedAfter=\ `t`:hl1:, updatedBefore=\ `t`:hl1:
+
+  Constraints against update time; see the comparable "createdAfter"
+  and "createdBefore" parameters above.
+
+.. _`Using curl to request a download`:
+
+**Using curl to request a download**
+
+A batch download can easily be requested with the curl_ command line
+tool.  Use curl's "-d" option to specify parameters, and use the https
+form of the request URL to securely send authentication credentials.
+For example:
+
+.. parsed-literal::
+
+  curl -u `username`:hl2::`password`:hl2: -d format=anvl -d type=ark \
+  -d type=doi
+    -d permanence=real \https://ezid.cdlib.org/download_request
 
 OAI-PMH harvesting
 ------------------
@@ -1834,6 +2171,9 @@ Only public, exported, non-test identifiers that have non-default
 target URLs and at least creator, title, and date citation metadata
 (in ERC__ terms, who/what/when metadata) are made available through
 OAI-PMH.
+
+Harvesting and batch download are similar but different operations;
+see `Batch download`_ for the differences.
 
 __ `Profile "erc"`_
 

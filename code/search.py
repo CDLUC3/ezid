@@ -213,7 +213,13 @@ def _loadCoOwnershipLocal ():
       if uId not in d[coId]: d[coId].append(uId)
   return d
 
-def _getCoOwnership (user):
+def getCoOwnership (user):
+  """
+  Returns a list of other users that have named 'user' as an
+  account-level co-owner.  I.e., if users A and B both name user
+  'user' as an account-level co-owner, the return is [A, B].  All
+  users are identified by persistent ARK identifiers.
+  """
   global _coOwnershipMap
   _cacheLock.acquire()
   try:
@@ -405,7 +411,7 @@ def getByOwner (owner, includeCoOwnership=True, sortColumn="updateTime",
   assert sortColumn in _columns, "invalid sort column"
   if useLocalNames: owner = idmap.getUserId(owner)
   if includeCoOwnership:
-    col = _getCoOwnership(owner)
+    col = getCoOwnership(owner)
     # The query below should include a DISTINCT qualifier if 'owner'
     # is an account-level co-owner (i.e., if len(col) > 0), but for
     # performance reasons we leave the qualifier out.  The worst that
@@ -457,7 +463,7 @@ def getByOwnerCount (owner, includeCoOwnership=True, useLocalNames=True):
   """
   if useLocalNames: owner = idmap.getUserId(owner)
   if includeCoOwnership:
-    col = _getCoOwnership(owner)
+    col = getCoOwnership(owner)
     # The query below should include a DISTINCT qualifier if 'owner'
     # is an account-level co-owner (i.e., if len(col) > 0), but for
     # performance reasons we leave the qualifier out.  The worst that

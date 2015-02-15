@@ -54,6 +54,7 @@ urlpatterns = django.conf.urls.patterns("",
   ("^shoulder/", "api.mintIdentifier"),
   ("^status$", "api.getStatus"),
   ("^version$", "api.getVersion"),
+  ("^download_request$", "api.batchDownloadRequest"),
   ("^admin/pause$", "api.pause"),
   ("^admin/reload$", "api.reload"),
 
@@ -65,7 +66,9 @@ urlpatterns = django.conf.urls.patterns("",
 if django.conf.settings.STANDALONE:
   urlpatterns += django.conf.urls.patterns("",
     ("^static/(?P<path>.*)$", "django.views.static.serve",
-    { "document_root": django.conf.settings.MEDIA_ROOT }))
+      { "document_root": django.conf.settings.MEDIA_ROOT }),
+    ("^download/(?P<path>.*)$", "django.views.static.serve",
+      { "document_root": django.conf.settings.DOWNLOAD_PUBLIC_DIR }))
 
 handler404 = "django.views.defaults.page_not_found"
 handler500 = "django.views.defaults.server_error"

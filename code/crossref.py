@@ -574,6 +574,7 @@ def _daemonThread ():
   while True:
     time.sleep(_idleSleep)
     try:
+      _checkAbort()
       # First, a quick test to avoid retrieving the entire table if
       # nothing needs to be done.  Note that in the loop below, if any
       # entry is deleted or if any identifier is processed, maxSeq is
