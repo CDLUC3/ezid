@@ -1345,9 +1345,10 @@ supplied, it will be stripped off.)</p>
 batch operations, EZID requires that the deposit metadata specify a
 single DOI identifier, i.e., a single &lt;doi_data&gt; element.  This
 element should contain &lt;doi&gt; and &lt;resource&gt; subelements, which may be
-left empty.  EZID fills the &lt;doi&gt; element with the identifier in
-question and the &lt;resource&gt; element with the target URL.  Here is an
-abridged example of deposit metadata:</p>
+left empty.  EZID replaces the contents of the &lt;doi&gt; element (if any)
+with the identifier in question and the contents of the &lt;resource&gt;
+element with the target URL.  Here is an abridged example of deposit
+metadata:</p>
 <pre class="literal-block">
 &lt;?xml version=&quot;1.0&quot;?&gt;
 &lt;book xmlns=&quot;http://www.crossref.org/schema/4.3.4&quot;

@@ -1192,9 +1192,10 @@ Although the CrossRef deposit schema is quite flexible, and supports
 batch operations, EZID requires that the deposit metadata specify a
 single DOI identifier, i.e., a single <doi_data> element.  This
 element should contain <doi> and <resource> subelements, which may be
-left empty.  EZID fills the <doi> element with the identifier in
-question and the <resource> element with the target URL.  Here is an
-abridged example of deposit metadata:
+left empty.  EZID replaces the contents of the <doi> element (if any)
+with the identifier in question and the contents of the <resource>
+element with the target URL.  Here is an abridged example of deposit
+metadata:
 
 .. parsed-literal::
 
