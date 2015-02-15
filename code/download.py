@@ -44,6 +44,7 @@ import idmap
 import log
 import mapping
 import search
+import shoulder
 import store
 
 _ezidUrl = None
@@ -53,10 +54,11 @@ _daemonEnabled = None
 _threadName = None
 _idleSleep = None
 _gzipCommand = None
+_testShoulders = None
 
 def _loadConfig ():
   global _ezidUrl, _usedFilenames, _daemonEnabled, _threadName, _idleSleep
-  global _gzipCommand
+  global _gzipCommand, _testShoulders
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _lock.acquire()
   try:
@@ -65,6 +67,7 @@ def _loadConfig ():
         ezidapp.models.DownloadQueue.objects.all()] +\
         [f.split(".")[0] for f in\
         os.listdir(django.conf.settings.DOWNLOAD_PUBLIC_DIR)]
+    _testShoulders = None
   finally:
     _lock.release()
   _idleSleep = int(config.config("daemons.download_processing_idle_sleep"))
@@ -76,6 +79,20 @@ def _loadConfig ():
     t = threading.Thread(target=_daemonThread, name=_threadName)
     t.setDaemon(True)
     t.start()
+
+def _getTestShoulders ():
+  global _testShoulders
+  _lock.acquire()
+  try:
+    if _testShoulders == None:
+      _testShoulders = []
+      s = shoulder.getArkTestShoulder()
+      if s != None: _testShoulders.append(s.key)
+      s = shoulder.getDoiTestShoulder()
+      if s != None: _testShoulders.append(s.key)
+    return _testShoulders
+  finally:
+    _lock.release()
 
 _suffix = {
   "anvl": "txt",
@@ -211,8 +228,8 @@ def enqueueRequest (auth, request):
   """
   Enqueues a batch download request.  The request must be
   authenticated; 'auth' should be a userauth.AuthenticatedUser object.
-  'request' should be an HTTP GET request.  The successful return is a
-  string that includes the download URL, as in:
+  'request' should be an HTTP POST request.  The successful return is
+  a string that includes the download URL, as in:
 
     success: http://ezid.cdlib.org/download/da543b91a0.xml.gz
 
@@ -225,16 +242,16 @@ def enqueueRequest (auth, request):
     return "error: bad request - " + s
   try:
     d = {}
-    for k in request.GET:
+    for k in request.POST:
       if k not in _parameters:
         return error("invalid parameter: " + _oneline(k))
       try:
         if _parameters[k][0]:
-          d[k] = map(_parameters[k][1], request.GET.getlist(k))
+          d[k] = map(_parameters[k][1], request.POST.getlist(k))
         else:
-          if len(request.GET.getlist(k)) > 1:
+          if len(request.POST.getlist(k)) > 1:
             return error("parameter is not repeatable: " + k)
-          d[k] = _parameters[k][1](request.GET[k])
+          d[k] = _parameters[k][1](request.POST[k])
       except _ValidationException, e:
         return error("parameter '%s': %s" % (k, str(e)))
     if "format" not in d:
@@ -263,7 +280,7 @@ def enqueueRequest (auth, request):
     requestor = auth.user[1]
     filename = _generateFilename(requestor)
     r = ezidapp.models.DownloadQueue(requestTime=int(time.time()),
-      rawRequest=request.GET.urlencode(),
+      rawRequest=request.POST.urlencode(),
       requestor=requestor, coOwners=",".join(search.getCoOwnership(requestor)),
       format=format, columns=_encode(columns), constraints=_encode(d),
       options=_encode(options), notify=_encode(notify), filename=filename)
@@ -365,7 +382,9 @@ def _satisfiesConstraints (id, record, constraints):
     elif k == "ownergroup":
       if idmap.getGroupId(record["_ownergroup"]) not in v: return False
     elif k == "permanence":
-      pass
+      t = (v == "test")
+      it = any(id.startswith(s) for s in _getTestShoulders())
+      if t^it: return False
     elif k == "profile":
       if record["_profile"] not in v: return False
     elif k == "status":
