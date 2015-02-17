@@ -65,9 +65,15 @@ def _loadConfig ():
 _loadConfig()
 config.addLoader(_loadConfig)
 
+# In the following, it is important that we only augment the existing
+# logging, not overwrite it, for Django also uses Python's logging
+# facility.
+
 logging.config.fileConfig(os.path.join(django.conf.settings.SETTINGS_DIR,
   django.conf.settings.LOGGING_CONFIG_FILE),
-  { "SITE_ROOT": django.conf.settings.SITE_ROOT })
+  { "SITE_ROOT": django.conf.settings.SITE_ROOT },
+  disable_existing_loggers=False)
+
 _log = logging.getLogger()
 
 def begin (transactionId, *args):
