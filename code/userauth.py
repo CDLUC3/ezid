@@ -207,7 +207,7 @@ def authenticate (username, password):
     else:
       return _authenticateLocal(username, password)
 
-def authenticateRequest (request):
+def authenticateRequest (request, storeSessionCookie=False):
   """
   Authenticates a Django request.  Returns an AuthenticatedUser object
   (defined in this module) if the authentication was successful, None
@@ -226,7 +226,8 @@ def authenticateRequest (request):
       return None
     if ":" not in s: return None
     r = authenticate(*s.split(":", 1))
-    if type(r) is AuthenticatedUser: request.session["auth"] = r
+    if type(r) is AuthenticatedUser and storeSessionCookie:
+      request.session["auth"] = r
     return r
   else:
     return None
