@@ -245,7 +245,7 @@ def login (request):
   Logs in a user.
   """
   if request.method != "GET": return _methodNotAllowed()
-  auth = userauth.authenticateRequest(request)
+  auth = userauth.authenticateRequest(request, storeSessionCookie=True)
   if type(auth) is str:
     return _response(auth)
   elif not auth:
