@@ -142,15 +142,21 @@ if dbPath:
     entry = cursor.next()
   db.close()
 else:
-  lastId = ""
-  while True:
-    ids = store.harvest(start=lastId, maximum=1000)
-    if len(ids) == 0: break
-    for id, m in ids:
-      if (id.startswith(testArkPrefix) or id.startswith(testDoiPrefix)) and\
-        int(time.time())-int(m["_c"]) >= lifetime:
-        expungeList.append(id)
-    lastId = ids[-1][0]
+  for prefix in [testArkPrefix, testDoiPrefix]:
+    # Let P be the lexicographically first possible test identifier
+    # (i.e., the prefix itself).  Then our starting point is a
+    # fictitious identifier that strictly precedes P, but is as close
+    # to P as possible.
+    lastId = prefix[:-1]
+    while True:
+      ids = store.harvest(start=lastId, maximum=1000)
+      if len(ids) == 0 or\
+        (ids[0][0] > prefix and not ids[0][0].startswith(prefix)):
+        break
+      for id, m in ids:
+        if id.startswith(prefix) and int(time.time())-int(m["_c"]) >= lifetime:
+          expungeList.append(id)
+      lastId = ids[-1][0]
 
 opener = urllib2.build_opener()
 h = urllib2.HTTPBasicAuthHandler()
