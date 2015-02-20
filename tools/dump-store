@@ -109,16 +109,13 @@ else:
 def outputRecord1 (id, record):
   outfile.write(id)
   for k in record:
-    if options.rawOutput:
-      outfile.write(" %s %s" % (util.encode4(k), util.encode3(record[k])))
-    else:
-      outfile.write(" %s %s" % (util.encode4(labelMapping.get(k, k)),
-        util.encode3(record[k])))
+    outfile.write(" %s %s" % (util.encode4(labelMapping.get(k, k)),
+      util.encode3(record[k])))
   outfile.write("\n")
 
 def outputRecord (id, record):
   if options.rawOutput:
-    outputRecord1(id, record)
+    outfile.write("%s %s\n" % (id, record))
   else:
     if record.get("_is", "public") != "public":
       record["_t"] = record["_t1"]
@@ -143,7 +140,8 @@ def outputRecord (id, record):
 
 lastId = ""
 while True:
-  ids = store.harvest(start=lastId, maximum=1000)
+  ids = store.harvest(start=lastId, maximum=1000,
+    decompressOnly=options.rawOutput)
   if len(ids) == 0: break
   for id, record in ids:
     if options.convertAgents:
