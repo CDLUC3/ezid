@@ -102,9 +102,6 @@ def _getLatestMetadata(identifier, request):
       request.session["auth"].group)
   else:
     r = ezid.getMetadata(identifier)
-  if type(r) is str:
-    django.contrib.messages.error(request, uic.formatError(r))
-    return redirect("ui_lookup.index")
   return r
 
 def _updateMetadata(request, d, stts, _id_metadata=None):
@@ -166,6 +163,9 @@ def edit(request, identifier):
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
   r = _getLatestMetadata(identifier, request)
+  if type(r) is str:
+    django.contrib.messages.error(request, uic.formatError(r))
+    return redirect("ui_manage.index")
   if not uic.authorizeUpdate(request, r):
     django.contrib.messages.error(request, "You are not allowed to edit this identifier")
     return redirect("/id/" + urllib.quote(identifier, ":/"))
@@ -206,7 +206,11 @@ def edit(request, identifier):
         if 'simpleToAdvanced' in request.POST and request.POST['simpleToAdvanced'] == 'True':
           # simpleToAdvanced button was selected 
           result = _updateMetadata(request, d, stts, id_metadata)
-          s, id_metadata = _getLatestMetadata(identifier, request)
+          r = _getLatestMetadata(identifier, request)
+          if type(r) is str:
+            django.contrib.messages.error(request, uic.formatError(r))
+            return redirect("ui_manage.index")
+          s, id_metadata = r 
           if not result.startswith("success:"):
             _alertMessageUpdateError(request)
           else:
@@ -251,6 +255,9 @@ def details(request):
   my_path = "/id/"
   identifier = request.path_info[len(my_path):]
   r = _getLatestMetadata(identifier, request)
+  if type(r) is str:
+    django.contrib.messages.error(request, uic.formatError(r))
+    return redirect("ui_manage.index")
   d['allow_update'] = uic.authorizeUpdate(request, r)
   s, id_metadata = r
   assert s.startswith("success:")
@@ -289,7 +296,11 @@ def display_xml(request, identifier):
   Used for displaying DataCite or CrossRef XML
   """
   d = { 'menu_item' : 'ui_manage.null'}
-  s, id_metadata = _getLatestMetadata(identifier, request)
+  r = _getLatestMetadata(identifier, request)
+  if type(r) is str:
+    django.contrib.messages.error(request, uic.formatError(r))
+    return redirect("/")
+  s, id_metadata = r 
   assert s.startswith("success:")
   d['identifier'] = id_metadata 
   d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
