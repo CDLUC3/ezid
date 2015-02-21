@@ -237,8 +237,10 @@ def _blobify (metadata):
     if len(v) > 0: l.append("%s %s" % (util.encode4(k), util.encode3(v)))
   return zlib.compress(" ".join(l))
 
-def _deblobify (blob):
-  v = zlib.decompress(blob).split(" ")
+def _deblobify (blob, decompressOnly=False):
+  v = zlib.decompress(blob)
+  if decompressOnly: return v
+  v = v.split(" ")
   d = {}
   for i in range(0, len(v), 2): d[util.decode(v[i])] = util.decode(v[i+1])
   return d
@@ -391,14 +393,17 @@ def get (identifier):
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def harvest (owner=None, since=None, start=None, maximum=None):
+def harvest (owner=None, since=None, start=None, maximum=None,
+  decompressOnly=False):
   """
   Returns a list of all identifiers in the store database in
   lexicographic order; each identifier is returned as a tuple
   (identifier, metadata).  In the tuple, 'identifier' is an
   unqualified ARK and 'metadata' is a dictionary of element (name,
-  value) pairs.  If 'owner' is supplied, it should be a user
-  persistent identifier (e.g., "ark:/99166/foo"), and only that user's
+  value) pairs (if 'decompressOnly' is false) or left as an
+  uncompressed but otherwise encoded string (if 'decompressOnly' is
+  true).  If 'owner' is supplied, it should be a user persistent
+  identifier (e.g., "ark:/99166/foo"), and only that user's
   identifiers are returned.  If 'since' is supplied, it should be a
   Unix timestamp, and only those identifiers updated more recently
   than that are returned.  If 'start' is supplied, it should be a
@@ -436,7 +441,8 @@ def harvest (owner=None, since=None, start=None, maximum=None):
     c = connection.cursor()
     _execute(c, ("SELECT identifier, metadata FROM identifier%s " +\
       "ORDER BY identifier%s") % (constraints, limit), tuple(values))
-    return [(i, _deblobify(m)) for i, m in c.fetchall()]
+    return [(i, _deblobify(m, decompressOnly=decompressOnly))\
+      for i, m in c.fetchall()]
   except Exception, e:
     log.otherError("store.harvest", e)
     tainted = True

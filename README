@@ -139,7 +139,12 @@ process.  (Actually, this directive applies to all mod_wsgi
 applications within the same server or virtual host.)  The name is
 arbitrary.
 
-    WSGIDaemonProcess site-1
+    WSGIDaemonProcess site-1 threads=50 shutdown-timeout=60
+
+The parameters are not required, but may be desirable.  The default
+number of threads is 15, which may be too low if clients submit many
+requests concurrently.  The default shutdown timeout is 5 seconds; a
+longer timeout gives current operations more time to finish cleanly.
 
 3. Map EZID URLs to mod_wsgi+Django.
 
