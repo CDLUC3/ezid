@@ -430,7 +430,7 @@ def _validateMetadata2 (owner, metadata):
         id = idmap.getUserId(co)
       except Exception, e:
         if type(e) is exceptions.AssertionError and\
-          "unknown user" in e.message:
+          "unknown user" in str(e):
           return "no such user in co-owner list"
         else:
           raise

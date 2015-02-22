@@ -131,7 +131,7 @@ def _validateUser (v):
   try:
     return idmap.getUserId(v)
   except Exception, e:
-    if type(e) is exceptions.AssertionError and "unknown user" in e.message:
+    if type(e) is exceptions.AssertionError and "unknown user" in str(e):
       raise _ValidationException("no such user")
     else:
       raise
@@ -140,7 +140,7 @@ def _validateGroup (v):
   try:
     return idmap.getGroupId(v)
   except Exception, e:
-    if type(e) is exceptions.AssertionError and "unknown group" in e.message:
+    if type(e) is exceptions.AssertionError and "unknown group" in str(e):
       raise _ValidationException("no such group")
     else:
       raise

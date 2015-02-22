@@ -86,7 +86,7 @@ def _execute (cursor, statement, values=()):
     try:
       cursor.execute(statement, values)
     except sqlite3.OperationalError, e:
-      if e.message == "database is locked":
+      if str(e) == "database is locked":
         time.sleep(_busySleep)
       else:
         raise e

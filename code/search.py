@@ -155,7 +155,7 @@ def _begin (cursor):
       # statements bombing out mid-transaction.
       cursor.execute("BEGIN IMMEDIATE")
     except sqlite3.OperationalError, e:
-      if e.message != "database is locked": raise e
+      if str(e) != "database is locked": raise e
     else:
       return True
 
@@ -164,7 +164,7 @@ def _commit (cursor):
     try:
       cursor.execute("COMMIT")
     except sqlite3.OperationalError, e:
-      if e.message != "database is locked": raise e
+      if str(e) != "database is locked": raise e
     else:
       break
 

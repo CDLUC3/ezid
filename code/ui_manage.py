@@ -145,7 +145,7 @@ def _addDataciteXmlToDict(id_metadata, d):
   if d['id_text'].startswith("doi:"):
     d['profiles'][:] = [p for p in d['profiles'] if not p.name == 'erc']
   datacite_obj = objectify.fromstring(id_metadata["datacite"])
-  if datacite_obj:
+  if datacite_obj is not None:
     d['datacite_obj'] = datacite_obj 
     d['manual_profile'] = True
     d['manual_template'] = 'create/_datacite_xml.html'

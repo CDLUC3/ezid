@@ -106,7 +106,7 @@ def advanced_form_processing(request, d):
         django.conf.settings.PROJECT_ROOT, "static", "datacite_emptyRecord.xml"))
       obj = objectify.parse(f).getroot()
       f.close()
-      if obj:
+      if obj is not None:
         d['datacite_obj'] = obj
       else:
         django.contrib.messages.error(request, "Unable to render empty datacite form using "\
