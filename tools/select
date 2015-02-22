@@ -451,7 +451,7 @@ except AssertionError, e:
   else:
     q = ""
   sys.stderr.write(("select: query parse error at '***': %s\n" +\
-    "QUERY:%s ***%s\n") % (e.message, c, q))
+    "QUERY:%s ***%s\n") % (str(e), c, q))
   sys.exit(1)
 
 if options.gunzipInput:

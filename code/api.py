@@ -112,7 +112,7 @@ def _readInput (request):
     try:
       return anvl.parse(request.body.decode("UTF-8"))
     except anvl.AnvlParseException, e:
-      return "error: bad request - ANVL parse error (%s)" % e.message
+      return "error: bad request - ANVL parse error (%s)" % str(e)
     except Exception:
       return "error: bad request - character decode error"
   else:

@@ -428,7 +428,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
   try:
     newRecord = formRecord("doi:" + doi, m)
   except AssertionError, e:
-    return "DOI metadata requirements not satisfied: " + e.message
+    return "DOI metadata requirements not satisfied: " + str(e)
   if newRecord == oldRecord and not forceUpload: return None
   if not _enabled: return None
   # To hide transient network errors, we make multiple attempts.
