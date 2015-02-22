@@ -232,17 +232,21 @@ def encode4 (s):
 class PercentDecodeError (Exception):
   pass
 
-_decodePattern = re.compile("%([0-9a-fA-F][0-9a-fA-F])?")
-
-def _decodeRewriter (m):
-  if len(m.group(0)) == 3:
-    return chr(int(m.group(0)[1:], 16))
-  else:
-    raise PercentDecodeError
+_hexDigits = "0123456789ABCDEFabcdef"
+_hexMapping = dict((a+b, chr(int(a+b, 16))) for a in _hexDigits\
+  for b in _hexDigits)
 
 def decode (s):
   """
   Decodes a string that was encoded by encode{1,2,3,4}.  Raises
   PercentDecodeError (defined in this module) and UnicodeDecodeError.
   """
-  return _decodePattern.sub(_decodeRewriter, s).decode("UTF-8")
+  l = s.split("%")
+  r = [l[0]]
+  for p in l[1:]:
+    try:
+      r.append(_hexMapping[p[:2]])
+      r.append(p[2:])
+    except KeyError:
+      raise PercentDecodeError()
+  return "".join(r).decode("UTF-8")
