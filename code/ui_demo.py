@@ -13,7 +13,7 @@ def simple(request):
   d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['namespace'].lower()) #must be done before calliung form processing
   r = ui_create.simple_form_processing(request, d)
   if r == 'bad_request':
-    uic.badRequest()
+    return uic.badRequest()
   elif r.startswith('created_identifier:'):
     return redirect("/id/" + urllib.quote(r.split()[1], ":/"))
   else:
