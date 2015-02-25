@@ -4,4 +4,4 @@ DEPLOYMENT_LEVEL = "staging"
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["ezid-stg.cdlib.org"]
+ALLOWED_HOSTS = ["ias-ezid-stg.cdlib.org"]
