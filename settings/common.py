@@ -25,7 +25,8 @@ TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
   ("Greg Janee", "gjanee@ucop.edu"),
-  ("John Kunze", "john.kunze@ucop.edu")
+  ("John Kunze", "john.kunze@ucop.edu"),
+  ("Andy Mardesich", "andy.mardesich@ucop.edu")
 )
 MANAGERS = ADMINS
 
