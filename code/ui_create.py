@@ -261,8 +261,7 @@ def _assembleMetadata (request, stts, return_val):
     return { "_profile": 'datacite',
       '_target' : uic.fix_target(request.POST['_target']),
       "_status": stts,
-      "_export": ("yes" if 'export' in request.POST and\
-                  request.POST['export']== "yes" or
-                  request.POST['_export'] == 'yes' else "no"),
+      "_export": ("yes" if request.POST.get("export", "no") == "yes" or
+                  request.POST.get("_export", "no") == "yes" else "no"),
       "datacite": return_val }
  
