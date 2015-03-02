@@ -15,6 +15,7 @@
 
 import base64
 import django.conf
+import hashlib
 import ldap
 import re
 import threading
@@ -29,15 +30,18 @@ _ldapServer = None
 _numAttempts = None
 _reattemptDelay = None
 _lock = threading.Lock()
-_ldapCache = None
+_ldapCache = None # { username: (hashed password or None, time,
+                  #   AuthenticatedUser), ... }
 _userDnTemplate = None
 _adminUsername = None
 _adminPassword = None
 _users = None
+_cachedPasswordLifetime = None
 
 def _loadConfig ():
   global _ldapEnabled, _ldapServer, _numAttempts, _reattemptDelay, _ldapCache
   global _userDnTemplate, _adminUsername, _adminPassword, _users
+  global _cachedPasswordLifetime
   _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
   _ldapServer = config.config("ldap.server")
   _numAttempts = int(config.config("ldap.num_attempts"))
@@ -54,6 +58,7 @@ def _loadConfig ():
     config.config("user_%s.id" % k), config.config("user_%s.group" % k),
     groupIds[config.config("user_%s.group" % k)])]\
     for k in config.config("users.keys").split(","))
+  _cachedPasswordLifetime = int(config.config("ldap.cached_password_lifetime"))
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -92,6 +97,21 @@ def _getAttributes (server, dn):
   return r
 
 def _authenticateLdap (username, password, authenticateAsAdmin=False):
+  # Authenticate against a cached password, if one exists and it
+  # hasn't expired.
+  if not authenticateAsAdmin:
+    _lock.acquire()
+    try:
+      if username in _ldapCache:
+        hp, t, au = _ldapCache[username]
+        if hp != None and int(time.time()) < t+_cachedPasswordLifetime:
+          if hashlib.sha1(password).digest() == hp:
+            return au
+          else:
+            return None
+    finally:
+      _lock.release()
+  # Looks like we have to authenticate against LDAP.
   l = None
   try:
     if authenticateAsAdmin:
@@ -120,11 +140,20 @@ def _authenticateLdap (username, password, authenticateAsAdmin=False):
           time.sleep(_reattemptDelay)
       else:
         break
+    # Authentication successful.  Return a cached AuthenticatedUser
+    # object, if there is one, and if so, update the cached password.
     _lock.acquire()
     try:
-      if username in _ldapCache: return _ldapCache[username]
+      if username in _ldapCache:
+        hp, t, au = _ldapCache[username]
+        if not authenticateAsAdmin:
+          _ldapCache[username] = (hashlib.sha1(password).digest(),
+            int(time.time()), au)
+        return au
     finally:
       _lock.release()
+    # Nothing in the cache, so LDAP must be queried to build an
+    # AuthenticatedUser object.
     if authenticateAsAdmin: userDn = _userDnTemplate % _escape(username)
     try:
       ua = _getAttributes(l, userDn)
@@ -133,6 +162,7 @@ def _authenticateLdap (username, password, authenticateAsAdmin=False):
         return None
       else:
         raise
+    # Sanity checks.
     if "ezidUser" not in ua["objectClass"]: return None
     uid = ua["uid"]
     assert " " not in uid, "invalid character in uid, DN='%s'" % userDn
@@ -160,9 +190,14 @@ def _authenticateLdap (username, password, authenticateAsAdmin=False):
       "overloaded ARK identifier, DN='%s'" % userDn
     au = AuthenticatedUser((uid, userArkId, userDn),
       (gid, groupArkId, groupDn))
+    # Cache the password and AuthenticatedUser object.
     _lock.acquire()
     try:
-      _ldapCache[username] = au
+      if authenticateAsAdmin:
+        _ldapCache[username] = (None, None, au)
+      else:
+        _ldapCache[username] = (hashlib.sha1(password).digest(),
+          int(time.time()), au)
     finally:
       _lock.release()
     return au
@@ -241,7 +276,7 @@ def getAuthenticatedUser (username):
   if _ldapEnabled:
     _lock.acquire()
     try:
-      if username in _ldapCache: return _ldapCache[username]
+      if username in _ldapCache: return _ldapCache[username][2]
     finally:
       _lock.release()
     au = _authenticateLdap(username, _adminPassword, authenticateAsAdmin=True)
