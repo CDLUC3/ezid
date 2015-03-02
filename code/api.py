@@ -89,6 +89,7 @@ import ezidadmin
 import noid_egg
 import store
 import userauth
+import util
 
 _adminUsername = None
 _idlewaitSleep = None
@@ -110,11 +111,14 @@ def _readInput (request):
       ct[1][8:].upper() != "UTF-8":
       return "error: bad request - unsupported character encoding"
     try:
-      return anvl.parse(request.body.decode("UTF-8"))
+      s = request.body.decode("UTF-8")
+      if not util.validateXmlSafeCharset(s):
+        return "error: bad request - disallowed Unicode character"
+      return anvl.parse(s)
+    except UnicodeDecodeError:
+      return "error: bad request - character decoding error"
     except anvl.AnvlParseException, e:
       return "error: bad request - ANVL parse error (%s)" % str(e)
-    except Exception:
-      return "error: bad request - character decode error"
   else:
     return {}
 
