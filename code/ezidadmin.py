@@ -652,6 +652,7 @@ def disableUser (username):
     if "ezidUser" not in r[0][1]["objectClass"]: return "No such user."
     if "userPassword" in r[0][1]:
       l.modify_s(dn, [(ldap.MOD_DELETE, "userPassword", None)])
+    userauth.clearLdapCache(username)
     django_util.deleteSessions(username)
     return None
   except Exception, e:

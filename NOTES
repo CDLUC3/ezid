@@ -51,10 +51,12 @@ Caching is employed in several places:
     shoulder database file.
 
   userauth._ldapCache authentication cache
-    A dictionary that maps local usernames to AuthenticatedUser
-    objects.  Loaded on demand as usernames are encountered.  Emptied
-    when EZID is reloaded.  Also, individual entries are removed when
-    users change groups.
+    A dictionary that maps local usernames to (hashed password, time,
+    AuthenticatedUser) tuples.  (The time in a tuple effectively puts
+    a lifetime on the associated cached password.)  Loaded on demand
+    as usernames are encountered.  Emptied when EZID is reloaded.
+    Also, individual entries are removed when users change passwords,
+    change groups, etc.
 
   policy._groups cache
     A dictionary that maps groups (identified by tuples; see above) to

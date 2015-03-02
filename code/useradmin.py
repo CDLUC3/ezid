@@ -28,6 +28,7 @@ import idmap
 import log
 import policy
 import search
+import userauth
 
 _ezidUrl = None
 _ldapEnabled = None
@@ -129,6 +130,7 @@ def resetPassword (username, password):
       "unexpected return from LDAP search command, DN='%s'" % dn
     if "ezidUser" not in r[0][1]["objectClass"]: return "No such user."
     l.passwd_s(dn, None, password)
+    userauth.clearLdapCache(username)
     return None
   except Exception, e:
     log.otherError("useradmin.resetPassword", e)
@@ -355,6 +357,7 @@ def setPassword (username, old, new):
       l.passwd_s(dn, old, new)
     except ldap.INVALID_CREDENTIALS:
       return "Incorrect current password."
+    userauth.clearLdapCache(username)
     return None
   except Exception, e:
     log.otherError("useradmin.setPassword", e)
