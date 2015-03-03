@@ -284,3 +284,10 @@ def validateXmlSafeCharset (s):
   that are accepted by XML 1.1.
   """
   return _illegalUnichrsRE.search(s) == None
+
+def sanitizeXmlSafeCharset (s):
+  """
+  Returns a copy of the given Unicode string in which characters not
+  accepted by XML 1.1 have been replaced with spaces.
+  """
+  return _illegalUnichrsRE.sub(" ", s)
