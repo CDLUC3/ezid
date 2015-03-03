@@ -111,10 +111,8 @@ def _readInput (request):
       ct[1][8:].upper() != "UTF-8":
       return "error: bad request - unsupported character encoding"
     try:
-      s = request.body.decode("UTF-8")
-      if not util.validateXmlSafeCharset(s):
-        return "error: bad request - disallowed Unicode character"
-      return anvl.parse(s)
+      return anvl.parse(
+        util.sanitizeXmlSafeCharset(request.body.decode("UTF-8")))
     except UnicodeDecodeError:
       return "error: bad request - character decoding error"
     except anvl.AnvlParseException, e:
