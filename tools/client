@@ -76,9 +76,9 @@ import urllib2
 
 KNOWN_SERVERS = {
   "l": "http://localhost:8000",
-  "d": "http://ezid-dev.cdlib.org",
-  "s": "http://ezid-stg.cdlib.org",
-  "w": "http://ezid-wf.cdlib.org",
+  "d": "http://ias-ezid-dev.cdlib.org",
+  "s": "http://ias-ezid-stg.cdlib.org",
+  "w": "http://ias-ezid-wf-stg.cdlib.org",
   "p": "http://ezid.cdlib.org"
 }
 
