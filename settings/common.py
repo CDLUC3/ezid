@@ -14,6 +14,9 @@ SETTINGS_DIR = os.path.join(PROJECT_ROOT, "settings")
 EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "ezid.conf")
 EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
 LOGGING_CONFIG_FILE = "logging.server.conf"
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, "static")
+MEDIA_URL = "static/"
+LOCALE_PATHS = os.path.join(MEDIA_ROOT, "locale")
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))
 
@@ -47,9 +50,6 @@ DATABASES = {
 
 TIME_ZONE = "America/Los_Angeles"
 TIME_FORMAT_UI_METADATA = "%Y-%m-%d %H:%M:%S"
-
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, "static")
-MEDIA_URL = "static/"
 
 def _loadSecretKey ():
   try:
@@ -90,7 +90,8 @@ TEMPLATE_LOADERS =\
 TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
 TEMPLATE_CONTEXT_PROCESSORS =\
   ("django.contrib.messages.context_processors.messages",
-   "django.core.context_processors.request")
+   "django.core.context_processors.request",
+   "django.core.context_processors.i18n")
 
 INSTALLED_APPS = (
   "django.contrib.sessions",
