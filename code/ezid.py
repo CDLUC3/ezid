@@ -539,7 +539,7 @@ def createDoi (doi, user, group, metadata={}):
     if "_x" in m:
       return "error: bad request - identifier registered with CrossRef " +\
         "must be exported"
-    if "_is" not in m and "crossref" not in m:
+    if "_is" not in m and m.get("crossref", "").strip() == "":
       return "error: bad request - CrossRef registration requires " +\
         "'crossref' deposit metadata"
   tid = uuid.uuid1()
@@ -593,7 +593,7 @@ def createDoi (doi, user, group, metadata={}):
       if m.get("_x", "") == "no":
         datacite.deactivate(doi)
         log.progress(tid, "datacite.deactivate")
-      if "crossref" in m:
+      if m.get("crossref", "").strip() != "":
         # Before storing CrossRef metadata, fill in the (:tba)
         # sections that were introduced in the
         # validation/normalization process, but only if the identifier
@@ -1219,8 +1219,8 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
       # up-to-date, but only if the identifier is not reserved.
       # Unfortunately, doing this with the current code architecture
       # requires that the metadata be re-parsed and re-serialized.
-      crm = d.get("crossref", m.get("crossref", None))
-      if crm != None and newStatus != "reserved" and (iStatus == "reserved" or
+      crm = d.get("crossref", m.get("crossref", "")).strip()
+      if crm != "" and newStatus != "reserved" and (iStatus == "reserved" or
         "crossref" in d or "_st" in d):
         d["crossref"] = crossref.replaceTbas(crm, m["_s"][4:],
           d.get("_st", m["_st"]))
