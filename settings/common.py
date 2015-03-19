@@ -4,6 +4,7 @@ import os.path
 import random
 import socket
 import sys
+from django.utils.translation import ugettext_lazy as _
 
 # EZID-specific paths...
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
@@ -25,6 +26,11 @@ ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, os.path.join(PROJECT_ROOT,
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
+LANGUAGES = (
+    ('en-US', _('English')),
+    ('fr-CA', _('Candian French')),
+)
 
 ADMINS = (
   ("Greg Janee", "gjanee@ucop.edu"),
@@ -71,8 +77,9 @@ def _loadSecretKey ():
 SECRET_KEY = _loadSecretKey()
 
 MIDDLEWARE_CLASSES = (
-  "django.middleware.common.CommonMiddleware",
   "django.contrib.sessions.middleware.SessionMiddleware",
+  "django.middleware.locale.LocaleMiddleware",
+  "django.middleware.common.CommonMiddleware",
   "django.contrib.messages.middleware.MessageMiddleware",
   "middleware.SslMiddleware"
 )

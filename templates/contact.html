@@ -1,49 +1,66 @@
 {% extends "layouts/base.html" %}
-
-{% block title %}Contact us{% endblock %}
+{% load i18n %}
+{% trans "Contact Us" as t_title %}
+{% block title %}{{ t_title }}{% endblock %}
 
 {% block content %}
 
+{% get_current_language as LANGUAGE_CODE %}
+<!-- Current language: {{ LANGUAGE_CODE }} -->
+<p>{% trans "TESTING: Welcome to our page. Language: " %}{{ LAGUAGE_CODE }}</p>
+
+{% language 'fr' %}
+    {% get_current_language as LANGUAGE_CODE %}
+    <!-- Current language: {{ LANGUAGE_CODE }} -->
+    <p>{% trans "TESTING: Welcome to our page. Language: " %}{{ LANGUAGE_CODE }}</p>
+{% endlanguage %}
+
+{% get_language_info for LANGUAGE_CODE as lang %}
+Language code: {{ lang.code }}<br />
+Name of language: {{ lang.name_local }}<br />
+Name in English: {{ lang.name }}<br />
+Bi-directional: {{ lang.bidi }}
+
 <div id="pwreset" class="grid_12">
 
-	<h1 id="title">Contact Us</h1>
+	<h1 id="title">{{ t_title }}</h1>
 
 	<p style="width:500px">
-		Please fill out this form if you would like more information
+		{% trans "Please fill out this form if you would like more information
 		about our services or have a specific question.
-		If you have a comment we are always happy to hear feedback.
+		If you have a comment we are always happy to hear feedback." %}
 	</p>
 
 	<form name="contact" action="{% url "ui.contact" %}" method="post">
-		<label for="your_name" class="left">Your name:</label>
+		<label for="your_name" class="left">{% trans "Your Name" %}:</label>
 		<div class="field_right">
 			<input type="text" name="your_name" value="{{ your_name }}" maxlength="200" size="40" />
 		</div>
 		
 		<label for="url" class="trapper_keeper">Your url:</label>
 		<div class="trapper_keeper">
-			<input type="text" name="url" value="" maxlength="200" size="40" /> * Please leave blank
+			<input type="text" name="url" value="" maxlength="200" size="40" /> * {% trans "Please leave blank. This field is meant to filter out Spam Bots." %}
 		</div>
 
-		<label for="email" class="left">Your email:</label>
+		<label for="email" class="left">{% trans "Your Email" %}:</label>
 		<div class="field_right">
 			<input type="text" name="email" value="{{ email }}" maxlength="200" size="40" />
 		</div>
 
-		<label for="affiliation" class="left">Your institution:</label>
+		<label for="affiliation" class="left">{% trans "Your Institution" %}:</label>
 		<div class="field_right">
 			<input type="text" name="affiliation" value="{{ affiliation }}" maxlength="200" size="40" />
 		</div>
 		
 		<label class="left">&nbsp;</label>
 		<div class="field_right" style="width:400px;">
-			Please indicate your question or comment:<br/>
+			{% trans "Please indicate your question or comment" %}:<br/>
 			<textarea rows="10" cols="50" name="comment" style="margin-bottom:16px;">{{comment}}</textarea>
 		</div>
 		
 		<div style="clear:both"></div>
 
-		<label for="hear_about" class="left">How did you hear about us?</label>
+		<label for="hear_about" class="left">{% trans "How did you hear about us?" %}</label>
 		<div class="field_right">
 			<select name="hear_about" id="hear_about">
 				{% for tup in heard %}
@@ -57,7 +74,9 @@
 		</div>
 		<label class="left"></label>
 		<div class="field_right">
-			<input type="submit" value="Submit" />
+			{# Translators: This is the Submit button #}
+			{% trans "Submit" as t_submit context "Button text"%}
+			<input type="submit" value="{{ t_submit }}" />
 		</div>
 
 	</form>
