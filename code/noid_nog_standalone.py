@@ -47,7 +47,7 @@ class Minter (object):
       s = c.readlines()
     finally:
       if c: c.close()
-    assert len(s) >= 2 and s[0].startswith("id:") and\
-      s[-2] == "nog-status: 0\n",\
+    assert len(s) >= 2 and (s[0].startswith("id:") or\
+      s[0].startswith("s:")) and s[-2] == "nog-status: 0\n",\
       "unexpected return from minter, output follows\n" + "".join(s)
-    return s[0][3:].strip()
+    return s[0].split(":", 1)[1].strip()
