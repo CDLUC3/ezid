@@ -1,34 +1,46 @@
 {% extends "layouts/base.html" %}
 {% load i18n %}
-{% trans "Contact Us" as t_title %}
-{% block title %}{{ t_title }}{% endblock %}
+{% comment %}
+***** NOT WORKING ****}
+{% trans "Contact Us" as t2_title %}
+{% endcomment %}
+{% block title %}{%trans "Contact Us" %}{% endblock %}
 
 {% block content %}
 
+{% comment %}
+***** NOT WORKING ****}
 {% get_current_language as LANGUAGE_CODE %}
 <!-- Current language: {{ LANGUAGE_CODE }} -->
 <p>{% trans "TESTING: Welcome to our page. Language: " %}{{ LAGUAGE_CODE }}</p>
+{% endcomment %}
 
+{% comment %}
+This tag forces language:
 {% language 'fr' %}
     {% get_current_language as LANGUAGE_CODE %}
     <!-- Current language: {{ LANGUAGE_CODE }} -->
     <p>{% trans "TESTING: Welcome to our page. Language: " %}{{ LANGUAGE_CODE }}</p>
 {% endlanguage %}
+{% endcomment %}
 
+<!-- 
 {% get_language_info for LANGUAGE_CODE as lang %}
 Language code: {{ lang.code }}<br />
 Name of language: {{ lang.name_local }}<br />
 Name in English: {{ lang.name }}<br />
-Bi-directional: {{ lang.bidi }}
+Bi-directional: {{ lang.bidi }}<br />
+request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
+-->
+
+{% trans "Contact Us" as t_title %}
 
 <div id="pwreset" class="grid_12">
 
 	<h1 id="title">{{ t_title }}</h1>
 
 	<p style="width:500px">
-		{% trans "Please fill out this form if you would like more information
-		about our services or have a specific question.
-		If you have a comment we are always happy to hear feedback." %}
+		{% blocktrans %}Please fill out this form if you would like more information about our services or have a specific question. If you have a comment we are always happy to hear feedback.{% endblocktrans %}
 	</p>
 
 	<form name="contact" action="{% url "ui.contact" %}" method="post">
@@ -64,11 +76,11 @@ Bi-directional: {{ lang.bidi }}
 		<div class="field_right">
 			<select name="hear_about" id="hear_about">
 				{% for tup in heard %}
-					<option value="{{ tup.0 }}"
+					<option value="{% trans tup.0 %}"
 						{% if tup.0 == hear_about %}
 							selected="selected"
 						{% endif %}
-						>{{ tup.1 }}</option>
+						>{% trans tup.1 %}</option>
 				{% endfor %}
 			</select>
 		</div>

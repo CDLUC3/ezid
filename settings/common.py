@@ -17,7 +17,7 @@ EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
 LOGGING_CONFIG_FILE = "logging.server.conf"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "static")
 MEDIA_URL = "static/"
-LOCALE_PATHS = os.path.join(MEDIA_ROOT, "locale")
+LOCALE_PATHS = (os.path.join(MEDIA_ROOT, "locale"),)
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))
 
@@ -28,7 +28,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 LANGUAGES = (
-    ('en-US', _('English')),
+    ('en', _('English')),
     ('fr-CA', _('Candian French')),
 )
 

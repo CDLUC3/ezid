@@ -14,6 +14,7 @@ import urllib
 import ezid
 import datacite
 import metadata
+from django.utils.translation import ugettext as _
 
 def ajax_hide_alert(request):
   request.session['hide_alert'] = True
@@ -21,11 +22,12 @@ def ajax_hide_alert(request):
 
 def contact(request):
   d = { 'menu_item': 'ui_null.null'}
-  d['heard']      =   ( ("website", "University website"), \
-                        ("conference", "Conference"), \
-                        ("colleagues", "Colleagues"), \
-                        ("webinar", "Webinar"), \
-                        ("other", "Other") )
+  # Translators: These options appear in drop-down on templates/contact.html
+  d['heard']      =   ( ("website", _("University website")), \
+                        ("conference", _("Conference")), \
+                        ("colleagues", _("Colleagues")), \
+                        ("webinar", _("Webinar")), \
+                        ("other", _("Other")) )
   if request.method == "GET":
     d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
   elif request.method == "POST":
@@ -37,13 +39,14 @@ def contact(request):
     d.update(uic.extract(request.POST, ['your_name', 'email', 'affiliation', 'comment', 'hear_about']))
     errored = False
     if P['your_name'] == '':
-      django.contrib.messages.error(request, "Please fill in your name.")
+      # Translators: Validation output for templates/contact.html
+      django.contrib.messages.error(request, _("Please fill in your name."))
       errored = True
     if P['email'] == '' or not re.match('^.+\@.+\..+$', P['email']):
-      django.contrib.messages.error(request, "Please fill in a valid email address.")
+      django.contrib.messages.error(request, _("Please fill in a valid email address."))
       errored = True
     if P['comment'].strip() == '':
-      django.contrib.messages.error(request, "Please fill in a question or comment.")
+      django.contrib.messages.error(request, _("Please fill in a question or comment."))
       errored = True
     if errored:
       return uic.render(request, 'contact', d)
@@ -69,7 +72,7 @@ def contact(request):
       django.contrib.messages.success(request, "Message sent")
       d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
     except:
-      django.contrib.messages.error(request, "There was a problem sending your email")
+      django.contrib.messages.error(request, _("There was a problem sending your email"))
       return uic.render(request, 'contact', d)
     #django.core.mail.send_mail("EZID password reset request", message,
     #  django.conf.settings.SERVER_EMAIL, [emailAddress])
@@ -136,9 +139,10 @@ def tombstone (request):
   if not m["_status"].startswith("unavailable"):
     return uic.redirect("/id/%s" % urllib.quote(id, ":/"))
   if "|" in m["_status"]:
-    reason = "Not available: " + m["_status"].split("|", 1)[1].strip()
+    # Translators: Output for tombstone page (unavailable IDs)
+    reason = "_(Not available: )" + m["_status"].split("|", 1)[1].strip()
   else:
-    reason = "Not available"
+    reason = "_(Not available)"
   htmlMode = False
   if m["_profile"] == "datacite" and "datacite" in m:
     md = datacite.dcmsRecordToHtml(m["datacite"])

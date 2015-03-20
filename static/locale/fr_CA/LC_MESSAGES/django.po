@@ -1,0 +1,113 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-20 11:49-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Translators: These options appear in drop-down on templates/contact.html
+#: code/ui.py:26
+msgid "University website"
+msgstr "Site de l'Université"
+
+#: code/ui.py:27
+msgid "Conference"
+msgstr "Conférence"
+
+#: code/ui.py:28
+msgid "Colleagues"
+msgstr "Collègues"
+
+#: code/ui.py:29
+msgid "Webinar"
+msgstr "Webinar"
+
+#: code/ui.py:30
+msgid "Other"
+msgstr "Autre"
+
+#. Translators: Validation output for templates/contact.html
+#: code/ui.py:43
+msgid "Please fill in your name."
+msgstr "Se il vous plaît remplir votre nom."
+
+#: code/ui.py:46
+msgid "Please fill in a valid email address."
+msgstr "Se il vous plaît saisir une adresse email valide."
+
+#: code/ui.py:49
+msgid "Please fill in a question or comment."
+msgstr "Se il vous plaît remplir dans une question ou un commentaire."
+
+#: code/ui.py:75
+msgid "There was a problem sending your email"
+msgstr "Il y avait un problème d'envoyer votre courriel"
+
+#: settings/common.py:31
+msgid "English"
+msgstr "Anglais"
+
+#: settings/common.py:32
+msgid "Candian French"
+msgstr "Candian Français"
+
+#: templates/contact.html:7 templates/contact.html.py:33
+msgid "Contact Us"
+msgstr "Contactez-nous"
+
+#: templates/contact.html:40
+msgid ""
+"Please fill out this form if you would like more information about our "
+"services or have a specific question. If you have a comment we are always "
+"happy to hear feedback."
+msgstr ""
+"Se il vous plaît remplir ce formulaire si vous souhaitez plus d'informations "
+"sur nos services ou avez une question spécifique. Si vous avez un "
+"commentaire Nous sommes toujours heureux d'entendre les commentaires."
+
+#: templates/contact.html:44
+msgid "Your Name"
+msgstr "Votre Nom"
+
+#: templates/contact.html:51
+msgid "Please leave blank. This field is meant to filter out Spam Bots."
+msgstr ""
+"Se il vous plaît laissez le champ vide. Ce champ est destiné à filtrer Spam "
+"Bots."
+
+#: templates/contact.html:54
+msgid "Your Email"
+msgstr "Votre Email"
+
+#: templates/contact.html:59
+msgid "Your Institution"
+msgstr "Votre Institution"
+
+#: templates/contact.html:66
+msgid "Please indicate your question or comment"
+msgstr "Se il vous plaît indiquer votre question ou commentaire"
+
+#: templates/contact.html:72
+msgid "How did you hear about us?"
+msgstr "Comment avez-vous entendu parler de nous?"
+
+#. Translators: This is the Submit button
+#: templates/contact.html:87
+msgctxt "Button text"
+msgid "Submit"
+msgstr "Soumettre"
+
+#~ msgid "TESTING: Welcome to our page. Language: "
+#~ msgstr "ESSAI: Bienvenue sur notre page. langue: "

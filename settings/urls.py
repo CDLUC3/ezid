@@ -1,5 +1,6 @@
 import django.conf
 import django.conf.urls
+from django.conf.urls import include
 
 urlpatterns = django.conf.urls.patterns("",
 
@@ -41,6 +42,8 @@ urlpatterns = django.conf.urls.patterns("",
   ("^contact$", "ui.contact"),
   ("^doc/[\w.]*\\.(?:html|py)$", "ui.doc"),
   ("^tombstone/id/", "ui.tombstone"),
+  ("^i18n/", include('django.conf.urls.i18n')),
+  # ("^i18n/", lambda x: HttpResponse("Test")),
 
   # SHARED BETWEEN UI AND API
   ("^id/", "dispatch.d", { "uiFunction": "ui_manage.details",
