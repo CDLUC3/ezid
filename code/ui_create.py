@@ -98,28 +98,20 @@ def advanced_form_processing(request, d):
   d['remainder_box_default'] = uic.remainder_box_default
   #selects current_profile based on parameters or profile preferred for prefix type
   d['manual_profile'] = False
+  choice_is_doi = False 
+  if (('shoulder' in request.REQUEST and request.REQUEST['shoulder'].startswith("doi:")) \
+    or (len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'))):
+      choice_is_doi = True 
   if 'current_profile' in request.REQUEST:
     if request.REQUEST['current_profile'] in uic.manual_profiles:
-      d['manual_profile'] = True
-      d['current_profile_name'] = request.REQUEST['current_profile']
-      f = open(os.path.join(
-        django.conf.settings.PROJECT_ROOT, "static", "datacite_emptyRecord.xml"))
-      obj = objectify.parse(f).getroot()
-      f.close()
-      if obj is not None:
-        d['datacite_obj'] = obj
-      else:
-        django.contrib.messages.error(request, "Unable to render empty datacite form using "\
-          "file: " + er)
-      d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
-      d['current_profile'] = d['current_profile_name']
+      d = _engage_datacite_xml_profile(request, d, request.REQUEST['current_profile'])
     else: 
       d['current_profile'] = metadata.getProfile(request.REQUEST['current_profile'])
       if d['current_profile'] == None:
         d['current_profile'] = metadata.getProfile('erc')
   else:
     if len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'):
-      d['current_profile'] = metadata.getProfile('datacite')
+      d = _engage_datacite_xml_profile(request, d, 'datacite_xml')
     else:
       d['current_profile'] = metadata.getProfile('erc')
   if d['manual_profile'] == False:
@@ -128,12 +120,12 @@ def advanced_form_processing(request, d):
   d['profiles'] = [p for p in metadata.getProfiles()[1:] if p.editable]
   profs = [(p.name, p.displayName, ) for p in d['profiles']] + uic.manual_profiles.items()
   d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
-  # not shown in advanced.
-  d['profile_names'].remove(('datacite', 'DataCite')) # Use 'datacite_xml', not 'datacite'
+  # 'datacite_xml' used for advanced profile instead of 'datacite'
+  d['profile_names'].remove(('datacite','DataCite'))
   # [TODO: Enhance advanced DOI ERC profile to allow for elements ERC + datacite.publisher or 
   #    ERC + dc.publisher.] For now, just hide this profile. 
-  if 'shoulder' in request.REQUEST and request.REQUEST['shoulder'].startswith("doi:"):
-    d['profile_names'].remove(('erc', 'ERC'))
+  if choice_is_doi: 
+    d['profile_names'].remove(('erc','ERC'))
  
   if request.method == "POST":
     if "current_profile" not in request.POST or "shoulder" not in request.POST: return 'bad_request'
@@ -170,6 +162,24 @@ def advanced_form_processing(request, d):
         django.contrib.messages.error(request, "There was an error creating your identifier: "  + err_msg)
         return 'edit_page'
   return 'edit_page'
+
+def _engage_datacite_xml_profile(request, d, profile_name):
+  d['manual_profile'] = True
+  d['current_profile_name'] = profile_name
+  ''' Feed in a whole, empty XML record so that elements can be properly
+      displayed in form fields on manage/edit page ''' 
+  f = open(os.path.join(
+    django.conf.settings.PROJECT_ROOT, "static", "datacite_emptyRecord.xml"))
+  obj = objectify.parse(f).getroot()
+  f.close()
+  if obj is not None:
+    d['datacite_obj'] = obj
+  else:
+    django.contrib.messages.error(request, "Unable to render empty datacite form using "\
+      "file: " + f.name)
+  d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
+  d['current_profile'] = d['current_profile_name']
+  return d
 
 def ajax_advanced(request):
   """Takes the request and processes create datacite advanced (xml) form
