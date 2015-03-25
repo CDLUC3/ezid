@@ -181,10 +181,6 @@ def _engage_datacite_xml_profile(request, d, profile_name):
   d['current_profile'] = d['current_profile_name']
   return d
 
-# Profiles not shown in advanced ID creation page.
-def _clean_from_adv_profile_choices(d, profile_name, profile_display_name):
-  return d
-
 def ajax_advanced(request):
   """Takes the request and processes create datacite advanced (xml) form
   from both create/demo and edit areas"""
