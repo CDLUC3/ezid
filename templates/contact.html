@@ -76,11 +76,11 @@ request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
 		<div class="field_right">
 			<select name="hear_about" id="hear_about">
 				{% for tup in heard %}
-					<option value="{% trans tup.0 %}"
+					<option value="{{ tup.0 }}"
 						{% if tup.0 == hear_about %}
 							selected="selected"
 						{% endif %}
-						>{% trans tup.1 %}</option>
+						>{{ tup.1 }}</option>
 				{% endfor %}
 			</select>
 		</div>
