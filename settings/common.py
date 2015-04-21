@@ -74,7 +74,8 @@ MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
   "django.contrib.sessions.middleware.SessionMiddleware",
   "django.contrib.messages.middleware.MessageMiddleware",
-  "middleware.SslMiddleware"
+  "middleware.SslMiddleware",
+  "middleware.ExceptionScrubberMiddleware"
 )
 
 ROOT_URLCONF = "settings.urls"
