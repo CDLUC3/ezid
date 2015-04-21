@@ -13,6 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import base64
 import django.conf
 import django.http
 import django.template
@@ -59,3 +60,16 @@ class SslMiddleware:
         return django.http.HttpResponseRedirect("http" + u[5:])
       else:
         return None
+
+class ExceptionScrubberMiddleware:
+  def process_exception (self, request, exception):
+    if "HTTP_AUTHORIZATION" in request.META:
+      try:
+        h = request.META["HTTP_AUTHORIZATION"].split()
+        assert len(h) == 2 and h[0] == "Basic"
+        s = base64.decodestring(h[1])
+        assert ":" in s
+        s = "Basic base64{%s:********}" % s.split(":", 1)[0]
+      except:
+        s = "********"
+      request.META["HTTP_AUTHORIZATION"] = s
