@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-20 11:49-0700\n"
+"POT-Creation-Date: 2015-05-04 15:59-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,19 +55,19 @@ msgstr "Se il vous plaît remplir dans une question ou un commentaire."
 msgid "There was a problem sending your email"
 msgstr "Il y avait un problème d'envoyer votre courriel"
 
-#: settings/common.py:31
+#: settings/common.py:32
 msgid "English"
 msgstr "Anglais"
 
-#: settings/common.py:32
+#: settings/common.py:33
 msgid "Candian French"
 msgstr "Candian Français"
 
-#: templates/contact.html:7 templates/contact.html.py:33
+#: templates/contact.html:7 templates/contact.html.py:36
 msgid "Contact Us"
 msgstr "Contactez-nous"
 
-#: templates/contact.html:40
+#: templates/contact.html:43
 msgid ""
 "Please fill out this form if you would like more information about our "
 "services or have a specific question. If you have a comment we are always "
@@ -77,34 +77,34 @@ msgstr ""
 "sur nos services ou avez une question spécifique. Si vous avez un "
 "commentaire Nous sommes toujours heureux d'entendre les commentaires."
 
-#: templates/contact.html:44
+#: templates/contact.html:47
 msgid "Your Name"
 msgstr "Votre Nom"
 
-#: templates/contact.html:51
+#: templates/contact.html:54
 msgid "Please leave blank. This field is meant to filter out Spam Bots."
 msgstr ""
 "Se il vous plaît laissez le champ vide. Ce champ est destiné à filtrer Spam "
 "Bots."
 
-#: templates/contact.html:54
+#: templates/contact.html:57
 msgid "Your Email"
 msgstr "Votre Email"
 
-#: templates/contact.html:59
+#: templates/contact.html:62
 msgid "Your Institution"
 msgstr "Votre Institution"
 
-#: templates/contact.html:66
+#: templates/contact.html:69
 msgid "Please indicate your question or comment"
 msgstr "Se il vous plaît indiquer votre question ou commentaire"
 
-#: templates/contact.html:72
+#: templates/contact.html:75
 msgid "How did you hear about us?"
 msgstr "Comment avez-vous entendu parler de nous?"
 
 #. Translators: This is the Submit button
-#: templates/contact.html:87
+#: templates/contact.html:90
 msgctxt "Button text"
 msgid "Submit"
 msgstr "Soumettre"

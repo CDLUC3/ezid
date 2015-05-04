@@ -45,8 +45,6 @@ if "HOSTNAME" in os.environ:
 else:
   SERVER_EMAIL = "ezid@" + socket.gethostname()
 
-SEND_BROKEN_LINK_EMAILS = True
-
 DATABASES = {
   "default": {
     "ENGINE": "django.db.backends.sqlite3",
@@ -79,6 +77,7 @@ SECRET_KEY = _loadSecretKey()
 
 MIDDLEWARE_CLASSES = (
   "django.contrib.sessions.middleware.SessionMiddleware",
+  "django.middleware.common.BrokenLinkEmailsMiddleware",
   "django.middleware.locale.LocaleMiddleware",
   "django.middleware.common.CommonMiddleware",
   "django.contrib.messages.middleware.MessageMiddleware",
