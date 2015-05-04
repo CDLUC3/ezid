@@ -14,6 +14,7 @@
 # Options:
 #   -p   write progress records to stderr
 #   -s   skip target URL comparisons
+#   -r N restart from the Nth identifier (useful if interrupted)
 #
 # 'dumpfile' should be a raw EZID dump.  If the filename ends with
 # ".gz", the dump is assumed to be gzip-compressed.
@@ -90,6 +91,9 @@ parser.add_option("-p", action="store_true", dest="printProgress",
   default=False, help="write progress records to stderr")
 parser.add_option("-s", action="store_true", dest="skipTargetUrls",
   default=None, help="skip target URL comparisons")
+parser.add_option("-r", action="store", type="int", dest="restartFrom",
+  default=1, help="restart from the Nth identifier (useful if interrupted)",
+  metavar="N")
 options, args = parser.parse_args()
 if len(args) != 2: parser.error("wrong number of arguments")
 
@@ -229,8 +233,9 @@ for record in ezidFile:
     doi = metadata["_s"][4:]
     if doi.startswith(testShoulder): continue
     n += 1
-    if n%1000 == 0: progress("%d (%d%%)" % (n, int(float(n*100)/numDois)))
-    doComparison(doi, metadata)
+    if n >= options.restartFrom:
+      if n%1000 == 0: progress("%d (%d%%)" % (n, int(float(n*100)/numDois)))
+      doComparison(doi, metadata)
     if doi in mdsDois: del mdsDois[doi]
   except Exception, e:
     print "exception caught during processing of %s: %s" % (doi, str(e))

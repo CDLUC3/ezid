@@ -26,6 +26,7 @@ ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, os.path.join(PROJECT_ROOT,
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 LANGUAGES = (
     ('en', _('English')),
@@ -81,7 +82,8 @@ MIDDLEWARE_CLASSES = (
   "django.middleware.locale.LocaleMiddleware",
   "django.middleware.common.CommonMiddleware",
   "django.contrib.messages.middleware.MessageMiddleware",
-  "middleware.SslMiddleware"
+  "middleware.SslMiddleware",
+  "middleware.ExceptionScrubberMiddleware"
 )
 
 ROOT_URLCONF = "settings.urls"
