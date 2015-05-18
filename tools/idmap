@@ -14,7 +14,7 @@ if [ $# -eq 0 ]; then
   infile=
 elif [ $# -eq 1 ]; then
   if [[ $1 =~ .*\.gz$ ]]; then
-    cat=gzcat
+    cat="gunzip -c"
   else
     cat=cat
   fi
