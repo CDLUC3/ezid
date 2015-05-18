@@ -79,7 +79,6 @@ KNOWN_SERVERS = {
   "d": "http://ias-ezid-dev.cdlib.org",
   "s": "http://ias-ezid-stg.cdlib.org",
   "w": "http://ias-ezid-wf-stg.cdlib.org",
-  "a": "http://ias-ezid-prd.cdlib.org",
   "p": "http://ezid.cdlib.org"
 }
 
