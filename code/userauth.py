@@ -17,7 +17,7 @@ import base64
 import django.conf
 import hashlib
 import ldap
-import re
+import ldap.dn
 import threading
 import time
 
@@ -75,11 +75,6 @@ class AuthenticatedUser (object):
     self.user = user
     self.group = group
 
-# Escaping and encoding of DN attribute values per RFC 2253.
-_pattern = re.compile("[,=+<>#;\\\\\"]")
-def _escape (v):
-  return _pattern.sub(lambda c: "\\" + c.group(0), v.encode("UTF-8"))
-
 def _getAttributes (server, dn):
   r = server.search_s(dn, ldap.SCOPE_BASE)
   assert len(r) == 1 and r[0][0].lower() == dn.lower(),\
@@ -115,9 +110,9 @@ def _authenticateLdap (username, password, authenticateAsAdmin=False):
   l = None
   try:
     if authenticateAsAdmin:
-      userDn = _userDnTemplate % _escape(_adminUsername)
+      userDn = _userDnTemplate % ldap.dn.escape_dn_chars(_adminUsername)
     else:
-      userDn = _userDnTemplate % _escape(username)
+      userDn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
     # We don't do retries on every LDAP interaction, but the following
     # 'bind' is the most frequently executed LDAP call, and the most
     # likely place in EZID where a down/inaccessible LDAP server will
@@ -154,7 +149,8 @@ def _authenticateLdap (username, password, authenticateAsAdmin=False):
       _lock.release()
     # Nothing in the cache, so LDAP must be queried to build an
     # AuthenticatedUser object.
-    if authenticateAsAdmin: userDn = _userDnTemplate % _escape(username)
+    if authenticateAsAdmin:
+      userDn = _userDnTemplate % ldap.dn.escape_dn_chars(username)
     try:
       ua = _getAttributes(l, userDn)
     except ldap.NO_SUCH_OBJECT:

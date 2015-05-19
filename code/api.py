@@ -117,7 +117,7 @@ def _readInput (request):
       return "error: bad request - character decoding error"
     except anvl.AnvlParseException, e:
       return "error: bad request - ANVL parse error (%s)" % str(e)
-    except Exception:
+    except:
       return "error: bad request - malformed or incomplete request body"
   else:
     return {}
