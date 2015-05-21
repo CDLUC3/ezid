@@ -161,24 +161,28 @@ _arguments = {
 }
 
 def _buildRequest (request):
-  if len(request.REQUEST.getlist("verb")) != 1:
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
+  if len(REQUEST.getlist("verb")) != 1:
     return _error(None, "badVerb", "no verb or multiple verbs")
-  verb = request.REQUEST["verb"]
+  verb = REQUEST["verb"]
   if verb not in _arguments:
     return _error(None, "badVerb", "illegal verb")
   r = (verb, {})
   exclusive = False
-  for k in request.REQUEST:
+  for k in REQUEST:
     if k == "verb": continue
     if k not in _arguments[verb]:
       return _error(None, "badArgument", "illegal argument: " + k)
-    if len(request.REQUEST.getlist(k)) > 1:
+    if len(REQUEST.getlist(k)) > 1:
       return _error(None, "badArgument", "multiple values for argument: " + k)
     if _arguments[verb][k] == "X":
-      if len(request.REQUEST.keys()) > 2:
+      if len(REQUEST.keys()) > 2:
         return _error(None, "badArgument", "argument is not exclusive: " + k)
       exclusive = True
-    r[1][k] = request.REQUEST[k]
+    r[1][k] = REQUEST[k]
   if not exclusive:
     for k, rox in _arguments[verb].items():
       if rox == "R" and k not in r[1]:
