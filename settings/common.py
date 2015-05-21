@@ -22,6 +22,7 @@ ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, os.path.join(PROJECT_ROOT,
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 ADMINS = (
   ("Greg Janee", "gjanee@ucop.edu"),
@@ -71,6 +72,7 @@ SECRET_KEY = _loadSecretKey()
 MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
   "django.contrib.sessions.middleware.SessionMiddleware",
+  "django.middleware.common.BrokenLinkEmailsMiddleware",
   "django.contrib.messages.middleware.MessageMiddleware",
   "middleware.SslMiddleware",
   "middleware.ExceptionScrubberMiddleware"
