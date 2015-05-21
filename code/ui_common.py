@@ -25,7 +25,7 @@ import django.contrib.messages
 import urlparse
 
 ezidUrl = None
-templates = None
+templates = None # { name: (template, path), ... }
 alertMessage = None
 testPrefixes = None
 defaultDoiProfile = None
@@ -49,7 +49,8 @@ def _loadConfig():
   global new_account_email, reload_templates, newsfeed_url
   ezidUrl = config.config("DEFAULT.ezid_base_url")
   templates = {}
-  _load_templates([ django.conf.settings.TEMPLATE_DIRS[0] ])
+  _load_templates([d for t in django.conf.settings.TEMPLATES\
+    for d in t["DIRS"]])
   try:
     f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
       "alert_message"))
@@ -77,7 +78,6 @@ def _loadConfig():
   newsfeed_url = config.config("newsfeed.url")
   
 #loads the templates directory recursively (dir_list is a list)
-#beginning with first list item django.conf.settings.TEMPLATE_DIRS[0]
 def _load_templates(dir_list):
   global templates
   my_dir = apply(os.path.join, dir_list)
@@ -86,7 +86,8 @@ def _load_templates(dir_list):
       _load_templates(dir_list + [f])
     elif os.path.isfile(os.path.join(my_dir,f)) and f.endswith(".html"):
       local_path = apply(os.path.join, dir_list[1:] + [f])
-      templates[local_path[:-5]] = django.template.loader.get_template(local_path)
+      templates[local_path[:-5]] =\
+        (django.template.loader.get_template(local_path), local_path)
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -98,10 +99,9 @@ def render(request, template, context={}):
   #this is to keep from having to restart the server every 3 seconds
   #to see template changes in development, only reloads if set for optimal performance
   if reload_templates:
-    templ = django.template.loader.get_template(os.path.join(\
-          django.conf.settings.TEMPLATE_DIRS[0], template) + '.html')
+    templ = django.template.loader.get_template(templates[template][1])
   else:
-    templ = templates[template]
+    templ = templates[template][0]
   content = templ.render(
     django.template.RequestContext(request, c))
   # By setting the content type ourselves, we gain control over the
@@ -156,7 +156,7 @@ def jsonResponse (data):
 redirect = django.http.HttpResponseRedirect
 
 def error (code):
-  content = templates[str(code)].render(django.template.Context())
+  content = templates[str(code)][0].render(django.template.Context())
   return django.http.HttpResponse(content, status=code)
 
 def badRequest ():

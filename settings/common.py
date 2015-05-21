@@ -21,8 +21,7 @@ ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, os.path.join(PROJECT_ROOT,
   "settings", "certs"))
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 ADMINS = (
   ("Greg Janee", "gjanee@ucop.edu"),
@@ -85,13 +84,20 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 7*86400
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
 
-TEMPLATE_LOADERS =\
-  ("django.template.loaders.filesystem.Loader",
-   "django.template.loaders.app_directories.Loader")
-TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
-TEMPLATE_CONTEXT_PROCESSORS =\
-  ("django.contrib.messages.context_processors.messages",
-   "django.core.context_processors.request")
+TEMPLATES = [
+  { "BACKEND": "django.template.backends.django.DjangoTemplates",
+    "DIRS": [os.path.join(PROJECT_ROOT, "templates")],
+    "OPTIONS": {
+      "context_processors": (
+        "django.contrib.messages.context_processors.messages",
+        "django.core.context_processors.request"),
+      "loaders": (
+        "django.template.loaders.filesystem.Loader",
+        "django.template.loaders.app_directories.Loader"),
+      "debug": DEBUG
+    }
+  }
+]
 
 INSTALLED_APPS = (
   "django.contrib.sessions",
