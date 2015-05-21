@@ -35,8 +35,6 @@ if "HOSTNAME" in os.environ:
 else:
   SERVER_EMAIL = "ezid@" + socket.gethostname()
 
-SEND_BROKEN_LINK_EMAILS = True
-
 DATABASES = {
   "default": {
     "ENGINE": "django.db.backends.sqlite3",

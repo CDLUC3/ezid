@@ -7,7 +7,7 @@ DJANGO_SETTINGS_MODULE=settings.production
 0 0 * * * /path/to/SITE_ROOT/PROJECT_ROOT/tools/expire-downloads
 
 # Sunday morning maintenance
-0 0 * * 0 django-admin.py cleanup
+0 0 * * 0 django-admin clearsessions
 5 0 * * 0 sqlite3 /path/to/SITE_ROOT/db/django.sqlite3 vacuum
 10 0 * * 0 /path/to/SITE_ROOT/PROJECT_ROOT/tools/expunge -
 15 0 * * 0 /path/to/SITE_ROOT/PROJECT_ROOT/tools/stats -s - -

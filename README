@@ -110,7 +110,7 @@ application.
 To create the initial databases, assuming the above environment
 variables have been set:
 
-    django-admin.py syncdb
+    django-admin migrate
     sqlite3 .../SITE_ROOT/db/store.sqlite3
       < .../SITE_ROOT/PROJECT_ROOT/etc/store-schema.sql
     sqlite3 .../SITE_ROOT/db/search.sqlite3
@@ -118,7 +118,7 @@ variables have been set:
 
 To run the built-in server:
 
-    django-admin.py runserver
+    django-admin runserver
 
 The server is hosted at http://localhost:8000/.
 
