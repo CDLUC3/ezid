@@ -72,8 +72,12 @@ def display_select(context, element, options, id_object):
 def _request_value(context, key_name):
   """gets the value of context[key_name]"""
   request = context['request']
-  if key_name in request.REQUEST:
-    return request.REQUEST[key_name]
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
+  if key_name in REQUEST:
+    return REQUEST[key_name]
   else:
     return ''
   
@@ -83,6 +87,10 @@ def _form_value(context, key_name, id_object):
   if id_object != None and key_name in id_object:
     val = id_object[key_name]
   request = context['request']
-  if key_name in request.REQUEST:
-    val = request.REQUEST[key_name]
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
+  if key_name in REQUEST:
+    val = REQUEST[key_name]
   return val
