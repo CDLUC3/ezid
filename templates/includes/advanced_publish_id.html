@@ -11,7 +11,7 @@
 	   /><label
 	    for="publish_true">Yes</label>&nbsp;
 	  <input type="radio" name="publish" value="False" id="publish_false"
-	    {% if request.REQUEST.publish == 'False' %}
+	    {% if request.POST.publish == 'False' %}
 	      checked="checked"
 	    {% endif %}
 	   /><label
@@ -30,7 +30,7 @@
 	   /><label
 	    for="export_yes">Yes</label>&nbsp;
 	  <input type="radio" name="export" value="no" id="export_no"
-	    {% if request.REQUEST.export == 'no' %}
+	    {% if request.POST.export == 'no' %}
 	      checked="checked"
 	    {% endif %}
 	   /><label
