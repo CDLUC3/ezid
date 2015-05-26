@@ -49,6 +49,10 @@ IS_ASCENDING = {'asc': True, 'desc': False }
 
 @uic.user_login_required
 def index(request):
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
   d = { 'menu_item' : 'ui_manage.index' }
   d['testPrefixes'] = uic.testPrefixes
   d['jquery_checked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) & set(FIELD_DEFAULTS))])
@@ -63,22 +67,22 @@ def index(request):
   d['field_norewrite'] = FIELD_ORDER + ['includeCoowned']
   d['fields_mapped'] = FIELDS_MAPPED
   d['field_defaults'] = FIELD_DEFAULTS
-  d['fields_selected'] = [x for x in FIELD_ORDER if x in request.REQUEST ]
+  d['fields_selected'] = [x for x in FIELD_ORDER if x in REQUEST ]
   if len(d['fields_selected']) < 1: d['fields_selected'] = FIELD_DEFAULTS
-  d['REQUEST'] = request.REQUEST
+  d['REQUEST'] = REQUEST
   d['field_widths'] = FIELD_WIDTHS
   d['field_display_types'] = FIELD_DISPLAY_TYPES
   
   #ensure sorting defaults are set
   d['includeCoowned'] = True
-  if 'submit_checks' in request.REQUEST and not ('includeCoowned' in request.REQUEST):
+  if 'submit_checks' in REQUEST and not ('includeCoowned' in REQUEST):
     d['includeCoowned'] = False    
-  if 'order_by' in request.REQUEST and request.REQUEST['order_by'] in d['fields_selected']:
-    d['order_by'] = request.REQUEST['order_by']
+  if 'order_by' in REQUEST and REQUEST['order_by'] in d['fields_selected']:
+    d['order_by'] = REQUEST['order_by']
   else:
     d['order_by'] = [x for x in FIELD_DEFAULT_SORT_PRIORITY if x in d['fields_selected'] ][0]
-  if 'sort' in request.REQUEST and request.REQUEST['sort'] in ['asc', 'desc']:
-    d['sort'] = request.REQUEST['sort']
+  if 'sort' in REQUEST and REQUEST['sort'] in ['asc', 'desc']:
+    d['sort'] = REQUEST['sort']
   else:
     d['sort'] = 'desc'
     
@@ -86,8 +90,8 @@ def index(request):
   #sorry, had to roll our own
   d['p'] = 1
   d['ps'] = 10
-  if 'p' in request.REQUEST and request.REQUEST['p'].isdigit(): d['p'] = int(request.REQUEST['p'])
-  if 'ps' in request.REQUEST and request.REQUEST['ps'].isdigit(): d['ps'] = int(request.REQUEST['ps'])
+  if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
+  if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
   d['total_results'] = search.getByOwnerCount(d['user'][0], True)
   d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
   if d['p'] > d['total_pages']: d['p'] = d['total_pages']

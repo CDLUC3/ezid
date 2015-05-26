@@ -9,7 +9,7 @@ Prerequisites
 =============
 
 Fundamentally, EZID requires Django <http://www.djangoproject.com/>
-(version 1.6 or later), which in turn requires Python
+(version 1.8 or later), which in turn requires Python
 <http://www.python.org/> (version 2.7 or later) and a relational
 database of some kind (SQLite <http://www.sqlite.org/> is just fine).
 lxml <http://lxml.de/> is required for processing XML.  Running under
@@ -110,7 +110,7 @@ application.
 To create the initial databases, assuming the above environment
 variables have been set:
 
-    django-admin.py syncdb
+    django-admin migrate
     sqlite3 .../SITE_ROOT/db/store.sqlite3
       < .../SITE_ROOT/PROJECT_ROOT/etc/store-schema.sql
     sqlite3 .../SITE_ROOT/db/search.sqlite3
@@ -118,7 +118,7 @@ variables have been set:
 
 To run the built-in server:
 
-    django-admin.py runserver
+    django-admin runserver
 
 The server is hosted at http://localhost:8000/.
 

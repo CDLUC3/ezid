@@ -56,8 +56,12 @@ def simple_form_processing(request, d):
   returns either 'bad_request', 'edit_page' or 'created_identifier: <new_id>' for results """
 
   #selects current_profile based on parameters or profile preferred for prefix type
-  if 'current_profile' in request.REQUEST:
-    d['current_profile'] = metadata.getProfile(request.REQUEST['current_profile'])
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
+  if 'current_profile' in REQUEST:
+    d['current_profile'] = metadata.getProfile(REQUEST['current_profile'])
     if d['current_profile'] == None:
       d['current_profile'] = metadata.getProfile('erc')
   else:
@@ -99,14 +103,18 @@ def advanced_form_processing(request, d):
   #selects current_profile based on parameters or profile preferred for prefix type
   d['manual_profile'] = False
   choice_is_doi = False 
-  if (('shoulder' in request.REQUEST and request.REQUEST['shoulder'].startswith("doi:")) \
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
+  if (('shoulder' in REQUEST and REQUEST['shoulder'].startswith("doi:")) \
     or (len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'))):
       choice_is_doi = True 
-  if 'current_profile' in request.REQUEST:
-    if request.REQUEST['current_profile'] in uic.manual_profiles:
-      d = _engage_datacite_xml_profile(request, d, request.REQUEST['current_profile'])
+  if 'current_profile' in REQUEST:
+    if REQUEST['current_profile'] in uic.manual_profiles:
+      d = _engage_datacite_xml_profile(request, d, REQUEST['current_profile'])
     else: 
-      d['current_profile'] = metadata.getProfile(request.REQUEST['current_profile'])
+      d['current_profile'] = metadata.getProfile(REQUEST['current_profile'])
       if d['current_profile'] == None:
         d['current_profile'] = metadata.getProfile('erc')
   else:
