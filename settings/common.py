@@ -71,7 +71,6 @@ SECRET_KEY = _loadSecretKey()
 MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
   "django.contrib.sessions.middleware.SessionMiddleware",
-  "django.middleware.common.BrokenLinkEmailsMiddleware",
   "django.contrib.messages.middleware.MessageMiddleware",
   "middleware.SslMiddleware",
   "middleware.ExceptionScrubberMiddleware"
