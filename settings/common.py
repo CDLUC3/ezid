@@ -25,8 +25,7 @@ ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, os.path.join(PROJECT_ROOT,
   "settings", "certs"))
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 LANGUAGES = (
     ('en', _('English')),
@@ -77,7 +76,6 @@ SECRET_KEY = _loadSecretKey()
 
 MIDDLEWARE_CLASSES = (
   "django.contrib.sessions.middleware.SessionMiddleware",
-  "django.middleware.common.BrokenLinkEmailsMiddleware",
   "django.middleware.locale.LocaleMiddleware",
   "django.middleware.common.CommonMiddleware",
   "django.contrib.messages.middleware.MessageMiddleware",
@@ -92,14 +90,21 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 7*86400
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
 
-TEMPLATE_LOADERS =\
-  ("django.template.loaders.filesystem.Loader",
-   "django.template.loaders.app_directories.Loader")
-TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
-TEMPLATE_CONTEXT_PROCESSORS =\
-  ("django.contrib.messages.context_processors.messages",
-   "django.core.context_processors.request",
-   "django.core.context_processors.i18n")
+TEMPLATES = [
+  { "BACKEND": "django.template.backends.django.DjangoTemplates",
+    "DIRS": [os.path.join(PROJECT_ROOT, "templates")],
+    "OPTIONS": {
+      "context_processors": (
+        "django.contrib.messages.context_processors.messages",
+        "django.core.context_processors.request",
+        "django.template.context_processors.i18n"),
+      "loaders": (
+        "django.template.loaders.filesystem.Loader",
+        "django.template.loaders.app_directories.Loader"),
+      "debug": DEBUG
+    }
+  }
+]
 
 INSTALLED_APPS = (
   "django.contrib.sessions",

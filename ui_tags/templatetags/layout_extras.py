@@ -38,8 +38,12 @@ def request_value(context, key_name):
   normal django templating will not retrieve any variables starting with an underscore
   which all of the internal profile variables have"""
   request = context['request']
-  if key_name in request.REQUEST:
-    return escape(request.REQUEST[key_name])
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
+  if key_name in REQUEST:
+    return escape(REQUEST[key_name])
   else:
     return ''
   
@@ -134,8 +138,12 @@ def form_or_default(context, key_name, default):
   outputs the default value passed in.
   """
   request = context['request']
-  if key_name in request.REQUEST and request.REQUEST[key_name] != '':
-    return escape(request.REQUEST[key_name])
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
+  if key_name in REQUEST and REQUEST[key_name] != '':
+    return escape(REQUEST[key_name])
   else:
     return escape(default)
 
@@ -145,9 +153,13 @@ def selected_radio(context, request_item, loop_index, item_value):
   """returns checked="checked" if this should be the currently selected
   radio button based on matching request data or 1st item and nothing selected"""
   request = context['request']
-  if request_item in request.REQUEST and request.REQUEST[request_item] == item_value:
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
+  if request_item in REQUEST and REQUEST[request_item] == item_value:
     return 'checked="checked"'
-  elif request_item not in request.REQUEST and loop_index == 1:
+  elif request_item not in REQUEST and loop_index == 1:
     return 'checked="checked"'
   else:
     return ''

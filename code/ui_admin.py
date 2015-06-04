@@ -97,8 +97,12 @@ def manage_users(request, ssl=False):
   d['users'] = ezidadmin.getUsers()
   d['users'].sort(key=lambda i: i['uid'].lower())
   users_by_dn = dict(zip([ x['dn'] for x in d['users']], d['users']))
-  if 'user' in request.REQUEST and request.REQUEST['user'] in users_by_dn:
-    d['user'] = users_by_dn[request.REQUEST['user']]
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
+  if 'user' in REQUEST and REQUEST['user'] in users_by_dn:
+    d['user'] = users_by_dn[REQUEST['user']]
   else:
     d['user'] = d['users'][0]
   if d['user']['sn'] == 'please supply':
@@ -163,10 +167,14 @@ def manage_groups(request, ssl=False):
   groups_by_dn = dict(zip([ x['dn'] for x in d['groups']], d['groups']))
   
   #get current group
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
   if len(d['groups']) > 0:
-    if 'group' in request.REQUEST:
-      if request.REQUEST['group'] in groups_by_dn:
-        d['group'] = groups_by_dn[request.REQUEST['group']]
+    if 'group' in REQUEST:
+      if REQUEST['group'] in groups_by_dn:
+        d['group'] = groups_by_dn[REQUEST['group']]
       else:
         d['group'] = d['groups'][0]
     else:

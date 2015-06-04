@@ -1,7 +1,16 @@
 # Sample crontab
+
+PYTHONPATH=/path/to/SITE_ROOT/PROJECT_ROOT
+DJANGO_SETTINGS_MODULE=settings.production
+
+# Nightly maintenance
 0 0 * * * /path/to/SITE_ROOT/PROJECT_ROOT/tools/expire-downloads
-0 0 * * 0 env PYTHONPATH=/path/to/SITE_ROOT/PROJECT_ROOT DJANGO_SETTINGS_MODULE=settings.production /path/to/django-admin.py cleanup
-10 0 * * 0 /path/to/sqlite3 /path/to/SITE_ROOT/db/django.sqlite3 vacuum
-20 0 * * 0 env PYTHONPATH=/path/to/SITE_ROOT/PROJECT_ROOT DJANGO_SETTINGS_MODULE=settings.production /path/to/python /path/to/SITE_ROOT/PROJECT_ROOT/tools/expunge -
-50 0 * * 0 env PYTHONPATH=/path/to/SITE_ROOT/PROJECT_ROOT DJANGO_SETTINGS_MODULE=settings.production /path/to/python /path/to/SITE_ROOT/PROJECT_ROOT/tools/stats -s - -
-30 1 2 * * env PYTHONPATH=/path/to/SITE_ROOT/PROJECT_ROOT DJANGO_SETTINGS_MODULE=settings.production /path/to/python /path/to/SITE_ROOT/PROJECT_ROOT/tools/dashboard -s - http://...
+
+# Sunday morning maintenance
+0 0 * * 0 django-admin clearsessions
+5 0 * * 0 sqlite3 /path/to/SITE_ROOT/db/django.sqlite3 vacuum
+10 0 * * 0 /path/to/SITE_ROOT/PROJECT_ROOT/tools/expunge -
+15 0 * * 0 /path/to/SITE_ROOT/PROJECT_ROOT/tools/stats -s - -
+
+# Monthly statistics
+0 3 2 * * /path/to/SITE_ROOT/PROJECT_ROOT/tools/dashboard -s - http://...
