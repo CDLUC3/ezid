@@ -1,0 +1,80 @@
+// Contact Page
+
+
+@media (min-width:$container-md){
+  .contact-promotional-base{
+    min-height: 560px;
+  }
+}
+
+@media (max-width:$container-sm){
+  .contact-promotional-base{
+    min-height: 300px;
+  }
+}
+#contact-gutter-left {
+  @extend .contact-promotional-base;
+  background: $design-secondary-color;
+  width: calc(50% - #{$container-md/2});  
+  float:left;
+}
+#contact-content{
+  padding: 0px;
+  max-width: $container-md;
+  float:left;
+}
+#contact-gutter-right{
+  width: calc(50% - #{$container-md/2});
+  float:right;
+}
+.promotional {
+  @extend .contact-promotional-base;
+  background: $design-secondary-color;
+}
+// Overwrite default border-left and padding
+blockquote {
+  margin: 0px;
+  border-left: 0px;
+  padding: 28px 33px 0px 0px;
+  line-height: 1.2em;
+}
+
+blockquote p {
+  font-size: 0.9em;
+  font-style: italic;
+  font-weight: bold;
+  color: #FFF;
+}
+.blockquote-footer {
+  margin-top: 18px;
+  font-family: $font-family-sans-serif-caps;
+  font-size: 0.80em;
+  color: #000;
+  line-height: 1.2em;
+}
+blockquote p a, 
+blockquote p a:visited, 
+blockquote p a:active 
+blockquote p a:hover {
+  color: #FFF !important;
+  text-decoration: underline;
+}
+.carousel-indicators {
+  bottom: 0px;
+}
+.col-promotional .tagline {
+  margin-top: 20px;
+  font-size: 1.09em;
+  font-family: $font-family-sans-serif--wider;
+  font-weight: bold;
+  text-align: right;
+}
+.col-promotional .tagline a, .col-promotional .tagline a:visited {
+  color: $design-pop-gradient-bottom !important;
+}
+.col-promotional .tagline a:hover, .col-promotional .tagline a:active {
+  color: $design-pop-gradient-bottom !important;
+}
+.col-promotional .tagline.active a {
+  color: $design-pop-gradient-bottom !important;
+} 

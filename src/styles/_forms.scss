@@ -1,0 +1,79 @@
+// ##### Forms ##### //
+
+// .form-group {
+//     margin-bottom: 0px;
+// }
+
+.form-horizontal .radio,
+.form-horizontal .checkbox,
+.form-horizontal .radio-inline,
+.form-horizontal .checkbox-inline {
+  padding: 0px;
+}
+
+input[type="radio"], input[type="checkbox"] {
+  margin: 0px;
+}
+
+.input-sm, select.input-sm {
+  border-radius: $border-radius-base;
+  height: 26px;
+  // TODO: Do I also need font-size and line-height here?
+}
+select.form-control {
+  background-color: #EEE;
+}
+.form-control {
+  border-color:$design-light-gray-border-color;
+  background-color:#FFF;
+}
+.form-group-sm {
+  padding: 0px 15px 0px 0px;
+}
+form.form-horizontal .second-col {
+  padding-left: 15px;
+}
+// Form input labels
+.form-horizontal .control-label {
+    text-align: left;
+}
+label {
+  font-size: 1em;
+  font-weight: normal;
+  color: $design-primary-color;
+  margin-bottom: 1px;
+}
+label.text-color-reg {
+  color: #000;
+}
+
+.radio_svg .checkbox__icon,
+.radio_svg .radio__icon {
+  visibility: hidden;
+}
+.image-checkbox-label {
+  background: url("/images/checkbox.svg") no-repeat center left;
+  background-size: 20px;
+  color: #000;
+}
+.checkbox__icon:checked + .image-checkbox-label {
+  background: url("/images/checkboxCheck.svg") no-repeat center left;
+  background-size: 20px;
+  color: #000;
+}
+.image-radio-label {
+  background: url("/images/radio.svg") no-repeat center left;
+  background-size: 18px;
+  color: #000;
+}
+.radio__icon:checked + .image-radio-label {
+  background: url("/images/radioCheck.svg") no-repeat center left;
+  background-size: 18px;
+  color: #000;
+}
+.radio_svg label {
+  padding-left: 25px;
+  font-weight: normal;
+  font-size: 1em;
+}
+

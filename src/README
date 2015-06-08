@@ -1,0 +1,7 @@
+========= Front-End Stylesheets for WEB UI presentation layer ===========
+SASS is a scripting language that is interpreted into CSS stylesheets (http://sass-lang.com/)
+EZID (development build only) includes libsass python extension module for processing SassScript.
+
+To build CSS from SASS (.scss) files:
+sassc --sourcemap ~/SITE/PROJECT/src/main.scss ~/SITE/PROJECT/static/stylesheets/main.css
+

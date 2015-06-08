@@ -1,0 +1,107 @@
+// ##### Text ##### //
+
+// All text based links
+a, a:visited, a:link {
+  @include text-link2($text-link-color);
+}
+
+a:hover {
+  @include text-link2($design-primary-color);
+}
+
+//Used on contact page
+blockquote a, 
+blockquote a:visited, 
+blockquote a:link {
+  @include text-link2(#FFF);
+}
+
+blockquote a:hover {
+  @include text-link2(#000);
+}
+
+//Used in alert div
+.alert-info a, 
+.alert-info a:visited, 
+.alert-info a:link {
+  @include text-link2(#8F8F8F);
+}
+
+.alert-info a:hover {
+  @include text-link2(#000);
+}
+
+//Contact Page Sign Up For Our Newsletter
+.tagline a, 
+.tagline a:visited, 
+.tagline a:link {
+  border-bottom: none;
+  padding-bottom: 0px;
+}
+
+.tagline a:hover {
+  @include text-link2($design-pop-gradient-bottom);
+}
+
+
+// All other links
+a.not-text {
+  border-bottom: none !important;
+  padding-bottom: 0px;
+}
+
+a:hover,
+a:focus,
+a:visited {
+  color: $design-primary-color;
+}
+
+// Home Page & Demo Steps
+a.boxy-pop,
+a.boxy-pop:visited,
+a.boxy-pop:link,
+ {
+  @include boxy(6px, 17px, $design-pop-color, #FFF);
+}
+a.boxy-pop:hover {
+  @include boxy(6px, 17px, $design-pop-color, #FFF);
+  text-decoration: underline;
+}
+.number-big-pop {
+  @include boxy(5px, 9px, $design-pop-color, #FFF);
+}
+// Demo EZID Page
+.number-big {
+  @include boxy(5px, 9px, $design-secondary-color, #FFF);
+}
+
+p.italic {
+  font-style: italic;
+}
+
+.font-xsmall {
+  font-size: 0.7em !important;
+}
+
+// apidoc font
+.apidoc {
+  font-size: $font-size-base;
+}
+
+// Demo page
+.font-small {
+  font-size: 0.8em;
+  line-height: 1.1em;
+}
+.font-small-bold {
+  font-size: 0.9em;
+  font-weight: bold;
+}
+// Home page
+.font-med {
+  line-height: 1.1em;
+}
+mark {
+  background-color: $design-mark-color;
+  padding: 0px;
+}

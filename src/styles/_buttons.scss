@@ -1,0 +1,85 @@
+// #####  Buttons ##### //
+
+// CUSTOM EXTENSION
+.btn-base {
+  color: white;
+  font-weight: bold;
+  font-size: 0.75em;
+  margin: 0px;
+  border: 0px;
+  letter-spacing: 1.1px;
+}
+
+// Primary (Blue) Buttons
+.btn-primary {
+  @extend .btn-base;
+  @include gradient-vertical($design-primary-gradient-top, $design-primary-gradient-bottom, 0%, 100%);
+}
+
+// Top nav Button
+.navbar-btn {
+  margin: 0
+}
+.navbar-btn button {
+  @extend .btn-base;
+  // font-size: 1em;
+  background-color: $design-pop-color;
+}
+
+.navbar-default .navbar-nav > li.navbar-btn a:visited, 
+.navbar-default .navbar-nav > li.navbar-btn a:hover, 
+.navbar-default .navbar-nav > li.navbar-btn a:focus {
+  border: 0px;   // Prevent brown underline from showing up like it does on other nav buttons
+}
+
+.padding-side-xs {
+  padding: 7px 18px;
+}
+.padding-side-sm {
+  padding: 7px 24px;
+}
+.padding-side-med {
+  padding: 7px 38px;
+}
+
+.btn-big {
+  font-family: KievitWebPro-Bold, Arial, sans-serif;
+  font-size: 0.9em !important;
+  letter-spacing: 1.3px;
+  line-height: 1.8em;
+  //  padding-top: 6px !important;
+  // padding: 6px 0px 4px 0px !important;
+}
+
+// Search Page Big Button
+.btn-fullwidth {
+  width: 100%;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+// Resources (Accordion) Toggle
+h2.panel-title {
+  font-size: 16px;
+}
+h2.panel-title > a {
+  margin-left: 10px;
+}
+.glyphicon.glyphicon-plus, .glyphicon.glyphicon-minus {
+    font-size: 0.8em;
+}
+.toggle-orange {
+  color: #ff6e1b;
+}
+
+// A link that behaves like an expanding Accordion
+.accordion {
+  margin-bottom: 10px;
+}
+
+.caret {
+  margin: 8px 8px 8px 8px;
+  border-top: 6px solid;
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent; 
+}

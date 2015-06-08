@@ -1,0 +1,127 @@
+// ##### Main Sass ##### //
+
+// Test with red borders
+// * {
+//  border: 1px solid red !important;
+// }
+
+// This file imports all Sass partials below and compiles result to main.css
+
+// ***** Global Settings ***** //
+@import "variables";  // I think this needs to come before bootstrap import below
+@import "fonts";
+
+// ***** Vendor Libraries ***** //
+@import "_bootstrap.scss";
+
+// ***** Custom Components ***** //
+@import "mixins"; // This needs to come first in order
+
+// ***** Custom Elements ***** //
+@import "buttons";
+@import "icons";
+@import "text";
+@import "forms";
+
+@import "footer";
+@import "headers";
+@import "modal-login";
+@import "nav";
+@import "pg-contact";
+@import "pg-dashboard";
+@import "pg-idcreate";
+@import "pg-index";
+@import "pg-learn";
+@import "table";
+@import "tip";
+
+.browsehappy {
+  margin: 0.2em 0;
+  background: #ccc;
+  color: #000;
+  padding: 0.2em 0;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.vertical-buffer { margin-top:50px; }
+.vertical-buffer-sm { margin-top:30px; }
+.vertical-buffer-20 { margin-top:20px; }
+.vertical-buffer-xs { margin-top:15px; }
+.horizontal-buffer { margin-left:10px; }
+.tagline { margin: 0px; }
+
+img.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// ToDo: Understand why padding is set to zero as default for all columns
+// This specific setting is meant for the contact page. But will also 
+// need to be done for other multi-column pages (i.e. Dashboard)
+.col-sm-push-3 {
+  padding-left: 40px;
+}
+
+hr { 
+  border-color: $design-secondary-color; // works in Chrome and Safari
+  background-color: $design-secondary-color; // works in Firefox and Opera
+  color: $design-secondary-color;  // works in IE7+
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+
+.gradient-orange {
+  @include gradient-vertical($design-pop-gradient-top, $design-pop-gradient-bottom, 0%, 100%);
+}
+
+.gradient-form {
+  @include gradient-vertical($design-light-gray-bg-color, $design-light-gray-gradient-bottom, 0%, 100%);
+}
+
+.border-left-solid-blue {
+  position: relative;
+  border-left: 1px solid $design-primary-color;
+  padding-left: $layout-container-margin-sm;
+  height: 7px;
+  top: 1px;
+  left: 2px;
+}
+
+.container_non_responsive {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  width: 800px;
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 1024px) {
+  .container {
+    width: $container-md;
+  }
+}
+@media screen and (max-width: 799px) {
+  .container {
+    padding: 0px 8px;
+  }
+}
+
+/* Responsive: Identifier Tabular Display 
+   http://exisweb.net/responsive-tables-in-wordpress */
+@media screen and (max-width: 600px) {
+  table {width:100%;}
+  thead {display: none;}
+  tr:nth-of-type(2n) {background-color: inherit;}
+  tr td:first-child {background: #f0f0f0; font-weight:bold;font-size:1.3em;}
+  tbody td {display: block;  text-align:center;}
+  tbody td:before { 
+    content: attr(data-th); 
+    display: block;
+    text-align:center;  
+  }
+}

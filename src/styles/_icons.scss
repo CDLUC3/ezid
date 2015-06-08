@@ -1,0 +1,92 @@
+// ##### Icons ##### //
+
+//Icon for indicating link points externally
+.ext-icon {
+  margin: 0px 7px 5px 6px;
+  padding:7px;
+  background: url("/images/ext-link.svg") no-repeat center left;
+  width: 15px;
+  height: 15px;
+  background-size: 15px 15px;
+}
+
+a span.ext-icon {
+  text-decoration: none !important;
+  border-bottom: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+.checkbox__icon {
+  width: 17px;
+  margin-left: 7px;
+}
+
+.radio__icon {
+  width: 16px;
+  margin-left: 7px;
+}
+
+// Note: Logo Top CSS contained in _nav.scss
+#logoBottom {
+  width: 100px;
+}
+
+.footer__icon {
+  width: 28px;
+  margin-top: 6px;
+  margin-left: 23px;
+}
+
+.icon-topnav-base {
+  margin-bottom: 7px;
+}
+#icon-topnav-search {
+  @extend .icon-topnav-base;
+  width: 22px;
+  // margin-left: 32px;
+}
+#icon-topnav-learn {
+  @extend .icon-topnav-base;
+  width: 19px;
+  // margin-left: 28px;
+}
+#icon-topnav-contact {
+  @extend .icon-topnav-base;
+  width: 24px;
+  // margin-left: 34px;
+}
+.icon-help {
+  width: 23px;
+}
+.icon__header--base {
+  margin-right: 8px;
+  margin-bottom : 6px;
+}
+#dashboard__icon--viewreport {
+  @extend .icon__header--base;
+  width: 25px;
+}
+#dashboard__icon--usage {
+  @extend .icon__header--base;
+  width: 28px;
+}
+#dashboard__icon--idsbymonth {
+  @extend .icon__header--base;
+  width: 14px;
+}
+#dashboard__icon--brokenlinks {
+  @extend .icon__header--base;
+  width: 35px; 
+}
+#dashboard__icon--crossref {
+  @extend .icon__header--base;
+  width: 35px; 
+}
+#search__icon--advanced {
+  margin-left: 4px;
+  margin-bottom : 6px;
+  width: 32px; 
+}
+span.glyphicon-heart {
+    font-size: 2.2em;
+}

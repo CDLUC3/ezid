@@ -1,0 +1,44 @@
+// ##### Custom Fonts for Text ##### //
+
+// ***** Kievit Regular ***** //
+
+@font-face {
+  font-family: 'KievitWeb';
+  src: url('../fonts/KievitWeb.eot'); /* IE9 Compat Modes */
+  src: url('../fonts/KievitWeb.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/KievitWeb.woff') format('woff'); /* Modern Browsers */
+}
+
+// ***** Kievit Web Pro Bold ***** //
+
+@font-face {
+  font-family: 'KievitWebPro-Bold';
+  src: url('../fonts/KievitWebPro-Bold.eot'); /* IE9 Compat Modes */
+  src: url('../fonts/KievitWebPro-Bold.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/KievitWebPro-Bold.woff') format('woff'); /* Modern Browsers */
+}
+
+// ***** Kievit Regular Small Caps ***** //
+
+@font-face {
+  font-family: 'KievitScWeb';
+  src: url('../fonts/KievitScWeb.eot'); /* IE9 Compat Modes */
+  src: url('../fonts/KievitScWeb.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/KievitScWeb.woff') format('woff'); /* Modern Browsers */
+}
+
+// ***** Freight Sans Pro Medium ***** //
+/**
+ * @license
+ * MyFonts Webfont Build ID 3019132, 2015-05-01T18:32:03-0400
+ * License: http://www.myfonts.com/viewlicense?type=web&buildid=3019132
+ * © 2015 MyFonts Inc
+*/
+@font-face {
+  font-family: 'FreightSansProMedium-Regular';
+  src: url('../fonts/2E117C_0_0.eot');
+  src: url('../fonts/2E117C_0_0.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/2E117C_0_0.woff2') format('woff2'),
+       url('../fonts/2E117C_0_0.woff') format('woff'),
+       url('../fonts/2E117C_0_0.ttf') format('truetype');
+}
