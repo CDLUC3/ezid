@@ -3,5 +3,5 @@ SASS is a scripting language that is interpreted into CSS stylesheets (http://sa
 EZID (development build only) includes libsass python extension module for processing SassScript.
 
 To build CSS from SASS (.scss) files:
-sassc --sourcemap ~/SITE/PROJECT/src/main.scss ~/SITE/PROJECT/static/stylesheets/main.css
+sassc ~/apache/ezid/SITE/PROJECT/src/styles/main.scss ~/apache/ezid/SITE/PROJECT/static/stylesheets/main.css
 
