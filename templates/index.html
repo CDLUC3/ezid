@@ -1,0 +1,103 @@
+{% extends "layouts/information.html" %}
+{% load layout_extras %}
+
+{% block title %}EZID Home{% endblock %}
+
+{% block main_column %}
+    <div class"vertical-buffer-xs" id="frontpage_img">
+      <div class="container">
+        <div class="row">
+          <ul class="lead">
+            <li>Automate research workflow</li>
+            <li>Store citation information</li>
+            <li>Share unbreakable links</li>
+          </ul>
+          <p class="tagline">
+            <a href="#" class="boxy-pop btn-big">SIGN UP FOR OUR NEWSLETTER &raquo;</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row vertical-buffer-sm">
+      <!-- TODO: Mobile: Make this stmnt spread out. Hide arrow, or change it to point down -->
+        <div class="col-sm-2" id="frontpage_idcreate_promo">
+          <div class="lead2">SEE HOW EASY IT IS:</div>
+          <div class="vertical-buffer-xs font-med">
+            <p><strong>NOTE:</strong>&nbsp;&nbsp;This is just a demo.
+            To create a real identifier, you must have an account.</p>
+          </div>
+        </div>
+
+        <div class="col-sm-10" id="frontpage_idcreate_content">
+          <div class="frontpage_idcreate_arrow"></div>
+          <form class="form-horizontal">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="inline-header nowrap">
+                  <span class="number-big-pop">1</span>
+                  <h2>Choose an identifier type</h2><img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
+                </div>
+              </div>
+              <div class="col-sm-1"></div>
+              <div id="frontpage_form_radiobuttons" class="col-sm-5">
+                <div class="form-group form-group-sm">
+
+                  <div class="radio-inline radio_svg">
+                    <input id="idtype_ark" type="radio" class="radio__icon" />    
+                    <label for="idtype_ark" class="image-radio-label">ARK
+                    </label>
+                  </div>
+
+                  <div class="radio-inline radio_svg">
+                    <input id="idtype_doi" type="radio" class="radio__icon" />    
+                    <label for="idtype_doi" class="image-radio-label">DOI
+                    </label>
+                  </div>
+
+                    <!-- label class="radio-inline"><input type="radio" value="Male">ARK (ark:/99999/fk4)</label>
+                    <label class="radio-inline"><input type="radio" value="Male">DOI (doi:10.5072/FK2)</label -->
+
+                </div>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="inline-header">
+                <span class="number-big-pop">2</span>
+                <h2>Describe the identified object</h2>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-5 form-group form-group-sm">
+                <label for="create_target_url" class="sr-only control-label">Location URL</label>
+                <input type="text" class="form-control" id="create_target_url" placeholder="Location URL" />
+                <img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
+              </div>
+              <div class="col-sm-5 form-group form-group-sm">
+                <label for="create_demo_what" class="sr-only control-label">What?</label>
+                <input type="text" class="form-control" id="create_demo_what" placeholder="What?" />
+                <img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
+              </div>
+              <div class="col-sm-5 form-group form-group-sm">
+                <label for="create_demo_who" class="sr-only control-label">Who?</label>
+                <input type="text" class="form-control" id="create_demo_who" placeholder="Who?" />
+                <img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
+              </div>
+              <div class="col-sm-5 form-group form-group-sm">
+                <label for="create_demo_when" class="sr-only control-label">When?</label>
+                <input type="text" class="form-control" id="create_demo_when" placeholder="When?" />
+                <img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
+              </div>
+              <div class="col-sm-1">
+                <button type="submit" class="btn btn-primary">CREATE</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+{% block sidebar %}
+{% endblock %}

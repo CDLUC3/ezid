@@ -1,0 +1,133 @@
+{% load layout_extras %}
+<div class="row vertical-buffer"></div>
+<!-- div class="footer" -->
+
+<div id="footer-gutter-left">
+  &nbsp;
+</div>
+
+<div id="footer-content">
+  <div class="container">
+  <div class="row">
+    <div id="footer-logo-col" class="col-sm-2">
+      <a class="not-text" href="http://www.cdlib.org/"><img id="logoBottom" src="/static/images/logoBottom.svg" ALT="University of California - California Digital Library"></a>
+    </div>
+    <div id="footer-content-col" class="col-sm-5">
+      {% host_based_include "includes/localized/_/footer_content.html" %}
+    </div>
+    <div id="footer-icon-col" class="col-sm-2">
+      <ul class="list-unstyled">
+        <li><a class="not-text" href="http://twitter.com/ezidcdl"><img class="footer__icon" src="/static/images/iconTwitter.svg" ALT="EZID on Twitter"></a></li>
+        <li><a class="not-text" href="http://www.cdlib.org/cdlinfo/category/infrastructure-services/feed/?s=ezid"><img class="footer__icon" src="/static/images/iconRSS.svg" ALT="EZID's RSS Feed"></a></li>
+        <li><a class="not-text" href="http://confluence.ucop.edu/display/DataCite/Home"><img class="footer__icon" src="/static/images/iconWiki.svg" ALT="EZID's Wiki Documentation"></a></li>
+      </ul>
+    </div>
+    <div id="footer-newsfeed-col" class="col-sm-3">
+      <strong>LATEST NEWS FROM EZID</strong><br/>
+      <!-- Vertical Bootstrap 3 Carousel
+      http://stackoverflow.com/questions/11589816/twitter-bootstrap-carousel-vertical-sliding/11596944 -->
+      <div class="carousel slide" data-ride="carousel" data-interval="5000">
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner vertical" role="listbox">
+          <div class="item active">
+            <a href="http://www.cdlib.org/cdlinfo/2015/05/28/cdl-staff-in-print-joan-starr-and-john-kratz-in-peerj/">CDL Staff in Print - Joan Starr and John Kratz in PeerJ</a>
+          </div>
+          <div class="item">
+            <a href="http://www.cdlib.org/cdlinfo/2015/05/11/ezid-service-update-april-2015/">EZID Service Update: April 2015</a>
+          </div>
+          <div class="item">
+            <a href="http://www.cdlib.org/cdlinfo/2015/02/17/ezid-introduces-a-batch-download-feature/">EZID introduces a batch download feature</a>
+          </div>
+        </div>
+      </div>
+      <p id="footer-newsfeed-linkall"><a class="font-xsmall" href="http://www.cdlib.org/cdlinfo/category/infrastructure-services/ezid/">View all news</a></p>
+
+    </div>
+  </div>
+  </div>
+</div>
+
+<div id="footer-gutter-right">
+  &nbsp;
+</div>
+
+    <script>
+      (function() {
+
+      'use strict';
+
+      // list out the vars
+      var mOverlay = getId('modal_window'),
+          mOpen = getId('modal_open'),
+          mClose = getId('modal_close'),
+          modal = getId('modal-holder'),
+          page = getId('page_top'),
+          modalOpen = false,
+          lastFocus;
+
+
+      // Let's cut down on what we need to type to get an ID
+      function getId ( id ) {
+        return document.getElementById(id);
+      }
+
+
+      // Let's open the modal
+      function modalShow () {
+        lastFocus = document.activeElement;
+        page.setAttribute('aria-hidden', 'true');
+        mOverlay.setAttribute('aria-hidden', 'false');
+        modalOpen = true;
+        modal.setAttribute('tabindex', '0');
+        modal.focus();
+      }
+
+
+      // binds to both the button click and the escape key to close the modal window
+      // but only if modalOpen is set to true
+      function modalClose ( event ) {
+        if (modalOpen && ( !event.keyCode || event.keyCode === 27 ) ) {
+          mOverlay.setAttribute('aria-hidden', 'true');
+          page.setAttribute('aria-hidden', 'false');
+          modal.setAttribute('tabindex', '-1');
+          modalOpen = false;
+          lastFocus.focus();
+        }
+      }
+
+      // Restrict focus to the modal window when it's open.
+      // Tabbing will just loop through the whole modal.
+      // Shift + Tab will allow backup to the top of the modal,
+      // and then stop.
+      function focusRestrict ( event ) {
+        document.addEventListener('focus', function( event ) {
+          if ( modalOpen && !modal.contains( event.target ) ) {
+            event.stopPropagation();
+            modal.focus();
+          }
+        }, true);
+      }
+
+      // Close modal window by clicking on the overlay
+      mOverlay.addEventListener('click', function( e ) {
+        if (e.target == modal.parentNode) {
+           modalClose( e );
+         }
+      }, false);
+
+
+      // open modal by btn click/hit
+      mOpen.addEventListener('click', modalShow);
+
+      // close modal by btn click/hit
+      mClose.addEventListener('click', modalClose);
+
+      // close modal by keydown, but only if modal is open
+      document.addEventListener('keydown', modalClose);
+
+      // restrict tab focus on elements only inside modal window
+      window.addEventListener('keypress', focusRestrict);
+
+    })();
+  </script>
+

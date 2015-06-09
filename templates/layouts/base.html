@@ -66,15 +66,10 @@
 
 <div id="page_top"></div>
 <a class="sr-only" href="#main-content">Skip navigation</a>
-    <div class="container_12">
-    	{% host_based_include "includes/localized/_/logo.html" %}
-      {% host_based_include "includes/localized/_/user_menu.html" %}
-      {% include "includes/status.html" %}
-      {% include "includes/top_menu.html" %}    
+      {% include "includes/top.html" %}    
       {% block content %}{% endblock %}
       
-      {% host_based_include "includes/localized/_/footer.html" %}
-    </div>
+      {% include "includes/footer.html" %}
 
     <script src="/static/javascripts/bootstrap/affix.js"></script>
     <script src="/static/javascripts/bootstrap/alert.js"></script>
@@ -134,4 +129,5 @@ for (var h = 0, tbody; tbody = tablebody[h]; h++) {
     	$('input:visible:enabled').first().focus();
     	window.scrollTo(0, 0);
     </script>
+  </body>
 </html>

@@ -1,0 +1,79 @@
+{% load menus %}
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+	  <!-- Button for smallest screens -->
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ezid-navbar-content"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+      <a class="navbar-brand not-text" href="index.html"><img class="logoTop--big" src="/static/images/logo.svg" ALT="University of California EZID: Identifiers Made Easy"></a>
+    </div>
+    <div class="collapse navbar-collapse" id="ezid-navbar-content">
+      <p id="nav-logged-in-welcome">Welcome ucsd_signaling_gateway!</p>
+      <ul class="nav navbar-nav pull-right">
+        <li>
+          <img class="center" id="icon-topnav-search" src="/static/images/searchOff.svg" ALT="Search Identifiers">
+          <a class="not-text" href="#">SEARCH</a>
+        </li>
+        <li class="dropdown">
+          <img class="center" id="icon-topnav-learn" src="/static/images/learnOff.svg" ALT="Learn About EZID">
+          <a href="#" class="dropdown-toggle not-text" data-toggle="dropdown" role="button" aria-expanded="false">LEARN</a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a class="not-text" href="learn.html#01">What Is EZID?</a></li>
+            <li><a class="not-text" href="learn.html#02">Current Users</a></li>
+            <li><a class="not-text" href="learn.html#03">Pricing</a></li>
+            <li><a class="not-text" href="learn.html#04">Documentation</a></li>
+            <li><a class="not-text" href="learn.html#05">FAQ</a></li>
+            <li id="dropdown__divider--border"><a class="not-text" href="learn.html#06">Media</a></li>
+            <li><a class="not-text" href="apidoc.html">API Guide</a></li>
+            <li><a class="not-text" href="demo_simple.html">EZID Demo</a></li>
+         </ul>
+        </li>
+        <li>
+          <img class="center" id="icon-topnav-contact" src="/static/images/contactOff.svg" ALT="Contact EZID">
+          <a class="not-text" href="contact.html">CONTACT</a></li>
+        <li class="navbar-btn">
+          <a class="not-text" href="#"><button type="button" class="btn padding-side-sm btn-big gradient-orange" id="modal_open">LOGIN</button></a>
+        </li>
+      </ul>
+      <!-- Login Modal -->
+      <div class="modal-overlay" id="modal_window"
+               aria-hidden="true" role="dialog"
+               aria-labelledby="modal-title">
+        <div class="modal-content" id="modal-holder" role="document">
+          <!-- div class="inline-header" -->
+            <!-- h1 id="modal-title">Access your account</h1 -->
+            <div id="modal-title">Access your account</div>
+            <a href="#" class="close not-text" id="modal_close" aria-label="close">&times;</a>
+            <!-- Need this? data-dismiss="alert" -->
+          <!-- /div -->
+          <form class="form-horizontal">
+            <div class="form-group form-group-sm">
+              <label for="username" class="sr-only control-label">Username</label>
+              <input type="text" id="username" class="form-control" placeholder="Username" />
+              <label for="password" class="sr-only control-label">Password</label>
+              <input type="password" id="password" class="form-control" placeholder="Password" />
+              <button type="submit" class="btn btn-primary padding-side-xs">LOG IN</button>
+              &nbsp;&nbsp;<a href="#" class="font-small">Forgot your password?</a>
+            </div>
+          </form>
+        </div> <!-- end .modal-content -->
+      </div> <!-- end .modal-overlay -->
+      <!-- End Login Modal -->
+    </div><!-- #nav-collapse -->
+  </div>
+  <div class="alert alert-warning" role="alert">
+    <a href="#" class="close not-text" data-dismiss="alert">&times;</a>
+    <span class="alert-warning-text">WARNING! </span> We will perform a site-wide maintenance on August 11th, 2015 starting at 12:00am.
+  </div>
+  <div class="nav-logged-in-buttons">
+    <div class="container">
+      <div class="row">
+        <ul class="nav nav-pills nav-justified">
+          <li><a class="not-text" href="#">DASHBOARD</a><span></span></li>
+          <li><a class="not-text" href="#">MANAGE IDs</a><span></span></li>
+          <li><a class="not-text" href="#">CREATE ID</a><span></span></li>
+          <li><a class="not-text" href="#">ACCOUNT SETTINGS</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>

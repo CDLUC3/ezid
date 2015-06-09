@@ -10,7 +10,7 @@ def index(request):
   d['feed_cache'] = newsfeed.getLatestItem()
   d['rss_feed'] = uic.newsfeed_url
   d['ezid_home_url'] = "http://" + request.get_host() +"/"
-  return uic.render(request, 'info/index', d)
+  return uic.render(request, 'index', d)
 
 def community(request):
   d = { 'menu_item' : 'ui_home.community' } 
