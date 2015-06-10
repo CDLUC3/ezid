@@ -23,7 +23,16 @@
       </ul>
     </div>
     <div id="footer-newsfeed-col" class="col-sm-3">
+    {% if feed_cache %}
       <strong>LATEST NEWS FROM EZID</strong><br/>
+
+<!--  TODO:
+         if feed_cache.1 
+          <a href=" feed_cache.1 " target="_blank"> feed_cache.0 </a>
+        else
+           feed_cache.0 
+         endif -->
+
       <!-- Vertical Bootstrap 3 Carousel
       http://stackoverflow.com/questions/11589816/twitter-bootstrap-carousel-vertical-sliding/11596944 -->
       <div class="carousel slide" data-ride="carousel" data-interval="5000">
@@ -42,6 +51,7 @@
       </div>
       <p id="footer-newsfeed-linkall"><a class="font-xsmall" href="http://www.cdlib.org/cdlinfo/category/infrastructure-services/ezid/">View all news</a></p>
 
+    {% endif %}
     </div>
   </div>
   </div>

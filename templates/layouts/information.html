@@ -4,30 +4,5 @@
 {% block title %}EZID{% endblock %}
 
 {% block content %}
-  <div class="grid_9">
-  	<div class="main_content">
-  		{% block main_column %}
-    	{% endblock %}
-   	</div>
-  </div>
-  <div class="grid_3">
-  	{% block sidebar %}
-  	{% endblock %}
-  </div>
-  {% if feed_cache %}
-    <div class="grid_12 squarebox">
-      <div class="squareboxpad">
-        <div style="float:right;width:8em;text-align:right">
-          <a href="{{rss_feed}}"><img src="/static/images/feed-icon-14x14.png"/></a>&nbsp;
-          <a href="{{rss_feed}}">RSS</a>
-        </div>
-        <strong>Latest news from EZID</strong>&nbsp;&nbsp;&nbsp;&nbsp;
-        {% if feed_cache.1 %}
-          <a href="{{ feed_cache.1 }}" target="_blank">{{ feed_cache.0 }}</a>
-        {% else %}
-          {{ feed_cache.0 }}
-        {% endif %}
-      </div>
-    </div>
-  {% endif %}
+{% block main_column %}{% endblock %}
 {% endblock %}

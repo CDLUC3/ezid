@@ -5166,22 +5166,22 @@ label.text-color-reg {
   visibility: hidden; }
 
 .image-checkbox-label {
-  background: url("/images/checkbox.svg") no-repeat center left;
+  background: url("/static/images/checkbox.svg") no-repeat center left;
   background-size: 20px;
   color: #000; }
 
 .checkbox__icon:checked + .image-checkbox-label {
-  background: url("/images/checkboxCheck.svg") no-repeat center left;
+  background: url("/static/images/checkboxCheck.svg") no-repeat center left;
   background-size: 20px;
   color: #000; }
 
 .image-radio-label {
-  background: url("/images/radio.svg") no-repeat center left;
+  background: url("/static/images/radio.svg") no-repeat center left;
   background-size: 18px;
   color: #000; }
 
 .radio__icon:checked + .image-radio-label {
-  background: url("/images/radioCheck.svg") no-repeat center left;
+  background: url("/static/images/radioCheck.svg") no-repeat center left;
   background-size: 18px;
   color: #000; }
 
