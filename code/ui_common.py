@@ -17,6 +17,7 @@ import ezid
 import ezidadmin
 import idmap
 import log
+import newsfeed 
 import policy
 import shoulder
 import useradmin

@@ -4,7 +4,7 @@
 .ext-icon {
   margin: 0px 7px 5px 6px;
   padding:7px;
-  background: url("/images/ext-link.svg") no-repeat center left;
+  background: url("/static/images/ext-link.svg") no-repeat center left;
   width: 15px;
   height: 15px;
   background-size: 15px 15px;
@@ -86,7 +86,4 @@ a span.ext-icon {
   margin-left: 4px;
   margin-bottom : 6px;
   width: 32px; 
-}
-span.glyphicon-heart {
-    font-size: 2.2em;
 }

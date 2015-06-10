@@ -1,0 +1,97 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+
+{% block title %}Learn About EZID{% endblock %}
+{% block content %}
+<div class="container vertical-buffer-xs">
+  <div class="panel-group vertical-buffer-xs" id="learn_accordion">
+    <div class="panel panel-default">
+      <div class="panel-heading" data-toggle="collapse" data-parent="#learn_accordion" href="#01">
+        <h2 class="panel-title">
+          <i class="indicator glyphicon glyphicon-plus toggle-orange"></i>
+          <a class="not-text">What Is EZID?</a>
+        </h2>
+      </div>
+      <div id="01" class="panel-collapse collapse">
+{% include "info/what_is_ezid.html" %}
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" data-toggle="collapse" data-parent="#learn_accordion" href="#02">
+        <h2 class="panel-title">
+          <i class="indicator glyphicon glyphicon-plus toggle-orange"></i>
+          <a class="not-text">Current Users</a>
+        </h2>
+      </div>
+      <div id="02" class="panel-collapse collapse">
+{% include "info/current_users.html" %}
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" data-toggle="collapse" data-parent="#learn_accordion" href="#03">
+        <h2 class="panel-title">
+          <i class="indicator glyphicon glyphicon-plus toggle-orange"></i>
+          <a class="not-text">Pricing</a>
+        </h2>
+      </div>
+      <div id="03" class="panel-collapse collapse">
+{% include "info/pricing.html" %}
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" data-toggle="collapse" data-parent="#learn_accordion" href="#04">
+        <h2 class="panel-title">
+          <i class="indicator glyphicon glyphicon-plus toggle-orange"></i>
+          <a class="not-text">Documentation</a>
+        </h2>
+      </div>
+      <div id="04" class="panel-collapse collapse">
+{% include "info/documentation.html" %}
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" data-toggle="collapse" data-parent="#learn_accordion" href="#05">
+        <h2 class="panel-title">
+          <i class="indicator glyphicon glyphicon-plus toggle-orange"></i>
+          <a class="not-text">FAQ</a>
+        </h2>
+      </div>
+      <div id="05" class="panel-collapse collapse">
+{% include "info/faq.html" %}
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" data-toggle="collapse" data-parent="#learn_accordion" href="#06">
+        <h2 class="panel-title">
+          <i class="indicator glyphicon glyphicon-plus toggle-orange"></i>
+          <a class="not-text">Media</a>
+        </h2>
+      </div>
+      <div id="06" class="panel-collapse collapse">
+{% include "info/media.html" %}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+$( document ).ready(function() {
+  location.hash && $(location.hash + '.collapse').collapse('show');
+  window.scrollTo(0, 0);
+  // $('html,body').scrollTop(0);
+});
+
+// window.scrollTo(0, 0);
+
+function toggleChevron(e) {
+    $(e.target)
+    .prev('.panel-heading')
+    .find("i.indicator")
+    .toggleClass('glyphicon-minus glyphicon-plus');
+    // $('html,body').scrollTop(300);
+}
+$('#learn_accordion').on('hidden.bs.collapse', toggleChevron);
+$('#learn_accordion').on('shown.bs.collapse', toggleChevron);
+</script>
+
+{% endblock %}
