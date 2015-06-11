@@ -23,6 +23,12 @@ def settings_value(name):
     return ""
   
 @register.simple_tag
+def content_heading(heading):
+  """Outputs primary heading at top of page"""
+  return '<div class="header"><div class="container"><div class="row"><h1>' + \
+         heading + '</h1></div></div></div>'
+
+@register.simple_tag
 def choices(name, value, choice_string):
   """Creates radio buttons (for simple admin email form) based on string choices separated by a pipe"""
   choices = choice_string.split("|")
