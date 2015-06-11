@@ -1,4 +1,5 @@
 {% extends "layouts/base.html" %}
+{% load layout_extras %}
 {% load i18n %}
 {% comment %}
 ***** NOT WORKING ****}
@@ -7,7 +8,8 @@
 {% block title %}{%trans "Contact Us" %}{% endblock %}
 
 {% block content %}
-
+{% trans "Please fill out this form if you would like more information about our services or have a specific question. If you have a comment we are always happy to hear feedback." as str_ch %}
+{% content_heading str_ch %}
 {% comment %}
 ***** NOT WORKING ****}
 {% get_current_language as LANGUAGE_CODE %}
@@ -33,65 +35,181 @@ Bi-directional: {{ lang.bidi }}<br />
 request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
 -->
 
-{% trans "Contact Us" as t_title %}
+<div class="vertical-buffer-xs"></div>
 
-<div id="pwreset" class="grid_12">
-
-	<h1 id="title">{{ t_title }}</h1>
-
-	<p style="width:500px">
-		{% blocktrans %}Please fill out this form if you would like more information about our services or have a specific question. If you have a comment we are always happy to hear feedback.{% endblocktrans %}
-	</p>
-
-	<form name="contact" action="{% url "ui.contact" %}" method="post">
-		<label for="your_name" class="left">{% trans "Your Name" %}:</label>
-		<div class="field_right">
-			<input type="text" name="your_name" value="{{ your_name }}" maxlength="200" size="40" />
-		</div>
-		
-		<label for="url" class="trapper_keeper">Your url:</label>
-		<div class="trapper_keeper">
-			<input type="text" name="url" value="" maxlength="200" size="40" /> * {% trans "Please leave blank. This field is meant to filter out Spam Bots." %}
-		</div>
-
-		<label for="email" class="left">{% trans "Your Email" %}:</label>
-		<div class="field_right">
-			<input type="text" name="email" value="{{ email }}" maxlength="200" size="40" />
-		</div>
-
-		<label for="affiliation" class="left">{% trans "Your Institution" %}:</label>
-		<div class="field_right">
-			<input type="text" name="affiliation" value="{{ affiliation }}" maxlength="200" size="40" />
-		</div>
-		
-		<label class="left">&nbsp;</label>
-		<div class="field_right" style="width:400px;">
-			{% trans "Please indicate your question or comment" %}:<br/>
-			<textarea rows="10" cols="50" name="comment" style="margin-bottom:16px;">{{comment}}</textarea>
-		</div>
-		
-		<div style="clear:both"></div>
-
-		<label for="hear_about" class="left">{% trans "How did you hear about us?" %}</label>
-		<div class="field_right">
-			<select name="hear_about" id="hear_about">
-				{% for tup in heard %}
-					<option value="{{ tup.0 }}"
-						{% if tup.0 == hear_about %}
-							selected="selected"
-						{% endif %}
-						>{{ tup.1 }}</option>
-				{% endfor %}
-			</select>
-		</div>
-		<label class="left"></label>
-		<div class="field_right">
-			{# Translators: This is the Submit button #}
-			{% trans "Submit" as t_submit context "Button text"%}
-			<input type="submit" value="{{ t_submit }}" />
-		</div>
-
-	</form>
+<div id="contact-gutter-left">
+  &nbsp;
 </div>
+
+<div id="contact-content">
+<div class="container">
+  <div class="row">
+    <div class="col-sm-9 col-sm-push-3">
+      <div class="row vertical-buffer-xs">
+      <form class="form-horizontal" role="form">
+        <div class="form-group form-group-sm">
+          <label for="contact_reason" class="col-sm-4 control-label">
+            {% trans "Reason for contacting EZID" %}</label>
+          <div class="col-sm-8">
+          <select id="contact_reason" name="contact_reason" class="form-control">
+            {% for tup in contact_reason_opts %}
+              <option value="{{ tup.0 }}"
+              {% if tup.0 == contact_reason %}
+                selected="selected"
+              {% endif %}
+              >{{ tup.1 }}</option>
+            {% endfor %}
+          </select>
+          </div>
+        </div>
+        <div class="form-group form-group-sm">
+          <label for="your_name" class="col-sm-4 control-label">{% trans "Your Name" %}</label>
+          <div class="col-sm-8">
+          <input type="text" id="your_name" name="your_name" value="{{ your_name }}" class="form-control" maxlength="200"/>
+          </div>
+        </div>
+        <div class="trapper_keeper">
+        <div class="form-group form-group-sm">
+          <label for="url" class="trapper_keeper col-sm-4 control-label">{% trans "Your URL" %}</label>
+          <div class="col-sm-8">
+          <input type="text" id="url" name="url" value="" class="form-control" maxlength="200"/>
+          </div>
+        </div>
+        </div>
+        <div class="form-group form-group-sm">
+          <label for="email" class="col-sm-4 control-label">{% trans "Your Email" %}</label>
+          <div class="col-sm-8">
+          <input type="text" id="email" name="email" value="{{ email }}" class="form-control" maxlength="200" placeholder="">
+          </div>
+        </div>
+        <div class="form-group form-group-sm">
+          <label for="affiliation" class="col-sm-4 control-label">{% trans "Your Institution" %}</label>
+          <div class="col-sm-8">
+          <input type="text" id="affiliation" name="affiliation" value="{{ affiliation }}" class="form-control" maxlength="200" placeholder="">
+          </div>
+        </div>
+        <div class="form-group form-group-sm">
+          <label for="comment" class="col-sm-4 control-label">{% trans "Please indicate any question or comment you may have" %}</label>
+          <div class="col-sm-8">
+          <textarea id="comment" name="comment" class="form-control" rows="4">{{ comment }}</textarea>
+          </div>
+        </div>
+        <div class="form-group form-group-sm">
+          <label for="hear_about" class="col-sm-4 control-label">{% trans "How did you hear about us?" %}</label>
+          <div class="col-sm-8">
+            <select name="hear_about" id="hear_about" class="form-control">
+            {% for tup in hear_about_opts %}
+              <option value="{{ tup.0 }}"
+              {% if tup.0 == hear_about %}
+                selected="selected"
+              {% endif %}
+              >{{ tup.1 }}</option>
+            {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group form-group-sm">
+          <label class="col-sm-4 control-label"></label>
+          <div class="col-sm-8">
+          <button type="submit" class="btn btn-primary padding-side-med">
+            {# Translators: This is the Submit button. All uppercase. #}
+            {% trans "SUBMIT" %}</button>
+          </div>
+        </div>
+        </form>
+      </div>
+    </div>
+    <div class="col-sm-3 col-sm-pull-9 col-promotional">
+      <div id="myCarousel" class="promotional carousel slide" data-ride="carousel">
+        <!-- Carousel indicators -->
+        <ol class="carousel-indicators">
+            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            <li data-target="#myCarousel" data-slide-to="1"></li>
+            <li data-target="#myCarousel" data-slide-to="2"></li>
+            <li data-target="#myCarousel" data-slide-to="3"></li>
+        </ol>
+        <!-- Carousel items -->
+        <div class="carousel-inner">
+          <div class="item active">
+            <blockquote>
+              <p>{% blocktrans %}Assigning DOIs to figshare content through the EZID system 
+              allows researchers to efficiently share and cite their research. 
+              The great team at the California Digital Library makes assigning 
+              DOIs a simple yet well structured process.{% endblocktrans %}</p>
+            </blockquote>
+            <div class="blockquote-footer">
+              {% trans "Mark Hahnel, Ph. D." %}<br/>
+              {# Translators: "figshare" does not need to be translated: company name #}
+              {% trans "Founder, figshare" %}
+            </div>
+          </div>
+          <div class="item">
+            <blockquote>
+              <p>{% blocktrans %}We're very pleased to see EZID working on behalf of its clients to
+              create new partnerships that expand the reach and impact of research
+              and scholarship. Sponsored memberships to CrossRef through the
+              California Digital Library open up new possibilities for smaller
+              organizations and those who work with scholars to innovate at the
+       	      fringes of new publication models, integrating the future of online
+       	      publication as it assumes various forms.{% endblocktrans %}</p>
+            </blockquote>
+            <div class="blockquote-footer">
+              {% trans "Rebecca Kennison, Director" %}<br/>
+              {% trans "Center for Digital Research and Scholarship" %}<br/>
+              {% trans "Columbia University Libraries/Information Services" %}
+            </div>
+          </div>
+          <div class="item">
+            <blockquote>
+              <p>{% blocktrans %}EZID gives Open Context</a> critical services that help make our 
+              data publications lasting contributions to the scholarly record. 
+              Because of EZID, we can explore innovative new approaches in 
+              publishing that can be used and cited in years to come.{% endblocktrans %}</p>
+            </blockquote>
+            <div class="blockquote-footer">
+              {% trans "Eric C. Kansa, Ph. D." %}<br/>
+              {% trans "Cofounder and Technology Director" %}<br/>
+              Open Context
+            </div>
+          </div>
+          <div class="item">
+            <blockquote>
+              <p>{% blocktrans %}The partnership between EZID and CrossRef presents an exciting
+              opportunity for eScholarship and our journal partners. The inclusion
+              of our Open Access publications in new discovery services via CrossRef,
+              particularly its metadata feed, will dramatically increase the exposure
+              of the important scholarship published on our platform.{% endblocktrans %}</p>
+            </blockquote>
+            <div class="blockquote-footer">
+              {% trans "Catherine Mitchell, Director" %}<br/>
+              {% trans "Access and Publishing" %}<br/>
+              {% trans "California Digital Library/University of California" %}
+            </div>
+          </div>
+        </div>
+    </div>
+
+      <p class="tagline">
+        <a href="#">SIGN UP FOR OUR NEWSLETTER &raquo;</a>
+      </p>
+    </div>
+  </div>
+</div>
+</div>
+
+<div id="contact-gutter-right">
+  &nbsp;
+</div>
+
+<div class="row vertical-buffer"></div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+     $("#myCarousel").carousel({
+         interval : 10000,
+         // pause: "false"
+     });
+});
+</script>
 
 {% endblock %}

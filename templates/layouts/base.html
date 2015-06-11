@@ -55,9 +55,9 @@
     {% block header %}{% endblock %}
     <script type="text/javascript">/*<![CDATA[*/
       areMessages = {% if messages %}true{% else %}false{% endif %};
-      {% block javascript %}{% endblock %}
+    {% block javascript %}{% endblock %}
     /*]]>*/</script>
-		<script type="text/javascript" src="/static/javascripts/message_box.js"></script>
+    <script type="text/javascript" src="/static/javascripts/message_box.js"></script>
   </head>
   <body>
     <!--[if lt IE 10]>
@@ -65,24 +65,25 @@
     <![endif]-->
 
 <div id="page_top"></div>
-<a class="sr-only" href="#main-content">Skip navigation</a>
+  <a class="sr-only" href="#main-content">Skip navigation</a>
       {% include "includes/top.html" %}    
+  <a class="sr-only" name="main-content"></a>
       {% block content %}{% endblock %}
       
       {% include "includes/footer.html" %}
 
-    <script src="/static/javascripts/bootstrap/affix.js"></script>
-    <script src="/static/javascripts/bootstrap/alert.js"></script>
-    <script src="/static/javascripts/bootstrap/button.js"></script>
-    <script src="/static/javascripts/bootstrap/carousel.js"></script>
-    <script src="/static/javascripts/bootstrap/collapse.js"></script>
-    <script src="/static/javascripts/bootstrap/dropdown.js"></script>
-    <script src="/static/javascripts/bootstrap/tab.js"></script>
-    <script src="/static/javascripts/bootstrap/transition.js"></script>
-    <script src="/static/javascripts/bootstrap/scrollspy.js"></script>
-    <script src="/static/javascripts/bootstrap/modal.js"></script>
-    <script src="/static/javascripts/bootstrap/tooltip.js"></script>
-    <script src="/static/javascripts/bootstrap/popover.js"></script>
+  <script src="/static/javascripts/bootstrap/affix.js"></script>
+  <script src="/static/javascripts/bootstrap/alert.js"></script>
+  <script src="/static/javascripts/bootstrap/button.js"></script>
+  <script src="/static/javascripts/bootstrap/carousel.js"></script>
+  <script src="/static/javascripts/bootstrap/collapse.js"></script>
+  <script src="/static/javascripts/bootstrap/dropdown.js"></script>
+  <script src="/static/javascripts/bootstrap/tab.js"></script>
+  <script src="/static/javascripts/bootstrap/transition.js"></script>
+  <script src="/static/javascripts/bootstrap/scrollspy.js"></script>
+  <script src="/static/javascripts/bootstrap/modal.js"></script>
+  <script src="/static/javascripts/bootstrap/tooltip.js"></script>
+  <script src="/static/javascripts/bootstrap/popover.js"></script>
 
 <!-- Table responsive behavior. Used for all tables.
 Go through each table and extract out heading text.

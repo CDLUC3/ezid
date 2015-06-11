@@ -22,21 +22,30 @@ def ajax_hide_alert(request):
 
 def contact(request):
   d = { 'menu_item': 'ui_null.null'}
-  # Translators: These options appear in drop-down on templates/contact.html
-  d['heard']      =   ( ("website", _("University website")), \
-                        ("conference", _("Conference")), \
-                        ("colleagues", _("Colleagues")), \
-                        ("webinar", _("Webinar")), \
-                        ("other", _("Other")) )
+  # Translators: These options will appear in drop-down on contact page (in new design)
+  d['contact_reason_opts'] = ( ("*", _("Choose One")), \
+                             ("account_new", _("I would like to inquire about getting a new account")), \
+                             ("account_existing", _("I have a problem or question about existing account")), \
+                             ("newsletter", _("I'd like to sign up for the EZID email newsletter")), \
+                             ("other", _("Other")) )
+  # Translators: These options appear in drop-down on contact page
+  d['hear_about_opts'] = ( ("website", _("University website")), \
+                         ("conference", _("Conference")), \
+                         ("colleagues", _("Colleagues")), \
+                         ("webinar", _("Webinar")), \
+                         ("other", _("Other")) )
   if request.method == "GET":
-    d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
+    d['contact_reason'], d['your_name'], d['email'], d['affiliation'], \
+      d['comment'], d['hear_about'] = '', '', '', '', '', ''
   elif request.method == "POST":
     P = request.POST
-    for i in ['your_name', 'email', 'comment', 'hear_about']:
+    for i in ['contact_reason', 'your_name', 'email', 'comment', 'hear_about']:
       if not i in P:
-        d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
+        d['contact_reason'], d['your_name'], d['email'], d['affiliation'], \
+          d['comment'], d['hear_about'] = '', '', '', '', ''
         return uic.render(request, 'contact', d)
-    d.update(uic.extract(request.POST, ['your_name', 'email', 'affiliation', 'comment', 'hear_about']))
+    d.update(uic.extract(request.POST, \
+      ['contact_reason', 'your_name', 'email', 'affiliation', 'comment', 'hear_about']))
     errored = False
     if P['your_name'] == '':
       # Translators: Validation output for templates/contact.html
@@ -44,9 +53,6 @@ def contact(request):
       errored = True
     if P['email'] == '' or not re.match('^.+\@.+\..+$', P['email']):
       django.contrib.messages.error(request, _("Please fill in a valid email address."))
-      errored = True
-    if P['comment'].strip() == '':
-      django.contrib.messages.error(request, _("Please fill in a question or comment."))
       errored = True
     if errored:
       return uic.render(request, 'contact', d)
