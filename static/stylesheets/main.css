@@ -5364,12 +5364,17 @@ h1 {
   font-size: 1.4em;
   border-bottom: 1px dotted black; }
 
-h2 {
+h2-base, h2, h2.id-creation {
   font-family: KievitWebPro-Bold, Arial, sans-serif;
-  margin: 0px 0px 17px 10px;
   color: #00778a;
   font-weight: normal;
   font-size: 1.4em; }
+
+h2 {
+  margin: 8px 0px 17px 0px; }
+
+h2.id-creation {
+  margin: 0px 0px 17px 10px; }
 
 h3 {
   color: #00778a;

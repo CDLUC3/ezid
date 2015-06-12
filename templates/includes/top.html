@@ -43,8 +43,7 @@
         </li>
       </ul>
       <!-- Login Modal -->
-      <div class="modal-overlay" id="modal_window"
-               aria-hidden="true" role="dialog"
+      <div class="modal-overlay" id="modal_window" aria-hidden="true" role="dialog"
                aria-labelledby="modal-title">
         <div class="modal-content" id="modal-holder" role="document">
           <!-- div class="inline-header" -->
@@ -56,9 +55,9 @@
           <form method="post" action="/login" class="form-horizontal">
             <div class="form-group form-group-sm">
               <label for="username" class="sr-only control-label">Username</label>
-              <input type="text" id="username" class="form-control" value="{{ username }}" placeholder="Username" />
+              <input type="text" id="username" name="username" class="form-control" value="{{ username }}" placeholder="Username" />
               <label for="password" class="sr-only control-label">Password</label>
-              <input type="password" id="password" class="form-control" value="{{ password }}" placeholder="Password" />
+              <input type="password" id="password" name="password" class="form-control" value="{{ password }}" placeholder="Password" />
               <button type="submit" class="btn btn-primary padding-side-xs" id="login" name="login">LOG IN</button>
               &nbsp;&nbsp;<a href="{% url "ui_account.pwreset" %}" class="font-small">Forgot your password?</a>
             </div>

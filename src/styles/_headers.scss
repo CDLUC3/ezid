@@ -22,14 +22,22 @@ h1 {  // Lives inside full-width header (above)
   border-bottom: 1px dotted black;
 }
 
-// ID Creation Header (Front Page Demo)
-h2 {
+h2-base {
   font-family: KievitWebPro-Bold, Arial, sans-serif;
-  margin: 0px 0px 17px 10px;
   color: $design-primary-color;
   font-weight: normal;
   font-size: 1.4em;
-  // letter-spacing: 0.03em;
+}
+
+h2 {
+  @extend h2-base;
+  margin: 8px 0px 17px 0px;
+}
+
+// ID Creation Header (Front Page Demo)
+h2.id-creation {
+  @extend h2-base;
+  margin: 0px 0px 17px 10px;
 }
 
 // Section Header
