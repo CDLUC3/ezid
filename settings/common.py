@@ -93,15 +93,12 @@ SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
 TEMPLATES = [
   { "BACKEND": "django.template.backends.django.DjangoTemplates",
     "DIRS": [os.path.join(PROJECT_ROOT, "templates")],
+    "APP_DIRS": True,
     "OPTIONS": {
-      "context_processors": (
+      "context_processors": [
         "django.contrib.messages.context_processors.messages",
-        "django.core.context_processors.request",
-        "django.template.context_processors.i18n"),
-      "loaders": (
-        "django.template.loaders.filesystem.Loader",
-        "django.template.loaders.app_directories.Loader"),
-      "debug": DEBUG
+        "django.template.context_processors.request",
+        "django.template.context_processors.i18n"]
     }
   }
 ]

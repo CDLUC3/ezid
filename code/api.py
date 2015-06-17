@@ -131,6 +131,8 @@ def _statusMapping (content, createRequest):
     return 401
   elif content.startswith("error: method not allowed"):
     return 405
+  elif content.startswith("error: concurrency limit exceeded"):
+    return 503
   else:
     return 500
 

@@ -181,12 +181,13 @@ _defaultUrnUuidProfile = None
 _adminUsername = None
 _adminPassword = None
 _adminAuthenticatedUser = None
+_perUserThreadLimit = None
 _perUserThrottle = None
 
 def _loadConfig ():
   global _ezidUrl, _noidEnabled, _defaultDoiProfile, _defaultArkProfile
   global _defaultUrnUuidProfile, _adminUsername, _adminPassword
-  global _adminAuthenticatedUser, _perUserThrottle
+  global _adminAuthenticatedUser, _perUserThreadLimit, _perUserThrottle
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _noidEnabled = (config.config("binder.enabled").lower() == "true")
   _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
@@ -198,8 +199,9 @@ def _loadConfig ():
   else:
     _adminPassword = config.config("user_%s.password" % _adminUsername)
   _adminAuthenticatedUser = None
+  _perUserThreadLimit = int(config.config("DEFAULT.max_threads_per_user"))
   _perUserThrottle =\
-    int(config.config("DEFAULT.concurrent_operations_per_user"))
+    int(config.config("DEFAULT.max_concurrent_operations_per_user"))
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -231,20 +233,19 @@ def _decrementCount (d, k):
 
 def _acquireIdentifierLock (identifier, user):
   _lock.acquire()
-  while True:
-    while _paused or identifier in _lockedIdentifiers:
-      _incrementCount(_waitingUsers, user)
-      _lock.wait()
-      _decrementCount(_waitingUsers, user)
-    if _activeUsers.get(user, 0) >= _perUserThrottle:
-      _incrementCount(_waitingUsers, user)
-      _lock.wait()
-      _decrementCount(_waitingUsers, user)
-    else:
-      _incrementCount(_activeUsers, user)
-      break
+  while _paused or identifier in _lockedIdentifiers or\
+    _activeUsers.get(user, 0) >= _perUserThrottle:
+    if _activeUsers.get(user, 0) + _waitingUsers.get(user, 0) >=\
+      _perUserThreadLimit:
+      _lock.release()
+      return False
+    _incrementCount(_waitingUsers, user)
+    _lock.wait()
+    _decrementCount(_waitingUsers, user)
+  _incrementCount(_activeUsers, user)
   _lockedIdentifiers.add(identifier)
   _lock.release()
+  return True
 
 def _releaseIdentifierLock (identifier, user):
   _lock.acquire()
@@ -519,6 +520,7 @@ def createDoi (doi, user, group, metadata={}):
     error: unauthorized
     error: bad request - subreason...
     error: internal server error
+    error: concurrency limit exceeded
   """
   doi = util.validateDoi(doi)
   if not doi: return "error: bad request - invalid DOI identifier"
@@ -543,7 +545,8 @@ def createDoi (doi, user, group, metadata={}):
       return "error: bad request - CrossRef registration requires " +\
         "'crossref' deposit metadata"
   tid = uuid.uuid1()
-  _acquireIdentifierLock(shadowArk, user[0])
+  if not _acquireIdentifierLock(shadowArk, user[0]):
+    return "error: concurrency limit exceeded"
   try:
     log.begin(tid, "createDoi", doi, user[0], user[1], group[0], group[1],
       *[a for p in metadata.items() for a in p])
@@ -673,6 +676,7 @@ def createArk (ark, user, group, metadata={}):
     error: unauthorized
     error: bad request - subreason...
     error: internal server error
+    error: concurrency limit exceeded
   """
   ark = util.validateArk(ark)
   if not ark: return "error: bad request - invalid ARK identifier"
@@ -688,7 +692,8 @@ def createArk (ark, user, group, metadata={}):
       return "error: bad request - invalid identifier status at creation time"
   if m.get("_x", "") == "yes": del m["_x"]
   tid = uuid.uuid1()
-  _acquireIdentifierLock(ark, user[0])
+  if not _acquireIdentifierLock(ark, user[0]):
+    return "error: concurrency limit exceeded"
   try:
     log.begin(tid, "createArk", ark, user[0], user[1], group[0], group[1],
       *[a for p in metadata.items() for a in p])
@@ -760,6 +765,7 @@ def createUrnUuid (urn, user, group, metadata={}):
     error: unauthorized
     error: bad request - subreason...
     error: internal server error
+    error: concurrency limit exceeded
   """
   urn = util.validateUrnUuid(urn)
   if not urn: return "error: bad request - invalid UUID URN identifier"
@@ -776,7 +782,8 @@ def createUrnUuid (urn, user, group, metadata={}):
       return "error: bad request - invalid identifier status at creation time"
   if m.get("_x", "") == "yes": del m["_x"]
   tid = uuid.uuid1()
-  _acquireIdentifierLock(shadowArk, user[0])
+  if not _acquireIdentifierLock(shadowArk, user[0]):
+    return "error: concurrency limit exceeded"
   try:
     log.begin(tid, "createUrnUuid", urn, user[0], user[1], group[0], group[1],
       *[a for p in metadata.items() for a in p])
@@ -955,6 +962,7 @@ def getMetadata (identifier, user=None, group=None):
     error: unauthorized
     error: bad request - subreason...
     error: internal server error
+    error: concurrency limit exceeded
   """
   if identifier.startswith("doi:"):
     doi = util.validateDoi(identifier[4:])
@@ -975,7 +983,8 @@ def getMetadata (identifier, user=None, group=None):
   if user == None: user = ("anonymous", "anonymous")
   if group == None: group = ("anonymous", "anonymous")
   tid = uuid.uuid1()
-  _acquireIdentifierLock(ark, user[0])
+  if not _acquireIdentifierLock(ark, user[0]):
+    return "error: concurrency limit exceeded"
   try:
     log.begin(tid, "getMetadata", nqidentifier, user[0], user[1], group[0],
       group[1])
@@ -1026,6 +1035,7 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
     error: unauthorized
     error: bad request - subreason...
     error: internal server error
+    error: concurrency limit exceeded
   """
   if identifier.startswith("doi:"):
     doi = util.validateDoi(identifier[4:])
@@ -1049,7 +1059,8 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
   r = _validateMetadata1(nqidentifier, user, d)
   if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
-  _acquireIdentifierLock(ark, user[0])
+  if not _acquireIdentifierLock(ark, user[0]):
+    return "error: concurrency limit exceeded"
   try:
     log.begin(tid, "setMetadata", nqidentifier, user[0], user[1], group[0],
       group[1], *[a for p in metadata.items() for a in p])
@@ -1254,6 +1265,7 @@ def deleteIdentifier (identifier, user, group):
     error: unauthorized
     error: bad request - subreason...
     error: internal server error
+    error: concurrency limit exceeded
   """
   if identifier.startswith("doi:"):
     doi = util.validateDoi(identifier[4:])
@@ -1272,7 +1284,8 @@ def deleteIdentifier (identifier, user, group):
   else:
     return "error: bad request - unrecognized identifier scheme"
   tid = uuid.uuid1()
-  _acquireIdentifierLock(ark, user[0])
+  if not _acquireIdentifierLock(ark, user[0]):
+    return "error: concurrency limit exceeded"
   try:
     log.begin(tid, "deleteIdentifier", nqidentifier, user[0], user[1],
       group[0], group[1])
