@@ -5011,6 +5011,7 @@ a span.ext-icon {
   width: 24px; }
 
 .icon-help {
+  margin-left: 8px;
   width: 23px; }
 
 .icon__header--base, #dashboard__icon--viewreport, #dashboard__icon--usage, #dashboard__icon--idsbymonth, #dashboard__icon--brokenlinks, #dashboard__icon--crossref {
@@ -5138,6 +5139,15 @@ mark {
   background-color: #fbb714;
   padding: 0px; }
 
+.form-control {
+  display: inline;
+  color: #000;
+  border-color: #beb6af;
+  background-color: #FFF; }
+
+.form-group-sm {
+  padding: 0px 15px 0px 0px; }
+
 .form-horizontal .radio,
 .form-horizontal .checkbox,
 .form-horizontal .radio-inline,
@@ -5152,18 +5162,22 @@ input[type="radio"], input[type="checkbox"] {
 .input-group-sm > .input-group-btn > .btn, select.input-sm, .form-horizontal .form-group-sm select.form-control, .input-group-sm > select.form-control,
 .input-group-sm > select.input-group-addon,
 .input-group-sm > .input-group-btn > select.btn {
+  font-size: 1.05em;
   border-radius: 0;
   height: 26px; }
 
+select::-moz-focus-inner {
+  /*Remove button padding in FF*/
+  border: 0;
+  padding: 0; }
+
+@-moz-document url-prefix() {
+  /* targets Firefox only */
+  select {
+    padding: 2px 8px !important; } }
+
 select.form-control {
   background-color: #EEE; }
-
-.form-control {
-  border-color: #beb6af;
-  background-color: #FFF; }
-
-.form-group-sm {
-  padding: 0px 15px 0px 0px; }
 
 form.form-horizontal .second-col {
   padding-left: 15px; }
@@ -5954,6 +5968,9 @@ td div.dollar {
 
 .tagline {
   margin: 0px; }
+
+.width-87 {
+  width: 87%; }
 
 img.center {
   display: block;

@@ -4,6 +4,16 @@
 //     margin-bottom: 0px;
 // }
 
+.form-control {
+  display: inline;
+  color: #000;
+  border-color:$design-light-gray-border-color;
+  background-color:#FFF;
+}
+.form-group-sm {
+  padding: 0px 15px 0px 0px;
+}
+
 .form-horizontal .radio,
 .form-horizontal .checkbox,
 .form-horizontal .radio-inline,
@@ -16,19 +26,23 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 .input-sm, select.input-sm {
+  font-size: 1.05em;
   border-radius: $border-radius-base;
   height: 26px;
-  // TODO: Do I also need font-size and line-height here?
 }
+
+select::-moz-focus-inner { /*Remove button padding in FF*/ 
+    border: 0;
+    padding: 0;
+}
+@-moz-document url-prefix() { /* targets Firefox only */
+    select {
+        padding: 2px 8px!important;
+    }
+}
+
 select.form-control {
   background-color: #EEE;
-}
-.form-control {
-  border-color:$design-light-gray-border-color;
-  background-color:#FFF;
-}
-.form-group-sm {
-  padding: 0px 15px 0px 0px;
 }
 form.form-horizontal .second-col {
   padding-left: 15px;
