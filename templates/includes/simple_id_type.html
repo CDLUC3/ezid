@@ -1,16 +1,40 @@
 {% load layout_extras %}
 
-<h2>Step 1: Choose an identifier type</h2>
+
+<div class="row idcreate-content-row">
+  <div class="col-sm-8">
+    <div class="inline-header">
+      <span class="number-big">1</span>
+      <h2>Choose an identifier type</h2>
+    </div>
   {% if prefixes|duplicate_id_types %}
-  	{% for p in prefixes %}
-    	<input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}"
-      	{% selected_radio "shoulder" forloop.counter p.prefix %} />
-   		<label for="{{p.prefix}}">{% shoulder_display p testPrefixes "False" %}</label><br/>
-  	{% endfor %}
+    {% for p in prefixes %}
+    <div class="radio form-group form-group-sm">
+      <label for="{{p.prefix}}" class="text-color-reg">
+        <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" 
+        {% selected_radio "shoulder" forloop.counter p.prefix %} />
+          {% shoulder_display p testPrefixes "False" %}
+      </label>
+    </div>
+    {% endfor %}
   {% else %}
-  	{% for p in prefixes %}
-    	<input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}"
-      	{% selected_radio "shoulder" forloop.counter p.prefix %} />
-   		<label for="{{p.prefix}}">{% shoulder_display p testPrefixes "True" %}</label><br/>
-  	{% endfor %}
+    {% for p in prefixes %}
+    <div class="radio form-group form-group-sm">
+      <label for="{{p.prefix}}" class="text-color-reg">
+        <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" 
+        {% selected_radio "shoulder" forloop.counter p.prefix %} />
+          {% shoulder_display p testPrefixes "True" %}
+      </label>
+    </div>
+    {% endfor %}
   {% endif %}
+  </div>
+  <div class="col-sm-3 font-small vertical-buffer-sm">
+    <!-- span class="font-small-bold">About Demo Identifiers</span><br/>
+    &#42; Demo identifiers, indicated on EZID screens with an asterisk (&#42;) are temporary identifiers for use in testing the EZID service. They last for two weeks. -->
+  </div>
+  <div class="col-sm-1">
+  </div>
+</div>
+
+

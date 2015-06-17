@@ -53,7 +53,7 @@ def display_form_element(context, element, id_object=None):
 
 def display_text_box(context, element, id_object):
   """displays a text box based on the element"""
-  return "<input type=\"text\" class=\"%s std_form_width\" name=\"%s\" id=\"%s\" size=\"35\" value=\"%s\" />" \
+  return "<input type=\"text\" class=\"%s form-control width-87\" name=\"%s\" id=\"%s\" value=\"%s\" />" \
     % tuple([escape(x) for x in(layout_extras.tooltip_class(element.name),
        element.name,
        element.name,

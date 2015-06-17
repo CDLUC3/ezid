@@ -1,24 +1,27 @@
 {% load layout_extras %}
 {% load metadata_tags %}
 
-<br/>
-<h2 style="display: inline;">Step 2: Describe the identified object</h2>{% help_icon "relevant_mouseovers" %}
-<div class="clearboth"></div>
+<div class="inline-header">
+  <span class="number-big">2</span>
+  <h2>Describe the identified object</h2><img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">{% help_icon "relevant_mouseovers" %}
+</div>
 <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
-<label for="_target" class="left {% tooltip_class "_target" %}">
-  {{internal_profile.target.displayName}}:
-</label>
-<div class="field_right">
-  <input type="text" class="{% tooltip_class "_target" %} std_form_width" name="_target" id="_target" size="35" value="{% request_value "_target" %}"/>
+<div class="col-sm-12 form-group form-group-sm">
+  <label for="_target" class="col-sm-3 control-label">{{internal_profile.target.displayName}}</label>
+  <div class="col-sm-7">
+    <input type="text" class="form-control width-87" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
+  </div>
 </div>
 {% for e in current_profile.elements %}
-  <label for="{{e.name}}" class="left {% tooltip_class e.name %}">
-    {{e.displayName}}:
+<div class="col-sm-12 form-group form-group-sm">
+  <label for="{{e.name}}" class="col-sm-3 control-label">
+    {{e.displayName}}
   </label>
-  <div class="field_right">
-  	{% display_form_element e %}
-  	{% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
-			{% datacite_field_help_icon e.name %}
-  	{% endif %}
+  <div class="col-sm-7">
+    {% display_form_element e %}
+    {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
+      {% datacite_field_help_icon e.name %}
+    {% endif %}
   </div>
+</div>
 {% endfor %}
