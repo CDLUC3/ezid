@@ -87,21 +87,19 @@ def active_id_display(id_text, testPrefixes):
   #  if id_text.startswith(pre['prefix']):
   #    return "<span class='fakeid'>" + '<a href="' + _urlForm(id_text) + '">' + _urlForm(id_text) + '</a></span>'
   return '<a href="' + _urlForm(id_text) + '">' + _urlForm(id_text) + '</a>'
-  
+
 @register.simple_tag
 def help_icon(id_of_help):
-  return '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#' + id_of_help + '" name="help_link">' + \
-    '<img src="/static/images/help_icon.gif" alt="Click for additional help"' + \
-    ' title="Click for additional help"/></a>'
-    
+  return '<a id="' + id_of_help + '" role="button" data-toggle="popover" data-trigger="click">' + \
+    '<img src="/static/images/iconHelp.svg" alt="Click for additional help"' + \
+    ' class="icon-help" title="Click for additional help"/></a>'
+
 @register.simple_tag
 def datacite_field_help_icon(id_of_help):
   temp_id = id_of_help.replace(".", "_") + '_help'
-  return '<div class="datacite_help">' + \
-    '<a href="#' + temp_id + '" name="help_link">' + \
-    '<img src="/static/images/help_icon.gif" alt="Click for additional help" title="Click for additional help"/>' + \
-    '</a></div>'
-
+  return '<a id="' + temp_id + '" role="button" data-toggle="popover" data-trigger="click">' + \
+    '<img src="/static/images/iconHelp.svg" alt="Click for additional help"' + \
+    ' class="icon-help" title="Click for additional help"/></a>'  
 
 @register.tag
 @basictag(takes_context=True)

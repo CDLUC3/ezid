@@ -3,13 +3,13 @@
 
 <div class="inline-header">
   <span class="number-big">2</span>
-  <h2>Describe the identified object</h2><img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">{% help_icon "relevant_mouseovers" %}
+  <h2 class="id-creation">Describe the identified object</h2>{% help_icon "relevant_mouseovers" %}
 </div>
 <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
 <div class="col-sm-12 form-group form-group-sm">
   <label for="_target" class="col-sm-3 control-label">{{internal_profile.target.displayName}}</label>
   <div class="col-sm-7">
-    <input type="text" class="form-control width-87" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
+    <input type="text" class="form-control width-reduced" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
   </div>
 </div>
 {% for e in current_profile.elements %}

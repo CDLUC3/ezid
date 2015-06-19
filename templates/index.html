@@ -37,7 +37,7 @@
                 <div class="inline-header nowrap">
                   <span class="number-big-pop">1</span>
                   <h2 class="id-creation">Choose an identifier type</h2>
-                  <img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
+                  {% help_icon "create_id_01" %}
                 </div>
               </div>
               <div id="frontpage_form_radiobuttons" class="col-md-6">
@@ -71,22 +71,22 @@
             <div class="row">
               <div class="col-md-5 form-group form-group-sm">
                 <label for="create_target_url" class="sr-only control-label">Location URL</label>
-                <input type="text" class="form-control width-87" id="create_target_url" placeholder="Location URL" />
-                <img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
+                <input type="text" class="form-control width-reduced" id="create_target_url" placeholder="Location URL" />
+                <a role="button" id="id_type2" data-toggle="popover" data-trigger="focus"><img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?"></a>
               </div>
               <div class="col-md-5 form-group form-group-sm">
                 <label for="create_demo_what" class="sr-only control-label">What?</label>
-                <input type="text" class="form-control width-87" id="create_demo_what" placeholder="What?" />
+                <input type="text" class="form-control width-reduced" id="create_demo_what" placeholder="What?" />
                 <img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
               </div>
               <div class="col-md-5 form-group form-group-sm">
                 <label for="create_demo_who" class="sr-only control-label">Who?</label>
-                <input type="text" class="form-control width-87" id="create_demo_who" placeholder="Who?" />
+                <input type="text" class="form-control width-reduced" id="create_demo_who" placeholder="Who?" />
                 <img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
               </div>
               <div class="col-md-5 form-group form-group-sm">
                 <label for="create_demo_when" class="sr-only control-label">When?</label>
-                <input type="text" class="form-control width-87" id="create_demo_when" placeholder="When?" />
+                <input type="text" class="form-control width-reduced" id="create_demo_when" placeholder="When?" />
                 <img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
               </div>
               <div class="col-md-1">
@@ -97,5 +97,12 @@
         </div>
       </div>
     </div>
-
+    <!-- Load random hero image-->
+    <script type="text/javascript">
+      var rImg = "url(" + getImageTag() + ")";
+      $("#frontpage_img").css({"backgroundImage": rImg});
+    </script>
+    <!-- Help Popover -->
+    {% include "info/popup_help.html" %}
+    <script type="text/javascript" src="/static/javascripts/help_box.js"></script>
 {% endblock %}

@@ -1,30 +1,33 @@
 {% load layout_extras %}
 
-
-<div class="row idcreate-content-row">
   <div class="col-sm-8">
     <div class="inline-header">
       <span class="number-big">1</span>
-      <h2>Choose an identifier type</h2>
+      <h2 class="id-creation">Choose an identifier type</h2>
+      {% help_icon "create_id_01" %}
     </div>
   {% if prefixes|duplicate_id_types %}
     {% for p in prefixes %}
     <div class="radio form-group form-group-sm">
-      <label for="{{p.prefix}}" class="text-color-reg">
-        <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" 
-        {% selected_radio "shoulder" forloop.counter p.prefix %} />
+      <div class="radio-inline radio_svg horizontal-buffer">
+        <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" class="radio__icon"    
+          {% selected_radio "shoulder" forloop.counter p.prefix %} />
+        <label for="{{p.prefix}}" class="image-radio-label">
           {% shoulder_display p testPrefixes "False" %}
-      </label>
+        </label>
+      </div>
     </div>
     {% endfor %}
   {% else %}
     {% for p in prefixes %}
-    <div class="radio form-group form-group-sm">
-      <label for="{{p.prefix}}" class="text-color-reg">
-        <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" 
-        {% selected_radio "shoulder" forloop.counter p.prefix %} />
+    <div class="radio form-group form-group-sm horizontal-buffer">
+      <div class="radio-inline radio_svg">
+        <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" class="radio__icon"
+          {% selected_radio "shoulder" forloop.counter p.prefix %} />
+        <label for="{{p.prefix}}" class="image-radio-label">
           {% shoulder_display p testPrefixes "True" %}
-      </label>
+        </label>
+      </div>
     </div>
     {% endfor %}
   {% endif %}
@@ -35,6 +38,4 @@
   </div>
   <div class="col-sm-1">
   </div>
-</div>
-
 

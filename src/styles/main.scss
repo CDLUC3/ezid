@@ -2,7 +2,7 @@
 
 // Test with red borders
 // * {
-// border: 1px solid red !important;
+//  border: 1px solid red !important;
 // }
 
 // This file imports all Sass partials below and compiles result to main.css
@@ -50,10 +50,11 @@
 .vertical-buffer-sm { margin-top:30px; }
 .vertical-buffer-20 { margin-top:20px; }
 .vertical-buffer-xs { margin-top:15px; }
-.horizontal-buffer { margin-left:10px; }
+.horizontal-buffer-xs { margin-left:10px; }
+.horizontal-buffer { margin-left:40px; }
 .tagline { margin: 0px; }
 
-.width-87 {
+.width-reduced {
   width: 87%;
 }
 

@@ -44,6 +44,9 @@ nav-logged-in-page-selected-blankspace p {
   padding-top: 16px;
   padding-right: 0px; 
 }
+.nav > li > a {
+  padding: 0px;
+}
 .navbar-default .navbar-nav > li > a,
 .navbar-default .navbar-nav > li a:visited {
   color: $design-primary-color;
@@ -163,34 +166,23 @@ nav-logged-in-page-selected-blankspace p {
 // ==============================================================
 // INNER PAGE:  ID Creation/Demo tabs
 // nav-tabs on Demo/Create pages
-ul.nav-tabs li {  
-  font-size: 1.3em;
-  a:link, a:hover, a:active, a:visited {
-    padding: 5px 35px;
-  }
-}
-.nav-tabs .nav-idcreate {
-  background-color: $design-light-gray-bg-color;
-  margin-bottom: 0px;
-}
-.nav-idcreate .spacer {
-  background-color: #FFF;
-  padding: 3px;
-}
-.nav-idcreate li a:visited, 
-.nav-idcreate li a:hover, 
-.nav-idcreate li a:focus,
-.nav-idcreate li a{
+.nav-idcreate li {
   color: #000;
-  font-size: 0.96em;
+  font-size: 1.3em;
   padding: 5px 18px;
   border: 1px solid $design-light-gray-border-color;
   background-color: #FFF;
 }
 
-.nav-idcreate li.active a:visited, 
-.nav-idcreate li.active a:hover, 
-.nav-idcreate li.active a:focus,
-.nav-idcreate li.active a{
+.nav-idcreate li.active,
+.nav-idcreate li:hover {
   background-color: $design-light-gray-bg-color;
+}
+.nav-idcreate li a:hover {
+  background-color: transparent;
+  border: 0px;
+}
+// Spacer between tabs
+.nav-idcreate li+li {
+  margin-left: 12px;
 }

@@ -45,9 +45,13 @@ blockquote a:hover {
 
 
 // All other links
-a.not-text {
+a.not-text, 
+a[data-toggle=popover] {
   border-bottom: none !important;
   padding-bottom: 0px;
+}
+.popover{
+  max-width: 400px; // Max Width of the popover (depending on the container!)
 }
 
 a:hover,

@@ -1,5 +1,6 @@
 /*
  * This will allow help boxes.
+ * Uses bootstrap's popover.js
  * 
  * Create a div to contain your help box like this, %value% represents a value you substitute:
  * 
@@ -8,96 +9,39 @@
  * </div>
  * 
  * Create a link to open the help like so:
- * <a href="#%div_id%" name="help_link">Open my help</a>
+ * <a id="%div_id%" role="button" data-toggle="popover" data-trigger="hover"><img ...></a>
  * 
- * Note the div_id around the contents and the div_id in the href for the link must match,
- * (though the div_id in the href has a # in front of it)
+ * Note the div_id around the contents and the div_id in the href for the link must match
  * 
  */
 
 $(document).ready(function() {
-	
-	//add close buttons to all help_window classes
-	$('.help_window').prepend('<div class="close_button"><a href="#close" class="close"><img src="/static/images/close_it.png" alt="close button" title="close button"/></a></div>');
-	//select all the a tag with name equal to help_link and add click functions
-  $('a[name=help_link]').click(function(e) {
+  // Hide all help content until elements are called upon (brought in via ezid-info-pages / popup_help.html)
+  $('.help_window').hide();
 
-  	//Cancel the link behavior
-    e.preventDefault();
-    //Get the A tag
-    var id = $(this).attr('href');
-    var helpbox = $(id);
-    
-    var icon = $(e.target);
-    
-    var icon_pos = icon.offset();
-    
-    var scrolltop = $(document).scrollTop();
-    var scrollbottom = scrolltop + $(window).height();
-    var offset_from_icon = 12;
-    
-    var icon_center_top = icon_pos.top + icon.outerHeight() / 2;
-    		
-   	var helpbox_full_height = helpbox.outerHeight();	
-    
-    if(icon_center_top - helpbox_full_height > scrolltop ){
-    	// display above icon
-    	var top = icon_center_top - helpbox_full_height - offset_from_icon;
-    }else if(icon_center_top + helpbox_full_height < scrolltop + $(window).height()){
-    	// display below icon
-    	var top = icon_center_top + offset_from_icon;
-    }else{
-    	// display above icon
-    	var top = icon_center_top - helpbox_full_height - offset_from_icon;
-    }
-    if(top < 1) top = 1;
-    
-    var helpbox_full_width = helpbox.outerWidth();
-    
-    var icon_center_left = icon_pos.left + icon.outerWidth()/2;
-
-    var left = icon_center_left - helpbox_full_width / 2;
-
-    if(left + helpbox_full_width > $(window).scrollLeft() + $(window).width() ){
-    	left = $(window).scrollLeft() + $(window).width() - helpbox_full_width;
-    }
-    if(left<1) left = 1;
-    
-    helpbox.css('position', 'absolute');
-    helpbox.css( 'top', top);
-    helpbox.css( 'left', left); 
-    //transition effect
-    $(id).fadeIn(100);
- 
+  // For each popover element, insert the corresponding content
+  $('[data-toggle="popover"]').each(function() {
+    var $pElem= $(this);
+    $pElem.popover(
+        {
+          html: true,
+          container: 'body',
+          content: getPopContent($pElem.attr("id"))
+        }
+    );
   });
-     
-  //if close button is clicked
-  $('.help_window .close').click(function (e) {
-  	//Cancel the link behavior
-    e.preventDefault();
-    $('.help_window').hide();
-  });
-  
-	//select all the a tag with name equal to code_insert_link and add click functions
-  $('a[name=code_insert_link]').click(function(e) {
+  function getPopContent(target) {
+    return $("#" + target + "_content").html();
+  };
 
-  	//Cancel the link behavior
-    e.preventDefault();
-    
-    var parts = $(this).attr('href').replace('#', '').split("_");
-    var code = "(:" + parts[0] + ")";
-    var field = document.getElementById(parts[1]);
-    
-    field.value = code;
-    
-    $('.help_window').hide();
+  // User able to dismiss/close help window by clicking outside
+  $('body').on('click', function (e) {
+    $('[data-toggle="popover"]').each(function () {
+      //the 'is' for buttons that trigger popups
+      //the 'has' for icons within a button that triggers a popup
+      if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+        $(this).popover('hide');
+      }
   });
-        
 });
-
-$(document).keyup(function(e) {
-  if(e.keyCode == 27) { // escape key
-    $('.help_window').hide();
-  }
 });
-

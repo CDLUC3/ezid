@@ -10,9 +10,8 @@
 </div>
 <div class="container vertical-buffer-sm">
   <ul class="nav nav-tabs nav-idcreate">
-    <li role="presentation" class="active"><a href="#">Simple</a></li>
-    <li class="spacer"></li>
-    <li role="presentation"><a href="#">Advanced</a></li>
+    <li role="presentation" class="active">Simple</li>
+    <li role="presentation"><a href="{% url "ui_create.advanced" %}">Advanced</a></li>
   </ul>
   <div class="idcreate-content gradient-form">
 
@@ -43,13 +42,8 @@
   </div>
 </div> <!-- End Container -->
 
-      
-      
   <script type="text/javascript" src="/static/javascripts/simple_create.js"></script>
-  
   {% include "info/popup_help.html" %}
   <script type="text/javascript" src="/static/javascripts/help_box.js"></script>
-  
-  {% include "includes/_tooltip_as_msgbox.html" %}
 
 {% endblock %}
