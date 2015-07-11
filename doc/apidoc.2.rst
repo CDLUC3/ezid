@@ -47,8 +47,8 @@ from the UI only, but otherwise all of EZID's functionality is
 available through the API.  This document describes Version 2 of the
 EZID API.
 
-Please send mail to the EZID discussion list to ask questions or
-report problems:
+Please send mail to the EZID discussion list (open to EZID customers
+only) to ask questions or report problems:
 
   ezid-l@listserv.ucop.edu
 

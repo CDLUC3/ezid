@@ -27,37 +27,20 @@
 # environment variable must include the .../SITE_ROOT/PROJECT_ROOT
 # directory; if it doesn't, we attempt to dynamically locate it and
 # add it.  The DJANGO_SETTINGS_MODULE environment variable must be
-# set; if it isn't, we set it to "settings.production".
+# set.
 #
 # Greg Janee <gjanee@ucop.edu>
 # November 2014
 
 import csv
-import os
+import os.path
 import re
 import sys
 import time
 
-if "DJANGO_SETTINGS_MODULE" not in os.environ:
-  os.environ["DJANGO_SETTINGS_MODULE"] = "settings.production"
-
-try:
-  import settings
-except ImportError:
-  sys.path.append(os.path.split(os.path.split(
-    os.path.abspath(__file__))[0])[0])
-  import settings
-
-# Bootstrapping: reference a(ny) Django setting to trigger the loading
-# of said settings, which causes the PYTHONPATH to be modified,
-# supporting subsequent imports.
-import django.conf
-django.conf.settings.PROJECT_ROOT
-
-# Configure the logging so that errors don't get added to the server's
-# log file.  Also, disable daemon threads.
-django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
-django.conf.settings.DAEMON_THREADS_ENABLED = False
+# The following must precede any EZID module imports:
+execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
+  "offline.py"))
 
 import mapping
 import util
