@@ -46,6 +46,11 @@ h3 {
   font-weight: bold;
   font-size: 0.9em;
 }
+// PAGE Learn
+.panel-body h3 {
+  @extend h2-base;
+  margin: 10px 0px 17px 0px;
+}
 
 h4 {
   margin-top: 18px;

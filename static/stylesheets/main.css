@@ -4970,8 +4970,8 @@ h2.panel-title > a {
   border-left: 6px solid transparent; }
 
 .ext-icon {
-  margin: 0px 7px 5px 6px;
-  padding: 7px;
+  margin: 0px 2px 5px 6px;
+  padding: 9px;
   background: url("/static/images/ext-link.svg") no-repeat center left;
   width: 15px;
   height: 15px;
@@ -5227,6 +5227,9 @@ label.text-color-reg {
   font-weight: normal;
   font-size: 1em; }
 
+label.disabled {
+  color: #beb6af; }
+
 .footer-base, #footer-content, #footer-gutter-left, #footer-gutter-right, #footer-logo-col, #footer-content-col, #footer-icon-col, #footer-newsfeed-col {
   height: 130px; }
 
@@ -5382,7 +5385,7 @@ h1 {
   font-size: 1.4em;
   border-bottom: 1px dotted black; }
 
-h2-base, h2, h2.id-creation {
+h2-base, h2, h2.id-creation, .panel-body h3 {
   font-family: KievitWebPro-Bold, Arial, sans-serif;
   color: #00778a;
   font-weight: normal;
@@ -5398,6 +5401,9 @@ h3 {
   color: #00778a;
   font-weight: bold;
   font-size: 0.9em; }
+
+.panel-body h3 {
+  margin: 10px 0px 17px 0px; }
 
 h4 {
   margin-top: 18px;
@@ -5596,8 +5602,7 @@ nav-logged-in-page-selected-blankspace p {
 
 .dropdown-menu {
   padding: 0;
-  margin-left: 20px;
-  top: 55px; }
+  margin-left: 20px; }
 
 .dropdown:hover .dropdown-menu {
   display: block; }
@@ -5844,13 +5849,6 @@ ul.lead > li {
 .panel-body {
   margin-left: 20px; }
 
-.panel-body h3 {
-  font-family: KievitWebPro-Bold, Arial, sans-serif;
-  margin: 10px 0px 17px 0px;
-  color: #00778a;
-  font-weight: normal;
-  font-size: 1.4em; }
-
 .learn__title--ext-link {
   position: absolute;
   top: 42px;
@@ -5906,14 +5904,20 @@ td div.dollar {
   width: 1em;
   padding-left: 3em; }
 
+.search__tooltip--container {
+  position: absolute;
+  margin-bottom: 100px; }
+
 .tip {
-  background: none repeat scroll 0% 0% #FFF;
+  background: #FFF;
   border: 1px solid #09a6b0;
   padding: 7px;
   border-radius: 0px;
   position: relative;
   width: 140px;
-  margin-left: 10px; }
+  margin-left: 285px;
+  margin-top: -30px;
+  z-index: 1; }
 
 /*  :before = Arrow border
     :after = Arrow filler   */
@@ -5970,6 +5974,9 @@ td div.dollar {
 
 .width-reduced {
   width: 87%; }
+
+.width-reduced-md {
+  width: 75%; }
 
 img.center {
   display: block;

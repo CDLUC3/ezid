@@ -16,7 +16,6 @@ EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "ezid.conf")
 EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
 LOGGING_CONFIG_FILE = "logging.server.conf"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "static")
-MEDIA_URL = "static/"
 LOCALE_PATHS = (os.path.join(MEDIA_ROOT, "locale"),)
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))

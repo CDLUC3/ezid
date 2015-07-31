@@ -8,8 +8,7 @@
 {% block title %}{%trans "Contact Us" %}{% endblock %}
 
 {% block content %}
-{% trans "Please fill out this form if you would like more information about our services or have a specific question. If you have a comment we are always happy to hear feedback." as str_ch %}
-{% content_heading str_ch %}
+{% content_heading "Contact Us" %}
 {% comment %}
 ***** NOT WORKING ****}
 {% get_current_language as LANGUAGE_CODE %}
@@ -36,6 +35,11 @@ request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
 -->
 
 <div class="vertical-buffer-xs"></div>
+<div class="container">
+<div class="width-reduced-md">
+<h2>{% trans "Please fill out this form if you would like more information about our services or have a specific question. If you have a comment we are always happy to hear feedback." %}</h2>
+</div>
+</div>
 
 <div id="contact-gutter-left">
   &nbsp;
@@ -132,10 +136,7 @@ request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
         <div class="carousel-inner">
           <div class="item active">
             <blockquote>
-              <p>{% blocktrans %}Assigning DOIs to figshare content through the EZID system 
-              allows researchers to efficiently share and cite their research. 
-              The great team at the California Digital Library makes assigning 
-              DOIs a simple yet well structured process.{% endblocktrans %}</p>
+              <p>{% trans "Assigning DOIs to figshare content through the EZID system allows researchers to efficiently share and cite their research.  The great team at the California Digital Library makes assigning DOIs a simple yet well structured process." %}</p>
             </blockquote>
             <div class="blockquote-footer">
               {% trans "Mark Hahnel, Ph. D." %}<br/>
@@ -145,13 +146,7 @@ request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
           </div>
           <div class="item">
             <blockquote>
-              <p>{% blocktrans %}We're very pleased to see EZID working on behalf of its clients to
-              create new partnerships that expand the reach and impact of research
-              and scholarship. Sponsored memberships to CrossRef through the
-              California Digital Library open up new possibilities for smaller
-              organizations and those who work with scholars to innovate at the
-       	      fringes of new publication models, integrating the future of online
-       	      publication as it assumes various forms.{% endblocktrans %}</p>
+              <p>{% trans "We're very pleased to see EZID working on behalf of its clients to create new partnerships that expand the reach and impact of research and scholarship. Sponsored memberships to CrossRef through the California Digital Library open up new possibilities for smaller organizations and those who work with scholars to innovate at the fringes of new publication models, integrating the future of online publication as it assumes various forms." %}</p>
             </blockquote>
             <div class="blockquote-footer">
               {% trans "Rebecca Kennison, Director" %}<br/>
@@ -161,10 +156,7 @@ request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
           </div>
           <div class="item">
             <blockquote>
-              <p>{% blocktrans %}EZID gives Open Context</a> critical services that help make our 
-              data publications lasting contributions to the scholarly record. 
-              Because of EZID, we can explore innovative new approaches in 
-              publishing that can be used and cited in years to come.{% endblocktrans %}</p>
+              <p>{% trans "EZID gives Open Context critical services that help make our data publications lasting contributions to the scholarly record.  Because of EZID, we can explore innovative new approaches in publishing that can be used and cited in years to come." %}</p>
             </blockquote>
             <div class="blockquote-footer">
               {% trans "Eric C. Kansa, Ph. D." %}<br/>
@@ -174,11 +166,7 @@ request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
           </div>
           <div class="item">
             <blockquote>
-              <p>{% blocktrans %}The partnership between EZID and CrossRef presents an exciting
-              opportunity for eScholarship and our journal partners. The inclusion
-              of our Open Access publications in new discovery services via CrossRef,
-              particularly its metadata feed, will dramatically increase the exposure
-              of the important scholarship published on our platform.{% endblocktrans %}</p>
+              <p>{% trans "The partnership between EZID and CrossRef presents an exciting opportunity for eScholarship and our journal partners. The inclusion of our Open Access publications in new discovery services via CrossRef, particularly its metadata feed, will dramatically increase the exposure of the important scholarship published on our platform." %}</p>
             </blockquote>
             <div class="blockquote-footer">
               {% trans "Catherine Mitchell, Director" %}<br/>
@@ -190,7 +178,7 @@ request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
     </div>
 
       <p class="tagline">
-        <a href="#">SIGN UP FOR OUR NEWSLETTER &raquo;</a>
+        <a href="#">{% trans "SIGN UP FOR OUR NEWSLETTER" %} &raquo;</a>
       </p>
     </div>
   </div>

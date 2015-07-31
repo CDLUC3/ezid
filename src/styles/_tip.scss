@@ -1,13 +1,20 @@
-//tooltip
+// Static "Tooltip" that remains in place. Used for Search page when not logged in.
+
+.search__tooltip--container {
+  position: absolute;
+  margin-bottom: 100px;
+}
 
 .tip {
-    background: none repeat scroll 0% 0% #FFF;
+    background: #FFF;
     border: 1px solid #09a6b0;
     padding: 7px;
     border-radius: 0px;
     position: relative;
     width: 140px;
-    margin-left: 10px;
+    margin-left: 285px;
+    margin-top: -30px;
+    z-index: 1;
 }
 
 /*  :before = Arrow border

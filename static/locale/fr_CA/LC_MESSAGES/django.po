@@ -1,0 +1,200 @@
+# EZID Translation File
+# EZID is a service of the California Digital Library, a division of the University of California Office of the President
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-30 17:13-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Translators: These options will appear in drop-down on contact page (in new design)
+#: code/ui.py:26
+msgid "Choose One"
+msgstr ""
+
+#: code/ui.py:27
+msgid "I would like to inquire about getting a new account"
+msgstr ""
+
+#: code/ui.py:28
+msgid "I have a problem or question about existing account"
+msgstr ""
+
+#: code/ui.py:29
+msgid "I'd like to sign up for the EZID email newsletter"
+msgstr ""
+
+#: code/ui.py:30 code/ui.py:36
+msgid "Other"
+msgstr ""
+
+#. Translators: These options appear in drop-down on contact page
+#: code/ui.py:32
+msgid "University website"
+msgstr ""
+
+#: code/ui.py:33
+msgid "Conference"
+msgstr ""
+
+#: code/ui.py:34
+msgid "Colleagues"
+msgstr ""
+
+#: code/ui.py:35
+msgid "Webinar"
+msgstr ""
+
+#. Translators: Validation output for templates/contact.html
+#: code/ui.py:52
+msgid "Please fill in your name."
+msgstr ""
+
+#: code/ui.py:55
+msgid "Please fill in a valid email address."
+msgstr ""
+
+#: code/ui.py:81
+msgid "There was a problem sending your email"
+msgstr ""
+
+#: settings/common.py:30
+msgid "English"
+msgstr ""
+
+#: settings/common.py:31
+msgid "Candian French"
+msgstr ""
+
+#: templates/contact.html:8
+msgid "Contact Us"
+msgstr ""
+
+#: templates/contact.html:40
+msgid ""
+"Please fill out this form if you would like more information about our "
+"services or have a specific question. If you have a comment we are always "
+"happy to hear feedback."
+msgstr ""
+
+#: templates/contact.html:56
+msgid "Reason for contacting EZID"
+msgstr ""
+
+#: templates/contact.html:70
+msgid "Your Name"
+msgstr ""
+
+#: templates/contact.html:77
+msgid "Your URL"
+msgstr ""
+
+#: templates/contact.html:84
+msgid "Your Email"
+msgstr ""
+
+#: templates/contact.html:90
+msgid "Your Institution"
+msgstr ""
+
+#: templates/contact.html:96
+msgid "Please indicate any question or comment you may have"
+msgstr ""
+
+#: templates/contact.html:102
+msgid "How did you hear about us?"
+msgstr ""
+
+#. Translators: This is the Submit button. All uppercase.
+#: templates/contact.html:120
+msgid "SUBMIT"
+msgstr ""
+
+#: templates/contact.html:139
+msgid ""
+"Assigning DOIs to figshare content through the EZID system allows "
+"researchers to efficiently share and cite their research.  The great team at "
+"the California Digital Library makes assigning DOIs a simple yet well "
+"structured process."
+msgstr ""
+
+#: templates/contact.html:142
+msgid "Mark Hahnel, Ph. D."
+msgstr ""
+
+#. Translators: "figshare" does not need to be translated: company name
+#: templates/contact.html:144
+msgid "Founder, figshare"
+msgstr ""
+
+#: templates/contact.html:149
+msgid ""
+"We're very pleased to see EZID working on behalf of its clients to create "
+"new partnerships that expand the reach and impact of research and "
+"scholarship. Sponsored memberships to CrossRef through the California "
+"Digital Library open up new possibilities for smaller organizations and "
+"those who work with scholars to innovate at the fringes of new publication "
+"models, integrating the future of online publication as it assumes various "
+"forms."
+msgstr ""
+
+#: templates/contact.html:152
+msgid "Rebecca Kennison, Director"
+msgstr ""
+
+#: templates/contact.html:153
+msgid "Center for Digital Research and Scholarship"
+msgstr ""
+
+#: templates/contact.html:154
+msgid "Columbia University Libraries/Information Services"
+msgstr ""
+
+#: templates/contact.html:159
+msgid ""
+"EZID gives Open Context critical services that help make our data "
+"publications lasting contributions to the scholarly record.  Because of "
+"EZID, we can explore innovative new approaches in publishing that can be "
+"used and cited in years to come."
+msgstr ""
+
+#: templates/contact.html:162
+msgid "Eric C. Kansa, Ph. D."
+msgstr ""
+
+#: templates/contact.html:163
+msgid "Cofounder and Technology Director"
+msgstr ""
+
+#: templates/contact.html:169
+msgid ""
+"The partnership between EZID and CrossRef presents an exciting opportunity "
+"for eScholarship and our journal partners. The inclusion of our Open Access "
+"publications in new discovery services via CrossRef, particularly its "
+"metadata feed, will dramatically increase the exposure of the important "
+"scholarship published on our platform."
+msgstr ""
+
+#: templates/contact.html:172
+msgid "Catherine Mitchell, Director"
+msgstr ""
+
+#: templates/contact.html:173
+msgid "Access and Publishing"
+msgstr ""
+
+#: templates/contact.html:174
+msgid "California Digital Library/University of California"
+msgstr ""
+
+#: templates/contact.html:181
+msgid "SIGN UP FOR OUR NEWSLETTER"
+msgstr ""
