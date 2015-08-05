@@ -21,7 +21,7 @@ def ajax_hide_alert(request):
   return uic.plainTextResponse('Ok')
 
 def contact(request):
-  d = { 'menu_item': 'ui_null.null'}
+  d = { 'menu_item': 'ui_null.contact'}
   # Translators: These options will appear in drop-down on contact page (in new design)
   d['contact_reason_opts'] = ( ("*", _("Choose One")), \
                              ("account_new", _("I would like to inquire about getting a new account")), \

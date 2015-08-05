@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-30 17:13-0700\n"
+"POT-Creation-Date: 2015-08-05 10:13-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,6 +72,10 @@ msgstr ""
 
 #: settings/common.py:31
 msgid "Candian French"
+msgstr ""
+
+#: templates/account/edit.html:5
+msgid "My Account"
 msgstr ""
 
 #: templates/contact.html:8
@@ -197,4 +201,8 @@ msgstr ""
 
 #: templates/contact.html:181
 msgid "SIGN UP FOR OUR NEWSLETTER"
+msgstr ""
+
+#: templates/search/index.html:5
+msgid "Search across all identifiers"
 msgstr ""

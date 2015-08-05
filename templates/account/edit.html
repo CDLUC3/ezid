@@ -1,102 +1,103 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
+{% load i18n %}
 
-{% block title %}My Account{% endblock %}
+{% block title %}{%trans "My Account" %}{% endblock %}
 
 {% block content %}
-  <div class="grid_12">
-    <h1>My Account</h1>
-    <h2>Account Information</h2>
-    
-    <form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" >
-      <div class="left_desc">Username:</div>
-      <div class="right_val">{{ username }}</div>
-      
-      <div>
-        <div style="float:left; width:350px;">
-          <label for="givenName" class="left">
-            First name:
-          </label>
-          <div class="field_right" style="width: 230px;">
-            <input type="text" name="givenName" id="givenName" size="25"
-                value="{{ givenName }}" />
-          </div>
-        </div>
-        
-        <div style="float:left; width: 350px;">
-          <label for="sn" class="left" style="text-align:right;">
-            Last name:&nbsp;&nbsp;&nbsp;
-          </label>
-          <div class="field_right" style="width: 230px;">
-            <input type="text" name="sn" id="sn" size="25"
-                value="{{ sn }}" />
-          </div>
-        </div>
-      </div>
-      
-      <label for="mail" class="left">
-        Email address:
-      </label>
-      <div class="field_right">
-        <input type="text" name="mail" id="mail" size="25"
-            value="{% form_or_default "mail" mail %}" />
-      </div>
-      
-      <label for="telephoneNumber" class="left">
-        Phone number:
-      </label>
-      <div class="field_right">
-        <input type="text" name="telephoneNumber" id="telephoneNumber" size="25"
-            value="{{ telephoneNumber }}" />
-      </div>
-      
-      
-      <div style="clear:both">&nbsp;</div>
-      <label for="ezidCoOwners" class="left">
-        Co-owners:
-      </label>
-      <div class="field_right">
-        <input type="text" name="ezidCoOwners" id="ezidCoOwners" size="35"
-            value="{{ ezidCoOwners }}" />{% help_icon "coowners_help" %}
-      </div>
-
-      <label class="left" style="margin: 5px 0 0 0;">&nbsp;</label>
-      <div class="field_right" style="margin: 5px 0 0 0;font-size:85%;">
-        Use commas to separate multiple entries.
-      </div>
-      <div style="clear:both">&nbsp;</div>
-      <h2>Change Password</h2>
-      
-      <label for="pwcurrent" class="left">
-        Current password:
-      </label>
-      <div class="field_right">
-        <input type="password" name="pwcurrent" id="pwcurrent" size="25" value="" autocomplete="off" />
-      </div>
-      
-      <label for="pwnew" class="left">
-        New password:
-      </label>
-      <div class="field_right">
-        <input type="password" name="pwnew" id="pwnew" size="25" value="" autocomplete="off" />
-      </div>
-     
-      <label for="pwconfirm" class="left">
-        Confirm new password:
-      </label>
-      <div class="field_right">
-        <input type="password" name="pwconfirm" id="pwconfirm" size="25" value="" autocomplete="off" />
-      </div>
-      
-      <label class="left">&nbsp;</label>
-      <div class="field_right">
-        <input type="submit" value="Save" />
-      </div>
-      <div style="clear:both">&nbsp;</div>   
-    </form>
-    
+{% content_heading "My Account" %}
+<div class="container vertical-buffer-xs">
+  <form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" class="form-horizontal" role="form">
+  <h3>ACCOUNT INFORMATION</h3>
+  <div class="row">
+    <div class="form-group form-group-sm">
+      <label for="account_username" class="col-sm-2">Username</label>
+      <div class="col-sm-5">{{ username }} </div>
+    </div>
   </div>
-  
+  <div class="row">
+    <div class="form-group form-group-sm">
+      <label for="gievnName" class="col-sm-2">First Name</label>
+      <div class="col-sm-5">
+        <input type="text" class="form-control" name="givenName" id="givenName" value="{{ givenName }}" />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group form-group-sm">
+      <label for="sn" class="col-sm-2">Last Name</label>
+      <div class="col-sm-5">
+        <input type="text" class="form-control" name="sn" id="sn" value="{{ sn }}" />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group form-group-sm">
+      <label for="telephoneNumber" class="col-sm-2">Phone</label>
+      <div class="col-sm-5">
+        <input type="tel" class="form-control" name="telephoneNumber" id="telephoneNumber" value="{{ telephoneNumber }}" />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group form-group-sm">
+      <label for="mail" class="col-sm-2">Email Address</label>
+      <div class="col-sm-5">
+        <input type="email" class="form-control" name="mail" id="mail" value="{% form_or_default "mail" mail %}" />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group form-group-sm">
+      <label for="ezidCoOwners" class="col-sm-2">Co-owners</label>
+      <div class="col-sm-5">
+        <input type="text" class="form-control" name="ezidCoOwners" id="ezidCoOwners" value="{{ ezidCoOwners }}" />
+        <div class="vertical-buffer-xs"></div>
+        <div class="font-small">
+          <span class="font-small-bold">NOTE:</span> Use commas to separate multiple entries.
+        </div>
+      </div>
+      <div class="col-sm-3 padding-left">
+        <button class="btn" type="button">Look Up Owners</button> <img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
+      </div>
+    </div>
+  </div>
+  <div class="vertical-buffer-sm"></div>
+  <!-- p>&nbsp;</p -->
+  <h3>CHANGE PASSWORD</h3>
+  <div class="row">
+    <div class="form-group form-group-sm">
+      <label for="pwcurrent" class="col-sm-2">Current password</label>
+      <div class="col-sm-5">
+        <input type="password" class="form-control" name="pwcurrent" id="pwcurrent" value="" autocomplete="off" />
+      </div>
+    </div>
+  </div>      
+  <div class="row">
+    <div class="form-group form-group-sm">
+      <label for="pwnew" class="col-sm-2">New password</label>
+      <div class="col-sm-5">
+        <input type="password" class="form-control" name="pwnew" id="pwnew" value="" autocomplete="off" />
+      </div>
+    </div>
+  </div>      
+  <div class="row">
+    <div class="form-group form-group-sm">
+      <label for="pwconfirm" class="col-sm-2">Confirm  new password</label>
+      <div class="col-sm-5">
+      <input type="password" class="form-control" name="pwconfirm" id="pwconfirm" size="25" value="" autocomplete="off" /> 
+      </div>
+    </div>
+  </div>      
+  <div class="vertical-buffer-sm"></div>
+  <div class="row">
+    <div class="col-sm-6 form-group form-group-sm">
+      <button type="submit" class="btn btn-primary padding-side-sm">SAVE</button>
+    </div>
+  </div>
+  </form>
+</div>     
+ 
   {% include "info/popup_help.html" %}
   <script type="text/javascript" src="/static/javascripts/help_box.js"></script>
 {% endblock %}

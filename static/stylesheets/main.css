@@ -5001,6 +5001,23 @@ a span.ext-icon {
 .icon-topnav-base, #icon-topnav-search, #icon-topnav-learn, #icon-topnav-contact {
   margin-bottom: 7px; }
 
+.icon-link .icon-active {
+  display: none; }
+
+.icon-link:hover .icon-inactive,
+.expand-link:active .icon-inactive {
+  display: none; }
+
+.icon-link:hover .icon-active,
+.icon-link:active .icon-active {
+  display: block; }
+
+li.active .icon-active {
+  display: block; }
+
+li.active .icon-inactive {
+  display: none; }
+
 #icon-topnav-search {
   width: 22px; }
 
@@ -5942,6 +5959,9 @@ td div.dollar {
   top: 13px;
   content: ''; }
 
+padding-left-base, .col-sm-push-3, .padding-left {
+  padding-left: 40px; }
+
 .browsehappy {
   margin: 0.2em 0;
   background: #ccc;
@@ -5982,9 +6002,6 @@ img.center {
   display: block;
   margin-left: auto;
   margin-right: auto; }
-
-.col-sm-push-3 {
-  padding-left: 40px; }
 
 hr {
   border-color: #b4975a;

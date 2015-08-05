@@ -37,6 +37,7 @@ urlpatterns = django.conf.urls.patterns("",
   ("^manage/edit/(.*)", "ui_manage.edit"),
   ("^manage/display_xml/(.*)", "ui_manage.display_xml"),
   ("^new_account$", "ui_admin.new_account", { "ssl": True }),
+  ("^search/?$", "ui_search.index"),
   ("^tombstone/id/", "ui.tombstone"),
 
   # SHARED BETWEEN UI AND API

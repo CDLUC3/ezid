@@ -1,6 +1,7 @@
 from django import template
 from django.conf import settings
 from django.utils.html import escape
+from django.utils.translation import ugettext as _
 from decorators import basictag
 from django.core.urlresolvers import reverse
 from operator import itemgetter

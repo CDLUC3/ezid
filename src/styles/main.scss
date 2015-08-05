@@ -35,6 +35,10 @@
 @import "table";
 @import "tip";
 
+padding-left-base {
+  padding-left: 40px;
+}
+
 .browsehappy {
   margin: 0.2em 0;
   background: #ccc;
@@ -72,7 +76,11 @@ img.center {
 // This specific setting is meant for the contact page. But will also 
 // need to be done for other multi-column pages (i.e. Dashboard)
 .col-sm-push-3 {
-  padding-left: 40px;
+  @extend padding-left-base;
+}
+
+.padding-left {
+  @extend padding-left-base;
 }
 
 hr { 

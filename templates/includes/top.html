@@ -1,4 +1,5 @@
 {% load layout_extras %}
+{% load menus %}
 <nav class="navbar navbar-default" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -13,13 +14,19 @@
       {% endif %}
       </p>
       <ul class="nav navbar-nav pull-right">
-        <li>
-          <img class="center" id="icon-topnav-search" src="/static/images/searchOff.svg" ALT="Search Identifiers">
-          <a class="not-text" href="/search">SEARCH</a>
+        <li class="{% active menu_item 'search' %}">
+          <a class="icon-link not-text" href="/search">
+            <img class="icon-inactive center" id="icon-topnav-search" src="/static/images/searchOff.svg" ALT="Search Identifiers">
+            <img class="icon-active center" id="icon-topnav-search" src="/static/images/searchOn.svg" ALT="Search Identifiers">
+            SEARCH
+          </a>
         </li>
-        <li class="dropdown">
-          <img class="center" id="icon-topnav-learn" src="/static/images/learnOff.svg" ALT="Learn About EZID">
-          <a href="/learn" class="dropdown-toggle not-text" data-toggle="dropdown" role="button" aria-expanded="false">LEARN</a>
+        <li class="dropdown {% active menu_item 'learn' %}">
+          <a href="/learn" class="dropdown-toggle icon-link not-text" data-toggle="dropdown" role="button" aria-expanded="false">
+            <img class="icon-inactive center" id="icon-topnav-learn" src="/static/images/learnOff.svg" ALT="Learn About EZID">
+            <img class="icon-active center" id="icon-topnav-learn" src="/static/images/learnOn.svg" ALT="Learn About EZID">
+            LEARN
+          </a>
           <ul class="dropdown-menu" role="menu">
             <li><a class="not-text" href="/learn#01">What Is EZID?</a></li>
             <li><a class="not-text" href="/learn#02">Current Users</a></li>
@@ -31,9 +38,13 @@
             <li><a class="not-text" href="/demo/simple">EZID Demo</a></li>
          </ul>
         </li>
-        <li>
-          <img class="center" id="icon-topnav-contact" src="/static/images/contactOff.svg" ALT="Contact EZID">
-          <a class="not-text" href="{% url "ui.contact" %}">CONTACT</a></li>
+        <li class="{% active menu_item 'contact' %}">
+          <a class="icon-link not-text" href="{% url "ui.contact" %}">
+            <img class="icon-inactive center" id="icon-topnav-contact" src="/static/images/contactOff.svg" ALT="Contact EZID">
+            <img class="icon-active center" id="icon-topnav-contact" src="/static/images/contactOn.svg" ALT="Contact EZID">
+            CONTACT
+          </a>
+        </li>
         <li class="navbar-btn">
           {% if session.auth %}
           <a class="not-text" href="/logout"><button type="button" class="btn padding-side-sm btn-big gradient-orange" id="modal_open">LOGOUT</button></a>
@@ -79,7 +90,7 @@
           <li><a class="not-text" href="#">DASHBOARD</a><span></span></li>
           <li><a class="not-text" href="#">MANAGE IDs</a><span></span></li>
           <li><a class="not-text" href="{% url "ui_create.index" %}">CREATE ID</a><span></span></li>
-          <li><a class="not-text" href="#">ACCOUNT SETTINGS</a></li>
+          <li><a class="not-text" href="{% url "ui_account.edit" %}">ACCOUNT SETTINGS</a></li>
         </ul>
       </div>
     </div>

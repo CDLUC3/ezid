@@ -44,6 +44,14 @@ MENUS = (
         )
 
 @register.simple_tag
+def active(current_func, view_name):
+  if string.split(current_func, '.')[1] == view_name:
+    return 'active'
+  elif string.split(string.split(current_func, '.')[0], '_')[1] == view_name:
+    return 'active'
+  return ''
+
+@register.simple_tag
 def top_menu(current_func, session):
   #print type(session['auth']).__name__
   #print session.keys()

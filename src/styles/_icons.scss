@@ -40,6 +40,25 @@ a span.ext-icon {
 .icon-topnav-base {
   margin-bottom: 7px;
 }
+// Swapping Out SVG Icons using hide/show on active
+// Hide one by default:
+.icon-link .icon-active {
+  display: none;
+}
+.icon-link:hover .icon-inactive,
+.expand-link:active .icon-inactive{
+  display: none;
+}
+.icon-link:hover .icon-active,
+.icon-link:active .icon-active{
+  display: block;
+}
+li.active .icon-active {
+  display: block;
+}
+li.active .icon-inactive {
+  display: none;
+}
 #icon-topnav-search {
   @extend .icon-topnav-base;
   width: 22px;
