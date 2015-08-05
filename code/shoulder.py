@@ -90,7 +90,7 @@ def _load1 (url):
   assert len(errors) == 0, "validation error(s): " +\
     ", ".join("(line %d) %s" % e for e in errors)
   shoulders = dict((e.key, e) for e in entries if e.type == "shoulder" and\
-    e.manager == "ezid")
+    e.manager == "ezid" and e.active)
   for shoulder in shoulders.itervalues():
     shoulder.is_test_shoulder = False
     shoulder.is_agent_shoulder = False
