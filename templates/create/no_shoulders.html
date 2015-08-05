@@ -1,11 +1,13 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
+{% load i18n %}
 
-{% block title %}Permanent Identifier Creation Unavailable{% endblock %}
+{% block title %}{%trans "Permanent Identifier Creation Unavailable" %}{% endblock %}
 
 {% block content %}
-  <div class="grid_9">
-    <h1>Permanent Identifier Creation Unavailable</h1>
+{% content_heading "Permanent Identifier Creation Unavailable" %}
+<div class="vertical-buffer"></div>
+<div class="container">
     <p>
     	You may not create any permanent identifiers because your account
     	doesn't have any identifier types (shoulders) assigned to it.	

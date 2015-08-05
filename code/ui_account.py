@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 
 def edit(request, ssl=False):
   """Edit account information form"""
-  d = { 'menu_item' : 'ui_null.null'}
+  d = { 'menu_item' : 'ui_account.edit'}
   if "auth" not in request.session: return uic.unauthorized()
   d['username'] = request.session['auth'].user[0]
   #used to do the following only for GET, but needed for post also to compare what has changed

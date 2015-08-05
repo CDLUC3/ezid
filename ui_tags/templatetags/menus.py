@@ -1,48 +1,63 @@
 from django import template
 from django.core.urlresolvers import reverse
-from django.utils.html import escape
 import string
 import config
 
 register = template.Library()
 
-#this sets the menu and submenu structure along with information about its link
-#and also allows matching with current items for different display
-# structure: name, function, menu role, submenus
+# This sets the menu and submenu structure for items that need to indicate they are active
+# in the top navigation area; And includes link information
+# and also allows matching with current items for different display
+#  structure: name, function, menu role, submenus
+# Demo page and api doc do not have anything active in top nav section (MENU_PUBLIC)
 
-MENUS = (
-          ("Home", "ui_home.index", 'public',
-            ( ('Why EZID?', 'ui_home.why', 'public', () ),
-              ('Understanding Identifiers', 'ui_home.understanding', 'public', () ),
-              ('Pricing', 'ui_home.pricing', 'public', () ),
-              ('Documentation', 'ui_home.documentation', 'public', () ),
-              ('Outreach', 'ui_home.outreach', 'public', () ),
-              ("Who's using EZID?", 'ui_home.community', 'public', () )
-            ) 
-          ),
-          ("Manage IDs", 'ui_manage.index', 'user', ()),
-          ("Create IDs", 'ui_create.index', 'user',
+# Nav that shows up for logged in users
+MENU_USER = (
+          ("DASHBOARD", 'ui_admin.index', 'admin', ()), #Improved feature
+          ("MANAGE IDS", 'ui_manage.index', 'user', ()),
+          ("CREATE ID", 'ui_create.index', 'user',
             ( ("Simple", 'ui_create.simple', 'user', ()),
               ("Advanced", "ui_create.advanced", 'user', ())
             )
           ),
-          ("Lookup ID", 'ui_lookup.index', 'public', ()),
-          ("Demo", 'ui_demo.index', 'public',
-            ( ("Simple", 'ui_demo.simple', 'public', ()),
-              ("Advanced", "ui_demo.advanced", 'public', ())
-            )
-          ),
-          ("Admin", 'ui_admin.index', 'admin',
-            ( ("Usage", 'ui_admin.usage', 'admin', ()),
-              ("Users", 'ui_admin.manage_users', 'admin', ()),
-              ("Groups", 'ui_admin.manage_groups', 'admin', ()),
-              ("Status", 'ui_admin.system_status', 'admin', ()),
-              ("Alerts", 'ui_admin.alert_message', 'admin', ()),
-              ("New account", 'ui_admin.new_account', 'admin', ())
-            )
-          )
+          ("ACCOUNT SETTINGS", 'ui_account.edit', 'user', ())
         )
 
+# Tertiary nav
+MENU_DEMO = (
+             ("Simple", 'ui_demo.simple', 'public', ()),
+             ("Advanced", "ui_demo.advanced", 'public', ())
+            )
+
+#Dynamically created menu for subnav; Only displays for logged in users
+@register.simple_tag
+def menu_user(current_func, session):
+  #print type(session['auth']).__name__
+  #print session.keys()
+  acc = ''
+  is_last = False 
+  for i, menu in enumerate(MENU_USER):
+    if i == len(MENU_USER) - 1:
+      is_last = True
+    acc += menu_user_item(menu, session,
+      string.split(current_func, '.')[0] == string.split(menu[1], '.')[0], is_last)
+  return acc
+
+def menu_user_item(tup, session, is_current, is_last_menu_item):
+  u = reverse(tup[1])
+  acc = ''
+  if is_current:
+    acc += '<li class="active">'
+  else:
+    acc += '<li>'
+  acc += """<a class="not-text" href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
+  if not is_last_menu_item:
+    # This span creates a divider between list elements
+    acc += '<span></span>'
+  acc += '</li>'
+  return acc
+
+# Simply determines whether an element should be tagged as active; Only used for topmost nav
 @register.simple_tag
 def active(current_func, view_name):
   if string.split(current_func, '.')[1] == view_name:
@@ -50,50 +65,3 @@ def active(current_func, view_name):
   elif string.split(string.split(current_func, '.')[0], '_')[1] == view_name:
     return 'active'
   return ''
-
-@register.simple_tag
-def top_menu(current_func, session):
-  #print type(session['auth']).__name__
-  #print session.keys()
-  acc = ''
-  for menu in MENUS:
-    acc += top_menu_item(menu, session,
-      string.split(current_func, '.')[0] == string.split(menu[1], '.')[0])
-  return acc
-  
-@register.simple_tag
-def secondary_menu(current_func, session):
-  matched = False
-  for menu in MENUS:
-    if string.split(current_func,'.')[0] == string.split(menu[1], '.')[0]:
-      matched = True
-      break
-  if not matched or not menu[3]: return ''
-  acc = []
-  for m in menu[3]:
-    acc.append(display_item(m, session,
-                string.split(current_func, '.')[1] == string.split(m[1], '.')[1]))
-  return '<span class="pad">|</span>'.join(acc)
-  
-  
-
-def top_menu_item(tup, session, is_current):
-  return "<div>" + display_item(tup, session, is_current) + "</div>"
-
-
-def display_item(tup, session, is_current):
-  u = reverse(tup[1])
-  if is_current:
-    if tup[2] == 'public' or (tup[2] == 'user' and session.has_key('auth')):
-      return """<a href="%(path)s" class="menu_current">%(text)s</a>""" % {'path':u, 'text':tup[0] }
-    else:
-      return """<span class="menu_current">""" + tup[0] + """</span>"""
-  else:
-    if tup[2] == 'public' or (tup[2] == 'user' and session.has_key('auth')):
-      return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
-    elif tup[2] == 'user':
-      return """<span class="menu_disabled">""" + tup[0] + """</span>"""
-    elif tup[2] == 'admin' and session.has_key('auth') and config.config("ldap.admin_username") == session['auth'].user[0]:
-      return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
-    else:
-      return ''
