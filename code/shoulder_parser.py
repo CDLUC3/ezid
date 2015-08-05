@@ -39,6 +39,12 @@
 #
 # The optional fields for a shoulder are:
 #
+#    active
+#       Must be "true" or "false"; defaults to "true".  If "false",
+#       the shoulder is not in active use, meaning that it is ignored
+#       by EZID and that it does not participate in global validation
+#       checks.
+#
 #    date
 #       The date the shoulder was created in the syntax YYYY.MM.DD.
 #
@@ -51,7 +57,14 @@
 #
 #    crossref
 #       Must be "true" or "false"; if "true", indicates the shoulder
-#       supports CrossRef registration.
+#       supports CrossRef registration.  May be used with DOI
+#       shoulders only.
+#
+#    prefix_shares_datacenter
+#       Must be "true" or "false"; if "true", the shoulder's
+#       datacenter may be shared with another shoulder having a
+#       different DOI prefix.  Useful for silencing warnings.  May be
+#       used with DOI shoulders only.
 #
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
@@ -71,12 +84,14 @@ _fields = {
   "shoulder": {
     "manager": True,
     "name": True,
-    "date": False,
     "minter": True,
     "datacenter": False,
+    "active": False,
+    "date": False,
     "is_supershoulder": False,
     "is_subshoulder": False,
-    "crossref": False }
+    "crossref": False,
+    "prefix_shares_datacenter": False }
 }
 
 _shoulderManagers = ["ezid", "oca", "other"]
@@ -137,6 +152,12 @@ def _validateShoulder (entry, errors, warnings):
       entry.lineNum.date)
   mytest(entry.minter == "" or re.match("https?://", entry.minter),
     "invalid minter", entry.lineNum.minter)
+  if "active" in entry:
+    if mytest(entry.active in ["true", "false"],
+      "invalid boolean value", entry.lineNum.active):
+      entry["active"] = (entry.active == "true")
+  else:
+    entry["active"] = True
   if entry.key.startswith("doi:"):
     if mytest("datacenter" in entry, "missing DOI shoulder datacenter",
       entry.lineNum.key):
@@ -150,13 +171,23 @@ def _validateShoulder (entry, errors, warnings):
         entry["crossref"] = (entry.crossref == "true")
     else:
       entry["crossref"] = False
+    if "prefix_shares_datacenter" in entry:
+      if mytest(entry.prefix_shares_datacenter in ["true", "false"],
+        "invalid boolean value", entry.lineNum.prefix_shares_datacenter):
+        entry["prefix_shares_datacenter"] =\
+          (entry.prefix_shares_datacenter == "true")
+    else:
+      entry["prefix_shares_datacenter"] = False
   else:
     if "datacenter" in entry:
       warnings.append((entry.lineNum.datacenter,
-        "non-DOI shoulder has datacenter"))
+        "non-DOI shoulder has datacenter field"))
     if "crossref" in entry:
       warnings.append((entry.lineNum.crossref,
-        "CrossRef registration only supported by DOIs"))
+        "non-DOI shoulder has crossref field"))
+    if "prefix_shares_datacenter" in entry:
+      warnings.append((entry.lineNum.prefix_shares_datacenter,
+        "non-DOI shoulder has prefix_shares_datacenter field"))
   for field in ["is_supershoulder", "is_subshoulder"]:
     if field in entry:
       if mytest(entry[field] in ["true", "false"], "invalid boolean value",
@@ -217,7 +248,8 @@ def _read (fileContent, errors, warnings):
   return entries
 
 def _globalValidations (entries, errors, warnings):
-  shoulders = [e for e in entries if e.type == "shoulder"]
+  shoulders = [e for e in entries if e.type == "shoulder" and e.active]
+  # Test for duplicate shoulders and shoulder prefixes.
   shoulders.sort(key=lambda e: (e.key, e.lineNum.key))
   for i in range(len(shoulders)-1):
     _test(shoulders[i].key != shoulders[i+1].key, "duplicate shoulder",
@@ -228,12 +260,32 @@ def _globalValidations (entries, errors, warnings):
         not shoulders[i+1].get("is_subshoulder", False):
         warnings.append((shoulders[i].lineNum.key,
           "shoulder is proper prefix of another shoulder"))
+  # Test for duplicate shoulder names.
   def qualifiedName (shoulder):
     return shoulder.key.split(":", 1)[0] + shoulder.name
   shoulders.sort(key=lambda s: (qualifiedName(s), s.lineNum.name))
   for i in range(len(shoulders)-1):
     _test(qualifiedName(shoulders[i]) != qualifiedName(shoulders[i+1]),
       "duplicate shoulder name", shoulders[i+1].lineNum.name, errors)
+  # Test for DOI prefixes shared across datacenters.
+  shoulders.sort(key=lambda s: s.lineNum.key)
+  d = {}
+  for s in shoulders:
+    if s.key.startswith("doi:") and "datacenter" in s:
+      l = d.get(s.datacenter, [])
+      l.append(s)
+      d[s.datacenter] = l
+  def getPrefix (s):
+    return s.key.split("/", 1)[0]
+  for dc, l in d.items():
+    if len(l) > 1:
+      p = getPrefix(l[0])
+      if not all(getPrefix(s) == p for s in l[1:]):
+        for s in l:
+          if not s.prefix_shares_datacenter:
+            warnings.append((s.lineNum.key,
+              "datacenter is shared across DOI prefixes at lines " +\
+              ", ".join("%d" % ss.lineNum.key for ss in l)))
 
 def parse (fileContent):
   """
