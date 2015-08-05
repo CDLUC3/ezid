@@ -26,6 +26,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import base64
 import os.path
 import threading
 import urllib2
@@ -36,6 +37,8 @@ import shoulder_parser
 
 _lock = threading.Lock()
 _primaryUrl = None
+_username = None
+_password = None
 _cacheFile = None
 _arkTestShoulderKey = None
 _doiTestShoulderKey = None
@@ -46,12 +49,18 @@ _doiTestShoulder = None
 _agentShoulder = None
 
 def _loadConfig ():
-  global _primaryUrl, _cacheFile, _arkTestShoulderKey, _doiTestShoulderKey
-  global _agentShoulderKey, _shoulders, _arkTestShoulder, _doiTestShoulder
-  global _agentShoulder
+  global _primaryUrl, _username, _password, _cacheFile, _arkTestShoulderKey
+  global _doiTestShoulderKey, _agentShoulderKey, _shoulders, _arkTestShoulder
+  global _doiTestShoulder, _agentShoulder
   _lock.acquire()
   try:
     _primaryUrl = config.config("shoulders.primary_url")
+    _username = config.config("shoulders.username")
+    if _username != "":
+      _password = config.config("shoulders.password")
+    else:
+      _username = None
+      _password = None
     _cacheFile = config.config("shoulders.cache_file")
     _arkTestShoulderKey = config.config("shoulders.ark_test")
     _doiTestShoulderKey = config.config("shoulders.doi_test")
@@ -69,7 +78,11 @@ config.addLoader(_loadConfig)
 def _load1 (url):
   f = None
   try:
-    f = urllib2.urlopen(url)
+    r = urllib2.Request(url)
+    if _username != None:
+      r.add_header("Authorization", "Basic " +\
+        base64.b64encode("%s:%s" % (_username, _password)))
+    f = urllib2.urlopen(r)
     content = f.read()
   finally:
     if f: f.close()
@@ -77,7 +90,7 @@ def _load1 (url):
   assert len(errors) == 0, "validation error(s): " +\
     ", ".join("(line %d) %s" % e for e in errors)
   shoulders = dict((e.key, e) for e in entries if e.type == "shoulder" and\
-    e.manager == "ezid")
+    e.manager == "ezid" and e.active)
   for shoulder in shoulders.itervalues():
     shoulder.is_test_shoulder = False
     shoulder.is_agent_shoulder = False

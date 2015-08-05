@@ -201,8 +201,10 @@ instead.  Second, script update actions may conflict with those of the
 running server, even though SQLite locking works across processes,
 because offline scripts don't participate in the server's locking
 mechanism and won't necessarily interact properly with server
-background processing daemons.  Thus, for example, the expunge script
-performs its update actions through the EZID API.
+background processing daemons.  This explains why, for example, the
+expunge script performs its update actions through the EZID API.
+
+See .../SITE_ROOT/PROJECT_ROOT/tools/offline.py for more information.
 
 9. Log file formats
 -------------------

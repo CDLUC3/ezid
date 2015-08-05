@@ -18,7 +18,7 @@ import sys
 
 maximumIdentifierLength = 256
 
-_doiPattern = re.compile("10\.[1-9]\d{3,4}/[!->@-~]+$")
+_doiPattern = re.compile("10\.[1-9]\d{3,4}/[!\"$->@-~]+$")
 def validateDoi (doi):
   """
   If the supplied string (e.g., "10.5060/foo") is a syntactically
@@ -30,7 +30,8 @@ def validateDoi (doi):
   # should be limiting in practice.  The Handbook allows virtually any
   # prefix; we allow only 4 or 5 digits.  The Handbook allows all
   # printable Unicode characters in the suffix; we allow all graphic
-  # ASCII characters except (?).  (Question marks are excluded to
+  # ASCII characters except (#) and (?).  (Hash marks may be confused
+  # with fragment identifiers.  Question marks are excluded to
   # eliminate any possible confusion over whether a dx.doi.org-style
   # "urlappend" argument is part of the identifier or not; our
   # position is that it is not.)  But our validation is also more
@@ -53,8 +54,8 @@ _arkPattern2 = re.compile("\./|/\.")
 _arkPattern3 = re.compile("([./])[./]+")
 _arkPattern4 = re.compile("^[./]|[./]$")
 _arkPattern5 = re.compile("%[0-9a-fA-F][0-9a-fA-F]|.")
-_arkPattern6 = re.compile("[0-9a-zA-Z=#*+@_$~]")
-_arkPattern7 = re.compile("[0-9a-zA-Z=#*+@_$~./]")
+_arkPattern6 = re.compile("[0-9a-zA-Z=*+@_$~]")
+_arkPattern7 = re.compile("[0-9a-zA-Z=*+@_$~./]")
 
 def _normalizeArkPercentEncoding (m):
   s = m.group(0)
@@ -79,15 +80,17 @@ def validateArk (ark):
   """
   # Our validation diverges from the ARK specification
   # <http://wiki.ucop.edu/display/Curation/ARK> in that it is not as
-  # restrictive: we allow all graphic ASCII characters; we place no
-  # limit on length; we allow the first character to be alphabetic;
-  # and we allow variant paths to be intermixed with component paths.
-  # All these relaxations are intended to support shadow ARKs and
-  # relatively direct transformation of DOIs into shadow ARKs.  The
-  # normalizations performed here follow the rules given in the
-  # specification except that we don't re-order variant paths, which
-  # would conflict with transformation of DOIs into shadow ARKs (since
-  # order of period-delimited components in DOIs is significant).
+  # restrictive: we allow all graphic ASCII characters; our length
+  # upper bound is more permissive; we allow the first character to be
+  # alphabetic; and we allow variant paths to be intermixed with
+  # component paths.  All these relaxations are intended to support
+  # shadow ARKs and relatively direct transformation of DOIs into
+  # shadow ARKs.  The normalizations performed here follow the rules
+  # given in the specification except that we don't re-order variant
+  # paths, which would conflict with transformation of DOIs into
+  # shadow ARKs (since order of period-delimited components in DOIs is
+  # significant).  Also, hash marks (#) are percent encoded to avoid
+  # confusion with their interpretation as fragment identifiers.
   m = _arkPattern1.match(ark)
   if not m or ark[-1] == "\n": return None
   p = m.group(1)
