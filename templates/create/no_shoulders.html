@@ -9,15 +9,16 @@
 <div class="vertical-buffer"></div>
 <div class="container">
     <p>
-    	You may not create any permanent identifiers because your account
-    	doesn't have any identifier types (shoulders) assigned to it.	
+    	{% trans "You may not create any permanent identifiers because your account doesn't have any identifier types (shoulders) assigned to it." %}
     </p>
     
     <p>
-    	You may still create temporary identifiers with the
-    	<a href="{% url "ui_demo.simple" %}">demo identifier</a> functionality.
+    	{% trans "You may still create temporary identifiers with the" %}
+    	<a href="{% url "ui_demo.simple" %}">{% trans "demo identifier" %}</a>
+        {% trans "functionality." %}
     </p>
     
-    <p>If you have questions, you may <a href="{% url "ui.contact" %}">contact us</a>.</p>
+    <p>{% trans "If you have questions, you may " %}<a href="{% url "ui.contact" %}">
+       {% trans "contact us" %}</a>.</p>
   </div>
 {% endblock %}

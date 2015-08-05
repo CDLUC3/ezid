@@ -1,30 +1,48 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
-
-{% block title %}Create Advanced ID{% endblock %}
-
+{% load i18n %}
+{% block title %}{% trans "Create an Advanced Identifier" %}{% endblock %}
 {% block content %}
-  <div class="grid_9">
-    <h1>Create Identifier</h1>
-    <form id="create_form" action="{% url "ui_create.advanced" %}" method="post">
-      <input name="action" id="action"  type="hidden" value="create"/>      
+{% content_heading "Create an Identifier" %}
+<div class="alert alert-error" role="alert">
+  ! {% trans "That entry is incorrect. Please re-check your entry." %}
+</div>
+<div class="container vertical-buffer-sm">
+  <ul class="nav nav-tabs nav-idcreate">
+    <li role="presentation"><a href="{% url "ui_create.simple" %}">{% trans "Simple" %}</a></li>
+    <li role="presentation" class="active">{% trans "Advanced" %}</li>
+  </ul>
+  <div class="idcreate-content gradient-form">
 
+
+    <form id="create_form" action="{% url "ui_create.advanced" %}" method="post" class="form-horizontal" role="form">
+      <input name="action" id="action"  type="hidden" value="create"/>      
+      <div class="row idcreate-content-row">
       {% include "includes/simple_id_type.html" %}
-      
+      </div> 
+      <div class="row idcreate-content-row">
       {% include "includes/advanced_remainder.html" %}
-      
+      </div> 
+      <div class="row idcreate-content-row">
       {% include "includes/advanced_publish_id.html" %}
-           
+      </div> 
+      <div class="row idcreate-content-row">
       {% include "includes/advanced_describe.html" %}
-      
-      <label class="left">&nbsp;</label>
-      <div class="field_right">
-        <input type="submit" value="Create"/>
       </div>
-      <div style="clear:both">&nbsp;</div>
-    </form>
-    <p>Once created, an identifier cannot be renamed or deleted.</p>
+        <div class="col-sm-3">
+          <!-- TODO: This should instead be positioned using an offset -->
+        </div>
+        <div class="col-sm-8">
+          <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>
+          <p class="italic vertical-buffer-xs">
+            {% trans "Once created, an identifier  cannot be renamed  or deleted." %}
+          </p>
+        </div>
+       </div>
+     </form>
+
   </div>
+</div> <!-- End Container -->     
   
   <script type="text/javascript" src="/static/javascripts/advanced_create.js"></script>
   {% include "info/popup_help.html" %}

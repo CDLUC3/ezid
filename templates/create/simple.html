@@ -1,17 +1,17 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
-
-{% block title %}Create an Identifier{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Create an Identifier" %}{% endblock %}
 
 {% block content %}
 {% content_heading "Create an Identifier" %}
 <div class="alert alert-error" role="alert">
-  ! That entry is incorrect. Please re-check your entry.
+ ! {% trans "That entry is incorrect. Please re-check your entry." %}
 </div>
 <div class="container vertical-buffer-sm">
   <ul class="nav nav-tabs nav-idcreate">
-    <li role="presentation" class="active">Simple</li>
-    <li role="presentation"><a href="{% url "ui_create.advanced" %}">Advanced</a></li>
+    <li role="presentation" class="active">{% trans "Simple" %}</li>
+    <li role="presentation"><a href="{% url "ui_create.advanced" %}">{% trans "Advanced" %}</a></li>
   </ul>
   <div class="idcreate-content gradient-form">
 
@@ -27,9 +27,9 @@
           <!-- TODO: This should instead be positioned using an offset -->
         </div>
         <div class="col-sm-8">
-          <button type="submit" class="btn btn-primary padding-side-xs">CREATE</button>
+          <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>
           <p class="italic vertical-buffer-xs">
-            Clicking "Create" will create the identifier and make it public.  To defer making it public, use the Advanced form. Once created, an identifier  cannot be renamed  or deleted.
+            {% trans "Clicking &quot;Create&quot; will create the identifier and make it public.  To defer making it public, use the Advanced form. Once created, an identifier cannot be renamed or deleted." %}
       	    {% help_icon "public_id_help" %}
           </p>
         </div>
