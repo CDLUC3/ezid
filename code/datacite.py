@@ -42,13 +42,14 @@ _allocators = None
 _stylesheet = None
 _crossrefTransform = None
 _pingDoi = None
+_pingDatacenter = None
 _pingTarget = None
 _numActiveOperations = 0
 
 def _loadConfig ():
   global _enabled, _doiUrl, _metadataUrl, _numAttempts, _reattemptDelay
   global _timeout, _allocators, _stylesheet, _crossrefTransform, _pingDoi
-  global _pingTarget
+  global _pingDatacenter, _pingTarget
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
@@ -63,6 +64,7 @@ def _loadConfig ():
   _crossrefTransform = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
     django.conf.settings.PROJECT_ROOT, "profiles", "crossref2datacite.xsl")))
   _pingDoi = config.config("datacite.ping_doi")
+  _pingDatacenter = config.config("datacite.ping_datacenter")
   _pingTarget = config.config("datacite.ping_target")
 
 _loadConfig()
@@ -95,22 +97,25 @@ class _HTTPErrorProcessor (urllib2.HTTPErrorProcessor):
       return urllib2.HTTPErrorProcessor.http_response(self, request, response)
   https_response = http_response
 
-def _datacenterAuthorization (doi):
-  s = shoulder.getLongestMatch("doi:" + doi)
-  # Should never happen.
-  assert s is not None, "shoulder not found"
-  a = s.datacenter.split(".")[0]
+def _authorization (doi, datacenter=None):
+  if datacenter == None:
+    s = shoulder.getLongestMatch("doi:" + doi)
+    # Should never happen.
+    assert s is not None, "shoulder not found"
+    datacenter = s.datacenter
+  a = datacenter.split(".")[0]
   p = _allocators.get(a, None)
   assert p is not None, "no such allocator: " + a
-  return "Basic " + base64.b64encode(s.datacenter + ":" + p)
+  return "Basic " + base64.b64encode(datacenter + ":" + p)
 
-def registerIdentifier (doi, targetUrl):
+def registerIdentifier (doi, targetUrl, datacenter=None):
   """
   Registers a scheme-less DOI identifier (e.g., "10.5060/foo") and
-  target URL (e.g., "http://whatever...") with DataCite.  There are
-  three possible returns: None on success; a string error message if
-  the target URL was not accepted by DataCite; or a thrown exception
-  on other error.
+  target URL (e.g., "http://whatever...") with DataCite.
+  'datacenter', if specified, should be the identifier's datacenter,
+  e.g., "CDL.BUL".  There are three possible returns: None on success;
+  a string error message if the target URL was not accepted by
+  DataCite; or a thrown exception on other error.
   """
   if not _enabled: return None
   # To deal with transient problems with the Handle system underlying
@@ -121,7 +126,7 @@ def registerIdentifier (doi, targetUrl):
     # We manually supply the HTTP Basic authorization header to avoid
     # the doubling of the number of HTTP transactions caused by the
     # challenge/response model.
-    r.add_header("Authorization", _datacenterAuthorization(doi))
+    r.add_header("Authorization", _authorization(doi, datacenter))
     r.add_header("Content-Type", "text/plain; charset=UTF-8")
     r.add_data(("doi=%s\nurl=%s" % (doi.replace("\\", "\\\\"),
       targetUrl.replace("\\", "\\\\"))).encode("UTF-8"))
@@ -145,20 +150,22 @@ def registerIdentifier (doi, targetUrl):
     time.sleep(_reattemptDelay)
   return None
 
-def setTargetUrl (doi, targetUrl):
+def setTargetUrl (doi, targetUrl, datacenter=None):
   """
   Sets the target URL of an existing scheme-less DOI identifier (e.g.,
-  "10.5060/foo").  There are three possible returns: None on success;
-  a string error message if the target URL was not accepted by
-  DataCite; or a thrown exception on other error.
+  "10.5060/foo").  'datacenter', if specified, should be the
+  identifier's datacenter, e.g., "CDL.BUL".  There are three possible
+  returns: None on success; a string error message if the target URL
+  was not accepted by DataCite; or a thrown exception on other error.
   """
-  return registerIdentifier(doi, targetUrl)
+  return registerIdentifier(doi, targetUrl, datacenter)
 
-def getTargetUrl (doi):
+def getTargetUrl (doi, datacenter=None):
   """
   Returns the target URL of a scheme-less DOI identifier (e.g.,
   "10.5060/foo") as registered with DataCite, or None if the
-  identifier is not registered.
+  identifier is not registered.  'datacenter', if specified, should be
+  the identifier's datacenter, e.g., "CDL.BUL".
   """
   # To hide transient network errors, we make multiple attempts.
   for i in range(_numAttempts):
@@ -167,7 +174,7 @@ def getTargetUrl (doi):
     # We manually supply the HTTP Basic authorization header to avoid
     # the doubling of the number of HTTP transactions caused by the
     # challenge/response model.
-    r.add_header("Authorization", _datacenterAuthorization(doi))
+    r.add_header("Authorization", _authorization(doi, datacenter))
     c = None
     try:
       _modifyActiveCount(1)
@@ -404,7 +411,7 @@ def formRecord (identifier, metadata, supplyMissing=False):
     r += u"</resource>\n"
     return r
 
-def uploadMetadata (doi, current, delta, forceUpload=False):
+def uploadMetadata (doi, current, delta, forceUpload=False, datacenter=None):
   """
   Uploads citation metadata for the resource identified by an existing
   scheme-less DOI identifier (e.g., "10.5060/foo") to DataCite.  This
@@ -413,11 +420,12 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
   element names (e.g., "Title") to values.  'current+delta' is
   uploaded, but only if there is at least one DataCite-relevant
   difference between it and 'current' alone (unless 'forceUpload' is
-  true).  There are three possible returns: None on success; a string
-  error message if the uploaded DataCite Metadata Scheme record was
-  not accepted by DataCite (due to an XML-related problem); or a
-  thrown exception on other error.  No error checking is done on the
-  inputs.
+  true).  'datacenter', if specified, should be the identifier's
+  datacenter, e.g., "CDL.BUL".  There are three possible returns: None
+  on success; a string error message if the uploaded DataCite Metadata
+  Scheme record was not accepted by DataCite (due to an XML-related
+  problem); or a thrown exception on other error.  No error checking
+  is done on the inputs.
   """
   try:
     oldRecord = formRecord("doi:" + doi, current)
@@ -438,7 +446,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
     # We manually supply the HTTP Basic authorization header to avoid
     # the doubling of the number of HTTP transactions caused by the
     # challenge/response model.
-    r.add_header("Authorization", _datacenterAuthorization(doi))
+    r.add_header("Authorization", _authorization(doi, datacenter))
     r.add_header("Content-Type", "application/xml; charset=UTF-8")
     r.add_data(newRecord.encode("UTF-8"))
     c = None
@@ -462,7 +470,7 @@ def uploadMetadata (doi, current, delta, forceUpload=False):
       if c: c.close()
     time.sleep(_reattemptDelay)
 
-def _deactivate (doi):
+def _deactivate (doi, datacenter):
   # To hide transient network errors, we make multiple attempts.
   for i in range(_numAttempts):
     o = urllib2.build_opener(_HTTPErrorProcessor)
@@ -470,7 +478,7 @@ def _deactivate (doi):
     # We manually supply the HTTP Basic authorization header to avoid
     # the doubling of the number of HTTP transactions caused by the
     # challenge/response model.
-    r.add_header("Authorization", _datacenterAuthorization(doi))
+    r.add_header("Authorization", _authorization(doi, datacenter))
     r.get_method = lambda: "DELETE"
     c = None
     try:
@@ -489,7 +497,7 @@ def _deactivate (doi):
       if c: c.close()
     time.sleep(_reattemptDelay)
 
-def deactivate (doi):
+def deactivate (doi, datacenter=None):
   """
   Deactivates an existing, scheme-less DOI identifier (e.g.,
   "10.5060/foo") in DataCite.  This removes the identifier from
@@ -497,11 +505,12 @@ def deactivate (doi):
   existence in the Handle system or on the ability to change the
   identifier's target URL.  The identifier can and will be reactivated
   by uploading new metadata to it (cf. uploadMetadata in this module).
-  Raises an exception on error.
+  'datacenter', if specified, should be the identifier's datacenter,
+  e.g., "CDL.BUL".  Raises an exception on error.
   """
   if not _enabled: return
   try:
-    _deactivate(doi)
+    _deactivate(doi, datacenter)
   except urllib2.HTTPError, e:
     if e.code == 404:
       # The identifier must already have metadata in DataCite; in case
@@ -509,10 +518,10 @@ def deactivate (doi):
       # upload some bogus metadata.
       message = uploadMetadata(doi, {}, { "datacite.title": "inactive",
         "datacite.creator": "inactive", "datacite.publisher": "inactive",
-        "datacite.publicationyear": "0000" })
+        "datacite.publicationyear": "0000" }, datacenter=datacenter)
       assert message is None,\
         "unexpected return from DataCite store metadata operation: " + message
-      _deactivate(doi)
+      _deactivate(doi, datacenter)
     else:
       raise
 
@@ -523,7 +532,7 @@ def ping ():
   """
   if not _enabled: return "up"
   try:
-    r = setTargetUrl(_pingDoi, _pingTarget)
+    r = setTargetUrl(_pingDoi, _pingTarget, _pingDatacenter)
     assert r == None
   except:
     return "down"
@@ -542,7 +551,7 @@ def pingDataciteOnly ():
     # We manually supply the HTTP Basic authorization header to avoid
     # the doubling of the number of HTTP transactions caused by the
     # challenge/response model.
-    r.add_header("Authorization", _datacenterAuthorization(_pingDoi))
+    r.add_header("Authorization", _authorization(_pingDoi, _pingDatacenter))
     c = None
     try:
       _modifyActiveCount(1)
