@@ -1,7 +1,8 @@
 {% load layout_extras %}
+{% load i18n %}
 {% if datacite_obj_sizes.size %}
 	<div class="optional">
-		<div name="/resource/sizes" class="element container">
+		<div name="/resource/sizes" class="element datacite-container">
 			<label for="/resource/sizes" class="element">Size:</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/sizes" nbelmtsadded="{{ num_sizes }}" class="addButton">
 			<input type="button" value="-" name="/resource/sizes" class="rmvButton">
@@ -9,11 +10,10 @@
 	{% for size in datacite_obj_sizes.size %}
 			<div class="multiple">
 				<div name="/resource/sizes/size[{{ forloop.counter }}]" class="element">
-					<label for="/resource/sizes/size[{{ forloop.counter }}]" class="element sized">Size:</label>
+					<label for="/resource/sizes/size[{{ forloop.counter }}]" class="element sized">{% trans "Size" %}:</label>
 					<input type="text" name="/resource/sizes/size[{{ forloop.counter }}]" value="{{ size.text|default_if_none:"" }}" class="data sized" />
 				</div>
 			</div>
-			<div class="clearboth"></div>
 {% endfor %}
 		</div>
 	</div>

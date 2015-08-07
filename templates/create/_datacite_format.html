@@ -1,19 +1,19 @@
 {% load layout_extras %}
+{% load i18n %}
 {% if datacite_obj_formats.format %}
 	<div class="optional">
-		<div name="/resource/formats" class="element container">
-			<label for="/resource/formats" class="element">Format:</label>
+		<div name="/resource/formats" class="element datacite-container">
+			<label for="/resource/formats" class="element">{% trans "Format" %}:</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/formats" nbelmtsadded="{{ num_formats }}" class="addButton">
 			<input type="button" value="-" name="/resource/formats" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_formats_help" %}</div>
 {% for format in datacite_obj_formats.format %}
 			<div class="multiple">
 				<div name="/resource/formats/format[{{ forloop.counter }}]" class="element">
-					<label for="/resource/formats/format[{{ forloop.counter }}]" class="element sized">Format:</label>
-					<input type="text" name="/resource/formats/format[{{ forloop.counter }}]" value="{{ format.text|default_if_none:"" }}" class="data sized" />
+					<label for="/resource/formats/format[{{ forloop.counter }}]" class="element">{% trans "Format" %}:</label>
+					<input type="text" name="/resource/formats/format[{{ forloop.counter }}]" value="{{ format.text|default_if_none:"" }}" class="data form-control" />
 				</div>
 			</div>
-			<div class="clearboth"></div>
 {% endfor %}
 		</div>
 	</div>

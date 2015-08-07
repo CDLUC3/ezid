@@ -1,28 +1,28 @@
 {% load layout_extras %}
+{% load i18n %}
 	<div class="optional">
-		<div name="/resource/descriptions" class="element container">
-			<label for="/resource/descriptions" class="element">Abstract</label>
+		<div name="/resource/descriptions" class="element datacite-container">
+			<label for="/resource/descriptions" class="element">{% trans "Abstract" %}</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="{{ num_descriptions }}" class="addButton">
 			<input type="button" value="-" name="/resource/descriptions" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_descriptions_help" %}</div>
 {% for descr in datacite_obj_descriptions.description %}
 			<div class="multiple">
 				<div name="/resource/descriptions/description[{{ forloop.counter }}]" class="element">
-					<label for="/resource/descriptions/description[{{ forloop.counter }}]" class="element sized">Descriptive information:</label>
-					<input type="text" name="/resource/descriptions/description[{{ forloop.counter }}]" value="{{ descr.text|default_if_none:"" }}" class="data sized" />
+					<label for="/resource/descriptions/description[{{ forloop.counter }}]" class="element">Descriptive information:</label>
+					<input type="text" name="/resource/descriptions/description[{{ forloop.counter }}]" value="{{ descr.text|default_if_none:"" }}" class="data form-control" />
 					<div class="attribute">
-						<label for="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" class="attribute sized">Type:</label>
-						<select name="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" sendselect="yes" class="choice sized">
+						<label for="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" class="attribute">{% trans "Type" %}:</label>
+						<select name="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" sendselect="yes" class="choice">
 							<option value=""></option>
-							<option value="Abstract"{% if descr.attrib.descriptionType == "Abstract" or descr.attrib.descriptionType == "" %} selected="selected"{% endif %}>Abstract</option>
-							<option value="SeriesInformation"{% if descr.attrib.descriptionType == "SeriesInformation" %} selected="selected"{% endif %}>Series Information</option>
-							<option value="TableOfContents"{% if descr.attrib.descriptionType == "TableOfContents" %} selected="selected"{% endif %}>Table of Contents</option>
-							<option value="Methods"{% if descr.attrib.descriptionType == "Methods" %} selected="selected"{% endif %}>Methods</option>
-							<option value="Other"{% if descr.attrib.descriptionType == "Other" %} selected="selected"{% endif %}>Other</option>
+							<option value="Abstract"{% if descr.attrib.descriptionType == "Abstract" or descr.attrib.descriptionType == "" %} selected="selected"{% endif %}>{% trans "Abstract" %}</option>
+							<option value="SeriesInformation"{% if descr.attrib.descriptionType == "SeriesInformation" %} selected="selected"{% endif %}>{% trans "Series Information" %}</option>
+							<option value="TableOfContents"{% if descr.attrib.descriptionType == "TableOfContents" %} selected="selected"{% endif %}>{% trans "Table of Contents" %}</option>
+							<option value="Methods"{% if descr.attrib.descriptionType == "Methods" %} selected="selected"{% endif %}>{% trans "Methods" %}</option>
+							<option value="Other"{% if descr.attrib.descriptionType == "Other" %} selected="selected"{% endif %}>{% trans "Other" %}</option>
 						</select>
 					</div>
 				</div>
-				<div class="clearboth"></div>
 			</div>
 {% endfor %}
 		</div>

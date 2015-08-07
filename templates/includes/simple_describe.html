@@ -1,27 +1,30 @@
 {% load layout_extras %}
 {% load metadata_tags %}
+{% load i18n %}
 
-<div class="inline-header">
-  <span class="number-big">2</span>
-  <h2 class="id-creation">Describe the identified object</h2>{% help_icon "relevant_mouseovers" %}
-</div>
-<input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
-<div class="col-sm-12 form-group form-group-sm">
-  <label for="_target" class="col-sm-3 control-label">{{internal_profile.target.displayName}}</label>
-  <div class="col-sm-7">
-    <input type="text" class="form-control width-reduced" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
+<div class="row idcreate-content-row">
+  <div class="inline-header">
+    <span class="number-big">2</span>
+    <h2 class="id-creation">{% trans "Describe the identified object" %}</h2>{% help_icon "relevant_mouseovers" %}
   </div>
-</div>
+  <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
+  <div class="form-group form-group-sm">
+    <label for="_target" class="col-sm-2 control-label">{{internal_profile.target.displayName}}</label>
+    <div class="col-sm-7">
+      <input type="url" class="form-control width-reduced" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
+    </div>
+  </div>
 {% for e in current_profile.elements %}
-<div class="col-sm-12 form-group form-group-sm">
-  <label for="{{e.name}}" class="col-sm-3 control-label">
-    {{e.displayName}}
-  </label>
-  <div class="col-sm-7">
+  <div class="form-group form-group-sm">
+    <label for="{{e.name}}" class="col-sm-2 control-label">
+      {{e.displayName}}
+    </label>
+    <div class="col-sm-7">
     {% display_form_element e %}
     {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
       {% datacite_field_help_icon e.name %}
     {% endif %}
+    </div>
   </div>
-</div>
 {% endfor %}
+</div>

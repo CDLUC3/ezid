@@ -1,42 +1,45 @@
 {% load layout_extras %}
 {% load metadata_tags %}
+{% load i18n %}
 
 <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
-<div style="margin-top: 1em;">
-	<h2 style="display:inline;">Step 4: Describe the identified object using the 
-	<select name="current_profile" id="current_profile">
-	  {% for prof in profile_names %}
-	    <option value="{{prof.0}}"
-	      {% if prof.0 == current_profile_name %}
-	        selected="selected"
-	      {% endif %}
-	    >{{prof.1}}</option>
-	  {% endfor %}
-	</select>
-	citation profile:
-	</h2>{% help_icon "which_profile" %}
-</div>
-<div class="clearboth"></div>
-<label for="_target" class="left {% tooltip_class "_target" %}">
-  {{internal_profile.target.displayName}}:
-</label>
-<div class="field_right">
-  <input type="text" class="{% tooltip_class "_target" %} std_form_width" name="_target" id="_target" size="35" value="{% request_value "_target" %}"/>
-</div>
-{% if manual_profile %}
-  <div style="clear:both;">
-  	{% include manual_template %}
+<div class="row idcreate-content-row">
+  <div class="col-sm-12 inline-header">
+    <span class="number-big">4</span>
+    <h2 class="id-creation">{% trans "Describe the identified object using the" %}
+      <select name="current_profile" id="current_profile">
+        {% for prof in profile_names %}
+          <option value="{{prof.0}}"
+            {% if prof.0 == current_profile_name %}
+              selected="selected"
+            {% endif %}
+          >{{prof.1}}</option>
+        {% endfor %}
+      </select>
+      {% trans "profile:" %}
+    </h2>{% help_icon "which_profile" %}
   </div>
+
+  <div class="form-group form-group-sm">
+    <label for="_target" class="col-sm-2">{{internal_profile.target.displayName}}:</label>
+    <div class="col-sm-5">
+      <input type="url" class="form-control" name="_target" id="_target" value="{% request_value "_target" %}" />
+      </div>
+  </div>
+
+{% if manual_profile %}
+  {% include manual_template %}
 {% else %}
-	{% for e in current_profile.elements %}
-	  <label for="{{e.name}}" class="left {% tooltip_class e.name %}">
-	    {{e.displayName}}:
-	  </label>
-	  <div class="field_right">
-	    {% display_form_element e %}
-	    {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
-				{% datacite_field_help_icon e.name %}
-	  	{% endif %}
-	  </div>        
-	{% endfor %}
+  {% for e in current_profile.elements %}
+      <div class="form-group form-group-sm">
+        <label for="{{e.name}}" class="col-sm-2">{{e.displayName}}:</label>
+        <div class="col-sm-5">
+          {% display_form_element e %}
+          {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
+            {% datacite_field_help_icon e.name %}
+          {% endif %}
+        </div>
+      </div>
+  {% endfor %}
 {% endif %}
+</div>

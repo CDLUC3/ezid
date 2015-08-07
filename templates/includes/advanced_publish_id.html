@@ -1,44 +1,59 @@
 {% load layout_extras %}
-<h2>Step 3: Decide</h2>
+{% load i18n %}
+
+  <div class="row idcreate-content-row">
+    <div class="col-sm-12 inline-header">
+      <span class="number-big">3</span>
+      <h2 class="id-creation">{% trans "Decide" %}</h2>
+    </div>
+  </div>
+
+  <div class="row horizontal-buffer">
+    <div class="col-md-3 col-xs-5 form-group form-group-sm">
+      {% trans "Make this identifier public?" %}
+    </div>
+    <div class="col-md-9 col-xs-7 form-group form-group-sm">
+      <div class="radio-inline radio_svg">
+        <input type="radio" name="publish" value="True" id="publish_true" class="radio__icon"
+          {% if request.POST.publish != 'False' %}
+            checked="checked"
+          {% endif %} 
+        /><label for="publish_true" class="image-radio-label">{% trans "YES" %}</label>
+      </div>
+      <div class="radio-inline radio_svg">
+        <input type="radio" name="publish" value="False" id="publish_false" class="radio__icon"
+          {% if request.POST.publish == 'False' %}
+            checked="checked"
+          {% endif %}
+        /><label for="publish_false" class="image-radio-label">{% trans "NO" %}</label>
+        {% help_icon "public_id_help" %}
+      </div>
+    </div>
+  </div>
+
+  <div class="row horizontal-buffer" id="harv_index">
+    <div class="col-md-3 col-xs-5 form-group form-group-sm">
+      {% trans "Allow harvesting/indexing?" %}
+    </div>
+    <div class="col-md-9 col-xs-7 form-group form-group-sm">
+      <div class="radio-inline radio_svg">
+        <input type="radio" name="export" value="yes" id="export_yes" class="radio__icon"
+          {% if request.POST.export != 'no' %}
+            checked="checked"
+          {% endif %}
+        /><label for="export_yes" class="image-radio-label">{% trans "YES" %}</label>
+      </div>
+      <div class="radio-inline radio_svg">
+        <input type="radio" name="export" value="no" id="export_no" class="radio__icon"
+          {% if request.POST.export == 'no' %}
+            checked="checked"
+          {% endif %}
+        /><label for="export_no" class="image-radio-label">{% trans "NO" %}</label>
+        {% help_icon "public_id_help" %}
+      </div>
+    </div>
+  </div>
  
-<div class="form_yn_question_box">
-  Make this identifier public?
-  <div class="yn_select">
-	  <input type="radio" name="publish" value="True" id="publish_true" 
-	    {% if request.POST.publish != 'False' %}
-	        checked="checked"
-	    {% endif %}
-	   /><label
-	    for="publish_true">Yes</label>&nbsp;
-	  <input type="radio" name="publish" value="False" id="publish_false"
-	    {% if request.POST.publish == 'False' %}
-	      checked="checked"
-	    {% endif %}
-	   /><label
-	    for="publish_false">No</label>
-	    {% help_icon "public_id_help" %}
-	</div>
-</div>
-
-<div class="form_yn_question_box" id="harv_index">
-  Allow harvesting/indexing?
-  <div class="yn_select">
-	  <input type="radio" name="export" value="yes" id="export_yes" 
-	    {% if request.POST.export != 'no' %}
-	        checked="checked"
-	    {% endif %}
-	   /><label
-	    for="export_yes">Yes</label>&nbsp;
-	  <input type="radio" name="export" value="no" id="export_no"
-	    {% if request.POST.export == 'no' %}
-	      checked="checked"
-	    {% endif %}
-	   /><label
-	    for="export_no">No</label>
-	    {% help_icon "export_help" %}
-	</div>
-</div>
-
 <script type="application/javascript">
 	function setHidden(){
   	if ($('#publish_true').is(':checked')) {

@@ -17,18 +17,12 @@
 
     <form id="create_form" action="{% url "ui_create.advanced" %}" method="post" class="form-horizontal" role="form">
       <input name="action" id="action"  type="hidden" value="create"/>      
-      <div class="row idcreate-content-row">
       {% include "includes/simple_id_type.html" %}
-      </div> 
-      <div class="row idcreate-content-row">
       {% include "includes/advanced_remainder.html" %}
-      </div> 
-      <div class="row idcreate-content-row">
       {% include "includes/advanced_publish_id.html" %}
-      </div> 
-      <div class="row idcreate-content-row">
       {% include "includes/advanced_describe.html" %}
-      </div>
+
+      <div class="row idcreate-content-row">
         <div class="col-sm-3">
           <!-- TODO: This should instead be positioned using an offset -->
         </div>
@@ -38,8 +32,9 @@
             {% trans "Once created, an identifier  cannot be renamed  or deleted." %}
           </p>
         </div>
-       </div>
-     </form>
+
+      </div>
+    </form>
 
   </div>
 </div> <!-- End Container -->     

@@ -1,11 +1,14 @@
 {% load layout_extras %}
+{% load i18n %}
 
+<div class="row idcreate-content-row">
   <div class="col-sm-8">
     <div class="inline-header">
       <span class="number-big">1</span>
-      <h2 class="id-creation">Choose an identifier type</h2>
+      <h2 class="id-creation">{% trans "Choose an identifier type" %}</h2>
       {% help_icon "create_id_01" %}
     </div>
+  </div>
   {% if prefixes|duplicate_id_types %}
     {% for p in prefixes %}
     <div class="radio form-group form-group-sm">
@@ -20,8 +23,8 @@
     {% endfor %}
   {% else %}
     {% for p in prefixes %}
-    <div class="radio form-group form-group-sm horizontal-buffer">
-      <div class="radio-inline radio_svg">
+    <div class="radio form-group form-group-sm">
+      <div class="radio-inline radio_svg horizontal-buffer">
         <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" class="radio__icon"
           {% selected_radio "shoulder" forloop.counter p.prefix %} />
         <label for="{{p.prefix}}" class="image-radio-label">
@@ -31,11 +34,5 @@
     </div>
     {% endfor %}
   {% endif %}
-  </div>
-  <div class="col-sm-3 font-small vertical-buffer-sm">
-    <!-- span class="font-small-bold">About Demo Identifiers</span><br/>
-    &#42; Demo identifiers, indicated on EZID screens with an asterisk (&#42;) are temporary identifiers for use in testing the EZID service. They last for two weeks. -->
-  </div>
-  <div class="col-sm-1">
-  </div>
 
+</div>

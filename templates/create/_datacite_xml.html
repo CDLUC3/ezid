@@ -1,4 +1,5 @@
 {% load layout_extras %}
+{% load i18n %}
 <script type="text/javascript" src="/static/javascripts/rng_to_html/extras.js"></script>
 <script type="text/javascript" src="/static/javascripts/rng_to_html/form_initialization.js"></script>
 <script type="text/javascript" src="/static/javascripts/rng_to_html/formFunctions.js"></script>
@@ -18,23 +19,20 @@
 	<!-- div class="clearboth" style="margin-top:5px;"></div -->
 
 	<div name="/resource/publisher" class="element">
-		<label for="/resource/publisher" class="element sized1 smallertext"><span title="Publisher is a required element">Publisher:</span> <span class="required">*</span>
+		<label for="/resource/publisher" class="element sized1 smallertext"><span title="Publisher is a required element">{% trans "Publisher:" %}</span> <span class="required">*</span>
 </label>
-		<input type="text" name="/resource/publisher" value="{{ datacite_obj.publisher.text|default_if_none:"" }}" class="data sized1"> {% help_icon "dcxml_publisher_help" %}
-		<div class="clearboth"></div>
+		<input type="text" name="/resource/publisher" value="{{ datacite_obj.publisher.text|default_if_none:"" }}" class="data form-control"> {% help_icon "dcxml_publisher_help" %}
 	</div>
 	<div name="/resource/publicationYear" class="element">
-		<label for="/resource/publicationYear" class="element sized1 smallertext"><span title="Publication Year is a required element">Publication Year:</span> <span class="required">*</span> </label>
-		<input type="text" name="/resource/publicationYear" value="{{ datacite_obj.publicationYear.text|default_if_none:"" }}" class="data sizedsmall1"> {% help_icon "dcxml_publication_year_help" %}
-		<div class="clearboth"></div>
+		<label for="/resource/publicationYear" class="element sized1 smallertext"><span title="Publication Year is a required element">{% trans "Publication Year:" %}</span> <span class="required">*</span> </label>
+		<input type="text" name="/resource/publicationYear" value="{{ datacite_obj.publicationYear.text|default_if_none:"" }}" class="data form-control"> {% help_icon "dcxml_publication_year_help" %}
 	</div>
 
 {% if datacite_obj.language %}
 	<div class="optional">
 		<div name="/resource/language" class="element">
-			<label for="/resource/language" class="element sized1 smallertext">Language:</label>
-			<input type="text" name="/resource/language" value="{{ datacite_obj.language.text|default_if_none:"" }}" class="data sized1"> {% help_icon "dcxml_language_help" %}
-			<div class="clearboth"></div>
+			<label for="/resource/language" class="element sized1 smallertext">{% trans "Language:" %}</label>
+			<input type="text" name="/resource/language" value="{{ datacite_obj.language.text|default_if_none:"" }}" class="data form-control"> {% help_icon "dcxml_language_help" %}
 		</div>
 	</div>
 {% endif %}
@@ -43,31 +41,29 @@
 		<div name="/resource/resourceType" class="element">
 			<div name="/resource/resourceType" class="element">
 				<div class="attribute">
-					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit sized1 smallertext">Resource Type:</label>
+					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit sized1 smallertext">{% trans "Resource Type:" %}</label>
 					<select name="/resource/resourceType/@resourceTypeGeneral" id="resource_type_general" sendselect="yes"
 					  class="choice sized1">
 						<option value/>
-						<option value="Audiovisual"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Audiovisual" %} selected="selected"{% endif %}>Audiovisual</option>
-						<option value="Collection"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Collection" %} selected="selected"{% endif %}>Collection</option>
-						<option value="Dataset"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Dataset" or datacite_obj.resourceType.attrib.resourceTypeGeneral == "" %} selected="selected"{% endif %}>Dataset</option>
-						<option value="Event"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Event" %} selected="selected"{% endif %}>Event</option>
-						<option value="Image"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Image" %} selected="selected"{% endif %}>Image</option>
-						<option value="InteractiveResource"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "InteractiveResource" %} selected="selected"{% endif %}>Interactive Resource</option>
-						<option value="Model"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Model" %} selected="selected"{% endif %}>Model</option>
-						<option value="PhysicalObject"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "PhysicalObject" %} selected="selected"{% endif %}>Physical Object</option>
-						<option value="Service"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Service" %} selected="selected"{% endif %}>Service</option>
-						<option value="Software"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Software" %} selected="selected"{% endif %}>Software</option>
-						<option value="Sound"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Sound" %} selected="selected"{% endif %}>Sound</option>
-						<option value="Text"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Text" %} selected="selected"{% endif %}>Text</option>
-						<option value="Workflow"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Workflow" %} selected="selected"{% endif %}>Workflow</option>
-						<option value="Other"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Other" %} selected="selected"{% endif %}>Other</option>
+						<option value="Audiovisual"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Audiovisual" %} selected="selected"{% endif %}>{% trans "Audiovisual" %}</option>
+						<option value="Collection"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Collection" %} selected="selected"{% endif %}>{% trans "Collection" %}</option>
+						<option value="Dataset"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Dataset" or datacite_obj.resourceType.attrib.resourceTypeGeneral == "" %} selected="selected"{% endif %}>{% trans "Dataset" %}</option>
+						<option value="Event"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Event" %} selected="selected"{% endif %}>{% trans "Event" %}</option>
+						<option value="Image"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Image" %} selected="selected"{% endif %}>{% trans "Image" %}</option>
+						<option value="InteractiveResource"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "InteractiveResource" %} selected="selected"{% endif %}>{% trans "Interactive Resource" %}</option>
+						<option value="Model"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Model" %} selected="selected"{% endif %}>{% trans "Model" %}</option>
+						<option value="PhysicalObject"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "PhysicalObject" %} selected="selected"{% endif %}>{% trans "Physical Object" %}</option>
+						<option value="Service"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Service" %} selected="selected"{% endif %}>{% trans "Service" %}</option>
+						<option value="Software"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Software" %} selected="selected"{% endif %}>{% trans "Software" %}</option>
+						<option value="Sound"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Sound" %} selected="selected"{% endif %}>{% trans "Sound" %}</option>
+						<option value="Text"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Text" %} selected="selected"{% endif %}>{% trans "Text" %}</option>
+						<option value="Workflow"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Workflow" %} selected="selected"{% endif %}>{% trans "Workflow" %}</option>
+						<option value="Other"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Other" %} selected="selected"{% endif %}>{% trans "Other" %}</option>
 					</select> {% help_icon "dcxml_resource_type_general_help" %}
 				</div>
-				<div class="clearboth"></div>
-				<label for="/resource/resourceType" class="element sized1 smallertext">Resource Type Description:</label>				
-				<input type="text" name="/resource/resourceType" value="{{ datacite_obj.resourceType.text|default_if_none:"" }}" class="data sized1" id="resource_type" /> {% help_icon "dcxml_resource_type_help" %}
+				<label for="/resource/resourceType" class="element sized1 smallertext">{% trans "Resource Type Description:" %}</label>				
+				<input type="text" name="/resource/resourceType" value="{{ datacite_obj.resourceType.text|default_if_none:"" }}" class="data form-control" id="resource_type" /> {% help_icon "dcxml_resource_type_help" %}
 			</div>
-			<div class="clearboth"></div>
 		</div>
 	</div>
 
@@ -78,8 +74,6 @@
 	{% datacite_get_contributors datacite_obj datacite_obj_empty %}
 
 	{% datacite_get_dates datacite_obj datacite_obj_empty %}
-
-	<div class="clearboth"></div>
 
 	{% datacite_get_altIds datacite_obj datacite_obj_empty %}
 
@@ -92,9 +86,8 @@
 {% if datacite_obj.version %}
 	<div class="optional">
 		<div name="/resource/version" class="element">
-			<label for="/resource/version" class="element sized1">Version:</label>
-			<input type="text" name="/resource/version" value="{{ datacite_obj.version.text|default_if_none:"" }}" class="data sized1"> {% help_icon "dcxml_version_help" %}
-			<div class="clearboth"></div>
+			<label for="/resource/version" class="element sized1">{% trans "Version:" %}</label>
+			<input type="text" name="/resource/version" value="{{ datacite_obj.version.text|default_if_none:"" }}" class="data form-control"> {% help_icon "dcxml_version_help" %}
 		</div>
 	</div>
 {% endif %}
@@ -105,7 +98,7 @@
 
 </div>
 
-<label class="element sized">&nbsp;</label><div><span class="required">*</span> required item</div>
+<label class="element sized">&nbsp;</label><div><span class="required">*</span> {% trans "required item" %}</div>
 {% include "info/datacite_xml_help.html" %}
 
 <!-- this form needs different handling since it's auto-generated

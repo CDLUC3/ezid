@@ -1,7 +1,8 @@
 {% load layout_extras %}
+{% load i18n %}
 	<div class="optional" >
-		<div name="/resource/contributors" class="element container">
-			<label for="/resource/contributors" class="element">Contributor</label>
+		<div name="/resource/contributors" class="element datacite-container">
+			<label for="/resource/contributors" class="element">{% trans "Contributor" %}</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/contributors" nbelmtsadded="{{ num_contributors }}" class="addButton">
 			<input type="button" value="-" name="/resource/contributors" class="rmvButton">
 			<div class="helpico">{% help_icon "dcxml_contributors_help" %}</div>
@@ -9,55 +10,54 @@
 			<div class="multiple">
 				<div name="/resource/contributors/contributor[{{ forloop.counter }}]" class="element">
 					<div name="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" class="element">
-						<label for="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" class="element sized">Name:</label>
-						<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" value="{{ contributor.contributorName.text|default_if_none:"" }}" class="data sized">
+						<label for="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" class="element">{% trans "Name" %}:</label>
+						<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" value="{{ contributor.contributorName.text|default_if_none:"" }}" class="data">
 					</div>
 					<div class="optional">
 						<div name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" class="element">
-							<label for="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" class="element sized">Name Identifier:</label>
-							<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" value="{{ contributor.nameIdentifier.text|default_if_none:"" }}" class="data sized" />
+							<label for="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" class="element">{% trans "Name Identifier" %}:</label>
+							<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" value="{{ contributor.nameIdentifier.text|default_if_none:"" }}" class="data form-control" />
 							<div class="attribute">
-								<label for="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" class="attribute sized">Name Identifier Scheme:</label>
-								<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" value="{{ contributor.nameIdentifier.attrib.nameIdentifierScheme }}" class="data sized">
+								<label for="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" class="attribute">{% trans "Name Identifier Scheme" %}:</label>
+								<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" value="{{ contributor.nameIdentifier.attrib.nameIdentifierScheme }}" class="data form-control">
 							</div>
 							<div class="attribute">
-								<label for="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@schemeURI" class="attribute sized">Scheme URI:</label>
-								<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@schemeURI" value="{{ contributor.nameIdentifier.attrib.schemeURI }}" class="data sized">
+								<label for="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@schemeURI" class="attribute">{% trans "Scheme URI" %}:</label>
+								<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@schemeURI" value="{{ contributor.nameIdentifier.attrib.schemeURI }}" class="data form-control">
 							</div>
 						</div>
 					</div>
 					<div class="attribute">
-						<label for="/resource/contributors/contributor[{{ forloop.counter }}]/@contributorType" class="attribute sized">Contributor Type:</label>
-							<select name="/resource/contributors/contributor[{{ forloop.counter }}]/@contributorType" sendselect="yes" class="choice sized">
+						<label for="/resource/contributors/contributor[{{ forloop.counter }}]/@contributorType" class="attribute">{% trans "Contributor Type" %}:</label>
+							<select name="/resource/contributors/contributor[{{ forloop.counter }}]/@contributorType" sendselect="yes" class="choice">
 								<option value=""></option>
-								<option value="ContactPerson"{% if contributor.attrib.contributorType == "ContactPerson"%} selected="selected"{% endif %}>Contact Person</option>
-								<option value="DataCollector"{% if contributor.attrib.contributorType == "DataCollector"%} selected="selected"{% endif %}>Data Collector</option>
-								<option value="DataCurator"{% if contributor.attrib.contributorType == "DataCurator"%} selected="selected"{% endif %}>Data Curator</option>
-								<option value="DataManager"{% if contributor.attrib.contributorType == "DataManager"%} selected="selected"{% endif %}>Data Manager</option>
-								<option value="Distributor"{% if contributor.attrib.contributorType == "Distributor"%} selected="selected"{% endif %}>Distributor</option>
-								<option value="Editor"{% if contributor.attrib.contributorType == "Editor"%} selected="selected"{% endif %}>Editor</option>
-								<option value="Funder"{% if contributor.attrib.contributorType == "Funder"%} selected="selected"{% endif %}>Funder</option>
-								<option value="HostingInstitution"{% if contributor.attrib.contributorType == "HostingInstitution"%} selected="selected"{% endif %}>Hosting Institution</option>
-								<option value="Producer"{% if contributor.attrib.contributorType == "Producer"%} selected="selected"{% endif %}>Producer</option>
-								<option value="ProjectLeader"{% if contributor.attrib.contributorType == "ProjectLeader"%} selected="selected"{% endif %}>Project Leader</option>
-								<option value="ProjectMember"{% if contributor.attrib.contributorType == "ProjectMember"%} selected="selected"{% endif %}>Project Member</option>
-								<option value="RegistrationAgency"{% if contributor.attrib.contributorType == "RegistrationAgency"%} selected="selected"{% endif %}>Registration Agency</option>
-								<option value="RegistrationAuthority"{% if contributor.attrib.contributorType == "RegistrationAuthority"%} selected="selected"{% endif %}>Registration Authority</option>
-								<option value="RelatedPerson"{% if contributor.attrib.contributorType == "RelatedPerson"%} selected="selected"{% endif %}>Related Person</option>
-								<option value="ResearchGroup"{% if contributor.attrib.contributorType == "ResearchGroup"%} selected="selected"{% endif %}>Research Group</option>
-								<option value="RightsHolder"{% if contributor.attrib.contributorType == "RightsHolder"%} selected="selected"{% endif %}>Rights Holder</option>
-								<option value="Researcher"{% if contributor.attrib.contributorType == "Researcher"%} selected="selected"{% endif %}>Researcher</option>
-								<option value="Sponsor"{% if contributor.attrib.contributorType == "Sponsor"%} selected="selected"{% endif %}>Sponsor</option>
-								<option value="Supervisor"{% if contributor.attrib.contributorType == "Supervisor"%} selected="selected"{% endif %}>Supervisor</option>
-								<option value="WorkPackageLeader"{% if contributor.attrib.contributorType == "WorkPackageLeader"%} selected="selected"{% endif %}>Work Package Leader</option>
-								<option value="Other"{% if contributor.attrib.contributorType == "Other"%} selected="selected"{% endif %}>Other</option>
+								<option value="ContactPerson"{% if contributor.attrib.contributorType == "ContactPerson"%} selected="selected"{% endif %}>{% trans "Contact Person" %}</option>
+								<option value="DataCollector"{% if contributor.attrib.contributorType == "DataCollector"%} selected="selected"{% endif %}>{% trans "Data Collector" %}</option>
+								<option value="DataCurator"{% if contributor.attrib.contributorType == "DataCurator"%} selected="selected"{% endif %}>{% trans "Data Curator" %}</option>
+								<option value="DataManager"{% if contributor.attrib.contributorType == "DataManager"%} selected="selected"{% endif %}>{% trans "Data Manager" %}</option>
+								<option value="Distributor"{% if contributor.attrib.contributorType == "Distributor"%} selected="selected"{% endif %}>{% trans "Distributor" %}</option>
+								<option value="Editor"{% if contributor.attrib.contributorType == "Editor"%} selected="selected"{% endif %}>{% trans "Editor" %}</option>
+								<option value="Funder"{% if contributor.attrib.contributorType == "Funder"%} selected="selected"{% endif %}>{% trans "Funder" %}</option>
+								<option value="HostingInstitution"{% if contributor.attrib.contributorType == "HostingInstitution"%} selected="selected"{% endif %}>{% trans "Hosting Institution" %}</option>
+								<option value="Producer"{% if contributor.attrib.contributorType == "Producer"%} selected="selected"{% endif %}>{% trans "Producer" %}</option>
+								<option value="ProjectLeader"{% if contributor.attrib.contributorType == "ProjectLeader"%} selected="selected"{% endif %}>{% trans "Project Leader" %}</option>
+								<option value="ProjectMember"{% if contributor.attrib.contributorType == "ProjectMember"%} selected="selected"{% endif %}>{% trans "Project Member" %}</option>
+								<option value="RegistrationAgency"{% if contributor.attrib.contributorType == "RegistrationAgency"%} selected="selected"{% endif %}>{% trans "Registration Agency" %}</option>
+								<option value="RegistrationAuthority"{% if contributor.attrib.contributorType == "RegistrationAuthority"%} selected="selected"{% endif %}>{% trans "Registration Authority" %}</option>
+								<option value="RelatedPerson"{% if contributor.attrib.contributorType == "RelatedPerson"%} selected="selected"{% endif %}>{% trans "Related Person" %}</option>
+								<option value="ResearchGroup"{% if contributor.attrib.contributorType == "ResearchGroup"%} selected="selected"{% endif %}>{% trans "Research Group</option>
+								<option value="RightsHolder"{% if contributor.attrib.contributorType == "RightsHolder"%} selected="selected"{% endif %}>{% trans "Rights Holder" %}</option>
+								<option value="Researcher"{% if contributor.attrib.contributorType == "Researcher"%} selected="selected"{% endif %}>{% trans "Researcher" %}</option>
+								<option value="Sponsor"{% if contributor.attrib.contributorType == "Sponsor"%} selected="selected"{% endif %}>{% trans "Sponsor" %}</option>
+								<option value="Supervisor"{% if contributor.attrib.contributorType == "Supervisor"%} selected="selected"{% endif %}>{% trans "Supervisor" %}</option>
+								<option value="WorkPackageLeader"{% if contributor.attrib.contributorType == "WorkPackageLeader"%} selected="selected"{% endif %}>{% trans "Work Package Leader" %}</option>
+								<option value="Other"{% if contributor.attrib.contributorType == "Other"%} selected="selected"{% endif %}>{% trans "Other" %}</option>
 							</select>
 					</div>
 					<div name="/resource/contributors/contributor[{{ forloop.counter }}]/affiliation" class="element">
-						<label for="/resource/contributors/contributor[{{ forloop.counter }}]/affiliation" class="element sized">Affiliation:</label>
-						<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/affiliation" value="{{ contributor.affiliation.text|default_if_none:"" }}" class="data sized">
+						<label for="/resource/contributors/contributor[{{ forloop.counter }}]/affiliation" class="element">{% trans "Affiliation" %}:</label>
+						<input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/affiliation" value="{{ contributor.affiliation.text|default_if_none:"" }}" class="data form-control">
 					</div>
-					<div class="clearboth"></div>
 				</div>
 			</div>
 {% endfor %}
