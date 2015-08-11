@@ -1,17 +1,19 @@
 {% load layout_extras %}
-<div style="float:left;">
-  <a href="#" id="get_link">Get link</a>
-    <div class="get_link_box" id="get_link_box">
-      <input type="text" id="copy_url_value" size="50" value="{% full_url_to_id_details id_text %}" readonly="true" /><br/>
-      <div style="padding-top:8px;">
-        <div style="float:right;padding-right:8px;">
-          <a href="#" id="close_box_link" style="color: blue;">
-            Close
-          </a>
-        </div>
+{% load i18n %}
+  <div class="padding-left" style="float: left;">
+    <button class="btn" id="get_link" type="button">{% trans "Get Link" %}</button>
+  </div>
+
+  <!-- Get Link Modal -->
+  <div class="get_link_box" id="get_link_box">
+    <div style="padding-top:8px;">
+      <div style="float:right;padding-right:8px;">
+        <a href="#" class="close not-text" id="close_box_link" aria-label="close">&times;</a>
       </div>
-   </div>
-</div>
+      <input type="text" id="copy_url_value" size="32" value="{% full_url_to_id_details id_text %}" readonly="true" /><br/>
+    </div>
+ </div>
+  <!-- End Get Link Modal -->
 <script type="text/javascript">
   $("#get_link").bind("click", function(event){
     $("#get_link_box").css('display','block');

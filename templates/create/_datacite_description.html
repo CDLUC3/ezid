@@ -15,11 +15,11 @@
 						<label for="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" class="attribute">{% trans "Type" %}:</label>
 						<select name="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" sendselect="yes" class="choice">
 							<option value=""></option>
-							<option value="Abstract"{% if descr.attrib.descriptionType == "Abstract" or descr.attrib.descriptionType == "" %} selected="selected"{% endif %}>{% trans "Abstract" %}</option>
-							<option value="SeriesInformation"{% if descr.attrib.descriptionType == "SeriesInformation" %} selected="selected"{% endif %}>{% trans "Series Information" %}</option>
-							<option value="TableOfContents"{% if descr.attrib.descriptionType == "TableOfContents" %} selected="selected"{% endif %}>{% trans "Table of Contents" %}</option>
-							<option value="Methods"{% if descr.attrib.descriptionType == "Methods" %} selected="selected"{% endif %}>{% trans "Methods" %}</option>
-							<option value="Other"{% if descr.attrib.descriptionType == "Other" %} selected="selected"{% endif %}>{% trans "Other" %}</option>
+							<option value="Abstract"{% if descr.attrib.descriptionType == "Abstract" or descr.attrib.descriptionType == "" %} selected="selected"{% endif %}>Abstract</option>
+							<option value="SeriesInformation"{% if descr.attrib.descriptionType == "SeriesInformation" %} selected="selected"{% endif %}>Series Information</option>
+							<option value="TableOfContents"{% if descr.attrib.descriptionType == "TableOfContents" %} selected="selected"{% endif %}>Table of Contents</option>
+							<option value="Methods"{% if descr.attrib.descriptionType == "Methods" %} selected="selected"{% endif %}>Methods</option>
+							<option value="Other"{% if descr.attrib.descriptionType == "Other" %} selected="selected"{% endif %}>Other</option>
 						</select>
 					</div>
 				</div>

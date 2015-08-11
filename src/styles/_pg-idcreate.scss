@@ -1,4 +1,4 @@
-// Demo and ID Create pages
+// Demo and ID Create  and Details pages
 
 .idcreate-content {
   border-left: 1px solid $design-light-gray-border-color;
@@ -10,4 +10,26 @@
 
 .idcreate-content-row {
   padding: 50px 40px 0px 34px;
+}
+
+#iddetails-id {
+  float: left; 
+  margin-top: 6px;
+  font-weight: bold;
+}
+
+.get_link_box {
+   display: none;
+   z-index: 5;
+   border: solid;
+   border-width: 1px;
+   border-color: black;
+   position: absolute;
+   background-color:#fff;
+   padding: 10px 10px 10px 10px;
+}
+
+.iddetails__delay-text {
+  margin-top: 6px;
+  color: red;
 }

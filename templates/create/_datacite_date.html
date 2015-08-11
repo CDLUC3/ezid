@@ -15,15 +15,15 @@
 						<label for="/resource/dates/date[{{ forloop.counter }}]/@dateType" class="attribute">{% trans "Date Type" %}:</label>
 						<select name="/resource/dates/date[{{ forloop.counter }}]/@dateType" sendselect="yes" class="choice">
 							<option value=""></option>
-							<option value="Accepted"{% if date.attrib.dateType == "Accepted"%} selected="selected"{% endif %}>{% trans "Accepted" %}</option>
-							<option value="Available"{% if date.attrib.dateType == "Available"%} selected="selected"{% endif %}>{% trans "Available" %}</option>
-							<option value="Collected"{% if date.attrib.dateType == "Collected"%} selected="selected"{% endif %}>{% trans "Collected" %}</option>
-							<option value="Copyrighted"{% if date.attrib.dateType == "Copyrighted"%} selected="selected"{% endif %}>{% trans "Copyrighted" %}</option>
-							<option value="Created"{% if date.attrib.dateType == "Created"%} selected="selected"{% endif %}>{% trans "Created" %}</option>
-							<option value="Issued"{% if date.attrib.dateType == "Issued"%} selected="selected"{% endif %}>{% trans "Issued" %}</option>
-							<option value="Submitted"{% if date.attrib.dateType == "Submitted"%} selected="selected"{% endif %}>{% trans "Submitted" %}</option>
-							<option value="Updated"{% if date.attrib.dateType == "Updated"%} selected="selected"{% endif %}>{% trans "Updated" %}</option>
-							<option value="Valid"{% if date.attrib.dateType == "Valid"%} selected="selected"{% endif %}>{% trans "Valid" %}</option>
+							<option value="Accepted"{% if date.attrib.dateType == "Accepted"%} selected="selected"{% endif %}>Accepted</option>
+							<option value="Available"{% if date.attrib.dateType == "Available"%} selected="selected"{% endif %}>Available</option>
+							<option value="Collected"{% if date.attrib.dateType == "Collected"%} selected="selected"{% endif %}>Collected</option>
+							<option value="Copyrighted"{% if date.attrib.dateType == "Copyrighted"%} selected="selected"{% endif %}>Copyrighted</option>
+							<option value="Created"{% if date.attrib.dateType == "Created"%} selected="selected"{% endif %}>Created</option>
+							<option value="Issued"{% if date.attrib.dateType == "Issued"%} selected="selected"{% endif %}>Issued</option>
+							<option value="Submitted"{% if date.attrib.dateType == "Submitted"%} selected="selected"{% endif %}>Submitted</option>
+							<option value="Updated"{% if date.attrib.dateType == "Updated"%} selected="selected"{% endif %}>Updated</option>
+							<option value="Valid"{% if date.attrib.dateType == "Valid"%} selected="selected"{% endif %}>Valid</option>
 						</select>
 					</div>
 				</div>

@@ -9,9 +9,9 @@
 {% for relId in datacite_obj_relatedIdentifiers.relatedIdentifier %}
 			<div class="multiple">
 				<div class="element">
-					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]" class="element">Identifier:</label>
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]" class="element">{% trans "Identifier" %}:</label>
 					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]" value="{{ relId.text|default_if_none:"" }}"  class="data form-control" />
-					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedIdentifierType" class="attribute">Identifier Type:</label>
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedIdentifierType" class="attribute">{% trans "Identifier Type" %}:</label>
 					<select name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedIdentifierType" sendselect="yes" class="choice">
 						<option value=""></option>
 						<option value="ARK"{% if relId.attrib.relatedIdentifierType == "ARK"%} selected="selected"{% endif %}>ARK</option>
@@ -61,11 +61,11 @@
 						<option value="References"{% if relId.attrib.relationType == "References"%} selected="selected"{% endif %}>References</option>
 						<option value="Reviews"{% if relId.attrib.relationType == "Reviews"%} selected="selected"{% endif %}>Reviews</option>
 					</select>
-					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedMetadataScheme" class="element">Related Metadata Scheme:</label>
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedMetadataScheme" class="element">{% trans "Related Metadata Scheme" %}:</label>
 					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedMetadataScheme" value="{{ relId.attrib.relatedMetadataScheme }}" class="data form-control" />
-					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@schemeURI" class="element">Scheme URI:</label>
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@schemeURI" class="element">{% trans "Scheme URI" %}:</label>
 					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@schemeURI" value="{{ relId.attrib.schemeURI }}" class="data form-control" />
-					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@schemeType" class="element">Scheme Type:</label>
+					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@schemeType" class="element">{% trans "Scheme Type" %}:</label>
 					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@schemeType" value="{{ relId.attrib.schemeType }}" class="data form-control" />
 				</div>
 			</div>

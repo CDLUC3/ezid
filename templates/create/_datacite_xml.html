@@ -6,7 +6,6 @@
 <script type="text/javascript" src="/static/javascripts/rng_to_html/dom_utils.js"></script>
 <script type="text/javascript" src="/static/javascripts/jquery.form.js"></script>
 
-<link type="text/css" rel="stylesheet" href="/static/stylesheets/datacite_xml.css" >
 <br/>
 <div name="/resource" class="element">
 
@@ -45,20 +44,20 @@
 					<select name="/resource/resourceType/@resourceTypeGeneral" id="resource_type_general" sendselect="yes"
 					  class="choice sized1">
 						<option value/>
-						<option value="Audiovisual"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Audiovisual" %} selected="selected"{% endif %}>{% trans "Audiovisual" %}</option>
-						<option value="Collection"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Collection" %} selected="selected"{% endif %}>{% trans "Collection" %}</option>
-						<option value="Dataset"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Dataset" or datacite_obj.resourceType.attrib.resourceTypeGeneral == "" %} selected="selected"{% endif %}>{% trans "Dataset" %}</option>
-						<option value="Event"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Event" %} selected="selected"{% endif %}>{% trans "Event" %}</option>
-						<option value="Image"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Image" %} selected="selected"{% endif %}>{% trans "Image" %}</option>
-						<option value="InteractiveResource"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "InteractiveResource" %} selected="selected"{% endif %}>{% trans "Interactive Resource" %}</option>
-						<option value="Model"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Model" %} selected="selected"{% endif %}>{% trans "Model" %}</option>
-						<option value="PhysicalObject"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "PhysicalObject" %} selected="selected"{% endif %}>{% trans "Physical Object" %}</option>
-						<option value="Service"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Service" %} selected="selected"{% endif %}>{% trans "Service" %}</option>
-						<option value="Software"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Software" %} selected="selected"{% endif %}>{% trans "Software" %}</option>
-						<option value="Sound"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Sound" %} selected="selected"{% endif %}>{% trans "Sound" %}</option>
-						<option value="Text"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Text" %} selected="selected"{% endif %}>{% trans "Text" %}</option>
-						<option value="Workflow"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Workflow" %} selected="selected"{% endif %}>{% trans "Workflow" %}</option>
-						<option value="Other"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Other" %} selected="selected"{% endif %}>{% trans "Other" %}</option>
+						<option value="Audiovisual"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Audiovisual" %} selected="selected"{% endif %}>Audiovisual</option>
+						<option value="Collection"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Collection" %} selected="selected"{% endif %}>Collection</option>
+						<option value="Dataset"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Dataset" or datacite_obj.resourceType.attrib.resourceTypeGeneral == "" %} selected="selected"{% endif %}>Dataset</option>
+						<option value="Event"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Event" %} selected="selected"{% endif %}>Event</option>
+						<option value="Image"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Image" %} selected="selected"{% endif %}>Image</option>
+						<option value="InteractiveResource"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "InteractiveResource" %} selected="selected"{% endif %}>Interactive Resource</option>
+						<option value="Model"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Model" %} selected="selected"{% endif %}>Model</option>
+						<option value="PhysicalObject"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "PhysicalObject" %} selected="selected"{% endif %}>Physical Object</option>
+						<option value="Service"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Service" %} selected="selected"{% endif %}>Service</option>
+						<option value="Software"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Software" %} selected="selected"{% endif %}>Software</option>
+						<option value="Sound"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Sound" %} selected="selected"{% endif %}>Sound</option>
+						<option value="Text"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Text" %} selected="selected"{% endif %}>Text</option>
+						<option value="Workflow"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Workflow" %} selected="selected"{% endif %}>Workflow</option>
+						<option value="Other"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Other" %} selected="selected"{% endif %}>Other</option>
 					</select> {% help_icon "dcxml_resource_type_general_help" %}
 				</div>
 				<label for="/resource/resourceType" class="element sized1 smallertext">{% trans "Resource Type Description:" %}</label>				

@@ -102,6 +102,14 @@ li.active .icon-inactive {
   @extend .icon__header--base;
   width: 35px; 
 }
+#id__icon--aboutobject {
+  @extend .icon__header--base;
+  width: 17px; 
+}
+#id__icon--aboutid {
+  @extend .icon__header--base;
+  width: 17px; 
+}
 #search__icon--advanced {
   margin-left: 4px;
   margin-bottom : 6px;
