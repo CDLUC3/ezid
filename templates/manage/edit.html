@@ -1,164 +1,162 @@
 {% extends "layouts/base.html" %}
 {% load metadata_tags %}
 {% load layout_extras %}
+{% load i18n %}
 
-{% block title %}Edit Identifier Details{% endblock %}
-
-{% block header %}
-{% endblock %}
-
-{% block javascript %}
-
-{% endblock %}
+{% block title %}{% trans "Edit Identifier Details" %}{% endblock %}
 
 {% block content %}
-  <form id="edit_form" action="{% url "ui_manage.edit" id_text %}" method="post">
+{% content_heading "Identifier Details" %}
+<div class="container vertical-buffer-20">
+  <form id="edit_form" action="{% url "ui_manage.edit" id_text %}" method="post" class="form-horizontal" role="form">
     <!-- original profile is the profile that was loaded before possibly being changed from drop-down list -->
     <input name="action" id="action"  type="hidden" value="edit"/>
     <input name="identifier" id="identifier"  type="hidden" value="{{ id_text }}"/>
     <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
     <input name="simpleToAdvanced" id="simpleToAdvanced"  type="hidden" value="False"/>
-  <div class="grid_9">
-  	<div style="float:right">
-  	</div>
-    <h1>Identifier Details</h1>
-    <div class="left_desc">Identifier:</div>
-    <div class="right_val">
-      <div style="float:left;padding-right:20px;">
-        {{ id_text }}
-      </div>
-       {% include "includes/get_link.html" %}
+  <div class="row">
+    <label class="col-sm-12">{% trans "Identifier" %}:</label>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <div id="iddetails-id">{{ id_text }}</div>
+    {% include "includes/get_link.html" %}  
+  </div>
+  <div class="row vertical-buffer-20 vertical-buffer-bot">
+    <div class="inline-header">
+      <img id="id__icon--aboutobject" src="/static/images/idAboutObject.svg" ALT="">
+        <h3>{% trans "ABOUT THE IDENTIFIED OBJECT" %}</h3>
     </div>
-    
-    <div style="clear:left;"></div>
-    
-    <h2>About the identified object</h2>
-      <p>This identified object uses the <strong>{{ current_profile.displayName }}</strong> citation profile.</p>
-      <label for="_target" class="left {% tooltip_class "_target" %}">
-        {{internal_profile.target.displayName}}:
-      </label>
-      <div class="field_right {% tooltip_class "_target" %}">
-        <input type="text" name="_target" id="_target" size="35" value="{% form_or_dict_value identifier "_target" %}" class="std_form_width" />
+    <label class="col-sm-12">{% trans "This identified object uses the" %} <strong>{{ current_profile.displayName }}</strong> {% trans "citation profile" %}.</label>
+  </div>
+  <div class="row">
+    <div class="form-group form-group-sm">
+      <label for="_target" class="col-sm-2">{{internal_profile.target.displayName}}: </label>
+      <div class="col-sm-7">
+        <input type="text" class="form-control" name="_target" id="_target" value="{% form_or_dict_value identifier "_target" %}" />
       </div>
+    </div>
+  </div>
 
-      {% if manual_profile %}
-        <div style="clear:both;">
-        {% include manual_template %}
-        </div>
-      {% else %}
-        {% for e in current_profile.elements %}
-        <label for="{{e.name}}" class="left {% tooltip_class e.name %}">
-          {{e.displayName}}:
-        </label>
-        <div class="field_right">
-          {% display_form_element e identifier %}
-          {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
-		{% datacite_field_help_icon e.name %}
-  	  {% endif %}
-        </div>        
-        {% endfor %}
-      {% endif %}
+  {% if manual_profile %}
+    {% include manual_template %}
+  {% else %}
+    {% for e in current_profile.elements %}
+  <div class="row">
+    <div class="form-group form-group-sm">
+      <label for="{{e.name}}" class="col-sm-2">
+        {{e.displayName}}:
+      </label>
+      <div class="col-sm-7">
+        {% display_form_element e identifier %}
+        {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
+          {% datacite_field_help_icon e.name %}
+        {% endif %}
+      </div>        
+    </div>
+  </div>
+    {% endfor %}
+  {% endif %}
 
-    	<label class="left">&nbsp;</label>
-    	<div class="field_right">
-          <input type="submit" value="Save changes"/>
-    	</div>
-      <div style="clear:both;"></div>
-
-      <h2>About the identifier</h2>
-      <table>
-      	<tr>
-	      	<td class='{% tooltip_class "_owner label_col" %}'>{{internal_profile.owner.displayName}}:</td>
-	      	<td>{% display_value identifier internal_profile.owner %}</td>
-	    	</tr>
-	    	
-	    	<tr>
-		      <td class='{% tooltip_class "_ownergroup" %}'>{{internal_profile.ownergroup.displayName}}:</td>
-		      <td>{% display_value identifier internal_profile.ownergroup %}</td>
-		    </tr>
-		    
-		    <tr>
-		      <td class='{% tooltip_class "_coowners" %}'>{{internal_profile.coowners.displayName}}:</td>
-		      <td>{% display_value identifier internal_profile.coowners %}</td>
-		    </tr>
-		    
-		    <tr>
-		      <td class='{% tooltip_class "_created" %}'>{{internal_profile.created.displayName}}:</td>
-		      <td>{% display_value identifier internal_profile.created %}</td>
-		    </tr>
-		    
-		    <tr>
-		      <td class='{% tooltip_class "_updated" %}'>{{internal_profile.updated.displayName}}:</td>
-		      <td>{% display_value identifier internal_profile.updated %}</td>
-		    </tr>
-		    
-		   	<tr>
-		    	<td class='{% tooltip_class "_status" %}'>{{internal_profile.status.displayName}}:</td>
-		      <td>
+  <div class="vertical-buffer-20"> </div>
+  <div class="row vertical-buffer-bot">
+    <div class="inline-header">
+      <img id="id__icon--aboutid" src="/static/images/idAboutID.svg" ALT="">
+        <h3>{% trans "ABOUT THE IDENTIFIER" %}</h3>
+    </div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2 col-xs-3">{{internal_profile.owner.displayName}}:</label>
+    <div class="col-sm-7 col-xs-9">{% display_value identifier internal_profile.owner %}</div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2 col-xs-3">{{internal_profile.ownergroup.displayName}}:</label>
+    <div class="col-sm-7 col-xs-9">{% display_value identifier internal_profile.ownergroup %}</div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2 col-xs-3">{{internal_profile.coowners.displayName}}:</label>
+    <div class="col-sm-7 col-xs-9">{% display_value identifier internal_profile.coowners %}</div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">{{internal_profile.created.displayName}}:</label>
+    <div class="col-sm-7">{% display_value identifier internal_profile.created %}</div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">{{internal_profile.updated.displayName}}:</label>
+    <div class="col-sm-7">{% display_value identifier internal_profile.updated %}</div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-xs-2">{{internal_profile.status.displayName}}:</label>
+    <div class="col-xs-7">
+      <div class="form-group form-group-sm">
 		     		{% if orig_status == 'reserved' %}
 			      	<input type="radio" name="_status" id="_status_reserved"
 			      		value="reserved"
 			      		{% if pub_status == 'reserved' %}
 			      			checked="checked"
 			      		{% endif %}
-			      		 /><label for="_status_reserved">reserved</label>&nbsp;&nbsp;
+			      		 /><label for="_status_reserved">{% trans "reserved" %}</label>&nbsp;&nbsp;
 						{% endif %}		            
 		        <input type="radio" name="_status" id="_status_public" value="public"
 		            {% if pub_status == 'public' %}
 		              checked="checked"
-		            {% endif %}/><label for="_status_public">public</label>&nbsp;&nbsp;
+		            {% endif %}/><label for="_status_public">{% trans "public" %}</label>&nbsp;&nbsp;
 		        
 		        {% if orig_status != 'reserved' %}    
 			        <input type="radio" name="_status" id="_status_unavailable" value="unavailable"
 			            {% if pub_status == 'unavailable' %}
 			              checked="checked"
-			            {% endif %}/><label for="_status_unavailable">unavailable</label>&nbsp;&nbsp;
+			            {% endif %}/><label for="_status_unavailable">{% trans "unavailable" %}</label>&nbsp;&nbsp;
 		        {% endif %}
 		        {% help_icon "public_id_help" %}
-		      </td>
-		    </tr>
-		    
-		    <tr id="unavailable_reason_row"
-		    	{% if pub_status == 'unavailable' %}
-		    		style="display: visible;"
-		    	{% else %}
-		    		style="display: none;"
-		    	{% endif %}
-		    		>
-		    	<td>Unavailable reason:</td>
-		      <td>
-						<input type="text" name="stat_reason" id="stat_reason" size="35"
-						{% if stat_reason %}
-							value="{{stat_reason}}"
-						{% else %}
-							value=""
-						{% endif %}
-						
-						class="std_form_width" />
-						
-						{% help_icon "unavail_reason_help" %}
-		      </td>
-		    </tr>
-		    
-	      <tr id="indexing_row">
-	      	<td colspan="2">
-		        <p>
-		          Allow harvesting/indexing?&nbsp;&nbsp;
-		          <input type="radio" name="_export" id="export_yes" value="yes"
-		            {% if export == 'yes' %}
-		              checked="checked"
-		            {% endif %}/><label for="export_yes">Yes</label>&nbsp;&nbsp;
-		          <input type="radio" name="_export" id="export_no" value="no"
-		          {% if export != 'yes' %}
-		            checked="checked"
-		          {% endif %}
-		          /><label for="export_no">No</label>
-		          {% help_icon "export_help" %}
-		        </p>
-	       	</td>
-	      </tr>
-      </table>
+      </div>
+    </div>
   </div>
+  <div id="unavailable_reason_row" 
+    {% if pub_status == 'unavailable' %}
+      style="display: visible;"
+    {% else %}
+      style="display: none;"
+    {% endif %}
+    class="row vertical-buffer-bot">
+    <label class="col-sm-2">{% trans "Unavailable reason" %}:</label>
+    <div class="col-sm-7">
+      <div class="form-group form-group-sm">
+        <input type="text" name="stat_reason" id="stat_reason" 
+          {% if stat_reason %}
+            value="{{stat_reason}}"
+          {% else %}
+            value=""
+          {% endif %}
+          class="form-control" /> {% help_icon "unavail_reason_help" %}
+      </div>
+    </div>
+  </div>
+  <div id="indexing_row" class="row vertical-buffer-bot">
+    <label class="col-sm-2 col-xs-3">{% trans "Allow harvesting/indexing?" %}</label>
+    <div class="col-sm-7 col-xs-9">
+      <div class="form-group form-group-sm">
+        <input type="radio" name="_export" id="export_yes" value="yes"
+          {% if export == 'yes' %}
+            checked="checked"
+          {% endif %}/><label for="export_yes">{% trans "Yes" %}</label>&nbsp;&nbsp;
+        <input type="radio" name="_export" id="export_no" value="no"
+        {% if export != 'yes' %}
+          checked="checked"
+        {% endif %}
+        /><label for="export_no">{% trans "No" %}</label>
+        {% help_icon "export_help" %}
+      </div>
+    </div>
+  </div>
+  <div class="row vertical-buffer-sm">
+    <div class="form-group form-group-sm">
+      <div class="col-sm-12">
+        <button type="submit" class="btn btn-primary padding-side-med">
+          {% trans "SAVE CHANGES" %}</button>
+      </div>
+    </div>
+  </div>
+
   <div class="grid_3">
     <br/><br/><br/><br/><br/><br/>
     {% if not manual_profile %}
@@ -209,5 +207,5 @@
   
   {% include "info/popup_help.html" %}
   <script type="text/javascript" src="/static/javascripts/help_box.js"></script>
-
+</div>
 {% endblock %}
