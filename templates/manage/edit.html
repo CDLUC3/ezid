@@ -26,9 +26,11 @@
       <img id="id__icon--aboutobject" src="/static/images/idAboutObject.svg" ALT="">
         <h3>{% trans "ABOUT THE IDENTIFIED OBJECT" %}</h3>
     </div>
-    <label class="col-sm-12">{% trans "This identified object uses the" %} <strong>{{ current_profile.displayName }}</strong> {% trans "citation profile" %}.</label>
+    <div class="row vertical-buffer-xs">
+      <label class="col-sm-7"><small>{% trans "This identified object uses the" %} <strong>{{ current_profile.displayName }}</strong> {% trans "profile" %}.</small></label>
+    </div>
   </div>
-  <div class="row">
+  <div class="row vertical-buffer-20">
     <div class="form-group form-group-sm">
       <label for="_target" class="col-sm-2">{{internal_profile.target.displayName}}: </label>
       <div class="col-sm-7">

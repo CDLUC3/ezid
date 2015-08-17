@@ -91,6 +91,7 @@ def __emails(request):
   return django.conf.settings.LOCALIZATIONS[host][1]
 
 def doc (request):
+  d = { 'menu_item' : 'ui_null.null'}
   """
   Renders UTF-8 encoded HTML documentation.
   """
@@ -99,6 +100,7 @@ def doc (request):
   file = os.path.join(django.conf.settings.PROJECT_ROOT, "doc",
     request.path_info[5:])
   if os.path.exists(file):
+    """ To Do: Re-implement this:
     f = open(file)
     content = f.read()
     f.close()
@@ -121,6 +123,8 @@ def doc (request):
       return uic.staticHtmlResponse(content)
     else:
       return uic.staticTextResponse(content)
+    """
+    return uic.render(request, "doc/apidoc")
   else:
     return uic.error(404)
 
