@@ -1202,17 +1202,17 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
       if newStatus == "public":
         message = datacite.uploadMetadata(m["_s"][4:], m, d,
           forceUpload=(iStatus != "public" or\
-          (iExport == "no" and newExport == "yes")))
+          (iExport == "no" and newExport == "yes")), datacenter=m["_d"])
         log.progress(tid, "datacite.uploadMetadata")
         if message is not None:
           log.badRequest(tid)
           return "error: bad request - " + _oneline(message)
       if "_st" in d:
         if iStatus == "reserved":
-          message = datacite.registerIdentifier(m["_s"][4:], d["_st"])
+          message = datacite.registerIdentifier(m["_s"][4:], d["_st"], m["_d"])
           log.progress(tid, "datacite.registerIdentifier")
         else:
-          message = datacite.setTargetUrl(m["_s"][4:], d["_st"])
+          message = datacite.setTargetUrl(m["_s"][4:], d["_st"], m["_d"])
           log.progress(tid, "datacite.setTargetUrl")
         if message is not None:
           log.badRequest(tid)
@@ -1223,7 +1223,7 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
       # update above caused the identifier to become active again.
       if (newStatus.startswith("unavailable") and iStatus == "public") or\
         (newStatus == "public" and newExport == "no"):
-        datacite.deactivate(m["_s"][4:])
+        datacite.deactivate(m["_s"][4:], m["_d"])
         log.progress(tid, "datacite.deactivate")
       # If the identifier is a DOI with CrossRef metadata, make sure
       # the embedded identifier and target URL sections are
@@ -1314,11 +1314,12 @@ def deleteIdentifier (identifier, user, group):
       if m.get("_s", nqidentifier).startswith("doi:"):
         doi = m.get("_s", nqidentifier)[4:]
         # We can't actually delete a DOI, so we do the next best thing...
-        s = datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI")
+        s = datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI",
+          m["_d"])
         log.progress(tid, "datacite.setTargetUrl")
         assert s is None,\
           "unexpected return from DataCite set target URL operation: " + s
-        datacite.deactivate(doi)
+        datacite.deactivate(doi, m["_d"])
         log.progress(tid, "datacite.deactivate")
     noid_egg.deleteIdentifier(ark)
     log.progress(tid, "noid_egg.deleteIdentifier")
