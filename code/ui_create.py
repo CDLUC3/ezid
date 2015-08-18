@@ -240,7 +240,7 @@ def ajax_advanced(request):
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
 
     return_val = datacite_xml.generate_xml(request.POST)
-    xsd_path = django.conf.settings.PROJECT_ROOT + "/xsd/datacite-kernel-3.1/metadata.xsd"
+    xsd_path = django.conf.settings.PROJECT_ROOT + "/xsd/datacite-kernel-3/metadata.xsd"
     if datacite_xml.validate_document(return_val, xsd_path, error_msgs) == False:
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
 
