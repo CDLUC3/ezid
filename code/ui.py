@@ -29,7 +29,7 @@ def contact(request):
                              ("newsletter", _("I'd like to sign up for the EZID email newsletter")), \
                              ("other", _("Other")) )
   # Translators: These options appear in drop-down on contact page
-  d['hear_about_opts'] = ( ("website", _("University website")), \
+  d['hear_about_opts'] = ( ("website", _("Website")), \
                          ("conference", _("Conference")), \
                          ("colleagues", _("Colleagues")), \
                          ("webinar", _("Webinar")), \
@@ -124,7 +124,7 @@ def doc (request):
     else:
       return uic.staticTextResponse(content)
     """
-    return uic.render(request, "doc/apidoc")
+    return uic.render(request, "doc/apidoc.2")
   else:
     return uic.error(404)
 
