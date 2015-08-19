@@ -19,6 +19,7 @@
 import base64
 import django.conf
 import lxml.etree
+import os
 import os.path
 import re
 import threading
@@ -45,11 +46,12 @@ _pingDoi = None
 _pingDatacenter = None
 _pingTarget = None
 _numActiveOperations = 0
+_schemas = None
 
 def _loadConfig ():
   global _enabled, _doiUrl, _metadataUrl, _numAttempts, _reattemptDelay
   global _timeout, _allocators, _stylesheet, _crossrefTransform, _pingDoi
-  global _pingDatacenter, _pingTarget
+  global _pingDatacenter, _pingTarget, _schemas
   _enabled = (config.config("datacite.enabled").lower() == "true")
   _doiUrl = config.config("datacite.doi_url")
   _metadataUrl = config.config("datacite.metadata_url")
@@ -66,6 +68,14 @@ def _loadConfig ():
   _pingDoi = config.config("datacite.ping_doi")
   _pingDatacenter = config.config("datacite.ping_datacenter")
   _pingTarget = config.config("datacite.ping_target")
+  schemas = {}
+  for f in os.listdir(os.path.join(django.conf.settings.PROJECT_ROOT, "xsd")):
+    m = re.match("datacite-kernel-(.*)", f)
+    if m:
+      schemas[m.group(1)] = (lxml.etree.XMLSchema(lxml.etree.parse(
+        os.path.join(django.conf.settings.PROJECT_ROOT, "xsd", f,
+        "metadata.xsd"))), threading.Lock())
+  _schemas = schemas
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -194,7 +204,7 @@ _prologRE = re.compile("(<\?xml\s+version\s*=\s*['\"]([-\w.:]+)[\"'])" +\
   "(\s+encoding\s*=\s*['\"]([-\w.]+)[\"'])?")
 _utf8RE = re.compile("UTF-?8$", re.I)
 _rootTagRE =\
-  re.compile("{(http://datacite\.org/schema/kernel-[^}]*)}resource$")
+  re.compile("{(http://datacite\.org/schema/kernel-([^}]*))}resource$")
 
 def validateDcmsRecord (identifier, record):
   """
@@ -202,13 +212,13 @@ def validateDcmsRecord (identifier, record):
   <http://schema.datacite.org/> record for a qualified identifier
   (e.g., "doi:10.5060/foo").  The record should be unencoded.  Either
   the normalized record is returned or an assertion error is raised.
-  Validation is limited to checking that the record is well-formed
-  XML, that the record appears to be a DCMS record (by examining the
-  root element), and that the identifier type embedded in the record
-  matches that of 'identifier'.  (In an extension to DCMS, we allow
-  the identifier to be something other than a DOI, for example, an
-  ARK.)  Normalization is limited to removing any encoding
-  declaration.  'identifier' is inserted in the returned record.
+  The record is validated against the appropriate XML schema.  (In an
+  extension to DCMS, we allow the identifier to be something other
+  than a DOI, for example, an ARK.)  The record is normalized by
+  removing any encoding declaration; by converting from schema version
+  2.1 to 2.2 if necessary; and by inserting an appropriate
+  'schemaLocation' attribute.  Also, 'identifier' is inserted in the
+  returned record.
   """
   m = _prologRE.match(record)
   if m:
@@ -219,15 +229,34 @@ def validateDcmsRecord (identifier, record):
         record[len(m.group(1))+len(m.group(3)):]
   else:
     record = "<?xml version=\"1.0\"?>\n" + record
+  # We first do an initial parsing of the record to check
+  # well-formedness and to be able to manipulate it, but hold off on
+  # full schema validation because of our extension to the schema to
+  # include other identifier types.
   try:
     root = lxml.etree.XML(record)
   except Exception, e:
     assert False, "XML parse error: " + str(e)
   m = _rootTagRE.match(root.tag)
   assert m, "not a DataCite record"
+  version = m.group(2)
+  # As a special case, upgrade schema version 2.1 to 2.2.
+  if version == "2.1":
+    def changeNamespace (node):
+      # The order is important here: parent before children.
+      node.tag = "{http://datacite.org/schema/kernel-2.2}" +\
+        node.tag.split("}")[1]
+      for child in node: changeNamespace(child)
+    changeNamespace(root)
+    lxml.etree.cleanup_namespaces(root)
+    m = _rootTagRE.match(root.tag)
+    version = "2.2"
+  schema = _schemas.get(version, None)
+  assert schema != None, "unsupported DataCite record version"
   i = root.xpath("N:identifier", namespaces={ "N": m.group(1) })
   assert len(i) == 1 and "identifierType" in i[0].attrib,\
-    "not a valid DataCite record"
+    "malformed DataCite record: no <identifier> element"
+  i = i[0]
   if identifier.startswith("doi:"):
     type = "DOI"
     identifier = identifier[4:]
@@ -239,8 +268,25 @@ def validateDcmsRecord (identifier, record):
     identifier = identifier[9:]
   else:
     assert False, "unrecognized identifier scheme"
-  assert i[0].attrib["identifierType"] == type, "identifier type mismatch"
-  i[0].text = identifier
+  assert i.attrib["identifierType"] == type,\
+    "mismatch between identifier type and <identifier> element"
+  # Time to validate.  We temporarily replace the identifier with
+  # something innocuous that will pass the schema's validation check,
+  # then change it back.  Locking lameness: despite its claims,
+  # XMLSchema objects are in fact not threadsafe.
+  i.attrib["identifierType"] = "DOI"
+  i.text = "10.1234/X"
+  schema[1].acquire()
+  try:
+    schema[0].assert_(root)
+  finally:
+    schema[1].release()
+  i.attrib["identifierType"] = type
+  i.text = identifier
+  root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
+    ("http://datacite.org/schema/kernel-%s " +\
+    "http://schema.datacite.org/meta/kernel-%s/metadata.xsd") %\
+    (version, version)
   try:
     return "<?xml version=\"1.0\"?>\n" +\
       lxml.etree.tostring(root, encoding=unicode)
