@@ -31,6 +31,7 @@ import xml.sax.saxutils
 import config
 import mapping
 import shoulder
+import util
 
 _lock = threading.Lock()
 _enabled = None
@@ -288,8 +289,10 @@ def validateDcmsRecord (identifier, record):
     "http://schema.datacite.org/meta/kernel-%s/metadata.xsd") %\
     (version, version)
   try:
+    # We re-sanitize the document because unacceptable characters can
+    # be (and have been) introduced via XML character entities.
     return "<?xml version=\"1.0\"?>\n" +\
-      lxml.etree.tostring(root, encoding=unicode)
+      util.sanitizeXmlSafeCharset(lxml.etree.tostring(root, encoding=unicode))
   except Exception, e:
     assert False, "XML serialization error: " + str(e)
 
