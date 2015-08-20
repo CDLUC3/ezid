@@ -174,7 +174,10 @@ def validateBody (body):
   root.attrib[_schemaLocation] =\
     namespace + " " + (_schemaLocationTemplate % version)
   try:
-    return _addDeclaration(lxml.etree.tostring(root, encoding="unicode"))
+    # We re-sanitize the document because unacceptable characters can
+    # be (and have been) introduced via XML character entities.
+    return _addDeclaration(util.sanitizeXmlSafeCharset(
+      lxml.etree.tostring(root, encoding="unicode")))
   except Exception, e:
     assert False, "XML serialization error: " + str(e)
 
