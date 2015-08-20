@@ -106,7 +106,6 @@ def datacite_field_help_icon(id_of_help):
 @basictag(takes_context=True)
 def url_force_https(context, url_path):
   """Force link to be prefixed wth https"""
-  import pdb; pdb.set_trace()
   if django.conf.settings.SSL and ('HTTP_HOST' in request.META):
     url_path_no_lead_slash = url_path[1:] if re.match('^\/.*', url_path) else url_path
     request = context['request']
