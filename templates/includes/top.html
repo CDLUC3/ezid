@@ -63,7 +63,7 @@
             <a href="#" class="close not-text" id="modal_close" aria-label="close">&times;</a>
             <!-- TODO: Need this? data-dismiss="alert" -->
           <!-- /div -->
-          <form method="post" action="/login" class="form-horizontal">
+          <form method="post" action="{% url_force_ssh "/login" %}" class="form-horizontal">
             <div class="form-group form-group-sm">
               <label for="username" class="sr-only control-label">Username</label>
               <input type="text" id="username" name="username" class="form-control" value="{{ username }}" placeholder="Username" />

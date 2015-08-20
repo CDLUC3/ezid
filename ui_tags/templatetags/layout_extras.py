@@ -104,6 +104,17 @@ def datacite_field_help_icon(id_of_help):
 
 @register.tag
 @basictag(takes_context=True)
+def url_force_ssh(context, url_path):
+  """Force link to be prefixed wth https"""
+  url_path_no_lead_slash = url_path[1:] if re.match('^\/.*', url_path) else url_path
+  request = context['request']
+  if 'HTTP_HOST' in request.META:
+    return "%s//%s/%s" % ('https:', request.META.get("HTTP_HOST"), url_path_no_lead_slash)
+  else:
+    return url_path
+
+@register.tag
+@basictag(takes_context=True)
 def host_based_include(context, template_path):
   """This includes a file from a different directory instead of the
   normal specified file based on the hostname.  This allows for some
