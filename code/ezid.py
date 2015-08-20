@@ -369,8 +369,13 @@ def _validateMetadata1 (identifier, user, metadata):
     del metadata["_status"]
   if "_target" in metadata:
     e = "_t" if identifier.startswith("ark:/") else "_st"
-    if metadata["_target"].strip() != "":
-      metadata[e] = metadata["_target"].strip()
+    t = metadata["_target"].strip()
+    if t != "":
+      # Our validation of target URLs is nominal, but is intended to
+      # match that done by DataCite (which in turn simply uses Java's
+      # URL validation).
+      if not re.match("(https?|ftp)://", t): return "invalid target URL"
+      metadata[e] = t
     else:
       metadata[e] = _defaultTarget(identifier)
     del metadata["_target"]
