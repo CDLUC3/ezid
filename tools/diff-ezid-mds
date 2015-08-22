@@ -23,12 +23,12 @@
 # system query such as:
 #
 # http://search.datacite.org/api?q=*:*&fq=datacentre_symbol:CDL.CDL
-#   &wt=csv&fl=doi,xml&csv.header=false&rows=1000000
+#   &wt=csv&fl=doi,datacentre_symbol,xml&csv.header=false&rows=1000000
 #
 # In terms of format, 'queryfile' should be an uncompressed,
-# headerless, comma-separated CSV file with two columns: identifier
-# (schemeless and normalized, e.g., "10.5060/FOO") and DataCite XML
-# record (base64 encoded).
+# headerless, comma-separated CSV file with three columns: identifier
+# (schemeless and normalized, e.g., "10.5060/FOO"), datacenter (e.g.,
+# "CDL.CDL"), and DataCite XML record (base64 encoded).
 #
 # This script assumes that a query such as the above returns both
 # active and inactive identifiers, and that an identifier is inactive
@@ -90,14 +90,15 @@ def unpackMdsRow (row):
   assert row[-1] == "\n", "queryfile error: no newline"
   # We don't use Python's 'csv' module since we're going to want to
   # track file seek positions below.  There can't be a comma in base64
-  # encoding, ergo...
-  doi, metadata = row[:-1].rsplit(",", 1)
+  # encoding or in a datacenter name, ergo...
+  doi, datacenter, metadata = row[:-1].rsplit(",", 2)
   if doi.startswith('"'):
     assert doi.endswith('"'), "queryfile error: quoting anomaly"
     doi = doi[1:-1].replace('""', '"')
   assert len(doi) > 0, "queryfile error: no identifier"
+  assert len(datacenter) > 0, "queryfile error: no datacenter"
   if len(metadata) > 0: metadata = base64.b64decode(metadata).decode("UTF-8")
-  return (doi, metadata)
+  return (doi, datacenter, metadata)
 
 def decodeEzidRecord (record):
   v = record[:-1].split(" ")
@@ -150,7 +151,7 @@ mdsDois = {}
 
 seekPosition = 0
 for row in mdsFile:
-  doi, metadata = unpackMdsRow(row)
+  doi, datacenter, metadata = unpackMdsRow(row)
   if not doi.startswith(testShoulder):
     assert doi not in mdsDois, "duplicate identifier in queryfile"
     mdsDois[doi] = seekPosition
@@ -168,7 +169,8 @@ def doComparison (doi, metadata):
     error += ", not in MDS"
   else:
     mdsFile.seek(mdsDois[doi])
-    mdsMetadata = unpackMdsRow(mdsFile.readline())[1]
+    mdsDatacenter, mdsMetadata = unpackMdsRow(mdsFile.readline())[1:3]
+    if mdsDatacenter != metadata["_d"]: error += ", datacenter mismatch"
     if metadata["_is"] == "public" and metadata["_x"] == "yes":
       if len(mdsMetadata) == 0:
         error += ", has no metadata in MDS"
@@ -231,7 +233,7 @@ progress("pass 3")
 
 for doi, seekPosition in mdsDois.iteritems():
   mdsFile.seek(seekPosition)
-  metadata = unpackMdsRow(mdsFile.readline())[1]
+  metadata = unpackMdsRow(mdsFile.readline())[2]
   error = ""
   if len(metadata) > 0: error += ", has metadata in MDS"
   if not options.skipTargetUrls:
