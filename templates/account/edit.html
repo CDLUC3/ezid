@@ -5,19 +5,19 @@
 {% block title %}{%trans "My Account" %}{% endblock %}
 
 {% block content %}
-{% content_heading "My Account" %}
+{% content_heading _("My Account") %}
 <div class="container vertical-buffer-xs">
   <form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" class="form-horizontal" role="form">
-  <h3>ACCOUNT INFORMATION</h3>
+  <h3>{% trans "ACCOUNT INFORMATION" %}</h3>
   <div class="row">
     <div class="form-group form-group-sm">
-      <label for="account_username" class="col-sm-2">Username</label>
+      <label for="account_username" class="col-sm-2">{%trans "Username" %}</label>
       <div class="col-sm-5">{{ username }} </div>
     </div>
   </div>
   <div class="row">
     <div class="form-group form-group-sm">
-      <label for="givenName" class="col-sm-2">First Name</label>
+      <label for="givenName" class="col-sm-2">{%trans "First Name" %}</label>
       <div class="col-sm-5">
         <input type="text" class="form-control" name="givenName" id="givenName" value="{{ givenName }}" />
       </div>
@@ -25,7 +25,7 @@
   </div>
   <div class="row">
     <div class="form-group form-group-sm">
-      <label for="sn" class="col-sm-2">Last Name</label>
+      <label for="sn" class="col-sm-2">{%trans "Last Name" %}</label>
       <div class="col-sm-5">
         <input type="text" class="form-control" name="sn" id="sn" value="{{ sn }}" />
       </div>
@@ -33,7 +33,7 @@
   </div>
   <div class="row">
     <div class="form-group form-group-sm">
-      <label for="telephoneNumber" class="col-sm-2">Phone</label>
+      <label for="telephoneNumber" class="col-sm-2">{%trans "Phone" %}</label>
       <div class="col-sm-5">
         <input type="tel" class="form-control" name="telephoneNumber" id="telephoneNumber" value="{{ telephoneNumber }}" />
       </div>
@@ -41,7 +41,7 @@
   </div>
   <div class="row">
     <div class="form-group form-group-sm">
-      <label for="mail" class="col-sm-2">Email Address</label>
+      <label for="mail" class="col-sm-2">{%trans "Email Address" %}</label>
       <div class="col-sm-5">
         <input type="email" class="form-control" name="mail" id="mail" value="{% form_or_default "mail" mail %}" />
       </div>
@@ -49,25 +49,25 @@
   </div>
   <div class="row">
     <div class="form-group form-group-sm">
-      <label for="ezidCoOwners" class="col-sm-2">Co-owners</label>
+      <label for="ezidCoOwners" class="col-sm-2">{%trans "Co-owners" %}</label>
       <div class="col-sm-5">
         <input type="text" class="form-control" name="ezidCoOwners" id="ezidCoOwners" value="{{ ezidCoOwners }}" />
         <div class="vertical-buffer-xs"></div>
         <div class="font-small">
-          <span class="font-small-bold">NOTE:</span> Use commas to separate multiple entries.
+          <span class="font-small-bold">{%trans "NOTE:" %}</span> {%trans "Use commas to separate multiple entries." %}
         </div>
       </div>
       <div class="col-sm-3 padding-left">
-        <button class="btn" type="button">Look Up Owners</button>{% help_icon "lookup_owners" %} 
+        <button class="btn" type="button">{%trans "Look Up Owners" %}</button>{% help_icon "lookup_owners" %} 
       </div>
     </div>
   </div>
   <div class="vertical-buffer-sm"></div>
   <!-- p>&nbsp;</p -->
-  <h3>CHANGE PASSWORD</h3>
+  <h3>{% trans "CHANGE PASSWORD" %}</h3>
   <div class="row">
     <div class="form-group form-group-sm">
-      <label for="pwcurrent" class="col-sm-2">Current password</label>
+      <label for="pwcurrent" class="col-sm-2">{%trans "Current password" %}</label>
       <div class="col-sm-5">
         <input type="password" class="form-control" name="pwcurrent" id="pwcurrent" value="" autocomplete="off" />
       </div>
@@ -75,7 +75,7 @@
   </div>      
   <div class="row">
     <div class="form-group form-group-sm">
-      <label for="pwnew" class="col-sm-2">New password</label>
+      <label for="pwnew" class="col-sm-2">{%trans "New password" %}</label>
       <div class="col-sm-5">
         <input type="password" class="form-control" name="pwnew" id="pwnew" value="" autocomplete="off" />
       </div>
@@ -83,7 +83,7 @@
   </div>      
   <div class="row">
     <div class="form-group form-group-sm">
-      <label for="pwconfirm" class="col-sm-2">Confirm  new password</label>
+      <label for="pwconfirm" class="col-sm-2">{%trans "Confirm new password" %}</label>
       <div class="col-sm-5">
       <input type="password" class="form-control" name="pwconfirm" id="pwconfirm" size="25" value="" autocomplete="off" /> 
       </div>
@@ -92,7 +92,7 @@
   <div class="vertical-buffer-sm"></div>
   <div class="row">
     <div class="col-sm-6 form-group form-group-sm">
-      <button type="submit" class="btn btn-primary padding-side-sm">SAVE</button>
+      <button type="submit" class="btn btn-primary padding-side-sm">{%trans "SAVE" %}</button>
     </div>
   </div>
   </form>

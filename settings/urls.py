@@ -6,6 +6,8 @@ urlpatterns = django.conf.urls.patterns("",
 
   # UI - RENDERED FROM TEMPLATES IN INFO REPOSITORY
   ("^/?$", "ui_home.index"),
+  ("^learn/$", "ui_home.learn"),
+  ("^learn/crossref_faq$", "ui_home.crossref_faq"),
   ("^home/(\w+)$", "ui_home.no_menu"),
 
   # UI - OTHER
@@ -31,7 +33,6 @@ urlpatterns = django.conf.urls.patterns("",
   ("^demo/advanced$", "ui_demo.advanced"),
   ("^doc/[\w.]*\\.(?:html|py)$", "ui.doc"),
   ("^i18n/", include('django.conf.urls.i18n')),
-  ("^learn$", "ui_home.learn"),
   ("^lookup/?$", "ui_lookup.index"),
   ("^manage/?$", "ui_manage.index"),
   ("^manage/edit/(.*)", "ui_manage.edit"),

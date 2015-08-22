@@ -27,7 +27,7 @@ def settings_value(name):
 def content_heading(heading):
   """Outputs primary heading at top of page"""
   return '<div class="header"><div class="container"><div class="row"><h1>' + \
-         heading + '</h1></div></div></div>'
+         unicode(heading) + '</h1></div></div></div>'
 
 @register.simple_tag
 def choices(name, value, choice_string):

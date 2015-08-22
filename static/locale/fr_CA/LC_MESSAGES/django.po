@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-05 10:13-0700\n"
+"POT-Creation-Date: 2015-08-21 16:56-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgstr ""
 
 #. Translators: These options appear in drop-down on contact page
 #: code/ui.py:32
-msgid "University website"
+msgid "Website"
 msgstr ""
 
 #: code/ui.py:33
@@ -66,6 +66,11 @@ msgstr ""
 msgid "There was a problem sending your email"
 msgstr ""
 
+#: doc/apidoc.2.html:4 doc/apidoc.2.html.py:6 doc/apidoc.html:4
+#: doc/apidoc.html.py:6
+msgid "The EZID API, Version 2"
+msgstr ""
+
 #: settings/common.py:30
 msgid "English"
 msgstr ""
@@ -74,11 +79,98 @@ msgstr ""
 msgid "Candian French"
 msgstr ""
 
-#: templates/account/edit.html:5
+#: templates/account/edit.html:5 templates/account/edit.html.py:8
 msgid "My Account"
 msgstr ""
 
-#: templates/contact.html:8
+#: templates/account/edit.html:11
+msgid "ACCOUNT INFORMATION"
+msgstr ""
+
+#: templates/account/edit.html:14 templates/account/pwreset1.html:12
+msgid "Username"
+msgstr ""
+
+#: templates/account/edit.html:20
+msgid "First Name"
+msgstr ""
+
+#: templates/account/edit.html:28
+msgid "Last Name"
+msgstr ""
+
+#: templates/account/edit.html:36
+msgid "Phone"
+msgstr ""
+
+#: templates/account/edit.html:44
+msgid "Email Address"
+msgstr ""
+
+#: templates/account/edit.html:52
+msgid "Co-owners"
+msgstr ""
+
+#: templates/account/edit.html:57
+msgid "NOTE:"
+msgstr ""
+
+#: templates/account/edit.html:57
+msgid "Use commas to separate multiple entries."
+msgstr ""
+
+#: templates/account/edit.html:61
+msgid "Look Up Owners"
+msgstr ""
+
+#: templates/account/edit.html:67
+msgid "CHANGE PASSWORD"
+msgstr ""
+
+#: templates/account/edit.html:70
+msgid "Current password"
+msgstr ""
+
+#: templates/account/edit.html:78
+msgid "New password"
+msgstr ""
+
+#: templates/account/edit.html:86
+msgid "Confirm new password"
+msgstr ""
+
+#: templates/account/edit.html:95
+msgid "SAVE"
+msgstr ""
+
+#: templates/account/pwreset1.html:5 templates/account/pwreset1.html.py:7
+msgid "Request password reset"
+msgstr ""
+
+#: templates/account/pwreset1.html:19
+msgid "Email address"
+msgstr ""
+
+#: templates/account/pwreset1.html:28
+msgid "SEND EMAIL"
+msgstr ""
+
+#: templates/account/pwreset1.html:35
+msgid ""
+"You will be sent an email containing a link allowing your password to be "
+"reset."
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. Translators: i.e.: <a href="blah blah blah">TRANSLATE THIS ONLY, AND KEEP HTML TAGS</a>
+#: templates/account/pwreset1.html:40
+#, python-format
+msgid ""
+"<a href=\"%(url_contact)s\">Contact us</a> if you don't remember your "
+"username."
+msgstr ""
+
+#: templates/contact.html:8 templates/contact.html.py:11
 msgid "Contact Us"
 msgstr ""
 
@@ -203,6 +295,387 @@ msgstr ""
 msgid "SIGN UP FOR OUR NEWSLETTER"
 msgstr ""
 
-#: templates/search/index.html:5
+#: templates/create/_datacite_altId.html:5
+msgid "Alternate Identifier"
+msgstr ""
+
+#: templates/create/_datacite_altId.html:12
+#: templates/create/_datacite_relId.html:12 templates/manage/details.html:12
+#: templates/manage/edit.html:18
+msgid "Identifier"
+msgstr ""
+
+#: templates/create/_datacite_altId.html:15
+#: templates/create/_datacite_relId.html:14
+msgid "Identifier Type"
+msgstr ""
+
+#: templates/create/_datacite_contributor.html:5
+msgid "Contributor"
+msgstr ""
+
+#: templates/create/_datacite_contributor.html:13
+msgid "Name"
+msgstr ""
+
+#: templates/create/_datacite_contributor.html:18
+msgid "Name Identifier"
+msgstr ""
+
+#: templates/create/_datacite_contributor.html:21
+msgid "Name Identifier Scheme"
+msgstr ""
+
+#: templates/create/_datacite_contributor.html:25
+#: templates/create/_datacite_relId.html:66
+#: templates/create/_datacite_subject.html:19
+msgid "Scheme URI"
+msgstr ""
+
+#: templates/create/_datacite_contributor.html:31
+msgid "Contributor Type"
+msgstr ""
+
+#: templates/create/_datacite_contributor.html:58
+msgid "Affiliation"
+msgstr ""
+
+#: templates/create/_datacite_creator.html:5
+msgid "Creator"
+msgstr ""
+
+#: templates/create/_datacite_creator.html:13
+msgid "Name:"
+msgstr ""
+
+#: templates/create/_datacite_creator.html:24
+msgid "Name Identifier:"
+msgstr ""
+
+#: templates/create/_datacite_creator.html:30
+msgid "Identifier Scheme:"
+msgstr ""
+
+#: templates/create/_datacite_creator.html:36
+msgid "Scheme URI:"
+msgstr ""
+
+#: templates/create/_datacite_creator.html:42
+msgid "Affiliation:"
+msgstr ""
+
+#: templates/create/_datacite_date.html:5
+#: templates/create/_datacite_date.html:12
+msgid "Date"
+msgstr ""
+
+#: templates/create/_datacite_date.html:15
+msgid "Date Type"
+msgstr ""
+
+#: templates/create/_datacite_description.html:5
+msgid "Abstract"
+msgstr ""
+
+#: templates/create/_datacite_description.html:15
+msgid "Type"
+msgstr ""
+
+#: templates/create/_datacite_format.html:6
+#: templates/create/_datacite_format.html:13
+msgid "Format"
+msgstr ""
+
+#: templates/create/_datacite_geoLoc.html:5
+msgid "Geolocation"
+msgstr ""
+
+#: templates/create/_datacite_geoLoc.html:13
+msgid "Point"
+msgstr ""
+
+#: templates/create/_datacite_geoLoc.html:17
+msgid "Box"
+msgstr ""
+
+#: templates/create/_datacite_geoLoc.html:21
+msgid "Place"
+msgstr ""
+
+#: templates/create/_datacite_relId.html:5
+msgid "Related Identifier"
+msgstr ""
+
+#: templates/create/_datacite_relId.html:64
+msgid "Related Metadata Scheme"
+msgstr ""
+
+#: templates/create/_datacite_relId.html:68
+msgid "Scheme Type"
+msgstr ""
+
+#: templates/create/_datacite_rights.html:5
+#: templates/create/_datacite_rights.html:12
+msgid "Rights"
+msgstr ""
+
+#: templates/create/_datacite_size.html:13
+msgid "Size"
+msgstr ""
+
+#: templates/create/_datacite_subject.html:5
+#: templates/create/_datacite_subject.html:12
+msgid "Subject"
+msgstr ""
+
+#: templates/create/_datacite_subject.html:15
+msgid "Scheme"
+msgstr ""
+
+#: templates/create/_datacite_title.html:4
+msgid "Title"
+msgstr ""
+
+#: templates/create/_datacite_title.html:16
+msgid "Type:"
+msgstr ""
+
+#: templates/create/_datacite_title.html:18
+msgid "Main title"
+msgstr ""
+
+#: templates/create/_datacite_title.html:19
+msgid "Alternative title"
+msgstr ""
+
+#: templates/create/_datacite_title.html:20
+msgid "Subtitle"
+msgstr ""
+
+#: templates/create/_datacite_title.html:21
+msgid "Translated title"
+msgstr ""
+
+#: templates/create/_datacite_xml.html:21
+msgid "Publisher:"
+msgstr ""
+
+#: templates/create/_datacite_xml.html:26
+msgid "Publication Year:"
+msgstr ""
+
+#: templates/create/_datacite_xml.html:33
+msgid "Language:"
+msgstr ""
+
+#: templates/create/_datacite_xml.html:43
+msgid "Resource Type:"
+msgstr ""
+
+#: templates/create/_datacite_xml.html:63
+msgid "Resource Type Description:"
+msgstr ""
+
+#: templates/create/_datacite_xml.html:88
+msgid "Version:"
+msgstr ""
+
+#: templates/create/_datacite_xml.html:100
+msgid "required item"
+msgstr ""
+
+#: templates/create/advanced.html:4
+msgid "Create an Advanced Identifier"
+msgstr ""
+
+#: templates/create/advanced.html:6 templates/create/simple.html:4
+#: templates/create/simple.html.py:7
+msgid "Create an Identifier"
+msgstr ""
+
+#: templates/create/advanced.html:8 templates/create/simple.html:9
+msgid "That entry is incorrect. Please re-check your entry."
+msgstr ""
+
+#: templates/create/advanced.html:12 templates/create/simple.html:13
+msgid "Simple"
+msgstr ""
+
+#: templates/create/advanced.html:13 templates/create/simple.html:14
+msgid "Advanced"
+msgstr ""
+
+#: templates/create/advanced.html:30 templates/create/simple.html:30
+msgid "CREATE"
+msgstr ""
+
+#: templates/create/advanced.html:32
+msgid "Once created, an identifier  cannot be renamed  or deleted."
+msgstr ""
+
+#: templates/create/no_shoulders.html:5 templates/create/no_shoulders.html:8
+msgid "Permanent Identifier Creation Unavailable"
+msgstr ""
+
+#: templates/create/no_shoulders.html:12
+msgid ""
+"You may not create any permanent identifiers because your account doesn't "
+"have any identifier types (shoulders) assigned to it."
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. Translators: i.e.: <a href="blah blah blah">TRANSLATE THIS ONLY, AND KEEP HTML TAGS</a>
+#: templates/create/no_shoulders.html:19
+#, python-format
+msgid ""
+"You may still create temporary identifiers with the <a href="
+"\"%(url_demosimple)s\">demo identifier</a>functionality."
+msgstr ""
+
+#: templates/create/no_shoulders.html:22
+msgid "If you have questions, you may "
+msgstr ""
+
+#: templates/create/no_shoulders.html:23
+msgid "contact us"
+msgstr ""
+
+#. Translators: Please preserve &quot; tags
+#: templates/create/simple.html:33
+msgid ""
+"Clicking &quot;Create&quot; will create the identifier and make it public.  "
+"To defer making it public, use the Advanced form. Once created, an "
+"identifier cannot be renamed or deleted."
+msgstr ""
+
+#: templates/includes/advanced_describe.html:9
+msgid "Describe the identified object using the"
+msgstr ""
+
+#: templates/includes/advanced_describe.html:19
+msgid "profile:"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:7
+msgid "Decide"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:13
+msgid "Make this identifier public?"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:21
+#: templates/includes/advanced_publish_id.html:44
+msgid "YES"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:28
+#: templates/includes/advanced_publish_id.html:51
+msgid "NO"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:36
+#: templates/manage/edit.html:137
+msgid "Allow harvesting/indexing?"
+msgstr ""
+
+#: templates/includes/advanced_remainder.html:5
+msgid "Identifier Preview:"
+msgstr ""
+
+#: templates/includes/advanced_remainder.html:12
+msgid "Optional: Enter a custom remainder (suffix)"
+msgstr ""
+
+#: templates/includes/get_link.html:4
+msgid "Get Link"
+msgstr ""
+
+#: templates/includes/simple_describe.html:8
+msgid "Describe the identified object"
+msgstr ""
+
+#: templates/includes/simple_id_type.html:8
+msgid "Choose an identifier type"
+msgstr ""
+
+#: templates/manage/details.html:6 templates/manage/details.html.py:9
+#: templates/manage/edit.html:9
+msgid "Identifier Details"
+msgstr ""
+
+#: templates/manage/details.html:19
+msgid "takes up to 30 minutes for link to work"
+msgstr ""
+
+#: templates/manage/details.html:24
+msgid "takes up to 30 minutes for link to be updated"
+msgstr ""
+
+#: templates/manage/details.html:33 templates/manage/edit.html:27
+msgid "ABOUT THE IDENTIFIED OBJECT"
+msgstr ""
+
+#: templates/manage/details.html:66
+msgid "See the DataCite XML Metadata record in a new window"
+msgstr ""
+
+#: templates/manage/details.html:70
+msgid "See the CrossRef XML Metadata record in a new window"
+msgstr ""
+
+#: templates/manage/details.html:78 templates/manage/edit.html:66
+msgid "ABOUT THE IDENTIFIER"
+msgstr ""
+
+#: templates/manage/details.html:127
+msgid "MAKE CHANGES"
+msgstr ""
+
+#: templates/manage/details.html:136
+msgid "Citation Preview"
+msgstr ""
+
+#: templates/manage/edit.html:6
+msgid "Edit Identifier Details"
+msgstr ""
+
+#: templates/manage/edit.html:30
+msgid "This identified object uses the"
+msgstr ""
+
+#: templates/manage/edit.html:30
+msgid "profile"
+msgstr ""
+
+#: templates/manage/edit.html:99
+msgid "reserved"
+msgstr ""
+
+#: templates/manage/edit.html:104
+msgid "public"
+msgstr ""
+
+#: templates/manage/edit.html:110
+msgid "unavailable"
+msgstr ""
+
+#: templates/manage/edit.html:123
+msgid "Unavailable reason"
+msgstr ""
+
+#: templates/manage/edit.html:143
+msgid "Yes"
+msgstr ""
+
+#: templates/manage/edit.html:148
+msgid "No"
+msgstr ""
+
+#: templates/manage/edit.html:157
+msgid "SAVE CHANGES"
+msgstr ""
+
+#: templates/search/index.html:5 templates/search/index.html.py:8
 msgid "Search across all identifiers"
 msgstr ""

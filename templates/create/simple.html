@@ -4,7 +4,7 @@
 {% block title %}{% trans "Create an Identifier" %}{% endblock %}
 
 {% block content %}
-{% content_heading "Create an Identifier" %}
+{% content_heading _("Create an Identifier") %}
 <div class="alert alert-error" role="alert">
  ! {% trans "That entry is incorrect. Please re-check your entry." %}
 </div>
@@ -29,6 +29,7 @@
         <div class="col-sm-8">
           <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>
           <p class="italic vertical-buffer-xs">
+    {# Translators: Please preserve &quot; tags #}
             {% trans "Clicking &quot;Create&quot; will create the identifier and make it public.  To defer making it public, use the Advanced form. Once created, an identifier cannot be renamed or deleted." %}
       	    {% help_icon "public_id_help" %}
           </p>

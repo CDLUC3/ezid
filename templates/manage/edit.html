@@ -6,7 +6,7 @@
 {% block title %}{% trans "Edit Identifier Details" %}{% endblock %}
 
 {% block content %}
-{% content_heading "Identifier Details" %}
+{% content_heading _("Identifier Details") %}
 <div class="container vertical-buffer-20">
   <form id="edit_form" action="{% url "ui_manage.edit" id_text %}" method="post" class="form-horizontal" role="form">
     <!-- original profile is the profile that was loaded before possibly being changed from drop-down list -->

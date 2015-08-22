@@ -5,7 +5,7 @@
 {% block title %}{%trans "Permanent Identifier Creation Unavailable" %}{% endblock %}
 
 {% block content %}
-{% content_heading "Permanent Identifier Creation Unavailable" %}
+{% content_heading _("Permanent Identifier Creation Unavailable") %}
 <div class="vertical-buffer"></div>
 <div class="container">
     <p>
@@ -13,9 +13,10 @@
     </p>
     
     <p>
-    	{% trans "You may still create temporary identifiers with the" %}
-    	<a href="{% url "ui_demo.simple" %}">{% trans "demo identifier" %}</a>
-        {% trans "functionality." %}
+        {% url "ui_demo.simple" as url_demosimple %}
+    {# Translators: Copy HTML tags over and only translate words outside of these tags #}
+    {# Translators: i.e.: <a href="blah blah blah">TRANSLATE THIS ONLY, AND KEEP HTML TAGS</a> #}
+        {% blocktrans %}You may still create temporary identifiers with the <a href="{{ url_demosimple }}">demo identifier</a>functionality.{% endblocktrans %}
     </p>
     
     <p>{% trans "If you have questions, you may " %}<a href="{% url "ui.contact" %}">

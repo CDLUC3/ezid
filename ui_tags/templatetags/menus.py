@@ -57,6 +57,13 @@ def menu_user_item(tup, session, is_current, is_last_menu_item):
   acc += '</li>'
   return acc
 
+@register.simple_tag
+def learn_breadcrumb(view_title):
+  codeblock = '<div class="container"><ul class="breadcrumb">' + \
+    '<li><a href="/">Home</a></li><li><a href="/learn">Learn</a></li>' + \
+    '<li class="active">' + view_title + '</li></ul></div>' 
+  return codeblock
+
 # Simply determines whether an element should be tagged as active; Only used for topmost nav
 @register.simple_tag
 def active(current_func, view_name):

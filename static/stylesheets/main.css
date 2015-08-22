@@ -5896,6 +5896,10 @@ ul.lead > li {
   top: 42px;
   right: 20%; }
 
+.breadcrumb {
+  background-color: #FFF;
+  margin-bottom: 0px; }
+
 thead {
   background-color: #c6b082;
   font-size: 0.9em; }

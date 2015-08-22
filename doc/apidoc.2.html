@@ -1,8 +1,9 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
-{% block title %}The EZID API, Version 2{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "The EZID API, Version 2" %}{% endblock %}
 {% block content %}
-{% content_heading "The EZID API, Version 2" %}
+{% content_heading _("The EZID API, Version 2") %}
 
 {% include "/doc/apidoc.2_body.html" %}
 

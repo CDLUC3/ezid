@@ -1,20 +1,22 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
-{% block title %}Request password reset{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "Request password reset" %}{% endblock %}
 {% block content %}
-{% content_heading "Request password reset" %}
+{% content_heading _("Request password reset") %}
 
 <div class="container vertical-buffer">
 <form method="post" action="{% url "ui_account.pwreset" %}" class="form-horizontal" role="form">
   <div class="form-group form-group-sm">
-    <label for="username" class="col-sm-2 control-label">Username</label>
+    <label for="username" class="col-sm-2 control-label">{% trans "Username" %}</label>
     <div class="col-sm-4">
       <input type="text" id="username" name="username" value="{{ username }}" class="form-control"/>
     </div>
     <div class="col-sm-6">&nbsp;</div>
   </div>
   <div class="form-group form-group-sm">
-    <label for="email" class="col-sm-2 control-label">Email address</label>
+    <label for="email" class="col-sm-2 control-label">{% trans "Email address" %}</label>
     <div class="col-sm-4">
       <input type="text" id="email" name="email" value="{{ email }}" class="form-control"/>
     </div>
@@ -23,15 +25,20 @@
   <div class="form-group form-group-sm">
     <label class="col-sm-2 control-label"></label>
     <div class="col-sm-4">
-      <button type="submit" class="btn btn-primary padding-side-med">SEND EMAIL</button>
+      <button type="submit" class="btn btn-primary padding-side-med">{% trans "SEND EMAIL" %}</button>
     </div>
     <div class="col-sm-6">&nbsp;</div>
   </div>
 </form>
 
 <div class="col-sm-6 vertical-buffer">
-  <p>You will be sent an email containing a link allowing your password to be reset.</p>
-  <p>(<a href="{% url "ui.contact" %}">Contact us</a> if you don't remember your username.)</p>
+  <p>{% trans "You will be sent an email containing a link allowing your password to be reset." %}</p>
+  <p>(
+    {% url "ui.contact" as url_contact %}
+    {# Translators: Copy HTML tags over and only translate words outside of these tags #}
+    {# Translators: i.e.: <a href="blah blah blah">TRANSLATE THIS ONLY, AND KEEP HTML TAGS</a> #}
+    {% blocktrans %}<a href="{{ url_contact }}">Contact us</a> if you don't remember your username.{% endblocktrans %})
+  </p>
 </div>
 <div class="col-sm-6">&nbsp;</div>
 
