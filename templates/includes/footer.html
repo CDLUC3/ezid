@@ -26,27 +26,22 @@
     {% if feed_cache %}
       <strong>LATEST NEWS FROM EZID</strong><br/>
 
-<!--  TODO:
-         if feed_cache.1 
-          <a href=" feed_cache.1 " target="_blank"> feed_cache.0 </a>
-        else
-           feed_cache.0 
-         endif -->
-
       <!-- Vertical Bootstrap 3 Carousel
       http://stackoverflow.com/questions/11589816/twitter-bootstrap-carousel-vertical-sliding/11596944 -->
       <div class="carousel slide" data-ride="carousel" data-interval="5000">
         <!-- Wrapper for slides -->
         <div class="carousel-inner vertical" role="listbox">
-          <div class="item active">
-            <a href="http://www.cdlib.org/cdlinfo/2015/05/28/cdl-staff-in-print-joan-starr-and-john-kratz-in-peerj/">CDL Staff in Print - Joan Starr and John Kratz in PeerJ</a>
-          </div>
+      {% for title, link in feed_cache %}
+        {% if link == "None" %}
           <div class="item">
-            <a href="http://www.cdlib.org/cdlinfo/2015/05/11/ezid-service-update-april-2015/">EZID Service Update: April 2015</a>
+            {{ title }} 
           </div>
+        {% else %}
           <div class="item">
-            <a href="http://www.cdlib.org/cdlinfo/2015/02/17/ezid-introduces-a-batch-download-feature/">EZID introduces a batch download feature</a>
+            <a href="{{ link }}">{{ title }}</a>
           </div>
+        {% endif %}
+      {% endfor %}
         </div>
       </div>
       <p id="footer-newsfeed-linkall"><a class="font-xsmall" href="http://www.cdlib.org/cdlinfo/category/infrastructure-services/ezid/">View all news</a></p>

@@ -95,7 +95,7 @@ config.addLoader(_loadConfig)
   
 def render(request, template, context={}):
   global alertMessage, google_analytics_id, reload_templates
-  c = { "session": request.session, "alertMessage": alertMessage, "google_analytics_id": google_analytics_id }
+  c = { "session": request.session, "alertMessage": alertMessage, "feed_cache": newsfeed.getLatestItem(), "rss_feed": newsfeed_url, "google_analytics_id": google_analytics_id }
   c.update(context)
   #this is to keep from having to restart the server every 3 seconds
   #to see template changes in development, only reloads if set for optimal performance
