@@ -1,5 +1,6 @@
 from django import template
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 import string
 import config
 
@@ -13,20 +14,20 @@ register = template.Library()
 
 # Nav that shows up for logged in users
 MENU_USER = (
-          ("DASHBOARD", 'ui_admin.index', 'admin', ()), #Improved feature
-          ("MANAGE IDS", 'ui_manage.index', 'user', ()),
-          ("CREATE ID", 'ui_create.index', 'user',
-            ( ("Simple", 'ui_create.simple', 'user', ()),
-              ("Advanced", "ui_create.advanced", 'user', ())
+          (_("DASHBOARD"), 'ui_admin.index', 'admin', ()), #Improved feature
+          (_("MANAGE IDS"), 'ui_manage.index', 'user', ()),
+          (_("CREATE ID"), 'ui_create.index', 'user',
+            ( (_("Simple"), 'ui_create.simple', 'user', ()),
+              (_("Advanced"), "ui_create.advanced", 'user', ())
             )
           ),
-          ("ACCOUNT SETTINGS", 'ui_account.edit', 'user', ())
+          (_("ACCOUNT SETTINGS"), 'ui_account.edit', 'user', ())
         )
 
 # Tertiary nav
 MENU_DEMO = (
-             ("Simple", 'ui_demo.simple', 'public', ()),
-             ("Advanced", "ui_demo.advanced", 'public', ())
+             (_("Simple"), 'ui_demo.simple', 'public', ()),
+             (_("Advanced"), "ui_demo.advanced", 'public', ())
             )
 
 #Dynamically created menu for subnav; Only displays for logged in users
@@ -59,8 +60,12 @@ def menu_user_item(tup, session, is_current, is_last_menu_item):
 
 @register.simple_tag
 def learn_breadcrumb(view_title):
+  home = _("Home")
+  learn = _("Learn")
+  documentation = _("Documentation")
   codeblock = '<div class="container"><ul class="breadcrumb">' + \
-    '<li><a href="/">Home</a></li><li><a href="/learn">Learn</a></li>' + \
+    '<li><a href="/">' + home + '</a></li><li><a href="/learn">' + learn + '</a></li>' + \
+    '<li><a href="/learn/#04">' + documentation + '</a></li>' + \
     '<li class="active">' + view_title + '</li></ul></div>' 
   return codeblock
 

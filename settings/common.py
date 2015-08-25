@@ -28,7 +28,7 @@ TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 LANGUAGES = (
     ('en', _('English')),
-    ('fr-CA', _('Candian French')),
+    ('fr-CA', _('Canadian French')),
 )
 
 ADMINS = (

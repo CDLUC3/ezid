@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-21 16:56-0700\n"
+"POT-Creation-Date: 2015-08-25 13:59-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,7 +76,19 @@ msgid "English"
 msgstr ""
 
 #: settings/common.py:31
-msgid "Candian French"
+msgid "Canadian French"
+msgstr ""
+
+#: templates/404.html:5
+msgid "Error: 404 Not Found"
+msgstr ""
+
+#: templates/404.html:8
+msgid "Error"
+msgstr ""
+
+#: templates/404.html:12
+msgid "Not Found"
 msgstr ""
 
 #: templates/account/edit.html:5 templates/account/edit.html.py:8
@@ -498,10 +510,12 @@ msgid "That entry is incorrect. Please re-check your entry."
 msgstr ""
 
 #: templates/create/advanced.html:12 templates/create/simple.html:13
+#: ui_tags/templatetags/menus.py:20 ui_tags/templatetags/menus.py:29
 msgid "Simple"
 msgstr ""
 
 #: templates/create/advanced.html:13 templates/create/simple.html:14
+#: ui_tags/templatetags/menus.py:21 ui_tags/templatetags/menus.py:30
 msgid "Advanced"
 msgstr ""
 
@@ -599,6 +613,29 @@ msgstr ""
 msgid "Choose an identifier type"
 msgstr ""
 
+#: templates/info/crossref_faq.html:11
+msgid "CrossRef: Frequently Asked Questions"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE THIS ONLY</p>
+#. i.e.: <a href="blah blah blah">AND KEEP HTML TAGS</a>
+#: templates/info/crossref_faq.html:22
+msgid ""
+"\n"
+"<p><strong>How do I get my data into CrossRef</strong></p>\n"
+"<p>Lorem ipsum dolor sit amet, offendit vivendum volutpat ad sea. Per tale "
+"dicta an. Agam delenit abhorreant mel te, oratio aeterno definitionem vim "
+"ei, ea malorum maiestatis deterruisset eos. Pro eu quem oblique detracto.</"
+"p>\n"
+"\n"
+"<p>No sanctus scaevola definitionem vim. Vis justo quaestio ne, ne qui quod "
+"erroribus. Eam animal legendos ex, adhuc mandamus recteque pri ne. Solum "
+"audiam accusata qui ea, perfecto inimicus est in. Mentitum iracundia "
+"torquatos cu est, periculis complectitur ex vis. Eos illud postea ut, erant "
+"facilisis appellantur est cu, mutat debet et ius.</p>\n"
+msgstr ""
+
 #: templates/manage/details.html:6 templates/manage/details.html.py:9
 #: templates/manage/edit.html:9
 msgid "Identifier Details"
@@ -678,4 +715,32 @@ msgstr ""
 
 #: templates/search/index.html:5 templates/search/index.html.py:8
 msgid "Search across all identifiers"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:17
+msgid "DASHBOARD"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:18
+msgid "MANAGE IDS"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:19
+msgid "CREATE ID"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:24
+msgid "ACCOUNT SETTINGS"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:63
+msgid "Home"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:64
+msgid "Learn"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:65
+msgid "Documentation"
 msgstr ""
