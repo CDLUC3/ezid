@@ -5898,8 +5898,8 @@ ul.lead > li {
 
 .breadcrumb {
   background-color: #FFF;
-  margin-top: 10px;
-  margin-bottom: 0px; }
+  margin: 10px 0px 0px 0px;
+  padding-left: 0px; }
 
 thead {
   background-color: #c6b082;

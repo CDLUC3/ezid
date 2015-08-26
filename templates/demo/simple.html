@@ -1,54 +1,46 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
-
-{% block title %}Create Simple Demo ID{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Create Simple Demo Identifier" %}{% endblock %}
 
 {% block content %}
-  <div class="grid_9">
-    <h1>Create Demo Identifier</h1>    
+{% content_heading _("Create a Simple Demo Identifier") %}
+<div class="alert alert-error" role="alert">
+ ! {% trans "That entry is incorrect. Please re-check your entry." %}
+</div>
+<div class="container vertical-buffer-sm">
+  <ul class="nav nav-tabs nav-idcreate">
+    <li role="presentation" class="active">{% trans "Simple" %}</li>
+    <li role="presentation"><a href="{% url "ui_demo.advanced" %}">{% trans "Advanced" %}</a></li>
+  </ul>
+  <div class="idcreate-content gradient-form">
     
-    <form id="create_form" action="{% url "ui_demo.simple" %}" method="post">
+    <form id="create_form" action="{% url "ui_demo.simple" %}" method="post" class="form-horizontal" role="form">
       
-      {% include "includes/simple_id_type.html" %}
+      {% include "includes/simple_id_type.html" with calling_page="Demo" %}
       
       {% include "includes/simple_describe.html" %}
-      
-      <label class="left">&nbsp;</label>
-      <div class="field_right">
-        <input type="submit" value="Create"/>
-      </div>
-      <div style="clear:both">&nbsp;</div>
-      <div style="width:80%;float:left;">
-        <p>
-        	Clicking &quot;Create&quot; will create the identifier and make it public.
-        	To defer making it public, use the Advanced form.
-        </p>
-        <p>Once created, an identifier cannot be renamed or deleted.</p>
-      </div>
-      <div style="width:20%;float:left">
-      	{% help_icon "public_id_help" %}
+     
+      <div class="row">
+        <div class="col-sm-2">
+          <!-- TODO: This should instead be positioned using an offset -->
+        </div>
+        <div class="col-sm-8">
+          <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>
+          <p class="italic vertical-buffer-xs">
+    {# Translators: Please preserve &quot; tags #}
+            {% trans "Clicking &quot;Create&quot; will create the identifier and make it public.  To defer making it public, use the Advanced form. Once created, an identifier cannot be renamed or deleted." %}
+      	    {% help_icon "public_id_help" %}
+          </p>
+        </div>
       </div>
     </form>
-    <div style="clear:both;"></div>
+
   </div>
-  <div class="grid_3">
-  	<div class="squarebox">
-	  	<div class="squareboxpad">
-		  	<h1>About Demo Identifiers</h1>
-		  	<p>
-		  		Demo identifiers, indicated on EZID screens by
-		  		<span class="fakeid">yellow highlighting</span>, are temporary  
-					identifiers for use in testing the EZID service.  
-					They last for two weeks.
-		  	</p>
-		  </div>
-		</div>  		
-  </div>
-  
+</div> <!-- End Container -->
+
   <script type="text/javascript" src="/static/javascripts/simple_create.js"></script>
   {% include "info/popup_help.html" %}
   <script type="text/javascript" src="/static/javascripts/help_box.js"></script>
-  
-  {% include "includes/_tooltip_as_msgbox.html" %}
 
-{% endblock %}
+{% endblock %} 

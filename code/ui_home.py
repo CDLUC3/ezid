@@ -6,6 +6,7 @@ import ui_common as uic
 def index(request):
   d = { 'menu_item' : 'ui_home.index'}
   d['ezid_home_url'] = "http://" + request.get_host() +"/"
+  d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['namespace'].lower())
   return uic.render(request, 'index', d)
 
 def learn(request):

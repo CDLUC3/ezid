@@ -181,20 +181,29 @@ def selected_radio(context, request_item, loop_index, item_value):
     return ''
 
 @register.simple_tag
-def shoulder_display(prefix_dict, testPrefixes, simple_display):
-  display_prefix = ""
-  for pre in testPrefixes:
-    if prefix_dict['prefix'].startswith(pre['prefix']):
-      display_prefix = " (<span class='fakeid'>" + escape(prefix_dict['prefix']) + "</span>)"
-  if display_prefix == '':
-    display_prefix = " (" + prefix_dict['prefix'] + ")"
-  if simple_display == "True":
-    t = re.search('^[A-Za-z]+:', prefix_dict['prefix'])
-    t = t.group(0)[:-1].upper()
-    return escape(t) + display_prefix
+def shoulder_display(prefix_dict, id_type_only="False", testPrefixes=[], sans_namespace="False"):
+  """Three types of display:
+  FULL --------------->  Caltech Biology ARK (ark:/77912/w7))
+  SANS NAMESPACE ----->    ARK (ark:/99999/...))       <----------   used for demo page
+  ID TYPE ONLY ------->    ARK                         <----------   used for home page"""
+  if id_type_only == "False":
+    display_prefix = ""
+    for pre in testPrefixes:
+      if prefix_dict['prefix'].startswith(pre['prefix']):
+        display_prefix = " (" + escape(prefix_dict['prefix']) + "/... *)"
+    if display_prefix == '':
+      display_prefix = " (" + prefix_dict['prefix'] + ")"
+    if sans_namespace == "True":
+      return escape(_get_id_type(prefix_dict['prefix'])) + display_prefix
+    else:
+      type = _get_id_type(prefix_dict['prefix'])
+      return escape(prefix_dict['namespace'] + ' ' + type) + display_prefix 
   else:
-    type = prefix_dict['prefix'].split(":")[0].upper()
-    return escape(prefix_dict['namespace'] + ' ' + type) + display_prefix 
+    return escape(_get_id_type(prefix_dict['prefix']))
+
+def _get_id_type (prefix):
+  t = prefix.split(":")[0].upper()
+  return t
 
 @register.simple_tag
 def search_display(dictionary, field):

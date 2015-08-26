@@ -31,33 +31,26 @@
 
         <div class="col-sm-10" id="frontpage_idcreate_content">
           <div class="frontpage_idcreate_arrow"></div>
-          <form class="form-horizontal">
+          <form id="create_form" action="{% url "ui_demo.simple" %}" method="post" class="form-horizontal" role="form">
             <div class="row">
               <div class="col-md-6">
                 <div class="inline-header nowrap">
                   <span class="number-big-pop">1</span>
                   <h2 class="id-creation">Choose an identifier type</h2>
-                  {% help_icon "create_id_01" %}
                 </div>
               </div>
               <div id="frontpage_form_radiobuttons" class="col-md-6">
                 <div class="form-group form-group-sm">
-
+                 {% for p in prefixes %}
                   <div class="radio-inline radio_svg">
-                    <input id="idtype_ark" type="radio" class="radio__icon" />    
-                    <label for="idtype_ark" class="image-radio-label">ARK
+                    <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" 
+                      class="radio__icon" {% selected_radio "shoulder" forloop.counter p.prefix %} />
+                    <label for="{{p.prefix}}" class="image-radio-label">
+                      {% shoulder_display p "True" %}
                     </label>
                   </div>
-
-                  <div class="radio-inline radio_svg">
-                    <input id="idtype_doi" type="radio" class="radio__icon" />    
-                    <label for="idtype_doi" class="image-radio-label">DOI
-                    </label>
-                  </div>
-
-                    <!-- label class="radio-inline"><input type="radio" value="Male">ARK (ark:/99999/fk4)</label>
-                    <label class="radio-inline"><input type="radio" value="Male">DOI (doi:10.5072/FK2)</label -->
-
+                 {% endfor %}
+                {% help_icon "create_id_01" %}
                 </div>
               </div>
             </div>
