@@ -555,7 +555,7 @@ def deactivate (doi, datacenter=None):
   identifier's target URL.  The identifier can and will be reactivated
   by uploading new metadata to it (cf. uploadMetadata in this module).
   'datacenter', if specified, should be the identifier's datacenter,
-  e.g., "CDL.BUL".  Raises an exception on error.
+  e.g., "CDL.BUL".  Returns None; raises an exception on error.
   """
   if not _enabled: return
   try:
@@ -573,6 +573,7 @@ def deactivate (doi, datacenter=None):
       _deactivate(doi, datacenter)
     else:
       raise
+  return None
 
 def ping ():
   """
