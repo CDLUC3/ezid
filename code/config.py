@@ -126,6 +126,7 @@ def getVersionInfo ():
 if django.conf.settings.DAEMON_THREADS_ENABLED:
   import backproc
   import crossref
+  import datacite_async
   import download
   import newsfeed
   import status
