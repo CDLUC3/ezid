@@ -38,10 +38,8 @@ def _updateSearchDatabase (identifier, operation, metadata):
     identifier = metadata["_s"]
   else:
     identifier = "ark:/" + identifier
-  if operation == "create":
-    search.insert(identifier, metadata)
-  elif operation == "modify":
-    search.update(identifier, metadata)
+  if operation in ["create", "modify"]:
+    search.update(identifier, metadata, insertIfNecessary=True)
   elif operation == "delete":
     search.delete(identifier)
   else:
