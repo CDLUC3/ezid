@@ -23,6 +23,7 @@ import uuid
 
 import config
 import crossref
+import datacite_async
 import log
 import search
 import store
@@ -46,6 +47,11 @@ def _updateSearchDatabase (identifier, operation, metadata):
   else:
     assert False, "unrecognized operation"
 
+def _updateDataciteQueue (identifier, operation, metadata):
+  if "_s" in metadata and metadata["_s"].startswith("doi:") and\
+    metadata.get("_is", "public") != "reserved":
+    datacite_async.enqueueIdentifier(metadata["_s"], operation, metadata)
+
 def _updateCrossrefQueue (identifier, operation, metadata):
   if "_cr" not in metadata: return
   if metadata.get("_is", "public") == "reserved": return
@@ -62,6 +68,7 @@ def _backprocDaemon ():
             threading.currentThread().getName() != _threadName:
             break
           _updateSearchDatabase(identifier, operation, metadata)
+          _updateDataciteQueue(identifier, operation, metadata)
           _updateCrossrefQueue(identifier, operation, metadata)
           store.deleteFromUpdateQueue(seq)
       else:
