@@ -29,6 +29,8 @@ import search
 import store
 
 _enabled = None
+_lock = threading.Lock()
+_runningThreads = set()
 _threadName = None
 _idleSleep = None
 
@@ -56,15 +58,42 @@ def _updateCrossrefQueue (identifier, operation, metadata):
   assert "_s" in metadata and metadata["_s"].startswith("doi:")
   crossref.enqueueIdentifier(metadata["_s"], operation, metadata)
 
+def _checkContinue ():
+  return _enabled and threading.currentThread().getName() == _threadName
+
 def _backprocDaemon ():
-  while _enabled and threading.currentThread().getName() == _threadName:
+  _lock.acquire()
+  try:
+    _runningThreads.add(threading.currentThread().getName())
+  finally:
+    _lock.release()
+  # If we were started due to a reload, we wait for the previous
+  # thread to terminate... but not forever.  60 seconds is arbitrary.
+  totalWaitTime = 0
+  try:
+    while _checkContinue():
+      _lock.acquire()
+      try:
+        n = len(_runningThreads)
+      finally:
+        _lock.release()
+      if n == 1: break
+      assert totalWaitTime <= 60,\
+        "new backproc daemon started before previous daemon terminated"
+      totalWaitTime += _idleSleep
+      time.sleep(_idleSleep)
+  except AssertionError, e:
+    log.otherError("backproc._backprocDaemon", e)
+  # Regular processing.
+  while _checkContinue():
     try:
       l = store.getUpdateQueue(maximum=1000)
       if len(l) > 0:
         for seq, identifier, metadata, operation in l:
-          if not _enabled or\
-            threading.currentThread().getName() != _threadName:
-            break
+          if not _checkContinue(): break
+          # The following 4 statements form a kind of atomic
+          # transaction (and hence there are no continuation checks
+          # here).
           _updateSearchDatabase(identifier, operation, metadata)
           _updateDataciteQueue(identifier, operation, metadata)
           _updateCrossrefQueue(identifier, operation, metadata)
@@ -73,6 +102,11 @@ def _backprocDaemon ():
         time.sleep(_idleSleep)
     except Exception, e:
       log.otherError("backproc._backprocDaemon", e)
+  _lock.acquire()
+  try:
+    _runningThreads.remove(threading.currentThread().getName())
+  finally:
+    _lock.release()
 
 def _loadConfig ():
   global _enabled, _idleSleep, _threadName
