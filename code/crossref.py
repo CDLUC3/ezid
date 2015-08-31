@@ -422,15 +422,16 @@ def _pollDepositStatus (batchId, doi):
       (doi, batchId), e))
     return ("unknown", None)
 
-def enqueueIdentifier (identifier, operation, metadata):
+def enqueueIdentifier (identifier, operation, metadata, blob):
   """
   Adds an identifier to the CrossRef queue.  'identifier' should be
   the normalized, qualified identifier, e.g., "doi:10.5060/FOO".
   'operation' is the identifier operation as reported by the store
-  module.  'metadata' is the identifier's metadata dictionary.
+  module.  'metadata' is the identifier's metadata dictionary; 'blob'
+  is the same in blob form.
   """
   e = ezidapp.models.CrossrefQueue(identifier=identifier, owner=metadata["_o"],
-    metadata=util.blobify(metadata),
+    metadata=blob,
     operation=ezidapp.models.CrossrefQueue.operationLabelToCode(operation))
   e.save()
 

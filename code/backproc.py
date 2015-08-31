@@ -34,7 +34,7 @@ _runningThreads = set()
 _threadName = None
 _idleSleep = None
 
-def _updateSearchDatabase (identifier, operation, metadata):
+def _updateSearchDatabase (identifier, operation, metadata, blob):
   if metadata["_o"] == "anonymous": return
   if "_s" in metadata:
     identifier = metadata["_s"]
@@ -47,16 +47,16 @@ def _updateSearchDatabase (identifier, operation, metadata):
   else:
     assert False, "unrecognized operation"
 
-def _updateDataciteQueue (identifier, operation, metadata):
+def _updateDataciteQueue (identifier, operation, metadata, blob):
   if "_s" in metadata and metadata["_s"].startswith("doi:") and\
     metadata.get("_is", "public") != "reserved":
-    datacite_async.enqueueIdentifier(metadata["_s"], operation, metadata)
+    datacite_async.enqueueIdentifier(metadata["_s"], operation, metadata, blob)
 
-def _updateCrossrefQueue (identifier, operation, metadata):
+def _updateCrossrefQueue (identifier, operation, metadata, blob):
   if "_cr" not in metadata: return
   if metadata.get("_is", "public") == "reserved": return
   assert "_s" in metadata and metadata["_s"].startswith("doi:")
-  crossref.enqueueIdentifier(metadata["_s"], operation, metadata)
+  crossref.enqueueIdentifier(metadata["_s"], operation, metadata, blob)
 
 def _checkContinue ():
   return _enabled and threading.currentThread().getName() == _threadName
@@ -89,14 +89,14 @@ def _backprocDaemon ():
     try:
       l = store.getUpdateQueue(maximum=1000)
       if len(l) > 0:
-        for seq, identifier, metadata, operation in l:
+        for seq, identifier, metadata, blob, operation in l:
           if not _checkContinue(): break
           # The following 4 statements form a kind of atomic
           # transaction (and hence there are no continuation checks
           # here).
-          _updateSearchDatabase(identifier, operation, metadata)
-          _updateDataciteQueue(identifier, operation, metadata)
-          _updateCrossrefQueue(identifier, operation, metadata)
+          _updateSearchDatabase(identifier, operation, metadata, blob)
+          _updateDataciteQueue(identifier, operation, metadata, blob)
+          _updateCrossrefQueue(identifier, operation, metadata, blob)
           store.deleteFromUpdateQueue(seq)
       else:
         time.sleep(_idleSleep)
