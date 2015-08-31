@@ -125,6 +125,13 @@ def _daemonThread ():
       time.sleep(_idleSleep)
 
 def _dataciteCallWrapper (row, methodName, function, *args):
+  # This function hides all transient errors.  There are three
+  # possible returns: True (the function call completed successfully;
+  # a transient error might have been recorded in the
+  # ezidapp_DataciteQueue database table; 'row' is untouched); or
+  # False (a permanent error was encountered, logged, and recorded in
+  # the database table; 'row' was removed from _loadedRows); or
+  # processing was aborted.
   def formatException (e):
     m = str(e)
     if len(m) > 0: m = ": " + m
