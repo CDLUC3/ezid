@@ -14,6 +14,7 @@
 # -----------------------------------------------------------------------------
 
 import django.conf
+import random
 import threading
 import time
 import urllib2
@@ -163,34 +164,37 @@ def _dataciteCallWrapper (row, methodName, function, *args):
       return False
 
 def _workerThread ():
-  time.sleep(2*_idleSleep)
+  # Sleep between 1x and 2x the idle sleep, to give the main daemon a
+  # chance to load the row cache and to prevent the workers from
+  # running synchronously.
+  time.sleep(_idleSleep*(random.random()+1))
   while True:
     try:
       while True:
         row = _nextUnprocessedLoadedRow()
         if row != None: break
         time.sleep(_idleSleep)
+      doi = row.identifier[4:]
       if row.operation == ezidapp.models.DataciteQueue.OVERWRITE:
         m = util.deblobify(row.metadata)
         if not _dataciteCallWrapper(row, "datacite.uploadMetadata",
-          datacite.uploadMetadata, row.identifier[4:], {}, m):
+          datacite.uploadMetadata, doi, {}, m):
           continue
         if not _dataciteCallWrapper(row, "datacite.setTargetUrl",
-          datacite.setTargetUrl, row.identifier[4:], m["_st"]):
+          datacite.setTargetUrl, doi, m["_st"]):
           continue
         if m.get("_is", "public") != "public" or\
           m.get("_x", "yes") != "yes":
           if not _dataciteCallWrapper(row, "datacite.deactivate",
-            datacite.deactivate, row.identifier[4:]):
+            datacite.deactivate, doi):
             continue
       else: # DELETE
         # We can't actually delete a DOI, so we do the next best thing...
         if not _dataciteCallWrapper(row, "datacite.setTargetUrl",
-          datacite.setTargetUrl, row.identifier[4:],
-          "http://datacite.org/invalidDOI"):
+          datacite.setTargetUrl, doi, "http://datacite.org/invalidDOI"):
           continue
         if not _dataciteCallWrapper(row, "datacite.deactivate",
-          datacite.deactivate, row.identifier[4:]):
+          datacite.deactivate, doi):
           continue
       _checkAbort()
       row.delete()
