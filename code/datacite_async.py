@@ -31,9 +31,6 @@ _threadName = None
 _numWorkerThreads = None
 _reattemptDelay = None
 _lock = threading.Lock()
-# N.B.: in the following, a cache of the ezidapp_DataciteQueue table,
-# permanent errors and duplicate identifiers have been removed.
-_loadedRows = None
 
 class _AbortException (Exception):
   pass
@@ -51,6 +48,13 @@ def _checkAbort ():
 def _queue ():
   _checkAbort()
   return ezidapp.models.DataciteQueue
+
+# In the following, an in-memory cache of (a portion of) the
+# ezidapp_DataciteQueue table, permanent errors and duplicate
+# identifiers have been removed.  Rows being processed by a worker
+# thread have a 'beingProcessed' attribute added.
+
+_loadedRows = None
 
 def _lockLoadedRows (f):
   # Decorator.
