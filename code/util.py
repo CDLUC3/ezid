@@ -15,6 +15,7 @@
 
 import re
 import sys
+import zlib
 
 maximumIdentifierLength = 256
 
@@ -294,3 +295,30 @@ def sanitizeXmlSafeCharset (s):
   accepted by XML 1.1 have been replaced with spaces.
   """
   return _illegalUnichrsRE.sub(" ", s)
+
+def blobify (metadata):
+  """
+  Converts a metadata dictionary to a binary, compressed string, or
+  "blob."  Labels and values are stripped; labels with empty values
+  are discarded.
+  """
+  l = []
+  for k, v in metadata.items():
+    k = k.strip()
+    assert len(k) > 0, "empty label"
+    v = v.strip()
+    if len(v) > 0: l.append("%s %s" % (encode4(k), encode3(v)))
+  return zlib.compress(" ".join(l))
+
+def deblobify (blob, decompressOnly=False):
+  """
+  Converts a blob back to a metadata dictionary.  If 'decompressOnly'
+  is true, the metadata is returned as a single, percent-encoded
+  string of the form: label value label value ...
+  """
+  v = zlib.decompress(blob)
+  if decompressOnly: return v
+  v = v.split(" ")
+  d = {}
+  for i in range(0, len(v), 2): d[decode(v[i])] = decode(v[i+1])
+  return d
