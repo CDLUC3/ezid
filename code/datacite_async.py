@@ -130,25 +130,25 @@ def _dataciteCallWrapper (row, methodName, function, *args):
     if len(m) > 0: m = ": " + m
     return type(e).__name__ + m
   def permanentError (e):
-    _checkAbort()
     row.error = formatException(e)
     row.errorIsPermanent = True
+    _checkAbort()
     row.save()
-    _deleteLoadedRow(row)
     log.otherError("datacite_async._dataciteCallWrapper/" + methodName, e)
+    _deleteLoadedRow(row)
   while True:
     _checkAbort()
     try:
       s = function(*args)
-      assert s == None, s
+      assert s == None, "error response received from DataCite call: " + s
       return True
     except IOError, e:
       if isinstance(e, urllib2.HTTPError) and e.code < 500:
         permanentError(e)
         return False
       else:
-        _checkAbort()
         row.error = formatException(e)
+        _checkAbort()
         row.save()
         time.sleep(_reattemptDelay)
     except Exception, e:
