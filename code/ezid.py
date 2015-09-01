@@ -455,7 +455,7 @@ def _validateDatacite (identifier, metadata, completeCheck):
         metadata["datacite"], schemaValidate=completeCheck)
     except AssertionError, e:
       return "element 'datacite': " + _oneline(str(e))
-  if completeCheck:
+  if completeCheck and identifier.startswith("doi:"):
     try:
       datacite.formRecord(identifier, metadata)
     except AssertionError, e:
