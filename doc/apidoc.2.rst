@@ -1077,7 +1077,7 @@ Metadata requirements & mapping
 -------------------------------
 
 A DOI identifier created by EZID must have title, creator, publisher,
-and publication year metadata any time its status is public (see
+and publication year metadata any time its status is not reserved (see
 `Identifier status`_ above).  Other than that, EZID imposes no
 requirements on the presence or form of citation metadata, but
 uploading at least minimal citation metadata to EZID is strongly
