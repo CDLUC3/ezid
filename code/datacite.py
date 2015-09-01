@@ -207,19 +207,20 @@ _utf8RE = re.compile("UTF-?8$", re.I)
 _rootTagRE =\
   re.compile("{(http://datacite\.org/schema/kernel-([^}]*))}resource$")
 
-def validateDcmsRecord (identifier, record):
+def validateDcmsRecord (identifier, record, schemaValidate=True):
   """
   Validates and normalizes a DataCite Metadata Scheme
   <http://schema.datacite.org/> record for a qualified identifier
   (e.g., "doi:10.5060/foo").  The record should be unencoded.  Either
   the normalized record is returned or an assertion error is raised.
-  The record is validated against the appropriate XML schema.  (In an
-  extension to DCMS, we allow the identifier to be something other
-  than a DOI, for example, an ARK.)  The record is normalized by
-  removing any encoding declaration; by converting from schema version
-  2.1 to 2.2 if necessary; and by inserting an appropriate
-  'schemaLocation' attribute.  Also, 'identifier' is inserted in the
-  returned record.
+  If 'schemaValidate' is true, the record is validated against the
+  appropriate XML schema; otherwise, only a more forgiving
+  well-formedness check is performed.  (In an extension to DCMS, we
+  allow the identifier to be something other than a DOI, for example,
+  an ARK.)  The record is normalized by removing any encoding
+  declaration; by converting from schema version 2.1 to 2.2 if
+  necessary; and by inserting an appropriate 'schemaLocation'
+  attribute.  Also, 'identifier' is inserted in the returned record.
   """
   m = _prologRE.match(record)
   if m:
@@ -271,18 +272,19 @@ def validateDcmsRecord (identifier, record):
     assert False, "unrecognized identifier scheme"
   assert i.attrib["identifierType"] == type,\
     "mismatch between identifier type and <identifier> element"
-  # Time to validate.  We temporarily replace the identifier with
-  # something innocuous that will pass the schema's validation check,
-  # then change it back.  Locking lameness: despite its claims,
-  # XMLSchema objects are in fact not threadsafe.
-  i.attrib["identifierType"] = "DOI"
-  i.text = "10.1234/X"
-  schema[1].acquire()
-  try:
-    schema[0].assert_(root)
-  finally:
-    schema[1].release()
-  i.attrib["identifierType"] = type
+  if schemaValidate:
+    # We temporarily replace the identifier with something innocuous
+    # that will pass the schema's validation check, then change it
+    # back.  Locking lameness: despite its claims, XMLSchema objects
+    # are in fact not threadsafe.
+    i.attrib["identifierType"] = "DOI"
+    i.text = "10.1234/X"
+    schema[1].acquire()
+    try:
+      schema[0].assert_(root)
+    finally:
+      schema[1].release()
+    i.attrib["identifierType"] = type
   i.text = identifier
   root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
     ("http://datacite.org/schema/kernel-%s " +\
@@ -555,7 +557,7 @@ def deactivate (doi, datacenter=None):
   identifier's target URL.  The identifier can and will be reactivated
   by uploading new metadata to it (cf. uploadMetadata in this module).
   'datacenter', if specified, should be the identifier's datacenter,
-  e.g., "CDL.BUL".  Raises an exception on error.
+  e.g., "CDL.BUL".  Returns None; raises an exception on error.
   """
   if not _enabled: return
   try:
@@ -573,6 +575,7 @@ def deactivate (doi, datacenter=None):
       _deactivate(doi, datacenter)
     else:
       raise
+  return None
 
 def ping ():
   """

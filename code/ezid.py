@@ -379,22 +379,6 @@ def _validateMetadata1 (identifier, user, metadata):
     else:
       metadata[e] = _defaultTarget(identifier)
     del metadata["_target"]
-  # Note that the validation check here precludes updating a DataCite
-  # Metadata Scheme record via a shadow ARK (but individual DataCite
-  # elements can still be updated).
-  if "datacite" in metadata and metadata["datacite"].strip() != "":
-    try:
-      metadata["datacite"] = datacite.validateDcmsRecord(identifier,
-        metadata["datacite"])
-    except AssertionError, e:
-      return "element 'datacite': " + _oneline(str(e))
-  if "datacite.resourcetype" in metadata and\
-    metadata["datacite.resourcetype"].strip() != "":
-    try:
-      metadata["datacite.resourcetype"] = datacite.validateResourceType(
-        metadata["datacite.resourcetype"])
-    except AssertionError, e:
-      return "element 'datacite.resourcetype': " + str(e)
   if "crossref" in metadata and metadata["crossref"].strip() != "":
     try:
       metadata["crossref"] = crossref.validateBody(metadata["crossref"])
@@ -443,6 +427,39 @@ def _validateMetadata2 (owner, metadata):
       if id != owner[1] and id not in coOwners: coOwners.append(id)
     metadata["_co"] = " ; ".join(coOwners)
     del metadata["_coowners"]
+  return None
+
+def _validateDatacite (identifier, metadata, completeCheck):
+  """
+  Similar to _validateMetadata1, but performs DataCite-related
+  validations.  If 'completeCheck' is true, the DataCite XML record
+  (if any) is fully schema validated, and we check that DataCite
+  metadata requirements are satisfied (XML record or not).  (These
+  checks have been split out from _validateMetadata1 because of the
+  'completeCheck' flag, which varies depending on the identifier
+  state.)
+  """
+  if "datacite.resourcetype" in metadata and\
+    metadata["datacite.resourcetype"].strip() != "":
+    try:
+      metadata["datacite.resourcetype"] = datacite.validateResourceType(
+        metadata["datacite.resourcetype"])
+    except AssertionError, e:
+      return "element 'datacite.resourcetype': " + str(e)
+  # The following checks may fail if we operate on a shadow ARK, ergo...
+  if identifier.startswith("ark:/") and "_s" in metadata:
+    identifier = metadata["_s"]
+  if "datacite" in metadata and metadata["datacite"].strip() != "":
+    try:
+      metadata["datacite"] = datacite.validateDcmsRecord(identifier,
+        metadata["datacite"], schemaValidate=completeCheck)
+    except AssertionError, e:
+      return "element 'datacite': " + _oneline(str(e))
+  if completeCheck:
+    try:
+      datacite.formRecord(identifier, metadata)
+    except AssertionError, e:
+      return "DOI metadata requirements not satisfied: " + str(e)
   return None
 
 def _identifierExists (identifier):
@@ -549,6 +566,8 @@ def createDoi (doi, user, group, metadata={}):
     if "_is" not in m and m.get("crossref", "").strip() == "":
       return "error: bad request - CrossRef registration requires " +\
         "'crossref' deposit metadata"
+  r = _validateDatacite(qdoi, m, "_is" not in m)
+  if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
   if not _acquireIdentifierLock(shadowArk, user[0]):
     return "error: concurrency limit exceeded"
@@ -587,28 +606,14 @@ def createDoi (doi, user, group, metadata={}):
       m["_t1"] = m["_t"]
       m["_st1"] = m["_st"]
       m["_st"] = _defaultTarget(qdoi)
-    if m.get("_is", "public") == "public":
-      r = datacite.uploadMetadata(doi, {}, m, forceUpload=True)
-      log.progress(tid, "datacite.uploadMetadata")
-      if r is not None:
-        log.badRequest(tid)
-        return "error: bad request - " + _oneline(r)
-      r = datacite.registerIdentifier(doi, m["_st"])
-      log.progress(tid, "datacite.registerIdentifier")
-      if r is not None:
-        log.badRequest(tid)
-        return "error: bad request - element '_target': " + _oneline(r)
-      if m.get("_x", "") == "no":
-        datacite.deactivate(doi)
-        log.progress(tid, "datacite.deactivate")
-      if m.get("crossref", "").strip() != "":
-        # Before storing CrossRef metadata, fill in the (:tba)
-        # sections that were introduced in the
-        # validation/normalization process, but only if the identifier
-        # is public.  Unfortunately, doing this with the current code
-        # architecture requires that the metadata be re-parsed and
-        # re-serialized.
-        m["crossref"] = crossref.replaceTbas(m["crossref"], doi, m["_st"])
+    if m.get("_is", "public") == "public" and\
+      m.get("crossref", "").strip() != "":
+      # Before storing CrossRef metadata, fill in the (:tba) sections
+      # that were introduced in the validation/normalization process,
+      # but only if the identifier is public.  Unfortunately, doing
+      # this with the current code architecture requires that the
+      # metadata be re-parsed and re-serialized.
+      m["crossref"] = crossref.replaceTbas(m["crossref"], doi, m["_st"])
     noid_egg.setElements(shadowArk, m)
     log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
@@ -1199,37 +1204,7 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
         "crossref" in m)):
         return "error: bad request - CrossRef registration requires " +\
           "'crossref' deposit metadata"
-    # Perform any necessary DataCite operations.  These are more prone
-    # to failure, hence we do them first to avoid corrupting our own
-    # databases.  Note that this section is executed if we are
-    # operating on the DOI directly or on the DOI via its shadow ARK.
     if "_s" in m and m["_s"].startswith("doi:"):
-      if newStatus == "public":
-        message = datacite.uploadMetadata(m["_s"][4:], m, d,
-          forceUpload=(iStatus != "public" or\
-          (iExport == "no" and newExport == "yes")), datacenter=m["_d"])
-        log.progress(tid, "datacite.uploadMetadata")
-        if message is not None:
-          log.badRequest(tid)
-          return "error: bad request - " + _oneline(message)
-      if "_st" in d:
-        if iStatus == "reserved":
-          message = datacite.registerIdentifier(m["_s"][4:], d["_st"], m["_d"])
-          log.progress(tid, "datacite.registerIdentifier")
-        else:
-          message = datacite.setTargetUrl(m["_s"][4:], d["_st"], m["_d"])
-          log.progress(tid, "datacite.setTargetUrl")
-        if message is not None:
-          log.badRequest(tid)
-          return "error: bad request - element '_target': " +\
-            _oneline(message)
-      # The following test for public DOIs may look overly general,
-      # but it's written this way to cover the case that a metadata
-      # update above caused the identifier to become active again.
-      if (newStatus.startswith("unavailable") and iStatus == "public") or\
-        (newStatus == "public" and newExport == "no"):
-        datacite.deactivate(m["_s"][4:], m["_d"])
-        log.progress(tid, "datacite.deactivate")
       # If the identifier is a DOI with CrossRef metadata, make sure
       # the embedded identifier and target URL sections are
       # up-to-date, but only if the identifier is not reserved.
@@ -1240,10 +1215,17 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
         "crossref" in d or "_st" in d):
         d["crossref"] = crossref.replaceTbas(crm, m["_s"][4:],
           d.get("_st", m["_st"]))
+    # DataCite-related validations.  If it seems odd to be validating
+    # way down here, it is... but we can't check metadata requirements
+    # compliance without a complete picture of the metadata.
+    m.update(d)
+    r = _validateDatacite(nqidentifier, m, newStatus != "reserved")
+    if type(r) is str:
+      log.badRequest(tid)
+      return "error: bad request - " + r
     # Finally, and most importantly, update our own databases.
     noid_egg.setElements(ark, d)
     log.progress(tid, "noid_egg.setElements")
-    m.update(d)
     store.update(ark, m, updateUpdateQueue=updateUpdateQueue)
   except Exception, e:
     log.error(tid, e)
@@ -1316,16 +1298,6 @@ def deleteIdentifier (identifier, user, group):
         log.badRequest(tid)
         return "error: bad request - identifier status does not support " +\
           "deletion"
-      if m.get("_s", nqidentifier).startswith("doi:"):
-        doi = m.get("_s", nqidentifier)[4:]
-        # We can't actually delete a DOI, so we do the next best thing...
-        s = datacite.setTargetUrl(doi, "http://datacite.org/invalidDOI",
-          m["_d"])
-        log.progress(tid, "datacite.setTargetUrl")
-        assert s is None,\
-          "unexpected return from DataCite set target URL operation: " + s
-        datacite.deactivate(doi, m["_d"])
-        log.progress(tid, "datacite.deactivate")
     noid_egg.deleteIdentifier(ark)
     log.progress(tid, "noid_egg.deleteIdentifier")
     store.delete(ark)
