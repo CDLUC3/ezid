@@ -26,7 +26,6 @@ import sqlite3
 import threading
 import time
 import uuid
-import zlib
 
 import config
 import log
@@ -226,25 +225,6 @@ def _getOwnerKey (owner, connection):
   finally:
     _ownerMappingLock.release()
 
-def _blobify (metadata):
-  # We copy the whitespace processing performed in noid.setElements so
-  # that the store exactly matches noid.
-  l = []
-  for k, v in metadata.items():
-    k = k.strip()
-    assert len(k) > 0, "empty label"
-    v = v.strip()
-    if len(v) > 0: l.append("%s %s" % (util.encode4(k), util.encode3(v)))
-  return zlib.compress(" ".join(l))
-
-def _deblobify (blob, decompressOnly=False):
-  v = zlib.decompress(blob)
-  if decompressOnly: return v
-  v = v.split(" ")
-  d = {}
-  for i in range(0, len(v), 2): d[util.decode(v[i])] = util.decode(v[i+1])
-  return d
-
 def insert (identifier, metadata, updateUpdateQueue=True):
   """
   Inserts an identifier in the store database.  'identifier' should be
@@ -261,7 +241,7 @@ def insert (identifier, metadata, updateUpdateQueue=True):
     connection, poolId = _getConnection()
     key = _getOwnerKey(metadata["_o"], connection)
     updateTime = max(int(metadata["_u"]), int(metadata.get("_su", 0)))
-    blob = _blobify(metadata)
+    blob = util.blobify(metadata)
     visible = oai.isVisible(metadata.get("_s", "ark:/" + identifier), metadata)
     c = connection.cursor()
     begun = _begin(c)
@@ -300,7 +280,7 @@ def update (identifier, metadata, insertIfNecessary=False,
     connection, poolId = _getConnection()
     key = _getOwnerKey(metadata["_o"], connection)
     updateTime = max(int(metadata["_u"]), int(metadata.get("_su", 0)))
-    blob = _blobify(metadata)
+    blob = util.blobify(metadata)
     visible = oai.isVisible(metadata.get("_s", "ark:/" + identifier), metadata)
     c = connection.cursor()
     begun = _begin(c)
@@ -381,7 +361,7 @@ def get (identifier):
       "WHERE identifier = ?", (identifier,))
     r = c.fetchall()
     if len(r) > 0:
-      return (_deblobify(r[0][0]), r[0][1], bool(r[0][2]))
+      return (util.deblobify(r[0][0]), r[0][1], bool(r[0][2]))
     else:
       return None
   except Exception, e:
@@ -441,7 +421,7 @@ def harvest (owner=None, since=None, start=None, maximum=None,
     c = connection.cursor()
     _execute(c, ("SELECT identifier, metadata FROM identifier%s " +\
       "ORDER BY identifier%s") % (constraints, limit), tuple(values))
-    return [(i, _deblobify(m, decompressOnly=decompressOnly))\
+    return [(i, util.deblobify(m, decompressOnly=decompressOnly))\
       for i, m in c.fetchall()]
   except Exception, e:
     log.otherError("store.harvest", e)
@@ -534,7 +514,7 @@ def oaiHarvest (from_, until, maximum):
     _execute(c, ("SELECT identifier, updateTime, metadata FROM identifier " +\
       "WHERE oaiVisible = 1 AND updateTime > ?%s ORDER BY updateTime ASC " +\
       "LIMIT ?") % untilClause, values)
-    return [(i, ut, _deblobify(m)) for i, ut, m in c.fetchall()]
+    return [(i, ut, util.deblobify(m)) for i, ut, m in c.fetchall()]
   except Exception, e:
     log.otherError("store.oaiHarvest", e)
     tainted = True
@@ -591,12 +571,12 @@ def _operationCodeToString (code):
 def getUpdateQueue (maximum=None):
   """
   Returns the update queue as a list of (sequence number, identifier,
-  metadata, operation) tuples.  The list is in sequence order.  In all
-  cases 'identifier' is an unqualified ARK identifier, e.g.,
-  "13030/foo".  'metadata' is a dictionary of element (name, value)
-  pairs.  'operation' is one of the strings "create", "modify", or
-  "delete".  'maximum' can be used to limit the number of tuples
-  returned.
+  metadata/dictionary, metadata/blob, operation) tuples.  The list is
+  in sequence order.  In all cases 'identifier' is an unqualified ARK
+  identifier, e.g., "13030/foo".  'metadata' is a dictionary of
+  element (name, value) pairs.  'operation' is one of the strings
+  "create", "modify", or "delete".  'maximum' can be used to limit the
+  number of tuples returned.
   """
   connection = None
   tainted = False
@@ -610,8 +590,8 @@ def getUpdateQueue (maximum=None):
       limit = ""
     _execute(c, "SELECT seq, identifier, metadata, operation FROM " +\
       "updateQueue ORDER BY seq" + limit)
-    return [(r[0], r[1], _deblobify(r[2]), _operationCodeToString(r[3]))\
-      for r in c.fetchall()]
+    return [(r[0], r[1], util.deblobify(r[2]), r[2],
+      _operationCodeToString(r[3])) for r in c.fetchall()]
   except Exception, e:
     log.otherError("store.getUpdateQueue", e)
     tainted = True

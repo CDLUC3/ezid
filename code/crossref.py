@@ -23,7 +23,6 @@ import time
 import urllib
 import urllib2
 import uuid
-import zlib
 
 import ezid
 import ezidapp.models
@@ -423,30 +422,16 @@ def _pollDepositStatus (batchId, doi):
       (doi, batchId), e))
     return ("unknown", None)
 
-def _blobify (metadata):
-  l = []
-  for k, v in metadata.items():
-    assert len(k) > 0, "empty label"
-    assert len(v) > 0, "empty value"
-    l.append(util.encode4(k))
-    l.append(util.encode3(v))
-  return zlib.compress(" ".join(l))
-
-def _deblobify (blob):
-  v = zlib.decompress(blob).split(" ")
-  d = {}
-  for i in range(0, len(v), 2): d[util.decode(v[i])] = util.decode(v[i+1])
-  return d
-
-def enqueueIdentifier (identifier, operation, metadata):
+def enqueueIdentifier (identifier, operation, metadata, blob):
   """
   Adds an identifier to the CrossRef queue.  'identifier' should be
   the normalized, qualified identifier, e.g., "doi:10.5060/FOO".
   'operation' is the identifier operation as reported by the store
-  module.  'metadata' is the identifier's metadata dictionary.
+  module.  'metadata' is the identifier's metadata dictionary; 'blob'
+  is the same in blob form.
   """
   e = ezidapp.models.CrossrefQueue(identifier=identifier, owner=metadata["_o"],
-    metadata=_blobify(metadata),
+    metadata=blob,
     operation=ezidapp.models.CrossrefQueue.operationLabelToCode(operation))
   e.save()
 
@@ -479,7 +464,7 @@ def _queue ():
   return ezidapp.models.CrossrefQueue
 
 def _doDeposit (r):
-  m = _deblobify(r.metadata)
+  m = util.deblobify(r.metadata)
   if r.operation == ezidapp.models.CrossrefQueue.DELETE:
     url = "http://datacite.org/invalidDOI"
   else:

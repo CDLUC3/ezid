@@ -83,6 +83,7 @@ import time
 import anvl
 import config
 import datacite
+import datacite_async
 import download
 import ezid
 import ezidadmin
@@ -320,11 +321,14 @@ def _statusLineGenerator (includeSuccessLine):
     na = sum(activeUsers.values())
     nw = sum(waitingUsers.values())
     ql = store.getUpdateQueueLength()
+    ndo = datacite.numActiveOperations()
+    dql = datacite_async.getQueueLength()
     s = ("STATUS %s activeOperations=%d%s waitingRequests=%d%s " +\
-      "updateQueueLength=%d\n") %\
+      "activeDataciteOperations=%d updateQueueLength=%d " +\
+      "dataciteQueueLength=%d\n") %\
       ("paused" if isPaused else "running",
       na, _formatUserCountList(activeUsers),
-      nw, _formatUserCountList(waitingUsers), ql)
+      nw, _formatUserCountList(waitingUsers), ndo, ql, dql)
     yield s.encode("UTF-8")
     time.sleep(3)
 

@@ -23,51 +23,90 @@ import uuid
 
 import config
 import crossref
+import datacite_async
 import log
 import search
 import store
 
 _enabled = None
+_lock = threading.Lock()
+_runningThreads = set()
 _threadName = None
 _idleSleep = None
 
-def _updateSearchDatabase (identifier, operation, metadata):
+def _updateSearchDatabase (identifier, operation, metadata, blob):
   if metadata["_o"] == "anonymous": return
   if "_s" in metadata:
     identifier = metadata["_s"]
   else:
     identifier = "ark:/" + identifier
-  if operation == "create":
-    search.insert(identifier, metadata)
-  elif operation == "modify":
-    search.update(identifier, metadata)
+  if operation in ["create", "modify"]:
+    search.update(identifier, metadata, insertIfNecessary=True)
   elif operation == "delete":
     search.delete(identifier)
   else:
     assert False, "unrecognized operation"
 
-def _updateCrossrefQueue (identifier, operation, metadata):
+def _updateDataciteQueue (identifier, operation, metadata, blob):
+  if "_s" in metadata and metadata["_s"].startswith("doi:") and\
+    metadata.get("_is", "public") != "reserved":
+    datacite_async.enqueueIdentifier(metadata["_s"], operation, metadata, blob)
+
+def _updateCrossrefQueue (identifier, operation, metadata, blob):
   if "_cr" not in metadata: return
   if metadata.get("_is", "public") == "reserved": return
   assert "_s" in metadata and metadata["_s"].startswith("doi:")
-  crossref.enqueueIdentifier(metadata["_s"], operation, metadata)
+  crossref.enqueueIdentifier(metadata["_s"], operation, metadata, blob)
+
+def _checkContinue ():
+  return _enabled and threading.currentThread().getName() == _threadName
 
 def _backprocDaemon ():
-  while _enabled and threading.currentThread().getName() == _threadName:
+  _lock.acquire()
+  try:
+    _runningThreads.add(threading.currentThread().getName())
+  finally:
+    _lock.release()
+  # If we were started due to a reload, we wait for the previous
+  # thread to terminate... but not forever.  60 seconds is arbitrary.
+  totalWaitTime = 0
+  try:
+    while _checkContinue():
+      _lock.acquire()
+      try:
+        n = len(_runningThreads)
+      finally:
+        _lock.release()
+      if n == 1: break
+      assert totalWaitTime <= 60,\
+        "new backproc daemon started before previous daemon terminated"
+      totalWaitTime += _idleSleep
+      time.sleep(_idleSleep)
+  except AssertionError, e:
+    log.otherError("backproc._backprocDaemon", e)
+  # Regular processing.
+  while _checkContinue():
     try:
       l = store.getUpdateQueue(maximum=1000)
       if len(l) > 0:
-        for seq, identifier, metadata, operation in l:
-          if not _enabled or\
-            threading.currentThread().getName() != _threadName:
-            break
-          _updateSearchDatabase(identifier, operation, metadata)
-          _updateCrossrefQueue(identifier, operation, metadata)
+        for seq, identifier, metadata, blob, operation in l:
+          if not _checkContinue(): break
+          # The following 4 statements form a kind of atomic
+          # transaction (and hence there are no continuation checks
+          # here).
+          _updateSearchDatabase(identifier, operation, metadata, blob)
+          _updateDataciteQueue(identifier, operation, metadata, blob)
+          _updateCrossrefQueue(identifier, operation, metadata, blob)
           store.deleteFromUpdateQueue(seq)
       else:
         time.sleep(_idleSleep)
     except Exception, e:
       log.otherError("backproc._backprocDaemon", e)
+  _lock.acquire()
+  try:
+    _runningThreads.remove(threading.currentThread().getName())
+  finally:
+    _lock.release()
 
 def _loadConfig ():
   global _enabled, _idleSleep, _threadName
