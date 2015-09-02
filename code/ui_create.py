@@ -86,7 +86,7 @@ def simple_form_processing(request, d):
            '_export': 'yes' }))
       if s.startswith("success:"):
         new_id = s.split()[1]
-        django.contrib.messages.success(request, "Identifier created.")
+        django.contrib.messages.success(request, "IDENTIFIER CREATED.")
         return "created_identifier: "+new_id
       else:
         django.contrib.messages.error(request, "There was an error creating your identifier:"  + s)
@@ -160,7 +160,7 @@ def advanced_form_processing(request, d):
           uic.group_or_anon_tup(request), to_write)
       if s.startswith("success:"):
         new_id = s.split()[1]
-        django.contrib.messages.success(request, "Identifier created.")
+        django.contrib.messages.success(request, "IDENTIFIER CREATED.")
         return 'created_identifier: ' + new_id
       else:
         if "-" in s:

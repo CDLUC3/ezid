@@ -66,9 +66,15 @@
 
 <div id="page_top"></div>
   <a class="sr-only" href="#main-content">Skip navigation</a>
+      {% include "includes/status.html" %}
       {% include "includes/top.html" %}    
   <a class="sr-only" name="main-content"></a>
-      {% block content %}{% endblock %}
+      {% block heading %}{% endblock %}
+      {% block alert %}
+        {% include "includes/messages.html" %}
+      {% endblock %}
+      {% block content %}
+      {% endblock %}
       
       {% include "includes/footer.html" %}
 
@@ -122,8 +128,10 @@ for (var h = 0, tbody; tbody = tablebody[h]; h++) {
       </script>
     {% endif %}
     <script type="text/javascript">
-    	$('input:visible:enabled').first().focus();
-    	window.scrollTo(0, 0);
+      $('input:visible:enabled').first().focus();
+      window.scrollTo(0, 0);
+
+      $(".alert-success").delay(2000).fadeOut(2000);
     </script>
   </body>
 </html>

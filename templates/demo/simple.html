@@ -3,11 +3,8 @@
 {% load i18n %}
 {% block title %}{% trans "Create Simple Demo Identifier" %}{% endblock %}
 
+{% block heading %}{% content_heading _("Create a Simple Demo Identifier") %}{% endblock %}
 {% block content %}
-{% content_heading _("Create a Simple Demo Identifier") %}
-<div class="alert alert-error" role="alert">
- ! {% trans "That entry is incorrect. Please re-check your entry." %}
-</div>
 <div class="container vertical-buffer-sm">
   <ul class="nav nav-tabs nav-idcreate">
     <li role="presentation" class="active">{% trans "Simple" %}</li>

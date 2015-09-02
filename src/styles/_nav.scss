@@ -56,14 +56,22 @@ nav-logged-in-page-selected-blankspace p {
   letter-spacing: 0.08em;
   padding: 0px;
 }
-.navbar-default .navbar-nav > li a:focus,
-.navbar-default .navbar-nav > li a:hover, 
-.navbar-default .navbar-nav > li.active a, 
-.navbar-default .navbar-nav > li.active a:hover, 
-.navbar-default .navbar-nav > li.active a:focus {
+.navbar-default {
+  .navbar-nav > li a:focus,
+  .navbar-nav > li a:hover, 
+  .navbar-nav > li.active a:hover, 
+  .navbar-nav > li.active a:focus {
   background-color: #FFF;
   color: $design-secondary-color;
   font-weight: bold;
+  padding-bottom: 1px;
+  border-bottom: 4px solid $design-secondary-color;
+  }
+}
+
+.navbar-default .navbar-nav > li.active a {
+  background-color: #FFF;
+  color: $design-secondary-color;
   padding-bottom: 1px;
   border-bottom: 4px solid $design-secondary-color;
 }

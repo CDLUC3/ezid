@@ -1,0 +1,20 @@
+{% if messages %}
+  {% for m in messages %}
+    {% if m.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+      {% if forloop.first %}
+  <div class="alert alert-error" role="alert">
+    Please correct the following error(s) below.
+  </div>
+      {% endif %}
+  <div class="alert alert-error" role="alert">
+    <ul><li class="{{ m.tags }}">
+    {% else %}
+  <div class="alert alert-success" role="alert">
+    {% endif %}
+      {{ m }}
+    {% if m.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+    </li></ul>
+    {% endif %}
+  </div>
+  {% endfor %}
+{% endif %}

@@ -1,14 +1,9 @@
-<script type="text/javascript">var autohide = true;</script>
-<div id="ustatus">
-  {% if alertMessage != "" %}
-    {% if not session or not "hide_alert" in session or not session.hide_alert %}
-    	<p class='notice_message'>{{ alertMessage }}</p>
-    	<script type="text/javascript">autohide = false;</script>
-    {% endif %}
+{% if alertMessage != "" %}
+  {% if not session or not "hide_alert" in session or not session.hide_alert %}
+  <div class="alert alert-warning" role="alert">
+    <a href="#" class="close not-text" data-dismiss="alert">&times;</a>
+    {{ alertMessage }}
+  </div>
   {% endif %}
-  {% if messages %}
-    {% for m in messages %}
-      <p class="{{ m.tags }}">{{ m }}</p>
-    {% endfor %}
-  {% endif %}
-</div>
+{% endif %}
+

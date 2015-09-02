@@ -59,13 +59,13 @@ def menu_user_item(tup, session, is_current, is_last_menu_item):
   return acc
 
 @register.simple_tag
-def learn_breadcrumb(view_title):
+def learn_breadcrumb(view_title, parent_dir_title="Documentation", parent_dir_link="#04"):
   home = _("Home")
   learn = _("Learn")
-  documentation = _("Documentation")
+  parent_dir_title_tr = _(parent_dir_title)
   codeblock = '<div class="container"><ul class="breadcrumb">' + \
     '<li><a href="/">' + home + '</a></li><li><a href="/learn">' + learn + '</a></li>' + \
-    '<li><a href="/learn/#04">' + documentation + '</a></li>' + \
+    '<li><a href="/learn/' + parent_dir_link + '">' + parent_dir_title_tr + '</a></li>' + \
     '<li class="active">' + view_title + '</li></ul></div>' 
   return codeblock
 

@@ -5482,14 +5482,21 @@ h5 {
   border-color: #ff8625;
   color: #000; }
 
+.alert-success {
+  line-height: 1.55em;
+  background-color: #86CA82;
+  border-color: #86CA82;
+  color: #000;
+  font-size: 1.1em; }
+
 .alert-warning-text {
   font-size: 1.1em;
   font-weight: 900;
   color: #FFF; }
 
 .alert-error {
-  background-color: #EB0000;
-  border-color: #EB0000;
+  background-color: #9E1919;
+  border-color: #9E1919;
   color: #FFF;
   font-weight: bold; }
 
@@ -5607,12 +5614,17 @@ nav-logged-in-page-selected-blankspace p {
 
 .navbar-default .navbar-nav > li a:focus,
 .navbar-default .navbar-nav > li a:hover,
-.navbar-default .navbar-nav > li.active a,
 .navbar-default .navbar-nav > li.active a:hover,
 .navbar-default .navbar-nav > li.active a:focus {
   background-color: #FFF;
   color: #b4975a;
   font-weight: bold;
+  padding-bottom: 1px;
+  border-bottom: 4px solid #b4975a; }
+
+.navbar-default .navbar-nav > li.active a {
+  background-color: #FFF;
+  color: #b4975a;
   padding-bottom: 1px;
   border-bottom: 4px solid #b4975a; }
 

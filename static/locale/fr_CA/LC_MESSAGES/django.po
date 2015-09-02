@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-25 13:59-0700\n"
+"POT-Creation-Date: 2015-09-01 13:02-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -506,20 +506,24 @@ msgid "Create an Identifier"
 msgstr ""
 
 #: templates/create/advanced.html:8 templates/create/simple.html:9
+#: templates/demo/simple.html:9
 msgid "That entry is incorrect. Please re-check your entry."
 msgstr ""
 
 #: templates/create/advanced.html:12 templates/create/simple.html:13
-#: ui_tags/templatetags/menus.py:20 ui_tags/templatetags/menus.py:29
+#: templates/demo/simple.html:13 ui_tags/templatetags/menus.py:20
+#: ui_tags/templatetags/menus.py:29
 msgid "Simple"
 msgstr ""
 
 #: templates/create/advanced.html:13 templates/create/simple.html:14
-#: ui_tags/templatetags/menus.py:21 ui_tags/templatetags/menus.py:30
+#: templates/demo/simple.html:14 ui_tags/templatetags/menus.py:21
+#: ui_tags/templatetags/menus.py:30
 msgid "Advanced"
 msgstr ""
 
 #: templates/create/advanced.html:30 templates/create/simple.html:30
+#: templates/demo/simple.html:29
 msgid "CREATE"
 msgstr ""
 
@@ -555,11 +559,19 @@ msgid "contact us"
 msgstr ""
 
 #. Translators: Please preserve &quot; tags
-#: templates/create/simple.html:33
+#: templates/create/simple.html:33 templates/demo/simple.html:32
 msgid ""
 "Clicking &quot;Create&quot; will create the identifier and make it public.  "
 "To defer making it public, use the Advanced form. Once created, an "
 "identifier cannot be renamed or deleted."
+msgstr ""
+
+#: templates/demo/simple.html:4
+msgid "Create Simple Demo Identifier"
+msgstr ""
+
+#: templates/demo/simple.html:7
+msgid "Create a Simple Demo Identifier"
 msgstr ""
 
 #: templates/includes/advanced_describe.html:9
@@ -611,6 +623,13 @@ msgstr ""
 
 #: templates/includes/simple_id_type.html:8
 msgid "Choose an identifier type"
+msgstr ""
+
+#: templates/includes/simple_id_type.html:41
+msgid ""
+"Demo identifiers, indicated on EZID screens with an asterisk (&#42;) are "
+"temporary identifiers for use in testing the EZID service. They last for two "
+"weeks."
 msgstr ""
 
 #: templates/info/crossref_faq.html:11
@@ -739,8 +758,4 @@ msgstr ""
 
 #: ui_tags/templatetags/menus.py:64
 msgid "Learn"
-msgstr ""
-
-#: ui_tags/templatetags/menus.py:65
-msgid "Documentation"
 msgstr ""
