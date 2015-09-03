@@ -3,8 +3,8 @@
 {% load i18n %}
 
 {% block title %}{% trans "Request password reset" %}{% endblock %}
+{% block heading %}{% content_heading _("Request password reset") %}{% endblock %}
 {% block content %}
-{% content_heading _("Request password reset") %}
 
 <div class="container vertical-buffer">
 <form method="post" action="{% url "ui_account.pwreset" %}" class="form-horizontal" role="form">
@@ -35,9 +35,12 @@
   <p>{% trans "You will be sent an email containing a link allowing your password to be reset." %}</p>
   <p>(
     {% url "ui.contact" as url_contact %}
-    {# Translators: Copy HTML tags over and only translate words outside of these tags #}
-    {# Translators: i.e.: <a href="blah blah blah">TRANSLATE THIS ONLY, AND KEEP HTML TAGS</a> #}
-    {% blocktrans %}<a href="{{ url_contact }}">Contact us</a> if you don't remember your username.{% endblocktrans %})
+{% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
+i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+{% endcomment %}
+
+    {% blocktrans trimmed %}<a href="{{ url_contact }}">Contact us</a> if you don't remember your username.{% endblocktrans %})
   </p>
 </div>
 <div class="col-sm-6">&nbsp;</div>

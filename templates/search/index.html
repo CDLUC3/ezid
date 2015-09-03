@@ -3,9 +3,8 @@
 {% load i18n %}
 
 {% block title %}{%trans "Search across all identifiers" %}{% endblock %}
-
+{% block heading %}{% content_heading _("Search across all identifiers") %}{% endblock %}
 {% block content %}
-{% content_heading _("Search across all identifiers") %}
 <div class="container vertical-buffer-xs">
 
 <section id="search">

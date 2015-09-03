@@ -6,9 +6,8 @@
 {% trans "Contact Us" as t2_title %}
 {% endcomment %}
 {% block title %}{%trans "Contact Us" %}{% endblock %}
-
+{% block heading %}{% content_heading _("Contact Us") %}{% endblock %}
 {% block content %}
-{% content_heading _("Contact Us") %}
 {% comment %}
 ***** NOT WORKING ****}
 {% get_current_language as LANGUAGE_CODE %}

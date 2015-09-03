@@ -8,24 +8,28 @@
 {% block heading %}{% content_heading _("Identifier Details") %}{% endblock %}
 {% block content %}
 <div class="container vertical-buffer-20">
-  <div class="row">
-    <label class="col-sm-12">{% trans "Identifier" %}:</label>
+  <div class="row vertical-buffer-bot">
+    <label class="col-xs-2">{% trans "Identifier" %}:</label>
+    <div class="col-sm-7 col-xs-10"><strong>{% identifier_display id_text testPrefixes %}</strong></div>
   </div>
   <div class="row vertical-buffer-bot">
-    <div id="iddetails-id">{% identifier_display id_text testPrefixes %}</div>
-    {% include "includes/get_link.html" %}  
-    {% if recent_creation %}
-    <div class="iddetails__delay-text">
-      ({% trans "takes up to 30 minutes for link to work" %})
+    <label class="col-sm-2 col-xs-2">{% trans "Identifier as URL" %}:</label>
+    <div class="col-sm-5 col-xs-8">
+      {% full_url_to_id_details id_text %}
     </div>
-    {% else %}
-      {% if recent_update %}
-      <div class="iddetails__delay-text">
-        ({% trans "takes up to 30 minutes for link to be updated" %})
-      </div>
-      {% endif %}
-    {% endif %}
+    {% include "includes/get_link.html" %}  
   </div>
+    {% if recent_creation or recent_update %}
+  <div class="row vertical-buffer-bot">
+    <div class="col-xs-5 col-xs-offset-7 iddetails__delay-text">
+      {% if recent_creation %}
+      ({% trans "takes up to 30 minutes for link to work" %})
+      {% elif recent_update %}
+      ({% trans "takes up to 30 minutes for link to be updated" %})
+      {% endif %}
+    </div>
+  </div>
+    {% endif %}
   <hr/>
   <div class="row vertical-buffer-bot">
     <div class="inline-header">

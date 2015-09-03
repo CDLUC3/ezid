@@ -3,9 +3,8 @@
 {% load i18n %}
 
 {% block title %}{%trans "My Account" %}{% endblock %}
-
+{% block heading %}{% content_heading _("My Account") %}{% endblock %}
 {% block content %}
-{% content_heading _("My Account") %}
 <div class="container vertical-buffer-xs">
   <form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" class="form-horizontal" role="form">
   <h3>{% trans "ACCOUNT INFORMATION" %}</h3>

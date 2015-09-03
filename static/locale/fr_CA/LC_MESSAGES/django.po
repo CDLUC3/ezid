@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-01 13:02-0700\n"
+"POT-Creation-Date: 2015-09-03 14:52-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,8 +66,8 @@ msgstr ""
 msgid "There was a problem sending your email"
 msgstr ""
 
-#: doc/apidoc.2.html:4 doc/apidoc.2.html.py:6 doc/apidoc.html:4
-#: doc/apidoc.html.py:6
+#: doc/apidoc.2.html:4 doc/apidoc.2.html.py:5 doc/apidoc.html:4
+#: doc/apidoc.html.py:5
 msgid "The EZID API, Version 2"
 msgstr ""
 
@@ -83,79 +83,79 @@ msgstr ""
 msgid "Error: 404 Not Found"
 msgstr ""
 
-#: templates/404.html:8
+#: templates/404.html:6
 msgid "Error"
 msgstr ""
 
-#: templates/404.html:12
+#: templates/404.html:11
 msgid "Not Found"
 msgstr ""
 
-#: templates/account/edit.html:5 templates/account/edit.html.py:8
+#: templates/account/edit.html:5 templates/account/edit.html.py:6
 msgid "My Account"
 msgstr ""
 
-#: templates/account/edit.html:11
+#: templates/account/edit.html:10
 msgid "ACCOUNT INFORMATION"
 msgstr ""
 
-#: templates/account/edit.html:14 templates/account/pwreset1.html:12
+#: templates/account/edit.html:13 templates/account/pwreset1.html:12
 msgid "Username"
 msgstr ""
 
-#: templates/account/edit.html:20
+#: templates/account/edit.html:19
 msgid "First Name"
 msgstr ""
 
-#: templates/account/edit.html:28
+#: templates/account/edit.html:27
 msgid "Last Name"
 msgstr ""
 
-#: templates/account/edit.html:36
+#: templates/account/edit.html:35
 msgid "Phone"
 msgstr ""
 
-#: templates/account/edit.html:44
+#: templates/account/edit.html:43
 msgid "Email Address"
 msgstr ""
 
-#: templates/account/edit.html:52
+#: templates/account/edit.html:51
 msgid "Co-owners"
 msgstr ""
 
-#: templates/account/edit.html:57
+#: templates/account/edit.html:56
 msgid "NOTE:"
 msgstr ""
 
-#: templates/account/edit.html:57
+#: templates/account/edit.html:56
 msgid "Use commas to separate multiple entries."
 msgstr ""
 
-#: templates/account/edit.html:61
+#: templates/account/edit.html:60
 msgid "Look Up Owners"
 msgstr ""
 
-#: templates/account/edit.html:67
+#: templates/account/edit.html:66
 msgid "CHANGE PASSWORD"
 msgstr ""
 
-#: templates/account/edit.html:70
+#: templates/account/edit.html:69
 msgid "Current password"
 msgstr ""
 
-#: templates/account/edit.html:78
+#: templates/account/edit.html:77
 msgid "New password"
 msgstr ""
 
-#: templates/account/edit.html:86
+#: templates/account/edit.html:85
 msgid "Confirm new password"
 msgstr ""
 
-#: templates/account/edit.html:95
+#: templates/account/edit.html:94
 msgid "SAVE"
 msgstr ""
 
-#: templates/account/pwreset1.html:5 templates/account/pwreset1.html.py:7
+#: templates/account/pwreset1.html:5 templates/account/pwreset1.html.py:6
 msgid "Request password reset"
 msgstr ""
 
@@ -174,59 +174,60 @@ msgid ""
 msgstr ""
 
 #. Translators: Copy HTML tags over and only translate words outside of these tags
-#. Translators: i.e.: <a href="blah blah blah">TRANSLATE THIS ONLY, AND KEEP HTML TAGS</a>
-#: templates/account/pwreset1.html:40
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/account/pwreset1.html:43
 #, python-format
 msgid ""
 "<a href=\"%(url_contact)s\">Contact us</a> if you don't remember your "
 "username."
 msgstr ""
 
-#: templates/contact.html:8 templates/contact.html.py:11
+#: templates/contact.html:8 templates/contact.html.py:9
 msgid "Contact Us"
 msgstr ""
 
-#: templates/contact.html:40
+#: templates/contact.html:39
 msgid ""
 "Please fill out this form if you would like more information about our "
 "services or have a specific question. If you have a comment we are always "
 "happy to hear feedback."
 msgstr ""
 
-#: templates/contact.html:56
+#: templates/contact.html:55
 msgid "Reason for contacting EZID"
 msgstr ""
 
-#: templates/contact.html:70
+#: templates/contact.html:69
 msgid "Your Name"
 msgstr ""
 
-#: templates/contact.html:77
+#: templates/contact.html:76
 msgid "Your URL"
 msgstr ""
 
-#: templates/contact.html:84
+#: templates/contact.html:83
 msgid "Your Email"
 msgstr ""
 
-#: templates/contact.html:90
+#: templates/contact.html:89
 msgid "Your Institution"
 msgstr ""
 
-#: templates/contact.html:96
+#: templates/contact.html:95
 msgid "Please indicate any question or comment you may have"
 msgstr ""
 
-#: templates/contact.html:102
+#: templates/contact.html:101
 msgid "How did you hear about us?"
 msgstr ""
 
 #. Translators: This is the Submit button. All uppercase.
-#: templates/contact.html:120
+#: templates/contact.html:119
 msgid "SUBMIT"
 msgstr ""
 
-#: templates/contact.html:139
+#: templates/contact.html:138
 msgid ""
 "Assigning DOIs to figshare content through the EZID system allows "
 "researchers to efficiently share and cite their research.  The great team at "
@@ -234,16 +235,16 @@ msgid ""
 "structured process."
 msgstr ""
 
-#: templates/contact.html:142
+#: templates/contact.html:141
 msgid "Mark Hahnel, Ph. D."
 msgstr ""
 
 #. Translators: "figshare" does not need to be translated: company name
-#: templates/contact.html:144
+#: templates/contact.html:143
 msgid "Founder, figshare"
 msgstr ""
 
-#: templates/contact.html:149
+#: templates/contact.html:148
 msgid ""
 "We're very pleased to see EZID working on behalf of its clients to create "
 "new partnerships that expand the reach and impact of research and "
@@ -254,19 +255,19 @@ msgid ""
 "forms."
 msgstr ""
 
-#: templates/contact.html:152
+#: templates/contact.html:151
 msgid "Rebecca Kennison, Director"
 msgstr ""
 
-#: templates/contact.html:153
+#: templates/contact.html:152
 msgid "Center for Digital Research and Scholarship"
 msgstr ""
 
-#: templates/contact.html:154
+#: templates/contact.html:153
 msgid "Columbia University Libraries/Information Services"
 msgstr ""
 
-#: templates/contact.html:159
+#: templates/contact.html:158
 msgid ""
 "EZID gives Open Context critical services that help make our data "
 "publications lasting contributions to the scholarly record.  Because of "
@@ -274,15 +275,15 @@ msgid ""
 "used and cited in years to come."
 msgstr ""
 
-#: templates/contact.html:162
+#: templates/contact.html:161
 msgid "Eric C. Kansa, Ph. D."
 msgstr ""
 
-#: templates/contact.html:163
+#: templates/contact.html:162
 msgid "Cofounder and Technology Director"
 msgstr ""
 
-#: templates/contact.html:169
+#: templates/contact.html:168
 msgid ""
 "The partnership between EZID and CrossRef presents an exciting opportunity "
 "for eScholarship and our journal partners. The inclusion of our Open Access "
@@ -291,19 +292,19 @@ msgid ""
 "scholarship published on our platform."
 msgstr ""
 
-#: templates/contact.html:172
+#: templates/contact.html:171
 msgid "Catherine Mitchell, Director"
 msgstr ""
 
-#: templates/contact.html:173
+#: templates/contact.html:172
 msgid "Access and Publishing"
 msgstr ""
 
-#: templates/contact.html:174
+#: templates/contact.html:173
 msgid "California Digital Library/University of California"
 msgstr ""
 
-#: templates/contact.html:181
+#: templates/contact.html:180
 msgid "SIGN UP FOR OUR NEWSLETTER"
 msgstr ""
 
@@ -500,66 +501,62 @@ msgstr ""
 msgid "Create an Advanced Identifier"
 msgstr ""
 
-#: templates/create/advanced.html:6 templates/create/simple.html:4
-#: templates/create/simple.html.py:7
+#: templates/create/advanced.html:5 templates/create/simple.html:4
+#: templates/create/simple.html.py:6
 msgid "Create an Identifier"
 msgstr ""
 
-#: templates/create/advanced.html:8 templates/create/simple.html:9
-#: templates/demo/simple.html:9
-msgid "That entry is incorrect. Please re-check your entry."
-msgstr ""
-
-#: templates/create/advanced.html:12 templates/create/simple.html:13
-#: templates/demo/simple.html:13 ui_tags/templatetags/menus.py:20
+#: templates/create/advanced.html:9 templates/create/simple.html:10
+#: templates/demo/simple.html:10 ui_tags/templatetags/menus.py:20
 #: ui_tags/templatetags/menus.py:29
 msgid "Simple"
 msgstr ""
 
-#: templates/create/advanced.html:13 templates/create/simple.html:14
-#: templates/demo/simple.html:14 ui_tags/templatetags/menus.py:21
+#: templates/create/advanced.html:10 templates/create/simple.html:11
+#: templates/demo/simple.html:11 ui_tags/templatetags/menus.py:21
 #: ui_tags/templatetags/menus.py:30
 msgid "Advanced"
 msgstr ""
 
-#: templates/create/advanced.html:30 templates/create/simple.html:30
-#: templates/demo/simple.html:29
+#: templates/create/advanced.html:27 templates/create/simple.html:27
+#: templates/demo/simple.html:26
 msgid "CREATE"
 msgstr ""
 
-#: templates/create/advanced.html:32
+#: templates/create/advanced.html:29
 msgid "Once created, an identifier  cannot be renamed  or deleted."
 msgstr ""
 
-#: templates/create/no_shoulders.html:5 templates/create/no_shoulders.html:8
+#: templates/create/no_shoulders.html:5 templates/create/no_shoulders.html:6
 msgid "Permanent Identifier Creation Unavailable"
 msgstr ""
 
-#: templates/create/no_shoulders.html:12
+#: templates/create/no_shoulders.html:11
 msgid ""
 "You may not create any permanent identifiers because your account doesn't "
 "have any identifier types (shoulders) assigned to it."
 msgstr ""
 
 #. Translators: Copy HTML tags over and only translate words outside of these tags
-#. Translators: i.e.: <a href="blah blah blah">TRANSLATE THIS ONLY, AND KEEP HTML TAGS</a>
-#: templates/create/no_shoulders.html:19
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/create/no_shoulders.html:20
 #, python-format
 msgid ""
 "You may still create temporary identifiers with the <a href="
 "\"%(url_demosimple)s\">demo identifier</a>functionality."
 msgstr ""
 
-#: templates/create/no_shoulders.html:22
+#: templates/create/no_shoulders.html:23
 msgid "If you have questions, you may "
 msgstr ""
 
-#: templates/create/no_shoulders.html:23
+#: templates/create/no_shoulders.html:24
 msgid "contact us"
 msgstr ""
 
 #. Translators: Please preserve &quot; tags
-#: templates/create/simple.html:33 templates/demo/simple.html:32
+#: templates/create/simple.html:30 templates/demo/simple.html:29
 msgid ""
 "Clicking &quot;Create&quot; will create the identifier and make it public.  "
 "To defer making it public, use the Advanced form. Once created, an "
@@ -570,7 +567,7 @@ msgstr ""
 msgid "Create Simple Demo Identifier"
 msgstr ""
 
-#: templates/demo/simple.html:7
+#: templates/demo/simple.html:6
 msgid "Create a Simple Demo Identifier"
 msgstr ""
 
@@ -601,7 +598,7 @@ msgid "NO"
 msgstr ""
 
 #: templates/includes/advanced_publish_id.html:36
-#: templates/manage/edit.html:137
+#: templates/manage/edit.html:141
 msgid "Allow harvesting/indexing?"
 msgstr ""
 
@@ -625,70 +622,112 @@ msgstr ""
 msgid "Choose an identifier type"
 msgstr ""
 
-#: templates/includes/simple_id_type.html:41
+#. Translators: Please preserve &#42; tags
+#: templates/includes/simple_id_type.html:42
 msgid ""
 "Demo identifiers, indicated on EZID screens with an asterisk (&#42;) are "
 "temporary identifiers for use in testing the EZID service. They last for two "
 "weeks."
 msgstr ""
 
-#: templates/info/crossref_faq.html:11
+#: templates/info/about_us.html:5
+msgid "About EZID"
+msgstr ""
+
+#: templates/info/about_us.html:6
+msgid "About Us"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/info/about_us.html:17
+msgid ""
+"<h2>About EZID</h2> <p> EZID is a service conceived, built, and maintained "
+"by the <a href=\"http://www.cdlib.org/\">California Digital Library<span "
+"title=\"External Link\" class=\"ext-icon\"></span></a> (CDL). CDL was "
+"founded by the University of California in 1997 to take advantage of "
+"emerging technologies that were transforming the way digital information was "
+"being published and accessed. CDL's diverse and talented staff has assembled "
+"one of the world's largest digital research libraries and has changed the "
+"ways that faculty, students, and researchers discover and access "
+"information. </p> <p> CDL has relationships with a wide range of researchers "
+"across the University, including natural history museums, research groups, "
+"individual scientists and faculty members on all 10 UC campuses. CDL staff "
+"members bring a unique blend of experience to this multi-disciplinary "
+"venture.  CDL staff members have formal training in science, mathematics, "
+"the humanities, and information science, as well as deep professional "
+"experience in the creation of software, services, and funded proposals. </p> "
+"<p> CDL has\textensive contacts with scientists, within the University of "
+"California and beyond via projects funded by the Library of Congress, "
+"National Science Foundation, National Institutes of Health (pending) and the "
+"Gordon and Betty Moore Foundation.  More information about CDL's i <a href="
+"\"http://www.cdlib.org/about/grants.html\">grants and partnerships<span "
+"title=\"External Link\" class=\"ext-icon\"></span></a> is available. "
+"Finally, CDL is a founding member of the international <a href=\"http://www."
+"datacite.org/\">DataCite<span title=\"External Link\" class=\"ext-icon\"></"
+"span></a> consortium, which is dedicated to providing the social and "
+"technical infrastructure that will enable data sharing and publication. </p>"
+msgstr ""
+
+#: templates/info/crossref_faq.html:9
 msgid "CrossRef: Frequently Asked Questions"
 msgstr ""
 
 #. Translators: Copy HTML tags over and only translate words outside of these tags
-#. i.e.: <p>TRANSLATE THIS ONLY</p>
-#. i.e.: <a href="blah blah blah">AND KEEP HTML TAGS</a>
-#: templates/info/crossref_faq.html:22
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/info/crossref_faq.html:21
 msgid ""
-"\n"
-"<p><strong>How do I get my data into CrossRef</strong></p>\n"
-"<p>Lorem ipsum dolor sit amet, offendit vivendum volutpat ad sea. Per tale "
-"dicta an. Agam delenit abhorreant mel te, oratio aeterno definitionem vim "
-"ei, ea malorum maiestatis deterruisset eos. Pro eu quem oblique detracto.</"
-"p>\n"
-"\n"
-"<p>No sanctus scaevola definitionem vim. Vis justo quaestio ne, ne qui quod "
-"erroribus. Eam animal legendos ex, adhuc mandamus recteque pri ne. Solum "
-"audiam accusata qui ea, perfecto inimicus est in. Mentitum iracundia "
-"torquatos cu est, periculis complectitur ex vis. Eos illud postea ut, erant "
-"facilisis appellantur est cu, mutat debet et ius.</p>\n"
+"<p><strong>How do I get my data into CrossRef</strong></p> <p>Lorem ipsum "
+"dolor sit amet, offendit vivendum volutpat ad sea. Per tale dicta an. Agam "
+"delenit abhorreant mel te, oratio aeterno definitionem vim ei, ea malorum "
+"maiestatis deterruisset eos. Pro eu quem oblique detracto.</p> <p>No sanctus "
+"scaevola definitionem vim. Vis justo quaestio ne, ne qui quod erroribus. Eam "
+"animal legendos ex, adhuc mandamus recteque pri ne. Solum audiam accusata "
+"qui ea, perfecto inimicus est in. Mentitum iracundia torquatos cu est, "
+"periculis complectitur ex vis. Eos illud postea ut, erant facilisis "
+"appellantur est cu, mutat debet et ius.</p>"
 msgstr ""
 
-#: templates/manage/details.html:6 templates/manage/details.html.py:9
-#: templates/manage/edit.html:9
+#: templates/manage/details.html:6 templates/manage/details.html.py:8
+#: templates/manage/edit.html:8
 msgid "Identifier Details"
 msgstr ""
 
-#: templates/manage/details.html:19
+#: templates/manage/details.html:16 templates/manage/edit.html:22
+msgid "Identifier as URL"
+msgstr ""
+
+#: templates/manage/details.html:26
 msgid "takes up to 30 minutes for link to work"
 msgstr ""
 
-#: templates/manage/details.html:24
+#: templates/manage/details.html:28
 msgid "takes up to 30 minutes for link to be updated"
 msgstr ""
 
-#: templates/manage/details.html:33 templates/manage/edit.html:27
+#: templates/manage/details.html:37 templates/manage/edit.html:31
 msgid "ABOUT THE IDENTIFIED OBJECT"
 msgstr ""
 
-#: templates/manage/details.html:66
+#: templates/manage/details.html:70
 msgid "See the DataCite XML Metadata record in a new window"
 msgstr ""
 
-#: templates/manage/details.html:70
+#: templates/manage/details.html:74
 msgid "See the CrossRef XML Metadata record in a new window"
 msgstr ""
 
-#: templates/manage/details.html:78 templates/manage/edit.html:66
+#: templates/manage/details.html:82 templates/manage/edit.html:70
 msgid "ABOUT THE IDENTIFIER"
 msgstr ""
 
-#: templates/manage/details.html:127
+#: templates/manage/details.html:131
 msgid "MAKE CHANGES"
 msgstr ""
 
-#: templates/manage/details.html:136
+#: templates/manage/details.html:140
 msgid "Citation Preview"
 msgstr ""
 
@@ -696,43 +735,43 @@ msgstr ""
 msgid "Edit Identifier Details"
 msgstr ""
 
-#: templates/manage/edit.html:30
+#: templates/manage/edit.html:34
 msgid "This identified object uses the"
 msgstr ""
 
-#: templates/manage/edit.html:30
+#: templates/manage/edit.html:34
 msgid "profile"
 msgstr ""
 
-#: templates/manage/edit.html:99
+#: templates/manage/edit.html:103
 msgid "reserved"
 msgstr ""
 
-#: templates/manage/edit.html:104
+#: templates/manage/edit.html:108
 msgid "public"
 msgstr ""
 
-#: templates/manage/edit.html:110
+#: templates/manage/edit.html:114
 msgid "unavailable"
 msgstr ""
 
-#: templates/manage/edit.html:123
+#: templates/manage/edit.html:127
 msgid "Unavailable reason"
 msgstr ""
 
-#: templates/manage/edit.html:143
+#: templates/manage/edit.html:147
 msgid "Yes"
 msgstr ""
 
-#: templates/manage/edit.html:148
+#: templates/manage/edit.html:152
 msgid "No"
 msgstr ""
 
-#: templates/manage/edit.html:157
+#: templates/manage/edit.html:161
 msgid "SAVE CHANGES"
 msgstr ""
 
-#: templates/search/index.html:5 templates/search/index.html.py:8
+#: templates/search/index.html:5 templates/search/index.html.py:6
 msgid "Search across all identifiers"
 msgstr ""
 

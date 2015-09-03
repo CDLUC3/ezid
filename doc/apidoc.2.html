@@ -2,8 +2,8 @@
 {% load layout_extras %}
 {% load i18n %}
 {% block title %}{% trans "The EZID API, Version 2" %}{% endblock %}
+{% block heading %}{% content_heading _("The EZID API, Version 2") %}{% endblock %}
 {% block content %}
-{% content_heading _("The EZID API, Version 2") %}
 
 {% include "/doc/apidoc.2_body.html" %}
 

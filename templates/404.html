@@ -3,9 +3,8 @@
 {% load i18n %}
 
 {% block title %}{%trans "Error: 404 Not Found" %}{% endblock %}
-
+{% block heading %}{% content_heading _("Error") %}{% endblock %}
 {% block content %}
-{% content_heading _("Error") %}
 
 <div class="vertical-buffer"></div>
 <div class="container">
