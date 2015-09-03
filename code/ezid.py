@@ -1223,6 +1223,10 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
     if type(r) is str:
       log.badRequest(tid)
       return "error: bad request - " + r
+    # Propagate changes back to the delta dictionary (ugh).
+    if "datacite.resourcetype" in d:
+      d["datacite.resourcetype"] = m["datacite.resourcetype"]
+    if "datacite" in d: d["datacite"] = m["datacite"]
     # Finally, and most importantly, update our own databases.
     noid_egg.setElements(ark, d)
     log.progress(tid, "noid_egg.setElements")
