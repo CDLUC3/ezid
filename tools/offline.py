@@ -28,12 +28,11 @@ except ImportError:
     os.path.abspath(__file__))[0])[0])
   import settings
 
-# Bootstrapping: reference a(ny) Django setting to trigger the loading
-# of said settings, which causes the Python path to be further
-# modified, supporting subsequent imports.
+# Bootstrapping: among other things, the following causes the Python
+# path to be further modified, supporting subsequent imports.
 
-import django.conf
-django.conf.settings.PROJECT_ROOT
+import django
+django.setup()
 
 # Configure the logging so that errors don't get added to the server's
 # log file.  Also, disable daemon threads.
