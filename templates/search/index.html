@@ -8,7 +8,179 @@
 <div class="container vertical-buffer-xs">
 
 <section id="search">
--------------- Search page content here --------------
+  <form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" role="form" action="search_results.html">
+  <!-- Row: Basic Search -->
+  <div class="row">
+    <div class="col-sm-12 form-group form-group-sm">
+      <div class="radio-inline radio_svg search__tooltip--container">
+        <input id="search_mine" type="checkbox" class="checkbox__icon" disabled>    
+        <label for="search_mine" class="image-checkbox-label text-color-reg disabled">Search only over my identifiers
+        </label>
+        <img src="/static/images/iconHelp.svg" class="icon-help" ALT="What is this?">
+        <div class="tip font-xsmall">To search over only your identifiers, please login.</div>
+      </div>
+    </div>
+    <br/><br/>
+
+    <div class="col-sm-12 form-group form-group-sm">
+      <label for="search_id">Identifier</label>
+      <input type="text" class="form-control" id="search_id" placeholder="ex: doi:10.5061/DRYAD.20">
+    </div>
+
+    <div class="col-sm-6 form-group form-group-sm">
+      <label for="search_keyword">Key Word</label>
+      <input type="text" class="form-control" id="search_keyword" placeholder="ex: Guanosine pentaphosphate">
+    </div>
+    <div class="col-sm-6 form-group form-group-sm second-col">
+      <label for="search_title">Title</label>
+      <input type="text" class="form-control" id="search_title" placeholder="ex: Control of rRNA transcription">
+    </div>
+
+    <div class="col-sm-6 form-group form-group-sm">
+      <label for="search_creator">Creator</label>
+      <input type="text" class="form-control" id="search_creator" placeholder="ex: Santos, Eduardo S.">
+    </div>
+    <div class="col-sm-6 form-group form-group-sm second-col">
+      <label for="search_publisher">Publisher</label>
+      <input type="text" class="form-control" id="search_publisher" placeholder="ex: Dryad Digital Repository">
+    </div>
+
+    <div class="col-sm-6 form-group form-group-sm">
+      <div class="row">
+        <label for="search_publication_year_from">Publication Year</label>
+      </div>
+      <div class="form-group row">
+        <div class="form-inline">
+          <label for="search_publication_year_from" class="col-md-1 control-label">From</label>
+          <div class="col-md-2">
+            <input type="text" class="form-control" id="search_publication_year_from" placeholder="YYYY">
+          </div>
+          <label for="search_publication_year_to" class="col-md-1 control-label">To</label>
+          <div class="col-md-2">
+            <input type="text" class="form-control" id="search_publication_year_to" placeholder="YYYY">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 form-group form-group-sm second-col">
+      <label for="search_resource_type">Resource Type</label>
+      <select id="search_resource_type" class="form-control">
+        <option selected="true" disabled="true">Select a type of resource</option><option value="Audiovisual" >Audiovisual</option><option value="Collection" >Collection</option><option value="Dataset" >Dataset</option><option value="Event" >Event</option><option value="Image" >Image</option><option value="InteractiveResource" >InteractiveResource</option><option value="Model" >Model</option><option value="PhysicalObject" >PhysicalObject</option><option value="Service" >Service</option><option value="Software" >Software</option><option value="Sound" >Sound</option><option value="Text" >Text</option><option value="Workflow" >Workflow</option><option value="Other" >Other</option></select>
+     </select>
+    </div>
+  </div>
+    <!-- End Row: Basic Search -->
+  <hr>
+    <!-- Row: Advanced Search -->
+
+  <div class="accordion" id="accordion_advanced_search">
+    <div class="accordion-group">
+      <div class="accordion-heading inline-header">
+        <a class="accordion-toggle not-text" data-toggle="collapse" data-parent="#accordion_advanced_search" href="#accordion_advanced_search_collapse">
+          <i class="indicator caret-right"></i><h3>ADVANCED SEARCH</h3><img id="search__icon--advanced" src="/static/images/searchAdvanced.svg" ALT="">
+        </a>
+      </div>
+      <div id="accordion_advanced_search_collapse" class="accordion-body collapse">
+        <div class="accordion-inner">
+
+          <div class="row">
+            <div class="col-sm-6 form-group form-group-sm">
+              <label for="search_target_url">Target URL</label>
+              <input type="text" class="form-control" id="search_target_url" placeholder="ex: http://datadryad.org/resource/doi:10.5061/dryad.mt6m4">
+            </div>
+            <div class="col-sm-6 form-group form-group-sm second-col">
+              <label for="search_identifier_type">Identifier Type</label>
+              <select id="search_identifier_type" class="form-control">
+                <option selected="true" disabled="true">Select a type of identifier (ARK or DOI)</option><option value="ARK" >ARK</option><option value="DOI" >DOI</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6 form-group form-group-sm">
+              <label for="search_create_date_from">Create Date</label>
+              <div class="form-inline">
+                <div class="row">
+                  <label for="search_create_date_from" class="col-md-1 control-label">From</label>
+                  <div class="col-sm-6">
+                    <input type="date" class="form-control" id="search_create_date_from">
+                  </div>
+                  <label for="search_create_date_to" class="col-md-1 control-label">To</label>
+                  <div class="col-sm-6">
+                    <input type="date" class="form-control" id="search_create_date_to">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6 form-group form-group-sm second-col">
+              <label for="search_update_date_from">Update Date</label>
+              <div class="form-inline">
+                <div class="row">
+                  <label for="search_update_date_from" class="col-md-1 control-label">From</label>
+                  <div class="col-sm-6">
+                    <input type="date" class="form-control" id="search_update_date_from">
+                  </div>
+                  <label for="search_update_date_to" class="col-md-1 control-label">To</label>
+                  <div class="col-sm-6">
+                    <input type="date" class="form-control" id="search_update_date_to">
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-4 form-group form-group-sm">
+              <label for="search_status">Status</label>
+              <select id="search_status" class="form-control">
+                <option selected="true" disabled="true">Select a status</option><option value="Public" >Public</option><option value="Reserved" >Reserved</option><option value="Unavailable" >Unavailable</option>
+              </select>
+            </div>
+            <div class="col-sm-4 form-group form-group-sm">
+              <div>
+                <label for="search_harvestingindexing">Allow Harvesting/Indexing?</label>
+                <label class="radio-inline">
+                  <input type="radio" name="search_harvestingindexing" id="search_harvestingindexing_yes" value="Yes"> Yes
+                </label>
+                <span class="border-left-solid-blue"></span>
+                <label class="radio-inline">
+                  <input type="radio" name="search_harvestingindexing" id="search_harvestingindexing_no" value="No"> No
+                </label>
+              </div>
+            </div>
+            <div class="col-sm-4 form-group form-group-sm">
+              <div>
+                <label for="search_hasmetadata">Has Metadata?</label>
+                <label class="radio-inline">
+                  <input type="radio" name="search_hasmetadata" id="search_hasmetadata_yes" value="Yes"> Yes
+                </label>
+                <span class="border-left-solid-blue"></span>
+                <label class="radio-inline">
+                  <input type="radio" name="search_hasmetadata" id="search_hasmetadata_no" value="No"> No
+                </label>
+              </div>
+            </div>
+          </div>  <!-- End Advanced Search Rows-->
+        </div>  <!-- End accordion inner -->          
+      </div>  <!-- End accordion collapse -->
+    </div> <!-- End accordion-group -->
+  </div> <!-- End accordion wrapper -->
+  <div class="vertical-buffer-xs"></div>
+  <input class="btn btn-primary btn-fullwidth" type="submit" value="SEARCH">
+  </form>
 </section>
 </div>
+<script>
+function toggleChevron(e) {
+    $(e.target)
+    .prev('.accordion-heading')
+    .find("i.indicator")
+    .toggleClass('caret caret-right');
+}
+$('#accordion_advanced_search').on('hidden.bs.collapse', toggleChevron);
+$('#accordion_advanced_search').on('shown.bs.collapse', toggleChevron);
+</script>
 {% endblock %}

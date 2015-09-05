@@ -46,6 +46,7 @@ a span.ext-icon {
   display: none;
 }
 .icon-link:hover .icon-inactive,
+.icon-link:hover .icon-inactive a,
 .icon-link:active .icon-inactive{
   display: none;
 }

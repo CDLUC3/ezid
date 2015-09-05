@@ -1,0 +1,93 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load i18n %}
+
+{% block title %}{%trans "Search across all identifiers" %}{% endblock %}
+{% block content %}
+<div class="container vertical-buffer-xs">
+<section id="search_min">
+  <form class="form-horizontal" role="form">
+    <div class="row vertical-buffer-sm">
+      <div class="col-sm-5 form-group form-group-sm">
+        <label for="search_min_input" class="sr-only control-label">((squirrels) AND au:"Colman")</label>
+        <input type="text" class="form-control" id="search_min_input" placeholder="((squirrels) AND au:&quot;Colman&quot;)" />
+      </div>
+      <div class="col-sm-5 form-group form-group-sm">
+        <button class="btn btn-primary padding-side-xs" type="button">{% trans "SEARCH" %}</button>
+        <a href="search.html"><button class="btn btn-primary padding-side-xs" type="button">{% trans "MODIFY ORIGINAL SEARCH" %}</button></a>
+      </div>
+    </div>
+  </form>
+</section>
+
+<section id="search-results">
+  <div class="row gradient-orange block-header">
+    <div class="col-sm-10">
+      <div class="inline-header">
+        <h3 id="header-search-results">139,901 {% trans "Search Results (Includes co-owned identifiers)" %}</h3>
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <button class="btn btn-primary padding-side-xs" type="button">{% trans "CUSTOMIZE VIEW" %}</button>
+    </div>
+  </div>
+
+<table class="table table-hover table-condensed">
+<thead>
+<tr>
+<th>{% trans "Select" %}</th>
+<th>{% trans "Identifier" %}  <span class="caret"></span></th>
+<th>{% trans "Date Last Modified" %}  <span class="caret"></span></th>
+<th>{% trans "Object Title" %}  <span class="caret"></span></th>
+<th>{% trans "Object Creator" %}  <span class="caret"></span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img class="checkbox__icon" src="images/checkbox.svg" ALT=""></td>
+<td><a href="id_edit.html">doi:10.5072/FK2V11Z24F</a></td>
+<td>2015-02-26 04:10:02 UTC</td>
+<td>Piper_BacterialOTU_taxonomy</td>
+<td>Piper, Candace L. ; Siciliano, Steven D. ; Winsley, Tristrom ; Lamb, Eric G.</td>
+</tr>
+<tr>
+<td><img class="checkbox__icon" src="images/checkbox.svg" ALT=""></td>
+<td><a href="id_edit.html">doi:10.5072/FK2V11dHG</a></td>
+<td>2015-02-26 04:10:02 UTC</td>
+<td>Piper_BacterialOTU_taxonomy</td>
+<td>Piper, Candace L. ; Siciliano, Steven D. ; Winsley, Tristrom ; Lamb, Eric G.</td>
+</tr>
+<tr>
+<td><img class="checkbox__icon" src="images/checkbox.svg" ALT=""></td>
+<td><a href='id_edit.html'>doi:10.5072/FK2RJ4CG51</a></td>
+<td>2015-07-20 15:29:01 UTC</td>
+<td>Bones, molars, and briefs (1899)</td>
+<td>(:unkn) unknown</td>
+</tr>
+<tr>
+<td><img class="checkbox__icon" src="images/checkbox.svg" ALT=""></td>
+<td><a href='id_edit.html'>doi:10.5072/FK2.SYN8512021.1</a></td>
+<td>2015-07-20 18:15:56 UTC</td>
+<td>IT060SynapseJavaClientDoiTest</td>
+<td>(author name not available)</td>
+</tr>
+<tr>
+<td><img class="checkbox__icon" src="images/checkbox.svg" ALT=""></td>
+<td><a href='id_edit.html'>doi:10.5072/FK2/Z0OPNC</a></td>
+<td>2015-07-20 17:56:14 UTC</td>
+<td>KCP1 DS3</td>
+<td>kc072015B, kc072015B</td>
+</tr>
+</tbody>
+</table>
+
+  <div class="row">
+    <!-- TODO: Not sure whether it's better to make buttons like this:
+    <input class="btn btn-primary" type="button" value="DOWNLOAD ALL" -->
+    <button class="btn btn-primary padding-side-xs" type="button">{% trans "SELECT ALL" %}</button>
+    <button class="btn btn-primary padding-side-xs" type="button">{% trans "DOWNLOAD SELECTED" %}</button>
+    <button class="btn btn-primary padding-side-xs" type="button">{% trans "DOWNLOAD ALL" %}</button>
+  </div>
+</section>
+</div> <!-- End Container -->
+{% endblock %}

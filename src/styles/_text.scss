@@ -76,7 +76,7 @@ a.boxy-pop:hover {
 }
 // Demo EZID Page
 .number-big {
-  @include boxy(5px, 9px, $design-secondary-color, #FFF);
+  @include boxy(5px, 9px, $design-primary-color, #FFF);
 }
 
 p.italic {

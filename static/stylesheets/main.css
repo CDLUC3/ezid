@@ -4969,6 +4969,17 @@ h2.panel-title > a {
   border-right: 6px solid transparent;
   border-left: 6px solid transparent; }
 
+.caret-right {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  margin: 8px 8px 8px 8px;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 6px solid; }
+
 .ext-icon {
   margin: 0px 2px 5px 6px;
   padding: 9px;
@@ -5005,6 +5016,7 @@ a span.ext-icon {
   display: none; }
 
 .icon-link:hover .icon-inactive,
+.icon-link:hover .icon-inactive a,
 .icon-link:active .icon-inactive {
   display: none; }
 
@@ -5139,7 +5151,7 @@ a.boxy-pop:hover {
 
 .number-big {
   padding: 5px 9px;
-  background-color: #b4975a;
+  background-color: #00778a;
   color: #FFF; }
 
 p.italic {
@@ -5814,10 +5826,6 @@ blockquote p a:hover {
 
 .idcreate-content-row {
   padding: 50px 40px 0px 34px; }
-
-#iddetails-id {
-  margin-top: 6px;
-  font-weight: bold; }
 
 .get_link_box {
   display: none;

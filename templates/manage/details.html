@@ -8,28 +8,50 @@
 {% block heading %}{% content_heading _("Identifier Details") %}{% endblock %}
 {% block content %}
 <div class="container vertical-buffer-20">
-  <div class="row vertical-buffer-bot">
-    <label class="col-xs-2">{% trans "Identifier" %}:</label>
-    <div class="col-sm-7 col-xs-10"><strong>{% identifier_display id_text testPrefixes %}</strong></div>
-  </div>
-  <div class="row vertical-buffer-bot">
-    <label class="col-sm-2 col-xs-2">{% trans "Identifier as URL" %}:</label>
-    <div class="col-sm-5 col-xs-8">
-      {% full_url_to_id_details id_text %}
+  <div class="row">
+    <div class="col-sm-7 col-xs-12">
+      <div class="row vertical-buffer-bot">
+        <label class="col-xs-4">{% trans "Identifier" %}:</label>
+        <div class="col-xs-8"><strong>{% identifier_display id_text testPrefixes %}</strong></div>
+      </div>
+      <div class="row vertical-buffer-bot">
+        <label class="col-xs-4">{% trans "Identifier as URL" %}:</label>
+        <div class="col-xs-8">
+          {% full_url_to_id_details id_text %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-2 col-xs-offset-4">
+          {% include "includes/get_link.html" %}  
+        </div>
+        {% if recent_creation or recent_update %}
+        <div class="col-xs-6 iddetails__delay-text">
+          {% if recent_creation %}
+          ({% trans "takes up to 30 minutes for link to work" %})
+          {% elif recent_update %}
+          ({% trans "takes up to 30 minutes for link to be updated" %})
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
     </div>
-    {% include "includes/get_link.html" %}  
-  </div>
-    {% if recent_creation or recent_update %}
-  <div class="row vertical-buffer-bot">
-    <div class="col-xs-5 col-xs-offset-7 iddetails__delay-text">
-      {% if recent_creation %}
-      ({% trans "takes up to 30 minutes for link to work" %})
-      {% elif recent_update %}
-      ({% trans "takes up to 30 minutes for link to be updated" %})
-      {% endif %}
+    {% if not has_block_data and current_profile.name == 'datacite' %}
+    <div class="col-sm-5 col-xs-12">
+
+      <h3>{% trans "Citation Preview" %}</h3>
+        {% get_dict_value identifier "datacite.creator" %}
+        ({% get_dict_value identifier "datacite.publicationyear" %}):
+        {% get_dict_value identifier "datacite.title" %}.
+        {% get_dict_value identifier "datacite.version" %}
+        {% get_dict_value identifier "datacite.publisher" %}.
+        {% if has_resource_type %}
+          {% get_dict_value identifier "datacite.resourcetype" %}.
+        {% endif %}
+        {% active_id_display id_text testPrefixes %}
     </div>
-  </div>
     {% endif %}
+  </div>
+  <div class="vertical-buffer-20"> </div>
   <hr/>
   <div class="row vertical-buffer-bot">
     <div class="inline-header">
@@ -135,20 +157,6 @@
   </form>
   {% endif %}
 				  
-  <div class="">
-	{% if not has_block_data and current_profile.name == 'datacite' %}
-			<h2 style="margin-top: 2em;">{% trans "Citation Preview" %}</h2>
-		  {% get_dict_value identifier "datacite.creator" %}
-		  ({% get_dict_value identifier "datacite.publicationyear" %}):
-		  {% get_dict_value identifier "datacite.title" %}.
-		  {% get_dict_value identifier "datacite.version" %}
-		  {% get_dict_value identifier "datacite.publisher" %}.
-		  {% if has_resource_type %}
-		  	{% get_dict_value identifier "datacite.resourcetype" %}.
-		  {% endif %}
-		  {% active_id_display id_text testPrefixes %}
-	{% endif %}
-  </div>
 </div>
   {% include "info/popup_help.html" %}
   <script type="text/javascript" src="/static/javascripts/help_box.js"></script>

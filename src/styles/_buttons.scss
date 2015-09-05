@@ -83,3 +83,15 @@ h2.panel-title > a {
   border-right: 6px solid transparent;
   border-left: 6px solid transparent; 
 }
+
+.caret-right {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  margin: 8px 8px 8px 8px;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 6px solid;
+}
