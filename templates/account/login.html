@@ -1,29 +1,42 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
+{% load i18n %}
 
-{% block title %}Login{% endblock %}
-
+{% block title %}{% trans "Login" %}{% endblock %}
+{% block heading %}{% content_heading _("Login") %}{% endblock %}
 {% block content %}
-  <div class="grid_9">
-    <h1>Login</h1>
-    <form method="post" action="/login">
-      <label for="username" class="left">Username</label>
-      <div class="field_right">
+<div class="container vertical-buffer-20">
+  <form method="post" action="/login" class="form-horizontal" role="form">
+    <div class="form-group form-group-sm">
+      <label for="username" class="col-sm-2 control-label">{% trans "Username" %}</label>
+      <div class="col-sm-8">
         <input type="text" id="username" name="username" size="20" value="{{ username }}"/>
       </div>
-      <label for="password" class="left">Password</label>
-      <div class="field_right">
+    </div>
+
+    <div class="form-group form-group-sm">
+      <label for="password" class="col-sm-2 control-label">{% trans "Password" %}</label>
+      <div class="col-sm-8">
         <input type="password" id="password" name="password" size="20" value="{{ password }}"/>
       </div>
-      <label for="login" class="left">&nbsp;</label>
-      <div class="field_right">
-        <input type="submit" id="login" name="login" value="Login" />
-      </div>
-    </form>
-    
-    <div style="clear:both;">&nbsp;</div>
+    </div>
 
-		<p>If you do not already have an account, please <a href="{% url "ui.contact" %}">contact us</a></p>
-		<p>If you have forgotten your password, request <a href="{% url "ui_account.pwreset" %}">a password reset</a></p>    
-  </div>
+    <div class="form-group form-group-sm">
+      <div class="col-sm-8 col-sm-offset-2">
+        <button type="submit" class="btn btn-primary padding-side-med">{% trans "LOGIN" %}</button>
+      </div>
+    </div>
+  </form>
+    
+    {% url "ui.contact" as url_contact %}
+    {% url "ui_account.pwreset" as url_pwreset %}
+{% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
+i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+{% endcomment %}
+    {% blocktrans trimmed %}
+    <p>If you do not already have an account, please <a href="{{ url_contact }}">contact us</a></p>
+    <p>If you have forgotten your password, request <a href="{{ url_pwreset }}">a password reset</a></p>    
+    {% endblocktrans %}
+</div>
 {% endblock %}

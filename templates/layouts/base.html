@@ -1,16 +1,16 @@
 {% load layout_extras %}
-
+{% load i18n %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html class="no-js">
+{% get_current_language as LANGUAGE_CODE %}
+<html class="no-js" lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>EZID: {% block title %}Identifiers made easy{% endblock %}</title>
     <meta name="description" 
-    	content="EZID service creates long-term identifiers
-    	and is a key component for keeping data and digital objects safe
-    	while fulfilling grant requirements for data management plans." />
+    	content="{% trans "EZID service creates long-term identifiers and is a key component for keeping data and digital objects safe while fulfilling grant requirements for data management plans." %}" />
     <meta name="keywords"
-    	content="identifier, metadata, ezid, metadata schemas, reporting,
+    	content="{% blocktrans trimmed %}
+        identifier, metadata, ezid, metadata schemas, reporting,
     	data management plan, managing data, datasets, data repository,
     	curate, curator, curation, biology, engineering, biological science,
     	science, scientific, hard science, social science, humanities,
@@ -28,10 +28,11 @@
     	PI, principal investigator, archives, archival, data collection,
     	reporting, report, images, records, journals, articles, papers,
     	crossref, generate, create, demo, id, pricing,
-    	how to create long-term identifiers, how do to get long-term identifiers,
+    	how to create long-term identifiers, how to get long-term identifiers,
     	how to get unique identifiers, how to create long-term identifiers,
     	how to create unique identifiers, how to manage data, what should be in my data plan,
-    	how to get identifiers for my repository, how to use the identifier API for my repository" />
+    	how to get identifiers for my repository, how to use the identifier API for my repository
+        {% endblocktrans %}" />
     <meta name="viewport" content="width=device-width"> 
     <link rel="shortcut icon" type="image/png" href="/static/images/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/static/stylesheets/main.css"/>
@@ -65,7 +66,7 @@
     <![endif]-->
 
 <div id="page_top"></div>
-  <a class="sr-only" href="#main-content">Skip navigation</a>
+  <a class="sr-only" href="#main-content">{% trans "Skip navigation" %}</a>
       {% include "includes/status.html" %}
       {% include "includes/top.html" %}    
   <a class="sr-only" name="main-content"></a>

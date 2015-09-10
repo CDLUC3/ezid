@@ -1,15 +1,10 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
 {% load i18n %}
-{% comment %}
-***** NOT WORKING ****}
-{% trans "Contact Us" as t2_title %}
-{% endcomment %}
 {% block title %}{%trans "Contact Us" %}{% endblock %}
 {% block heading %}{% content_heading _("Contact Us") %}{% endblock %}
 {% block content %}
 {% comment %}
-***** NOT WORKING ****}
 {% get_current_language as LANGUAGE_CODE %}
 <!-- Current language: {{ LANGUAGE_CODE }} -->
 <p>{% trans "TESTING: Welcome to our page. Language: " %}{{ LAGUAGE_CODE }}</p>
@@ -17,7 +12,7 @@
 
 {% comment %}
 This tag forces language:
-{% language 'fr' %}
+{% language 'fr_CA' %}
     {% get_current_language as LANGUAGE_CODE %}
     <!-- Current language: {{ LANGUAGE_CODE }} -->
     <p>{% trans "TESTING: Welcome to our page. Language: " %}{{ LANGUAGE_CODE }}</p>
@@ -32,7 +27,6 @@ Name in English: {{ lang.name }}<br />
 Bi-directional: {{ lang.bidi }}<br />
 request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
 -->
-
 <div class="vertical-buffer-xs"></div>
 <div class="container">
 <div class="width-reduced-md">

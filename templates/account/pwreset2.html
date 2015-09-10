@@ -1,42 +1,35 @@
 {% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load i18n %}
 
-{% block title %}EZID : Reset password{% endblock %}
-
+{% block title %}EZID : {% trans "Reset Password" %}{% endblock %}
+{% block heading %}{% content_heading _("Reset Password") %}{% endblock %}
 {% block content %}
-
-<div id="pwreset" class="grid_9">
-
-	<h1>Reset password</h1>
-	
-	<form method="post" action="{% url "ui_account.pwreset" pwrr %}">
-		<label for="username" class="left">
-			Username
-		</label>
-		<div class="field_right">
-			<input type="text" name="username" size="20" value="{{ username }}" readonly="readonly"/>
-		</div>
-	
-		<label for="password" class="left">
-			New password
-		</label>
-		<div class="field_right">
-			<input type="password" id="password" name="password" size="20"/>
-		</div>
-	
-		<label for="confirm" class="left">
-			Confirm password
-		</label>
-		<div class="field_right">
-			<input type="password" id="confirm" name="confirm" size="20"/>
-		</div>
-		
-		<label class="left">&nbsp;</label>
-		<div class="field_right">
-			<input type="submit" value="Submit"/>
-		</div>
-	
-	</form>
-	<div style="clear:both;">&nbsp;</div>
+<div class="container vertical-buffer">
+  <form method="post" action="{% url "ui_account.pwreset" pwrr %}" class="form-horizontal" role="form">
+    <div class="form-group form-group-sm">
+      <label for="username" class="col-sm-2 control-label">{% trans "Username" %}</label>
+      <div class="col-sm-8">
+        <input type="text" name="username" value="{{ username }}" readonly="readonly"/>
+      </div>
+    </div>
+    <div class="form-group form-group-sm">
+      <label for="password" class="col-sm-2 control-label">{% trans "New password" %}</label>
+      <div class="col-sm-8">
+        <input type="password" id="password" name="password" size="20"/>
+      </div>
+    </div>
+    <div class="form-group form-group-sm">
+      <label for="confirm" class="col-sm-2 control-label">{% trans "Confirm password" %}</label>
+      <div class="col-sm-8">
+        <input type="password" id="confirm" name="confirm" size="20"/>
+      </div>
+    </div>
+    <div class="form-group form-group-sm">
+      <div class="col-sm-4 col-sm-offset-2">
+        <button type="submit" class="btn btn-primary padding-side-med">{% trans "SUBMIT" %}</button>
+      </div>
+    </div>
+  </form>
 </div>
-
 {% endblock %}

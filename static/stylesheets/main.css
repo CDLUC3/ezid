@@ -5151,7 +5151,7 @@ a.boxy-pop:hover {
 
 .number-big {
   padding: 5px 9px;
-  background-color: #00778a;
+  background-color: #b4975a;
   color: #FFF; }
 
 p.italic {
@@ -6072,6 +6072,9 @@ padding-left-base, .col-sm-push-3, .padding-left {
 
 .vertical-buffer-xs {
   margin-top: 15px; }
+
+.vertical-buffer-xxs {
+  margin-top: 5px; }
 
 .horizontal-buffer-xs {
   margin-left: 10px; }
