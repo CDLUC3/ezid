@@ -1,0 +1,60 @@
+#! /usr/bin/env python
+
+# Transforms an API documentation file, written in reStructuredText
+# (http://docutils.sourceforge.net/rst.html), to a Django template.
+# This script is just a thin wrapper around the Docutils rst2html.py
+# tool, which is assumed to be in the caller's path.
+#
+# Usage: make-apidoc-html apidoc.{version}.rst
+#
+# Output is written to apidoc.{version}.html.
+#
+# Greg Janee <gjanee@ucop.edu>
+# September 2015
+
+import re
+import subprocess
+import sys
+import tempfile
+
+def error (message):
+  sys.stderr.write("make-apidoc-html: %s\n" % message)
+  sys.exit(1)
+
+if len(sys.argv) != 2:
+  sys.stderr.write("Usage: make-apidoc-html apidoc.{version}.rst\n")
+  sys.exit(1)
+
+infile = sys.argv[1]
+m = re.match("apidoc\.(.*)\.rst$", infile)
+if not m: error("input filename does not match expected pattern")
+version = m.group(1)
+outfile = infile[:-3] + "html"
+
+t = tempfile.NamedTemporaryFile()
+if subprocess.call(["rst2html.py", infile, t.name]) != 0:
+  error("subprocess call failed")
+m = re.search("//BEGIN//</p>\n(.*)<p>//END//", t.read(), re.S)
+if not m: error("error parsing rst2html.py output")
+body = m.group(1)
+t.close()
+
+body = re.sub("HOSTNAME", "{{ request.META.HTTP_HOST }}", body)
+
+# Note the hack below: the extra </div> is needed to close the
+# preceding section.
+
+f = open(outfile, "w")
+f.write(
+"""{%% extends "layouts/apidoc.html" %%}
+{%% load layout_extras %%}
+{%% load i18n %%}
+{%% block title %%}{%% trans "The EZID API, Version %s" %%}{%% endblock %%}
+{%% block heading %%}
+{%% content_heading _("The EZID API, Version %s") %%}
+{%% endblock %%}
+{%% block content %%}
+%s</div>
+{%% endblock %%}
+""" % (version, version, body))
+f.close()

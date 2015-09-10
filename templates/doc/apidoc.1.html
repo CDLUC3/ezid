@@ -1,118 +1,15 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.8: http://docutils.sourceforge.net/" />
-<title>The EZID API, Version 1</title>
-<style type="text/css">
-
-/* The following is a copy of the stylesheet distributed with Pandoc
-(http://johnmacfarlane.net/pandoc/demo/pandoc.css) with some additions
-noted at the end. */
-
-body {
-    margin: auto;
-    padding-right: 1em;
-    padding-left: 1em;
-    max-width: 44em;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    color: black;
-    font-family: Verdana, sans-serif;
-    font-size: 100%;
-    line-height: 140%;
-    color: #333;
-}
-pre {
-    border: 1px dotted gray;
-    background-color: #ececec;
-    color: #111111;
-    padding: 0.5em;
-}
-code {
-    font-family: monospace;
-}
-h1 a, h2 a, h3 a, h4 a, h5 a {
-    text-decoration: none;
-    color: #7a5ada;
-}
-h1, h2, h3, h4, h5 { font-family: verdana;
-                     font-weight: bold;
-                     border-bottom: 1px dotted black;
-                     color: #7a5ada; }
-h1 {
-        font-size: 130%;
-}
-
-h2 {
-        font-size: 110%;
-}
-
-h3 {
-        font-size: 95%;
-}
-
-h4 {
-        font-size: 90%;
-        font-style: italic;
-}
-
-h5 {
-        font-size: 90%;
-        font-style: italic;
-}
-
-h1.title {
-        font-size: 200%;
-        font-weight: bold;
-        padding-top: 0.2em;
-        padding-bottom: 0.2em;
-        text-align: left;
-        border: none;
-}
-
-dt code {
-        font-weight: bold;
-}
-dd p {
-        margin-top: 0;
-}
-
-#footer {
-        padding-top: 1em;
-        font-size: 70%;
-        color: gray;
-        text-align: center;
-}
-
-/* Additions... */
-
-.hl1 { color: green; font-style: oblique }
-.hl2 { font-family: monospace; font-style: oblique; color: green }
-
-table { border-collapse: collapse }
-th, td { border: 1px solid black; padding: .25em }
-th { text-align: left; background-color: #EEE }
-th p.first, td p.first { margin-top: 0pt }
-th p.first, td p.last { margin-bottom: 0pt }
-
-table.leftheaders tr > td:first-child { background-color: #EEE;
-  font-weight: bold }
-
-.warning { font-weight: bold; color: red }
-.smallfont { font-size: 80%; line-height: 100% }
-
-</style>
-</head>
-<body>
-<div class="document" id="the-ezid-api-version-1">
-<h1 class="title">The EZID API, Version 1</h1>
-
-<!-- superseded warning placeholder -->
+{% extends "layouts/apidoc.html" %}
+{% load layout_extras %}
+{% load i18n %}
+{% block title %}{% trans "The EZID API, Version 1" %}{% endblock %}
+{% block heading %}
+{% content_heading _("The EZID API, Version 1") %}
+{% endblock %}
+{% block content %}
+<p class="superseded">THIS VERSION IS SUPERSEDED BY A NEWER VERSION</p>
 <div class="smallfont line-block">
-<div class="line"><strong>This version:</strong> <a class="reference external" href="http://n2t.net/ezid/doc/apidoc.1.html">http://n2t.net/ezid/doc/apidoc.1.html</a></div>
-<div class="line"><strong>Latest version:</strong> <a class="reference external" href="http://n2t.net/ezid/doc/apidoc.html">http://n2t.net/ezid/doc/apidoc.html</a></div>
+<div class="line"><strong>This version:</strong> <a class="reference external" href="http://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html">http://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html</a></div>
+<div class="line"><strong>Latest version:</strong> <a class="reference external" href="http://{{ request.META.HTTP_HOST }}/doc/apidoc.html">http://{{ request.META.HTTP_HOST }}/doc/apidoc.html</a></div>
 </div>
 <p>Modified 2010.06.24.</p>
 <p>EZID is an interface that provides an easy way for digital object
@@ -244,6 +141,4 @@ except urllib2.HTTPError, e:
   print e.fp.read()
 </pre>
 </div>
-</div>
-</body>
-</html>
+{% endblock %}

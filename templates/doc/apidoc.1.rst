@@ -1,12 +1,16 @@
 The EZID API, Version 1
 =======================
 
-.. superseded warning placeholder
+//BEGIN//
+
+.. class:: superseded
+
+THIS VERSION IS SUPERSEDED BY A NEWER VERSION
 
 .. class:: smallfont
 
-| **This version:** http://n2t.net/ezid/doc/apidoc.1.html
-| **Latest version:** http://n2t.net/ezid/doc/apidoc.html
+| **This version:** http://HOSTNAME/doc/apidoc.1.html
+| **Latest version:** http://HOSTNAME/doc/apidoc.html
 
 Modified 2010.06.24.
 
@@ -157,3 +161,5 @@ Example Python Client
   except urllib2.HTTPError, e:
     print e.code, e.msg
     print e.fp.read()
+
+//END//

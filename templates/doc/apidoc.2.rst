@@ -31,13 +31,13 @@
 The EZID API, Version 2
 =======================
 
-.. superseded warning placeholder
+//BEGIN//
 
 .. class:: smallfont
 
-| **This version:** http://ezid.cdlib.org/doc/apidoc.2.html
-| **Latest version:** http://ezid.cdlib.org/doc/apidoc.html
-| **Previous version:** http://ezid.cdlib.org/doc/apidoc.1.html
+| **This version:** http://HOSTNAME/doc/apidoc.2.html
+| **Latest version:** http://HOSTNAME/doc/apidoc.html
+| **Previous version:** http://HOSTNAME/doc/apidoc.1.html
 
 EZID (easy-eye-dee) provides an easy way to obtain, describe, and
 manage long-term identifiers for digital objects.  It can be accessed
@@ -2188,3 +2188,5 @@ set to "ARK" or "\URN:UUID" as appropriate.
 
 __ `Dublin Core Metadata Element Set`_
 __ `DataCite Metadata Scheme`_
+
+//END//
