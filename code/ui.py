@@ -91,40 +91,24 @@ def __emails(request):
   return django.conf.settings.LOCALIZATIONS[host][1]
 
 def doc (request):
-  d = { 'menu_item' : 'ui_null.null'}
   """
-  Renders UTF-8 encoded HTML documentation.
+  Renders UTF-8 encoded HTML documentation and plain text Python code
+  files.
   """
   if request.method != "GET": return uic.methodNotAllowed()
   assert request.path_info.startswith("/doc/")
-  file = os.path.join(django.conf.settings.PROJECT_ROOT, "doc",
-    request.path_info[5:])
-  if os.path.exists(file):
-    """ To Do: Re-implement this:
-    f = open(file)
-    content = f.read()
-    f.close()
-    # If the filename of the requested document has what looks to be a
-    # version indicator, attempt to load the unversioned (i.e.,
-    # latest) version of the document.  Then, if the requested
-    # document is not the latest version, add a warning.
-    m = re.match("(.*/\w+)\.\w+\.html$", file)
-    if m:
-      uvfile = m.group(1) + ".html"
-      if os.path.exists(uvfile):
-        f = open(uvfile)
-        uvcontent = f.read()
-        f.close()
-        if content != uvcontent:
-          content = re.sub("<!-- superseded warning placeholder -->",
-            "<p class='warning'>THIS VERSION IS SUPERSEDED BY A NEWER " +\
-            "VERSION</p>", content)
+  file = request.path_info[5:]
+  path = os.path.join(django.conf.settings.PROJECT_ROOT, "templates", "doc",
+    file)
+  if os.path.exists(path):
     if file.endswith(".html"):
-      return uic.staticHtmlResponse(content)
+      return uic.render(request, os.path.join("doc", file[:-5]),
+        { "menu_item": "ui_home.null" })
     else:
+      f = open(path)
+      content = f.read()
+      f.close()
       return uic.staticTextResponse(content)
-    """
-    return uic.render(request, "doc/apidoc.2")
   else:
     return uic.error(404)
 
