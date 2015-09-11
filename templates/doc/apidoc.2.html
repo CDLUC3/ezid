@@ -6,6 +6,7 @@
 {% content_heading _("The EZID API, Version 2") %}
 {% endblock %}
 {% block content %}
+<div class="container api vertical-buffer-20">
 <div class="smallfont line-block">
 <div class="line"><strong>This version:</strong> <a class="reference external" href="http://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html">http://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html</a></div>
 <div class="line"><strong>Latest version:</strong> <a class="reference external" href="http://{{ request.META.HTTP_HOST }}/doc/apidoc.html">http://{{ request.META.HTTP_HOST }}/doc/apidoc.html</a></div>
@@ -2099,5 +2100,6 @@ DataCite XML metadata records stored in EZID are converted to version
 3 of the DataCite schema for uniformity.  Note that, in an extension
 to the DataCite schema, the identifier type for non-DOI identifiers is
 set to &quot;ARK&quot; or &quot;URN:UUID&quot; as appropriate.</p>
+</div>
 </div>
 {% endblock %}

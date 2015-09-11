@@ -54,7 +54,9 @@ f.write(
 {%% content_heading _("The EZID API, Version %s") %%}
 {%% endblock %%}
 {%% block content %%}
+<div class="container api vertical-buffer-20">
 %s</div>
+</div>
 {%% endblock %%}
 """ % (version, version, body))
 f.close()
