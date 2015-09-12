@@ -5773,6 +5773,9 @@ blockquote p {
   font-style: italic;
   font-weight: bold;
   color: #FFF; }
+  blockquote p a, blockquote p a:visited, blockquote p a:active, blockquote p a:hover {
+    color: #FFF;
+    text-decoration: underline; }
 
 .blockquote-footer {
   margin-top: 18px;
@@ -5780,13 +5783,6 @@ blockquote p {
   font-size: 0.80em;
   color: #000;
   line-height: 1.2em; }
-
-blockquote p a,
-blockquote p a:visited,
-blockquote p a:active
-blockquote p a:hover {
-  color: #FFF !important;
-  text-decoration: underline; }
 
 .carousel-indicators {
   bottom: 0px; }
@@ -5798,13 +5794,7 @@ blockquote p a:hover {
   font-weight: bold;
   text-align: right; }
 
-.col-promotional .tagline a, .col-promotional .tagline a:visited {
-  color: #ff701c !important; }
-
-.col-promotional .tagline a:hover, .col-promotional .tagline a:active {
-  color: #ff701c !important; }
-
-.col-promotional .tagline.active a {
+.col-promotional .tagline a, .col-promotional .tagline a:visited, .col-promotional .tagline a:hover, .col-promotional .tagline a:active {
   color: #ff701c !important; }
 
 @media (min-width: 780px) {
@@ -5930,21 +5920,45 @@ ul.lead > li {
   display: block;
   margin: 15px 0px 20px 40px;
   padding: 0px; }
+  .api blockquote > * {
+    font-size: 0.9em;
+    font-style: normal;
+    font-weight: normal;
+    color: #000; }
+  .api blockquote p {
+    font-size: 0.9em;
+    font-style: normal;
+    font-weight: normal;
+    color: #000; }
+    .api blockquote p a, .api blockquote p a:visited, .api blockquote p a:link {
+      color: #00778a;
+      text-decoration: none;
+      border-bottom: 1px #b0bdca solid;
+      padding-bottom: 1px; }
+    .api blockquote p a:hover {
+      color: #00778a;
+      text-decoration: none;
+      border-bottom: 1px #00778a solid;
+      padding-bottom: 1px; }
   .api blockquote a, .api blockquote a:visited, .api blockquote a:link {
+    color: #00778a;
     text-decoration: none;
     border-bottom: 1px #b0bdca solid;
     padding-bottom: 1px; }
   .api blockquote a:hover {
+    color: #00778a;
     text-decoration: none;
     border-bottom: 1px #00778a solid;
     padding-bottom: 1px; }
 
-.api tr td:first-child {
-  background-color: #c6b082;
-  font-weight: bold;
-  font-size: 0.9em; }
+.api table.leftheaders {
+  margin: 5px 0px 15px 5px; }
+  .api table.leftheaders tr > td:first-child {
+    background-color: #c6b082;
+    font-weight: bold;
+    font-size: 0.9em; }
 
-.api tr td {
+.api tr td, .api th {
   padding: 5px; }
 
 thead {

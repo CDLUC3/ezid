@@ -44,6 +44,10 @@ blockquote p {
   font-style: italic;
   font-weight: bold;
   color: #FFF;
+  a, , a:visited, , a:active , a:hover {
+    color: #FFF;
+    text-decoration: underline;
+  }
 }
 .blockquote-footer {
   margin-top: 18px;
@@ -51,13 +55,6 @@ blockquote p {
   font-size: 0.80em;
   color: #000;
   line-height: 1.2em;
-}
-blockquote p a, 
-blockquote p a:visited, 
-blockquote p a:active 
-blockquote p a:hover {
-  color: #FFF !important;
-  text-decoration: underline;
 }
 .carousel-indicators {
   bottom: 0px;
@@ -69,12 +66,8 @@ blockquote p a:hover {
   font-weight: bold;
   text-align: right;
 }
-.col-promotional .tagline a, .col-promotional .tagline a:visited {
-  color: $design-pop-gradient-bottom !important;
+.col-promotional .tagline {
+  a, a:visited, a:hover, a:active {
+    color: $design-pop-gradient-bottom !important;
+  }
 }
-.col-promotional .tagline a:hover, .col-promotional .tagline a:active {
-  color: $design-pop-gradient-bottom !important;
-}
-.col-promotional .tagline.active a {
-  color: $design-pop-gradient-bottom !important;
-} 
