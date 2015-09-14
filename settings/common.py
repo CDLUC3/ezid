@@ -25,8 +25,7 @@ TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 ADMINS = (
   ("Greg Janee", "gjanee@ucop.edu"),
-  ("John Kunze", "john.kunze@ucop.edu"),
-  ("Andy Mardesich", "andy.mardesich@ucop.edu")
+  ("John Kunze", "john.kunze@ucop.edu")
 )
 MANAGERS = ADMINS
 
