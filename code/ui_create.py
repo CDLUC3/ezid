@@ -118,7 +118,7 @@ def advanced_form_processing(request, d):
       if d['current_profile'] == None:
         d['current_profile'] = metadata.getProfile('erc')
   else:
-    if len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'):
+    if choice_is_doi == True:
       d = _engage_datacite_xml_profile(request, d, 'datacite_xml')
     else:
       d['current_profile'] = metadata.getProfile('erc')

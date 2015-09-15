@@ -49,11 +49,13 @@ f.write(
 """{%% extends "layouts/apidoc.html" %%}
 {%% load layout_extras %%}
 {%% load i18n %%}
+{%% load menus %%}
 {%% block title %%}{%% trans "The EZID API, Version %s" %%}{%% endblock %%}
 {%% block heading %%}
 {%% content_heading _("The EZID API, Version %s") %%}
 {%% endblock %%}
 {%% block content %%}
+{%% learn_breadcrumb _('API Guide') %%}
 <div class="container api vertical-buffer-20">
 %s</div>
 </div>

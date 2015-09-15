@@ -1,11 +1,14 @@
 {% extends "layouts/apidoc.html" %}
 {% load layout_extras %}
 {% load i18n %}
+{% load menus %}
 {% block title %}{% trans "The EZID API, Version 1" %}{% endblock %}
 {% block heading %}
 {% content_heading _("The EZID API, Version 1") %}
 {% endblock %}
 {% block content %}
+{% learn_breadcrumb 'EZID API Guide' %}
+<div class="container api vertical-buffer-20">
 <p class="superseded">THIS VERSION IS SUPERSEDED BY A NEWER VERSION</p>
 <div class="smallfont line-block">
 <div class="line"><strong>This version:</strong> <a class="reference external" href="http://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html">http://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html</a></div>
@@ -140,5 +143,6 @@ except urllib2.HTTPError, e:
   print e.code, e.msg
   print e.fp.read()
 </pre>
+</div>
 </div>
 {% endblock %}

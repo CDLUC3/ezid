@@ -1,47 +1,42 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
+{% load i18n %}
 
-{% block title %}Create Advanced Demo ID{% endblock %}
-
+{% block title %}{% trans "Create Advanced Demo ID" %}{% endblock %}
+{% block heading %}{% content_heading _("Create an Advanced Demo Identifier") %}{% endblock %}
 {% block content %}
-  <div class="grid_9">
-    <h1>Create Demo Identifier</h1>
-    <form id="create_form" action="{% url "ui_demo.advanced" %}" method="post">
+<div class="container vertical-buffer-sm">
+  <ul class="nav nav-tabs nav-idcreate">
+    <li role="presentation"><a href="{% url "ui_demo.simple" %}">{% trans "Simple" %}</a></li>
+    <li role="presentation" class="active">{% trans "Advanced" %}</li>
+  </ul>
+  <div class="idcreate-content gradient-form">
+    <form id="create_form" action="{% url "ui_demo.advanced" %}" method="post" class="form-horizontal" role="form">
       <input name="action" id="action" type="hidden" value="create"/>
       
-      {% include "includes/simple_id_type.html" %}
+      {% include "includes/simple_id_type.html" with calling_page="Demo" %}
       
       {% include "includes/advanced_remainder.html" %}
       
       {% include "includes/advanced_publish_id.html" %}
            
       {% include "includes/advanced_describe.html" %}
-      
-      
-      <label class="left">&nbsp;</label>
-      <div class="field_right">
-        <input type="submit" value="Create"/>
-      </div>
-      <div style="clear:both">&nbsp;</div>
-    </form>
-    <p>Once created, an identifier cannot be renamed or deleted.</p>
-    <div style="clear:both;"></div>
-  </div>
-  
-  <div class="grid_3">
-  	<div class="squarebox">
-	  	<div class="squareboxpad">
-		  	<h1>About Demo Identifiers</h1>
-		  	<p>
-		  		Demo identifiers, indicated on EZID screens by
-		  		<span class="fakeid">yellow highlighting</span>, are temporary  
-					identifiers for use in testing the EZID service.  
-					They last for two weeks.
-		  	</p>
-		  </div>
-		</div>  		
-  </div>
+     
+      <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+          <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>{% trans "NOTE" %}:</strong> {% trans "This is just a demo. To create a real identifier, you must have an account." %}
 
+          <p class="italic vertical-buffer-xs">
+    {# Translators: Please preserve &quot; tags #}
+            {% trans "Once created, an identifier cannot be renamed or deleted." %}
+      	    {% help_icon "public_id_help" %}
+          </p>
+        </div>
+      </div> 
+    </form>
+  </div>
+</div>  
   <script type="text/javascript" src="/static/javascripts/advanced_create.js"></script>
   {% include "info/popup_help.html" %}
   <script type="text/javascript" src="/static/javascripts/help_box.js"></script>

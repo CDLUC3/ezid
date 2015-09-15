@@ -59,14 +59,18 @@ def menu_user_item(tup, session, is_current, is_last_menu_item):
   return acc
 
 @register.simple_tag
-def learn_breadcrumb(view_title, parent_dir_title="Documentation", parent_dir_link="#04"):
+def learn_breadcrumb(view_title, parent_dir_title=None, parent_dir_link=None):
   home = _("Home")
   learn = _("Learn")
-  parent_dir_title_tr = _(parent_dir_title)
   codeblock = '<div class="container"><ul class="breadcrumb">' + \
-    '<li><a href="/">' + home + '</a></li><li><a href="/learn">' + learn + '</a></li>' + \
-    '<li><a href="/learn/' + parent_dir_link + '">' + parent_dir_title_tr + '</a></li>' + \
-    '<li class="active">' + view_title + '</li></ul></div>' 
+    '<li><a href="/">' + home + '</a></li><li><a href="/learn">' + learn + '</a></li>'
+  if parent_dir_title is not None:
+    if parent_dir_link is None: 
+      parent_dir_link = ''
+    parent_dir_title_tr = _(parent_dir_title)
+    codeblock += '<li><a href="/learn/' + parent_dir_link + '">' + \
+      parent_dir_title_tr + '</a></li>' 
+  codeblock += '<li class="active">' + view_title + '</li></ul></div>' 
   return codeblock
 
 # Simply determines whether an element should be tagged as active; Only used for topmost nav

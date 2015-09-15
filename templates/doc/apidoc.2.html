@@ -1,11 +1,13 @@
 {% extends "layouts/apidoc.html" %}
 {% load layout_extras %}
 {% load i18n %}
+{% load menus %}
 {% block title %}{% trans "The EZID API, Version 2" %}{% endblock %}
 {% block heading %}
 {% content_heading _("The EZID API, Version 2") %}
 {% endblock %}
 {% block content %}
+{% learn_breadcrumb 'EZID API Guide' %}
 <div class="container api vertical-buffer-20">
 <div class="smallfont line-block">
 <div class="line"><strong>This version:</strong> <a class="reference external" href="http://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html">http://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html</a></div>
