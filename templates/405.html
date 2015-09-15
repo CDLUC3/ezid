@@ -1,8 +1,13 @@
-<html>
-<head>
-<title>Method not allowed</title>
-</head>
-<body>
-<h1>405 Method not allowed</h1>
-</body>
-</html>
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load i18n %}
+
+{% block title %}{%trans "Error: 405 Method not allowed" %}{% endblock %}
+{% block heading %}{% content_heading _("Error") %}{% endblock %}
+{% block content %}
+
+<div class="vertical-buffer"></div>
+<div class="container">
+<h2>405 {% trans "Method not allowed" %}</h2>
+</div>
+{% endblock %}

@@ -24,6 +24,7 @@ import useradmin
 import userauth
 import django.contrib.messages
 import urlparse
+from django.utils.translation import ugettext as _
 
 ezidUrl = None
 templates = None # { name: (template, path), ... }
@@ -38,7 +39,7 @@ new_account_email = None
 reload_templates = None
 newsfeed_url = None
 
-remainder_box_default = "Recommended: Leave blank"
+remainder_box_default = _("Recommended: Leave blank")
 manual_profiles = {'datacite_xml': 'DataCite'}
 
 def _loadConfig():
@@ -156,21 +157,21 @@ def jsonResponse (data):
 
 redirect = django.http.HttpResponseRedirect
 
-def error (code):
+def error (request, code):
   content = templates[str(code)][0].render(django.template.Context())
   return django.http.HttpResponse(content, status=code)
 
-def badRequest ():
-  return error(400)
+def badRequest (request):
+  return error(request, 400)
 
-def unauthorized ():
-  return error(401)
+def unauthorized (request):
+  return error(request, 401)
 
-def methodNotAllowed ():
-  return error(405)
+def methodNotAllowed (request):
+  return error(request, 405)
 
 def formatError (message):
-  for p in ["error: bad request - ", "error: "]:
+  for p in [_("error: bad request - "), _("error: ")]:
     if message.startswith(p) and len(message) > len(p):
       return message[len(p)].upper() + message[len(p)+1:] + "."
   return message
@@ -181,11 +182,11 @@ def getPrefixes (user, group):
       for s in policy.getShoulders(user, group)]
   except Exception, e:
     log.otherError("ui_common.getPrefixes", e)
-    return "error: internal server error"
+    return _("error: internal server error")
   
 def is_logged_in(request):
   if "auth" not in request.session:
-    django.contrib.messages.error(request, "You must be logged in to view this page")
+    django.contrib.messages.error(request, _("You must be logged in to view this page"))
     request.session['redirect_to'] = request.get_full_path()
     return False
   return True
@@ -247,15 +248,15 @@ def validate_simple_metadata_form(request, profile):
   post = request.POST
   msgs = django.contrib.messages
   if "_target" not in post:
-    msgs.error(request, "You must enter a location (URL) for your identifier")
+    msgs.error(request, _("You must enter a location (URL) for your identifier"))
     is_valid = False
   if not(url_is_valid(post['_target'])):
-    msgs.error(request, "Please enter a a valid location (URL)")
+    msgs.error(request, _("Please enter a valid location (URL)"))
     is_valid = False
   if "datacite.resourcetype" in post:
     rt = post["datacite.resourcetype"].strip()
     if rt != "" and rt.split("/", 1)[0] not in _dataciteResourceTypes:
-      msgs.error(request, "Invalid general resource type")
+      msgs.error(request, _("Invalid general resource type"))
       is_valid = False
   if profile.name == 'datacite' and _validate_datacite_metadata_form(request, profile) == False:
     is_valid = False
@@ -266,16 +267,16 @@ def validate_advanced_top(request):
   err_msgs = []
   post = request.POST
   if "_target" not in post:
-    err_msgs.append("You must enter a location (URL) for your identifier") 
+    err_msgs.append(_("You must enter a location (URL) for your identifier")) 
   if not(url_is_valid(post['_target'])):
-    err_msgs.append("Please enter a valid location (URL)")
+    err_msgs.append(_("Please enter a valid location (URL)"))
   if post['action'] == 'create' and \
       post['remainder'] != remainder_box_default and (' ' in post['remainder']):
-    err_msgs.append("The remainder you entered is not valid.")     
+    err_msgs.append(_("The remainder you entered is not valid."))     
   if "datacite.resourcetype" in post:
     rt = post["datacite.resourcetype"].strip()
     if rt != "" and rt.split("/", 1)[0] not in _dataciteResourceTypes:
-      err_msgs.append("Invalid general resource type")
+      err_msgs.append(_("Invalid general resource type"))
   return err_msgs
   
 def validate_advanced_metadata_form(request, profile):
@@ -302,18 +303,20 @@ def _validate_datacite_metadata_form(request, profile):
     return True
   if not set(['datacite.creator', 'datacite.title', 'datacite.publisher', \
       'datacite.publicationyear', 'datacite.resourcetype']).issubset(post):
-    msgs.error(request, "Some required form elements are missing")
+    msgs.error(request, _("Some required form elements are missing"))
     return False
   for x in ['datacite.creator', 'datacite.title', 'datacite.publisher']:
     if post[x].strip() == '':
-      msgs.error(request, 'You must fill in a value for ' + x.split('.')[1] + ' or use one of the codes shown in the help.')
+      str_validate_head = _("You must fill in a value for")
+      str_validate_tail = _("or use one of the codes shown in the help")
+      msgs.error(request, str_validate_head + ' ' + x.split('.')[1] + ' ' + str_validate_tail + '.')
       is_valid = False
   codes = ['(:unac)', '(:unal)', '(:unap)', '(:unas)', '(:unav)', \
            '(:unkn)', '(:none)', '(:null)', '(:tba)', '(:etal)', \
            '(:at)']
   if not( post['datacite.publicationyear'] in codes or \
           re.search('^\d{4}$', post['datacite.publicationyear']) ):
-    msgs.error(request, 'You must fill in a 4-digit publication year or use one of the codes shown in the help.')
+    msgs.error(request, _("You must fill in a 4-digit publication year or use one of the codes shown in the help."))
     is_valid = False
     
   return is_valid
@@ -379,7 +382,7 @@ def user_login_required(f):
   def wrap(request, *args, **kwargs):
     if 'auth' not in request.session.keys():
       request.session['redirect_to'] = request.get_full_path()
-      django.contrib.messages.error(request, 'You must be logged in to view this page.')
+      django.contrib.messages.error(request, _("You must be logged in to view this page."))
       return django.http.HttpResponseRedirect("/login")
     return f(request, *args, **kwargs)
   wrap.__doc__=f.__doc__
@@ -391,7 +394,7 @@ def admin_login_required(f):
   def wrap(request, *args, **kwargs):
     if "auth" not in request.session or request.session["auth"].user[0] != adminUsername:
       request.session['redirect_to'] = request.get_full_path()
-      django.contrib.messages.error(request, 'You must be logged in as an administrator to view this page.')
+      django.contrib.messages.error(request, _("You must be logged in as an administrator to view this page."))
       return django.http.HttpResponseRedirect("/login")
     return f(request, *args, **kwargs)
   wrap.__doc__=f.__doc__

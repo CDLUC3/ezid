@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-14 14:11-0700\n"
+"POT-Creation-Date: 2015-09-15 13:05-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,6 +66,68 @@ msgstr ""
 msgid "There was a problem sending your email"
 msgstr ""
 
+#: code/ui_common.py:42
+msgid "Recommended: Leave blank"
+msgstr ""
+
+#: code/ui_common.py:174
+msgid "error: bad request - "
+msgstr ""
+
+#: code/ui_common.py:174
+msgid "error: "
+msgstr ""
+
+#: code/ui_common.py:185
+msgid "error: internal server error"
+msgstr ""
+
+#: code/ui_common.py:189
+msgid "You must be logged in to view this page"
+msgstr ""
+
+#: code/ui_common.py:251 code/ui_common.py:270
+msgid "You must enter a location (URL) for your identifier"
+msgstr ""
+
+#: code/ui_common.py:254 code/ui_common.py:272
+msgid "Please enter a valid location (URL)"
+msgstr ""
+
+#: code/ui_common.py:259 code/ui_common.py:279
+msgid "Invalid general resource type"
+msgstr ""
+
+#: code/ui_common.py:275
+msgid "The remainder you entered is not valid."
+msgstr ""
+
+#: code/ui_common.py:306
+msgid "Some required form elements are missing"
+msgstr ""
+
+#: code/ui_common.py:310
+msgid "You must fill in a value for"
+msgstr ""
+
+#: code/ui_common.py:311
+msgid "or use one of the codes shown in the help"
+msgstr ""
+
+#: code/ui_common.py:319
+msgid ""
+"You must fill in a 4-digit publication year or use one of the codes shown in "
+"the help."
+msgstr ""
+
+#: code/ui_common.py:385
+msgid "You must be logged in to view this page."
+msgstr ""
+
+#: code/ui_common.py:397
+msgid "You must be logged in as an administrator to view this page."
+msgstr ""
+
 #: settings/common.py:30
 msgid "English"
 msgstr ""
@@ -74,16 +136,41 @@ msgstr ""
 msgid "Canadian French"
 msgstr ""
 
+#: templates/400.html:5
+msgid "Error: 400 Bad Request"
+msgstr ""
+
+#: templates/400.html:6 templates/401.html:6 templates/404.html:6
+#: templates/405.html:6
+msgid "Error"
+msgstr ""
+
+#: templates/400.html:11
+msgid "Bad Request"
+msgstr ""
+
+#: templates/401.html:5
+msgid "Error: 401 Unauthorized"
+msgstr ""
+
+#: templates/401.html:11
+msgid "Unauthorized"
+msgstr ""
+
 #: templates/404.html:5
 msgid "Error: 404 Not Found"
 msgstr ""
 
-#: templates/404.html:6
-msgid "Error"
-msgstr ""
-
 #: templates/404.html:11
 msgid "Not Found"
+msgstr ""
+
+#: templates/405.html:5
+msgid "Error: 405 Method not allowed"
+msgstr ""
+
+#: templates/405.html:11
+msgid "Method not allowed"
 msgstr ""
 
 #: templates/account/edit.html:5 templates/account/edit.html.py:6

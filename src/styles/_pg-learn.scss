@@ -14,3 +14,8 @@
   margin: 10px 0px 0px 0px;
   padding-left: 0px;
 }
+
+// libsass patch: https://github.com/twbs/bootstrap/issues/16576 
+.breadcrumb > li + li:before {
+  content: $breadcrumb-separator + "\00a0";
+}

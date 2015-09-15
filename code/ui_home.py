@@ -22,6 +22,6 @@ def no_menu(request, template_name):
   try:
     loader.get_template('info/' + template_name + ".html")
   except:
-    return uic.error(404)
+    return uic.error(request, 404)
   return uic.render(request, 'info/' + template_name, d)
 

@@ -1,8 +1,13 @@
-<html>
-<head>
-<title>Bad request</title>
-</head>
-<body>
-<h1>400 Bad request</h1>
-</body>
-</html>
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load i18n %}
+
+{% block title %}{%trans "Error: 400 Bad Request" %}{% endblock %}
+{% block heading %}{% content_heading _("Error") %}{% endblock %}
+{% block content %}
+
+<div class="vertical-buffer"></div>
+<div class="container">
+<h2>400 {% trans "Bad Request" %}</h2>
+</div>
+{% endblock %}

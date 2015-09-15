@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 def edit(request, ssl=False):
   """Edit account information form"""
   d = { 'menu_item' : 'ui_account.edit'}
-  if "auth" not in request.session: return uic.unauthorized()
+  if "auth" not in request.session: return uic.unauthorized(request)
   d['username'] = request.session['auth'].user[0]
   #used to do the following only for GET, but needed for post also to compare what has changed
   r = useradmin.getAccountProfile(request.session["auth"].user[0])
@@ -45,7 +45,7 @@ def login(request, ssl=False):
   elif request.method == "POST":
     d.update(uic.extract(request.POST, ['username', 'password']))
     if "username" not in request.POST or "password" not in request.POST:
-      return uic.badRequest()
+      return uic.badRequest(request)
     auth = userauth.authenticate(request.POST["username"],
       request.POST["password"])
     if type(auth) is str:
@@ -63,14 +63,14 @@ def login(request, ssl=False):
       django.contrib.messages.error(request, "Login failed.")
       return uic.render(request, "account/login", d)
   else:
-    return uic.methodNotAllowed()
+    return uic.methodNotAllowed(request)
 
 def logout(request):
   """
   Logs the user out and redirects to the home page.
   """
   d = { 'menu_item' : 'ui_null.null'}
-  if request.method != "GET": return uic.methodNotAllowed()
+  if request.method != "GET": return uic.methodNotAllowed(request)
   request.session.flush()
   django.contrib.messages.success(request, "You have been logged out.")
   return redirect("ui_home.index")
@@ -161,7 +161,7 @@ def pwreset(request, pwrr, ssl=False):
         "username": username, 'menu_item' : 'ui_null.null' })
     elif request.method == "POST":
       if "password" not in request.POST or "confirm" not in request.POST:
-        return uic.badRequest()
+        return uic.badRequest(request)
       password = request.POST["password"]
       confirm = request.POST["confirm"]
       if password != confirm:
@@ -182,13 +182,13 @@ def pwreset(request, pwrr, ssl=False):
         django.contrib.messages.success(request, "Password changed.")
         return uic.redirect("/")
     else:
-      return uic.methodNotAllowed()
+      return uic.methodNotAllowed(request)
   else:
     if request.method == "GET":
       return uic.render(request, "account/pwreset1", {'menu_item' : 'ui_null.null'})
     elif request.method == "POST":
       if "username" not in request.POST or "email" not in request.POST:
-        return uic.badRequest()
+        return uic.badRequest(request)
       username = request.POST["username"].strip()
       email = request.POST["email"].strip()
       if username == "":
@@ -206,4 +206,4 @@ def pwreset(request, pwrr, ssl=False):
         django.contrib.messages.success(request, "Email sent.")
         return uic.redirect("/")
     else:
-      return uic.methodNotAllowed()
+      return uic.methodNotAllowed(request)

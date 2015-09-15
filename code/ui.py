@@ -95,7 +95,7 @@ def doc (request):
   Renders UTF-8 encoded HTML documentation and plain text Python code
   files.
   """
-  if request.method != "GET": return uic.methodNotAllowed()
+  if request.method != "GET": return uic.methodNotAllowed(request)
   assert request.path_info.startswith("/doc/")
   file = request.path_info[5:]
   path = os.path.join(django.conf.settings.PROJECT_ROOT, "templates", "doc",
@@ -110,13 +110,13 @@ def doc (request):
       f.close()
       return uic.staticTextResponse(content)
   else:
-    return uic.error(404)
+    return uic.error(request, 404)
 
 def tombstone (request):
   """
   Renders a tombstone (i.e., unavailable identifier) page.
   """
-  if request.method != "GET": return uic.methodNotAllowed()
+  if request.method != "GET": return uic.methodNotAllowed(request)
   assert request.path_info.startswith("/tombstone/id/")
   id = request.path_info[14:]
   if "auth" in request.session:
