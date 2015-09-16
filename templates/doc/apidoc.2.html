@@ -7,7 +7,7 @@
 {% content_heading _("The EZID API, Version 2") %}
 {% endblock %}
 {% block content %}
-{% learn_breadcrumb 'EZID API Guide' %}
+{% learn_breadcrumb _('API Guide') %}
 <div class="container api vertical-buffer-20">
 <div class="smallfont line-block">
 <div class="line"><strong>This version:</strong> <a class="reference external" href="http://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html">http://{{ request.META.HTTP_HOST }}/doc/apidoc.2.html</a></div>
@@ -74,12 +74,12 @@ only) to ask questions or report problems:</p>
 <p>The EZID API is available from the base URL</p>
 <blockquote>
 <a class="reference external" href="http://ezid.cdlib.org">http://ezid.cdlib.org</a></blockquote>
-<p>Interaction is via <a class="reference external" href="http://oreilly.com/catalog/9780596529260">REST-style</a> HTTP web services.  The API's central
-design principle is to treat an identifier as a kind of web resource.
-Specifically, identifier <span class="hl1">foo</span> is represented as a resource at
-URL http://ezid.cdlib.org/id/<span class="hl1">foo</span>.  In this document we will
-refer to this URL as the identifier's &quot;EZID URL.&quot;  A client
-manipulates an identifier by performing HTTP operations on its EZID
+<p>Interaction is via <a class="reference external" href="http://oreilly.com/catalog/9780596529260">REST-style</a> <span class="ext-icon"></span> HTTP web services.
+The API's central design principle is to treat an identifier as a
+kind of web resource.  Specifically, identifier <span class="hl1">foo</span> is
+represented as a resource at URL http://ezid.cdlib.org/id/<span class="hl1">foo</span>.
+In this document we will refer to this URL as the identifier's &quot;EZID URL.&quot;
+A client manipulates an identifier by performing HTTP operations on its EZID
 URL: PUT to create the identifier, GET to view it, and POST to modify
 it.</p>
 <p>An identifier's EZID URL should not be confused with the identifier's
@@ -149,10 +149,10 @@ operation on an EZID URL returns client-parseable metadata (see
 <a class="reference internal" href="#operation-get-identifier-metadata">Operation: get identifier metadata</a> below), but in the UI it returns
 an HTML page.</p>
 <p>To distinguish between the two interfaces EZID employs HTTP <a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html">content
-negotiation</a>.  If a request comes in with an HTTP Accept header that
-expresses a preference for any form of HTML or XML, the UI is invoked;
-otherwise, the API is invoked.  A preference for the API can be made
-explicit by omitting any Accept header, or setting the Accept header
+negotiation</a> <span class="ext-icon"></span>.  If a request comes in with an HTTP Accept
+header that expresses a preference for any form of HTML or XML, the UI
+is invoked; otherwise, the API is invoked.  A preference for the API can
+be made explicit by omitting any Accept header, or setting the Accept header
 to something like &quot;text/plain&quot;.  If using Java, it will probably be
 necessary to override the default Accept header Java sends as
 follows:</p>
@@ -195,7 +195,7 @@ that they often do not supply credentials initially, but only in
 response to a challenge from EZID, thus doubling the number of HTTP
 transactions.</p>
 <p>To manually provide credentials in Java, using <a class="reference external" href="http://commons.apache.org/codec/">Apache Commons
-Codec</a> to do the Base64 encoding:</p>
+Codec</a> <span class="ext-icon"></span> to do the Base64 encoding:</p>
 <pre class="literal-block">
 import java.net.*;
 import org.apache.commons.codec.binary.*;
@@ -238,8 +238,8 @@ interaction:</p>
 ⇐
 ⇐ success: session cookie returned
 </pre>
-<p>In Python, cookies can be managed using <a class="reference external" href="http://docs.python.org/library/cookielib.html">cookielib</a>, or manually
-captured and set using code similar to the following:</p>
+<p>In Python, cookies can be managed using <a class="reference external" href="http://docs.python.org/library/cookielib.html">cookielib</a> <span class="ext-icon"></span>, or
+manually captured and set using code similar to the following:</p>
 <pre class="literal-block">
 import urllib2
 c = urllib2.urlopen(&quot;https://ezid.cdlib.org/login&quot;)
@@ -250,7 +250,7 @@ r.add_header(&quot;Cookie&quot;, <span class="hl2">cookie</span>)
 </pre>
 <p>In Java, cookies can be manually captured and set using code
 analogous to the Python code above or, in Java 1.6 and newer,
-<a class="reference external" href="http://download.oracle.com/javase/6/docs/api/java/net/CookieManager.html">CookieManager</a> can be used to manage cookies.</p>
+<a class="reference external" href="http://download.oracle.com/javase/6/docs/api/java/net/CookieManager.html">CookieManager</a> <span class="ext-icon"></span> can be used to manage cookies.</p>
 <p>Perform a GET operation on http://ezid.cdlib.org/logout to
 invalidate a session.</p>
 </li>
@@ -275,7 +275,7 @@ names nor element values may be empty.  (When modifying an identifier,
 an uploaded empty value is treated as a command to delete the element
 entirely.)</p>
 <p>Metadata dictionaries are serialized using a subset of <a class="reference external" href="https://wiki.ucop.edu/display/Curation/Anvl">A Name-Value
-Language (ANVL)</a> rules:</p>
+Language (ANVL)</a> <span class="ext-icon"></span> rules:</p>
 <ul class="simple">
 <li>One element name/value pair per line.</li>
 <li>Names separated from values by colons.</li>
@@ -307,10 +307,10 @@ who: Proust, Marcel
 element names and values, specifically, line terminators (both
 newlines (&quot;\n&quot;, U+000A) and carriage returns (&quot;\r&quot;, U+000D)) and, in
 element names, colons (&quot;:&quot;, U+003A).  EZID employs <a class="reference external" href="http://en.wikipedia.org/wiki/Percent-encoding">percent-encoding</a>
-as the escaping mechanism, and thus percent signs (&quot;%&quot;, U+0025) must
-be escaped as well.  In Python, a dictionary of Unicode metadata
-element names and values, <span class="hl1">metadata</span>, is serialized into a UTF-8
-encoded string, <span class="hl1">anvl</span>, with the following code:</p>
+<span class="ext-icon"></span> as the escaping mechanism, and thus percent signs (&quot;%&quot;,
+U+0025) must be escaped as well.  In Python, a dictionary of Unicode
+metadata element names and values, <span class="hl1">metadata</span>, is serialized into
+a UTF-8 encoded string, <span class="hl1">anvl</span>, with the following code:</p>
 <pre class="literal-block">
 import re
 
@@ -844,11 +844,11 @@ is, and its future metadata cross-walking support will be, limited to
 those profiles that it explicitly supports.</p>
 <ol class="arabic simple" id="profile-erc">
 <li><strong>Profile &quot;erc&quot;</strong>.  These elements are drawn from <a class="reference external" href="https://wiki.ucop.edu/display/Curation/ERC">Kernel Metadata
-and Electronic Resource Citations (ERCs)</a>.  This profile aims at
-universal citations: any kind of object (digital, physical,
-abstract) or agent (person, group, software, satellite) for any
-purpose (research, education, entertainment, administration), any
-subject focus (oceanography, sales, religion, archiving), and any
+and Electronic Resource Citations (ERCs)</a> <span class="ext-icon"></span>.  This
+profile aims at universal citations: any kind of object (digital,
+physical, abstract) or agent (person, group, software, satellite)
+for any purpose (research, education, entertainment, administration),
+any subject focus (oceanography, sales, religion, archiving), and any
 medium (television, newspaper, database, book).  This is the
 default profile for ARK and URN identifiers.</li>
 </ol>
@@ -911,9 +911,9 @@ approximation.</p>
 </tr>
 </tbody>
 </table>
-<p>As a special case, an entire <a class="reference external" href="https://wiki.ucop.edu/display/Curation/Anvl">ANVL</a> document containing ERC metadata
-may be bound to the metadata element &quot;erc&quot;.  Care should be taken
-to escape line terminators in the document (as is true for all
+<p>As a special case, an entire <a class="reference external" href="https://wiki.ucop.edu/display/Curation/Anvl">ANVL</a> <span class="ext-icon"></span> document containing
+ERC metadata may be bound to the metadata element &quot;erc&quot;.  Care should
+be taken to escape line terminators in the document (as is true for all
 metadata element values; see <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above).
 For example, the ANVL document:</p>
 <pre class="literal-block">
@@ -928,7 +928,8 @@ erc: who: Proust, Marcel%0Awhat: Remembrance of Things Past
 <ol class="arabic simple" id="profile-datacite" start="2">
 <li><strong>Profile &quot;datacite&quot;</strong>.  These elements are drawn from the
 <a class="reference external" href="http://schema.datacite.org/">DataCite Metadata Scheme for the Publication and Citation of
-Research Data</a>.  This is the default profile for DOI identifiers.</li>
+Research Data</a> <span class="ext-icon"></span>.  This is the default profile for DOI
+identifiers.</li>
 </ol>
 <blockquote>
 <table border="1" class="docutils">
@@ -1034,7 +1035,7 @@ datacite: &lt;?xml version=&quot;1.0&quot;?&gt;%0A&lt;resource...
 </blockquote>
 <ol class="arabic simple" id="profile-dc" start="3">
 <li><strong>Profile &quot;dc&quot;</strong>.  These elements are drawn from the <a class="reference external" href="http://dublincore.org/documents/dces/">Dublin Core
-Metadata Element Set</a>.</li>
+Metadata Element Set</a> <span class="ext-icon"></span>.</li>
 </ol>
 <!--  -->
 <blockquote>
@@ -1130,8 +1131,8 @@ EZID will map element &quot;erc.who&quot; to &quot;datacite.creator&quot;.</li>
 <p>If no meaningful value is available for a required element, clients
 are encouraged to supply a standard machine-readable code drawn from
 the <a class="reference external" href="https://wiki.ucop.edu/display/Curation/ERC">Kernel Metadata and Electronic Resource Citations (ERCs)</a>
-specification.  These codes have the common syntactic form
-&quot;(:<span class="hl1">code</span>)&quot; and include:</p>
+<span class="ext-icon"></span> specification.  These codes have the common syntactic
+form &quot;(:<span class="hl1">code</span>)&quot; and include:</p>
 <blockquote>
 <table border="1" class="docutils">
 <colgroup>
@@ -1188,12 +1189,13 @@ who: (:unkn) anonymous donor
 </div>
 <div class="section" id="crossref-registration">
 <h1>CrossRef registration</h1>
-<p>A DOI identifier may be registered with <a class="reference external" href="http://www.crossref.org/">CrossRef</a> in addition to
-being registered with <a class="reference external" href="http://www.datacite.org/">DataCite</a>, thereby making it available to
-CrossRef's indexing and linking services.  <strong>Note:</strong> to take advantage
-of this, both the identifier shoulder and the user making the request
-must be enabled for CrossRef registration by an EZID administrator.
-In addition, the user must have an account with CrossRef.</p>
+<p>A DOI identifier may be registered with <a class="reference external" href="http://www.crossref.org/">CrossRef</a> <span class="ext-icon"></span>
+in addition to being registered with <a class="reference external" href="http://www.datacite.org/">DataCite</a> <span class="ext-icon"></span>, thereby
+making it available to CrossRef's indexing and linking services.
+<strong>Note:</strong> to take advantage of this, both the identifier shoulder and
+the user making the request must be enabled for CrossRef registration by
+an EZID administrator.  In addition, the user must have an account with
+CrossRef.</p>
 <p>Once registered, an identifier cannot be removed from CrossRef.  If
 the identifier's status is set to unavailable (recall <a class="reference internal" href="#identifier-status">Identifier
 status</a>, above), EZID will prepend &quot;WITHDRAWN&quot; to the title of the
@@ -1225,9 +1227,9 @@ Warnings and errors may also be viewed in the EZID UI and may also be
 emailed to a specified mailbox.  Warnings and errors can be removed
 only by submitting new metadata and re-registering identifiers.</p>
 <p>CrossRef deposit metadata should adhere to the <a class="reference external" href="http://help.crossref.org/deposit_schema">CrossRef Deposit
-Schema</a>, version 4.3.0 or later.  The metadata should consist of the
-immediate child element of a &lt;body&gt; element, i.e., one of the
-following elements:</p>
+Schema</a> <span class="ext-icon"></span>, version 4.3.0 or later.  The metadata should
+consist of the immediate child element of a &lt;body&gt; element, i.e., one of
+the following elements:</p>
 <ul class="simple">
 <li>&lt;journal&gt;</li>
 <li>&lt;book&gt;</li>
@@ -1497,7 +1499,8 @@ curl_close($ch);
 </div>
 <div class="section" id="perl-examples">
 <h1>Perl examples</h1>
-<p>The following Perl examples use the <a class="reference external" href="http://search.cpan.org/dist/libwww-perl/">libwww-perl (LWP)</a> library.</p>
+<p>The following Perl examples use the <a class="reference external" href="http://search.cpan.org/dist/libwww-perl/">libwww-perl (LWP)</a> <span class="ext-icon"></span>
+library.</p>
 <p>To get identifier metadata, parse and decode it, and store it in a
 hash, <span class="hl1">%metadata</span>:</p>
 <pre class="literal-block">
@@ -1737,8 +1740,9 @@ class harness {
 </div>
 <div class="section" id="curl-examples">
 <h1>curl examples</h1>
-<p>The EZID API can be exercised using the <a class="reference external" href="http://curl.haxx.se/">curl</a> command line tool.  The
-following examples assume metadata is UTF-8 encoded throughout.</p>
+<p>The EZID API can be exercised using the <a class="reference external" href="http://curl.haxx.se/">curl</a> <span class="ext-icon"></span> command
+line tool.  The following examples assume metadata is UTF-8 encoded
+throughout.</p>
 <p>To get identifier metadata, obtaining text formatted as described in
 <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above:</p>
 <pre class="literal-block">
@@ -1859,7 +1863,7 @@ week.</p>
 <p id="download-formats"><strong>Download formats</strong></p>
 <p>Identifier metadata is returned in one of three formats; which format
 is determined by the &quot;format&quot; parameter.  In all cases, the text
-encoding is UTF-8 and the metadata is compressed with <a class="reference external" href="http://www.gzip.org/">gzip</a>.</p>
+encoding is UTF-8 and the metadata is compressed with <a class="reference external" href="http://www.gzip.org/">gzip</a> <span class="ext-icon"></span>.</p>
 <ol class="arabic">
 <li><p class="first"><strong>Format &quot;anvl&quot;</strong>.  This format is effectively the concatenation of
 performing a get metadata operation (see <a class="reference internal" href="#operation-get-identifier-metadata">Operation: get identifier
@@ -1898,7 +1902,7 @@ datacite: &lt;?xml version=&quot;1.0&quot;?&gt;%0A&lt;resource xmlns=&quot;http:
 </pre>
 </li>
 <li><p class="first"><strong>Format &quot;csv&quot;</strong>.  Metadata is returned as an Excel-compatible
-<a class="reference external" href="http://en.wikipedia.org/wiki/Comma-separated_values">Comma-separated values (CSV)</a> table, one row per selected
+<a class="reference external" href="http://en.wikipedia.org/wiki/Comma-separated_values">Comma-separated values (CSV)</a> <span class="ext-icon"></span> table, one row per selected
 identifier.  A header row lists column names.  The columns to
 return must be specified using one or more &quot;column&quot; parameters; the
 order of columns in the table matches the parameter order.  The
@@ -2072,10 +2076,10 @@ and &quot;createdBefore&quot; parameters above.</p>
 </li>
 </ul>
 <p id="using-curl-to-request-a-download"><strong>Using curl to request a download</strong></p>
-<p>A batch download can easily be requested with the <a class="reference external" href="http://curl.haxx.se/">curl</a> command line
-tool.  Use curl's &quot;-d&quot; option to specify parameters, and use the https
-form of the request URL to securely send authentication credentials.
-For example:</p>
+<p>A batch download can easily be requested with the <a class="reference external" href="http://curl.haxx.se/">curl</a> <span class="ext-icon"></span>
+command line tool.  Use curl's &quot;-d&quot; option to specify parameters, and
+use the https form of the request URL to securely send authentication
+credentials.  For example:</p>
 <pre class="literal-block">
 curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -d format=anvl -d type=ark -d type=doi
   -d permanence=real https://ezid.cdlib.org/download_request
@@ -2085,7 +2089,8 @@ curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -d f
 <h1>OAI-PMH harvesting</h1>
 <p>EZID supports harvesting of identifiers and citation metadata via <a class="reference external" href="http://www.openarchives.org/OAI/openarchivesprotocol.html">The
 Open Archives Initiative Protocol for Metadata Harvesting
-(OAI-PMH)</a>, version 2.0.  The base URL for OAI-PMH access is</p>
+(OAI-PMH)</a> <span class="ext-icon"></span>, version 2.0.  The base URL for OAI-PMH
+access is</p>
 <blockquote>
 <a class="reference external" href="http://ezid.cdlib.org/oai">http://ezid.cdlib.org/oai</a></blockquote>
 <p>Only public, exported, non-test identifiers that have non-default
@@ -2096,12 +2101,12 @@ OAI-PMH.</p>
 see <a class="reference internal" href="#batch-download">Batch download</a> for the differences.</p>
 <p>In returning an identifier's metadata, EZID maps citation metadata
 from the identifier's preferred metadata profile (see <a class="reference internal" href="#metadata-profiles">Metadata
-profiles</a> above) to one of two delivery formats: <a class="reference external" href="http://dublincore.org/documents/dces/">Dublin Core</a> (as
-required by the protocol) or <a class="reference external" href="http://schema.datacite.org/">DataCite</a>.  In the latter case, older
-DataCite XML metadata records stored in EZID are converted to version
-3 of the DataCite schema for uniformity.  Note that, in an extension
-to the DataCite schema, the identifier type for non-DOI identifiers is
-set to &quot;ARK&quot; or &quot;URN:UUID&quot; as appropriate.</p>
+profiles</a> above) to one of two delivery formats: <a class="reference external" href="http://dublincore.org/documents/dces/">Dublin Core</a>
+<span class="ext-icon"></span> (as required by the protocol) or <a class="reference external" href="http://schema.datacite.org/">DataCite</a> <span class="ext-icon"></span>.
+In the latter case, older DataCite XML metadata records stored in EZID
+are converted to version 3 of the DataCite schema for uniformity.  Note
+that, in an extension to the DataCite schema, the identifier type for
+non-DOI identifiers is set to &quot;ARK&quot; or &quot;URN:UUID&quot; as appropriate.</p>
 </div>
 </div>
 {% endblock %}

@@ -4983,12 +4983,11 @@ h2.panel-title > a {
   border-left: 6px solid; }
 
 .ext-icon {
-  margin: 0px 2px 5px 6px;
+  margin: 0px 4px 5px 4px;
   padding: 9px;
   background: url("/static/images/ext-link.svg") no-repeat center left;
   width: 15px;
-  height: 15px;
-  background-size: 15px 15px; }
+  height: 15px; }
 
 a span.ext-icon {
   text-decoration: none !important;
@@ -5918,6 +5917,15 @@ ul.lead > li {
 .api h1 {
   color: #00778a;
   border-bottom: 1px dotted black; }
+
+.api .hl1 {
+  color: green;
+  font-style: oblique; }
+
+.api .hl2 {
+  color: green;
+  font-family: monospace;
+  font-style: oblique; }
 
 .api blockquote {
   display: block;
