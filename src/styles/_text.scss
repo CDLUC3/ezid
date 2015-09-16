@@ -91,6 +91,15 @@ p.italic {
 .apidoc {
   font-size: $font-size-base;
 }
+.hl1 {
+  color: green;
+  font-style: oblique;
+}
+.hl2 {
+  color: green;
+  font-family: monospace;
+  font-style: oblique;
+}
 
 // Demo page
 .font-small {

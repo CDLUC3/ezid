@@ -8,6 +8,8 @@ urlpatterns = django.conf.urls.patterns("",
   ("^/?$", "ui_home.index"),
   ("^learn/$", "ui_home.learn"),
   ("^learn/crossref_faq$", "ui_home.crossref_faq"),
+  ("^learn/id_basics$", "ui_home.id_basics"),
+  ("^learn/suffix_passthrough$", "ui_home.suffix_passthrough"),
   ("^home/(\w+)$", "ui_home.no_menu"),
 
   # UI - OTHER

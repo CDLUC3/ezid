@@ -17,6 +17,14 @@ def crossref_faq(request):
   d = { 'menu_item' : 'ui_home.learn' }
   return uic.render(request, 'info/crossref_faq', d)
 
+def id_basics(request):
+  d = { 'menu_item' : 'ui_home.learn' }
+  return uic.render(request, 'info/id_basics', d)
+
+def suffix_passthrough(request):
+  d = { 'menu_item' : 'ui_home.learn' }
+  return uic.render(request, 'info/suffix_passthrough', d)
+
 def no_menu(request, template_name):
   d = {'menu_item' : 'ui_home.null'}
   try:

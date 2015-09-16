@@ -4989,10 +4989,36 @@ h2.panel-title > a {
   width: 15px;
   height: 15px; }
 
-a span.ext-icon {
-  text-decoration: none !important;
-  border-bottom: 0px !important;
-  padding-bottom: 0px !important; }
+.ext-link-base, .ext-link, .pdf-link, .ppt-link {
+  position: relative;
+  text-decoration: none;
+  border-bottom: 1px #00778a solid;
+  padding-bottom: 1px;
+  margin-right: 24px; }
+
+.ext-link:after {
+  position: absolute;
+  top: -0.1em;
+  right: -20px;
+  content: url("/static/images/ext-link.svg");
+  width: 15px;
+  height: 15px; }
+
+.pdf-link:after {
+  position: absolute;
+  top: -0.1em;
+  right: -25px;
+  content: url("/static/images/pdf-icon_18x18.png");
+  width: 15px;
+  height: 15px; }
+
+.ppt-link:after {
+  position: absolute;
+  top: -0.1em;
+  right: -20px;
+  content: url("/static/images/powerpoint.svg");
+  width: 15px;
+  height: 15px; }
 
 .checkbox__icon {
   width: 17px;
@@ -5163,6 +5189,15 @@ p.italic {
 
 .apidoc {
   font-size: 15px; }
+
+.hl1 {
+  color: green;
+  font-style: oblique; }
+
+.hl2 {
+  color: green;
+  font-family: monospace;
+  font-style: oblique; }
 
 .font-small {
   font-size: 0.8em;
@@ -5902,9 +5937,7 @@ ul.lead > li {
   margin-left: 20px; }
 
 .learn__title--ext-link {
-  position: absolute;
-  top: 42px;
-  right: 20%; }
+  margin-bottom: 20px; }
 
 .breadcrumb {
   background-color: #FFF;
@@ -5917,15 +5950,6 @@ ul.lead > li {
 .api h1 {
   color: #00778a;
   border-bottom: 1px dotted black; }
-
-.api .hl1 {
-  color: green;
-  font-style: oblique; }
-
-.api .hl2 {
-  color: green;
-  font-family: monospace;
-  font-style: oblique; }
 
 .api blockquote {
   display: block;
