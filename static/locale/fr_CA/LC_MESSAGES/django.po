@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-15 13:05-0700\n"
+"POT-Creation-Date: 2015-09-15 17:09-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -744,16 +744,16 @@ msgid "NO"
 msgstr ""
 
 #: templates/includes/advanced_publish_id.html:36
-#: templates/manage/edit.html:145
+#: templates/manage/edit.html:144
 msgid "Allow harvesting/indexing?"
 msgstr ""
 
-#: templates/includes/advanced_remainder.html:5
-msgid "Identifier Preview:"
+#: templates/includes/advanced_remainder.html:8
+msgid "Optional: Enter a custom remainder (suffix)"
 msgstr ""
 
-#: templates/includes/advanced_remainder.html:12
-msgid "Optional: Enter a custom remainder (suffix)"
+#: templates/includes/advanced_remainder.html:18
+msgid "Identifier Preview:"
 msgstr ""
 
 #: templates/includes/get_link.html:3
@@ -769,7 +769,7 @@ msgid "Choose an identifier type"
 msgstr ""
 
 #. Translators: Please preserve &#42; character reference
-#: templates/includes/simple_id_type.html:42
+#: templates/includes/simple_id_type.html:46
 msgid ""
 "Demo identifiers, indicated on EZID screens with an asterisk (&#42;) are "
 "temporary identifiers for use in testing the EZID service. They last for two "
@@ -834,6 +834,47 @@ msgid ""
 "qui ea, perfecto inimicus est in. Mentitum iracundia torquatos cu est, "
 "periculis complectitur ex vis. Eos illud postea ut, erant facilisis "
 "appellantur est cu, mutat debet et ius.</p>"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS. PLEASE PRESERVE HTML TAGS</p>
+#: templates/info/popup_help.html:48
+msgid ""
+"<div id=\"choose_id_demo_content\" class=\"help_window\"> <p> <strong>DOIs:</"
+"strong> Recommended for final products, published materials, and citation. "
+"Use for objects under good long-term management. </p> <p> <strong>ARKs:</"
+"strong> Recommended for projects requiring more flexibility, early or "
+"unpublished versions of material. </p> </div> <div id=\"choose_id_content\" "
+"class=\"help_window\"> <p> <strong>DOIs:</strong> Recommended for final "
+"products, published materials, and citation. Use for objects under good long-"
+"term management. Cannot be deleted. </p> <p> <strong>ARKs:</strong> "
+"Recommended for projects requiring more flexibility, early or unpublished "
+"versions of material. Can be deleted. </p> </div> <div id="
+"\"custom_remainder_content\" class=\"help_window\"> <p> EZID will create a "
+"unique string for you. If you want to do this yourself, bear this in mind: "
+"semantics can work if they are intrinsic to the object being registered. "
+"But, if you include information that is subject to change, it works against "
+"persistence. </p> </div> <div id=\"describe_profile_frontpage_content\" "
+"class=\"help_window\"> <p> <strong>DataCite:</strong> required for DOIs. "
+"More here: <a href=\"http://schema.datacite.org\">http://schema.datacite."
+"org</a> </p> <p> <strong>ERC:</strong> Electronic Resource Citation, default "
+"for ARKs. More here: <a href=\"http://dublincore.org/groups/kernel/spec/"
+"\">http://dublincore.org/groups/kernel/spec/</a> </p> </div> <div id="
+"\"describe_profile_content\" class=\"help_window\"> <p> <strong>DataCite:</"
+"strong> required for DOIs. More here: <a href=\"http://schema.datacite.org"
+"\">http://schema.datacite.org</a> </p> <p> <strong>Dublin Core:</strong> "
+"More here: <a href=\"http://dublincore.org/documents/dces/\">http://"
+"dublincore.org/documents/dces/</a> </p> <p> <strong>ERC:</strong> Electronic "
+"Resource Citation, default for ARKs. More here: <a href=\"http://dublincore."
+"org/groups/kernel/spec/\">http://dublincore.org/groups/kernel/spec/</a> </p> "
+"</div> <div id=\"decide_public_content\" class=\"help_window\"> <p> A public "
+"status means the identifier is viewable by anyone. The reserved status means "
+"it is viewable only by owners, so “reserved” is a great way to save a DOI or "
+"ARK for use later. Reserved IDs can be deleted. </p> </div> <div id="
+"\"decide_export_content\" class=\"help_window\"> <p> Your choice pertains to "
+"making the metadata available for harvesting and/or indexing. Choosing \"Yes"
+"\" does not guarantee that the metadata will be harvested or indexed, but "
+"choosing \"No\" removes the possibility. </p> </div>"
 msgstr ""
 
 #: templates/layouts/base.html:10
@@ -906,7 +947,7 @@ msgstr ""
 msgid "See the CrossRef XML Metadata record in a new window"
 msgstr ""
 
-#: templates/manage/details.html:104 templates/manage/edit.html:74
+#: templates/manage/details.html:104 templates/manage/edit.html:73
 msgid "ABOUT THE IDENTIFIER"
 msgstr ""
 
@@ -926,33 +967,33 @@ msgstr ""
 msgid "profile"
 msgstr ""
 
-#: templates/manage/edit.html:107
+#: templates/manage/edit.html:106
 msgid "reserved"
 msgstr ""
 
-#: templates/manage/edit.html:112
+#: templates/manage/edit.html:111
 msgid "public"
 msgstr ""
 
-#: templates/manage/edit.html:118
+#: templates/manage/edit.html:117
 msgid "unavailable"
 msgstr ""
 
-#: templates/manage/edit.html:131
+#: templates/manage/edit.html:130
 msgid "Unavailable reason"
 msgstr ""
 
-#: templates/manage/edit.html:151 templates/search/index.html:166
+#: templates/manage/edit.html:150 templates/search/index.html:166
 #: templates/search/index.html.py:178
 msgid "Yes"
 msgstr ""
 
-#: templates/manage/edit.html:156 templates/search/index.html:170
+#: templates/manage/edit.html:155 templates/search/index.html:170
 #: templates/search/index.html.py:182
 msgid "No"
 msgstr ""
 
-#: templates/manage/edit.html:165
+#: templates/manage/edit.html:164
 msgid "SAVE CHANGES"
 msgstr ""
 

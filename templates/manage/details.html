@@ -126,7 +126,7 @@
   </div>
   <div class="row vertical-buffer-bot">
     <label class="col-sm-2">{{internal_profile.status.displayName}}:</label>
-    <div class="col-sm-7">{{pub_status}}{% help_icon "public_id_help" %}</div>
+    <div class="col-sm-7">{{pub_status}}</div>
   </div>
 	    
   {% if stat_reason %}
@@ -139,7 +139,7 @@
   {% if pub_status == 'public' %}
   <div class="row vertical-buffer-bot">
     <label class="col-sm-2">{{internal_profile.export.displayName}}</label>
-    <div class="col-sm-7">{% display_value identifier internal_profile.export %}{% help_icon "export_help" %}</div>
+    <div class="col-sm-7">{% display_value identifier internal_profile.export %}</div>
   </div>
   {% endif %}
 

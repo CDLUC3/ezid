@@ -103,7 +103,7 @@ def doc (request):
   if os.path.exists(path):
     if file.endswith(".html"):
       return uic.render(request, os.path.join("doc", file[:-5]),
-        { "menu_item": "ui_home.null" })
+        { "menu_item": "ui_home.learn" })
     else:
       f = open(path)
       content = f.read()

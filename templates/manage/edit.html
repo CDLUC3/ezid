@@ -59,7 +59,6 @@
       <div class="col-sm-7">
         {% display_form_element e identifier %}
         {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
-          {% datacite_field_help_icon e.name %}
         {% endif %}
       </div>        
     </div>
@@ -117,7 +116,7 @@
 			              checked="checked"
 			            {% endif %}/><label for="_status_unavailable">{% trans "unavailable" %}</label>&nbsp;&nbsp;
 		        {% endif %}
-		        {% help_icon "public_id_help" %}
+		        {% help_icon "decide_public" %}
       </div>
     </div>
   </div>
@@ -137,7 +136,7 @@
           {% else %}
             value=""
           {% endif %}
-          class="form-control" /> {% help_icon "unavail_reason_help" %}
+          class="form-control" />
       </div>
     </div>
   </div>
@@ -154,7 +153,7 @@
           checked="checked"
         {% endif %}
         /><label for="export_no">{% trans "No" %}</label>
-        {% help_icon "export_help" %}
+        {% help_icon "decide_export" %}
       </div>
     </div>
   </div>
@@ -176,7 +175,7 @@
             <input id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Add more information to the record" onclick="profileSimpleToAdvanced(event);" class="link-lookalike"/>
           {% elif not manual_profile and current_profile.name != "datacite" %}
             Would you like to add more information to the record?
-            <input id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Convert to the DataCite citation profile" onclick="profileSimpleToAdvanced(event);" class="link-lookalike"/> <span style="position:relative;top:-50px;left:83%"> {% help_icon "which_profile" %} </span> 
+            <input id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Convert to the DataCite citation profile" onclick="profileSimpleToAdvanced(event);" class="link-lookalike"/> <span style="position:relative;top:-50px;left:83%"></span> 
           {% endif %}
         </div>
       </div>

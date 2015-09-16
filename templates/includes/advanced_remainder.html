@@ -1,16 +1,12 @@
 {% load layout_extras %}
 {% load i18n %}
 
-<div id="preview_div" style="width:180px;float:right;word-wrap:break-word;">
-  <h2>{% trans "Identifier Preview:" %}</h2>
-  <div id="preview_div_value"></div>
-</div>
 
 <div class="row idcreate-content-row">
   <div class="col-sm-8 inline-header">
     <span class="number-big">2</span>
     <h2 class="id-creation">{% trans "Optional: Enter a custom remainder (suffix)" %}</h2>
-     {% help_icon "remainder_guidelines" %}
+     {% help_icon "custom_remainder" %}
   </div>
   <div class="col-sm-8 form-group form-group-sm">
     <div class="horizontal-buffer">
@@ -18,13 +14,13 @@
         value="{% form_or_default "remainder" remainder_box_default %}" class="element_customRemainder"/>
     </div>
   </div>
+  <div class="col-sm-8 horizontal-buffer" id="preview_div">
+    <h2>{% trans "Identifier Preview:" %}</h2>
+    <div id="preview_div_value"></div>
+  </div>
 </div>
 
 <script type="text/javascript">
-  $(document).ready(function () {
-    $(".element_customRemainder").tooltip({ bodyHandler: function () { return "<b><u>Custom Remainder</u></b><br/>Normally EZID creates a unique string to place after the identifier string selected in step 1 above, but you can enter your own unique string here if you are comfortable vouching for its uniqueness yourself."; } });
-  });
-  // deal with custom remainder and previews
   $('#remainder').focus(function() {
     $(this).select();
 	}).mouseup(function() {

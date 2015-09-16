@@ -6,7 +6,11 @@
     <div class="inline-header">
       <span class="number-big">1</span>
       <h2 class="id-creation">{% trans "Choose an identifier type" %}</h2>
-      {% help_icon "create_id_01" %}
+      {% if calling_page == 'Demo' %}
+        {% help_icon "choose_id_demo" %}
+      {% else %}
+        {% help_icon "choose_id" %}
+      {% endif %}
     </div>
   {% if prefixes|duplicate_id_types %}
     {% for p in prefixes %}
