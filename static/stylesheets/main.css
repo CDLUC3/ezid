@@ -6137,6 +6137,9 @@ padding-left-base, .col-sm-push-3, .padding-left {
 .vertical-buffer-bot {
   margin-bottom: 4px; }
 
+.vertical-buffer-bot-md {
+  margin-bottom: 25px; }
+
 .vertical-buffer {
   margin-top: 50px; }
 
