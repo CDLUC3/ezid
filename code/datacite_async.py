@@ -175,26 +175,27 @@ def _workerThread ():
         if row != None: break
         time.sleep(_idleSleep)
       doi = row.identifier[4:]
+      m = util.deblobify(row.metadata)
       if row.operation == ezidapp.models.DataciteQueue.OVERWRITE:
-        m = util.deblobify(row.metadata)
         if not _dataciteCallWrapper(row, "datacite.uploadMetadata",
-          datacite.uploadMetadata, doi, {}, m):
+          datacite.uploadMetadata, doi, {}, m, True, m["_d"]):
           continue
         if not _dataciteCallWrapper(row, "datacite.setTargetUrl",
-          datacite.setTargetUrl, doi, m["_st"]):
+          datacite.setTargetUrl, doi, m["_st"], m["_d"]):
           continue
         if m.get("_is", "public") != "public" or\
           m.get("_x", "yes") != "yes":
           if not _dataciteCallWrapper(row, "datacite.deactivate",
-            datacite.deactivate, doi):
+            datacite.deactivate, doi, m["_d"]):
             continue
       else: # DELETE
         # We can't actually delete a DOI, so we do the next best thing...
         if not _dataciteCallWrapper(row, "datacite.setTargetUrl",
-          datacite.setTargetUrl, doi, "http://datacite.org/invalidDOI"):
+          datacite.setTargetUrl, doi, "http://datacite.org/invalidDOI",
+          m["_d"]):
           continue
         if not _dataciteCallWrapper(row, "datacite.deactivate",
-          datacite.deactivate, doi):
+          datacite.deactivate, doi, m["_d"]):
           continue
       _checkAbort()
       row.delete()
