@@ -91,7 +91,7 @@ $footer-newsfeed-col-padding: 20px;
   transition: 1.3s ease-in-out top;
 }
 
-@media all and (transform-3d),
+@media all and (transform-3d), 
 (-webkit-transform-3d) {
   .carousel-inner.vertical > .item {
     -webkit-transition: -webkit-transform 1.3s ease-in-out;
@@ -122,32 +122,32 @@ $footer-newsfeed-col-padding: 20px;
     transform: translate3d(0, 0, 0);
   }
 }
-.carousel-inner.vertical > .active {
-  top: 0;
-}
-.carousel-inner.vertical > .next,
-.carousel-inner.vertical > .prev {
-  top: 0;
-  height: 100%;
-  width: auto;
-}
-.carousel-inner.vertical > .next {
-  left: 0;
-  top: 100%;
-}
-.carousel-inner.vertical > .prev {
-  left: 0;
-  top: -100%
-}
-.carousel-inner.vertical > .next.left,
-.carousel-inner.vertical > .prev.right {
-  top: 0;
-}
-.carousel-inner.vertical > .active.left {
-  left: 0;
-  top: -100%;
-}
-.carousel-inner.vertical > .active.right {
-  left: 0;
-  top: 100%;
+.carousel-inner.vertical {
+  > .active {
+    top: 0;
+  }
+  > .next, > .prev {
+    top: 0;
+    height: 100%;
+    width: auto;
+  }
+  .next {
+    left: 0;
+    top: 100%;
+  }
+  > .prev {
+    left: 0;
+    top: -100%
+  }
+  > .next.left, > .prev.right {
+    top: 0;
+  }
+  > .active.left {
+    left: 0;
+    top: -100%;
+  }
+  > .active.right {
+    left: 0;
+    top: 100%;
+  }
 }

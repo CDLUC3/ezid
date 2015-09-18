@@ -1,7 +1,7 @@
 {% load layout_extras %}
 {% load i18n %}
 
-  <div class="row idcreate-content-row">
+  <div class="row idcreate-content-row vertical-buffer-sm">
     <div class="col-sm-12 inline-header">
       <span class="number-big">3</span>
       <h2 class="id-creation">{% trans "Decide" %}</h2>
@@ -9,10 +9,10 @@
   </div>
 
   <div class="row horizontal-buffer">
-    <div class="col-md-3 col-xs-5 form-group form-group-sm">
+    <div class="col-xs-5 form-group form-group-sm">
       {% trans "Make this identifier public?" %}
     </div>
-    <div class="col-md-9 col-xs-7 form-group form-group-sm">
+    <div class="col-xs-7 form-group form-group-sm">
       <div class="radio-inline radio_svg">
         <input type="radio" name="publish" value="True" id="publish_true" class="radio__icon"
           {% if request.POST.publish != 'False' %}
@@ -32,10 +32,10 @@
   </div>
 
   <div class="row horizontal-buffer" id="harv_index">
-    <div class="col-md-3 col-xs-5 form-group form-group-sm">
+    <div class="col-xs-5 form-group form-group-sm">
       {% trans "Allow harvesting/indexing?" %}
     </div>
-    <div class="col-md-9 col-xs-7 form-group form-group-sm">
+    <div class="col-xs-7 form-group form-group-sm">
       <div class="radio-inline radio_svg">
         <input type="radio" name="export" value="yes" id="export_yes" class="radio__icon"
           {% if request.POST.export != 'no' %}

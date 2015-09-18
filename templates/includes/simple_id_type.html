@@ -1,8 +1,8 @@
 {% load layout_extras %}
 {% load i18n %}
 
-<div class="row idcreate-content-row">
-  <div class="col-sm-8">
+<div class="row idcreate-content-row vertical-buffer-sm-resp">
+  <div class="col-sm-12">
     <div class="inline-header">
       <span class="number-big">1</span>
       <h2 class="id-creation">{% trans "Choose an identifier type" %}</h2>
@@ -38,13 +38,4 @@
     {% endfor %}
   {% endif %}
   </div>
-
-  {% if calling_page == 'Demo' %}
-  <div class="col-sm-3 font-small vertical-buffer-sm">
-    <span class="font-small-bold">About Demo Identifiers</span><br/>
-    {# Translators: Please preserve &#42; character reference #}
-    &#42; {% trans "Demo identifiers, indicated on EZID screens with an asterisk (&#42;) are temporary identifiers for use in testing the EZID service. They last for two weeks." %}
-  </div>
-  {% endif %}
-  <div class="col-sm-1"></div>
 </div>

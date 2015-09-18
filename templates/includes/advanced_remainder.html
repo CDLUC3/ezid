@@ -2,19 +2,19 @@
 {% load i18n %}
 
 
-<div class="row idcreate-content-row">
-  <div class="col-sm-8 inline-header">
+<div class="row idcreate-content-row vertical-buffer-sm">
+  <div class="col-sm-12 inline-header">
     <span class="number-big">2</span>
     <h2 class="id-creation">{% trans "Optional: Enter a custom remainder (suffix)" %}</h2>
      {% help_icon "custom_remainder" %}
   </div>
-  <div class="col-sm-8 form-group form-group-sm">
+  <div class="col-sm-12 form-group form-group-sm">
     <div class="horizontal-buffer">
       <input type="text" name="remainder" id="remainder"
         value="{% form_or_default "remainder" remainder_box_default %}" class="element_customRemainder"/>
     </div>
   </div>
-  <div class="col-sm-8 horizontal-buffer" id="preview_div">
+  <div class="col-sm-12 horizontal-buffer" id="preview_div">
     <h2>{% trans "Identifier Preview:" %}</h2>
     <div id="preview_div_value"></div>
   </div>

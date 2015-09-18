@@ -13,20 +13,32 @@
   <div class="idcreate-content gradient-form">
     <form id="create_form" action="{% url "ui_demo.advanced" %}" method="post" class="form-horizontal" role="form">
       <input name="action" id="action" type="hidden" value="create"/>
+
+        <div class="col-xs-12 col-md-5 col-md-push-7">
+        <div class="call-out">
+          <h3>{% trans "Quick Start Guides" %}</h3>
+          <ul>
+            <li><a href="/static/locale/en/EZID_AdvancedCreate.pdf" class="pdf-link" title="PDF Document" target="_blank">{% trans "Advanced Create for DOIs" %}</a></li>
+            <li><a href="/static/locale/en/EZID_PlaceholdersForRequiredFields.pdf" title="PDF Document" class="pdf-link" target="_blank">{% trans "Placeholder information for required fields" %}</span></a></li>
+            <li><a href="/static/locale/en/EZID_ResourceTypes.pdf" title="PDF Document" class="pdf-link" target="_blank">{% trans "Resource Types" %}</a></li>
+            <li><a href="/static/locale/en/EZID_ContributorTypes.pdf" title="PDF Document" class="pdf-link" target="_blank">{% trans "Contributor Types" %}</a></li>
+            <li><a href="/static/locale/en/EZID_RelationTypes.pdf" title="PDF Document" class="pdf-link" target="_blank">{% trans "Relation Types" %}</a></li>
+          </ul>
+        </div>
+        </div>
+
+        <div class="col-xs-12 col-md-7 col-md-pull-5">
+          {% include "includes/simple_id_type.html" with calling_page="Demo" %}
+          {% include "includes/advanced_remainder.html" %}
+          {% include "includes/advanced_publish_id.html" %}
+        </div>
       
-      {% include "includes/simple_id_type.html" with calling_page="Demo" %}
-      
-      {% include "includes/advanced_remainder.html" %}
-      
-      {% include "includes/advanced_publish_id.html" %}
-           
-      {% include "includes/advanced_describe.html" %}
+        {% include "includes/advanced_describe.html" %}
      
-      <div class="row">
+      <div class="row idcreate-content-row">
         <div class="col-sm-8 col-sm-offset-2">
           <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>{% trans "NOTE" %}:</strong> {% trans "This is just a demo. To create a real identifier, you must have an account." %}
-
           <p class="italic vertical-buffer-xs">
     {# Translators: Please preserve &quot; tags #}
             {% trans "Once created, an identifier cannot be renamed or deleted." %}

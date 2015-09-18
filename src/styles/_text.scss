@@ -9,6 +9,33 @@ a:hover {
   @include text-link2($design-primary-color);
 }
 
+//Used on Create ID pages
+.call-out h3 {
+  font-size: 1.1em;
+  margin-left: 20px;
+}
+
+.call-out li {
+  padding-top: 3px;
+}
+
+.call-out a, 
+.call-out a:visited, 
+.call-out a:link {
+//  @include text-link2($design-primary-color);
+}
+
+.call-out {
+  border:2px solid $design-light-gray-border-color;
+  background-color: $design-light-gray-bg-color;
+  padding-bottom: 15px;
+  margin: 25px 20px 10px 0px;
+  // width: 80%;
+}
+.call-out p {
+  margin-left: $layout-container-margin-lg;
+}
+
 //Used on contact page
 blockquote a, 
 blockquote a:visited, 
@@ -32,17 +59,15 @@ blockquote a:hover {
 }
 
 //Contact Page Sign Up For Our Newsletter
-.tagline a, 
-.tagline a:visited, 
-.tagline a:link {
-  border-bottom: none;
-  padding-bottom: 0px;
+.tagline {
+  a, a:visited, a:link {
+    border-bottom: none;
+    padding-bottom: 0px;
+  }
+  a:hover {
+    @include text-link2($design-pop-gradient-bottom);
+  }
 }
-
-.tagline a:hover {
-  @include text-link2($design-pop-gradient-bottom);
-}
-
 
 // All other links
 a.not-text, 
@@ -82,9 +107,11 @@ a.boxy-pop:hover {
 p.italic {
   font-style: italic;
 }
-
 .font-xsmall {
   font-size: 0.7em !important;
+}
+.no-wrap {
+  white-space: nowrap;
 }
 
 // apidoc font
@@ -117,4 +144,10 @@ p.italic {
 mark {
   background-color: $design-mark-color;
   padding: 0px;
+}
+
+// Search page
+.form-horizontal label.text-right {
+  text-align: right;
+  padding-right: 10px;
 }

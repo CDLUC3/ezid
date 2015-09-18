@@ -190,7 +190,7 @@ def shoulder_display(prefix_dict, id_type_only="False", testPrefixes=[], sans_na
     display_prefix = ""
     for pre in testPrefixes:
       if prefix_dict['prefix'].startswith(pre['prefix']):
-        display_prefix = " (" + escape(prefix_dict['prefix']) + "/... *)"
+        display_prefix = " (" + escape(prefix_dict['prefix']) + "/... )"
     if display_prefix == '':
       display_prefix = " (" + prefix_dict['prefix'] + ")"
     if sans_namespace == "True":

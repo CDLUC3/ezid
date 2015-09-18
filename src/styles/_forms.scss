@@ -28,7 +28,7 @@ input[type="radio"], input[type="checkbox"] {
 .input-sm, select.input-sm {
   font-size: 1.05em;
   border-radius: $border-radius-base;
-  height: 26px;
+  height: $layout-container-margin-lg;
 }
 
 select::-moz-focus-inner { /*Remove button padding in FF*/ 

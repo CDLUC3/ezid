@@ -13,11 +13,23 @@
   <div class="idcreate-content gradient-form">
     
     <form id="create_form" action="{% url "ui_demo.simple" %}" method="post" class="form-horizontal" role="form">
-      
-      {% include "includes/simple_id_type.html" with calling_page="Demo" %}
-      
-      {% include "includes/simple_describe.html" %}
+
+      <div class="row">
+        <div class="col-xs-12 col-md-5 col-md-push-7">
+        <div class="call-out">
+          <h3>{% trans "Quick Start Guides" %}</h3>
+          <ul>
+            <li><a href="/static/locale/en/EZID_SimpleCreate.pdf" class="pdf-link" title="PDF Document" target="_blank">{% trans "Simple ID Creation" %}</a></li>
+          </ul>
+        </div>
+        </div>
+
+        <div class="col-xs-12 col-md-7 col-md-pull-5">
+          {% include "includes/simple_id_type.html" with calling_page="Demo" %}
+        </div>
+      </div>
      
+        {% include "includes/simple_describe.html" %}
       <div class="row">
         <div class="col-sm-8 col-sm-offset-2">
           <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>

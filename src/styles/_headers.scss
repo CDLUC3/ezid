@@ -82,10 +82,11 @@ h5 {
   padding: 10px;
   height: 50px;
 }
-#header-search-results {
-  margin-top: 9px;
+#table_id_info { //was: #header-search-results {
   color: #000;
+  font-weight: bold;
 }
+
 //ALERTS
 .alert {
   text-align: center;

@@ -1,9 +1,23 @@
 // Home/Index Page
-#frontpage_img .lead {
-  margin-top: 92px;
-}
-#frontpage_img .tagline {
-  margin-bottom: 80px;
+#frontpage_img {
+  background-repeat: no-repeat;
+  background-size: cover; 
+  max-height:420px; 
+  text-align: left; 
+  padding-top:0px; 
+  color: white;
+  .lead {
+    margin-top: 92px;
+  }
+  .tagline {
+    margin-bottom: 80px;
+    a, a:visited, a.hover, a.active {
+      color: #FFF !important;
+    }
+  }
+  .tagline.active a {
+    color: #FFF !important;
+  }
 }
 .lead {
   line-height: 1.1;
@@ -16,23 +30,16 @@ ul.lead > li {
   letter-spacing: 0.03em;
 }
 
-#frontpage_img {
-  background-repeat: no-repeat;
-  background-size: cover; 
-  max-height:420px; 
-  text-align: left; 
-  padding-top:0px; 
-  color: white;
-}
-
-.lead2 {
+h1.lead2 {
   padding: 0px;
   line-height: 0.9;
   font-family: FreightSansProMedium-Regular, Arial, sans-serif;
   font-size: 2.9em;
+  font-weight: normal;
   letter-spacing: 0.01em;
   color: $design-primary-color;
-  margin-bottom: 26px;
+  margin: 0px 0px 26px 0px;
+  width: 100%;
 }
 
 #frontpage_idcreate_promo {
@@ -69,12 +76,3 @@ ul.lead > li {
 //  margin-top: -25px; /* account for padding and border if not using box-sizing: border-box; */
 }
 
-#frontpage_img .tagline a, #frontpage_img .tagline a:visited {
-  color: #FFF !important;
-}
-#frontpage_img .tagline a:hover, #frontpage_img .tagline a:active {
-  color: #FFF !important;
-}
-#frontpage_img .tagline.active a {
-  color: #FFF !important;
-} 

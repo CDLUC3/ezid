@@ -90,7 +90,6 @@ nav-logged-in-page-selected-blankspace p {
 .dropdown-menu {
   padding: 0;
   margin-left: 20px;
-  // top: 55px;
 }
 // Show menu when you hover
 .dropdown:hover .dropdown-menu {
@@ -152,7 +151,7 @@ nav-logged-in-page-selected-blankspace p {
   // Borders between Logged-In nav buttons
   ul.nav-pills > li span {
     border-right: 1px solid #000;
-    height: 30px;  //45px
+    height: $layout-container-margin-lg;  // 30px
     position:absolute; 
     top: 10px; // 14px
     right: 0;
