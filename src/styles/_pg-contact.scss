@@ -29,7 +29,6 @@
 }
 .promotional {
   @extend .contact-promotional-base;
-  background: $design-secondary-color;
 }
 // Overwrite default border-left and padding
 blockquote {
@@ -43,30 +42,32 @@ blockquote p {
   font-size: 0.9em;
   font-style: italic;
   font-weight: bold;
-  color: #FFF;
+  color: $design-primary-color;;
   a, , a:visited, , a:active , a:hover {
     color: #FFF;
     text-decoration: underline;
   }
 }
 .blockquote-footer {
-  margin-top: 18px;
+  margin: 18px 0px 0px $layout-container-margin-lg;
   font-family: $font-family-sans-serif-caps;
   font-size: 0.80em;
-  color: #000;
+  color: $design-primary-color;
   line-height: 1.2em;
 }
 .carousel-indicators {
   bottom: 0px;
+  li {
+    border: 1px solid $design-primary-color;
+    background-color: $design-primary-color;
+  }
 }
 .col-promotional .tagline {
-  margin-top: 20px;
+  margin: 20px 10px 0px 0px;
   font-size: 1.09em;
   font-family: $font-family-sans-serif--wider;
   font-weight: bold;
   text-align: right;
-}
-.col-promotional .tagline {
   a, a:visited, a:hover, a:active {
     color: $design-pop-gradient-bottom !important;
   }

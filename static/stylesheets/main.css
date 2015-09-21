@@ -5120,8 +5120,7 @@ a:hover {
 .call-out {
   border: 2px solid #beb6af;
   background-color: #f9f8f7;
-  padding-bottom: 15px;
-  margin: 25px 20px 10px 0px; }
+  padding-bottom: 15px; }
 
 .call-out p {
   margin-left: 30px; }
@@ -5812,9 +5811,6 @@ nav-logged-in-page-selected-blankspace p {
   width: calc(50% - 500px);
   float: right; }
 
-.promotional {
-  background: #b4975a; }
-
 blockquote {
   margin: 0px;
   border-left: 0px;
@@ -5825,30 +5821,32 @@ blockquote p {
   font-size: 0.9em;
   font-style: italic;
   font-weight: bold;
-  color: #FFF; }
+  color: #00778a; }
   blockquote p a, blockquote p a:visited, blockquote p a:active, blockquote p a:hover {
     color: #FFF;
     text-decoration: underline; }
 
 .blockquote-footer {
-  margin-top: 18px;
+  margin: 18px 0px 0px 30px;
   font-family: KievitScWeb, Arial, sans-serif;
   font-size: 0.80em;
-  color: #000;
+  color: #00778a;
   line-height: 1.2em; }
 
 .carousel-indicators {
   bottom: 0px; }
+  .carousel-indicators li {
+    border: 1px solid #00778a;
+    background-color: #00778a; }
 
 .col-promotional .tagline {
-  margin-top: 20px;
+  margin: 20px 10px 0px 0px;
   font-size: 1.09em;
   font-family: FreightSansProMedium-Regular, Arial, sans-serif;
   font-weight: bold;
   text-align: right; }
-
-.col-promotional .tagline a, .col-promotional .tagline a:visited, .col-promotional .tagline a:hover, .col-promotional .tagline a:active {
-  color: #ff701c !important; }
+  .col-promotional .tagline a, .col-promotional .tagline a:visited, .col-promotional .tagline a:hover, .col-promotional .tagline a:active {
+    color: #ff701c !important; }
 
 @media (min-width: 780px) {
   #dashboard__usage--col {
@@ -5871,6 +5869,9 @@ blockquote p {
 
 .idcreate-content-row {
   padding: 0px 40px 0px 34px; }
+
+.quick-start {
+  margin: 25px 20px 10px 0px; }
 
 .get_link_box {
   display: none;
