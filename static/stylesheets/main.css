@@ -5887,6 +5887,13 @@ blockquote p {
   margin-top: 6px;
   color: red; }
 
+#id_as_url__box {
+  height: 26px;
+  border: 1px solid #beb6af; }
+
+#copy_message {
+  display: none; }
+
 #frontpage_img {
   background-repeat: no-repeat;
   background-size: cover;

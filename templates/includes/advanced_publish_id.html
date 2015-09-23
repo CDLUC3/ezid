@@ -10,7 +10,7 @@
 
   <div class="row horizontal-buffer">
     <div class="col-xs-5 form-group form-group-sm">
-      {% trans "Make this identifier public?" %}
+      {% trans "Make this identifier ..." %}
     </div>
     <div class="col-xs-7 form-group form-group-sm">
       <div class="radio-inline radio_svg">
@@ -18,14 +18,14 @@
           {% if request.POST.publish != 'False' %}
             checked="checked"
           {% endif %} 
-        /><label for="publish_true" class="image-radio-label">{% trans "YES" %}</label>
+        /><label for="publish_true" class="image-radio-label">{% trans "PUBLIC" %}</label>
       </div>
       <div class="radio-inline radio_svg">
         <input type="radio" name="publish" value="False" id="publish_false" class="radio__icon"
           {% if request.POST.publish == 'False' %}
             checked="checked"
           {% endif %}
-        /><label for="publish_false" class="image-radio-label">{% trans "NO" %}</label>
+        /><label for="publish_false" class="image-radio-label">{% trans "RESERVED" %}</label>
         {% help_icon "decide_public" %}
       </div>
     </div>

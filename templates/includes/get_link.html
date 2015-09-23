@@ -1,27 +1,17 @@
 {% load layout_extras %}
 {% load i18n %}
-    <button class="btn" id="get_link" type="button">{% trans "Copy Link" %}</button>
+    <button class="btn" id="copy_link" type="button">{% trans "Copy Link" %}</button>
 
-  <!-- Get Link Modal -->
-  <div class="get_link_box" id="get_link_box">
-    <div style="padding-top:8px;">
-      <div style="float:right;padding-right:8px;">
-        <a href="#" class="close not-text" id="close_box_link" aria-label="close">&times;</a>
-      </div>
-      <input type="text" id="copy_url_value" size="32" value="{% full_url_to_id_details id_text %}" readonly="true" /><br/>
-    </div>
- </div>
-  <!-- End Get Link Modal -->
 <script type="text/javascript">
-  $("#get_link").bind("click", function(event){
-    $("#get_link_box").css('display','block');
-    $("#copy_url_value").focus();
-    $("#copy_url_value").select();
-    return false;
-  });
-  
-  $("#close_box_link").bind("click", function(event){
-    $("#get_link_box").css('display','none');
-    return false;
+  // Copy URL
+  $('#copy_link').click(function(){
+    $('#url_to_copy').fadeOut(100, function() {
+      $('#copy_message').fadeIn(400).delay(600);
+      $('#id_as_url__box').css('background-color', '#F9EDBE');
+      $('#copy_message').fadeOut('normal', function() {
+        $('#url_to_copy').fadeIn(100);
+        $('#id_as_url__box').css('background-color', 'white');
+      });
+    });
   });
 </script>

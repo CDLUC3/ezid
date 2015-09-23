@@ -21,11 +21,12 @@
   <div class="row vertical-buffer-bot">
     <label class="col-sm-2 col-xs-2">{% trans "Identifier as URL" %}:</label>
     <div class="col-sm-5 col-xs-8">
-      {% full_url_to_id_details id_text %}
+      <div id="id_as_url__box" class="vertical-buffer-xxs">
+        <span id="url_to_copy">{% full_url_to_id_details id_text %}</span>
+        <span id="copy_message">{% trans "Link copied to your clipboard" %}</span>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-2 col-xs-offset-2">
+    <div class="col-xs-2">
       {% include "includes/get_link.html" %}
     </div>
   </div>
