@@ -18,14 +18,14 @@
 }
 
 .get_link_box {
-   display: none;
-   z-index: 5;
-   border: solid;
-   border-width: 1px;
-   border-color: black;
-   position: absolute;
-   background-color:#fff;
-   padding: 10px 10px 10px 10px;
+  display: none;
+  z-index: 5;
+  border: solid;
+  border-width: 1px;
+  border-color: black;
+  position: absolute;
+  background-color:#fff;
+  padding: 10px 10px 10px 10px;
 }
 
 .iddetails__delay-text {
@@ -36,6 +36,7 @@
 #id_as_url__box {
   height: 26px;
   border: 1px solid $design-light-gray-border-color;
+  padding: 4px;
 }
 
 #copy_message {

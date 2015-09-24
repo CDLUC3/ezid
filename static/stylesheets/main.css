@@ -5200,9 +5200,6 @@ p.italic {
 .font-xsmall {
   font-size: 0.7em !important; }
 
-.no-wrap {
-  white-space: nowrap; }
-
 .apidoc {
   font-size: 15px; }
 
@@ -5889,7 +5886,8 @@ blockquote p {
 
 #id_as_url__box {
   height: 26px;
-  border: 1px solid #beb6af; }
+  border: 1px solid #beb6af;
+  padding: 4px; }
 
 #copy_message {
   display: none; }

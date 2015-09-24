@@ -9,6 +9,12 @@
 {% block content %}
 <div class="container vertical-buffer-20">
   <div class="row vertical-buffer-bot">
+    <div class="inline-header">
+      <img id="id__icon--aboutid" src="/static/images/idAboutID.svg" ALT="">
+        <h3>{% trans "ABOUT THE IDENTIFIER" %}</h3>
+    </div>
+  </div>
+  <div class="row vertical-buffer-bot">
     <label class="col-sm-2">{% trans "Identifier" %}:</label>
     <div class="col-sm-8"><strong>{% identifier_display id_text testPrefixes %}</strong></div>
   </div>
@@ -101,7 +107,7 @@
   <div class="row vertical-buffer-bot">
     <div class="inline-header">
       <img id="id__icon--aboutid" src="/static/images/idAboutID.svg" ALT="">
-        <h3>{% trans "ABOUT THE IDENTIFIER" %}</h3>
+        <h3>{% trans "ABOUT THE IDENTIFIER'S STATUS" %}</h3>
     </div>
   </div>
   <div class="row vertical-buffer-bot">

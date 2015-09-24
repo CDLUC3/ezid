@@ -44,6 +44,7 @@
 
     <div class="col-sm-12 form-group form-group-sm">
       <label for="search_id">{% trans "Identifier" %}</label>
+      {# Translators: "ex." is abbreviation for "example" #}
       <input type="text" class="form-control" id="search_id" placeholder="{% trans "ex:" %} doi:10.5061/DRYAD.20">
     </div>
 
@@ -65,19 +66,25 @@
       <input type="text" class="form-control" id="search_publisher" placeholder="{% trans "ex:" %} Dryad Digital Repository">
     </div>
 
-    <div class="col-sm-6 form-group form-group-sm">
+    <div class="col-sm-6">
       <div class="row">
         <label for="search_publication_year_from">{% trans "Publication Year" %}</label>
       </div>
       <div class="form-group row">
         <div class="form-inline">
-          <label for="search_publication_year_from" class="col-md-1 control-label">{% trans "From" %}</label>
-          <div class="col-md-2">
-            <input type="text" class="form-control" id="search_publication_year_from" placeholder="YYYY">
+          <div class="col-sm-6 form-group form-group-sm">
+            <label for="search_publication_year_from" class="col-sm-3 control-label text-right">{% trans "From" %}</label>
+            <div class="col-sm-1">
+              <input type="text" class="form-control" id="search_publication_year_from" placeholder="2001">
+              <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
+            </div>
           </div>
-          <label for="search_publication_year_to" class="col-md-1 control-label">{% trans "To" %}</label>
-          <div class="col-md-2">
-            <input type="text" class="form-control" id="search_publication_year_to" placeholder="YYYY">
+          <div class="col-sm-6 form-group form-group-sm">
+            <label for="search_publication_year_to" class="col-sm-3 control-label text-right">To</label>
+            <div class="col-sm-1">
+              <input type="text" class="form-control" id="search_publication_year_to" placeholder="2005/06/15">
+              <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
+            </div>
           </div>
         </div>
       </div>
@@ -89,6 +96,7 @@
      </select>
     </div>
   </div>
+  <div class="vertical-buffer-xxs"></div>
     <!-- End Row: Basic Search -->
   <hr>
     <!-- Row: Advanced Search -->
@@ -114,45 +122,54 @@
                 <option selected="true" disabled="true">{% trans "Select a type of identifier (ARK or DOI)" %}</option><option value="ARK" >ARK</option><option value="DOI" >DOI</option>
               </select>
             </div>
-          </div>
 
-          <div class="row">
-            <div class="col-sm-6 form-group form-group-sm">
-              <label for="search_create_date_from">{% trans "Create Date" %}</label>
-              <div class="form-inline">
-                <div class="row">
-                  <label for="search_create_date_from" class="col-md-1 control-label">{% trans "From" %}</label>
-                  <div class="col-sm-6">
-                    <input type="date" class="form-control" id="search_create_date_from">
+            <div class="col-sm-6">
+              <div class="row">
+                <label>{% trans "Create Date" %}</label>
+              </div>
+              <div class="row form-group">
+               <div class="form-inline">
+                  <div class="col-sm-6 form-group form-group-sm">
+                    <label for="search_create_date_from" class="col-sm-3 control-label text-right">{% trans "From" %}</label>
+                    <div class="col-sm-1">
+                      <input type="text" class="form-control" id="search_create_date_from" placeholder="2001">
+                      <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
+                    </div>
                   </div>
-                  <label for="search_create_date_to" class="col-md-1 control-label">{% trans "To" %}</label>
-                  <div class="col-sm-6">
-                    <input type="date" class="form-control" id="search_create_date_to">
+                  <div class="col-sm-6 form-group form-group-sm">
+                    <label for="search_create_date_to" class="col-sm-3 control-label text-right">{% trans "To" %}</label>
+                    <div class="col-sm-1">
+                      <input type="text" class="form-control" id="search_create_date_to" placeholder="2005/06/15">
+                      <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
+                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-6 form-group form-group-sm second-col">
-              <label for="search_update_date_from">{% trans "Update Date" %}</label>
-              <div class="form-inline">
-                <div class="row">
-                  <label for="search_update_date_from" class="col-md-1 control-label">{% trans "From" %}</label>
-                  <div class="col-sm-6">
-                    <input type="date" class="form-control" id="search_update_date_from">
+            <div class="col-sm-6 second-col">
+              <div class="row">
+                <label>{% trans "Update Date" %}</label>
+              </div>
+              <div class="row form-group">
+                <div class="form-inline">
+                  <div class="col-sm-6 form-group form-group-sm">
+                    <label for="search_update_date_from" class="col-sm-3 control-label text-right">{% trans "From" %}</label>
+                    <div class="col-sm-1">
+                      <input type="text" class="form-control" id="search_update_date_from" placeholder="2001">
+                      <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
+                    </div>
                   </div>
-                  <label for="search_update_date_to" class="col-md-1 control-label">{% trans "To" %}</label>
-                  <div class="col-sm-6">
-                    <input type="date" class="form-control" id="search_update_date_to">
-                </div>
+                  <div class="col-sm-6 form-group form-group-sm">
+                    <label for="search_update_date_to" class="col-sm-3 control-label text-right">{% trans "To" %}</label>
+                    <div class="col-sm-1">
+                      <input type="text" class="form-control" id="search_update_date_to" placeholder="2005/06/15">
+                      <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="row">
             <div class="col-sm-4 form-group form-group-sm">
               <label for="search_status">{% trans "Status" %}</label>
               <select id="search_status" class="form-control">
@@ -160,27 +177,32 @@
               </select>
             </div>
             <div class="col-sm-4 form-group form-group-sm">
-              <div>
-                <label for="search_harvestingindexing">{% trans "Allow Harvesting/Indexing?" %}</label>
-                <label class="radio-inline">
-                  <input type="radio" name="search_harvestingindexing" id="search_harvestingindexing_yes" value="Yes"> {% trans "Yes" %}
-                </label>
-                <span class="border-left-solid-blue"></span>
-                <label class="radio-inline">
-                  <input type="radio" name="search_harvestingindexing" id="search_harvestingindexing_no" value="No"> {% trans "No" %}
-                </label>
+              <label for="search_export">{% trans "Allows Harvesting/Indexing?" %}</label>
+              <div class="radio-inline radio_svg">
+                <input type="radio" name="search_export" value="yes" id="search_export_yes" 
+                  class="radio__icon" checked="checked" />
+                <label for="search_export_yes" class="image-radio-label">{% trans "Yes" %}</label>
+              </div>
+              <span class="border-left-solid-blue"></span>
+              <div class="radio-inline radio_svg">
+                <input type="radio" name="search_export" value="no" id="search_export_no" 
+                  class="radio__icon"  />
+                <label for="search_export_no" class="image-radio-label">{% trans "No" %}</label>
               </div>
             </div>
+
             <div class="col-sm-4 form-group form-group-sm">
-              <div>
-                <label for="search_hasmetadata">{% trans "Has Metadata?" %}</label>
-                <label class="radio-inline">
-                  <input type="radio" name="search_hasmetadata" id="search_hasmetadata_yes" value="Yes"> {% trans "Yes" %}
-                </label>
-                <span class="border-left-solid-blue"></span>
-                <label class="radio-inline">
-                  <input type="radio" name="search_hasmetadata" id="search_hasmetadata_no" value="No"> {% trans "No" %}
-                </label>
+              <label for="search_hasmetadata">{% trans "Has Metadata?" %}</label>
+              <div class="radio-inline radio_svg">
+                <input type="radio" name="search_hasmetadata" value="yes" id="search_hasmetadata_yes" 
+                  class="radio__icon" checked="checked" />
+                <label for="search_hasmetadata_yes" class="image-radio-label">{% trans "Yes" %}</label>
+              </div>
+              <span class="border-left-solid-blue"></span>
+              <div class="radio-inline radio_svg">
+                <input type="radio" name="search_hasmetadata" value="no" id="search_hasmetadata_no" 
+                  class="radio__icon"  />
+                <label for="search_hasmetadata_no" class="image-radio-label">{% trans "No" %}</label>
               </div>
             </div>
           </div>  <!-- End Advanced Search Rows-->
