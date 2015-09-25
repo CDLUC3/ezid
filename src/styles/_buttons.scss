@@ -52,10 +52,18 @@
 }
 
 // Search Page Big Button
-.btn-fullwidth {
+.btn-fullwidth-base {
   width: 100%;
-  font-size: 1.1em;
   font-weight: bold;
+}
+.btn-fullwidth {
+  @extend .btn-fullwidth-base;
+  font-size: 1.1em;
+}
+// Manage Page Big Button
+.btn-fullwidth-sm {
+  @extend .btn-fullwidth-base;
+  font-size: 0.75em;
 }
 
 // Resources (Accordion) Toggle

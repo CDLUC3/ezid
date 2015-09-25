@@ -127,7 +127,9 @@
 
       // open modal by btn click/hit
       mOpen.addEventListener('click', modalShow);
-      mOpenFromSearchPg.addEventListener('click', modalShow);
+      if (mOpenFromSearchPg !== null) {
+        mOpenFromSearchPg.addEventListener('click', modalShow);
+      }
 
       // close modal by btn click/hit
       mClose.addEventListener('click', modalClose);

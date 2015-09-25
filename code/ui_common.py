@@ -158,7 +158,7 @@ def jsonResponse (data):
 redirect = django.http.HttpResponseRedirect
 
 def error (request, code):
-  content = templates[str(code)][0].render(django.template.Context())
+  content = templates[str(code)][0].render(django.template.RequestContext(request, {'menu_item' : 'ui_home.null'}))
   return django.http.HttpResponse(content, status=code)
 
 def badRequest (request):

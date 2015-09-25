@@ -4945,10 +4945,15 @@ button.close {
   letter-spacing: 1.3px;
   line-height: 1.8em; }
 
-.btn-fullwidth {
+.btn-fullwidth-base, .btn-fullwidth, .btn-fullwidth-sm {
   width: 100%;
-  font-size: 1.1em;
   font-weight: bold; }
+
+.btn-fullwidth {
+  font-size: 1.1em; }
+
+.btn-fullwidth-sm {
+  font-size: 0.75em; }
 
 h2.panel-title {
   font-size: 16px; }
@@ -5516,7 +5521,7 @@ h5 {
   padding: 10px;
   height: 50px; }
 
-#table_id_info {
+#search_table_id_info {
   color: #000;
   font-weight: bold; }
 

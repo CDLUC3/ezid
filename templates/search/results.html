@@ -3,6 +3,7 @@
 {% load i18n %}
 
 {% block title %}{%trans "Search across all identifiers" %}{% endblock %}
+{% comment %} No Heading necessary for this template {% endcomment %}
 {% block content %}
 <div class="container vertical-buffer-xs">
 <section id="search_min">
@@ -24,7 +25,7 @@
   <!-- div class="row gradient-orange block-header">
     <div class="col-sm-10">
       <div class="inline-header">
-        <h3 id="header-search-results">139,901 {% trans "Search Results (Includes co-owned identifiers)" %}</h3>
+        <h3 id="search_table_id_info">139,901 {% trans "Search Results (Includes co-owned identifiers)" %}</h3>
       </div>
     </div>
     <div class="col-sm-2">

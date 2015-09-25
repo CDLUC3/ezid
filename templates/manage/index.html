@@ -1,54 +1,52 @@
 {% extends "layouts/base.html" %}
 {% load manage_form_tags %}
+{% load i18n %}
 
-{% block title %}Manage IDs{% endblock %}
-
+{% block title %}{% trans "Manage IDs" %}{% endblock %}
+{% comment %} No Heading necessary for this template {% endcomment %}
 {% block content %}
-  
-	  <div class="grid_12">
-	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp;
+<div class="container vertical-buffer-xs">
   {% if results|length < 1 %}
-		<p>There are no recent results to display.<br/>
-		<br/><br/><br/><br/><br/><br/><br/><br/><br/></p>
-	  </div>
+  <p>There are no recent results to display.<br/>
+  <br/><br/><br/><br/><br/><br/><br/><br/><br/></p>
   {% else %}
-	  	{% if includeCoowned %}
-	  		(includes co-owned identifiers)
-	  	{% else %}
-				(does not include co-owned identifiers)
-		{% endif %} 
-	  	
-	  	&nbsp;&nbsp;&nbsp;<a href="#dialog" name="modal">Customize view</a>
-	  	{% include "manage/_choose_cols.html" %}
-	  </div>
-	  
-	  <div style="clear:both"></div>
-	  
-	  <div class="grid_12">
-	    {% pager_display REQUEST p total_pages ps %}
-		  <table class="manage">
-		  	{% header_row REQUEST fields_selected fields_mapped field_widths order_by sort %}
-		  	{% for item in results %}
-		  	  <tr class="{% cycle 'row1' 'row2' %}">
-		  			{% data_row item fields_selected field_display_types account_co_owners testPrefixes %}
-		  		</tr>
-		  	{% endfor %}
-		  </table>
-		  {% pager_display REQUEST p total_pages ps %}
-		</div>
-  {% endif %}
+  <div class="vertical-buffer-bot-md">
+    <a href="{% url "ui_search.index" %}"><button class="btn btn-primary btn-fullwidth-sm" type="button">{% trans "SEARCH YOUR IDENTIFIERS" %}</button></a>
+  </div>
+  <div class="vertical-buffer-xxs"></div>
 
-  {% if results|length > 0 %}
-	  <div class="grid_12">
-		<p>Identifiers shown with a <span class="fakeid">highlight</span> are demo/temporary identifiers.</p>
-	  </div>
+  <div class="row gradient-orange block-header">
+    <div class="col-sm-10">
+      <div class="inline-header">
+        <h3 id="search_table_id_info">{% trans "My Identifiers" %} (20,951) - 
+          {% trans "(Includes co-owned identifiers)" %}</h3>
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <button class="btn btn-primary padding-side-xs" type="button">{% trans "CUSTOMIZE VIEW" %}</button>
+    </div>
+  </div> 
+	  
+  {% pager_display REQUEST p total_pages ps %}
+  <table class="manage">
+  {% header_row REQUEST fields_selected fields_mapped field_widths order_by sort %}
+  {% for item in results %}
+  <tr class="{% cycle 'row1' 'row2' %}">
+    {% data_row item fields_selected field_display_types account_co_owners testPrefixes %}
+  </tr>
+  {% endfor %}
+  </table>
+  {% pager_display REQUEST p total_pages ps %}
+
+  <p>Identifiers shown with an asterisk (&#42;) are demo/temporary identifiers.</p>
   {% endif %}
-	<script type="text/javascript">
-  	// Add class for current column heading
-	  $(document).ready(function() {
-	  	$("th:has(.order_by_col)").attr("id", "cur_sort");
-		});
-	</script>
+</div> 
+  <script type="text/javascript">
+  // Add class for current column heading
+    $(document).ready(function() {
+      $("th:has(.order_by_col)").attr("id", "cur_sort");
+    });
+  </script>
 {% endblock %}
 
 
