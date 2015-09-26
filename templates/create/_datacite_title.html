@@ -1,27 +1,32 @@
 {% load layout_extras %}
 {% load i18n %}
-	<div name="/resource/titles" class="element datasite-container">
-		<label for="/resource/titles" class="element"><span title="Title is a required section">{% trans "Title" %}</span> <span class="required">*</span></label>
-		<input type="button" value="+" onclick="addOne(this)" name="/resource/titles" nbelmtsadded="{{ num_titles }}" class="addButton">
-		<input type="button" value="-" name="/resource/titles" class="rmvButton">
-		<div class="helpico">{% help_icon "dcxml_titles_help" %}</div>
-	{% for title in datacite_obj_titles.title %} 
-		<div class="multiple">
-			<div name="/resource/titles/title[{{ forloop.counter }}]" class="element">
-				<label for="/resource/titles/title[{{ forloop.counter }}]" class="element"><span title="Title is a required element">Title:</span>
-		{% if forloop.first %}<span class="required">*</span>{% endif %}
-				</label>
-				<input type="text" name="/resource/titles/title[{{ forloop.counter }}]" value="{{ title.text|default_if_none:"" }}" class="data" />
-				<div name="/resource/titles/title[{{ forloop.counter }}]/@titleType" class="attribute">
-					<label for="/resource/titles/title[{{ forloop.counter }}]/@titleType" class="attribute">{% trans "Type:" %}</label>
-					<div class="sized">
-						<input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="" class="data" {% if not title.attrib.titleType or title.attrib.titleType == "" %} checked="checked"{% endif %}/>{% trans "Main title" %}
-						<input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="AlternativeTitle" class="data" {% if title.attrib.titleType == "AlternativeTitle" %} checked="checked"{% endif %}/>{% trans "Alternative title" %}
-						<input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="Subtitle" class="data"{% if title.attrib.titleType == "Subtitle" %} checked="checked"{% endif %}/>{% trans "Subtitle" %}
-						<input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="TranslatedTitle" class="data" {% if title.attrib.titleType == "TranslatedTitle" %} checked="checked"{% endif %}/>{% trans "Translated title" %}
-					</div>
-				</div>
-			</div>
-		</div>
-	{% endfor %}
-	</div>
+<div name="/resource/titles" class="element datasite-container">
+  <label for="/resource/titles" class="element"><span title="Title is a required section">{% trans "Title" %}</span> <span class="required">*</span></label>
+  <input type="button" value="+" onclick="addOne(this)" name="/resource/titles" nbelmtsadded="{{ num_titles }}" class="addButton">
+  <input type="button" value="-" name="/resource/titles" class="rmvButton">
+  {% for title in datacite_obj_titles.title %} 
+  <div class="multiple">
+    <div class="row">
+      <div name="/resource/titles/title[{{ forloop.counter }}]" class="element form-group form-group-sm">
+        <label for="/resource/titles/title[{{ forloop.counter }}]" class="element col-sm-3 control-label"><span title="Title is a required element">Title:</span>
+      {% if forloop.first %}<span class="required">*</span>{% endif %}
+        </label>
+        <div class="col-sm-5">
+          <input type="text" name="/resource/titles/title[{{ forloop.counter }}]" value="{{ title.text|default_if_none:"" }}" class="data form-control" />
+        </div>
+      </div>
+    </div>
+    <div name="/resource/titles/title[{{ forloop.counter }}]/@titleType" class="attribute row">
+    <div class="form-group form-group-sm">
+      <label for="/resource/titles/title[{{ forloop.counter }}]/@titleType" class="attribute col-sm-3">{% trans "Type:" %}</label>
+      <div class="col-sm-7">
+        <input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="" class="data" {% if not title.attrib.titleType or title.attrib.titleType == "" %} checked="checked"{% endif %}/>{% trans "Main title" %}
+        <input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="AlternativeTitle" class="data" {% if title.attrib.titleType == "AlternativeTitle" %} checked="checked"{% endif %}/>{% trans "Alternative title" %}
+        <input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="Subtitle" class="data"{% if title.attrib.titleType == "Subtitle" %} checked="checked"{% endif %}/>{% trans "Subtitle" %}
+        <input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="TranslatedTitle" class="data" {% if title.attrib.titleType == "TranslatedTitle" %} checked="checked"{% endif %}/>{% trans "Translated title" %}
+      </div>
+    </div>
+    </div>
+  </div>
+{% endfor %}
+</div>

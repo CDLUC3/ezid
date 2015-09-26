@@ -6,7 +6,6 @@
 			<label for="/resource/formats" class="element">{% trans "Format" %}:</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/formats" nbelmtsadded="{{ num_formats }}" class="addButton">
 			<input type="button" value="-" name="/resource/formats" class="rmvButton">
-			<div class="helpico">{% help_icon "dcxml_formats_help" %}</div>
 {% for format in datacite_obj_formats.format %}
 			<div class="multiple">
 				<div name="/resource/formats/format[{{ forloop.counter }}]" class="element">

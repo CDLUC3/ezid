@@ -1,26 +1,37 @@
 {% load layout_extras %}
 {% load i18n %}
-	<div class="optional">
-		<div name="/resource/subjects" class="element datacite-container">
-			<label for="/resource/subjects" class="element">{% trans "Subject" %}</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="{{ num_subjects }}" class="addButton">
-			<input type="button" value="-" name="/resource/subjects" class="rmvButton">
-			<div class="helpico">{% help_icon "dcxml_subjects_help" %}</div>
+  <div class="optional">
+    <div name="/resource/subjects" class="element datacite-container">
+      <label for="/resource/subjects" class="element">{% trans "Subject" %}</label>
+      <input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="{{ num_subjects }}" class="addButton">
+      <input type="button" value="-" name="/resource/subjects" class="rmvButton">
 {% for subject in datacite_obj_subjects.subject %}
-                        <div class="multiple">
-                                <div name="/resource/subjects/subject[{{ forloop.counter }}]" class="element">
-                                        <label for="/resource/subjects/subject[{{ forloop.counter }}]" class="element">{% trans "Subject" %}:</label>
-                                        <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]" value="{{ subject.text|default_if_none:"" }}" class="data form-control" />
-                                        <div class="attribute">
-                                                <label for="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" class="attribute">{% trans "Scheme" %}:</label>
-                                                <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" value="{{ subject.attrib.subjectScheme }}" class="data form-control" />
-                                        </div>
-                                        <div class="attribute">
-                                                <label for="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" class="attribute">{% trans "Scheme URI" %}:</label>
-                                                <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" value="{{ subject.attrib.schemeURI }}" class="data form-control">
-                                        </div>
-                                </div>
-                        </div>
+      <div class="multiple">
+        <div class="row">
+          <div name="/resource/subjects/subject[{{ forloop.counter }}]" class="element form-group form-group-sm">
+            <label for="/resource/subjects/subject[{{ forloop.counter }}]" class="element col-sm-3 control-label">{% trans "Subject" %}:</label>
+            <div class="col-sm-5">
+              <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]" value="{{ subject.text|default_if_none:"" }}" class="data form-control" />
+            </div>
+          </div>
+        </div>
+        <div class=" attribute row">
+          <div class="form-group form-group-sm">
+            <label for="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" class="attribute col-sm-3 control-label">{% trans "Scheme" %}:</label>
+            <div class="col-sm-5">
+              <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" value="{{ subject.attrib.subjectScheme }}" class="data form-control" />
+            </div>
+          </div>
+        </div>
+        <div class="attribute row">
+          <div class="form-group form-group-sm">
+            <label for="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" class="attribute col-sm-3 control-label">{% trans "Scheme URI" %}:</label>
+            <div class="col-sm-5">
+              <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" value="{{ subject.attrib.schemeURI }}" class="data form-control">
+            </div>
+          </div>
+        </div>
+      </div>
 {% endfor %}
-		</div>
-	</div>
+    </div>
+  </div>

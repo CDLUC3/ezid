@@ -5,7 +5,6 @@
 			<label for="/resource/relatedIdentifiers" class="element">{% trans "Related Identifier" %}</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/relatedIdentifiers" nbelmtsadded="{{ num_relIds }}" class="addButton">
 			<input type="button" value="-" name="/resource/relatedIdentifiers" class="rmvButton">
-			<div class="helpico">{% help_icon "dcxml_rel_ids_help" %}</div>
 {% for relId in datacite_obj_relatedIdentifiers.relatedIdentifier %}
 			<div class="multiple">
 				<div class="element">

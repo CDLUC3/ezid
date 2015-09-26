@@ -6,7 +6,6 @@
 			<label for="/resource/sizes" class="element">Size:</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/sizes" nbelmtsadded="{{ num_sizes }}" class="addButton">
 			<input type="button" value="-" name="/resource/sizes" class="rmvButton">
-			<div class="helpico">{% help_icon "dcxml_sizes_help" %}</div>
 	{% for size in datacite_obj_sizes.size %}
 			<div class="multiple">
 				<div name="/resource/sizes/size[{{ forloop.counter }}]" class="element">

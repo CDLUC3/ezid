@@ -6,65 +6,73 @@
 <script type="text/javascript" src="/static/javascripts/rng_to_html/dom_utils.js"></script>
 <script type="text/javascript" src="/static/javascripts/jquery.form.js"></script>
 
+<link type="text/css" rel="stylesheet" href="/static/stylesheets/datacite_xml.css"/>
 <br/>
 <div name="/resource" class="element">
 
 <!-- Any repeating elements are rendered with separate templates -->
 
-	{% datacite_get_creators datacite_obj datacite_obj_empty %}
+{% datacite_get_creators datacite_obj datacite_obj_empty %}
 
-	{% datacite_get_titles datacite_obj datacite_obj_empty %}
+{% datacite_get_titles datacite_obj datacite_obj_empty %}
 
-	<!-- div class="clearboth" style="margin-top:5px;"></div -->
-
-	<div name="/resource/publisher" class="element">
-		<label for="/resource/publisher" class="element sized1 smallertext"><span title="Publisher is a required element">{% trans "Publisher:" %}</span> <span class="required">*</span>
+  <div name="/resource/publisher" class="row element form-group form-group-sm">
+    <label for="/resource/publisher" class="element col-sm-3 control-label"><span title="Publisher is a required element">{% trans "Publisher:" %}</span> <span class="required">*</span>
 </label>
-		<input type="text" name="/resource/publisher" value="{{ datacite_obj.publisher.text|default_if_none:"" }}" class="data form-control"> {% help_icon "dcxml_publisher_help" %}
-	</div>
-	<div name="/resource/publicationYear" class="element">
-		<label for="/resource/publicationYear" class="element sized1 smallertext"><span title="Publication Year is a required element">{% trans "Publication Year:" %}</span> <span class="required">*</span> </label>
-		<input type="text" name="/resource/publicationYear" value="{{ datacite_obj.publicationYear.text|default_if_none:"" }}" class="data form-control"> {% help_icon "dcxml_publication_year_help" %}
-	</div>
+    <div class="col-sm-5">
+      <input type="text" name="/resource/publisher" value="{{ datacite_obj.publisher.text|default_if_none:"" }}" class="data form-control"> 
+    </div>
+  </div>
+  <div name="/resource/publicationYear" class="element form-group form-group-sm">
+    <label for="/resource/publicationYear" class="element col-sm-3 control-label"><span title="Publication Year is a required element">{% trans "Publication Year:" %}</span> <span class="required">*</span> </label>
+    <div class="col-sm-5">
+      <input type="text" name="/resource/publicationYear" value="{{ datacite_obj.publicationYear.text|default_if_none:"" }}" class="data form-control">
+    </div>
+  </div>
 
-{% if datacite_obj.language %}
-	<div class="optional">
-		<div name="/resource/language" class="element">
-			<label for="/resource/language" class="element sized1 smallertext">{% trans "Language:" %}</label>
-			<input type="text" name="/resource/language" value="{{ datacite_obj.language.text|default_if_none:"" }}" class="data form-control"> {% help_icon "dcxml_language_help" %}
-		</div>
-	</div>
-{% endif %}
+  <div class="optional">
+    <div name="/resource/language" class="row element form-group form-group-sm">
+      <label for="/resource/language" class="element col-sm-3 control-label">{% trans "Language:" %}</label>
+    <div class="col-sm-5">
+      <input type="text" name="/resource/language" value="{{ datacite_obj.language.text|default_if_none:"" }}" class="data form-control"> 
+    </div>
+  </div>
 
-	<div class="optional">
-		<div name="/resource/resourceType" class="element">
-			<div name="/resource/resourceType" class="element">
-				<div class="attribute">
-					<label for="/resource/resourceType/@resourceTypeGeneral" class="attribute boldit sized1 smallertext">{% trans "Resource Type:" %}</label>
-					<select name="/resource/resourceType/@resourceTypeGeneral" id="resource_type_general" sendselect="yes"
-					  class="choice sized1">
-						<option value/>
-						<option value="Audiovisual"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Audiovisual" %} selected="selected"{% endif %}>Audiovisual</option>
-						<option value="Collection"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Collection" %} selected="selected"{% endif %}>Collection</option>
-						<option value="Dataset"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Dataset" or datacite_obj.resourceType.attrib.resourceTypeGeneral == "" %} selected="selected"{% endif %}>Dataset</option>
-						<option value="Event"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Event" %} selected="selected"{% endif %}>Event</option>
-						<option value="Image"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Image" %} selected="selected"{% endif %}>Image</option>
-						<option value="InteractiveResource"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "InteractiveResource" %} selected="selected"{% endif %}>Interactive Resource</option>
-						<option value="Model"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Model" %} selected="selected"{% endif %}>Model</option>
-						<option value="PhysicalObject"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "PhysicalObject" %} selected="selected"{% endif %}>Physical Object</option>
-						<option value="Service"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Service" %} selected="selected"{% endif %}>Service</option>
-						<option value="Software"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Software" %} selected="selected"{% endif %}>Software</option>
-						<option value="Sound"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Sound" %} selected="selected"{% endif %}>Sound</option>
-						<option value="Text"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Text" %} selected="selected"{% endif %}>Text</option>
-						<option value="Workflow"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Workflow" %} selected="selected"{% endif %}>Workflow</option>
-						<option value="Other"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Other" %} selected="selected"{% endif %}>Other</option>
-					</select> {% help_icon "dcxml_resource_type_general_help" %}
-				</div>
-				<label for="/resource/resourceType" class="element sized1 smallertext">{% trans "Resource Type Description:" %}</label>				
-				<input type="text" name="/resource/resourceType" value="{{ datacite_obj.resourceType.text|default_if_none:"" }}" class="data form-control" id="resource_type" /> {% help_icon "dcxml_resource_type_help" %}
-			</div>
-		</div>
-	</div>
+  <div class="optional">
+    <div name="/resource/resourceType" class="row element form-group form-group-sm">
+      <div name="/resource/resourceType" class="element">
+        <div class="attribute">
+          <label for="/resource/resourceType/@resourceTypeGeneral" class="attribute col-sm-3 control-label">{% trans "Resource Type:" %}</label>
+          <div class="col-sm-5">
+            <select name="/resource/resourceType/@resourceTypeGeneral" id="resource_type_general" sendselect="yes"
+              class="choice form-control">
+              <option value/>
+              <option value="Audiovisual"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Audiovisual" %} selected="selected"{% endif %}>Audiovisual</option>
+              <option value="Collection"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Collection" %} selected="selected"{% endif %}>Collection</option>
+              <option value="Dataset"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Dataset" or datacite_obj.resourceType.attrib.resourceTypeGeneral == "" %} selected="selected"{% endif %}>Dataset</option>
+              <option value="Event"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Event" %} selected="selected"{% endif %}>Event</option>
+              <option value="Image"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Image" %} selected="selected"{% endif %}>Image</option>
+              <option value="InteractiveResource"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "InteractiveResource" %} selected="selected"{% endif %}>Interactive Resource</option>
+              <option value="Model"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Model" %} selected="selected"{% endif %}>Model</option>
+              <option value="PhysicalObject"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "PhysicalObject" %} selected="selected"{% endif %}>Physical Object</option>
+              <option value="Service"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Service" %} selected="selected"{% endif %}>Service</option>
+              <option value="Software"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Software" %} selected="selected"{% endif %}>Software</option>
+              <option value="Sound"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Sound" %} selected="selected"{% endif %}>Sound</option>
+              <option value="Text"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Text" %} selected="selected"{% endif %}>Text</option>
+              <option value="Workflow"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Workflow" %} selected="selected"{% endif %}>Workflow</option>
+              <option value="Other"{% if datacite_obj.resourceType.attrib.resourceTypeGeneral == "Other" %} selected="selected"{% endif %}>Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row form-group form-group-sm">
+      <label for="/resource/resourceType" class="element col-sm-3 control-label">{% trans "Resource Type Description:" %}</label>				
+      <div class="col-sm-5">
+        <input type="text" name="/resource/resourceType" value="{{ datacite_obj.resourceType.text|default_if_none:"" }}" class="data form-control" id="resource_type" />
+      </div>
+    </div>
+  </div>
 
 	{% datacite_get_descriptions datacite_obj datacite_obj_empty %}
 
@@ -82,14 +90,14 @@
 
 	{% datacite_get_formats datacite_obj datacite_obj_empty %}
 
-{% if datacite_obj.version %}
-	<div class="optional">
-		<div name="/resource/version" class="element">
-			<label for="/resource/version" class="element sized1">{% trans "Version:" %}</label>
-			<input type="text" name="/resource/version" value="{{ datacite_obj.version.text|default_if_none:"" }}" class="data form-control"> {% help_icon "dcxml_version_help" %}
-		</div>
-	</div>
-{% endif %}
+  <div class="optional">
+    <div name="/resource/version" class="row element form-group form-group-sm">
+      <label for="/resource/version" class="element col-sm-3 control-label">{% trans "Version:" %}</label>
+      <div class="col-sm-5">
+        <input type="text" name="/resource/version" value="{{ datacite_obj.version.text|default_if_none:"" }}" class="data form-control">
+      </div>
+    </div>
+  </div>
 
 	{% datacite_get_rights datacite_obj datacite_obj_empty %}
 	
@@ -98,7 +106,6 @@
 </div>
 
 <label class="element sized">&nbsp;</label><div><span class="required">*</span> {% trans "required item" %}</div>
-{% include "info/datacite_xml_help.html" %}
 
 <!-- this form needs different handling since it's auto-generated
 	submitting by AJAX will avoid complete rewriting page and repopulating
@@ -106,11 +113,11 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-  	// change form to submit by AJAX
-  	var options = {
-	    url:      '/create/ajax_advanced',
-	    success:	showResponse
-		};   	
+    // change form to submit by AJAX
+    var options = {
+        url:      '/create/ajax_advanced',
+        success:	showResponse
+    };   	
     $('#create_form').ajaxForm(options);
     $('#edit_form').ajaxForm(options);
     
@@ -118,77 +125,77 @@
      * which the obfuscated javascript form the external library uses.
      */
     $('input[type=button].addButton').click(function (e)
-	{
-		if(!e.isDefaultPrevented())
-		{
-		  var items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=text].data');
-		  items.each(function() {
-		  	var $this = $(this);
-		  	$this[0].value = '';
-		  })
-		  items = $(e.target).parent().children('div.multiple').children('div.element').last().find('select');
-		  items.each(function() {
-		  	$(this).prop('selectedIndex', 0);
-		  })
-		  items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=radio]');
-		  if(items.length > 0)
-		  	items[0].checked = true;
-		  }
-	});
+    {
+      if(!e.isDefaultPrevented())
+      {
+        var items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=text].data');
+        items.each(function() {
+          var $this = $(this);
+          $this[0].value = '';
+        })
+        items = $(e.target).parent().children('div.multiple').children('div.element').last().find('select');
+        items.each(function() {
+          $(this).prop('selectedIndex', 0);
+        })
+        items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=radio]');
+        if(items.length > 0)
+          items[0].checked = true;
+      }
+    });
 		
-		//* set the resourceType to the same as resourceTypeGeneral
-		$(':submit').click(function(e)
-		{
-			var gen = $('#resource_type_general').val();
-			var res_type = $('#resource_type').val();			
-			if(gen != '' && res_type == ''){
-				$('#resource_type').val(gen);
-			}
-		});
-});
+    //* set the resourceType to the same as resourceTypeGeneral
+    $(':submit').click(function(e)
+    {
+      var gen = $('#resource_type_general').val();
+      var res_type = $('#resource_type').val();			
+      if(gen != '' && res_type == ''){
+        $('#resource_type').val(gen);
+      }
+    });
+  });
 
 
-	$('input[type=button].rmvButton').click(function (e)  {
-	/* Confirmation step before user removes an element */
-		var continue_removal = confirm ("Please confirm you want to remove last item.");
-		if (continue_removal) { 
-			var addButton = getPreviousSiblingElement(e.target, "input");
-			var nbElementsAdded = parseInt(addButton.getAttribute("nbelmtsadded"));
-			// The element to remove is the last <div class="multiple"> brother element of the removeButton
-			var parentNode = e.target.parentNode;
-			var divTag = getLastChildElementByTagAndAtt(parentNode, "div", "class", "multiple");
-			/* If only one element remains, then set element's items to empty 
-			 * This differs from external javascript library, which only hides
-			 * the element.                                        */
-			if (nbElementsAdded == 1) {
-			  var items = $(divTag).find('input[type=text].data');
-			  items.each(function() {
-			    var $this = $(this);
-			    $this[0].value = '';
-			  })
-			  items = $(divTag).find('select');
-			  items.each(function() {
-			    $(this).prop('selectedIndex', 0);
-			  })
-			  items = $(divTag).find('input[type=radio]');
-			  if(items.length > 0)
-			    items[0].checked = true;
-			} else {
-				removeOne(e.target); 
-			}
-		}
-	});
+  $('input[type=button].rmvButton').click(function (e)  {
+  /* Confirmation step before user removes an element */
+    var continue_removal = confirm ("Please confirm you want to remove last item.");
+    if (continue_removal) { 
+      var addButton = getPreviousSiblingElement(e.target, "input");
+      var nbElementsAdded = parseInt(addButton.getAttribute("nbelmtsadded"));
+      // The element to remove is the last <div class="multiple"> brother element of the removeButton
+      var parentNode = e.target.parentNode;
+      var divTag = getLastChildElementByTagAndAtt(parentNode, "div", "class", "multiple");
+      /* If only one element remains, then set element's items to empty 
+       * This differs from external javascript library, which only hides
+       * the element.                                        */
+      if (nbElementsAdded == 1) {
+        var items = $(divTag).find('input[type=text].data');
+        items.each(function() {
+          var $this = $(this);
+          $this[0].value = '';
+        })
+        items = $(divTag).find('select');
+        items.each(function() {
+          $(this).prop('selectedIndex', 0);
+        })
+        items = $(divTag).find('input[type=radio]');
+        if(items.length > 0)
+          items[0].checked = true;
+        } else {
+          removeOne(e.target); 
+        }
+      }
+    });
 	
-	// post-submit callback 
-	function showResponse(resp, statusText, xhr, $form)  {
-		if(resp['status'] == 'failure'){
-			var outstr = "";
-			for (var i=0; i < resp['errors'].length; i++)
-				outstr += '<p class="error">' + escapeHtml(resp['errors'][i]) + '</p>';
-			$("#ustatus").html(outstr);
-			showMessage(true);
-		}else if(resp['status'] == 'success'){
-			window.location = "/id/" + resp['id'];
-		}
-	}
+    // post-submit callback 
+    function showResponse(resp, statusText, xhr, $form)  {
+      if(resp['status'] == 'failure'){
+        var outstr = "";
+        for (var i=0; i < resp['errors'].length; i++)
+        outstr += '<p class="error">' + escapeHtml(resp['errors'][i]) + '</p>';
+        $("#ustatus").html(outstr);
+        showMessage(true);
+      }else if(resp['status'] == 'success'){
+        window.location = "/id/" + resp['id'];
+      }
+    }
 </script>

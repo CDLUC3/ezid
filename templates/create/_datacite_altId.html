@@ -5,7 +5,6 @@
 			<label for="/resource/alternateIdentifiers" class="element">{% trans "Alternate Identifier" %}</label>
 			<input type="button" value="+" onclick="addOne(this)" name="/resource/alternateIdentifiers" nbelmtsadded="{{ num_altIds }}" class="addButton">
 			<input type="button" value="-" name="/resource/alternateIdentifiers" class="rmvButton">
-			<div class="helpico">{% help_icon "dcxml_alt_ids_help" %}</div>
 {% for altId in datacite_obj_alternateIdentifiers.alternateIdentifier %}
 			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px; background: #ffffff */">
 				<div name="/resource/alternateIdentifiers/alternateIdentifier[{{ forloop.counter }}]" class="element">
