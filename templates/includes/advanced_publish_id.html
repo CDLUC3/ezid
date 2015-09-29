@@ -13,21 +13,21 @@
       {% trans "Make this identifier ..." %}
     </div>
     <div class="col-xs-7 form-group form-group-sm">
-      <div class="radio-inline radio_svg">
-        <input type="radio" name="publish" value="True" id="publish_true" class="radio__icon"
+      <label for="publish_true" class="radio-css">
+        <input type="radio" name="publish" value="True" id="publish_true"
           {% if request.POST.publish != 'False' %}
             checked="checked"
           {% endif %} 
-        /><label for="publish_true" class="image-radio-label">{% trans "PUBLIC" %}</label>
-      </div>
-      <div class="radio-inline radio_svg">
-        <input type="radio" name="publish" value="False" id="publish_false" class="radio__icon"
+        /><span>{% trans "PUBLIC" %}</span>
+      </label>
+      <label for="publish_false" class="radio-css">
+        <input type="radio" name="publish" value="False" id="publish_false"
           {% if request.POST.publish == 'False' %}
             checked="checked"
-          {% endif %}
-        /><label for="publish_false" class="image-radio-label">{% trans "RESERVED" %}</label>
-        {% help_icon "decide_public" %}
-      </div>
+          {% endif %} 
+        /><span>{% trans "RESERVED" %}</span>
+      </label>
+      {% help_icon "decide_public" %}
     </div>
   </div>
 
@@ -36,21 +36,21 @@
       {% trans "Allow harvesting/indexing?" %}
     </div>
     <div class="col-xs-7 form-group form-group-sm">
-      <div class="radio-inline radio_svg">
-        <input type="radio" name="export" value="yes" id="export_yes" class="radio__icon"
+      <label for="export_yes" class="radio-css">
+        <input type="radio" name="export" value="yes" id="export_yes"
           {% if request.POST.export != 'no' %}
             checked="checked"
           {% endif %}
-        /><label for="export_yes" class="image-radio-label">{% trans "YES" %}</label>
-      </div>
-      <div class="radio-inline radio_svg">
-        <input type="radio" name="export" value="no" id="export_no" class="radio__icon"
+        /><span>{% trans "YES" %}</span>
+      </label>
+      <label for="export_no" class="radio-css">
+        <input type="radio" name="export" value="no" id="export_no"
           {% if request.POST.export == 'no' %}
             checked="checked"
           {% endif %}
-        /><label for="export_no" class="image-radio-label">{% trans "NO" %}</label>
-        {% help_icon "decide_export" %}
-      </div>
+        /><span>{% trans "NO" %}</span>
+      </label>
+      {% help_icon "decide_export" %}
     </div>
   </div>
  

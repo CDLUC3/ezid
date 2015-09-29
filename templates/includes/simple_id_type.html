@@ -14,24 +14,24 @@
     </div>
   {% if prefixes|duplicate_id_types %}
     {% for p in prefixes %}
-    <div class="radio form-group form-group-sm">
-      <div class="radio-inline radio_svg horizontal-buffer">
-        <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" class="radio__icon"    
+    <div class="form-group form-group-sm">
+      <div class="horizontal-buffer">
+        <label for="{{p.prefix}}" class="radio-css">
+          <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" 
           {% selected_radio "shoulder" forloop.counter p.prefix %} />
-        <label for="{{p.prefix}}" class="image-radio-label">
-          {% shoulder_display p "False" testPrefixes "False" %}
+          <span>{% shoulder_display p "False" testPrefixes "False" %}</span>
         </label>
       </div>
     </div>
     {% endfor %}
   {% else %}
     {% for p in prefixes %}
-    <div class="radio form-group form-group-sm">
-      <div class="radio-inline radio_svg horizontal-buffer">
-        <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" class="radio__icon"
+    <div class="form-group form-group-sm">
+      <div class="horizontal-buffer">
+        <label for="{{p.prefix}}" class="radio-css">
+          <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" 
           {% selected_radio "shoulder" forloop.counter p.prefix %} />
-        <label for="{{p.prefix}}" class="image-radio-label">
-          {% shoulder_display p "False" testPrefixes "True" %}
+          <span>{% shoulder_display p "False" testPrefixes "True" %}</span>
         </label>
       </div>
     </div>

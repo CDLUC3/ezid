@@ -20,10 +20,18 @@
     <div class="form-group form-group-sm">
       <label for="/resource/titles/title[{{ forloop.counter }}]/@titleType" class="attribute col-sm-3">{% trans "Type:" %}</label>
       <div class="col-sm-7">
-        <input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="" class="data" {% if not title.attrib.titleType or title.attrib.titleType == "" %} checked="checked"{% endif %}/>{% trans "Main title" %}
-        <input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="AlternativeTitle" class="data" {% if title.attrib.titleType == "AlternativeTitle" %} checked="checked"{% endif %}/>{% trans "Alternative title" %}
-        <input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="Subtitle" class="data"{% if title.attrib.titleType == "Subtitle" %} checked="checked"{% endif %}/>{% trans "Subtitle" %}
-        <input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="TranslatedTitle" class="data" {% if title.attrib.titleType == "TranslatedTitle" %} checked="checked"{% endif %}/>{% trans "Translated title" %}
+        <label class="radio-css" for="MainTitle"> 
+          <input type="radio" id="MainTitle" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="" class="data" {% if not title.attrib.titleType or title.attrib.titleType == "" %} checked="checked"{% endif %}/><span>{% trans "Main title" %}</span>
+        </label> 
+        <label class="radio-css" for="AlternativeTitle"> 
+          <input type="radio" id="AlternativeTitle" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="AlternativeTitle" class="data" {% if title.attrib.titleType == "AlternativeTitle" %} checked="checked"{% endif %}/><span>{% trans "Alternative title" %}</span>
+        </label>
+        <label class="radio-css" for="Subtitle"> 
+          <input type="radio" id="Subtitle" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="Subtitle" class="data"{% if title.attrib.titleType == "Subtitle" %} checked="checked"{% endif %}/><span>{% trans "Subtitle" %}</span>
+        </label>
+        <label class="radio-css" for="TranslatedTitle"> 
+          <input type="radio" id="TranslatedTitle" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="TranslatedTitle" class="data" {% if title.attrib.titleType == "TranslatedTitle" %} checked="checked"{% endif %}/><span>{% trans "Translated title" %}</span>
+        </label>
       </div>
     </div>
     </div>

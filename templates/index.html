@@ -41,15 +41,13 @@
               </div>
               <div id="frontpage_form_radiobuttons" class="col-md-6">
                 <div class="form-group form-group-sm">
-                 {% for p in prefixes %}
-                  <div class="radio-inline radio_svg">
+                {% for p in prefixes %}
+                  <label for="{{p.prefix}}" class="radio-css">
                     <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" 
-                      class="radio__icon" {% selected_radio "shoulder" forloop.counter p.prefix %} />
-                    <label for="{{p.prefix}}" class="image-radio-label">
-                      {% shoulder_display p "True" %}
-                    </label>
-                  </div>
-                 {% endfor %}
+                      {% selected_radio "shoulder" forloop.counter p.prefix %} />
+                    <span>{% shoulder_display p "True" %}</span>
+                  </label>
+                {% endfor %}
                 {% help_icon "choose_id_demo" %}
                 </div>
               </div>

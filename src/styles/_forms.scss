@@ -21,7 +21,7 @@
   padding: 0px;
 }
 
-input[type="radio"], input[type="checkbox"] {
+input[type="checkbox"] {
   margin: 0px;
 }
 
@@ -61,10 +61,6 @@ label.text-color-reg {
   color: #000;
 }
 
-.radio_svg .checkbox__icon,
-.radio_svg .radio__icon {
-  visibility: hidden;
-}
 .image-checkbox-label {
   background: url("/static/images/checkbox.svg") no-repeat center left;
   background-size: 20px;
@@ -75,23 +71,48 @@ label.text-color-reg {
   background-size: 20px;
   color: #000;
 }
-.image-radio-label {
-  background: url("/static/images/radio.svg") no-repeat center left;
-  background-size: 18px;
-  color: #000;
-}
-.radio__icon:checked + .image-radio-label {
-  background: url("/static/images/radioCheck.svg") no-repeat center left;
-  background-size: 18px;
-  color: #000;
-}
-.radio_svg label {
-  padding-left: 25px;
-  font-weight: normal;
-  font-size: 1em;
-}
 
 label.disabled {
   color: $design-light-gray-border-color;
+}
+
+// Pure CSS radio button
+input[type="radio"] {
+  border: 0; 
+  clip: rect(0 0 0 0); 
+  height: 1px; margin: -1px; 
+  overflow: hidden; 
+  padding: 0; 
+  position: absolute; 
+  width: 1px;
+}
+
+/* One radio button per line */
+label.radio-css {
+  cursor: pointer;
+}
+
+input[type="radio"] + span {
+  display: block;
+}
+
+/* the basic, unchecked style */
+input[type="radio"] + span:before {
+  content: '';
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: -0.1em;
+  border-radius: 1em;
+  background-color: #FFF;
+  border: 0.112em solid $design-dark-gray-color;
+  box-shadow: 0 0 0 0.1em $design-dark-gray-color;
+  margin-right: 0.75em;
+  transition: 0.25s ease all;
+}
+
+/* the checked style using the :checked pseudo class */
+input[type="radio"]:checked + span:before {
+  background: $design-dark-gray-color;
 }
 

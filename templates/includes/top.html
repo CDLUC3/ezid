@@ -16,18 +16,18 @@
       <ul class="nav navbar-nav pull-right">
         <li class="{% active menu_item 'search' %}">
           <a class="icon-link not-text" href="/search">
-            <img class="icon-inactive center" id="icon-topnav-search" src="/static/images/searchOff.svg" ALT="Search Identifiers">
-            <img class="icon-active center" id="icon-topnav-search" src="/static/images/searchOn.svg" ALT="Search Identifiers">
+            <img class="icon-topnav-search icon-inactive center" src="/static/images/searchOff.svg" ALT="Search Identifiers">
+            <img class="icon-topnav-search icon-active center" src="/static/images/searchOn.svg" ALT="Search Identifiers">
             SEARCH
           </a>
         </li>
         <li class="dropdown {% active menu_item 'learn' %}">
-          <a href="/learn" class="dropdown-toggle icon-link not-text" data-toggle="dropdown" role="button" aria-expanded="false">
-            <img class="icon-inactive center" id="icon-topnav-learn" src="/static/images/learnOff.svg" ALT="Learn About EZID">
-            <img class="icon-active center" id="icon-topnav-learn" src="/static/images/learnOn.svg" ALT="Learn About EZID">
+          <a href="/learn" class="dropdown-toggle icon-link not-text" data-toggle="dropdown" role="button" aria-haspopup="true">
+            <img class="icon-topnav-learn icon-inactive center" src="/static/images/learnOff.svg" ALT="Learn About EZID">
+            <img class="icon-topnav-learn icon-active center" src="/static/images/learnOn.svg" ALT="Learn About EZID">
             LEARN
           </a>
-          <ul class="dropdown-menu" role="menu">
+          <ul class="dropdown-menu" role="menu" aria-expanded="false">
             <li><a class="not-text" href="/learn#01">What Is EZID?</a></li>
             <li><a class="not-text" href="/learn#02">Current Users</a></li>
             <li><a class="not-text" href="/learn#03">Pricing</a></li>
@@ -40,8 +40,8 @@
         </li>
         <li class="{% active menu_item 'contact' %}">
           <a class="icon-link not-text" href="{% url "ui.contact" %}">
-            <img class="icon-inactive center" id="icon-topnav-contact" src="/static/images/contactOff.svg" ALT="Contact EZID">
-            <img class="icon-active center" id="icon-topnav-contact" src="/static/images/contactOn.svg" ALT="Contact EZID">
+            <img class="icon-topnav-contact icon-inactive center" src="/static/images/contactOff.svg" ALT="Contact EZID">
+            <img class="icon-topnav-contact icon-active center" src="/static/images/contactOn.svg" ALT="Contact EZID">
             CONTACT
           </a>
         </li>

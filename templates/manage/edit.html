@@ -98,26 +98,33 @@
     <label class="col-xs-2">{{internal_profile.status.displayName}}:</label>
     <div class="col-xs-7">
       <div class="form-group form-group-sm">
-		     		{% if orig_status == 'reserved' %}
-			      	<input type="radio" name="_status" id="_status_reserved"
-			      		value="reserved"
-			      		{% if pub_status == 'reserved' %}
-			      			checked="checked"
-			      		{% endif %}
-			      		 /><label for="_status_reserved">{% trans "reserved" %}</label>&nbsp;&nbsp;
-						{% endif %}		            
-		        <input type="radio" name="_status" id="_status_public" value="public"
-		            {% if pub_status == 'public' %}
-		              checked="checked"
-		            {% endif %}/><label for="_status_public">{% trans "public" %}</label>&nbsp;&nbsp;
-		        
-		        {% if orig_status != 'reserved' %}    
-			        <input type="radio" name="_status" id="_status_unavailable" value="unavailable"
-			            {% if pub_status == 'unavailable' %}
-			              checked="checked"
-			            {% endif %}/><label for="_status_unavailable">{% trans "unavailable" %}</label>&nbsp;&nbsp;
-		        {% endif %}
-		        {% help_icon "decide_public" %}
+      {% if orig_status == 'reserved' %}
+        <label class="radio-css" for="_status_reserved">
+          <input type="radio" name="_status" id="_status_reserved" value="reserved"
+          {% if pub_status == 'reserved' %}
+            checked="checked"
+          {% endif %}
+          /><span>{% trans "reserved" %}</span>
+        </label>
+      {% endif %}		            
+        <label class="radio-css" for="_status_public">
+          <input type="radio" name="_status" id="_status_public" value="public"
+          {% if pub_status == 'public' %}
+            checked="checked"
+          {% endif %}
+          /><span>{% trans "public" %}</span>
+        </label>
+      {% if orig_status != 'reserved' %}    
+        <label class="radio-css" for="_status_unavailable">
+          <input type="radio" name="_status" id="_status_unavailable" value="unavailable"
+          {% if pub_status == 'unavailable' %}
+            checked="checked"
+          {% endif %}
+          /><span>{% trans "unavailable" %}</span>
+        </label>
+
+      {% endif %}
+      {% help_icon "decide_public" %}
       </div>
     </div>
   </div>
@@ -145,15 +152,20 @@
     <label class="col-sm-2 col-xs-3">{% trans "Allow harvesting/indexing?" %}</label>
     <div class="col-sm-7 col-xs-9">
       <div class="form-group form-group-sm">
-        <input type="radio" name="_export" id="export_yes" value="yes"
+        <label class="radio-css" for="export_yes">
+          <input type="radio" name="_export" id="export_yes" value="yes"
           {% if export == 'yes' %}
             checked="checked"
-          {% endif %}/><label for="export_yes">{% trans "Yes" %}</label>&nbsp;&nbsp;
-        <input type="radio" name="_export" id="export_no" value="no"
-        {% if export != 'yes' %}
-          checked="checked"
-        {% endif %}
-        /><label for="export_no">{% trans "No" %}</label>
+          {% endif %}
+          /><span>{% trans "Yes" %}</span>
+        </label>
+        <label class="radio-css" for="export_no">
+          <input type="radio" name="_export" id="export_no" value="no"
+          {% if export != 'yes' %}
+            checked="checked"
+          {% endif %}
+          /><span>{% trans "No" %}</span>
+        </label>
         {% help_icon "decide_export" %}
       </div>
     </div>

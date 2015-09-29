@@ -12,7 +12,7 @@
   <!-- Row: Basic Search -->
   <div class="row">
     <div class="col-sm-12 form-group form-group-sm">
-      <div class="radio-inline radio_svg search__tooltip--container">
+      <div class="radio-inline search__tooltip--container">
         <input id="search_mine" type="checkbox" class="checkbox__icon"
       {% if not session.auth %}
           disabled    
@@ -76,14 +76,14 @@
             <label for="search_publication_year_from" class="col-sm-3 control-label text-right">{% trans "From" %}</label>
             <div class="col-sm-1">
               <input type="text" class="form-control" id="search_publication_year_from" placeholder="2001">
-              <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
+              <span class="font-small text-nowrap">YYYY</span>
             </div>
           </div>
           <div class="col-sm-6 form-group form-group-sm">
             <label for="search_publication_year_to" class="col-sm-3 control-label text-right">To</label>
             <div class="col-sm-1">
               <input type="text" class="form-control" id="search_publication_year_to" placeholder="2005/06/15">
-              <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
+              <span class="font-small text-nowrap">YYYY</span>
             </div>
           </div>
         </div>
@@ -178,32 +178,28 @@
             </div>
             <div class="col-sm-4 form-group form-group-sm">
               <label for="search_export">{% trans "Allows Harvesting/Indexing?" %}</label>
-              <div class="radio-inline radio_svg">
+              <label for="search_export_yes" class="radio-css">
                 <input type="radio" name="search_export" value="yes" id="search_export_yes" 
-                  class="radio__icon" checked="checked" />
-                <label for="search_export_yes" class="image-radio-label">{% trans "Yes" %}</label>
-              </div>
+                  checked="checked" /><span>{% trans "Yes" %}</span>
+              </label>
               <span class="border-left-solid-blue"></span>
-              <div class="radio-inline radio_svg">
+              <label for="search_export_no" class="radio-css">
                 <input type="radio" name="search_export" value="no" id="search_export_no" 
-                  class="radio__icon"  />
-                <label for="search_export_no" class="image-radio-label">{% trans "No" %}</label>
-              </div>
+                  /><span>{% trans "No" %}</span>
+              </label>
             </div>
 
             <div class="col-sm-4 form-group form-group-sm">
               <label for="search_hasmetadata">{% trans "Has Metadata?" %}</label>
-              <div class="radio-inline radio_svg">
+              <label for="search_hasmetadata_yes" class="radio-css">
                 <input type="radio" name="search_hasmetadata" value="yes" id="search_hasmetadata_yes" 
-                  class="radio__icon" checked="checked" />
-                <label for="search_hasmetadata_yes" class="image-radio-label">{% trans "Yes" %}</label>
-              </div>
+                  /><span>{% trans "Yes" %}</span>
+              </label>
               <span class="border-left-solid-blue"></span>
-              <div class="radio-inline radio_svg">
+              <label for="search_hasmetadata_no" class="radio-css">
                 <input type="radio" name="search_hasmetadata" value="no" id="search_hasmetadata_no" 
-                  class="radio__icon"  />
-                <label for="search_hasmetadata_no" class="image-radio-label">{% trans "No" %}</label>
-              </div>
+                  checked="checked" /><span>{% trans "No" %}</span>
+              </label>
             </div>
           </div>  <!-- End Advanced Search Rows-->
         </div>  <!-- End accordion inner -->          

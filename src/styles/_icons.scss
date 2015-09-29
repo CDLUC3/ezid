@@ -63,11 +63,6 @@
   margin-left: 7px;
 }
 
-.radio__icon {
-  width: 16px;
-  margin-left: 7px;
-}
-
 // Note: Logo Top CSS contained in _nav.scss
 #logoBottom {
   width: 100px;
@@ -102,17 +97,17 @@ li.active .icon-active {
 li.active .icon-inactive {
   display: none;
 }
-#icon-topnav-search {
+.icon-topnav-search {
   @extend .icon-topnav-base;
   width: 22px;
   // margin-left: 32px;
 }
-#icon-topnav-learn {
+.icon-topnav-learn {
   @extend .icon-topnav-base;
   width: 19px;
   // margin-left: 28px;
 }
-#icon-topnav-contact {
+.icon-topnav-contact {
   @extend .icon-topnav-base;
   width: 24px;
   // margin-left: 34px;
