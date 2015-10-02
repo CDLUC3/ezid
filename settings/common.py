@@ -19,6 +19,7 @@ sys.path.append(os.path.join(PROJECT_ROOT, "code"))
 
 ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, os.path.join(PROJECT_ROOT,
   "settings", "certs"))
+ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
 
 DEBUG = True
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
