@@ -8,7 +8,7 @@
 <div class="container vertical-buffer-xs">
 
 <section id="search">
-  <form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" role="form" action="search_results.html">
+  <form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" role="form">
   <!-- Row: Basic Search -->
   <div class="row">
     <div class="col-sm-12 form-group form-group-sm">
@@ -82,7 +82,7 @@
           <div class="col-sm-6 form-group form-group-sm">
             <label for="search_publication_year_to" class="col-sm-3 control-label text-right">To</label>
             <div class="col-sm-1">
-              <input type="text" class="form-control" id="search_publication_year_to" placeholder="2005/06/15">
+              <input type="text" class="form-control" id="search_publication_year_to" placeholder="2005">
               <span class="font-small text-nowrap">YYYY</span>
             </div>
           </div>
