@@ -39,3 +39,8 @@ django.setup()
 
 django.conf.settings.LOGGING_CONFIG_FILE = "logging.offline.conf"
 django.conf.settings.DAEMON_THREADS_ENABLED = False
+
+# The log module must be imported for the logging settings to take
+# effect (and in particular, to affect Django logging).
+
+import log
