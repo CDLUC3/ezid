@@ -8,3 +8,5 @@ ALLOWED_HOSTS = ["ias-ezid-dev.cdlib.org", "ezid-dev-alt-aws.cdlib.org"]
 # LOCALIZATIONS["ezid-dev-alt-aws.cdlib.org"] = ("purdue", ["gjanee@ucop.edu"])
 LOCALIZATIONS["ezid-dev-alt-aws.cdlib.org"] =\
   ("jisc-edina", ["gjanee@ucop.edu"])
+
+injectPasswords(DEPLOYMENT_LEVEL)

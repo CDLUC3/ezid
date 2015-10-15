@@ -33,11 +33,12 @@
 #
 # -----------------------------------------------------------------------------
 
-import ConfigParser
 import django.conf
 import os.path
 import subprocess
 import time
+
+import config_loader
 
 _loaders = []
 
@@ -48,8 +49,6 @@ def addLoader (loader):
   _loaders.append(loader)
 
 _config = None
-_shadowConfig = None
-_level = None
 _version = None
 _startupVersion = None
 
@@ -74,21 +73,11 @@ def load ():
   """
   (Re)loads the configuration file.
   """
-  global _config, _shadowConfig, _level, _version
-  config = ConfigParser.ConfigParser({
-    "SITE_ROOT": django.conf.settings.SITE_ROOT,
-    "PROJECT_ROOT": django.conf.settings.PROJECT_ROOT })
-  f = open(django.conf.settings.EZID_CONFIG_FILE)
-  config.readfp(f)
-  f.close()
-  _config = config
-  config = ConfigParser.ConfigParser()
-  if os.path.exists(django.conf.settings.EZID_SHADOW_CONFIG_FILE):
-    f = open(django.conf.settings.EZID_SHADOW_CONFIG_FILE)
-    config.readfp(f)
-    f.close()
-  _shadowConfig = config
-  _level = "{%s}" % django.conf.settings.DEPLOYMENT_LEVEL
+  global _config, _version
+  _config = config_loader.Config(django.conf.settings.SITE_ROOT,
+    django.conf.settings.PROJECT_ROOT, django.conf.settings.EZID_CONFIG_FILE,
+    django.conf.settings.EZID_SHADOW_CONFIG_FILE,
+    django.conf.settings.DEPLOYMENT_LEVEL)
   _version = (int(time.time()),) + _getVersion()
   for l in _loaders: l()
 
@@ -100,15 +89,7 @@ def config (option):
   Returns the value of a configuration option.  The option name should
   be specified in section.option syntax, e.g., "datacite.username".
   """
-  s, o = option.split(".")
-  if _shadowConfig.has_option(s, _level+o):
-    return _shadowConfig.get(s, _level+o)
-  elif _config.has_option(s, _level+o):
-    return _config.get(s, _level+o)
-  elif _shadowConfig.has_option(s, o):
-    return _shadowConfig.get(s, o)
-  else:
-    return _config.get(s, o)
+  return _config.getOption(option)
 
 def getVersionInfo ():
   """

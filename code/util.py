@@ -17,7 +17,7 @@ import re
 import sys
 import zlib
 
-maximumIdentifierLength = 256
+maximumIdentifierLength = 255
 
 _doiPattern = re.compile("10\.[1-9]\d{3,4}/[!\"$->@-~]+$")
 def validateDoi (doi):
