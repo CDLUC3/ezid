@@ -697,18 +697,13 @@ Shadow ARKs
 -----------
 
 When EZID creates a non-ARK identifier (e.g., a DOI identifier), it
-also creates a related ARK identifier.  These special ARK identifiers
-are termed "shadow ARKs."
-
-A non-ARK identifier and its shadow ARK have the same owner and
+also creates a related ARK identifier termed a "shadow ARK."  A
+non-ARK identifier and its shadow ARK share the same owner and
 co-owners (and hence the same access characteristics) and the same
-creation time and citation metadata, but they have separate target
-URLs and update times.  By sharing citation metadata, a non-ARK
-identifier and its shadow ARK are intended to identify the same
-digital object or conceptual entity, but having separate target URLs
-allows the identifiers to address different representations of the
-object.  Clients can also use shadow ARKs to exploit the different
-technical characteristics between ARK and non-ARK identifiers.
+target URL and metadata.  A shadow ARK can be thought of as a non-ARK
+identifier expressed in ARK syntax, and clients seeking uniformity of
+identifier representations may find shadow ARKs useful for that
+purpose.
 
 Shadow ARKs are returned on the status line when creating or minting
 non-ARK identifiers (see `Operation: create identifier`_ and
@@ -729,11 +724,9 @@ between non-ARK identifiers and shadow ARKs.
 Identifier status
 -----------------
 
-Each identifier in EZID has a status.  In the case of a non-ARK
-identifier (e.g., a DOI identifier), the identifier and its shadow ARK
-share the same status.  The status is recorded as the value of the
-"_status" reserved metadata element (see `Internal metadata`_ below)
-and may be one of:
+Each identifier in EZID has a status.  The status is recorded as the
+value of the "_status" reserved metadata element (see `Internal
+metadata`_ below) and may be one of:
 
 **public**
   The default value.
