@@ -23,6 +23,13 @@
 # time, etc.), and so they should be considered closely-related
 # identifiers.
 #
+# ***TRANSITION ALERT*** Shadow ARKs are being phased out.  _t and
+# _st, _t1 and _st1, and _u and _su are clamped now to have the same
+# value (though differing legacy values are still in place).
+# Transitional code is marked with "TRANSITION" below.  When it has
+# been confirmed that clients won't miss the old functionality, shadow
+# ARKs will be eliminated entirely.
+#
 # Identifier metadata is structured as element (name, value) pairs.
 # Element names are not repeatable.  Names are arbitrary and
 # uncontrolled, but those beginning with an underscore are reserved
@@ -614,6 +621,10 @@ def createDoi (doi, user, group, metadata={}):
       # this with the current code architecture requires that the
       # metadata be re-parsed and re-serialized.
       m["crossref"] = crossref.replaceTbas(m["crossref"], doi, m["_st"])
+    # TRANSITION BEGIN
+    m["_t"] = m["_st"]
+    if "_t1" in m: m["_t1"] = m["_st1"]
+    # TRANSITION END
     noid_egg.setElements(shadowArk, m)
     log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
@@ -814,6 +825,10 @@ def createUrnUuid (urn, user, group, metadata={}):
       m["_t1"] = m["_t"]
       m["_st1"] = m["_st"]
       m["_st"] = _defaultTarget(qurn)
+    # TRANSITION BEGIN
+    m["_t"] = m["_st"]
+    if "_t1" in m: m["_t1"] = m["_st1"]
+    # TRANSITION END
     noid_egg.setElements(shadowArk, m)
     log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
@@ -1005,6 +1020,12 @@ def getMetadata (identifier, user=None, group=None):
     if not policy.authorizeView(user, group, nqidentifier, d):
       log.unauthorized(tid)
       return "error: unauthorized"
+    # TRANSITION BEGIN
+    if "_s" in d:
+      d["_t"] = d["_st"]
+      if "_st1" in d: d["_t1"] = d["_st1"]
+      d["_u"] = d["_su"]
+    # TRANSITION END
     convertMetadataDictionary(d, ark, nqidentifier.startswith("ark:/"))
     log.success(tid)
     return ("success: " + nqidentifier, d)
@@ -1215,6 +1236,27 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
         "crossref" in d or "_st" in d):
         d["crossref"] = crossref.replaceTbas(crm, m["_s"][4:],
           d.get("_st", m["_st"]))
+    # TRANSITION BEGIN
+    if "_s" in m:
+      if "_st" in d:
+        d["_t"] = d["_st"]
+      elif "_t" in d:
+        if d["_t"] == _defaultTarget("ark:/" + ark):
+          d["_st"] = d["_t"] = _defaultTarget(m["_s"])
+        else:
+          d["_st"] = d["_t"]
+      if "_st1" in d:
+        d["_t1"] = d["_st1"]
+      elif "_t1" in d:
+        if d["_t1"] == _defaultTarget("ark:/" + ark):
+          d["_st1"] = d["_t1"] = _defaultTarget(m["_s"])
+        else:
+          d["_st1"] = d["_t1"]
+      if "_su" in d:
+        d["_u"] = d["_su"]
+      elif "_u" in d:
+        d["_su"] = d["_u"]
+    # TRANSITION END
     # DataCite-related validations.  If it seems odd to be validating
     # way down here, it is... but we can't check metadata requirements
     # compliance without a complete picture of the metadata.

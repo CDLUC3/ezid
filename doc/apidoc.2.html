@@ -727,17 +727,13 @@ element.</li>
 <div class="section" id="shadow-arks">
 <h1>Shadow ARKs</h1>
 <p>When EZID creates a non-ARK identifier (e.g., a DOI identifier), it
-also creates a related ARK identifier.  These special ARK identifiers
-are termed &quot;shadow ARKs.&quot;</p>
-<p>A non-ARK identifier and its shadow ARK have the same owner and
+also creates a related ARK identifier termed a &quot;shadow ARK.&quot;  A
+non-ARK identifier and its shadow ARK share the same owner and
 co-owners (and hence the same access characteristics) and the same
-creation time and citation metadata, but they have separate target
-URLs and update times.  By sharing citation metadata, a non-ARK
-identifier and its shadow ARK are intended to identify the same
-digital object or conceptual entity, but having separate target URLs
-allows the identifiers to address different representations of the
-object.  Clients can also use shadow ARKs to exploit the different
-technical characteristics between ARK and non-ARK identifiers.</p>
+target URL and metadata.  A shadow ARK can be thought of as a non-ARK
+identifier expressed in ARK syntax, and clients seeking uniformity of
+identifier representations may find shadow ARKs useful for that
+purpose.</p>
 <p>Shadow ARKs are returned on the status line when creating or minting
 non-ARK identifiers (see <a class="reference internal" href="#operation-create-identifier">Operation: create identifier</a> and
 <a class="reference internal" href="#operation-mint-identifier">Operation: mint identifier</a> above).  Also, a non-ARK identifier's
@@ -755,11 +751,9 @@ between non-ARK identifiers and shadow ARKs.</p>
 </div>
 <div class="section" id="identifier-status">
 <h1>Identifier status</h1>
-<p>Each identifier in EZID has a status.  In the case of a non-ARK
-identifier (e.g., a DOI identifier), the identifier and its shadow ARK
-share the same status.  The status is recorded as the value of the
-&quot;_status&quot; reserved metadata element (see <a class="reference internal" href="#internal-metadata">Internal metadata</a> below)
-and may be one of:</p>
+<p>Each identifier in EZID has a status.  The status is recorded as the
+value of the &quot;_status&quot; reserved metadata element (see <a class="reference internal" href="#internal-metadata">Internal
+metadata</a> below) and may be one of:</p>
 <dl class="docutils">
 <dt><strong>public</strong></dt>
 <dd>The default value.</dd>
