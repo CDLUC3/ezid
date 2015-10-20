@@ -27,7 +27,7 @@ class Group (django.db.models.Model):
   class Meta:
     abstract = True
 
-  pid = django.db.models.CharField(max_length=util.maximumIdentifierLength,
+  pid = django.db.models.CharField(max_length=util.maxIdentifierLength,
     unique=True, validators=[validation.agentPid])
   # The group's persistent identifier, e.g., "ark:/99166/foo".  Note
   # that the uniqueness requirement is actually stronger than

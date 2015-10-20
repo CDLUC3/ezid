@@ -37,7 +37,7 @@ def agentPid (pid):
 
 datacenterSymbolRE = re.compile(
   "^([A-Z][-A-Z0-9]{0,6}[A-Z0-9])\.([A-Z][-A-Z0-9]{0,6}[A-Z0-9])$", re.I)
-maxDatacenterSymbolLen = 17
+maxDatacenterSymbolLength = 17
 
 def datacenterSymbol (symbol):
   # Validates a DataCite datacenter symbol, per DataCite rules.
