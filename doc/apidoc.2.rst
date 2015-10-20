@@ -698,12 +698,12 @@ Shadow ARKs
 
 When EZID creates a non-ARK identifier (e.g., a DOI identifier), it
 also creates a related ARK identifier termed a "shadow ARK."  A
-non-ARK identifier and its shadow ARK share the same owner and
-co-owners (and hence the same access characteristics) and the same
-target URL and metadata.  A shadow ARK can be thought of as a non-ARK
-identifier expressed in ARK syntax, and clients seeking uniformity of
-identifier representations may find shadow ARKs useful for that
-purpose.
+non-ARK identifier and its shadow ARK have the same owner and target
+URL and other metadata, and can be operated on equivalently, and so
+are in effect the same identifier.  A shadow ARK can be thought of as
+a non-ARK identifier expressed in ARK syntax, and clients seeking
+uniformity of identifier representations may find shadow ARKs useful
+for that purpose.
 
 Shadow ARKs are returned on the status line when creating or minting
 non-ARK identifiers (see `Operation: create identifier`_ and
