@@ -14,6 +14,7 @@
 # -----------------------------------------------------------------------------
 
 import django.core.exceptions
+import re
 
 import util
 
@@ -33,3 +34,12 @@ def agentPid (pid):
   if not pid.startswith("ark:/") or util.validateArk(pid[5:]) != pid[5:]:
     raise django.core.exceptions.ValidationError(
       "Invalid agent persistent identifier.")
+
+datacenterSymbolRE = re.compile(
+  "^([A-Z][-A-Z0-9]{0,6}[A-Z0-9])\.([A-Z][-A-Z0-9]{0,6}[A-Z0-9])$", re.I)
+maxDatacenterSymbolLen = 17
+
+def datacenterSymbol (symbol):
+  # Validates a DataCite datacenter symbol, per DataCite rules.
+  if not datacenterSymbolRE.match(symbol):
+    raise django.core.exceptions.ValidationError("Invalid datacenter symbol.")
