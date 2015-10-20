@@ -33,8 +33,7 @@ class DownloadQueue (django.db.models.Model):
   rawRequest = django.db.models.TextField()
   # The raw request, i.e., the urlencoded query string.
 
-  requestor = django.db.models.CharField(
-    max_length=util.maximumIdentifierLength)
+  requestor = django.db.models.CharField(max_length=util.maxIdentifierLength)
   # The requesting user, referenced by the user's persistent
   # identifier, e.g., "ark:/99166/p92z12p14".
 
@@ -87,11 +86,11 @@ class DownloadQueue (django.db.models.Model):
   # The filename root, e.g., "da543b91a0".
 
   currentOwner = django.db.models.CharField(
-    max_length=util.maximumIdentifierLength, blank=True)
+    max_length=util.maxIdentifierLength, blank=True)
   # The owner currently being harvested (either 'requestor' above or
   # one of the users in 'coOwners').  HARVEST stage only.
 
-  lastId = django.db.models.CharField(max_length=util.maximumIdentifierLength,
+  lastId = django.db.models.CharField(max_length=util.maxIdentifierLength,
     blank=True)
   # The last identifier processed.  HARVEST stage only.
 

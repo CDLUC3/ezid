@@ -30,8 +30,7 @@ class DataciteQueue (django.db.models.Model):
   enqueueTime = django.db.models.IntegerField()
   # The time this record was enqueued as a Unix timestamp.
 
-  identifier = django.db.models.CharField(
-    max_length=util.maximumIdentifierLength)
+  identifier = django.db.models.CharField(max_length=util.maxIdentifierLength)
   # The identifier in qualified, normalized form, e.g.,
   # "doi:10.5060/FOO".  Always a DOI.
 
