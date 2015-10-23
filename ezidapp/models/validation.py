@@ -25,6 +25,16 @@ def nonEmpty (value):
   if value.strip() == "":
     raise django.core.exceptions.ValidationError("This field cannot be blank.")
 
+def anyIdentifier (identifier):
+  # Validates that a string corresponds to the qualified, normalized
+  # form of any known type of identifier.
+  i = util.validateIdentifier(identifier)
+  if i is None:
+    raise django.core.exceptions.ValidationError("Invalid identifier.")
+  if i != identifier:
+    raise django.core.exceptions.ValidationError(
+      "Identifier is not in normalized form.")
+
 def agentPid (pid):
   # Validates an agent (i.e., user or group) persistent identifier.
   # This function does not check that the identifier actually exists;

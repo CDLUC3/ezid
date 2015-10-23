@@ -20,6 +20,7 @@ import zlib
 maxIdentifierLength = 255
 
 _doiPattern = re.compile("10\.[1-9]\d{3,4}/[!\"$->@-~]+$")
+
 def validateDoi (doi):
   """
   If the supplied string (e.g., "10.5060/foo") is a syntactically
@@ -129,6 +130,33 @@ def validateUrnUuid (urn):
   else:
     return None
 
+def validateIdentifier (identifier):
+  """
+  If the supplied string is any type of qualified, syntactically valid
+  identifier, returns the canonical form of the identifier.
+  Otherwise, returns None.
+  """
+  if identifier.startswith("ark:/"):
+    s = validateArk(identifier[5:])
+    if s != None:
+      return "ark:/" + s
+    else:
+      return None
+  elif identifier.startswith("doi:"):
+    s = validateDoi(identifier[4:])
+    if s != None:
+      return "doi:" + s
+    else:
+      return None
+  elif identifier.startswith("urn:uuid:"):
+    s = validateUrnUuid(identifier[9:])
+    if s != None:
+      return "urn:uuid:" + s
+    else:
+      return None
+  else:
+    return None
+
 def _percentEncodeCdr (m):
   s = m.group(0)
   return s[0] + "".join("%%%02x" % ord(c) for c in s[1:])
@@ -186,6 +214,7 @@ def shadow2doi (ark):
   return doi.upper()
 
 _urnUuidShadowArkPrefix = "97720/"
+
 def urnUuid2shadow (urn):
   """
   Given a scheme-less UUID URN identifier (e.g.,
@@ -322,3 +351,17 @@ def deblobify (blob, decompressOnly=False):
   d = {}
   for i in range(0, len(v), 2): d[decode(v[i])] = decode(v[i+1])
   return d
+
+def oneLine (s):
+  """
+  Replaces newlines in a string with spaces.
+  """
+  return re.sub("\s", " ", s)
+
+def formatException (exception):
+  """
+  Formats an exception into a single-line string.
+  """
+  s = oneLine(str(exception)).strip()
+  if len(s) > 0: s = ": " + s
+  return type(exception).__name__ + s
