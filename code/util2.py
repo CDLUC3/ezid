@@ -18,10 +18,14 @@ import urllib
 import config
 
 _ezidUrl = None
+_arkTestPrefix = None
+_doiTestPrefix = None
 
 def _loadConfig ():
-  global _ezidUrl
+  global _ezidUrl, _arkTestPrefix, _doiTestPrefix
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
+  _arkTestPrefix = config.config("shoulders.ark_test")
+  _doiTestPrefix = config.config("shoulders.doi_test")
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -39,3 +43,11 @@ def tombstoneTargetUrl (identifier):
   identifier is assumed to be in normalized, qualified form.
   """
   return "%s/tombstone/id/%s" % (_ezidUrl, urllib.quote(identifier, ":/"))
+
+def isTestIdentifier (identifier):
+  """
+  Returns True if the supplied qualified identifier is a test
+  identifier.
+  """
+  return identifier.startswith(_arkTestPrefix) or\
+    identifier.startswith(_doiTestPrefix)
