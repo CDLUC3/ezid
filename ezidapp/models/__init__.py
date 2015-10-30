@@ -3,9 +3,11 @@ from datacenter import Datacenter
 from datacite_queue import DataciteQueue
 from download_queue import DownloadQueue
 from group import Group
+from identifier import Identifier
 from profile import Profile
 from search_datacenter import SearchDatacenter
 from search_group import SearchGroup
+from search_identifier import SearchIdentifier
 from search_profile import SearchProfile
 from search_realm import SearchRealm
 from search_user import SearchUser
