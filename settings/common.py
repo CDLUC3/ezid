@@ -116,3 +116,27 @@ STANDALONE = False
 SSL = True
 DAEMON_THREADS_ENABLED = True
 LOCALIZATIONS = { "default": ("cdl", ["ezid@ucop.edu"]) }
+
+# The following is a necessarily cockamamie scheme to get passwords
+# from the EZID configuration system into this file.
+# 'injectPasswords' should be called by the settings module
+# corresponding to the deployment level, after all settings are in
+# place.
+
+PASSWORD_PATHS = []
+
+def injectPasswords (deploymentLevel):
+  import config_loader
+  config = config_loader.Config(SITE_ROOT, PROJECT_ROOT,
+    EZID_CONFIG_FILE, EZID_SHADOW_CONFIG_FILE, deploymentLevel)
+  for path in PASSWORD_PATHS:
+    o = sys.modules["settings.common"] # this module
+    for p in path[:-1]:
+      if type(p) is str and hasattr(o, p):
+        o = getattr(o, p)
+      else:
+        o = o[p]
+    if type(path[-1]) is str and hasattr(o, path[-1]):
+      setattr(o, path[-1], config.getOption(getattr(o, path[-1])))
+    else:
+      o[path[-1]] = config.getOption(o[path[-1]])
