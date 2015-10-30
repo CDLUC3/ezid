@@ -20,12 +20,19 @@ import config
 _ezidUrl = None
 _arkTestPrefix = None
 _doiTestPrefix = None
+_defaultArkProfile = None
+_defaultDoiProfile = None
+_defaultUrnUuidProfile = None
 
 def _loadConfig ():
-  global _ezidUrl, _arkTestPrefix, _doiTestPrefix
+  global _ezidUrl, _arkTestPrefix, _doiTestPrefix, _defaultArkProfile
+  global _defaultDoiProfile, _defaultUrnUuidProfile
   _ezidUrl = config.config("DEFAULT.ezid_base_url")
   _arkTestPrefix = config.config("shoulders.ark_test")
   _doiTestPrefix = config.config("shoulders.doi_test")
+  _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
+  _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
+  _defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
 
 _loadConfig()
 config.addLoader(_loadConfig)
@@ -51,3 +58,17 @@ def isTestIdentifier (identifier):
   """
   return identifier.startswith(_arkTestPrefix) or\
     identifier.startswith(_doiTestPrefix)
+
+def defaultProfile (identifier):
+  """
+  Returns the label of the default metadata profile (e.g., "erc") for
+  a given qualified identifier.
+  """
+  if identifier.startswith("ark:/"):
+    return _defaultArkProfile
+  elif identifier.startswith("doi:"):
+    return _defaultDoiProfile
+  elif identifier.startswith("urn:uuid:"):
+    return _defaultUrnUuidProfile
+  else:
+    assert False, "unhandled case"
