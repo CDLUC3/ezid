@@ -102,8 +102,7 @@ class Identifier (django.db.models.Model):
   def isUnavailable (self):
     return self.status == self.UNAVAILABLE
 
-  unavailableReason = django.db.models.CharField(max_length=255, blank=True,
-    default="")
+  unavailableReason = django.db.models.TextField(blank=True, default="")
   # If the status is UNAVAILABLE then, optionally, a reason for the
   # unavailability, e.g., "withdrawn"; otherwise, empty.
 
