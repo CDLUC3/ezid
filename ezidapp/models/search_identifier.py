@@ -58,5 +58,35 @@ class SearchIdentifier (identifier.Identifier):
     v.extend(self.cm.values())
     self.keywords = " ; ".join(v)
 
+  # Note that MySQL FULLTEXT indexes must be created outside Django;
+  # see .../etc/search-mysql-indexes.sql.
+
   class Meta (identifier.Identifier.Meta):
-    index_together = [("oaiVisible", "updateTime")]
+    index_together = [
+      # public search
+      ("publicSearchVisible", "resourcePublicationDate"),
+      ("publicSearchVisible", "resourceType"),
+      # user management search
+      ("owner", "resourcePublicationDate"),
+      ("owner", "resourceType"),
+      ("owner", "createTime"),
+      ("owner", "updateTime"),
+      ("owner", "status"),
+      ("owner", "export"),
+      ("owner", "hasMetadata"),
+      ("ownergroup", "resourcePublicationDate"),
+      ("ownergroup", "resourceType"),
+      ("ownergroup", "createTime"),
+      ("ownergroup", "updateTime"),
+      ("ownergroup", "status"),
+      ("ownergroup", "export"),
+      ("ownergroup", "hasMetadata"),
+      # dashboard
+      ("owner", "hasIssues"),
+      ("ownergroup", "hasIssues"),
+      # batch download
+      ("owner", "identifier"),
+      ("ownergroup", "identifier"),
+      # OAI
+      ("oaiVisible", "updateTime")
+    ]
