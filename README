@@ -12,7 +12,8 @@ EZID requires:
 
 - Django <http://www.djangoproject.com/> (version 1.8+);
 - Python <http://www.python.org/> (version 2.7+);
-- a relational database (SQLite <http://www.sqlite.org/> is fine);
+- a relational database (SQLite <http://www.sqlite.org/> and MySQL
+  <http://www.mysql.com/> have both been used);
 - if using MySQL, a MySQL API driver, e.g., mysqlclient
   <https://pypi.python.org/pypi/mysqlclient>;
 - lxml <http://lxml.de/> for processing XML;
@@ -29,10 +30,11 @@ EZID requires:
 Those are the core prerequisites for running EZID standalone.  But
 EZID is of little value unless there are some other, external servers
 running: a Noid <http://wiki.ucop.edu/display/Curation/NOID> "egg"
-server for storing metadata; additional Noid "nog" servers for minting
-identifiers; a shoulder server (optional); DataCite services for
-creating DOI identifiers; and an LDAP server, if LDAP authentication
-is used.
+server for storing metadata (strictly speaking, optional, but an
+essential component in the grand scheme of things); additional Noid
+"nog" servers for minting identifiers; a shoulder server (optional);
+DataCite services for creating DOI identifiers; and an LDAP server, if
+LDAP authentication is used.
 
 General layout and configuration
 ================================
@@ -64,7 +66,7 @@ layout:
         db/
             alert_message
             django.sqlite3
-            search.sqlite3
+            search.sqlite3 (if using SQLite)
             secret_key
             shoulders_cache.txt
             stats
@@ -117,10 +119,15 @@ To create the initial databases, assuming the above environment
 variables have been set:
 
     django-admin migrate
+
+And, if using SQLite:
+
     sqlite3 .../SITE_ROOT/db/store.sqlite3
       < .../SITE_ROOT/PROJECT_ROOT/etc/store-schema.sql
-    sqlite3 .../SITE_ROOT/db/search.sqlite3
-      < .../SITE_ROOT/PROJECT_ROOT/etc/search-schema.sql
+
+Or, if using MySQL:
+
+    mysql < .../SITE_ROOT/PROJECT_ROOT/etc/search-mysql-addendum.sql
 
 To run the built-in server:
 

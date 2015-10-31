@@ -59,7 +59,7 @@ class SearchIdentifier (identifier.Identifier):
     self.keywords = " ; ".join(v)
 
   # Note that MySQL FULLTEXT indexes must be created outside Django;
-  # see .../etc/search-mysql-indexes.sql.
+  # see .../etc/search-mysql-addendum.sql.
 
   class Meta (identifier.Identifier.Meta):
     index_together = [
