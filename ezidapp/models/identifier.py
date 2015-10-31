@@ -143,6 +143,17 @@ class Identifier (django.db.models.Model):
     import util2
     return util2.defaultTargetUrl(self.identifier)
 
+  @property
+  def resolverTarget (self):
+    # The URL the identifier actually resolves to.
+    import util2
+    if self.isReserved:
+      return self.defaultTarget
+    elif self.isUnavailable:
+      return util2.tombstoneTargetUrl(self.identifier)
+    else:
+      return self.target
+
   USER = "U"
   GROUP = "G"
   agentRole = django.db.models.CharField(max_length=1, blank=True,
