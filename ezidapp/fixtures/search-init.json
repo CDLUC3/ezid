@@ -1,0 +1,56 @@
+[
+
+{ "model": "ezidapp.SearchRealm",
+  "pk": 1,
+  "fields": { "name": "CDL" }
+},
+
+{ "model": "ezidapp.SearchGroup",
+  "pk": 1,
+  "fields": {
+    "pid": "ark:/99166/p9g44hq02",
+    "groupname": "admin",
+    "realm": 1
+  }
+},
+
+{ "model": "ezidapp.SearchUser",
+  "pk": 1,
+  "fields": {
+    "pid": "ark:/99166/p9kw57h4w",
+    "username": "admin",
+    "group": 1,
+    "realm": 1
+  }
+},
+
+{ "model": "ezidapp.SearchGroup",
+  "pk": 2,
+  "fields": {
+    "pid": "ark:/99166/p9pg1hn29",
+    "groupname": "apitest",
+    "realm": 1
+  }
+},
+
+{ "model": "ezidapp.SearchUser",
+  "pk": 2,
+  "fields": {
+    "pid": "ark:/99166/p9jq0st8j",
+    "username": "apitest",
+    "group": 2,
+    "realm": 1
+  }
+},
+
+{ "model": "ezidapp.SearchProfile",
+  "pk": 1,
+  "fields": { "label": "erc" }
+},
+
+{ "model": "ezidapp.SearchProfile",
+  "pk": 2,
+  "fields": { "label": "datacite" }
+}
+
+]
