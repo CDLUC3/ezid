@@ -72,12 +72,12 @@ class Identifier (django.db.models.Model):
   # If an owner is specified but not an ownergroup, the ownergroup is
   # computed.
 
-  createTime = django.db.models.IntegerField(blank=True,
+  createTime = django.db.models.IntegerField(blank=True, default="",
     validators=[django.core.validators.MinValueValidator(0)])
   # The time the identifier was created as a Unix timestamp.  If not
   # specified, the current time is used.
 
-  updateTime = django.db.models.IntegerField(blank=True,
+  updateTime = django.db.models.IntegerField(blank=True, default="",
     validators=[django.core.validators.MinValueValidator(0)])
   # The time the identifier was last modified as a Unix timestamp.  If
   # not specified, the current time is used.
