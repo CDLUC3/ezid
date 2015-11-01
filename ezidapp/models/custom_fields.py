@@ -47,3 +47,9 @@ class CompressedJsonField (django.db.models.BinaryField):
         raise django.core.exceptions.ValidationError(
           "Exception encountered unpacking compressed JSON database value: " +\
           util.formatException(e))
+
+class NonValidatingForeignKey (django.db.models.ForeignKey):
+  # A ForeignKey that doesn't perform any validation.
+
+  def validate (self, value, model_instance):
+    pass

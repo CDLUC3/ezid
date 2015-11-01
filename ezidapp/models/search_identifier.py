@@ -15,6 +15,7 @@
 
 import django.db.models
 
+import custom_fields
 import identifier
 import search_datacenter
 import search_group
@@ -31,14 +32,17 @@ class SearchIdentifier (identifier.Identifier):
 
   # Foreign key declarations.  Note that in the search database every
   # identifier has an owner; anonymous identifiers are not stored.
+  # For performance we do not validate foreign key references (but of
+  # course they're still checked in the database).
 
-  owner = django.db.models.ForeignKey(search_user.SearchUser,
+  owner = custom_fields.NonValidatingForeignKey(search_user.SearchUser,
     on_delete=django.db.models.PROTECT)
-  ownergroup = django.db.models.ForeignKey(search_group.SearchGroup,
+  ownergroup = custom_fields.NonValidatingForeignKey(search_group.SearchGroup,
     blank=True, null=True, default=None, on_delete=django.db.models.PROTECT)
-  datacenter = django.db.models.ForeignKey(search_datacenter.SearchDatacenter,
-    blank=True, null=True, default=None, on_delete=django.db.models.PROTECT)
-  profile = django.db.models.ForeignKey(search_profile.SearchProfile,
+  datacenter = custom_fields.NonValidatingForeignKey(
+    search_datacenter.SearchDatacenter, blank=True, null=True,
+    default=None, on_delete=django.db.models.PROTECT)
+  profile = custom_fields.NonValidatingForeignKey(search_profile.SearchProfile,
     blank=True, null=True, default=None, on_delete=django.db.models.PROTECT)
 
   @property
