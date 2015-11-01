@@ -13,6 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import lxml.etree
 import re
 import sys
 import zlib
@@ -365,3 +366,44 @@ def formatException (exception):
   s = oneLine(str(exception)).strip()
   if len(s) > 0: s = ": " + s
   return type(exception).__name__ + s
+
+_extractTransform = None
+_extractTransformSource = """<?xml version="1.0"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:output method="text" encoding="UTF-8"/>
+<xsl:strip-space elements="*"/>
+
+<xsl:template match="*">
+  <xsl:for-each select="@*">
+    <xsl:if test="not(local-name()='schemaLocation')">
+      <xsl:if test="normalize-space(.) != ''">
+        <xsl:value-of select="normalize-space(.)"/>
+        <xsl:text> ; </xsl:text>
+      </xsl:if>
+    </xsl:if>
+  </xsl:for-each>
+  <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="text()">
+  <xsl:value-of select="normalize-space(.)"/>
+  <xsl:text> ; </xsl:text>
+</xsl:template>
+
+</xsl:stylesheet>"""
+
+def extractXmlContent (document):
+  """
+  Extracts all content from an XML document (all attribute values, all
+  textual element content) and returns it as a single Unicode string
+  in which individual fragments are separated by " ; ".  Whitespace is
+  normalized throughout per XPath.  The input document may be a string
+  or an already-parsed document tree.
+  """
+  global _extractTransform
+  if _extractTransform == None:
+    _extractTransform = lxml.etree.XSLT(lxml.etree.XML(
+      _extractTransformSource))
+  if isinstance(document, basestring): document = lxml.etree.XML(document)
+  return unicode(_extractTransform(document)).strip()[:-2]
