@@ -51,6 +51,16 @@
 { "model": "ezidapp.SearchProfile",
   "pk": 2,
   "fields": { "label": "datacite" }
+},
+
+{ "model": "ezidapp.SearchProfile",
+  "pk": 3,
+  "fields": { "label": "dc" }
+},
+
+{ "model": "ezidapp.SearchProfile",
+  "pk": 4,
+  "fields": { "label": "crossref" }
 }
 
 ]
