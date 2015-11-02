@@ -55,8 +55,10 @@ def login(request, ssl=False):
       request.session["auth"] = auth
       django.contrib.messages.success(request, "Login successful.")
       #request.session['hide_alert'] = False
+      if 'redirect_to' in request.POST:
+        return redirect(_filterBadRedirect(request.POST['redirect_to']))
       if 'redirect_to' in request.session and request.session['redirect_to']:
-        return redirect(request.session['redirect_to'])
+        return redirect(_filterBadRedirect(request.session['redirect_to']))
       else:
         return redirect('ui_home.index')
     else:
@@ -64,6 +66,9 @@ def login(request, ssl=False):
       return uic.render(request, "account/login", d)
   else:
     return uic.methodNotAllowed(request)
+
+def _filterBadRedirect(url):
+  return "/" if url.startswith("/login") else url
 
 def logout(request):
   """

@@ -47,7 +47,7 @@
         </li>
         <li class="navbar-btn">
           {% if session.auth %}
-          <a class="not-text" href="/logout"><button type="button" class="btn padding-side-sm btn-big gradient-orange" id="modal_open">LOGOUT</button></a>
+          <a class="not-text" href="/logout"><button type="button" class="btn padding-side-sm btn-big gradient-orange">LOGOUT</button></a>
           {% else %}
           <a class="not-text" href="#"><button type="button" class="btn padding-side-sm btn-big gradient-orange" id="modal_open">LOGIN</button></a>
           {% endif %}
@@ -69,6 +69,7 @@
               <input type="text" id="username" name="username" class="form-control" value="{{ username }}" placeholder="Username" />
               <label for="password" class="sr-only control-label">Password</label>
               <input type="password" id="password" name="password" class="form-control" value="{{ password }}" placeholder="Password" />
+              <input type="hidden" name="redirect_to" value="{{ request.get_full_path }}">
               <button type="submit" class="btn btn-primary padding-side-xs" id="login" name="login">LOG IN</button>
               &nbsp;&nbsp;<a href="{% url "ui_account.pwreset" %}" class="font-small">Forgot your password?</a>
             </div>
