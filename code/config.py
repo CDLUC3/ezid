@@ -39,6 +39,7 @@ import subprocess
 import time
 
 import config_loader
+import ezidapp.models.search_identifier
 
 _loaders = []
 
@@ -69,19 +70,23 @@ def _getVersion ():
     _getVersion1(os.path.join(django.conf.settings.PROJECT_ROOT, "templates",
       "info")))
 
-def load ():
-  """
-  (Re)loads the configuration file.
-  """
+def _load ():
   global _config, _version
   _config = config_loader.Config(django.conf.settings.SITE_ROOT,
     django.conf.settings.PROJECT_ROOT, django.conf.settings.EZID_CONFIG_FILE,
     django.conf.settings.EZID_SHADOW_CONFIG_FILE,
     django.conf.settings.DEPLOYMENT_LEVEL)
   _version = (int(time.time()),) + _getVersion()
-  for l in _loaders: l()
 
-load()
+def reload ():
+  """
+  Reloads the configuration file.
+  """
+  _load()
+  for l in _loaders: l()
+  ezidapp.models.search_identifier.clearProfileCache()
+
+_load()
 _startupVersion = _version
 
 def config (option):

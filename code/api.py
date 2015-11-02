@@ -369,7 +369,7 @@ def pause (request):
 
 def reload (request):
   """
-  Reloads the configuration file; interface to config.load.
+  Reloads the configuration file; interface to config.reload.
   """
   if request.method != "POST": return _methodNotAllowed()
   auth = userauth.authenticateRequest(request)
@@ -385,7 +385,7 @@ def reload (request):
     while True:
       if len(ezid.getStatus()[0]) == 0: break
       time.sleep(_idlewaitSleep)
-    config.load()
+    config.reload()
   finally:
     ezid.pause(oldValue)
   return _response("success: configuration file reloaded and caches emptied")

@@ -27,6 +27,12 @@ import search_user
 import util2
 """
 
+_profileCache = None
+
+def clearProfileCache ():
+  global _profileCache
+  _profileCache = None
+
 class SearchIdentifier (identifier.Identifier):
   # An identifier as stored in the search database.
 
@@ -47,9 +53,12 @@ class SearchIdentifier (identifier.Identifier):
 
   @property
   def defaultProfile (self):
+    global _profileCache
     import util2
-    return search_profile.SearchProfile.objects.get(
-      label=util2.defaultProfile(self.identifier))
+    if _profileCache == None:
+      _profileCache = dict((p.label, p) for p in\
+        search_profile.SearchProfile.objects.all())
+    return _profileCache[util2.defaultProfile(self.identifier)]
 
   keywords = django.db.models.TextField(editable=False)
   # Computed value: a compendium of all searchable text.
