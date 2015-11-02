@@ -367,6 +367,45 @@ def formatException (exception):
   if len(s) > 0: s = ": " + s
   return type(exception).__name__ + s
 
+xmlDeclarationRE = re.compile("<\?xml\s+version\s*=\s*(['\"])([-\w.:]+)\\1" +\
+  "(\s+encoding\s*=\s*(['\"])([a-zA-Z][-\w.]*)\\4)?" +\
+  "(\s+standalone\s*=\s*(['\"])(yes|no)\\7)?\s*\?>\s*")
+
+def removeXmlEncodingDeclaration (document):
+  """
+  Removes the encoding declaration from an XML document if present.
+  """
+  m = xmlDeclarationRE.match(document)
+  if m and m.group(3) != None:
+    return document[:m.start(3)] + document[m.end(3):]
+  else:
+    return document
+
+def removeXmlDeclaration (document):
+  """
+  Removes the entire XML declaration from an XML document if present.
+  """
+  m = xmlDeclarationRE.match(document)
+  if m:
+    return document[len(m.group(0)):]
+  else:
+    return document
+
+def parseXmlString (document):
+  """
+  Parses an XML document from a string, returning a root element node.
+  If a Unicode string is supplied, any encoding declaration in the
+  document is discarded and ignored; otherwise, if an encoding
+  declaration is present, the parser treats the string as a binary
+  stream and decodes it per the declaration.
+  """
+  if type(document) is str:
+    return lxml.etree.XML(document)
+  elif type(document) is unicode:
+    return lxml.etree.XML(removeXmlEncodingDeclaration(document))
+  else:
+    assert False, "unhandled case"
+
 _extractTransform = None
 _extractTransformSource = """<?xml version="1.0"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -405,5 +444,5 @@ def extractXmlContent (document):
   if _extractTransform == None:
     _extractTransform = lxml.etree.XSLT(lxml.etree.XML(
       _extractTransformSource))
-  if isinstance(document, basestring): document = lxml.etree.XML(document)
+  if isinstance(document, basestring): document = parseXmlString(document)
   return unicode(_extractTransform(document)).strip()[:-2]
