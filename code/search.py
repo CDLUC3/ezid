@@ -273,9 +273,9 @@ def _processMetadata (identifier, metadata, mapLocalNames):
   m["updateTime"] = int(updateTime)
   m["status"] = _get(metadata, "_status", "_is")
   if m["status"] is None: m["status"] = "public"
-  creator, title, publisher, date = mapping.getDisplayMetadata(metadata)
-  m["mappedTitle"] = title
-  m["mappedCreator"] = creator
+  km = mapping.map(metadata)
+  m["mappedTitle"] = km.title
+  m["mappedCreator"] = km.creator
   return m
 
 def _rowTupleToDict (row):
