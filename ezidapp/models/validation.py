@@ -15,6 +15,7 @@
 
 import django.core.exceptions
 import re
+import time
 
 import util
 
@@ -53,6 +54,28 @@ def datacenterSymbol (symbol):
   # Validates a DataCite datacenter symbol, per DataCite rules.
   if not datacenterSymbolRE.match(symbol) or symbol[-1] == "\n":
     raise django.core.exceptions.ValidationError("Invalid datacenter symbol.")
+
+_timespecRE = re.compile("\d{4}(-\d\d(-\d\d(T\d\d:\d\d:\d\dZ?)?)?)?$")
+_timespecFormats = {
+  4: "%Y",
+  7: "%Y-%m",
+  10: "%Y-%m-%d",
+  19: "%Y-%m-%dT%H:%M:%S",
+  20: "%Y-%m-%dT%H:%M:%SZ"
+}
+
+def publicationDate (date):
+  # Validates a publication date.  Currently one date format is
+  # recognized: ISO 8601 YYYY-MM-DDTHH:MM:SSZ in which trailing
+  # components may be omitted.  Returns just the date portion of the
+  # date, i.e., YYYY, YYYY-MM, or YYYY-MM-DD.
+  try:
+    assert _timespecRE.match(date) and date[-1] != "\n"
+    time.strptime(date, _timespecFormats[len(date)])
+    return date[:10]
+  except:
+    raise django.core.exceptions.ValidationError(
+      "Invalid publication date or unrecognized date format.")
 
 # EZID borrows its resource type vocabulary from DataCite, and extends
 # that vocabulary by allowing a "specific type" (in DataCite parlance)
