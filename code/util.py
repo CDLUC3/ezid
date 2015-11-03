@@ -286,46 +286,6 @@ def decode (s):
       raise PercentDecodeError()
   return "".join(r).decode("UTF-8")
 
-# The following definitions are taken from the XML 1.1 specification.
-# The characters we consider illegal include restricted and
-# discouraged characters, but compatibility characters are still
-# allowed.  Python's implementation of Unicode is significant here.
-# If Unicode is stored as UCS-2 (which is the case on every platform
-# encountered to date), then it's not possible to use regular
-# expressions to check for characters higher than 0xFFFF, and we
-# necessarily allow surrogate characters (though we don't check that
-# surrogates come in pairs and are properly ordered, nor do we check
-# for discouraged characters higher than 0xFFFF).  If Python stores
-# Unicode as UCS-4, then surrogate characters are not allowed, and we
-# check for discouraged characters in all planes.
-
-_illegalUnichrs = [(0x00, 0x08), (0x0B, 0x0C), (0x0E, 0x1F), (0x7F, 0x84),
-  (0x86, 0x9F), (0xFDD0, 0xFDDF), (0xFFFE, 0xFFFF)]
-if sys.maxunicode >= 0x10000:
-  _illegalUnichrs.extend([(0xD800, 0xDFFF), (0x1FFFE, 0x1FFFF),
-    (0x2FFFE, 0x2FFFF), (0x3FFFE, 0x3FFFF), (0x4FFFE, 0x4FFFF),
-    (0x5FFFE, 0x5FFFF), (0x6FFFE, 0x6FFFF), (0x7FFFE, 0x7FFFF),
-    (0x8FFFE, 0x8FFFF), (0x9FFFE, 0x9FFFF), (0xAFFFE, 0xAFFFF),
-    (0xBFFFE, 0xBFFFF), (0xCFFFE, 0xCFFFF), (0xDFFFE, 0xDFFFF),
-    (0xEFFFE, 0xEFFFF), (0xFFFFE, 0xFFFFF), (0x10FFFE, 0x10FFFF)])
-
-_illegalUnichrsRE = re.compile(u"[%s]" % u"".join("%s-%s" % (unichr(low),
-  unichr(high)) for low, high in _illegalUnichrs))
-
-def validateXmlSafeCharset (s):
-  """
-  Returns true if the given Unicode string contains only characters
-  that are accepted by XML 1.1.
-  """
-  return _illegalUnichrsRE.search(s) == None
-
-def sanitizeXmlSafeCharset (s):
-  """
-  Returns a copy of the given Unicode string in which characters not
-  accepted by XML 1.1 have been replaced with spaces.
-  """
-  return _illegalUnichrsRE.sub(" ", s)
-
 def blobify (metadata):
   """
   Converts a metadata dictionary to a binary, compressed string, or
@@ -366,6 +326,46 @@ def formatException (exception):
   s = oneLine(str(exception)).strip()
   if len(s) > 0: s = ": " + s
   return type(exception).__name__ + s
+
+# The following definitions are taken from the XML 1.1 specification.
+# The characters we consider illegal include restricted and
+# discouraged characters, but compatibility characters are still
+# allowed.  Python's implementation of Unicode is significant here.
+# If Unicode is stored as UCS-2 (which is the case on every platform
+# encountered to date), then it's not possible to use regular
+# expressions to check for characters higher than 0xFFFF, and we
+# necessarily allow surrogate characters (though we don't check that
+# surrogates come in pairs and are properly ordered, nor do we check
+# for discouraged characters higher than 0xFFFF).  If Python stores
+# Unicode as UCS-4, then surrogate characters are not allowed, and we
+# check for discouraged characters in all planes.
+
+_illegalUnichrs = [(0x00, 0x08), (0x0B, 0x0C), (0x0E, 0x1F), (0x7F, 0x84),
+  (0x86, 0x9F), (0xFDD0, 0xFDDF), (0xFFFE, 0xFFFF)]
+if sys.maxunicode >= 0x10000:
+  _illegalUnichrs.extend([(0xD800, 0xDFFF), (0x1FFFE, 0x1FFFF),
+    (0x2FFFE, 0x2FFFF), (0x3FFFE, 0x3FFFF), (0x4FFFE, 0x4FFFF),
+    (0x5FFFE, 0x5FFFF), (0x6FFFE, 0x6FFFF), (0x7FFFE, 0x7FFFF),
+    (0x8FFFE, 0x8FFFF), (0x9FFFE, 0x9FFFF), (0xAFFFE, 0xAFFFF),
+    (0xBFFFE, 0xBFFFF), (0xCFFFE, 0xCFFFF), (0xDFFFE, 0xDFFFF),
+    (0xEFFFE, 0xEFFFF), (0xFFFFE, 0xFFFFF), (0x10FFFE, 0x10FFFF)])
+
+_illegalUnichrsRE = re.compile(u"[%s]" % u"".join("%s-%s" % (unichr(low),
+  unichr(high)) for low, high in _illegalUnichrs))
+
+def validateXmlSafeCharset (s):
+  """
+  Returns true if the given Unicode string contains only characters
+  that are accepted by XML 1.1.
+  """
+  return _illegalUnichrsRE.search(s) == None
+
+def sanitizeXmlSafeCharset (s):
+  """
+  Returns a copy of the given Unicode string in which characters not
+  accepted by XML 1.1 have been replaced with spaces.
+  """
+  return _illegalUnichrsRE.sub(" ", s)
 
 xmlDeclarationRE = re.compile("<\?xml\s+version\s*=\s*(['\"])([-\w.:]+)\\1" +\
   "(\s+encoding\s*=\s*(['\"])([a-zA-Z][-\w.]*)\\4)?" +\
