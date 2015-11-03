@@ -286,32 +286,78 @@ def decode (s):
       raise PercentDecodeError()
   return "".join(r).decode("UTF-8")
 
+def toExchange (metadata, identifier=None):
+  """
+  Returns an exchange representation of a metadata dictionary, which
+  is a string of the format "label value label value ..." in which
+  labels and values are percent-encoded via encode{3,4} above, and are
+  separated by single spaces.  Labels and values are stripped before
+  being encoded; empty labels are not permitted and labels with empty
+  values are discarded.  If 'identifier' is not None, it is inserted
+  as the first token in the string; it is not encoded.
+  """
+  l = []
+  if identifier != None:
+    # We're assuming here that the identifier contains no spaces or
+    # newlines, but we don't check that.
+    l.append(identifier)
+  for k, v in metadata.items():
+    k = k.strip()
+    assert len(k) > 0, "empty label"
+    v = v.strip()
+    if len(v) > 0:
+      l.append(encode4(k))
+      l.append(encode3(v))
+  return " ".join(l)
+
+def fromExchange (line, identifierEmbedded=False):
+  """
+  Reconstitutes a metadata dictionary from an exchange representation.
+  If 'identifierEmbedded' is True, the first token is assumed to be an
+  identifier, and the return is a tuple (identifier, dictionary).
+  Otherwise, the return is simply a dictionary.  N.B.: this function
+  only partially checks the input.
+  """
+  if len(line) > 0 and line[-1] == "\n": line = line[:-1]
+  if len(line) == 0:
+    assert not identifierEmbedded, "wrong number of tokens"
+    return {}
+  v = line.split(" ")
+  if identifierEmbedded:
+    assert len(v)%2 == 1, "wrong number of tokens"
+    assert len(v[0]) > 0, "empty token"
+    identifier = v[0]
+    start = 1
+  else:
+    assert len(v)%2 == 0, "wrong number of tokens"
+    start = 0
+  d = {}
+  for i in range(start, len(v), 2):
+    assert len(v[i]) > 0 and len(v[i+1]) > 0, "empty token"
+    d[decode(v[i])] = decode(v[i+1])
+  if identifierEmbedded:
+    return identifier, d
+  else:
+    return d
+
 def blobify (metadata):
   """
   Converts a metadata dictionary to a binary, compressed string, or
   "blob."  Labels and values are stripped; labels with empty values
   are discarded.
   """
-  l = []
-  for k, v in metadata.items():
-    k = k.strip()
-    assert len(k) > 0, "empty label"
-    v = v.strip()
-    if len(v) > 0: l.append("%s %s" % (encode4(k), encode3(v)))
-  return zlib.compress(" ".join(l))
+  return zlib.compress(toExchange(metadata))
 
 def deblobify (blob, decompressOnly=False):
   """
   Converts a blob back to a metadata dictionary.  If 'decompressOnly'
-  is true, the metadata is returned as a single, percent-encoded
-  string of the form: label value label value ...
+  is True, the metadata is returned in exchange representation form.
   """
   v = zlib.decompress(blob)
-  if decompressOnly: return v
-  v = v.split(" ")
-  d = {}
-  for i in range(0, len(v), 2): d[decode(v[i])] = decode(v[i+1])
-  return d
+  if decompressOnly:
+    return v
+  else:
+    return fromExchange(v)
 
 def oneLine (s):
   """
