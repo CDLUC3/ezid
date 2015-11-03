@@ -31,10 +31,10 @@
 # identifier "has metadata" or not.  The histogram does not include
 # test identifiers, but does include reserved identifiers.
 #
-# The definition of "has metadata" is: for DOIs, if the identifier has
-# metadata mappable to at least the required DataCite fields; for
-# other identifier types, if the identifier has metadata mappable to
-# the ERC who/what/when fields.
+# The definition of "has metadata" is: if the identifier has metadata
+# mappable to title and date, and metadata mappable to at least one of
+# creator and publisher (i.e., the identifier has at least
+# who/what/when metadata in ERC parlance).
 #
 # The format of the output file is:
 #
@@ -94,10 +94,9 @@ def identifierType (id):
   return id.split(":")[0].upper()
 
 def hasMetadata (id, m):
-  t = mapping.getDisplayMetadata(m)
-  return (id.startswith("doi:") and None not in t) or\
-    (not id.startswith("doi:") and (t[0] is not None or t[2] is not None) and\
-    t[1] is not None and t[3] is not None)
+  km = mapping.map(m)
+  return km.title != None and km.date != None and\
+    (km.creator != None or km.publisher != None)
 
 usageText = """Usage:
 
