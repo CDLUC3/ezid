@@ -21,6 +21,7 @@ import search_datacenter
 import search_group
 import search_profile
 import search_user
+import util
 
 # Deferred imports...
 """
@@ -65,11 +66,18 @@ class SearchIdentifier (identifier.Identifier):
 
   def computeComputedValues (self):
     super(SearchIdentifier, self).computeComputedValues()
-    v = [self.identifier, self.owner.username, self.ownergroup.groupname]
-    if self.isDoi: v.append(self.datacenter.symbol)
-    if self.target != self.defaultTarget: v.append(self.target)
-    v.extend(self.cm.values())
-    self.keywords = " ; ".join(v)
+    t = [self.identifier, self.owner.username, self.ownergroup.groupname]
+    if self.isDoi: t.append(self.datacenter.symbol)
+    if self.target != self.defaultTarget: t.append(self.target)
+    for k, v in self.cm.items():
+      if k in ["datacite", "crossref"]:
+        try:
+          t.append(util.extractXmlContent(v))
+        except:
+          t.append(v)
+      else:
+        t.append(v)
+    self.keywords = " ; ".join(t)
 
   # Note that MySQL FULLTEXT indexes must be created outside Django;
   # see .../etc/search-mysql-addendum.sql.
