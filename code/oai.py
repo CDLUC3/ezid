@@ -90,8 +90,10 @@ def isVisible (identifier, metadata):
   if export != "yes": return False
   if metadata.get("_st", metadata["_t"]) == _defaultTarget(identifier):
     return False
-  m = mapping.getDisplayMetadata(metadata)
-  if m[0] is None or m[1] is None or m[3] is None: return False
+  km = mapping.map(metadata)
+  if km.title is None or km.date is None or (km.creator is None and\
+    km.publisher is None):
+    return False
   return True
 
 def _q (elementName):
@@ -225,9 +227,10 @@ def _buildDublinCoreRecord (identifier, metadata):
   def q (elementName):
     return "{http://purl.org/dc/elements/1.1/}" + elementName
   lxml.etree.SubElement(root, q("identifier")).text = identifier
-  for k, v in zip(["creator", "title", "publisher", "date"],
-    mapping.getDisplayMetadata(metadata)):
-    if v != None: lxml.etree.SubElement(root, q(k)).text = v
+  km = mapping.map(metadata)
+  for e in ["creator", "title", "publisher", "date", "type"]:
+    if getattr(km, e) != None:
+      lxml.etree.SubElement(root, q(e)).text = getattr(km, e)
   return root
 
 def _doGetRecord (oaiRequest):
