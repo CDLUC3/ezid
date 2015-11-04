@@ -40,48 +40,17 @@ request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
       <div class="row vertical-buffer-xs">
       <form name="contact" action="{% url "ui.contact" %}" method="post" class="form-horizontal" role="form">
         {{ form.non_field_errors }}
-        <div class="form-group form-group-sm">
-          {{ form.contact_reason.errors }}
-          <label for="{{ form.contact_reason.id_for_label }}" class="col-sm-4 control-label">{{ form.contact_reason.label }}</label>
-          <div class="col-sm-8">
-            {{ form.contact_reason }}
-          </div>
-        </div>
-        <div class="form-group form-group-sm">
-          {{ form.your_name.errors }}
-          <label for="{{ form.your_name.id_for_label }}" class="col-sm-4 control-label">{{ form.your_name.label }}</label>
-          <div class="col-sm-8">
-            {{ form.your_name }}
-          </div>
-        </div>
-        <div class="form-group form-group-sm">
-          {{ form.email.errors }}
-          <label for="{{ form.email.id_for_label }}" class="col-sm-4 control-label">{{ form.email.label }}</label>
-          <div class="col-sm-8">
-            {{ form.email }}
-          </div>
-        </div>
-        <div class="form-group form-group-sm">
-          {{ form.affiliation.errors }}
-          <label for="{{ form.affiliation.id_for_label }}" class="col-sm-4 control-label">{{ form.affiliation.label }}</label>
-          <div class="col-sm-8">
-            {{ form.affiliation }}
-          </div>
-        </div>
-        <div class="form-group form-group-sm">
-          {{ form.comment.errors }}
-          <label for="{{ form.comment.id_for_label }}" class="col-sm-4 control-label">{{ form.comment.label }}</label>
-          <div class="col-sm-8">
-            {{ form.comment }}
-          </div>
-        </div>
-        <div class="form-group form-group-sm">
-          {{ form.hear_about.errors }}
-          <label for="{{ form.hear_about.id_for_label }}" class="col-sm-4 control-label">{{ form.hear_about.label }}</label>
-          <div class="col-sm-8">
-            {{ form.hear_about }}
-          </div>
-        </div>
+
+{% for field in form %}
+    <div class="form-group form-group-sm">
+      {{ field.errors }}
+      <label for="{{ field.id_for_label }}" class="col-sm-4 control-label">{{ field.label }}</label>
+      <div class="col-sm-8">
+        {{ field|add_attributes:"form-control"}}
+      </div>
+    </div>
+{% endfor %}
+
 
         <div class="trapper_keeper">
         <div class="form-group form-group-sm">

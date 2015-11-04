@@ -17,17 +17,13 @@ class ContactForm(forms.Form):
     ("other", _("Other")),
   )
   contact_reason = forms.ChoiceField(choices=CONTACT_REASONS, 
-    label = _("Reason for contacting EZID"),
-    widget=forms.Select(attrs={'class': 'form-control'}))
-  your_name = forms.CharField(max_length=200, label=_("Your Name"),
-    widget=forms.TextInput(attrs={'class': 'form-control'}))
-  email = forms.EmailField(max_length=200, label=_("Your Email"), 
-    widget=forms.TextInput(attrs={'class': 'form-control'}))
+    label = _("Reason for contacting EZID"))
+  your_name = forms.CharField(max_length=200, label=_("Your Name"))
+  email = forms.EmailField(max_length=200, label=_("Your Email"))
   affiliation = forms.CharField(required=False, label=_("Your Institution"), 
-    max_length=200, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    max_length=200)
   comment = forms.CharField(label=_("Please indicate any question or comment \
-    you may have"), widget=forms.Textarea(attrs={'rows': '4', \
-    'class': 'form-control'}))
+    you may have"), widget=forms.Textarea(attrs={'rows': '4'}))
 
   # Translators: These options appear in drop-down on contact page
   REFERRAL_SOURCES = (
@@ -39,5 +35,4 @@ class ContactForm(forms.Form):
     ("other", _("Other")),
   )
   hear_about = forms.ChoiceField(choices=REFERRAL_SOURCES,
-    label=_("How did you hear about us?"),
-    widget=forms.Select(attrs={'class': 'form-control'}))
+    label=_("How did you hear about us?"))
