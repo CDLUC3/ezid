@@ -5,6 +5,7 @@ import django.core.mail
 import django.http
 import django.template
 import django.template.loader
+import form_objects
 import errno
 import os
 import re
@@ -22,66 +23,38 @@ def ajax_hide_alert(request):
 
 def contact(request):
   d = { 'menu_item': 'ui_null.contact'}
-  # Translators: These options will appear in drop-down on contact page (in new design)
-  d['contact_reason_opts'] = ( ("*", _("Choose One")), \
-                             ("account_new", _("I would like to inquire about getting a new account")), \
-                             ("account_existing", _("I have a problem or question about existing account")), \
-                             ("newsletter", _("I'd like to sign up for the EZID email newsletter")), \
-                             ("other", _("Other")) )
-  # Translators: These options appear in drop-down on contact page
-  d['hear_about_opts'] = ( ("website", _("Website")), \
-                         ("conference", _("Conference")), \
-                         ("colleagues", _("Colleagues")), \
-                         ("webinar", _("Webinar")), \
-                         ("other", _("Other")) )
-  if request.method == "GET":
-    d['contact_reason'], d['your_name'], d['email'], d['affiliation'], \
-      d['comment'], d['hear_about'] = '', '', '', '', '', ''
-  elif request.method == "POST":
+  if request.method == "POST":
     P = request.POST
-    for i in ['contact_reason', 'your_name', 'email', 'comment', 'hear_about']:
-      if not i in P:
-        d['contact_reason'], d['your_name'], d['email'], d['affiliation'], \
-          d['comment'], d['hear_about'] = '', '', '', '', ''
-        return uic.render(request, 'contact', d)
-    d.update(uic.extract(request.POST, \
-      ['contact_reason', 'your_name', 'email', 'affiliation', 'comment', 'hear_about']))
-    errored = False
-    if P['your_name'] == '':
-      # Translators: Validation output for templates/contact.html
-      django.contrib.messages.error(request, _("Please fill in your name."))
-      errored = True
-    if P['email'] == '' or not re.match('^.+\@.+\..+$', P['email']):
-      django.contrib.messages.error(request, _("Please fill in a valid email address."))
-      errored = True
-    if errored:
-      return uic.render(request, 'contact', d)
+    d['form'] = form_objects.ContactForm(P)
     if not 'url' in P or P['url'] != '':
       #url is hidden.  If it's filled in then probably a spam bot
-      return uic.render(request, 'contact', d)
-    emails = __emails(request)
-    title = "EZID contact form email"
-    if 'HTTP_REFERER' in request.META:
-      message = 'Sent FROM: ' + request.META['HTTP_REFERER'] +"\r\n\r\n"
-    else:
-      message = ''
-    message += "Name: " + P['your_name'] + "\r\n\r\n" + \
-              "Email: " + P['email'] + "\r\n\r\n"
-    if 'affiliation' in P:
-      message += "Institution: " +  P['affiliation'] + "\r\n\r\n"
-    message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
-              "Heard about from: " + P['hear_about']
-    try:
-      django.core.mail.send_mail(title, message,
-        P['email'], emails)
+      pass
+    elif d['form'].is_valid():
+      emails = __emails(request)
+      title = "EZID contact form email"
+      if 'HTTP_REFERER' in request.META:
+        message = 'Sent FROM: ' + request.META['HTTP_REFERER'] +"\r\n\r\n"
+      else:
+        message = ''
+        message += "Name: " + P['your_name'] + "\r\n\r\n" + \
+          "Email: " + P['email'] + "\r\n\r\n"
+      if 'affiliation' in P:
+        message += "Institution: " +  P['affiliation'] + "\r\n\r\n"
+        message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
+          "Heard about from: " + P['hear_about']
+      try:
+        django.core.mail.send_mail(title, message, P['email'], emails)
 
-      django.contrib.messages.success(request, "Message sent")
-      d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
-    except:
-      django.contrib.messages.error(request, _("There was a problem sending your email"))
-      return uic.render(request, 'contact', d)
-    #django.core.mail.send_mail("EZID password reset request", message,
-    #  django.conf.settings.SERVER_EMAIL, [emailAddress])
+        django.contrib.messages.success(request, _("Message sent"))
+        d['form'] = form_objects.ContactForm() # Build an empty form
+      except:
+        django.contrib.messages.error(request, _("There was a problem sending your email"))
+    elif not d['form'].is_valid() :
+      django.contrib.messages.error(request, _("Form could not be sent. Please check \
+        the highlighted field(s) below for details."))
+      # fall through to re-render page; form already contains error info
+  else:  # GET Request
+    d['form'] = form_objects.ContactForm() # Build an empty form
   return uic.render(request, 'contact', d)
 
 def __emails(request):
