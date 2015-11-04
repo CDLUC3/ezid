@@ -268,7 +268,6 @@ class Identifier (django.db.models.Model):
     # N.B.: This method does not examine any computed values, nor does
     # it examine the citation metadata.  For validations related to
     # those, computeComputedValues must be called.
-    import util2
     if self.owner != None and self.ownergroup == None:
       self.ownergroup = self.owner.group
     else:
@@ -318,13 +317,13 @@ class Identifier (django.db.models.Model):
           { "crossrefStatus": "Non-DOI identifier has nonempty " +\
           "CrossRef status." })
     if self.target == "": self.target = self.defaultTarget
-    self.isTest = util2.isTestIdentifier(self.identifier)
     if self.isAgentPid: self.cleanAgentPid()
     if self.profile == None: self.profile = self.defaultProfile
 
   def cleanAgentPid (self):
     # Checks applicable to agent PIDs only.
     import config
+    import util2
     if not self.isArk:
       raise django.core.exceptions.ValidationError(
         { "identifier": "Agent PID is not an ARK." })
@@ -341,13 +340,16 @@ class Identifier (django.db.models.Model):
     if self.target != self.defaultTarget:
       raise django.core.exceptions.ValidationError(
         { "target": "Agent PID has non-default target URL." })
-    if self.isTest:
+    # N.B.: our isTest field hasn't been computed yet.
+    if util2.isTestIdentifier(self.identifier):
       raise django.core.exceptions.ValidationError(
         { "identifier": "Agent PID is a test identifier." })
 
   def computeComputedValues (self):
     # This method should be called after clean_fields and clean.  Note
     # that it, too, can raise validation exceptions.
+    import util2
+    self.isTest = util2.isTestIdentifier(self.identifier)
     self.resourceType = ""
     self.resourceTitle = ""
     self.resourceCreator = ""
