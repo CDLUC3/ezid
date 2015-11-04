@@ -15,6 +15,7 @@
 
 import django.core.exceptions
 import django.db.models
+import re
 import time
 
 import custom_fields
@@ -368,3 +369,79 @@ class Identifier (django.db.models.Model):
 
   def __unicode__ (self):
     return self.identifier
+
+  def toLegacy (self):
+    # Returns a legacy representation of the identifier.  See the
+    # inverse of this method, 'fromLegacy' below.
+    d = self.cm.copy()
+    d["_o"] = self.owner.pid
+    d["_g"] = self.ownergroup.pid
+    d["_c"] = str(self.createTime)
+    d["_u"] = str(self.updateTime)
+    d["_p"] = self.profile.label
+    if self.isPublic:
+      d["_t"] = self.target
+    else:
+      if self.isReserved:
+        d["_is"] = "reserved"
+      else:
+        d["_is"] = "unavailable"
+        if self.unavailableReason != "":
+          d["_is"] += " | " + self.unavailableReason
+      d["_t"] = self.resolverTarget
+      d["_t1"] = self.target
+    if not self.export: d["_x"] = "no"
+    if not self.isArk:
+      d["_s"] = self.identifier
+      d["_su"] = d["_u"]
+      d["_st"] = d["_t"]
+      if not self.isPublic: d["_st1"] = d["_t1"]
+      if self.isDoi: d["_d"] = self.datacenter.symbol
+    if self.crossref: d["_cr"] = "yes | " + self.crossrefStatus
+    if self.isAgentPid:
+      d["_ezid_role"] = "user" if self.agentRole == self.USER else "group"
+    return d
+
+  _legacyUnavailableStatusRE = re.compile("unavailable \| (.*)")
+
+  def fromLegacy (self, d):
+    # Creates an identifier from a legacy representation (or more
+    # accurately, fills out an identifier from a legacy
+    # representation).  This method should be called after the
+    # concrete subclass instance has been created with the identifier
+    # set as in, for example, SearchIdentifier(identifier=...).  All
+    # foreign key values (owner, ownergroup, datacenter, profile) must
+    # be set externally to this method.  Finally,
+    # computeComputedValues should be called after this method to fill
+    # out the rest of the object.
+    self.createTime = int(d["_c"])
+    if self.isArk:
+      self.updateTime = int(d["_u"])
+    else:
+      self.updateTime = int(d["_su"])
+    if "_is" in d:
+      if d["_is"] == "reserved":
+        self.status = self.RESERVED
+      else:
+        self.status = self.UNAVAILABLE
+        m = self._legacyUnavailableStatusRE.match(d["_is"])
+        if m: self.unavailableReason = m.group(1)
+      if self.isArk:
+        self.target = d["_t1"]
+      else:
+        self.target = d["_st1"]
+    else:
+      self.status = self.PUBLIC
+      if self.isArk:
+        self.target = d["_t"]
+      else:
+        self.target = d["_st"]
+    self.export = "_x" not in d
+    for k, v in d.items():
+      if not k.startswith("_"): self.cm[k] = v
+    if "_cr" in d:
+      self.crossref = True
+      assert d["_cr"].startswith("yes | "), "malformed legacy CrossRef status"
+      self.crossrefStatus = d["_cr"][6:]
+    if "_ezid_role" in d:
+      self.agentRole = self.USER if d["_ezid_role"] == "user" else self.GROUP
