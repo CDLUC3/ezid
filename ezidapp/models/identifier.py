@@ -342,7 +342,7 @@ class Identifier (django.db.models.Model):
     if self.target != self.defaultTarget:
       raise django.core.exceptions.ValidationError(
         { "target": "Agent PID has non-default target URL." })
-    # N.B.: our isTest field hasn't been computed yet.
+    # N.B.: the isTest field hasn't been computed yet.
     if util2.isTestIdentifier(self.identifier):
       raise django.core.exceptions.ValidationError(
         { "identifier": "Agent PID is a test identifier." })
@@ -360,8 +360,7 @@ class Identifier (django.db.models.Model):
 
   def computeComputedValues (self):
     # This method should be called after clean_fields, clean, and
-    # cleanCitationMetadataFields.  Note that it, too, can raise
-    # validation exceptions.
+    # cleanCitationMetadataFields.
     import mapping
     import util2
     self.isTest = util2.isTestIdentifier(self.identifier)
