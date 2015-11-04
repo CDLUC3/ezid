@@ -25,6 +25,7 @@ import validation
 # Deferred imports...
 """
 import config
+import mapping
 import util2
 """
 
@@ -190,14 +191,14 @@ class Identifier (django.db.models.Model):
   # All of the identifier's citation metadata as a dictionary of
   # name/value pairs, e.g., { "erc.who": "Proust, Marcel", ... }.
 
-  resourceTitle = django.db.models.TextField(editable=False)
-  # Computed value: the resource's title, if available, as mapped from
-  # the identifier's preferred metadata profile; otherwise, empty.
-
   resourceCreator = django.db.models.TextField(editable=False)
   # Computed value: the resource's creator, if available, as mapped
   # from the identifier's preferred metadata profile; otherwise,
   # empty.
+
+  resourceTitle = django.db.models.TextField(editable=False)
+  # Computed value: the resource's title, if available, as mapped from
+  # the identifier's preferred metadata profile; otherwise, empty.
 
   resourcePublisher = django.db.models.TextField(editable=False)
   # Computed value: the resource's publisher, if available, as mapped
@@ -252,22 +253,23 @@ class Identifier (django.db.models.Model):
 
   def my_full_clean (self, exclude=None, validate_unique=False):
     # This method differs from the Django-supplied full_clean method
-    # in three ways: it stops if any field-level validations fail; it
-    # computes the computed values; and the default value for the
-    # validate_unique argument is False.
+    # in four ways: it stops if any field-level validations fail; it
+    # validates certain citation metadata fields; it computes the
+    # computed values; and the default value for the validate_unique
+    # argument is False.
     if exclude is None:
       exclude = []
     else:
       exclude = list(exclude)
     self.clean_fields(exclude=exclude)
     self.clean()
+    self.cleanCitationMetadataFields()
     self.computeComputedValues()
     if validate_unique: self.validate_unique(exclude=exclude)
 
   def clean (self):
     # N.B.: This method does not examine any computed values, nor does
-    # it examine the citation metadata.  For validations related to
-    # those, computeComputedValues must be called.
+    # it examine the citation metadata.
     if self.owner != None and self.ownergroup == None:
       self.ownergroup = self.owner.group
     else:
@@ -345,20 +347,36 @@ class Identifier (django.db.models.Model):
       raise django.core.exceptions.ValidationError(
         { "identifier": "Agent PID is a test identifier." })
 
+  def cleanCitationMetadataFields (self):
+    # Cleans certain citation metadata fields on which EZID imposes
+    # structure.  This method should be called after 'clean'.
+    if "datacite.resourcetype" in self.cm:
+      try:
+        self.cm["datacite.resourcetype"] =\
+          validation.resourceType(self.cm["datacite.resourcetype"])[1]
+      except django.core.exceptions.ValidationError, e:
+        raise django.core.exceptions.ValidationError(
+          { "datacite.resourcetype": e })
+
   def computeComputedValues (self):
-    # This method should be called after clean_fields and clean.  Note
-    # that it, too, can raise validation exceptions.
+    # This method should be called after clean_fields, clean, and
+    # cleanCitationMetadataFields.  Note that it, too, can raise
+    # validation exceptions.
+    import mapping
     import util2
     self.isTest = util2.isTestIdentifier(self.identifier)
-    self.resourceType = ""
-    self.resourceTitle = ""
     self.resourceCreator = ""
+    self.resourceTitle = ""
     self.resourcePublisher = ""
     self.resourcePublicationDate = ""
-    if "datacite.resourcetype" in self.cm:
-      v = validation.resourceType(self.cm["datacite.resourcetype"])
-      self.resourceType = v[0]
-      self.cm["datacite.resourcetype"] = v[1]
+    self.resourceType = ""
+    km = mapping.map(self.cm, profile=self.profile.label, constrainDate=True,
+      constrainType=True)
+    if km.creator != None: self.resourceCreator = km.creator
+    if km.title != None: self.resourceTitle = km.title
+    if km.publisher != None: self.resourcePublisher = km.publisher
+    if km.date != None: self.resourcePublicationDate = km.date
+    if km.type != None: self.resourceType = validation.resourceTypes[km.type]
     self.hasMetadata = self.resourceTitle != "" and\
       self.resourcePublicationDate != "" and (self.resourceCreator != "" or\
       self.resourcePublisher != "")
