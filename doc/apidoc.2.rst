@@ -1949,10 +1949,11 @@ encoding is UTF-8 and the metadata is compressed with gzip_.
 
      The identifier.
 
-   - _mappedCreator, _mappedTitle, _mappedPublisher, _mappedDate
+   - _mappedCreator, _mappedTitle, _mappedPublisher, _mappedDate,
+     _mappedType
 
-     Creator, title, publisher, and date citation metadata as mapped
-     from the identifier's preferred metadata profile.
+     Creator, title, publisher, date, and type citation metadata as
+     mapped from the identifier's preferred metadata profile.
 
    Continuing with the previous example, if the parameters are
 

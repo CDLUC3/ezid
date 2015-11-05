@@ -406,25 +406,20 @@ def _writeAnvl (f, id, record):
   f.write(":: %s\n" % id)
   f.write(anvl.format(record).encode("UTF-8"))
 
-_metadataMappings = {
-  "_mappedCreator": 0,
-  "_mappedTitle": 1,
-  "_mappedPublisher": 2,
-  "_mappedDate": 3
-}
+_mappedFields = set(["_mappedCreator", "_mappedTitle", "_mappedPublisher",
+  "_mappedDate", "_mappedType"])
 
 def _writeCsv (f, id, record, columns):
   w = csv.writer(f)
   l = []
-  mappedMetadata = None
+  km = None
   for c in columns:
     if c == "_id":
       l.append(id)
-    elif c in _metadataMappings:
-      if mappedMetadata == None:
-        mappedMetadata = mapping.getDisplayMetadata(record)
-      l.append(mappedMetadata[_metadataMappings[c]] if\
-        mappedMetadata[_metadataMappings[c]] != None else "")
+    elif c in _mappedFields:
+      if km == None: km = mapping.map(record)
+      v = getattr(km, c[7:].lower())
+      l.append(v if v != None else "")
     else:
       l.append(record.get(c, ""))
   w.writerow([_csvEncode(c) for c in l])
