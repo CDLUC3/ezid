@@ -712,6 +712,8 @@ def createArk (ark, user, group, metadata={}):
     elif m["_is"] != "reserved":
       return "error: bad request - invalid identifier status at creation time"
   if m.get("_x", "") == "yes": del m["_x"]
+  r = _validateDatacite(qark, m, "_is" not in m)
+  if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
   if not _acquireIdentifierLock(ark, user[0]):
     return "error: concurrency limit exceeded"
@@ -802,6 +804,8 @@ def createUrnUuid (urn, user, group, metadata={}):
     elif m["_is"] != "reserved":
       return "error: bad request - invalid identifier status at creation time"
   if m.get("_x", "") == "yes": del m["_x"]
+  r = _validateDatacite(qurn, m, "_is" not in m)
+  if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
   if not _acquireIdentifierLock(shadowArk, user[0]):
     return "error: concurrency limit exceeded"
