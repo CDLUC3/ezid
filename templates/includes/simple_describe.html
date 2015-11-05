@@ -14,14 +14,21 @@
       <input type="text" class="form-control width-reduced" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
     </div>
   </div>
-{% for e in current_profile.elements %}
-  <div class="form-group form-group-sm">
-    <label for="{{e.name}}" class="col-sm-2 control-label">
-      {{e.displayName}}
+{% for field in form %}
+  <div class="form-group form-group-sm{% if field.errors %} has-error{% endif %}">
+    <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">
+      {{ field.label }}
     </label>
     <div class="col-sm-7">
-    {% display_form_element e %}
+      {{ field|add_attributes:"form-control"}}
     </div>
+  {% if field.errors %}
+    <div class="col-sm-2">
+    {% for error in field.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
   </div>
 {% endfor %}
 </div>

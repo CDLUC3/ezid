@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 import django.contrib.messages
 import metadata
 import ezid
+import form_objects
 import logging
 import urllib
 import re
@@ -53,15 +54,16 @@ def advanced(request):
 
 def simple_form_processing(request, d):
   """ common code so that create simple identifier code does not repeat across real and test areas.
-  returns either 'bad_request', 'edit_page' or 'created_identifier: <new_id>' for results """
+  returns dictionary containing an id_gen_result of either 'bad_request', 'edit_page' or 
+  'created_identifier: <new_id>'. A form object containing posted data and any related errors
+  may also be included in dictionary. Expects a POST method only """
 
+  # request.method == "POST"
+  P = request.POST
   #selects current_profile based on parameters or profile preferred for prefix type
-  if request.method == "GET":
-    REQUEST = request.GET
-  else:
-    REQUEST = request.POST
-  if 'current_profile' in REQUEST:
-    d['current_profile'] = metadata.getProfile(REQUEST['current_profile'])
+  d['internal_profile'] = metadata.getProfile('internal')
+  if 'current_profile' in P:
+    d['current_profile'] = metadata.getProfile(P['current_profile'])
     if d['current_profile'] == None:
       d['current_profile'] = metadata.getProfile('erc')
   else:
@@ -70,28 +72,34 @@ def simple_form_processing(request, d):
     else:
       d['current_profile'] = metadata.getProfile('erc')
       
-  d['internal_profile'] = metadata.getProfile('internal')
-  
-  if request.method == "POST":
-    if "current_profile" not in request.POST or "shoulder" not in request.POST: return "bad_request"
-    pre_list = [p['prefix'] for p in d['prefixes']]
-    if request.POST['shoulder'] not in pre_list:
-      django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
-      return "edit_page"
-    
-    if uic.validate_simple_metadata_form(request, d['current_profile']):
-      s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request),
-          uic.group_or_anon_tup(request), uic.assembleUpdateDictionary(request, d['current_profile'],
-          { '_target' : uic.fix_target(request.POST['_target']),
-           '_export': 'yes' }))
-      if s.startswith("success:"):
-        new_id = s.split()[1]
-        django.contrib.messages.success(request, "IDENTIFIER CREATED.")
-        return "created_identifier: "+new_id
-      else:
-        django.contrib.messages.error(request, "There was an error creating your identifier:"  + s)
-        return "edit_page"
-  return 'edit_page'
+  if "current_profile" not in P or "shoulder" not in P:
+    d['id_gen_result'] = 'bad_request'
+    return d
+  d['form'] = form_objects.ProfileErcForm(P)
+  pre_list = [pr['prefix'] for pr in d['prefixes']]
+  if P['shoulder'] not in pre_list:
+    django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
+    d['id_gen_result'] = 'edit_page'
+    return d
+  if d['form'].is_valid():
+    s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request),
+        uic.group_or_anon_tup(request), uic.assembleUpdateDictionary(request, d['current_profile'],
+        { '_target' : uic.fix_target(P['_target']),
+         '_export': 'yes' }))
+    if s.startswith("success:"):
+      new_id = s.split()[1]
+      django.contrib.messages.success(request, "IDENTIFIER CREATED.")
+      d['id_gen_result'] = "created_identifier: "+new_id
+      return d
+    else:
+      django.contrib.messages.error(request, "Identifier could not be created as submitted:"  + s)
+      d['id_gen_result'] = 'edit_page'
+      return d 
+  else:
+    django.contrib.messages.error(request, "Identifier could not be created as submitted. \
+      Please check the highlighted fields below for details.")
+    d['id_gen_result'] = 'edit_page'
+    return d
 
 def advanced_form_processing(request, d):
   """takes request and context object, d['prefixes'] should be set before calling"""

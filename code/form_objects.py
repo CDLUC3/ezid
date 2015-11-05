@@ -1,12 +1,16 @@
 from django import forms
 from django.utils.translation import ugettext as _
 
+class ProfileErcForm(forms.Form):
+  """
+  Form object for ID with ERC profile 
+  """
+  erc_who = forms.CharField(required=False, label=_("Who"))
+  erc_what = forms.CharField(required=False, label=_("What"))
+  erc_when = forms.CharField(required=False, label=_("When"))
+
 class ContactForm(forms.Form):
-  """
-  Form object for Contact Us form 
-  'attrs' parameter passes in arguments for proper display in UI
-  (eg. class="form-control" is specific to Bootstrap UI framework)
-  """
+  """ Form object for Contact Us form """
   # Translators: These options will appear in drop-down on contact page
   CONTACT_REASONS = (
     ("", _("Choose One")),
