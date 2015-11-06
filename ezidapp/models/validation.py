@@ -104,8 +104,8 @@ resourceTypes = {
 
 def resourceType (descriptor):
   # Validates a resource type that is possibly extended with a
-  # specific type as described above.  Returns a pair
-  # (mnemonicCode, normalizedDescriptor).
+  # specific type as described above.  Returns a normalized
+  # descriptor.
   descriptor = descriptor.strip()
   if "/" in descriptor:
     gt, st = descriptor.split("/", 1)
@@ -116,7 +116,10 @@ def resourceType (descriptor):
     st = ""
   if gt not in resourceTypes:
     raise django.core.exceptions.ValidationError("Invalid resource type.")
-  return (resourceTypes[gt], gt+"/"+st if st != "" else gt)
+  if st != "":
+    return "%s/%s" % (gt, st)
+  else:
+    return gt
 
 goodCrossrefStatusRE = re.compile("(awaiting status change to public|" +\
   "registration in progress|successfully registered)$")

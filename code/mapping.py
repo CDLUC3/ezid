@@ -31,26 +31,37 @@ class KernelMetadata (object):
   # Holds kernel citation metadata in attributes 'creator', 'title',
   # 'publisher', 'date', and 'type'.  Each attribute either has a
   # nonempty value or is None.
+
   def __init__ (self, creator=None, title=None, publisher=None, date=None,
-    type=None, constrainDate=False, constrainType=False):
+    type=None, validatedType=None):
     self.creator = creator
     self.title = title
     self.publisher = publisher
-    if date != None and constrainDate:
+    self.date = date
+    self.type = type
+    self._validatedType = validatedType
+
+  @property
+  def validatedDate (self):
+    if self.date != None:
       try:
-        self.date = ezidapp.models.validation.publicationDate(date)
+        return ezidapp.models.validation.publicationDate(self.date)
       except:
-        self.date = None
+        return None
     else:
-      self.date = date
-    if type != None and constrainType:
+      return None
+
+  @property
+  def validatedType (self):
+    if self._validatedType != None:
+      return self._validatedType
+    elif self.type != None:
       try:
-        self.type =\
-          ezidapp.models.validation.resourceType(type)[1].split("/")[0]
+        return ezidapp.models.validation.resourceType(self.type)
       except:
-        self.type = None
+        return None
     else:
-      self.type = type
+      return None
 
 def _get (d, *keys):
   for k in keys:
@@ -59,26 +70,24 @@ def _get (d, *keys):
       if v != "": return v
   return None
 
-def _mapErcItemized (metadata, constrainDate, constrainType):
+def _mapErcItemized (metadata):
   return KernelMetadata(
     creator=_get(metadata, "erc.who"),
     title=_get(metadata, "erc.what"),
-    date=_get(metadata, "erc.when"),
-    constrainDate=constrainDate)
+    date=_get(metadata, "erc.when"))
 
-def _mapErc (metadata, constrainDate, constrainType):
+def _mapErc (metadata):
   if _get(metadata, "erc"):
     try:
       d = erc.parse(metadata["erc"])
       return KernelMetadata(
         creator=_get(d, "who"),
         title=_get(d, "what"),
-        date=_get(d, "when"),
-        constrainDate=constrainDate)
+        date=_get(d, "when"))
     except:
-      return _mapErcItemized(metadata, constrainDate, constrainType)
+      return _mapErcItemized(metadata)
   else:
-    return _mapErcItemized(metadata, constrainDate, constrainType)
+    return _mapErcItemized(metadata)
 
 # The following dictionary maps lowercased DCMI Type Vocabulary
 # <http://dublincore.org/documents/dcmi-type-vocabulary/#H7> terms to
@@ -99,26 +108,27 @@ _dublinCoreTypes = {
   "text": "Text"
 }
 
-def _mapDublinCore (metadata, constrainDate, constrainType):
+def _mapDublinCore (metadata):
   type = _get(metadata, "dc.type")
-  if type and constrainType and type.lower() in _dublinCoreTypes:
-    type = _dublinCoreTypes[type.lower()]
+  if type and type.lower() in _dublinCoreTypes:
+    vtype = _dublinCoreTypes[type.lower()]
+  else:
+    vtype = None
   return KernelMetadata(
     creator=_get(metadata, "dc.creator"),
     title=_get(metadata, "dc.title"),
     publisher=_get(metadata, "dc.publisher"),
     date=_get(metadata, "dc.date"),
     type=type,
-    constrainDate=constrainDate, constrainType=constrainType)
+    validatedType=vtype)
 
-def _mapDataciteItemized (metadata, constrainDate, constrainType):
+def _mapDataciteItemized (metadata):
   return KernelMetadata(
     creator=_get(metadata, "datacite.creator"),
     title=_get(metadata, "datacite.title"),
     publisher=_get(metadata, "datacite.publisher"),
     date=_get(metadata, "datacite.publicationyear"),
-    type=_get(metadata, "datacite.resourcetype"),
-    constrainDate=constrainDate, constrainType=constrainType)
+    type=_get(metadata, "datacite.resourcetype"))
 
 _rootTagRE =\
   re.compile("{(http://datacite\.org/schema/kernel-[^}]*)}resource$")
@@ -132,7 +142,7 @@ def _text (n):
   else:
     return None
 
-def _mapDatacite (metadata, constrainDate, constrainType):
+def _mapDatacite (metadata):
   if _get(metadata, "datacite"):
     try:
       root = util.parseXmlString(_get(metadata, "datacite"))
@@ -169,43 +179,37 @@ def _mapDatacite (metadata, constrainDate, constrainType):
           type = None
       else:
         type = None
-      return KernelMetadata(creator, title, publisher, date, type,
-        constrainDate, constrainType)
+      return KernelMetadata(creator, title, publisher, date, type)
     except:
-      return _mapDataciteItemized(metadata, constrainDate, constrainType)
+      return _mapDataciteItemized(metadata)
   else:
-    return _mapDataciteItemized(metadata, constrainDate, constrainType)
+    return _mapDataciteItemized(metadata)
 
-def _mapCrossref (metadata, constrainDate, constrainType):
+def _mapCrossref (metadata):
   if _get(metadata, "crossref"):
     try:
       return _mapDatacite({ "datacite":
-        datacite.crossrefToDatacite(_get(metadata, "crossref")) },
-        constrainDate, constrainType)
+        datacite.crossrefToDatacite(_get(metadata, "crossref")) })
     except:
       return KernelMetadata()
   else:
     return KernelMetadata()
 
-def map (metadata, profile=None, constrainDate=False, constrainType=False):
+def map (metadata, profile=None):
   """
   Given 'metadata', a dictionary of citation metadata, returns mapped
   kernel metadata encapsulated in a KernelMetadata object (defined in
   this module).  If 'profile' is None, the metadata profile to use is
   determined from any _profile or _p field in the metadata dictionary;
-  the profile defaults to "erc".  If 'constrainDate' is True, to be
-  mapped, the date must be in a recognized format and it is normalized
-  to YYYY[-MM[-DD]].  If 'constrainType' is True, the type must be
-  mappable to and is mapped to EZID's resource type vocabulary.  Note
-  that this function is forgiving in nature, and does not raise
-  exceptions.
+  the profile defaults to "erc".  Note that this function is forgiving
+  in nature, and does not raise exceptions.
   """
   if profile == None: profile = _get(metadata, "_profile", "_p")
   if profile == "dc":
-    return _mapDublinCore(metadata, constrainDate, constrainType)
+    return _mapDublinCore(metadata)
   elif profile == "datacite":
-    return _mapDatacite(metadata, constrainDate, constrainType)
+    return _mapDatacite(metadata)
   elif profile == "crossref":
-    return _mapCrossref(metadata, constrainDate, constrainType)
+    return _mapCrossref(metadata)
   else:
-    return _mapErc(metadata, constrainDate, constrainType)
+    return _mapErc(metadata)

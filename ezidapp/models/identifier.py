@@ -181,7 +181,7 @@ class Identifier (django.db.models.Model):
   def defaultProfile (self):
     # Should return the default profile for the identifier's type;
     # must be implemented by the subclass.
-    assert False, "not implemented"
+    assert False, "missing implementation"
 
   # Citation metadata follows.  Which is to say, the following
   # metadata refers to the resource identified by the identifier, not
@@ -353,7 +353,7 @@ class Identifier (django.db.models.Model):
     if "datacite.resourcetype" in self.cm:
       try:
         self.cm["datacite.resourcetype"] =\
-          validation.resourceType(self.cm["datacite.resourcetype"])[1]
+          validation.resourceType(self.cm["datacite.resourcetype"])
       except django.core.exceptions.ValidationError, e:
         raise django.core.exceptions.ValidationError(
           { "datacite.resourcetype": e })
@@ -369,13 +369,14 @@ class Identifier (django.db.models.Model):
     self.resourcePublisher = ""
     self.resourcePublicationDate = ""
     self.resourceType = ""
-    km = mapping.map(self.cm, profile=self.profile.label, constrainDate=True,
-      constrainType=True)
+    km = mapping.map(self.cm, profile=self.profile.label)
     if km.creator != None: self.resourceCreator = km.creator
     if km.title != None: self.resourceTitle = km.title
     if km.publisher != None: self.resourcePublisher = km.publisher
-    if km.date != None: self.resourcePublicationDate = km.date
-    if km.type != None: self.resourceType = validation.resourceTypes[km.type]
+    d = km.validatedDate
+    if d != None: self.resourcePublicationDate = d
+    t = km.validatedType
+    if t != None: self.resourceType = validation.resourceTypes[t.split("/")[0]]
     self.hasMetadata = self.resourceTitle != "" and\
       self.resourcePublicationDate != "" and (self.resourceCreator != "" or\
       self.resourcePublisher != "")
