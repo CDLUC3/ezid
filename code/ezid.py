@@ -170,6 +170,7 @@ import uuid
 import config
 import crossref
 import datacite
+import ezidapp.models.validation
 import idmap
 import log
 import noid_egg
@@ -449,10 +450,11 @@ def _validateDatacite (identifier, metadata, completeCheck):
   if "datacite.resourcetype" in metadata and\
     metadata["datacite.resourcetype"].strip() != "":
     try:
-      metadata["datacite.resourcetype"] = datacite.validateResourceType(
+      metadata["datacite.resourcetype"] =\
+        ezidapp.models.validation.resourceType(
         metadata["datacite.resourcetype"])
-    except AssertionError, e:
-      return "element 'datacite.resourcetype': " + str(e)
+    except:
+      return "element 'datacite.resourcetype': invalid resource type"
   # The following checks may fail if we operate on a shadow ARK, ergo...
   if identifier.startswith("ark:/") and "_s" in metadata:
     identifier = metadata["_s"]
