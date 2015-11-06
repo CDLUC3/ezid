@@ -7,6 +7,6 @@
 \.DS_Store$
 \.old[0-9]*$
 ^node_modules$
-^dev/css/main\.css$
+^dev/css/*$
 \.map$
 ^ui_library$
