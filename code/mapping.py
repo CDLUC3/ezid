@@ -5,11 +5,20 @@
 # Metadata mapping.  This module effectively defines a citation
 # metadata standard, which we refer to as "kernel" metadata.
 #
-# Subtle point: the mappings in this module are not the same as the
-# mappings used to satisfy DataCite requirements.  The latter are more
-# opportunistic.  For example, to satisfy DataCite, EZID will look to
-# the individual DataCite profile elements (datacite.title, etc.) if
-# necessary regardless of the declared profile.
+# Subtle point: there are two slightly different mappings.  The
+# default mapping (used to support everything except DataCite
+# requirements) treats the identifier's preferred metadata profile as
+# gospel: no field not in the profile is examined.  The intention of
+# this mapping is to support a unified view of identifier native
+# metadata.
+#
+# The other mapping (triggered by datacitePriority=True) is used to
+# satisfy DataCite metadata requirements, and it examines and gives
+# preference to the DataCite fields (primarily the 'datacite' XML
+# field and secondarily the datacite.* itemized fields) regardless of
+# the profile.  The intention of this mapping is to allow an
+# identifier to retain its native metadata, and to augment or override
+# that metadata just for the purposes of satisfying requirements.
 #
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
@@ -195,21 +204,31 @@ def _mapCrossref (metadata):
   else:
     return KernelMetadata()
 
-def map (metadata, profile=None):
+def map (metadata, profile=None, datacitePriority=False):
   """
   Given 'metadata', a dictionary of citation metadata, returns mapped
   kernel metadata encapsulated in a KernelMetadata object (defined in
   this module).  If 'profile' is None, the metadata profile to use is
   determined from any _profile or _p field in the metadata dictionary;
-  the profile defaults to "erc".  Note that this function is forgiving
-  in nature, and does not raise exceptions.
+  the profile defaults to "erc".  If datacitePriority is True, the
+  DataCite fields (the 'datacite' XML field and the datacite.*
+  itemized fields) are examined and take precedence regardless of the
+  profile.  Note that this function is forgiving in nature, and does
+  not raise exceptions.
   """
   if profile == None: profile = _get(metadata, "_profile", "_p")
   if profile == "dc":
-    return _mapDublinCore(metadata)
+    km = _mapDublinCore(metadata)
   elif profile == "datacite":
-    return _mapDatacite(metadata)
+    km = _mapDatacite(metadata)
   elif profile == "crossref":
-    return _mapCrossref(metadata)
+    km = _mapCrossref(metadata)
   else:
-    return _mapErc(metadata)
+    km = _mapErc(metadata)
+  if datacitePriority and profile != "datacite":
+    dm = _mapDatacite(metadata)
+    for a in ["creator", "title", "publisher", "date", "type"]:
+      if getattr(dm, a) != None:
+        setattr(km, a, getattr(dm, a))
+        if a == "type": km._validatedType = None
+  return km
