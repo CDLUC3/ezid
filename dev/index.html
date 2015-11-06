@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<title>Gulp Template</title>
+
+	<!-- build:css css/new.min.css -->
+	<link rel="stylesheet" href="css/new.css">
+	<!-- endbuild -->
+
+</head>
+<body>
+
+	<h1>Hello There!</h1>
+
+	<!--#include file="includes/included.html" -->
+
+	<div class="jquery-test">
+
+		<p>jQuery is working. Try this:</p>
+
+		<div class="disappear-container">
+
+			<p class="disappear">Click this text to make it disappear.</p>
+
+			<p class="disappear">And this text.</p>
+
+			<p class="disappear">And why not this text too.</p>
+
+		</div>
+
+	</div>
+
+	<!-- Uncomment the img below to throw a HTML validation error via the w3cjs task ("sizes" cannot be empty): -->
+
+	<p>
+		<!-- <img
+	    src="/path1/"
+	    srcset="/path1/ 60w, /path2/ 50w"
+	    sizes=""
+	    alt="(image alt text)"> -->
+	</p>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<!-- build:js js/custom.min.js -->
+	<script src="js/modernizr-custombuild.js"></script>
+	<script src="js/custom1.js"></script>
+	<script src="js/custom2.js"></script>
+	<!-- endbuild -->
+	
+</body>
+</html>
