@@ -48,22 +48,22 @@ gulp.task('build', function (callback) {
 
 // Run "gulp modernizr" at the command line to build a custom modernizr file based off of classes found in CSS:
 gulp.task('modernizr', function() {
-  gulp.src('app/css/main.css') // where modernizr will look for classes
+  gulp.src('dev/css/main.css') // where modernizr will look for classes
     .pipe(modernizr({
       options: ['setClasses'],
-      dest: 'app/js/modernizr-custombuild.js'
+      dest: 'dev/js/modernizr-custombuild.js'
     }))
 });
 
 
 // Process sass and add sourcemaps:
 gulp.task('sass', function() {
-  return gulp.src('app/scss/**/*.scss')
+  return gulp.src('dev/scss/**/*.scss')
     .pipe(sourcemaps.init())
     .pipe(sass.sync().on('error', sass.logError))
     .pipe(autoprefixer('last 2 versions'))
     .pipe(sourcemaps.write('sourcemaps'))
-    .pipe(gulp.dest('app/css'))
+    .pipe(gulp.dest('dev/css'))
     .pipe(browserSync.reload({
       stream: true
     }));
@@ -72,11 +72,11 @@ gulp.task('sass', function() {
 
 // Watch sass, html, and js and reload browser if any changes:
 gulp.task('watch', ['browserSync', 'sass', 'scss-lint', 'js-lint'], function (){
-  gulp.watch('app/scss/**/*.scss', ['sass']);
-  gulp.watch('app/scss/**/*.scss', ['scss-lint']);
-  gulp.watch('app/js/**/*.js', ['js-lint']);
-  gulp.watch('app/**/*.html', browserSync.reload); 
-  gulp.watch('app/js/**/*.js', browserSync.reload); 
+  gulp.watch('dev/scss/**/*.scss', ['sass']);
+  gulp.watch('dev/scss/**/*.scss', ['scss-lint']);
+  gulp.watch('dev/js/**/*.js', ['js-lint']);
+  gulp.watch('dev/**/*.html', browserSync.reload); 
+  gulp.watch('dev/js/**/*.js', browserSync.reload); 
 });
 
 
@@ -84,9 +84,9 @@ gulp.task('watch', ['browserSync', 'sass', 'scss-lint', 'js-lint'], function (){
 gulp.task('browserSync', function() {
   browserSync({
     server: {
-      baseDir: 'app',
+      baseDir: 'dev',
       middleware: ssi({
-        baseDir: __dirname + '/app',
+        baseDir: __dirname + '/dev',
         ext: '.html',
         version: '1.4.0'
       })
@@ -99,49 +99,49 @@ gulp.task('browserSync', function() {
 gulp.task('useref', function(){
   var assets = useref.assets();
 
-  return gulp.src(['app/**/*.html', '!app/includes/*'])
+  return gulp.src(['dev/**/*.html', '!dev/includes/*'])
     .pipe(assets)
     .pipe(gulpIf('*.css', minifyCSS())) // Minifies only if it's a CSS file
     .pipe(gulpIf('*.js', uglify())) // Uglifies only if it's a Javascript file
     .pipe(assets.restore())
     .pipe(useref())
     .pipe(lbInclude()) // Process <!--#include file="" --> statements
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest('ui_library'))
 });
 
 
 // Compress images:
 gulp.task('images', function(){
-  return gulp.src('app/images/**/*.+(png|jpg|jpeg|gif|svg)')
+  return gulp.src('dev/images/**/*.+(png|jpg|jpeg|gif|svg)')
   .pipe(cache(imagemin({ // Caching images that ran through imagemin
       interlaced: true
     })))
-  .pipe(gulp.dest('dist/images'))
+  .pipe(gulp.dest('ui_library/images'))
 });
 
 
-// Copy font files from "app" directory to "dist" directory during build process:
+// Copy font files from "dev" directory to "ui_library" directory during build process:
 gulp.task('fonts', function() {
-  return gulp.src('app/fonts/**/*')
-  .pipe(gulp.dest('dist/fonts'))
+  return gulp.src('dev/fonts/**/*')
+  .pipe(gulp.dest('ui_library/fonts'))
 })
 
 
-// Delete "dist" directory at start of build process:
+// Delete "ui_library" directory at start of build process:
 gulp.task('clean', function(callback) {
-  del('dist');
+  del('ui_library');
   return cache.clearAll(callback);
 })
 
 // Validate build HTML:
 gulp.task('validateHTML', function () {
-  gulp.src('dist/**/*.html')
+  gulp.src('ui_library/**/*.html')
     .pipe(validateHTML())
 });
 
 // Lint Sass:
 gulp.task('scss-lint', function() {
-  return gulp.src(['app/scss/**/*.scss', '!app/scss/vendor/**/*.scss'])
+  return gulp.src(['dev/scss/**/*.scss', '!dev/scss/vendor/**/*.scss'])
     .pipe(scsslint({
       'config': 'scss-lint-config.yml'
     }));
@@ -149,7 +149,7 @@ gulp.task('scss-lint', function() {
 
 // Lint JavaScript:
 gulp.task('js-lint', function() {
-  return gulp.src(['app/js/**/*.js', '!app/js/modernizr-custombuild.js'])
+  return gulp.src(['dev/js/**/*.js', '!dev/js/modernizr-custombuild.js'])
     .pipe(jshint())
     .pipe(jshint.reporter('default'))
 });
