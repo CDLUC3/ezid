@@ -1,0 +1,65 @@
+// Tables
+
+thead {
+  background-color: $design-secondary-gradient-top;
+  font-size: 0.9em;
+}
+td, th {
+  padding: 5px;
+  border: 1px solid $design-secondary-gradient-top;
+}
+
+.table-sm td {
+  font-size: 0.8em;
+}
+
+.table-md td {
+  font-size: 0.9em;
+}
+
+.table td a {
+  font-weight: normal;  
+}
+
+.table-borderless tr,
+.table-borderless td,
+.table-borderless th {
+  border: 0px;
+}
+
+.table > thead > tr > th {
+  border-bottom: 0px;
+}
+
+tr.darkened{
+  background-color:$design-secondary-lightest;
+}
+td.right {
+  text-align: right;
+}
+
+td.center {
+  text-align: center;
+}
+
+td.left {
+  text-align: left;
+}
+td.subrow {
+  padding-left: 10px;
+}
+td.subhead {
+  padding-top: 16px !important;
+}
+td div.dollar{
+  float: left;
+  width: 1em;
+  padding-left: 3em;
+}
+
+.pagination > .active {
+  > a, > a:hover, > a:focus {
+    background-color: $design-primary-color;
+    border-color: $design-primary-color;
+  }
+}

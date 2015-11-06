@@ -1,0 +1,118 @@
+// ##### Forms ##### //
+
+// .form-group {
+//     margin-bottom: 0px;
+// }
+
+.form-control {
+  display: inline;
+  color: #000;
+  border-color:$design-light-gray-border-color;
+  background-color:#FFF;
+}
+.form-group-sm {
+  padding: 0px 15px 0px 0px;
+}
+
+.form-horizontal .radio,
+.form-horizontal .checkbox,
+.form-horizontal .radio-inline,
+.form-horizontal .checkbox-inline {
+  padding: 0px;
+}
+
+input[type="checkbox"] {
+  margin: 0px;
+}
+
+.input-sm, select.input-sm {
+  font-size: 1.05em;
+  border-radius: $border-radius-base;
+  height: $layout-container-margin-lg;
+}
+
+select::-moz-focus-inner { /*Remove button padding in FF*/ 
+    border: 0;
+    padding: 0;
+}
+@-moz-document url-prefix() { /* targets Firefox only */
+    select {
+        padding: 2px 8px!important;
+    }
+}
+
+select.form-control {
+  background-color: #EEE;
+}
+form.form-horizontal .second-col {
+  padding-left: 15px;
+}
+// Form input labels
+.form-horizontal .control-label {
+    text-align: left;
+}
+label {
+  font-size: 1.1em;
+  font-weight: normal;
+  color: $design-primary-color;
+  margin-bottom: 1px;
+}
+label.text-color-reg {
+  color: #000;
+}
+
+.image-checkbox-label {
+  background: url("/static/images/checkbox.svg") no-repeat center left;
+  background-size: 20px;
+  color: #000;
+}
+.checkbox__icon:checked + .image-checkbox-label {
+  background: url("/static/images/checkboxCheck.svg") no-repeat center left;
+  background-size: 20px;
+  color: #000;
+}
+
+label.disabled {
+  color: $design-light-gray-border-color;
+}
+
+// Pure CSS radio button
+input[type="radio"] {
+  border: 0; 
+  clip: rect(0 0 0 0); 
+  height: 1px; margin: -1px; 
+  overflow: hidden; 
+  padding: 0; 
+  position: absolute; 
+  width: 1px;
+}
+
+/* One radio button per line */
+label.radio-css {
+  cursor: pointer;
+}
+
+input[type="radio"] + span {
+  display: block;
+}
+
+/* the basic, unchecked style */
+input[type="radio"] + span:before {
+  content: '';
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: -0.1em;
+  border-radius: 1em;
+  background-color: #FFF;
+  border: 0.112em solid $design-dark-gray-color;
+  box-shadow: 0 0 0 0.1em $design-dark-gray-color;
+  margin-right: 0.75em;
+  transition: 0.25s ease all;
+}
+
+/* the checked style using the :checked pseudo class */
+input[type="radio"]:checked + span:before {
+  background: $design-dark-gray-color;
+}
+
