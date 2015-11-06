@@ -437,6 +437,25 @@ def removeXmlDeclaration (document):
   else:
     return document
 
+def insertXmlEncodingDeclaration (document):
+  """
+  Inserts a UTF-8 encoding declaration in an XML document if it lacks
+  one.  'document' should be an unencoded string and the return is
+  likewise an unencoded string.  (Note that, due to the discrepancy
+  between the encoding declaration and the encoding of the returned
+  string, to be parsed again by lxml, the encoding declaration will
+  need to be removed.)
+  """
+  m = xmlDeclarationRE.match(document)
+  if m:
+    if m.group(3) == None:
+      return document[:m.end(2)+1] + " encoding=\"UTF-8\"" +\
+        document[m.end(2)+1:]
+    else:
+      return document
+  else:
+    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + document
+
 def parseXmlString (document):
   """
   Parses an XML document from a string, returning a root element node.
