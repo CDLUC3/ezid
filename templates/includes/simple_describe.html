@@ -8,12 +8,6 @@
     <h2 class="id-creation">{% trans "Describe the identified object" %}</h2>{% help_icon "describe_profile" %}
   </div>
   <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
-  <div class="form-group form-group-sm">
-    <label for="_target" class="col-sm-2 control-label">{{internal_profile.target.displayName}}</label>
-    <div class="col-sm-7">
-      <input type="text" class="form-control width-reduced" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
-    </div>
-  </div>
 {% for field in form %}
   <div class="form-group form-group-sm{% if field.errors %} has-error{% endif %}">
     <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">
