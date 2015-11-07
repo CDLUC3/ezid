@@ -1,0 +1,155 @@
+// ##### Icons  (and Links with Icons)  ##### //
+
+//Icon for indicating link points externally
+// *** NOT PART OF HREF TAG - used for API Doc ***
+.ext-icon {
+  margin: 0px 4px 5px 4px;
+  padding:9px;
+  background: url("/static/images/ext-link.svg") no-repeat center left;
+  width: 15px;
+  height: 15px;
+}
+
+.ext-link-base {
+  position: relative;
+  text-decoration: none;
+  border-bottom:1px $design-primary-color solid;
+  padding-bottom: 1px;
+  margin-right: 24px;
+}
+
+.ext-link {
+  @extend .ext-link-base;
+}
+.ext-link:after {
+  position: absolute;
+  top: -0.1em;
+  right: -20px;
+  content: url('/static/images/ext-link.svg');
+  width: 15px;
+  height: 15px;
+}
+
+// Links to PDFs (png background image)
+.pdf-link {
+  @extend .ext-link-base;
+}
+
+.pdf-link:after {
+  position: absolute;
+  top: -0.1em;
+  right: -25px;
+  content: url('/static/images/pdf-icon_18x18.png');
+  width: 15px;
+  height: 15px;
+}
+
+// Links to PDFs (png background image)
+.ppt-link {
+  @extend .ext-link-base;
+}
+
+.ppt-link:after {
+  position: absolute;
+  top: -0.1em;
+  right: -20px;
+  content: url('/static/images/powerpoint.svg');
+  width: 15px;
+  height: 15px;
+}
+
+.checkbox__icon {
+  width: 17px;
+  margin-left: 7px;
+}
+
+// Note: Logo Top CSS contained in _nav.scss
+#logoBottom {
+  width: 100px;
+}
+
+.footer__icon {
+  width: 28px;
+  margin-top: 6px;
+  margin-left: 23px;
+}
+
+.icon-topnav-base {
+  margin-bottom: 7px;
+}
+// Swapping Out SVG Icons using hide/show on active
+// Hide one by default:
+.icon-link .icon-active {
+  display: none;
+}
+.icon-link:hover .icon-inactive,
+.icon-link:hover .icon-inactive a,
+.icon-link:active .icon-inactive{
+  display: none;
+}
+.icon-link:hover .icon-active,
+.icon-link:active .icon-active{
+  display: block;
+}
+li.active .icon-active {
+  display: block;
+}
+li.active .icon-inactive {
+  display: none;
+}
+.icon-topnav-search {
+  @extend .icon-topnav-base;
+  width: 22px;
+  // margin-left: 32px;
+}
+.icon-topnav-learn {
+  @extend .icon-topnav-base;
+  width: 19px;
+  // margin-left: 28px;
+}
+.icon-topnav-contact {
+  @extend .icon-topnav-base;
+  width: 24px;
+  // margin-left: 34px;
+}
+.icon-help {
+  margin-left: 8px;
+  width: 23px;
+}
+.icon__header--base {
+  margin-right: 8px;
+  margin-bottom : 6px;
+}
+#dashboard__icon--viewreport {
+  @extend .icon__header--base;
+  width: 25px;
+}
+#dashboard__icon--usage {
+  @extend .icon__header--base;
+  width: 28px;
+}
+#dashboard__icon--idsbymonth {
+  @extend .icon__header--base;
+  width: 14px;
+}
+#dashboard__icon--brokenlinks {
+  @extend .icon__header--base;
+  width: 35px; 
+}
+#dashboard__icon--crossref {
+  @extend .icon__header--base;
+  width: 35px; 
+}
+#id__icon--aboutobject {
+  @extend .icon__header--base;
+  width: 17px; 
+}
+#id__icon--aboutid {
+  @extend .icon__header--base;
+  width: 17px; 
+}
+#search__icon--advanced {
+  margin-left: 4px;
+  margin-bottom : 6px;
+  width: 32px; 
+}

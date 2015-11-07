@@ -1,0 +1,44 @@
+// ##### Advanced (Datacite) fields  ##### //
+
+.element.form-group {
+  margin-bottom: 5px;
+}
+
+.datacite-container>label, .element>label, .boldit{
+	font-weight: bold;
+	font-size: larger;
+	margin-top:3px;
+}
+
+.multiple {	
+	margin-top:5px;
+}
+	
+.addButton {
+	float:right;
+	width: 30px;
+	margin-right: 80px;
+}
+	
+.rmvButton {
+	float:right;
+	width: 30px;
+	margin-right: 5px;
+}
+	
+label.smallertext {
+	font-size: 10pt;
+}
+	
+input.sizedsmall1, div.sizedsmall1 {
+	display: box;
+	float:left;
+	clear: right;
+	width:80px;
+	margin: 4px 0px 4px 0px;
+}
+	
+div.datacite-container>div.helpico {
+	float:right;
+	width:50px;
+}

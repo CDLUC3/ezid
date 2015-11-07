@@ -1,0 +1,142 @@
+// ##### Headers ##### //
+
+// Main (Blue) Header
+.header {
+  @include gradient-vertical($design-primary-gradient-top, $design-primary-gradient-bottom, 0%, 100%);
+}
+h1 {  // Lives inside full-width header (above)
+  color: white;
+  font-weight: bold;
+  font-size: 1.5em;
+  margin-top: 18px;
+  margin-bottom: 15px;
+  line-height: 1.3em;
+  letter-spacing: 0.026em;
+  width: 79%;
+}
+
+.apidoc h1 {
+  color: $design-primary-color;
+  font-weight: bold;
+  font-size: 1.4em;
+  border-bottom: 1px dotted black;
+}
+
+h2-base {
+  font-family: KievitWebPro-Bold, Arial, sans-serif;
+  color: $design-primary-color;
+  font-weight: normal;
+  font-size: 1.4em;
+}
+
+h2 {
+  @extend h2-base;
+  margin: 8px 0px 17px 0px;
+}
+
+// ID Creation Header (Front Page Demo)
+h2.id-creation {
+  @extend h2-base;
+  margin: 0px 0px 17px 10px;
+}
+
+// Section Header
+h3 {
+  color: $design-primary-color;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+// PAGE Learn
+.panel-body h3 {
+  @extend h2-base;
+  margin: 10px 0px 17px 0px;
+}
+
+h4 {
+  margin-top: 18px;
+  color: $design-pop-dark;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+h5 {
+  margin-top: 10px;
+  color: #000;
+  font-weight: bold;
+  font-size: 1em;
+  font-style: italic;
+}
+
+// Headers with other content next to them
+.inline-header h2, .inline-header h3 {
+  margin-top: 0px;
+  margin-right: $layout-container-margin-sm;
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+// Search Results Header
+.block-header {
+  margin-top: 0px;
+  margin-bottom: 20px;
+  padding: 10px;
+  height: 50px;
+}
+#search_table_id_info {
+  color: #000;
+  font-weight: bold;
+}
+
+//ALERTS
+.alert {
+  text-align: center;
+  line-height: 1.22em;
+  height:auto;
+  font-size: 1em;
+  padding: 7px;
+  margin-bottom: 0; 
+}
+.alert a:visited, 
+.alert a:hover, 
+.alert a:focus,
+.alert a {
+  color:#000;
+}
+
+.alert-info {
+  background-color: #c4ae7d;
+  border-color:  #c4ae7d;
+  color: #000;
+}
+.alert-warning {
+  line-height: 1.55em;
+  background-color: #ff8625;
+  border-color:  #ff8625;
+  color: #000;
+}
+.alert-success {
+  line-height: 1.55em;
+  background-color: #86CA82;
+  border-color:  #86CA82;
+  color: #000;
+  font-size: 1.1em;
+}
+.alert-warning-text {
+  font-size: 1.1em;
+  font-weight: 900;
+  color: #FFF;
+}
+.alert-error {
+  background-color: #9E1919;
+  border-color: #9E1919;
+  color: #FFF;
+  font-weight: bold;
+}
+.close {
+  // TODO: Styling of X for mouse roll-over
+  // font-weight: bold;
+  font-size: 1.9em;
+  line-height: .6em;
+  text-shadow: none;
+  opacity: 0.95;
+}

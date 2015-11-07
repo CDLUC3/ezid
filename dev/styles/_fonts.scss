@@ -1,0 +1,54 @@
+// Bootstrap font //
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('/static/fonts/glyphicons-halflings-regular.eot');
+  src: url('/static/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+       url('/static/fonts/glyphicons-halflings-regular.woff') format('woff'),
+       url('/static/fonts/glyphicons-halflings-regular.ttf') format('truetype'),
+       url('/static/fonts/glyphicons-halflings-regular.svg') format('svg');
+}
+
+// ##### Custom Fonts for Text ##### //
+
+// ***** Kievit Regular ***** //
+
+@font-face {
+  font-family: 'KievitWeb';
+  src: url('/static/fonts/KievitWeb.eot'); /* IE9 Compat Modes */
+  src: url('/static/fonts/KievitWeb.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('/static/fonts/KievitWeb.woff') format('woff'); /* Modern Browsers */
+}
+
+// ***** Kievit Web Pro Bold ***** //
+
+@font-face {
+  font-family: 'KievitWebPro-Bold';
+  src: url('/static/fonts/KievitWebPro-Bold.eot'); /* IE9 Compat Modes */
+  src: url('/static/fonts/KievitWebPro-Bold.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('/static/fonts/KievitWebPro-Bold.woff') format('woff'); /* Modern Browsers */
+}
+
+// ***** Kievit Regular Small Caps ***** //
+
+@font-face {
+  font-family: 'KievitScWeb';
+  src: url('/static/fonts/KievitScWeb.eot'); /* IE9 Compat Modes */
+  src: url('/static/fonts/KievitScWeb.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('/static/fonts/KievitScWeb.woff') format('woff'); /* Modern Browsers */
+}
+
+// ***** Freight Sans Pro Medium ***** //
+/**
+ * @license
+ * MyFonts Webfont Build ID 3019132, 2015-05-01T18:32:03-0400
+ * License: http://www.myfonts.com/viewlicense?type=web&buildid=3019132
+ * © 2015 MyFonts Inc
+*/
+@font-face {
+  font-family: 'FreightSansProMedium-Regular';
+  src: url('/static/fonts/2E117C_0_0.eot');
+  src: url('/static/fonts/2E117C_0_0.eot?#iefix') format('embedded-opentype'),
+       url('/static/fonts/2E117C_0_0.woff2') format('woff2'),
+       url('/static/fonts/2E117C_0_0.woff') format('woff'),
+       url('/static/fonts/2E117C_0_0.ttf') format('truetype');
+}

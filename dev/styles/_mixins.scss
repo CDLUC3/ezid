@@ -1,0 +1,29 @@
+// ##### Custom Mixins ##### //
+
+// Vertical gradient, from top to bottom
+// https://github.com/twbs/bootstrap-sass/blob/881ce27c6b4101698ea849283933203e20861a33/assets/stylesheets/bootstrap/mixins/_gradients.scss
+//
+// Creates two color stops, start and end, by specifying a color and position for each color stop.
+// Color stops are not available in IE9 and below.
+@mixin gradient-vertical($start-color: #555, $end-color: #333, $start-percent: 0%, $end-percent: 100%) {
+background-color: $end-color; // Fallback (could use .jpg/.png alternatively)
+background-image: -webkit-linear-gradient(top, $start-color $start-percent, $end-color $end-percent); // Safari 5.1-6, Chrome 10+
+background-image: -o-linear-gradient(top, $start-color $start-percent, $end-color $end-percent); // Opera 12
+background-image: linear-gradient(to bottom, $start-color $start-percent, $end-color $end-percent); // Standard, IE10, Firefox 16+, Opera 12.10+, Safari 7+, Chrome 26+
+background-repeat: repeat-x;
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{ie-hex-str($start-color)}', endColorstr='#{ie-hex-str($end-color)}', GradientType=0); // IE9 and down
+}
+
+@mixin boxy($padding-top-bot: 1px, $padding-r-l: 6px, $bgcolor: $design-pop-color, $color: #FFF) {
+  padding: $padding-top-bot $padding-r-l;
+  background-color: $bgcolor;
+  color: $color;
+}
+
+// @mixin text-link2 ($mycolor) {
+@mixin text-link2 ($color: $text-link-color){
+  text-decoration: none;
+  border-bottom:1px $color solid;
+  padding-bottom: 1px;
+  // margin-right: 2px;
+}
