@@ -25,7 +25,6 @@ import validation
 # Deferred imports...
 """
 import config
-import mapping
 import util2
 """
 
@@ -166,9 +165,6 @@ class Identifier (django.db.models.Model):
   def isAgentPid (self):
     return self.agentRole != ""
 
-  isTest = django.db.models.BooleanField(editable=False)
-  # Computed value: True if the identifier is a test identifier.
-
   # profile = django.db.models.ForeignKey(profile.Profile, blank=True,
   #   null=True, default=None)
   # The identifier's preferred metadata profile.  Note that there is
@@ -180,76 +176,15 @@ class Identifier (django.db.models.Model):
   @property
   def defaultProfile (self):
     # Should return the default profile for the identifier's type;
-    # must be implemented by the subclass.
+    # must be implemented by the concrete subclass.
     assert False, "missing implementation"
-
-  # Citation metadata follows.  Which is to say, the following
-  # metadata refers to the resource identified by the identifier, not
-  # the identifier itself.
 
   cm = custom_fields.CompressedJsonField(default=lambda: {})
   # All of the identifier's citation metadata as a dictionary of
   # name/value pairs, e.g., { "erc.who": "Proust, Marcel", ... }.
 
-  resourceCreator = django.db.models.TextField(editable=False)
-  # Computed value: the resource's creator, if available, as mapped
-  # from the identifier's preferred metadata profile; otherwise,
-  # empty.
-
-  resourceTitle = django.db.models.TextField(editable=False)
-  # Computed value: the resource's title, if available, as mapped from
-  # the identifier's preferred metadata profile; otherwise, empty.
-
-  resourcePublisher = django.db.models.TextField(editable=False)
-  # Computed value: the resource's publisher, if available, as mapped
-  # from the identifier's preferred metadata profile; otherwise,
-  # empty.
-
-  resourcePublicationDate = django.db.models.CharField(max_length=10,
-    editable=False)
-  # Computed value: the resource's publication date, if available, as
-  # mapped from the identifier's preferred metadata profile;
-  # otherwise, empty.  A nonempty publication date may take one of
-  # three forms: YYYY, YYYY-MM, or YYYY-MM-DD.
-
-  resourceType = django.db.models.CharField(max_length=1, editable=False,
-    choices=sorted([(v, k) for k, v in validation.resourceTypes.items()],
-    cmp=lambda a, b: cmp(a[1], b[1])))
-  # Computed value: the resource's type, if available, as mapped from
-  # the identifier's preferred metadata profile; otherwise, empty.
-  # The type is stored as a single-character mnemonic code.
-
-  hasMetadata = django.db.models.BooleanField(editable=False)
-  # Computed value: True if resourceTitle and resourcePublicationDate
-  # are nonempty, and at least one of resourceCreator and
-  # resourcePublisher is nonempty (i.e., the identifier has at least
-  # who/what/when metadata in ERC parlance).
-
-  publicSearchVisible = django.db.models.BooleanField(editable=False)
-  # Computed value: True if the identifier is visible in EZID's public
-  # search interface, i.e., if the identifier is public and exported
-  # and not a test identifier.
-
-  oaiVisible = django.db.models.BooleanField(editable=False)
-  # Computed value: True if the identifier is visible in the OAI feed,
-  # i.e., if the identifier is public and exported and not a test
-  # identifier (i.e., if publicSearchVisible is True), and if
-  # hasMetadata is True and if the target URL is not the default
-  # target URL.
-
-  hasIssues = django.db.models.BooleanField(editable=False)
-  # Computed value: True if the identifier "has issues," i.e., has
-  # problems of some kind.
-
-  def issueReasons (self):
-    # Returns a list of the identifier's issues.
-    reasons = []
-    if not self.hasMetadata: reasons.append("missing metadata")
-    if self.crossref:
-      if validation.badCrossrefStatusRE.match(self.crossrefStatus):
-        reasons.append("CrossRef registration " +\
-          ("warning" if "warning" in self.crossrefStatus else "failure"))
-    return reasons
+  isTest = django.db.models.BooleanField(editable=False)
+  # Computed value: True if the identifier is a test identifier.
 
   def my_full_clean (self, exclude=None, validate_unique=False):
     # This method differs from the Django-supplied full_clean method
@@ -313,7 +248,7 @@ class Identifier (django.db.models.Model):
           { "datacenter": "Non-DOI identifier has datacenter." })
       if self.crossref:
         raise django.core.exceptions.ValidationError(
-          { "crossref": "Non-DOI identifier registered with CrossRef." })
+          { "crossref": "Non-DOI identifier is registered with CrossRef." })
       if self.crossrefStatus != "":
         raise django.core.exceptions.ValidationError(
           { "crossrefStatus": "Non-DOI identifier has nonempty " +\
@@ -361,31 +296,8 @@ class Identifier (django.db.models.Model):
   def computeComputedValues (self):
     # This method should be called after clean_fields, clean, and
     # cleanCitationMetadataFields.
-    import mapping
     import util2
     self.isTest = util2.isTestIdentifier(self.identifier)
-    self.resourceCreator = ""
-    self.resourceTitle = ""
-    self.resourcePublisher = ""
-    self.resourcePublicationDate = ""
-    self.resourceType = ""
-    km = mapping.map(self.cm, profile=self.profile.label)
-    if km.creator != None: self.resourceCreator = km.creator
-    if km.title != None: self.resourceTitle = km.title
-    if km.publisher != None: self.resourcePublisher = km.publisher
-    d = km.validatedDate
-    if d != None: self.resourcePublicationDate = d
-    t = km.validatedType
-    if t != None: self.resourceType = validation.resourceTypes[t.split("/")[0]]
-    self.hasMetadata = self.resourceTitle != "" and\
-      self.resourcePublicationDate != "" and (self.resourceCreator != "" or\
-      self.resourcePublisher != "")
-    self.publicSearchVisible = self.isPublic and self.export and\
-      not self.isTest
-    self.oaiVisible = self.publicSearchVisible and self.hasMetadata and\
-      self.target != self.defaultTarget
-    self.hasIssues = not self.hasMetadata or (self.crossref and\
-      validation.badCrossrefStatusRE.match(self.crossrefStatus))
 
   def __unicode__ (self):
     return self.identifier
