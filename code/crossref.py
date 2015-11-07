@@ -53,15 +53,15 @@ def _loadConfig ():
   global _enabled, _depositorName, _depositorEmail, _realServer, _testServer
   global _depositUrl, _resultsUrl, _username, _password, _doiTestShoulder
   global _daemonEnabled, _threadName, _idleSleep, _ezidUrl
-  _enabled = (config.config("crossref.enabled").lower() == "true")
-  _depositorName = config.config("crossref.depositor_name")
-  _depositorEmail = config.config("crossref.depositor_email")
-  _realServer = config.config("crossref.real_server")
-  _testServer = config.config("crossref.test_server")
-  _depositUrl = config.config("crossref.deposit_url")
-  _resultsUrl = config.config("crossref.results_url")
-  _username = config.config("crossref.username")
-  _password = config.config("crossref.password")
+  _enabled = (config.get("crossref.enabled").lower() == "true")
+  _depositorName = config.get("crossref.depositor_name")
+  _depositorEmail = config.get("crossref.depositor_email")
+  _realServer = config.get("crossref.real_server")
+  _testServer = config.get("crossref.test_server")
+  _depositUrl = config.get("crossref.deposit_url")
+  _resultsUrl = config.get("crossref.results_url")
+  _username = config.get("crossref.username")
+  _password = config.get("crossref.password")
   s = shoulder.getDoiTestShoulder()
   if s != None:
     assert s.key.startswith("doi:")
@@ -69,10 +69,10 @@ def _loadConfig ():
   else:
     # Shoulder never happen.
     _doiTestShoulder = "10.????"
-  _idleSleep = int(config.config("daemons.crossref_processing_idle_sleep"))
+  _idleSleep = int(config.get("daemons.crossref_processing_idle_sleep"))
   _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
-    config.config("daemons.crossref_enabled").lower() == "true")
-  _ezidUrl = config.config("DEFAULT.ezid_base_url")
+    config.get("daemons.crossref_enabled").lower() == "true")
+  _ezidUrl = config.get("DEFAULT.ezid_base_url")
   if _daemonEnabled:
     _threadName = uuid.uuid1().hex
     t = threading.Thread(target=_daemonThread, name=_threadName)
@@ -602,4 +602,4 @@ def _daemonThread ():
       maxSeq = None
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)

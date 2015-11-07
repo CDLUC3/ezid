@@ -73,13 +73,13 @@ def _statusDaemon ():
 def _loadConfig ():
   global _enabled, _reportingInterval, _threadName
   _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
-    config.config("daemons.status_enabled").lower() == "true"
+    config.get("daemons.status_enabled").lower() == "true"
   if _enabled:
-    _reportingInterval = int(config.config("daemons.status_logging_interval"))
+    _reportingInterval = int(config.get("daemons.status_logging_interval"))
     _threadName = uuid.uuid1().hex
     t = threading.Thread(target=_statusDaemon, name=_threadName)
     t.setDaemon(True)
     t.start()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)

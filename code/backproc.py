@@ -111,13 +111,13 @@ def _backprocDaemon ():
 def _loadConfig ():
   global _enabled, _idleSleep, _threadName
   _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
-    config.config("daemons.backproc_enabled").lower() == "true"
+    config.get("daemons.backproc_enabled").lower() == "true"
   if _enabled:
-    _idleSleep = int(config.config("daemons.background_processing_idle_sleep"))
+    _idleSleep = int(config.get("daemons.background_processing_idle_sleep"))
     _threadName = uuid.uuid1().hex
     t = threading.Thread(target=_backprocDaemon, name=_threadName)
     t.setDaemon(True)
     t.start()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)

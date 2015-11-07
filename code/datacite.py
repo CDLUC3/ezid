@@ -54,22 +54,22 @@ def _loadConfig ():
   global _enabled, _doiUrl, _metadataUrl, _numAttempts, _reattemptDelay
   global _timeout, _allocators, _stylesheet, _crossrefTransform, _pingDoi
   global _pingDatacenter, _pingTarget, _schemas
-  _enabled = (config.config("datacite.enabled").lower() == "true")
-  _doiUrl = config.config("datacite.doi_url")
-  _metadataUrl = config.config("datacite.metadata_url")
-  _numAttempts = int(config.config("datacite.num_attempts"))
-  _reattemptDelay = int(config.config("datacite.reattempt_delay"))
-  _timeout = int(config.config("datacite.timeout"))
+  _enabled = (config.get("datacite.enabled").lower() == "true")
+  _doiUrl = config.get("datacite.doi_url")
+  _metadataUrl = config.get("datacite.metadata_url")
+  _numAttempts = int(config.get("datacite.num_attempts"))
+  _reattemptDelay = int(config.get("datacite.reattempt_delay"))
+  _timeout = int(config.get("datacite.timeout"))
   _allocators = {}
-  for a in config.config("datacite.allocators").split(","):
-    _allocators[a] = config.config("allocator_%s.password" % a)
+  for a in config.get("datacite.allocators").split(","):
+    _allocators[a] = config.get("allocator_%s.password" % a)
   _stylesheet = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
     django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
   _crossrefTransform = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
     django.conf.settings.PROJECT_ROOT, "profiles", "crossref2datacite.xsl")))
-  _pingDoi = config.config("datacite.ping_doi")
-  _pingDatacenter = config.config("datacite.ping_datacenter")
-  _pingTarget = config.config("datacite.ping_target")
+  _pingDoi = config.get("datacite.ping_doi")
+  _pingDatacenter = config.get("datacite.ping_datacenter")
+  _pingTarget = config.get("datacite.ping_target")
   schemas = {}
   for f in os.listdir(os.path.join(django.conf.settings.PROJECT_ROOT, "xsd")):
     m = re.match("datacite-kernel-(.*)", f)
@@ -80,7 +80,7 @@ def _loadConfig ():
   _schemas = schemas
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _modifyActiveCount (delta):
   global _numActiveOperations

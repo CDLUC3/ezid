@@ -41,17 +41,17 @@ _testShoulders = None
 def _loadConfig ():
   global _enabled, _baseUrl, _repositoryName, _adminEmail, _batchSize
   global _testShoulders
-  _enabled = (config.config("oai.enabled").lower() == "true")
-  _baseUrl = config.config("DEFAULT.ezid_base_url")
-  _repositoryName = config.config("oai.repository_name")
-  _adminEmail = config.config("oai.admin_email")
-  _batchSize = int(config.config("oai.batch_size"))
+  _enabled = (config.get("oai.enabled").lower() == "true")
+  _baseUrl = config.get("DEFAULT.ezid_base_url")
+  _repositoryName = config.get("oai.repository_name")
+  _adminEmail = config.get("oai.admin_email")
+  _batchSize = int(config.get("oai.batch_size"))
   _lock.acquire()
   _testShoulders = None
   _lock.release()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _getTestShoulders ():
   global _testShoulders

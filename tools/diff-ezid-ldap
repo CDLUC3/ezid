@@ -44,9 +44,9 @@ if len(sys.argv) != 3:
 # Load EZID groups and users from LDAP.
 
 s = ldap.initialize(sys.argv[1])
-s.bind_s(config.config("ldap.ldap_admin_dn"),
-  config.config("ldap.ldap_admin_password"), ldap.AUTH_SIMPLE)
-entries = s.search_s(config.config("ldap.base_dn"), ldap.SCOPE_SUBTREE,
+s.bind_s(config.get("ldap.ldap_admin_dn"),
+  config.get("ldap.ldap_admin_password"), ldap.AUTH_SIMPLE)
+entries = s.search_s(config.get("ldap.base_dn"), ldap.SCOPE_SUBTREE,
   "(|(objectClass=ezidGroup)(objectClass=ezidUser))")
 s.unbind()
 

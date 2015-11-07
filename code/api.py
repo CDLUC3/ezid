@@ -97,11 +97,11 @@ _idlewaitSleep = None
 
 def _loadConfig ():
   global _adminUsername, _idlewaitSleep
-  _adminUsername = config.config("ldap.admin_username")
-  _idlewaitSleep = float(config.config("DEFAULT.idlewait_sleep"))
+  _adminUsername = config.get("ldap.admin_username")
+  _idlewaitSleep = float(config.get("DEFAULT.idlewait_sleep"))
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _readInput (request):
   if "CONTENT_TYPE" in request.META:

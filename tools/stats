@@ -135,7 +135,7 @@ elif sys.argv[1] == "-s":
       sys.exit(1)
     store.setDatabase(sys.argv[2])
 
-if sys.argv[3] == "-": sys.argv[3] = config.config("DEFAULT.stats_file")
+if sys.argv[3] == "-": sys.argv[3] = config.get("DEFAULT.stats_file")
 
 outfile = open(sys.argv[3]+".new", "w")
 

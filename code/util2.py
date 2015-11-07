@@ -27,15 +27,15 @@ _defaultUrnUuidProfile = None
 def _loadConfig ():
   global _ezidUrl, _arkTestPrefix, _doiTestPrefix, _defaultArkProfile
   global _defaultDoiProfile, _defaultUrnUuidProfile
-  _ezidUrl = config.config("DEFAULT.ezid_base_url")
-  _arkTestPrefix = config.config("shoulders.ark_test")
-  _doiTestPrefix = config.config("shoulders.doi_test")
-  _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
-  _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
-  _defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
+  _ezidUrl = config.get("DEFAULT.ezid_base_url")
+  _arkTestPrefix = config.get("shoulders.ark_test")
+  _doiTestPrefix = config.get("shoulders.doi_test")
+  _defaultArkProfile = config.get("DEFAULT.default_ark_profile")
+  _defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
+  _defaultUrnUuidProfile = config.get("DEFAULT.default_urn_uuid_profile")
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def defaultTargetUrl (identifier):
   """

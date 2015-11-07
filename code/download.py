@@ -59,7 +59,7 @@ _testShoulders = None
 def _loadConfig ():
   global _ezidUrl, _usedFilenames, _daemonEnabled, _threadName, _idleSleep
   global _gzipCommand, _testShoulders
-  _ezidUrl = config.config("DEFAULT.ezid_base_url")
+  _ezidUrl = config.get("DEFAULT.ezid_base_url")
   _lock.acquire()
   try:
     if _usedFilenames == None:
@@ -70,10 +70,10 @@ def _loadConfig ():
     _testShoulders = None
   finally:
     _lock.release()
-  _idleSleep = int(config.config("daemons.download_processing_idle_sleep"))
-  _gzipCommand = config.config("DEFAULT.gzip_command")
+  _idleSleep = int(config.get("daemons.download_processing_idle_sleep"))
+  _gzipCommand = config.get("DEFAULT.gzip_command")
   _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
-    config.config("daemons.download_enabled").lower() == "true")
+    config.get("daemons.download_enabled").lower() == "true")
   if _daemonEnabled:
     _threadName = uuid.uuid1().hex
     t = threading.Thread(target=_daemonThread, name=_threadName)
@@ -630,4 +630,4 @@ def _daemonThread ():
       doSleep = True
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)

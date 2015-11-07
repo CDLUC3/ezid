@@ -57,20 +57,20 @@ def _loadConfig ():
   global _userDnPattern, _groupDnTemplate, _adminUsername, _adminPassword
   global _ldapAdminDn, _ldapAdminPassword, _agentShoulder
   global _statusProbes
-  _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
-  _updatesEnabled = (config.config("ldap.updates_enabled").lower() == "true")
-  _ldapServer = config.config("ldap.server")
-  _baseDn = config.config("ldap.base_dn")
-  _userDnTemplate = config.config("ldap.user_dn_template")
+  _ldapEnabled = (config.get("ldap.enabled").lower() == "true")
+  _updatesEnabled = (config.get("ldap.updates_enabled").lower() == "true")
+  _ldapServer = config.get("ldap.server")
+  _baseDn = config.get("ldap.base_dn")
+  _userDnTemplate = config.get("ldap.user_dn_template")
   i = _userDnTemplate.find("%s")
   _userDnPattern = re.compile(re.escape(_userDnTemplate[:i]) + ".*" +\
     re.escape(_userDnTemplate[i+2:]) + "$")
-  _groupDnTemplate = config.config("ldap.group_dn_template")
-  _adminUsername = config.config("ldap.admin_username")
-  _adminPassword = config.config("ldap.admin_password")
-  _ldapAdminDn = config.config("ldap.ldap_admin_dn")
-  _ldapAdminPassword = config.config("ldap.ldap_admin_password")
-  _agentShoulder = config.config("shoulders.agent")
+  _groupDnTemplate = config.get("ldap.group_dn_template")
+  _adminUsername = config.get("ldap.admin_username")
+  _adminPassword = config.get("ldap.admin_password")
+  _ldapAdminDn = config.get("ldap.ldap_admin_dn")
+  _ldapAdminPassword = config.get("ldap.ldap_admin_password")
+  _agentShoulder = config.get("shoulders.agent")
   assert _agentShoulder.startswith("ark:/")
   _lock.acquire()
   try:
@@ -79,7 +79,7 @@ def _loadConfig ():
     _lock.release()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _validateShoulderList (dn, sl, swallowErrors=True):
   if sl == "NONE": return sl

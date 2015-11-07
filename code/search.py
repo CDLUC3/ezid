@@ -64,7 +64,7 @@ _numConnections = None
 def _loadConfig ():
   global _searchDatabase, _ldapEnabled, _coOwnershipMap, _pool, _poolId
   global _numConnections
-  _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
+  _ldapEnabled = (config.get("ldap.enabled").lower() == "true")
   _cacheLock.acquire()
   try:
     _coOwnershipMap = None
@@ -72,7 +72,7 @@ def _loadConfig ():
     _cacheLock.release()
   _dbLock.acquire()
   try:
-    _searchDatabase = config.config("DEFAULT.search_database")
+    _searchDatabase = config.get("DEFAULT.search_database")
     _pool = []
     _poolId = uuid.uuid1()
     _numConnections = 0
@@ -80,7 +80,7 @@ def _loadConfig ():
     _dbLock.release()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def setDatabase (file):
   """
@@ -204,11 +204,11 @@ def _loadCoOwnershipLdap ():
 
 def _loadCoOwnershipLocal ():
   d = {}
-  for u in config.config("users.keys").split(","):
-    uId = config.config("user_%s.id" % u)
-    for co in config.config("user_%s.co_owners" % u).split(","):
+  for u in config.get("users.keys").split(","):
+    uId = config.get("user_%s.id" % u)
+    for co in config.get("user_%s.co_owners" % u).split(","):
       if len(co) == 0: continue
-      coId = config.config("user_%s.id" % co)
+      coId = config.get("user_%s.id" % co)
       if coId not in d: d[coId] = []
       if uId not in d[coId]: d[coId].append(uId)
   return d

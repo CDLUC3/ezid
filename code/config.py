@@ -22,7 +22,7 @@
 # Standard coding practice: to support dynamic configuration
 # reloading, if a module caches any configuration options in module
 # variables, upon being initially loaded it should call
-# config.addLoader to add a reload function.
+# config.registerReloadListener to register a reload function to call.
 #
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
@@ -41,13 +41,13 @@ import time
 import config_loader
 import ezidapp.models.search_identifier
 
-_loaders = []
+_reloadFunctions = []
 
-def addLoader (loader):
+def registerReloadListener (loader):
   """
   Adds a reload listener.
   """
-  _loaders.append(loader)
+  _reloadFunctions.append(loader)
 
 _config = None
 _version = None
@@ -83,13 +83,13 @@ def reload ():
   Reloads the configuration file.
   """
   _load()
-  for l in _loaders: l()
+  for f in _reloadFunctions: f()
   ezidapp.models.search_identifier.clearProfileCache()
 
 _load()
 _startupVersion = _version
 
-def config (option):
+def get (option):
   """
   Returns the value of a configuration option.  The option name should
   be specified in section.option syntax, e.g., "datacite.username".
