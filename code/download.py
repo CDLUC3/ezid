@@ -43,7 +43,6 @@ import ezidapp.models
 import idmap
 import log
 import mapping
-import search
 import shoulder
 import store
 
@@ -279,9 +278,13 @@ def enqueueRequest (auth, request):
       options = { "convertTimestamps": False }
     requestor = auth.user[1]
     filename = _generateFilename(requestor)
+    # Transition alert: co-ownership is being phased out and as a
+    # result 'coOwners' is always set to empty below.  When the new
+    # ownership model is in place, the 'coOwners' field will be
+    # replaced by a more general list of users to harvest.
     r = ezidapp.models.DownloadQueue(requestTime=int(time.time()),
       rawRequest=request.POST.urlencode(),
-      requestor=requestor, coOwners=",".join(search.getCoOwnership(requestor)),
+      requestor=requestor, coOwners="",
       format=format, columns=_encode(columns), constraints=_encode(d),
       options=_encode(options), notify=_encode(notify), filename=filename)
     r.save()
