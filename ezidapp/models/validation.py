@@ -46,6 +46,16 @@ def agentPid (pid):
     raise django.core.exceptions.ValidationError(
       "Invalid agent persistent identifier.")
 
+_crossrefDoiRE = re.compile("doi:10\.[1-9]\d{3,4}/[-\w.;()/]+$")
+
+def crossrefDoi (identifier):
+  # Validates that a DOI identifier (which is assumed to have already
+  # been validated and normalized as an ordinary identifier) meets the
+  # additional syntactic restrictions imposed by CrossRef.
+  if not _crossrefDoiRE.match(identifier):
+    raise django.core.exceptions.ValidationError(
+      "Identifier does not satisfy CrossRef syntax requirements.")
+
 datacenterSymbolRE = re.compile(
   "^([A-Z][-A-Z0-9]{0,6}[A-Z0-9])\.([A-Z][-A-Z0-9]{0,6}[A-Z0-9])$", re.I)
 maxDatacenterSymbolLength = 17
@@ -120,17 +130,3 @@ def resourceType (descriptor):
     return "%s/%s" % (gt, st)
   else:
     return gt
-
-goodCrossrefStatusRE = re.compile("(awaiting status change to public|" +\
-  "registration in progress|successfully registered)$")
-badCrossrefStatusRE = re.compile("(registered with warning|" +\
-  "registration failure) \| [^ ]")
-
-def crossrefStatusOrEmpty (value):
-  # Validates that a string is either empty or a CrossRef status.
-  value = value.strip()
-  if value != "":
-    if not goodCrossrefStatusRE.match(value) and\
-      not badCrossrefStatusRE.match(value):
-      raise django.core.exceptions.ValidationError(
-        "Malformed CrossRef status.")

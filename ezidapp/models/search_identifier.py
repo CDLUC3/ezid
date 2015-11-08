@@ -124,10 +124,9 @@ class SearchIdentifier (identifier.Identifier):
     # Returns a list of the identifier's issues.
     reasons = []
     if not self.hasMetadata: reasons.append("missing metadata")
-    if self.crossref:
-      if validation.badCrossrefStatusRE.match(self.crossrefStatus):
-        reasons.append("CrossRef registration " +\
-          ("warning" if "warning" in self.crossrefStatus else "failure"))
+    if self.isCrossrefBad:
+      reasons.append("CrossRef registration " +\
+        ("warning" if self.crossrefStatus == self.CR_WARNING else "failure"))
     return reasons
 
   def computeComputedValues (self):
@@ -161,12 +160,11 @@ class SearchIdentifier (identifier.Identifier):
     self.hasMetadata = self.resourceTitle != "" and\
       self.resourcePublicationDate != "" and (self.resourceCreator != "" or\
       self.resourcePublisher != "")
-    self.publicSearchVisible = self.isPublic and self.export and\
+    self.publicSearchVisible = self.isPublic and self.exported and\
       not self.isTest
     self.oaiVisible = self.publicSearchVisible and self.hasMetadata and\
       self.target != self.defaultTarget
-    self.hasIssues = not self.hasMetadata or (self.crossref and\
-      validation.badCrossrefStatusRE.match(self.crossrefStatus))
+    self.hasIssues = not self.hasMetadata or self.isCrossrefBad
 
   # Note that MySQL FULLTEXT indexes must be created outside Django;
   # see .../etc/search-mysql-addendum.sql.
@@ -182,14 +180,14 @@ class SearchIdentifier (identifier.Identifier):
       ("owner", "createTime"),
       ("owner", "updateTime"),
       ("owner", "status"),
-      ("owner", "export"),
+      ("owner", "exported"),
       ("owner", "hasMetadata"),
       ("ownergroup", "resourcePublicationDate"),
       ("ownergroup", "resourceType"),
       ("ownergroup", "createTime"),
       ("ownergroup", "updateTime"),
       ("ownergroup", "status"),
-      ("ownergroup", "export"),
+      ("ownergroup", "exported"),
       ("ownergroup", "hasMetadata"),
       # dashboard
       ("owner", "hasIssues"),
