@@ -27,7 +27,6 @@ import ezid
 import idmap
 import log
 import policy
-import search
 import userauth
 
 _ezidUrl = None
@@ -280,7 +279,6 @@ def setAccountProfile (username, coOwnerList):
         m = []
     if len(m) > 0: l.modify_s(dn, m)
     policy.clearCoOwnerCache(username)
-    search.clearCoOwnershipCache()
     _cacheLdapInformation(l, dn, arkId)
     return None
   except Exception, e:
