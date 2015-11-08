@@ -29,7 +29,6 @@ import datacite_async
 import download
 import ezid
 import log
-import search
 import store
 
 _enabled = None
@@ -51,7 +50,6 @@ def _statusDaemon ():
       na = sum(activeUsers.values())
       nw = sum(waitingUsers.values())
       nstc, nstca = store.numConnections()
-      nsec, nseca = search.numConnections()
       cqs = crossref.getQueueStatistics()
       log.status("pid=%d" % os.getpid(),
         "threads=%d" % threading.activeCount(),
@@ -60,7 +58,6 @@ def _statusDaemon ():
         "waitingRequests=%d%s" % (nw, _formatUserCountList(waitingUsers)),
         "activeDataciteOperations=%d" % datacite.numActiveOperations(),
         "storeDbConnections:active/total=%d/%d" % (nstca, nstc),
-        "searchDbConnections:active/total=%d/%d" % (nseca, nsec),
         "updateQueueLength=%d" % store.getUpdateQueueLength(),
         "dataciteQueueLength=%d" % datacite_async.getQueueLength(),
         "crossrefQueue:archived/unsubmitted/submitted=%d/%d/%d" %\
