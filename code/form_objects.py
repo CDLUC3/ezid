@@ -3,28 +3,36 @@ import ui_common as uic
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
-def validate_url(url):
+def _validate_url(url):
   if not uic.url_is_valid(url):
     raise ValidationError(_("Please enter a a valid location (URL)"))
 
 class ErcForm(forms.Form):
-  """
-  Form object for ID with ERC profile 
-  """
+  """ Form object for ID with ERC profile """
   _target = forms.CharField(required=False, label=_("Location (URL)"),
-    validators=[validate_url])
+    validators=[_validate_url])
   def __init__(self, *args, **kwargs):
     super(forms.Form,self).__init__(*args,**kwargs)
     self.fields["erc.who"]=forms.CharField(required=False, label=_("Who"))
     self.fields["erc.what"]=forms.CharField(required=False, label=_("What"))
     self.fields["erc.when"]=forms.CharField(required=False, label=_("When"))
 
-class DataciteForm(forms.Form):
-  """
-  Form object for ID with DataCite profile 
-  """
+class DcForm(forms.Form):
+  """ Form object for ID with Dublin Core profile """
   _target = forms.CharField(required=False, label=_("Location (URL)"),
-    validators=[validate_url])
+    validators=[_validate_url])
+  def __init__(self, *args, **kwargs):
+    super(forms.Form,self).__init__(*args,**kwargs)
+    self.fields["dc.creator"] = forms.CharField(required=False, label=_("Creator"))
+    self.fields["dc.title"] = forms.CharField(required=False, label=_("Title"))
+    self.fields["dc.publisher"] = forms.CharField(required=False, label=_("Publisher"))
+    self.fields["dc.date"] = forms.CharField(required=False, label=_("Date"))
+    self.fields["dc.type"] = forms.CharField(required=False, label=_("Type"))
+
+class DataciteForm(forms.Form):
+  """ Form object for ID with DataCite profile """
+  _target = forms.CharField(required=False, label=_("Location (URL)"),
+    validators=[_validate_url])
   def __init__(self, *args, **kwargs):
     super(forms.Form,self).__init__(*args,**kwargs)
     self.fields["datacite.creator"] = forms.CharField(label=_("Creator"),
@@ -56,6 +64,7 @@ def getIdForm (profile, request=None):
   r = request.POST if request else None
   if profile.name == 'erc': return ErcForm(r)
   elif profile.name == 'datacite': return DataciteForm(r)
+  elif profile.name == 'dc': return DcForm(r)
     
 class ContactForm(forms.Form):
   """ Form object for Contact Us form """

@@ -39,7 +39,6 @@ new_account_email = None
 reload_templates = None
 newsfeed_url = None
 
-remainder_box_default = _("Recommended: Leave blank")
 manual_profiles = {'datacite_xml': 'DataCite'}
 
 def _loadConfig():
@@ -279,48 +278,6 @@ def validate_advanced_top(request):
       err_msgs.append(_("Invalid general resource type"))
   return err_msgs
   
-def validate_advanced_metadata_form(request, profile):
-  """validates an advanced metadata form, profile is more or less irrelevant for now,
-  but may be useful later
-  Advanced Datacite DOI XML Blobs validation is done in ui_create.ajax_advanced"""
-  err_msgs = validate_advanced_top(request)
-  if len(err_msgs) > 0: #add any error messages to the request from top part
-    is_valid = False
-    for em in err_msgs:
-      django.contrib.messages.error(request, em)
-  else:
-    is_valid = True
-  if profile.name == 'datacite' and _validate_datacite_metadata_form(request, profile) == False:
-    is_valid = False
-  return is_valid
-
-def _validate_datacite_metadata_form(request, profile):
-  post = request.POST
-  msgs = django.contrib.messages
-  is_valid = True
-  if profile.name != 'datacite' or ('publish' in post and post['publish'] == 'False') or\
-    ('_status' in post and post['_status'] == 'reserved'):
-    return True
-  if not set(['datacite.creator', 'datacite.title', 'datacite.publisher', \
-      'datacite.publicationyear', 'datacite.resourcetype']).issubset(post):
-    msgs.error(request, _("Some required form elements are missing"))
-    return False
-  for x in ['datacite.creator', 'datacite.title', 'datacite.publisher']:
-    if post[x].strip() == '':
-      str_validate_head = _("You must fill in a value for")
-      str_validate_tail = _("or use one of the codes shown in the help")
-      msgs.error(request, str_validate_head + ' ' + x.split('.')[1] + ' ' + str_validate_tail + '.')
-      is_valid = False
-  codes = ['(:unac)', '(:unal)', '(:unap)', '(:unas)', '(:unav)', \
-           '(:unkn)', '(:none)', '(:null)', '(:tba)', '(:etal)', \
-           '(:at)']
-  if not( post['datacite.publicationyear'] in codes or \
-          re.search('^\d{4}$', post['datacite.publicationyear']) ):
-    msgs.error(request, _("You must fill in a 4-digit publication year or use one of the codes shown in the help."))
-    is_valid = False
-    
-  return is_valid
-
 def user_or_anon_tup(request):
   """Gets user tuple from request.session, otherwise returns anonymous tuple"""
   if 'auth' in request.session:

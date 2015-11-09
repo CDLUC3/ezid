@@ -11,6 +11,9 @@ import datacite_xml
 import policy
 import os.path
 from lxml import etree, objectify
+from django.utils.translation import ugettext as _
+
+remainder_box_default = "Recommended: Leave blank"
 
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
@@ -26,13 +29,14 @@ def simple(request):
     key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
-  r = simple_form_processing(request, d)
-  if r == 'bad_request':
-    uic.badRequest()
-  elif r.startswith('created_identifier:'):
-    return redirect("/id/" + urllib.quote(r.split()[1], ":/"))
-  else:
-    return uic.render(request, 'create/simple', d)
+  d = simple_form_processing(request, d)
+  result = d['id_gen_result']
+  if result == 'edit_page':
+    return uic.render(request, 'create/simple', d)  # ID Creation page 
+  elif result == 'bad_request':
+    return uic.badRequest()
+  elif result.startswith('created_identifier:'):
+    return redirect("/id/" + urllib.quote(result.split()[1], ":/"))   # ID Details page
 
 @uic.user_login_required
 def advanced(request):
@@ -44,16 +48,18 @@ def advanced(request):
     key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
-  r = advanced_form_processing(request, d)
-  if r == 'bad_request':
-    uic.badRequest()
-  elif r.startswith('created_identifier:'):
-    return redirect("/id/" + urllib.quote(r.split()[1], ":/"))
-  else:
-    return uic.render(request, 'create/advanced', d)
+  d = advanced_form_processing(request, d)
+  result = d['id_gen_result']
+  if result == 'edit_page':
+    return uic.render(request, 'create/advanced', d)  # ID Creation page 
+  elif result == 'bad_request':
+    return uic.badRequest()
+  elif result.startswith('created_identifier:'):
+    return redirect("/id/" + urllib.quote(result.split()[1], ":/"))   # ID Details page
 
 def simple_form_processing(request, d):
   """ Create simple identifier code shared by real and demo sections.
+  Takes request and context object, d['prefixes'] should be set before calling.
   Returns dictionary with d['id_gen_result'] of either 'bad_request', 'edit_page' or 
   'created_identifier: <new_id>'. If process is as expected, also includes a form object 
   containing posted data and any related errors. """
@@ -84,8 +90,8 @@ def simple_form_processing(request, d):
     d['form'] = form_objects.getIdForm(d['current_profile'], request)
     pre_list = [pr['prefix'] for pr in d['prefixes']]
     if REQUEST['shoulder'] not in pre_list:
-      django.contrib.messages.error(request, "Unauthorized to create with this \
-        identifier prefix: " + REQUEST['shoulder'])
+      django.contrib.messages.error(request, _("Unauthorized to create with \
+        this identifier prefix") + ": " + REQUEST['shoulder'])
       d['id_gen_result'] = 'edit_page'
       return d
     if d['form'].is_valid():
@@ -95,24 +101,25 @@ def simple_form_processing(request, d):
            '_export': 'yes' }))
       if s.startswith("success:"):
         new_id = s.split()[1]
-        django.contrib.messages.success(request, "IDENTIFIER CREATED.")
+        django.contrib.messages.success(request, _("IDENTIFIER CREATED."))
         d['id_gen_result'] = "created_identifier: "+new_id
       else:
-        django.contrib.messages.error(request, "Identifier could not be created as submitted:"  + s)
+        django.contrib.messages.error(request, _("Identifier could not be \
+          created as submitted") + ": "  + s)
         d['id_gen_result'] = 'edit_page'
     else:
-      django.contrib.messages.error(request, "Identifier could not be created as submitted. \
-        Please check the highlighted fields below for details.")
+      django.contrib.messages.error(request, _("Identifier could not be \
+        created as submitted.  Please check the highlighted fields below \
+        for details."))
       d['id_gen_result'] = 'edit_page'
   return d
 
 def advanced_form_processing(request, d):
-  """takes request and context object, d['prefixes'] should be set before calling"""
-  #sets manual_profile, current_profile, current_profile_name, internal_profile,
-  #     profiles, profile_names
+  """Like simple_form_processing. Takes request and context object, d['prefixes'] 
+  should be set before calling. Sets manual_profile, current_profile, current_profile_name, 
+  internal_profile, profiles, profile_names"""
 
-  #Form set up
-  d['remainder_box_default'] = uic.remainder_box_default
+  d['remainder_box_default'] = remainder_box_default
   #selects current_profile based on parameters or profile preferred for prefix type
   d['manual_profile'] = False
   choice_is_doi = False 
@@ -139,7 +146,8 @@ def advanced_form_processing(request, d):
     d['current_profile_name'] = d['current_profile'].name
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = [p for p in metadata.getProfiles()[1:] if p.editable]
-  profs = [(p.name, p.displayName, ) for p in d['profiles']] + uic.manual_profiles.items()
+  profs = [(p.name, p.displayName, ) for p in d['profiles']] + \
+    uic.manual_profiles.items()
   d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
   # 'datacite_xml' used for advanced profile instead of 'datacite'
   d['profile_names'].remove(('datacite','DataCite'))
@@ -147,42 +155,63 @@ def advanced_form_processing(request, d):
   #    ERC + dc.publisher.] For now, just hide this profile. 
   if choice_is_doi: 
     d['profile_names'].remove(('erc','ERC'))
- 
-  if request.method == "POST":
-    if "current_profile" not in request.POST or "shoulder" not in request.POST: return 'bad_request'
+
+  if request.method == "GET":
+    d['form'] = form_objects.getIdForm(d['current_profile'])   # Begin ID Creation (empty form)
+    d['id_gen_result'] = 'edit_page' 
+  else:          # request.method == "POST"
+    P = REQUEST
+    if "current_profile" not in P or "shoulder" not in P: 
+      d['id_gen_result'] = 'bad_request'
+      return d
+    d['form'] = form_objects.getIdForm(d['current_profile'], request)
     pre_list = [p['prefix'] for p in d['prefixes']]
-    if request.POST['shoulder'] not in pre_list:
-      django.contrib.messages.error(request, "Unauthorized to create with this identifier prefix.")
-      return 'edit_page'
-    if uic.validate_advanced_metadata_form(request, d['current_profile']):
+    if P['shoulder'] not in pre_list:
+      django.contrib.messages.error(request, _("Unauthorized to create with \
+        this identifier prefix: ") + P['shoulder'])
+      d['id_gen_result'] = 'edit_page'
+      return d
+    if P['action'] == 'create' and \
+      P['remainder'] != remainder_box_default and (' ' in P['remainder']):
+      django.contrib.messages.error(request, _("The remainder you entered is \
+        not valid."))   
+      d['id_gen_result'] = 'edit_page'
+      return d
+    if not d['form'].is_valid():
+      django.contrib.messages.error(request, _("Identifier could not be \
+        created as submitted. Please check the highlighted fields below for \
+        details."))
+      d['id_gen_result'] = 'edit_page'
+    else:
       """ # For advanced DOI's, this is handled via _datacite_xml.html
             template by ui_create.ajax_advanced
           No more manual profiles here for processing.
       """
       to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
-        { '_target' : uic.fix_target(request.POST['_target']),
-        "_status": ("public" if request.POST["publish"] == "True" else "reserved"),
-        "_export": ("yes" if request.POST["export"] == "yes" else "no") } )
+        { '_target' : uic.fix_target(P['_target']),
+        "_status": ("public" if P["publish"] == "True" else "reserved"),
+        "_export": ("yes" if P["export"] == "yes" else "no") } )
       
       #write out ID and metadata (one variation with special remainder, one without)
-      if request.POST['remainder'] == '' or request.POST['remainder'] == uic.remainder_box_default:
-        s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request), 
+      if P['remainder'] == '' or P['remainder'] == remainder_box_default:
+        s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request), 
             uic.group_or_anon_tup(request), to_write)
       else:
-        s = ezid.createIdentifier(request.POST['shoulder'] + request.POST['remainder'], uic.user_or_anon_tup(request),
-          uic.group_or_anon_tup(request), to_write)
+        s = ezid.createIdentifier(P['shoulder'] + P['remainder'], 
+          uic.user_or_anon_tup(request), uic.group_or_anon_tup(request), to_write)
       if s.startswith("success:"):
         new_id = s.split()[1]
-        django.contrib.messages.success(request, "IDENTIFIER CREATED.")
-        return 'created_identifier: ' + new_id
+        django.contrib.messages.success(request, _("IDENTIFIER CREATED."))
+        d['id_gen_result'] = 'created_identifier: ' + new_id
       else:
         if "-" in s:
           err_msg = re.search(r'^error: .+?- (.+)$', s).group(1)
         else:
           err_msg = re.search(r'^error: (.+)$', s).group(1)
-        django.contrib.messages.error(request, "There was an error creating your identifier: "  + err_msg)
-        return 'edit_page'
-  return 'edit_page'
+        django.contrib.messages.error(request, _("There was an error creating \
+          your identifier") + ": " + err_msg)
+        d['id_gen_result'] = 'edit_page'
+  return d 
 
 def _engage_datacite_xml_profile(request, d, profile_name):
   d['manual_profile'] = True
@@ -196,8 +225,8 @@ def _engage_datacite_xml_profile(request, d, profile_name):
   if obj is not None:
     d['datacite_obj'] = obj
   else:
-    django.contrib.messages.error(request, "Unable to render empty datacite form using "\
-      "file: " + f.name)
+    django.contrib.messages.error(request, _("Unable to render empty datacite \
+      form using file") + ": " + f.name)
   d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
   d['current_profile'] = d['current_profile_name']
   return d
@@ -210,12 +239,12 @@ def ajax_advanced(request):
     error_msgs = []
     if (request.POST['action'] == 'create'):
       required = ['shoulder', 'remainder', '_target', 'publish', 'export']
-      action_result = ['creating', 'created']
+      action_result = [_("creating"), _("created")]
     else:   # action='edit'
       required = ['_target', '_export']
-      action_result = ['editing', 'edited successfully']
+      action_result = [_("editing"), _("edited successfully")]
       if not request.POST['identifier']:
-        error_msgs.append("Unable to edit. Identifier not supplied.")
+        error_msgs.append(_("Unable to edit. Identifier not supplied."))
     d["testPrefixes"] = uic.testPrefixes
     if 'auth' in request.session:
       d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.key }\
@@ -227,23 +256,25 @@ def ajax_advanced(request):
     pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
     if (request.POST['action'] == 'create' and\
         request.POST['shoulder'] not in pre_list):
-        error_msgs.append("Unauthorized to create with this identifier prefix.")
+        error_msgs.append(_("Unauthorized to create with this identifier \
+          prefix."))
     for x in required:
       if x not in request.POST:
-        error_msgs.append("A required form element was not submitted.")
+        error_msgs.append(_("A required form element was not submitted."))
         return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
 
     error_msgs = error_msgs + uic.validate_advanced_top(request)
-    for k, v in {'/resource/creators/creator[1]/creatorName': 'creator name',
-                 '/resource/titles/title[1]': 'title',
-                 '/resource/publisher': 'publisher',
-                 '/resource/publicationYear': 'publication year'}.items():
+    for k, v in {'/resource/creators/creator[1]/creatorName': _("creator name"),
+                 '/resource/titles/title[1]': _("title"),
+                 '/resource/publisher': _("publisher"),
+                 '/resource/publicationYear': _("publication year")}.items():
       if (not (k in request.POST)) or request.POST[k].strip() == '':
-        error_msgs.append("Please enter a " + v)
+        error_msgs.append(_("Please enter a ") + v)
     
     if ('/resource/publicationYear' in request.POST) and \
               not re.compile('^\d{4}$').match(request.POST['/resource/publicationYear']):
-      error_msgs.append("Please enter a four digit year for the publication year.")
+      error_msgs.append(_("Please enter a four digit year for the \
+        publication year."))
       
     #for k, v in request.POST.iteritems():
     #  if v:
@@ -271,7 +302,7 @@ def ajax_advanced(request):
       
       #write out ID and metadata (one variation with special remainder, one without)
       if request.POST['remainder'] == '' or\
-         request.POST['remainder'] == uic.remainder_box_default:
+         request.POST['remainder'] == remainder_box_default:
         s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request), 
           uic.group_or_anon_tup(request), to_write)
       else:
@@ -281,11 +312,13 @@ def ajax_advanced(request):
 
     if s.startswith("success:"):
       new_id = s.split()[1]
-      django.contrib.messages.success(request, "Identifier " + action_result[1] + ".")
+      django.contrib.messages.success(request, _("Identifier") + "  " \
+        + action_result[1] + ".")
       return uic.jsonResponse({'status': 'success', 'id': new_id })
     else:
-      return uic.jsonResponse({'status': 'failure', 'errors': ["There was an error " +
-        action_result[0] + " your identifier:"  + s] })
+      return uic.jsonResponse({'status': 'failure', 
+        'errors': [_("There was an error ") + action_result[0] + \
+        _(" your identifier:")  + s] })
  
 def _assembleMetadata (request, stts, return_val):
     # There is no datacite_xml ezid profile. Just use 'datacite'
