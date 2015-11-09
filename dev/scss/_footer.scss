@@ -2,13 +2,15 @@
 
 .footer p {
 	margin: 0;
-}
 
-.footer p + p {
-	margin: 20px 0;
+	& + p {
+		margin: 20px 0;
+	}
+
 }
 
 .footer__lang {
+	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-iconBG;
 }
 
@@ -19,25 +21,35 @@
 }
 
 .footer__news {
+	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-newsfeed;
 }
 
 .footer__icons {
+	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-iconBG;
 }
 
-.footer__icon {
+.footer__icon-link {
 	
+}
+
+.footer__icon {
+	width: 30px;
 }
 
 .footer__brand {
 	display: flex;
+	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-newsfeed;
 }
 
 .footer__logo {
+	// remove these two properties after recropping whitespace from image:
+	position: relative;
+	margin: -50px 0 0 0;
+	
 	width: 100px;
-	height: 100px;
 }
 
 .footer__copyright {
