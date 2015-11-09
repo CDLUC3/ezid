@@ -44,11 +44,15 @@
 	background-color: $design-secondary-footer-newsfeed;
 }
 
-.footer__logo {
+.footer__logo-link {
 	// remove these two properties after recropping whitespace from image:
 	position: relative;
 	margin: -50px 0 0 0;
 	
+	width: 100px;
+}
+
+.footer__logo {
 	width: 100px;
 }
 
