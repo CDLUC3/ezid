@@ -1,6 +1,6 @@
 // ##### Footer Component ##### //
 
-.footer p {
+.footer p { // temporarily reset default margin
 	margin: 0;
 
 	& + p {
@@ -45,11 +45,9 @@
 }
 
 .footer__logo-link {
-	// remove these two properties after recropping whitespace from image:
-	position: relative;
-	margin: -50px 0 0 0;
-	
 	width: 100px;
+	padding: 0 $layout-box-padding 0 0;
+	border-right: 1px solid #000;
 }
 
 .footer__logo {
@@ -57,5 +55,6 @@
 }
 
 .footer__copyright {
-	
+	margin: 0 0 0 10px;
+	font-size: 0.8em;
 }
