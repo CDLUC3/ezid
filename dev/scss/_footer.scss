@@ -1,1 +1,45 @@
 // ##### Footer Component ##### //
+
+.footer p {
+	margin: 0;
+}
+
+.footer p + p {
+	margin: 20px 0;
+}
+
+.footer__lang {
+	background-color: $design-secondary-footer-iconBG;
+}
+
+.footer__lang-label {
+	display: block;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.footer__news {
+	background-color: $design-secondary-footer-newsfeed;
+}
+
+.footer__icons {
+	background-color: $design-secondary-footer-iconBG;
+}
+
+.footer__icon {
+	
+}
+
+.footer__brand {
+	display: flex;
+	background-color: $design-secondary-footer-newsfeed;
+}
+
+.footer__logo {
+	width: 100px;
+	height: 100px;
+}
+
+.footer__copyright {
+	
+}
