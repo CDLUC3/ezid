@@ -1,0 +1,60 @@
+// ##### Footer Component ##### //
+
+.footer p { // temporarily reset default margin
+	margin: 0;
+
+	& + p {
+		margin: 20px 0;
+	}
+
+}
+
+.footer__lang {
+	padding: $layout-box-padding;
+	background-color: $design-secondary-footer-iconBG;
+}
+
+.footer__lang-label {
+	display: block;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.footer__news {
+	padding: $layout-box-padding;
+	background-color: $design-secondary-footer-newsfeed;
+}
+
+.footer__icons {
+	padding: $layout-box-padding;
+	background-color: $design-secondary-footer-iconBG;
+}
+
+.footer__icon-link {
+	
+}
+
+.footer__icon {
+	width: 30px;
+}
+
+.footer__brand {
+	display: flex;
+	padding: $layout-box-padding;
+	background-color: $design-secondary-footer-newsfeed;
+}
+
+.footer__logo-link {
+	width: 100px;
+	padding: 0 $layout-box-padding 0 0;
+	border-right: 1px solid #000;
+}
+
+.footer__logo {
+	width: 100px;
+}
+
+.footer__copyright {
+	margin: 0 0 0 10px;
+	font-size: 0.8em;
+}

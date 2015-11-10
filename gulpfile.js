@@ -48,7 +48,7 @@ gulp.task('build', function (callback) {
 
 // Run "gulp modernizr" at the command line to build a custom modernizr file based off of classes found in CSS:
 gulp.task('modernizr', function() {
-  gulp.src('dev/css/new.css') // where modernizr will look for classes
+  gulp.src('dev/css/main2.css') // where modernizr will look for classes
     .pipe(modernizr({
       options: ['setClasses'],
       dest: 'dev/js/modernizr-custombuild.js'

@@ -1,0 +1,19 @@
+// ##### New Styles for EZID ##### //
+
+// ***** Global Settings ***** //
+
+@import 'variables';
+@import '../styles/variables';
+@import 'mixins';
+@import 'fonts';
+@import 'testing'; // Comment out before production
+
+// ***** Custom Components ***** //
+
+@import 'footer';
+
+// ***** Global Styles ***** //
+
+body {
+  font-family: 'KievitWeb';
+}
