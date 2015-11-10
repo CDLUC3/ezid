@@ -84,7 +84,10 @@ def reload ():
   """
   _load()
   for f in _reloadFunctions: f()
-  ezidapp.models.search_identifier.clearProfileCache()
+  # The following functions are explicitly listed here, and don't use
+  # the registerReloadListener mechanism, to avoid circular import
+  # problems.
+  ezidapp.models.search_identifier.clearCaches()
 
 _load()
 _startupVersion = _version

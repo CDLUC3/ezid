@@ -14,6 +14,7 @@
 # -----------------------------------------------------------------------------
 
 import django.db.models
+import django.db.utils
 
 import custom_fields
 import identifier
@@ -29,12 +30,6 @@ import validation
 import mapping
 import util2
 """
-
-_profileCache = None
-
-def clearProfileCache ():
-  global _profileCache
-  _profileCache = None
 
 class SearchIdentifier (identifier.Identifier):
   # An identifier as stored in the search database.
@@ -56,12 +51,8 @@ class SearchIdentifier (identifier.Identifier):
 
   @property
   def defaultProfile (self):
-    global _profileCache
     import util2
-    if _profileCache == None:
-      _profileCache = dict((p.label, p) for p in\
-        search_profile.SearchProfile.objects.all())
-    return _profileCache[util2.defaultProfile(self.identifier)]
+    return _getProfile(util2.defaultProfile(self.identifier))
 
   # Citation metadata follows.  Which is to say, the following
   # metadata refers to the resource identified by the identifier, not
@@ -198,3 +189,79 @@ class SearchIdentifier (identifier.Identifier):
       # OAI
       ("oaiVisible", "updateTime")
     ]
+
+# The following caches are only added to or replaced entirely;
+# existing entries are never modified.  Thus, with appropriate coding
+# below, they are threadsafe without needing locking.
+
+_userCache = None
+_groupCache = None
+_datacenterCache = None
+_profileCache = None
+
+def clearCaches ():
+  global _userCache, _groupCache, _datacenterCache, _profileCache
+  _userCache = None
+  _groupCache = None
+  _datacenterCache = None
+  _profileCache = None
+
+def _getFromCache (cache, model, attribute, key, insertOnMissing=True):
+  # Generic caching function supporting the caches in this module.
+  # Returns (I, cache) where I is the instance of 'model' for which
+  # I.'attribute' = 'key'.  'cache' may be None on input, and it is
+  # possibly set and/or augmented on return.
+  if cache == None:
+    cache = dict((getattr(i, attribute), i) for i in model.objects.all())
+  if key in cache:
+    i = cache[key]
+  else:
+    if not insertOnMissing:
+      raise model.DoesNotExist("No %s for %s='%s'." % (model.__name__,
+        attribute, key))
+    try:
+      i = model(**{ attribute: key })
+      i.full_clean(validate_unique=False)
+      i.save()
+    except django.db.utils.IntegrityError:
+      # Somebody beat us to it.
+      i = model.objects.get(**{ attribute: key })
+    cache[key] = i
+  return i, cache
+
+def _getUser (pid):
+  global _userCache
+  u, _userCache = _getFromCache(_userCache, search_user.SearchUser,
+    "pid", pid, insertOnMissing=False)
+  return u
+
+def _getGroup (pid):
+  global _groupCache
+  g, _groupCache = _getFromCache(_groupCache, search_group.SearchGroup,
+    "pid", pid, insertOnMissing=False)
+  return g
+
+def _getDatacenter (symbol):
+  global _datacenterCache
+  d, _datacenterCache = _getFromCache(_datacenterCache,
+    search_datacenter.SearchDatacenter, "symbol", symbol)
+  return d
+
+def _getProfile (label):
+  global _profileCache
+  p, _profileCache = _getFromCache(_profileCache, search_profile.SearchProfile,
+    "label", label)
+  return p
+
+def updateFromLegacy (identifier, metadata, forceInsert=False,
+  forceUpdate=False):
+  # Inserts or updates an identifier in the search database.  The
+  # identifier is constructed from a legacy representation.
+  i = SearchIdentifier(identifier)
+  i.fromLegacy(metadata)
+  i.owner = _getUser(metadata["_o"])
+  i.ownergroup = _getGroup(metadata["_g"])
+  i.profile = _getProfile(metadata["_p"])
+  if i.isDoi: i.datacenter = _getDatacenter(metadata["_d"])
+  i.my_full_clean()
+  i.save(force_insert=forceInsert, force_update=forceUpdate)
