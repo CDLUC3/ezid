@@ -5,16 +5,11 @@
 	@include bp(screen1) {
     display: flex;
   }
-	
+
 }
 
-.footer p { // temporarily reset default margin
-	margin: 0;
-
-	& + p {
-		margin: 20px 0;
-	}
-
+.footer__text {
+	margin: 0 0 1em 0;
 }
 
 .footer__lang {
@@ -43,21 +38,34 @@
 
 }
 
+.footer__news-title {
+	margin: 0 0 1em 0;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 1em;
+}
+
+.footer__news-link {
+	// empty
+}
+
 .footer__icons {
-	padding: $layout-box-padding;
+	display: flex;
+	justify-content: space-around;
+	padding: 10px 100px;
 	background-color: $design-secondary-footer-iconBG;
 
 	@include bp(screen1) {
-    order: 3;
-    display: flex;
     flex-flow: column nowrap;
     justify-content: space-between;
+    order: 3;
+    padding: 10px 20px;
   }
 
 }
 
 .footer__icon-link {
-	
+	// empty
 }
 
 .footer__icon {
