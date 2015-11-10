@@ -400,13 +400,13 @@ class Identifier (django.db.models.Model):
       if "datacite" not in self.cm and\
         (not self.usesCrossrefProfile or "crossref" not in self.cm):
         try:
-          self.cm["_profile"] = self.profile.label
+          self.cm["_p"] = self.profile.label
           datacite.formRecord(self.identifier, self.cm)
         except AssertionError, e:
           raise django.core.exceptions.ValidationError(
             "Public DOI metadata requirements not satisfied: %s." % str(e))
         finally:
-          del self.cm["_profile"]
+          del self.cm["_p"]
     if self.isCrossref and "crossref" not in self.cm:
       raise django.core.exceptions.ValidationError(
         "Registration with CrossRef requires CrossRef metadata supplied " +\
