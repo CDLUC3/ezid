@@ -1,0 +1,79 @@
+
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+	  <!-- Button for smallest screens -->
+     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ezid-navbar-content"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+      <a class="navbar-brand not-text" href="/"><img class="logoTop--big" src="/static/images/logo.svg" ALT="University of California EZID (easy-eye-dee): Identifiers Made Easy"></a>
+
+    </div>
+    <div class="collapse navbar-collapse" id="ezid-navbar-content">
+      <p id="nav-logged-in-welcome">&nbsp;
+      
+      </p>
+      <ul class="nav navbar-nav pull-right">
+        <li class="">
+          <a class="icon-link not-text" href="/search">
+            <img class="icon-topnav-search icon-inactive center" src="/static/images/searchOff.svg" ALT="Search Identifiers">
+            <img class="icon-topnav-search icon-active center" src="/static/images/searchOn.svg" ALT="Search Identifiers">
+            SEARCH
+          </a>
+        </li>
+        <li class="dropdown ">
+          <a href="/learn" class="dropdown-toggle icon-link not-text" data-toggle="dropdown" role="button" aria-haspopup="true">
+            <img class="icon-topnav-learn icon-inactive center" src="/static/images/learnOff.svg" ALT="Learn About EZID">
+            <img class="icon-topnav-learn icon-active center" src="/static/images/learnOn.svg" ALT="Learn About EZID">
+            LEARN
+          </a>
+          <ul class="dropdown-menu" role="menu" aria-expanded="false">
+            <li><a class="not-text" href="/learn#01">What Is EZID?</a></li>
+            <li><a class="not-text" href="/learn#02">Current Users</a></li>
+            <li><a class="not-text" href="/learn#03">Pricing</a></li>
+            <li><a class="not-text" href="/learn#04">Documentation</a></li>
+            <li><a class="not-text" href="/learn#05">FAQ</a></li>
+            <li id="dropdown__divider--border"><a class="not-text" href="/learn#06">Media</a></li>
+            <li><a class="not-text" href="/doc/apidoc.html">API Guide</a></li>
+            <li><a class="not-text" href="/demo">EZID Demo</a></li>
+         </ul>
+        </li>
+        <li class="">
+          <a class="icon-link not-text" href="/contact">
+            <img class="icon-topnav-contact icon-inactive center" src="/static/images/contactOff.svg" ALT="Contact EZID">
+            <img class="icon-topnav-contact icon-active center" src="/static/images/contactOn.svg" ALT="Contact EZID">
+            CONTACT
+          </a>
+        </li>
+        <li class="navbar-btn">
+          
+          <a class="not-text" href="#"><button type="button" class="btn padding-side-sm btn-big gradient-orange" id="modal_open">LOGIN</button></a>
+          
+        </li>
+      </ul>
+      <!-- Login Modal -->
+      <div class="modal-overlay" id="modal_window" aria-hidden="true" role="dialog"
+               aria-labelledby="modal-title">
+        <div class="modal-content" id="modal-holder" role="document">
+          <!-- div class="inline-header" -->
+            <!-- h1 id="modal-title">Access your account</h1 -->
+            <div id="modal-title">Access your account</div>
+            <a href="#" class="close not-text" id="modal_close" aria-label="close">&times;</a>
+            <!-- TODO: Need this? data-dismiss="alert" -->
+          <!-- /div -->
+          <form method="post" action="https://ias-ezid-dev.cdlib.org/login" class="form-horizontal">
+            <div class="form-group form-group-sm">
+              <label for="username" class="sr-only control-label">Username</label>
+              <input type="text" id="username" name="username" class="form-control" value="" placeholder="Username" />
+              <label for="password" class="sr-only control-label">Password</label>
+              <input type="password" id="password" name="password" class="form-control" value="" placeholder="Password" />
+              <input type="hidden" name="redirect_to" value="/">
+              <button type="submit" class="btn btn-primary padding-side-xs" id="login" name="login">LOG IN</button>
+              &nbsp;&nbsp;<a href="/account/pwreset" class="font-small">Forgot your password?</a>
+            </div>
+          </form>
+        </div> <!-- end .modal-content -->
+      </div> <!-- end .modal-overlay -->
+      <!-- End Login Modal -->
+    </div><!-- #nav-collapse -->
+  </div>
+  
+</nav>
