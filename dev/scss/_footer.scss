@@ -1,5 +1,13 @@
 // ##### Footer Component ##### //
 
+.footer {
+
+	@include bp(screen1) {
+    display: flex;
+  }
+	
+}
+
 .footer p { // temporarily reset default margin
 	margin: 0;
 
@@ -12,6 +20,11 @@
 .footer__lang {
 	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-iconBG;
+
+	@include bp(screen1) {
+    order: 1;
+  }
+
 }
 
 .footer__lang-label {
@@ -23,11 +36,24 @@
 .footer__news {
 	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-newsfeed;
+
+	@include bp(screen1) {
+    order: 4;
+  }
+
 }
 
 .footer__icons {
 	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-iconBG;
+
+	@include bp(screen1) {
+    order: 3;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+  }
+
 }
 
 .footer__icon-link {
@@ -42,6 +68,11 @@
 	display: flex;
 	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-newsfeed;
+
+	@include bp(screen1) {
+    order: 2;
+  }
+
 }
 
 .footer__logo-link {
@@ -57,4 +88,8 @@
 .footer__copyright {
 	margin: 0 0 0 10px;
 	font-size: 0.8em;
+}
+
+.footer__copyright-link {
+	margin: 0 0.5em 0 0;
 }
