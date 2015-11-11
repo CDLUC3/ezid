@@ -1,1 +1,81 @@
 // ##### Header Component ##### //
+
+.header {
+	display: flex;
+	justify-content: space-between;
+}
+
+.header__logo {
+	width: 370px;
+}
+
+.header__nav {
+	display: flex;
+	justify-content: space-between;
+	width: 400px;
+}
+
+%header__nav-element {
+	display: flex;
+	align-items: flex-end;
+	height: 50px;
+	background-repeat: no-repeat;
+	background-position: top center;
+	background-size: 23px 23px;
+	color: $design-primary-color;
+	font-size: 0.9em;
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+	cursor: pointer;
+
+	&:hover {
+		color: $design-secondary-color;
+	}
+
+}
+
+.header__search {
+	@extend %header__nav-element;
+	background-image: url('../images/searchOff.svg');
+
+	&:hover {
+		background-image: url('../images/searchOn.svg');
+	}
+
+}
+
+.header__learn {
+	@extend %header__nav-element;
+	background-image: url('../images/learnOff.svg');
+
+	&:hover {
+		background-image: url('../images/learnOn.svg');
+	}
+
+}
+
+.header__learn-menu {
+	display: none;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.header__contact {
+	@extend %header__nav-element;
+	background-image: url('../images/contactOff.svg');
+
+	&:hover {
+		background-image: url('../images/contactOn.svg');
+	}
+
+}
+
+.header__loginout {
+	border: none;
+	background-color: $design-pop-color;
+	color: $design-white-color;
+	font-size: 1em;
+	text-transform: uppercase;
+}
