@@ -337,7 +337,7 @@ def makeLdapGroup (gid):
   # names are the list delimiters used in various places: spaces,
   # semicolons, and pipes.  But for good citizenship we're much more
   # restrictive than that.
-  if not re.match("[a-z0-9]+([-_.][a-z0-9]+)*$", gid, re.I):
+  if not re.match("[a-z0-9]+([-_.][a-z0-9]+)*$", gid, re.I) or len(gid) > 32:
     return "Invalid group name."
   # Remove any Unicode-ness for LDAP's sake.
   gid = str(gid)
@@ -520,7 +520,7 @@ def makeLdapUser (uid):
   # usernames are the list delimiters used in various places: spaces,
   # semicolons, and pipes.  But for good citizenship we're much more
   # restrictive than that.
-  if not re.match("[a-z0-9]+([-_.][a-z0-9]+)*$", uid, re.I):
+  if not re.match("[a-z0-9]+([-_.][a-z0-9]+)*$", uid, re.I) or len(uid) > 32:
     return "Invalid username."
   l = None
   try:

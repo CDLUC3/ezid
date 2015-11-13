@@ -160,6 +160,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.core.validators
 import exceptions
 import re
 import threading
@@ -351,7 +352,11 @@ def _validateMetadata1 (identifier, user, metadata):
     del metadata["_export"]
   if "_profile" in metadata:
     if metadata["_profile"].strip() != "":
-      metadata["_p"] = metadata["_profile"].strip()
+      p = metadata["_profile"].strip()
+      # The following matches the validation done by the forthcoming
+      # Identifier model.
+      if len(p) > 255: return "profile name exceeds maximum allowable length"
+      metadata["_p"] = p
     else:
       if identifier.startswith("doi:"):
         metadata["_p"] = _defaultDoiProfile
@@ -378,10 +383,13 @@ def _validateMetadata1 (identifier, user, metadata):
     e = "_t" if identifier.startswith("ark:/") else "_st"
     t = metadata["_target"].strip()
     if t != "":
-      # Our validation of target URLs is nominal, but is intended to
-      # match that done by DataCite (which in turn simply uses Java's
-      # URL validation).
-      if not re.match("(https?|ftp)://", t): return "invalid target URL"
+      # The following matches the validation done by the forthcoming
+      # Identifier model.
+      try:
+        assert len(t) <= 2000
+        django.core.validators.URLValidator()(t)
+      except:
+        return "invalid target URL"
       metadata[e] = t
     else:
       metadata[e] = _defaultTarget(identifier)
