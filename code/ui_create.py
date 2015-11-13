@@ -157,9 +157,13 @@ def advanced_form_processing(request, d):
     d['profile_names'].remove(('erc','ERC'))
 
   if request.method == "GET":
-    d['form'] = form_objects.getIdForm(d['current_profile'])   # Begin ID Creation (empty form)
+    # Begin ID Creation (empty form)
+    if d['current_profile_name'] == 'datacite_xml':
+      d['form'] = form_objects.getIdForm_datacite_xml()
+    else:
+      d['form'] = form_objects.getIdForm(d['current_profile']) 
     d['id_gen_result'] = 'edit_page' 
-  else:          # request.method == "POST"
+  else:     # request.method == "POST"
     P = REQUEST
     if "current_profile" not in P or "shoulder" not in P: 
       d['id_gen_result'] = 'bad_request'
@@ -237,13 +241,15 @@ def ajax_advanced(request):
   if request.is_ajax():
     d = {}
     error_msgs = []
-    if (request.POST['action'] == 'create'):
+
+    P = request.POST
+    if (P['action'] == 'create'):
       required = ['shoulder', 'remainder', '_target', 'publish', 'export']
       action_result = [_("creating"), _("created")]
     else:   # action='edit'
       required = ['_target', '_export']
       action_result = [_("editing"), _("edited successfully")]
-      if not request.POST['identifier']:
+      if not P['identifier']:
         error_msgs.append(_("Unable to edit. Identifier not supplied."))
     d["testPrefixes"] = uic.testPrefixes
     if 'auth' in request.session:
@@ -254,12 +260,14 @@ def ajax_advanced(request):
     else:
       d['prefixes'] = []
     pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
-    if (request.POST['action'] == 'create' and\
-        request.POST['shoulder'] not in pre_list):
+    if (P['action'] == 'create' and\
+        P['shoulder'] not in pre_list):
         error_msgs.append(_("Unauthorized to create with this identifier \
           prefix."))
+    import pdb; pdb.set_trace()
+    d['form'] = form_objects.getIdForm_datacite_xml(request)
     for x in required:
-      if x not in request.POST:
+      if x not in P:
         error_msgs.append(_("A required form element was not submitted."))
         return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
 
@@ -268,46 +276,46 @@ def ajax_advanced(request):
                  '/resource/titles/title[1]': _("title"),
                  '/resource/publisher': _("publisher"),
                  '/resource/publicationYear': _("publication year")}.items():
-      if (not (k in request.POST)) or request.POST[k].strip() == '':
+      if (not (k in P)) or P[k].strip() == '':
         error_msgs.append(_("Please enter a ") + v)
     
-    if ('/resource/publicationYear' in request.POST) and \
-              not re.compile('^\d{4}$').match(request.POST['/resource/publicationYear']):
+    if ('/resource/publicationYear' in P) and \
+              not re.compile('^\d{4}$').match(P['/resource/publicationYear']):
       error_msgs.append(_("Please enter a four digit year for the \
         publication year."))
       
-    #for k, v in request.POST.iteritems():
+    #for k, v in P.iteritems():
     #  if v:
     #    if re.match(r'^/resource/dates/date\[\d+?\]$', k ) and not re.match(r'^\d{4}', v ):
     #      error_msgs.append("Please ensure your date is numeric and in the correct format.")
     if len(error_msgs) > 0:
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
 
-    return_val = datacite_xml.generate_xml(request.POST)
+    return_val = datacite_xml.generate_xml(P)
     xsd_path = django.conf.settings.PROJECT_ROOT + "/xsd/datacite-kernel-3/metadata.xsd"
     if datacite_xml.validate_document(return_val, xsd_path, error_msgs) == False:
       return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
 
-    if (request.POST['action'] == 'edit'): 
-      if request.POST['_status'] == 'unavailable':
-        stts = request.POST['_status'] + " | " + request.POST['stat_reason']
+    if (P['action'] == 'edit'): 
+      if P['_status'] == 'unavailable':
+        stts = P['_status'] + " | " + P['stat_reason']
       else:
-        stts = request.POST['_status']
+        stts = P['_status']
       to_write = _assembleMetadata(request, stts, return_val) 
-      s = ezid.setMetadata(request.POST['identifier'], uic.user_or_anon_tup(request),\
+      s = ezid.setMetadata(P['identifier'], uic.user_or_anon_tup(request),\
           uic.group_or_anon_tup(request), to_write)
     else:  # action=='create'
-      stts = ("public" if request.POST["publish"] == "True" else "reserved")
+      stts = ("public" if P["publish"] == "True" else "reserved")
       to_write = _assembleMetadata(request, stts, return_val) 
       
       #write out ID and metadata (one variation with special remainder, one without)
-      if request.POST['remainder'] == '' or\
-         request.POST['remainder'] == remainder_box_default:
-        s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request), 
+      if P['remainder'] == '' or\
+         P['remainder'] == remainder_box_default:
+        s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request), 
           uic.group_or_anon_tup(request), to_write)
       else:
-        s = ezid.createIdentifier(request.POST['shoulder'] +\
-            request.POST['remainder'], uic.user_or_anon_tup(request),
+        s = ezid.createIdentifier(P['shoulder'] +\
+            P['remainder'], uic.user_or_anon_tup(request),
         uic.group_or_anon_tup(request), to_write)
 
     if s.startswith("success:"):

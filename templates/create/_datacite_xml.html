@@ -11,9 +11,27 @@
 <div name="/resource" class="element">
 
 <!-- Any repeating elements are rendered with separate templates -->
-
-{% datacite_get_creators datacite_obj datacite_obj_empty %}
-
+{{ form.creator_set.management_form }}
+{% for form in form.creator_set %}
+  {% for field in form %}
+  <div class="form-group form-group-sm{% if field.errors %} has-error{% endif %}">
+    <label for="{{ field.id_for_label }}" class="col-sm-3 control-label">
+      {{ field.label }}
+    </label>
+    <div class="col-sm-5">
+      {{ field|add_attributes:"form-control"}}
+    </div>
+  {% if field.errors %}
+    <div class="col-sm-2">
+    {% for error in field.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
+  {% endfor %}
+{% endfor %}
+<!-- datacite_get_creators datacite_obj datacite_obj_empty --> 
 {% datacite_get_titles datacite_obj datacite_obj_empty %}
 
   <div name="/resource/publisher" class="row element form-group form-group-sm">

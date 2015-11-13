@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import formset_factory
 import ui_common as uic
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
@@ -6,6 +7,9 @@ from django.utils.translation import ugettext as _
 def _validate_url(url):
   if not uic.url_is_valid(url):
     raise ValidationError(_("Please enter a a valid location (URL)"))
+
+
+################# Simple ID Form ####################
 
 class ErcForm(forms.Form):
   """ Form object for ID with ERC profile """
@@ -59,13 +63,49 @@ class DataciteForm(forms.Form):
     self.fields["datacite.resourcetype"] = forms.ChoiceField(required=False, 
       choices=RESOURCE_TYPES, label=_("Resource type"))
 
+# Returns a simple ID Django form
 def getIdForm (profile, request=None):
   if request: assert request.method == 'POST'
   r = request.POST if request else None
   if profile.name == 'erc': return ErcForm(r)
   elif profile.name == 'datacite': return DataciteForm(r)
   elif profile.name == 'dc': return DcForm(r)
-    
+
+################# Advanced Datacite ID Form/Elements #################
+
+class CreatorForm(forms.Form):
+  """ Form object for Creator Element in DataCite Advanced (XML) profile """
+  def __init__(self, *args, **kwargs):
+    super(forms.Form,self).__init__(*args,**kwargs)
+    self.fields["/resource/creators/creator[1]/creatorName"] =  \
+      forms.CharField(label=_("Name"))
+    self.fields["/resource/creators/creator[1]/nameIdentifier"] = \
+      forms.CharField(label=_("Name Identifier"))
+
+class TitleForm(forms.Form):
+  """ Form object for Title Element in DataCite Advanced (XML) profile """
+  def __init__(self, *args, **kwargs):
+    super(forms.Form,self).__init__(*args,**kwargs)
+    self.fields["/resource/titles/title[1]"] = \
+      forms.CharField(label=_("Title"))
+
+# Returns *Advanced* Datacite elements in the form of Django formsets
+def getIdForm_datacite_xml (request=None):
+  if request: assert request.method == 'POST'
+  P = request.POST if request else None
+  CreatorSet = formset_factory(CreatorForm)
+  TitleSet = formset_factory(TitleForm)
+  if not P:    # GET
+    creator_set = CreatorSet(prefix='creators')
+    title_set = TitleSet(prefix='titles')
+  else:
+    creator_set = CreatorSet(P, prefix='creators')
+    title_set = TitleSet(P, prefix='titles')
+  return {'creator_set': creator_set, 'title_set': title_set}
+
+
+################# Remaining Forms  ####################
+
 class ContactForm(forms.Form):
   """ Form object for Contact Us form """
   # Translators: These options will appear in drop-down on contact page
