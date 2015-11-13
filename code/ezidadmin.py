@@ -28,6 +28,7 @@ import config
 import datacite
 import django_util
 import ezid
+import ezidapp.models
 import idmap
 import log
 import noid_egg
@@ -418,6 +419,12 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
       (ldap.MOD_ADD, "shoulderList", shoulderList.encode("UTF-8"))])
     _cacheLdapInformation(l, dn, arkId, user, group)
     idmap.addGroup(gid, arkId)
+    # The following is temporary.  Note the assumption here that there
+    # is just one realm.
+    g = ezidapp.models.SearchGroup(pid=arkId, groupname=gid,
+      realm=ezidapp.models.SearchRealm.objects.all()[0])
+    g.full_clean()
+    g.save()
     return None
   except Exception, e:
     log.otherError("ezidadmin.makeGroup", e)
@@ -564,13 +571,14 @@ def makeUser (uid, groupDn, user, group):
     # user.
     l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
     try:
-      r = l.search_s(groupDn, ldap.SCOPE_BASE, attrlist=["objectClass"])
+      r = l.search_s(groupDn, ldap.SCOPE_BASE, attrlist=["objectClass", "gid"])
     except ldap.NO_SUCH_OBJECT:
       # UI controls should prevent this from ever happening.
       return "No such group LDAP entry."
     if "ezidGroup" not in r[0][1]["objectClass"]:
       # Ditto.
       return "Group LDAP entry is not an EZID group."
+    gid = r[0][1]["gid"][0].decode("UTF-8")
     try:
       r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass", "uid",
         "arkId", "ezidOwnerGroup"])
@@ -622,6 +630,13 @@ def makeUser (uid, groupDn, user, group):
     l.modify_s(dn, m)
     _cacheLdapInformation(l, dn, arkId, user, group)
     idmap.addUser(uid, arkId)
+    # The following is temporary.  Note the assumption here that there
+    # is just one realm.
+    u = ezidapp.models.SearchUser(pid=arkId, username=uid,
+      group=ezidapp.models.SearchGroup.objects.get(groupname=gid),
+      realm=ezidapp.models.SearchRealm.objects.all()[0])
+    u.full_clean()
+    u.save()
     return (dn,)
   except Exception, e:
     log.otherError("ezidadmin.makeUser", e)
@@ -681,13 +696,15 @@ def changeGroup (uid, newGroupDn, user, group):
     # user.
     l.bind_s(_ldapAdminDn, _ldapAdminPassword, ldap.AUTH_SIMPLE)
     try:
-      r = l.search_s(newGroupDn, ldap.SCOPE_BASE, attrlist=["objectClass"])
+      r = l.search_s(newGroupDn, ldap.SCOPE_BASE, attrlist=["objectClass",
+        "gid"])
     except ldap.NO_SUCH_OBJECT:
       # UI controls should prevent this from ever happening.
       return "No such group LDAP entry."
     if "ezidGroup" not in r[0][1]["objectClass"]:
       # Ditto.
       return "Group LDAP entry is not an EZID group."
+    gid = r[0][1]["gid"][0].decode("UTF-8")
     try:
       r = l.search_s(dn, ldap.SCOPE_BASE, attrlist=["objectClass", "arkId"])
     except ldap.NO_SUCH_OBJECT:
@@ -702,6 +719,15 @@ def changeGroup (uid, newGroupDn, user, group):
     userauth.clearLdapCache(uid)
     django_util.deleteSessions(uid)
     _cacheLdapInformation(l, dn, arkId, user, group)
+    # The following is temporary.  Note the assumption here that there
+    # is just one realm.
+    u = ezidapp.models.SearchUser.objects.get(username=uid)
+    g = ezidapp.models.SearchGroup.objects.get(groupname=gid)
+    u.group = g
+    u.full_clean()
+    u.save()
+    ezidapp.models.SearchIdentifier.objects.filter(owner=u).\
+      update(ownergroup=g)
     return None
   except Exception, e:
     log.otherError("ezidadmin.changeGroup", e)
