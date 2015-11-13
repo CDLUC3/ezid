@@ -1,17 +1,25 @@
 // ##### Footer Component ##### //
 
-.footer p { // temporarily reset default margin
-	margin: 0;
+.footer {
 
-	& + p {
-		margin: 20px 0;
-	}
+	@include bp(screen1) {
+    display: flex;
+  }
 
+}
+
+.footer__text {
+	margin: 0 0 1em;
 }
 
 .footer__lang {
 	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-iconBG;
+
+	@include bp(screen1) {
+    order: 1;
+  }
+
 }
 
 .footer__lang-label {
@@ -23,15 +31,41 @@
 .footer__news {
 	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-newsfeed;
+
+	@include bp(screen1) {
+    order: 4;
+  }
+
+}
+
+.footer__news-title {
+	margin: 0 0 1em;
+	font-size: 1em;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.footer__news-link {
+	// empty
 }
 
 .footer__icons {
-	padding: $layout-box-padding;
+	display: flex;
+	justify-content: space-around;
+	padding: 10px 100px;
 	background-color: $design-secondary-footer-iconBG;
+
+	@include bp(screen1) {
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    order: 3;
+    padding: 10px 20px;
+  }
+
 }
 
 .footer__icon-link {
-	
+	// empty
 }
 
 .footer__icon {
@@ -42,12 +76,17 @@
 	display: flex;
 	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-newsfeed;
+
+	@include bp(screen1) {
+    order: 2;
+  }
+
 }
 
 .footer__logo-link {
 	width: 100px;
 	padding: 0 $layout-box-padding 0 0;
-	border-right: 1px solid #000;
+	border-right: 1px solid $design-black-color;
 }
 
 .footer__logo {
@@ -57,4 +96,8 @@
 .footer__copyright {
 	margin: 0 0 0 10px;
 	font-size: 0.8em;
+}
+
+.footer__copyright-link {
+	margin: 0 0.5em 0 0;
 }
