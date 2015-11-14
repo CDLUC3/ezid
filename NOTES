@@ -73,14 +73,6 @@ Caching is employed in several places:
     co-owner lists are modified through the account and admin
     interfaces.
 
-  search._coOwnershipMap cache
-    A dictionary that maps users to lists of other users that have
-    named them as account-level co-owners.  I.e., if users A and B
-    both name user C as an account-level co-owner, then this map will
-    contain an entry C -> [A, B].  Users are identified by ARK
-    identifiers.  Computed once on demand.  Emptied when EZID is
-    reloaded and when any account-level co-ownership list is modified.
-
   session cookies
     See above.  With a couple caveats, a session cookie is deleted if
     and only if a user explicitly logs out
@@ -100,19 +92,6 @@ Caching is employed in several places:
     Cached in agent identifiers for the purposes of storage redundancy
     and locality only.  Written only, never read.
 
-These can be considered caches as well:
-
-  store database
-    Serves as a local backup for the primary "bind" noid database;
-    also supports identifier harvesting.  Stores all identifiers and
-    all metadata.
-
-  search database
-    Supports searching and browsing over identifier metadata.  Stores
-    some identifiers (most are included, but, e.g., anonymously-owned
-    identifiers are excluded) and just that metadata needed for
-    searching.
-
 4. Identifier metadata
 ----------------------
 
@@ -129,9 +108,6 @@ information.  Because potentially sensitive LDAP information is cached
 in agent identifiers (see above), not only are agent identifiers not
 revealed to clients, they are owned by the EZID administrator and can
 only be viewed by the EZID administrator.
-
-The search database contains agent identifiers; see
-.../etc/search-schema.sql for a potential privacy/security hole.
 
 6. Case sensitivity of LDAP UIDs
 --------------------------------

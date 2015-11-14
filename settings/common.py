@@ -24,11 +24,10 @@ ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
 DEBUG = True
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
-ADMINS = (
+MANAGERS = ADMINS = (
   ("Greg Janee", "gjanee@ucop.edu"),
   ("John Kunze", "john.kunze@ucop.edu")
 )
-MANAGERS = ADMINS
 
 if "HOSTNAME" in os.environ:
   SERVER_EMAIL = "ezid@" + os.environ["HOSTNAME"]
@@ -40,8 +39,16 @@ DATABASES = {
     "ENGINE": "django.db.backends.sqlite3",
     "NAME": os.path.join(SITE_ROOT, "db", "django.sqlite3"),
     "OPTIONS": { "timeout": 60 }
+  },
+  "search": {
+    "ENGINE": "django.db.backends.mysql",
+    "HOST": "databases.search_host", # see below
+    "NAME": "ezid",
+    "USER": "ezidrw",
+    "PASSWORD": "databases.search_password" # see below
   }
 }
+DATABASE_ROUTERS = ["settings.routers.Router"]
 
 TIME_ZONE = "America/Los_Angeles"
 TIME_FORMAT_UI_METADATA = "%Y-%m-%d %H:%M:%S"
@@ -111,18 +118,21 @@ DAEMON_THREADS_ENABLED = True
 LOCALIZATIONS = { "default": ("cdl", ["ezid@ucop.edu"]) }
 
 # The following is a necessarily cockamamie scheme to get passwords
-# from the EZID configuration system into this file.
-# 'injectPasswords' should be called by the settings module
-# corresponding to the deployment level, after all settings are in
-# place.
+# and other sensitive information from the EZID configuration system
+# into this file.  'injectSecrets' should be called by the settings
+# module corresponding to the deployment level, after all settings are
+# in place.
 
-PASSWORD_PATHS = []
+SECRET_PATHS = [
+  ("DATABASES", "search", "HOST"),
+  ("DATABASES", "search", "PASSWORD")
+]
 
-def injectPasswords (deploymentLevel):
+def injectSecrets (deploymentLevel):
   import config_loader
   config = config_loader.Config(SITE_ROOT, PROJECT_ROOT,
     EZID_CONFIG_FILE, EZID_SHADOW_CONFIG_FILE, deploymentLevel)
-  for path in PASSWORD_PATHS:
+  for path in SECRET_PATHS:
     o = sys.modules["settings.common"] # this module
     for p in path[:-1]:
       if type(p) is str and hasattr(o, p):
