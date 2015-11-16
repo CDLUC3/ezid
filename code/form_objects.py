@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import formset_factory
 import ui_common as uic
+import util
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
@@ -8,37 +9,48 @@ def _validate_url(url):
   if not uic.url_is_valid(url):
     raise ValidationError(_("Please enter a a valid location (URL)"))
 
+def _validate_custom_remainder(shoulder):
+  def innerfn(remainder_to_test):
+    # ToDo: change this to util.validateIdentifier when this code is brought in
+    if not (util.validateArk(shoulder + remainder_to_test)):
+      raise ValidationError(
+        _("This combination of characters cannot be used as a remainder."))
+  return innerfn
 
-################# Simple ID Form ####################
+################# Basic ID Forms ####################
 
-class ErcForm(forms.Form):
-  """ Form object for ID with ERC profile """
-  _target = forms.CharField(required=False, label=_("Location (URL)"),
-    validators=[_validate_url])
+
+class BaseForm(forms.Form):
+  """ Base Form object: all forms have a _target field  """
   def __init__(self, *args, **kwargs):
-    super(forms.Form,self).__init__(*args,**kwargs)
+    super(BaseForm,self).__init__(*args,**kwargs)
+    self.fields["_target"]=forms.CharField(required=False, label=_("Location (URL)"),
+      validators=[_validate_url])
+
+class ErcForm(BaseForm):
+  """ Form object for ID with ERC profile. BaseForm parent brings in _target field """
+  def __init__(self, *args, **kwargs):
+    super(ErcForm,self).__init__(*args,**kwargs)
     self.fields["erc.who"]=forms.CharField(required=False, label=_("Who"))
     self.fields["erc.what"]=forms.CharField(required=False, label=_("What"))
     self.fields["erc.when"]=forms.CharField(required=False, label=_("When"))
 
-class DcForm(forms.Form):
-  """ Form object for ID with Dublin Core profile """
-  _target = forms.CharField(required=False, label=_("Location (URL)"),
-    validators=[_validate_url])
+class DcForm(BaseForm):
+  """ Form object for ID with Dublin Core profile. BaseForm parent brings in 
+      _target field """
   def __init__(self, *args, **kwargs):
-    super(forms.Form,self).__init__(*args,**kwargs)
+    super(DcForm,self).__init__(*args,**kwargs)
     self.fields["dc.creator"] = forms.CharField(required=False, label=_("Creator"))
     self.fields["dc.title"] = forms.CharField(required=False, label=_("Title"))
     self.fields["dc.publisher"] = forms.CharField(required=False, label=_("Publisher"))
     self.fields["dc.date"] = forms.CharField(required=False, label=_("Date"))
     self.fields["dc.type"] = forms.CharField(required=False, label=_("Type"))
 
-class DataciteForm(forms.Form):
-  """ Form object for ID with DataCite profile """
-  _target = forms.CharField(required=False, label=_("Location (URL)"),
-    validators=[_validate_url])
+class DataciteForm(BaseForm):
+  """ Form object for ID with DataCite profile. BaseForm parent brings in 
+      _target field """
   def __init__(self, *args, **kwargs):
-    super(forms.Form,self).__init__(*args,**kwargs)
+    super(DataciteForm,self).__init__(*args,**kwargs)
     self.fields["datacite.creator"] = forms.CharField(label=_("Creator"),
       error_messages={'required': _("Please fill in a value for creator.")})
     self.fields["datacite.title"] = forms.CharField(label=_("Title"),
@@ -65,11 +77,40 @@ class DataciteForm(forms.Form):
 
 # Returns a simple ID Django form
 def getIdForm (profile, request=None):
-  if request: assert request.method == 'POST'
-  r = request.POST if request else None
-  if profile.name == 'erc': return ErcForm(r)
-  elif profile.name == 'datacite': return DataciteForm(r)
-  elif profile.name == 'dc': return DcForm(r)
+  P = None
+  if request:
+    P = request.POST
+    assert request.method == 'POST'
+  if profile.name == 'erc': return ErcForm(P)
+  elif profile.name == 'datacite': return DataciteForm(P)
+  elif profile.name == 'dc': return DcForm(P)
+
+################# Advanced ID Form Retrieval - (two forms technically) #######
+
+class RemainderForm(forms.Form):
+  """ Remainder Form object: all advanced forms have a remainder field,
+      validation of which requires passing in the shoulder """
+  def __init__(self, *args, **kwargs):
+    self.shoulder = kwargs.pop('shoulder',None)
+    super(RemainderForm,self).__init__(*args,**kwargs)
+    self.fields["remainder"]=forms.CharField(required=False, 
+      label=_("Custom Remainder"), initial=_("Recommended: Leave blank"), 
+      validators=[_validate_custom_remainder(self.shoulder)])
+
+def getAdvancedIdForm (profile, request=None):
+  """ For advanced ID (but not datacite_xml). Returns two forms: One w/a 
+      single remainder field and one with profile-specific fields """
+  P = None
+  shoulder = None
+  if request: 
+    assert request.method == 'POST'
+    P = request.POST
+    shoulder=P['shoulder']
+  remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
+  if profile.name == 'erc': form = ErcForm(P, prefix='form')
+  elif profile.name == 'datacite': form = DataciteForm(P, prefix='form')
+  elif profile.name == 'dc': form = DcForm(P, prefix='form')
+  return {'remainder_form': remainder_form, 'form': form}
 
 ################# Advanced Datacite ID Form/Elements #################
 
@@ -104,7 +145,7 @@ def getIdForm_datacite_xml (request=None):
   return {'creator_set': creator_set, 'title_set': title_set}
 
 
-################# Remaining Forms  ####################
+############## Remaining Forms (not related to ID creation/editing) #########
 
 class ContactForm(forms.Form):
   """ Form object for Contact Us form """

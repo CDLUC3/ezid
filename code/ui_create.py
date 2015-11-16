@@ -161,14 +161,14 @@ def advanced_form_processing(request, d):
     if d['current_profile_name'] == 'datacite_xml':
       d['form'] = form_objects.getIdForm_datacite_xml()
     else:
-      d['form'] = form_objects.getIdForm(d['current_profile']) 
+      d['form'] = form_objects.getAdvancedIdForm(d['current_profile']) 
     d['id_gen_result'] = 'edit_page' 
   else:     # request.method == "POST"
     P = REQUEST
     if "current_profile" not in P or "shoulder" not in P: 
       d['id_gen_result'] = 'bad_request'
       return d
-    d['form'] = form_objects.getIdForm(d['current_profile'], request)
+    d['form'] = form_objects.getAdvancedIdForm(d['current_profile'], request)
     pre_list = [p['prefix'] for p in d['prefixes']]
     if P['shoulder'] not in pre_list:
       django.contrib.messages.error(request, _("Unauthorized to create with \
