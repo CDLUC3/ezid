@@ -17,6 +17,7 @@ import django.db
 import time
 
 import config
+import ezidapp.models
 import log
 
 _reconnectDelay = None
@@ -56,3 +57,14 @@ def withAutoReconnect (functionName, function, continuationCheck=None):
       # connection objects are indexed generically, but are stored
       # thread-local.)
       django.db.connections["search"].close()
+
+def ping ():
+  """
+  Tests the search database, returning "up" or "down".
+  """
+  try:
+    n = ezidapp.models.SearchRealm.objects.count()
+  except:
+    return "down"
+  else:
+    return "up"

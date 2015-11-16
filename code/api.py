@@ -88,6 +88,7 @@ import download
 import ezid
 import ezidadmin
 import noid_egg
+import search_util
 import store
 import userauth
 import util
@@ -276,7 +277,7 @@ def getStatus (request):
   body = ""
   if "subsystems" in request.GET:
     l = request.GET["subsystems"]
-    if l == "*": l = "datacite,ldap,noid"
+    if l == "*": l = "datacite,ldap,noid,search"
     for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
       if ss == "datacite":
         body += "datacite: %s\n" % datacite.ping()
@@ -284,6 +285,8 @@ def getStatus (request):
         body += "ldap: %s\n" % ezidadmin.pingLdap()
       elif ss == "noid":
         body += "noid: %s\n" % noid_egg.ping()
+      elif ss == "search":
+        body += "search: %s\n" % search_util.ping()
       else:
         return _response("error: bad request - no such subsystem")
   return _response("success: EZID is up", anvlBody=body)
