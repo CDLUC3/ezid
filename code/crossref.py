@@ -30,6 +30,7 @@ import config
 import idmap
 import log
 import policy
+import search_util
 import shoulder
 import userauth
 import util
@@ -515,6 +516,21 @@ def _sendEmail (emailAddresses, r):
 def _oneline (s):
   return re.sub("\s", " ", s)
 
+def _updateSearchDatabase (identifier, status):
+  if status == "successfully registered":
+    status = ezidapp.models.SearchIdentifier.CR_SUCCESS
+    message = ""
+  elif status.startswith("registered with warning | "):
+    message = status[26:]
+    status = ezidapp.models.SearchIdentifier.CR_WARNING
+  elif status.startswith("registration failure | "):
+    message = status[23:]
+    status = ezidapp.models.SearchIdentifier.CR_FAILURE
+  else:
+    assert False, "unhandled case"
+  ezidapp.models.SearchIdentifier.objects.filter(identifier=identifier).\
+    update(crossrefStatus=status, crossrefMessage=message)
+
 def _doPoll (r):
   t = _pollDepositStatus(r.batchId, r.identifier[4:])
   if t[0] == "submitted":
@@ -535,9 +551,16 @@ def _doPoll (r):
         else:
           m = "registration failure | " + m
       _checkAbort()
+      # We update the identifier's CrossRef status in the store
+      # database, and do so in such a way as to avoid entering the
+      # identifier back in the update queue, which would trigger a
+      # call to us again.  However, the search database still needs to
+      # be updated, so we do that explicitly.
       s = ezid.asAdmin(ezid.setMetadata, r.identifier,
         { "_cr": "yes | " + m }, False)
       assert s.startswith("success:"), "ezid.setMetadata failed: " + s
+      search_util.withAutoReconnect("crossref._updateSearchDatabase",
+        lambda: _updateSearchDatabase(r.identifier, m), _checkAbort)
     if t[0] == "completed successfully":
       _checkAbort()
       r.delete()
@@ -600,6 +623,8 @@ def _daemonThread ():
     except Exception, e:
       log.otherError("crossref._daemonThread", e)
       maxSeq = None
+  # Make sure our connection to the search database gets cleaned up...
+  django.db.connections["search"].close()
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
