@@ -17,6 +17,7 @@
 # -----------------------------------------------------------------------------
 
 import django.conf
+import django.db
 import threading
 import time
 import uuid
@@ -24,8 +25,10 @@ import uuid
 import config
 import crossref
 import datacite_async
+import ezidapp.models
+import ezidapp.models.search_identifier
 import log
-import search
+import search_util
 import store
 
 _enabled = None
@@ -41,9 +44,10 @@ def _updateSearchDatabase (identifier, operation, metadata, blob):
   else:
     identifier = "ark:/" + identifier
   if operation in ["create", "modify"]:
-    search.update(identifier, metadata, insertIfNecessary=True)
+    ezidapp.models.search_identifier.updateFromLegacy(identifier, metadata)
   elif operation == "delete":
-    search.delete(identifier)
+    ezidapp.models.SearchIdentifier.objects.filter(identifier=identifier).\
+      delete()
   else:
     assert False, "unrecognized operation"
 
@@ -91,10 +95,16 @@ def _backprocDaemon ():
       if len(l) > 0:
         for seq, identifier, metadata, blob, operation in l:
           if not _checkContinue(): break
-          # The following 4 statements form a kind of atomic
-          # transaction (and hence there are no continuation checks
-          # here).
-          _updateSearchDatabase(identifier, operation, metadata, blob)
+          # The following four statements form a kind of atomic
+          # transaction.  Hence, if the first statement succeeds, we
+          # proceed straight through with no intervening continuation
+          # checks.
+          try:
+            search_util.withAutoReconnect("backproc._updateSearchDatabase",
+              lambda: _updateSearchDatabase(identifier, operation,
+              metadata, blob), _checkContinue)
+          except search_util.AbortException:
+            break
           _updateDataciteQueue(identifier, operation, metadata, blob)
           _updateCrossrefQueue(identifier, operation, metadata, blob)
           store.deleteFromUpdateQueue(seq)
@@ -107,6 +117,8 @@ def _backprocDaemon ():
     _runningThreads.remove(threading.currentThread().getName())
   finally:
     _lock.release()
+  # Make sure our connection to the search database gets cleaned up...
+  django.db.connections["search"].close()
 
 def _loadConfig ():
   global _enabled, _idleSleep, _threadName
