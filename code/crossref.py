@@ -15,6 +15,7 @@
 
 import django.conf
 import django.core.mail
+import django.db
 import django.db.models
 import lxml.etree
 import re
