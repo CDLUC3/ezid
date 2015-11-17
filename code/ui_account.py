@@ -1,7 +1,7 @@
 import ui_common as uic
 import userauth, useradmin
 import django.contrib.messages
-import idmap
+import form_objects
 import re
 import time
 from django.shortcuts import redirect
@@ -12,26 +12,24 @@ def edit(request, ssl=False):
   if "auth" not in request.session: return uic.unauthorized(request)
   d['username'] = request.session['auth'].user[0]
   #used to do the following only for GET, but needed for post also to compare what has changed
-  r = useradmin.getAccountProfile(request.session["auth"].user[0])
+  r = useradmin.getAccountProfile(d['username'])
   if type(r) is str:
     django.contrib.messages.error(request, r)
     return redirect('ui_home.index')
-  r2 = useradmin.getContactInfo(request.session["auth"].user[0])
+  r2 = useradmin.getContactInfo(d['username'])
   if type(r2) is str:
     django.contrib.messages.error(request, r2)
     return redirect("ui_home.index")
   r.update(r2)
   d.update(r)
-  if not 'ezidCoOwners' in d:
-    d['ezidCoOwners'] = ''
-      
-  if request.method == "POST":
-    orig_vals = uic.extract(d, ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners'])
-    form_vals = uic.extract(request.POST, \
-                ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners'])
-    d.update(form_vals)
-    if validate_edit_user(request):
-      update_edit_user(request, orig_vals != form_vals)
+  # ToDo: Replace with proxy data .... Is this line even needed?
+  if not 'ezidCoOwners' in d: d['ezidCoOwners'] = ''
+  if request.method == "GET":
+    d['form'] = form_objects.UserForm(d, username=d['username'])
+  else:
+    d['form'] = form_objects.UserForm(request.POST, username=d['username'])
+    if d['form'].is_valid():
+      update_edit_user(request, d['form'].has_changed())
   return uic.render(request, "account/edit", d)
 
 def login(request, ssl=False):
@@ -80,49 +78,6 @@ def logout(request):
   django.contrib.messages.success(request, "You have been logged out.")
   return redirect("ui_home.index")
 
-def validate_edit_user(request):
-  """validates that the fields required to update a user are set, not a view for a page"""
-  valid_form = True
-  fields = ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners', 'pwcurrent','pwnew', 'pwconfirm']
-  
-  for field in fields:
-    if not field in request.POST:
-      django.contrib.messages.error(request, "Form submission error.")
-      return False
-  
-  required_fields = {'sn': 'Last name', 'mail': 'Email address'}
-  for field in required_fields:
-    if request.POST[field].strip() == '':
-      django.contrib.messages.error(request, required_fields[field] + " must be filled in.")
-      valid_form = False
-  
-  if not re.match('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', request.POST['mail'], re.IGNORECASE):
-    django.contrib.messages.error(request, "Please enter a valid email address.")
-    valid_form = False
-  
-  if request.POST['ezidCoOwners'] != '':
-    coowners = [co.strip() for co in request.POST['ezidCoOwners'].split(',')]
-    for coowner in coowners:
-      #import pdb; pdb.set_trace()
-      try:
-        idmap.getUserId(coowner)
-      except AssertionError:
-        django.contrib.messages.error(request, coowner + " is not a correct username for a co-owner.")
-        valid_form = False
-  
-  if not request.POST['pwcurrent'].strip() == '':
-    auth = userauth.authenticate(request.session['auth'].user[0], request.POST["pwcurrent"])
-    if type(auth) is str or not auth:
-      django.contrib.messages.error(request, "Your current password is incorrect.")
-      valid_form = False
-    if request.POST['pwnew'] != request.POST['pwconfirm']:
-      django.contrib.messages.error(request, "Your new and confirmed passwords do not match.")
-      valid_form = False
-    if request.POST['pwnew'] == '' or request.POST['pwconfirm'] == '':
-      django.contrib.messages.error(request, "Your new password cannot be empty.")
-      valid_form = False
-  return valid_form
-  
 def update_edit_user(request, basic_info_changed):
   """method to update the user editing his information.  Not a view for a page"""
   uid = request.session['auth'].user[0]

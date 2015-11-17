@@ -2,23 +2,14 @@ from django import forms
 from django.forms import formset_factory
 import ui_common as uic
 import util
+import idmap
+import userauth 
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
-def _validate_url(url):
-  if not uic.url_is_valid(url):
-    raise ValidationError(_("Please enter a a valid location (URL)"))
-
-def _validate_custom_remainder(shoulder):
-  def innerfn(remainder_to_test):
-    # ToDo: change this to util.validateIdentifier when this code is brought in
-    if not (util.validateArk(shoulder + remainder_to_test)):
-      raise ValidationError(
-        _("This combination of characters cannot be used as a remainder."))
-  return innerfn
+remainder_box_default = _("Recommended: Leave blank")
 
 ################# Basic ID Forms ####################
-
 
 class BaseForm(forms.Form):
   """ Base Form object: all forms have a _target field  """
@@ -79,8 +70,8 @@ class DataciteForm(BaseForm):
 def getIdForm (profile, request=None):
   P = None
   if request:
-    P = request.POST
     assert request.method == 'POST'
+    P = request.POST
   if profile.name == 'erc': return ErcForm(P)
   elif profile.name == 'datacite': return DataciteForm(P)
   elif profile.name == 'dc': return DcForm(P)
@@ -94,7 +85,7 @@ class RemainderForm(forms.Form):
     self.shoulder = kwargs.pop('shoulder',None)
     super(RemainderForm,self).__init__(*args,**kwargs)
     self.fields["remainder"]=forms.CharField(required=False, 
-      label=_("Custom Remainder"), initial=_("Recommended: Leave blank"), 
+      label=_("Custom Remainder"), initial=remainder_box_default, 
       validators=[_validate_custom_remainder(self.shoulder)])
 
 def getAdvancedIdForm (profile, request=None):
@@ -107,10 +98,26 @@ def getAdvancedIdForm (profile, request=None):
     P = request.POST
     shoulder=P['shoulder']
   remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
-  if profile.name == 'erc': form = ErcForm(P, prefix='form')
-  elif profile.name == 'datacite': form = DataciteForm(P, prefix='form')
-  elif profile.name == 'dc': form = DcForm(P, prefix='form')
+  if profile.name == 'erc': form = ErcForm(P, auto_id='%s')
+  elif profile.name == 'datacite': form = DataciteForm(P, auto_id='%s')
+  elif profile.name == 'dc': form = DcForm(P, auto_id='%s')
   return {'remainder_form': remainder_form, 'form': form}
+
+################# ID Form Validation functions  #################
+
+def _validate_url(url):
+  if not uic.url_is_valid(url):
+    raise ValidationError(_("Please enter a valid location (URL)"))
+
+def _validate_custom_remainder(shoulder):
+  def innerfn(remainder_to_test):
+    test = "" if remainder_to_test == remainder_box_default \
+      else remainder_to_test
+    # ToDo: change this to util.validateIdentifier when this code is brought in
+    if not (util.validateArk(shoulder[5:] + test)):
+      raise ValidationError(
+        _("This combination of characters cannot be used as a remainder."))
+  return innerfn
 
 ################# Advanced Datacite ID Form/Elements #################
 
@@ -144,8 +151,59 @@ def getIdForm_datacite_xml (request=None):
     title_set = TitleSet(P, prefix='titles')
   return {'creator_set': creator_set, 'title_set': title_set}
 
-
+#############################################################################
 ############## Remaining Forms (not related to ID creation/editing) #########
+#############################################################################
+
+################# User Form Validation functions  #################
+
+def _validate_proxies(proxies):
+  p_list = [p.strip() for p in proxies.split(',')]
+  for proxy in p_list:
+    try:
+      # ToDo: Make sure this validates a proxy user and not a coowner like it's doing now.
+      idmap.getUserId(proxy)
+    except AssertionError:
+      raise ValidationError(proxy + " " + \
+        _("is not a correct username for a co-owner."))
+
+def _validate_current_pw(username):
+  def innerfn(pwcurrent):
+    auth = userauth.authenticate(username, request.POST["pwcurrent"])
+    if type(auth) is str or not auth:
+      raise ValidationError(_("Your current password is incorrect."))
+  return innerfn
+
+################# User (My Account) Form  #################
+
+class UserForm(forms.Form):
+  """ Form object for My Account Page (User editing) """
+  username = '' 
+  def __init__(self, *args, **kwargs):
+    username = kwargs.pop('username',None)
+    super(UserForm,self).__init__(*args,**kwargs)
+  givenName = forms.CharField(required=False, label=_("First Name"))
+  sn = forms.CharField(label=_("Last Name"),
+    error_messages={'required': _("Please fill in your last name")})
+  telephoneNumber = forms.CharField(required=False, label=_("Phone"))
+  mail = forms.EmailField(label=_("Email Address"),
+    error_messages={'required': _("Please fill in your email."),
+                    'invalid': _("Please fill in a valid email address.")})
+  ezidCoOwners = forms.CharField(required=False, label=_("Assigned Proxy Users"),
+    validators=[_validate_proxies])
+  pwcurrent = forms.CharField(required=False, label=_("Current Password"),
+    validators=[_validate_current_pw(username)])
+  pwnew = forms.CharField(required=False, label=_("New Password"))
+  pwconfirm = forms.CharField(required=False, label=_("Confirm New Password"))
+  def clean(self):
+    cleaned_data = super(UserForm, self).clean()
+    pwnew_c = cleaned_data.get("pwnew")
+    pwconfirm_c = cleaned_data.get("pwconfirm")
+    if pwnew_c and pwnew_c != pwconfirm_c:
+      raise ValidationError("Passwords don't match")
+    return cleaned_data
+
+################# Contact Us Form  #################
 
 class ContactForm(forms.Form):
   """ Form object for Contact Us form """

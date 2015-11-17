@@ -23,6 +23,7 @@
 {% if manual_profile %}
   {% include manual_template %}
 {% else %}
+  {{ form.form.non_field_errors }}
   {% for field in form.form %}
   <div class="form-group form-group-sm{% if field.errors %} has-error{% endif %}">
     <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">

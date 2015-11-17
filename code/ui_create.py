@@ -13,8 +13,6 @@ import os.path
 from lxml import etree, objectify
 from django.utils.translation import ugettext as _
 
-remainder_box_default = "Recommended: Leave blank"
-
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
   return redirect("ui_create.simple")
@@ -119,7 +117,7 @@ def advanced_form_processing(request, d):
   should be set before calling. Sets manual_profile, current_profile, current_profile_name, 
   internal_profile, profiles, profile_names"""
 
-  d['remainder_box_default'] = remainder_box_default
+  d['remainder_box_default'] = form_objects.remainder_box_default
   #selects current_profile based on parameters or profile preferred for prefix type
   d['manual_profile'] = False
   choice_is_doi = False 
@@ -175,13 +173,7 @@ def advanced_form_processing(request, d):
         this identifier prefix: ") + P['shoulder'])
       d['id_gen_result'] = 'edit_page'
       return d
-    if P['action'] == 'create' and \
-      P['remainder'] != remainder_box_default and (' ' in P['remainder']):
-      django.contrib.messages.error(request, _("The remainder you entered is \
-        not valid."))   
-      d['id_gen_result'] = 'edit_page'
-      return d
-    if not d['form'].is_valid():
+    if not (d['form']['form'].is_valid() and d['form']['remainder_form'].is_valid()):
       django.contrib.messages.error(request, _("Identifier could not be \
         created as submitted. Please check the highlighted fields below for \
         details."))
@@ -197,7 +189,7 @@ def advanced_form_processing(request, d):
         "_export": ("yes" if P["export"] == "yes" else "no") } )
       
       #write out ID and metadata (one variation with special remainder, one without)
-      if P['remainder'] == '' or P['remainder'] == remainder_box_default:
+      if P['remainder'] == '' or P['remainder'] == form_objects.remainder_box_default:
         s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request), 
             uic.group_or_anon_tup(request), to_write)
       else:
@@ -264,7 +256,6 @@ def ajax_advanced(request):
         P['shoulder'] not in pre_list):
         error_msgs.append(_("Unauthorized to create with this identifier \
           prefix."))
-    import pdb; pdb.set_trace()
     d['form'] = form_objects.getIdForm_datacite_xml(request)
     for x in required:
       if x not in P:
@@ -310,7 +301,7 @@ def ajax_advanced(request):
       
       #write out ID and metadata (one variation with special remainder, one without)
       if P['remainder'] == '' or\
-         P['remainder'] == remainder_box_default:
+         P['remainder'] == form_objects.remainder_box_default:
         s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request), 
           uic.group_or_anon_tup(request), to_write)
       else:
