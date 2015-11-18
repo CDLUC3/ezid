@@ -144,12 +144,15 @@ def getIdForm_datacite_xml (request=None):
   CreatorSet = formset_factory(CreatorForm)
   TitleSet = formset_factory(TitleForm)
   if not P:    # GET
+    remainder_form = RemainderForm(P, shoulder=None, auto_id='%s')
     creator_set = CreatorSet(prefix='creators')
     title_set = TitleSet(prefix='titles')
   else:
+    remainder_form = RemainderForm(P, shoulder=P['shoulder'], auto_id='%s')
     creator_set = CreatorSet(P, prefix='creators')
     title_set = TitleSet(P, prefix='titles')
-  return {'creator_set': creator_set, 'title_set': title_set}
+  return {'remainder_form': remainder_form, 'creator_set': creator_set, 
+    'title_set': title_set}
 
 #############################################################################
 ############## Remaining Forms (not related to ID creation/editing) #########
@@ -240,3 +243,16 @@ class ContactForm(forms.Form):
   )
   hear_about = forms.ChoiceField(required=False, choices=REFERRAL_SOURCES,
     label=_("How did you hear about us?"))
+
+################  Password Reset Landing Page ##########
+
+class PwResetLandingForm(forms.Form):
+  username=forms.CharField(label=_("Username"),
+    error_messages={'required': _("Please fill in your username.")})
+  email=forms.EmailField(label=_("Email address"),
+    error_messages={'required': _("Please fill in your email address."),
+                    'invalid': _("Please fill in a valid email address.")})
+  """ Strip any surrounding whitespace """
+  def clean_username(self):
+    username = self.cleaned_data["username"].strip()
+    return username

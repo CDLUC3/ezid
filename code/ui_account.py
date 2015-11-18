@@ -144,26 +144,23 @@ def pwreset(request, pwrr, ssl=False):
     else:
       return uic.methodNotAllowed(request)
   else:
+    d = { 'menu_item' : 'ui_null.null'}
     if request.method == "GET":
-      return uic.render(request, "account/pwreset1", {'menu_item' : 'ui_null.null'})
+      d['form'] = form_objects.PwResetLandingForm()
+      return uic.render(request, "account/pwreset1", d)
     elif request.method == "POST":
-      if "username" not in request.POST or "email" not in request.POST:
+      P = request.POST
+      if "username" not in P or "email" not in P:
         return uic.badRequest(request)
-      username = request.POST["username"].strip()
-      email = request.POST["email"].strip()
-      if username == "":
-        django.contrib.messages.error(request, "Username required.")
-        return uic.render(request, "account/pwreset1", { "email": email,  'menu_item' : 'ui_null.null' })
-      if email == "":
-        django.contrib.messages.error(request, "Email address required.")
-        return uic.render(request, "account/pwreset1", { "username": username,  'menu_item' : 'ui_null.null' })
-      r = useradmin.sendPasswordResetEmail(username, email)
-      if type(r) is str:
-        django.contrib.messages.error(request, r)
-        return uic.render(request, "account/pwreset1", { "username": username,
-          "email": email,  'menu_item' : 'ui_null.null' })
-      else:
-        django.contrib.messages.success(request, "Email sent.")
-        return uic.redirect("/")
+      d['form'] = form_objects.PwResetLandingForm(P)
+      if d['form'].is_valid():
+        r = useradmin.sendPasswordResetEmail(P['username'], P['email'])
+        if type(r) is str:
+          django.contrib.messages.error(request, r)
+          return uic.render(request, "account/pwreset1", d)
+        else:
+          django.contrib.messages.success(request, "Email sent.")
+          return uic.redirect("/")
+      return uic.render(request, "account/pwreset1", d)
     else:
       return uic.methodNotAllowed(request)
