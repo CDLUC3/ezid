@@ -14,7 +14,7 @@
 
 .footer__lang {
 	padding: $layout-box-padding;
-	background-color: $design-secondary-footer-iconBG;
+	background-color: $design-secondary-footer-icon-bg;
 
 	@include bp(screen1) {
     order: 1;
@@ -53,7 +53,7 @@
 	display: flex;
 	justify-content: space-around;
 	padding: 10px 100px;
-	background-color: $design-secondary-footer-iconBG;
+	background-color: $design-secondary-footer-icon-bg;
 
 	@include bp(screen1) {
     flex-flow: column nowrap;
