@@ -155,9 +155,17 @@ http://creativecommons.org/licenses/BSD/
     "../*[local-name()='database_date']/*[local-name()='publication_date']"/>
   <xsl:choose>
     <xsl:when test="$datacite.publicationyear != '(:unav)'">
-      <publicationYear>
-        <xsl:value-of select="$datacite.publicationyear"/>
-      </publicationYear>
+      <xsl:choose>
+        <xsl:when test="translate($datacite.publicationyear, '0123456789.',
+          '..........-') = '....'">
+          <publicationYear>
+            <xsl:value-of select="$datacite.publicationyear"/>
+          </publicationYear>
+        </xsl:when>
+        <xsl:otherwise>
+          <publicationYear>0000</publicationYear>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:when>
     <xsl:when test="../*[local-name()='publication_date']">
       <xsl:apply-templates select="../*[local-name()='publication_date'][1]"/>
@@ -375,9 +383,17 @@ http://creativecommons.org/licenses/BSD/
 </xsl:template>
 
 <xsl:template match="*[local-name()='publication_date']">
-  <publicationYear>
-    <xsl:value-of select="*[local-name()='year']"/>
-  </publicationYear>
+  <xsl:choose>
+    <xsl:when test="translate(normalize-space(*[local-name()='year']),
+      '0123456789.', '..........-') = '....'">
+      <publicationYear>
+        <xsl:value-of select="normalize-space(*[local-name()='year'])"/>
+      </publicationYear>
+    </xsl:when>
+    <xsl:otherwise>
+      <publicationYear>0000</publicationYear>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <!-- Prevent any other output. -->
