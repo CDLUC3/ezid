@@ -1,0 +1,17 @@
+<svg width="198" height="198" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+ <g>
+  <title>background</title>
+  <rect fill="#fff" id="canvas_background" height="200" width="200" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <title>Cross Icon</title>
+  <g id="svg_3">
+   <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_1" y2="191.543618" x2="193.926207" y1="6" x1="8.382589" stroke-width="10" stroke="#000" fill="none"/>
+   <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_2" y2="193.382589" x2="6" y1="5" x1="194.382589" fill-opacity="null" stroke-opacity="null" stroke-width="10" stroke="#000" fill="none"/>
+  </g>
+ </g>
+</svg>
