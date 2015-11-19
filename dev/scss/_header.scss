@@ -77,7 +77,7 @@
 	display: flex;
 	align-items: center; // vertical text centering
 	height: 40px;
-	margin: 0 0 0.2em; // align button bottom with nav text
+	margin: 0 0 0.1em; // align button bottom with nav text
 	padding: 0 20px; // horizontal text centering
 	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 	color: $design-white-color;
@@ -85,4 +85,9 @@
 	font-weight: bold;
 	text-decoration: none;
 	text-transform: uppercase;
+
+	&:hover {
+		color: $design-black-color;
+	}
+
 }
