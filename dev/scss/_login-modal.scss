@@ -3,3 +3,33 @@
 .login-modal {
 	// empty
 }
+
+.login-modal__header {
+	// empty
+}
+
+.login-modal__title {
+	color: $design-primary-color;
+	font-size: 1.4em;
+}
+
+.login-modal__close {
+	width: 15px;
+}
+
+.login-modal__label {
+	@extend %screen-readers-only;
+}
+
+.login-modal__footer {
+	// empty
+}
+
+.login-modal__submit {
+	border: none;
+}
+
+.login-modal__forgot {
+	color: $design-primary-color;
+	text-decoration: none;
+}

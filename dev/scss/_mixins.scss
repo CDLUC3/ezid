@@ -38,3 +38,11 @@ Selector pattern using above mixin:
 }
 
 */
+
+// For screen readers only
+
+%screen-readers-only {
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+}
