@@ -56,14 +56,8 @@
 }
 
 .login-modal__submit {
-	height: 30px;
-	padding: 0 15px; // horizontal text centering
-	border: none;
-	background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
-	color: $design-white-color;
-	font-weight: bold;
-	text-transform: uppercase;
-	cursor: pointer;
+	@extend %button__primary;
+	font-size: 0.7em;
 }
 
 .login-modal__forgot {
