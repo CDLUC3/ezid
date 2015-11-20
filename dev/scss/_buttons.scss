@@ -1,5 +1,14 @@
 // ##### Button Elements ##### //
 
-.button {
-	// empty
+.button__primary {
+	display: inline-block;
+	padding: 0.7em 1.3em; // horizontal text centering
+	border: none;
+	background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
+	color: $design-white-color;
+	font-size: 0.8em;
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+	cursor: pointer; // for form buttons
 }
