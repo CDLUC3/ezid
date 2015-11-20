@@ -39,7 +39,7 @@
 	padding: 0.4em;
 	border: 1px solid $design-dark-gray-color;
 	font-size: 0.9em;
-	
+
 	&:focus { // streamlining Bootstrap's form focus styles:
 		transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
 		border-color: $design-primary-color;
