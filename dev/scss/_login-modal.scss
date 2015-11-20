@@ -1,35 +1,68 @@
 // ##### Login Modal Component ##### //
 
 .login-modal {
-	// empty
+	width: 230px;
+	padding: 20px;
 }
 
 .login-modal__header {
-	// empty
+	display: flex;
+	justify-content: space-between;
 }
 
 .login-modal__title {
+	margin: 0 0 10px;
 	color: $design-primary-color;
 	font-size: 1.4em;
 }
 
 .login-modal__close {
 	width: 15px;
+	height: 15px;
+}
+
+.login-modal__form {
+	display: flex;
+	flex-flow: column nowrap;
 }
 
 .login-modal__label {
 	@extend %screen-readers-only;
 }
 
+.login-modal__field {
+	margin: 0 0 10px;
+	padding: 0.4em;
+	border: 1px solid $design-dark-gray-color;
+	font-size: 0.9em;
+	
+	&:focus { // streamlining Bootstrap form focus styles:
+		transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+		border-color: $design-primary-color;
+		outline: 0;
+		box-shadow: 0 0 8px rgba($design-primary-color, 0.6);
+	}
+
+}
+
 .login-modal__footer {
-	// empty
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .login-modal__submit {
+	height: 30px;
+	padding: 0 15px; // horizontal text centering
 	border: none;
+	background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
+	color: $design-white-color;
+	font-weight: bold;
+	text-transform: uppercase;
+	cursor: pointer;
 }
 
 .login-modal__forgot {
 	color: $design-primary-color;
-	text-decoration: none;
+	font-size: 0.8em;
 }
