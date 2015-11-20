@@ -3,6 +3,7 @@
 .login-modal {
 	width: 230px;
 	padding: 20px;
+	background-color: rgba($design-white-color, 0.5);
 }
 
 .login-modal__header {
@@ -17,8 +18,10 @@
 }
 
 .login-modal__close {
+	padding: 2px;
 	width: 15px;
 	height: 15px;
+	background-color: $design-white-color;
 	cursor: pointer;
 }
 
