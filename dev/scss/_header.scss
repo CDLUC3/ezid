@@ -10,7 +10,6 @@
 }
 
 .header__nav {
-	position: relative; // for .header__learn-menu
 	display: flex;
 	align-items: flex-end; // align login button to bottom of other nav text
 	justify-content: space-between;
@@ -21,6 +20,7 @@
 	display: flex;
 	align-items: flex-end;
 	height: 50px;
+	padding: 0 0 10px; // provides mouseover target for .header__learn-menu
 	background-repeat: no-repeat;
 	background-position: top center;
 	background-size: 23px 23px;
@@ -49,34 +49,44 @@
 
 .header__learn {
 	@extend %header__nav-element;
+	position: relative; // for .header__learn-menu
 	background-image: url('../images/learnOff.svg');
 
 	&:hover {
 		background-image: url('../images/learnOn.svg');
+
+		.header__learn-menu { // show menu on hover
+			display: block;
+		}
+
 	}
 
 }
 
 .header__learn-menu {
-	// display: none;
+	display: none; // hide menu until hover on .header__learn
 	position: absolute;
 	top: 60px;
-	left: 40px;
+	min-width: 160px;
 	margin: 0;
 	padding: 0;
-	list-style: none;
 	border: 1px solid $design-light-gray-border-color;
+	list-style: none;
 	box-shadow: 0 6px 12px rgba($design-light-gray-border-color, 0.5);
 
 	a {
 		display: block;
-		padding: 0.5em 1em;
+		padding: 1em;
 		color: $design-black-color;
+		font-size: 1.1em;
+		font-weight: normal;
 		text-decoration: none;
+		text-transform: none;
 
 		&:hover {
-			color: $design-white-color;
 			background: linear-gradient(to bottom, $design-secondary-gradient-top, $design-secondary-color);
+			color: $design-white-color;
+			font-weight: bold;
 		}
 
 	}
@@ -97,7 +107,7 @@
 	display: flex;
 	align-items: center; // vertical text centering
 	height: 40px;
-	margin: 0 0 0.1em; // align button bottom with nav text
+	margin: 0 0 13px; // align button bottom with nav text
 	padding: 0 20px; // horizontal text centering
 	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 	color: $design-white-color;
