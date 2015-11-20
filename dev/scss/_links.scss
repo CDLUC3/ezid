@@ -1,5 +1,17 @@
 // ##### Link Elements ##### //
 
-.link {
-	// empty
+%link__primary {
+	border-bottom: 1px solid $design-light-gray-border-color;
+	color: $design-primary-color;
+	font-size: 0.8em;
+	text-decoration: none;
+
+	&:hover {
+		border-bottom: 1px solid $design-primary-color;
+	}
+
+}
+
+.link__primary-example {
+	@extend %link__primary;
 }
