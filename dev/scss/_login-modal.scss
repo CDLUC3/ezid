@@ -18,9 +18,9 @@
 }
 
 .login-modal__close {
-	padding: 2px;
 	width: 15px;
 	height: 15px;
+	padding: 2px;
 	background-color: $design-white-color;
 	cursor: pointer;
 }
@@ -40,7 +40,7 @@
 	border: 1px solid $design-dark-gray-color;
 	font-size: 0.9em;
 	
-	&:focus { // streamlining Bootstrap form focus styles:
+	&:focus { // streamlining Bootstrap's form focus styles:
 		transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
 		border-color: $design-primary-color;
 		outline: 0;
@@ -67,6 +67,13 @@
 }
 
 .login-modal__forgot {
+	border-bottom: 1px solid $design-light-gray-border-color;
 	color: $design-primary-color;
 	font-size: 0.8em;
+	text-decoration: none;
+
+	&:hover {
+		border-bottom: 1px solid $design-primary-color;
+	}
+
 }
