@@ -74,9 +74,13 @@
 	list-style: none;
 	box-shadow: 0 6px 12px rgba($design-light-gray-border-color, 0.5);
 
+	li:nth-of-type(6) a {
+		border-bottom: 1px dotted $design-black-color;
+	}
+
 	a {
 		display: block;
-		padding: 1em;
+		padding: 0.7em 1em;
 		color: $design-black-color;
 		font-size: 1.1em;
 		font-weight: normal;
