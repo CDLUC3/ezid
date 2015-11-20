@@ -8,7 +8,12 @@
 @import 'fonts';
 @import 'testing'; // Comment out before production
 
-// ***** Custom Components ***** //
+// ***** Elements ***** //
+
+@import 'buttons';
+@import 'links';
+
+// ***** Components ***** //
 
 @import 'footer';
 @import 'header';
