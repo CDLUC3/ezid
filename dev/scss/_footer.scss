@@ -52,12 +52,11 @@
 .footer__icons {
 	display: flex;
 	justify-content: space-around;
-	padding: 10px 100px;
+	padding: 10px 50px;
 	background-color: $design-secondary-footer-icon-bg;
 
 	@include bp(screen1) {
     flex-flow: column nowrap;
-    justify-content: space-between;
     order: 3;
     padding: 10px 20px;
   }
