@@ -4,6 +4,7 @@
 
 	@include bp(screen1) {
     display: flex;
+    width: 100%;
   }
 
 }
@@ -12,7 +13,7 @@
 	margin: 0 0 1em;
 }
 
-.footer__lang {
+.footer__lang, .footer__logo-link {
 	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-icon-bg;
 
@@ -71,21 +72,16 @@
 	width: 30px;
 }
 
-.footer__brand {
-	display: flex;
+.footer__logo-link {
+	display: none;
+	width: 100px;
 	padding: $layout-box-padding;
-	background-color: $design-secondary-footer-newsfeed;
+	border-right: 1px solid $design-black-color;
 
 	@include bp(screen1) {
-    order: 2;
+    display: block;
   }
 
-}
-
-.footer__logo-link {
-	width: 100px;
-	padding: 0 $layout-box-padding 0 0;
-	border-right: 1px solid $design-black-color;
 }
 
 .footer__logo {
@@ -93,8 +89,14 @@
 }
 
 .footer__copyright {
-	margin: 0 0 0 10px;
 	font-size: 0.8em;
+	padding: $layout-box-padding;
+	background-color: $design-secondary-footer-newsfeed;
+
+	@include bp(screen1) {
+    order: 2;
+  }
+
 }
 
 .footer__copyright-link {
