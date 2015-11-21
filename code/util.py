@@ -413,6 +413,23 @@ def sanitizeXmlSafeCharset (s):
   """
   return _illegalUnichrsRE.sub(" ", s)
 
+if sys.maxunicode >= 0x10000:
+  _illegalUnichrsPlusSuppPlanes = _illegalUnichrs + [(0x10000, 0x10FFFF)]
+else:
+  _illegalUnichrsPlusSuppPlanes = _illegalUnichrs + [(0xD800, 0xDFFF)]
+
+_illegalUnichrsPlusSuppPlanesRE =\
+  re.compile(u"[%s]" % u"".join("%s-%s" % (unichr(low),
+  unichr(high)) for low, high in _illegalUnichrsPlusSuppPlanes))
+
+def validateXmlSafeCharsetBmpOnly (s):
+  """
+  Returns true if the given Unicode string contains only characters
+  that are accepted by XML 1.1 and that are in the Basic Multilingual
+  Plane.
+  """
+  return _illegalUnichrsPlusSuppPlanesRE.search(s) == None
+
 xmlDeclarationRE = re.compile("<\?xml\s+version\s*=\s*(['\"])([-\w.:]+)\\1" +\
   "(\s+encoding\s*=\s*(['\"])([a-zA-Z][-\w.]*)\\4)?" +\
   "(\s+standalone\s*=\s*(['\"])(yes|no)\\7)?\s*\?>\s*")

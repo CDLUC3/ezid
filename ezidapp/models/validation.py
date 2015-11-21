@@ -130,3 +130,11 @@ def resourceType (descriptor):
     return "%s/%s" % (gt, st)
   else:
     return gt
+
+def unicodeBmpOnly (s):
+  # Validates that a Unicode string contains characters in the Basic
+  # Multilingual Plane only (and also doesn't contain control
+  # characters, byte order marks, etc.).
+  if not util.validateXmlSafeCharsetBmpOnly(s):
+    raise django.core.exceptions.ValidationError(
+      "Illegal or disallowed Unicode character.")

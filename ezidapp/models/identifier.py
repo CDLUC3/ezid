@@ -156,7 +156,8 @@ class Identifier (django.db.models.Model):
   # For the CR_WARNING and CR_FAILURE CrossRef statuses only, any
   # message received from CrossRef; otherwise, empty.
 
-  target = django.db.models.URLField(max_length=2000, blank=True, default="")
+  target = django.db.models.URLField(max_length=2000, blank=True, default="",
+    validators=[validation.unicodeBmpOnly])
   # The identifier's nominal target URL, e.g., "http://foo.com/bar".
   # (The target URL actually registered with resolvers depends on the
   # identifier's status.)  Note that EZID supplies a default target
