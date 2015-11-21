@@ -13,9 +13,9 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.core.validators
 import django.db.models
-
-import validation
+import re
 
 class Profile (django.db.models.Model):
   # A metadata profile.
@@ -23,8 +23,9 @@ class Profile (django.db.models.Model):
   class Meta:
     abstract = True
 
-  label = django.db.models.CharField(max_length=255, unique=True,
-    validators=[validation.nonEmpty])
+  label = django.db.models.CharField(max_length=32, unique=True,
+    validators=[django.core.validators.RegexValidator(
+    "^[a-z0-9]+([-_.][a-z0-9]+)*$", "Invalid profile name.", flags=re.I)])
   # The profile's label, e.g., "erc".
 
   def clean (self):
