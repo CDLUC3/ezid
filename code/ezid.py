@@ -356,7 +356,8 @@ def _validateMetadata1 (identifier, user, metadata):
       p = metadata["_profile"].strip()
       # The following matches the validation done by the forthcoming
       # Identifier model.
-      if len(p) > 255: return "profile name exceeds maximum allowable length"
+      if len(p) > 32 or not re.match("^[a-z0-9]+([-_.][a-z0-9]+)*$", p):
+        return "invalid profile name"
       metadata["_p"] = p
     else:
       if identifier.startswith("doi:"):
