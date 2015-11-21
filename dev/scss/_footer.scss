@@ -13,7 +13,8 @@
 	margin: 0 0 1em;
 }
 
-.footer__lang, .footer__logo-link {
+.footer__lang,
+.footer__logo-link {
 	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-icon-bg;
 
@@ -89,9 +90,9 @@
 }
 
 .footer__copyright {
-	font-size: 0.8em;
 	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-newsfeed;
+	font-size: 0.8em;
 
 	@include bp(screen1) {
     order: 2;
@@ -99,6 +100,11 @@
 
 }
 
+.footer__link {
+	@extend %link__primary;
+}
+
 .footer__copyright-link {
+	@extend %link__primary;
 	margin: 0 0.5em 0 0;
 }
