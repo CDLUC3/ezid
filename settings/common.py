@@ -45,7 +45,8 @@ DATABASES = {
     "HOST": "databases.search_host", # see below
     "NAME": "ezid",
     "USER": "ezidrw",
-    "PASSWORD": "databases.search_password" # see below
+    "PASSWORD": "databases.search_password", # see below
+    "OPTIONS": { "charset": "utf8mb4" }
   }
 }
 DATABASE_ROUTERS = ["settings.routers.Router"]
