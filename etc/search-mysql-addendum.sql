@@ -29,6 +29,12 @@ ALTER TABLE ezidapp_searchidentifier MODIFY resourcePublisher LONGTEXT
   NOT NULL COLLATE 'utf8mb4_general_ci';
 ALTER TABLE ezidapp_searchidentifier MODIFY keywords LONGTEXT
   NOT NULL COLLATE 'utf8mb4_general_ci';
+ALTER TABLE ezidapp_searchidentifier MODIFY resourceCreatorPrefix VARCHAR(50)
+  NOT NULL COLLATE 'utf8mb4_general_ci';
+ALTER TABLE ezidapp_searchidentifier MODIFY resourceTitlePrefix VARCHAR(50)
+  NOT NULL COLLATE 'utf8mb4_general_ci';
+ALTER TABLE ezidapp_searchidentifier MODIFY resourcePublisherPrefix VARCHAR(50)
+  NOT NULL COLLATE 'utf8mb4_general_ci';
 
 -- Fixups.  A couple columns are not required within Django, but
 -- because EZID always supplies defaults, they can be declared NOT

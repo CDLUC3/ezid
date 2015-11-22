@@ -89,6 +89,20 @@ class SearchIdentifier (identifier.Identifier):
   keywords = django.db.models.TextField(editable=False)
   # Computed value: a compendium of all searchable text.
 
+  # To support (partial) ordering by resource creator/title/publisher,
+  # which have unbounded length and are therefore unindexable, we add
+  # the following fields that hold prefixes of the corresponding
+  # fields above.
+
+  indexedPrefixLength = 50
+
+  resourceCreatorPrefix = django.db.models.CharField(
+    max_length=indexedPrefixLength, editable=False)
+  resourceTitlePrefix = django.db.models.CharField(
+    max_length=indexedPrefixLength, editable=False)
+  resourcePublisherPrefix = django.db.models.CharField(
+    max_length=indexedPrefixLength, editable=False)
+
   hasMetadata = django.db.models.BooleanField(editable=False)
   # Computed value: True if resourceTitle and resourcePublicationDate
   # are nonempty, and at least one of resourceCreator and
@@ -148,6 +162,11 @@ class SearchIdentifier (identifier.Identifier):
       else:
         kw.append(v)
     self.keywords = " ; ".join(kw)
+    self.resourceCreatorPrefix =\
+      self.resourceCreator[:self.indexedPrefixLength]
+    self.resourceTitlePrefix = self.resourceTitle[:self.indexedPrefixLength]
+    self.resourcePublisherPrefix =\
+      self.resourcePublisher[:self.indexedPrefixLength]
     self.hasMetadata = self.resourceTitle != "" and\
       self.resourcePublicationDate != "" and (self.resourceCreator != "" or\
       self.resourcePublisher != "")
@@ -180,6 +199,9 @@ class SearchIdentifier (identifier.Identifier):
       ("ownergroup", "status"),
       ("ownergroup", "exported"),
       ("ownergroup", "hasMetadata"),
+      ("resourceCreatorPrefix",),
+      ("resourceTitlePrefix",),
+      ("resourcePublisherPrefix",),
       # dashboard
       ("owner", "hasIssues"),
       ("ownergroup", "hasIssues"),
