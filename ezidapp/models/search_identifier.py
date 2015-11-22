@@ -189,25 +189,11 @@ class SearchIdentifier (identifier.Identifier):
 
   class Meta (identifier.Identifier.Meta):
     index_together = [
-      # public search
-      ("publicSearchVisible", "resourcePublicationDate"),
-      ("publicSearchVisible", "resourceType"),
-      # user management search
-      ("owner", "resourcePublicationDate"),
-      ("owner", "resourceType"),
-      ("owner", "createTime"),
-      ("owner", "updateTime"),
-      ("owner", "status"),
-      ("owner", "exported"),
-      ("owner", "hasMetadata"),
-      ("ownergroup", "resourcePublicationDate"),
-      ("ownergroup", "resourceType"),
-      ("ownergroup", "createTime"),
-      ("ownergroup", "updateTime"),
-      ("ownergroup", "status"),
-      ("ownergroup", "exported"),
-      ("ownergroup", "hasMetadata"),
-      ("searchableTarget"),
+      # search
+      ("createTime",),
+      ("updateTime",),
+      ("searchableTarget",),
+      ("resourcePublicationDate",),
       ("resourceCreatorPrefix",),
       ("resourceTitlePrefix",),
       ("resourcePublisherPrefix",),
