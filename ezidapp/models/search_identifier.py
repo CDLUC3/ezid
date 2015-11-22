@@ -54,6 +54,12 @@ class SearchIdentifier (identifier.Identifier):
     import util2
     return _getProfile(util2.defaultProfile(self.identifier))
 
+  searchableTarget = django.db.models.CharField(max_length=255,
+    editable=False)
+  # Computed value.  To support searching over target URLs (which are
+  # too long to be fully indexed), this field is the last 255
+  # characters of the target URL in reverse order.
+
   # Citation metadata follows.  Which is to say, the following
   # metadata refers to the resource identified by the identifier, not
   # the identifier itself.
@@ -137,6 +143,8 @@ class SearchIdentifier (identifier.Identifier):
   def computeComputedValues (self):
     super(SearchIdentifier, self).computeComputedValues()
     import mapping
+    self.searchableTarget = self.target[::-1]\
+      [:self._meta.get_field("searchableTarget").max_length]
     self.resourceCreator = ""
     self.resourceTitle = ""
     self.resourcePublisher = ""
@@ -199,6 +207,7 @@ class SearchIdentifier (identifier.Identifier):
       ("ownergroup", "status"),
       ("ownergroup", "exported"),
       ("ownergroup", "hasMetadata"),
+      ("searchableTarget"),
       ("resourceCreatorPrefix",),
       ("resourceTitlePrefix",),
       ("resourcePublisherPrefix",),
