@@ -65,27 +65,47 @@ def datacenterSymbol (symbol):
   if not datacenterSymbolRE.match(symbol) or symbol[-1] == "\n":
     raise django.core.exceptions.ValidationError("Invalid datacenter symbol.")
 
-_timespecRE = re.compile("\d{4}(-\d\d(-\d\d(T\d\d:\d\d:\d\dZ?)?)?)?$")
-_timespecFormats = {
-  4: "%Y",
-  7: "%Y-%m",
-  10: "%Y-%m-%d",
-  19: "%Y-%m-%dT%H:%M:%S",
-  20: "%Y-%m-%dT%H:%M:%SZ"
-}
+_timespecs = [
+  (4, re.compile("(\d{4})$"), "%Y", 1),
+  (6, re.compile("(\d{6})$"), "%Y%m", 2),
+  (7, re.compile("(\d{4}-\d\d)$"), "%Y-%m", 2),
+  (8, re.compile("(\d{8})$"), "%Y%m%d", 3),
+  (10, re.compile("(\d{4}-\d\d-\d\d)$"), "%Y-%m-%d", 3),
+  (16, re.compile("(\d{4}-\d\d-\d\d \d\d:\d\d)$"), "%Y-%m-%d %H:%M", 3),
+  (16, re.compile("(\d{4}-\d\d-\d\dT\d\d:\d\d)$"), "%Y-%m-%dT%H:%M", 3),
+  ((19, 26), re.compile("(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)" +\
+    "( ?(Z|[-+][01]\d:?(00|15|30|45)))?$"), "%Y-%m-%d %H:%M:%S", 3),
+  ((19, 25), re.compile("(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)" +\
+    "(Z|[-+][01]\d:?(00|15|30|45))?$"), "%Y-%m-%dT%H:%M:%S", 3),
+  (21, re.compile("(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)\.\d$"),
+    "%Y-%m-%d %H:%M:%S", 3),
+  (21, re.compile("(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)\.\d$"),
+    "%Y-%m-%dT%H:%M:%S", 3),
+  ((8, 14), re.compile("([a-zA-Z]+ \d{4})$"), "%B %Y", 2),
+  ((11, 18), re.compile("([a-zA-Z]+ (\d| \d|\d\d), \d{4})$"), "%B %d, %Y", 3)
+]
 
 def publicationDate (date):
-  # Validates a publication date.  Currently one date format is
-  # recognized: ISO 8601 YYYY-MM-DDTHH:MM:SSZ in which trailing
-  # components may be omitted.  Returns just the date portion of the
+  # Validates a publication date, which may be specified in a number
+  # of formats (see above).  Returns just the date portion of the
   # date, i.e., YYYY, YYYY-MM, or YYYY-MM-DD.
-  try:
-    assert _timespecRE.match(date) and date[-1] != "\n"
-    time.strptime(date, _timespecFormats[len(date)])
-    return date[:10]
-  except:
-    raise django.core.exceptions.ValidationError(
-      "Invalid publication date or unrecognized date format.")
+  for length, regexp, pattern, numComponents in _timespecs:
+    if type(length) is tuple:
+      if len(date) < length[0] or len(date) > length[1]: continue
+    else:
+      if len(date) != length: continue
+    try:
+      m = regexp.match(date)
+      assert m and date[-1] != "\n"
+      t = time.strptime(m.group(1), pattern)
+      # Oddly, strptime works on dates before the Unix epoch, but not
+      # strftime, so we avoid it.
+      return ("%04d", "%04d-%02d", "%04d-%02d-%02d")[numComponents-1] %\
+        t[:numComponents]
+    except:
+      pass
+  raise django.core.exceptions.ValidationError(
+    "Invalid publication date or unrecognized date format.")
 
 # EZID borrows its resource type vocabulary from DataCite, and extends
 # that vocabulary by allowing a "specific type" (in DataCite parlance)
