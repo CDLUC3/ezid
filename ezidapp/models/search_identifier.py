@@ -78,12 +78,15 @@ class SearchIdentifier (identifier.Identifier):
   # from the identifier's preferred metadata profile; otherwise,
   # empty.
 
-  resourcePublicationDate = django.db.models.CharField(max_length=10,
-    editable=False)
+  resourcePublicationDate = django.db.models.TextField(editable=False)
   # Computed value: the resource's publication date, if available, as
   # mapped from the identifier's preferred metadata profile;
-  # otherwise, empty.  A nonempty publication date may take one of
-  # three forms: YYYY, YYYY-MM, or YYYY-MM-DD.
+  # otherwise, empty.
+
+  searchablePublicationYear = django.db.models.IntegerField(
+    blank=True, null=True, editable=False)
+  # The year portion of resourcePublicationDate, as a numeric, if one
+  # could be extracted; otherwise, None.
 
   resourceType = django.db.models.CharField(max_length=1, editable=False,
     choices=sorted([(v, k) for k, v in validation.resourceTypes.items()],
@@ -154,8 +157,12 @@ class SearchIdentifier (identifier.Identifier):
     if km.creator != None: self.resourceCreator = km.creator
     if km.title != None: self.resourceTitle = km.title
     if km.publisher != None: self.resourcePublisher = km.publisher
+    if km.date != None: self.resourcePublicationDate = km.date
     d = km.validatedDate
-    if d != None: self.resourcePublicationDate = d
+    if d != None:
+      self.searchablePublicationYear = int(d[:4])
+    else:
+      self.searchablePublicationYear = None
     t = km.validatedType
     if t != None: self.resourceType = validation.resourceTypes[t.split("/")[0]]
     kw = [self.identifier, self.owner.username, self.ownergroup.groupname]
@@ -193,7 +200,7 @@ class SearchIdentifier (identifier.Identifier):
       ("createTime",),
       ("updateTime",),
       ("searchableTarget",),
-      ("resourcePublicationDate",),
+      ("searchablePublicationYear",),
       ("resourceCreatorPrefix",),
       ("resourceTitlePrefix",),
       ("resourcePublisherPrefix",),

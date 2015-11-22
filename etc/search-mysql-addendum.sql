@@ -27,6 +27,8 @@ ALTER TABLE ezidapp_searchidentifier MODIFY resourceTitle LONGTEXT
   NOT NULL COLLATE 'utf8mb4_general_ci';
 ALTER TABLE ezidapp_searchidentifier MODIFY resourcePublisher LONGTEXT
   NOT NULL COLLATE 'utf8mb4_general_ci';
+ALTER TABLE ezidapp_searchidentifier MODIFY resourcePublicationDate LONGTEXT
+  NOT NULL COLLATE 'utf8mb4_general_ci';
 ALTER TABLE ezidapp_searchidentifier MODIFY keywords LONGTEXT
   NOT NULL COLLATE 'utf8mb4_general_ci';
 ALTER TABLE ezidapp_searchidentifier MODIFY resourceCreatorPrefix VARCHAR(50)
