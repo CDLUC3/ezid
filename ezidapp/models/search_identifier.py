@@ -88,12 +88,17 @@ class SearchIdentifier (identifier.Identifier):
   # The year portion of resourcePublicationDate, as a numeric, if one
   # could be extracted; otherwise, None.
 
-  resourceType = django.db.models.CharField(max_length=1, editable=False,
-    choices=sorted([(v, k) for k, v in validation.resourceTypes.items()],
-    cmp=lambda a, b: cmp(a[1], b[1])))
+  resourceType = django.db.models.TextField(editable=False)
   # Computed value: the resource's type, if available, as mapped from
   # the identifier's preferred metadata profile; otherwise, empty.
-  # The type is stored as a single-character mnemonic code.
+
+  searchableResourceType = django.db.models.CharField(max_length=1,
+    editable=False,
+    choices=sorted([(v, k) for k, v in validation.resourceTypes.items()],
+    cmp=lambda a, b: cmp(a[1], b[1])))
+  # The general resource type stored as a single-character mnemonic
+  # code, if one could be extracted from resourceType; otherwise,
+  # empty.
 
   keywords = django.db.models.TextField(editable=False)
   # Computed value: a compendium of all searchable text.
@@ -163,8 +168,12 @@ class SearchIdentifier (identifier.Identifier):
       self.searchablePublicationYear = int(d[:4])
     else:
       self.searchablePublicationYear = None
+    if km.type != None: self.resourceType = km.type
     t = km.validatedType
-    if t != None: self.resourceType = validation.resourceTypes[t.split("/")[0]]
+    if t != None:
+      self.searchableResourceType = validation.resourceTypes[t.split("/")[0]]
+    else:
+      self.searchableResourceType = ""
     kw = [self.identifier, self.owner.username, self.ownergroup.groupname]
     if self.isDoi: kw.append(self.datacenter.symbol)
     if self.target != self.defaultTarget: kw.append(self.target)
