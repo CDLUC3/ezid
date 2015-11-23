@@ -9,17 +9,14 @@
 
 }
 
-.footer__text {
-	margin: 0 0 1em;
-}
-
 .footer__lang,
 .footer__logo-link {
-	padding: $layout-box-padding;
+	padding: $layout-box-padding 20px $layout-box-padding $layout-box-padding;
 	background-color: $design-secondary-lightest;
 
 	@include bp(screen1) {
     order: 1;
+    border-right: 1px solid $design-black-color;
   }
 
 }
@@ -75,9 +72,6 @@
 
 .footer__logo-link {
 	display: none;
-	width: 100px;
-	padding: $layout-box-padding;
-	border-right: 1px solid $design-black-color;
 
 	@include bp(screen1) {
     display: block;
@@ -96,8 +90,13 @@
 
 	@include bp(screen1) {
     order: 2;
+    padding: $layout-box-padding $layout-box-padding $layout-box-padding 20px;
   }
 
+}
+
+.footer__text {
+	margin: 0 0 1em;
 }
 
 .footer__link {
