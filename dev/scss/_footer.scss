@@ -14,6 +14,7 @@
 	background-color: $design-secondary-lightest;
 
 	@include bp(screen1) {
+    flex: 1 0 auto;
     order: 1;
     border-right: 1px solid $design-black-color;
   }
