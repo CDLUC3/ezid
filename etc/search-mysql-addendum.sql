@@ -69,3 +69,7 @@ CREATE FULLTEXT INDEX ezidapp_searchidentifier_resourcePublisher
   ON ezidapp_searchidentifier (resourcePublisher);
 CREATE FULLTEXT INDEX ezidapp_searchidentifier_keywords
   ON ezidapp_searchidentifier (keywords);
+
+-- The following greatly improves index statistics.
+
+ALTER TABLE ezidapp_searchidentifier STATS_SAMPLE_PAGES = 200;
