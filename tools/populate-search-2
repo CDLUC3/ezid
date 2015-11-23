@@ -32,5 +32,9 @@ for line in sys.stdin:
   else:
     id = "ark:/" + id
   if record["_o"] != "anonymous":
-    ezidapp.models.search_identifier.updateFromLegacy(id, record,
-      forceInsert=True)
+    try:
+      ezidapp.models.search_identifier.updateFromLegacy(id, record,
+        forceInsert=True)
+    except Exception, e:
+      sys.stderr.write("Exception processing '%s': %s\n" % (id,
+        util.oneLine(str(e))))
