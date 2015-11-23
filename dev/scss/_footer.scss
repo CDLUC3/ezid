@@ -16,7 +16,7 @@
 .footer__lang,
 .footer__logo-link {
 	padding: $layout-box-padding;
-	background-color: $design-secondary-footer-icon-bg;
+	background-color: $design-secondary-lightest;
 
 	@include bp(screen1) {
     order: 1;
@@ -91,7 +91,7 @@
 
 .footer__copyright {
 	padding: $layout-box-padding;
-	background-color: $design-secondary-footer-newsfeed;
+	background-color: $design-secondary-lightest;
 	font-size: 0.8em;
 
 	@include bp(screen1) {
