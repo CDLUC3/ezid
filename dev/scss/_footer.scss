@@ -88,6 +88,7 @@
 	padding: $layout-box-padding;
 	background-color: $design-secondary-lightest;
 	font-size: 0.8em;
+	line-height: 1.5;
 
 	@include bp(screen1) {
     order: 2;
@@ -97,7 +98,7 @@
 }
 
 .footer__text {
-	margin: 0 0 1em;
+	margin: 0 0 0.8em;
 }
 
 .footer__link {
