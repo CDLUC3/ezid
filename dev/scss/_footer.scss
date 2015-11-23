@@ -23,7 +23,7 @@
 
 .footer__lang-label {
 	display: block;
-	margin: 0 0 1em 0;
+	margin: 0 0 1em;
 	font-weight: bold;
 	text-transform: uppercase;
 }
@@ -103,10 +103,10 @@
 }
 
 .footer__link {
-	@extend %link__primary;
+	@extend %link__over-beige;
 }
 
 .footer__copyright-link {
-	@extend %link__primary;
+	@extend %link__over-beige;
 	margin: 0 0.5em 0 0;
 }

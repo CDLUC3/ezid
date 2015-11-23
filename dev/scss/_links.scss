@@ -14,3 +14,19 @@
 .link__primary-example {
 	@extend %link__primary;
 }
+
+%link__over-beige {
+	border-bottom: 1px solid $design-light-gray-border-color;
+	color: $text-link-over-beige;
+	text-decoration: none;
+
+	&:hover {
+		border-bottom: 1px solid $text-link-over-beige;
+	}
+
+}
+
+.link__over-beige-example {
+	@extend %link__over-beige;
+	background: $design-secondary-lightest;
+}
