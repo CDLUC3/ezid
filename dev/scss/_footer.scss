@@ -1,6 +1,8 @@
 // ##### Footer Component ##### //
 
 .footer {
+	align-items: flex-start;
+	background-color: $design-secondary-lightest;
 
 	@include bp(screen1) {
     display: flex;
@@ -10,13 +12,13 @@
 
 .footer__lang,
 .footer__logo-link {
-	padding: $layout-box-padding 20px $layout-box-padding $layout-box-padding;
-	background-color: $design-secondary-lightest;
+	margin: $layout-box-padding 0 $layout-box-padding $layout-box-padding;
+	padding: 0 20px 0 0;
 
 	@include bp(screen1) {
     flex: 1 0 auto;
     order: 1;
-    border-right: 1px solid $design-black-color;
+    border-right: 1px solid $design-light-gray-border-color;
   }
 
 }
@@ -51,6 +53,7 @@
 
 .footer__icons {
 	display: flex;
+	align-self: stretch;
 	justify-content: space-around;
 	padding: 10px 50px;
 	background-color: $design-secondary-footer-icon-bg;
