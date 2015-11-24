@@ -4,10 +4,12 @@
 	display: flex;
 	flex-flow: column nowrap;
 	background-color: $design-secondary-lightest;
+	
 
 	@include bp(screen1) {
     flex-flow: row nowrap;
     justify-content: center;
+    background: linear-gradient(to right, $design-secondary-lightest 50%, $design-secondary-footer-newsfeed 50%); // split the bg into two colors each for the lang/logo and news regions
   }
 
 }
@@ -91,6 +93,7 @@
 .footer__copyright {
 	flex: 0 1 40%;
 	padding: $layout-box-padding;
+	background-color: $design-secondary-lightest;
 	font-size: 0.8em;
 	line-height: 1.5;
 
