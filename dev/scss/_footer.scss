@@ -4,10 +4,10 @@
 	display: flex;
 	flex-flow: column nowrap;
 	background-color: $design-secondary-lightest;
-	
 
 	@include bp(screen1) {
     flex-flow: row nowrap;
+    align-items: center;
     justify-content: center;
     background: linear-gradient(to right, $design-secondary-lightest 50%, $design-secondary-footer-newsfeed 50%); // split the bg into two colors each for the lang/logo and news regions
   }
@@ -20,7 +20,6 @@
 	padding: 0 20px 0 0;
 
 	@include bp(screen1) {
-    align-self: flex-start;
     order: 1;
     border-right: 1px solid $design-light-gray-border-color;
   }
@@ -57,6 +56,7 @@
 
 .footer__icons {
 	display: flex;
+	align-self: stretch;
 	justify-content: space-around;
 	padding: 10px 50px;
 	background-color: $design-secondary-footer-icon-bg;
@@ -98,6 +98,7 @@
 	line-height: 1.5;
 
 	@include bp(screen1) {
+    align-self: stretch;
     order: 2;
     padding: $layout-box-padding $layout-box-padding $layout-box-padding 20px;
   }
