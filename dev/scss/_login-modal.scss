@@ -64,3 +64,12 @@
 	@extend %link__primary;
 	font-size: 0.8em;
 }
+
+.login-modal__new {
+	margin: 10px 0 0 0;
+	font-size: 1.1em;
+}
+
+.login-modal__sign-up-link {
+	@extend %link__pop;
+}
