@@ -34,6 +34,11 @@
 %link__pop {
 	color: $design-pop-color;
 	text-decoration: none;
+
+	&:hover {
+		border-bottom: 1px solid $design-pop-color;
+	}
+
 }
 
 .link__pop-example {
