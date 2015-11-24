@@ -1,5 +1,37 @@
 // ##### Login Menu Component ##### //
 
 .login-menu {
-	// empty
+	display: flex;
+	justify-content: space-around;
+	height: 40px;
+	padding: 10px;
+	background: linear-gradient(to bottom, $design-secondary-gradient-top, $design-secondary-color);
+}
+
+%login-menu__link {
+	display: flex;
+	flex: 1 0 auto;
+	align-items: center;
+	justify-content: center;
+	border-left: 1px solid $design-black-color;
+	color: $design-black-color;
+	font-size: 0.9em;
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+	word-spacing: 0.3em;
+
+	&:first-child {
+		border: none;
+	}
+
+}
+
+.login-menu__link {
+	@extend %login-menu__link;
+}
+
+.login-menu__link--selected {
+	@extend %login-menu__link;
+	color: $design-white-color;
 }
