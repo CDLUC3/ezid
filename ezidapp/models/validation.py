@@ -113,23 +113,25 @@ def publicationDate (date):
 # in "Image/Photograph".  The following dictionary lists the allowable
 # resource types (these are from version 3.1 of the DataCite Metadata
 # Schema <http://schema.datacite.org/meta/kernel-3/>) and maps them to
-# single-character mnemonic codes for database storage purposes.
+# mnemonic codes for database storage purposes.  (N.B.: the codes are
+# used for ordering, so their order should match the order of the full
+# terms.)
 
 resourceTypes = {
   "Audiovisual": "A",
   "Collection": "C",
   "Dataset": "D",
   "Event": "E",
-  "Image": "I",
-  "InteractiveResource": "N",
+  "Image": "Im",
+  "InteractiveResource": "In",
   "Model": "M",
   "PhysicalObject": "P",
-  "Service": "V",
-  "Software": "S",
-  "Sound": "U",
+  "Service": "Se",
+  "Software": "So",
+  "Sound": "Su",
   "Text": "T",
   "Workflow": "W",
-  "Other": "O"
+  "Other": "Z"
 }
 
 def resourceType (descriptor):

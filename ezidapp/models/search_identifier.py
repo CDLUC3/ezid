@@ -92,7 +92,7 @@ class SearchIdentifier (identifier.Identifier):
   # Computed value: the resource's type, if available, as mapped from
   # the identifier's preferred metadata profile; otherwise, empty.
 
-  searchableResourceType = django.db.models.CharField(max_length=1,
+  searchableResourceType = django.db.models.CharField(max_length=2,
     editable=False,
     choices=sorted([(v, k) for k, v in validation.resourceTypes.items()],
     cmp=lambda a, b: cmp(a[1], b[1])))
