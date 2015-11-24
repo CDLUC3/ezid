@@ -30,3 +30,12 @@
 	@extend %link__over-beige;
 	background: $design-secondary-lightest;
 }
+
+%link__pop {
+	color: $design-pop-color;
+	text-decoration: none;
+}
+
+.link__pop-example {
+	@extend %link__pop;
+}
