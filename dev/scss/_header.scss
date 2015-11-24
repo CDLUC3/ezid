@@ -5,8 +5,20 @@
 	justify-content: space-between;
 }
 
+.header__logos {
+	display: flex;
+}
+
+.header__main-logo-link {
+	// empty
+}
+
 .header__main-logo-image {
 	height: 45px;
+}
+
+.header__affiliate-logo-link {
+	margin: 0 0 0 20px;
 }
 
 .header__affiliate-logo-image {
