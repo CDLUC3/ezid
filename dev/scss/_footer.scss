@@ -6,8 +6,8 @@
 	background-color: $design-secondary-lightest;
 
 	@include bp(screen1) {
-    align-items: flex-start;
     flex-flow: row nowrap;
+    justify-content: center;
   }
 
 }
@@ -18,7 +18,7 @@
 	padding: 0 20px 0 0;
 
 	@include bp(screen1) {
-    flex: 1 0 auto;
+    align-self: flex-start;
     order: 1;
     border-right: 1px solid $design-light-gray-border-color;
   }
@@ -55,7 +55,6 @@
 
 .footer__icons {
 	display: flex;
-	align-self: stretch;
 	justify-content: space-around;
 	padding: 10px 50px;
 	background-color: $design-secondary-footer-icon-bg;
@@ -90,9 +89,8 @@
 }
 
 .footer__copyright {
-	flex: 1 1 auto;
+	flex: 0 1 40%;
 	padding: $layout-box-padding;
-	background-color: $design-secondary-lightest;
 	font-size: 0.8em;
 	line-height: 1.5;
 
