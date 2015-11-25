@@ -18,7 +18,12 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__main-logo-image {
-	height: 45px;
+	height: 7vw;
+
+	@include bp(screen1) {
+		height: 45px;
+	}
+
 }
 
 .header__affiliate-logo-link {
@@ -26,7 +31,12 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__affiliate-logo-image {
-	height: 45px;
+	height: 7vw;
+	
+	@include bp(screen1) {
+		height: 45px;
+	}
+
 }
 
 .header__nav {
