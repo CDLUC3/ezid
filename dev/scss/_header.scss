@@ -1,12 +1,16 @@
 // ##### Header Component ##### //
 
+$header-top-margin: 20px 0 0;
+
 .header {
 	display: flex;
+	flex-flow: row wrap;
 	justify-content: space-between;
 }
 
 .header__logos {
 	display: flex;
+	margin: $header-top-margin;
 }
 
 .header__main-logo-link {
@@ -27,9 +31,10 @@
 
 .header__nav {
 	display: flex;
-	align-items: flex-end; // align login button to bottom of other nav text
 	justify-content: space-between;
 	width: 400px;
+	margin: $header-top-margin;
+	padding: 0 0 0 20px;
 }
 
 %header__nav-element {
@@ -126,6 +131,7 @@
 .header__loginout {
 	display: flex;
 	align-items: center; // vertical text centering
+	align-self: flex-end; // align login button to bottom of other nav text
 	height: 40px;
 	margin: 0 0 13px; // align button bottom with nav text
 	padding: 0 20px; // horizontal text centering
