@@ -46,7 +46,8 @@ DATABASES = {
     "NAME": "ezid",
     "USER": "ezidrw",
     "PASSWORD": "databases.search_password", # see below
-    "OPTIONS": { "charset": "utf8mb4" }
+    "OPTIONS": { "charset": "utf8mb4" },
+    "fulltextSearchSupported": True
   }
 }
 DATABASE_ROUTERS = ["settings.routers.Router"]
