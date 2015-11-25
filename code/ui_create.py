@@ -46,7 +46,7 @@ def advanced(request):
     key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
-  d = advanced_form_processing(request, d)
+  d = adv_form(request, d)
   result = d['id_gen_result']
   if result == 'edit_page':
     return uic.render(request, 'create/advanced', d)  # ID Creation page 
@@ -112,7 +112,7 @@ def simple_form_processing(request, d):
       d['id_gen_result'] = 'edit_page'
   return d
 
-def advanced_form_processing(request, d):
+def adv_form(request, d):
   """Like simple_form_processing. Takes request and context object, d['prefixes'] 
   should be set before calling. Sets manual_profile, current_profile, current_profile_name, 
   internal_profile, profiles, profile_names"""
@@ -163,50 +163,49 @@ def advanced_form_processing(request, d):
     d['id_gen_result'] = 'edit_page' 
   else:     # request.method == "POST"
     P = REQUEST
-    if "current_profile" not in P or "shoulder" not in P: 
-      d['id_gen_result'] = 'bad_request'
-      return d
-    d['form'] = form_objects.getAdvancedIdForm(d['current_profile'], request)
-    pre_list = [p['prefix'] for p in d['prefixes']]
-    if P['shoulder'] not in pre_list:
-      django.contrib.messages.error(request, _("Unauthorized to create with \
-        this identifier prefix: ") + P['shoulder'])
-      d['id_gen_result'] = 'edit_page'
-      return d
-    if not (d['form']['form'].is_valid() and d['form']['remainder_form'].is_valid()):
-      django.contrib.messages.error(request, _("Identifier could not be \
-        created as submitted. Please check the highlighted fields below for \
-        details."))
-      d['id_gen_result'] = 'edit_page'
+    if d['current_profile_name'] == 'datacite_xml':
+      d = adv_form_datacite_xml(request)
     else:
-      """ # For advanced DOI's, this is handled via _datacite_xml.html
-            template by ui_create.ajax_advanced
-          No more manual profiles here for processing.
-      """
-      to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
-        { '_target' : uic.fix_target(P['_target']),
-        "_status": ("public" if P["publish"] == "True" else "reserved"),
-        "_export": ("yes" if P["export"] == "yes" else "no") } )
-      
-      #write out ID and metadata (one variation with special remainder, one without)
-      if P['remainder'] == '' or P['remainder'] == form_objects.remainder_box_default:
-        s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request), 
-            uic.group_or_anon_tup(request), to_write)
-      else:
-        s = ezid.createIdentifier(P['shoulder'] + P['remainder'], 
-          uic.user_or_anon_tup(request), uic.group_or_anon_tup(request), to_write)
-      if s.startswith("success:"):
-        new_id = s.split()[1]
-        django.contrib.messages.success(request, _("IDENTIFIER CREATED."))
-        d['id_gen_result'] = 'created_identifier: ' + new_id
-      else:
-        if "-" in s:
-          err_msg = re.search(r'^error: .+?- (.+)$', s).group(1)
-        else:
-          err_msg = re.search(r'^error: (.+)$', s).group(1)
-        django.contrib.messages.error(request, _("There was an error creating \
-          your identifier") + ": " + err_msg)
+      if "current_profile" not in P or "shoulder" not in P: 
+        d['id_gen_result'] = 'bad_request'
+        return d
+      d['form'] = form_objects.getAdvancedIdForm(d['current_profile'], request)
+      pre_list = [p['prefix'] for p in d['prefixes']]
+      if P['shoulder'] not in pre_list:
+        django.contrib.messages.error(request, _("Unauthorized to create with \
+          this identifier prefix: ") + P['shoulder'])
         d['id_gen_result'] = 'edit_page'
+        return d
+      if not (d['form']['form'].is_valid() and d['form']['remainder_form'].is_valid()):
+        django.contrib.messages.error(request, _("Identifier could not be \
+          created as submitted. Please check the highlighted fields below for \
+          details."))
+        d['id_gen_result'] = 'edit_page'
+      else:
+        to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
+          { '_target' : uic.fix_target(P['_target']),
+          "_status": ("public" if P["publish"] == "True" else "reserved"),
+          "_export": ("yes" if P["export"] == "yes" else "no") } )
+      
+        #write out ID and metadata (one variation with special remainder, one without)
+        if P['remainder'] == '' or P['remainder'] == form_objects.remainder_box_default:
+          s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request), 
+              uic.group_or_anon_tup(request), to_write)
+        else:
+          s = ezid.createIdentifier(P['shoulder'] + P['remainder'], 
+            uic.user_or_anon_tup(request), uic.group_or_anon_tup(request), to_write)
+        if s.startswith("success:"):
+          new_id = s.split()[1]
+          django.contrib.messages.success(request, _("IDENTIFIER CREATED."))
+          d['id_gen_result'] = 'created_identifier: ' + new_id
+        else:
+          if "-" in s:
+            err_msg = re.search(r'^error: .+?- (.+)$', s).group(1)
+          else:
+            err_msg = re.search(r'^error: (.+)$', s).group(1)
+          django.contrib.messages.error(request, _("There was an error creating \
+            your identifier") + ": " + err_msg)
+          d['id_gen_result'] = 'edit_page'
   return d 
 
 def _engage_datacite_xml_profile(request, d, profile_name):
@@ -227,97 +226,82 @@ def _engage_datacite_xml_profile(request, d, profile_name):
   d['current_profile'] = d['current_profile_name']
   return d
 
-def ajax_advanced(request):
+def adv_form_datacite_xml(request):
   """Takes the request and processes create datacite advanced (xml) form
   from both create/demo and edit areas"""
-  if request.is_ajax():
-    d = {}
-    error_msgs = []
+  d = {}
+  error_msgs = []
 
-    P = request.POST
-    if (P['action'] == 'create'):
-      required = ['shoulder', 'remainder', '_target', 'publish', 'export']
-      action_result = [_("creating"), _("created")]
-    else:   # action='edit'
-      required = ['_target', '_export']
-      action_result = [_("editing"), _("edited successfully")]
-      if not P['identifier']:
-        error_msgs.append(_("Unable to edit. Identifier not supplied."))
-    d["testPrefixes"] = uic.testPrefixes
-    if 'auth' in request.session:
-      d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.key }\
-        for s in policy.getShoulders(request.session["auth"].user,
-        request.session["auth"].group)],
-        key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
-    else:
-      d['prefixes'] = []
-    pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
-    if (P['action'] == 'create' and\
-        P['shoulder'] not in pre_list):
-        error_msgs.append(_("Unauthorized to create with this identifier \
-          prefix."))
-    d['form'] = form_objects.getIdForm_datacite_xml(request)
-    for x in required:
-      if x not in P:
-        error_msgs.append(_("A required form element was not submitted."))
-        return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
+  P = request.POST
+  if (P['action'] == 'create'):
+    action_result = [_("creating"), _("created")]
+  else:   # action='edit'
+    action_result = [_("editing"), _("edited successfully")]
+    if not P['identifier']:
+      error_msgs.append(_("Unable to edit. Identifier not supplied."))
+  d["testPrefixes"] = uic.testPrefixes
+  if 'auth' in request.session:
+    d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.key }\
+      for s in policy.getShoulders(request.session["auth"].user,
+      request.session["auth"].group)],
+      key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
+  else:
+    d['prefixes'] = []
+  pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
+  if (P['action'] == 'create' and\
+      P['shoulder'] not in pre_list):
+      error_msgs.append(_("Unauthorized to create with this identifier \
+        prefix."))
+  import pdb; pdb.set_trace()
+  d['form'] = form_objects.getIdForm_datacite_xml(request)
+  if not (d['form']['remainder_form'].is_valid() and 
+    d['form']['creator_set'].is_valid() and d['form']['title_set'].is_valid()):
+    d['id_gen_result'] = 'edit_page'
+  else:
+ 
+    # ToDo: Come back to this once Django form validation is worked out 
+    # return_val = datacite_xml.generate_xml(P)
+    # xsd_path = django.conf.settings.PROJECT_ROOT + "/xsd/datacite-kernel-3/metadata.xsd"
+    # if datacite_xml.validate_document(return_val, xsd_path, error_msgs) == False:
+    #  return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
 
-    error_msgs = error_msgs + uic.validate_advanced_top(request)
-    for k, v in {'/resource/creators/creator[1]/creatorName': _("creator name"),
-                 '/resource/titles/title[1]': _("title"),
-                 '/resource/publisher': _("publisher"),
-                 '/resource/publicationYear': _("publication year")}.items():
-      if (not (k in P)) or P[k].strip() == '':
-        error_msgs.append(_("Please enter a ") + v)
+    django.contrib.messages.success(request, _("Identifier") + "  " \
+      + action_result[1] + ".")
+    d['id_gen_result'] = 'created_identifier: ' + 'ark:/85143/c4hp4m'
+  return d
+
+  #  if (P['action'] == 'edit'): 
+  #    if P['_status'] == 'unavailable':
+  #      stts = P['_status'] + " | " + P['stat_reason']
+  #    else:
+  #      stts = P['_status']
+  #    to_write = _assembleMetadata(request, stts, return_val) 
+  #    s = ezid.setMetadata(P['identifier'], uic.user_or_anon_tup(request),\
+  #        uic.group_or_anon_tup(request), to_write)
+  #  else:  # action=='create'
+  #    stts = ("public" if P["publish"] == "True" else "reserved")
+  #    to_write = _assembleMetadata(request, stts, return_val) 
     
-    if ('/resource/publicationYear' in P) and \
-              not re.compile('^\d{4}$').match(P['/resource/publicationYear']):
-      error_msgs.append(_("Please enter a four digit year for the \
-        publication year."))
-      
-    #for k, v in P.iteritems():
-    #  if v:
-    #    if re.match(r'^/resource/dates/date\[\d+?\]$', k ) and not re.match(r'^\d{4}', v ):
-    #      error_msgs.append("Please ensure your date is numeric and in the correct format.")
-    if len(error_msgs) > 0:
-      return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
-
-    return_val = datacite_xml.generate_xml(P)
-    xsd_path = django.conf.settings.PROJECT_ROOT + "/xsd/datacite-kernel-3/metadata.xsd"
-    if datacite_xml.validate_document(return_val, xsd_path, error_msgs) == False:
-      return uic.jsonResponse({'status': 'failure', 'errors': error_msgs })
-
-    if (P['action'] == 'edit'): 
-      if P['_status'] == 'unavailable':
-        stts = P['_status'] + " | " + P['stat_reason']
-      else:
-        stts = P['_status']
-      to_write = _assembleMetadata(request, stts, return_val) 
-      s = ezid.setMetadata(P['identifier'], uic.user_or_anon_tup(request),\
-          uic.group_or_anon_tup(request), to_write)
-    else:  # action=='create'
-      stts = ("public" if P["publish"] == "True" else "reserved")
-      to_write = _assembleMetadata(request, stts, return_val) 
-      
       #write out ID and metadata (one variation with special remainder, one without)
-      if P['remainder'] == '' or\
-         P['remainder'] == form_objects.remainder_box_default:
-        s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request), 
-          uic.group_or_anon_tup(request), to_write)
-      else:
-        s = ezid.createIdentifier(P['shoulder'] +\
-            P['remainder'], uic.user_or_anon_tup(request),
-        uic.group_or_anon_tup(request), to_write)
+  #    if P['remainder'] == '' or\
+  #       P['remainder'] == form_objects.remainder_box_default:
+  #      s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request), 
+  #        uic.group_or_anon_tup(request), to_write)
+  #    else:
+  #      s = ezid.createIdentifier(P['shoulder'] +\
+  #          P['remainder'], uic.user_or_anon_tup(request),
+  #      uic.group_or_anon_tup(request), to_write)
 
-    if s.startswith("success:"):
-      new_id = s.split()[1]
-      django.contrib.messages.success(request, _("Identifier") + "  " \
-        + action_result[1] + ".")
-      return uic.jsonResponse({'status': 'success', 'id': new_id })
-    else:
-      return uic.jsonResponse({'status': 'failure', 
-        'errors': [_("There was an error ") + action_result[0] + \
-        _(" your identifier:")  + s] })
+  #  if s.startswith("success:"):
+  #    new_id = s.split()[1]
+  #    django.contrib.messages.success(request, _("Identifier") + "  " \
+  #      + action_result[1] + ".")
+  #    d['id_gen_result'] = 'created_identifier: ' + new_id
+  #  else:
+  #    django.contrib.messages.error(request, _("Identifier could not be \
+  #      created as submitted") + ": "  + s)
+  #    d['id_gen_result'] = 'edit_page'
+  #return d
  
 def _assembleMetadata (request, stts, return_val):
     # There is no datacite_xml ezid profile. Just use 'datacite'

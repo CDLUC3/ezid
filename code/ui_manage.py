@@ -9,11 +9,13 @@ import math
 import useradmin
 import erc
 import datacite
+import datacite_xml
+import form_objects
 import urllib
 import time
 import os.path
 from lxml import etree, objectify
-
+from io import StringIO
 
 # these are layout properties for the fields in the manage index page,
 # if I had realized there were going to be so many properties up front, I probably would
@@ -101,6 +103,12 @@ def index(request):
   return uic.render(request, 'manage/index', d)
 
 def _getLatestMetadata(identifier, request):
+  """
+  The successful return is a pair (status, dictionary) where 'status' is a 
+  string that includes the canonical, qualified form of the identifier, as in:
+    success: doi:10.5060/FOO
+  and 'dictionary' contains element (name, value) pairs.
+  """
   if "auth" in request.session:
     r = ezid.getMetadata(identifier, request.session["auth"].user,
       request.session["auth"].group)
@@ -233,6 +241,9 @@ def edit(request, identifier):
       d['current_profile'] = metadata.getProfile('dc')
     if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
       d = _addDataciteXmlToDict(id_metadata, d)
+      d['dx_form'] = datacite_xml.populateFormObject(d['identifier']['datacite']) 
+      # d['form'] gets assigned to {remainder_form, creator_set, title_set, etc...}
+      d['form']=form_objects.getIdForm_datacite_xml(d, None) 
   return uic.render(request, "manage/edit", d)
 
 def _formatErcBlock (block):

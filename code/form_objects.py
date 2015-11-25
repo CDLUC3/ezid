@@ -125,32 +125,41 @@ class CreatorForm(forms.Form):
   """ Form object for Creator Element in DataCite Advanced (XML) profile """
   def __init__(self, *args, **kwargs):
     super(forms.Form,self).__init__(*args,**kwargs)
-    self.fields["/resource/creators/creator[1]/creatorName"] =  \
+    self.fields["name"] =  \
       forms.CharField(label=_("Name"))
-    self.fields["/resource/creators/creator[1]/nameIdentifier"] = \
-      forms.CharField(label=_("Name Identifier"))
+    self.fields["nameIdentifier"] = \
+      forms.CharField(required=False, label=_("Name Identifier"))
+    self.fields["nameIdentifierScheme"] = \
+      forms.CharField(required=False, label=_("Identifier Scheme"))
+    self.fields["schemeURI"] = \
+      forms.CharField(required=False, label=_("Scheme URI"))
+    self.fields["affiliation"] = \
+      forms.CharField(required=False, label=_("Affiliation"))
 
 class TitleForm(forms.Form):
   """ Form object for Title Element in DataCite Advanced (XML) profile """
   def __init__(self, *args, **kwargs):
     super(forms.Form,self).__init__(*args,**kwargs)
-    self.fields["/resource/titles/title[1]"] = \
-      forms.CharField(label=_("Title"))
+    self.fields["title"] = \
+      forms.CharField(required=False, label=_("Title"))
 
-# Returns *Advanced* Datacite elements in the form of Django formsets
-def getIdForm_datacite_xml (request=None):
-  if request: assert request.method == 'POST'
+# Accepts request.POST for base level variables (and when creating a new ID),
+# When displaying an already created ID, accepts a dictionary of datacite_xml
+#   specific data.
+# Returns Advanced Datacite elements in the form of Django formsets
+def getIdForm_datacite_xml (d=None, request=None):
   P = request.POST if request else None
   CreatorSet = formset_factory(CreatorForm)
   TitleSet = formset_factory(TitleForm)
-  if not P:    # GET
+  if d: shoulder = P['shoulder'] if P else d['id_text']
+  if not P and not d:    # Get an empty form
     remainder_form = RemainderForm(P, shoulder=None, auto_id='%s')
     creator_set = CreatorSet(prefix='creators')
     title_set = TitleSet(prefix='titles')
-  else:
-    remainder_form = RemainderForm(P, shoulder=P['shoulder'], auto_id='%s')
-    creator_set = CreatorSet(P, prefix='creators')
-    title_set = TitleSet(P, prefix='titles')
+  else:       # Populated form
+    remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
+    creator_set = CreatorSet(d['dx_form']['data_creators'], prefix='creators', auto_id='%s')
+    title_set = TitleSet(d['dx_form']['data_titles'], prefix='titles', auto_id='%s')
   return {'remainder_form': remainder_form, 'creator_set': creator_set, 
     'title_set': title_set}
 
@@ -253,6 +262,7 @@ class PwResetLandingForm(forms.Form):
     error_messages={'required': _("Please fill in your email address."),
                     'invalid': _("Please fill in a valid email address.")})
   """ Strip any surrounding whitespace """
+  # ToDo: This doesn't seem to work. It also need to be done for email.
   def clean_username(self):
     username = self.cleaned_data["username"].strip()
     return username

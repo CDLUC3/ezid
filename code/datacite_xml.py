@@ -3,8 +3,9 @@
 # EZID :: datacite_xml.py
 #
 # Allows processing a form with form elements named with simple XPATH
-# expressions and creates an XML document for attaching Datacite XML
-# metadata.
+# expressions 
+# 1) Generates form fields for use with Django form model.
+# 2) Creates an XML document for attaching Datacite XML metadata.
 #
 # Author:
 #   Scott Fisher <sfisher@ucop.edu>
@@ -18,6 +19,71 @@
 from lxml import etree
 import re
 import copy
+from io import StringIO
+
+ns = { "N": "http://datacite.org/schema/kernel-3" }
+
+# ============================================================================= 
+#   Form field generation
+# =============================================================================
+
+def _countCreators(tree):
+  return len(tree.xpath('//N:resource/N:creators/N:creator', namespaces=ns))
+
+def _getElementDict(elementName, tree):
+  if elementName == 'creators':
+    return {
+      "name" : tree.xpath('//N:resource/N:creators/N:creator/N:creatorName', namespaces=ns),
+      "nameIdentifier" : tree.xpath('//N:resource/N:creators/N:creator/N:nameIdentifier', namespaces=ns),
+      "nameIdentifierScheme" : tree.xpath('//N:resource/N:creators/N:creator/N:nameIdentifier/@nameIdentifierScheme', namespaces=ns),
+      "schemeURI" : tree.xpath('//N:resource/N:creators/N:creator/N:nameIdentifier/@schemeURI', namespaces=ns),
+      "affiliation" : tree.xpath('//N:resource/N:creators/N:creator/N:affiliation', namespaces=ns) }
+
+def _assignKey(d,k,v,i): 
+  """Assign None if XPath query results in no item for this index in the resulting list"""
+  try: d[k] = v[i].text 
+  except IndexError: d[k] = None
+  return d
+
+def _generateFormFields(elementName, numElements, tree):
+  """Create a dictionary like this:
+     {'creators-0-name': 'Datacite', 'creators-0-nameIdentifier': '0000-09898', ...}"""
+  d={}
+  k_total   = elementName + "-TOTAL_FORMS"
+  d[k_total]   = numElements
+  k_initial = elementName + "-INITIAL_FORMS"
+  d[k_initial] = '0'
+  k_max     = elementName + "-MAX_NUM_FORMS"
+  d[k_max]     = ''
+  for i in range(numElements):
+    for k, v in _getElementDict(elementName, tree).iteritems():
+      d = _assignKey(d, \
+        # Generating a string like this: "creators-0-nameIdentifier
+        elementName + "-" + str(i) + "-" + k, v, i)
+  return d
+
+def populateFormObject(xml):
+  """Returns data prepared for Django form"""
+  xml = re.sub('\n[\s]*', '', xml)
+  root = StringIO(xml)
+  parser = etree.XMLParser(ns_clean=True, recover=True)
+  tree = etree.parse(root, parser)
+  d = {}
+  d['data_creators'] = _generateFormFields('creators', _countCreators(tree), tree)
+  # These next few lines (for Title element)
+  #  still need to be generated using method above for Creator element
+  num_titles = len(tree.xpath('//N:resource/N:titles/N:title', namespaces=ns))
+  titles = tree.xpath('//N:resource/N:titles/N:title', namespaces=ns)
+  title = titles[0].text if len(titles) > 0 else None
+  d['data_titles'] = {
+    'titles-TOTAL_FORMS': num_titles, 'titles-INITIAL_FORMS': '0', 'titles-MAX_NUM_FORMS': '',
+    'titles-0-title': title, 
+  }
+  return d
+ 
+# ============================================================================= 
+#   XML generation
+# =============================================================================
 
 # Order for XML elements. Schema specifies a sequence in some cases (geoLocations).
 RESOURCE_ORDER = ['resource', 'creators', 'creator', 'creatorName',
@@ -81,7 +147,7 @@ def generate_xml(param_items):
                        u' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + \
                        u' xsi:schemaLocation="http://datacite.org/schema/kernel-3' + \
                        u' http://schema.datacite.org/meta/kernel-3/metadata.xsd"/>')
-
+  import pdb; pdb.set_trace()
   items = [x for x in param_items.items() if x[0].startswith(u"/resource") ]
   items = _removeEmptyDescriptions(items)
   items = sorted(items, cmp=compareXpaths, key=lambda i: i[0])
@@ -175,7 +241,7 @@ def _id_type(str):
     return u''
   else:
     return m.findall(str)[0].upper()
-  
+
 def validate_document(xml_doc, xsd_path, err_msgs):
   """Validates the document against the XSD and adds
   error messages to the err_msgs array if things go wrong"""
