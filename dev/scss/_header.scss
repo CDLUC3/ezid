@@ -30,12 +30,13 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__nav {
+	width: 100%;
+	margin: $header-top-margin;
 
 	@include bp(screen1) {
     display: flex;
 		justify-content: space-between;
 		width: 400px;
-		margin: $header-top-margin;
 		padding: 0 0 0 20px;
   }
 
@@ -43,21 +44,33 @@ $header-top-margin: 20px 0 0;
 
 %header__nav-element {
 	display: flex;
-	align-items: flex-end;
-	height: 50px;
-	padding: 0 0 10px; // provides mouseover target for .header__learn-menu
+	margin: -1px 0 0 0; // collapse menu borders
+	padding: 15px 0 15px 45px;
+	border: 1px solid $design-light-gray-border-color;
+	background-color: $design-light-gray-bg-color;
 	background-repeat: no-repeat;
-	background-position: top center;
+	background-position: 10px center;
 	background-size: 23px 23px;
 	color: $design-primary-color;
 	font-size: 0.9em;
 	font-weight: bold;
 	text-decoration: none;
 	text-transform: uppercase;
-	cursor: pointer;
 
-	&:hover {
-		color: $design-secondary-color;
+	@include bp(screen1) {
+		align-items: flex-end;
+		height: 50px;
+		margin: 0;
+		padding: 0 0 10px; // provides mouseover target for .header__learn-menu
+		border: none;
+		background-color: transparent;
+		background-position: top center;
+		cursor: pointer;
+
+		&:hover {
+			color: $design-secondary-color;
+		}
+
 	}
 
 }
@@ -74,10 +87,10 @@ $header-top-margin: 20px 0 0;
 
 .header__learn {
 	@extend %header__nav-element;
-	position: relative; // for .header__learn-menu
 	background-image: url('../images/learnOff.svg');
 
 	@include bp(screen1) {
+		position: relative; // for .header__learn-menu
 
 		&:hover {
 			.header__learn-menu { // show menu on hover
@@ -90,6 +103,7 @@ $header-top-margin: 20px 0 0;
 
 	&:hover {
 		background-image: url('../images/learnOn.svg');
+
 	}
 
 }
@@ -130,6 +144,7 @@ $header-top-margin: 20px 0 0;
 
 .header__contact {
 	@extend %header__nav-element;
+
 	background-image: url('../images/contactOff.svg');
 
 	&:hover {
@@ -139,21 +154,26 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__loginout {
-	display: flex;
-	align-items: center; // vertical text centering
-	align-self: flex-end; // align login button to bottom of other nav text
-	height: 40px;
-	margin: 0 0 13px; // align button bottom with nav text
-	padding: 0 20px; // horizontal text centering
-	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
-	color: $design-white-color;
-	font-size: 0.9em;
-	font-weight: bold;
-	text-decoration: none;
-	text-transform: uppercase;
+	display: none;
 
-	&:hover {
-		color: $design-black-color;
+	@include bp(screen1) {
+		display: flex;
+		align-items: center; // vertical text centering
+		align-self: flex-end; // align login button to bottom of other nav text
+		height: 40px;
+		margin: 0 0 13px; // align button bottom with nav text
+		padding: 0 20px; // horizontal text centering
+		background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+		color: $design-white-color;
+		font-size: 0.9em;
+		font-weight: bold;
+		text-decoration: none;
+		text-transform: uppercase;
+
+		&:hover {
+			color: $design-black-color;
+		}
+
 	}
 
 }
