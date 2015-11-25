@@ -39,7 +39,7 @@ class Identifier (django.db.models.Model):
     abstract = True
 
   identifier = django.db.models.CharField(
-    max_length=util.maxIdentifierLength, primary_key=True,
+    max_length=util.maxIdentifierLength, unique=True,
     validators=[validation.anyIdentifier])
   # The identifier in qualified, normalized form, e.g.,
   # "ark:/12345/abc" or "doi:10.1234/ABC".
@@ -92,6 +92,11 @@ class Identifier (django.db.models.Model):
     choices=[(RESERVED, "reserved"), (PUBLIC, "public"),
     (UNAVAILABLE, "unavailable")], default=PUBLIC)
   # The identifier's status.
+
+  statusDisplayToCode = {
+    "reserved": RESERVED,
+    "public": PUBLIC,
+    "unavailable": UNAVAILABLE }
 
   @property
   def isReserved (self):
