@@ -44,7 +44,7 @@ $header-top-margin: 20px 0 0;
 
 %header__nav-element {
 	display: flex;
-	margin: -1px 0 0 0; // collapse menu borders
+	margin: -1px 0 0; // collapse menu borders
 	padding: 15px 0 15px 45px;
 	border: 1px solid $design-light-gray-border-color;
 	background-color: $design-light-gray-bg-color;
@@ -86,8 +86,6 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__learn {
-	@extend %header__nav-element;
-	background-image: url('../images/learnOff.svg');
 
 	@include bp(screen1) {
 		position: relative; // for .header__learn-menu
@@ -101,9 +99,14 @@ $header-top-margin: 20px 0 0;
 
 	}
 
+}
+
+.header__learn-link {
+	@extend %header__nav-element;
+	background-image: url('../images/learnOff.svg');
+
 	&:hover {
 		background-image: url('../images/learnOn.svg');
-
 	}
 
 }
@@ -112,6 +115,7 @@ $header-top-margin: 20px 0 0;
 	display: none; // hide menu until hover on .header__learn
 	position: absolute;
 	top: 60px;
+	left: 0;
 	min-width: 160px;
 	margin: 0;
 	padding: 0;
