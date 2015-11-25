@@ -75,7 +75,7 @@ $header-top-margin: 20px 0 0;
 
 }
 
-.header__search {
+.header__search-link {
 	@extend %header__nav-element;
 	background-image: url('../images/searchOff.svg');
 
@@ -146,7 +146,7 @@ $header-top-margin: 20px 0 0;
 
 }
 
-.header__contact {
+.header__contact-link {
 	@extend %header__nav-element;
 
 	background-image: url('../images/contactOff.svg');
@@ -157,7 +157,7 @@ $header-top-margin: 20px 0 0;
 
 }
 
-.header__loginout {
+.header__loginout-link {
 	display: none;
 
 	@include bp(screen1) {
