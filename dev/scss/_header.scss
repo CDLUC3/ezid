@@ -1,41 +1,81 @@
 // ##### Header Component ##### //
 
+$header-top-margin: 20px 0 0;
+
 .header {
 	display: flex;
+	flex-flow: row wrap;
 	justify-content: space-between;
 }
 
-.header__logo {
-	width: 370px;
+.header__logos {
+	display: flex;
+	margin: $header-top-margin;
+}
+
+.header__main-logo-link {
+	// empty
+}
+
+.header__main-logo-image {
+	height: 45px;
+}
+
+.header__affiliate-logo-link {
+	margin: 0 0 0 20px;
+}
+
+.header__affiliate-logo-image {
+	height: 45px;
 }
 
 .header__nav {
-	display: flex;
-	justify-content: space-between;
-	width: 400px;
+	width: 100%;
+	margin: $header-top-margin;
+
+	@include bp(screen1) {
+    display: flex;
+		justify-content: space-between;
+		width: 400px;
+		padding: 0 0 0 20px;
+  }
+
 }
 
 %header__nav-element {
 	display: flex;
-	align-items: flex-end;
-	height: 50px;
+	margin: -1px 0 0; // collapse menu borders
+	padding: 15px 0 15px 45px;
+	border: 1px solid $design-light-gray-border-color;
+	background-color: $design-light-gray-bg-color;
 	background-repeat: no-repeat;
-	background-position: top center;
+	background-position: 10px center;
 	background-size: 23px 23px;
 	color: $design-primary-color;
 	font-size: 0.9em;
 	font-weight: bold;
 	text-decoration: none;
 	text-transform: uppercase;
-	cursor: pointer;
 
-	&:hover {
-		color: $design-secondary-color;
+	@include bp(screen1) {
+		align-items: flex-end;
+		height: 50px;
+		margin: 0;
+		padding: 0 0 10px; // provides mouseover target for .header__learn-menu
+		border: none;
+		background-color: transparent;
+		background-position: top center;
+		cursor: pointer;
+
+		&:hover {
+			color: $design-secondary-color;
+		}
+
 	}
 
 }
 
-.header__search {
+.header__search-link {
 	@extend %header__nav-element;
 	background-image: url('../images/searchOff.svg');
 
@@ -46,6 +86,22 @@
 }
 
 .header__learn {
+
+	@include bp(screen1) {
+		position: relative; // for .header__learn-menu
+
+		&:hover {
+			.header__learn-menu { // show menu on hover
+				display: block;
+			}
+
+		}
+
+	}
+
+}
+
+.header__learn-link {
 	@extend %header__nav-element;
 	background-image: url('../images/learnOff.svg');
 
@@ -56,14 +112,43 @@
 }
 
 .header__learn-menu {
-	display: none;
+	display: none; // hide menu until hover on .header__learn
+	position: absolute;
+	top: 60px;
+	left: 0;
+	min-width: 160px;
 	margin: 0;
 	padding: 0;
+	border: 1px solid $design-light-gray-border-color;
 	list-style: none;
+	box-shadow: 0 6px 12px rgba($design-light-gray-border-color, 0.5);
+
+	li:nth-of-type(6) a {
+		border-bottom: 1px dotted $design-black-color;
+	}
+
+	a {
+		display: block;
+		padding: 0.7em 1em;
+		color: $design-black-color;
+		font-size: 1.1em;
+		font-weight: normal;
+		text-decoration: none;
+		text-transform: none;
+
+		&:hover {
+			background: linear-gradient(to bottom, $design-secondary-gradient-top, $design-secondary-color);
+			color: $design-white-color;
+			font-weight: bold;
+		}
+
+	}
+
 }
 
-.header__contact {
+.header__contact-link {
 	@extend %header__nav-element;
+
 	background-image: url('../images/contactOff.svg');
 
 	&:hover {
@@ -72,10 +157,27 @@
 
 }
 
-.header__loginout {
-	border: none;
-	background-color: $design-pop-color;
-	color: $design-white-color;
-	font-size: 1em;
-	text-transform: uppercase;
+.header__loginout-link {
+	display: none;
+
+	@include bp(screen1) {
+		display: flex;
+		align-items: center; // vertical text centering
+		align-self: flex-end; // align login button to bottom of other nav text
+		height: 40px;
+		margin: 0 0 13px; // align button bottom with nav text
+		padding: 0 20px; // horizontal text centering
+		background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+		color: $design-white-color;
+		font-size: 0.9em;
+		font-weight: bold;
+		text-decoration: none;
+		text-transform: uppercase;
+
+		&:hover {
+			color: $design-black-color;
+		}
+
+	}
+
 }

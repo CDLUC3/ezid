@@ -1,0 +1,75 @@
+// ##### Login Modal Component ##### //
+
+.login-modal {
+	width: 230px;
+	padding: 20px;
+	background-color: rgba($design-white-color, 0.5);
+}
+
+.login-modal__header {
+	display: flex;
+	justify-content: space-between;
+}
+
+.login-modal__title {
+	margin: 0 0 10px;
+	color: $design-primary-color;
+	font-size: 1.4em;
+}
+
+.login-modal__close {
+	width: 15px;
+	height: 15px;
+	padding: 2px;
+	background-color: $design-white-color;
+	cursor: pointer;
+}
+
+.login-modal__form {
+	display: flex;
+	flex-flow: column nowrap;
+}
+
+.login-modal__label {
+	@extend %screen-readers-only;
+}
+
+.login-modal__field {
+	margin: 0 0 10px;
+	padding: 0.4em;
+	border: 1px solid $design-dark-gray-color;
+	font-size: 0.9em;
+
+	&:focus { // streamlining Bootstrap's form focus styles:
+		transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+		border-color: $design-primary-color;
+		outline: 0;
+		box-shadow: 0 0 8px rgba($design-primary-color, 0.6);
+	}
+
+}
+
+.login-modal__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.login-modal__submit {
+	@extend %button__primary;
+	font-size: 0.7em;
+}
+
+.login-modal__forgot {
+	@extend %link__primary;
+	font-size: 0.8em;
+}
+
+.login-modal__new {
+	margin: 10px 0 0;
+	font-size: 1.1em;
+}
+
+.login-modal__sign-up-link {
+	@extend %link__pop;
+}

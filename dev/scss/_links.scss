@@ -1,0 +1,46 @@
+// ##### Link Elements ##### //
+
+%link__primary {
+	border-bottom: 1px solid $design-light-gray-border-color;
+	color: $design-primary-color;
+	text-decoration: none;
+
+	&:hover {
+		border-bottom: 1px solid $design-primary-color;
+	}
+
+}
+
+.link__primary-example {
+	@extend %link__primary;
+}
+
+%link__over-beige {
+	border-bottom: 1px solid $design-light-gray-border-color;
+	color: $text-link-over-beige;
+	text-decoration: none;
+
+	&:hover {
+		border-bottom: 1px solid $text-link-over-beige;
+	}
+
+}
+
+.link__over-beige-example {
+	@extend %link__over-beige;
+	background: $design-secondary-lightest;
+}
+
+%link__pop {
+	color: $design-pop-color;
+	text-decoration: none;
+
+	&:hover {
+		border-bottom: 1px solid $design-pop-color;
+	}
+
+}
+
+.link__pop-example {
+	@extend %link__pop;
+}
