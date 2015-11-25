@@ -13,6 +13,8 @@
 #
 # -----------------------------------------------------------------------------
 
+import calendar
+import datetime
 import lxml.etree
 import re
 import sys
@@ -528,3 +530,55 @@ def extractXmlContent (document):
       _extractTransformSource))
   if isinstance(document, basestring): document = parseXmlString(document)
   return unicode(_extractTransform(document)).strip()[:-2]
+
+_datespecRE = re.compile("(\d{4})(?:-(\d\d)(?:-(\d\d))?)?$")
+
+def dateToLowerTimestamp (date):
+  """
+  Converts a string date of the form YYYY, YYYY-MM, or YYYY-MM-DD to a
+  Unix timestamp, or returns None if the date is invalid.  The
+  returned timestamp is the first (earliest) second within the
+  specified time period.  Note that the timestamp may be negative or
+  otherwise out of the normal range for Unix timestamps.
+  """
+  rm = _datespecRE.match(date)
+  if not rm or date[-1] == "\n": return None
+  y = int(rm.group(1))
+  m = int(rm.group(2)) if rm.group(2) != None else 1
+  d = int(rm.group(3)) if rm.group(3) != None else 1
+  try:
+    return calendar.timegm(datetime.date(y, m, d).timetuple())
+  except ValueError:
+    return None
+
+def dateToUpperTimestamp (date):
+  """
+  Converts a string date of the form YYYY, YYYY-MM, or YYYY-MM-DD to a
+  Unix timestamp, or returns None if the date is invalid.  The
+  returned timestamp is the last (latest) second within the specified
+  time period.  Note that the timestamp may be negative or otherwise
+  out of the normal range for Unix timestamps.
+  """
+  # Overflow and edge cases.
+  if date in ["9999", "9999-12", "9999-12-31"]:
+    return calendar.timegm(
+      datetime.datetime(9999, 12, 31, 23, 59, 59).timetuple())
+  elif date == "0000":
+    return None
+  rm = _datespecRE.match(date)
+  if not rm or date[-1] == "\n": return None
+  try:
+    y = int(rm.group(1))
+    if rm.group(2) == None:
+      date = datetime.date(y+1, 1, 1)
+    else:
+      m = int(rm.group(2))
+      if rm.group(3) == None:
+        date = (datetime.date(y, m, 1) +\
+          datetime.timedelta(days=31)).replace(day=1)
+      else:
+        date = datetime.date(y, m, int(rm.group(3))) +\
+          datetime.timedelta(days=1)
+    return calendar.timegm(date.timetuple()) - 1
+  except ValueError:
+    return None
