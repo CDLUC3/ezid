@@ -30,11 +30,15 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__nav {
-	display: flex;
-	justify-content: space-between;
-	width: 400px;
-	margin: $header-top-margin;
-	padding: 0 0 0 20px;
+
+	@include bp(screen1) {
+    display: flex;
+		justify-content: space-between;
+		width: 400px;
+		margin: $header-top-margin;
+		padding: 0 0 0 20px;
+  }
+
 }
 
 %header__nav-element {
@@ -73,13 +77,19 @@ $header-top-margin: 20px 0 0;
 	position: relative; // for .header__learn-menu
 	background-image: url('../images/learnOff.svg');
 
-	&:hover {
-		background-image: url('../images/learnOn.svg');
+	@include bp(screen1) {
 
-		.header__learn-menu { // show menu on hover
-			display: block;
+		&:hover {
+			.header__learn-menu { // show menu on hover
+				display: block;
+			}
+
 		}
 
+	}
+
+	&:hover {
+		background-image: url('../images/learnOn.svg');
 	}
 
 }
