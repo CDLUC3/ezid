@@ -213,9 +213,6 @@ class SearchIdentifier (identifier.Identifier):
       ("resourceCreatorPrefix",),
       ("resourceTitlePrefix",),
       ("resourcePublisherPrefix",),
-      # dashboard
-      ("owner", "hasIssues"),
-      ("ownergroup", "hasIssues"),
       # batch download
       ("owner", "identifier"),
       ("ownergroup", "identifier"),
@@ -290,7 +287,7 @@ def updateFromLegacy (identifier, metadata, forceInsert=False,
   forceUpdate=False):
   # Inserts or updates an identifier in the search database.  The
   # identifier is constructed from a legacy representation.
-  i = SearchIdentifier(identifier)
+  i = SearchIdentifier(identifier=identifier)
   i.fromLegacy(metadata)
   i.owner = _getUser(metadata["_o"])
   i.ownergroup = _getGroup(metadata["_g"])
