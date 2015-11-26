@@ -164,7 +164,7 @@ def adv_form(request, d):
   else:     # request.method == "POST"
     P = REQUEST
     if d['current_profile_name'] == 'datacite_xml':
-      d = adv_form_datacite_xml(request)
+      d = adv_form_datacite_xml(request, d)
     else:
       if "current_profile" not in P or "shoulder" not in P: 
         d['id_gen_result'] = 'bad_request'
@@ -226,10 +226,9 @@ def _engage_datacite_xml_profile(request, d, profile_name):
   d['current_profile'] = d['current_profile_name']
   return d
 
-def adv_form_datacite_xml(request):
+def adv_form_datacite_xml(request, d):
   """Takes the request and processes create datacite advanced (xml) form
   from both create/demo and edit areas"""
-  d = {}
   error_msgs = []
 
   P = request.POST
@@ -248,14 +247,14 @@ def adv_form_datacite_xml(request):
   else:
     d['prefixes'] = []
   pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
+  import pdb; pdb.set_trace()
   if (P['action'] == 'create' and\
       P['shoulder'] not in pre_list):
       error_msgs.append(_("Unauthorized to create with this identifier \
         prefix."))
-  import pdb; pdb.set_trace()
-  d['form'] = form_objects.getIdForm_datacite_xml(request)
+  d['form'] = form_objects.getIdForm_datacite_xml(None, request)
   if not (d['form']['remainder_form'].is_valid() and 
-    d['form']['creator_set'].is_valid() and d['form']['title_set'].is_valid()):
+    d['form']['title_set'].is_valid() and d['form']['creator_set'].is_valid()):
     d['id_gen_result'] = 'edit_page'
   else:
  

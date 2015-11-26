@@ -147,7 +147,6 @@ def generate_xml(param_items):
                        u' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + \
                        u' xsi:schemaLocation="http://datacite.org/schema/kernel-3' + \
                        u' http://schema.datacite.org/meta/kernel-3/metadata.xsd"/>')
-  import pdb; pdb.set_trace()
   items = [x for x in param_items.items() if x[0].startswith(u"/resource") ]
   items = _removeEmptyDescriptions(items)
   items = sorted(items, cmp=compareXpaths, key=lambda i: i[0])

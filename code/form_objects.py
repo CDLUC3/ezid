@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import formset_factory
+from django.forms import BaseFormSet, formset_factory
 import ui_common as uic
 import util
 import idmap
@@ -121,46 +121,50 @@ def _validate_custom_remainder(shoulder):
 
 ################# Advanced Datacite ID Form/Elements #################
 
+# Django faulty design: First formset allows blank form fields.
+# http://stackoverflow.com/questions/2406537/django-formsets-make-first-required
+class RequiredFormSet(BaseFormSet):
+  """ Sets first form in a formset required. Used for TitleSet. """
+  def __init__(self, *args, **kwargs):
+    super(RequiredFormSet, self).__init__(*args, **kwargs)
+    self.forms[0].empty_permitted = False
+
 class CreatorForm(forms.Form):
   """ Form object for Creator Element in DataCite Advanced (XML) profile """
   def __init__(self, *args, **kwargs):
     super(forms.Form,self).__init__(*args,**kwargs)
-    self.fields["name"] =  \
-      forms.CharField(label=_("Name"))
-    self.fields["nameIdentifier"] = \
-      forms.CharField(required=False, label=_("Name Identifier"))
-    self.fields["nameIdentifierScheme"] = \
-      forms.CharField(required=False, label=_("Identifier Scheme"))
-    self.fields["schemeURI"] = \
-      forms.CharField(required=False, label=_("Scheme URI"))
-    self.fields["affiliation"] = \
-      forms.CharField(required=False, label=_("Affiliation"))
+    self.fields["name"] = forms.CharField(label=_("Name"))
+    self.fields["nameIdentifier"] = forms.CharField(required=False, label=_("Name Identifier"))
+    self.fields["nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
+    self.fields["schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
+    self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
 
 class TitleForm(forms.Form):
   """ Form object for Title Element in DataCite Advanced (XML) profile """
-  def __init__(self, *args, **kwargs):
-    super(forms.Form,self).__init__(*args,**kwargs)
-    self.fields["title"] = \
-      forms.CharField(required=False, label=_("Title"))
+  title=forms.CharField(label=_("Title"))
 
 # Accepts request.POST for base level variables (and when creating a new ID),
 # When displaying an already created ID, accepts a dictionary of datacite_xml
 #   specific data.
 # Returns Advanced Datacite elements in the form of Django formsets
 def getIdForm_datacite_xml (d=None, request=None):
-  P = request.POST if request else None
   CreatorSet = formset_factory(CreatorForm)
-  TitleSet = formset_factory(TitleForm)
-  if d: shoulder = P['shoulder'] if P else d['id_text']
-  if not P and not d:    # Get an empty form
-    remainder_form = RemainderForm(P, shoulder=None, auto_id='%s')
+  TitleSet = formset_factory(TitleForm, formset=RequiredFormSet)
+  remainder_form = creator_set = title_set = None 
+  if not request and not d:  # Get an empty form
+    remainder_form = RemainderForm(None, shoulder=None, auto_id='%s')
     creator_set = CreatorSet(prefix='creators')
     title_set = TitleSet(prefix='titles')
-  else:       # Populated form
-    remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
+  if request and request.method == "GET" and d:
     creator_set = CreatorSet(d['dx_form']['data_creators'], prefix='creators', auto_id='%s')
     title_set = TitleSet(d['dx_form']['data_titles'], prefix='titles', auto_id='%s')
-  return {'remainder_form': remainder_form, 'creator_set': creator_set, 
+  elif request and request.method == "POST": 
+    P = request.POST 
+    shoulder = P['shoulder'] 
+    remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
+    creator_set = CreatorSet(P, prefix='creators', auto_id='%s')
+    title_set = TitleSet(P, prefix='titles', auto_id='%s')
+  return {'remainder_form': remainder_form, 'creator_set': creator_set, \
     'title_set': title_set}
 
 #############################################################################
