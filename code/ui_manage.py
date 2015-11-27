@@ -98,14 +98,18 @@ def index(request):
   d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
   if d['p'] > d['total_pages']: d['p'] = d['total_pages']
   d['p'] = max(d['p'], 1)
-  orderColumn = re.sub("mapped", "resource", d['order_by'])
+  orderColumn = d['order_by']
+  if orderColumn in ["mappedTitle", "mappedCreator"]:
+    orderColumn = "resource" + orderColumn[6:] + "Prefix"
+  elif orderColumn == "coOwners":
+    orderColumn = "updateTime" # arbitrary; co-owners not supported anymore
   if not IS_ASCENDING[d['sort']]: orderColumn = "-" + orderColumn
   d['results'] = []
   for id in ezidapp.models.SearchIdentifier.objects.\
     filter(owner__username=d['user'][0]).\
     only("identifier", "owner__username", "createTime", "updateTime",
     "status", "unavailableReason", "resourceTitle", "resourceCreator").\
-    select_related("owner__username").\
+    select_related("owner").\
     order_by(orderColumn)[(d['p']-1)*d['ps']:d['p']*d['ps']]:
     result = { "identifier": id.identifier, "owner": id.owner.username,
       "coOwners": "", "createTime": id.createTime,
