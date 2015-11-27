@@ -28,12 +28,15 @@ import util
 
 _reconnectDelay = None
 _fulltextSupported = None
+_maxTargetLength = None
 
 def _loadConfig ():
-  global _reconnectDelay, _fulltextSupported
+  global _reconnectDelay, _fulltextSupported, _maxTargetLength
   _reconnectDelay = int(config.get("databases.reconnect_delay"))
   _fulltextSupported =\
     django.conf.settings.DATABASES["search"]["fulltextSearchSupported"]
+  _maxTargetLength = ezidapp.models.SearchIdentifier._meta.\
+    get_field("searchableTarget").max_length
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
@@ -207,8 +210,8 @@ def formulateQuery (constraints, orderBy=None,
           values.append(value + "/")
       qlist = []
       for v in values:
-        q = django.db.models.Q(searchableTarget=v[::-1][:255])
-        if len(v) > 255: q &= django.db.models.Q(target=v)
+        q = django.db.models.Q(searchableTarget=v[::-1][:_maxTargetLength])
+        if len(v) > _maxTargetLength: q &= django.db.models.Q(target=v)
         qlist.append(q)
       filters.append(reduce(operator.or_, qlist))
     elif column == "profile":
