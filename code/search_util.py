@@ -138,6 +138,7 @@ def formulateQuery (constraints, orderBy=None,
                       |   |   |            | "Image"
   hasMetadata         |   | Y | bool       |
   publicSearchVisible |   | Y | bool       |
+  hasIssues           |   | Y | bool       |
   -------------------------------------------------------------------------
 
   'constraints' must include one or more of: an owner constraint, an
@@ -149,7 +150,8 @@ def formulateQuery (constraints, orderBy=None,
   filters = []
   scopeRequirementMet = False
   for column, value in constraints.items():
-    if column in ["exported", "isTest", "hasMetadata", "publicSearchVisible"]:
+    if column in ["exported", "isTest", "hasMetadata", "publicSearchVisible",
+      "hasIssues"]:
       filters.append(django.db.models.Q(**{ column: value }))
       if column == "publicSearchVisible" and value == True:
         scopeRequirementMet = True
