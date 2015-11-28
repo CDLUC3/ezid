@@ -12,47 +12,89 @@
 <!-- Old format: -->
 <!-- datacite_get_creators datacite_obj datacite_obj_empty --> 
 {{ form.creator_set.management_form }}
+<div name="creators-" class="element datacite-container">
+  <label for="creators-" class="element"><span title="Creator is a required section">{% trans "Creator" %}</span> <span class="required">*</span></label>
+  <input type="button" value="+" onclick="addOne(this)" name="creators" nbelmtsadded="1" class="addButton">
+  <input type="button" value="-" name="creators-" class="rmvButton">
+
+  <div class="multiple">
 {% for form in form.creator_set %}
   {% for field in form %}
-  <div class="form-group form-group-sm{% if field.errors %} has-error{% endif %}">
-    <label for="{{ field.id_for_label }}" class="col-sm-3 control-label">
-      {{ field.label }}
-    </label>
-    <div class="col-sm-5">
-      {{ field|add_attributes:"form-control"}}
+    <div name="creators-[1]" class="element row{% if field.errors %} has-error{% endif %}">
+      <div name="{{ field.id_for_label }}" class="element form-group form-group-sm">
+        <label for="{{ field.id_for_label }}" class="element col-sm-3 control-label"><span>{{ field.label }}</span>
+        {% if forloop.first %}
+        <span class="required">*</span>
+        {% endif %}
+        </label>
+        <div class="element col-sm-5">
+          {{ field|add_attributes:"data form-control"}}
+        </div>
+      {% if field.errors %}
+        <div class="element col-sm-2">
+        {% for error in field.errors %}
+          {{ error|escape }}
+        {% endfor %}
+        </div>
+      {% endif %}
+      </div>
     </div>
-  {% if field.errors %}
-    <div class="col-sm-2">
-    {% for error in field.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </div>
-  {% endif %}
-  </div>
   {% endfor %}
 {% endfor %}
+  </div>
+</div>
+
 
 {{ form.title_set.management_form }}
-{% for form in form.title_set %}
-  {% for field in form %}
-  <div class="form-group form-group-sm{% if field.errors %} has-error{% endif %}">
-    <label for="{{ field.id_for_label }}" class="col-sm-3 control-label">
-      {{ field.label }}
-    </label>
-    <div class="col-sm-5">
-      {{ field|add_attributes:"form-control"}}
-    </div>
-  {% if field.errors %}
-    <div class="col-sm-2">
-    {% for error in field.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </div>
-  {% endif %}
-  </div>
-  {% endfor %}
-{% endfor %}
+<div name="titles-" class="element datacite-container">
+  <label for="titles-" class="element"><span title="Title is a required section">{% trans "Title" %}</span> <span class="required">*</span></label>
+  <input type="button" value="+" onclick="addOne(this)" name="titles" nbelmtsadded="1" class="addButton">
+  <input type="button" value="-" name="titles-" class="rmvButton">
 
+  <div class="multiple">
+{% for form in form.title_set %}
+    <!-- form.title -->
+    <div name="titles-[1]" class="element row{% if form.title.errors %} has-error{% endif %}">
+      <div name="{{ form.title.id_for_label }}" class="element form-group form-group-sm">
+        <label for="{{ form.title.id_for_label }}" class="element col-sm-3 control-label">
+          <span>{{ form.title.label }}</span>
+            {% if forloop.first %}
+            <span class="required">*</span>
+            {% endif %}
+        </label>
+        <div class="element col-sm-5">
+          {{ form.title|add_attributes:"data form-control"}}
+        </div>
+      {% if form.title.errors %}
+        <div class="element col-sm-2">
+        {% for error in form.title.errors %}
+          {{ error|escape }}
+        {% endfor %}
+        </div>
+      {% endif %}
+      </div>
+    </div>
+    <!-- form.titleType -->
+    <div name="titles-[1]" class="attribute row{% if form.titleType.errors %} has-error{% endif %}">
+      <div name="{{ form.titleType.id_for_label }}" class="element form-group form-group-sm">
+        <label for="{{ form.titleType.id_for_label }}" class="element col-sm-3 control-label">
+          {{ form.titleType.label }}
+        </label>
+        <div class="attribute col-sm-7">
+          <label class="radio-css" for="id_titles-0-titleType_0">
+          {{ form.titleType.0.tag }}<span>{{ form.titleType.0.choice_label }}</span></label>
+          <label class="radio-css" for="id_titles-0-titleType_1">
+          {{ form.titleType.1.tag }}<span>{{ form.titleType.1.choice_label }}</span></label>
+          <label class="radio-css" for="id_titles-0-titleType_2">
+          {{ form.titleType.2.tag }}<span>{{ form.titleType.2.choice_label }}</span></label>
+          <label class="radio-css" for="id_titles-0-titleType_3">
+          {{ form.titleType.3.tag }}<span>{{ form.titleType.3.choice_label }}</span></label>
+        </div>
+      </div>
+    </div>
+{% endfor %}
+  </div>
+</div>
 </div>
 
 <label class="element sized">&nbsp;</label><div><span class="required">*</span> {% trans "required item" %}</div>

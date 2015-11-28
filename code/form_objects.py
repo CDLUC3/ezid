@@ -76,7 +76,8 @@ def getIdForm (profile, request=None):
   elif profile.name == 'datacite': return DataciteForm(P)
   elif profile.name == 'dc': return DcForm(P)
 
-################# Advanced ID Form Retrieval - (two forms technically) #######
+################# Advanced ID Form Retrieval ###########################
+### (two forms technically: RemainderForm and Profile Specific Form) ###
 
 class RemainderForm(forms.Form):
   """ Remainder Form object: all advanced forms have a remainder field,
@@ -142,6 +143,14 @@ class CreatorForm(forms.Form):
 class TitleForm(forms.Form):
   """ Form object for Title Element in DataCite Advanced (XML) profile """
   title=forms.CharField(label=_("Title"))
+  TITLE_TYPES = (
+    ("", _("Main title")),
+    ("AlternativeTitle", _("Alternative title")),
+    ("Subtitle", _("Subtitle")),
+    ("TranslatedTitle", _("Translated title"))
+  ) 
+  titleType = forms.ChoiceField(required=False, label = _("Type"), 
+    widget= forms.RadioSelect(), choices=TITLE_TYPES)
 
 # Accepts request.POST for base level variables (and when creating a new ID),
 # When displaying an already created ID, accepts a dictionary of datacite_xml
