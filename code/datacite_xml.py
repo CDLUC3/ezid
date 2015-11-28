@@ -30,6 +30,12 @@ ns = { "N": "http://datacite.org/schema/kernel-3" }
 def _countCreators(tree):
   return len(tree.xpath('//N:resource/N:creators/N:creator', namespaces=ns))
 
+def _countTitles(tree):
+  return len(tree.xpath('//N:resource/N:titles/N:title', namespaces=ns))
+
+def _countGeoLocations(tree):
+  return len(tree.xpath('//N:resource/N:geoLocations/N:geoLocation', namespaces=ns))
+
 def _getElementDict(elementName, tree):
   if elementName == 'creators':
     return {
@@ -38,6 +44,15 @@ def _getElementDict(elementName, tree):
       "nameIdentifierScheme" : tree.xpath('//N:resource/N:creators/N:creator/N:nameIdentifier/@nameIdentifierScheme', namespaces=ns),
       "schemeURI" : tree.xpath('//N:resource/N:creators/N:creator/N:nameIdentifier/@schemeURI', namespaces=ns),
       "affiliation" : tree.xpath('//N:resource/N:creators/N:creator/N:affiliation', namespaces=ns) }
+  if elementName == 'titles':
+    return {
+      "title" : tree.xpath('//N:resource/N:titles/N:title', namespaces=ns),
+      "titleType" : tree.xpath('//N:resource/N:titles/N:title/@titleType', namespaces=ns) }
+  if elementName == 'geoLocations':
+    return {
+      "point" : tree.xpath('//N:resource/N:geoLocations/N:geoLocation/N:geoLocationPoint', namespaces=ns),
+      "box" : tree.xpath('//N:resource/N:geoLocations/N:geoLocation/N:geoLocationBox', namespaces=ns),
+      "place" : tree.xpath('//N:resource/N:geoLocations/N:geoLocation/N:geoLocationPlace', namespaces=ns) }
 
 def _assignKey(d,k,v,i): 
   """Assign None if XPath query results in no item for this index in the resulting list"""
@@ -70,15 +85,8 @@ def populateFormObject(xml):
   tree = etree.parse(root, parser)
   d = {}
   d['data_creators'] = _generateFormFields('creators', _countCreators(tree), tree)
-  # These next few lines (for Title element)
-  #  still need to be generated using method above for Creator element
-  num_titles = len(tree.xpath('//N:resource/N:titles/N:title', namespaces=ns))
-  titles = tree.xpath('//N:resource/N:titles/N:title', namespaces=ns)
-  title = titles[0].text if len(titles) > 0 else None
-  d['data_titles'] = {
-    'titles-TOTAL_FORMS': num_titles, 'titles-INITIAL_FORMS': '0', 'titles-MAX_NUM_FORMS': '',
-    'titles-0-title': title, 
-  }
+  d['data_titles'] = _generateFormFields('titles', _countTitles(tree), tree)
+  d['data_geoLocations'] = _generateFormFields('geoLocations', _countGeoLocations(tree), tree)
   return d
  
 # ============================================================================= 

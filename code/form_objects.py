@@ -152,29 +152,47 @@ class TitleForm(forms.Form):
   titleType = forms.ChoiceField(required=False, label = _("Type"), 
     widget= forms.RadioSelect(), choices=TITLE_TYPES)
 
+class GeoLocForm(forms.Form):
+  """ Form object for GeoLocation Element in DataCite Advanced (XML) profile """
+  # Translators: A coordinate point  
+  point = forms.RegexField(required=False, label=_("Point"),
+    regex='^(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)$',
+    error_messages={'invalid': _("A Geolocation Point must be made up of two \
+      decimal numbers separated by a space.")})
+  # Translators: A bounding box (with coordinates)
+  box = forms.RegexField(required=False, label=_("Box"),
+    regex='^(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)$',
+    error_messages={'invalid': _("A Geolocation Box must be made up of four \
+      decimal numbers separated by a space.")})
+  place = forms.CharField(required=False, label=_("Place"))
+
 # Accepts request.POST for base level variables (and when creating a new ID),
 # When displaying an already created ID, accepts a dictionary of datacite_xml
 #   specific data.
 # Returns Advanced Datacite elements in the form of Django formsets
 def getIdForm_datacite_xml (d=None, request=None):
-  CreatorSet = formset_factory(CreatorForm)
+  CreatorSet = formset_factory(CreatorForm, formset=RequiredFormSet)
   TitleSet = formset_factory(TitleForm, formset=RequiredFormSet)
-  remainder_form = creator_set = title_set = None 
+  GeoLocSet = formset_factory(GeoLocForm)
+  remainder_form = creator_set = title_set = geoloc_set = None 
   if not request and not d:  # Get an empty form
     remainder_form = RemainderForm(None, shoulder=None, auto_id='%s')
     creator_set = CreatorSet(prefix='creators')
     title_set = TitleSet(prefix='titles')
+    geoloc_set = GeoLocSet(prefix='geoLocations')
   if request and request.method == "GET" and d:
     creator_set = CreatorSet(d['dx_form']['data_creators'], prefix='creators', auto_id='%s')
     title_set = TitleSet(d['dx_form']['data_titles'], prefix='titles', auto_id='%s')
+    geoloc_set = GeoLocSet(d['dx_form']['data_geoLocations'], prefix='geoLocations', auto_id='%s')
   elif request and request.method == "POST": 
     P = request.POST 
     shoulder = P['shoulder'] 
     remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
     creator_set = CreatorSet(P, prefix='creators', auto_id='%s')
     title_set = TitleSet(P, prefix='titles', auto_id='%s')
+    geoloc_set = GeoLocSet(P, prefix='geoLocations', auto_id='%s')
   return {'remainder_form': remainder_form, 'creator_set': creator_set, \
-    'title_set': title_set}
+    'title_set': title_set, 'geoloc_set' : geoloc_set}
 
 #############################################################################
 ############## Remaining Forms (not related to ID creation/editing) #########

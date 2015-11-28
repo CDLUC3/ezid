@@ -1,40 +1,52 @@
 {% load layout_extras %}
 {% load i18n %}
-<div name="/resource/titles" class="element datasite-container">
-  <label for="/resource/titles" class="element"><span title="Title is a required section">{% trans "Title" %}</span> <span class="required">*</span></label>
-  <input type="button" value="+" onclick="addOne(this)" name="/resource/titles" nbelmtsadded="{{ num_titles }}" class="addButton">
-  <input type="button" value="-" name="/resource/titles" class="rmvButton">
-  {% for title in datacite_obj_titles.title %} 
+{{ form.title_set.management_form }}
+<div name="titles-" class="element datacite-container">
+  <label for="titles-" class="element"><span title="Title is a required section">{% trans "Title" %}</span> <span class="required">*</span></label>
+  <input type="button" value="+" onclick="addOne(this)" name="titles" nbelmtsadded="1" class="addButton">
+  <input type="button" value="-" name="titles-" class="rmvButton">
+
   <div class="multiple">
-    <div class="row">
-      <div name="/resource/titles/title[{{ forloop.counter }}]" class="element form-group form-group-sm">
-        <label for="/resource/titles/title[{{ forloop.counter }}]" class="element col-sm-3 control-label"><span title="Title is a required element">Title:</span>
-      {% if forloop.first %}<span class="required">*</span>{% endif %}
+{% for form in form.title_set %}
+    <!-- form.title -->
+    <div name="titles-[1]" class="element row{% if form.title.errors %} has-error{% endif %}">
+      <div name="{{ form.title.id_for_label }}" class="element form-group form-group-sm">
+        <label for="{{ form.title.id_for_label }}" class="element col-sm-3 control-label">
+          <span>{{ form.title.label }}</span>
+            {% if forloop.first %}
+            <span class="required">*</span>
+            {% endif %}
         </label>
-        <div class="col-sm-5">
-          <input type="text" name="/resource/titles/title[{{ forloop.counter }}]" value="{{ title.text|default_if_none:"" }}" class="data form-control" />
+        <div class="element col-sm-5">
+          {{ form.title|add_attributes:"data form-control"}}
+        </div>
+      {% if form.title.errors %}
+        <div class="element col-sm-2">
+        {% for error in form.title.errors %}
+          {{ error|escape }}
+        {% endfor %}
+        </div>
+      {% endif %}
+      </div>
+    </div>
+    <!-- form.titleType -->
+    <div name="titles-[1]" class="attribute row{% if form.titleType.errors %} has-error{% endif %}">
+      <div name="{{ form.titleType.id_for_label }}" class="element form-group form-group-sm">
+        <label for="{{ form.titleType.id_for_label }}" class="element col-sm-3 control-label">
+          {{ form.titleType.label }}
+        </label>
+        <div class="attribute col-sm-7">
+          <label class="radio-css" for="id_titles-0-titleType_0">
+          {{ form.titleType.0.tag }}<span>{{ form.titleType.0.choice_label }}</span></label>
+          <label class="radio-css" for="id_titles-0-titleType_1">
+          {{ form.titleType.1.tag }}<span>{{ form.titleType.1.choice_label }}</span></label>
+          <label class="radio-css" for="id_titles-0-titleType_2">
+          {{ form.titleType.2.tag }}<span>{{ form.titleType.2.choice_label }}</span></label>
+          <label class="radio-css" for="id_titles-0-titleType_3">
+          {{ form.titleType.3.tag }}<span>{{ form.titleType.3.choice_label }}</span></label>
         </div>
       </div>
     </div>
-    <div name="/resource/titles/title[{{ forloop.counter }}]/@titleType" class="attribute row">
-    <div class="form-group form-group-sm">
-      <label for="/resource/titles/title[{{ forloop.counter }}]/@titleType" class="attribute col-sm-3">{% trans "Type:" %}</label>
-      <div class="col-sm-7">
-        <label class="radio-css" for="MainTitle"> 
-          <input type="radio" id="MainTitle" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="" class="data" {% if not title.attrib.titleType or title.attrib.titleType == "" %} checked="checked"{% endif %}/><span>{% trans "Main title" %}</span>
-        </label> 
-        <label class="radio-css" for="AlternativeTitle"> 
-          <input type="radio" id="AlternativeTitle" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="AlternativeTitle" class="data" {% if title.attrib.titleType == "AlternativeTitle" %} checked="checked"{% endif %}/><span>{% trans "Alternative title" %}</span>
-        </label>
-        <label class="radio-css" for="Subtitle"> 
-          <input type="radio" id="Subtitle" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="Subtitle" class="data"{% if title.attrib.titleType == "Subtitle" %} checked="checked"{% endif %}/><span>{% trans "Subtitle" %}</span>
-        </label>
-        <label class="radio-css" for="TranslatedTitle"> 
-          <input type="radio" id="TranslatedTitle" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="TranslatedTitle" class="data" {% if title.attrib.titleType == "TranslatedTitle" %} checked="checked"{% endif %}/><span>{% trans "Translated title" %}</span>
-        </label>
-      </div>
-    </div>
-    </div>
-  </div>
 {% endfor %}
+  </div>
 </div>

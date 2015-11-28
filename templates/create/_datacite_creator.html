@@ -1,78 +1,35 @@
 {% load layout_extras %}
 {% load i18n %}
 
-<div name="/resource/creators" class="element datacite-container">
-  <label for="/resource/creators" class="element"><span title="Creator is a required section">{% trans "Creator" %}</span> <span class="required">*</span></label>
-  <input type="button" value="+" onclick="addOne(this)" name="/resource/creators" nbelmtsadded="{{ num_creators }}" class="addButton">
-  <input type="button" value="-" name="/resource/creators" class="rmvButton">
-  {% for creator in datacite_obj_creators.creator %}
+{{ form.creator_set.management_form }}
+<div name="creators-" class="element datacite-container">
+  <label for="creators-" class="element"><span title="Creator is a required section">{% trans "Creator" %}</span> <span class="required">*</span></label>
+  <input type="button" value="+" onclick="addOne(this)" name="creators-" nbelmtsadded="1" class="addButton">
+  <input type="button" value="-" name="creators-" class="rmvButton">
+
   <div class="multiple">
-    <div class="row">
-      <div name="/resource/creators/creator[{{ forloop.counter }}]" class="element">
-        <div name="/resource/creators/creator[{{ forloop.counter }}]/creatorName" class="element form-group form-group-sm">
-          <label for="/resource/creators/creator[{{ forloop.counter }}]/creatorName" class="element col-sm-3 control-label"><span title="Name is a required element">{% trans "Name:" %}</span>
-          {% if forloop.first %}
-          <span class="required">*</span>
-          {% endif %}
-          </label>
-          <div class="col-sm-5">
-            <input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/creatorName" value="{{ creator.creatorName.text|default_if_none:"" }}" class="data form-control" />
-          </div>
+{% for form in form.creator_set %}
+  {% for field in form %}
+    <div name="creators-[1]" class="element row{% if field.errors %} has-error{% endif %}">
+      <div name="{{ field.id_for_label }}" class="element form-group form-group-sm">
+        <label for="{{ field.id_for_label }}" class="element col-sm-3 control-label"><span>{{ field.label }}</span>
+        {% if forloop.first %}
+        <span class="required">*</span>
+        {% endif %}
+        </label>
+        <div class="element col-sm-5">
+          {{ field|add_attributes:"data form-control"}}
         </div>
+      {% if field.errors %}
+        <div class="element col-sm-2">
+        {% for error in field.errors %}
+          {{ error|escape }}
+        {% endfor %}
+        </div>
+      {% endif %}
       </div>
     </div>
-
-  <div class="accordion">
-    <div class="accordion-group">
-      <div class="accordion-heading">
-        <a class="accordion-toggle font-small" data-toggle="collapse" data-parent="#creator_accordion{{ forloop.counter }}" href="#creator_accordion{{ forloop.counter }}_collapse">
-          &#43; Add more details 
-        </a>
-      </div>
-      <div id="creator_accordion{{ forloop.counter }}_collapse" class="accordion-body collapse">
-        <div class="accordion-inner">
-
-    <div class="optional">
-      <div class="row">
-        <div name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" class="element form-group form-group-sm">
-          <label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" class="element col-sm-3 control-label">{% trans "Name Identifier:" %}</label>
-          <div class="col-sm-5">
-            <input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" value="{{ creator.nameIdentifier.text|default_if_none:"" }}" class="data form-control" />
-          </div>
-        </div>
-      </div>
-      <div class="attribute row">
-        <div class="form-group form-group-sm">
-          <label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" class="attribute col-sm-3 control-label">{% trans "Identifier Scheme:" %}</label>
-          <div class="col-sm-5">
-            <input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" value="{{ creator.nameIdentifier.attrib.nameIdentifierScheme }}" class="data form-control" />
-          </div>
-        </div>
-      </div>
-      <div class="attribute row">
-        <div class="form-group form-group-sm">
-          <label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@schemeURI" class="attribute col-sm-3 control-label">{% trans "Scheme URI:" %}</label>
-          <div class="col-sm-5">
-            <input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@schemeURI" value="{{ creator.nameIdentifier.attrib.schemeURI }}" class="data form-control" />
-          </div>
-        </div>
-      </div>
-      <div class="attribute row">
-        <div class="form-group form-group-sm">
-          <label for="/resource/creators/creator[{{ forloop.counter }}]/affiliation" class="element col-sm-3 control-label">{% trans "Affiliation:" %}</label>
-          <div class="col-sm-5">
-            <input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/affiliation" value="{{ creator.affiliation.text|default_if_none:"" }}" class="data form-control" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-  </div>
   {% endfor %}
+{% endfor %}
+  </div>
 </div>
-
