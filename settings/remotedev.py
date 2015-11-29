@@ -19,7 +19,8 @@ else:
   DATABASES["search"] = {
     "ENGINE": "django.db.backends.sqlite3",
     "NAME": os.path.join(SITE_ROOT, "db", "search.sqlite3"),
-    "OPTIONS": { "timeout": 60 }
+    "OPTIONS": { "timeout": 60 },
+    "fulltextSearchSupported": False
   }
   del SECRET_PATHS[0:len(SECRET_PATHS)]
 
