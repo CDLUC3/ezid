@@ -210,9 +210,9 @@ def unavailable_codes(for_field):
 # This function should and will be moved to a better location.  -GJ
 def _urlForm (id):
   if id.startswith("doi:"):
-    return "%s/%s" % (config.config("resolver.doi"), urllib.quote(id[4:], ":/"))
+    return "%s/%s" % (config.get("resolver.doi"), urllib.quote(id[4:], ":/"))
   elif id.startswith("ark:/") or id.startswith("urn:uuid:"):
-    return "%s/%s" % (config.config("resolver.ark"), urllib.quote(id, ":/"))
+    return "%s/%s" % (config.get("resolver.ark"), urllib.quote(id, ":/"))
   else:
     return "[None]"
 

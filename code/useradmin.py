@@ -27,7 +27,6 @@ import ezid
 import idmap
 import log
 import policy
-import search
 import userauth
 
 _ezidUrl = None
@@ -43,18 +42,18 @@ _ldapAdminPassword = None
 def _loadConfig ():
   global _ezidUrl, _ldapEnabled, _updatesEnabled, _ldapServer, _userDnTemplate
   global _adminUsername, _adminPassword, _ldapAdminDn, _ldapAdminPassword
-  _ezidUrl = config.config("DEFAULT.ezid_base_url")
-  _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
-  _updatesEnabled = (config.config("ldap.updates_enabled").lower() == "true")
-  _ldapServer = config.config("ldap.server")
-  _userDnTemplate = config.config("ldap.user_dn_template")
-  _adminUsername = config.config("ldap.admin_username")
-  _adminPassword = config.config("ldap.admin_password")
-  _ldapAdminDn = config.config("ldap.ldap_admin_dn")
-  _ldapAdminPassword = config.config("ldap.ldap_admin_password")
+  _ezidUrl = config.get("DEFAULT.ezid_base_url")
+  _ldapEnabled = (config.get("ldap.enabled").lower() == "true")
+  _updatesEnabled = (config.get("ldap.updates_enabled").lower() == "true")
+  _ldapServer = config.get("ldap.server")
+  _userDnTemplate = config.get("ldap.user_dn_template")
+  _adminUsername = config.get("ldap.admin_username")
+  _adminPassword = config.get("ldap.admin_password")
+  _ldapAdminDn = config.get("ldap.ldap_admin_dn")
+  _ldapAdminPassword = config.get("ldap.ldap_admin_password")
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def sendPasswordResetEmail (username, emailAddress):
   """
@@ -280,7 +279,6 @@ def setAccountProfile (username, coOwnerList):
         m = []
     if len(m) > 0: l.modify_s(dn, m)
     policy.clearCoOwnerCache(username)
-    search.clearCoOwnershipCache()
     _cacheLdapInformation(l, dn, arkId)
     return None
   except Exception, e:

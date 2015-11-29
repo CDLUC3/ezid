@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
-# EZID command line client.  The output is Unicode, with the character
-# encoding being determined by the platform unless the -e option is
-# used.  By default, ANVL responses (currently, that's all responses)
-# are left in %-encoded form.
+# EZID command line client.  The output is Unicode using UTF-8
+# encoding unless overriden by the -e option.  By default, ANVL
+# responses (currently, that's all responses) are left in %-encoded
+# form.
 #
-# Usage: ezid.py [options] credentials operation...
+# Usage: ezid-client.py [options] credentials operation...
 #
 #   options:
 #     -d          decode ANVL responses
@@ -38,14 +38,15 @@
 #
 # then an identifier with that metadata can be minted by invoking:
 #
-#   ezid.py username:password mint ark:/99999/fk4 @ metadata.txt
+#   ezid-client.py username:password mint ark:/99999/fk4 @ metadata.txt
 #
 # Otherwise, if a value has the form "@filename", a (single) value is
 # read from the named file.  For example, if file metadata.xml
 # contains a DataCite XML record, then an identifier with that record
 # as the value of the 'datacite' element can be minted by invoking:
 #
-#   ezid.py username:password mint doi:10.5072/FK2 datacite @metadata.xml
+#   ezid-client.py username:password mint doi:10.5072/FK2 \
+#     datacite @metadata.xml
 #
 # In both of the above cases, the contents of the named file are
 # assumed to be UTF-8 encoded.  And in both cases, the interpretation
@@ -79,7 +80,7 @@ OPERATIONS = {
   "status": lambda l: l in [0, 1]
 }
 
-USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
+USAGE_TEXT = """Usage: ezid-client.py [options] credentials operation...
 
   options:
     -d          decode ANVL responses
@@ -195,16 +196,13 @@ def printAnvlResponse (response, sortLines=False):
       line = re.sub("%([0-9a-fA-F][0-9a-fA-F])",
         lambda m: chr(int(m.group(1), 16)), line)
     if _options.oneLine: line = line.replace("\n", " ").replace("\r", " ")
-    if _options.outputEncoding != None:
-      print line.encode(_options.outputEncoding)
-    else:
-      print line
+    print line.encode(_options.outputEncoding)
 
 # Process command line arguments.
 
 parser = optparse.OptionParser(formatter=MyHelpFormatter())
 parser.add_option("-d", action="store_true", dest="decode", default=False)
-parser.add_option("-e", action="store", dest="outputEncoding", default=None)
+parser.add_option("-e", action="store", dest="outputEncoding", default="UTF-8")
 parser.add_option("-o", action="store_true", dest="oneLine", default=False)
 parser.add_option("-t", action="store_true", dest="formatTimestamps",
   default=False)

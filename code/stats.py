@@ -51,11 +51,11 @@ _stats = None
 
 def _loadConfig ():
   global _statsFile, _statsFileMtime
-  _statsFile = config.config("DEFAULT.stats_file")
+  _statsFile = config.get("DEFAULT.stats_file")
   _statsFileMtime = 0
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _loadStats ():
   global _statsFileMtime, _stats

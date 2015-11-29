@@ -231,15 +231,15 @@ def _loadConfig ():
   _lock.acquire()
   try:
     _daemonEnabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
-      config.config("daemons.datacite_enabled").lower() == "true"
+      config.get("daemons.datacite_enabled").lower() == "true"
     _loadedRows = []
     if _daemonEnabled:
-      _idleSleep = int(config.config("daemons.datacite_processing_idle_sleep"))
+      _idleSleep = int(config.get("daemons.datacite_processing_idle_sleep"))
       _threadName = uuid.uuid1().hex
       _numWorkerThreads =\
-        int(config.config("daemons.datacite_num_worker_threads"))
+        int(config.get("daemons.datacite_num_worker_threads"))
       _reattemptDelay =\
-        int(config.config("daemons.datacite_processing_error_sleep"))
+        int(config.get("daemons.datacite_processing_error_sleep"))
       t = threading.Thread(target=_daemonThread, name=_threadName)
       t.setDaemon(True)
       t.start()
@@ -252,4 +252,4 @@ def _loadConfig ():
     _lock.release()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)

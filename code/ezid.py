@@ -171,6 +171,7 @@ import uuid
 import config
 import crossref
 import datacite
+import ezidapp.models.validation
 import idmap
 import log
 import noid_egg
@@ -196,23 +197,23 @@ def _loadConfig ():
   global _ezidUrl, _noidEnabled, _defaultDoiProfile, _defaultArkProfile
   global _defaultUrnUuidProfile, _adminUsername, _adminPassword
   global _adminAuthenticatedUser, _perUserThreadLimit, _perUserThrottle
-  _ezidUrl = config.config("DEFAULT.ezid_base_url")
-  _noidEnabled = (config.config("binder.enabled").lower() == "true")
-  _defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
-  _defaultArkProfile = config.config("DEFAULT.default_ark_profile")
-  _defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
-  _adminUsername = config.config("ldap.admin_username")
-  if config.config("ldap.enabled").lower() == "true":
-    _adminPassword = config.config("ldap.admin_password")
+  _ezidUrl = config.get("DEFAULT.ezid_base_url")
+  _noidEnabled = (config.get("binder.enabled").lower() == "true")
+  _defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
+  _defaultArkProfile = config.get("DEFAULT.default_ark_profile")
+  _defaultUrnUuidProfile = config.get("DEFAULT.default_urn_uuid_profile")
+  _adminUsername = config.get("ldap.admin_username")
+  if config.get("ldap.enabled").lower() == "true":
+    _adminPassword = config.get("ldap.admin_password")
   else:
-    _adminPassword = config.config("user_%s.password" % _adminUsername)
+    _adminPassword = config.get("user_%s.password" % _adminUsername)
   _adminAuthenticatedUser = None
-  _perUserThreadLimit = int(config.config("DEFAULT.max_threads_per_user"))
+  _perUserThreadLimit = int(config.get("DEFAULT.max_threads_per_user"))
   _perUserThrottle =\
-    int(config.config("DEFAULT.max_concurrent_operations_per_user"))
+    int(config.get("DEFAULT.max_concurrent_operations_per_user"))
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 # Simple locking mechanism to ensure that, in a multi-threaded
 # environment, no given identifier is operated on by two threads
@@ -355,7 +356,8 @@ def _validateMetadata1 (identifier, user, metadata):
       p = metadata["_profile"].strip()
       # The following matches the validation done by the forthcoming
       # Identifier model.
-      if len(p) > 255: return "profile name exceeds maximum allowable length"
+      if len(p) > 32 or not re.match("^[a-z0-9]+([-_.][a-z0-9]+)*$", p):
+        return "invalid profile name"
       metadata["_p"] = p
     else:
       if identifier.startswith("doi:"):
@@ -457,10 +459,11 @@ def _validateDatacite (identifier, metadata, completeCheck):
   if "datacite.resourcetype" in metadata and\
     metadata["datacite.resourcetype"].strip() != "":
     try:
-      metadata["datacite.resourcetype"] = datacite.validateResourceType(
+      metadata["datacite.resourcetype"] =\
+        ezidapp.models.validation.resourceType(
         metadata["datacite.resourcetype"])
-    except AssertionError, e:
-      return "element 'datacite.resourcetype': " + str(e)
+    except:
+      return "element 'datacite.resourcetype': invalid resource type"
   # The following checks may fail if we operate on a shadow ARK, ergo...
   if identifier.startswith("ark:/") and "_s" in metadata:
     identifier = metadata["_s"]

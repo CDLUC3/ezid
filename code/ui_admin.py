@@ -238,7 +238,7 @@ def system_status(request, ssl=False):
   d['status_list'] = ezidadmin.systemStatus(None)
   d['js_ids'] =  '[' + ','.join(["'" + x['id'] + "'" for x in d['status_list']]) + ']'
   if request.method == "POST":
-    config.load()
+    config.reload()
     request.session.flush()
     django.contrib.messages.success(request, "EZID reloaded.")
     django.contrib.messages.success(request, "You have been logged out.")

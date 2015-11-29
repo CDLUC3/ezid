@@ -46,16 +46,16 @@ def _loadConfig ():
     _testShoulders = None
     _groups = {}
     _coOwners = {}
-    _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
-    _ldapServer = config.config("ldap.server")
-    _userDnTemplate = config.config("ldap.user_dn_template")
-    _adminUsername = config.config("ldap.admin_username")
-    _adminPassword = config.config("ldap.admin_password")
+    _ldapEnabled = (config.get("ldap.enabled").lower() == "true")
+    _ldapServer = config.get("ldap.server")
+    _userDnTemplate = config.get("ldap.user_dn_template")
+    _adminUsername = config.get("ldap.admin_username")
+    _adminPassword = config.get("ldap.admin_password")
   finally:
     _lock.release()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _lookupShoulders (group, shoulderText):
   if shoulderText == "NONE": return []
@@ -102,11 +102,11 @@ def _loadGroupLdap (group):
 
 def _loadGroupLocal (group):
   return (_lookupShoulders(group,
-    config.config("group_%s.shoulders" % group[0])),
-    config.config("group_%s.crossref_enabled" % group[0]).lower() == "true",
-    [m for m in config.config("group_%s.crossref_mail" % group[0]).split(",")\
+    config.get("group_%s.shoulders" % group[0])),
+    config.get("group_%s.crossref_enabled" % group[0]).lower() == "true",
+    [m for m in config.get("group_%s.crossref_mail" % group[0]).split(",")\
     if len(m) > 0],
-    config.config("group_%s.crossref_send_mail_on_error" % group[0]).\
+    config.get("group_%s.crossref_send_mail_on_error" % group[0]).\
     lower() == "true")
 
 def _loadGroup (group):
@@ -220,7 +220,7 @@ def _loadCoOwnersLdap (user):
     if l: l.unbind()
 
 def _loadCoOwnersLocal (user):
-  return [o for o in config.config("user_%s.co_owners" % user).split(",")\
+  return [o for o in config.get("user_%s.co_owners" % user).split(",")\
     if len(o) > 0]
 
 def _loadCoOwners (user):

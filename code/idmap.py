@@ -27,7 +27,7 @@ _userMap = None
 
 def _loadConfig ():
   global _ldapEnabled, _idMap, _groupMap, _userMap
-  _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
+  _ldapEnabled = (config.get("ldap.enabled").lower() == "true")
   _lock.acquire()
   try:
     _idMap = None
@@ -37,7 +37,7 @@ def _loadConfig ():
     _lock.release()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _loadLdapIds ():
   global _idMap, _groupMap, _userMap
@@ -63,13 +63,13 @@ def _loadLocalIds ():
   idMap = {}
   groupMap = {}
   userMap = {}
-  for g in config.config("groups.keys").split(","):
-    id = config.config("group_%s.id" % g)
+  for g in config.get("groups.keys").split(","):
+    id = config.get("group_%s.id" % g)
     assert id not in idMap, "duplicate agent identifier: " + id
     idMap[id] = (g, "group")
     groupMap[g] = id
-  for u in config.config("users.keys").split(","):
-    id = config.config("user_%s.id" % u)
+  for u in config.get("users.keys").split(","):
+    id = config.get("user_%s.id" % u)
     assert id not in idMap, "duplicate agent identifier: " + id
     idMap[id] = (u, "user")
     userMap[u] = id
