@@ -326,4 +326,10 @@ def updateFromLegacy (identifier, metadata, forceInsert=False,
   i.profile = _getProfile(metadata["_p"])
   if i.isDoi: i.datacenter = _getDatacenter(metadata["_d"])
   i.my_full_clean()
+  # Because backproc.py's call to this function is really the only
+  # place identifiers get inserted and updated in the search database,
+  # we're not concerned with race conditions.
+  if not forceInsert:
+    j = SearchIdentifier.objects.filter(identifier=identifier).only("id")
+    if len(j) > 0: i.id = j[0].id
   i.save(force_insert=forceInsert, force_update=forceUpdate)
