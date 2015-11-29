@@ -460,6 +460,7 @@ def _checkAbort ():
   # conflicts very unlikely.
   if not _daemonEnabled or threading.currentThread().getName() != _threadName:
     raise _AbortException()
+  return True
 
 def _queue ():
   _checkAbort()
@@ -555,8 +556,9 @@ def _doPoll (r):
       # We update the identifier's CrossRef status in the store
       # database, and do so in such a way as to avoid entering the
       # identifier back in the update queue, which would trigger a
-      # call to us again.  However, the search database still needs to
-      # be updated, so we do that explicitly.
+      # call to us again.  However, this approach means that we must
+      # also manually update the identifier in the search database.
+      # N.B.: there's a race condition here, but it's insignificant.
       s = ezid.asAdmin(ezid.setMetadata, r.identifier,
         { "_cr": "yes | " + m }, False)
       assert s.startswith("success:"), "ezid.setMetadata failed: " + s
