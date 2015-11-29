@@ -205,17 +205,49 @@ class SearchIdentifier (identifier.Identifier):
 
   class Meta (identifier.Identifier.Meta):
     index_together = [
-      # search
-      ("createTime",),
-      ("updateTime",),
-      ("searchableTarget",),
-      ("searchablePublicationYear",),
-      ("resourceCreatorPrefix",),
-      ("resourceTitlePrefix",),
-      ("resourcePublisherPrefix",),
-      # batch download
+      # batch download and management search
       ("owner", "identifier"),
       ("ownergroup", "identifier"),
+      # management search
+      ("owner", "createTime"),
+      ("owner", "updateTime"),
+      ("owner", "status"),
+      ("owner", "exported"),
+      ("owner", "crossrefStatus"),
+      ("owner", "profile"),
+      ("owner", "isTest"),
+      ("owner", "searchablePublicationYear"),
+      ("owner", "searchableResourceType"),
+      ("owner", "hasMetadata"),
+      ("owner", "hasIssues"),
+      ("owner", "resourceCreatorPrefix"),
+      ("owner", "resourceTitlePrefix"),
+      ("owner", "resourcePublisherPrefix"),
+      ("ownergroup", "createTime"),
+      ("ownergroup", "updateTime"),
+      ("ownergroup", "status"),
+      ("ownergroup", "exported"),
+      ("ownergroup", "crossrefStatus"),
+      ("ownergroup", "profile"),
+      ("ownergroup", "isTest"),
+      ("ownergroup", "searchablePublicationYear"),
+      ("ownergroup", "searchableResourceType"),
+      ("ownergroup", "hasMetadata"),
+      ("ownergroup", "hasIssues"),
+      ("ownergroup", "resourceCreatorPrefix"),
+      ("ownergroup", "resourceTitlePrefix"),
+      ("ownergroup", "resourcePublisherPrefix"),
+      # public search
+      ("publicSearchVisible", "identifier"),
+      ("publicSearchVisible", "createTime"),
+      ("publicSearchVisible", "updateTime"),
+      ("publicSearchVisible", "searchablePublicationYear"),
+      ("publicSearchVisible", "searchableResourceType"),
+      ("publicSearchVisible", "resourceCreatorPrefix"),
+      ("publicSearchVisible", "resourceTitlePrefix"),
+      ("publicSearchVisible", "resourcePublisherPrefix"),
+      # general search
+      ("searchableTarget",),
       # OAI
       ("oaiVisible", "updateTime")
     ]
