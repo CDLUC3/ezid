@@ -4,6 +4,7 @@ $header-top-margin: 20px 0 0;
 
 .header {
 	display: flex;
+	position: relative; // to .header__mobile-menu
 	flex-flow: row wrap;
 	justify-content: space-between;
 }
@@ -32,15 +33,29 @@ $header-top-margin: 20px 0 0;
 
 .header__affiliate-logo-image {
 	height: 7vw;
-	
+
 	@include bp(screen1) {
 		height: 45px;
 	}
 
 }
 
-.header__nav {
-	position: relative; // to .header__mobile-menu
+.header__mobile-menu-icon {
+	position: absolute;
+	top: 20px;
+	right: 0;
+	width: 25px;
+	padding: 8px;
+	border: 1px solid $design-light-gray-border-color;
+
+	@include bp(screen1) {
+		display: none;
+	}
+
+}
+
+%header__nav {
+	display: none;
 	width: 100%;
 	margin: $header-top-margin;
 
@@ -53,16 +68,16 @@ $header-top-margin: 20px 0 0;
 
 }
 
-.header__mobile-menu {
-	position: absolute;
-	top: -65px;
-	right: 0;
-	width: 25px;
-	padding: 8px;
-	border: 1px solid $design-light-gray-border-color;
+.header__nav {
+	@extend %header__nav;
+}
+
+.header__nav--selected {
+	@extend %header__nav;
+	display: block;
 
 	@include bp(screen1) {
-		display: none;
+		display: flex;
 	}
 
 }
