@@ -22,7 +22,7 @@
 # Standard coding practice: to support dynamic configuration
 # reloading, if a module caches any configuration options in module
 # variables, upon being initially loaded it should call
-# config.addLoader to add a reload function.
+# config.registerReloadListener to register a reload function to call.
 #
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
@@ -39,14 +39,15 @@ import subprocess
 import time
 
 import config_loader
+import ezidapp.models.search_identifier
 
-_loaders = []
+_reloadFunctions = []
 
-def addLoader (loader):
+def registerReloadListener (loader):
   """
   Adds a reload listener.
   """
-  _loaders.append(loader)
+  _reloadFunctions.append(loader)
 
 _config = None
 _version = None
@@ -69,22 +70,29 @@ def _getVersion ():
     _getVersion1(os.path.join(django.conf.settings.PROJECT_ROOT, "templates",
       "info")))
 
-def load ():
-  """
-  (Re)loads the configuration file.
-  """
+def _load ():
   global _config, _version
   _config = config_loader.Config(django.conf.settings.SITE_ROOT,
     django.conf.settings.PROJECT_ROOT, django.conf.settings.EZID_CONFIG_FILE,
     django.conf.settings.EZID_SHADOW_CONFIG_FILE,
     django.conf.settings.DEPLOYMENT_LEVEL)
   _version = (int(time.time()),) + _getVersion()
-  for l in _loaders: l()
 
-load()
+def reload ():
+  """
+  Reloads the configuration file.
+  """
+  _load()
+  for f in _reloadFunctions: f()
+  # The following functions are explicitly listed here, and don't use
+  # the registerReloadListener mechanism, to avoid circular import
+  # problems.
+  ezidapp.models.search_identifier.clearCaches()
+
+_load()
 _startupVersion = _version
 
-def config (option):
+def get (option):
   """
   Returns the value of a configuration option.  The option name should
   be specified in section.option syntax, e.g., "datacite.username".

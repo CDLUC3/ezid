@@ -42,26 +42,26 @@ def _loadConfig ():
   global _ldapEnabled, _ldapServer, _numAttempts, _reattemptDelay, _ldapCache
   global _userDnTemplate, _adminUsername, _adminPassword, _users
   global _cachedPasswordLifetime
-  _ldapEnabled = (config.config("ldap.enabled").lower() == "true")
-  _ldapServer = config.config("ldap.server")
-  _numAttempts = int(config.config("ldap.num_attempts"))
-  _reattemptDelay = float(config.config("ldap.reattempt_delay"))
+  _ldapEnabled = (config.get("ldap.enabled").lower() == "true")
+  _ldapServer = config.get("ldap.server")
+  _numAttempts = int(config.get("ldap.num_attempts"))
+  _reattemptDelay = float(config.get("ldap.reattempt_delay"))
   _lock.acquire()
   _ldapCache = {}
   _lock.release()
-  _userDnTemplate = config.config("ldap.user_dn_template")
-  _adminUsername = config.config("ldap.admin_username")
-  _adminPassword = config.config("ldap.admin_password")
-  groupIds = dict([k, config.config("group_%s.id" % k)]\
-    for k in config.config("groups.keys").split(","))
-  _users = dict([k, (config.config("user_%s.password" % k),
-    config.config("user_%s.id" % k), config.config("user_%s.group" % k),
-    groupIds[config.config("user_%s.group" % k)])]\
-    for k in config.config("users.keys").split(","))
-  _cachedPasswordLifetime = int(config.config("ldap.cached_password_lifetime"))
+  _userDnTemplate = config.get("ldap.user_dn_template")
+  _adminUsername = config.get("ldap.admin_username")
+  _adminPassword = config.get("ldap.admin_password")
+  groupIds = dict([k, config.get("group_%s.id" % k)]\
+    for k in config.get("groups.keys").split(","))
+  _users = dict([k, (config.get("user_%s.password" % k),
+    config.get("user_%s.id" % k), config.get("user_%s.group" % k),
+    groupIds[config.get("user_%s.group" % k)])]\
+    for k in config.get("users.keys").split(","))
+  _cachedPasswordLifetime = int(config.get("ldap.cached_password_lifetime"))
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 class AuthenticatedUser (object):
   """

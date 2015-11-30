@@ -29,6 +29,7 @@ import urllib2
 import xml.sax.saxutils
 
 import config
+import ezidapp.models.validation
 import mapping
 import shoulder
 import util
@@ -53,22 +54,22 @@ def _loadConfig ():
   global _enabled, _doiUrl, _metadataUrl, _numAttempts, _reattemptDelay
   global _timeout, _allocators, _stylesheet, _crossrefTransform, _pingDoi
   global _pingDatacenter, _pingTarget, _schemas
-  _enabled = (config.config("datacite.enabled").lower() == "true")
-  _doiUrl = config.config("datacite.doi_url")
-  _metadataUrl = config.config("datacite.metadata_url")
-  _numAttempts = int(config.config("datacite.num_attempts"))
-  _reattemptDelay = int(config.config("datacite.reattempt_delay"))
-  _timeout = int(config.config("datacite.timeout"))
+  _enabled = (config.get("datacite.enabled").lower() == "true")
+  _doiUrl = config.get("datacite.doi_url")
+  _metadataUrl = config.get("datacite.metadata_url")
+  _numAttempts = int(config.get("datacite.num_attempts"))
+  _reattemptDelay = int(config.get("datacite.reattempt_delay"))
+  _timeout = int(config.get("datacite.timeout"))
   _allocators = {}
-  for a in config.config("datacite.allocators").split(","):
-    _allocators[a] = config.config("allocator_%s.password" % a)
+  for a in config.get("datacite.allocators").split(","):
+    _allocators[a] = config.get("allocator_%s.password" % a)
   _stylesheet = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
     django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")))
   _crossrefTransform = lxml.etree.XSLT(lxml.etree.parse(os.path.join(
     django.conf.settings.PROJECT_ROOT, "profiles", "crossref2datacite.xsl")))
-  _pingDoi = config.config("datacite.ping_doi")
-  _pingDatacenter = config.config("datacite.ping_datacenter")
-  _pingTarget = config.config("datacite.ping_target")
+  _pingDoi = config.get("datacite.ping_doi")
+  _pingDatacenter = config.get("datacite.ping_datacenter")
+  _pingTarget = config.get("datacite.ping_target")
   schemas = {}
   for f in os.listdir(os.path.join(django.conf.settings.PROJECT_ROOT, "xsd")):
     m = re.match("datacite-kernel-(.*)", f)
@@ -79,7 +80,7 @@ def _loadConfig ():
   _schemas = schemas
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _modifyActiveCount (delta):
   global _numActiveOperations
@@ -298,51 +299,6 @@ def validateDcmsRecord (identifier, record, schemaValidate=True):
   except Exception, e:
     assert False, "XML serialization error: " + str(e)
 
-# From version 3.1 of the DataCite Metadata Schema
-# <http://schema.datacite.org/meta/kernel-3/>:
-_resourceTypes = ["Audiovisual", "Collection", "Dataset", "Event", "Image",
-  "InteractiveResource", "Model", "PhysicalObject", "Service", "Software",
-  "Sound", "Text", "Workflow", "Other"]
-
-# From the DCMI Type Vocabulary
-# <http://dublincore.org/documents/dcmi-type-vocabulary/#H7>:
-_dcResourceTypes = ["Collection", "Dataset", "Event", "Image",
-  "InteractiveResource", "MovingImage", "PhysicalObject", "Service",
-  "Software", "Sound", "StillImage", "Text"]
-
-def validateResourceType (descriptor):
-  """
-  Validates and normalizes a resource type descriptor.  By
-  "descriptor" we mean either a general resource type by itself (e.g.,
-  "Image") or a general and a specific resource type separated by a
-  slash (e.g., "Image/Photograph").  Either a normalized descriptor is
-  returned or an assertion error is raised.
-  """
-  descriptor = descriptor.strip()
-  if "/" in descriptor:
-    gt, st = descriptor.split("/", 1)
-    gt = gt.strip()
-    st = st.strip()
-    assert gt in _resourceTypes, "invalid general resource type"
-    if len(st) > 0:
-      return gt + "/" + st
-    else:
-      return gt
-  else:
-    assert descriptor in _resourceTypes, "invalid general resource type"
-    return descriptor
-
-def _insertEncodingDeclaration (record):
-  m = _prologRE.match(record)
-  if m:
-    if m.group(3) is None:
-      return record[:len(m.group(1))] + " encoding=\"UTF-8\"" +\
-        record[len(m.group(1)):]
-    else:
-      return record
-  else:
-    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + record
-
 def _interpolate (template, *args):
   return template % tuple(xml.sax.saxutils.escape(a, { "\"": "&quot;" })\
     for a in args)
@@ -372,13 +328,6 @@ _resourceTypeTemplate2 =\
   u"""  <resourceType resourceTypeGeneral="%s">%s</resourceType>
 """
 
-def _extractPublicationYear (year):
-  m = re.match("(\d{4})(-\d\d(-\d\d(T\d\d:\d\d:\d\dZ?)?)?)?$", year)
-  if m:
-    return m.group(1)
-  else:
-    return "0000"
-
 def formRecord (identifier, metadata, supplyMissing=False):
   """
   Forms an XML record for upload to DataCite, employing metadata
@@ -403,62 +352,48 @@ def formRecord (identifier, metadata, supplyMissing=False):
   else:
     assert False, "unhandled case"
   if metadata.get("datacite", "").strip() != "":
-    return _insertEncodingDeclaration(metadata["datacite"])
+    return util.insertXmlEncodingDeclaration(metadata["datacite"])
   elif metadata.get("_p", metadata.get("_profile", "")) == "crossref" and\
     metadata.get("crossref", "").strip() != "":
+    # We could run CrossRef metadata through the metadata mapper using
+    # the case below, but doing it this way creates a richer XML
+    # record.
     overrides = { "_idType": idType, "_id": idBody }
     for e in ["creator", "title", "publisher", "publicationyear",
       "resourcetype"]:
       if metadata.get("datacite."+e, "").strip() != "":
         overrides["datacite."+e] = metadata["datacite."+e].strip()
     if "datacite.publicationyear" in overrides:
-      overrides["datacite.publicationyear"] =\
-        _extractPublicationYear(overrides["datacite.publicationyear"])
+      try:
+        overrides["datacite.publicationyear"] =\
+          ezidapp.models.validation.publicationDate(
+          overrides["datacite.publicationyear"])[:4]
+      except:
+        overrides["datacite.publicationyear"] = "0000"
     try:
-      return _insertEncodingDeclaration(crossrefToDatacite(
+      return util.insertXmlEncodingDeclaration(crossrefToDatacite(
         metadata["crossref"].strip(), overrides))
     except Exception, e:
       assert False, "CrossRef to DataCite metadata conversion error: " + str(e)
   else:
-    # Python shortcoming: local variables can't be assigned to from
-    # inner scopes, so we have to make mappedMetadata a list.
-    mappedMetadata = [None]
-    def getMappedValue (element, index, label):
-      if metadata.get("datacite."+element, "").strip() != "":
-        return metadata["datacite."+element].strip()
-      else:
-        if mappedMetadata[0] == None:
-          mappedMetadata[0] = mapping.getDisplayMetadata(metadata)
-        if mappedMetadata[0][index] != None:
-          return mappedMetadata[0][index]
+    km = mapping.map(metadata, datacitePriority=True)
+    for a in ["creator", "title", "publisher", "date"]:
+      if getattr(km, a) == None:
+        if supplyMissing:
+          setattr(km, a, "(:unav)")
         else:
-          if supplyMissing:
-            return "(:unav)"
-          else:
-            assert False, "no " + label
-    creator = getMappedValue("creator", 0, "creator")
-    title = getMappedValue("title", 1, "title")
-    publisher = getMappedValue("publisher", 2, "publisher")
-    publicationYear = _extractPublicationYear(
-      getMappedValue("publicationyear", 3, "publication year"))
-    r = _interpolate(_metadataTemplate, idType, idBody, creator, title,
-      publisher, publicationYear)
-    if metadata.get("datacite.resourcetype", "").strip() != "":
-      rt = metadata["datacite.resourcetype"].strip()
-      if "/" in rt:
-        gt, st = rt.split("/", 1)
-        r += _interpolate(_resourceTypeTemplate2, gt.strip(), st.strip())
+          assert False, "no " + ("publication date" if a == "date" else a)
+    d = km.validatedDate
+    r = _interpolate(_metadataTemplate, idType, idBody, km.creator, km.title,
+      km.publisher, d[:4] if d else "0000")
+    t = km.validatedType
+    if t == None and km.type != None: t = "Other"
+    if t != None:
+      if "/" in t:
+        gt, st = t.split("/", 1)
+        r += _interpolate(_resourceTypeTemplate2, gt, st)
       else:
-        r += _interpolate(_resourceTypeTemplate1, rt)
-    elif metadata.get("_p", metadata.get("_profile", "")) == "dc" and\
-      metadata.get("dc.type", "").strip() != "":
-      rt = metadata["dc.type"].strip()
-      if rt in _dcResourceTypes:
-        if rt == "MovingImage":
-          rt = "Audiovisual"
-        elif rt == "StillImage":
-          rt = "Image"
-        r += _interpolate(_resourceTypeTemplate1, rt)
+        r += _interpolate(_resourceTypeTemplate1, t)
     r += u"</resource>\n"
     return r
 
@@ -618,13 +553,6 @@ def pingDataciteOnly ():
       if c: c.close()
     time.sleep(_reattemptDelay)
 
-def _removeEncodingDeclaration (record):
-  m = _prologRE.match(record)
-  if m and m.group(3) != None:
-    return record[:len(m.group(1))] + record[len(m.group(1))+len(m.group(3)):]
-  else:
-    return record
-
 def dcmsRecordToHtml (record):
   """
   Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
@@ -632,8 +560,8 @@ def dcmsRecordToHtml (record):
   None on error.
   """
   try:
-    r = lxml.etree.tostring(_stylesheet(lxml.etree.XML(
-      _removeEncodingDeclaration(record))), encoding=unicode)
+    r = lxml.etree.tostring(_stylesheet(util.parseXmlString(record)),
+      encoding=unicode)
     assert r.startswith("<table")
     return r
   except:
@@ -653,8 +581,7 @@ def crossrefToDatacite (record, overrides={}):
   for k, v in overrides.items():
     d[k] = lxml.etree.XSLT.strparam(v)
   return lxml.etree.tostring(_crossrefTransform(
-    lxml.etree.XML(_removeEncodingDeclaration(record)), **d),
-    encoding=unicode)
+    util.parseXmlString(record), **d), encoding=unicode)
 
 _schemaVersionRE =\
   re.compile("{http://datacite\.org/schema/kernel-([^}]*)}resource$")
@@ -669,7 +596,7 @@ def upgradeDcmsRecord (record, returnString=True):
   lxml.etree.Element object is returned.  In both cases, the root
   element's xsi:schemaLocation attribute is set or added as necessary.
   """
-  root = lxml.etree.XML(_removeEncodingDeclaration(record))
+  root = util.parseXmlString(record)
   root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
     "http://datacite.org/schema/kernel-3 " +\
     "http://schema.datacite.org/meta/kernel-3/metadata.xsd"

@@ -56,14 +56,14 @@ def _loadConfig ():
   global _suppressionWindow, _errorLifetime, _sentErrors
   _lock.acquire()
   try:
-    _suppressionWindow = int(config.config("email.error_suppression_window"))
-    _errorLifetime = int(config.config("email.error_lifetime"))
+    _suppressionWindow = int(config.get("email.error_suppression_window"))
+    _errorLifetime = int(config.get("email.error_lifetime"))
     _sentErrors = {}
   finally:
     _lock.release()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 # In the following, it is important that we only augment the existing
 # logging, not overwrite it, for Django also uses Python's logging

@@ -57,10 +57,10 @@ def _newsDaemon ():
 def _loadConfig ():
   global _enabled, _url, _pollingInterval, _threadName, _news_items
   _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
-    config.config("daemons.newsfeed_enabled").lower() == "true"
+    config.get("daemons.newsfeed_enabled").lower() == "true"
   if _enabled:
-    _url = config.config("newsfeed.url")
-    _pollingInterval = int(config.config("newsfeed.polling_interval"))
+    _url = config.get("newsfeed.url")
+    _pollingInterval = int(config.get("newsfeed.polling_interval"))
     _lock.acquire()
     try:
       _news_items = _noItem
@@ -74,7 +74,7 @@ def _loadConfig ():
     _news_items = _noItem
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def getLatestItem ():
   """
