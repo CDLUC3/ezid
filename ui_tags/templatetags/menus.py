@@ -85,7 +85,7 @@ def display_item(tup, session, is_current):
       return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
     elif tup[2] == 'user':
       return """<span class="menu_disabled">""" + tup[0] + """</span>"""
-    elif tup[2] == 'admin' and session.has_key('auth') and config.config("ldap.admin_username") == session['auth'].user[0]:
+    elif tup[2] == 'admin' and session.has_key('auth') and config.get("ldap.admin_username") == session['auth'].user[0]:
       return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
     else:
       return ''

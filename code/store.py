@@ -52,13 +52,13 @@ _ownerMapping = None
 def _loadConfig ():
   global _storeDatabase, _busySleep, _pool, _poolId, _poolLimit
   global _numConnections, _ownerMapping
-  _busySleep = float(config.config("DEFAULT.sqlite_busy_sleep"))
+  _busySleep = float(config.get("DEFAULT.sqlite_busy_sleep"))
   _poolLock.acquire()
   try:
-    _storeDatabase = config.config("DEFAULT.store_database")
+    _storeDatabase = config.get("DEFAULT.store_database")
     _pool = []
     _poolId = uuid.uuid1()
-    _poolLimit = int(config.config("DEFAULT.store_database_pool_limit"))
+    _poolLimit = int(config.get("DEFAULT.store_database_pool_limit"))
     _numConnections = 0
     _ownerMappingLock.acquire()
     try:
@@ -69,7 +69,7 @@ def _loadConfig ():
     _poolLock.release()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def setDatabase (file):
   """

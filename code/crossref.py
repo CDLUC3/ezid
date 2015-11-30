@@ -15,6 +15,7 @@
 
 import django.conf
 import django.core.mail
+import django.db
 import django.db.models
 import lxml.etree
 import re
@@ -30,6 +31,7 @@ import config
 import idmap
 import log
 import policy
+import search_util
 import shoulder
 import userauth
 import util
@@ -53,15 +55,15 @@ def _loadConfig ():
   global _enabled, _depositorName, _depositorEmail, _realServer, _testServer
   global _depositUrl, _resultsUrl, _username, _password, _doiTestShoulder
   global _daemonEnabled, _threadName, _idleSleep, _ezidUrl
-  _enabled = (config.config("crossref.enabled").lower() == "true")
-  _depositorName = config.config("crossref.depositor_name")
-  _depositorEmail = config.config("crossref.depositor_email")
-  _realServer = config.config("crossref.real_server")
-  _testServer = config.config("crossref.test_server")
-  _depositUrl = config.config("crossref.deposit_url")
-  _resultsUrl = config.config("crossref.results_url")
-  _username = config.config("crossref.username")
-  _password = config.config("crossref.password")
+  _enabled = (config.get("crossref.enabled").lower() == "true")
+  _depositorName = config.get("crossref.depositor_name")
+  _depositorEmail = config.get("crossref.depositor_email")
+  _realServer = config.get("crossref.real_server")
+  _testServer = config.get("crossref.test_server")
+  _depositUrl = config.get("crossref.deposit_url")
+  _resultsUrl = config.get("crossref.results_url")
+  _username = config.get("crossref.username")
+  _password = config.get("crossref.password")
   s = shoulder.getDoiTestShoulder()
   if s != None:
     assert s.key.startswith("doi:")
@@ -69,10 +71,10 @@ def _loadConfig ():
   else:
     # Shoulder never happen.
     _doiTestShoulder = "10.????"
-  _idleSleep = int(config.config("daemons.crossref_processing_idle_sleep"))
+  _idleSleep = int(config.get("daemons.crossref_processing_idle_sleep"))
   _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
-    config.config("daemons.crossref_enabled").lower() == "true")
-  _ezidUrl = config.config("DEFAULT.ezid_base_url")
+    config.get("daemons.crossref_enabled").lower() == "true")
+  _ezidUrl = config.get("DEFAULT.ezid_base_url")
   if _daemonEnabled:
     _threadName = uuid.uuid1().hex
     t = threading.Thread(target=_daemonThread, name=_threadName)
@@ -458,6 +460,7 @@ def _checkAbort ():
   # conflicts very unlikely.
   if not _daemonEnabled or threading.currentThread().getName() != _threadName:
     raise _AbortException()
+  return True
 
 def _queue ():
   _checkAbort()
@@ -515,6 +518,21 @@ def _sendEmail (emailAddresses, r):
 def _oneline (s):
   return re.sub("\s", " ", s)
 
+def _updateSearchDatabase (identifier, status):
+  if status == "successfully registered":
+    status = ezidapp.models.SearchIdentifier.CR_SUCCESS
+    message = ""
+  elif status.startswith("registered with warning | "):
+    message = status[26:]
+    status = ezidapp.models.SearchIdentifier.CR_WARNING
+  elif status.startswith("registration failure | "):
+    message = status[23:]
+    status = ezidapp.models.SearchIdentifier.CR_FAILURE
+  else:
+    assert False, "unhandled case"
+  ezidapp.models.SearchIdentifier.objects.filter(identifier=identifier).\
+    update(crossrefStatus=status, crossrefMessage=message)
+
 def _doPoll (r):
   t = _pollDepositStatus(r.batchId, r.identifier[4:])
   if t[0] == "submitted":
@@ -535,9 +553,17 @@ def _doPoll (r):
         else:
           m = "registration failure | " + m
       _checkAbort()
+      # We update the identifier's CrossRef status in the store
+      # database, and do so in such a way as to avoid entering the
+      # identifier back in the update queue, which would trigger a
+      # call to us again.  However, this approach means that we must
+      # also manually update the identifier in the search database.
+      # N.B.: there's a race condition here, but it's insignificant.
       s = ezid.asAdmin(ezid.setMetadata, r.identifier,
         { "_cr": "yes | " + m }, False)
       assert s.startswith("success:"), "ezid.setMetadata failed: " + s
+      search_util.withAutoReconnect("crossref._updateSearchDatabase",
+        lambda: _updateSearchDatabase(r.identifier, m), _checkAbort)
     if t[0] == "completed successfully":
       _checkAbort()
       r.delete()
@@ -600,6 +626,8 @@ def _daemonThread ():
     except Exception, e:
       log.otherError("crossref._daemonThread", e)
       maxSeq = None
+  # Make sure our connection to the search database gets cleaned up...
+  django.db.connections["search"].close()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)

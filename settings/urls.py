@@ -39,7 +39,7 @@ urlpatterns = django.conf.urls.patterns("",
   ("^account/pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", { "ssl": True }),
   ("^ajax_hide_alert$", "ui.ajax_hide_alert"),
   ("^contact$", "ui.contact"),
-  ("^doc/[\w.]*\\.(?:html|py)$", "ui.doc"),
+  ("^doc/[-\w.]*\\.(?:html|py)$", "ui.doc"),
   ("^tombstone/id/", "ui.tombstone"),
 
   # SHARED BETWEEN UI AND API

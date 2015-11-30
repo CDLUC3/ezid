@@ -54,17 +54,17 @@ def _loadConfig ():
   global _doiTestShoulder, _agentShoulder
   _lock.acquire()
   try:
-    _primaryUrl = config.config("shoulders.primary_url")
-    _username = config.config("shoulders.username")
+    _primaryUrl = config.get("shoulders.primary_url")
+    _username = config.get("shoulders.username")
     if _username != "":
-      _password = config.config("shoulders.password")
+      _password = config.get("shoulders.password")
     else:
       _username = None
       _password = None
-    _cacheFile = config.config("shoulders.cache_file")
-    _arkTestShoulderKey = config.config("shoulders.ark_test")
-    _doiTestShoulderKey = config.config("shoulders.doi_test")
-    _agentShoulderKey = config.config("shoulders.agent")
+    _cacheFile = config.get("shoulders.cache_file")
+    _arkTestShoulderKey = config.get("shoulders.ark_test")
+    _doiTestShoulderKey = config.get("shoulders.doi_test")
+    _agentShoulderKey = config.get("shoulders.agent")
     _shoulders = None
     _arkTestShoulder = None
     _doiTestShoulder = None
@@ -73,7 +73,7 @@ def _loadConfig ():
     _lock.release()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _load1 (url):
   f = None

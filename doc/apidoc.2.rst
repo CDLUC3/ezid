@@ -21,7 +21,7 @@
 .. _DataCite Metadata Scheme: http://schema.datacite.org/
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
 .. _ERC: https://wiki.ucop.edu/display/Curation/ERC
-.. _ezid.py: ezid.py
+.. _ezid-client.py: ezid-client.py
 .. _gzip: http://www.gzip.org/
 .. _libwww-perl: http://search.cpan.org/dist/libwww-perl/
 .. _OAI-PMH: http://www.openarchives.org/OAI/openarchivesprotocol.html
@@ -1312,15 +1312,15 @@ subsystem names and probe all subsystems.
 Python example
 --------------
 
-ezid.py_ is a command line tool, written in Python, that is capable of
-exercising all API functions.  It serves as an example of how to use
-the API from Python, but it's also useful in its own right as an easy,
-scriptable means of accessing EZID functionality.  The general usage
-is:
+ezid-client.py_ is a command line tool, written in Python, that is
+capable of exercising all API functions.  It serves as an example of
+how to use the API from Python, but it's also useful in its own right
+as an easy, scriptable means of accessing EZID functionality.  The
+general usage is:
 
 .. parsed-literal::
 
-  % ezid.py `credentials`:hl2: `operation`:hl2: `[arguments...]`:hl2:
+  % ezid-client.py `credentials`:hl2: `operation`:hl2: `[arguments...]`:hl2:
 
 Run the tool with no command line arguments for a complete usage
 statement; additional documentation is in the source code.  To give a
@@ -1331,8 +1331,8 @@ To mint a test ARK identifier and supply initial metadata:
 
 .. parsed-literal::
 
-  % ezid.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 erc.who \
-  'Proust, Marcel' \\
+  % ezid-client.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 \
+  erc.who 'Proust, Marcel' \\
       erc.what 'Remembrance of Things Past' erc.when 1922
   success: ark:/99999/fk4gt78tq
 
@@ -1340,7 +1340,7 @@ To get identifier metadata:
 
 .. parsed-literal::
 
-  % ezid.py -dt - view ark:/99999/fk4gt78tq
+  % ezid-client.py -dt - view ark:/99999/fk4gt78tq
   success: ark:/99999/fk4gt78tq
   _created: 2013-05-17T18:17:14
   _export: yes
@@ -1369,7 +1369,8 @@ invoking:
 
 .. parsed-literal::
 
-  % ezid.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 @ metadata.txt
+  % ezid-client.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 \
+  @ metadata.txt
 
 And if a metadata element value has the form "@\ `filename`:hl1:", the
 named file is read and treated as a single value.  For example, if
@@ -1379,7 +1380,7 @@ can be minted by invoking:
 
 .. parsed-literal::
 
-  % ezid.py `username`:hl2::`password`:hl2: mint doi:10.5072/FK2 \
+  % ezid-client.py `username`:hl2::`password`:hl2: mint doi:10.5072/FK2 \
   datacite @metadata.xml
 
 PHP examples
@@ -1820,7 +1821,7 @@ identifiers and print the identifiers:
 
   #! /bin/bash
   for i in {1..100}; do
-    ezid.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 | \
+    ezid-client.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 | \
   awk '{ print $2 }'
   done
 
@@ -1949,10 +1950,11 @@ encoding is UTF-8 and the metadata is compressed with gzip_.
 
      The identifier.
 
-   - _mappedCreator, _mappedTitle, _mappedPublisher, _mappedDate
+   - _mappedCreator, _mappedTitle, _mappedPublisher, _mappedDate,
+     _mappedType
 
-     Creator, title, publisher, and date citation metadata as mapped
-     from the identifier's preferred metadata profile.
+     Creator, title, publisher, date, and type citation metadata as
+     mapped from the identifier's preferred metadata profile.
 
    Continuing with the previous example, if the parameters are
 

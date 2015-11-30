@@ -43,7 +43,6 @@ import ezidapp.models
 import idmap
 import log
 import mapping
-import search
 import shoulder
 import store
 
@@ -59,7 +58,7 @@ _testShoulders = None
 def _loadConfig ():
   global _ezidUrl, _usedFilenames, _daemonEnabled, _threadName, _idleSleep
   global _gzipCommand, _testShoulders
-  _ezidUrl = config.config("DEFAULT.ezid_base_url")
+  _ezidUrl = config.get("DEFAULT.ezid_base_url")
   _lock.acquire()
   try:
     if _usedFilenames == None:
@@ -70,10 +69,10 @@ def _loadConfig ():
     _testShoulders = None
   finally:
     _lock.release()
-  _idleSleep = int(config.config("daemons.download_processing_idle_sleep"))
-  _gzipCommand = config.config("DEFAULT.gzip_command")
+  _idleSleep = int(config.get("daemons.download_processing_idle_sleep"))
+  _gzipCommand = config.get("DEFAULT.gzip_command")
   _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
-    config.config("daemons.download_enabled").lower() == "true")
+    config.get("daemons.download_enabled").lower() == "true")
   if _daemonEnabled:
     _threadName = uuid.uuid1().hex
     t = threading.Thread(target=_daemonThread, name=_threadName)
@@ -279,9 +278,13 @@ def enqueueRequest (auth, request):
       options = { "convertTimestamps": False }
     requestor = auth.user[1]
     filename = _generateFilename(requestor)
+    # Transition alert: co-ownership is being phased out and as a
+    # result 'coOwners' is always set to empty below.  When the new
+    # ownership model is in place, the 'coOwners' field will be
+    # replaced by a more general list of users to harvest.
     r = ezidapp.models.DownloadQueue(requestTime=int(time.time()),
       rawRequest=request.POST.urlencode(),
-      requestor=requestor, coOwners=",".join(search.getCoOwnership(requestor)),
+      requestor=requestor, coOwners="",
       format=format, columns=_encode(columns), constraints=_encode(d),
       options=_encode(options), notify=_encode(notify), filename=filename)
     r.save()
@@ -406,25 +409,20 @@ def _writeAnvl (f, id, record):
   f.write(":: %s\n" % id)
   f.write(anvl.format(record).encode("UTF-8"))
 
-_metadataMappings = {
-  "_mappedCreator": 0,
-  "_mappedTitle": 1,
-  "_mappedPublisher": 2,
-  "_mappedDate": 3
-}
+_mappedFields = set(["_mappedCreator", "_mappedTitle", "_mappedPublisher",
+  "_mappedDate", "_mappedType"])
 
 def _writeCsv (f, id, record, columns):
   w = csv.writer(f)
   l = []
-  mappedMetadata = None
+  km = None
   for c in columns:
     if c == "_id":
       l.append(id)
-    elif c in _metadataMappings:
-      if mappedMetadata == None:
-        mappedMetadata = mapping.getDisplayMetadata(record)
-      l.append(mappedMetadata[_metadataMappings[c]] if\
-        mappedMetadata[_metadataMappings[c]] != None else "")
+    elif c in _mappedFields:
+      if km == None: km = mapping.map(record)
+      v = getattr(km, c[7:].lower())
+      l.append(v if v != None else "")
     else:
       l.append(record.get(c, ""))
   w.writerow([_csvEncode(c) for c in l])
@@ -635,4 +633,4 @@ def _daemonThread ():
       doSleep = True
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)

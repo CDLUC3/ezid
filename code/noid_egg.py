@@ -47,14 +47,14 @@ _authorization = None
 
 def _loadConfig ():
   global _enabled, _server, _authorization
-  _enabled = (config.config("binder.enabled").lower() == "true")
-  _server = config.config("binder.url")
+  _enabled = (config.get("binder.enabled").lower() == "true")
+  _server = config.get("binder.url")
   _authorization = "Basic " +\
-    base64.b64encode(config.config("binder.username") + ":" +\
-    config.config("binder.password"))
+    base64.b64encode(config.get("binder.username") + ":" +\
+    config.get("binder.password"))
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _issue (method, operations):
   r = urllib2.Request(_server + "?-")
