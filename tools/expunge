@@ -49,12 +49,12 @@ import noid_egg
 import store
 import util
 
-testArkPrefix = config.config("shoulders.ark_test")[5:]
-testDoiPrefix = util.doi2shadow(config.config("shoulders.doi_test")[4:])
+testArkPrefix = config.get("shoulders.ark_test")[5:]
+testDoiPrefix = util.doi2shadow(config.get("shoulders.doi_test")[4:])
 lifetime = 2*7*24*60*60 # seconds
-baseUrl = config.config("DEFAULT.ezid_base_url")
+baseUrl = config.get("DEFAULT.ezid_base_url")
 if baseUrl.startswith("http:"): baseUrl = "https:" + baseUrl[5:]
-adminPassword = config.config("ldap.admin_password")
+adminPassword = config.get("ldap.admin_password")
 
 usageText = """Usage:
 

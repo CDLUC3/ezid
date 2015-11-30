@@ -25,15 +25,15 @@ _minterServers = None
 def _loadConfig ():
   global _minterServers
   d = {}
-  for ms in config.config("shoulders.minter_servers").split(","):
+  for ms in config.get("shoulders.minter_servers").split(","):
     p = "minter_server_" + ms
-    d[config.config(p + ".url")] = "Basic " +\
-      base64.b64encode(config.config(p + ".username") + ":" +\
-      config.config(p + ".password"))
+    d[config.get(p + ".url")] = "Basic " +\
+      base64.b64encode(config.get(p + ".username") + ":" +\
+      config.get(p + ".password"))
   _minterServers = d
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _addAuthorization (request):
   d = _minterServers

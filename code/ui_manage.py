@@ -4,7 +4,6 @@ from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 import ezid
 import metadata
-import search
 import math
 import useradmin
 import erc
@@ -15,7 +14,8 @@ import urllib
 import time
 import os.path
 from lxml import etree, objectify
-from io import StringIO
+import re
+import ezidapp.models
 
 # these are layout properties for the fields in the manage index page,
 # if I had realized there were going to be so many properties up front, I probably would
@@ -94,12 +94,31 @@ def index(request):
   d['ps'] = 10
   if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
   if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
-  d['total_results'] = search.getByOwnerCount(d['user'][0], True)
+  d['total_results'] = ezidapp.models.SearchIdentifier.objects.\
+    filter(owner__username=d['user'][0]).count()
   d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
   if d['p'] > d['total_pages']: d['p'] = d['total_pages']
-
-  d['results'] = search.getByOwner(d['user'][0], d['includeCoowned'], d['order_by'], IS_ASCENDING[d['sort']], d['ps'], (d['p']-1)*d['ps'])
-  
+  d['p'] = max(d['p'], 1)
+  orderColumn = d['order_by']
+  if orderColumn in ["mappedTitle", "mappedCreator"]:
+    orderColumn = "resource" + orderColumn[6:] + "Prefix"
+  elif orderColumn == "coOwners":
+    orderColumn = "updateTime" # arbitrary; co-owners not supported anymore
+  if not IS_ASCENDING[d['sort']]: orderColumn = "-" + orderColumn
+  d['results'] = []
+  for id in ezidapp.models.SearchIdentifier.objects.\
+    filter(owner__username=d['user'][0]).\
+    only("identifier", "owner__username", "createTime", "updateTime",
+    "status", "unavailableReason", "resourceTitle", "resourceCreator").\
+    select_related("owner").\
+    order_by(orderColumn)[(d['p']-1)*d['ps']:d['p']*d['ps']]:
+    result = { "identifier": id.identifier, "owner": id.owner.username,
+      "coOwners": "", "createTime": id.createTime,
+      "updateTime": id.updateTime, "status": id.get_status_display(),
+      "mappedTitle": id.resourceTitle, "mappedCreator": id.resourceCreator }
+    if id.isUnavailable and id.unavailableReason != "":
+      result["status"] += " | " + id.unavailableReason
+    d['results'].append(result)
   return uic.render(request, 'manage/index', d)
 
 def _getLatestMetadata(identifier, request):

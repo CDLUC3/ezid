@@ -88,6 +88,7 @@ import download
 import ezid
 import ezidadmin
 import noid_egg
+import search_util
 import store
 import userauth
 import util
@@ -97,11 +98,11 @@ _idlewaitSleep = None
 
 def _loadConfig ():
   global _adminUsername, _idlewaitSleep
-  _adminUsername = config.config("ldap.admin_username")
-  _idlewaitSleep = float(config.config("DEFAULT.idlewait_sleep"))
+  _adminUsername = config.get("ldap.admin_username")
+  _idlewaitSleep = float(config.get("DEFAULT.idlewait_sleep"))
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _readInput (request):
   if "CONTENT_TYPE" in request.META:
@@ -276,7 +277,7 @@ def getStatus (request):
   body = ""
   if "subsystems" in request.GET:
     l = request.GET["subsystems"]
-    if l == "*": l = "datacite,ldap,noid"
+    if l == "*": l = "datacite,ldap,noid,search"
     for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
       if ss == "datacite":
         body += "datacite: %s\n" % datacite.ping()
@@ -284,6 +285,8 @@ def getStatus (request):
         body += "ldap: %s\n" % ezidadmin.pingLdap()
       elif ss == "noid":
         body += "noid: %s\n" % noid_egg.ping()
+      elif ss == "search":
+        body += "search: %s\n" % search_util.ping()
       else:
         return _response("error: bad request - no such subsystem")
   return _response("success: EZID is up", anvlBody=body)
@@ -369,7 +372,7 @@ def pause (request):
 
 def reload (request):
   """
-  Reloads the configuration file; interface to config.load.
+  Reloads the configuration file; interface to config.reload.
   """
   if request.method != "POST": return _methodNotAllowed()
   auth = userauth.authenticateRequest(request)
@@ -385,7 +388,7 @@ def reload (request):
     while True:
       if len(ezid.getStatus()[0]) == 0: break
       time.sleep(_idlewaitSleep)
-    config.load()
+    config.reload()
   finally:
     ezid.pause(oldValue)
   return _response("success: configuration file reloaded and caches emptied")
