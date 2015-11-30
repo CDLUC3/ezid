@@ -67,7 +67,7 @@ import config
 import datacite
 import util
 
-testShoulder = config.config("shoulders.doi_test")[4:]
+testShoulder = config.get("shoulders.doi_test")[4:]
 
 parser = optparse.OptionParser(usage="%prog [options] dumpfile queryfile")
 parser.add_option("-p", action="store_true", dest="printProgress",

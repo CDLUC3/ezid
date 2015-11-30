@@ -11,4 +11,4 @@ LOCALIZATIONS = { "default": ("cdl", ["andy.mardesich@ucop.edu"]) }
 LOCALIZATIONS["localhost:8001"] = ("purdue", ["gjanee@ucop.edu"])
 LOCALIZATIONS["localhost:8002"] = ("jisc-edina", ["gjanee@ucop.edu"])
 
-injectPasswords(DEPLOYMENT_LEVEL)
+injectSecrets(DEPLOYMENT_LEVEL)

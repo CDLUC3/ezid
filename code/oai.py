@@ -41,17 +41,17 @@ _testShoulders = None
 def _loadConfig ():
   global _enabled, _baseUrl, _repositoryName, _adminEmail, _batchSize
   global _testShoulders
-  _enabled = (config.config("oai.enabled").lower() == "true")
-  _baseUrl = config.config("DEFAULT.ezid_base_url")
-  _repositoryName = config.config("oai.repository_name")
-  _adminEmail = config.config("oai.admin_email")
-  _batchSize = int(config.config("oai.batch_size"))
+  _enabled = (config.get("oai.enabled").lower() == "true")
+  _baseUrl = config.get("DEFAULT.ezid_base_url")
+  _repositoryName = config.get("oai.repository_name")
+  _adminEmail = config.get("oai.admin_email")
+  _batchSize = int(config.get("oai.batch_size"))
   _lock.acquire()
   _testShoulders = None
   _lock.release()
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
 
 def _getTestShoulders ():
   global _testShoulders
@@ -90,8 +90,10 @@ def isVisible (identifier, metadata):
   if export != "yes": return False
   if metadata.get("_st", metadata["_t"]) == _defaultTarget(identifier):
     return False
-  m = mapping.getDisplayMetadata(metadata)
-  if m[0] is None or m[1] is None or m[3] is None: return False
+  km = mapping.map(metadata)
+  if km.title is None or km.date is None or (km.creator is None and\
+    km.publisher is None):
+    return False
   return True
 
 def _q (elementName):
@@ -225,9 +227,10 @@ def _buildDublinCoreRecord (identifier, metadata):
   def q (elementName):
     return "{http://purl.org/dc/elements/1.1/}" + elementName
   lxml.etree.SubElement(root, q("identifier")).text = identifier
-  for k, v in zip(["creator", "title", "publisher", "date"],
-    mapping.getDisplayMetadata(metadata)):
-    if v != None: lxml.etree.SubElement(root, q(k)).text = v
+  km = mapping.map(metadata)
+  for e in ["creator", "title", "publisher", "date", "type"]:
+    if getattr(km, e) != None:
+      lxml.etree.SubElement(root, q(e)).text = getattr(km, e)
   return root
 
 def _doGetRecord (oaiRequest):

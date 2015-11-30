@@ -4,16 +4,16 @@
 {% block title %}EZID Home{% endblock %}
 
 {% block content %}
-    <div class"vertical-buffer-xs" id="frontpage_img">
+    <div class="vertical-buffer-xs" id="frontpage_img">
       <div class="container">
         <div class="row">
-          <ul class="lead">
-            <li>Automate research workflow</li>
-            <li>Store citation information</li>
-            <li>Share unbreakable links</li>
-          </ul>
+          <div class="lead">
+            Create and manage long-term <br/>
+            globally unique IDs for data<br/>
+            and other sources using EZID
+          </div>
           <p class="tagline">
-            <a href="#" class="boxy-pop btn-big">SIGN UP FOR OUR NEWSLETTER &raquo;</a>
+            <a href="/learn#01" class="boxy-pop btn-big">LEARN MORE &raquo;</a>
           </p>
         </div>
       </div>
@@ -43,7 +43,8 @@
                 <div class="form-group form-group-sm">
                 {% for p in prefixes %}
                   <label for="{{p.prefix}}" class="radio-css">
-                    <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" 
+                    <input type="radio" name="shoulder" value="{{p.prefix}}" 
+                      class="id_type_button" id="{{p.prefix}}" 
                       {% selected_radio "shoulder" forloop.counter p.prefix %} />
                     <span>{% shoulder_display p "True" %}</span>
                   </label>
@@ -60,22 +61,51 @@
                 {% help_icon "describe_profile_frontpage" %}
               </div>
             </div>
-            <div class="row">
+            <div id="home_demo_ark" class="row">
               <div class="col-md-5 form-group form-group-sm">
-                <label for="create_target_url" class="sr-only control-label">Location URL</label>
-                <input type="text" class="form-control width-reduced" id="create_target_url" placeholder="Location URL" />
+                <label for="createdemo_ark_target_url" class="sr-only control-label">Location URL</label>
+                <input type="text" class="form-control width-reduced" id="createdemo_ark_target_url" placeholder="Location URL" />
               </div>
               <div class="col-md-5 form-group form-group-sm">
-                <label for="create_demo_what" class="sr-only control-label">What?</label>
-                <input type="text" class="form-control width-reduced" id="create_demo_what" placeholder="What?" />
+                <label for="createdemo_ark_what" class="sr-only control-label">What?</label>
+                <input type="text" class="form-control width-reduced" id="createdemo_ark_what" placeholder="What?" />
               </div>
               <div class="col-md-5 form-group form-group-sm">
-                <label for="create_demo_who" class="sr-only control-label">Who?</label>
-                <input type="text" class="form-control width-reduced" id="create_demo_who" placeholder="Who?" />
+                <label for="createdemo_ark_who" class="sr-only control-label">Who?</label>
+                <input type="text" class="form-control width-reduced" id="createdemo_ark_who" placeholder="Who?" />
               </div>
               <div class="col-md-5 form-group form-group-sm">
-                <label for="create_demo_when" class="sr-only control-label">When?</label>
-                <input type="text" class="form-control width-reduced" id="create_demo_when" placeholder="When?" />
+                <label for="createdemo_ark_when" class="sr-only control-label">When?</label>
+                <input type="text" class="form-control width-reduced" id="createdemo_ark_when" placeholder="When?" />
+              </div>
+              <div class="col-md-1">
+                <button type="submit" class="btn btn-primary">CREATE</button>
+              </div>
+            </div>
+            <div id="home_demo_doi" class="row">
+              <div class="col-md-5 form-group form-group-sm">
+                <label for="createdemo_doi_target_url" class="sr-only control-label">Location URL</label>
+                <input type="text" class="form-control width-reduced" id="createdemo_doi_target_url" placeholder="Location URL" />
+              </div>
+              <div class="col-md-5 form-group form-group-sm">
+                <label for="createdemo_doi_creator" class="sr-only control-label">Creator</label>
+                <input type="text" class="form-control width-reduced" id="createdemo_doi_creator" placeholder="Creator" />
+              </div>
+              <div class="col-md-5 form-group form-group-sm">
+                <label for="createdemo_doi_title" class="sr-only control-label">Title</label>
+                <input type="text" class="form-control width-reduced" id="createdemo_doi_title" placeholder="Title" />
+              </div>
+              <div class="col-md-5 form-group form-group-sm">
+                <label for="createdemo_doi_publisher" class="sr-only control-label">Publisher</label>
+                <input type="text" class="form-control width-reduced" id="createdemo_doi_publisher" placeholder="Publisher" />
+              </div>
+              <div class="col-md-5 form-group form-group-sm">
+                <label for="createdemo_doi_publicationyear" class="sr-only control-label">Publication Year</label>
+                <input type="text" class="form-control width-reduced" id="createdemo_doi_publicationyear" placeholder="Publication Year" />
+              </div>
+              <div class="col-md-5 form-group form-group-sm">
+                <label for="createdemo_doi_resourcetype" class="sr-only control-label">Resource Type</label>
+                <input type="text" class="form-control width-reduced" id="createdemo_doi_resourcetype" placeholder="Resource Type" />
               </div>
               <div class="col-md-1">
                 <button type="submit" class="btn btn-primary">CREATE</button>
@@ -85,10 +115,28 @@
         </div>
       </div>
     </div>
-    <!-- Load random hero image-->
     <script type="text/javascript">
+      // Load random hero image
       var rImg = "url(" + getImageTag() + ")";
       $("#frontpage_img").css({"backgroundImage": rImg});
+
+      // Load different fields depending on ID type
+      $(document).ready(function () {
+        toggleIdFields();
+        //Whenever ID type changes
+        $(".id_type_button").change(function () {
+          toggleIdFields();
+        });
+      });
+      function toggleIdFields() {
+        if ($("#ark\\:\\/99999\\/fk4").is(':checked')) {
+          $("#home_demo_ark").show();
+          $("#home_demo_doi").hide();
+        } else {
+          $("#home_demo_ark").hide();
+          $("#home_demo_doi").show();
+        }
+      }
     </script>
     <!-- Help Popover -->
     {% include "info/popup_help.html" %}

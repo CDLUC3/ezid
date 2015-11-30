@@ -1,24 +1,10 @@
 #! /usr/bin/env python
 
-# Performs a cleanup pass to insert into or update in the search
-# database those identifiers that were touched in any way between the
-# time the populate-search-1 script was started and the time the new
-# database was installed in the running server.  Let 'date' be the
-# last timestamp observed in the EZID transaction log before running
-# populate-search-1.  After running populate-search-1, the general
-# procedure for running this script is:
+# Performs the second of three steps in populating the search database
+# from a raw dump file.  This script does the main work of populating
+# the identifier table.  Usage:
 #
-#    SR=.../SITE_ROOT
-#    PR=$SR/PROJECT_ROOT
-#
-#    $PR/tools/filterlog -CSD -s $SR/logs/transaction_log |
-#      awk '($1 " " $2) > "date"' | $PR/tools/populate-search-2 2> log
-#    $PR/tools/filterlog -e log
-#
-# This script writes EZID transaction log records to standard error.
-# Bad request errors on getMetadata requests are normal.  To examine
-# the log for significant errors, filter it for internal server errors
-# as shown above.
+#    populate-search-2 < DUMP
 #
 # This script requires several EZID modules.  The PYTHONPATH
 # environment variable must include the .../SITE_ROOT/PROJECT_ROOT
@@ -26,11 +12,8 @@
 # add it.  The DJANGO_SETTINGS_MODULE environment variable must be
 # set.
 #
-# Additionally, if LDAP is enabled, a connection to the LDAP server is
-# required.
-#
 # Greg Janee <gjanee@ucop.edu>
-# April 2012
+# November 2015
 
 import os.path
 import sys
@@ -39,37 +22,19 @@ import sys
 execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
   "offline.py"))
 
-import ezid
-import log
-import search
+import ezidapp.models.search_identifier
 import util
 
-# We don't try to "replay" the transaction log, but rather, use it
-# just to identify those identifiers touched in any way.  We then
-# probe EZID directly to get the current states of those identifiers.
-
-ids = set()
-
-for l in sys.stdin:
-  v = l.split(" ")
-  if v[2] == "createArk":
-    ids.add("ark:/" + util.decode(v[3]))
-  elif v[2] == "createDoi":
-    ids.add("doi:" + util.decode(v[3]))
-  elif v[2] == "createUrnUuid":
-    ids.add("urn:uuid:" + util.decode(v[3]))
-  elif v[2] == "setMetadata" or v[2] == "deleteIdentifier":
-    ids.add(util.decode(v[3]))
-
-for id in ids:
-  r = ezid.getMetadata(id)
-  if type(r) is tuple:
-    if r[1]["_owner"] != "anonymous":
-      if "_shadows" in r[1]: id = r[1]["_shadows"]
-      search.update(id, r[1], insertIfNecessary=True, mapLocalNames=True)
+for line in sys.stdin:
+  id, record = util.fromExchange(line, identifierEmbedded=True)
+  if "_s" in record:
+    id = record["_s"]
   else:
-    if r == "error: bad request - no such identifier":
-      search.delete(id)
-    else:
-      log.otherError("populate-search-2",
-        Exception("ezid.getMetadata failed: " + r))
+    id = "ark:/" + id
+  if record["_o"] != "anonymous":
+    try:
+      ezidapp.models.search_identifier.updateFromLegacy(id, record,
+        forceInsert=True)
+    except Exception, e:
+      sys.stderr.write("Exception processing '%s': %s\n" % (id,
+        util.oneLine(str(e))))

@@ -49,7 +49,7 @@ def _loadConfig():
   global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
   global adminUsername, google_analytics_id
   global new_account_email, reload_templates, newsfeed_url
-  ezidUrl = config.config("DEFAULT.ezid_base_url")
+  ezidUrl = config.get("DEFAULT.ezid_base_url")
   templates = {}
   _load_templates([d for t in django.conf.settings.TEMPLATES\
     for d in t["DIRS"]])
@@ -71,13 +71,13 @@ def _loadConfig():
   if p != None: testPrefixes.append({ "namespace": p.name, "prefix": p.key })
   p = shoulder.getDoiTestShoulder()
   if p != None: testPrefixes.append({ "namespace": p.name, "prefix": p.key })
-  defaultDoiProfile = config.config("DEFAULT.default_doi_profile")
-  defaultArkProfile = config.config("DEFAULT.default_ark_profile")
-  defaultUrnUuidProfile = config.config("DEFAULT.default_urn_uuid_profile")
-  adminUsername = config.config("ldap.admin_username")
-  google_analytics_id = config.config("DEFAULT.google_analytics_id")
-  new_account_email = config.config("email.new_account_email")
-  newsfeed_url = config.config("newsfeed.url")
+  defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
+  defaultArkProfile = config.get("DEFAULT.default_ark_profile")
+  defaultUrnUuidProfile = config.get("DEFAULT.default_urn_uuid_profile")
+  adminUsername = config.get("ldap.admin_username")
+  google_analytics_id = config.get("DEFAULT.google_analytics_id")
+  new_account_email = config.get("email.new_account_email")
+  newsfeed_url = config.get("newsfeed.url")
   
 #loads the templates directory recursively (dir_list is a list)
 def _load_templates(dir_list):
@@ -92,7 +92,7 @@ def _load_templates(dir_list):
         (django.template.loader.get_template(local_path), local_path)
 
 _loadConfig()
-config.addLoader(_loadConfig)
+config.registerReloadListener(_loadConfig)
   
 def render(request, template, context={}):
   global alertMessage, google_analytics_id, reload_templates

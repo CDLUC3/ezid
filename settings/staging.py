@@ -6,4 +6,4 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["ias-ezid-stg.cdlib.org"]
 
-injectPasswords(DEPLOYMENT_LEVEL)
+injectSecrets(DEPLOYMENT_LEVEL)
