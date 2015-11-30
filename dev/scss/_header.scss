@@ -40,6 +40,7 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__nav {
+	position: relative; // to .header__mobile-menu
 	width: 100%;
 	margin: $header-top-margin;
 
@@ -49,6 +50,20 @@ $header-top-margin: 20px 0 0;
 		width: 400px;
 		padding: 0 0 0 20px;
   }
+
+}
+
+.header__mobile-menu {
+	position: absolute;
+	top: -65px;
+	right: 0;
+	width: 25px;
+	padding: 8px;
+	border: 1px solid $design-light-gray-border-color;
+
+	@include bp(screen1) {
+		display: none;
+	}
 
 }
 
