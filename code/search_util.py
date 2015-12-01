@@ -182,8 +182,7 @@ def formulateQuery (constraints, orderBy=None,
         [django.db.models.Q(ownergroup__groupname=v) for v in value]))
       scopeRequirementMet = True
     elif column in ["createTime", "updateTime"]:
-      filters.append(django.db.models.Q(**{ (column + "__gte"): value[0] }))
-      filters.append(django.db.models.Q(**{ (column + "__lte"): value[1] }))
+      filters.append(django.db.models.Q(**{ (column + "__range"): value }))
     elif column == "status":
       if isinstance(value, basestring): value = [value]
       filters.append(reduce(operator.or_,
@@ -235,12 +234,12 @@ def formulateQuery (constraints, orderBy=None,
         filters.append(django.db.models.Q(searchablePublicationYear=value[0]))
       else:
         filters.append(django.db.models.Q(
-          searchablePublicationYear__gte=value[0]))
-        filters.append(django.db.models.Q(
-          searchablePublicationYear__lte=value[1]))
+          searchablePublicationYear__range=value))
     elif column == "resourceType":
-      filters.append(django.db.models.Q(searchableResourceType=\
-        ezidapp.models.validation.resourceTypes.get(value, value)))
+      if isinstance(value, basestring): value = [value]
+      filters.append(reduce(operator.or_,
+        [django.db.models.Q(searchableResourceType=\
+        ezidapp.models.validation.resourceTypes.get(v, v)) for v in value]))
     else:
       assert False, "unrecognized column"
   assert scopeRequirementMet, "query scope requirement not met"
