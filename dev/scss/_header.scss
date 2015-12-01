@@ -114,10 +114,10 @@ $header-top-margin: 20px 0 0;
 			color: $design-secondary-color;
 		}
 
-		&:last-of-type {
-			margin: -1px 0; // collapse borders on 2nd menu element
-		}
+	}
 
+	&:last-of-type {
+		margin: -1px 0; // collapse borders on 2nd menu element
 	}
 
 }
