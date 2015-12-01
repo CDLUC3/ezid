@@ -8,6 +8,6 @@ $(document).ready(function(){
   $('#js-header__mobile-menu-icon').click(function(){
     // $('#js-header__mobile-menu').toggleClass('header__nav header__nav--selected');
     // jquery ui method:
-    $('#js-header__mobile-menu').toggleClass('header__nav header__nav--selected', 500, 'easeInOutCubic');
+    $('#js-header__mobile-menu').toggleClass('header__nav header__nav--selected', 300, 'easeInOutCubic');
   });
 });
