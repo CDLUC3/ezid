@@ -247,7 +247,7 @@ def adv_form_datacite_xml(request, d):
   else:
     d['prefixes'] = []
   pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
-  import pdb; pdb.set_trace()
+  # import pdb; pdb.set_trace()
   if (P['action'] == 'create' and\
       P['shoulder'] not in pre_list):
       error_msgs.append(_("Unauthorized to create with this identifier \
