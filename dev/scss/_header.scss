@@ -55,17 +55,16 @@ $header-top-margin: 20px 0 0;
 }
 
 %header__nav {
-	// display: none;
 	width: 100%;
-	height: 0; // for jquery ui method
+	height: 0; // hide mobile nav
 	margin: $header-top-margin;
-	overflow: hidden; // for jquery ui method
+	overflow: hidden;
 
 	@include bp(screen1) {
     display: flex;
 		justify-content: space-between;
 		width: 400px;
-		height: auto; // for jquery ui method
+		height: auto;
 		padding: 0 0 0 20px;
   }
 
@@ -77,8 +76,7 @@ $header-top-margin: 20px 0 0;
 
 .header__nav--selected {
 	@extend %header__nav;
-	// display: block;
-	height: auto; // for jquery ui method
+	height: auto; // show mobile nav
 
 	@include bp(screen1) {
 		display: flex;
@@ -104,7 +102,7 @@ $header-top-margin: 20px 0 0;
 		align-items: flex-end;
 		height: 50px;
 		margin: 0;
-		padding: 0 0 10px; // provides mouseover target for .header__learn-menu
+		padding: 0 0 10px;
 		border: none;
 		background-color: transparent;
 		background-position: top center;
