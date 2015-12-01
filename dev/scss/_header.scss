@@ -117,6 +117,11 @@ $header-top-margin: 20px 0 0;
 
 	&:last-of-type {
 		margin: -1px 0; // collapse borders on 2nd menu element
+
+		@include bp(screen1) {
+			margin: 0;
+		}
+
 	}
 
 }
@@ -132,7 +137,6 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__learn {
-
 	@include bp(screen1) {
 		position: relative; // for .header__learn-menu
 
@@ -211,7 +215,7 @@ $header-top-margin: 20px 0 0;
 		align-items: center; // vertical text centering
 		align-self: flex-end; // align login button to bottom of other nav text
 		height: 40px;
-		margin: 0 0 13px; // align button bottom with nav text
+		margin: 0 0 14px; // align button bottom with nav text
 		padding: 0 20px; // horizontal text centering
 		background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 		color: $design-white-color;
