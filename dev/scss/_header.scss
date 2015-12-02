@@ -4,6 +4,7 @@ $header-top-margin: 20px 0 0;
 
 .header {
 	display: flex;
+	position: relative; // to .header__mobile-menu
 	flex-flow: row wrap;
 	justify-content: space-between;
 }
@@ -32,30 +33,16 @@ $header-top-margin: 20px 0 0;
 
 .header__affiliate-logo-image {
 	height: 7vw;
-	
+
 	@include bp(screen1) {
 		height: 45px;
 	}
 
 }
 
-.header__nav {
-	position: relative; // to .header__mobile-menu
-	width: 100%;
-	margin: $header-top-margin;
-
-	@include bp(screen1) {
-    display: flex;
-		justify-content: space-between;
-		width: 400px;
-		padding: 0 0 0 20px;
-  }
-
-}
-
-.header__mobile-menu {
+.header__mobile-menu-icon {
 	position: absolute;
-	top: -65px;
+	top: 4vw;
 	right: 0;
 	width: 25px;
 	padding: 8px;
@@ -67,9 +54,39 @@ $header-top-margin: 20px 0 0;
 
 }
 
+%header__nav {
+	width: 100%;
+	height: 0; // hide small screen nav
+	margin: $header-top-margin;
+	overflow: hidden; // hide small screen nav
+
+	@include bp(screen1) {
+    display: flex;
+		justify-content: space-between;
+		width: 400px;
+		height: auto; // show large screen nav
+		padding: 0 0 0 20px;
+		overflow: visible; // show large screen nav
+  }
+
+}
+
+.header__nav {
+	@extend %header__nav;
+}
+
+.header__nav--selected {
+	@extend %header__nav;
+	height: auto; // show small screen nav
+
+	@include bp(screen1) {
+		display: flex;
+	}
+
+}
+
 %header__nav-element {
 	display: flex;
-	margin: -1px 0 0; // collapse menu borders
 	padding: 15px 0 15px 45px;
 	border: 1px solid $design-light-gray-border-color;
 	background-color: $design-light-gray-bg-color;
@@ -86,7 +103,7 @@ $header-top-margin: 20px 0 0;
 		align-items: flex-end;
 		height: 50px;
 		margin: 0;
-		padding: 0 0 10px; // provides mouseover target for .header__learn-menu
+		padding: 0 0 10px;
 		border: none;
 		background-color: transparent;
 		background-position: top center;
@@ -94,6 +111,15 @@ $header-top-margin: 20px 0 0;
 
 		&:hover {
 			color: $design-secondary-color;
+		}
+
+	}
+
+	&:last-of-type {
+		margin: -1px 0; // collapse borders on 2nd menu element
+
+		@include bp(screen1) {
+			margin: 0;
 		}
 
 	}
@@ -111,7 +137,6 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__learn {
-
 	@include bp(screen1) {
 		position: relative; // for .header__learn-menu
 
@@ -190,7 +215,7 @@ $header-top-margin: 20px 0 0;
 		align-items: center; // vertical text centering
 		align-self: flex-end; // align login button to bottom of other nav text
 		height: 40px;
-		margin: 0 0 13px; // align button bottom with nav text
+		margin: 0 0 14px; // align button bottom with nav text
 		padding: 0 20px; // horizontal text centering
 		background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 		color: $design-white-color;

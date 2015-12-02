@@ -1,4 +1,5 @@
 {% extends "layouts/base.html" %}
+{% load metadata_tags %}
 {% load layout_extras %}
 
 {% block title %}EZID Home{% endblock %}
@@ -31,7 +32,8 @@
 
         <div class="col-sm-10" id="frontpage_idcreate_content">
           <div class="frontpage_idcreate_arrow"></div>
-          <form id="create_form" action="{% url "ui_demo.simple" %}" method="post" class="form-horizontal" role="form">
+          <form id="create_form" action="{% url "ui_home.index" %}" method="post" class="form-horizontal" role="form">
+            <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
             <div class="row">
               <div class="col-md-6">
                 <div class="inline-header text-nowrap">
@@ -63,50 +65,30 @@
             </div>
             <div id="home_demo_ark" class="row">
               <div class="col-md-5 form-group form-group-sm">
-                <label for="createdemo_ark_target_url" class="sr-only control-label">Location URL</label>
-                <input type="text" class="form-control width-reduced" id="createdemo_ark_target_url" placeholder="Location URL" />
+                <label for="_target" class="sr-only control-label">{{internal_profile.target.displayName}}</label>
+                <input type="text" class="form-control" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
               </div>
+              {% for e in current_profile.elements %}
               <div class="col-md-5 form-group form-group-sm">
-                <label for="createdemo_ark_what" class="sr-only control-label">What?</label>
-                <input type="text" class="form-control width-reduced" id="createdemo_ark_what" placeholder="What?" />
+                <label for="{{e.name}}" class="sr-only control-label">{{e.displayName}}</label>
+                {% display_form_element e %}
               </div>
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="createdemo_ark_who" class="sr-only control-label">Who?</label>
-                <input type="text" class="form-control width-reduced" id="createdemo_ark_who" placeholder="Who?" />
-              </div>
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="createdemo_ark_when" class="sr-only control-label">When?</label>
-                <input type="text" class="form-control width-reduced" id="createdemo_ark_when" placeholder="When?" />
-              </div>
+              {% endfor %}
               <div class="col-md-1">
                 <button type="submit" class="btn btn-primary">CREATE</button>
               </div>
             </div>
             <div id="home_demo_doi" class="row">
               <div class="col-md-5 form-group form-group-sm">
-                <label for="createdemo_doi_target_url" class="sr-only control-label">Location URL</label>
-                <input type="text" class="form-control width-reduced" id="createdemo_doi_target_url" placeholder="Location URL" />
+                <label for="_target" class="sr-only control-label">{{internal_profile.target.displayName}}</label>
+                <input type="text" class="form-control" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
               </div>
+              {% for e in current_profile.elements %}
               <div class="col-md-5 form-group form-group-sm">
-                <label for="createdemo_doi_creator" class="sr-only control-label">Creator</label>
-                <input type="text" class="form-control width-reduced" id="createdemo_doi_creator" placeholder="Creator" />
+                <label for="{{e.name}}" class="sr-only control-label">{{e.displayName}}</label>
+                {% display_form_element e %}
               </div>
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="createdemo_doi_title" class="sr-only control-label">Title</label>
-                <input type="text" class="form-control width-reduced" id="createdemo_doi_title" placeholder="Title" />
-              </div>
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="createdemo_doi_publisher" class="sr-only control-label">Publisher</label>
-                <input type="text" class="form-control width-reduced" id="createdemo_doi_publisher" placeholder="Publisher" />
-              </div>
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="createdemo_doi_publicationyear" class="sr-only control-label">Publication Year</label>
-                <input type="text" class="form-control width-reduced" id="createdemo_doi_publicationyear" placeholder="Publication Year" />
-              </div>
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="createdemo_doi_resourcetype" class="sr-only control-label">Resource Type</label>
-                <input type="text" class="form-control width-reduced" id="createdemo_doi_resourcetype" placeholder="Resource Type" />
-              </div>
+              {% endfor %}
               <div class="col-md-1">
                 <button type="submit" class="btn btn-primary">CREATE</button>
               </div>
@@ -138,7 +120,8 @@
         }
       }
     </script>
-    <!-- Help Popover -->
+    
+    <script type="text/javascript" src="/static/javascripts/simple_create.js"></script>
     {% include "info/popup_help.html" %}
     <script type="text/javascript" src="/static/javascripts/help_box.js"></script>
 {% endblock %}
