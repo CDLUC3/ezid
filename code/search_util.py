@@ -55,12 +55,16 @@ def withAutoReconnect (functionName, function, continuationCheck=None):
   module).  'functionName' is the name of 'function' for logging
   purposes.
   """
+  firstError = True
   while True:
     try:
       return function()
     except django.db.OperationalError, e:
-      log.otherError("search_util.withAutoReconnect/" + functionName, e)
-      time.sleep(_reconnectDelay)
+      # We're silent about the first error because it might simply be
+      # due to the database connection having timed out.
+      if not firstError:
+        log.otherError("search_util.withAutoReconnect/" + functionName, e)
+        time.sleep(_reconnectDelay)
       if continuationCheck != None and not continuationCheck():
         raise AbortException()
       # In some cases a lost connection causes the thread's database
@@ -69,6 +73,7 @@ def withAutoReconnect (functionName, function, continuationCheck=None):
       # connection objects are indexed generically, but are stored
       # thread-local.)
       django.db.connections["search"].close()
+      firstError = False
 
 def ping ():
   """
