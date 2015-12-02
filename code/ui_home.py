@@ -2,12 +2,21 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import loader
 import ui_common as uic
+from django.shortcuts import redirect
+import ui_create
+import urllib
 
 def index(request):
   d = { 'menu_item' : 'ui_home.index'}
   d['ezid_home_url'] = "http://" + request.get_host() +"/"
   d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['namespace'].lower())
-  return uic.render(request, 'index', d)
+  r = ui_create.simple_form_processing(request, d)
+  if r == 'bad_request':
+    return uic.badRequest()
+  elif r.startswith('created_identifier:'):
+    return redirect("/id/" + urllib.quote(r.split()[1], ":/"))
+  else:
+    return uic.render(request, 'index', d)
 
 def learn(request):
   d = { 'menu_item' : 'ui_home.learn' }
