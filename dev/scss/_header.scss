@@ -42,7 +42,7 @@ $header-top-margin: 20px 0 0;
 
 .header__mobile-menu-icon {
 	position: absolute;
-	top: 20px;
+	top: 4vw;
 	right: 0;
 	width: 25px;
 	padding: 8px;
@@ -55,18 +55,18 @@ $header-top-margin: 20px 0 0;
 }
 
 %header__nav {
-	// display: none;
 	width: 100%;
-	height: 0; // for jquery ui method
+	height: 0; // hide small screen nav
 	margin: $header-top-margin;
-	overflow: hidden; // for jquery ui method
+	overflow: hidden; // hide small screen nav
 
 	@include bp(screen1) {
     display: flex;
 		justify-content: space-between;
 		width: 400px;
-		height: auto; // for jquery ui method
+		height: auto; // show large screen nav
 		padding: 0 0 0 20px;
+		overflow: visible; // show large screen nav
   }
 
 }
@@ -77,8 +77,7 @@ $header-top-margin: 20px 0 0;
 
 .header__nav--selected {
 	@extend %header__nav;
-	// display: block;
-	height: auto; // for jquery ui method
+	height: auto; // show small screen nav
 
 	@include bp(screen1) {
 		display: flex;
@@ -104,7 +103,7 @@ $header-top-margin: 20px 0 0;
 		align-items: flex-end;
 		height: 50px;
 		margin: 0;
-		padding: 0 0 10px; // provides mouseover target for .header__learn-menu
+		padding: 0 0 10px;
 		border: none;
 		background-color: transparent;
 		background-position: top center;
@@ -118,6 +117,11 @@ $header-top-margin: 20px 0 0;
 
 	&:last-of-type {
 		margin: -1px 0; // collapse borders on 2nd menu element
+
+		@include bp(screen1) {
+			margin: 0;
+		}
+
 	}
 
 }
@@ -133,7 +137,6 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__learn {
-
 	@include bp(screen1) {
 		position: relative; // for .header__learn-menu
 
@@ -212,7 +215,7 @@ $header-top-margin: 20px 0 0;
 		align-items: center; // vertical text centering
 		align-self: flex-end; // align login button to bottom of other nav text
 		height: 40px;
-		margin: 0 0 13px; // align button bottom with nav text
+		margin: 0 0 14px; // align button bottom with nav text
 		padding: 0 20px; // horizontal text centering
 		background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 		color: $design-white-color;
