@@ -26,3 +26,8 @@
 	}
 
 }
+
+.home-banner__lead-button {
+	@extend %button__pop;
+	padding: 0.7em 30px 0.7em 1.3em; // make room for background arrow icon
+}
