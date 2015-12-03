@@ -40,18 +40,22 @@ $header-top-margin: 20px 0 0;
 
 }
 
-.header__mobile-menu-icon {
+.header__nav-button {
 	position: absolute;
 	top: 4vw;
 	right: 0;
-	width: 25px;
-	padding: 8px;
+	padding: 6px;
 	border: 1px solid $design-light-gray-border-color;
+	background: transparent;
 
 	@include bp(screen1) {
 		display: none;
 	}
 
+}
+
+.header__nav-button-icon {
+	width: 25px;
 }
 
 %header__nav {

@@ -36,42 +36,40 @@ Session cookies store the following key/value pairs:
 3. Caching
 ----------
 
-Caching is employed in several places:
+Caching is employed in several places.  All caches are emptied when
+EZID is reloaded.
 
   ezid.conf settings
     Cached in various modules.  Loaded at module load time.  Invoking
     the "Reload EZID" admin function causes all settings to be
-    reloaded (except logging settings).
+    reloaded (except Django and logging settings).
 
   shoulder._shoulders dictionary
   shoulders_cache.txt file
     The former is a dictionary that maps shoulders to
-    shoulder_parser.Entry objects.  Loaded on demand.  Emptied when
-    EZID is reloaded.  The latter is a local copy of the (remote)
-    shoulder database file.
+    shoulder_parser.Entry objects; loaded on demand.  The latter is a
+    local copy of the (remote) shoulder database file.
 
   userauth._ldapCache authentication cache
     A dictionary that maps local usernames to (hashed password, time,
     AuthenticatedUser) tuples.  (The time in a tuple effectively puts
     a lifetime on the associated cached password.)  Loaded on demand
-    as usernames are encountered.  Emptied when EZID is reloaded.
-    Also, individual entries are removed when users change passwords,
-    change groups, etc.
+    as usernames are encountered.  Individual entries are removed when
+    users change passwords, change groups, etc.
 
   policy._groups cache
     A dictionary that maps groups (identified by tuples; see above) to
     group information tuples (containing shoulders, CrossRef
     attributes, etc.).  Loaded on demand as groups are encountered.
-    Emptied when EZID is reloaded.  Also, individual entries are
-    removed when groups are modified through the admin interface.
+    Individual entries are removed when groups are modified through
+    the admin interface.
 
   policy._coOwners cache
     A dictionary that maps users (identified by simple names) to
     co-owner lists (in which users are also identified by simple
-    names).  Loaded on demand as users are encountered.  Emptied when
-    EZID is reloaded.  Also, individual entries are removed when
-    co-owner lists are modified through the account and admin
-    interfaces.
+    names).  Loaded on demand as users are encountered.  Individual
+    entries are removed when co-owner lists are modified through the
+    account and admin interfaces.
 
   session cookies
     See above.  With a couple caveats, a session cookie is deleted if
@@ -85,12 +83,16 @@ Caching is employed in several places:
 
   idmap.py: _idMap, _groupMap, _userMap
     These dictionaries cache correspondences between agent identifiers
-    and user and group local names.  Loaded on demand.  Emptied when
-    EZID is reloaded.
+    and user and group local names.  Loaded on demand.
 
   LDAP information
     Cached in agent identifiers for the purposes of storage redundancy
     and locality only.  Written only, never read.
+
+  search_identifier.py
+    Caches user, group, datacenter, and profile objects from the
+    search database.  Loads objects on demand, as they're referenced,
+    and also inserts referenced objects that don't exist yet.
 
 4. Identifier metadata
 ----------------------
