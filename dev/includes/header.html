@@ -9,15 +9,15 @@
     </a>
   </div>
 
-  <button type="button" id="js-header__nav-button" class="header__nav-button">
-    <img src="images/mobile-menu.svg" alt="" class="header__nav-button-icon">
+  <button type="button" id="js-header__nav-button" class="header__nav-button" aria-controls="js-header__nav">
+    <img src="images/mobile-menu.svg" alt="Show or hide navigation" class="header__nav-button-icon">
   </button>
 
-  <nav id="js-header__nav" class="header__nav--selected" aria-hidden="false">
+  <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-hidden="false">
     <a class="header__search-link" href="">Search</a>
     <div class="header__learn">
       <a id="header__learn-link" class="header__learn-link" href="">Learn</a>
-      <ul class="header__learn-menu" aria-labelledby="header__learn-link">
+      <ul class="header__learn-menu" aria-labelledby="header__learn-link" aria-haspopup="true">
         <li><a href="/learn#01">What Is EZID?</a></li>
         <li><a href="/learn#02">Current Users</a></li>
         <li><a href="/learn#03">Pricing</a></li>
