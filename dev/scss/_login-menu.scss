@@ -2,18 +2,21 @@
 
 .login-menu {
 	display: flex;
-	justify-content: space-around;
-	height: 25px;
-	padding: 15px;
+	flex-flow: column nowrap;
 	background: linear-gradient(to bottom, $design-secondary-gradient-top, $design-secondary-color);
+
+	@include bp(screen1) {
+		flex-flow: row nowrap;
+		justify-content: space-around;
+		padding: 10px;
+	}
+
 }
 
 %login-menu__link {
 	display: flex;
 	flex: 1 0 auto;
-	align-items: center;
-	justify-content: center;
-	border-left: 1px solid $design-black-color;
+	padding: 15px;
 	color: $design-black-color;
 	font-size: 0.9em;
 	font-weight: bold;
@@ -21,8 +24,28 @@
 	text-transform: uppercase;
 	word-spacing: 0.3em;
 
-	&:first-child {
-		border: none;
+	@include bp(screen1) {
+		justify-content: center;
+		padding: 5px 0;
+
+		&:not(:first-child) {
+			border-left: 1px solid $design-black-color;
+		}
+
+	}
+
+	&:not(:first-child) {
+		border-top: 1px solid $design-black-color;
+
+		@include bp(screen1) {
+			border-top: none;
+		}
+
+	}
+
+	&:hover,
+	&:focus {
+		color: $design-white-color;
 	}
 
 }
