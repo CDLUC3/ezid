@@ -28,6 +28,14 @@ class Datacenter (django.db.models.Model):
     validators=[validation.datacenterSymbol])
   # The datacenter's so-called symbol, e.g., "CDL.BUL".
 
+  @property
+  def allocator (self):
+    return self.symbol.split(".")[0]
+
+  @property
+  def datacenter (self):
+    return self.symbol.split(".")[1]
+
   def clean (self):
     self.symbol = self.symbol.upper()
 

@@ -55,12 +55,16 @@ def withAutoReconnect (functionName, function, continuationCheck=None):
   module).  'functionName' is the name of 'function' for logging
   purposes.
   """
+  firstError = True
   while True:
     try:
       return function()
     except django.db.OperationalError, e:
-      log.otherError("search_util.withAutoReconnect/" + functionName, e)
-      time.sleep(_reconnectDelay)
+      # We're silent about the first error because it might simply be
+      # due to the database connection having timed out.
+      if not firstError:
+        log.otherError("search_util.withAutoReconnect/" + functionName, e)
+        time.sleep(_reconnectDelay)
       if continuationCheck != None and not continuationCheck():
         raise AbortException()
       # In some cases a lost connection causes the thread's database
@@ -69,6 +73,7 @@ def withAutoReconnect (functionName, function, continuationCheck=None):
       # connection objects are indexed generically, but are stored
       # thread-local.)
       django.db.connections["search"].close()
+      firstError = False
 
 def ping ():
   """
@@ -182,8 +187,7 @@ def formulateQuery (constraints, orderBy=None,
         [django.db.models.Q(ownergroup__groupname=v) for v in value]))
       scopeRequirementMet = True
     elif column in ["createTime", "updateTime"]:
-      filters.append(django.db.models.Q(**{ (column + "__gte"): value[0] }))
-      filters.append(django.db.models.Q(**{ (column + "__lte"): value[1] }))
+      filters.append(django.db.models.Q(**{ (column + "__range"): value }))
     elif column == "status":
       if isinstance(value, basestring): value = [value]
       filters.append(reduce(operator.or_,
@@ -235,12 +239,12 @@ def formulateQuery (constraints, orderBy=None,
         filters.append(django.db.models.Q(searchablePublicationYear=value[0]))
       else:
         filters.append(django.db.models.Q(
-          searchablePublicationYear__gte=value[0]))
-        filters.append(django.db.models.Q(
-          searchablePublicationYear__lte=value[1]))
+          searchablePublicationYear__range=value))
     elif column == "resourceType":
-      filters.append(django.db.models.Q(searchableResourceType=\
-        ezidapp.models.validation.resourceTypes.get(value, value)))
+      if isinstance(value, basestring): value = [value]
+      filters.append(reduce(operator.or_,
+        [django.db.models.Q(searchableResourceType=\
+        ezidapp.models.validation.resourceTypes.get(v, v)) for v in value]))
     else:
       assert False, "unrecognized column"
   assert scopeRequirementMet, "query scope requirement not met"
