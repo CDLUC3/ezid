@@ -1,5 +1,7 @@
 // ##### Home Page Banner Component ##### //
 
 .home-banner {
-	// empty
+	height: 300px;
+	background: url('/images/homeHero_01.jpg') no-repeat;
+	background-size: cover;
 }
