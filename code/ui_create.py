@@ -78,14 +78,16 @@ def simple_form_processing(request, d):
     else:
       d['current_profile'] = metadata.getProfile('erc')
       
+  if "form_placeholder" not in d: d['form_placeholder'] = None
   if request.method == "GET":
-    d['form'] = form_objects.getIdForm(d['current_profile'])   # Begin ID Creation (empty form)
+    # Begin ID Creation (empty form)
+    d['form'] = form_objects.getIdForm(d['current_profile'], d['form_placeholder'])
     d['id_gen_result'] = 'edit_page'
   else:
     if "current_profile" not in REQUEST or "shoulder" not in REQUEST:
       d['id_gen_result'] = 'bad_request'
       return d
-    d['form'] = form_objects.getIdForm(d['current_profile'], request)
+    d['form'] = form_objects.getIdForm(d['current_profile'], d['form_placeholder'], request)
     pre_list = [pr['prefix'] for pr in d['prefixes']]
     if REQUEST['shoulder'] not in pre_list:
       django.contrib.messages.error(request, _("Unauthorized to create with \

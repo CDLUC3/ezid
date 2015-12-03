@@ -63,34 +63,23 @@
                 {% help_icon "describe_profile_frontpage" %}
               </div>
             </div>
-            <div id="home_demo_ark" class="row">
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="_target" class="sr-only control-label">{{internal_profile.target.displayName}}</label>
-                <input type="text" class="form-control" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
-              </div>
-              {% for e in current_profile.elements %}
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="{{e.name}}" class="sr-only control-label">{{e.displayName}}</label>
-                {% display_form_element e %}
-              </div>
-              {% endfor %}
-              <div class="col-md-1">
-                <button type="submit" class="btn btn-primary">CREATE</button>
-              </div>
-            </div>
-            <div id="home_demo_doi" class="row">
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="_target" class="sr-only control-label">{{internal_profile.target.displayName}}</label>
-                <input type="text" class="form-control" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
-              </div>
-              {% for e in current_profile.elements %}
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="{{e.name}}" class="sr-only control-label">{{e.displayName}}</label>
-                {% display_form_element e %}
+            <div class="row">
+              {{ form.non_field_errors }}
+              {% for field in form %}
+              <div class="col-md-5 form-group form-group-sm{% if field.errors %} has-error{% endif %}">
+                <label for="{{ field.id_for_label }}" class="sr-only control-label">
+                  {{ field.label }}
+                </label>
+                {{ field|add_attributes:"form-control"}}
+              {% if field.errors %}
+                {% for error in field.errors %}
+                  {{ error|escape }}
+                {% endfor %}
+              {% endif %}
               </div>
               {% endfor %}
               <div class="col-md-1">
-                <button type="submit" class="btn btn-primary">CREATE</button>
+                <button type="submit" class="btn btn-primary padding-side-xs">CREATE</button>
               </div>
             </div>
           </form>

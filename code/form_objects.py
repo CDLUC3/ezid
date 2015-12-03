@@ -12,23 +12,34 @@ remainder_box_default = _("Recommended: Leave blank")
 ################# Basic ID Forms ####################
 
 class BaseForm(forms.Form):
-  """ Base Form object: all forms have a _target field  """
+  """ Base Form object: all forms have a _target field. If 'placeholder' is True
+      set attribute to include specified placeholder text in text fields """
   def __init__(self, *args, **kwargs):
+    self.placeholder = kwargs.pop('placeholder',None)
     super(BaseForm,self).__init__(*args,**kwargs)
     self.fields["_target"]=forms.CharField(required=False, label=_("Location (URL)"),
       validators=[_validate_url])
+    if self.placeholder is not None and self.placeholder == True:
+      self.fields['_target'].widget.attrs['placeholder'] = "Location (URL)"
 
 class ErcForm(BaseForm):
-  """ Form object for ID with ERC profile. BaseForm parent brings in _target field """
+  """ Form object for ID with ERC profile. BaseForm parent brings in _target field 
+      If 'placeholder' is True set attribute to include specified placeholder text 
+      in text fields """
   def __init__(self, *args, **kwargs):
     super(ErcForm,self).__init__(*args,**kwargs)
     self.fields["erc.who"]=forms.CharField(required=False, label=_("Who"))
     self.fields["erc.what"]=forms.CharField(required=False, label=_("What"))
     self.fields["erc.when"]=forms.CharField(required=False, label=_("When"))
+    if self.placeholder is not None and self.placeholder == True:
+      self.fields['erc.who'].widget.attrs['placeholder'] = "Who?"
+      self.fields['erc.what'].widget.attrs['placeholder'] = "What?"
+      self.fields['erc.when'].widget.attrs['placeholder'] = "When?"
 
 class DcForm(BaseForm):
   """ Form object for ID with Dublin Core profile. BaseForm parent brings in 
-      _target field """
+      _target field. If 'placeholder' is True set attribute to include specified 
+      placeholder text in text fields """
   def __init__(self, *args, **kwargs):
     super(DcForm,self).__init__(*args,**kwargs)
     self.fields["dc.creator"] = forms.CharField(required=False, label=_("Creator"))
@@ -39,7 +50,8 @@ class DcForm(BaseForm):
 
 class DataciteForm(BaseForm):
   """ Form object for ID with DataCite profile. BaseForm parent brings in 
-      _target field """
+      _target field. If 'placeholder' is True set attribute to include specified
+      placeholder text in text fields """
   def __init__(self, *args, **kwargs):
     super(DataciteForm,self).__init__(*args,**kwargs)
     self.fields["datacite.creator"] = forms.CharField(label=_("Creator"),
@@ -65,16 +77,26 @@ class DataciteForm(BaseForm):
     )
     self.fields["datacite.resourcetype"] = forms.ChoiceField(required=False, 
       choices=RESOURCE_TYPES, label=_("Resource type"))
+    if self.placeholder is not None and self.placeholder == True:
+      self.fields['datacite.creator'].widget.attrs['placeholder'] = "Creator"
+      self.fields['datacite.title'].widget.attrs['placeholder'] = "Title"
+      self.fields['datacite.publisher'].widget.attrs['placeholder'] = "Publisher"
+      self.fields['datacite.publicationyear'].widget.attrs['placeholder'] = "Publication year"
 
-# Returns a simple ID Django form
-def getIdForm (profile, request=None):
+def getIdForm (profile, placeholder, request=None):
+  """ Returns a simple ID Django form. If 'placeholder' is True
+      set attribute to include specified placeholder text in text fields """
   P = None
   if request:
     assert request.method == 'POST'
     P = request.POST
-  if profile.name == 'erc': return ErcForm(P)
-  elif profile.name == 'datacite': return DataciteForm(P)
-  elif profile.name == 'dc': return DcForm(P)
+  if profile.name == 'erc': 
+    form = ErcForm(P, placeholder=placeholder)
+  elif profile.name == 'datacite': 
+    form = DataciteForm(P, placeholder=placeholder)
+  elif profile.name == 'dc': 
+    form = DcForm(P, placeholder=placeholder)
+  return form
 
 ################# Advanced ID Form Retrieval ###########################
 ### (two forms technically: RemainderForm and Profile Specific Form) ###
