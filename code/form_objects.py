@@ -257,11 +257,11 @@ class UserForm(forms.Form):
   ezidCoOwners = forms.CharField(required=False, label=_("Assigned Proxy Users"),
     validators=[_validate_proxies])
   pwcurrent = forms.CharField(required=False, label=_("Current Password"),
-    widget=forms.PasswordInput, validators=[_validate_current_pw(username)])
+    widget=forms.PasswordInput(), validators=[_validate_current_pw(username)])
   pwnew = forms.CharField(required=False, label=_("New Password"),
-    widget=forms.PasswordInput)
+    widget=forms.PasswordInput())
   pwconfirm = forms.CharField(required=False, label=_("Confirm New Password"),
-    widget=forms.PasswordInput)
+    widget=forms.PasswordInput())
   def clean(self):
     cleaned_data = super(UserForm, self).clean()
     pwnew_c = cleaned_data.get("pwnew")

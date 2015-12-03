@@ -67,11 +67,21 @@
   {% endif %}
   </div>
   <div class="row form-group form-group-sm">
+    <label class="col-sm-2 control-label">{% trans "My Proxy Accounts" %}</label>
+    <div class="col-sm-5">
+      UCI, ******* PLACEHOLDER ******
+      <div class="vertical-buffer-xs"></div>
+      <div class="font-small">
+        <span class="font-small-bold">{%trans "NOTE:" %}</span> {%trans "These are identifier groups where you have been designated as proxy user." %}
+      </div>
+    </div>
+  </div>
+  <div class="row form-group form-group-sm">
     <label for="{{ form.ezidCoOwners.id_for_label }}" class="col-sm-2">{{ form.ezidCoOwners.label }}</label>
     <div class="col-sm-5">
       {{ form.ezidCoOwners|add_attributes:"form-control"}}
-      {% if form.mail.errors %}
-        {% for error in form.mail.errors %}
+      {% if form.ezidCoOwners.errors %}
+        {% for error in form.ezidCoOwners.errors %}
           {{ error|escape }}<br/>
         {% endfor %}
       {% endif %}
@@ -81,7 +91,7 @@
       </div>
     </div>
     <div class="col-sm-3 padding-left">
-      <button class="btn" type="button">{%trans "Look Up Owners" %}</button>{% help_icon "lookup_owners" %} 
+      <button class="btn" type="button">{%trans "Select Proxy Users" %}</button>{% help_icon "lookup_proxies" %} 
     </div>
   </div>
   <div class="vertical-buffer-sm"></div>
