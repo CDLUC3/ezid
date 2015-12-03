@@ -7,8 +7,8 @@
 # 1) Generates form fields for use with Django form model.
 # 2) Creates an XML document for attaching Datacite XML metadata.
 #
-# Author:
-#   Scott Fisher <sfisher@ucop.edu>
+# Authors:
+#   Scott Fisher <sfisher@ucop.edu>, Andy Mardesich <andy.mardesich@ucop.edu>
 #
 # License:
 #   Copyright (c) 2013, Regents of the University of California
@@ -22,19 +22,14 @@ import copy
 from io import StringIO
 
 ns = { "N": "http://datacite.org/schema/kernel-3" }
+ROOT_CREATORS = '//N:resource/N:creators/N:creator'
+ROOT_TITLES = '//N:resource/N:titles/N:title'
+ROOT_GEOLOCS = '//N:resource/N:geoLocations/N:geoLocation'
 
 # ============================================================================= 
 #   Form field generation
 # =============================================================================
 
-def _countCreators(tree):
-  return len(tree.xpath('//N:resource/N:creators/N:creator', namespaces=ns))
-
-def _countTitles(tree):
-  return len(tree.xpath('//N:resource/N:titles/N:title', namespaces=ns))
-
-def _countGeoLocations(tree):
-  return len(tree.xpath('//N:resource/N:geoLocations/N:geoLocation', namespaces=ns))
 
 def _getElementDict(elementName, tree):
   if elementName == 'creators':
@@ -84,9 +79,12 @@ def populateFormObject(xml):
   parser = etree.XMLParser(ns_clean=True, recover=True)
   tree = etree.parse(root, parser)
   d = {}
-  d['data_creators'] = _generateFormFields('creators', _countCreators(tree), tree)
-  d['data_titles'] = _generateFormFields('titles', _countTitles(tree), tree)
-  d['data_geoLocations'] = _generateFormFields('geoLocations', _countGeoLocations(tree), tree)
+  d['data_creators'] = _generateFormFields('creators', \
+    len(tree.xpath(ROOT_CREATORS, namespaces=ns)), tree)
+  d['data_titles'] = _generateFormFields('titles', \
+    len(tree.xpath(ROOT_TITLES, namespaces=ns)), tree)
+  d['data_geoLocations'] = _generateFormFields('geoLocations', \
+    len(tree.xpath(ROOT_GEOLOCS, namespaces=ns)), tree)
   return d
  
 # ============================================================================= 
