@@ -2,7 +2,7 @@
 
 .home-banner {
 	height: 64vw;
-	background: $design-primary-color url('/images/homeHero_01.jpg') no-repeat;
+	background: $design-primary-color url('../images/homeHero_01.jpg') no-repeat;
 	background-position: bottom center;
 	background-size: 100%;
 
@@ -45,7 +45,7 @@
 	@extend %button__pop;
 	margin: 2vw 0 0;
 	padding: 1.5vw 2em 1.5vw 1.3em; // make room for background arrow icon
-	background: url('/images/icon_double-arrow.svg') no-repeat, linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+	background: url('../images/icon_double-arrow.svg') no-repeat, linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 	background-position: right 10px center; // apply modernizr fallback here
 	background-size: 0.8em;
 	font-size: 2vw;
