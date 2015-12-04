@@ -1,16 +1,30 @@
 // ##### Home Page Banner Component ##### //
 
 .home-banner {
-	height: 300px;
-	background: url('/images/homeHero_01.jpg') no-repeat;
-	background-size: cover;
+	height: 64vw;
+	background: $design-primary-color url('/images/homeHero_01.jpg') no-repeat;
+	background-position: bottom center;
+	background-size: 100%;
+
+	@include bp(screen1) {
+		height: 300px;
+		background-position: top;
+		background-size: cover;
+	}
+
 }
 
 .home-banner__lead {
-	width: 430px;
+	width: 68vw;
+	margin: 0 auto;
+	padding: 3vw 0 0;
+	text-align: center;
 
 	@include bp(screen1) {
+		width: 430px;
+		margin: 0;
 		padding: 80px 0 0 100px;
+		text-align: left;
 	}
 
 }
@@ -18,22 +32,29 @@
 .home-banner__lead-text {
 	margin: 0;
 	color: $design-white-color;
-	font-size: 2em;
+	font-size: 5vw;
 	font-weight: bold;
 
 	@include bp(screen1) {
-		// empty
+		font-size: 2em;
 	}
 
 }
 
 .home-banner__lead-button {
 	@extend %button__pop;
-	margin: 1em 0 0;
-	padding: 0.7em 2em 0.7em 1.3em; // make room for background arrow icon
+	margin: 2vw 0 0;
+	padding: 1.5vw 2em 1.5vw 1.3em; // make room for background arrow icon
 	background: url('/images/icon_double-arrow.svg') no-repeat, linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 	background-position: right 10px center; // apply modernizr fallback here
 	background-size: 0.8em;
+	font-size: 2vw;
+
+	@include bp(screen1) {
+		margin: 1em 0 0;
+		padding: 0.7em 2em 0.7em 1.3em;
+		font-size: 0.8em;
+	}
 
 	&:hover,
 	&:focus {
