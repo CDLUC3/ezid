@@ -1,24 +1,39 @@
 // ##### Table Component ##### //
 
+// Inspired from: http://codepen.io/geoffyuen/pen/FCBEg
+
 .table1 {
+	width: 100%;
 	border-collapse: collapse;
 	
 	th {
 		display: none;
-		color: blue;
+		text-align: left;
+		background: $design-secondary-color;
+		padding: 0.5em;
+
+		@include bp(screen1) {
+			display: table-cell;
+    }
+
 	}
 
-	// tr:nth-child(odd) {
-	//   background: red;
-	// }
+	tbody tr:nth-child(even) {
+	  background: $design-secondary-lightest;
+	}
 
 	td {
-		display: block;
+		display: flex;
+		padding: 0.5em;
+
+		@include bp(screen1) {
+			display: table-cell;
+    }
 
 		&:before {
-			display: inline-block;
+			flex: 0 0 auto;
 			width: 10em;
-			color: blue;
+			font-weight: bold;
 			content: attr(data-th)": ";
 
 			@include bp(screen1) {
@@ -26,26 +41,6 @@
 			}
 
 		}
-
-		&:first-child {
-      padding-top: 1em;
-    }
-
-    &:last-child {
-      padding-bottom: 1em;
-    }
-
-	}
-
-	th,
-	td {
-		padding: 0.25em;
-		text-align: left;
-		border: $bgreen;
-
-		@include bp(screen1) {
-			display: table-cell;
-    }
 
 	}
 
