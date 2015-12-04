@@ -29,5 +29,15 @@
 
 .home-banner__lead-button {
 	@extend %button__pop;
-	padding: 0.7em 30px 0.7em 1.3em; // make room for background arrow icon
+	margin: 1em 0 0;
+	padding: 0.7em 28px 0.7em 1.3em; // make room for background arrow icon
+	background: url('/images/icon_double-arrow.svg') no-repeat, linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+	background-position: right 10px center; // apply modernizr fallback here
+	background-size: 0.8em;
+
+	&:hover,
+	&:focus {
+		text-decoration: underline;
+	}
+
 }
