@@ -1,6 +1,58 @@
 // ##### Table Component ##### //
 
-// From: http://codepen.io/geoffyuen/pen/FCBEg
+.table1 {
+	border-collapse: collapse;
+	
+	th {
+		display: none;
+		color: blue;
+	}
+
+	// tr:nth-child(odd) {
+	//   background: red;
+	// }
+
+	td {
+		display: block;
+
+		&:before {
+			display: inline-block;
+			width: 10em;
+			color: blue;
+			content: attr(data-th)": ";
+
+			@include bp(screen1) {
+				display: none;
+			}
+
+		}
+
+		&:first-child {
+      padding-top: 1em;
+    }
+
+    &:last-child {
+      padding-bottom: 1em;
+    }
+
+	}
+
+	th,
+	td {
+		padding: 0.25em;
+		text-align: left;
+		border: $bgreen;
+
+		@include bp(screen1) {
+			display: table-cell;
+    }
+
+	}
+
+}
+
+
+
 
 $breakpoint-alpha: 480px; // adjust to your needs
 
@@ -19,7 +71,7 @@ $breakpoint-alpha: 480px; // adjust to your needs
   
   td {
     display: block; 
-    
+
     &:first-child {
       padding-top: .5em;
     }
@@ -44,7 +96,7 @@ $breakpoint-alpha: 480px; // adjust to your needs
   
   th, td {
     text-align: left;
-    
+
     @media (min-width: $breakpoint-alpha) {
       display: table-cell;
       padding: .25em .5em;
@@ -66,7 +118,7 @@ $breakpoint-alpha: 480px; // adjust to your needs
 // presentational styling
 
 .rwd-table {
-  background: #ccc;
+  background: #eee;
   color: black;
   overflow: hidden;
   th, td {
