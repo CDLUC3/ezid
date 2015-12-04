@@ -7,10 +7,10 @@
 }
 
 .home-banner__lead {
-	width: 500px;
+	width: 430px;
 
 	@include bp(screen1) {
-		padding: 100px 0 0 100px;
+		padding: 80px 0 0 100px;
 	}
 
 }
@@ -30,7 +30,7 @@
 .home-banner__lead-button {
 	@extend %button__pop;
 	margin: 1em 0 0;
-	padding: 0.7em 28px 0.7em 1.3em; // make room for background arrow icon
+	padding: 0.7em 2em 0.7em 1.3em; // make room for background arrow icon
 	background: url('/images/icon_double-arrow.svg') no-repeat, linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 	background-position: right 10px center; // apply modernizr fallback here
 	background-size: 0.8em;
