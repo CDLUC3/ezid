@@ -1,47 +1,16 @@
 // ##### Table Component ##### //
 
+// Inspired from: http://codepen.io/geoffyuen/pen/FCBEg
+
 .table1 {
+	width: 100%;
 	border-collapse: collapse;
-	
+
 	th {
 		display: none;
-		color: blue;
-	}
-
-	// tr:nth-child(odd) {
-	//   background: red;
-	// }
-
-	td {
-		display: block;
-
-		&:before {
-			display: inline-block;
-			width: 10em;
-			color: blue;
-			content: attr(data-th)": ";
-
-			@include bp(screen1) {
-				display: none;
-			}
-
-		}
-
-		&:first-child {
-      padding-top: 1em;
-    }
-
-    &:last-child {
-      padding-bottom: 1em;
-    }
-
-	}
-
-	th,
-	td {
-		padding: 0.25em;
+		padding: 0.5em;
+		background: $design-secondary-color;
 		text-align: left;
-		border: $bgreen;
 
 		@include bp(screen1) {
 			display: table-cell;
@@ -49,85 +18,30 @@
 
 	}
 
-}
+	tbody tr:nth-child(even) {
+	  background: $design-secondary-lightest;
+	}
 
+	td {
+		display: flex;
+		padding: 0.5em;
 
-
-
-$breakpoint-alpha: 480px; // adjust to your needs
-
-.rwd-table {
-  margin: 1em 0;
-  min-width: 300px; // adjust to your needs
-  
-  tr {
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  th {
-    display: none; // for accessibility, use a visually hidden method here instead! Thanks, reddit!   
-  }
-  
-  td {
-    display: block; 
-
-    &:first-child {
-      padding-top: .5em;
-    }
-    &:last-child {
-      padding-bottom: .5em;
+		@include bp(screen1) {
+			display: table-cell;
     }
 
-    &:before {
-      content: attr(data-th)": "; // who knew you could do this? The internet, that's who.
-      font-weight: bold;
+		&:before {
+			flex: 0 0 auto;
+			width: 10em;
+			font-weight: bold;
+			content: attr(data-th)': ';
 
-      // optional stuff to make it look nicer
-      width: 6.5em; // magic number :( adjust according to your own content
-      display: inline-block;
-      // end options
-      
-      @media (min-width: $breakpoint-alpha) {
-        display: none;
-      }
-    }
-  }
-  
-  th, td {
-    text-align: left;
+			@include bp(screen1) {
+				display: none;
+			}
 
-    @media (min-width: $breakpoint-alpha) {
-      display: table-cell;
-      padding: .25em .5em;
-      
-      &:first-child {
-        padding-left: 0;
-      }
-      
-      &:last-child {
-        padding-right: 0;
-      }
-    }
+		}
 
-  }
-  
-  
-}
+	}
 
-// presentational styling
-
-.rwd-table {
-  background: #eee;
-  color: black;
-  overflow: hidden;
-  th, td {
-    margin: .5em 1em;
-    @media (min-width: $breakpoint-alpha) { 
-      padding: 1em !important; 
-    }
-  }
-  th, td:before {
-    color: blue;
-  }
 }
