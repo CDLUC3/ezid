@@ -142,10 +142,10 @@ $header-top-margin: 20px 0 0;
 
 .header__learn {
 	@include bp(screen1) {
-		position: relative; // for .header__learn-menu
+		position: relative; // for .header__learn-subnav
 
 		&:hover {
-			.header__learn-menu { // show menu on hover
+			.header__learn-subnav { // show menu on hover
 				display: block;
 			}
 
@@ -165,12 +165,12 @@ $header-top-margin: 20px 0 0;
 
 }
 
-.header__learn-menu {
+.header__learn-subnav {
 	display: none; // hide menu until hover on .header__learn
 	position: absolute;
 	top: 60px;
 	left: 0;
-	min-width: 160px;
+	min-width: 170px;
 	margin: 0;
 	padding: 0;
 	border: 1px solid $design-light-gray-border-color;

@@ -1,0 +1,65 @@
+// ##### Table Component ##### //
+
+// Inspired from: http://codepen.io/geoffyuen/pen/FCBEg
+
+.table1 {
+	width: 100%;
+	border-collapse: collapse;
+
+	@include bp(screen1) {
+		tbody tr:nth-child(even) {
+		  background: $design-secondary-lightest;
+		}
+
+	}
+
+	th {
+		display: none;
+		padding: 0.5em;
+		background: $design-secondary-color;
+		text-align: left;
+
+		@include bp(screen1) {
+			display: table-cell;
+    }
+
+	}
+
+	td {
+		display: flex;
+		padding: 0.5em;
+
+		@include bp(screen1) {
+			display: table-cell;
+    }
+
+    &:first-child {
+	    background: $design-secondary-lightest;
+	    font-weight: bold;
+
+	    @include bp(screen1) {
+	    	background: transparent;
+	    	font-weight: normal;
+	    }
+
+	    &:before {
+	    	display: none;
+	    }
+
+    }
+
+		&:before {
+			flex: 0 0 auto;
+			width: 10em;
+			font-weight: bold;
+			content: attr(data-th)': ';
+
+			@include bp(screen1) {
+				display: none;
+			}
+
+		}
+
+	}
+
+}

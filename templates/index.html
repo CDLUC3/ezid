@@ -1,9 +1,10 @@
 {% extends "layouts/base.html" %}
 {% load metadata_tags %}
 {% load layout_extras %}
+{% load i18n %}
 
 {% block title %}EZID Home{% endblock %}
-
+{% block description %}{%trans "EZID service creates long-term identifiers and is a key component for keeping data and digital objects safe while fulfilling grant requirements for data management plans." %}{% endblock %}
 {% block content %}
     <div class="vertical-buffer-xs" id="frontpage_img">
       <div class="container">
