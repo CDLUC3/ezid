@@ -2,69 +2,54 @@
 {% load layout_extras %}
 {% load i18n %}
 
-{% block title %}{%trans "Search across all identifiers" %}{% endblock %}A
+{% block title %}{%trans "Search across EZID identifiers" %}{% endblock %}A
 {% block description %}{%trans "Search across all EZID identifiers by keyword, title, creator, publisher, or identifier string." %}{% endblock %}
-{% block heading %}{% content_heading _("Search across all identifiers") %}{% endblock %}
+{% block heading %}{% content_heading _("Search across EZID identifiers") %}{% endblock %}
 {% block content %}
 <div class="container vertical-buffer-xs">
 
 <section id="search">
   <form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" role="form">
+  <div class="row">
+    <div class="vertical-buffer-sm"></div>
+    <div class="col-sm-9 form-group form-group-sm">
+      <input type="text" class="form-control" id="search_keyword" 
+        placeholder="{% trans "Full text search using words about or describing the identifier." %}">
+    </div>
+    <div class="col-sm-3 form-group form-group-sm">
+      <input class="btn btn-primary padding-side-med" type="submit" value="{% trans "SEARCH" %}">
+    </div>
+    <div class="col-sm-12 vertical-buffer-xxs"></div>
+  </div>
+  <div class="accordion" id="accordion_advanced_search">
+    <div class="accordion-group">
+      <div class="accordion-heading inline-header">
+        <a class="accordion-toggle not-text" data-toggle="collapse" data-parent="#accordion_advanced_search" href="#accordion_advanced_search_collapse">
+          <i class="indicator caret-right"></i><h3>{% trans "ADVANCED SEARCH" %}</h3><img id="search__icon--advanced" src="/static/images/searchAdvanced.svg" ALT="">
+        </a>
+      </div>
+      <div id="accordion_advanced_search_collapse" class="accordion-body collapse">
+        <div class="accordion-inner">
   <!-- Row: Basic Search -->
   <div class="row">
-    <div class="col-sm-12 form-group form-group-sm">
-      <div class="radio-inline search__tooltip--container">
-        <input id="search_mine" type="checkbox" class="checkbox__icon"
-      {% if not session.auth %}
-          disabled    
-      {% endif %}
-        >
-        <label for="search_mine" class="image-checkbox-label text-color-reg 
-      {% if not session.auth %}
-          disabled
-      {% endif %}
-        ">{% trans "Search only over my identifiers" %}
-        </label>
-      {% if not session.auth %}
-        <img src="/static/images/iconHelp.svg" class="icon-help" ALT="?">
-        <div class="tip font-xsmall">
-      {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
-      i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
-      i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
-      {% endcomment %}
-      {% blocktrans trimmed %}
-          To search over only your identifiers, please 
-          <a id="modal_open_pg-search" data-toggle="modal" href="#">login</a>
-      {% endblocktrans %}
-          .
-        </div>
-      {% endif %}
-      </div>
-    </div>
-    <br/><br/>
-
-    <div class="col-sm-12 form-group form-group-sm">
-      <label for="search_id">{% trans "Identifier" %}</label>
-      {# Translators: "ex." is abbreviation for "example" #}
-      <input type="text" class="form-control" id="search_id" placeholder="{% trans "ex:" %} doi:10.5061/DRYAD.20">
-    </div>
-
     <div class="col-sm-6 form-group form-group-sm">
-      <label for="search_keyword">{% trans "Key Word" %}</label>
-      <input type="text" class="form-control" id="search_keyword" placeholder="{% trans "ex:" %} Guanosine pentaphosphate">
+      <label for="search_id">{% trans "Identifier/Identifier Prefix" %}</label>
+      {# Translators: "Ex." is abbreviation for "example" #}
+      <input type="text" class="form-control" id="search_id" placeholder="{% trans "Ex." %} doi:10.17614/Q44F1NB79">
     </div>
+
     <div class="col-sm-6 form-group form-group-sm second-col">
-      <label for="search_title">{% trans "Title" %}</label>
-      <input type="text" class="form-control" id="search_title" placeholder="{% trans "ex: Control of rRNA transcription" %}">
+      <label for="search_title">{% trans "Object Title" %}</label>
+      <input type="text" class="form-control" id="search_title" placeholder="{% trans "Ex." %} 2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone">
     </div>
 
     <div class="col-sm-6 form-group form-group-sm">
-      <label for="search_creator">{% trans "Creator" %}</label>
-      <input type="text" class="form-control" id="search_creator" placeholder="{% trans "ex:" %} Santos, Eduardo S.">
+      <label for="search_creator">{% trans "Object Creator" %}</label>
+      <input type="text" class="form-control" id="search_creator" placeholder="{% trans "Ex. Pitt Quantum Repository" %}">
     </div>
     <div class="col-sm-6 form-group form-group-sm second-col">
       <label for="search_publisher">{% trans "Publisher" %}</label>
-      <input type="text" class="form-control" id="search_publisher" placeholder="{% trans "ex:" %} Dryad Digital Repository">
+      <input type="text" class="form-control" id="search_publisher" placeholder="{% trans "Ex. University of Pittsburgh" %}">
     </div>
 
     <div class="col-sm-6">
@@ -76,139 +61,29 @@
           <div class="col-sm-6 form-group form-group-sm">
             <label for="search_publication_year_from" class="col-sm-3 control-label text-right">{% trans "From" %}</label>
             <div class="col-sm-1">
-              <input type="text" class="form-control" id="search_publication_year_from" placeholder="2001">
-              <span class="font-small text-nowrap">YYYY</span>
+              <input type="text" class="form-control" id="search_publication_year_from" placeholder="Ex. 2015">
             </div>
           </div>
           <div class="col-sm-6 form-group form-group-sm">
             <label for="search_publication_year_to" class="col-sm-3 control-label text-right">To</label>
             <div class="col-sm-1">
-              <input type="text" class="form-control" id="search_publication_year_to" placeholder="2005">
-              <span class="font-small text-nowrap">YYYY</span>
+              <input type="text" class="form-control" id="search_publication_year_to">
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="col-sm-6 form-group form-group-sm second-col">
-      <label for="search_resource_type">{% trans "Resource Type" %}</label>
+      <label for="search_resource_type">{% trans "Object Type" %}</label>
       <select id="search_resource_type" class="form-control">
-        <option selected="true" disabled="true">Select a type of resource</option><option value="Audiovisual" >Audiovisual</option><option value="Collection" >Collection</option><option value="Dataset" >Dataset</option><option value="Event" >Event</option><option value="Image" >Image</option><option value="InteractiveResource" >InteractiveResource</option><option value="Model" >Model</option><option value="PhysicalObject" >PhysicalObject</option><option value="Service" >Service</option><option value="Software" >Software</option><option value="Sound" >Sound</option><option value="Text" >Text</option><option value="Workflow" >Workflow</option><option value="Other" >Other</option></select>
+        <option selected="true" disabled="true">{% trans "Select a type of object" %}</option><option value="Audiovisual" >Audiovisual</option><option value="Collection" >Collection</option><option value="Dataset" >Dataset</option><option value="Event" >Event</option><option value="Image" >Image</option><option value="InteractiveResource" >InteractiveResource</option><option value="Model" >Model</option><option value="PhysicalObject" >PhysicalObject</option><option value="Service" >Service</option><option value="Software" >Software</option><option value="Sound" >Sound</option><option value="Text" >Text</option><option value="Workflow" >Workflow</option><option value="Other" >Other</option></select>
      </select>
     </div>
   </div>
-  <div class="vertical-buffer-xxs"></div>
-    <!-- End Row: Basic Search -->
-  <hr>
-    <!-- Row: Advanced Search -->
-
-  <div class="accordion" id="accordion_advanced_search">
-    <div class="accordion-group">
-      <div class="accordion-heading inline-header">
-        <a class="accordion-toggle not-text" data-toggle="collapse" data-parent="#accordion_advanced_search" href="#accordion_advanced_search_collapse">
-          <i class="indicator caret-right"></i><h3>{% trans "ADVANCED SEARCH" %}</h3><img id="search__icon--advanced" src="/static/images/searchAdvanced.svg" ALT="">
-        </a>
-      </div>
-      <div id="accordion_advanced_search_collapse" class="accordion-body collapse">
-        <div class="accordion-inner">
-
-          <div class="row">
-            <div class="col-sm-6 form-group form-group-sm">
-              <label for="search_target_url">{% trans "Target URL" %}</label>
-              <input type="text" class="form-control" id="search_target_url" placeholder="{% trans "ex:" %} http://datadryad.org/resource/doi:10.5061/dryad.mt6m4">
-            </div>
-            <div class="col-sm-6 form-group form-group-sm second-col">
-              <label for="search_identifier_type">{% trans "Identifier Type" %}</label>
-              <select id="search_identifier_type" class="form-control">
-                <option selected="true" disabled="true">{% trans "Select a type of identifier (ARK or DOI)" %}</option><option value="ARK" >ARK</option><option value="DOI" >DOI</option>
-              </select>
-            </div>
-
-            <div class="col-sm-6">
-              <div class="row">
-                <label>{% trans "Create Date" %}</label>
-              </div>
-              <div class="row form-group">
-               <div class="form-inline">
-                  <div class="col-sm-6 form-group form-group-sm">
-                    <label for="search_create_date_from" class="col-sm-3 control-label text-right">{% trans "From" %}</label>
-                    <div class="col-sm-1">
-                      <input type="text" class="form-control" id="search_create_date_from" placeholder="2001">
-                      <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
-                    </div>
-                  </div>
-                  <div class="col-sm-6 form-group form-group-sm">
-                    <label for="search_create_date_to" class="col-sm-3 control-label text-right">{% trans "To" %}</label>
-                    <div class="col-sm-1">
-                      <input type="text" class="form-control" id="search_create_date_to" placeholder="2005/06/15">
-                      <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
-                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 second-col">
-              <div class="row">
-                <label>{% trans "Update Date" %}</label>
-              </div>
-              <div class="row form-group">
-                <div class="form-inline">
-                  <div class="col-sm-6 form-group form-group-sm">
-                    <label for="search_update_date_from" class="col-sm-3 control-label text-right">{% trans "From" %}</label>
-                    <div class="col-sm-1">
-                      <input type="text" class="form-control" id="search_update_date_from" placeholder="2001">
-                      <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
-                    </div>
-                  </div>
-                  <div class="col-sm-6 form-group form-group-sm">
-                    <label for="search_update_date_to" class="col-sm-3 control-label text-right">{% trans "To" %}</label>
-                    <div class="col-sm-1">
-                      <input type="text" class="form-control" id="search_update_date_to" placeholder="2005/06/15">
-                      <span class="font-small text-nowrap">YYYY,&nbsp;&nbsp;&nbsp;YYYY/MM,&nbsp;&nbsp;&nbsp;YYYY/MM/DD</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-4 form-group form-group-sm">
-              <label for="search_status">{% trans "Status" %}</label>
-              <select id="search_status" class="form-control">
-                <option selected="true" disabled="true">{% trans "Select a status" %}</option><option value="Public" >{% trans "Public" %}</option><option value="Reserved" >{% trans "Reserved" %}</option><option value="Unavailable" >{% trans "Unavailable" %}</option>
-              </select>
-            </div>
-            <div class="col-sm-4 form-group form-group-sm">
-              <label for="search_export">{% trans "Allows Harvesting/Indexing?" %}</label>
-              <label for="search_export_yes" class="radio-css">
-                <input type="radio" name="search_export" value="yes" id="search_export_yes" 
-                  checked="checked" /><span>{% trans "Yes" %}</span>
-              </label>
-              <span class="border-left-solid-blue"></span>
-              <label for="search_export_no" class="radio-css">
-                <input type="radio" name="search_export" value="no" id="search_export_no" 
-                  /><span>{% trans "No" %}</span>
-              </label>
-            </div>
-
-            <div class="col-sm-4 form-group form-group-sm">
-              <label for="search_hasmetadata">{% trans "Has Metadata?" %}</label>
-              <label for="search_hasmetadata_yes" class="radio-css">
-                <input type="radio" name="search_hasmetadata" value="yes" id="search_hasmetadata_yes" 
-                  /><span>{% trans "Yes" %}</span>
-              </label>
-              <span class="border-left-solid-blue"></span>
-              <label for="search_hasmetadata_no" class="radio-css">
-                <input type="radio" name="search_hasmetadata" value="no" id="search_hasmetadata_no" 
-                  checked="checked" /><span>{% trans "No" %}</span>
-              </label>
-            </div>
-          </div>  <!-- End Advanced Search Rows-->
         </div>  <!-- End accordion inner -->          
       </div>  <!-- End accordion collapse -->
     </div> <!-- End accordion-group -->
   </div> <!-- End accordion wrapper -->
-  <div class="vertical-buffer-xs"></div>
-  <input class="btn btn-primary btn-fullwidth" type="submit" value="{% trans "SEARCH" %}">
   </form>
 </section>
 </div>
