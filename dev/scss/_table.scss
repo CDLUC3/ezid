@@ -6,6 +6,13 @@
 	width: 100%;
 	border-collapse: collapse;
 
+	@include bp(screen1) {
+		tbody tr:nth-child(even) {
+		  background: $design-secondary-lightest;
+		}
+
+	}
+
 	th {
 		display: none;
 		padding: 0.5em;
@@ -18,16 +25,27 @@
 
 	}
 
-	tbody tr:nth-child(even) {
-	  background: $design-secondary-lightest;
-	}
-
 	td {
 		display: flex;
 		padding: 0.5em;
 
 		@include bp(screen1) {
 			display: table-cell;
+    }
+
+    &:first-child {
+	    background: $design-secondary-lightest;
+	    font-weight: bold;
+
+	    @include bp(screen1) {
+	    	background: transparent;
+	    	font-weight: normal;
+	    }
+
+	    &:before {
+	    	display: none;
+	    }
+
     }
 
 		&:before {
