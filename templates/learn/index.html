@@ -1,7 +1,9 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
+{% load i18n %}
 
-{% block title %}Learn About EZID{% endblock %}
+{% block title %}Learn About EZID{% endblock %}A
+{% block description %}{%trans "Learn more about EZID pricing, documentation and current users." %}{% endblock %}
 {% block heading %}{% content_heading "Learn About EZID" %}{% endblock %}
 {% block content %}
 <div class="container vertical-buffer-xs">

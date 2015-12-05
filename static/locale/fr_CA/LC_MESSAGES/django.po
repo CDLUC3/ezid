@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-15 17:09-0700\n"
+"POT-Creation-Date: 2015-12-04 16:17-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,11 +128,11 @@ msgstr ""
 msgid "You must be logged in as an administrator to view this page."
 msgstr ""
 
-#: settings/common.py:30
+#: settings/common.py:31
 msgid "English"
 msgstr ""
 
-#: settings/common.py:31
+#: settings/common.py:32
 msgid "Canadian French"
 msgstr ""
 
@@ -298,50 +298,56 @@ msgid "Confirm password"
 msgstr ""
 
 #. Translators: This is the Submit button. All uppercase.
-#: templates/account/pwreset2.html:30 templates/contact.html:112
+#: templates/account/pwreset2.html:30 templates/contact.html:108
 msgid "SUBMIT"
 msgstr ""
 
-#: templates/contact.html:4 templates/contact.html.py:5
+#: templates/contact.html:4 templates/contact.html.py:6
 msgid "Contact Us"
 msgstr ""
 
-#: templates/contact.html:33
+#: templates/contact.html:5
+msgid ""
+"Contact EZID for more information about our services or ask a specific "
+"question."
+msgstr ""
+
+#: templates/contact.html:34
 msgid ""
 "Please fill out this form if you would like more information about our "
 "services or have a specific question. If you have a comment we are always "
 "happy to hear feedback."
 msgstr ""
 
-#: templates/contact.html:49
+#: templates/contact.html:45
 msgid "Reason for contacting EZID"
 msgstr ""
 
-#: templates/contact.html:63
+#: templates/contact.html:59
 msgid "Your Name"
 msgstr ""
 
-#: templates/contact.html:70
+#: templates/contact.html:66
 msgid "Your URL"
 msgstr ""
 
-#: templates/contact.html:77
+#: templates/contact.html:73
 msgid "Your Email"
 msgstr ""
 
-#: templates/contact.html:83
+#: templates/contact.html:79
 msgid "Your Institution"
 msgstr ""
 
-#: templates/contact.html:89
+#: templates/contact.html:85
 msgid "Please indicate any question or comment you may have"
 msgstr ""
 
-#: templates/contact.html:95
+#: templates/contact.html:91
 msgid "How did you hear about us?"
 msgstr ""
 
-#: templates/contact.html:131
+#: templates/contact.html:127
 msgid ""
 "Assigning DOIs to figshare content through the EZID system allows "
 "researchers to efficiently share and cite their research.  The great team at "
@@ -349,16 +355,16 @@ msgid ""
 "structured process."
 msgstr ""
 
-#: templates/contact.html:134
+#: templates/contact.html:130
 msgid "Mark Hahnel, Ph. D."
 msgstr ""
 
 #. Translators: "figshare" does not need to be translated: company name
-#: templates/contact.html:136
+#: templates/contact.html:132
 msgid "Founder, figshare"
 msgstr ""
 
-#: templates/contact.html:141
+#: templates/contact.html:137
 msgid ""
 "We're very pleased to see EZID working on behalf of its clients to create "
 "new partnerships that expand the reach and impact of research and "
@@ -369,19 +375,19 @@ msgid ""
 "forms."
 msgstr ""
 
-#: templates/contact.html:144
+#: templates/contact.html:140
 msgid "Rebecca Kennison, Director"
 msgstr ""
 
-#: templates/contact.html:145
+#: templates/contact.html:141
 msgid "Center for Digital Research and Scholarship"
 msgstr ""
 
-#: templates/contact.html:146
+#: templates/contact.html:142
 msgid "Columbia University Libraries/Information Services"
 msgstr ""
 
-#: templates/contact.html:151
+#: templates/contact.html:147
 msgid ""
 "EZID gives Open Context critical services that help make our data "
 "publications lasting contributions to the scholarly record.  Because of "
@@ -389,15 +395,15 @@ msgid ""
 "used and cited in years to come."
 msgstr ""
 
-#: templates/contact.html:154
+#: templates/contact.html:150
 msgid "Eric C. Kansa, Ph. D."
 msgstr ""
 
-#: templates/contact.html:155
+#: templates/contact.html:151
 msgid "Cofounder and Technology Director"
 msgstr ""
 
-#: templates/contact.html:161
+#: templates/contact.html:157
 msgid ""
 "The partnership between EZID and CrossRef presents an exciting opportunity "
 "for eScholarship and our journal partners. The inclusion of our Open Access "
@@ -406,19 +412,19 @@ msgid ""
 "scholarship published on our platform."
 msgstr ""
 
-#: templates/contact.html:164
+#: templates/contact.html:160
 msgid "Catherine Mitchell, Director"
 msgstr ""
 
-#: templates/contact.html:165
+#: templates/contact.html:161
 msgid "Access and Publishing"
 msgstr ""
 
-#: templates/contact.html:166
+#: templates/contact.html:162
 msgid "California Digital Library/University of California"
 msgstr ""
 
-#: templates/contact.html:173
+#: templates/contact.html:169
 msgid "SIGN UP FOR OUR NEWSLETTER"
 msgstr ""
 
@@ -426,15 +432,14 @@ msgstr ""
 msgid "Alternate Identifier"
 msgstr ""
 
-#: templates/create/_datacite_altId.html:12
-#: templates/create/_datacite_relId.html:12 templates/manage/details.html:14
-#: templates/manage/edit.html:18 templates/search/index.html:46
-#: templates/search/results.html:39
+#: templates/create/_datacite_altId.html:11
+#: templates/create/_datacite_relId.html:11 templates/manage/details.html:18
+#: templates/manage/edit.html:18 templates/search/index.html:47
 msgid "Identifier"
 msgstr ""
 
-#: templates/create/_datacite_altId.html:15
-#: templates/create/_datacite_relId.html:14 templates/search/index.html:112
+#: templates/create/_datacite_altId.html:14
+#: templates/create/_datacite_relId.html:13 templates/search/index.html:121
 msgid "Identifier Type"
 msgstr ""
 
@@ -446,29 +451,29 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: templates/create/_datacite_contributor.html:18
+#: templates/create/_datacite_contributor.html:23
 msgid "Name Identifier"
 msgstr ""
 
-#: templates/create/_datacite_contributor.html:21
+#: templates/create/_datacite_contributor.html:31
 msgid "Name Identifier Scheme"
 msgstr ""
 
-#: templates/create/_datacite_contributor.html:25
-#: templates/create/_datacite_relId.html:66
-#: templates/create/_datacite_subject.html:19
+#: templates/create/_datacite_contributor.html:40
+#: templates/create/_datacite_relId.html:65
+#: templates/create/_datacite_subject.html:28
 msgid "Scheme URI"
 msgstr ""
 
-#: templates/create/_datacite_contributor.html:31
+#: templates/create/_datacite_contributor.html:48
 msgid "Contributor Type"
 msgstr ""
 
-#: templates/create/_datacite_contributor.html:58
+#: templates/create/_datacite_contributor.html:79
 msgid "Affiliation"
 msgstr ""
 
-#: templates/create/_datacite_creator.html:5 templates/search/index.html:60
+#: templates/create/_datacite_creator.html:5 templates/search/index.html:62
 msgid "Creator"
 msgstr ""
 
@@ -476,41 +481,45 @@ msgstr ""
 msgid "Name:"
 msgstr ""
 
-#: templates/create/_datacite_creator.html:24
+#: templates/create/_datacite_creator.html:38
 msgid "Name Identifier:"
 msgstr ""
 
-#: templates/create/_datacite_creator.html:30
+#: templates/create/_datacite_creator.html:46
 msgid "Identifier Scheme:"
 msgstr ""
 
-#: templates/create/_datacite_creator.html:36
+#: templates/create/_datacite_creator.html:54
 msgid "Scheme URI:"
 msgstr ""
 
-#: templates/create/_datacite_creator.html:42
+#: templates/create/_datacite_creator.html:62
 msgid "Affiliation:"
 msgstr ""
 
 #: templates/create/_datacite_date.html:5
-#: templates/create/_datacite_date.html:12
+#: templates/create/_datacite_date.html:11
 msgid "Date"
 msgstr ""
 
-#: templates/create/_datacite_date.html:15
+#: templates/create/_datacite_date.html:14
 msgid "Date Type"
 msgstr ""
 
 #: templates/create/_datacite_description.html:5
-msgid "Abstract"
+msgid "Description"
 msgstr ""
 
-#: templates/create/_datacite_description.html:15
+#: templates/create/_datacite_description.html:12
+msgid "Descriptive information"
+msgstr ""
+
+#: templates/create/_datacite_description.html:20
 msgid "Type"
 msgstr ""
 
 #: templates/create/_datacite_format.html:6
-#: templates/create/_datacite_format.html:13
+#: templates/create/_datacite_format.html:12
 msgid "Format"
 msgstr ""
 
@@ -518,15 +527,15 @@ msgstr ""
 msgid "Geolocation"
 msgstr ""
 
-#: templates/create/_datacite_geoLoc.html:13
+#: templates/create/_datacite_geoLoc.html:12
 msgid "Point"
 msgstr ""
 
-#: templates/create/_datacite_geoLoc.html:17
+#: templates/create/_datacite_geoLoc.html:16
 msgid "Box"
 msgstr ""
 
-#: templates/create/_datacite_geoLoc.html:21
+#: templates/create/_datacite_geoLoc.html:20
 msgid "Place"
 msgstr ""
 
@@ -534,20 +543,20 @@ msgstr ""
 msgid "Related Identifier"
 msgstr ""
 
-#: templates/create/_datacite_relId.html:64
+#: templates/create/_datacite_relId.html:63
 msgid "Related Metadata Scheme"
 msgstr ""
 
-#: templates/create/_datacite_relId.html:68
+#: templates/create/_datacite_relId.html:67
 msgid "Scheme Type"
 msgstr ""
 
 #: templates/create/_datacite_rights.html:5
-#: templates/create/_datacite_rights.html:12
+#: templates/create/_datacite_rights.html:11
 msgid "Rights"
 msgstr ""
 
-#: templates/create/_datacite_size.html:13
+#: templates/create/_datacite_size.html:12
 msgid "Size"
 msgstr ""
 
@@ -556,59 +565,59 @@ msgstr ""
 msgid "Subject"
 msgstr ""
 
-#: templates/create/_datacite_subject.html:15
+#: templates/create/_datacite_subject.html:20
 msgid "Scheme"
 msgstr ""
 
-#: templates/create/_datacite_title.html:4 templates/search/index.html:55
+#: templates/create/_datacite_title.html:4 templates/search/index.html:57
 msgid "Title"
 msgstr ""
 
-#: templates/create/_datacite_title.html:16
+#: templates/create/_datacite_title.html:21
 msgid "Type:"
 msgstr ""
 
-#: templates/create/_datacite_title.html:18
+#: templates/create/_datacite_title.html:24
 msgid "Main title"
 msgstr ""
 
-#: templates/create/_datacite_title.html:19
+#: templates/create/_datacite_title.html:27
 msgid "Alternative title"
 msgstr ""
 
-#: templates/create/_datacite_title.html:20
+#: templates/create/_datacite_title.html:30
 msgid "Subtitle"
 msgstr ""
 
-#: templates/create/_datacite_title.html:21
+#: templates/create/_datacite_title.html:33
 msgid "Translated title"
 msgstr ""
 
-#: templates/create/_datacite_xml.html:21
+#: templates/create/_datacite_xml.html:20
 msgid "Publisher:"
 msgstr ""
 
-#: templates/create/_datacite_xml.html:26
+#: templates/create/_datacite_xml.html:27
 msgid "Publication Year:"
 msgstr ""
 
-#: templates/create/_datacite_xml.html:33
+#: templates/create/_datacite_xml.html:35
 msgid "Language:"
 msgstr ""
 
-#: templates/create/_datacite_xml.html:43
+#: templates/create/_datacite_xml.html:45
 msgid "Resource Type:"
 msgstr ""
 
-#: templates/create/_datacite_xml.html:63
+#: templates/create/_datacite_xml.html:70
 msgid "Resource Type Description:"
 msgstr ""
 
-#: templates/create/_datacite_xml.html:88
+#: templates/create/_datacite_xml.html:95
 msgid "Version:"
 msgstr ""
 
-#: templates/create/_datacite_xml.html:100
+#: templates/create/_datacite_xml.html:108
 msgid "required item"
 msgstr ""
 
@@ -622,19 +631,19 @@ msgid "Create an Identifier"
 msgstr ""
 
 #: templates/create/advanced.html:9 templates/create/simple.html:10
-#: templates/demo/advanced.html:10 templates/demo/simple.html:10
+#: templates/demo/advanced.html:11 templates/demo/simple.html:10
 #: ui_tags/templatetags/menus.py:20 ui_tags/templatetags/menus.py:29
 msgid "Simple"
 msgstr ""
 
 #: templates/create/advanced.html:10 templates/create/simple.html:11
-#: templates/demo/advanced.html:11 templates/demo/simple.html:11
+#: templates/demo/advanced.html:12 templates/demo/simple.html:11
 #: ui_tags/templatetags/menus.py:21 ui_tags/templatetags/menus.py:30
 msgid "Advanced"
 msgstr ""
 
 #: templates/create/advanced.html:27 templates/create/simple.html:27
-#: templates/demo/advanced.html:27 templates/demo/simple.html:23
+#: templates/demo/advanced.html:41 templates/demo/simple.html:35
 msgid "CREATE"
 msgstr ""
 
@@ -671,7 +680,7 @@ msgid "contact us"
 msgstr ""
 
 #. Translators: Please preserve &quot; tags
-#: templates/create/simple.html:30 templates/demo/simple.html:27
+#: templates/create/simple.html:30 templates/demo/simple.html:39
 msgid ""
 "Clicking &quot;Create&quot; will create the identifier and make it public.  "
 "To defer making it public, use the Advanced form. Once created, an "
@@ -683,20 +692,49 @@ msgid "Create Advanced Demo ID"
 msgstr ""
 
 #: templates/demo/advanced.html:6
+msgid "Use the EZID demo to create an advanced identifier."
+msgstr ""
+
+#: templates/demo/advanced.html:7
 msgid "Create an Advanced Demo Identifier"
 msgstr ""
 
-#: templates/demo/advanced.html:28 templates/demo/simple.html:24
+#: templates/demo/advanced.html:20 templates/demo/simple.html:20
+msgid "Quick Start Guides"
+msgstr ""
+
+#: templates/demo/advanced.html:22
+msgid "Advanced Create for DOIs"
+msgstr ""
+
+#: templates/demo/advanced.html:23
+msgid "Placeholder information for required fields"
+msgstr ""
+
+#: templates/demo/advanced.html:24
+msgid "Resource Types"
+msgstr ""
+
+#: templates/demo/advanced.html:25
+msgid "Contributor Types"
+msgstr ""
+
+#: templates/demo/advanced.html:26
+msgid "Relation Types"
+msgstr ""
+
+#: templates/demo/advanced.html:42 templates/demo/simple.html:36
 msgid "NOTE"
 msgstr ""
 
-#: templates/demo/advanced.html:28 templates/demo/simple.html:24
+#: templates/demo/advanced.html:42 templates/demo/simple.html:36
 msgid ""
-"This is just a demo. To create a real identifier, you must have an account."
+"This is a <strong>demo</strong>. To create a real identifier, you must have "
+"an account."
 msgstr ""
 
 #. Translators: Please preserve &quot; tags
-#: templates/demo/advanced.html:32
+#: templates/demo/advanced.html:45
 msgid "Once created, an identifier cannot be renamed or deleted."
 msgstr ""
 
@@ -704,12 +742,25 @@ msgstr ""
 msgid "Create Simple Demo Identifier"
 msgstr ""
 
+#: templates/demo/simple.html:5
+msgid "Use the EZID demo to create a simple identifier."
+msgstr ""
+
 #: templates/demo/simple.html:6
 msgid "Create a Simple Demo Identifier"
 msgstr ""
 
+#: templates/demo/simple.html:22
+msgid "Simple ID Creation"
+msgstr ""
+
 #: templates/doc/apidoc.1.html:5 templates/doc/apidoc.1.html.py:7
 msgid "The EZID API, Version 1"
+msgstr ""
+
+#: templates/doc/apidoc.1.html:10 templates/doc/apidoc.2.html:10
+#: templates/doc/apidoc.html:10
+msgid "API Guide"
 msgstr ""
 
 #: templates/doc/apidoc.2.html:5 templates/doc/apidoc.2.html.py:7
@@ -730,22 +781,28 @@ msgid "Decide"
 msgstr ""
 
 #: templates/includes/advanced_publish_id.html:13
-msgid "Make this identifier public?"
+msgid "Make this identifier ..."
 msgstr ""
 
 #: templates/includes/advanced_publish_id.html:21
+msgid "PUBLIC"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:28
+msgid "RESERVED"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:36
+#: templates/manage/edit.html:152
+msgid "Allow harvesting/indexing?"
+msgstr ""
+
 #: templates/includes/advanced_publish_id.html:44
 msgid "YES"
 msgstr ""
 
-#: templates/includes/advanced_publish_id.html:28
 #: templates/includes/advanced_publish_id.html:51
 msgid "NO"
-msgstr ""
-
-#: templates/includes/advanced_publish_id.html:36
-#: templates/manage/edit.html:144
-msgid "Allow harvesting/indexing?"
 msgstr ""
 
 #: templates/includes/advanced_remainder.html:8
@@ -768,12 +825,11 @@ msgstr ""
 msgid "Choose an identifier type"
 msgstr ""
 
-#. Translators: Please preserve &#42; character reference
-#: templates/includes/simple_id_type.html:46
+#: templates/index.html:7
 msgid ""
-"Demo identifiers, indicated on EZID screens with an asterisk (&#42;) are "
-"temporary identifiers for use in testing the EZID service. They last for two "
-"weeks."
+"EZID service creates long-term identifiers and is a key component for "
+"keeping data and digital objects safe while fulfilling grant requirements "
+"for data management plans."
 msgstr ""
 
 #: templates/info/about_us.html:5
@@ -790,30 +846,29 @@ msgstr ""
 #: templates/info/about_us.html:17
 msgid ""
 "<h2>About EZID</h2> <p> EZID is a service conceived, built, and maintained "
-"by the <a href=\"http://www.cdlib.org/\">California Digital Library<span "
-"title=\"External Link\" class=\"ext-icon\"></span></a> (CDL). CDL was "
-"founded by the University of California in 1997 to take advantage of "
-"emerging technologies that were transforming the way digital information was "
-"being published and accessed. CDL's diverse and talented staff has assembled "
-"one of the world's largest digital research libraries and has changed the "
-"ways that faculty, students, and researchers discover and access "
-"information. </p> <p> CDL has relationships with a wide range of researchers "
-"across the University, including natural history museums, research groups, "
-"individual scientists and faculty members on all 10 UC campuses. CDL staff "
-"members bring a unique blend of experience to this multi-disciplinary "
-"venture.  CDL staff members have formal training in science, mathematics, "
-"the humanities, and information science, as well as deep professional "
-"experience in the creation of software, services, and funded proposals. </p> "
-"<p> CDL has\textensive contacts with scientists, within the University of "
-"California and beyond via projects funded by the Library of Congress, "
-"National Science Foundation, National Institutes of Health (pending) and the "
-"Gordon and Betty Moore Foundation.  More information about CDL's i <a href="
-"\"http://www.cdlib.org/about/grants.html\">grants and partnerships<span "
-"title=\"External Link\" class=\"ext-icon\"></span></a> is available. "
-"Finally, CDL is a founding member of the international <a href=\"http://www."
-"datacite.org/\">DataCite<span title=\"External Link\" class=\"ext-icon\"></"
-"span></a> consortium, which is dedicated to providing the social and "
-"technical infrastructure that will enable data sharing and publication. </p>"
+"by the <a href=\"http://www.cdlib.org/\" class=\"ext-link\">California "
+"Digital Library</a> (CDL). CDL was founded by the University of California "
+"in 1997 to take advantage of emerging technologies that were transforming "
+"the way digital information was being published and accessed. CDL's diverse "
+"and talented staff has assembled one of the world's largest digital research "
+"libraries and has changed the ways that faculty, students, and researchers "
+"discover and access information. </p> <p> CDL has relationships with a wide "
+"range of researchers across the University, including natural history "
+"museums, research groups, individual scientists and faculty members on all "
+"10 UC campuses. CDL staff members bring a unique blend of experience to this "
+"multi-disciplinary venture.  CDL staff members have formal training in "
+"science, mathematics, the humanities, and information science, as well as "
+"deep professional experience in the creation of software, services, and "
+"funded proposals. </p> <p> CDL has\textensive contacts with scientists, "
+"within the University of California and beyond via projects funded by the "
+"Library of Congress, National Science Foundation, National Institutes of "
+"Health (pending) and the Gordon and Betty Moore Foundation.  More "
+"information about CDL's <a href=\"http://www.cdlib.org/about/grants.html\" "
+"class=\"ext-link\">grants and partnerships</a> is available. Finally, CDL is "
+"a founding member of the international <a href=\"http://www.datacite.org/\" "
+"class=\"ext-link\">DataCite</a> consortium, which is dedicated to providing "
+"the social and technical infrastructure that will enable data sharing and "
+"publication. </p>"
 msgstr ""
 
 #: templates/info/crossref_faq.html:9
@@ -836,6 +891,26 @@ msgid ""
 "appellantur est cu, mutat debet et ius.</p>"
 msgstr ""
 
+#: templates/info/id_basics.html:7 templates/info/id_basics.html.py:12
+msgid "ID Basics"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/info/id_basics.html:19
+msgid ""
+"<p><strong>EZID Default Account Setup</strong></p> <p>Lorem ipsum dolor sit "
+"amet, offendit vivendum volutpat ad sea. Per tale dicta an. Agam delenit "
+"abhorreant mel te, oratio aeterno definitionem vim ei, ea malorum maiestatis "
+"deterruisset eos. Pro eu quem oblique detracto.</p> <p>No sanctus scaevola "
+"definitionem vim. Vis justo quaestio ne, ne qui quod erroribus. Eam animal "
+"legendos ex, adhuc mandamus recteque pri ne. Solum audiam accusata qui ea, "
+"perfecto inimicus est in. Mentitum iracundia torquatos cu est, periculis "
+"complectitur ex vis. Eos illud postea ut, erant facilisis appellantur est "
+"cu, mutat debet et ius.</p>"
+msgstr ""
+
 #. Translators: Copy HTML tags over and only translate words outside of these tags
 #. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS. PLEASE PRESERVE HTML TAGS</p>
 #: templates/info/popup_help.html:48
@@ -855,63 +930,72 @@ msgid ""
 "semantics can work if they are intrinsic to the object being registered. "
 "But, if you include information that is subject to change, it works against "
 "persistence. </p> </div> <div id=\"describe_profile_frontpage_content\" "
-"class=\"help_window\"> <p> <strong>DataCite:</strong> required for DOIs. "
-"More here: <a href=\"http://schema.datacite.org\">http://schema.datacite."
-"org</a> </p> <p> <strong>ERC:</strong> Electronic Resource Citation, default "
-"for ARKs. More here: <a href=\"http://dublincore.org/groups/kernel/spec/"
-"\">http://dublincore.org/groups/kernel/spec/</a> </p> </div> <div id="
-"\"describe_profile_content\" class=\"help_window\"> <p> <strong>DataCite:</"
-"strong> required for DOIs. More here: <a href=\"http://schema.datacite.org"
-"\">http://schema.datacite.org</a> </p> <p> <strong>Dublin Core:</strong> "
-"More here: <a href=\"http://dublincore.org/documents/dces/\">http://"
-"dublincore.org/documents/dces/</a> </p> <p> <strong>ERC:</strong> Electronic "
+"class=\"help_window\"> <p> <strong>DataCite:</strong> Required for DOIs. "
+"More here: <a href=\"http://schema.datacite.org\" class=\"ext-link no-wrap"
+"\">http://schema.datacite.org</a> </p> <p> <strong>ERC:</strong> Electronic "
 "Resource Citation, default for ARKs. More here: <a href=\"http://dublincore."
-"org/groups/kernel/spec/\">http://dublincore.org/groups/kernel/spec/</a> </p> "
-"</div> <div id=\"decide_public_content\" class=\"help_window\"> <p> A public "
-"status means the identifier is viewable by anyone. The reserved status means "
-"it is viewable only by owners, so “reserved” is a great way to save a DOI or "
-"ARK for use later. Reserved IDs can be deleted. </p> </div> <div id="
+"org/groups/kernel/spec/\" class=\"ext-link no-wrap\">http://dublincore.org/"
+"groups/kernel/spec/</a> </p> </div> <div id=\"describe_profile_content\" "
+"class=\"help_window\"> <p> <strong>DataCite:</strong> required for DOIs. "
+"More here: <a href=\"http://schema.datacite.org\" class=\"ext-link no-wrap"
+"\">http://schema.datacite.org</a> </p> <p> <strong>Dublin Core:</strong> "
+"More here: <a href=\"http://dublincore.org/documents/dces/\" class=\"ext-"
+"link no-wrap\">http://dublincore.org/documents/dces/</a> </p> <p> "
+"<strong>ERC:</strong> Electronic Resource Citation, default for ARKs. More "
+"here: <a href=\"http://dublincore.org/groups/kernel/spec/\" class=\"ext-link "
+"no-wrap\">http://dublincore.org/groups/kernel/spec/</a> </p> </div> <div id="
+"\"decide_public_content\" class=\"help_window\"> <p> A public status means "
+"the identifier is viewable by anyone. The reserved status means it is "
+"viewable only by owners, so “reserved” is a great way to save a DOI or ARK "
+"for use later. Reserved IDs can be deleted. </p> </div> <div id="
 "\"decide_export_content\" class=\"help_window\"> <p> Your choice pertains to "
 "making the metadata available for harvesting and/or indexing. Choosing \"Yes"
 "\" does not guarantee that the metadata will be harvested or indexed, but "
-"choosing \"No\" removes the possibility. </p> </div>"
+"choosing \"No\" removes the possibility. </p> </div> <div id="
+"\"lookup_proxies_content\" class=\"help_window\"> <p> <strong>About Proxy "
+"Users:</strong> An EZID user account may designate another EZID user account "
+"as a proxy user of the first account's identifiers. This gives the second "
+"EZID user account the right to manage and edit detailed information about an "
+"identifier. </p> </div>"
 msgstr ""
 
-#: templates/layouts/base.html:10
+#: templates/info/suffix_passthrough.html:6
+#: templates/info/suffix_passthrough.html:7
+#: templates/info/suffix_passthrough.html:12
+msgid "Suffix Passthrough Explained"
+msgstr ""
+
+#: templates/info/suffix_passthrough.html:12
+msgid "Documentation"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/info/suffix_passthrough.html:19
 msgid ""
-"EZID service creates long-term identifiers and is a key component for "
-"keeping data and digital objects safe while fulfilling grant requirements "
-"for data management plans."
+"<p><strong>What is Suffix Passthrough?</strong></p> <p>Lorem ipsum dolor sit "
+"amet, offendit vivendum volutpat ad sea. Per tale dicta an. Agam delenit "
+"abhorreant mel te, oratio aeterno definitionem vim ei, ea malorum maiestatis "
+"deterruisset eos. Pro eu quem oblique detracto.</p> <p>No sanctus scaevola "
+"definitionem vim. Vis justo quaestio ne, ne qui quod erroribus. Eam animal "
+"legendos ex, adhuc mandamus recteque pri ne. Solum audiam accusata qui ea, "
+"perfecto inimicus est in. Mentitum iracundia torquatos cu est, periculis "
+"complectitur ex vis. Eos illud postea ut, erant facilisis appellantur est "
+"cu, mutat debet et ius.</p>"
 msgstr ""
 
-#: templates/layouts/base.html:12
+#: templates/layouts/apidoc.html:4
 msgid ""
-"identifier, metadata, ezid, metadata schemas, reporting, data management "
-"plan, managing data, datasets, data repository, curate, curator, curation, "
-"biology, engineering, biological science, science, scientific, hard science, "
-"social science, humanities, digital humanities, biomed, visual arts, "
-"government agency, DOI, publish, published object, citation, cite, id "
-"number, scientist, authors, research, researchers, data files, linking, "
-"grant proposals, digitization, planning, digital preservation, UC3, "
-"California Digital Library, CDL, UC Curation Center, University of "
-"California, storage, faculty, labs, organize, ARK, research, federal "
-"agencies, funding, funder, sharing data, Merritt, UC, tools, service, "
-"digital objects, datacite, scholars, persistent, dissertations, theses, "
-"budget, collection, public, standard, accessible, database, data warehouse, "
-"academic, open data, transactional data, central, unique, api, data "
-"managers, long-term, NSF requirements, NIH, IMLS, (other funding agency "
-"names that require data plans), PI, principal investigator, archives, "
-"archival, data collection, reporting, report, images, records, journals, "
-"articles, papers, crossref, generate, create, demo, id, pricing, how to "
-"create long-term identifiers, how to get long-term identifiers, how to get "
-"unique identifiers, how to create long-term identifiers, how to create "
-"unique identifiers, how to manage data, what should be in my data plan, how "
-"to get identifiers for my repository, how to use the identifier API for my "
-"repository"
+"Guidelines for accessing the EZID Application Programing Interface (API)."
 msgstr ""
 
-#: templates/layouts/base.html:69
+#: templates/layouts/base.html:46
 msgid "Skip navigation"
+msgstr ""
+
+#: templates/learn/index.html:6
+msgid "Learn more about EZID pricing, documentation and current users."
 msgstr ""
 
 #: templates/manage/details.html:6 templates/manage/details.html.py:8
@@ -919,39 +1003,47 @@ msgstr ""
 msgid "Identifier Details"
 msgstr ""
 
-#: templates/manage/details.html:18 templates/manage/edit.html:22
-msgid "Identifier as URL"
-msgstr ""
-
-#: templates/manage/details.html:30
-msgid "takes up to 30 minutes for ID to be activated on doi.org"
-msgstr ""
-
-#: templates/manage/details.html:32
-msgid "takes up to 30 minutes for ID to be updated on doi.org"
-msgstr ""
-
-#: templates/manage/details.html:41
-msgid "Citation Preview"
-msgstr ""
-
-#: templates/manage/details.html:59 templates/manage/edit.html:35
-msgid "ABOUT THE IDENTIFIED OBJECT"
-msgstr ""
-
-#: templates/manage/details.html:92
-msgid "See the DataCite XML Metadata record in a new window"
-msgstr ""
-
-#: templates/manage/details.html:96
-msgid "See the CrossRef XML Metadata record in a new window"
-msgstr ""
-
-#: templates/manage/details.html:104 templates/manage/edit.html:73
+#: templates/manage/details.html:14 templates/manage/edit.html:74
 msgid "ABOUT THE IDENTIFIER"
 msgstr ""
 
-#: templates/manage/details.html:153
+#: templates/manage/details.html:22 templates/manage/edit.html:22
+msgid "Identifier as URL"
+msgstr ""
+
+#: templates/manage/details.html:26 templates/manage/edit.html:26
+msgid "Link copied to your clipboard"
+msgstr ""
+
+#: templates/manage/details.html:30
+msgid ""
+"Be aware that it can take up to several hours until new DOIs become "
+"resolvable."
+msgstr ""
+
+#: templates/manage/details.html:32
+msgid ""
+"Be aware that it can take up to 24 hours until a DOI update is globally "
+"known."
+msgstr ""
+
+#: templates/manage/details.html:65 templates/manage/edit.html:36
+msgid "ABOUT THE IDENTIFIED OBJECT"
+msgstr ""
+
+#: templates/manage/details.html:98
+msgid "See the DataCite XML Metadata record in a new window"
+msgstr ""
+
+#: templates/manage/details.html:102
+msgid "See the CrossRef XML Metadata record in a new window"
+msgstr ""
+
+#: templates/manage/details.html:110
+msgid "ABOUT THE IDENTIFIER'S STATUS"
+msgstr ""
+
+#: templates/manage/details.html:159
 msgid "MAKE CHANGES"
 msgstr ""
 
@@ -959,50 +1051,76 @@ msgstr ""
 msgid "Edit Identifier Details"
 msgstr ""
 
-#: templates/manage/edit.html:38
+#: templates/manage/edit.html:39
 msgid "This identified object uses the"
 msgstr ""
 
-#: templates/manage/edit.html:38
+#: templates/manage/edit.html:39
 msgid "profile"
 msgstr ""
 
-#: templates/manage/edit.html:106
+#: templates/manage/edit.html:107
 msgid "reserved"
 msgstr ""
 
-#: templates/manage/edit.html:111
+#: templates/manage/edit.html:115
 msgid "public"
 msgstr ""
 
-#: templates/manage/edit.html:117
+#: templates/manage/edit.html:123
 msgid "unavailable"
 msgstr ""
 
-#: templates/manage/edit.html:130
+#: templates/manage/edit.html:138
 msgid "Unavailable reason"
 msgstr ""
 
-#: templates/manage/edit.html:150 templates/search/index.html:166
-#: templates/search/index.html.py:178
+#: templates/manage/edit.html:160 templates/search/index.html:184
+#: templates/search/index.html.py:197
 msgid "Yes"
 msgstr ""
 
-#: templates/manage/edit.html:155 templates/search/index.html:170
-#: templates/search/index.html.py:182
+#: templates/manage/edit.html:167 templates/search/index.html:189
+#: templates/search/index.html.py:202
 msgid "No"
 msgstr ""
 
-#: templates/manage/edit.html:164
+#: templates/manage/edit.html:177
 msgid "SAVE CHANGES"
 msgstr ""
 
-#: templates/search/index.html:5 templates/search/index.html.py:6
+#: templates/manage/index.html:5
+msgid "Manage IDs"
+msgstr ""
+
+#: templates/manage/index.html:15
+msgid "SEARCH YOUR IDENTIFIERS"
+msgstr ""
+
+#: templates/manage/index.html:22
+msgid "My Identifiers"
+msgstr ""
+
+#: templates/manage/index.html:23
+msgid "(Includes co-owned identifiers)"
+msgstr ""
+
+#: templates/manage/index.html:27 templates/search/results.html:33
+msgid "CUSTOMIZE VIEW"
+msgstr ""
+
+#: templates/search/index.html:5 templates/search/index.html.py:7
 #: templates/search/results.html:5
 msgid "Search across all identifiers"
 msgstr ""
 
-#: templates/search/index.html:25
+#: templates/search/index.html:6
+msgid ""
+"Search across all EZID identifiers by keyword, title, creator, publisher, or "
+"identifier string."
+msgstr ""
+
+#: templates/search/index.html:26
 msgid "Search only over my identifiers"
 msgstr ""
 
@@ -1010,137 +1128,117 @@ msgstr ""
 #. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
 #. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
 #.
-#: templates/search/index.html:34
+#: templates/search/index.html:35
 msgid ""
 "To search over only your identifiers, please <a id=\"modal_open_pg-search\" "
 "data-toggle=\"modal\" href=\"#\">login</a>"
 msgstr ""
 
-#: templates/search/index.html:47 templates/search/index.html.py:52
-#: templates/search/index.html:61 templates/search/index.html.py:65
-#: templates/search/index.html:109
+#. Translators: "ex." is abbreviation for "example"
+#: templates/search/index.html:49 templates/search/index.html.py:54
+#: templates/search/index.html:63 templates/search/index.html.py:67
+#: templates/search/index.html:118
 msgid "ex:"
 msgstr ""
 
-#: templates/search/index.html:51
+#: templates/search/index.html:53
 msgid "Key Word"
 msgstr ""
 
-#: templates/search/index.html:56
+#: templates/search/index.html:58
 msgid "ex: Control of rRNA transcription"
 msgstr ""
 
-#: templates/search/index.html:64
+#: templates/search/index.html:66
 msgid "Publisher"
 msgstr ""
 
-#: templates/search/index.html:70
+#: templates/search/index.html:72
 msgid "Publication Year"
 msgstr ""
 
-#: templates/search/index.html:74 templates/search/index.html.py:124
-#: templates/search/index.html:142
+#: templates/search/index.html:77 templates/search/index.html.py:134
+#: templates/search/index.html:157
 msgid "From"
 msgstr ""
 
-#: templates/search/index.html:78 templates/search/index.html.py:128
-#: templates/search/index.html:146
-msgid "To"
-msgstr ""
-
-#: templates/search/index.html:86
+#: templates/search/index.html:94
 msgid "Resource Type"
 msgstr ""
 
-#: templates/search/index.html:100
+#: templates/search/index.html:109
 msgid "ADVANCED SEARCH"
 msgstr ""
 
-#: templates/search/index.html:108
+#: templates/search/index.html:117
 msgid "Target URL"
 msgstr ""
 
-#: templates/search/index.html:114
+#: templates/search/index.html:123
 msgid "Select a type of identifier (ARK or DOI)"
 msgstr ""
 
-#: templates/search/index.html:121
+#: templates/search/index.html:129
 msgid "Create Date"
 msgstr ""
 
-#: templates/search/index.html:139
+#: templates/search/index.html:141 templates/search/index.html.py:164
+msgid "To"
+msgstr ""
+
+#: templates/search/index.html:152
 msgid "Update Date"
 msgstr ""
 
-#: templates/search/index.html:157
+#: templates/search/index.html:175
 msgid "Status"
 msgstr ""
 
-#: templates/search/index.html:159
+#: templates/search/index.html:177
 msgid "Select a status"
 msgstr ""
 
-#: templates/search/index.html:159
+#: templates/search/index.html:177
 msgid "Public"
 msgstr ""
 
-#: templates/search/index.html:159
+#: templates/search/index.html:177
 msgid "Reserved"
 msgstr ""
 
-#: templates/search/index.html:159
+#: templates/search/index.html:177
 msgid "Unavailable"
 msgstr ""
 
-#: templates/search/index.html:164
-msgid "Allow Harvesting/Indexing?"
+#: templates/search/index.html:181
+msgid "Allows Harvesting/Indexing?"
 msgstr ""
 
-#: templates/search/index.html:176
+#: templates/search/index.html:194
 msgid "Has Metadata?"
 msgstr ""
 
-#: templates/search/index.html:192 templates/search/results.html:16
+#: templates/search/index.html:211 templates/search/results.html:18
 msgid "SEARCH"
 msgstr ""
 
-#: templates/search/results.html:17
+#: templates/search/results.html:19
 msgid "MODIFY ORIGINAL SEARCH"
 msgstr ""
 
-#: templates/search/results.html:27
+#: templates/search/results.html:29
 msgid "Search Results (Includes co-owned identifiers)"
 msgstr ""
 
-#: templates/search/results.html:31
-msgid "CUSTOMIZE VIEW"
-msgstr ""
-
-#: templates/search/results.html:38
-msgid "Select"
-msgstr ""
-
-#: templates/search/results.html:40
-msgid "Date Last Modified"
-msgstr ""
-
-#: templates/search/results.html:41
-msgid "Object Title"
-msgstr ""
-
-#: templates/search/results.html:42
-msgid "Object Creator"
-msgstr ""
-
-#: templates/search/results.html:87
+#: templates/search/results.html:226
 msgid "SELECT ALL"
 msgstr ""
 
-#: templates/search/results.html:88
+#: templates/search/results.html:227
 msgid "DOWNLOAD SELECTED"
 msgstr ""
 
-#: templates/search/results.html:89
+#: templates/search/results.html:228
 msgid "DOWNLOAD ALL"
 msgstr ""
 
