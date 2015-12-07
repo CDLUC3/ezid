@@ -20,7 +20,7 @@ class BaseForm(forms.Form):
     self.fields["_target"]=forms.CharField(required=False, label=_("Location (URL)"),
       validators=[_validate_url])
     if self.placeholder is not None and self.placeholder == True:
-      self.fields['_target'].widget.attrs['placeholder'] = "Location (URL)"
+      self.fields['_target'].widget.attrs['placeholder'] = _("Location (URL)")
 
 class ErcForm(BaseForm):
   """ Form object for ID with ERC profile. BaseForm parent brings in _target field 
@@ -32,9 +32,9 @@ class ErcForm(BaseForm):
     self.fields["erc.what"]=forms.CharField(required=False, label=_("What"))
     self.fields["erc.when"]=forms.CharField(required=False, label=_("When"))
     if self.placeholder is not None and self.placeholder == True:
-      self.fields['erc.who'].widget.attrs['placeholder'] = "Who?"
-      self.fields['erc.what'].widget.attrs['placeholder'] = "What?"
-      self.fields['erc.when'].widget.attrs['placeholder'] = "When?"
+      self.fields['erc.who'].widget.attrs['placeholder'] = _("Who?")
+      self.fields['erc.what'].widget.attrs['placeholder'] = _("What?")
+      self.fields['erc.when'].widget.attrs['placeholder'] = _("When?")
 
 class DcForm(BaseForm):
   """ Form object for ID with Dublin Core profile. BaseForm parent brings in 
@@ -78,10 +78,10 @@ class DataciteForm(BaseForm):
     self.fields["datacite.resourcetype"] = forms.ChoiceField(required=False, 
       choices=RESOURCE_TYPES, label=_("Resource type"))
     if self.placeholder is not None and self.placeholder == True:
-      self.fields['datacite.creator'].widget.attrs['placeholder'] = "Creator"
-      self.fields['datacite.title'].widget.attrs['placeholder'] = "Title"
-      self.fields['datacite.publisher'].widget.attrs['placeholder'] = "Publisher"
-      self.fields['datacite.publicationyear'].widget.attrs['placeholder'] = "Publication year"
+      self.fields['datacite.creator'].widget.attrs['placeholder'] = _("Creator")
+      self.fields['datacite.title'].widget.attrs['placeholder'] = _("Title")
+      self.fields['datacite.publisher'].widget.attrs['placeholder'] = _("Publisher")
+      self.fields['datacite.publicationyear'].widget.attrs['placeholder'] = _("Publication year")
 
 def getIdForm (profile, placeholder, request=None):
   """ Returns a simple ID Django form. If 'placeholder' is True
@@ -268,6 +268,58 @@ class UserForm(forms.Form):
     pwconfirm_c = cleaned_data.get("pwconfirm")
     if pwnew_c and pwnew_c != pwconfirm_c:
       raise ValidationError("Passwords don't match")
+    return cleaned_data
+
+################# Search Form  #################
+
+class SearchForm(forms.Form):
+  """ Form object for public Search """
+  keywords = forms.CharField(required=False, label=_("Search Terms"),
+    widget=forms.TextInput(attrs={'placeholder': _("Full text search using words about or describing the identifier.")}))
+  identifier = forms.CharField(required=False, 
+    label=_("Identifier/Identifier Prefix"), widget=forms.TextInput(
+      attrs={'placeholder': "doi:10.17614/Q44F1NB79"}))
+  # Translators: "Ex." is abbreviation for "example"
+  title = forms.CharField(required=False, label=_("Object Title (What)"),
+    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone")}))
+  creator = forms.CharField(required=False, label=_("Object Creator (Who)"),
+    widget=forms.TextInput(attrs={'placeholder': 
+      _("Ex. Pitt Quantum Repository")}))
+  publisher = forms.CharField(required=False, label=_("Object Publisher"),
+    widget=forms.TextInput(attrs={'placeholder': 
+      _("Ex. University of Pittsburgh")}))
+  pubdate_from = forms.DateField(required=False, label=_("From"),
+    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015")}))
+  pubdate_to = forms.DateField(required=False, label=_("To"),
+    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2016")}))
+  OBJECT_TYPES = (
+    ('', _("Select a type of object")), ('Audiovisual', _('Audiovisual')), 
+    ('Collection', _('Collection')), ('Dataset', _('Dataset')), 
+    ('Event', _('Event')), ('Image', _('Image')), 
+    ('InteractiveResource', _('InteractiveResource')), ('Model', _('Model')), 
+    ('PhysicalObject', _('PhysicalObject')), ('Service', _('Service')), 
+    ('Software', _('Software')), ('Sound', _('Sound')), ('Text', _('Text')), 
+    ('Workflow', _('Workflow')), ('Other', _('Other'))
+  )
+  object_type = forms.ChoiceField(required=False, choices=OBJECT_TYPES, 
+    label = _("Object Type"))
+  ID_TYPES = (
+    ('', _("Select a type of identifier (ARK or DOI)")),
+    ('ark', "ARK"),
+    ('doi', "DOI"),
+  )
+  id_type = forms.ChoiceField(required=False, choices=ID_TYPES, 
+    label = _("Identifier Type"))
+  def clean(self):
+    cleaned_data = super(SearchForm, self).clean()
+    form_empty = True
+    for field_value in cleaned_data.itervalues():
+      # Check for None or '', so IntegerFields with 0 or similar things don't seem empty.
+      if field_value is not None and field_value != '' and not field_value.isspace():
+        form_empty = False
+        break
+    if form_empty:
+      raise forms.ValidationError(_("Please enter information in at least one field."))
     return cleaned_data
 
 ################# Contact Us Form  #################
