@@ -39,9 +39,9 @@ Selector pattern using above mixin:
 
 */
 
-// For screen readers only
+// Hide something visually but not for screen readers
 
-%screen-readers-only {
+%hide {
   position: absolute;
   top: -9999px;
   left: -9999px;
