@@ -11,4 +11,19 @@ summary {
 	border: 1px solid $design-light-gray-border-color;
 	background: $design-light-gray-bg-color;
 	cursor: pointer;
+
+	// Remove native arrow icon from Chrome & Safari
+	&::-webkit-details-marker {
+	  display: none;
+	}
+
+	&:before {
+		padding: 0 10px 0 0;
+		content: '-';
+	}
+
+}
+
+details.open summary:before {
+	content: '+';
 }
