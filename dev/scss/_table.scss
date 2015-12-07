@@ -14,13 +14,22 @@
 	}
 
 	th {
-		@extend %hide;
+		// hide visually but not for screen readers:
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+
 		padding: 0.5em;
 		background: $design-secondary-color;
 		text-align: left;
 
 		@include bp(screen1) {
 			display: table-cell;
+
+			// reset hide above to show:
+			position: static;
+			top: auto;
+			left: auto;
     }
 
 	}

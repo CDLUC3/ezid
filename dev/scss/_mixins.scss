@@ -39,10 +39,16 @@ Selector pattern using above mixin:
 
 */
 
-// Hide something visually but not for screen readers
+// Hide/show something visually but not for screen readers
 
 %hide {
   position: absolute;
   top: -9999px;
   left: -9999px;
+}
+
+%show {
+  position: static;
+  top: auto;
+  left: auto;
 }
