@@ -42,13 +42,9 @@
 	    	font-weight: normal;
 	    }
 
-	    &:before {
-	    	display: none;
-	    }
-
     }
 
-		&:before {
+		&:not(:first-child):before {
 			flex: 0 0 auto;
 			width: 10em;
 			font-weight: bold;
