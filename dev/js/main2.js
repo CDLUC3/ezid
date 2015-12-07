@@ -21,4 +21,10 @@ $(document).ready(function(){
     }
 
   });
+
+  // ***** Accordion ***** //
+
+  // Initialize via jquery.details.min.js
+  $('details').details();
+
 });

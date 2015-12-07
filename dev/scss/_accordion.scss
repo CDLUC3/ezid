@@ -3,3 +3,12 @@
 .accordion {
 	// empty
 }
+
+summary {
+	display: block;
+	margin: 0 0 5px;
+	padding: 10px;
+	border: 1px solid $design-light-gray-border-color;
+	background: $design-light-gray-bg-color;
+	cursor: pointer;
+}
