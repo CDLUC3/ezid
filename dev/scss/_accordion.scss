@@ -4,7 +4,18 @@
 	// empty
 }
 
-summary {
+.accordion__section {
+
+	&.open {
+		.accordion__title:before {
+			content: '+';
+		}
+
+	}
+
+}
+
+.accordion__title {
 	display: block;
 	margin: 0 0 5px;
 	padding: 10px;
@@ -22,8 +33,4 @@ summary {
 		content: '-';
 	}
 
-}
-
-details.open summary:before {
-	content: '+';
 }
