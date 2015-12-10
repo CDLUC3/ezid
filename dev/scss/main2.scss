@@ -28,3 +28,9 @@
 body {
   font-family: 'KievitWeb';
 }
+
+abbr {
+  border: none; // for older browsers
+  text-decoration: none; // for newer browsers
+  cursor: inherit;
+}
