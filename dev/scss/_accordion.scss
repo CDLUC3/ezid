@@ -36,6 +36,7 @@ $accordion-padding: 15px;
 	background-repeat: no-repeat;
 	background-position: left $accordion-padding center; // needs Modernizr fallback
 	background-size: 12px;
+	font-weight: bold;
 	cursor: pointer;
 
 	// Remove native arrow icon from Chrome & Safari
