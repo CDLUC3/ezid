@@ -7,8 +7,9 @@
 .accordion__section {
 
 	&.open {
-		.accordion__title:before {
-			content: '-';
+
+		.accordion__title {
+			background-image: url('../images/icon_minus-sign.svg');
 		}
 
 	}
@@ -18,19 +19,18 @@
 .accordion__title {
 	display: block;
 	margin: 0 0 5px;
-	padding: 10px;
+	padding: 10px 10px 10px 30px;
 	border: 1px solid $design-light-gray-border-color;
-	background: $design-light-gray-bg-color;
+	background-color: $design-light-gray-bg-color;
+	background-image: url('../images/icon_plus-sign.svg');
+	background-repeat: no-repeat;
+	background-position: left 10px center; // needs Modernizr fallback
+	background-size: 10px;
 	cursor: pointer;
 
 	// Remove native arrow icon from Chrome & Safari
 	&::-webkit-details-marker {
 	  display: none;
-	}
-
-	&:before {
-		padding: 0 10px 0 0;
-		content: '+';
 	}
 
 }
