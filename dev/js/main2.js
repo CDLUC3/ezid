@@ -21,4 +21,17 @@ $(document).ready(function(){
     }
 
   });
-});
+
+  // ***** Accordion ***** //
+
+  // Pre-open an accordion section by retrieving the referring URL hash (up to 2 digits), removing the hash tag, and adding the hash value to the jQuery selector:
+
+  var urlhash = window.location.hash.substr(1,3);
+  
+  $('#accordion__section-'+urlhash).attr('open', '');
+
+  // Initialize via jquery.details.min.js
+
+  $('details').details();
+
+}); // Close $(document).ready(function()

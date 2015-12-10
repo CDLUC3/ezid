@@ -14,13 +14,22 @@
 	}
 
 	th {
-		display: none;
+		// hide visually but not for screen readers:
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+
 		padding: 0.5em;
 		background: $design-secondary-color;
 		text-align: left;
 
 		@include bp(screen1) {
 			display: table-cell;
+
+			// reset hide above to show:
+			position: static;
+			top: auto;
+			left: auto;
     }
 
 	}
@@ -42,13 +51,9 @@
 	    	font-weight: normal;
 	    }
 
-	    &:before {
-	    	display: none;
-	    }
-
     }
 
-		&:before {
+		&:not(:first-child):before {
 			flex: 0 0 auto;
 			width: 10em;
 			font-weight: bold;
