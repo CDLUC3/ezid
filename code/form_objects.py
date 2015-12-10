@@ -254,7 +254,7 @@ class UserForm(forms.Form):
   mail = forms.EmailField(label=_("Email Address"),
     error_messages={'required': _("Please fill in your email."),
                     'invalid': _("Please fill in a valid email address.")})
-  ezidCoOwners = forms.CharField(required=False, label=_("Assigned Proxy Users"),
+  ezidCoOwners = forms.CharField(required=False, label=_("Proxy User(s)"),
     validators=[_validate_proxies])
   pwcurrent = forms.CharField(required=False, label=_("Current Password"),
     widget=forms.PasswordInput(), validators=[_validate_current_pw(username)])
