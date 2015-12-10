@@ -19,13 +19,13 @@
 .accordion__title {
 	display: block;
 	margin: 0 0 5px;
-	padding: 10px 10px 10px 30px;
+	padding: 10px 10px 10px 35px;
 	border: 1px solid $design-light-gray-border-color;
 	background-color: $design-light-gray-bg-color;
 	background-image: url('../images/icon_plus-sign.svg');
 	background-repeat: no-repeat;
-	background-position: left 10px center; // needs Modernizr fallback
-	background-size: 10px;
+	background-position: left 12px center; // needs Modernizr fallback
+	background-size: 12px;
 	cursor: pointer;
 
 	// Remove native arrow icon from Chrome & Safari
