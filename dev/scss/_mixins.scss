@@ -52,3 +52,10 @@ Selector pattern using above mixin:
   top: auto;
   left: auto;
 }
+
+%fcontrol-focus:focus { // streamlining Bootstrap's form focus styles:
+  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+  border-color: $design-primary-color;
+  outline: 0;
+  box-shadow: 0 0 8px rgba($design-primary-color, 0.6);
+}
