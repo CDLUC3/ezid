@@ -48,3 +48,27 @@
 	}
 
 }
+
+.fcontrol__radio-label-stacked {
+	display: block;
+	margin: 0 0.5em 0 0;
+	float: left;
+	clear: left;
+	color: $design-primary-color;
+	font-size: 1.1em;
+}
+
+.fcontrol__radio-button-stacked {
+	display: block;
+	margin: 7px 0 0;
+	font-size: 1em;
+}
+
+.fcontrol__radio-label-inline {
+	color: $design-primary-color;
+	font-size: 1.1em;
+}
+
+.fcontrol__radio-button-inline {
+	font-size: 1em;
+}
