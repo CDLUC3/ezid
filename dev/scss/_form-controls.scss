@@ -49,19 +49,56 @@
 
 }
 
-.fcontrol__radio-label-stacked {
-	display: block;
-	margin: 0 0.5em 0 0;
-	float: left;
-	clear: left;
-	color: $design-primary-color;
-	font-size: 1.1em;
+// Radio button style example from http://www.sitepoint.com/replacing-radio-buttons-without-replacing-radio-buttons/
+
+// Hide the actual radio button:
+.fcontrol__radio-button-stacked {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
 }
 
-.fcontrol__radio-button-stacked {
-	display: block;
-	margin: 7px 0 0;
-	font-size: 1em;
+// Radio button wrapper using label:
+.fcontrol__radio-label-stacked {
+  display: block;
+  margin: 0.5em 0;
+  font-size: 1.1em;
+  cursor: pointer;
+}
+
+// Pseudo form label:
+.fcontrol__radio-button-stacked + span {
+  display: block;
+  color: $design-primary-color;
+}
+
+// Pseudo button styling:
+.fcontrol__radio-button-stacked + span:before {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: 0.5em;
+  transition: 0.25s ease all;
+  border: 0.125em solid $design-dark-gray-color;
+  border-radius: 1em;
+  background: $design-white-color;
+  content: '';
+  vertical-align: -0.1em;
+}
+
+// The checked style:
+.fcontrol__radio-button-stacked:checked + span:before {
+  background: $design-dark-gray-color;
+}
+
+// Focus styling:
+.fcontrol__radio-button-stacked:focus + span:before {
+  border-color: $design-primary-color;
 }
 
 .fcontrol__radio-label-inline {
