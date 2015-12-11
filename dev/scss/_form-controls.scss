@@ -49,7 +49,25 @@
 
 }
 
-// Radio button style example from http://www.sitepoint.com/replacing-radio-buttons-without-replacing-radio-buttons/
+// Radio button styles inspired from http://www.sitepoint.com/replacing-radio-buttons-without-replacing-radio-buttons/
+
+// Radio button wrappers using label:
+%fcontrol__radio-label {
+  font-size: 1.1em;
+  cursor: pointer;
+}
+
+.fcontrol__radio-label-stacked {
+  @extend %fcontrol__radio-label;
+  display: block;
+  margin: 0.5em 0;
+}
+
+.fcontrol__radio-label-inline {
+  @extend %fcontrol__radio-label;
+  display: inline-block;
+  margin: 0 0.8em 0 0;
+}
 
 // Hide the actual radio button:
 .fcontrol__radio-button-stacked {
@@ -63,14 +81,6 @@
   clip: rect(0 0 0 0);
 }
 
-// Radio button wrapper using label:
-.fcontrol__radio-label-stacked {
-  display: block;
-  margin: 0.5em 0;
-  font-size: 1.1em;
-  cursor: pointer;
-}
-
 // Pseudo form label:
 .fcontrol__radio-button-stacked + span {
   display: block;
@@ -82,7 +92,7 @@
   display: inline-block;
   width: 0.8em;
   height: 0.8em;
-  margin-right: 0.5em;
+  margin-right: 0.3em;
   transition: 0.25s ease all;
   border: 0.125em solid $design-dark-gray-color;
   border-radius: 1em;
