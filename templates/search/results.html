@@ -1,4 +1,5 @@
 {% extends "layouts/base.html" %}
+{% load manage_form_tags %}
 {% load layout_extras %}
 {% load i18n %}
 
@@ -35,184 +36,14 @@
 
 <table id="table_id" class="display">
 <thead>
-<tr>
-<th>Select</th>
-<th>Identifier</th>
-<th>Owner</th>
-<th>Date Created</th>
-<th>Date Last Modified</th>
-<th>Status</th>
-<th>Object Title</th>
-<th>Object Creator</th>
-</tr>
+ {% header_row REQUEST fields_selected fields_mapped field_widths order_by sort %}
 </thead>
 <tbody>
-<tr>
-<td>
-  <div class="radio-inline radio_svg">
-    <input id="select_01" type="checkbox" class="checkbox__icon" />
-    <label for="select_01" class="image-checkbox-label">&nbsp;</label>
-  </div>
-</td>
-<td><a href="/id/doi:10.5072/FK20867P2S">doi:10.5072/FK2IJ4F84FJ</a></td>
-<td>purduehz</td>
-<td>2001-10-26 04:10:02 UTC</td>
-<td>2015-10-26 04:10:02 UTC</td>
-<td>PRESHAKE: Centrifuge modeling of the effect of seismic preshaking on the liquefaction resistance of sands</td>
-<td>public</td>
-<td>Waleed El-Sekelly; Tarek Abdoun; Ricardo Dobry</td>
-</tr>
-<tr>
-<td>
-  <div class="radio-inline radio_svg">
-    <input id="select_02" type="checkbox" class="checkbox__icon" />
-    <label for="select_02" class="image-checkbox-label">&nbsp;</label>
-  </div>
-</td>
-<td><a href="/id/doi:10.5072/FK20867P2S">doi:10.5072/FK2V11dHG</a></td>
-<td>howie</td>
-<td>2001-09-26 04:10:02 UTC</td>
-<td>2015-02-26 04:10:02 UTC</td>
-<td>Piper_BacterialOTU_taxonomy</td>
-<td>public</td>
-<td>Piper, Candace L. ; Siciliano, Steven D. ; Winsley, Tristrom ; Lamb, Eric G.</td>
-</tr>
-<tr>
-<td>
-  <div class="radio-inline radio_svg">
-    <input id="select_03" type="checkbox" class="checkbox__icon" />
-    <label for="select_03" class="image-checkbox-label">&nbsp;</label>
-  </div>
-</td>
-<td><a href='/id/doi:10.5072/FK20867P2S'>doi:10.5072/FK2RJ4CG51</a></td>
-<td>frankie</td>
-<td>2001-08-26 04:10:02 UTC</td>
-<td>2015-07-20 15:29:01 UTC</td>
-<td>Bones, molars, and briefs (1899)</td>
-<td>public</td>
-<td>(:unkn) unknown</td>
-</tr>
-<tr>
-<td>
-  <div class="radio-inline radio_svg">
-    <input id="select_04" type="checkbox" class="checkbox__icon" />
-    <label for="select_04" class="image-checkbox-label">&nbsp;</label>
-  </div>
-</td>
-<td><a href='/id/doi:10.5072/FK20867P2S'>doi:10.5072/FK2.SYN8512021.1</a></td>
-<td>doozer</td>
-<td>2001-07-26 04:10:02 UTC</td>
-<td>2015-07-20 18:15:56 UTC</td>
-<td>IT060SynapseJavaClientDoiTest</td>
-<td>public</td>
-<td>(author name not available)</td>
-</tr>
-<tr>
-<td>
-  <div class="radio-inline radio_svg">
-    <input id="select_05" type="checkbox" class="checkbox__icon" />
-    <label for="select_05" class="image-checkbox-label">&nbsp;</label>
-  </div>
-</td>
-<td><a href='/id/doi:10.5072/FK20867P2S'>doi:10.5072/FK2/Z0OPNC</a></td>
-<td>oberon</td>
-<td>2001-06-26 04:10:02 UTC</td>
-<td>2015-07-20 17:56:14 UTC</td>
-<td>KCP1 DS3</td>
-<td>public</td>
-<td>kc072015B, kc072015B</td>
-</tr>
-<tr>
-<td>
-  <div class="radio-inline radio_svg">
-    <input id="select_06" type="checkbox" class="checkbox__icon" />
-    <label for="select_06" class="image-checkbox-label">&nbsp;</label>
-  </div>
-</td>
-<td><a href="/id/doi:10.5072/FK20867P2S">doi:10.5072/FK2IJ4F84F01</a></td>
-<td>purduehz</td>
-<td>2001-10-26 04:10:02 UTC</td>
-<td>2015-10-26 04:10:02 UTC</td>
-<td>PRESHAKE: Centrifuge modeling of the effect of seismic preshaking on the liquefaction resistance of sands</td>
-<td>public</td>
-<td>Waleed El-Sekelly; Tarek Abdoun; Ricardo Dobry</td>
-</tr>
-<tr>
-<td>
-  <div class="radio-inline radio_svg">
-    <input id="select_07" type="checkbox" class="checkbox__icon" />
-    <label for="select_07" class="image-checkbox-label">&nbsp;</label>
-  </div>
-</td>
-<td><a href="/id/doi:10.5072/FK20867P2S">doi:10.5072/FK2V11dH02</a></td>
-<td>howie</td>
-<td>2001-09-26 04:10:02 UTC</td>
-<td>2015-02-26 04:10:02 UTC</td>
-<td>Piper_BacterialOTU_taxonomy</td>
-<td>public</td>
-<td>Piper, Candace L. ; Siciliano, Steven D. ; Winsley, Tristrom ; Lamb, Eric G.</td>
-</tr>
-<tr>
-<td>
-  <div class="radio-inline radio_svg">
-    <input id="select_08" type="checkbox" class="checkbox__icon" />
-    <label for="select_08" class="image-checkbox-label">&nbsp;</label>
-  </div>
-</td>
-<td><a href='/id/doi:10.5072/FK20867P2S'>doi:10.5072/FK2RJ4CG503</a></td>
-<td>frankie</td>
-<td>2001-08-26 04:10:02 UTC</td>
-<td>2015-07-20 15:29:01 UTC</td>
-<td>Bones, molars, and briefs (1899)</td>
-<td>public</td>
-<td>(:unkn) unknown</td>
-</tr>
-<tr>
-<td>
-  <div class="radio-inline radio_svg">
-    <input id="select_09" type="checkbox" class="checkbox__icon" />
-    <label for="select_09" class="image-checkbox-label">&nbsp;</label>
-  </div>
-</td>
-<td><a href='/id/doi:10.5072/FK20867P2S'>doi:10.5072/FK2.SYN8512021.104</a></td>
-<td>doozer</td>
-<td>2001-07-26 04:10:02 UTC</td>
-<td>2015-07-20 18:15:56 UTC</td>
-<td>IT060SynapseJavaClientDoiTest</td>
-<td>public</td>
-<td>(author name not available)</td>
-</tr>
-<tr>
-<td>
-  <div class="radio-inline radio_svg">
-    <input id="select_10" type="checkbox" class="checkbox__icon" />
-    <label for="select_10" class="image-checkbox-label">&nbsp;</label>
-  </div>
-</td>
-<td><a href='/id/doi:10.5072/FK20867P2S'>doi:10.5072/FK2/Z0OPNC0507</a></td>
-<td>oberon</td>
-<td>2001-06-26 04:10:02 UTC</td>
-<td>2015-07-20 17:56:14 UTC</td>
-<td>KCP1 DS3</td>
-<td>public</td>
-<td>kc072015B, kc072015B</td>
-</tr>
-<tr>
-<td>
-  <div class="radio-inline radio_svg">
-    <input id="select_11" type="checkbox" class="checkbox__icon" />
-    <label for="select_11" class="image-checkbox-label">&nbsp;</label>
-  </div>
-</td>
-<td><a href='/id/doi:10.5072/FK20867P2S'>doi:10.5072/FK2/Z0OPNC0608</a></td>
-<td>oberon</td>
-<td>2001-06-26 04:10:02 UTC</td>
-<td>2015-07-20 17:56:14 UTC</td>
-<td>KCP1 DS3</td>
-<td>public</td>
-<td>kc072015B, kc072015B</td>
-</tr>
-
+  {% for item in results %}
+  <tr>
+    {% data_row item fields_selected field_display_types account_co_owners testPrefixes %}
+  </tr>
+  {% endfor %}
 </tbody>
 </table>
 

@@ -22,11 +22,13 @@ import ezidapp.models
 # have created a field layout object with a number of properties instead.
 
 # The order to display fields both in the customize check boxes and the columns
-FIELD_ORDER = ['identifier', 'owner', 'coOwners', 'createTime', 'updateTime', 'status',\
-                'mappedTitle', 'mappedCreator']
+# ToDo: Include Object Publisher, Object Publication Date, Object Type
+FIELD_ORDER = ['mappedTitle', 'mappedCreator', 'identifier', 'owner', 'createTime',\
+               'updateTime', 'status']
 
 # The default selected fields for display if custom fields haven't been defined
-FIELD_DEFAULTS = ['identifier', 'updateTime', 'mappedTitle', 'mappedCreator']
+FIELD_DEFAULTS = ['mappedTitle', 'mappedCreator', 'identifier', 'owner', 'createTime',\
+                  'updateTime', 'status']
 
 # Column names for display for each field
 FIELDS_MAPPED = {'identifier':'Identifier',  'owner':'Owner', 'coOwners': 'Co-Owners', \
