@@ -1,31 +1,22 @@
 {% load layout_extras %}
 <div class="row vertical-buffer"></div>
-<!-- div class="footer" -->
-
+<!-- div class="container-fluid" -->
 <div id="footer-gutter-left">
   &nbsp;
 </div>
 
 <div id="footer-content">
   <div class="container">
-  <div class="row">
-    <div id="footer-logo-col" class="col-sm-2">
-      <a class="not-text" href="http://www.cdlib.org/"><img id="logoBottom" src="/static/images/logoBottom.svg" ALT="University of California - California Digital Library"></a>
-    </div>
-    <div id="footer-content-col" class="col-sm-5">
-      {% host_based_include "includes/localized/_/footer_content.html" %}
-    </div>
-    <div id="footer-icon-col" class="col-sm-2">
-      <ul class="list-unstyled">
-        <li><a class="not-text" href="http://twitter.com/ezidcdl"><img class="footer__icon" src="/static/images/iconTwitter.svg" ALT="EZID on Twitter"></a></li>
-        <li><a class="not-text" href="http://www.cdlib.org/cdlinfo/category/infrastructure-services/feed/?s=ezid"><img class="footer__icon" src="/static/images/iconRSS.svg" ALT="EZID's RSS Feed"></a></li>
-        <li><a class="not-text" href="http://confluence.ucop.edu/display/DataCite/Home"><img class="footer__icon" src="/static/images/iconWiki.svg" ALT="EZID's Wiki Documentation"></a></li>
-      </ul>
-    </div>
-    <div id="footer-newsfeed-col" class="col-sm-3">
-    {% if feed_cache %}
-      <strong>LATEST NEWS FROM <abbr>EZID</abbr></strong><br/>
 
+<footer class="footer">
+
+  <a class="footer__logo-link" href="http://www.cdlib.org/"><img class="footer__logo" src="/static/images/logoBottom.svg" alt="California Digital Library"></a>
+
+  <div class="footer__news">
+{% if feed_cache %}
+    <h1 class="footer__news-title">Latest News from EZID</h1>
+
+    <p class="footer__news-text">
       <!-- Vertical Bootstrap 3 Carousel
       http://stackoverflow.com/questions/11589816/twitter-bootstrap-carousel-vertical-sliding/11596944 -->
       <div id="newsCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
@@ -46,18 +37,32 @@
       {% endfor %}
         </div>
       </div>
-      <p id="footer-newsfeed-linkall"><a class="font-xsmall" href="http://www.cdlib.org/cdlinfo/category/infrastructure-services/ezid/">View all news</a></p>
+    </p>
 
-    {% endif %}
-    </div>
+    <a href="http://www.cdlib.org/cdlinfo/category/infrastructure-services/ezid/" class="footer__news-link">View all news</a>
+{% endif %}
   </div>
+
+  <div class="footer__icons">
+    <a class="footer__icon-link" href="http://twitter.com/ezidcdl" title="Twitter"><img class="footer__icon" src="/static/images/iconTwitter.svg" alt="California Digital Library"></a>
+    <a class="footer__icon-link" href="http://www.cdlib.org/cdlinfo/category/infrastructure-services/feed/?s=ezid" title="RSS"><img class="footer__icon" src="/static/images/iconRSS.svg" alt="California Digital Library"></a>
+  </div>
+
+  <div class="footer__copyright">
+    <p class="footer__text">EZID is a service of the <a href="http://www.cdlib.org/" class="footer__link">California Digital Library</a>, a division of the <a href="http://www.universityofcalifornia.edu/" class="footer__link">University of California Office of the President</a></p>
+    <p class="footer__text">© 2015 The Regents of the University of California</p>
+    <a href="/home/about_us" class="footer__copyright-link">About Us</a>
+    <a href="http://www.cdlib.org/about/privacy.html" class="footer__copyright-link">Privacy Policy</a>
+  </div>
+
+</footer>
   </div>
 </div>
 
 <div id="footer-gutter-right">
   &nbsp;
 </div>
-
+<!-- /div -->
     <script>
     // Login Modal
       (function() {
