@@ -32,6 +32,16 @@ $(document).ready(function(){
 
   // Initialize via jquery.details.min.js
 
+  // Experimental toggle closed if not currently open (only works in Chrome & Safari):
+
+  // $('.accordion__section').click(function(){
+
+  //   if ($('.accordion__section').not(this).attr('open', '')) {
+  //     $('.accordion__section').removeAttr('open');
+  //   }
+
+  // });
+
   $('details').details();
 
 }); // Close $(document).ready(function()
