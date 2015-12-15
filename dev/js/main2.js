@@ -30,13 +30,21 @@ $(document).ready(function(){
   
   $('#accordion__section-'+urlhash).attr('open', '');
 
-  // If an accordion section is clicked, close all the other ones if they are open:
-
   $('.accordion__section').click(function(){
 
+    // If an accordion section is clicked, close all the other ones if they are open and set their aria-expanded attributes to false:
     if ($('.accordion__section').not(this).attr('open', '')) {
       $('.accordion__section').not(this).removeAttr('open');
-    } 
+      $('.accordion__section').attr('aria-expanded', 'false');
+    }
+
+    // If an accordion section is clicked, set its aria-expanded attribute to true:
+    $(this).attr('aria-expanded', 'true');
+
+    // If an opened accordion section is clicked closed, set it's aria-expanded attribute to false:
+    if ($(this).attr('open')) {
+      $(this).attr('aria-expanded', 'false');
+    }
 
   });
 
