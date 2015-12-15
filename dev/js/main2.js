@@ -30,18 +30,14 @@ $(document).ready(function(){
   
   $('#accordion__section-'+urlhash).attr('open', '');
 
-  // Initialize via jquery.details.min.js
+  // If an accordion section is clicked, close all the other ones if they are open:
 
-  // Experimental toggle closed if not currently open (only works in Chrome & Safari):
+  $('.accordion__section').click(function(){
 
-  // $('.accordion__section').click(function(){
+    if ($('.accordion__section').not(this).attr('open', '')) {
+      $('.accordion__section').not(this).removeAttr('open');
+    } 
 
-  //   if ($('.accordion__section').not(this).attr('open', '')) {
-  //     $('.accordion__section').removeAttr('open');
-  //   }
-
-  // });
-
-  $('details').details();
+  });
 
 }); // Close $(document).ready(function()
