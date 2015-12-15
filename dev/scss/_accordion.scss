@@ -11,6 +11,16 @@ $accordion-padding: 15px;
 	margin: 0 0 10px;
 	padding: 0 $accordion-padding;
 	border: 1px solid $design-light-gray-border-color;
+
+	&[aria-expanded='false'] .accordion__title {
+		background-image: url('../images/icon_plus-sign.svg');
+	}
+
+	&[aria-expanded='true'] .accordion__title {
+		border-bottom: 1px solid $design-light-gray-border-color;
+		background-image: url('../images/icon_minus-sign.svg');
+	}
+
 }
 
 .accordion__title {
@@ -25,15 +35,6 @@ $accordion-padding: 15px;
 	background-size: 12px;
 	font-weight: bold;
 	cursor: pointer;
-
-	&[aria-expanded='false'] {
-		background-image: url('../images/icon_plus-sign.svg');
-	}
-
-	&[aria-expanded='true'] {
-		border-bottom: 1px solid $design-light-gray-border-color;
-		background-image: url('../images/icon_minus-sign.svg');
-	}
 
 	// Remove native arrow icon from Chrome & Safari
 	&::-webkit-details-marker {
