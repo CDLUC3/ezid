@@ -1,5 +1,13 @@
 // ##### Fieldsets ##### //
 
-.fieldset {
-	// empty
+.fieldset1 {
+	// border: none;
+	// padding: 0;
+}
+
+.fieldset1__legend1 {
+	&:before {
+		content: '';
+	}
+
 }
