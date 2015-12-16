@@ -42,8 +42,20 @@ $(document).ready(function(){
     $(this).attr('aria-expanded', 'true');
 
     // If an opened accordion section is clicked closed, set it's aria-expanded attribute to false:
-    if ($(this).attr('open')) {
-      $(this).attr('aria-expanded', 'false');
+    // if ($(this).attr('open')) {
+    //   $(this).attr('aria-expanded', 'false');
+    // }
+
+  });
+
+  $('.accordion__title').click(function(){
+
+    if ($(this).parent().attr('aria-expanded', 'true')) {
+      // $(this).parent().css('border', '1px solid red');
+      $(this).parent().attr('aria-expanded', 'false');
+    } else {
+      // $(this).parent().css('border', '1px solid blue');
+      $(this).parent().attr('aria-expanded', 'true');
     }
 
   });
