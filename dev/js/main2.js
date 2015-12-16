@@ -30,31 +30,16 @@ $(document).ready(function(){
   
   $('#accordion__section-'+urlhash).attr('open', '');
 
-  $('.accordion__section').click(function(){
+  $('.accordion__title').click(function(){
 
-    // If an accordion section is clicked, close all the other ones if they are open and set their aria-expanded attributes to false:
-    if ($('.accordion__section').not(this).attr('open', '')) {
-      $('.accordion__section').not(this).removeAttr('open');
+    // If an accordion title is clicked, close all the other sections if they are open and set their aria-expanded attributes to false:
+    if ($(this).parent().siblings().attr('open', '')) {
+      $(this).parent().siblings().removeAttr('open');
       $('.accordion__section').attr('aria-expanded', 'false');
     }
 
-    // If an accordion section is clicked, set its aria-expanded attribute to true:
-    $(this).attr('aria-expanded', 'true');
-
-    // If an opened accordion section is clicked closed, set it's aria-expanded attribute to false:
-    // if ($(this).attr('open')) {
-    //   $(this).attr('aria-expanded', 'false');
-    // }
-
-  });
-
-  $('.accordion__title').click(function(){
-
-    if ($(this).parent().attr('aria-expanded', 'true')) {
-      // $(this).parent().css('border', '1px solid red');
-      $(this).parent().attr('aria-expanded', 'false');
-    } else {
-      // $(this).parent().css('border', '1px solid blue');
+    // If an accordion title is clicked, set its section aria-expanded attribute to true:
+    if ($(this).parent().attr('aria-expanded') == 'false') {
       $(this).parent().attr('aria-expanded', 'true');
     }
 
