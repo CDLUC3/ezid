@@ -79,26 +79,28 @@
   border: 0;
   overflow: hidden;
   clip: rect(0 0 0 0);
-}
 
-// Pseudo form label:
-.fcontrol__radio-button-stacked + span {
-  display: block;
-  color: $design-primary-color;
-}
+	// Pseudo form label:
+  & + span {
+  	display: block;
+  	color: $design-primary-color;
 
-// Pseudo button styling:
-.fcontrol__radio-button-stacked + span:before {
-  display: inline-block;
-  width: 0.8em;
-  height: 0.8em;
-  margin-right: 0.3em;
-  transition: 0.25s ease all;
-  border: 0.125em solid $design-dark-gray-color;
-  border-radius: 1em;
-  background: $design-white-color;
-  content: '';
-  vertical-align: -0.1em;
+		// Pseudo button styling:
+  	&:before {
+  		display: inline-block;
+		  width: 0.8em;
+		  height: 0.8em;
+		  margin-right: 0.3em;
+		  transition: 0.25s ease all;
+		  border: 0.125em solid $design-dark-gray-color;
+		  border-radius: 1em;
+		  background: $design-white-color;
+		  content: '';
+		  vertical-align: -0.1em;
+  	}
+
+  }
+
 }
 
 // The checked style:
