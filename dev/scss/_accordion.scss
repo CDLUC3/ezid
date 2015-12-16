@@ -12,11 +12,7 @@ $accordion-padding: 15px;
 	padding: 0 $accordion-padding;
 	border: 1px solid $design-light-gray-border-color;
 
-	&[aria-expanded='false'] .accordion__title {
-		background-image: url('../images/icon_plus-sign.svg');
-	}
-
-	&[aria-expanded='true'] .accordion__title {
+	&[open] .accordion__title {
 		border-bottom: 1px solid $design-light-gray-border-color;
 		background-image: url('../images/icon_minus-sign.svg');
 	}
@@ -27,9 +23,8 @@ $accordion-padding: 15px;
 	display: block;
 	margin: 0 (-$accordion-padding);
 	padding: 10px 10px 10px ($accordion-padding + 25px);
-
 	background-color: $design-light-gray-bg-color;
-
+	background-image: url('../images/icon_plus-sign.svg');
 	background-repeat: no-repeat;
 	background-position: left $accordion-padding center; // needs Modernizr fallback
 	background-size: 12px;
