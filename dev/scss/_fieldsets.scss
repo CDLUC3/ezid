@@ -5,9 +5,44 @@
 	// padding: 0;
 }
 
-.fieldset1__legend1 {
+%fieldset1__legend-number {
+	margin: 0 0 1em 0;
+	color: $design-primary-color;
+	font-size: 1.3em;
+	font-weight: bold;
+	
 	&:before {
-		content: '';
+		margin: 0 0.5em 0 0;
+		padding: 5px 10px;
+		color: $design-white-color;
+		background: $design-pop-color;
+	}
+
+}
+
+.fieldset1__legend-number1 {
+	@extend %fieldset1__legend-number;
+
+	&:before {
+		content: '1';
+	}
+
+}
+
+.fieldset1__legend-legend2 {
+	@extend %fieldset1__legend-number;
+
+	&:before {
+		content: '2';
+	}
+
+}
+
+.fieldset1__legend-legend3 {
+	@extend %fieldset1__legend-number;
+
+	&:before {
+		content: '3';
 	}
 
 }
