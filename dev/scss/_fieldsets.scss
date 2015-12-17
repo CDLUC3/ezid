@@ -1,27 +1,29 @@
 // ##### Fieldsets ##### //
 
-.fieldset1 {
-	// border: none;
-	// padding: 0;
+.fieldset-stacked {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
 }
 
-%fieldset1__legend-number {
-	margin: 0 0 1em 0;
+%fieldset__legend-numbered {
+	margin: 0 0 1em;
 	color: $design-primary-color;
 	font-size: 1.3em;
 	font-weight: bold;
-	
+
 	&:before {
 		margin: 0 0.5em 0 0;
 		padding: 5px 10px;
-		color: $design-white-color;
 		background: $design-pop-color;
+		color: $design-white-color;
 	}
 
 }
 
-.fieldset1__legend-number1 {
-	@extend %fieldset1__legend-number;
+.fieldset-stacked__legend-number-1,
+.fieldset-inline__legend-number-1 {
+	@extend %fieldset__legend-numbered;
 
 	&:before {
 		content: '1';
@@ -29,8 +31,9 @@
 
 }
 
-.fieldset1__legend-legend2 {
-	@extend %fieldset1__legend-number;
+.fieldset-stacked__legend-number-2,
+.fieldset-inline__legend-number-2 {
+	@extend %fieldset__legend-numbered;
 
 	&:before {
 		content: '2';
@@ -38,11 +41,21 @@
 
 }
 
-.fieldset1__legend-legend3 {
-	@extend %fieldset1__legend-number;
+.fieldset-stacked__legend-number-3,
+.fieldset-inline__legend-number-3 {
+	@extend %fieldset__legend-numbered;
 
 	&:before {
 		content: '3';
 	}
 
+}
+
+.fieldset-inline {
+	// empty
+}
+
+.fieldset-inline__legend-number-2 {
+	display: inline-block;
+	margin: 0 2em 0 0;
 }
