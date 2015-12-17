@@ -67,6 +67,8 @@
   @extend %fcontrol__radio-label;
   display: inline-block;
   margin: 0 0.8em 0 0;
+  color: $design-primary-color;
+	font-size: 1.1em;
 }
 
 // Hide the actual radio button:
@@ -81,7 +83,7 @@
   clip: rect(0 0 0 0);
 
 	// Pseudo form label:
-  & + span {
+  + span {
   	display: block;
   	color: $design-primary-color;
 
@@ -111,11 +113,6 @@
 // Focus styling:
 .fcontrol__radio-button-stacked:focus + span:before {
   border-color: $design-primary-color;
-}
-
-.fcontrol__radio-label-inline {
-	color: $design-primary-color;
-	font-size: 1.1em;
 }
 
 .fcontrol__radio-button-inline {
