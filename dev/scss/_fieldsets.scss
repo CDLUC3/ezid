@@ -4,9 +4,21 @@
 	padding: 0 0 1em;
 }
 
+%fieldset__legend {
+	margin: 0 0 1em;
+	padding: 1em 0 0;
+	color: $design-primary-color;
+	font-size: 1.3em;
+	font-weight: bold;
+}
+
+.fieldset-stacked__legend,
+.fieldset-inline__legend {
+	@extend %fieldset__legend;
+}
+
 %fieldset__legend-numbered {
 	margin: 0 0 1em;
-	padding: 1em 0 0 0;
 	color: $design-primary-color;
 	font-size: 1.3em;
 	font-weight: bold;
@@ -51,12 +63,13 @@
 }
 
 .fieldset-inline {
-	// empty
+	padding: 1em 0;
 }
 
-.fieldset-inline__legend-number-2 {
+.fieldset-inline__legend-number-2,
+.fieldset-inline__legend {
 	display: inline-block;
-	margin: 0 2em 1em 0; // bottom margin is for when .fieldset-inline__elements wraps
+	margin: 0 1em 1em 0; // bottom margin is for when .fieldset-inline__elements wraps
 }
 
 .fieldset-inline__elements {
