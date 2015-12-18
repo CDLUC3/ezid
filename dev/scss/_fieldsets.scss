@@ -37,32 +37,15 @@
 }
 
 // Add numbers to the numbered legends:
-.fieldset-stacked__legend-number-1,
-.fieldset-inline__legend-number-1 {
-	@extend %fieldset__legend-numbered;
+@for $i from 1 through 3 {
+  .fieldset-stacked__legend-number-#{$i},
+	.fieldset-inline__legend-number-#{$i} {
+		@extend %fieldset__legend-numbered;
 
-	&:before {
-		content: '1';
-	}
+		&:before {
+			content: '#{$i}';
+		}
 
-}
-
-.fieldset-stacked__legend-number-2,
-.fieldset-inline__legend-number-2 {
-	@extend %fieldset__legend-numbered;
-
-	&:before {
-		content: '2';
-	}
-
-}
-
-.fieldset-stacked__legend-number-3,
-.fieldset-inline__legend-number-3 {
-	@extend %fieldset__legend-numbered;
-
-	&:before {
-		content: '3';
 	}
 
 }
