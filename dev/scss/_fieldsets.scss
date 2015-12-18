@@ -1,11 +1,12 @@
 // ##### Fieldsets ##### //
 
-// Spacing around fieldset groups:
+// Fieldset groups:
 .fieldset-stacked {
 	padding: 0 0 1em;
 }
 
-.fieldset-inline {
+.fieldset-inline,
+.fieldset-hidden {
 	padding: 1em 0;
 }
 
@@ -50,6 +51,11 @@
 
 }
 
+// Hidden legends
+.fieldset-hidden__legend {
+	@extend %hide;
+}
+
 .fieldset-inline__elements {
 	display: inline-block;
 }
@@ -59,7 +65,12 @@
 .fieldset-stacked + .fieldset-inline,
 .fieldset-inline + .fieldset-stacked,
 .fieldset-inline + .fieldset-inline,
-.fieldset-stacked + .fieldset-stacked {
+.fieldset-stacked + .fieldset-stacked,
+.fieldset-stacked + .fieldset-hidden,
+.fieldset-hidden + .fieldset-stacked,
+.fieldset-inline + .fieldset-hidden,
+.fieldset-hidden + .fieldset-inline,
+.fieldset-hidden + .fieldset-hidden {
 // .fieldset-stacked, .fieldset-inline {
 	border-top: 1px solid $design-dark-gray-color;
 }
