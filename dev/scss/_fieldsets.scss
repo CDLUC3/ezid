@@ -57,5 +57,9 @@
 
 .fieldset-inline__legend-number-2 {
 	display: inline-block;
-	margin: 0 2em 0 0;
+	margin: 0 2em 1em 0; // bottom margin is for when .fieldset-inline__elements wraps
+}
+
+.fieldset-inline__elements {
+	display: inline-block;
 }
