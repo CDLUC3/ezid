@@ -1,11 +1,17 @@
 // ##### Fieldsets ##### //
 
+// Spacing around fieldset groups:
 .fieldset-stacked {
 	padding: 0 0 1em;
 }
 
+.fieldset-inline {
+	padding: 1em 0;
+}
+
+// Create the standard legend:
 %fieldset__legend {
-	margin: 0 0 1em;
+	margin: 0 1em 1em 0;
 	padding: 1em 0 0;
 	color: $design-primary-color;
 	font-size: 1.3em;
@@ -17,11 +23,9 @@
 	@extend %fieldset__legend;
 }
 
+// Create numered legends extended from the generic ones:
 %fieldset__legend-numbered {
-	margin: 0 0 1em;
-	color: $design-primary-color;
-	font-size: 1.3em;
-	font-weight: bold;
+	@extend %fieldset__legend;
 
 	&:before {
 		margin: 0 0.5em 0 0;
@@ -32,6 +36,7 @@
 
 }
 
+// Add numbers to the numbered legends:
 .fieldset-stacked__legend-number-1,
 .fieldset-inline__legend-number-1 {
 	@extend %fieldset__legend-numbered;
@@ -62,25 +67,16 @@
 
 }
 
-.fieldset-inline {
-	padding: 1em 0;
-}
-
-.fieldset-inline__legend-number-2,
-.fieldset-inline__legend {
-	// display: inline-block;
-	margin: 0 1em 1em 0; // bottom margin is for when .fieldset-inline__elements wraps
-}
-
 .fieldset-inline__elements {
 	display: inline-block;
 }
 
 
-// Place a border line between fieldsets
+// Place a border line between fieldsets:
 .fieldset-stacked + .fieldset-inline,
 .fieldset-inline + .fieldset-stacked,
 .fieldset-inline + .fieldset-inline,
 .fieldset-stacked + .fieldset-stacked {
+// .fieldset-stacked, .fieldset-inline {
 	border-top: 1px solid $design-dark-gray-color;
 }
