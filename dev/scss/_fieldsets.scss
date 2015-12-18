@@ -11,6 +11,7 @@
 	color: $design-primary-color;
 	font-size: 1.3em;
 	font-weight: bold;
+	// display: inline-block;
 
 	&:before {
 		margin: 0 0.5em 0 0;
@@ -62,4 +63,9 @@
 
 .fieldset-inline__elements {
 	display: inline-block;
+}
+
+.fieldset-stacked + .fieldset-inline {
+	padding: 1em 0 0;
+	border-top: 1px solid $design-dark-gray-color;
 }
