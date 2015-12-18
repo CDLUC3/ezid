@@ -1,17 +1,15 @@
 // ##### Fieldsets ##### //
 
 .fieldset-stacked {
-	margin: 1em 0;
-	padding: 0;
-	border: none;
+	padding: 0 0 1em;
 }
 
 %fieldset__legend-numbered {
 	margin: 0 0 1em;
+	padding: 1em 0 0 0;
 	color: $design-primary-color;
 	font-size: 1.3em;
 	font-weight: bold;
-	// display: inline-block;
 
 	&:before {
 		margin: 0 0.5em 0 0;
@@ -65,7 +63,11 @@
 	display: inline-block;
 }
 
-.fieldset-stacked + .fieldset-inline {
-	padding: 1em 0 0;
+
+// Place a border line between fieldsets
+.fieldset-stacked + .fieldset-inline,
+.fieldset-inline + .fieldset-stacked,
+.fieldset-inline + .fieldset-inline,
+.fieldset-stacked + .fieldset-stacked {
 	border-top: 1px solid $design-dark-gray-color;
 }
