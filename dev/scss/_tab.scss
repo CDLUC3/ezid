@@ -1,5 +1,49 @@
 // ##### Tab Component ##### //
 
+// Inspired from: http://codepen.io/vulpesigni/pen/yyZYNy
+
 .tab {
-	// empty
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.tab__input {
+  display: none;
+
+  &:checked + .tab__label {
+  	border-bottom: 1px solid $design-light-gray-bg-color;
+  	background: $design-light-gray-bg-color;
+  	color: $design-black-color;
+
+  	+ .tab__content {
+			display: block;
+  	}
+
+  }
+
+}
+
+.tab__label {
+  padding: 0.7em 1em;
+	border: 1px solid $design-light-gray-border-color;
+	background: $design-white-color;
+	color: $design-primary-color;
+	font-size: 1.2em;
+	cursor: pointer;
+	z-index: 1;
+
+  &:not(:first-of-type) {
+  	margin-left: -1px;
+  }
+
+}
+
+.tab__content {
+  display: none;
+  order: 1;
+  width: 100%;
+  margin-top: -1px;
+  padding: 30px;
+  border: 1px solid $design-light-gray-border-color;
+  background: $design-light-gray-bg-color;
 }
