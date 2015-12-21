@@ -1,6 +1,7 @@
 // ##### Fieldsets ##### //
 
-// Fieldset groups:
+// ***** Fieldset Groups ***** //
+
 .fieldset-stacked {
 	padding: 0 0 1em;
 }
@@ -10,7 +11,12 @@
 	padding: 1em 0;
 }
 
-// Create the standard legend:
+.fieldset-inline__elements {
+	display: inline-block;
+}
+
+// ***** Standard Legends ***** //
+
 %fieldset__legend {
 	margin: 0 1em 1em 0;
 	padding: 1em 0 0;
@@ -24,8 +30,10 @@
 	@extend %fieldset__legend;
 }
 
-// Create numered legends extended from the generic ones:
+// ***** Numbered Legends ***** //
+
 %fieldset__legend-numbered {
+	// extend from the generic legends:
 	@extend %fieldset__legend;
 
 	&:before {
@@ -37,8 +45,8 @@
 
 }
 
-// Add numbers to the numbered legends:
-@for $i from 1 through 3 {
+
+@for $i from 1 through 3 { // add numbers to the classes
   .fieldset-stacked__legend-number-#{$i},
 	.fieldset-inline__legend-number-#{$i} {
 		@extend %fieldset__legend-numbered;
@@ -51,17 +59,14 @@
 
 }
 
-// Hidden legends
+// ***** Hidden Legends ***** //
+
 .fieldset-hidden__legend {
 	@extend %hide;
 }
 
-.fieldset-inline__elements {
-	display: inline-block;
-}
+// ***** Fieldset Borders ***** //
 
-
-// Place a border line between fieldsets:
 .fieldset-stacked + .fieldset-inline,
 .fieldset-inline + .fieldset-stacked,
 .fieldset-inline + .fieldset-inline,
