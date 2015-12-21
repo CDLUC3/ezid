@@ -1,5 +1,7 @@
 // ##### Form Controls ##### //
 
+// ***** Text Field With Stacked Label ***** //
+
 .fcontrol__text-label-stacked {
 	display: block;
 	margin: 0 0 2px;
@@ -15,6 +17,8 @@
 	font-size: 1em;
 }
 
+// ***** Text Field With Inline Label ***** //
+
 .fcontrol__text-label-inline {
 	color: $design-primary-color;
 	font-size: 1.1em;
@@ -26,6 +30,8 @@
 	border: 1px solid $design-light-gray-border-color;
 	font-size: 1em;
 }
+
+// ***** Select Menu ***** //
 
 .fcontrol__select-label {
 	display: block;
@@ -49,20 +55,24 @@
 
 }
 
-// Radio button styles inspired from http://www.sitepoint.com/replacing-radio-buttons-without-replacing-radio-buttons/
+// ***** Radio Buttons ***** //
 
-// Radio button wrappers using label:
+// Inspired from http://www.sitepoint.com/replacing-radio-buttons-without-replacing-radio-buttons/
+
+// Wrap radio button using label:
 %fcontrol__radio-label {
   font-size: 1.1em;
   cursor: pointer;
 }
 
+// Stacked version:
 .fcontrol__radio-label-stacked {
   @extend %fcontrol__radio-label;
   display: block;
   margin: 0.5em 0;
 }
 
+// Inline version:
 .fcontrol__radio-label-inline {
   @extend %fcontrol__radio-label;
   display: inline-block;
@@ -105,12 +115,12 @@
 
 }
 
-// The checked style:
+// Checked style:
 .fcontrol__radio-button-stacked:checked + span:before {
   background: $design-dark-gray-color;
 }
 
-// Focus styling:
+// Focus style:
 .fcontrol__radio-button-stacked:focus + span:before {
   border-color: $design-primary-color;
 }
