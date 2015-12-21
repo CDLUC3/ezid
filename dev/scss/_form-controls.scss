@@ -128,3 +128,13 @@
 .fcontrol__radio-button-inline {
 	font-size: 1em;
 }
+
+// ***** Required Styles ***** //
+
+.fcontrol__text-label-stacked {
+	&:after {
+		color: $design-red-color;
+		content: ' (Required)';
+	}
+
+}
