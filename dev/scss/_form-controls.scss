@@ -1,9 +1,17 @@
 // ##### Form Controls ##### //
 
-// ***** Text Field With Stacked Label ***** //
+// ***** Stacked Labels ***** //
+
+%fcontrol__group-stacked {
+	display: flex;
+	flex-flow: column nowrap;
+}
+
+.fcontrol__group-stacked {
+	@extend %fcontrol__group-stacked;
+}
 
 .fcontrol__text-label-stacked {
-	display: block;
 	margin: 0 0 2px;
 	color: $design-primary-color;
 	font-size: 1.1em;
@@ -11,15 +19,25 @@
 
 .fcontrol__text-field-stacked {
 	@extend %fcontrol-focus;
-	display: block;
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
 	font-size: 1em;
 }
 
-// ***** Text Field With Inline Label ***** //
+// ***** Inline Labels ***** //
+
+%fcontrol__group-inline {
+	display: flex;
+	flex-flow: row nowrap;
+}
+
+.fcontrol__group-inline {
+	@extend %fcontrol__group-inline;
+}
 
 .fcontrol__text-label-inline {
+	align-self: center;
+	margin: 0 1em 0 0;
 	color: $design-primary-color;
 	font-size: 1.1em;
 }
@@ -29,6 +47,12 @@
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
 	font-size: 1em;
+}
+
+// ***** Hidden Labels ***** //
+
+.fcontrol__text-label-hidden {
+	@extend %hide;
 }
 
 // ***** Select Menu ***** //
@@ -138,3 +162,40 @@
 	}
 
 }
+
+// ***** Error Styles ***** //
+
+.fcontrol__invalid-flag {
+	display: none;
+	padding: 0.3em 0.5em;
+	border: 1px solid $design-red-color;
+	background: $design-red-color;
+	color: $design-white-color;
+}
+
+.fcontrol__group-stacked--invalid {
+	@extend %fcontrol__group-stacked;
+
+	[class^='fcontrol__text-field'] {
+		border: 1px solid $design-red-color;
+	}
+
+	.fcontrol__invalid-flag {
+		display: block;
+	}
+
+}
+
+.fcontrol__group-inline--invalid {
+	@extend %fcontrol__group-inline;
+
+	[class^='fcontrol__text-field'] {
+		border: 1px solid $design-red-color;
+	}
+
+	.fcontrol__invalid-flag {
+		display: block;
+	}
+
+}
+
