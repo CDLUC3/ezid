@@ -68,18 +68,11 @@
 
 // ***** Fieldset Borders ***** //
 
-.fieldset-stacked + .fieldset-inline,
-.fieldset-inline + .fieldset-stacked,
-.fieldset-inline + .fieldset-inline,
-.fieldset-stacked + .fieldset-stacked,
-.fieldset-stacked + .fieldset-hidden,
-.fieldset-hidden + .fieldset-stacked,
-.fieldset-inline + .fieldset-hidden,
-.fieldset-hidden + .fieldset-inline,
-.fieldset-hidden + .fieldset-hidden {
-// .fieldset-stacked, .fieldset-inline {
+.fieldset__top-border {
 	border-top: 1px solid $design-dark-gray-color;
 }
+
+// ***** Inline Fieldset with Inline Select ***** //
 
 .fieldset__inline-select-group {
 	display: flex;
