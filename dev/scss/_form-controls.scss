@@ -131,7 +131,7 @@
 
 // ***** Required Styles ***** //
 
-.fcontrol__text-label-stacked {
+.fcontrol__label-required {
 	&:after {
 		color: $design-red-color;
 		content: ' (Required)';
