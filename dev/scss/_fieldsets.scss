@@ -18,7 +18,7 @@
 // ***** Standard Legends ***** //
 
 %fieldset__legend {
-	margin: 0 1em 1em 0;
+	margin: 0 0.5em 1em 0;
 	padding: 1em 0 0;
 	color: $design-primary-color;
 	font-size: 1.3em;
@@ -26,7 +26,8 @@
 }
 
 .fieldset-stacked__legend,
-.fieldset-inline__legend {
+.fieldset-inline__legend,
+.fieldset__inline-select-text {
 	@extend %fieldset__legend;
 }
 
@@ -78,4 +79,13 @@
 .fieldset-hidden + .fieldset-hidden {
 // .fieldset-stacked, .fieldset-inline {
 	border-top: 1px solid $design-dark-gray-color;
+}
+
+.fieldset__inline-select-group {
+	display: flex;
+	flex-flow: row wrap;
+}
+
+.fieldset__inline-select-text {
+	margin: 0 0 0 0.5em;
 }
