@@ -19,6 +19,7 @@
 
 .fcontrol__text-field-stacked {
 	@extend %fcontrol-focus;
+	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
 	font-size: 1em;
@@ -45,6 +46,7 @@
 .fcontrol__text-field-inline {
 	@extend %fcontrol-focus;
 	flex: 1 0 auto;
+	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
 	font-size: 1em;
