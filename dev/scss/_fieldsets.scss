@@ -18,6 +18,7 @@ $fieldset-legend-spacing: 1em;
 
 .fieldset-inline {
 	display: flex;
+	flex-flow: row wrap;
 	align-items: flex-start;
 }
 
@@ -92,6 +93,7 @@ $fieldset-legend-spacing: 1em;
 
 .fieldset-stacked__inline-select {
 	display: flex;
+	flex-flow: row wrap;
 	margin: 0 0 $fieldset-legend-spacing;
 }
 
