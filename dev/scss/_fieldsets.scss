@@ -1,21 +1,27 @@
 // ##### Fieldsets ##### //
 
-// ***** Fieldset Groups ***** //
+// ***** Spacing Between Legends and Elements ***** //
 
-.fieldset-stacked {
-	padding: 0 0 1em;
-}
+$fieldset-legend-spacing: 1em;
 
-.fieldset-inline,
-.fieldset-hidden {
+// ***** Fieldset Containers ***** //
+
+%fieldset {
 	padding: 1em 0;
 }
 
-.fieldset-inline__elements {
-	display: inline-block;
+.fieldset-stacked,
+.fieldset-inline,
+.fieldset-hidden {
+	@extend %fieldset;
 }
 
-// ***** Standard Legends ***** //
+.fieldset-inline {
+	display: flex;
+	align-items: flex-start;
+}
+
+// ***** Unnumbered Legends ***** //
 
 %fieldset__legend {
 	display: flex;
@@ -32,10 +38,15 @@
 	@extend %fieldset__legend;
 }
 
+.fieldset-stacked__legend {
+	margin: 0 0 $fieldset-legend-spacing;
+}
+
 // ***** Numbered Legends ***** //
 
 %fieldset__legend-numbered {
-	// extend from the generic legends:
+
+	// extend from the unnumbered legends:
 	@extend %fieldset__legend;
 
 	&:before {
@@ -61,6 +72,10 @@
 
 }
 
+[class^='fieldset-stacked__legend-number'] {
+	margin: 0 0 $fieldset-legend-spacing;
+}
+
 // ***** Hidden Legends ***** //
 
 .fieldset-hidden__legend {
@@ -73,14 +88,14 @@
 	border-top: 1px solid $design-dark-gray-color;
 }
 
-// ***** Inline Fieldset with Inline Select ***** //
+// ***** Stacked Fieldset with Inline Select ***** //
 
-.fieldset__inline-select-group {
+.fieldset-stacked__inline-select {
 	display: flex;
-	flex-flow: row wrap;
-	align-items: center;
+	margin: 0 0 $fieldset-legend-spacing;
 }
 
 .fieldset__inline-select-text {
 	margin: 0 0 0 0.5em;
+	padding: 5px 0;
 }
