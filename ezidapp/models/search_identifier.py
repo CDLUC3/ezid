@@ -278,16 +278,20 @@ def _getFromCache (cache, model, attribute, key, insertOnMissing=True):
   if key in cache:
     i = cache[key]
   else:
-    if not insertOnMissing:
-      raise model.DoesNotExist("No %s for %s='%s'." % (model.__name__,
-        attribute, key))
-    try:
-      i = model(**{ attribute: key })
-      i.full_clean(validate_unique=False)
-      i.save()
-    except django.db.utils.IntegrityError:
-      # Somebody beat us to it.
-      i = model.objects.get(**{ attribute: key })
+    if insertOnMissing:
+      try:
+        i = model(**{ attribute: key })
+        i.full_clean(validate_unique=False)
+        i.save()
+      except django.db.utils.IntegrityError:
+        # Somebody beat us to it.
+        i = model.objects.get(**{ attribute: key })
+    else:
+      try:
+        i = model.objects.get(**{ attribute: key })
+      except model.DoesNotExist:
+        raise model.DoesNotExist("No %s for %s='%s'." % (model.__name__,
+          attribute, key))
     cache[key] = i
   return i, cache
 
