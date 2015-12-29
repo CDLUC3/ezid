@@ -91,7 +91,7 @@ strong {
 dfn {
   font-style: italic; }
 
-h1, .api h1 {
+h1 {
   font-size: 2em;
   margin: 0.67em 0; }
 
@@ -396,14 +396,13 @@ hr {
   overflow: visible;
   clip: auto; }
 
-h1, .api h1, h2, h3, h4, h5, h6,
+h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
   font-family: inherit;
   font-weight: 500;
   line-height: 1.1;
   color: inherit; }
   h1 small,
-  .api h1 small,
   h1 .small, h2 small,
   h2 .small, h3 small,
   h3 .small, h4 small,
@@ -421,13 +420,12 @@ h1, .api h1, h2, h3, h4, h5, h6,
     line-height: 1;
     color: #777777; }
 
-h1, .api h1, .h1,
+h1, .h1,
 h2, .h2,
 h3, .h3 {
   margin-top: 21px;
   margin-bottom: 10.5px; }
   h1 small,
-  .api h1 small,
   h1 .small, .h1 small,
   .h1 .small,
   h2 small,
@@ -454,7 +452,7 @@ h6, .h6 {
   .h6 .small {
     font-size: 75%; }
 
-h1, .api h1, .h1 {
+h1, .h1 {
   font-size: 39px; }
 
 h2, .h2 {
@@ -5032,11 +5030,6 @@ h2.panel-title > a {
 #logoBottom {
   width: 100px; }
 
-.footer__icon {
-  width: 28px;
-  margin-top: 6px;
-  margin-left: 23px; }
-
 .icon-topnav-base, .icon-topnav-search, .icon-topnav-learn, .icon-topnav-contact {
   margin-bottom: 7px; }
 
@@ -5101,16 +5094,6 @@ li.active .icon-inactive {
   margin-bottom: 6px;
   width: 32px; }
 
-a, a:visited, a:link {
-  text-decoration: none;
-  border-bottom: 1px #b0bdca solid;
-  padding-bottom: 1px; }
-
-a:hover {
-  text-decoration: none;
-  border-bottom: 1px #00778a solid;
-  padding-bottom: 1px; }
-
 .call-out h3 {
   font-size: 1.1em;
   margin-left: 20px; }
@@ -5166,11 +5149,6 @@ a[data-toggle=popover] {
 
 .popover {
   max-width: 400px; }
-
-a:hover,
-a:focus,
-a:visited {
-  color: #00778a; }
 
 a.boxy-pop,
 a.boxy-pop:visited,
@@ -5343,7 +5321,7 @@ input[type="radio"]:checked + span:before {
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF168B99', endColorstr='#FF056A7B', GradientType=0); }
 
-h1, .api h1 {
+h1 {
   color: white;
   font-weight: bold;
   font-size: 1.5em;
@@ -5352,12 +5330,6 @@ h1, .api h1 {
   line-height: 1.3em;
   letter-spacing: 0.026em;
   width: 79%; }
-
-.apidoc h1 {
-  color: #00778a;
-  font-weight: bold;
-  font-size: 1.4em;
-  border-bottom: 1px dotted black; }
 
 h2-base, h2, h2.id-creation, .panel-body h3 {
   font-family: KievitWebPro-Bold, Arial, sans-serif;
@@ -5854,55 +5826,6 @@ h1.lead2 {
 
 .breadcrumb > li + li:before {
   content: "/ "; }
-
-.api h1 {
-  color: #00778a;
-  border-bottom: 1px dotted black; }
-
-.api blockquote {
-  display: block;
-  margin: 15px 0px 20px 40px;
-  padding: 0px; }
-  .api blockquote > * {
-    font-size: 0.9em;
-    font-style: normal;
-    font-weight: normal;
-    color: #000; }
-  .api blockquote p {
-    font-size: 0.9em;
-    font-style: normal;
-    font-weight: normal;
-    color: #000; }
-    .api blockquote p a, .api blockquote p a:visited, .api blockquote p a:link {
-      color: #00778a;
-      text-decoration: none;
-      border-bottom: 1px #b0bdca solid;
-      padding-bottom: 1px; }
-    .api blockquote p a:hover {
-      color: #00778a;
-      text-decoration: none;
-      border-bottom: 1px #00778a solid;
-      padding-bottom: 1px; }
-  .api blockquote a, .api blockquote a:visited, .api blockquote a:link {
-    color: #00778a;
-    text-decoration: none;
-    border-bottom: 1px #b0bdca solid;
-    padding-bottom: 1px; }
-  .api blockquote a:hover {
-    color: #00778a;
-    text-decoration: none;
-    border-bottom: 1px #00778a solid;
-    padding-bottom: 1px; }
-
-.api table.leftheaders {
-  margin: 5px 0px 15px 5px; }
-  .api table.leftheaders tr > td:first-child {
-    background-color: #c6b082;
-    font-weight: bold;
-    font-size: 0.9em; }
-
-.api tr td, .api th {
-  padding: 5px; }
 
 thead {
   background-color: #c6b082;
