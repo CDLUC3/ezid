@@ -112,6 +112,7 @@ def _backprocDaemon ():
         time.sleep(_idleSleep)
     except Exception, e:
       log.otherError("backproc._backprocDaemon", e)
+      time.sleep(_idleSleep)
   _lock.acquire()
   try:
     _runningThreads.remove(threading.currentThread().getName())

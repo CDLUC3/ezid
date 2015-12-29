@@ -1,0 +1,205 @@
+// ##### Form Controls ##### //
+
+// ***** Stacked Labels ***** //
+
+%fcontrol__group-stacked {
+	display: flex;
+	flex-flow: column nowrap;
+}
+
+.fcontrol__group-stacked {
+	@extend %fcontrol__group-stacked;
+}
+
+.fcontrol__text-label-stacked {
+	margin: 0 0 2px;
+	color: $design-primary-color;
+	font-size: 1.1em;
+}
+
+.fcontrol__text-field-stacked {
+	@extend %fcontrol-focus;
+	margin: 0; // normalize across browsers
+	padding: 0.3em 0.5em;
+	border: 1px solid $design-light-gray-border-color;
+	font-size: 1em;
+}
+
+// ***** Inline Labels ***** //
+
+%fcontrol__group-inline {
+	display: flex;
+	flex-flow: row nowrap;
+}
+
+.fcontrol__group-inline {
+	@extend %fcontrol__group-inline;
+}
+
+.fcontrol__text-label-inline {
+	align-self: center;
+	margin: 0 1em 0 0;
+	color: $design-primary-color;
+	font-size: 1.1em;
+}
+
+.fcontrol__text-field-inline {
+	@extend %fcontrol-focus;
+	flex: 1 0 auto;
+	margin: 0; // normalize across browsers
+	padding: 0.3em 0.5em;
+	border: 1px solid $design-light-gray-border-color;
+	font-size: 1em;
+}
+
+// ***** Hidden Labels ***** //
+
+.fcontrol__text-label-hidden {
+	@extend %hide;
+}
+
+// ***** Select Menu ***** //
+
+.fcontrol__select-label {
+	display: block;
+	margin: 0 0 2px;
+	color: $design-primary-color;
+	font-size: 1.1em;
+}
+
+.fcontrol__select {
+	@extend %fcontrol-focus;
+	display: block;
+	align-self: center; // For %fieldset__legend
+	padding: 0 0.3em;
+	border: 1px solid $design-light-gray-border-color;
+	background: linear-gradient(to bottom, lighten($design-dark-gray-color, 47%), lighten($design-dark-gray-color, 40%));
+	font-size: 1em;
+
+	option {
+		padding: 0.3em 0.5em;
+		background: lighten($design-dark-gray-color, 40%);
+	}
+
+}
+
+// ***** Radio Buttons ***** //
+
+// Inspired from http://www.sitepoint.com/replacing-radio-buttons-without-replacing-radio-buttons/
+
+// Wrap radio button using label:
+%fcontrol__radio-label {
+  font-size: 1.1em;
+  cursor: pointer;
+}
+
+// Stacked version:
+.fcontrol__radio-label-stacked {
+  @extend %fcontrol__radio-label;
+  display: block;
+  margin: 0.5em 0;
+}
+
+// Inline version:
+.fcontrol__radio-label-inline {
+  @extend %fcontrol__radio-label;
+  display: inline-block;
+  margin: 0 0.8em 0 0;
+  color: $design-primary-color;
+	font-size: 1.1em;
+}
+
+// Hide the actual radio button:
+.fcontrol__radio-button-stacked {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+
+	// Pseudo form label:
+  + span {
+  	display: block;
+  	color: $design-primary-color;
+
+		// Pseudo button styling:
+  	&:before {
+  		display: inline-block;
+		  width: 0.8em;
+		  height: 0.8em;
+		  margin-right: 0.3em;
+		  transition: 0.25s ease all;
+		  border: 0.125em solid $design-dark-gray-color;
+		  border-radius: 1em;
+		  background: $design-white-color;
+		  content: '';
+		  vertical-align: -0.1em;
+  	}
+
+  }
+
+}
+
+// Checked style:
+.fcontrol__radio-button-stacked:checked + span:before {
+  background: $design-dark-gray-color;
+}
+
+// Focus style:
+.fcontrol__radio-button-stacked:focus + span:before {
+  border-color: $design-primary-color;
+}
+
+.fcontrol__radio-button-inline {
+	font-size: 1em;
+}
+
+// ***** Required Styles ***** //
+
+.fcontrol__label-required {
+	&:after {
+		color: $design-red-color;
+		content: ' (Required)';
+	}
+
+}
+
+// ***** Error Styles ***** //
+
+.fcontrol__invalid-flag {
+	display: none;
+	padding: 0.3em 0.5em;
+	border: 1px solid $design-red-color;
+	background: $design-red-color;
+	color: $design-white-color;
+}
+
+.fcontrol__group-stacked--invalid {
+	@extend %fcontrol__group-stacked;
+
+	[class^='fcontrol__text-field'] {
+		border: 1px solid $design-red-color;
+	}
+
+	.fcontrol__invalid-flag {
+		display: block;
+	}
+
+}
+
+.fcontrol__group-inline--invalid {
+	@extend %fcontrol__group-inline;
+
+	[class^='fcontrol__text-field'] {
+		border: 1px solid $design-red-color;
+	}
+
+	.fcontrol__invalid-flag {
+		display: block;
+	}
+
+}
+

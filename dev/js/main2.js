@@ -30,8 +30,31 @@ $(document).ready(function(){
   
   $('#accordion__section-'+urlhash).attr('open', '');
 
-  // Initialize via jquery.details.min.js
+  $('.accordion__title').click(function(){
 
-  $('details').details();
+    // If an accordion title is clicked, close all the other sections if they are open and set their aria-expanded attributes to false:
+    if ($(this).parent().siblings().attr('open', '')) {
+      $(this).parent().siblings().removeAttr('open');
+      $('.accordion__section').attr('aria-expanded', 'false');
+    }
+
+    // If an accordion title is clicked, set its section aria-expanded attribute to true:
+    if ($(this).parent().attr('aria-expanded') == 'false') {
+      $(this).parent().attr('aria-expanded', 'true');
+    }
+
+  });
+
+  // ***** HTML Form Validation ***** //
+
+  // If 'required' attribute exists on a text input, add 'Required' class to its label:
+
+  if ($('.fcontrol__text-field-stacked').is('[required]')) {
+    $('.fcontrol__text-label-stacked').addClass('fcontrol__label-required');
+  }
+
+  if ($('.fcontrol__text-field-inline').is('[required]')) {
+    $('.fcontrol__text-label-inline').addClass('fcontrol__label-required');
+  }
 
 }); // Close $(document).ready(function()

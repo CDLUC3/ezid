@@ -1,0 +1,103 @@
+// ##### Fieldsets ##### //
+
+// ***** Spacing Between Legends and Elements ***** //
+
+$fieldset-legend-spacing: 1em;
+
+// ***** Fieldset Containers ***** //
+
+%fieldset {
+	padding: 1em 0;
+}
+
+.fieldset-stacked,
+.fieldset-inline,
+.fieldset-hidden {
+	@extend %fieldset;
+}
+
+.fieldset-inline {
+	display: flex;
+	flex-flow: row wrap;
+	align-items: flex-start;
+}
+
+// ***** Unnumbered Legends ***** //
+
+%fieldset__legend {
+	display: flex;
+	align-items: center;
+	margin: 0 0.5em 0 0;
+	color: $design-primary-color;
+	font-size: 1.3em;
+	font-weight: bold;
+}
+
+.fieldset-stacked__legend,
+.fieldset-inline__legend,
+.fieldset__inline-select-text {
+	@extend %fieldset__legend;
+}
+
+.fieldset-stacked__legend {
+	margin: 0 0 $fieldset-legend-spacing;
+}
+
+// ***** Numbered Legends ***** //
+
+%fieldset__legend-numbered {
+
+	// extend from the unnumbered legends:
+	@extend %fieldset__legend;
+
+	&:before {
+		margin: 0 0.5em 0 0;
+		padding: 5px 10px;
+		background: $design-pop-color;
+		color: $design-white-color;
+	}
+
+}
+
+
+@for $i from 1 through 3 { // add numbers to the classes
+  .fieldset-stacked__legend-number-#{$i},
+	.fieldset-inline__legend-number-#{$i} {
+		@extend %fieldset__legend-numbered;
+
+		&:before {
+			content: '#{$i}';
+		}
+
+	}
+
+}
+
+[class^='fieldset-stacked__legend-number'] {
+	margin: 0 0 $fieldset-legend-spacing;
+}
+
+// ***** Hidden Legends ***** //
+
+.fieldset-hidden__legend {
+	@extend %hide;
+}
+
+// ***** Fieldset Borders ***** //
+
+.fieldset__top-border {
+	border-top: 1px solid $design-dark-gray-color;
+}
+
+// ***** Stacked Fieldset with Inline Select ***** //
+
+.fieldset-stacked__inline-select {
+	display: flex;
+	flex-flow: row wrap;
+	margin: 0 0 $fieldset-legend-spacing;
+}
+
+.fieldset__inline-select-text {
+	margin: 0 0 0 0.5em;
+	padding: 5px 0;
+}

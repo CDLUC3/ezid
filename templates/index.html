@@ -5,6 +5,19 @@
 
 {% block title %}EZID Home{% endblock %}
 {% block description %}{%trans "EZID service creates long-term identifiers and is a key component for keeping data and digital objects safe while fulfilling grant requirements for data management plans." %}{% endblock %}
+{% block javascript %}
+  var imageURLs = [
+    'homeHero_01.jpg', 'homeHero_02.jpg', 'homeHero_03.jpg', 'homeHero_04.jpg',
+    'homeHero_05.jpg', 'homeHero_06.jpg', 'homeHero_07.jpg', 'homeHero_08.jpg',
+    'homeHero_09.jpg'
+  ];
+  function getImageTag() {
+    var img = '/static/images/';
+    var randomIndex = Math.floor(Math.random() * imageURLs.length);
+    img += imageURLs[randomIndex];
+    return img;
+  }
+{% endblock %}
 {% block content %}
     <div class="vertical-buffer-xs" id="frontpage_img">
       <div class="container">

@@ -1,14 +1,10 @@
 // ##### Text ##### //
-
 // All text based links
 a, a:visited, a:link {
-  @include text-link2($text-link-color);
 }
 
 a:hover {
-  @include text-link2($design-primary-color);
 }
-
 //Used on Create ID pages
 .call-out h3 {
   font-size: 1.1em;
@@ -77,12 +73,6 @@ a[data-toggle=popover] {
 }
 .popover{
   max-width: 400px; // Max Width of the popover (depending on the container!)
-}
-
-a:hover,
-a:focus,
-a:visited {
-  color: $design-primary-color;
 }
 
 // Home Page & Demo Steps

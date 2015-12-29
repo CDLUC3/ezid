@@ -8,34 +8,20 @@
     <title>EZID: {% block title %}Identifiers made easy{% endblock %}</title>
     <meta name="description" content="{% block description %}{% endblock %}" />
     <meta name="keywords" content="" />
-    <meta name="viewport" content="width=device-width"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"> 
     <link rel="shortcut icon" type="image/png" href="/static/images/favicon.ico"/>
     <link rel="icon" sizes="16x16 32x32" href="/static/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/static/stylesheets/main.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/main2.css"/>
     <link rel="stylesheet" type="text/css" href="/static/stylesheets/datatables.css"/>
 
     <script type="text/javascript" src="/static/javascripts/jquery.js"></script>
-
-<script type="text/javascript">
-  var imageURLs = [
-    'homeHero_01.jpg', 'homeHero_02.jpg', 'homeHero_03.jpg', 'homeHero_04.jpg',
-    'homeHero_05.jpg', 'homeHero_06.jpg', 'homeHero_07.jpg', 'homeHero_08.jpg',
-    'homeHero_09.jpg'
-  ];
-  function getImageTag() {
-    var img = '/static/images/';
-    var randomIndex = Math.floor(Math.random() * imageURLs.length);
-    img += imageURLs[randomIndex];
-    return img;
-  }
-</script>
 
     {% block header %}{% endblock %}
     <script type="text/javascript">/*<![CDATA[*/
       areMessages = {% if messages %}true{% else %}false{% endif %};
     {% block javascript %}{% endblock %}
     /*]]>*/</script>
-    <script type="text/javascript" src="/static/javascripts/message_box.js"></script>
   </head>
   <body>
     <!--[if lt IE 10]>
