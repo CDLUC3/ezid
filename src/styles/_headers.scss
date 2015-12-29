@@ -1,18 +1,8 @@
 // ##### Headers ##### //
 
 // Main (Blue) Header
-.header {
+.heading__top-banner-bg {
   @include gradient-vertical($design-primary-gradient-top, $design-primary-gradient-bottom, 0%, 100%);
-}
-h1 {  // Lives inside full-width header (above)
-  color: white;
-  font-weight: bold;
-  font-size: 1.5em;
-  margin-top: 18px;
-  margin-bottom: 15px;
-  line-height: 1.3em;
-  letter-spacing: 0.026em;
-  width: 79%;
 }
 
 h2-base {

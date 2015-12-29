@@ -5313,23 +5313,13 @@ input[type="radio"] + span:before {
 input[type="radio"]:checked + span:before {
   background: #7c7e7f; }
 
-.header {
+.heading__top-banner-bg {
   background-color: #056a7b;
   background-image: -webkit-linear-gradient(top, #168b99 0%, #056a7b 100%);
   background-image: -o-linear-gradient(top, #168b99 0%, #056a7b 100%);
   background-image: linear-gradient(to bottom, #168b99 0%, #056a7b 100%);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF168B99', endColorstr='#FF056A7B', GradientType=0); }
-
-h1 {
-  color: white;
-  font-weight: bold;
-  font-size: 1.5em;
-  margin-top: 18px;
-  margin-bottom: 15px;
-  line-height: 1.3em;
-  letter-spacing: 0.026em;
-  width: 79%; }
 
 h2-base, h2, h2.id-creation, .panel-body h3 {
   font-family: KievitWebPro-Bold, Arial, sans-serif;

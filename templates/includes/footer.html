@@ -12,28 +12,26 @@
 {% if feed_cache %}
     <h1 class="footer__news-title">Latest News from EZID</h1>
 
-    <p class="footer__news-text">
-      <!-- Vertical Bootstrap 3 Carousel
-      http://stackoverflow.com/questions/11589816/twitter-bootstrap-carousel-vertical-sliding/11596944 -->
-      <div id="newsCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
-        <!-- Wrapper for slides -->
-        <div class="carousel-inner vertical" role="listbox">
-      {% for title, link in feed_cache %}
-        {% if forloop.first %}
-          <div class="item active">
-        {% else %}
-          <div class="item">
-        {% endif %}
-        {% if link == "None" %}
-            {{ title }} 
-        {% else %}
-            <a href="{{ link }}">{{ title }}</a>
-        {% endif %}
-          </div>
-      {% endfor %}
+    <!-- Vertical Bootstrap 3 Carousel
+    http://stackoverflow.com/questions/11589816/twitter-bootstrap-carousel-vertical-sliding/11596944 -->
+    <div id="newsCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
+      <!-- Wrapper for slides -->
+      <div class="carousel-inner vertical" role="listbox">
+    {% for title, link in feed_cache %}
+      {% if forloop.first %}
+        <div class="item active">
+      {% else %}
+        <div class="item">
+      {% endif %}
+      {% if link == "None" %}
+          {{ title }} 
+      {% else %}
+          <a href="{{ link }}">{{ title }}</a>
+      {% endif %}
         </div>
+    {% endfor %}
       </div>
-    </p>
+    </div>
 
     <a href="http://www.cdlib.org/cdlinfo/category/infrastructure-services/ezid/" class="footer__news-link">View all news</a>
 {% endif %}
