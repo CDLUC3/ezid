@@ -20,6 +20,11 @@ Selector pattern using above mixin:
 }
 
 */
+.fieldset-hidden__legend, .fcontrol__text-label-hidden {
+  position: absolute;
+  top: -9999px;
+  left: -9999px; }
+
 .fcontrol__text-field-stacked:focus, .fcontrol__text-field-inline:focus, .fcontrol__select:focus {
   transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
   border-color: #00778a;
@@ -57,23 +62,122 @@ Selector pattern using above mixin:
   text-transform: uppercase;
   cursor: pointer; }
 
+.fieldset-stacked,
+.fieldset-inline,
+.fieldset-hidden {
+  padding: 1em 0; }
+
+.fieldset-inline {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row wrap;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start; }
+
+.fieldset-stacked__legend,
+.fieldset-inline__legend,
+.fieldset__inline-select-text, .fieldset-stacked__legend-number-1,
+.fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
+.fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
+.fieldset-inline__legend-number-3 {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin: 0 0.5em 0 0;
+  color: #00778a;
+  font-size: 1.3em;
+  font-weight: bold; }
+
+.fieldset-stacked__legend {
+  margin: 0 0 1em; }
+
+.fieldset-stacked__legend-number-1:before,
+.fieldset-inline__legend-number-1:before, .fieldset-stacked__legend-number-2:before,
+.fieldset-inline__legend-number-2:before, .fieldset-stacked__legend-number-3:before,
+.fieldset-inline__legend-number-3:before {
+  margin: 0 0.5em 0 0;
+  padding: 5px 10px;
+  background: #ff7f22;
+  color: white; }
+
+.fieldset-stacked__legend-number-1:before,
+.fieldset-inline__legend-number-1:before {
+  content: "1"; }
+
+.fieldset-stacked__legend-number-2:before,
+.fieldset-inline__legend-number-2:before {
+  content: "2"; }
+
+.fieldset-stacked__legend-number-3:before,
+.fieldset-inline__legend-number-3:before {
+  content: "3"; }
+
+[class^='fieldset-stacked__legend-number'] {
+  margin: 0 0 1em; }
+
+.fieldset__top-border {
+  border-top: 1px solid #7c7e7f; }
+
+.fieldset-stacked__inline-select {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row wrap;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap;
+  margin: 0 0 1em; }
+
+.fieldset__inline-select-text {
+  margin: 0 0 0 0.5em;
+  padding: 5px 0; }
+
+.fcontrol__group-stacked, .fcontrol__group-stacked--invalid {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: column nowrap;
+      -ms-flex-flow: column nowrap;
+          flex-flow: column nowrap; }
+
 .fcontrol__text-label-stacked {
-  display: block;
   margin: 0 0 2px;
   color: #00778a;
   font-size: 1.1em; }
 
 .fcontrol__text-field-stacked {
-  display: block;
+  margin: 0;
   padding: 0.3em 0.5em;
   border: 1px solid #beb6af;
   font-size: 1em; }
 
+.fcontrol__group-inline, .fcontrol__group-inline--invalid {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+      -ms-flex-flow: row nowrap;
+          flex-flow: row nowrap; }
+
 .fcontrol__text-label-inline {
+  -webkit-align-self: center;
+      -ms-flex-item-align: center;
+          align-self: center;
+  margin: 0 1em 0 0;
   color: #00778a;
   font-size: 1.1em; }
 
 .fcontrol__text-field-inline {
+  -webkit-flex: 1 0 auto;
+      -ms-flex: 1 0 auto;
+          flex: 1 0 auto;
+  margin: 0;
   padding: 0.3em 0.5em;
   border: 1px solid #beb6af;
   font-size: 1em; }
@@ -86,6 +190,9 @@ Selector pattern using above mixin:
 
 .fcontrol__select {
   display: block;
+  -webkit-align-self: center;
+      -ms-flex-item-align: center;
+          align-self: center;
   padding: 0 0.3em;
   border: 1px solid #beb6af;
   background: linear-gradient(to bottom, whitesmoke, #e3e4e4);
@@ -104,7 +211,9 @@ Selector pattern using above mixin:
 
 .fcontrol__radio-label-inline {
   display: inline-block;
-  margin: 0 0.8em 0 0; }
+  margin: 0 0.8em 0 0;
+  color: #00778a;
+  font-size: 1.1em; }
 
 .fcontrol__radio-button-stacked {
   position: absolute;
@@ -115,22 +224,20 @@ Selector pattern using above mixin:
   border: 0;
   overflow: hidden;
   clip: rect(0 0 0 0); }
-
-.fcontrol__radio-button-stacked + span {
-  display: block;
-  color: #00778a; }
-
-.fcontrol__radio-button-stacked + span:before {
-  display: inline-block;
-  width: 0.8em;
-  height: 0.8em;
-  margin-right: 0.3em;
-  transition: 0.25s ease all;
-  border: 0.125em solid #7c7e7f;
-  border-radius: 1em;
-  background: white;
-  content: '';
-  vertical-align: -0.1em; }
+  .fcontrol__radio-button-stacked + span {
+    display: block;
+    color: #00778a; }
+    .fcontrol__radio-button-stacked + span:before {
+      display: inline-block;
+      width: 0.8em;
+      height: 0.8em;
+      margin-right: 0.3em;
+      transition: 0.25s ease all;
+      border: 0.125em solid #7c7e7f;
+      border-radius: 1em;
+      background: white;
+      content: '';
+      vertical-align: -0.1em; }
 
 .fcontrol__radio-button-stacked:checked + span:before {
   background: #7c7e7f; }
@@ -138,18 +245,37 @@ Selector pattern using above mixin:
 .fcontrol__radio-button-stacked:focus + span:before {
   border-color: #00778a; }
 
-.fcontrol__radio-label-inline {
-  color: #00778a;
-  font-size: 1.1em; }
-
 .fcontrol__radio-button-inline {
   font-size: 1em; }
 
-.link__primary-example, .login-modal__forgot {
+.fcontrol__label-required:after {
+  color: #cc0000;
+  content: ' (Required)'; }
+
+.fcontrol__invalid-flag {
+  display: none;
+  padding: 0.3em 0.5em;
+  border: 1px solid #cc0000;
+  background: #cc0000;
+  color: white; }
+
+.fcontrol__group-stacked--invalid [class^='fcontrol__text-field'] {
+  border: 1px solid #cc0000; }
+
+.fcontrol__group-stacked--invalid .fcontrol__invalid-flag {
+  display: block; }
+
+.fcontrol__group-inline--invalid [class^='fcontrol__text-field'] {
+  border: 1px solid #cc0000; }
+
+.fcontrol__group-inline--invalid .fcontrol__invalid-flag {
+  display: block; }
+
+.link__primary-example, .login-modal__forgot, .api .reference {
   border-bottom: 1px solid #beb6af;
   color: #00778a;
   text-decoration: none; }
-  .link__primary-example:hover, .login-modal__forgot:hover {
+  .link__primary-example:hover, .login-modal__forgot:hover, .api .reference:hover {
     border-bottom: 1px solid #00778a; }
 
 .link__over-beige-example, .footer__news-link, .footer__link, .footer__copyright-link {
@@ -173,22 +299,21 @@ Selector pattern using above mixin:
   margin: 0 0 10px;
   padding: 0 15px;
   border: 1px solid #beb6af; }
+  .accordion__section[open] .accordion__title {
+    border-bottom: 1px solid #beb6af;
+    background-image: url("../images/icon_minus-sign.svg"); }
 
 .accordion__title {
   display: block;
   margin: 0 -15px;
   padding: 10px 10px 10px 40px;
   background-color: #f9f8f7;
+  background-image: url("../images/icon_plus-sign.svg");
   background-repeat: no-repeat;
   background-position: left 15px center;
   background-size: 12px;
   font-weight: bold;
   cursor: pointer; }
-  .accordion__title[aria-expanded='false'] {
-    background-image: url("../images/icon_plus-sign.svg"); }
-  .accordion__title[aria-expanded='true'] {
-    border-bottom: 1px solid #beb6af;
-    background-image: url("../images/icon_minus-sign.svg"); }
   .accordion__title::-webkit-details-marker {
     display: none; }
 
@@ -657,6 +782,45 @@ Selector pattern using above mixin:
   margin: 10px 0 0;
   font-size: 1.1em; }
 
+.tab {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row wrap;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap; }
+
+.tab__input {
+  display: none; }
+  .tab__input:checked + .tab__label {
+    border-bottom: 1px solid #f9f8f7;
+    background: #f9f8f7;
+    color: black; }
+    .tab__input:checked + .tab__label + .tab__content {
+      display: block; }
+
+.tab__label {
+  padding: 0.7em 1em;
+  border: 1px solid #beb6af;
+  background: white;
+  color: #00778a;
+  font-size: 1.2em;
+  cursor: pointer;
+  z-index: 1; }
+  .tab__label:not(:first-of-type) {
+    margin-left: -1px; }
+
+.tab__content {
+  display: none;
+  -webkit-order: 1;
+      -ms-flex-order: 1;
+          order: 1;
+  width: 100%;
+  margin-top: -1px;
+  padding: 30px;
+  border: 1px solid #beb6af;
+  background: #f9f8f7; }
+
 .table1 {
   width: 100%;
   border-collapse: collapse; }
@@ -701,6 +865,41 @@ Selector pattern using above mixin:
       @media (min-width: 780px) {
         .table1 td:not(:first-child):before {
           display: none; } }
+
+.api h1 {
+  border-bottom: 1px dotted black;
+  color: #00778a; }
+
+.api blockquote {
+  display: block;
+  margin: 15 0 20 40;
+  padding: 0; }
+  .api blockquote > * {
+    color: black;
+    font-size: 0.9em;
+    font-style: normal;
+    font-weight: normal; }
+  .api blockquote p {
+    color: black;
+    font-size: 0.9em;
+    font-style: normal;
+    font-weight: normal; }
+
+.api table.leftheaders {
+  margin: 5 0 15 5; }
+  .api table.leftheaders tr > td:first-child {
+    background-color: #c6b082;
+    font-size: 0.9em;
+    font-weight: bold; }
+
+.api tr td,
+.api th {
+  padding: 5px; }
+
+.home__identifier-box {
+  background-color: #F9F8F7;
+  padding: 38px 50px 5px 54px;
+  box-shadow: 0px 0px 14px 1px rgba(0, 0, 0, 0.24); }
 
 body {
   font-family: 'KievitWeb'; }
