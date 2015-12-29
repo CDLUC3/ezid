@@ -271,15 +271,17 @@ Selector pattern using above mixin:
 .fcontrol__group-inline--invalid .fcontrol__invalid-flag {
   display: block; }
 
-.heading__top-banner-text {
+.heading__top-banner-text, .api h1 {
   width: 79%;
   margin-top: 18px;
   margin-bottom: 15px;
-  color: white;
   font-size: 1.5em;
   font-weight: bold;
   letter-spacing: 0.026em;
   line-height: 1.3em; }
+
+.heading__top-banner-text {
+  color: white; }
 
 .link__primary-example, .login-modal__forgot, .api .reference {
   border-bottom: 1px solid #beb6af;

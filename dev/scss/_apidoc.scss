@@ -6,7 +6,7 @@
   }
 
   h1 {
-    @extend h1;
+    @extend %heading__1;
     border-bottom: 1px dotted $design-black-color;
     color: $design-primary-color;
   }

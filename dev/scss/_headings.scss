@@ -1,12 +1,17 @@
 // ##### Heading Elements ##### //
 
-.heading__top-banner-text {
+%heading__1 {
   width: 79%;
   margin-top: 18px;
   margin-bottom: 15px;
-  color: $design-white-color;
   font-size: 1.5em;
   font-weight: bold;
   letter-spacing: 0.026em;
   line-height: 1.3em;
+
+}
+
+.heading__top-banner-text {
+  @extend %heading__1;
+  color: $design-white-color;
 }
