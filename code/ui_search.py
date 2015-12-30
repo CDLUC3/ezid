@@ -1,5 +1,5 @@
 import ui_common as uic
-import ezidapp.models
+import search_util 
 import django.contrib.messages
 import form_objects
 from django.utils.translation import ugettext as _
@@ -94,15 +94,10 @@ def index(request):
       if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
       if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
       # ToDo: This query is still missing identifier and identifier type
-      d['total_results'] = ezidapp.models.SearchIdentifier.objects.\
-        filter(owner__username=d['user'][0]).\
-        filter(keywords=REQUEST['keywords']).\
-        filter(resourceTitle=REQUEST['title']).\
-        filter(resourceCreator=REQUEST['creator']).\
-        filter(resourcePublisher=REQUEST['publisher']).\
-        filter(resourcePublicationDate__gte=REQUEST['pubdate_from']).\
-        filter(resourcePublicationDate__lte=REQUEST['pubdate_to']).\
-        filter(resourceType=REQUEST['object_type']).count()
+      import pdb; pdb.set_trace()
+      c = {'owner': d['user'][0]} # dictionary of search constraints
+      c = _buildConstraints(c, REQUEST)
+      d['total_results'] = search_util.formulateQuery(c).count()
       d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
       if d['p'] > d['total_pages']: d['p'] = d['total_pages']
       d['p'] = max(d['p'], 1)
@@ -114,21 +109,7 @@ def index(request):
       if not IS_ASCENDING[d['sort']]: orderColumn = "-" + orderColumn
       d['results'] = []
       # ToDo: This query is still missing identifier and identifier type
-      for id in ezidapp.models.SearchIdentifier.objects.\
-        filter(owner__username=d['user'][0]).\
-        filter(keywords=REQUEST['keywords']).\
-        filter(resourceTitle=REQUEST['title']).\
-        filter(resourceCreator=REQUEST['creator']).\
-        filter(resourcePublisher=REQUEST['publisher']).\
-        filter(resourcePublicationDate__gte=REQUEST['pubdate_from']).\
-        filter(resourcePublicationDate__lte=REQUEST['pubdate_to']).\
-        filter(resourceType=REQUEST['object_type']).count()
-        only("identifier", "owner__username", "createTime", "updateTime",
-        "status", "unavailableReason", "resourceTitle", "resourceCreator").\
-        select_related("owner").\
-        order_by(orderColumn)[(d['p']-1)*d['ps']:d['p']*d['ps']+DEBUG_PAGING]:
-        # ToDo: Discuss with Greg how to chunk large result sets for performance reasons
-        # Jquery table doesn't require chunking
+      for id in search_util.formulateQuery(c, orderBy=orderColumn)[(d['p']-1)*d['ps']:d['p']*d['ps']+DEBUG_PAGING]:
         result = { "identifier": id.identifier, "owner": id.owner.username,
           "coOwners": "", "createTime": id.createTime,
           "updateTime": id.updateTime, "status": id.get_status_display(),
@@ -145,6 +126,16 @@ def index(request):
       django.contrib.messages.error(request, _("Could not complete search.   " + all_errors))
       return uic.render(request, 'search/index', d)
 
+def _buildConstraints(c, REQUEST):
+  """ Map form field values to values defined in DB model """
+  cmap = {'title': 'resourceTitle', 'keywords': 'keywords', 'creator': 'resourceCreator',
+    'publisher': 'resourcePublisher', 'pubdate_from': 'resourcePublicationDate__gte', 
+    'pubdate_to': 'resourcePublicationDate__lte', 'object_type': 'resourceType'}
+  for k,v in cmap.iteritems(): 
+    if k in REQUEST and REQUEST[k]!='': c[v] = REQUEST[k]
+  return c
+
 def results(request):
   d = { 'menu_item' : 'ui_search.results' } 
   return uic.render(request, 'search/results', d)
+
