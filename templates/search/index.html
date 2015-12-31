@@ -28,13 +28,18 @@
           <i class="indicator caret-right"></i><h3>{% trans "ADVANCED SEARCH" %}</h3><img id="search__icon--advanced" src="/static/images/searchAdvanced.svg" ALT="">
         </a>
       </div>
-      <div id="accordion_advanced_search_collapse" class="accordion-body collapse">
+      <div id="accordion_advanced_search_collapse" class="accordion-body collapse {{ show_advanced_search }}">
         <div class="accordion-inner">
   <!-- Row: Basic Search -->
   <div class="row">
-    <div class="col-sm-6 form-group form-group-sm">
+    <div class="col-sm-6 form-group form-group-sm{% if form.identifier.errors %} has-error{% endif %}">
       <label for="{{ form.identifier.id_for_label }}">{{ form.identifier.label }}</label>
       {{ form.identifier|add_attributes:"form-control"}}
+      {% if form.identifier.errors %}
+        {% for error in form.identifier.errors %}
+          {{ error|escape }}
+        {% endfor %}
+      {% endif %}
     </div>
     <div class="col-sm-6 form-group form-group-sm second-col">
       <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
@@ -52,20 +57,30 @@
 
     <div class="col-sm-6">
       <div class="row">
-        <label for="search_publication_year_from">{% trans "Publication Date" %}</label>
+        <label for="search_publication_year_from">{% trans "Object Publication Year" %}</label>
       </div>
       <div class="form-group row">
         <div class="form-inline">
-          <div class="col-sm-6 form-group form-group-sm">
-            <label for="{{ form.pubdate_from.id_for_label }}" class="col-sm-3 control-label text-right">{{ form.pubdate_from.label }}</label>
+          <div class="col-sm-6 form-group form-group-sm{% if form.pubyear_from.errors %} has-error{% endif %}">
+            <label for="{{ form.pubyear_from.id_for_label }}" class="col-sm-3 control-label text-right">{{ form.pubyear_from.label }}</label>
             <div class="col-sm-1">
-              {{ form.pubdate_from|add_attributes:"form-control"}}
+              {{ form.pubyear_from|add_attributes:"form-control"}}
+              {% if form.pubyear_from.errors %}
+                {% for error in form.pubyear_from.errors %}
+                  {{ error|escape }}
+                {% endfor %}
+              {% endif %}
             </div>
           </div>
-          <div class="col-sm-6 form-group form-group-sm">
-            <label for="{{ form.pubdate_to.id_for_label }}" class="col-sm-3 control-label text-right">{{ form.pubdate_to.label }}</label>
+          <div class="col-sm-6 form-group form-group-sm{% if form.pubyear_to.errors %} has-error{% endif %}">
+            <label for="{{ form.pubyear_to.id_for_label }}" class="col-sm-3 control-label text-right">{{ form.pubyear_to.label }}</label>
             <div class="col-sm-1">
-              {{ form.pubdate_to|add_attributes:"form-control"}}
+              {{ form.pubyear_to|add_attributes:"form-control"}}
+              {% if form.pubyear_to.errors %}
+                {% for error in form.pubyear_to.errors %}
+                  {{ error|escape }}
+                {% endfor %}
+              {% endif %}
             </div>
           </div>
         </div>

@@ -3,9 +3,9 @@ import search_util
 import django.contrib.messages
 import form_objects
 from django.utils.translation import ugettext as _
-
 import math
 import useradmin
+from datetime import date
  
 DEBUG_PAGING = 3
 
@@ -94,9 +94,9 @@ def index(request):
       if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
       if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
       # ToDo: This query is still missing identifier and identifier type
-      import pdb; pdb.set_trace()
       c = {'owner': d['user'][0]} # dictionary of search constraints
       c = _buildConstraints(c, REQUEST)
+      c = _buildTimeConstraints(c, REQUEST)
       d['total_results'] = search_util.formulateQuery(c).count()
       d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
       if d['p'] > d['total_pages']: d['p'] = d['total_pages']
@@ -109,7 +109,8 @@ def index(request):
       if not IS_ASCENDING[d['sort']]: orderColumn = "-" + orderColumn
       d['results'] = []
       # ToDo: This query is still missing identifier and identifier type
-      for id in search_util.formulateQuery(c, orderBy=orderColumn)[(d['p']-1)*d['ps']:d['p']*d['ps']+DEBUG_PAGING]:
+      for id in search_util.formulateQuery(c, orderBy=orderColumn)\
+        [(d['p']-1)*d['ps']:d['p']*d['ps']+DEBUG_PAGING]:
         result = { "identifier": id.identifier, "owner": id.owner.username,
           "coOwners": "", "createTime": id.createTime,
           "updateTime": id.updateTime, "status": id.get_status_display(),
@@ -119,20 +120,41 @@ def index(request):
         d['results'].append(result)
       return uic.render(request, 'search/results', d)
     else:
-      all_errors = ''
-      errors = d['form'].errors['__all__']
-      for e in errors:
-        all_errors += e 
-      django.contrib.messages.error(request, _("Could not complete search.   " + all_errors))
+      d['show_advanced_search'] = "in" # Class name opens up adv. search html block
+      if '__all__' in d['form'].errors:
+        # non_form_error, probably due to all fields being empty
+        all_errors = ''
+        errors = d['form'].errors['__all__']
+        for e in errors:
+          all_errors += e 
+        django.contrib.messages.error(request, _("Could not complete search.   " + all_errors))
+      else:
+        django.contrib.messages.error(request, _("Could not complete search. \
+          Please check the highlighted fields below for details."))
       return uic.render(request, 'search/index', d)
 
 def _buildConstraints(c, REQUEST):
   """ Map form field values to values defined in DB model """
-  cmap = {'title': 'resourceTitle', 'keywords': 'keywords', 'creator': 'resourceCreator',
-    'publisher': 'resourcePublisher', 'pubdate_from': 'resourcePublicationDate__gte', 
-    'pubdate_to': 'resourcePublicationDate__lte', 'object_type': 'resourceType'}
+  cmap = {'keywords': 'keywords', 'identifier': 'identifier', 
+    'id_type': 'identifierType', 'title': 'resourceTitle', 
+    'creator': 'resourceCreator', 'publisher': 'resourcePublisher', 
+    'object_type': 'resourceType'}
   for k,v in cmap.iteritems(): 
     if k in REQUEST and REQUEST[k]!='': c[v] = REQUEST[k]
+  return c
+
+def _buildTimeConstraints(c, REQUEST):
+  """ Add any date related constraints """
+  year_earliest_int = 0 
+  current_year_int = int(date.today().year)
+  if 'pubdate_from' in REQUEST and REQUEST['pubdate_from']=='' and \
+    'pubdate_to' in REQUEST and REQUEST['pubdate_to']!='':
+      c['resourcePublicationYear'] = (year_earliest_int,REQUEST['pubdate_to'])
+  elif 'pubdate_from' in REQUEST and REQUEST['pubdate_from']!='':
+    if 'pubdate_to' in REQUEST and REQUEST['pubdate_to']!='':
+      c['resourcePublicationYear'] = (REQUEST['pubdate_from'],REQUEST['pubdate_to'])
+    else:
+      c['resourcePublicationYear'] = (REQUEST['pubdate_from'],current_year_int)
   return c
 
 def results(request):

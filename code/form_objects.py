@@ -64,7 +64,7 @@ class DataciteForm(BaseForm):
       regex='^\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\(:unkn\)| \
         \(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\)$',
       error_messages={'required': _("Please fill in a value for publication year."),
-                    'invalid': _("Please fill in a  4-digit publication year.")})
+                    'invalid': _("Please fill in a 4-digit publication year.")})
     # Translators: These options appear in drop-down on ID Creation page (DOIs)
     RESOURCE_TYPES = (
       ('', _('[Select a type of resource]')), ('Audiovisual', _('Audiovisual')), 
@@ -276,6 +276,7 @@ class SearchForm(forms.Form):
   """ Form object for public Search """
   keywords = forms.CharField(required=False, label=_("Search Terms"),
     widget=forms.TextInput(attrs={'placeholder': _("Full text search using words about or describing the identifier.")}))
+  # ToDo: Determine proper regex for identifier for validation purposes
   identifier = forms.CharField(required=False, 
     label=_("Identifier/Identifier Prefix"), widget=forms.TextInput(
       attrs={'placeholder': "doi:10.17614/Q44F1NB79"}))
@@ -288,9 +289,13 @@ class SearchForm(forms.Form):
   publisher = forms.CharField(required=False, label=_("Object Publisher"),
     widget=forms.TextInput(attrs={'placeholder': 
       _("Ex. University of Pittsburgh")}))
-  pubdate_from = forms.DateField(required=False, label=_("From"),
+  pubyear_from = forms.RegexField(required=False, label=_("From"),
+    regex='^\d{1,4}$',
+    error_messages={'invalid': _("Please fill in a 4-digit publication year.")},
     widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015")}))
-  pubdate_to = forms.DateField(required=False, label=_("To"),
+  pubyear_to = forms.RegexField(required=False, label=_("To"),
+    regex='^\d{1,4}$', 
+    error_messages={'invalid': _("Please fill in a 4-digit publication year.")},
     widget=forms.TextInput(attrs={'placeholder': _("Ex. 2016")}))
   OBJECT_TYPES = (
     ('', _("Select a type of object")), ('Audiovisual', _('Audiovisual')), 
@@ -312,6 +317,10 @@ class SearchForm(forms.Form):
     label = _("Identifier Type"))
   def clean(self):
     cleaned_data = super(SearchForm, self).clean()
+    """ cleaned_data contains all valid fields. So if one or more fields
+        are invalid, we need to simply bypass this check for non-empty fields"""
+    if len(cleaned_data) < 9: # This represents number of fields above
+      return cleaned_data
     form_empty = True
     for field_value in cleaned_data.itervalues():
       # Check for None or '', so IntegerFields with 0 or similar things don't seem empty.
