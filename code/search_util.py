@@ -121,7 +121,8 @@ def formulateQuery (constraints, orderBy=None,
   ownergroup          | Y | Y | str        | groupname
   createTime          |   | Y | (int, int) | time range as pair of Unix
                       |   |   |            | timestamps; bounds are
-                      |   |   |            | inclusive
+                      |   |   |            | inclusive; either/both bounds
+                      |   |   |            | may be None
   updateTime          |   | Y | (int, int) | ditto
   status              | Y | Y | str        | status display value, e.g.,
                       |   |   |            | "public"
@@ -138,7 +139,8 @@ def formulateQuery (constraints, orderBy=None,
   resourcePublisher   |   | Y | str        | ditto
   keywords            |   |   | str        | ditto
   resourcePublica-    |   | Y | (int, int) | time range as pair of years;
-    tionYear          |   |   |            | bounds are inclusive
+    tionYear          |   |   |            | bounds are inclusive; either/
+                      |   |   |            | both bounds may be None
   resourceType        | Y | Y | str        | general resource type, e.g.,
                       |   |   |            | "Image"
   hasMetadata         |   | Y | bool       |
@@ -187,7 +189,16 @@ def formulateQuery (constraints, orderBy=None,
         [django.db.models.Q(ownergroup__groupname=v) for v in value]))
       scopeRequirementMet = True
     elif column in ["createTime", "updateTime"]:
-      filters.append(django.db.models.Q(**{ (column + "__range"): value }))
+      if value[0] != None:
+        if value[1] != None:
+          filters.append(django.db.models.Q(**{ (column + "__range"): value }))
+        else:
+          filters.append(
+            django.db.models.Q(**{ (column + "__gte"): value[0] }))
+      else:
+        if value[1] != None:
+          filters.append(
+            django.db.models.Q(**{ (column + "__lte"): value[1] }))
     elif column == "status":
       if isinstance(value, basestring): value = [value]
       filters.append(reduce(operator.or_,
@@ -235,11 +246,21 @@ def formulateQuery (constraints, orderBy=None,
             [django.db.models.Q(**{ (column + "__icontains"): v })\
             for v in value]))
     elif column == "resourcePublicationYear":
-      if value[0] == value[1]:
-        filters.append(django.db.models.Q(searchablePublicationYear=value[0]))
+      if value[0] != None:
+        if value[1] != None:
+          if value[0] == value[1]:
+            filters.append(
+              django.db.models.Q(searchablePublicationYear=value[0]))
+          else:
+            filters.append(django.db.models.Q(
+              searchablePublicationYear__range=value))
+        else:
+          filters.append(
+            django.db.models.Q(searchablePublicationYear__gte=value[0]))
       else:
-        filters.append(django.db.models.Q(
-          searchablePublicationYear__range=value))
+        if value[1] != None:
+          filters.append(
+            django.db.models.Q(searchablePublicationYear__lte=value[1]))
     elif column == "resourceType":
       if isinstance(value, basestring): value = [value]
       filters.append(reduce(operator.or_,
