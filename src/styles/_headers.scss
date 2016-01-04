@@ -5,6 +5,29 @@
   @include gradient-vertical($design-primary-gradient-top, $design-primary-gradient-bottom, 0%, 100%);
 }
 
+%heading__1 {
+  width: 79%;
+  margin-top: 18px;
+  margin-bottom: 15px;
+  font-size: 1.5em;
+  font-weight: bold;
+  letter-spacing: 0.026em;
+  line-height: 1.3em;
+
+}
+
+.heading__top-banner-text {
+  @extend %heading__1;
+  color: $design-white-color;
+}
+
+.apidoc h1 {
+  color: $design-primary-color;
+  font-weight: bold;
+  font-size: 1.4em;
+  border-bottom: 1px dotted black;
+}
+
 h2-base {
   font-family: KievitWebPro-Bold, Arial, sans-serif;
   color: $design-primary-color;
