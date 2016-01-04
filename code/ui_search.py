@@ -5,7 +5,6 @@ import form_objects
 from django.utils.translation import ugettext as _
 import math
 import useradmin
-from datetime import date
  
 DEBUG_PAGING = 3
 
@@ -145,16 +144,14 @@ def _buildConstraints(c, REQUEST):
 
 def _buildTimeConstraints(c, REQUEST):
   """ Add any date related constraints """
-  year_earliest_int = 0 
-  current_year_int = int(date.today().year)
-  if 'pubdate_from' in REQUEST and REQUEST['pubdate_from']=='' and \
-    'pubdate_to' in REQUEST and REQUEST['pubdate_to']!='':
-      c['resourcePublicationYear'] = (year_earliest_int,REQUEST['pubdate_to'])
-  elif 'pubdate_from' in REQUEST and REQUEST['pubdate_from']!='':
-    if 'pubdate_to' in REQUEST and REQUEST['pubdate_to']!='':
-      c['resourcePublicationYear'] = (REQUEST['pubdate_from'],REQUEST['pubdate_to'])
+  if 'pubyear_from' in REQUEST and REQUEST['pubyear_from']=='' and \
+    'pubyear_to' in REQUEST and REQUEST['pubyear_to']!='':
+      c['resourcePublicationYear'] = (None,int(REQUEST['pubyear_to']))
+  elif 'pubyear_from' in REQUEST and REQUEST['pubyear_from']!='':
+    if 'pubyear_to' in REQUEST and REQUEST['pubyear_to']!='':
+      c['resourcePublicationYear'] = (int(REQUEST['pubyear_from']),int(REQUEST['pubyear_to']))
     else:
-      c['resourcePublicationYear'] = (REQUEST['pubdate_from'],current_year_int)
+      c['resourcePublicationYear'] = (int(REQUEST['pubyear_from']),None)
   return c
 
 def results(request):
