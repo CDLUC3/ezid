@@ -2,8 +2,7 @@
 
 // ***** Global Settings ***** //
 
-@import 'variables';
-@import '../styles/variables';
+@import '../../src/styles/variables';
 @import 'mixins';
 @import 'fonts';
 @import 'testing'; // Comment out before production
