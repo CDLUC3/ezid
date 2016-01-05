@@ -7,6 +7,9 @@ $header-top-margin: 20px 0 0;
 	position: relative; // to .header__mobile-menu
 	flex-flow: row wrap;
 	justify-content: space-between;
+	max-width: 1030px;
+	margin: 0 auto;
+	padding: 0 15px;
 }
 
 .header__logos {
