@@ -270,11 +270,11 @@ class UserForm(forms.Form):
       raise ValidationError("Passwords don't match")
     return cleaned_data
 
-################# Search Form  #################
+################# Search ID Form  #################
 
-class BaseSearchForm(forms.Form):
-  """ Base form object used for public Search page, 
-      and extended for use with Manage page """
+class BaseSearchIdForm(forms.Form):
+  """ Base form object used for public Search ID page, 
+      and extended for use with Manage ID page """
   keywords = forms.CharField(required=False, label=_("Search Terms"),
     widget=forms.TextInput(attrs={'placeholder': _("Full text search using words about or describing the identifier.")}))
   # ToDo: Determine proper regex for identifier for validation purposes
@@ -318,7 +318,7 @@ class BaseSearchForm(forms.Form):
     label = _("Identifier Type"))
   def clean(self):
     field_count = len(self.fields)
-    cleaned_data = super(BaseSearchForm, self).clean()
+    cleaned_data = super(BaseSearchIdForm, self).clean()
     """ cleaned_data contains all valid fields. So if one or more fields
         are invalid, we need to simply bypass this check for non-empty fields"""
     if len(cleaned_data) < field_count:
@@ -333,8 +333,8 @@ class BaseSearchForm(forms.Form):
       raise forms.ValidationError(_("Please enter information in at least one field."))
     return cleaned_data
 
-class ManageSearchForm(BaseSearchForm):
-  """ Used for Searching on Manage page """ 
+class ManageSearchIdForm(BaseSearchIdForm):
+  """ Used for Searching on Manage ID page. Inherits from BaseSearchIdForm """ 
   target = forms.CharField(required=False, label=_("Target URL"),
     widget=forms.TextInput(attrs={'placeholder': _("Ex. http://pqr.pitt.edu/mol/KQSWENSZQKJHSQ-SCSAIBSYSA-N")}))
   create_time_from = forms.RegexField(required=False, label=_("From"),
@@ -361,8 +361,10 @@ class ManageSearchForm(BaseSearchForm):
   )
   id_status = forms.ChoiceField(required=False, choices=ID_STATUS, 
     label = _("Identifier Status"))
-  # harvesting
-  # hasMetadata
+  harvesting = forms.BooleanField(label=_("Allows Harvesting/Indexing?"),
+    widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
+  hasMetadata = forms.BooleanField(label=_("Has Metadata?"),
+    widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
 
 ################# Contact Us Form  #################
 
