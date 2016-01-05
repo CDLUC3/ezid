@@ -33,3 +33,12 @@
 
 	border: $bgreen;
 }
+
+.home__text-field {
+	padding: 0 0 15px 0;
+
+	&:nth-child(even) {
+		padding: 0 15px 0 0;
+	}
+
+}
