@@ -4,9 +4,32 @@
 	// empty
 }
 
-// Copy of EZID styles:
-.home__identifier-box {
-	background-color: #F9F8F7;
+.home__identifier-container {
+	display: flex;
+	justify-content: center;
+
+	border: $bred;
+}
+
+.home__identifier-lead-box {
+	width: 120px;
+	margin: 30px 0 0;
+
+	border: $bblue;
+}
+
+.home__identifier-lead-heading {
+	color: $design-primary-color;
+	font-size: 2.7em;
+	text-transform: uppercase;
+	line-height: 1;
+}
+
+.home__identifier-form {
+	margin: 30px 15px;
 	padding: 38px 50px 5px 54px;
-	box-shadow: 0px 0px 14px 1px rgba(0, 0, 0, 0.24);
+	background-color: $design-light-gray-bg-color;
+	box-shadow: 0 0 14px 1px rgba($design-black-color, 0.24);
+
+	border: $bgreen;
 }
