@@ -44,11 +44,11 @@ IS_ASCENDING = {'asc': True, 'desc': False }
 def index(request):
   d = { 'menu_item' : 'ui_search.index' }
   if request.method == "GET":
-    d['form'] = form_objects.SearchForm() # Build an empty form
+    d['form'] = form_objects.BaseSearchForm() # Build an empty form
     return uic.render(request, 'search/index', d)
   elif request.method == "POST":
     REQUEST = request.POST
-    d['form'] = form_objects.SearchForm(request.POST)
+    d['form'] = form_objects.BaseSearchForm(request.POST)
     if d['form'].is_valid():
       """ This code is duplicated from ui_manage. So:
           ToDo:  this needs to be refactored/reduced. 
@@ -56,12 +56,11 @@ def index(request):
       d['testPrefixes'] = uic.testPrefixes
       d['jquery_checked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) & set(FIELD_DEFAULTS))])
       d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) - set(FIELD_DEFAULTS))])
-      d['user'] = request.session['auth'].user
-      r = useradmin.getAccountProfile(request.session["auth"].user[0])
-      if 'ezidCoOwners' in r:
-        d['account_co_owners'] = r['ezidCoOwners']
-      else:
-        d['account_co_owners'] = ''
+      # r = useradmin.getAccountProfile(request.session["auth"].user[0])
+      # if 'ezidCoOwners' in r:
+      #   d['account_co_owners'] = r['ezidCoOwners']
+      # else:
+      d['account_co_owners'] = ''
       d['field_order'] = FIELD_ORDER
       d['field_norewrite'] = FIELD_ORDER + ['includeCoowned']
       d['fields_mapped'] = FIELDS_MAPPED
@@ -92,8 +91,8 @@ def index(request):
       d['ps'] = 10
       if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
       if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
-      # ToDo: This query is still missing identifier and identifier type
-      c = {'owner': d['user'][0]} # dictionary of search constraints
+      # dictionary of search constraints
+      c = _buildAuthorityConstraints(request)
       c = _buildConstraints(c, REQUEST)
       c = _buildTimeConstraints(c, REQUEST)
       d['total_results'] = search_util.formulateQuery(c).count()
@@ -131,6 +130,13 @@ def index(request):
         django.contrib.messages.error(request, _("Could not complete search. \
           Please check the highlighted fields below for details."))
       return uic.render(request, 'search/index', d)
+
+def _buildAuthorityConstraints(request):
+  if "auth" not in request.session:
+    c = {'publicSearchVisible': True}
+  else:
+    c = {'owner': request.session['auth'].user[0]}
+  return c
 
 def _buildConstraints(c, REQUEST):
   """ Map form field values to values defined in DB model """

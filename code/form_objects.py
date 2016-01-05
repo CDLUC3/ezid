@@ -272,8 +272,9 @@ class UserForm(forms.Form):
 
 ################# Search Form  #################
 
-class SearchForm(forms.Form):
-  """ Form object for public Search """
+class BaseSearchForm(forms.Form):
+  """ Base form object used for public Search page, 
+      and extended for use with Manage page """
   keywords = forms.CharField(required=False, label=_("Search Terms"),
     widget=forms.TextInput(attrs={'placeholder': _("Full text search using words about or describing the identifier.")}))
   # ToDo: Determine proper regex for identifier for validation purposes
@@ -316,10 +317,11 @@ class SearchForm(forms.Form):
   id_type = forms.ChoiceField(required=False, choices=ID_TYPES, 
     label = _("Identifier Type"))
   def clean(self):
-    cleaned_data = super(SearchForm, self).clean()
+    field_count = len(self.fields)
+    cleaned_data = super(BaseSearchForm, self).clean()
     """ cleaned_data contains all valid fields. So if one or more fields
         are invalid, we need to simply bypass this check for non-empty fields"""
-    if len(cleaned_data) < 9: # This represents number of fields above
+    if len(cleaned_data) < field_count:
       return cleaned_data
     form_empty = True
     for field_value in cleaned_data.itervalues():
@@ -330,6 +332,37 @@ class SearchForm(forms.Form):
     if form_empty:
       raise forms.ValidationError(_("Please enter information in at least one field."))
     return cleaned_data
+
+class ManageSearchForm(BaseSearchForm):
+  """ Used for Searching on Manage page """ 
+  target = forms.CharField(required=False, label=_("Target URL"),
+    widget=forms.TextInput(attrs={'placeholder': _("Ex. http://pqr.pitt.edu/mol/KQSWENSZQKJHSQ-SCSAIBSYSA-N")}))
+  create_time_from = forms.RegexField(required=False, label=_("From"),
+    regex='^\d{4}-\d{2}-\d{2}$',
+    error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
+    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015-08-13")}))
+  create_time_to = forms.RegexField(required=False, label=_("To"),
+    regex='^\d{4}-\d{2}-\d{2}$',
+    error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
+    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015-08-13")}))
+  update_time_from = forms.RegexField(required=False, label=_("From"),
+    regex='^\d{4}-\d{2}-\d{2}$',
+    error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
+    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015-08-13")}))
+  update_time_to = forms.RegexField(required=False, label=_("To"),
+    regex='^\d{4}-\d{2}-\d{2}$',
+    error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
+    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015-08-13")}))
+  ID_STATUS = (
+    ('', _("Select a status")),
+    ('public', "Public"),
+    ('reserved', "Reserved"),
+    ('unavailable', "Unavailable"),
+  )
+  id_status = forms.ChoiceField(required=False, choices=ID_STATUS, 
+    label = _("Identifier Status"))
+  # harvesting
+  # hasMetadata
 
 ################# Contact Us Form  #################
 
