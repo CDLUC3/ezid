@@ -102,6 +102,7 @@ $header-top-margin: 20px 0 0;
 	font-weight: bold;
 	text-decoration: none;
 	text-transform: uppercase;
+	box-sizing: content-box;
 
 	@include bp(screen1) {
 		align-items: flex-end;
