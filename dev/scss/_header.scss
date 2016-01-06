@@ -4,7 +4,7 @@ $header-top-margin: 20px 0 0;
 
 .header {
 	display: flex;
-	position: relative; // to .header__mobile-menu
+	position: relative; // to .header__nav-button
 	flex-flow: row wrap;
 	justify-content: space-between;
 	max-width: 1030px;
@@ -44,7 +44,7 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__nav-button {
-	position: absolute;
+	position: absolute; // to .header
 	top: 4vw;
 	right: 0;
 	padding: 6px;
@@ -174,9 +174,10 @@ $header-top-margin: 20px 0 0;
 	position: absolute;
 	top: 60px;
 	left: 0;
-	min-width: 170px;
+	min-width: 150px;
 	margin: 0;
 	padding: 0;
+	background: $design-white-color;
 	border: 1px solid $design-light-gray-border-color;
 	list-style: none;
 	box-shadow: 0 6px 12px rgba($design-light-gray-border-color, 0.5);
@@ -189,7 +190,7 @@ $header-top-margin: 20px 0 0;
 		display: block;
 		padding: 0.7em 1em;
 		color: $design-black-color;
-		font-size: 1.1em;
+		font-size: 1em;
 		font-weight: normal;
 		text-decoration: none;
 		text-transform: none;
