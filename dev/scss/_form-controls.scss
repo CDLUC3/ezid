@@ -90,7 +90,9 @@
 
 // Wrap radio button using label:
 %fcontrol__radio-label {
-  font-size: 1.1em;
+  color: $design-primary-color;
+  font-size: 1.2em;
+  font-weight: normal;
   cursor: pointer;
 }
 
@@ -106,38 +108,28 @@
   @extend %fcontrol__radio-label;
   display: inline-block;
   margin: 0 0.8em 0 0;
-  color: $design-primary-color;
-	font-size: 1.1em;
 }
 
 // Hide the actual radio button:
 .fcontrol__radio-button-stacked {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
+  @extend %hide;
 
 	// Pseudo form label:
   + span {
   	display: block;
-  	color: $design-primary-color;
 
 		// Pseudo button styling:
   	&:before {
   		display: inline-block;
-		  width: 0.8em;
-		  height: 0.8em;
-		  margin-right: 0.3em;
+		  width: 1em;
+		  height: 1em;
+		  margin-right: 0.4em;
 		  transition: 0.25s ease all;
 		  border: 0.125em solid $design-dark-gray-color;
 		  border-radius: 1em;
 		  background: $design-white-color;
 		  content: '';
-		  vertical-align: -0.1em;
+		  vertical-align: -0.15em;
   	}
 
   }
