@@ -40,13 +40,13 @@
 }
 
 .home__identifier-form {
-	width: 100%;
 	margin: 15px;
 	padding: 5px 15px;
 	background-color: $design-light-gray-bg-color;
 	box-shadow: 0 0 14px 1px rgba($design-black-color, 0.24);
 
 	@include bp(screen2) {
+		width: 100%;
 		margin: 30px 15px;
 		padding: 30px 50px;
 	}
