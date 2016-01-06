@@ -219,23 +219,10 @@ $header-top-margin: 20px 0 0;
 	display: none;
 
 	@include bp(screen1) {
-		display: flex;
-		align-items: center; // vertical text centering
-		align-self: flex-end; // align login button to bottom of other nav text
-		height: 40px;
+		@extend %button__pop;
+		display: block;
+		align-self: flex-end; // align login button to bottom of other nav items
 		margin: 0 0 14px; // align button bottom with nav text
-		padding: 0 20px; // horizontal text centering
-		background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
-		color: $design-white-color;
-		font-size: 0.9em;
-		font-weight: bold;
-		text-decoration: none;
-		text-transform: uppercase;
-
-		&:hover {
-			color: $design-black-color;
-		}
-
 	}
 
 }
