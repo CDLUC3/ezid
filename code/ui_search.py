@@ -43,6 +43,7 @@ FIELD_DEFAULT_SORT_PRIORITY = ['updateTime', 'identifier', 'createTime', 'owner'
 IS_ASCENDING = {'asc': True, 'desc': False }
 
 def index(request):
+  """ (Public) Search Page """
   d = { 'menu_item' : 'ui_search.index' }
   if request.method == "GET":
     d['form'] = form_objects.BaseSearchIdForm() # Build an empty form
@@ -56,9 +57,13 @@ def index(request):
     else:
       return uic.render(request, 'search/index', d)
 
-def searchIdentifiers(d, request, noConstraintsReqd):
-  """ Method for running query and organizing result set for UI.
-      noConstraintsReqd provides a result set even though form itself is empty """
+def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
+  """ 
+  Run query and organize result set for UI, used for both Search page and 
+  Manage Search page, the latter of which works with slightly larger set of constraints.
+  If noConstraintsReqd==True, provide a result set even though form itself is empty.
+  If isPublicSearch==True, don't include owner credentials in constraints.
+  """
   if d['form'].is_valid() or noConstraintsReqd:
     if request.method == "GET":
       REQUEST = request.GET
@@ -104,10 +109,10 @@ def searchIdentifiers(d, request, noConstraintsReqd):
     if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
     if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
     # dictionary of search constraints
-    c = _buildAuthorityConstraints(request)
+    c = _buildAuthorityConstraints(request, isPublicSearch)
     if not noConstraintsReqd:
-      c = _buildConstraints(c, REQUEST)
-      c = _buildTimeConstraints(c, REQUEST)
+      c = _buildConstraints(c, REQUEST, isPublicSearch)
+      c = _buildTimeConstraints(c, REQUEST, isPublicSearch)
     d['total_results'] = search_util.formulateQuery(c).count()
     d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
     if d['p'] > d['total_pages']: d['p'] = d['total_pages']
@@ -146,36 +151,52 @@ def searchIdentifiers(d, request, noConstraintsReqd):
     d['search_success'] = False 
     return d
 
-def _buildAuthorityConstraints(request):
-  if "auth" not in request.session:
+def results(request):
+  d = { 'menu_item' : 'ui_search.results' } 
+  return uic.render(request, 'search/results', d)
+
+def _buildAuthorityConstraints(request, isPublicSearch=True):
+  """ 
+  A logged in user can use (public) Search page, but this would not limit the
+  results to just their IDs. It woiuld also include all public IDs.
+  """
+  if isPublicSearch or "auth" not in request.session:
     c = {'publicSearchVisible': True}
   else:
     c = {'owner': request.session['auth'].user[0]}
   return c
 
-def _buildConstraints(c, REQUEST):
-  """ Map form field values to values defined in DB model """
+def _buildConstraints(c, REQUEST, isPublicSearch=True):
+  """ Map form field values to values defined in DB model.
+      Manage Page includes additional elements. """
   cmap = {'keywords': 'keywords', 'identifier': 'identifier', 
     'id_type': 'identifierType', 'title': 'resourceTitle', 
     'creator': 'resourceCreator', 'publisher': 'resourcePublisher', 
     'object_type': 'resourceType'}
+  if not isPublicSearch:
+    cmap_managePage = {'target': 'target', 'id_status': 'status',
+      'harvesting': 'exported', 'hasMetadata': 'hasMetadata'}
+    cmap.update(cmap_managePage)
   for k,v in cmap.iteritems(): 
     if k in REQUEST and REQUEST[k]!='': c[v] = REQUEST[k]
   return c
 
-def _buildTimeConstraints(c, REQUEST):
+def _buildTimeConstraints(c, REQUEST, isPublicSearch=True):
   """ Add any date related constraints """
-  if 'pubyear_from' in REQUEST and REQUEST['pubyear_from']=='' and \
-    'pubyear_to' in REQUEST and REQUEST['pubyear_to']!='':
-      c['resourcePublicationYear'] = (None,int(REQUEST['pubyear_to']))
-  elif 'pubyear_from' in REQUEST and REQUEST['pubyear_from']!='':
-    if 'pubyear_to' in REQUEST and REQUEST['pubyear_to']!='':
-      c['resourcePublicationYear'] = (int(REQUEST['pubyear_from']),int(REQUEST['pubyear_to']))
-    else:
-      c['resourcePublicationYear'] = (int(REQUEST['pubyear_from']),None)
+  c = _timeConstraintBuilder(c, REQUEST, 'resourcePublicationYear', 'pubyear_from', 'pubyear_to')
+  if not isPublicSearch:
+    c = _timeConstraintBuilder(c, REQUEST, 'createTime', 'create_time_from', 'create_time_to')
+    c = _timeConstraintBuilder(c, REQUEST, 'updateTime', 'update_time_from', 'update_time_to')
   return c
 
-def results(request):
-  d = { 'menu_item' : 'ui_search.results' } 
-  return uic.render(request, 'search/results', d)
+def _timeConstraintBuilder(c, REQUEST, constraint_name, begin_date_name, end_date_name):
+  if begin_date_name in REQUEST and REQUEST[begin_date_name]=='' and \
+    end_date_name in REQUEST and REQUEST[end_date_name]!='':
+      c[constraint_name] = (None,int(REQUEST[end_date_name]))
+  elif begin_date_name in REQUEST and REQUEST[begin_date_name]!='':
+    if end_date_name in REQUEST and REQUEST[end_date_name]!='':
+      c[constraint_name] = (int(REQUEST[begin_date_name]),int(REQUEST[end_date_name]))
+    else:
+      c[constraintName] = (int(REQUEST[begin_date_name]),None)
+  return c
 
