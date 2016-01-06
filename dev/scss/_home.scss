@@ -40,6 +40,7 @@
 }
 
 .home__identifier-form {
+	width: 100%;
 	margin: 15px;
 	padding: 5px 15px;
 	background-color: $design-light-gray-bg-color;
@@ -58,7 +59,7 @@
 	@include bp(screen2) {
 
 		&:nth-child(even) {
-			padding: 0 15px 0 0;
+			padding: 0 0 15px 15px;
 		}
 
   }
