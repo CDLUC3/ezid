@@ -1,7 +1,7 @@
 // ##### Button Elements ##### //
 
 %button__base {
-	height: 30px;
+	height: $form-element-height;
 	padding: 0 1.3em;
 	border: none; // reset default style
 	color: $design-white-color;

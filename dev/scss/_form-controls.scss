@@ -19,6 +19,7 @@
 
 .fcontrol__text-field-stacked {
 	@extend %fcontrol-focus;
+	height: $form-element-height;
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
