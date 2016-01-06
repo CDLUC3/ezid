@@ -1,15 +1,21 @@
 // ##### Button Elements ##### //
 
 %button__base {
+	display: inline-block; // if class applied to <a>instead of <button>
 	height: $form-element-height;
 	padding: 0 1.3em;
 	border: none; // reset default style
 	color: $design-white-color;
-	font-size: 0.85em;
+	font-size: 0.9em;
 	font-weight: bold;
 	text-decoration: none;
 	text-transform: uppercase;
 	cursor: pointer; // reset default style
+
+	&:hover { // OK to remove if links disabled in bootstrap
+		color: $design-white-color;
+	}
+
 }
 
 %button__primary {

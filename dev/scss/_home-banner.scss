@@ -46,6 +46,7 @@
 
 .home-banner__lead-button {
 	@extend %button__pop;
+	height: auto; // use padding below to center button text
 	margin: 2vw 0 0;
 	padding: 1.5vw 5vw 1.5vw 2vw; // make room for background arrow icon
 	background: url('../images/icon_double-arrow.svg') no-repeat, linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
@@ -56,7 +57,7 @@
 	@include bp(screen1) {
 		margin: 1em 0 0;
 		padding: 0.7em 2.5em 0.7em 1.3em;
-		font-size: 0.8em;
+		font-size: 0.9em;
 	}
 
 	&:hover,
