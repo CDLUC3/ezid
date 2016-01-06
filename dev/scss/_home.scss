@@ -73,3 +73,7 @@
 	}
 
 }
+
+.home__button-primary {
+	@extend %button__primary;
+}
