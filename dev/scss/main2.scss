@@ -1,9 +1,11 @@
 // ##### New Styles for EZID ##### //
 
 // ***** Global Settings ***** //
+@import '../../src/styles/variables';
 
-@import 'variables';
-@import '../styles/variables';
+// ***** Vendor Libraries ***** //
+@import '../../src/styles/bootstrap';
+
 @import 'mixins';
 @import 'fonts';
 @import 'testing'; // Comment out before production
