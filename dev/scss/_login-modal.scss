@@ -1,6 +1,9 @@
 // ##### Login Modal Component ##### //
 
 .login-modal {
+	position: absolute; // to .header__loginout
+	top: 40px;
+	right: 0;
 	width: 230px;
 	padding: 20px;
 	background-color: rgba($design-white-color, 0.5);

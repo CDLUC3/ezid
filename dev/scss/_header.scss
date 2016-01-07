@@ -177,8 +177,8 @@ $header-top-margin: 20px 0 0;
 	min-width: 150px;
 	margin: 0;
 	padding: 0;
-	background: $design-white-color;
 	border: 1px solid $design-light-gray-border-color;
+	background: $design-white-color;
 	list-style: none;
 	box-shadow: 0 6px 12px rgba($design-light-gray-border-color, 0.5);
 
@@ -216,14 +216,18 @@ $header-top-margin: 20px 0 0;
 
 }
 
-.header__loginout-link {
+.header__loginout {
 	display: none;
 
 	@include bp(screen1) {
-		@extend %button__pop;
 		display: block;
+		position: relative; // to .login-modal
 		align-self: flex-end; // align login button to bottom of other nav items
 		margin: 0 0 14px; // align button bottom with nav text
 	}
 
+}
+
+.header__loginout-link {
+	@extend %button__pop;
 }
