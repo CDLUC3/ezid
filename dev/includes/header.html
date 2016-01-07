@@ -31,26 +31,7 @@
     <a class="header__contact-link" href="">Contact</a>
     <div class="header__loginout">
       <button class="header__loginout-link">Login</button>
-      <!-- Begin Login Modal -->
-      <div class="login-modal" aria-hidden="true" role="dialog" aria-labelledby="login-modal__title">
-        <div class="login-modal__header">
-          <div id="login-modal__title" class="login-modal__title">Access your account</div>
-          <img src="images/icon-cross.svg" alt="close" class="login-modal__close">
-        </div>
-        <form method="post" action="https://ias-ezid-dev.cdlib.org/login" class="login-modal__form">
-          <label for="login-modal__username-field" class="login-modal__label">Username</label>
-          <input id="login-modal__username-field" class="login-modal__field" type="text" name="login-modal__username"  value="" placeholder="Username">
-          <label for="login-modal__password-field" class="login-modal__label">Password</label>
-          <input id="login-modal__password-field" class="login-modal__field" type="password" name="password" value="" placeholder="Password">
-          <div class="login-modal__footer">
-            <button type="submit" class="login-modal__submit" id="login" name="login">Log In</button>
-            <a href="/account/pwreset" class="login-modal__forgot">Forgot your password?</a>
-          </div>
-          <span class="login-modal__new">New to EZID? <strong><a href="http://ias-ezid-dev.cdlib.org/contact" class="login-modal__sign-up-link">Contact Us.</a></strong></span>
-          <input type="hidden" name="redirect_to" value="/">
-        </form>
-      </div>
-      <!-- End Login Modal -->
+      <!--#include file="login-modal.html" -->
     </div>
   </nav>
 </header>
