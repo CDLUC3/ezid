@@ -2,11 +2,12 @@
 
 .home-banner {
 	height: 64vw;
+	margin: 0 -10px;
 	background-color: $design-primary-color;
 	background-repeat: no-repeat;
 	background-position: bottom center;
 	background-size: 100%;
-	// background-image exsists as an inline style
+	// background-image exsists as a style inline with the HTML
 
 	@include bp(screen1) {
 		height: 300px;
