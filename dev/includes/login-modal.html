@@ -5,10 +5,16 @@
 		<img src="images/icon-cross.svg" alt="close" class="login-modal__close">
 	</div>
 	<form method="post" action="https://ias-ezid-dev.cdlib.org/login" class="login-modal__form">
-		<label for="login-modal__username-field" class="login-modal__label">Username</label>
-    <input id="login-modal__username-field" class="login-modal__field" type="text" name="login-modal__username"  value="" placeholder="Username">
-    <label for="login-modal__password-field" class="login-modal__label">Password</label>
-    <input id="login-modal__password-field" class="login-modal__field" type="password" name="password" value="" placeholder="Password">
+    <div class="login-modal__form-element fcontrol__group-stacked">
+			<label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Username</label>
+			<input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="Username" required>
+			<span class="fcontrol__invalid-flag">This field is required</span>
+		</div>
+		<div class="login-modal__form-element fcontrol__group-stacked">
+			<label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Password</label>
+			<input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="password" placeholder="Password" required>
+			<span class="fcontrol__invalid-flag">This field is required</span>
+		</div>
 	  <div class="login-modal__footer">
 	    <button type="submit" class="login-modal__submit" id="login" name="login">Log In</button>
 	    <a href="/account/pwreset" class="login-modal__forgot">Forgot your password?</a>
