@@ -6,7 +6,8 @@
 	right: 0;
 	width: 250px;
 	padding: 20px;
-	background-color: rgba($design-white-color, 0.9);
+	background: rgba($design-white-color, 0.9);
+	box-shadow: 0 6px 12px;
 }
 
 .login-modal__header {
