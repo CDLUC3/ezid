@@ -1,5 +1,17 @@
 // ##### Heading Element ##### //
 
-.heading {
-	// empty
+.heading__primary {
+	padding: 0.8em 10px;
+	background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
+	color: $design-white-color;
+	font-size: 1.6em;
+	font-weight: bold;
+}
+
+.heading__pop {
+	padding: 0.8em 10px;
+	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+	color: $design-black-color;
+	font-size: 1.6em;
+	font-weight: bold;
 }
