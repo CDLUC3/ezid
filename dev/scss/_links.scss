@@ -7,11 +7,13 @@
 
 	&:hover {
 		border-bottom: 1px solid $design-primary-color;
+		color: $design-primary-color;
+		text-decoration: none; // bootstrap override
 	}
 
 }
 
-.link__primary-example {
+.link__primary {
 	@extend %link__primary;
 }
 
@@ -22,11 +24,13 @@
 
 	&:hover {
 		border-bottom: 1px solid $text-link-over-beige;
+		color: $text-link-over-beige;
+		text-decoration: none; // bootstrap override
 	}
 
 }
 
-.link__over-beige-example {
+.link__over-beige {
 	@extend %link__over-beige;
 	background: $design-secondary-lightest;
 }
@@ -37,10 +41,12 @@
 
 	&:hover {
 		border-bottom: 1px solid $design-pop-color;
+		color: $design-pop-color;
+		text-decoration: none; // bootstrap override
 	}
 
 }
 
-.link__pop-example {
+.link__pop {
 	@extend %link__pop;
 }

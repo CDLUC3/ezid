@@ -3,12 +3,14 @@
 .footer {
 	display: flex;
 	flex-flow: column nowrap;
+	margin: 0 -10px;
 	background-color: $design-secondary-lightest;
 
 	@include bp(screen1) {
     flex-flow: row nowrap;
     align-items: center;
     justify-content: center;
+    min-height: 120px;
     background: linear-gradient(to right, $design-secondary-lightest 50%, $design-secondary-footer-newsfeed 50%); // split the bg into two colors each for the lang/logo and news regions
   }
 
@@ -38,7 +40,9 @@
 	background-color: $design-secondary-footer-newsfeed;
 
 	@include bp(screen1) {
+    align-self: stretch;
     order: 4;
+    width: 250px;
   }
 
 }

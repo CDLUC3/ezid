@@ -16,9 +16,9 @@
 
     <h1><a href="index.html">EZID UI Library</a></h1>
 
-    <h2>Home Layout</h2>
+    <h2>Home Layout With Login Modal</h2>
 
-    <!--#include file="includes/header.html" -->
+    <!--#include file="includes/header-with-login.html" -->
     
     <!-- Home Banner -->
     <div class="home-banner" style="background-image: url('images/homeHero_01.jpg')">
@@ -31,7 +31,8 @@
     <div class="home__identifier-container">
 
       <div class="home__identifier-lead-box">
-        <p class="home__identifier-lead-heading">See How Easy It Is:</p>
+        <p class="home__identifier-lead-heading">See how easy it is:</p>
+        <p class="home__identifier-lead-note"><b>NOTE:</b> This is just a demo. To create a real identifier, you must have an account.</p>
       </div>
 
       <div class="home__identifier-form">
@@ -53,41 +54,49 @@
         <div class="fieldset-stacked fieldset__top-border home__fieldset" role="group" aria-labelledby="fieldset__example1">
 
           <div id="fieldset__example1" class="fieldset-stacked__legend-number-2">Describe the identified object</div>
+
+          <div class="row">
           
-          <div class="col-md-5 home__text-field">
-            <div class="fcontrol__group-stacked--invalid">
-              <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Location (URL)</label>
-              <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="Location (URL) (required)" required>
-              <span class="fcontrol__invalid-flag">Error message</span>
+            <div class="col-md-5 home__text-field">
+              <div class="fcontrol__group-stacked">
+                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Location (URL)</label>
+                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="Location (URL) (required)" required>
+                <span class="fcontrol__invalid-flag">Error message</span>
+              </div>
             </div>
+
+            <div class="col-md-5 home__text-field">
+              <div class="fcontrol__group-stacked">
+                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Who?</label>
+                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="Who? (required)" required>
+                <span class="fcontrol__invalid-flag">Error message</span>
+              </div>
+            </div>
+
           </div>
 
-          <div class="col-md-5 home__text-field">
-            <div class="fcontrol__group-stacked">
-              <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Who?</label>
-              <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="Who? (required)" required>
-              <span class="fcontrol__invalid-flag">Error message</span>
-            </div>
-          </div>
+          <div class="row">
 
-          <div class="col-md-5 home__text-field">
-            <div class="fcontrol__group-stacked">
-              <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">What?</label>
-              <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="What? (required)" required>
-              <span class="fcontrol__invalid-flag">Error message</span>
+            <div class="col-md-5 home__text-field">
+              <div class="fcontrol__group-stacked">
+                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">What?</label>
+                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="What? (required)" required>
+                <span class="fcontrol__invalid-flag">Error message</span>
+              </div>
             </div>
-          </div>
 
-          <div class="col-md-5 home__text-field">
-            <div class="fcontrol__group-stacked">
-              <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">When</label>
-              <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="When? (required)" required>
-              <span class="fcontrol__invalid-flag">Error message</span>
+            <div class="col-md-5 home__text-field">
+              <div class="fcontrol__group-stacked">
+                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">When</label>
+                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="When? (required)" required>
+                <span class="fcontrol__invalid-flag">Error message</span>
+              </div>
             </div>
-          </div>
 
-          <div class="col-md-2 home__create-button">
-            <button class="button__primary-example">Create</button>
+            <div class="col-md-2 home__create-button">
+              <button class="home__button-primary">Create</button>
+            </div>
+
           </div>
 
         </div>

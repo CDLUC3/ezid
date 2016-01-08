@@ -17,7 +17,7 @@
 }
 
 .home__identifier-lead-box {
-	margin: 20px 0 0 10px;
+	margin: 20px 0 0;
 
 	@include bp(screen2) {
 		width: 120px;
@@ -39,15 +39,20 @@
 
 }
 
+.home__identifier-lead-note {
+	// empty
+}
+
 .home__identifier-form {
-	margin: 15px;
+	margin: 15px 5px;
 	padding: 5px 15px;
 	background-color: $design-light-gray-bg-color;
 	box-shadow: 0 0 14px 1px rgba($design-black-color, 0.24);
 
 	@include bp(screen2) {
+		width: 100%;
 		margin: 30px 15px;
-		padding: 30px 50px;
+		padding: 30px 50px 15px;
 	}
 
 }
@@ -58,7 +63,7 @@
 	@include bp(screen2) {
 
 		&:nth-child(even) {
-			padding: 0 15px 0 0;
+			padding: 0 0 15px 15px;
 		}
 
   }
@@ -71,4 +76,8 @@
 		padding: 0 0 0 15px;
 	}
 
+}
+
+.home__button-primary {
+	@extend %button__primary;
 }

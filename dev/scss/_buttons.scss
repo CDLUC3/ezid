@@ -1,16 +1,26 @@
 // ##### Button Elements ##### //
 
-%button__primary {
-	display: inline-block;
-	padding: 0.7em 1.3em; // horizontal text centering
+%button__base {
+	display: inline-block; // if class applied to <a>instead of <button>
+	height: $form-element-height;
+	padding: 0 1.3em;
 	border: none; // reset default style
-	background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
 	color: $design-white-color;
-	font-size: 0.8em;
+	font-size: 0.9em;
 	font-weight: bold;
 	text-decoration: none;
 	text-transform: uppercase;
 	cursor: pointer; // reset default style
+
+	&:hover { // OK to remove if links disabled in bootstrap
+		color: $design-white-color;
+	}
+
+}
+
+%button__primary {
+	@extend %button__base;
+	background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
 }
 
 .button__primary-example {
@@ -18,16 +28,8 @@
 }
 
 %button__pop {
-	display: inline-block;
-	padding: 0.7em 1.3em; // horizontal text centering
-	border: none; // reset default style
+	@extend %button__base;
 	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
-	color: $design-white-color;
-	font-size: 0.8em;
-	font-weight: bold;
-	text-decoration: none;
-	text-transform: uppercase;
-	cursor: pointer; // reset default style
 }
 
 .button__pop-example {

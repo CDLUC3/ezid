@@ -291,29 +291,6 @@ def unique_id_types(prefixes):
   i = [(x[0].upper(), x[1],) for x in kinds.items()]
   return sorted(i, key = itemgetter(0))
   
-#This captures the block around which rounded corners go
-@register.tag(name="rounded_borders")
-def do_rounded_borders(parser, token):
-  nodelist = parser.parse(('endrounded_borders'))
-  parser.delete_first_token()
-  return FormatRoundedBordersNode(nodelist)
-
-class FormatRoundedBordersNode(template.Node):
-  def __init__(self,nodelist):
-    self.nodelist = nodelist
-
-  def render(self, context):
-    content = self.nodelist.render(context)
-    return """<div class="roundbox">
-        <img src="/static/images/corners/tl.gif" width="6" height="6" class="roundtl" />
-        <img src="/static/images/corners/tr.gif" width="6" height="6" class="roundtr" />
-        <img src="/static/images/corners/bl.gif" width="6" height="6" class="roundbl" />
-        <img src="/static/images/corners/br.gif" width="6" height="6" class="roundbr" />
-        <div class="roundboxpad">
-    %(content)s
-    </div></div>""" % {'content':content,}
-
-
 ''' -------------------------------------------------------------------
 For editing (and creating) DataCite advanced DOI elements: If object representing
 XML blob does not have element we're looking for, load an empty one

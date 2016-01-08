@@ -4,12 +4,11 @@ $header-top-margin: 20px 0 0;
 
 .header {
 	display: flex;
-	position: relative; // to .header__mobile-menu
+	position: relative; // to .header__nav-button
 	flex-flow: row wrap;
 	justify-content: space-between;
 	max-width: 1030px;
-	margin: 0 auto;
-	padding: 0 15px;
+	margin: 0 auto 15px;
 }
 
 .header__logos {
@@ -44,7 +43,7 @@ $header-top-margin: 20px 0 0;
 }
 
 .header__nav-button {
-	position: absolute;
+	position: absolute; // to .header
 	top: 4vw;
 	right: 0;
 	padding: 6px;
@@ -174,12 +173,13 @@ $header-top-margin: 20px 0 0;
 	position: absolute;
 	top: 60px;
 	left: 0;
-	min-width: 170px;
+	min-width: 150px;
 	margin: 0;
 	padding: 0;
 	border: 1px solid $design-light-gray-border-color;
+	background: $design-white-color;
 	list-style: none;
-	box-shadow: 0 6px 12px rgba($design-light-gray-border-color, 0.5);
+	box-shadow: 0 6px 12px;
 
 	li:nth-of-type(6) a {
 		border-bottom: 1px dotted $design-black-color;
@@ -189,7 +189,7 @@ $header-top-margin: 20px 0 0;
 		display: block;
 		padding: 0.7em 1em;
 		color: $design-black-color;
-		font-size: 1.1em;
+		font-size: 1em;
 		font-weight: normal;
 		text-decoration: none;
 		text-transform: none;
@@ -215,27 +215,18 @@ $header-top-margin: 20px 0 0;
 
 }
 
-.header__loginout-link {
+.header__loginout {
 	display: none;
 
 	@include bp(screen1) {
-		display: flex;
-		align-items: center; // vertical text centering
-		align-self: flex-end; // align login button to bottom of other nav text
-		height: 40px;
+		display: block;
+		position: relative; // to .login-modal
+		align-self: flex-end; // align login button to bottom of other nav items
 		margin: 0 0 14px; // align button bottom with nav text
-		padding: 0 20px; // horizontal text centering
-		background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
-		color: $design-white-color;
-		font-size: 0.9em;
-		font-weight: bold;
-		text-decoration: none;
-		text-transform: uppercase;
-
-		&:hover {
-			color: $design-black-color;
-		}
-
 	}
 
+}
+
+.header__loginout-link {
+	@extend %button__pop;
 }

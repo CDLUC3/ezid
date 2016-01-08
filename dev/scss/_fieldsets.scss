@@ -27,9 +27,9 @@ $fieldset-legend-spacing: 1em;
 %fieldset__legend {
 	display: flex;
 	align-items: center;
-	margin: 0 0.5em 0 0;
+	margin: 0 1em 0 0;
 	color: $design-primary-color;
-	font-size: 1.3em;
+	font-size: 1.4em;
 	font-weight: bold;
 }
 
@@ -51,10 +51,16 @@ $fieldset-legend-spacing: 1em;
 	@extend %fieldset__legend;
 
 	&:before {
-		margin: 0 0.5em 0 0;
-		padding: 5px 10px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.8em;
+		height: 1.8em;
+		margin: 0 0.8em 0 0;
 		background: $design-pop-color;
 		color: $design-white-color;
+		font-size: 0.8em;
+		font-weight: normal;
 	}
 
 }

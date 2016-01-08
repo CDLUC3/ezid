@@ -15,6 +15,7 @@
 @import 'buttons';
 @import 'fieldsets';
 @import 'form-controls';
+@import 'headings';
 @import 'links';
 
 // ***** Components ***** //
@@ -31,10 +32,12 @@
 // ***** Layouts ***** //
 
 @import 'home';
+@import 'search';
 
 // ***** Global Styles ***** //
 
 body {
+  margin: 0 10px;
   font-family: 'KievitWeb';
 }
 
