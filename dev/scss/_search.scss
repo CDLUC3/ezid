@@ -6,11 +6,29 @@
 
 .search__simple {
 	display: flex;
-	margin: 30px auto;
 	max-width: 1000px;
+	margin: 30px auto;
 }
 
 .search__simple-button {
 	@extend %button__primary;
 	margin: 0 0 0 15px;
+}
+
+.search__advanced {
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+.search__text-field {
+	padding: 0 0 15px;
+
+	@include bp(screen2) {
+
+		&:nth-child(even) {
+			padding: 0 0 15px 15px;
+		}
+
+  }
+
 }
