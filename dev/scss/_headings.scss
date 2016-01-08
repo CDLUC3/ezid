@@ -15,3 +15,36 @@
 	font-size: 1.6em;
 	font-weight: bold;
 }
+
+%heading__icon {
+	color: $design-primary-color;
+	text-transform: uppercase;
+}
+
+.heading__icon-1 {
+	@extend %heading__icon;
+}
+
+.heading__icon-2 {
+	@extend %heading__icon;
+}
+
+.heading__icon-3 {
+	@extend %heading__icon;
+}
+
+.heading__icon-4 {
+	@extend %heading__icon;
+}
+
+.heading__icon-5 {
+	@extend %heading__icon;
+}
+
+.heading__icon-6 {
+	@extend %heading__icon;
+}
+
+.heading__icon-7 {
+	@extend %heading__icon;
+}
