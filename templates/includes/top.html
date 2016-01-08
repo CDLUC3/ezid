@@ -1,94 +1,61 @@
 {% load layout_extras %}
 {% load menus %}
-<nav class="navbar navbar-default" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-	  <!-- Button for smallest screens -->
-     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ezid-navbar-content"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-      {% host_based_include "includes/localized/_/logo.html" %}
-    </div>
-    <div class="collapse navbar-collapse" id="ezid-navbar-content">
-      <p id="nav-logged-in-welcome">&nbsp;
-      {% if session.auth %}
-      Welcome {{ session.auth.user|first }}!
-      {% endif %}
-      </p>
-      <ul class="nav navbar-nav pull-right">
-        <li class="{% active menu_item 'search' %}">
-          <a class="icon-link not-text" href="/search">
-            <img class="icon-topnav-search icon-inactive center" src="/static/images/searchOff.svg" ALT="Search Identifiers">
-            <img class="icon-topnav-search icon-active center" src="/static/images/searchOn.svg" ALT="Search Identifiers">
-            SEARCH
-          </a>
-        </li>
-        <li class="dropdown {% active menu_item 'learn' %}">
-          <a href="/learn" class="dropdown-toggle icon-link not-text" data-toggle="dropdown" role="button" aria-haspopup="true">
-            <img class="icon-topnav-learn icon-inactive center" src="/static/images/learnOff.svg" ALT="Learn About EZID">
-            <img class="icon-topnav-learn icon-active center" src="/static/images/learnOn.svg" ALT="Learn About EZID">
-            LEARN
-          </a>
-          <ul class="dropdown-menu" role="menu" aria-expanded="false">
-            <li><a class="not-text" href="/learn#01">What Is EZID?</a></li>
-            <li><a class="not-text" href="/learn#02">Current Users</a></li>
-            <li><a class="not-text" href="/learn#03">Pricing</a></li>
-            <li><a class="not-text" href="/learn#04">Documentation</a></li>
-            <li><a class="not-text" href="/learn#05">FAQ</a></li>
-            <li id="dropdown__divider--border"><a class="not-text" href="/learn#06">Media</a></li>
-            <li><a class="not-text" href="/doc/apidoc.html">API Guide</a></li>
-            <li><a class="not-text" href="{% url "ui_demo.index" %}">EZID Demo</a></li>
-         </ul>
-        </li>
-        <li class="{% active menu_item 'contact' %}">
-          <a class="icon-link not-text" href="{% url "ui.contact" %}">
-            <img class="icon-topnav-contact icon-inactive center" src="/static/images/contactOff.svg" ALT="Contact EZID">
-            <img class="icon-topnav-contact icon-active center" src="/static/images/contactOn.svg" ALT="Contact EZID">
-            CONTACT
-          </a>
-        </li>
-        <li class="navbar-btn">
-          {% if session.auth %}
-          <a class="not-text" href="/logout"><button type="button" class="btn padding-side-sm btn-big gradient-orange">LOGOUT</button></a>
-          {% else %}
-          <a class="not-text" href="#"><button type="button" class="btn padding-side-sm btn-big gradient-orange" id="modal_open">LOGIN</button></a>
-          {% endif %}
-        </li>
-      </ul>
-      <!-- Login Modal -->
-      <div class="modal-overlay" id="modal_window" aria-hidden="true" role="dialog"
-               aria-labelledby="modal-title">
-        <div class="modal-content" id="modal-holder" role="document">
-          <!-- div class="inline-header" -->
-            <!-- h1 id="modal-title">Access your account</h1 -->
-            <div id="modal-title">Access your account</div>
-            <a href="#" class="close not-text" id="modal_close" aria-label="close">&times;</a>
-            <!-- TODO: Need this? data-dismiss="alert" -->
-          <!-- /div -->
-          <form method="post" action="{% url_force_https "/login" %}" class="form-horizontal">
-            <div class="form-group form-group-sm">
-              <label for="username" class="sr-only control-label">Username</label>
-              <input type="text" id="username" name="username" class="form-control" value="{{ username }}" placeholder="Username" />
-              <label for="password" class="sr-only control-label">Password</label>
-              <input type="password" id="password" name="password" class="form-control" value="{{ password }}" placeholder="Password" />
-              <input type="hidden" name="redirect_to" value="{{ request.get_full_path }}">
-              <button type="submit" class="btn btn-primary padding-side-xs" id="login" name="login">LOG IN</button>
-              &nbsp;&nbsp;<a href="{% url "ui_account.pwreset" %}" class="font-small">Forgot your password?</a>
-            </div>
-          </form>
-        </div> <!-- end .modal-content -->
-      </div> <!-- end .modal-overlay -->
-      <!-- End Login Modal -->
-    </div><!-- #nav-collapse -->
+<header role="banner" class="header">
+  <div class="header__logos">
+
+      {% comment %} host_based_include "includes/localized/_/logo.html" {% endcomment %}
+    <a class="header__main-logo-link" href="/">
+      <img class="header__main-logo-image" src="/static/images/logo.svg" alt="University of California, Easy ID, identifiers made easy">
+    </a>
+    <a class="header__affiliate-logo-link" href="http://www.lib.purdue.edu">
+      <img class="header__affiliate-logo-image" src="/static/images/logo_purdue.svg" alt="Purdue University Libraries">
+    </a>
   </div>
-  {% if session.auth %}
-  <div class="nav-logged-in-buttons">
-    <div class="container">
-      <div class="row">
-        <ul class="nav nav-pills nav-justified">
-          {% menu_user menu_item session %}
-        </ul>
+
+  <button type="button" id="js-header__nav-button" class="header__nav-button" aria-controls="js-header__nav">
+    <img src="/static/images/mobile-menu.svg" alt="Show or hide navigation" class="header__nav-button-icon">
+  </button>
+
+  <p id="nav-logged-in-welcome">&nbsp;
+    {% if session.auth %}
+    Welcome {{ session.auth.user|first }}!
+    {% endif %}
+  </p>
+  <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-hidden="false">
+    <a class="header__search-link" href="/search">Search</a>
+    <div class="header__learn">
+      <a id="header__learn-link" class="header__learn-link" href="{% url "ui_home.learn" %}">Learn</a>
+      <ul class="header__learn-subnav" aria-hidden="true">
+        <li><a href="{% url "ui_home.learn" %}#01">What Is EZID?</a></li>
+        <li><a href="{% url "ui_home.learn" %}#02">Current Users</a></li>
+        <li><a href="{% url "ui_home.learn" %}#03">Pricing</a></li>
+        <li><a href="{% url "ui_home.learn" %}#04">Documentation</a></li>
+        <li><a href="{% url "ui_home.learn" %}#05">FAQ</a></li>
+        <li><a href="{% url "ui_home.learn" %}#06">Media</a></li>
+        <li><a href="/doc/apidoc.html">API Guide</a></li>
+        <li><a href="{% url "ui_demo.index" %}">EZID Demo</a></li>
+      </ul>
+    </div>
+    <a class="header__contact-link" href="{% url "ui.contact" %}">Contact</a>
+    <div class="header__loginout">
+      {% if session.auth %}
+      <a class="not-text" href="/logout"><button class="header__loginout-link">Logout</button></a>
+      {% else %}
+      <button class="header__loginout-link" id="login-open">Login</button>
+      {% endif %}
+      {% include "includes/login-modal.html" %}
+    </div>
+    {% if session.auth %}
+    <div class="nav-logged-in-buttons">
+      <div class="container">
+        <div class="row">
+          <ul class="nav nav-pills nav-justified">
+            {% menu_user menu_item session %}
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
-  <p class="vertical-buffer-20"></p>
-  {% endif %}
-</nav>
+    <p class="vertical-buffer-20"></p>
+    {% endif %}
+  </nav>
+</header>

@@ -60,11 +60,10 @@
       'use strict';
 
       // list out the vars
-      var mOverlay = getId('modal_window'),
-          mOpen = getId('modal_open'),
-          mOpenFromSearchPg = getId('modal_open_pg-search'),
-          mClose = getId('modal_close'),
-          modal = getId('modal-holder'),
+      var mOverlay = getId('login-window'),
+          mOpen = getId('login-open'),
+          mClose = getId('login-close'),
+          modal = getId('login-content'),
           page = getId('page_top'),
           modalOpen = false,
           lastFocus;
@@ -122,9 +121,6 @@
 
       // open modal by btn click/hit
       mOpen.addEventListener('click', modalShow);
-      if (mOpenFromSearchPg !== null) {
-        mOpenFromSearchPg.addEventListener('click', modalShow);
-      }
 
       // close modal by btn click/hit
       mClose.addEventListener('click', modalClose);
