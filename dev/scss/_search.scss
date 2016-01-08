@@ -6,12 +6,11 @@
 
 .search__simple {
 	display: flex;
-	margin: 0 auto;
-	width: 1000px;
-
-	border: $bred;
+	margin: 30px auto;
+	max-width: 1000px;
 }
 
 .search__simple-button {
 	@extend %button__primary;
+	margin: 0 0 0 15px;
 }
