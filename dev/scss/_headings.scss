@@ -1,6 +1,9 @@
 // ##### Heading Element ##### //
 
+$heading-icon-spacing: 40px;
+
 .heading__primary {
+	margin: 0 -10px;
 	padding: 0.8em 10px;
 	background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
 	color: $design-white-color;
@@ -9,6 +12,7 @@
 }
 
 .heading__pop {
+	margin: 0;
 	padding: 0.8em 10px;
 	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 	color: $design-black-color;
@@ -17,34 +21,64 @@
 }
 
 %heading__icon {
+	margin: 1em 0;
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: 30px;
 	color: $design-primary-color;
 	text-transform: uppercase;
 }
 
 .heading__icon-1 {
 	@extend %heading__icon;
+	padding: 2px $heading-icon-spacing;
+	background-image: url('../images/searchAdvanced.svg');
 }
 
 .heading__icon-2 {
 	@extend %heading__icon;
+	padding: 8px $heading-icon-spacing;
+	background-image: url('../images/dashboardViewReport.svg');
 }
 
 .heading__icon-3 {
 	@extend %heading__icon;
+	padding: 4px $heading-icon-spacing;
+	background-image: url('../images/dashboardUsage.svg');
 }
 
 .heading__icon-4 {
 	@extend %heading__icon;
+	padding: 20px $heading-icon-spacing;
+	background-image: url('../images/dashboardIDsByMonth.svg');
 }
 
 .heading__icon-5 {
 	@extend %heading__icon;
+	padding: 0 $heading-icon-spacing;
+	background-image: url('../images/dashboardAdmin.svg');
 }
 
 .heading__icon-6 {
 	@extend %heading__icon;
+	padding: 2px $heading-icon-spacing;
+	background-image: url('../images/dashboardBrokenLinks.svg');
 }
 
 .heading__icon-7 {
 	@extend %heading__icon;
+	// padding: 20px $heading-icon-spacing;
+	// background-image: url('../images/searchAdvanced.svg');
+}
+
+.heading__icon-8 {
+	@extend %heading__icon;
+	padding: 15px $heading-icon-spacing;
+	background-image: url('../images/idAboutID.svg');
+}
+
+.heading__icon-9 {
+	@extend %heading__icon;
+	padding: 14px $heading-icon-spacing;
+	background-image: url('../images/idAboutObject.svg');
 }

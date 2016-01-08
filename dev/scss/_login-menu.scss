@@ -3,6 +3,7 @@
 .login-menu {
 	display: flex;
 	flex-flow: column nowrap;
+	margin: 0 -10px;
 	background: linear-gradient(to bottom, $design-secondary-gradient-top, $design-secondary-color);
 
 	@include bp(screen1) {
