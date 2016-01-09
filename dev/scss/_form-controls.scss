@@ -74,6 +74,7 @@
 	@extend %fcontrol-focus;
 	display: block;
 	align-self: center; // For %fieldset__legend
+	width: 100%;
 	padding: 0 0.3em;
 	border: 1px solid $design-light-gray-border-color;
 	background: linear-gradient(to bottom, lighten($design-dark-gray-color, 47%), lighten($design-dark-gray-color, 40%));
