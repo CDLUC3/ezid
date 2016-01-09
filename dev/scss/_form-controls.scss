@@ -70,11 +70,10 @@
 	font-size: 1.1em;
 }
 
-.fcontrol__select {
+%fcontrol__select {
 	@extend %fcontrol-focus;
 	display: block;
 	align-self: center; // For %fieldset__legend
-	width: 100%;
 	padding: 0 0.3em;
 	border: 1px solid $design-light-gray-border-color;
 	background: linear-gradient(to bottom, lighten($design-dark-gray-color, 47%), lighten($design-dark-gray-color, 40%));
@@ -85,6 +84,15 @@
 		background: lighten($design-dark-gray-color, 40%);
 	}
 
+}
+
+.fcontrol__select {
+	@extend %fcontrol__select;
+	width: 100%;
+}
+
+.fcontrol__select-inline {
+	@extend %fcontrol__select;
 }
 
 // ***** Radio Buttons ***** //
