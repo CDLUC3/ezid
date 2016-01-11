@@ -8,12 +8,12 @@
   <form method="post" action="{% url_force_https "/login" %}" class="login-modal__form">
     <div class="login-modal__form-element fcontrol__group-stacked">
       <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Username</label>
-      <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" value="{{ username }}" placeholder="Username" required>
+      <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" name="username" value="{{ username }}" placeholder="Username" required>
       <span class="fcontrol__invalid-flag">This field is required</span>
     </div>
     <div class="login-modal__form-element fcontrol__group-stacked">
       <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Password</label>
-      <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="password" value="{{ password }}" placeholder="Password" required>
+      <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="password" name="password" value="{{ password }}" placeholder="Password" required>
       <span class="fcontrol__invalid-flag">This field is required</span>
     </div>
     <div class="login-modal__footer">
