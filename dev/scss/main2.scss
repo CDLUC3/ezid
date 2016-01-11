@@ -46,3 +46,13 @@ abbr {
   text-decoration: none; // for newer browsers
   cursor: inherit;
 }
+
+summary {
+	cursor: pointer;
+
+	// Remove native arrow icon from Chrome & Safari
+	&::-webkit-details-marker {
+	  display: none;
+	}
+	
+}
