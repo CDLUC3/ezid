@@ -208,11 +208,31 @@
 }
 
 // Place inline groups inline and add margin in-between
+
+// scss-lint:disable DeclarationOrder
 .fcontrol__inline-groups {
-	display: flex;
 
 	.fcontrol__group-inline:not(:first-child) {
-		margin: 0 0 0 1em;
+			margin: 15px 0 0;
+		}
+
+	.fcontrol__text-label-inline {
+		width: 3em;
+		text-align: right;
+	}
+
+	@include bp(screen2) {
+		display: flex;
+
+		.fcontrol__group-inline:not(:first-child) {
+			margin: 0 0 0 1em;
+		}
+
+		.fcontrol__text-label-inline {
+			width: auto;
+			text-align: left;
+		}
+
 	}
 
 }
