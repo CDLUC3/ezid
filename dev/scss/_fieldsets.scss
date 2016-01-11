@@ -7,7 +7,7 @@ $fieldset-legend-spacing: 1em;
 // ***** Fieldset Containers ***** //
 
 %fieldset {
-	padding: 1em 0;
+	// empty
 }
 
 .fieldset-stacked,
@@ -92,6 +92,7 @@ $fieldset-legend-spacing: 1em;
 // ***** Fieldset Borders ***** //
 
 .fieldset__top-border {
+	padding: 1em 0;
 	border-top: 1px solid $design-dark-gray-color;
 }
 
