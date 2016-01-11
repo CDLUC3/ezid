@@ -207,12 +207,12 @@
 
 }
 
-// Place control groups inline and add margin in-between
+// Place inline groups inline and add margin in-between
 .fcontrol__inline-groups {
 	display: flex;
 
-	[class^='fcontrol__group'] {
-		margin: 0 1em 0 0;
+	.fcontrol__group-inline:not(:first-child) {
+		margin: 0 0 0 1em;
 	}
 
 }
