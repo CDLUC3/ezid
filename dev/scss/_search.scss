@@ -20,7 +20,7 @@
 	margin: 0 auto;
 }
 
-.search__text-field {
+.search__form-element-container {
 	padding: 0 0 15px;
 
 	@include bp(screen2) {
@@ -31,4 +31,8 @@
 
   }
 
+}
+
+.search__inline-groups {
+	padding: 0 0 15px;
 }
