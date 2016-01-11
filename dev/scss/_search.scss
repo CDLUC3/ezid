@@ -1,5 +1,7 @@
 // ##### Simple and Advanced Search Layout ##### //
 
+$search-layout-element-spacing: 30px;
+
 .search {
 	// empty
 }
@@ -7,7 +9,7 @@
 .search__simple {
 	display: flex;
 	max-width: 1000px;
-	margin: 30px auto;
+	margin: $search-layout-element-spacing auto;
 }
 
 .search__simple-button {
@@ -16,17 +18,20 @@
 }
 
 .search__advanced {
-	// max-width: 1000px;
 	margin: 0 auto;
 }
 
+.search__summary {
+	margin: 0 0 $search-layout-element-spacing;
+}
+
 .search__form-element-container {
-	padding: 0 0 15px;
+	padding: 0 0 $search-layout-element-spacing;
 
 	@include bp(screen2) {
 
 		&:nth-child(even) {
-			padding: 0 0 15px 15px;
+			padding: 0 0 $search-layout-element-spacing $search-layout-element-spacing;
 		}
 
   }
@@ -34,5 +39,5 @@
 }
 
 .search__inline-groups {
-	padding: 0 0 15px;
+	padding: 0 0 $search-layout-element-spacing;
 }
