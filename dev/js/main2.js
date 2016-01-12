@@ -63,4 +63,9 @@ $(document).ready(function(){
     $('#js-login-modal').toggleClass('login-modal login-modal--active', 200);
   });
 
+  $('#js-login-modal__close').click(function(){
+    $('#js-login-modal').removeClass('login-modal--active');
+    $('#js-login-modal').addClass('login-modal');
+  });
+
 }); // Close $(document).ready(function()
