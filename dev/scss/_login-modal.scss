@@ -1,7 +1,7 @@
 // ##### Login Modal Component ##### //
 
 %login-modal {
-	display: none;
+	opacity: 0;
 	position: absolute; // to .header__loginout
 	top: 40px;
 	right: 0;
@@ -17,7 +17,7 @@
 
 .login-modal--active {
 	@extend %login-modal;
-	display: block;
+	opacity: 1;
 }
 
 .login-modal__header {
