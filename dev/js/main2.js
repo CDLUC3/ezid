@@ -57,13 +57,21 @@ $(document).ready(function(){
     $('.fcontrol__text-label-inline').addClass('fcontrol__label-required');
   }
 
-  // ***** Toggle Modal Login ***** //
+  // ***** Modal Login ***** //
 
+  // Toggle open and closed from login button
   $('#js-header__loginout-button').click(function(){
     $('#js-login-modal').toggleClass('login-modal login-modal--active', 200);
   });
 
+  // Close when close icon is clicked
   $('#js-login-modal__close').click(function(){
+    $('#js-login-modal').removeClass('login-modal--active');
+    $('#js-login-modal').addClass('login-modal');
+  });
+
+  // Close when form is submitted
+  $('#js-login-modal__form').submit(function(){
     $('#js-login-modal').removeClass('login-modal--active');
     $('#js-login-modal').addClass('login-modal');
   });
