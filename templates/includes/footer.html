@@ -19,16 +19,16 @@
       <div class="carousel-inner vertical" role="listbox">
     {% for title, link in feed_cache %}
       {% if forloop.first %}
-        <div class="item active">
+        <p class="item active footer__news-text">
       {% else %}
-        <div class="item">
+        <p class="item footer__news-text">
       {% endif %}
       {% if link == "None" %}
           {{ title }} 
       {% else %}
           <a href="{{ link }}">{{ title }}</a>
       {% endif %}
-        </div>
+        </p>
     {% endfor %}
       </div>
     </div>
