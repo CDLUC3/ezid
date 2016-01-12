@@ -40,6 +40,8 @@
 	background-color: $design-secondary-footer-newsfeed;
 
 	@include bp(screen1) {
+    display: flex;
+    flex-flow: column nowrap;
     align-self: stretch;
     order: 4;
     width: 250px;
@@ -48,18 +50,19 @@
 }
 
 .footer__news-title {
-	margin: 0 0 1em;
+	margin: 0;
 	font-size: 1em;
 	font-weight: bold;
 	text-transform: uppercase;
 }
 
-.footer__news-text {
-	// empty
+.footer__news-feed {
+	flex: 1 0 auto;
 }
 
 .footer__news-link {
 	@extend %link__over-beige;
+	align-self: flex-start;
 	font-size: 0.7em;
 }
 
@@ -120,7 +123,6 @@
 
 .footer__link {
 	@extend %link__over-beige;
-	font-size: 0.7em;
 	line-height: 1.5;
 }
 

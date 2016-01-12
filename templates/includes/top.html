@@ -16,11 +16,11 @@
     <img src="/static/images/mobile-menu.svg" alt="Show or hide navigation" class="header__nav-button-icon">
   </button>
 
-  <p id="nav-logged-in-welcome">&nbsp;
+  <!-- p id="nav-logged-in-welcome">&nbsp;
     {% if session.auth %}
-    Welcome {{ session.auth.user|first }}!
+    Welcome {{ session.auth.user|first }}! 
     {% endif %}
-  </p>
+  </p -->
   <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-hidden="false">
     <a class="header__search-link" href="/search">Search</a>
     <div class="header__learn">
@@ -45,6 +45,8 @@
       {% endif %}
       {% include "includes/login-modal.html" %}
     </div>
+  </nav>
+</header>
     {% if session.auth %}
     <div class="nav-logged-in-buttons">
       <div class="container">
@@ -57,5 +59,3 @@
     </div>
     <p class="vertical-buffer-20"></p>
     {% endif %}
-  </nav>
-</header>

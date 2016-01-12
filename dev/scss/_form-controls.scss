@@ -41,7 +41,7 @@
 
 .fcontrol__text-label-inline {
 	align-self: center;
-	margin: 0 1em 0 0;
+	margin: 0 0.5em 0 0;
 	color: $design-primary-color;
 	font-size: 1.1em;
 }
@@ -70,7 +70,7 @@
 	font-size: 1.1em;
 }
 
-.fcontrol__select {
+%fcontrol__select {
 	@extend %fcontrol-focus;
 	display: block;
 	align-self: center; // For %fieldset__legend
@@ -84,6 +84,15 @@
 		background: lighten($design-dark-gray-color, 40%);
 	}
 
+}
+
+.fcontrol__select {
+	@extend %fcontrol__select;
+	width: 100%;
+}
+
+.fcontrol__select-inline {
+	@extend %fcontrol__select;
 }
 
 // ***** Radio Buttons ***** //
@@ -198,3 +207,32 @@
 
 }
 
+// Place inline groups inline and add margin in-between
+
+// scss-lint:disable DeclarationOrder
+.fcontrol__inline-groups {
+
+	.fcontrol__group-inline:not(:first-child) {
+			margin: 15px 0 0;
+		}
+
+	.fcontrol__text-label-inline {
+		width: 3em;
+		text-align: right;
+	}
+
+	@include bp(screen2) {
+		display: flex;
+
+		.fcontrol__group-inline:not(:first-child) {
+			margin: 0 0 0 1em;
+		}
+
+		.fcontrol__text-label-inline {
+			width: auto;
+			text-align: left;
+		}
+
+	}
+
+}

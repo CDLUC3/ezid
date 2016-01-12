@@ -57,4 +57,10 @@ $(document).ready(function(){
     $('.fcontrol__text-label-inline').addClass('fcontrol__label-required');
   }
 
+  // ***** Toggle Modal Login ***** //
+
+  $('#js-header__loginout-button').click(function(){
+    $('#js-login-modal').toggleClass('login-modal login-modal--active', 200);
+  });
+
 }); // Close $(document).ready(function()

@@ -1,7 +1,7 @@
 
 <p><b>Notes:</b> All text fields below are set to "required" using the <code>required</code> HTML input attribute. If a field returns "invalid" upon submitting the form (due to the field being empty or containing the wrong data type), the related script shoud append the <code>fcontrol__group</code> class with <code>--invalid</code> (see this page's HTML for examples).</p>
 
-<h3>Text Field With Stacked Label</h3>
+<h3>Text Field Stacked With Label</h3>
 
 <div class="fcontrol__group-stacked">
 	<label for="fcontrol__example-label1" class="fcontrol__text-label-stacked">First Name</label>
@@ -9,7 +9,7 @@
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
-<h3>Text Field With Stacked Label (Invalid)</h3>
+<h3>Text Field Stacked With Label and Error Message</h3>
 
 <div class="fcontrol__group-stacked--invalid">
 	<label for="fcontrol__example-label1" class="fcontrol__text-label-stacked">First Name</label>
@@ -17,7 +17,7 @@
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
-<h3>Text Field With Inline Label</h3>
+<h3>Text Field Inline With Label</h3>
 
 <div class="fcontrol__group-inline">
 	<label for="fcontrol__example-label2" class="fcontrol__text-label-inline">Last Name</label>
@@ -25,7 +25,7 @@
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
-<h3>Text Field With Inline Label (Invalid)</h3>
+<h3>Text Field Inline With Label and Error Message</h3>
 
 <div class="fcontrol__group-inline--invalid">
 	<label for="fcontrol__example-label2" class="fcontrol__text-label-inline">Last Name</label>
@@ -33,7 +33,22 @@
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
-<h3>Text Field With Hidden Stacked Label</h3>
+<h3>Inline Grouped Inline Text Fields With Labels</h3>
+
+<div class="fcontrol__inline-groups">
+	<div class="fcontrol__group-inline">
+		<label for="fcontrol__example-label2" class="fcontrol__text-label-inline">Last Name</label>
+		<input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+		<span class="fcontrol__invalid-flag">Error message</span>
+	</div>
+	<div class="fcontrol__group-inline">
+		<label for="fcontrol__example-label2" class="fcontrol__text-label-inline">Last Name</label>
+		<input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+		<span class="fcontrol__invalid-flag">Error message</span>
+	</div>
+</div>
+
+<h3>Text Field With Hidden Label</h3>
 
 <div class="fcontrol__group-stacked">
 	<label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Last Name</label>
@@ -41,7 +56,7 @@
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
-<h3>Text Field With Hidden Stacked (Invalid)</h3>
+<h3>Text Field With Hidden Label Stacked with Error Message</h3>
 
 <div class="fcontrol__group-stacked--invalid">
 	<label for="fcontrol__example-label4" class="fcontrol__text-label-hidden">Last Name</label>
@@ -49,7 +64,7 @@
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
-<h3>Text Field With Hidden Inline Label</h3>
+<h3>Text Field With Hidden Label</h3>
 
 <div class="fcontrol__group-inline">
 	<label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Last Name</label>
@@ -57,7 +72,7 @@
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
-<h3>Text Field With Hidden Label (Invalid)</h3>
+<h3>Text Field With Hidden Label Inline with Error Message</h3>
 
 <div class="fcontrol__group-inline--invalid">
 	<label for="fcontrol__example-label4" class="fcontrol__text-label-hidden">Last Name</label>
