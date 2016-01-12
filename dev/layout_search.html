@@ -33,17 +33,17 @@
       <button class="search__simple-button">Search</button>
     </div>
 
-    <details class="search__advanced" open>
-      <summary class="heading__icon-1">Advanced Search</summary>
+    <details class="search__advanced">
+      <summary class="heading__icon-1 search__summary">Advanced Search</summary>
       <div class="row">
-        <div class="col-md-6 search__text-field">
+        <div class="col-md-6 search__form-element-container">
           <div class="fcontrol__group-stacked">
             <label for="search__simple-label" class="fcontrol__text-label-stacked">Identifier/Identifier Prefix</label>
             <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="doi:10.17614/Q44F1NB79" required>
             <span class="fcontrol__invalid-flag">Your search must not be empty</span>
           </div>
         </div>
-        <div class="col-md-6 search__text-field">
+        <div class="col-md-6 search__form-element-container">
           <div class="fcontrol__group-stacked">
             <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Title (What)</label>
             <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="Ex. 2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone" required>
@@ -52,14 +52,14 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-6 search__text-field">
+        <div class="col-md-6 search__form-element-container">
           <div class="fcontrol__group-stacked">
             <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Creator (Who)</label>
             <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="Ex. Pitt Quantum Repository" required>
             <span class="fcontrol__invalid-flag">Your search must not be empty</span>
           </div>
         </div>
-        <div class="col-md-6 search__text-field">
+        <div class="col-md-6 search__form-element-container">
           <div class="fcontrol__group-stacked">
             <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Publisher</label>
             <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="Ex. University of Pittsburgh" required>
@@ -71,7 +71,7 @@
         <div class="col-md-6">
           <div class="fieldset-stacked" role="group" aria-labelledby="fieldset__example4">
             <div id="fieldset__example4" class="fieldset-stacked__legend">Object Publication Date (When)</div>
-            <div class="fcontrol__inline-groups">
+            <div class="fcontrol__inline-groups search__inline-groups">
               <div class="fcontrol__group-inline">
                 <label for="fcontrol__example-label2" class="fcontrol__text-label-inline">From</label>
                 <input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Ex. 2015">
@@ -83,7 +83,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 search__text-field">
+        <div class="col-md-6 search__form-element-container">
           <label for="fcontrol__example-label5" class="fcontrol__select-label">Object Type</label>
           <select name="" id="fcontrol__example-label5" class="fcontrol__select">
             <option value="">Apples</option>
@@ -95,7 +95,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 search__form-element-container">
           <label for="fcontrol__example-label5" class="fcontrol__select-label">ID Type</label>
           <select name="" id="fcontrol__example-label5" class="fcontrol__select">
             <option value="">Apples</option>
