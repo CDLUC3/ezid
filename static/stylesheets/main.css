@@ -3502,7 +3502,7 @@ h1.lead2 {
   transform: translateY(-50%); }
 
 .panel-body {
-  margin-left: 20px; }
+  margin: 28px 0px 35px 20px; }
 
 .learn__title--ext-link {
   margin-bottom: 20px; }
@@ -3651,9 +3651,6 @@ padding-left-base, .padding-left {
   background: #ccc;
   color: #000;
   padding: 0.2em 0; }
-
-.position-relative {
-  position: relative; }
 
 .vertical-buffer-bot {
   margin-bottom: 4px; }
