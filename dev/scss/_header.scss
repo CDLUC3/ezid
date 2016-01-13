@@ -1,23 +1,36 @@
 // ##### Header Component ##### //
 
-$header-top-margin: 20px 0 0;
+.header__admin-text {
+	display: none;
+
+	@include bp(screen1) {
+		display: flex;
+		justify-content: flex-end;
+		max-width: 1030px;
+		margin: 0 auto 10px;
+		color: $design-pop-color;
+	}
+
+}
 
 .header {
 	display: flex;
 	position: relative; // to .header__nav-button
-	flex-flow: row wrap;
+	flex-flow: row nowrap;
+	align-items: flex-end;
 	justify-content: space-between;
 	max-width: 1030px;
 	margin: 0 auto 15px;
-
-	// border: $bred;
 }
 
 .header__logos {
 	display: flex;
-	margin: $header-top-margin;
+	// margin: $header-top-margin;
 
-	// border: $bblue;
+	@include bp(screen1) {
+		margin: 0 0 13px;
+	}
+
 }
 
 .header__main-logo-link {
@@ -48,7 +61,7 @@ $header-top-margin: 20px 0 0;
 
 .header__nav-button {
 	position: absolute; // to .header
-	top: 4vw;
+	top: 0;
 	right: 0;
 	padding: 6px;
 	border: 1px solid $design-light-gray-border-color;
@@ -64,22 +77,10 @@ $header-top-margin: 20px 0 0;
 	width: 25px;
 }
 
-.header__controls {
-	display: flex;
-	flex-flow: column nowrap;
-	align-items: flex-end;
-	
-	// border: $bblue;
-}
-
-.header__admin-text {
-	color: $design-pop-color;
-}
-
 %header__nav {
 	width: 100%;
 	height: 0; // hide small screen nav
-	margin: $header-top-margin;
+	// margin: $header-top-margin;
 	overflow: hidden; // hide small screen nav
 
 	@include bp(screen1) {
@@ -90,7 +91,7 @@ $header-top-margin: 20px 0 0;
 		padding: 0 0 0 20px;
 		overflow: visible; // show large screen nav
   }
-// border: $bgreen;
+
 }
 
 .header__nav {
@@ -238,7 +239,7 @@ $header-top-margin: 20px 0 0;
 		display: block;
 		position: relative; // to .login-modal
 		align-self: flex-end; // align login button to bottom of other nav items
-		margin: 0 0 14px; // align button bottom with nav text
+		margin: 0 0 12px; // align button bottom with nav text
 	}
 
 }
