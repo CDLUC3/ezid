@@ -3301,7 +3301,7 @@ h5 {
   text-shadow: none;
   opacity: 0.95; }
 
-.login-modal--active {
+.login-modal {
   z-index: 99; }
 
 .api h1 {

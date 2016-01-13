@@ -3134,6 +3134,20 @@ Selector pattern using above mixin:
 .header__nav-button-icon {
   width: 25px; }
 
+.header__controls {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: column nowrap;
+      -ms-flex-flow: column nowrap;
+          flex-flow: column nowrap;
+  -webkit-align-items: flex-end;
+      -ms-flex-align: end;
+          align-items: flex-end; }
+
+.header__admin-text {
+  color: #ff7f22; }
+
 .header__nav, .header__nav--selected {
   width: 100%;
   height: 0;
@@ -3372,20 +3386,15 @@ Selector pattern using above mixin:
       background-size: 25px;
       content: ''; } }
 
-.login-modal, .login-modal--active {
+.login-modal {
+  display: none;
   position: absolute;
   top: 40px;
   right: 0;
   width: 250px;
   padding: 20px;
   background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 6px 12px;
-  opacity: 0; }
-
-.login-modal--active {
-  opacity: 1; }
-  .login-modal--active .login-modal__close {
-    cursor: pointer; }
+  box-shadow: 0 6px 12px; }
 
 .login-modal__header {
   display: -webkit-flex;
@@ -3405,7 +3414,7 @@ Selector pattern using above mixin:
   height: 15px;
   padding: 2px;
   background-color: white;
-  cursor: default; }
+  cursor: pointer; }
 
 .login-modal__form {
   display: -webkit-flex;
