@@ -3501,8 +3501,13 @@ h1.lead2 {
   top: 50%;
   transform: translateY(-50%); }
 
-.panel-body {
-  margin: 28px 0px 35px 20px; }
+@media (max-width: 780px) {
+  .panel-body {
+    margin: 28px 4px 30px 6px; } }
+
+@media (min-width: 780px) {
+  .panel-body {
+    margin: 28px 40px 30px 20px; } }
 
 .learn__title--ext-link {
   margin-bottom: 20px; }
@@ -3514,58 +3519,6 @@ h1.lead2 {
 
 .breadcrumb > li + li:before {
   content: "/ "; }
-
-thead {
-  background-color: #c6b082;
-  font-size: 0.9em; }
-
-td, th {
-  padding: 5px;
-  border: 1px solid #c6b082; }
-
-.table-sm td {
-  font-size: 0.8em; }
-
-.table-md td {
-  font-size: 0.9em; }
-
-.table td a {
-  font-weight: normal; }
-
-.table-borderless tr,
-.table-borderless td,
-.table-borderless th {
-  border: 0px; }
-
-.table > thead > tr > th {
-  border-bottom: 0px; }
-
-tr.darkened {
-  background-color: #ece5d6; }
-
-td.right {
-  text-align: right; }
-
-td.center {
-  text-align: center; }
-
-td.left {
-  text-align: left; }
-
-td.subrow {
-  padding-left: 10px; }
-
-td.subhead {
-  padding-top: 16px !important; }
-
-td div.dollar {
-  float: left;
-  width: 1em;
-  padding-left: 3em; }
-
-.pagination > .active > a, .pagination > .active > a:hover, .pagination > .active > a:focus {
-  background-color: #00778a;
-  border-color: #00778a; }
 
 .search__tooltip--container {
   position: absolute;
@@ -3735,13 +3688,6 @@ hr {
   top: 1px;
   left: 2px; }
 
-.container_non_responsive {
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 15px;
-  padding-right: 15px;
-  width: 800px; }
-
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 1024px) {
   .container {
@@ -3750,27 +3696,6 @@ hr {
 @media screen and (max-width: 799px) {
   .container {
     padding: 0px 8px; } }
-
-/* Responsive: Identifier Tabular Display 
-   http://exisweb.net/responsive-tables-in-wordpress */
-@media screen and (max-width: 600px) {
-  table {
-    width: 100%; }
-  thead {
-    display: none; }
-  tr:nth-of-type(2n) {
-    background-color: inherit; }
-  tr td:first-child {
-    background: #f0f0f0;
-    font-weight: bold;
-    font-size: 1.3em; }
-  tbody td {
-    display: block;
-    text-align: center; }
-  tbody td:before {
-    content: attr(data-th);
-    display: block;
-    text-align: center; } }
 
 /* a hidden field in the email form for screen scapers for
  * a "honeypot" like spam reducer.  If this field is filled
