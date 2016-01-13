@@ -49,13 +49,15 @@ $(document).ready(function(){
 
   // If 'required' attribute exists on a text input, add 'Required' class to its label:
 
-  if ($('.fcontrol__text-field-stacked').is('[required]')) {
-    $('.fcontrol__text-label-stacked').addClass('fcontrol__label-required');
-  }
+  // This feature is disabled, until fix becomes available:
+  
+  // if ($('.fcontrol__text-field-stacked').is('[required]')) {
+  //   $('.fcontrol__text-label-stacked').addClass('fcontrol__label-required');
+  // }
 
-  if ($('.fcontrol__text-field-inline').is('[required]')) {
-    $('.fcontrol__text-label-inline').addClass('fcontrol__label-required');
-  }
+  // if ($('.fcontrol__text-field-inline').is('[required]')) {
+  //   $('.fcontrol__text-label-inline').addClass('fcontrol__label-required');
+  // }
 
   // ***** Modal Login ***** //
 
