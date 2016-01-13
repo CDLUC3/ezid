@@ -82,6 +82,8 @@ $container-lg: $screen-lg-min;
 $popover-bg: #eee;
 $popover-max-width: auto;
 $popover-arrow-color: $popover-bg;
+$carousel-indicator-active-bg:       $design-primary-color !default;
+$carousel-indicator-border-color:    $design-primary-color !default;
 
 // ***** Font Awesome ***** //
 
