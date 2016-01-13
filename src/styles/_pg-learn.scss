@@ -1,7 +1,15 @@
 // Learn Page
 
-.panel-body {
-  margin: 28px 0px 30px 20px;
+@media (max-width:$container-sm){
+  .panel-body{
+    margin: 28px 4px 30px 6px;
+  }
+}
+
+@media (min-width:$container-sm){
+  .panel-body {
+    margin: 28px 40px 30px 20px;
+  }
 }
 
 .learn__title--ext-link {

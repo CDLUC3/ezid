@@ -10,14 +10,14 @@ $header-top-margin: 20px 0 0;
 	max-width: 1030px;
 	margin: 0 auto 15px;
 
-	border: $bred;
+	// border: $bred;
 }
 
 .header__logos {
 	display: flex;
 	margin: $header-top-margin;
 
-	border: $bblue;
+	// border: $bblue;
 }
 
 .header__main-logo-link {
@@ -68,7 +68,8 @@ $header-top-margin: 20px 0 0;
 	display: flex;
 	flex-flow: column nowrap;
 	align-items: flex-end;
-	border: $bblue;
+	
+	// border: $bblue;
 }
 
 .header__admin-text {
@@ -89,7 +90,7 @@ $header-top-margin: 20px 0 0;
 		padding: 0 0 0 20px;
 		overflow: visible; // show large screen nav
   }
-border: $bgreen;
+// border: $bgreen;
 }
 
 .header__nav {

@@ -60,20 +60,21 @@ $(document).ready(function(){
   // ***** Modal Login ***** //
 
   // Toggle open and closed from login button
+
   $('#js-header__loginout-button').click(function(){
-    $('#js-login-modal').toggleClass('login-modal login-modal--active', 200);
+    $('#js-login-modal').fadeToggle(200);
   });
 
   // Close when close icon is clicked
+
   $('#js-login-modal__close').click(function(){
-    $('#js-login-modal').removeClass('login-modal--active');
-    $('#js-login-modal').addClass('login-modal');
+    $('#js-login-modal').fadeToggle(200);
   });
 
   // Close when form is submitted
+
   $('#js-login-modal__form').submit(function(){
-    $('#js-login-modal').removeClass('login-modal--active');
-    $('#js-login-modal').addClass('login-modal');
+    $('#js-login-modal').fadeToggle(200);
   });
 
 }); // Close $(document).ready(function()
