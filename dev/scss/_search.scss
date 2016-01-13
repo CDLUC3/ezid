@@ -24,6 +24,17 @@ $search-layout-element-spacing: 30px;
 
 .search__summary {
 	margin: 0 0 $search-layout-element-spacing;
+
+	&:after {
+		margin: 0 0 0 0.5em;
+		padding: 20px;
+		background-image: url('../images/icon_down-arrow.svg');
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: 50px;
+		content: '';
+	}
+
 }
 
 .search__form-element-container {
