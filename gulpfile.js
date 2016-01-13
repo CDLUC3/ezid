@@ -149,7 +149,7 @@ gulp.task('scss-lint', function() {
 
 // Lint JavaScript:
 gulp.task('js-lint', function() {
-  return gulp.src(['dev/js/**/*.js', '!dev/js/modernizr-custombuild.js'])
+  return gulp.src(['dev/js/**/*.js', '!dev/js/vendor/*.js'])
     .pipe(jshint())
     .pipe(jshint.reporter('default'))
 });

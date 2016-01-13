@@ -18,6 +18,11 @@
 .login-modal--active {
 	@extend %login-modal;
 	opacity: 1; // show via jquery ui transition
+
+	.login-modal__close {
+		cursor: pointer;
+	}
+
 }
 
 .login-modal__header {
@@ -36,7 +41,7 @@
 	height: 15px;
 	padding: 2px;
 	background-color: $design-white-color;
-	cursor: pointer;
+	cursor: default;
 }
 
 .login-modal__form {

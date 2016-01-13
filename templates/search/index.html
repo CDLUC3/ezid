@@ -9,7 +9,7 @@
 <div class="container vertical-buffer-xs">
 
 <section id="search">
-  <form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" role="form">
+  <form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" id="search-form" role="form">
   {% comment "nonfield_errors" %}form.non_field_errors not used here, and will be displayed in django.contrib.messages.error{% endcomment %}
   <div class="row">
     <div class="vertical-buffer-sm"></div>

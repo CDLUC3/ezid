@@ -1,19 +1,18 @@
 {% load layout_extras %}
-<div id="login-window" class="login-modal" aria-hidden="true" role="dialog" aria-labelledby="login-modal__title">
-  <div id="login-content" role="document">
+<div id="js-login-modal" class="login-modal" aria-hidden="true" role="dialog" aria-labelledby="login-modal__title">
   <div class="login-modal__header">
-    <div id="login-modal__title" class="login-modal__title">Access your account</div>
-    <img src="/static/images/icon-cross.svg" alt="close" id="login-close" class="login-modal__close">
+    <div class="login-modal__title">Access your account</div>
+    <img id="js-login-modal__close" src="/static/images/icon-cross.svg" alt="close" class="login-modal__close">
   </div>
-  <form method="post" action="{% url_force_https "/login" %}" class="login-modal__form">
+  <form id="js-login-modal__form" method="post" action="{% url_force_https "/login" %}" class="login-modal__form">
     <div class="login-modal__form-element fcontrol__group-stacked">
-      <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Username</label>
-      <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" name="username" value="{{ username }}" placeholder="Username" required>
+      <label for="login-modal__input1" class="fcontrol__text-label-hidden">Username</label>
+      <input id="login-modal__input1" class="fcontrol__text-field-stacked" type="text" name="username" value="{{ username }}" placeholder="Username">
       <span class="fcontrol__invalid-flag">This field is required</span>
     </div>
     <div class="login-modal__form-element fcontrol__group-stacked">
-      <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Password</label>
-      <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="password" name="password" value="{{ password }}" placeholder="Password" required>
+      <label for="login-modal__input2" class="fcontrol__text-label-hidden">Password</label>
+      <input id="login-modal__input2" class="fcontrol__text-field-stacked" type="password" name="password" value="{{ password }}" placeholder="Password">
       <span class="fcontrol__invalid-flag">This field is required</span>
     </div>
     <div class="login-modal__footer">
@@ -23,5 +22,4 @@
     <span class="login-modal__new">New to EZID? <strong><a href="{% url "ui.contact" %}" class="login-modal__sign-up-link">Contact Us.</a></strong></span>
     <input type="hidden" name="redirect_to" value="{{ request.get_full_path }}">
   </form>
-  </div>
 </div>

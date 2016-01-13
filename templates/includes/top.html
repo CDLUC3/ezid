@@ -41,7 +41,7 @@
       {% if session.auth %}
       <a class="not-text" href="/logout"><button class="header__loginout-link">Logout</button></a>
       {% else %}
-      <button class="header__loginout-link" id="login-open">Login</button>
+      <button id="js-header__loginout-button" class="header__loginout-link">Login</button>
       {% endif %}
       {% include "includes/login-modal.html" %}
     </div>

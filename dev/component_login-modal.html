@@ -18,13 +18,28 @@
 
     <h2>Login Modal Component</h2>
 
+    <!-- Override main component styles to show as standalone component in this page -->
+    <style>
+      .login-modal {
+        position: relative;
+        top: 0;
+        right: 0;
+        opacity: 1;
+      }
+    </style>
+
     <!--#include file="includes/login-modal.html" -->
 
   </div>
 
-	<!-- build:js js/main2.min.js -->
-	<script src="js/modernizr-custombuild.js"></script>
-	<!-- endbuild -->
+  <!-- build:js js/main2.min.js -->
+  <script src="js/vendor/jquery.min.js"></script>
+  <script src="js/vendor/jquery-ui.min.js"></script>
+  <script src="js/vendor/better-dom.min.js"></script>
+  <script src="js/vendor/better-details-polyfill.js"></script>
+  <script src="js/vendor/modernizr-custombuild.js"></script>
+  <script src="js/main2.js"></script>
+  <!-- endbuild -->
 	
 </body>
 </html>

@@ -2,17 +2,17 @@
 <div id="js-login-modal" class="login-modal" aria-hidden="true" role="dialog" aria-labelledby="login-modal__title">
 	<div class="login-modal__header">
 		<div id="login-modal__title" class="login-modal__title">Access your account</div>
-		<img src="images/icon-cross.svg" alt="close" class="login-modal__close">
+		<img id="js-login-modal__close" src="images/icon-cross.svg" alt="close" class="login-modal__close">
 	</div>
-	<form method="post" action="https://ias-ezid-dev.cdlib.org/login" class="login-modal__form">
+	<form id="js-login-modal__form" action="" class="login-modal__form">
     <div class="login-modal__form-element fcontrol__group-stacked">
-			<label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Username</label>
-			<input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="Username" required>
+			<label for="login-modal__input1" class="fcontrol__text-label-hidden">Username</label>
+			<input id="login-modal__input1" class="fcontrol__text-field-stacked" type="text" placeholder="Username" required>
 			<span class="fcontrol__invalid-flag">This field is required</span>
 		</div>
 		<div class="login-modal__form-element fcontrol__group-stacked">
-			<label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Password</label>
-			<input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="password" placeholder="Password" required>
+			<label for="login-modal__input2" class="fcontrol__text-label-hidden">Password</label>
+			<input id="login-modal__input2" class="fcontrol__text-field-stacked" type="password" placeholder="Password" required>
 			<span class="fcontrol__invalid-flag">This field is required</span>
 		</div>
 	  <div class="login-modal__footer">
