@@ -3179,6 +3179,9 @@ input[type="radio"]:checked + span:before {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0); } }
 
+.header__learn-subnav {
+  z-index: 99; }
+
 .heading__top-banner-bg {
   background-color: #056a7b;
   background-image: -webkit-linear-gradient(top, #168b99 0%, #056a7b 100%);
@@ -3303,7 +3306,7 @@ h5 {
   text-shadow: none;
   opacity: 0.95; }
 
-.login-modal {
+.login-modal--active {
   z-index: 99; }
 
 .api h1 {
