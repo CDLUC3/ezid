@@ -2787,11 +2787,7 @@ h2.panel-title > a {
   width: 15px;
   height: 15px; }
 
-.ext-link-base, .ext-link, .pdf-link, .ppt-link {
-  position: relative;
-  text-decoration: none;
-  border-bottom: 1px #00778a solid;
-  padding-bottom: 1px;
+.ext-link {
   margin-right: 24px; }
 
 .ext-link:after {
@@ -2802,6 +2798,9 @@ h2.panel-title > a {
   width: 15px;
   height: 15px; }
 
+.pdf-link {
+  margin-right: 24px; }
+
 .pdf-link:after {
   position: absolute;
   top: -0.1em;
@@ -2809,6 +2808,9 @@ h2.panel-title > a {
   content: url("/static/images/pdf-icon_18x18.png");
   width: 15px;
   height: 15px; }
+
+.ppt-link {
+  margin-right: 24px; }
 
 .ppt-link:after {
   position: absolute;
@@ -2821,47 +2823,6 @@ h2.panel-title > a {
 .checkbox__icon {
   width: 17px;
   margin-left: 7px; }
-
-#logoBottom {
-  width: 100px; }
-
-.icon-topnav-base, .icon-topnav-search, .icon-topnav-learn, .icon-topnav-contact {
-  margin-bottom: 7px; }
-
-.icon-link .icon-active {
-  display: none; }
-
-.icon-link:hover .icon-inactive,
-.icon-link:hover .icon-inactive a,
-.icon-link:active .icon-inactive {
-  display: none; }
-
-.icon-link:hover .icon-active,
-.icon-link:active .icon-active {
-  display: block; }
-
-li.active .icon-active {
-  display: block; }
-
-li.active .icon-inactive {
-  display: none; }
-
-.icon-topnav-search {
-  width: 22px; }
-
-.icon-topnav-learn {
-  width: 19px; }
-
-.icon-topnav-contact {
-  width: 24px; }
-
-.icon-help {
-  margin-left: 8px;
-  width: 23px; }
-
-.icon__header--base, #dashboard__icon--viewreport, #dashboard__icon--usage, #dashboard__icon--idsbymonth, #dashboard__icon--brokenlinks, #dashboard__icon--crossref, #id__icon--aboutobject, #id__icon--aboutid {
-  margin-right: 8px;
-  margin-bottom: 6px; }
 
 #dashboard__icon--viewreport {
   width: 25px; }
@@ -2889,12 +2850,15 @@ li.active .icon-inactive {
   margin-bottom: 6px;
   width: 32px; }
 
-.api .reference {
+.ext-link, .pdf-link, .ppt-link, .api .reference {
+  position: relative;
   border-bottom: 1px solid #beb6af;
   color: #00778a;
   text-decoration: none; }
-  .api .reference:hover {
-    border-bottom: 1px solid #00778a; }
+  .ext-link:hover, .pdf-link:hover, .ppt-link:hover, .api .reference:hover {
+    border-bottom: 1px solid #00778a;
+    color: #00778a;
+    text-decoration: none; }
 
 .call-out h3 {
   font-size: 1.1em;
