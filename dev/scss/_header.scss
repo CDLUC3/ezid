@@ -30,7 +30,6 @@
 
 .header__logos {
 	display: flex;
-	// margin: $header-top-margin;
 
 	@include bp(screen1) {
 		flex: 1 0 auto;
@@ -69,7 +68,7 @@
 
 .header__nav-button {
 	position: absolute; // to .header
-	top: 0;
+	top: -5px;
 	right: 0;
 	padding: 6px;
 	border: 1px solid $design-light-gray-border-color;
