@@ -2894,7 +2894,9 @@ li.active .icon-inactive {
   color: #00778a;
   text-decoration: none; }
   .api .reference:hover {
-    border-bottom: 1px solid #00778a; }
+    border-bottom: 1px solid #00778a;
+    color: #00778a;
+    text-decoration: none; }
 
 .call-out h3 {
   font-size: 1.1em;
