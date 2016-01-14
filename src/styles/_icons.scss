@@ -10,16 +10,9 @@
   height: 15px;
 }
 
-.ext-link-base {
-  position: relative;
-  text-decoration: none;
-  border-bottom:1px $design-primary-color solid;
-  padding-bottom: 1px;
-  margin-right: 24px;
-}
-
 .ext-link {
-  @extend .ext-link-base;
+  @extend %link__primary;
+  margin-right: 24px;
 }
 .ext-link:after {
   position: absolute;
@@ -32,7 +25,8 @@
 
 // Links to PDFs (png background image)
 .pdf-link {
-  @extend .ext-link-base;
+  @extend %link__primary;
+  margin-right: 24px;
 }
 
 .pdf-link:after {
@@ -46,7 +40,8 @@
 
 // Links to PDFs (png background image)
 .ppt-link {
-  @extend .ext-link-base;
+  @extend %link__primary;
+  margin-right: 24px;
 }
 
 .ppt-link:after {
@@ -63,57 +58,6 @@
   margin-left: 7px;
 }
 
-// Note: Logo Top CSS contained in _nav.scss
-#logoBottom {
-  width: 100px;
-}
-
-.icon-topnav-base {
-  margin-bottom: 7px;
-}
-// Swapping Out SVG Icons using hide/show on active
-// Hide one by default:
-.icon-link .icon-active {
-  display: none;
-}
-.icon-link:hover .icon-inactive,
-.icon-link:hover .icon-inactive a,
-.icon-link:active .icon-inactive{
-  display: none;
-}
-.icon-link:hover .icon-active,
-.icon-link:active .icon-active{
-  display: block;
-}
-li.active .icon-active {
-  display: block;
-}
-li.active .icon-inactive {
-  display: none;
-}
-.icon-topnav-search {
-  @extend .icon-topnav-base;
-  width: 22px;
-  // margin-left: 32px;
-}
-.icon-topnav-learn {
-  @extend .icon-topnav-base;
-  width: 19px;
-  // margin-left: 28px;
-}
-.icon-topnav-contact {
-  @extend .icon-topnav-base;
-  width: 24px;
-  // margin-left: 34px;
-}
-.icon-help {
-  margin-left: 8px;
-  width: 23px;
-}
-.icon__header--base {
-  margin-right: 8px;
-  margin-bottom : 6px;
-}
 #dashboard__icon--viewreport {
   @extend .icon__header--base;
   width: 25px;
