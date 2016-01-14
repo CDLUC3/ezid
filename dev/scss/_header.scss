@@ -28,6 +28,7 @@
 	// margin: $header-top-margin;
 
 	@include bp(screen1) {
+		flex: 1 0 auto;
 		margin: 0 0 13px;
 	}
 
@@ -38,10 +39,11 @@
 }
 
 .header__main-logo-image {
-	height: 7vw;
+	width: 300px;
+	height: 100%;
 
 	@include bp(screen1) {
-		height: 45px;
+		width: 330px;
 	}
 
 }
@@ -51,10 +53,11 @@
 }
 
 .header__affiliate-logo-image {
-	height: 7vw;
+	width: 120px;
+	height: 100%;
 
 	@include bp(screen1) {
-		height: 45px;
+		width: 142px;
 	}
 
 }
