@@ -1,9 +1,12 @@
 {% load layout_extras %}
 {% load menus %}
 
+<div class="header__admin-text">
+&nbsp;
 {% if session.auth %}
-<div class="header__admin-text">Welcome {{ session.auth.user|first }}!</div>
+Welcome {{ session.auth.user|first }}!
 {% endif %}
+</div>
 
 <header role="banner" class="header">
   <div class="header__logos">
