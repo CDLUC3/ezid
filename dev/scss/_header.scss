@@ -16,11 +16,16 @@
 .header {
 	display: flex;
 	position: relative; // to .header__nav-button
-	flex-flow: row nowrap;
+	flex-flow: row wrap;
 	align-items: flex-end;
 	justify-content: space-between;
 	max-width: 1030px;
 	margin: 0 auto 15px;
+
+	@include bp(screen1) {
+		flex-flow: row nowrap;
+	}
+
 }
 
 .header__logos {
