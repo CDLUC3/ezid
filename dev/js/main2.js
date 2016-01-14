@@ -47,17 +47,15 @@ $(document).ready(function(){
 
   // ***** HTML Form Validation ***** //
 
-  // If 'required' attribute exists on a text input, add 'Required' class to its label:
+  // If 'required' attribute exists on a text input, add 'required' class to its label:
 
-  // This feature is disabled, until fix becomes available:
-  
-  // if ($('.fcontrol__text-field-stacked').is('[required]')) {
-  //   $('.fcontrol__text-label-stacked').addClass('fcontrol__label-required');
-  // }
+  $('.fcontrol__text-field-stacked[required]').map(function() {
+    $(this).siblings('.fcontrol__text-label-stacked').addClass('fcontrol__label-required');
+  });
 
-  // if ($('.fcontrol__text-field-inline').is('[required]')) {
-  //   $('.fcontrol__text-label-inline').addClass('fcontrol__label-required');
-  // }
+  $('.fcontrol__text-field-inline[required]').map(function() {
+    $(this).siblings('.fcontrol__text-label-inline').addClass('fcontrol__label-required');
+  });
 
   // ***** Modal Login ***** //
 

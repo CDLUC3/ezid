@@ -36,26 +36,19 @@ def menu_user(current_func, session):
   #print type(session['auth']).__name__
   #print session.keys()
   acc = ''
-  is_last = False 
   for i, menu in enumerate(MENU_USER):
-    if i == len(MENU_USER) - 1:
-      is_last = True
     acc += menu_user_item(menu, session,
-      string.split(current_func, '.')[0] == string.split(menu[1], '.')[0], is_last)
+      string.split(current_func, '.')[0] == string.split(menu[1], '.')[0])
   return acc
 
-def menu_user_item(tup, session, is_current, is_last_menu_item):
+def menu_user_item(tup, session, is_current):
   u = reverse(tup[1])
-  acc = ''
+  acc = '<a href=\"%s\" ' % u
   if is_current:
-    acc += '<li class="active">'
+    class_name = "login-menu__link--selected"
   else:
-    acc += '<li>'
-  acc += """<a class="not-text" href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
-  if not is_last_menu_item:
-    # This span creates a divider between list elements
-    acc += '<span></span>'
-  acc += '</li>'
+    class_name = "login-menu__link"
+  acc += 'class=\"' + class_name + '\">%s</a>' % tup[0]
   return acc
 
 @register.simple_tag

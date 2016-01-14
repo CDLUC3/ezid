@@ -1,5 +1,10 @@
 {% load layout_extras %}
 {% load menus %}
+
+{% if session.auth %}
+<div class="header__admin-text">Welcome {{ session.auth.user|first }}!</div>
+{% endif %}
+
 <header role="banner" class="header">
   <div class="header__logos">
 
@@ -16,11 +21,6 @@
     <img src="/static/images/mobile-menu.svg" alt="Show or hide navigation" class="header__nav-button-icon">
   </button>
 
-  <!-- p id="nav-logged-in-welcome">&nbsp;
-    {% if session.auth %}
-    Welcome {{ session.auth.user|first }}! 
-    {% endif %}
-  </p -->
   <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-hidden="false">
     <a class="header__search-link" href="/search">Search</a>
     <div class="header__learn">
@@ -48,14 +48,8 @@
   </nav>
 </header>
     {% if session.auth %}
-    <div class="nav-logged-in-buttons">
-      <div class="container">
-        <div class="row">
-          <ul class="nav nav-pills nav-justified">
-            {% menu_user menu_item session %}
-          </ul>
-        </div>
-      </div>
+    <div class="login-menu">
+      {% menu_user menu_item session %}
     </div>
     <p class="vertical-buffer-20"></p>
     {% endif %}

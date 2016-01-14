@@ -11,7 +11,7 @@
     align-items: center;
     justify-content: center;
     min-height: 120px;
-    background: linear-gradient(to right, $design-secondary-lightest 50%, $design-secondary-footer-newsfeed 50%); // split the bg into two colors each for the lang/logo and news regions
+    background: linear-gradient(to right, $design-secondary-lightest 67%, $design-secondary-footer-newsfeed 32%); // split the bg into two colors each for the lang/logo and news regions
   }
 
 }
@@ -105,10 +105,8 @@
 .footer__copyright {
 	flex: 0 1 40%;
 	padding: $layout-box-padding;
-	background-color: $design-secondary-lightest;
 
 	@include bp(screen1) {
-    align-self: stretch;
     order: 2;
     padding: $layout-box-padding $layout-box-padding $layout-box-padding 20px;
   }

@@ -132,9 +132,9 @@ def formulateQuery (constraints, orderBy=None,
   target              |   |   | str        | URL
   profile             | Y | Y | str        | profile label, e.g., "erc"
   isTest              |   | Y | bool       |
-  resourceCreator     |   | Y | str        | fulltext-style boolean
+  resourceCreator     |   | Y | str        | limited fulltext-style boolean
                       |   |   |            | expression, e.g.,
-                      |   |   |            | "green +eggs -ham"
+                      |   |   |            | '"green eggs" ham'
   resourceTitle       |   | Y | str        | ditto
   resourcePublisher   |   | Y | str        | ditto
   keywords            |   |   | str        | ditto
@@ -238,6 +238,21 @@ def formulateQuery (constraints, orderBy=None,
     elif column in ["resourceCreator", "resourceTitle", "resourcePublisher",
       "keywords"]:
       if _fulltextSupported:
+        # MySQL interprets some characters as operators, and will
+        # return an error if a query is malformed according to its
+        # less-than-well-defined rules.  For safety we remove all
+        # operators that are outside double quotes (i.e., quotes are
+        # the only operator we retain).
+        v = ""
+        inQuote = False
+        for c in value:
+          if c == '"':
+            inQuote = not inQuote
+          else:
+            if not inQuote and not c.isalnum(): c = " "
+          v += c
+        if inQuote: v += '"'
+        value = "".join(v)
         filters.append(django.db.models.Q(**{ (column + "__search"): value }))
       else:
         value = value.split()
