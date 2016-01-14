@@ -12,6 +12,10 @@
   }
 }
 
+.accordion-toggle {
+  @extend %link__primary;
+}
+
 .learn__title--ext-link {
   margin-bottom: 20px;
 }
