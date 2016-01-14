@@ -12,3 +12,6 @@ LOCALIZATIONS["localhost:8001"] = ("purdue", ["gjanee@ucop.edu"])
 LOCALIZATIONS["localhost:8002"] = ("jisc-edina", ["gjanee@ucop.edu"])
 
 injectSecrets(DEPLOYMENT_LEVEL)
+
+# Andy's MySQL driver won't allow utf8mb4 for some reason.
+DATABASES["search"]["OPTIONS"]["charset"] = "utf8"
