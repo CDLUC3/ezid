@@ -39,8 +39,11 @@ $heading-icon-spacing: 40px;
 
 .heading__icon-1 {
 	@extend %heading__icon;
-	padding: 2px $heading-icon-spacing;
-	background-image: url('../images/searchAdvanced.svg');
+	padding: 8px 45px;
+	background-image: url('../images/icon_down-arrow.svg');
+	background-position: left -7px center;
+	background-size: 50px;
+	// border: $bred;
 }
 
 .heading__icon-2 {
