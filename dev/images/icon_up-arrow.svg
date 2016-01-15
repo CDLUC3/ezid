@@ -12,7 +12,7 @@
 		<use xlink:href="#SVGID_1_"  overflow="visible"/>
 	</clipPath>
 	
-		<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="-141.7832" y1="815.7168" x2="-140.7827" y2="815.7168" gradientTransform="matrix(0 -38.4039 -38.4039 0 31349.3125 -5402.8281)">
+		<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="-141.7783" y1="815.7207" x2="-140.7778" y2="815.7207" gradientTransform="matrix(0 -38.4039 -38.4039 0 31349.4688 -5402.644)">
 		<stop  offset="0" style="stop-color:#FAFAF8"/>
 		<stop  offset="1" style="stop-color:#EDEAE6"/>
 	</linearGradient>
@@ -27,7 +27,7 @@
 	</clipPath>
 	<path clip-path="url(#SVGID_5_)" fill="none" stroke="#BEB6AF" d="M4.886,40.656c0,0-2,0-2-2V4.896c0,0,0-2,2-2h35.5c0,0,2,0,2,2
 		v33.76c0,0,0,2-2,2H4.886z"/>
-	<polygon clip-path="url(#SVGID_5_)" fill="#05788C" points="29.556,17.335 23.036,27.256 22.235,27.256 15.715,17.335 
-		17.275,16.295 22.636,24.456 27.996,16.295 	"/>
+	<polygon clip-path="url(#SVGID_5_)" fill="#05788C" points="15.716,26.215 22.236,16.295 23.036,16.295 29.556,26.215 
+		27.996,27.255 22.636,19.095 17.276,27.255 	"/>
 </g>
 </svg>

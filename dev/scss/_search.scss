@@ -20,6 +20,12 @@ $search-layout-element-spacing: 30px;
 .search__advanced {
 	max-width: 1000px;
 	margin: 0 auto;
+
+	// replace down arrow with up arrow when details is toggled open
+	&[open] .search__summary {
+		background-image: url('../images/icon_up-arrow.svg');
+	}
+
 }
 
 .search__summary {

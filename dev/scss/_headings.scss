@@ -9,8 +9,8 @@ $heading-icon-spacing: 40px;
 }
 
 .heading__primary-text {
-	margin: 0 auto;
 	max-width: 1000px;
+	margin: 0 auto;
 	padding: 0.8em 0;
 	color: $design-white-color;
 	font-size: 1.6em;
@@ -41,8 +41,8 @@ $heading-icon-spacing: 40px;
 	@extend %heading__icon;
 	padding: 8px 45px;
 	background-image: url('../images/icon_down-arrow.svg');
-	background-position: left -7px center;
-	background-size: 50px;
+	background-position: left -2px center;
+	background-size: 40px;
 	// border: $bred;
 }
 
