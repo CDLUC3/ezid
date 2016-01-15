@@ -12,7 +12,7 @@
     <link rel="shortcut icon" type="image/png" href="/static/images/favicon.ico"/>
     <link rel="icon" sizes="16x16 32x32" href="/static/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/static/stylesheets/main.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/stylesheets/main2.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/main2.min.css"/>
     <link rel="stylesheet" type="text/css" href="/static/stylesheets/datatables.css"/>
 
     <script type="text/javascript" src="/static/javascripts/main2.min.js"></script>
@@ -41,44 +41,18 @@
       
       {% include "includes/footer.html" %}
 
-  <script type="text/javascript" src="/static/javascripts/bootstrap/affix.js"></script>
+  <!-- script type="text/javascript" src="/static/javascripts/bootstrap/affix.js"></script -->
   <script type="text/javascript" src="/static/javascripts/bootstrap/alert.js"></script>
   <script type="text/javascript" src="/static/javascripts/bootstrap/button.js"></script>
   <script type="text/javascript" src="/static/javascripts/bootstrap/carousel.js"></script>
   <script type="text/javascript" src="/static/javascripts/bootstrap/collapse.js"></script>
-  <script type="text/javascript" src="/static/javascripts/bootstrap/dropdown.js"></script>
-  <script type="text/javascript" src="/static/javascripts/bootstrap/tab.js"></script>
-  <script type="text/javascript" src="/static/javascripts/bootstrap/transition.js"></script>
-  <script type="text/javascript" src="/static/javascripts/bootstrap/scrollspy.js"></script>
-  <script type="text/javascript" src="/static/javascripts/bootstrap/modal.js"></script>
+  <!-- script type="text/javascript" src="/static/javascripts/bootstrap/dropdown.js"></script -->
+  <!-- script type="text/javascript" src="/static/javascripts/bootstrap/tab.js"></script -->
+  <!-- script type="text/javascript" src="/static/javascripts/bootstrap/transition.js"></script -->
+  <!-- script type="text/javascript" src="/static/javascripts/bootstrap/scrollspy.js"></script -->
+  <!-- script type="text/javascript" src="/static/javascripts/bootstrap/modal.js"></script -->
   <script type="text/javascript" src="/static/javascripts/bootstrap/tooltip.js"></script>
   <script type="text/javascript" src="/static/javascripts/bootstrap/popover.js"></script>
-
-<!-- Table responsive behavior. Used for all tables.
-Go through each table and extract out heading text.
-Then concatenate this into each cell
-http://exisweb.net/responsive-tables-in-wordpress -->
-<script>
-var headertext = [];
-var headers = document.querySelectorAll("thead");
-var tablebody = document.querySelectorAll("tbody");
-
-for (var i = 0; i < headers.length; i++) {
-  headertext[i]=[];
-  for (var j = 0, headrow; headrow = headers[i].rows[0].cells[j]; j++) {
-    var current = headrow;
-    headertext[i].push(current.textContent.replace(/\r?\n|\r/,""));
-    }
-}
-
-for (var h = 0, tbody; tbody = tablebody[h]; h++) {
-  for (var i = 0, row; row = tbody.rows[i]; i++) {
-    for (var j = 0, col; col = row.cells[j]; j++) {
-      col.setAttribute("data-th", headertext[h][j]);
-    }
-  }
-}
-</script>
 
     {% if not google_analytics_id == 'none' %}
       <script>

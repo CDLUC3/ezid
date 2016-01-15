@@ -2839,12 +2839,23 @@ Selector pattern using above mixin:
       text-align: left; } }
 
 .heading__primary {
-  margin: 0 -10px;
-  padding: 0.8em 10px;
-  background: linear-gradient(to bottom, #168b99, #056a7b);
+  position: relative;
+  width: 1000px;
+  margin: 0 auto;
+  padding: 0.8em 0;
   color: white;
   font-size: 1.6em;
-  font-weight: bold; }
+  font-weight: bold;
+  z-index: 0; }
+  .heading__primary:before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -1000px;
+    width: 3000px;
+    background: linear-gradient(to bottom, #168b99, #056a7b);
+    content: '';
+    z-index: -1; }
 
 .heading__pop {
   margin: 0;
@@ -2946,19 +2957,13 @@ Selector pattern using above mixin:
   font-weight: bold; }
 
 .footer {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-flow: column nowrap;
-      -ms-flex-flow: column nowrap;
-          flex-flow: column nowrap;
   margin: 0 -10px;
   background-color: #ece5d6; }
   @media (min-width: 780px) {
     .footer {
-      -webkit-flex-flow: row nowrap;
-          -ms-flex-flow: row nowrap;
-              flex-flow: row nowrap;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
       -webkit-align-items: center;
           -ms-flex-align: center;
               align-items: center;
@@ -3054,7 +3059,8 @@ Selector pattern using above mixin:
       display: block; } }
 
 .footer__logo {
-  width: 100px; }
+  width: 100px;
+  height: 100%; }
 
 .footer__copyright {
   -webkit-flex: 0 1 40%;
@@ -3092,7 +3098,7 @@ Selector pattern using above mixin:
           -ms-flex-pack: end;
               justify-content: flex-end;
       max-width: 1000px;
-      margin: 0 auto 10px;
+      margin: 10px auto;
       color: #ff7f22; } }
 
 .header {
@@ -3634,7 +3640,8 @@ Selector pattern using above mixin:
 
 body {
   margin: 0 10px;
-  font-family: 'KievitWeb'; }
+  font-family: 'KievitWeb';
+  overflow-x: hidden; }
 
 abbr {
   border: none;

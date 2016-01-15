@@ -39,6 +39,7 @@
 body {
   margin: 0 10px;
   font-family: 'KievitWeb';
+  overflow-x: hidden; // for _headings.scss
 }
 
 abbr {
