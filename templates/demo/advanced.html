@@ -7,11 +7,16 @@
 {% block heading %}{% content_heading _("Create an Advanced Demo Identifier") %}{% endblock %}
 {% block content %}
 <div class="container vertical-buffer-sm">
-  <ul class="nav nav-tabs nav-idcreate">
-    <li role="presentation"><a href="{% url "ui_demo.simple" %}">{% trans "Simple" %}</a></li>
-    <li role="presentation" class="active">{% trans "Advanced" %}</li>
-  </ul>
-  <div class="idcreate-content gradient-form">
+  <div class="tab">
+    <input class="tab__input" id="tab-1" type="radio" name="name"/>
+    <label class="tab__label" for="tab-1">{% trans "Simple" %}</label>
+    <div class="tab__content">
+      <div>This page cannot be loaded unless you have JavaScript activated in your browser.</div>
+    </div>
+    <input class="tab__input" id="tab-2" type="radio" name="name" checked="checked"/>
+    <label class="tab__label" for="tab-2">{% trans "Advanced" %}</label>
+    <div class="tab__content gradient-form">
+
     <form id="create_form" action="{% url "ui_demo.advanced" %}" method="post" class="form-horizontal" role="form">
       <input name="action" id="action" type="hidden" value="create"/>
 
@@ -48,6 +53,20 @@
       </div> 
     </form>
   </div>
+<script type="text/javascript">
+/* ToDo: Bring in both simple and advanced content onto the same page
+   Then this JavaScript will be unnecessary since tabs will swap quickly
+   btwn simple/advanced content */
+$(document).ready(function() {
+  // redirect to Advanced ID create 
+  $('#tab-1:not(:checked)').on('change', function() {
+    document.getElementById('tab-1').checked = false;
+    document.getElementById('tab-2').checked = true;
+    window.location.href = "{% url "ui_demo.simple" %}";
+  });
+});
+</script>
+
 </div>  
   <script type="text/javascript" src="/static/javascripts/advanced_create.js"></script>
   {% include "info/popup_help.html" %}
