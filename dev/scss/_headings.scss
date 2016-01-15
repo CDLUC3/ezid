@@ -3,12 +3,26 @@
 $heading-icon-spacing: 40px;
 
 .heading__primary {
-	margin: 0 -10px;
-	padding: 0.8em 10px;
-	background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
+	position: relative;
+	width: 1000px;
+	margin: 0 auto;
+	padding: 0.8em 0;
 	color: $design-white-color;
 	font-size: 1.6em;
 	font-weight: bold;
+	z-index: 0;
+
+	&:before {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: -1000px;
+		width: 3000px;
+		background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
+		content: '';
+		z-index: -1;
+	}
+
 }
 
 .heading__pop {

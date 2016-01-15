@@ -1,13 +1,11 @@
 // ##### Footer Component ##### //
 
 .footer {
-	display: flex;
-	flex-flow: column nowrap;
 	margin: 0 -10px;
 	background-color: $design-secondary-lightest;
 
 	@include bp(screen1) {
-    flex-flow: row nowrap;
+    display: flex;
     align-items: center;
     justify-content: center;
     min-height: 120px;
@@ -100,6 +98,7 @@
 
 .footer__logo {
 	width: 100px;
+	height: 100%;
 }
 
 .footer__copyright {
