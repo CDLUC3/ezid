@@ -11,12 +11,9 @@
 	@include bp(screen1) {
 		flex-flow: row nowrap;
 		justify-content: space-around;
-		margin: 0 -10px 30px;
-		padding: 15px;
-
-		// Future styles:
 		max-width: 1235px;
 		margin: 0 auto 30px;
+		padding: 15px;
 	}
 
 }
@@ -24,7 +21,7 @@
 %login-menu__link {
 	display: flex;
 	flex: 1 0 auto;
-	padding: 15px;
+	padding: 15px 10px;
 	color: $design-black-color;
 	font-size: 0.9em;
 	font-weight: bold;
