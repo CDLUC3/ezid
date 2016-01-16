@@ -1,10 +1,12 @@
 // ##### Login Menu Component ##### //
+.login-menu__container {
+	margin: 0 -10px;
+	background: linear-gradient(to bottom, $design-secondary-gradient-top, $design-secondary-color);
+}
 
 .login-menu {
 	display: flex;
 	flex-flow: column nowrap;
-	margin: 0 -10px;
-	background: linear-gradient(to bottom, $design-secondary-gradient-top, $design-secondary-color);
 
 	@include bp(screen1) {
 		flex-flow: row nowrap;
@@ -13,8 +15,8 @@
 		padding: 15px;
 
 		// Future styles:
-		// max-width: 1235px;
-		// margin: 0 auto 30px;
+		max-width: 1235px;
+		margin: 0 auto 30px;
 	}
 
 }
