@@ -45,6 +45,15 @@ $search-layout-element-spacing: 30px;
 
 }
 
+.search__publication-fieldset {
+	font-size: 1.1em;
+}
+
 .search__inline-groups {
 	padding: 0 0 15px;
+
+	.fcontrol__text-label-inline {
+		font-weight: normal;
+	}
+
 }
