@@ -261,23 +261,6 @@ def validate_simple_metadata_form(request, profile):
     is_valid = False
   return is_valid
 
-def validate_advanced_top(request):
-  """validates advanced form top and returns list of error messages if any"""
-  err_msgs = []
-  post = request.POST
-  if "_target" not in post:
-    err_msgs.append(_("You must enter a location (URL) for your identifier")) 
-  if not(url_is_valid(post['_target'])):
-    err_msgs.append(_("Please enter a valid location (URL)"))
-  if post['action'] == 'create' and \
-      post['remainder'] != remainder_box_default and (' ' in post['remainder']):
-    err_msgs.append(_("The remainder you entered is not valid."))     
-  if "datacite.resourcetype" in post:
-    rt = post["datacite.resourcetype"].strip()
-    if rt != "" and rt.split("/", 1)[0] not in _dataciteResourceTypes:
-      err_msgs.append(_("Invalid general resource type"))
-  return err_msgs
-  
 def user_or_anon_tup(request):
   """Gets user tuple from request.session, otherwise returns anonymous tuple"""
   if 'auth' in request.session:

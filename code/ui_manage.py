@@ -169,7 +169,8 @@ def edit(request, identifier):
       d['current_profile'] = metadata.getProfile('dc')
     if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
       d = _addDataciteXmlToDict(id_metadata, d)
-      d['dx_form'] = datacite_xml.populateFormObject(d['identifier']['datacite']) 
+      d['dx_dict'] = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
+
       # d['form'] gets assigned to {remainder_form, creator_set, title_set, etc...}
       d['form']=form_objects.getIdForm_datacite_xml(d, request) 
   return uic.render(request, "manage/edit", d)

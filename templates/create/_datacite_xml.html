@@ -9,10 +9,65 @@
 <br/>
 <div name="/resource" class="element">
 
-<!-- Old format: -->
-<!-- datacite_get_creators datacite_obj datacite_obj_empty --> 
+  {{ form.nonrepeating_form.non_field_errors }}
+  <div class="row form-group form-group-sm{% if form.nonrepeating_form.target.errors %} has-error{% endif %}">
+    <label for="{{ form.nonrepeating_form.target.id_for_label }}" class="col-sm-3 control-label">{{ form.nonrepeating_form.target.label }}</label>
+    <div class="col-sm-5">
+      {{ form.nonrepeating_form.target|add_attributes:"form-control"}}
+    </div>
+  {% if form.nonrepeating_form.target.errors %}
+    <div class="col-sm-2">
+    {% for error in form.nonrepeating_form.target.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
+
 {% include "create/_datacite_creator.html" %}
 {% include "create/_datacite_title.html" %}
+  <div class="row form-group form-group-sm{% if form.nonrepeating_form.publisher.errors %} has-error{% endif %}">
+    <label for="{{ form.nonrepeating_form.publisher.id_for_label }}" class="col-sm-3 control-label">{{ form.nonrepeating_form.publisher.label }}</label>
+    <div class="col-sm-5">
+      {{ form.nonrepeating_form.publisher|add_attributes:"form-control"}}
+    </div>
+  {% if form.nonrepeating_form.publisher.errors %}
+    <div class="col-sm-2">
+    {% for error in form.nonrepeating_form.publisher.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
+  <div class="row form-group form-group-sm{% if form.nonrepeating_form.publicationYear.errors %} has-error{% endif %}">
+    <label for="{{ form.nonrepeating_form.publicationYear.id_for_label }}" class="col-sm-3 control-label">{{ form.nonrepeating_form.publicationYear.label }}</label>
+    <div class="col-sm-5">
+      {{ form.nonrepeating_form.publicationYear|add_attributes:"form-control"}}
+    </div>
+  {% if form.nonrepeating_form.publicationYear.errors %}
+    <div class="col-sm-2">
+    {% for error in form.nonrepeating_form.publicationYear.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
+{% for field in form.resourcetype_form %}
+  <div class="row form-group form-group-sm{% if field.errors %} has-error{% endif %}">
+    <label for="{{ field.id_for_label }}" class="element col-sm-3 control-label">{{ field.label }}</label>
+    <div class="element col-sm-5">
+      {{ field|add_attributes:"data form-control"}}
+    </div>
+  {% if field.errors %}
+    <div class="element col-sm-2">
+    {% for error in field.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
+{% endfor %}
+
 {% include "create/_datacite_geoLoc.html" %}
 
 </div>

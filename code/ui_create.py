@@ -119,7 +119,7 @@ def adv_form(request, d):
   should be set before calling. Sets manual_profile, current_profile, current_profile_name, 
   internal_profile, profiles, profile_names"""
 
-  d['remainder_box_default'] = form_objects.remainder_box_default
+  d['remainder_box_default'] = form_objects.REMAINDER_BOX_DEFAULT
   #selects current_profile based on parameters or profile preferred for prefix type
   d['manual_profile'] = False
   choice_is_doi = False 
@@ -160,13 +160,14 @@ def adv_form(request, d):
     # Begin ID Creation (empty form)
     if d['current_profile_name'] == 'datacite_xml':
       d['form'] = form_objects.getIdForm_datacite_xml()
+      # import pdb; pdb.set_trace()
     else:
       d['form'] = form_objects.getAdvancedIdForm(d['current_profile']) 
     d['id_gen_result'] = 'edit_page' 
   else:     # request.method == "POST"
     P = REQUEST
     if d['current_profile_name'] == 'datacite_xml':
-      d = adv_form_datacite_xml(request, d)
+      d = post_adv_form_datacite_xml(request, d)
     else:
       if "current_profile" not in P or "shoulder" not in P: 
         d['id_gen_result'] = 'bad_request'
@@ -190,7 +191,7 @@ def adv_form(request, d):
           "_export": ("yes" if P["export"] == "yes" else "no") } )
       
         #write out ID and metadata (one variation with special remainder, one without)
-        if P['remainder'] == '' or P['remainder'] == form_objects.remainder_box_default:
+        if P['remainder'] == '' or P['remainder'] == form_objects.REMAINDER_BOX_DEFAULT:
           s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request), 
               uic.group_or_anon_tup(request), to_write)
         else:
@@ -213,23 +214,12 @@ def adv_form(request, d):
 def _engage_datacite_xml_profile(request, d, profile_name):
   d['manual_profile'] = True
   d['current_profile_name'] = profile_name
-  ''' Feed in a whole, empty XML record so that elements can be properly
-      displayed in form fields on manage/edit page ''' 
-  f = open(os.path.join(
-    django.conf.settings.PROJECT_ROOT, "static", "datacite_emptyRecord.xml"))
-  obj = objectify.parse(f).getroot()
-  f.close()
-  if obj is not None:
-    d['datacite_obj'] = obj
-  else:
-    django.contrib.messages.error(request, _("Unable to render empty datacite \
-      form using file") + ": " + f.name)
   d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
   d['current_profile'] = d['current_profile_name']
   return d
 
-def adv_form_datacite_xml(request, d):
-  """Takes the request and processes create datacite advanced (xml) form
+def post_adv_form_datacite_xml(request, d):
+  """Processes create datacite advanced (xml) form using request object
   from both create/demo and edit areas"""
   error_msgs = []
 
@@ -240,16 +230,8 @@ def adv_form_datacite_xml(request, d):
     action_result = [_("editing"), _("edited successfully")]
     if not P['identifier']:
       error_msgs.append(_("Unable to edit. Identifier not supplied."))
-  d["testPrefixes"] = uic.testPrefixes
-  if 'auth' in request.session:
-    d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.key }\
-      for s in policy.getShoulders(request.session["auth"].user,
-      request.session["auth"].group)],
-      key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
-  else:
-    d['prefixes'] = []
+  import pdb; pdb.set_trace()
   pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
-  # import pdb; pdb.set_trace()
   if (P['action'] == 'create' and\
       P['shoulder'] not in pre_list):
       error_msgs.append(_("Unauthorized to create with this identifier \

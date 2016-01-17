@@ -7,7 +7,20 @@ import userauth
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
-remainder_box_default = _("Recommended: Leave blank")
+################# Constants ####################
+
+REMAINDER_BOX_DEFAULT = _("Recommended: Leave blank")
+RESOURCE_TYPES = (
+  ('', _("Select a type of object")), ('Audiovisual', _('Audiovisual')), 
+  ('Collection', _('Collection')), ('Dataset', _('Dataset')), 
+  ('Event', _('Event')), ('Image', _('Image')), 
+  ('InteractiveResource', _('InteractiveResource')), ('Model', _('Model')), 
+  ('PhysicalObject', _('PhysicalObject')), ('Service', _('Service')), 
+  ('Software', _('Software')), ('Sound', _('Sound')), ('Text', _('Text')), 
+  ('Workflow', _('Workflow')), ('Other', _('Other'))
+)
+REGEX_4DIGITYEAR='^\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
+  \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\)$'
 
 ################# Basic ID Forms ####################
 
@@ -61,22 +74,12 @@ class DataciteForm(BaseForm):
     self.fields["datacite.publisher"] = forms.CharField(label=_("Publisher"),
       error_messages={'required': _("Please fill in a value for publisher.")})
     self.fields["datacite.publicationyear"] = forms.RegexField(label=_("Publication year"),
-      regex='^\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\(:unkn\)| \
-        \(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\)$',
+      regex=REGEX_4DIGITYEAR,
       error_messages={'required': _("Please fill in a value for publication year."),
                     'invalid': _("Please fill in a 4-digit publication year.")})
     # Translators: These options appear in drop-down on ID Creation page (DOIs)
-    RESOURCE_TYPES = (
-      ('', _('[Select a type of resource]')), ('Audiovisual', _('Audiovisual')), 
-      ('Collection', _('Collection')), ('Dataset', _('Dataset')), 
-      ('Event', _('Event')), ('Image', _('Image')), 
-      ('InteractiveResource', _('InteractiveResource')), ('Model', _('Model')), 
-      ('PhysicalObject', _('PhysicalObject')), ('Service', _('Service')), 
-      ('Software', _('Software')), ('Sound', _('Sound')), ('Text', _('Text')), 
-      ('Workflow', _('Workflow')), ('Other', _('Other'))
-    )
-    self.fields["datacite.resourcetype"] = forms.ChoiceField(required=False, 
-      choices=RESOURCE_TYPES, label=_("Resource type"))
+    self.fields["datacite.resourcetype"] = \
+      forms.ChoiceField(choices=RESOURCE_TYPES, label=_("Resource type"))
     if self.placeholder is not None and self.placeholder == True:
       self.fields['datacite.creator'].widget.attrs['placeholder'] = _("Creator")
       self.fields['datacite.title'].widget.attrs['placeholder'] = _("Title")
@@ -108,7 +111,7 @@ class RemainderForm(forms.Form):
     self.shoulder = kwargs.pop('shoulder',None)
     super(RemainderForm,self).__init__(*args,**kwargs)
     self.fields["remainder"]=forms.CharField(required=False, 
-      label=_("Custom Remainder"), initial=remainder_box_default, 
+      label=_("Custom Remainder"), initial=REMAINDER_BOX_DEFAULT, 
       validators=[_validate_custom_remainder(self.shoulder)])
 
 def getAdvancedIdForm (profile, request=None):
@@ -134,15 +137,36 @@ def _validate_url(url):
 
 def _validate_custom_remainder(shoulder):
   def innerfn(remainder_to_test):
-    test = "" if remainder_to_test == remainder_box_default \
+    test = "" if remainder_to_test == REMAINDER_BOX_DEFAULT \
       else remainder_to_test
-    # ToDo: change this to util.validateIdentifier when this code is brought in
-    if not (util.validateArk(shoulder[5:] + test)):
+    if not (util.validateIdentifier(shoulder + test)):
       raise ValidationError(
         _("This combination of characters cannot be used as a remainder."))
   return innerfn
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ################# Advanced Datacite ID Form/Elements #################
+
+class NonRepeatingForm(forms.Form):
+  """ Form object for single field elements in DataCite Advanced (XML) profile """
+  target=forms.CharField(required=False, label=_("Location (URL)"),
+    validators=[_validate_url])
+  publisher = forms.CharField(label=_("Publisher"))
+  publicationYear = forms.RegexField(label=_("Publication Year"),
+    regex=REGEX_4DIGITYEAR,
+    error_messages={'required': _("Please fill in a value for publication year."),
+                    'invalid': _("Please fill in a 4-digit publication year.")})
+  language = forms.CharField(required=False, label=_("Language"))
+  version = forms.CharField(required=False, label=_("Version"))
+
+class ResourceTypeForm(forms.Form):
+  """ This is also composed of single field elements like NonRepeatingForm,
+      but I wasn't sure how to display fields with hyphens directly in the template.
+      By embedding them in a form object, this bypasses that problem. """
+  def __init__(self, *args, **kwargs):
+    super(ResourceTypeForm,self).__init__(*args,**kwargs)
+    self.fields['resourceType-ResourceTypeGeneral'] = forms.ChoiceField(choices=RESOURCE_TYPES, label = _("Resource Type"))
+    self.fields['resourceType'] = forms.CharField(required=False, label=_("Resource Type Description"))
 
 # Django faulty design: First formset allows blank form fields.
 # http://stackoverflow.com/questions/2406537/django-formsets-make-first-required
@@ -152,73 +176,91 @@ class RequiredFormSet(BaseFormSet):
     super(RequiredFormSet, self).__init__(*args, **kwargs)
     self.forms[0].empty_permitted = False
 
+# Remaining Datacite Forms listed below can be wrapped into a FormSet
 class CreatorForm(forms.Form):
   """ Form object for Creator Element in DataCite Advanced (XML) profile """
   def __init__(self, *args, **kwargs):
-    super(forms.Form,self).__init__(*args,**kwargs)
-    self.fields["name"] = forms.CharField(label=_("Name"))
+    super(CreatorForm,self).__init__(*args,**kwargs)
+    self.fields["creatorName"] = forms.CharField(label=_("Name"))
     self.fields["nameIdentifier"] = forms.CharField(required=False, label=_("Name Identifier"))
-    self.fields["nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
-    self.fields["schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
+    self.fields["nameIdentifier-nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
+    self.fields["nameIdentifier-schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
     self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
 
 class TitleForm(forms.Form):
   """ Form object for Title Element in DataCite Advanced (XML) profile """
-  title=forms.CharField(label=_("Title"))
-  TITLE_TYPES = (
-    ("", _("Main title")),
-    ("AlternativeTitle", _("Alternative title")),
-    ("Subtitle", _("Subtitle")),
-    ("TranslatedTitle", _("Translated title"))
-  ) 
-  titleType = forms.ChoiceField(required=False, label = _("Type"), 
-    widget= forms.RadioSelect(), choices=TITLE_TYPES)
+  def __init__(self, *args, **kwargs):
+    super(TitleForm,self).__init__(*args,**kwargs)
+    self.fields["title"] = forms.CharField(label=_("Title"))
+    TITLE_TYPES = (
+      ("", _("Main title")),
+      ("AlternativeTitle", _("Alternative title")),
+      ("Subtitle", _("Subtitle")),
+      ("TranslatedTitle", _("Translated title"))
+    ) 
+    self.fields["titleType"] = forms.ChoiceField(required=False, label = _("Type"),
+      widget= forms.RadioSelect(), choices=TITLE_TYPES)
+    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
+      label="Language(Hidden)", widget= forms.HiddenInput())
 
 class GeoLocForm(forms.Form):
   """ Form object for GeoLocation Element in DataCite Advanced (XML) profile """
   # Translators: A coordinate point  
-  point = forms.RegexField(required=False, label=_("Point"),
+  geoLocationPoint = forms.RegexField(required=False, label=_("Point"),
     regex='^(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)$',
     error_messages={'invalid': _("A Geolocation Point must be made up of two \
       decimal numbers separated by a space.")})
   # Translators: A bounding box (with coordinates)
-  box = forms.RegexField(required=False, label=_("Box"),
+  geoLocationBox = forms.RegexField(required=False, label=_("Box"),
     regex='^(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)$',
     error_messages={'invalid': _("A Geolocation Box must be made up of four \
       decimal numbers separated by a space.")})
-  place = forms.CharField(required=False, label=_("Place"))
+  geoLocationPlace = forms.CharField(required=False, label=_("Place"))
 
-# Accepts request.POST for base level variables (and when creating a new ID),
-# When displaying an already created ID, accepts a dictionary of datacite_xml
-#   specific data.
-# Returns Advanced Datacite elements in the form of Django formsets
 def getIdForm_datacite_xml (d=None, request=None):
+  """ Accepts request.POST for base level variables (and when creating a new ID),
+      When displaying an already created ID, accepts a dictionary of datacite_xml
+      specific data.
+      Returns Advanced Datacite elements as dict of Django forms and formsets
+      Fields in Django FormSets follow this naming convention:
+         prefix-#-elementName      
+      Thus the creatorName field in the third Creator fieldset would be named:
+         creators-creator-1-creatorName                                     """
+  # Initialize forms and FormSets
+  remainder_form = nonrepeating_form = resourcetype_form = creator_set = \
+    title_set = geoloc_set = None 
   CreatorSet = formset_factory(CreatorForm, formset=RequiredFormSet)
   TitleSet = formset_factory(TitleForm, formset=RequiredFormSet)
   GeoLocSet = formset_factory(GeoLocForm)
-  remainder_form = creator_set = title_set = geoloc_set = None 
   if not request and not d:  # Get an empty form
     remainder_form = RemainderForm(None, shoulder=None, auto_id='%s')
-    creator_set = CreatorSet(prefix='creators')
-    title_set = TitleSet(prefix='titles')
-    geoloc_set = GeoLocSet(prefix='geoLocations')
+    nonrepeating_form = NonRepeatingForm(None, auto_id='%s')
+    resourcetype_form = ResourceTypeForm(None, auto_id='%s')
+    creator_set = CreatorSet(prefix='creators-creator')
+    title_set = TitleSet(prefix='titles-title')
+    geoloc_set = GeoLocSet(prefix='geoLocations-geoLocation')
   if request and request.method == "GET" and d:
-    creator_set = CreatorSet(d['dx_form']['data_creators'], prefix='creators', auto_id='%s')
-    title_set = TitleSet(d['dx_form']['data_titles'], prefix='titles', auto_id='%s')
-    geoloc_set = GeoLocSet(d['dx_form']['data_geoLocations'], prefix='geoLocations', auto_id='%s')
+    # Remainder form only needed upon ID creation
+    nonrepeating_form = NonRepeatingForm(d['dx_dict']['nonRepeating'], auto_id='%s')
+    resourcetype_form = ResourceTypeForm(d['dx_dict']['resourceType'], auto_id='%s')
+    creator_set = CreatorSet(d['dx_dict']['creators'], prefix='creators-creator', auto_id='%s')
+    title_set = TitleSet(d['dx_dict']['titles'], prefix='titles-title', auto_id='%s')
+    geoloc_set = GeoLocSet(d['dx_dict']['geoLocations'], prefix='geoLocations-geoLocation', auto_id='%s')
   elif request and request.method == "POST": 
     P = request.POST 
     shoulder = P['shoulder'] 
     remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
-    creator_set = CreatorSet(P, prefix='creators', auto_id='%s')
-    title_set = TitleSet(P, prefix='titles', auto_id='%s')
-    geoloc_set = GeoLocSet(P, prefix='geoLocations', auto_id='%s')
-  return {'remainder_form': remainder_form, 'creator_set': creator_set, \
+    nonrepeating_form = NonRepeatingForm(P, auto_id='%s')
+    resourcetype_form = ResourceTypeForm(P, auto_id='%s')
+    creator_set = CreatorSet(P, prefix='creators-creator', auto_id='%s')
+    title_set = TitleSet(P, prefix='titles-title', auto_id='%s')
+    geoloc_set = GeoLocSet(P, prefix='geoLocations-geoLocation', auto_id='%s')
+  return {'remainder_form': remainder_form, 'nonrepeating_form': nonrepeating_form,
+    'resourcetype_form': resourcetype_form, 'creator_set': creator_set, 
     'title_set': title_set, 'geoloc_set' : geoloc_set}
 
-#############################################################################
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ############## Remaining Forms (not related to ID creation/editing) #########
-#############################################################################
 
 ################# User Form Validation functions  #################
 
@@ -274,7 +316,7 @@ class UserForm(forms.Form):
 
 class BaseSearchIdForm(forms.Form):
   """ Base form object used for public Search ID page, 
-      and extended for use with Manage ID page """
+      and extended for use with Manage ID page        """
   keywords = forms.CharField(required=False, label=_("Search Terms"),
     widget=forms.TextInput(attrs={'placeholder': _("Full text search using words about or describing the identifier.")}))
   # ToDo: Determine proper regex for identifier for validation purposes
@@ -298,16 +340,7 @@ class BaseSearchIdForm(forms.Form):
     regex='^\d{1,4}$', 
     error_messages={'invalid': _("Please fill in a 4-digit publication year.")},
     widget=forms.TextInput(attrs={'placeholder': _("Ex. 2016")}))
-  OBJECT_TYPES = (
-    ('', _("Select a type of object")), ('Audiovisual', _('Audiovisual')), 
-    ('Collection', _('Collection')), ('Dataset', _('Dataset')), 
-    ('Event', _('Event')), ('Image', _('Image')), 
-    ('InteractiveResource', _('InteractiveResource')), ('Model', _('Model')), 
-    ('PhysicalObject', _('PhysicalObject')), ('Service', _('Service')), 
-    ('Software', _('Software')), ('Sound', _('Sound')), ('Text', _('Text')), 
-    ('Workflow', _('Workflow')), ('Other', _('Other'))
-  )
-  object_type = forms.ChoiceField(required=False, choices=OBJECT_TYPES, 
+  object_type = forms.ChoiceField(required=False, choices=RESOURCE_TYPES, 
     label = _("Object Type"))
   ID_TYPES = (
     ('', _("Select a type of identifier (ARK or DOI)")),

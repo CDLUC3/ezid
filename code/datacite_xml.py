@@ -8,84 +8,155 @@
 # 2) Creates an XML document for attaching Datacite XML metadata.
 #
 # Authors:
-#   Scott Fisher <sfisher@ucop.edu>, Andy Mardesich <andy.mardesich@ucop.edu>
+#   Scott Fisher <sfisher@ucop.edu>, Greg Janee <gjanee@ucop.edu> 
 #
 # License:
-#   Copyright (c) 2013, Regents of the University of California
+#   Copyright (c) 2016, Regents of the University of California
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
 
-from lxml import etree
+import lxml.etree
+import util
 import re
 import copy
-from io import StringIO
 
-ns = { "N": "http://datacite.org/schema/kernel-3" }
-ROOT_CREATORS = '//N:resource/N:creators/N:creator'
-ROOT_TITLES = '//N:resource/N:titles/N:title'
-ROOT_GEOLOCS = '//N:resource/N:geoLocations/N:geoLocation'
+_repeatableElementContainers = ["creators", "titles", "subjects",
+  "contributors", "dates", "alternateIdentifiers", "relatedIdentifiers",
+  "sizes", "formats", "rightsList", "descriptions", "geoLocations"]
 
-# ============================================================================= 
-#   Form field generation
-# =============================================================================
+def dataciteXmlToFormElements (document):
+  """
+  Converts a DataCite XML record to a dictionary of form elements.
+  All non-content (comments, etc.) is discarded.  Whitespace is
+  processed and empty element and attribute values are discarded.
+  Dictionary keys follow the pattern of element and attribute XPaths,
+  e.g., the schemeURI attribute in the following XML fragment:
 
+    <resource>
+      <creators>
+        <creator>...</creator>
+        <creator>
+          <nameIdentifier schemeURI="...">
 
-def _getElementDict(elementName, tree):
-  if elementName == 'creators':
-    return {
-      "name" : tree.xpath('//N:resource/N:creators/N:creator/N:creatorName', namespaces=ns),
-      "nameIdentifier" : tree.xpath('//N:resource/N:creators/N:creator/N:nameIdentifier', namespaces=ns),
-      "nameIdentifierScheme" : tree.xpath('//N:resource/N:creators/N:creator/N:nameIdentifier/@nameIdentifierScheme', namespaces=ns),
-      "schemeURI" : tree.xpath('//N:resource/N:creators/N:creator/N:nameIdentifier/@schemeURI', namespaces=ns),
-      "affiliation" : tree.xpath('//N:resource/N:creators/N:creator/N:affiliation', namespaces=ns) }
-  if elementName == 'titles':
-    return {
-      "title" : tree.xpath('//N:resource/N:titles/N:title', namespaces=ns),
-      "titleType" : tree.xpath('//N:resource/N:titles/N:title/@titleType', namespaces=ns) }
-  if elementName == 'geoLocations':
-    return {
-      "point" : tree.xpath('//N:resource/N:geoLocations/N:geoLocation/N:geoLocationPoint', namespaces=ns),
-      "box" : tree.xpath('//N:resource/N:geoLocations/N:geoLocation/N:geoLocationBox', namespaces=ns),
-      "place" : tree.xpath('//N:resource/N:geoLocations/N:geoLocation/N:geoLocationPlace', namespaces=ns) }
+  is identified by key:
 
-def _assignKey(d,k,v,i): 
-  """Assign None if XPath query results in no item for this index in the resulting list"""
-  try: d[k] = v[i].text 
-  except IndexError: d[k] = None
-  return d
+    creators-creator-2-nameIdentifier-schemeURI
 
-def _generateFormFields(elementName, numElements, tree):
-  """Create a dictionary like this:
-     {'creators-0-name': 'Datacite', 'creators-0-nameIdentifier': '0000-09898', ...}"""
-  d={}
-  k_total   = elementName + "-TOTAL_FORMS"
-  d[k_total]   = numElements
-  k_initial = elementName + "-INITIAL_FORMS"
-  d[k_initial] = '0'
-  k_max     = elementName + "-MAX_NUM_FORMS"
-  d[k_max]     = ''
-  for i in range(numElements):
-    for k, v in _getElementDict(elementName, tree).iteritems():
-      d = _assignKey(d, \
-        # Generating a string like this: "creators-0-nameIdentifier
-        elementName + "-" + str(i) + "-" + k, v, i)
-  return d
-
-def populateFormObject(xml):
-  """Returns data prepared for Django form"""
-  xml = re.sub('\n[\s]*', '', xml)
-  root = StringIO(xml)
-  parser = etree.XMLParser(ns_clean=True, recover=True)
-  tree = etree.parse(root, parser)
+  Repeatable elements are indexed at the top level only; lower-level
+  repeatable elements (e.g., contributor affiliations) are
+  concatenated.  <br> elements in descriptions are replaced with
+  newlines.
+  """
   d = {}
-  d['data_creators'] = _generateFormFields('creators', \
-    len(tree.xpath(ROOT_CREATORS, namespaces=ns)), tree)
-  d['data_titles'] = _generateFormFields('titles', \
-    len(tree.xpath(ROOT_TITLES, namespaces=ns)), tree)
-  d['data_geoLocations'] = _generateFormFields('geoLocations', \
-    len(tree.xpath(ROOT_GEOLOCS, namespaces=ns)), tree)
+  def tagName (tag):
+    return tag.split("}")[1]
+  def getElementChildren (node):
+    return list(node.iterchildren(lxml.etree.Element))
+  def getText (node):
+    t = node.text or ""
+    for c in node.iterchildren(): t += c.tail or ""
+    return t
+  def processNode (path, node, index=None):
+    tag = tagName(node.tag)
+    if path == "":
+      mypath = tag
+    else:
+      mypath = "%s-%s" % (path, tag)
+    if index != None: mypath += "-%d" % index
+    for a in node.attrib:
+      v = node.attrib[a].strip()
+      if v != "": d["%s-%s" % (mypath, a)] = v
+    if tag in _repeatableElementContainers:
+      for i, c in enumerate(getElementChildren(node)):
+# ToDo: Change this to say i instead of i+1?
+        processNode(mypath, c, i+1)
+    else:
+      if tag == "description":
+        # The only mixed-content element type in the schema; <br>'s
+        # get replaced with newlines.
+        v = node.text or ""
+        for c in node.iterchildren():
+          if isinstance(c.tag, basestring) and tagName(c.tag) == "br":
+            v += "\n"
+          v += c.tail or ""
+        v = v.strip()
+        if v != "": d[mypath] = v
+      else:
+        children = getElementChildren(node)
+        if len(children) > 0:
+          for c in children: processNode(mypath, c)
+        else:
+          v = getText(node).strip()
+          if v != "":
+            if mypath in d:
+              # Repeatable elements not explicitly handled have their
+              # content concatenated.
+              d[mypath] += " ; " + v
+            else:
+              d[mypath] = v
+  root = util.parseXmlString(document)
+  for c in getElementChildren(root): processNode("", c)
   return d
+
+# The following exhaustive list of DataCite XML elements must form a
+# partial topological order, that is, if two elements have the same
+# parent, they must appear in the list in the same order that they
+# must appear in an XML document.
+
+_elementList = ["identifier", "creators", "creator", "creatorName",
+  "titles", "title", "publisher", "publicationYear", "subjects", "subject",
+  "contributors", "contributor", "contributorName", "nameIdentifier",
+  "affiliation", "dates", "date", "language", "resourceType",
+  "alternateIdentifiers", "alternateIdentifier", "relatedIdentifiers",
+  "relatedIdentifier", "sizes", "size", "formats", "format", "version",
+  "rightsList", "rights", "descriptions", "description", "geoLocations",
+  "geoLocation", "geoLocationPoint", "geoLocationBox", "geoLocationPlace"]
+
+_elements = dict((e, i) for i, e in enumerate(_elementList))
+
+def formElementsToDataciteXml (dictionary):
+  """
+  The inverse of dataciteXmlToFormElements.
+  """
+  namespace = "http://datacite.org/schema/kernel-3"
+  schemaLocation = "http://schema.datacite.org/meta/kernel-3/metadata.xsd"
+  def q (elementName):
+    return "{%s}%s" % (namespace, elementName)
+  def tagName (tag):
+    return tag.split("}")[1]
+  root = lxml.etree.Element(q("resource"), nsmap={ None: namespace })
+  root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
+    namespace + " " + schemaLocation
+  for key, value in dictionary.items():
+    node = root
+    while len(key) > 0:
+      k, remainder = key.split("-", 1) if "-" in key else (key, "")
+      if k in _elements:
+        if tagName(node.tag) in _repeatableElementContainers:
+          i, remainder = remainder.split("-", 1) if "-" in remainder else\
+            (remainder, "")
+          i = int(i)
+          while len(node) < i: lxml.etree.SubElement(node, q(k))
+          node = node[i-1]
+        else:
+          n = node.find(q(k))
+          if n != None:
+            node = n
+          else:
+            node = lxml.etree.SubElement(node, q(k))
+        if remainder == "": node.text = value
+      else:
+        node.attrib[k] = value
+      key = remainder
+  def sortChildren (node):
+    if tagName(node.tag) not in _repeatableElementContainers:
+      children = node.getchildren()
+      children.sort(key=lambda c: _elements[tagName(c.tag)])
+      for i, c in enumerate(children): node.insert(i, c)
+    for c in node.iterchildren(): sortChildren(c)
+  sortChildren(root)
+  return lxml.etree.tostring(root, encoding=unicode)
  
 # ============================================================================= 
 #   XML generation
