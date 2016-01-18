@@ -176,7 +176,7 @@ class RequiredFormSet(BaseFormSet):
     super(RequiredFormSet, self).__init__(*args, **kwargs)
     self.forms[0].empty_permitted = False
 
-# Remaining Datacite Forms listed below can be wrapped into a FormSet
+# Remaining Datacite Forms listed below are intended to be wrapped into FormSets (repeatable)
 class CreatorForm(forms.Form):
   """ Form object for Creator Element in DataCite Advanced (XML) profile """
   def __init__(self, *args, **kwargs):

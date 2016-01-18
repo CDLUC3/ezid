@@ -1,6 +1,7 @@
 import ui_common as uic
 import django.contrib.messages
 import ui_search
+import ui_create
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 import ezid
@@ -122,7 +123,6 @@ def edit(request, identifier):
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
   if request.method == "POST":
-    # datacite_xml editing uses ui_create.ajax_advanced, so doesn't use this step.
     d['pub_status'] = (request.POST['_status'] if '_status' in request.POST else d['pub_status'])
     d['stat_reason'] = (request.POST['stat_reason'] if 'stat_reason' in request.POST else d['stat_reasons'])
     d['export'] = request.POST['_export'] if '_export' in request.POST else d['export']
@@ -135,6 +135,12 @@ def edit(request, identifier):
       stts = request.POST['_status'] + " | " + request.POST['stat_reason']
     else:
       stts = request.POST['_status']
+
+    # ToDo: Sort out whether we're editing advanced DataCite or something else
+    # ui_create.post_adv_form_datacite_xml(request, d):
+
+
+
     # Even if converting from simple to advanced, let's validate fields first
     if uic.validate_simple_metadata_form(request, d['current_profile']):
       result = _updateMetadata(request, d, stts)

@@ -11,7 +11,7 @@ def index(request):
   d['ezid_home_url'] = "http://" + request.get_host() +"/"
   d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['namespace'].lower())
   d['form_placeholder']= True
-  d = ui_create.simple_form_processing(request, d)
+  d = ui_create.simple_form(request, d)
   result = d['id_gen_result']
   if result == 'edit_page':
     return uic.render(request, 'index', d)  # ID Creation page 
