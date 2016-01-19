@@ -69,7 +69,6 @@ def dataciteXmlToFormElements (document):
       if v != "": d["%s-%s" % (mypath, a)] = v
     if tag in _repeatableElementContainers:
       for i, c in enumerate(getElementChildren(node)):
-# ToDo: Change this to say i instead of i+1?
         processNode(mypath, c, i+1)
     else:
       if tag == "description":
@@ -99,6 +98,17 @@ def dataciteXmlToFormElements (document):
   for c in getElementChildren(root): processNode("", c)
   return d
 
+def temp_mock(form):
+  return {'creators-creator-1-creatorName': u'Miller, Elizabeth',
+    'creators-creator-1-nameIdentifier': u'0000-0001-5000-0007', 
+    'creators-creator-1-nameIdentifier-nameIdentifierScheme': u'ORCID', 
+    'creators-creator-1-nameIdentifier-schemeURI': u'http://orcid.org/', 
+    'creators-creator-1-affiliation': u'DataCite ; Dryad',
+    'publisher': u'Dryad Digital Repository',
+    'publicationYear': u'2012',
+    'resourceType-resourceTypeGeneral': u'Software',
+    'resourceType': u'XML'}
+
 # The following exhaustive list of DataCite XML elements must form a
 # partial topological order, that is, if two elements have the same
 # parent, they must appear in the list in the same order that they
@@ -114,6 +124,15 @@ _elementList = ["identifier", "creators", "creator", "creatorName",
   "geoLocation", "geoLocationPoint", "geoLocationBox", "geoLocationPlace"]
 
 _elements = dict((e, i) for i, e in enumerate(_elementList))
+
+def filterQueryDict(d):
+  """ Filters for only DataCite CML items. Remove unnecessary Django form variables
+      i.e.  (u'titles-title-MAX_NUM_FORMS', u'1000')
+      Also remove other fields from query object not related to datacite_xml fields
+      i.e.  (u'action', u'create') """
+  d = {k:v for (k,v) in d.iteritems() if '_FORMS' not in k}
+  d = {k:v for (k,v) in d.iteritems() if any(e in k for e in _elementList)}
+  return d
 
 def formElementsToDataciteXml (dictionary):
   """
@@ -136,7 +155,7 @@ def formElementsToDataciteXml (dictionary):
         if tagName(node.tag) in _repeatableElementContainers:
           i, remainder = remainder.split("-", 1) if "-" in remainder else\
             (remainder, "")
-          i = int(i)
+          i = int(i) + 1
           while len(node) < i: lxml.etree.SubElement(node, q(k))
           node = node[i-1]
         else:
@@ -157,7 +176,8 @@ def formElementsToDataciteXml (dictionary):
     for c in node.iterchildren(): sortChildren(c)
   sortChildren(root)
   return lxml.etree.tostring(root, encoding=unicode)
- 
+
+# ToDo: remove rest of this, I believe it's no longer needed 
 # ============================================================================= 
 #   XML generation
 # =============================================================================

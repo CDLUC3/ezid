@@ -232,6 +232,7 @@ def getIdForm_datacite_xml (d=None, request=None):
   CreatorSet = formset_factory(CreatorForm, formset=RequiredFormSet)
   TitleSet = formset_factory(TitleForm, formset=RequiredFormSet)
   GeoLocSet = formset_factory(GeoLocForm)
+  # On Create:GET
   if not request and not d:  # Get an empty form
     remainder_form = RemainderForm(None, shoulder=None, auto_id='%s')
     nonrepeating_form = NonRepeatingForm(None, auto_id='%s')
@@ -239,13 +240,16 @@ def getIdForm_datacite_xml (d=None, request=None):
     creator_set = CreatorSet(prefix='creators-creator')
     title_set = TitleSet(prefix='titles-title')
     geoloc_set = GeoLocSet(prefix='geoLocations-geoLocation')
-  if request and request.method == "GET" and d:
+  # On Edit:GET (Convert DataCite XML dict to form)
+  elif request and request.method == "GET":
+    assert d is not None
     # Remainder form only needed upon ID creation
     nonrepeating_form = NonRepeatingForm(d['dx_dict']['nonRepeating'], auto_id='%s')
     resourcetype_form = ResourceTypeForm(d['dx_dict']['resourceType'], auto_id='%s')
     creator_set = CreatorSet(d['dx_dict']['creators'], prefix='creators-creator', auto_id='%s')
     title_set = TitleSet(d['dx_dict']['titles'], prefix='titles-title', auto_id='%s')
     geoloc_set = GeoLocSet(d['dx_dict']['geoLocations'], prefix='geoLocations-geoLocation', auto_id='%s')
+  # On Create:POST, Edit:POST
   elif request and request.method == "POST": 
     P = request.POST 
     shoulder = P['shoulder'] 

@@ -12,6 +12,9 @@ import policy
 import os.path
 from django.utils.translation import ugettext as _
 
+FORM_VALIDATION_ERROR = _("Identifier could not be created as submitted.  Please check \
+  the highlighted fields below for details.")
+
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
   return redirect("ui_create.simple")
@@ -94,9 +97,7 @@ def simple_form(request, d):
     if d['form'].is_valid():
       d = _createSimpleId(d, request, REQUEST)
     else:
-      django.contrib.messages.error(request, _("Identifier could not be \
-        created as submitted.  Please check the highlighted fields below \
-        for details."))
+      django.contrib.messages.error(request, FORM_VALIDATION_ERROR)
       d['id_gen_result'] = 'edit_page'
   return d
 
@@ -132,8 +133,7 @@ def adv_form(request, d):
     d['current_profile_name'] = d['current_profile'].name
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = [p for p in metadata.getProfiles()[1:] if p.editable]
-  profs = [(p.name, p.displayName, ) for p in d['profiles']] + \
-    uic.manual_profiles.items()
+  profs = [(p.name, p.displayName, ) for p in d['profiles']] + uic.manual_profiles.items()
   d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
   # 'datacite_xml' used for advanced profile instead of 'datacite'
   d['profile_names'].remove(('datacite','DataCite'))
@@ -146,7 +146,6 @@ def adv_form(request, d):
     # Begin ID Creation (empty form)
     if d['current_profile_name'] == 'datacite_xml':
       d['form'] = form_objects.getIdForm_datacite_xml()
-      # import pdb; pdb.set_trace()
     else:
       d['form'] = form_objects.getAdvancedIdForm(d['current_profile']) 
     d['id_gen_result'] = 'edit_page' 
@@ -164,8 +163,7 @@ def adv_form(request, d):
         d['id_gen_result'] = 'edit_page'
         return d
       if not (d['form']['form'].is_valid() and d['form']['remainder_form'].is_valid()):
-        django.contrib.messages.error(request, _("Identifier could not be created as \
-          submitted. Please check the highlighted fields below for details."))
+        django.contrib.messages.error(request, FORM_VALIDATION_ERROR)
         d['id_gen_result'] = 'edit_page'
       else:
         d = _createAdvancedId(d, request, P)
@@ -194,19 +192,19 @@ def post_adv_form_datacite_xml(request, d):
   if (P['action'] == 'create') and not _verifyProperShoulder(request, P, pre_list):
     d['id_gen_result'] = 'edit_page'
     return d
-  import pdb; pdb.set_trace()
   d['form'] = form_objects.getIdForm_datacite_xml(None, request)
   if not (d['form']['remainder_form'].is_valid() 
     and d['form']['nonrepeating_form'].is_valid() and d['form']['resourcetype_form'].is_valid()
     and d['form']['creator_set'].is_valid() and d['form']['title_set'].is_valid()):
-      django.contrib.messages.error(request, _("Identifier could not be created as \
-        submitted. Please check the highlighted fields below for details."))
+      django.contrib.messages.error(request, FORM_VALIDATION_ERROR)
       d['id_gen_result'] = 'edit_page'
   else:
-    # Make sure XML is valid before creating ID 
-    # generated_xml = datacite_xml.generate_xml(P)
+    formdict = datacite_xml.filterQueryDict(P.dict())
+    d['generated_xml'] = datacite_xml.formElementsToDataciteXml(formdict)
+    # ToDo: Verify XML validation occurs in ezid.py and I don't have to do it here
+    # Old process:
     # xsd_path = django.conf.settings.PROJECT_ROOT + "/xsd/datacite-kernel-3/metadata.xsd"
-    # if datacite_xml.validate_document(generated_xml, xsd_path, error_msgs) == False:
+    # if datacite_xml.validate_document(d['generated_xml'], xsd_path, error_msgs) == False:
     #   django.contrib.messages.error(request, _("XML validation error") + ": " + error_msgs
     #   d['id_gen_result'] = 'edit_page'
     d = _createAdvancedId(d, request, P)
@@ -221,15 +219,6 @@ def post_adv_form_datacite_xml(request, d):
   #    s = ezid.setMetadata(P['identifier'], uic.user_or_anon_tup(request),\
   #        uic.group_or_anon_tup(request), to_write)
  
-def _assembleMetadata (request, stts, return_val):
-    # There is no datacite_xml ezid profile. Just use 'datacite'
-    return { "_profile": 'datacite',
-      '_target' : uic.fix_target(request.POST['_target']),
-      "_status": stts,
-      "_export": ("yes" if request.POST.get("export", "no") == "yes" or
-                  request.POST.get("_export", "no") == "yes" else "no"),
-      "datacite": return_val }
-
 def _createSimpleId (d, request, P):
   s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request),
     uic.group_or_anon_tup(request), uic.assembleUpdateDictionary(request, d['current_profile'],
@@ -247,13 +236,19 @@ def _createSimpleId (d, request, P):
 
 def _createAdvancedId (d, request, P):
   """ Like _createSimpleId, but also checks for elements on advanced create page:
-      _status and _export variables. If no remainder is supplied, simply mints an ID"""
-  to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
-    { '_target' : uic.fix_target(P['_target']),
-    "_status": ("public" if P["publish"] == "True" else "reserved"),
-    "_export": ("yes" if P["export"] == "yes" else "no") } )
-
-  #write out ID and metadata (one variation with special remainder, one without)
+      _status and _export variables; Adds datacite_xml if present. If no remainder 
+      is supplied, simply mints an ID                                         """
+  # ToDo: Clean this up
+  if d['current_profile'] == 'datacite_xml':
+    to_write = { "_profile": 'datacite', '_target' : uic.fix_target(P['target']), 
+      "_status": ("public" if P["publish"] == "True" else "reserved"),
+      "_export": ("yes" if P["export"] == "yes" else "no"),
+      "datacite": d['generated_xml'] }
+  else:
+    to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
+      { '_target' : uic.fix_target(P['_target']),
+      "_status": ("public" if P["publish"] == "True" else "reserved"),
+      "_export": ("yes" if P["export"] == "yes" else "no") } )
   if P['remainder'] == '' or P['remainder'] == form_objects.REMAINDER_BOX_DEFAULT:
     s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request),
         uic.group_or_anon_tup(request), to_write)
@@ -280,3 +275,4 @@ def _verifyProperShoulder (request, P, pre_list):
       this identifier prefix") + ": " + P['shoulder'])
     return False
   return True
+
