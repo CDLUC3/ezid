@@ -1,5 +1,18 @@
 // ##### Customize Table Component ##### //
 
 .customize-table {
-	// empty
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.5em 3em 0.5em 1em;
+	background: $design-pop-color;
+}
+
+.customize-table__heading {
+	font-size: 1.4em;
+	font-weight: bold;
+}
+
+.customize-table__button {
+	@extend %button__primary;
 }
