@@ -6,7 +6,7 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 1em 0.5em;
-	background: $design-pop-color;
+	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 
 	@include bp(screen1) {
 		flex-flow: row nowrap;
