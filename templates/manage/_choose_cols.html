@@ -1,29 +1,37 @@
 {% load manage_form_tags %}
+{% load i18n %}
 
-<div id="dialog" class="dialog_window">
-	<h2>Choose Columns to Display:</h2>
-	<form method="get" action="{% url "ui_manage.index" %}">
-		<div class="chk_col_box">
-			{% column_choices field_order fields_mapped fields_selected %}
-		</div>
-		{% rewrite_hidden_except REQUEST field_norewrite %}
-		<div style="clear:both"></div><br/>
-		<h2>Other Options:</h2>	
-		<input type="checkbox" id="includeCoowned" name="includeCoowned" value="t"
-		{% if includeCoowned %}
-			checked="checked" 
-		{% endif %} \>
-		<label for="includeCoowned">include co-owned identifiers</label>
-		<div class="chk_buttons"><br/>
-			<a href="#restore_defaults" id="restore_defaults">Restore Defaults</a>&nbsp;&nbsp;&nbsp;&nbsp;
-			<a href="#close" class="close">Cancel</a>&nbsp;&nbsp;&nbsp;&nbsp;
-			<input type="submit" name="submit_checks" id="submit_checks" value="Apply Changes" />
-		</div>
-	</form>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form method="get" action="{% url "ui_manage.index" %}">
+      <div class="modal-header">
+      <!-- div class="login-modal__header" -->
+        <img src="/static/images/icon-cross.svg" alt="close" class="close login-modal__close" data-dismiss="modal" aria-label="Close">
+        <div class="login-modal__title" id="myModalLabel">{% trans "Choose Columns to Display" %}</div>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          {% column_choices field_order fields_mapped fields_selected %}
+        </div>
+          {% rewrite_hidden_except REQUEST field_norewrite %}
+        <div class="login-modal__title">{% trans "Other Options" %}</div>
+        <input type="checkbox" id="includeCoowned" name="includeCoowned" value="t"
+          {% if includeCoowned %}
+         checked="checked" 
+          {% endif %} \>
+        <label for="includeCoowned">{% trans "include co-owned identifiers" %}</label>
+      </div>
+      <div class="modal-footer">
+        <a href="#restore_defaults" id="restore_defaults">{% trans "Restore Defaults" %}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+        <button type="submit" class="btn btn-primary" name="submit_checks">{% trans "Apply Changes" %}</button>
+      </div>
+      </form>
+    </div>
+  </div>
 </div>
 
-
-<script type="text/javascript" src="/static/javascripts/dialog_box.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	
