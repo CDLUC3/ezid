@@ -1,85 +1,90 @@
 // ##### Scrollable Table Component ##### //
 
-// Evaluating http://dbushell.com/demos/tables/rt_05-01-12.html below:
-
-.rt {
+.table2 {
+	display: block;
 	width: 100%;
-	border-collapse: collapse;
-}
 
-.rt th,
-.rt td {
-	margin: 0;
-	padding: 0.5em;
-	vertical-align: top;
-	border: 1px solid $design-light-gray-border-color;
-}
-
-.rt th {
-	text-align: left;
-	background: $design-secondary-lightest;
-}
-
-// @include bp(screen1) {
-
-@media (max-width: 45em) {
-
-	#rt1 {
-		display: block;
-		position: relative;
-		width: 100%;
-	}
-
-	#rt1 thead {
+	thead {
 		display: block;
 		float: left;
+		border-top: 1px solid $design-light-gray-border-color;
+		border-left: 1px solid $design-light-gray-border-color;
+
+		tr {
+			display: block;
+		}
+
 	}
 
-	#rt1 tbody {
+	th {
 		display: block;
-		width: auto;
-		position: relative;
-		overflow-x: auto;
+		background: $design-secondary-lightest;
+		text-align: left;
+	}
+
+	tbody {
+		display: flex; // removes margin between <tr>s
 		white-space: nowrap;
+		overflow-x: auto;
+
+		tr {
+			display: inline-block;
+			flex: 1 0 auto;
+			border-top: 1px solid $design-light-gray-border-color;
+		}
+
 	}
 
-	#rt1 thead tr {
+	td {
 		display: block;
 	}
 
-	#rt1 th {
-		display: block;
-	}
-
-	#rt1 tbody tr {
-		display: inline-block;
+	th,
+	td {
+		margin: 0;
+		padding: 0.5em;
+		border-right: 1px solid $design-light-gray-border-color;
+		border-bottom: 1px solid $design-light-gray-border-color;
 		vertical-align: top;
 	}
 
-	#rt1 td {
-		display: block;
-		min-height: 1.25em;
+}
+
+@include bp(screen1) {
+
+	.table2 {
+		display: table;
 	}
 
-	/* sort out borders */
-
-	.rt th {
-		border-bottom: 0;
+	.table2 thead {
+		display: table-header-group;
+		float: none;
 	}
 
-	.rt td {
-		border-left: 0;
-		border-right: 0;
-		border-bottom: 0;
+	.table2 thead tr {
+		display: table-row;
 	}
 
-	.rt tbody tr {
-		border-right: 1px solid $design-light-gray-border-color;
+	.table2 th {
+		display: table-cell;
 	}
 
-	.rt th:last-child,
-	.rt td:last-child {
-		border-bottom: 1px solid $design-light-gray-border-color;
+	.table2 tbody {
+		display: table-row-group;
+		white-space: normal;
+	}
+
+	.table2 tbody tr {
+		display: table-row;
+	}
+
+	.table2 td {
+		display: table-cell;
+
+		&:first-child {
+			border-left: 1px solid $design-light-gray-border-color;
+		}
+
 	}
 
 }
