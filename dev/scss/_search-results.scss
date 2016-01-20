@@ -1,3 +1,9 @@
 // ##### Search Results Layout ##### //
 
-
+.search-results__pagination {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	max-width: 1000px;
+	margin: 30px auto;
+}
