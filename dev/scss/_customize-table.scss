@@ -5,6 +5,8 @@
 	flex-flow: column nowrap;
 	align-items: center;
 	justify-content: space-between;
+	max-width: 1000px;
+	margin: 0 auto;
 	padding: 1em 0.5em;
 	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 
