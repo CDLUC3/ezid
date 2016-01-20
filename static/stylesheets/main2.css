@@ -2760,6 +2760,13 @@ Selector pattern using above mixin:
 .fcontrol__select {
   width: 100%; }
 
+.fcontrol__select-label-inline {
+  color: #00778a;
+  font-size: 1.1em; }
+
+.fcontrol__select-inline {
+  display: inline; }
+
 .fcontrol__radio-label-stacked, .fcontrol__radio-label-inline {
   color: #00778a;
   font-size: 1.2em;
@@ -3603,57 +3610,61 @@ Selector pattern using above mixin:
         .table1 td:not(:first-child):before {
           display: none; } }
 
-.rt {
-  width: 100%;
-  border-collapse: collapse; }
-
-.rt th,
-.rt td {
-  margin: 0;
-  padding: 0.5em;
-  vertical-align: top;
-  border: 1px solid #beb6af; }
-
-.rt th {
-  text-align: left;
-  background: #ece5d6; }
-
-@media (max-width: 45em) {
-  #rt1 {
+.table2 {
+  display: block;
+  width: 100%; }
+  .table2 thead {
     display: block;
-    position: relative;
-    width: 100%; }
-  #rt1 thead {
+    float: left;
+    border-top: 1px solid #beb6af;
+    border-left: 1px solid #beb6af; }
+    .table2 thead tr {
+      display: block; }
+  .table2 th {
     display: block;
-    float: left; }
-  #rt1 tbody {
-    display: block;
-    width: auto;
-    position: relative;
-    overflow-x: auto;
-    white-space: nowrap; }
-  #rt1 thead tr {
+    background: #ece5d6;
+    text-align: left; }
+  .table2 tbody {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    white-space: nowrap;
+    overflow-x: auto; }
+    .table2 tbody tr {
+      display: inline-block;
+      -webkit-flex: 1 0 auto;
+          -ms-flex: 1 0 auto;
+              flex: 1 0 auto;
+      border-top: 1px solid #beb6af; }
+  .table2 td {
     display: block; }
-  #rt1 th {
-    display: block; }
-  #rt1 tbody tr {
-    display: inline-block;
+  .table2 th,
+  .table2 td {
+    margin: 0;
+    padding: 0.5em;
+    border-right: 1px solid #beb6af;
+    border-bottom: 1px solid #beb6af;
     vertical-align: top; }
-  #rt1 td {
-    display: block;
-    min-height: 1.25em; }
-  /* sort out borders */
-  .rt th {
-    border-bottom: 0; }
-  .rt td {
-    border-left: 0;
-    border-right: 0;
-    border-bottom: 0; }
-  .rt tbody tr {
-    border-right: 1px solid #beb6af; }
-  .rt th:last-child,
-  .rt td:last-child {
-    border-bottom: 1px solid #beb6af; } }
+
+@media (min-width: 780px) {
+  .table2 {
+    display: table; }
+  .table2 thead {
+    display: table-header-group;
+    float: none; }
+  .table2 thead tr {
+    display: table-row; }
+  .table2 th {
+    display: table-cell; }
+  .table2 tbody {
+    display: table-row-group;
+    white-space: normal; }
+  .table2 tbody tr {
+    display: table-row; }
+  .table2 td {
+    display: table-cell; }
+    .table2 td:first-child {
+      border-left: 1px solid #beb6af; } }
 
 .home__identifier-container {
   display: -webkit-flex;
