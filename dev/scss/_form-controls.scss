@@ -61,7 +61,7 @@
 	@extend %hide;
 }
 
-// ***** Select Menu ***** //
+// ***** Select Stacked ***** //
 
 .fcontrol__select-label {
 	display: block;
@@ -93,6 +93,17 @@
 
 .fcontrol__select-inline {
 	@extend %fcontrol__select;
+}
+
+// ***** Select Inline ***** //
+
+.fcontrol__select-label-inline {
+	color: $design-primary-color;
+	font-size: 1.1em;
+}
+
+.fcontrol__select-inline {
+	display: inline;
 }
 
 // ***** Radio Buttons ***** //
