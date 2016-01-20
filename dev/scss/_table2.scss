@@ -22,7 +22,7 @@
 
 // @include bp(screen1) {
 
-@media (max-width: 45em) { /*640*/	
+@media (max-width: 45em) {
 
 	#rt1 {
 		display: block;
@@ -67,18 +67,19 @@
 		border-bottom: 0;
 	}
 
-	.rt td {border-left: 0;
+	.rt td {
+		border-left: 0;
 		border-right: 0;
 		border-bottom: 0;
 	}
 
-	.rt tbody tr {border-right:
-		1px solid #babcbf;
+	.rt tbody tr {
+		border-right: 1px solid $design-light-gray-border-color;
 	}
 
 	.rt th:last-child,
 	.rt td:last-child {
-		border-bottom: 1px solid #babcbf;
+		border-bottom: 1px solid $design-light-gray-border-color;
 	}
 
 }
