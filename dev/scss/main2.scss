@@ -21,25 +21,28 @@
 // ***** Components ***** //
 
 @import 'accordion';
+@import 'customize-table';
 @import 'footer';
 @import 'header';
 @import 'home-banner';
 @import 'login-menu';
 @import 'login-modal';
+@import 'pagination';
 @import 'tab';
 @import 'table';
+@import 'table2';
 
 // ***** Layouts ***** //
 
 @import 'home';
 @import 'search';
+@import 'search-results';
 
 // ***** Global Styles ***** //
 
 body {
   margin: 0 10px;
   font-family: 'KievitWeb';
-  overflow-x: hidden; // for _headings.scss
 }
 
 abbr {

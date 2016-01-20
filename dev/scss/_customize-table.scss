@@ -1,0 +1,32 @@
+// ##### Customize Table Component ##### //
+
+.customize-table {
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1em 0.5em;
+	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+
+	@include bp(screen1) {
+		flex-flow: row nowrap;
+		padding: 1em;
+	}
+
+}
+
+.customize-table__heading {
+	margin: 0 0 1em;
+	font-size: 1.4em;
+	font-weight: bold;
+
+	@include bp(screen1) {
+		margin: 0;
+	}
+
+}
+
+.customize-table__button {
+	@extend %button__primary;
+	flex: 0 0 auto;
+}
