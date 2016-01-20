@@ -1,5 +1,84 @@
 // ##### Scrollable Table Component ##### //
 
-.table2 {
-	// empty
+// Evaluating http://dbushell.com/demos/tables/rt_05-01-12.html below:
+
+.rt {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.rt th,
+.rt td {
+	margin: 0;
+	padding: 0.5em;
+	vertical-align: top;
+	border: 1px solid $design-light-gray-border-color;
+}
+
+.rt th {
+	text-align: left;
+	background: $design-secondary-lightest;
+}
+
+// @include bp(screen1) {
+
+@media (max-width: 45em) { /*640*/	
+
+	#rt1 {
+		display: block;
+		position: relative;
+		width: 100%;
+	}
+
+	#rt1 thead {
+		display: block;
+		float: left;
+	}
+
+	#rt1 tbody {
+		display: block;
+		width: auto;
+		position: relative;
+		overflow-x: auto;
+		white-space: nowrap;
+	}
+
+	#rt1 thead tr {
+		display: block;
+	}
+
+	#rt1 th {
+		display: block;
+	}
+
+	#rt1 tbody tr {
+		display: inline-block;
+		vertical-align: top;
+	}
+
+	#rt1 td {
+		display: block;
+		min-height: 1.25em;
+	}
+
+	/* sort out borders */
+
+	.rt th {
+		border-bottom: 0;
+	}
+
+	.rt td {border-left: 0;
+		border-right: 0;
+		border-bottom: 0;
+	}
+
+	.rt tbody tr {border-right:
+		1px solid #babcbf;
+	}
+
+	.rt th:last-child,
+	.rt td:last-child {
+		border-bottom: 1px solid #babcbf;
+	}
+
 }
