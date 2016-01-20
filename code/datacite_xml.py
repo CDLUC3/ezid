@@ -148,6 +148,8 @@ def formElementsToDataciteXml (dictionary):
   root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
     namespace + " " + schemaLocation
   for key, value in dictionary.items():
+    value = value.strip()
+    if value == "": continue
     node = root
     while len(key) > 0:
       k, remainder = key.split("-", 1) if "-" in key else (key, "")
