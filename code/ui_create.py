@@ -182,16 +182,18 @@ def post_adv_form_datacite_xml(request, d):
   error_msgs = []
 
   P = request.POST
+  pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
   if (P['action'] == 'create'):
+    if not _verifyProperShoulder(request, P, pre_list):
+      d['id_gen_result'] = 'edit_page'
+      return d
     action_result = [_("creating"), _("created")]
+    identifier = None
   else:   # action='edit'
     action_result = [_("editing"), _("edited successfully")]
     if not P['identifier']:
       error_msgs.append(_("Unable to edit. Identifier not supplied."))
-  pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
-  if (P['action'] == 'create') and not _verifyProperShoulder(request, P, pre_list):
-    d['id_gen_result'] = 'edit_page'
-    return d
+    identifier = P['identifier']
   d['form'] = form_objects.getIdForm_datacite_xml(None, request)
   if not (d['form']['remainder_form'].is_valid() 
     and d['form']['nonrepeating_form'].is_valid() and d['form']['resourcetype_form'].is_valid()
@@ -199,8 +201,9 @@ def post_adv_form_datacite_xml(request, d):
       django.contrib.messages.error(request, FORM_VALIDATION_ERROR)
       d['id_gen_result'] = 'edit_page'
   else:
-    formdict = datacite_xml.filterQueryDict(P.dict())
-    d['generated_xml'] = datacite_xml.formElementsToDataciteXml(formdict)
+    # Testing:
+    # d['generated_xml'] = datacite_xml.temp_mock()
+    d['generated_xml'] = datacite_xml.formElementsToDataciteXml(P.dict(), P['shoulder'], identifier)
     # ToDo: Verify XML validation occurs in ezid.py and I don't have to do it here
     # Old process:
     # xsd_path = django.conf.settings.PROJECT_ROOT + "/xsd/datacite-kernel-3/metadata.xsd"

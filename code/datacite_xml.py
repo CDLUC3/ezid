@@ -98,16 +98,15 @@ def dataciteXmlToFormElements (document):
   for c in getElementChildren(root): processNode("", c)
   return d
 
-def temp_mock(form):
-  return {'creators-creator-1-creatorName': u'Miller, Elizabeth',
-    'creators-creator-1-nameIdentifier': u'0000-0001-5000-0007', 
-    'creators-creator-1-nameIdentifier-nameIdentifierScheme': u'ORCID', 
-    'creators-creator-1-nameIdentifier-schemeURI': u'http://orcid.org/', 
-    'creators-creator-1-affiliation': u'DataCite ; Dryad',
-    'publisher': u'Dryad Digital Repository',
-    'publicationYear': u'2012',
-    'resourceType-resourceTypeGeneral': u'Software',
-    'resourceType': u'XML'}
+def temp_mock():
+  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme=""></nameIdentifier><affiliation></affiliation></creator></creators><titles><title titleType=""><title>test</title></title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><resourceType ResourceTypeGeneral="Dataset"></resourceType><geoLocations><geoLocation><geoLocationPoint></geoLocationPoint><geoLocationBox></geoLocationBox><geoLocationPlace></geoLocationPlace></geoLocation></geoLocations></resource>')
+
+def _id_type(str):
+  m = re.compile("^[a-z]+")
+  if m.search(str) == None:
+    return u''
+  else:
+    return m.findall(str)[0].upper()
 
 # The following exhaustive list of DataCite XML elements must form a
 # partial topological order, that is, if two elements have the same
@@ -125,19 +124,18 @@ _elementList = ["identifier", "creators", "creator", "creatorName",
 
 _elements = dict((e, i) for i, e in enumerate(_elementList))
 
-def filterQueryDict(d):
-  """ Filters for only DataCite CML items. Remove unnecessary Django form variables
-      i.e.  (u'titles-title-MAX_NUM_FORMS', u'1000')
-      Also remove other fields from query object not related to datacite_xml fields
-      i.e.  (u'action', u'create') """
-  d = {k:v for (k,v) in d.iteritems() if '_FORMS' not in k}
-  d = {k:v for (k,v) in d.iteritems() if any(e in k for e in _elementList)}
-  return d
-
-def formElementsToDataciteXml (dictionary):
+def formElementsToDataciteXml (d, shoulder, identifier=None):
   """
   The inverse of dataciteXmlToFormElements.
+  First, filter for only DataCite XML items. Remove unnecessary Django form variables
+      i.e.  (u'titles-title-MAX_NUM_FORMS', u'1000')
+      Also remove other fields from query object not related to datacite_xml fields
+      i.e.  (u'action', u'create') 
   """
+  d = {k:v for (k,v) in d.iteritems() if '_FORMS' not in k}
+  d = {k:v for (k,v) in d.iteritems() if any(e in k for e in _elementList)}
+  d['identifier-identifierType'] = _id_type(shoulder)
+  if identifier is not None: d['identifier'] = identifier
   namespace = "http://datacite.org/schema/kernel-3"
   schemaLocation = "http://schema.datacite.org/meta/kernel-3/metadata.xsd"
   def q (elementName):
@@ -147,7 +145,9 @@ def formElementsToDataciteXml (dictionary):
   root = lxml.etree.Element(q("resource"), nsmap={ None: namespace })
   root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
     namespace + " " + schemaLocation
-  for key, value in dictionary.items():
+  for key, value in d.items():
+    value = value.strip()
+    if value == "": continue
     node = root
     while len(key) > 0:
       k, remainder = key.split("-", 1) if "-" in key else (key, "")
@@ -331,13 +331,6 @@ def _sort_get_ordinal(str):
   else:
     return [int(x) for x in m.findall(str)]
   
-def _id_type(str):
-  m = re.compile("^[a-z]+")
-  if m.search(str) == None:
-    return u''
-  else:
-    return m.findall(str)[0].upper()
-
 def validate_document(xml_doc, xsd_path, err_msgs):
   """Validates the document against the XSD and adds
   error messages to the err_msgs array if things go wrong"""
