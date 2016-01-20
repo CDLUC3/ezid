@@ -23,9 +23,10 @@
       </div>
     </div>
     <div class="col-sm-2">
-      <button class="btn btn-primary padding-side-xs" type="button">{% trans "CUSTOMIZE VIEW" %}</button>
+      <button type="button" class="btn btn-primary padding-side-xs" data-toggle="modal" data-target="#myModal">{% trans "CUSTOMIZE VIEW" %}</button>
     </div>
   </div> 
+  {% include "manage/_choose_cols.html" %}
 	  
   {% pager_display REQUEST p total_pages ps %}
   <table class="manage">
