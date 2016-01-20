@@ -1,6 +1,94 @@
 // ##### Scrollable Table Component ##### //
 
-// Evaluating http://dbushell.com/demos/tables/rt_05-01-12.html below:
+.table2 {
+	display: block;
+	width: 100%;
+
+	thead {
+		display: block;
+		float: left;
+		border-top: 1px solid $design-light-gray-border-color;
+		border-left: 1px solid $design-light-gray-border-color;
+
+		tr {
+			display: block;
+		}
+
+	}
+
+	th {
+		display: block;
+		background: $design-secondary-lightest;
+		text-align: left;
+	}
+
+	tbody {
+		display: flex;
+		white-space: nowrap;
+		overflow-x: auto;
+
+		tr {
+			display: inline-block;
+			border-top: 1px solid $design-light-gray-border-color;
+		}
+
+	}
+
+	td {
+		display: block;
+	}
+
+	th,
+	td {
+		margin: 0;
+		padding: 0.5em;
+		border-right: 1px solid $design-light-gray-border-color;
+		border-bottom: 1px solid $design-light-gray-border-color;
+		vertical-align: top;
+	}
+
+}
+
+@include bp(screen1) {
+
+	.table2 {
+		display: table;
+	}
+
+	.table2 thead {
+		display: table-header-group;
+		float: none;
+	}
+
+	.table2 thead tr {
+		display: table-row;
+	}
+
+	.table2 th {
+		display: table-cell;
+	}
+
+	.table2 tbody {
+		display: table-row-group;
+		white-space: normal;
+	}
+
+	.table2 tbody tr {
+		display: table-row;
+	}
+
+	.table2 td {
+		display: table-cell;
+
+		&:first-child {
+			border-left: 1px solid $design-light-gray-border-color;
+		}
+
+	}
+
+}
+
+// http://dbushell.com/demos/tables/rt_05-01-12.html example below:
 
 .rt {
 	width: 100%;
@@ -19,8 +107,6 @@
 	text-align: left;
 	background: $design-secondary-lightest;
 }
-
-// @include bp(screen1) {
 
 @media (max-width: 45em) {
 
