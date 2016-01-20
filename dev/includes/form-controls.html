@@ -1,5 +1,7 @@
 
-<p><b>Notes:</b> All text fields below are set to "required" using the <code>required</code> HTML input attribute. If a field returns "invalid" upon submitting the form (due to the field being empty or containing the wrong data type), the related script shoud append the <code>fcontrol__group</code> class with <code>--invalid</code> (see this page's HTML for examples).</p>
+<p><b>Notes:</b> All text fields below are set to "required" using the <code>required</code> HTML input attribute. If a field returns "invalid" upon submitting the form (due to the field being empty or containing the wrong data type), a script shoud append the <code>fcontrol__group</code> class with <code>--invalid</code> (see this page's HTML for examples).</p>
+
+<!-- Each form control / label pair below needs to be unique within each page where they are placed. Current examples use the class "example" below -->
 
 <h3>Text Field Stacked With Label</h3>
 
@@ -12,24 +14,24 @@
 <h3>Text Field Stacked With Label and Error Message</h3>
 
 <div class="fcontrol__group-stacked--invalid">
-	<label for="fcontrol__example-label1" class="fcontrol__text-label-stacked">First Name</label>
-	<input id="fcontrol__example-label1" class="fcontrol__text-field-stacked" type="text" placeholder="Text to enter here" required>
+	<label for="fcontrol__example-label2" class="fcontrol__text-label-stacked">First Name</label>
+	<input id="fcontrol__example-label2" class="fcontrol__text-field-stacked" type="text" placeholder="Text to enter here" required>
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
 <h3>Text Field Inline With Label</h3>
 
 <div class="fcontrol__group-inline">
-	<label for="fcontrol__example-label2" class="fcontrol__text-label-inline">Last Name</label>
-	<input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+	<label for="fcontrol__example-label3" class="fcontrol__text-label-inline">Last Name</label>
+	<input id="fcontrol__example-label3" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
 <h3>Text Field Inline With Label and Error Message</h3>
 
 <div class="fcontrol__group-inline--invalid">
-	<label for="fcontrol__example-label2" class="fcontrol__text-label-inline">Last Name</label>
-	<input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+	<label for="fcontrol__example-label4" class="fcontrol__text-label-inline">Last Name</label>
+	<input id="fcontrol__example-label4" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
@@ -37,13 +39,13 @@
 
 <div class="fcontrol__inline-groups">
 	<div class="fcontrol__group-inline">
-		<label for="fcontrol__example-label2" class="fcontrol__text-label-inline">Last Name</label>
-		<input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+		<label for="fcontrol__example-label5" class="fcontrol__text-label-inline">Last Name</label>
+		<input id="fcontrol__example-label5" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
 		<span class="fcontrol__invalid-flag">Error message</span>
 	</div>
 	<div class="fcontrol__group-inline">
-		<label for="fcontrol__example-label2" class="fcontrol__text-label-inline">Last Name</label>
-		<input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+		<label for="fcontrol__example-label6" class="fcontrol__text-label-inline">Last Name</label>
+		<input id="fcontrol__example-label6" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
 		<span class="fcontrol__invalid-flag">Error message</span>
 	</div>
 </div>
@@ -51,39 +53,39 @@
 <h3>Text Field With Hidden Label</h3>
 
 <div class="fcontrol__group-stacked">
-	<label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Last Name</label>
-	<input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="Text to enter here (required)" required>
+	<label for="fcontrol__example-label7" class="fcontrol__text-label-hidden">Last Name</label>
+	<input id="fcontrol__example-label7" class="fcontrol__text-field-stacked" type="text" placeholder="Text to enter here (required)" required>
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
 <h3>Text Field With Hidden Label Stacked with Error Message</h3>
 
 <div class="fcontrol__group-stacked--invalid">
-	<label for="fcontrol__example-label4" class="fcontrol__text-label-hidden">Last Name</label>
-	<input id="fcontrol__example-label4" class="fcontrol__text-field-stacked" type="text" placeholder="Text to enter here (required)" required>
+	<label for="fcontrol__example-label8" class="fcontrol__text-label-hidden">Last Name</label>
+	<input id="fcontrol__example-label8" class="fcontrol__text-field-stacked" type="text" placeholder="Text to enter here (required)" required>
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
 <h3>Text Field With Hidden Label</h3>
 
 <div class="fcontrol__group-inline">
-	<label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Last Name</label>
-	<input id="fcontrol__example-label3" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here (required)" required>
+	<label for="fcontrol__example-label9" class="fcontrol__text-label-hidden">Last Name</label>
+	<input id="fcontrol__example-label9" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here (required)" required>
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
 <h3>Text Field With Hidden Label Inline with Error Message</h3>
 
 <div class="fcontrol__group-inline--invalid">
-	<label for="fcontrol__example-label4" class="fcontrol__text-label-hidden">Last Name</label>
-	<input id="fcontrol__example-label4" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here (required)" required>
+	<label for="fcontrol__example-label10" class="fcontrol__text-label-hidden">Last Name</label>
+	<input id="fcontrol__example-label10" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here (required)" required>
 	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
 <h3>Select Menu Stacked</h3>
 
-<label for="fcontrol__example-label5" class="fcontrol__select-label">Fruit</label>
-<select name="" id="fcontrol__example-label5" class="fcontrol__select">
+<label for="fcontrol__example-label11" class="fcontrol__select-label">Fruit</label>
+<select name="" id="fcontrol__example-label11" class="fcontrol__select">
 	<option value="">Apples</option>
 	<option value="">Oranges</option>
 	<option value="">Pears</option>
@@ -93,8 +95,8 @@
 
 <h3>Select Menu Inline</h3>
 
-<label for="fcontrol__example-label5" class="fcontrol__select-label-inline">Fruit</label>
-<select name="" id="fcontrol__example-label5" class="fcontrol__select-inline">
+<label for="fcontrol__example-label12" class="fcontrol__select-label-inline">Fruit</label>
+<select name="" id="fcontrol__example-label12" class="fcontrol__select-inline">
 	<option value="">Apples</option>
 	<option value="">Oranges</option>
 	<option value="">Pears</option>
@@ -104,20 +106,20 @@
 
 <h3>Radio Buttons Stacked</h3>
 
-<label for="fcontrol__example-label6" class="fcontrol__radio-label-stacked">
-  <input id="fcontrol__example-label6" class="fcontrol__radio-button-stacked" type="radio" value="" name="name1" checked> <span>One</span>
+<label for="fcontrol__example-label13" class="fcontrol__radio-label-stacked">
+  <input id="fcontrol__example-label13" class="fcontrol__radio-button-stacked" type="radio" value="" name="name1" checked> <span>One</span>
 </label>
 
-<label for="fcontrol__example-label7" class="fcontrol__radio-label-stacked">
-  <input id="fcontrol__example-label7" class="fcontrol__radio-button-stacked" type="radio" value="" name="name1"> <span>Two</span>
+<label for="fcontrol__example-label14" class="fcontrol__radio-label-stacked">
+  <input id="fcontrol__example-label14" class="fcontrol__radio-button-stacked" type="radio" value="" name="name1"> <span>Two</span>
 </label>
 
 <h3>Radio Buttons Inline</h3>
 
-<label for="fcontrol__example-label8" class="fcontrol__radio-label-inline">
-  <input id="fcontrol__example-label8" class="fcontrol__radio-button-stacked" type="radio" value="" name="name2" checked> <span>One</span>
+<label for="fcontrol__example-label15" class="fcontrol__radio-label-inline">
+  <input id="fcontrol__example-label15" class="fcontrol__radio-button-stacked" type="radio" value="" name="name2" checked> <span>One</span>
 </label>
 
-<label for="fcontrol__example-label9" class="fcontrol__radio-label-inline">
-  <input id="fcontrol__example-label9" class="fcontrol__radio-button-stacked" type="radio" value="" name="name2"> <span>Two</span>
+<label for="fcontrol__example-label16" class="fcontrol__radio-label-inline">
+  <input id="fcontrol__example-label16" class="fcontrol__radio-button-stacked" type="radio" value="" name="name2"> <span>Two</span>
 </label>
