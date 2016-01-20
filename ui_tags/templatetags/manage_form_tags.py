@@ -2,8 +2,6 @@ from django import template
 from django.conf import settings
 from django.utils.html import escape
 from decorators import basictag
-#from django.core.urlresolvers import reverse
-#import pdb
 import datetime
 import urllib
 from django.core.urlresolvers import reverse
@@ -13,16 +11,14 @@ import itertools
 register = template.Library()
 
 @register.simple_tag 
-def column_choices(field_order, fields_mapped, fields_selected, no_cols=3):
+def column_choices(field_order, fields_mapped, fields_selected):
   """this only works when the following context variables are set from the django view:
   field_order is the ordered list of the fields
   fields_mapped is mapping of fields to texual names
   fields_selected is ordered list of selected fields"""
-  items_per_col = (len(field_order) - 1 + no_cols) / no_cols
-  col_arr = chunks(field_order, items_per_col) #divided into sub-lists for three columns
-  return "<div class='chk_col'>" + "</div><div class='chk_col'>".join(['<br/>'.join(\
-         [make_check_tag(y, fields_mapped, fields_selected) for y in x]) \
-         for x in col_arr]) + '</div>'
+  return "<div class='col-sm-4'>" + "</div><div class='col-sm-4'>".join(\
+         [make_check_tag(f, fields_mapped, fields_selected) for f in field_order])\
+         + '</div>'
 
 def make_check_tag(item, friendly_names, selected):
   if item in selected:
@@ -123,9 +119,6 @@ def id_lookup(x):
 def percent_width(item_weight, total):
   return str(int(round(item_weight/total*1000))/10.0) + '%'
 
-def chunks(l, n):
-    return [l[i:i+n] for i in range(0, len(l), n)]
-  
 @register.simple_tag
 def pager_display(request, current_page, total_pages, page_size):
   if total_pages < 2: return ''

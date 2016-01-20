@@ -14,7 +14,7 @@ import os.path
 from lxml import etree, objectify
 import re
 import ezidapp.models
-
+from django.utils.translation import ugettext as _
 
 # these are layout properties for the fields in the manage index page,
 # if I had realized there were going to be so many properties up front, I probably would
@@ -28,9 +28,9 @@ FIELD_ORDER = ['identifier', 'owner', 'coOwners', 'createTime', 'updateTime', 's
 FIELD_DEFAULTS = ['identifier', 'updateTime', 'mappedTitle', 'mappedCreator']
 
 # Column names for display for each field
-FIELDS_MAPPED = {'identifier':'Identifier',  'owner':'Owner', 'coOwners': 'Co-Owners', \
-                  'createTime': 'Date Created', 'updateTime': 'Date Last Modified', 'status' :'Status',\
-                  'mappedTitle': 'Object Title', 'mappedCreator' : 'Object Creator'}
+FIELDS_MAPPED = {'identifier':_("Identifier"), 'owner':_("Owner"), 'coOwners':_("Co-Owners"),\
+               'createTime':_("Date Created"), 'updateTime':_("Date Last Modified"), \
+               'status':_("Status"), 'mappedTitle':_("Object Title"), 'mappedCreator':_("Object Creator")}
 
 # Weight to give each field for table display since many or few fields are present and can be customized
 FIELD_WIDTHS = {'identifier': 2.0,  'owner': 1.0, 'coOwners': 2.0, \
