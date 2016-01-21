@@ -35,6 +35,7 @@
 
 .search-results__pagination {
 	display: flex;
+	flex-flow: row wrap;
 	align-items: flex-end;
 	justify-content: space-between;
 	max-width: 1000px;
@@ -45,4 +46,8 @@
 	color: $design-black-color;
 	font-size: 1em;
 	font-weight: normal;
+}
+
+.search-results__select {
+	flex: 0 0 auto;
 }

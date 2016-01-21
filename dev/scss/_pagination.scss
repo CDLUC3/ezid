@@ -1,7 +1,7 @@
 // ##### Pagination Component ##### //
 
 .pagination {
-	// empty
+	flex: 0 0 auto;
 }
 
 .pagination__prev {
@@ -9,7 +9,7 @@
 	&:before {
 		display: inline-block;
 		margin: 0 0.25em 0 0;
-		content: '\007c  \00ab';
+		content: '\007c  \00ab'; // '| <<'
 	}
 
 }
@@ -27,7 +27,7 @@
 	&:after {
 		display: inline-block;
 		margin: 0 0 0 0.25em;
-		content: '\00bb  \007c';
+		content: '\00bb  \007c'; // '>> |'
 	}
 
 }
