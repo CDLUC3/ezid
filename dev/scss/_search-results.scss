@@ -1,5 +1,38 @@
 // ##### Search Results Layout ##### //
 
+.search-results__simple {
+	display: flex;
+	flex-flow: column nowrap;
+	max-width: 1000px;
+	margin: 10px auto;
+
+	@include bp(screen1) {
+		flex-flow: row nowrap;
+		margin: $search-layout-element-spacing auto;
+	}
+
+}
+
+.search-results__simple-button-group {
+	align-self: flex-end;
+	margin: 10px 0 0;
+
+	@include bp(screen1) {
+		margin: 0 0 0 15px;
+	}
+
+}
+
+.search-results__simple-button {
+	@extend %button__primary;
+
+	&:last-child {
+		margin: 0 0 0 10px;
+	}
+
+}
+
+
 .search-results__pagination {
 	display: flex;
 	align-items: flex-end;
