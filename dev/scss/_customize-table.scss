@@ -6,12 +6,13 @@
 	align-items: center;
 	justify-content: space-between;
 	max-width: 1000px;
-	margin: 0 auto;
+	margin: 0 auto 10px;
 	padding: 1em 0.5em;
 	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 
 	@include bp(screen1) {
 		flex-flow: row nowrap;
+		margin: 0 auto 30px;
 		padding: 1em;
 	}
 
