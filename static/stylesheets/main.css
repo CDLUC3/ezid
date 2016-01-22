@@ -3141,15 +3141,7 @@ input[type="radio"]:checked + span:before {
 .header__learn-subnav {
   z-index: 99; }
 
-.heading__top-banner-bg {
-  background-color: #056a7b;
-  background-image: -webkit-linear-gradient(top, #168b99 0%, #056a7b 100%);
-  background-image: -o-linear-gradient(top, #168b99 0%, #056a7b 100%);
-  background-image: linear-gradient(to bottom, #168b99 0%, #056a7b 100%);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF168B99', endColorstr='#FF056A7B', GradientType=0); }
-
-.heading__top-banner-text, .api h1 {
+.api h1 {
   width: 79%;
   margin-top: 18px;
   margin-bottom: 15px;
@@ -3157,9 +3149,6 @@ input[type="radio"]:checked + span:before {
   font-weight: bold;
   letter-spacing: 0.026em;
   line-height: 1.3em; }
-
-.heading__top-banner-text {
-  color: white; }
 
 .apidoc h1 {
   color: #00778a;
