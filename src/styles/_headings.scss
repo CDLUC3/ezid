@@ -35,8 +35,7 @@
   font-size: 1.4em;
 }
 
-.heading_2, 
-h2 {
+.heading_2 {
   @extend %h2-base;
   margin: 8px 0px 17px 0px;
 }

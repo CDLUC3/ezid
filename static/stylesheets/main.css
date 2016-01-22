@@ -3167,15 +3167,13 @@ input[type="radio"]:checked + span:before {
   font-size: 1.4em;
   border-bottom: 1px dotted black; }
 
-.heading_2,
-h2, h2.id-creation, .panel-body .heading_2 {
+.heading_2, h2.id-creation, .panel-body .heading_2 {
   font-family: KievitWebPro-Bold, Arial, sans-serif;
   color: #00778a;
   font-weight: normal;
   font-size: 1.4em; }
 
-.heading_2,
-h2 {
+.heading_2 {
   margin: 8px 0px 17px 0px; }
 
 h2.id-creation {
@@ -3456,6 +3454,30 @@ h1.lead2 {
   background-color: #FFF;
   margin: 10px 0px 0px 0px;
   padding-left: 0px; }
+
+.accordion__title h1, .accordion__title .h1 {
+  font-size: 15px;
+  margin: 0; }
+
+.accordion__title h2, .accordion__title .h2 {
+  font-size: 15px;
+  margin: 0; }
+
+.accordion__title h3, .accordion__title .h3 {
+  font-size: 15px;
+  margin: 0; }
+
+.accordion__title h4, .accordion__title .h4 {
+  font-size: 15px;
+  margin: 0; }
+
+.accordion__title h5, .accordion__title .h5 {
+  font-size: 15px;
+  margin: 0; }
+
+.accordion__title h6, .accordion__title .h6 {
+  font-size: 15px;
+  margin: 0; }
 
 .learn__title--ext-link {
   margin-bottom: 20px; }
