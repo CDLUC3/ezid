@@ -28,49 +28,30 @@
   border-bottom: 1px dotted black;
 }
 
-h2-base {
+%h2-base {
   font-family: KievitWebPro-Bold, Arial, sans-serif;
   color: $design-primary-color;
   font-weight: normal;
   font-size: 1.4em;
 }
 
+.heading_2, 
 h2 {
-  @extend h2-base;
+  @extend %h2-base;
   margin: 8px 0px 17px 0px;
 }
 
 // ID Creation Header (Front Page Demo)
 h2.id-creation {
-  @extend h2-base;
+  @extend %h2-base;
   margin: 0px 0px 17px 10px;
 }
 
-// Section Header
-h3 {
-  color: $design-primary-color;
-  font-weight: bold;
-  font-size: 0.9em;
-}
-// PAGE Learn
-.panel-body h3 {
-  @extend h2-base;
-  margin: 10px 0px 17px 0px;
-}
-
-h4 {
+.heading_3 {
   margin-top: 18px;
   color: $design-pop-dark;
   font-weight: bold;
   font-size: 1.1em;
-}
-
-h5 {
-  margin-top: 10px;
-  color: #000;
-  font-weight: bold;
-  font-size: 1em;
-  font-style: italic;
 }
 
 // Headers with other content next to them

@@ -9,6 +9,8 @@ urlpatterns = django.conf.urls.patterns("",
   ("^learn/$", "ui_home.learn"),
   ("^learn/crossref_faq$", "ui_home.crossref_faq"),
   ("^learn/id_basics$", "ui_home.id_basics"),
+  ("^learn/id_concepts$", "ui_home.id_concepts"),
+  ("^learn/open_source$", "ui_home.open_source"),
   ("^learn/suffix_passthrough$", "ui_home.suffix_passthrough"),
   ("^home/(\w+)$", "ui_home.no_menu"),
 
