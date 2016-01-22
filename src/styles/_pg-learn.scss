@@ -1,5 +1,34 @@
 // Learn Page
 
+.breadcrumb {
+  background-color: #FFF;
+  margin: 10px 0px 0px 0px;
+  padding-left: 0px;
+}
+
+.accordion-toggle {
+  @extend %link__primary;
+}
+
+.learn__title--ext-link {
+  margin-bottom: 20px;
+}
+
+.learn-preformatted {
+  font-family: monospace;
+  word-break: keep-all; /* webkit */
+  word-wrap: break-word;
+  white-space: pre;
+  white-space: -moz-pre-wrap; /* fennec */
+  white-space: pre-wrap;
+  white-space: pre\9; /* IE7+ */
+}
+
+// libsass patch: https://github.com/twbs/bootstrap/issues/16576 
+.breadcrumb > li + li:before {
+  content: $breadcrumb-separator + "\00a0";
+}
+
 @media (max-width:$container-sm){
   .panel-body{
     margin: 28px 4px 30px 6px;
@@ -12,21 +41,23 @@
   }
 }
 
-.accordion-toggle {
-  @extend %link__primary;
-}
+.panel-body {
+  .heading_2 {
+    @extend %h2-base;
+    margin: 10px 0px 17px 0px;
+  }
+  .heading_3 {
+    margin-top: 18px;
+    color: $design-pop-dark;
+    font-weight: bold;
+    font-size: 1.1em;
+  }
 
-.learn__title--ext-link {
-  margin-bottom: 20px;
-}
-
-.breadcrumb {
-  background-color: #FFF;
-  margin: 10px 0px 0px 0px;
-  padding-left: 0px;
-}
-
-// libsass patch: https://github.com/twbs/bootstrap/issues/16576 
-.breadcrumb > li + li:before {
-  content: $breadcrumb-separator + "\00a0";
+  .heading_4 {
+    margin-top: 10px;
+    color: #000;
+    font-weight: bold;
+    font-size: 1em;
+    font-style: italic;
+  }
 }

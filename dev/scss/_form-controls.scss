@@ -93,6 +93,7 @@
 
 .fcontrol__select-inline {
 	@extend %fcontrol__select;
+	display: inline;
 }
 
 // ***** Select Inline ***** //
@@ -100,10 +101,6 @@
 .fcontrol__select-label-inline {
 	color: $design-primary-color;
 	font-size: 1.1em;
-}
-
-.fcontrol__select-inline {
-	display: inline;
 }
 
 // ***** Radio Buttons ***** //

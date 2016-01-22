@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<title>Create ID Layout</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+	<!-- build:css css/main2.min.css -->
+	<link rel="stylesheet" href="css/main2.css">
+	<!-- endbuild -->
+
+</head>
+<body>
+
+	<div class="container-fluid">
+
+    <h1><a href="index.html">EZID UI Library</a></h1>
+
+    <h2>Create ID Layout</h2>
+
+    <!--#include file="includes/header.html" -->
+
+    <div class="heading__primary-container">
+      <h1 class="heading__primary-text">Create an identifier</h1>
+    </div>
+
+    <div class="tab create__tab">
+      <input class="tab__input" id="tab-1" type="radio" name="name" checked="checked"/>
+      <label class="tab__label" for="tab-1">Simple</label>
+      <div class="tab__content">
+        
+        <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset1">
+
+          <div id="create__fieldset1" class="fieldset-stacked__legend-number-1">Choose an identifier type</div>
+        
+          <label for="create__radio-button1" class="fcontrol__radio-label-stacked create__radio-buttons">
+            <input id="create__radio-button1" class="fcontrol__radio-button-stacked" type="radio" value="" name="name1" checked> <span>Alliance for Crops, Soils, and Environmental Science Societies ARK (ark:/85143/c4)</span>
+          </label>
+
+          <label for="create__radio-button2" class="fcontrol__radio-label-stacked create__radio-buttons">
+            <input id="create__radio-button2" class="fcontrol__radio-button-stacked" type="radio" value="" name="name1"> <span>American Astronomical Society (AAS) ARK (ark:/86074/r3)</span>
+          </label>
+
+          <label for="create__radio-button3" class="fcontrol__radio-label-stacked create__radio-buttons">
+            <input id="create__radio-button3" class="fcontrol__radio-button-stacked" type="radio" value="" name="name1"> <span>(etc.)</span>
+          </label>
+
+        </div>
+
+        <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset2">
+
+          <div id="create__fieldset2" class="fieldset-stacked__legend-number-2">Describe the identified object</div>
+        
+          [form controls to go here]
+
+        </div>
+
+      </div>
+
+      <input class="tab__input" id="tab-2" type="radio" name="name" />
+      <label class="tab__label" for="tab-2">Advanced</label>
+      <div class="tab__content">
+        [advanced form components to go here]
+      </div>
+    </div>
+
+    <!--#include file="includes/footer_geo-off.html" -->
+
+  </div>
+	
+  <!-- build:js js/main2.min.js -->
+  <script src="js/vendor/jquery.min.js"></script>
+  <script src="js/vendor/jquery-ui.min.js"></script>
+  <script src="js/vendor/better-dom.min.js"></script>
+  <script src="js/vendor/better-details-polyfill.js"></script>
+  <script src="js/vendor/modernizr-custombuild.js"></script>
+  <script src="js/main2.js"></script>
+  <!-- endbuild -->
+	
+</body>
+</html>

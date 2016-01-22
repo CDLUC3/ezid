@@ -32,6 +32,14 @@ def id_basics(request):
   d = { 'menu_item' : 'ui_home.learn' }
   return uic.render(request, 'info/id_basics', d)
 
+def id_concepts(request):
+  d = { 'menu_item' : 'ui_home.learn' }
+  return uic.render(request, 'info/id_concepts', d)
+
+def open_source(request):
+  d = { 'menu_item' : 'ui_home.learn' }
+  return uic.render(request, 'info/open_source', d)
+
 def suffix_passthrough(request):
   d = { 'menu_item' : 'ui_home.learn' }
   return uic.render(request, 'info/suffix_passthrough', d)

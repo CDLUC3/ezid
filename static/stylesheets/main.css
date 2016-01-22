@@ -3167,38 +3167,25 @@ input[type="radio"]:checked + span:before {
   font-size: 1.4em;
   border-bottom: 1px dotted black; }
 
-h2-base, h2, h2.id-creation, .panel-body h3 {
+.heading_2,
+h2, h2.id-creation, .panel-body .heading_2 {
   font-family: KievitWebPro-Bold, Arial, sans-serif;
   color: #00778a;
   font-weight: normal;
   font-size: 1.4em; }
 
+.heading_2,
 h2 {
   margin: 8px 0px 17px 0px; }
 
 h2.id-creation {
   margin: 0px 0px 17px 10px; }
 
-h3 {
-  color: #00778a;
-  font-weight: bold;
-  font-size: 0.9em; }
-
-.panel-body h3 {
-  margin: 10px 0px 17px 0px; }
-
-h4 {
+.heading_3 {
   margin-top: 18px;
   color: #d8402f;
   font-weight: bold;
   font-size: 1.1em; }
-
-h5 {
-  margin-top: 10px;
-  color: #000;
-  font-weight: bold;
-  font-size: 1em;
-  font-style: italic; }
 
 .inline-header h2, .inline-header h3 {
   margin-top: 0px;
@@ -3465,6 +3452,29 @@ h1.lead2 {
   top: 50%;
   transform: translateY(-50%); }
 
+.breadcrumb {
+  background-color: #FFF;
+  margin: 10px 0px 0px 0px;
+  padding-left: 0px; }
+
+.learn__title--ext-link {
+  margin-bottom: 20px; }
+
+.learn-preformatted {
+  font-family: monospace;
+  word-break: keep-all;
+  /* webkit */
+  word-wrap: break-word;
+  white-space: pre;
+  white-space: -moz-pre-wrap;
+  /* fennec */
+  white-space: pre-wrap;
+  white-space: pre\9;
+  /* IE7+ */ }
+
+.breadcrumb > li + li:before {
+  content: "/ "; }
+
 @media (max-width: 780px) {
   .panel-body {
     margin: 28px 4px 30px 6px; } }
@@ -3473,16 +3483,21 @@ h1.lead2 {
   .panel-body {
     margin: 28px 40px 30px 20px; } }
 
-.learn__title--ext-link {
-  margin-bottom: 20px; }
+.panel-body .heading_2 {
+  margin: 10px 0px 17px 0px; }
 
-.breadcrumb {
-  background-color: #FFF;
-  margin: 10px 0px 0px 0px;
-  padding-left: 0px; }
+.panel-body .heading_3 {
+  margin-top: 18px;
+  color: #d8402f;
+  font-weight: bold;
+  font-size: 1.1em; }
 
-.breadcrumb > li + li:before {
-  content: "/ "; }
+.panel-body .heading_4 {
+  margin-top: 10px;
+  color: #000;
+  font-weight: bold;
+  font-size: 1em;
+  font-style: italic; }
 
 .search__tooltip--container {
   position: absolute;

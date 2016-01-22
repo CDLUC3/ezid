@@ -2,7 +2,7 @@
 <html lang="en" class="no-js">
 <head>
 	<meta charset="UTF-8">
-	<title>Home Layout</title>
+	<title>Search Results Layout</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 	<!-- build:css css/main2.min.css -->
@@ -24,23 +24,51 @@
       <h1 class="heading__primary-text">Search Results</h1>
     </div>
     
-    <div class="search__simple">
+    <div class="search-results__simple">
       <div class="fcontrol__group-stacked">
         <label for="search__simple-label" class="fcontrol__text-label-hidden">Search</label>
         <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="Full text search using words about or describing the identifier.">
         <span class="fcontrol__invalid-flag">Your search cannot not be empty</span>
       </div>
-      <button class="search__simple-button">Search</button>
-      <button class="search__simple-button">Modify original search</button>
+      <div class="search-results__simple-button-group">
+        <button class="search-results__simple-button">Search</button>
+        <button class="search-results__simple-button">Modify original search</button>
+      </div>
     </div>
 
     <!--#include file="includes/customize-table.html" -->
 
-    <!--#include file="includes/pagination.html" -->
+    <div class="search-results__pagination">
+      
+      <div class="search-results__select">
+        <label for="search-results__pagination-label1" class="fcontrol__select-label-inline search-results__pagination-label">Show</label>
+        <select name="" id="search-results__pagination-label1" class="fcontrol__select-inline">
+          <option value="">50</option>
+          <option value="">100</option>
+        </select>
+        entries
+      </div>
+
+      <!--#include file="includes/pagination.html" -->
+      
+    </div>
 
     <!--#include file="includes/table2.html" -->
 
-    <!--#include file="includes/pagination.html" -->
+    <div class="search-results__pagination">
+      
+      <div class="search-results__select">
+        <label for="search-results__pagination-label2" class="fcontrol__select-label-inline search-results__pagination-label">Show</label>
+        <select name="" id="search-results__pagination-label2" class="fcontrol__select-inline">
+          <option value="">50</option>
+          <option value="">100</option>
+        </select>
+        entries
+      </div>
+
+      <!--#include file="includes/pagination.html" -->
+      
+    </div>
 
     <!--#include file="includes/footer_geo-off.html" -->
 

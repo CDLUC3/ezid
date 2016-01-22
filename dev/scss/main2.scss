@@ -34,6 +34,7 @@
 
 // ***** Layouts ***** //
 
+@import 'create';
 @import 'home';
 @import 'search';
 @import 'search-results';
@@ -58,5 +59,16 @@ summary {
 	&::-webkit-details-marker {
 	  display: none;
 	}
+
+}
+
+// Remove spinner arrows from Chrome & Safari
+input[type=number] {
+  -moz-appearance: textfield;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none; 
+  }
 
 }

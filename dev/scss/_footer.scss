@@ -1,7 +1,7 @@
 // ##### Footer Component ##### //
 
 .footer {
-	margin: 0 -10px;
+	margin: 10px -10px 0;
 	background-color: $design-secondary-lightest;
 
 	@include bp(screen1) {
@@ -85,6 +85,7 @@
 
 .footer__icon {
 	width: 30px;
+	height: 100%;
 }
 
 .footer__logo-link {

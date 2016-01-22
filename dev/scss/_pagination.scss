@@ -1,18 +1,15 @@
 // ##### Pagination Component ##### //
 
 .pagination {
-	// empty
+	flex: 0 0 auto;
+}
+
+.pagination__min {
+	margin: 0 0.5em 0 0;
 }
 
 .pagination__prev {
-
-	&:before {
-		display: inline-block;
-		margin: 0 0.25em 0 0;
-		font-size: 1.2em;
-		content: '\00ab';
-	}
-
+	// empty
 }
 
 .pagination__label {
@@ -24,12 +21,9 @@
 }
 
 .pagination__next {
+	// empty
+}
 
-	&:after {
-		display: inline-block;
-		margin: 0 0 0 0.25em;
-		font-size: 1.2em;
-		content: '\00bb';
-	}
-
+.pagination__max {
+	margin: 0 0 0 0.5em;
 }
