@@ -50,9 +50,11 @@ Welcome {{ session.auth.user|first }}!
     </div>
   </nav>
 </header>
-    {% if session.auth %}
-    <div class="login-menu">
-      {% menu_user menu_item session %}
-    </div>
-    <p class="vertical-buffer-20"></p>
-    {% endif %}
+{% if session.auth %}
+<div class="login-menu__container">
+  <div class="login-menu">
+  {% menu_user menu_item session %}
+  </div>
+</div>
+<p class="vertical-buffer-20"></p>
+{% endif %}

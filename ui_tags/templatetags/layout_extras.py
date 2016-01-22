@@ -28,8 +28,8 @@ def settings_value(name):
 @register.simple_tag
 def content_heading(heading):
   """Outputs primary heading at top of page"""
-  return '<div class="heading__top-banner-bg"><div class="container"><div class="row">' + \
-         '<h1 class="heading__top-banner-text">' + unicode(heading) + '</h1></div></div></div>'
+  return '<div class="heading__primary-container">' + \
+         '<h1 class="heading__primary-text">' + unicode(heading) + '</h1></div>'
 
 @register.simple_tag
 def choices(name, value, choice_string):

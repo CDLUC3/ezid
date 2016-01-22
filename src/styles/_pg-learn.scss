@@ -10,6 +10,34 @@
   @extend %link__primary;
 }
 
+// Headings for primary accordion sections
+.accordion__title {
+  h1, .h1 {
+    font-size: $font-size-base;
+    margin: 0;
+  }
+  h2, .h2 {
+    font-size: $font-size-base;
+    margin: 0;
+  }
+  h3, .h3 {
+    font-size: $font-size-base;
+    margin: 0;
+  }
+  h4, .h4 {
+    font-size: $font-size-base;
+    margin: 0;
+  }
+  h5, .h5 {
+    font-size: $font-size-base;
+    margin: 0;
+  }
+  h6, .h6 {
+    font-size: $font-size-base;
+    margin: 0;
+  }
+}
+
 .learn__title--ext-link {
   margin-bottom: 20px;
 }

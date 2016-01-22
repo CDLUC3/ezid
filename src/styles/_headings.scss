@@ -1,10 +1,5 @@
 // ##### Headers ##### //
 
-// Main (Blue) Header
-.heading__top-banner-bg {
-  @include gradient-vertical($design-primary-gradient-top, $design-primary-gradient-bottom, 0%, 100%);
-}
-
 %heading__1 {
   width: 79%;
   margin-top: 18px;
@@ -14,11 +9,6 @@
   letter-spacing: 0.026em;
   line-height: 1.3em;
 
-}
-
-.heading__top-banner-text {
-  @extend %heading__1;
-  color: $design-white-color;
 }
 
 .apidoc h1 {
@@ -35,8 +25,7 @@
   font-size: 1.4em;
 }
 
-.heading_2, 
-h2 {
+.heading_2 {
   @extend %h2-base;
   margin: 8px 0px 17px 0px;
 }
