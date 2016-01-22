@@ -19,96 +19,89 @@
   }
 {% endblock %}
 {% block content %}
-    <div class="vertical-buffer-xs" id="frontpage_img">
-      <div class="container">
-        <div class="row">
-          <div class="lead">
-            Create and manage long-term <br/>
-            globally unique IDs for data<br/>
-            and other sources using EZID
-          </div>
-          <p class="tagline">
-            <a href="/learn#01" class="boxy-pop btn-big">LEARN MORE &raquo;</a>
-          </p>
-        </div>
+    <!-- Home Banner -->
+    <div class="home-banner" style="background-image: url('/static/images/homeHero_01.jpg')">
+      <div class="home-banner__lead">
+        <p class="home-banner__lead-text">Create and manage long-term globally unique IDs for data and other sources using EZID</p>
+        <a href="" class="home-banner__lead-button">Learn More</a>
       </div>
     </div>
-    <div class="container">
-      <div class="row vertical-buffer-sm">
-      <!-- TODO: Mobile: Make this stmnt spread out. Hide arrow, or change it to point down -->
-        <div class="col-sm-2" id="frontpage_idcreate_promo">
-          <h1 class="lead2">SEE HOW EASY IT IS:</h1>
-          <div class="vertical-buffer-xs font-med">
-            <p><strong>NOTE:</strong>&nbsp;&nbsp;This is just a demo.
-            To create a real identifier, you must have an account.</p>
-          </div>
+
+    <div class="home__identifier-container">
+
+      <div class="home__identifier-lead-box">
+        <p class="home__identifier-lead-heading">See how easy it is:</p>
+        <p class="home__identifier-lead-note"><b>NOTE:</b> This is just a demo. To create a real identifier, you must have an account.</p>
+      </div>
+
+      <div class="home__identifier-form">
+
+        <div class="fieldset-inline" role="group" aria-labelledby="fieldset__example2">
+
+          <span id="fieldset__example2" class="fieldset-inline__legend-number-1">Choose an identifier type</span>
+          
+          <label for="fcontrol__example-label8" class="fcontrol__radio-label-inline">
+            <input id="fcontrol__example-label8" class="fcontrol__radio-button-stacked" type="radio" value="" name="name2" checked> <span>ARK</span>
+          </label>
+
+          <label for="fcontrol__example-label9" class="fcontrol__radio-label-inline">
+            <input id="fcontrol__example-label9" class="fcontrol__radio-button-stacked" type="radio" value="" name="name2"> <span>DOI</span>
+          </label>
+
         </div>
 
-        <div class="col-sm-10" id="frontpage_idcreate_content">
-          <div class="frontpage_idcreate_arrow"></div>
-          <form id="create_form" action="{% url "ui_home.index" %}" method="post" class="form-horizontal" role="form">
-            <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
-            <div class="row">
-              <div class="col-md-6">
-                <div class="inline-header text-nowrap">
-                  <span class="number-big-pop">1</span>
-                  <h2 class="id-creation">Choose an identifier type</h2>
-                </div>
-              </div>
-              <div id="frontpage_form_radiobuttons" class="col-md-6">
-                <div class="form-group form-group-sm">
-                {% for p in prefixes %}
-                  <label for="{{p.prefix}}" class="radio-css">
-                    <input type="radio" name="shoulder" value="{{p.prefix}}" 
-                      class="id_type_button" id="{{p.prefix}}" 
-                      {% selected_radio "shoulder" forloop.counter p.prefix %} />
-                    <span>{% shoulder_display p "True" %}</span>
-                  </label>
-                {% endfor %}
-                {% help_icon "choose_id_demo" %}
-                </div>
+        <div class="fieldset-stacked fieldset__top-border home__fieldset" role="group" aria-labelledby="fieldset__example1">
+
+          <div id="fieldset__example1" class="fieldset-stacked__legend-number-2">Describe the identified object</div>
+
+          <div class="row">
+          
+            <div class="col-md-5 home__text-field">
+              <div class="fcontrol__group-stacked">
+                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Location (URL)</label>
+                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="Location (URL) (required)" required>
+                <span class="fcontrol__invalid-flag">Error message</span>
               </div>
             </div>
-            <hr>
-            <div class="row">
-              <div class="inline-header">
-                <span class="number-big-pop">2</span>
-                <h2 class="id-creation">Describe the identified object</h2>
+
+            <div class="col-md-5 home__text-field">
+              <div class="fcontrol__group-stacked">
+                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Who?</label>
+                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="Who? (required)" required>
+                <span class="fcontrol__invalid-flag">Error message</span>
               </div>
             </div>
-            <div id="home_demo_ark" class="row">
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="_target" class="sr-only control-label">{{internal_profile.target.displayName}}</label>
-                <input type="text" class="form-control" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
-              </div>
-              {% for e in current_profile.elements %}
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="{{e.name}}" class="sr-only control-label">{{e.displayName}}</label>
-                {% display_form_element e %}
-              </div>
-              {% endfor %}
-              <div class="col-md-1">
-                <button type="submit" class="btn btn-primary padding-side-xs">CREATE</button>
+
+          </div>
+
+          <div class="row">
+
+            <div class="col-md-5 home__text-field">
+              <div class="fcontrol__group-stacked">
+                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">What?</label>
+                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="What? (required)" required>
+                <span class="fcontrol__invalid-flag">Error message</span>
               </div>
             </div>
-            <div id="home_demo_doi" class="row">
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="_target" class="sr-only control-label">{{internal_profile.target.displayName}}</label>
-                <input type="text" class="form-control" name="_target" id="_target" value="{% request_value "_target" %}" placeholder="">
-              </div>
-              {% for e in current_profile.elements %}
-              <div class="col-md-5 form-group form-group-sm">
-                <label for="{{e.name}}" class="sr-only control-label">{{e.displayName}}</label>
-                {% display_form_element e %}
-              </div>
-              {% endfor %}
-              <div class="col-md-1">
-                <button type="submit" class="btn btn-primary padding-side-xs">CREATE</button>
+
+            <div class="col-md-5 home__text-field">
+              <div class="fcontrol__group-stacked">
+                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">When</label>
+                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="When? (required)" required>
+                <span class="fcontrol__invalid-flag">Error message</span>
               </div>
             </div>
-          </form>
+
+            <div class="col-md-2 home__create-button">
+              <button class="home__button-primary">Create</button>
+            </div>
+
+          </div>
+
         </div>
+
       </div>
+
     </div>
     <script type="text/javascript">
       // Load random hero image

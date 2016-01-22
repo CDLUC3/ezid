@@ -1,7 +1,31 @@
+Location of this README file: /SITE/PROJECT/src
+
 ========= Front-End Stylesheets for WEB UI presentation layer ===========
+
+This directory contains the SASS stylesheets developed in teh 1st phase of the EZID
+UI Redesign. A certain portion of these stylesheets are still in play, notably:
+
+ _variables.scss
+ _bootstrap.scss
+ Files in the 'bootstrap' directory
+
+Much of the other files in this directory are slowly being replaced by code 
+developed under the 'SITE/PROJECT/dev' directory, initiated by Joel Hagedorn, 
+now, as of this writing, being handed off to Andy Mardesich.
+
+In this interim phase, we include styles from both development efforts,
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+main.css (legacy) stylesheet compilation process:
+
 SASS is a scripting language that is interpreted into CSS stylesheets (http://sass-lang.com/)
 EZID (development build only) includes libsass python extension module for processing SassScript.
 
 To build CSS from SASS (.scss) files:
 sassc ~/apache/ezid/SITE/PROJECT/src/styles/main.scss ~/apache/ezid/SITE/PROJECT/static/stylesheets/main.css
 
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+main2.css stylesheet/javascript compilation process:
+
+https://github.com/JoelCDL/gulp_template
