@@ -20,7 +20,7 @@
 {% endblock %}
 {% block content %}
     <!-- Home Banner -->
-    <div class="home-banner" style="background-image: url('/static/images/homeHero_01.jpg')">
+    <div class="home-banner">
       <div class="home-banner__lead">
         <p class="home-banner__lead-text">Create and manage long-term globally unique IDs for data and other sources using EZID</p>
         <a href="" class="home-banner__lead-button">Learn More</a>
@@ -35,6 +35,9 @@
       </div>
 
       <div class="home__identifier-form">
+        <div class="frontpage_idcreate_arrow"></div>
+        <form id="create_form" action="{% url "ui_home.index" %}" method="post" class="form-horizontal" role="form">
+        <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
 
         <div class="fieldset-inline" role="group" aria-labelledby="fieldset__example2">
 
@@ -97,16 +100,15 @@
             </div>
 
           </div>
-
         </div>
-
+        </form>
       </div>
 
     </div>
     <script type="text/javascript">
       // Load random hero image
       var rImg = "url(" + getImageTag() + ")";
-      $("#frontpage_img").css({"backgroundImage": rImg});
+      $(".home-banner").css({"backgroundImage": rImg});
 
       // Load different fields depending on ID type
       $(document).ready(function () {
