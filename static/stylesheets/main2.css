@@ -2805,24 +2805,24 @@ Selector pattern using above mixin:
   font-size: 1em; }
 
 .fcontrol__label-required:after {
-  color: #cc0000;
+  color: #9e1919;
   content: ' (Required)'; }
 
 .fcontrol__invalid-flag {
   display: none;
   padding: 0.3em 0.5em;
-  border: 1px solid #cc0000;
-  background: #cc0000;
+  border: 1px solid #9e1919;
+  background: #9e1919;
   color: white; }
 
 .fcontrol__group-stacked--invalid [class^='fcontrol__text-field'] {
-  border: 1px solid #cc0000; }
+  border: 1px solid #9e1919; }
 
 .fcontrol__group-stacked--invalid .fcontrol__invalid-flag {
   display: block; }
 
 .fcontrol__group-inline--invalid [class^='fcontrol__text-field'] {
-  border: 1px solid #cc0000; }
+  border: 1px solid #9e1919; }
 
 .fcontrol__group-inline--invalid .fcontrol__invalid-flag {
   display: block; }

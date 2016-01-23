@@ -36,9 +36,9 @@ class BaseForm(forms.Form):
       self.fields['_target'].widget.attrs['placeholder'] = _("Location (URL)")
 
 class ErcForm(BaseForm):
-  """ Form object for ID with ERC profile. BaseForm parent brings in _target field 
-      If 'placeholder' is True set attribute to include specified placeholder text 
-      in text fields """
+  """ Form object for ID with ERC profile (Used for simple or advanced ARK).
+      BaseForm parent brings in _target field. If 'placeholder' is True 
+      set attribute to include specified placeholder text in text fields """
   def __init__(self, *args, **kwargs):
     super(ErcForm,self).__init__(*args,**kwargs)
     self.fields["erc.who"]=forms.CharField(required=False, label=_("Who"))
@@ -50,9 +50,9 @@ class ErcForm(BaseForm):
       self.fields['erc.when'].widget.attrs['placeholder'] = _("When?")
 
 class DcForm(BaseForm):
-  """ Form object for ID with Dublin Core profile. BaseForm parent brings in 
-      _target field. If 'placeholder' is True set attribute to include specified 
-      placeholder text in text fields """
+  """ Form object for ID with Dublin Core profile (Advanced ARK or DOI).
+      BaseForm parent brings in target field. If 'placeholder' is True set 
+      attribute to include specified placeholder text in text fields """
   def __init__(self, *args, **kwargs):
     super(DcForm,self).__init__(*args,**kwargs)
     self.fields["dc.creator"] = forms.CharField(required=False, label=_("Creator"))
@@ -62,7 +62,7 @@ class DcForm(BaseForm):
     self.fields["dc.type"] = forms.CharField(required=False, label=_("Type"))
 
 class DataciteForm(BaseForm):
-  """ Form object for ID with DataCite profile. BaseForm parent brings in 
+  """ Form object for ID with (simple DOI) DataCite profile. BaseForm parent brings in 
       _target field. If 'placeholder' is True set attribute to include specified
       placeholder text in text fields """
   def __init__(self, *args, **kwargs):
@@ -165,8 +165,8 @@ class ResourceTypeForm(forms.Form):
       By embedding them in a form object, this bypasses that problem. """
   def __init__(self, *args, **kwargs):
     super(ResourceTypeForm,self).__init__(*args,**kwargs)
-    self.fields['resourceType-ResourceTypeGeneral'] = forms.ChoiceField(choices=RESOURCE_TYPES, label = _("Resource Type"))
-    self.fields['resourceType'] = forms.CharField(required=False, label=_("Resource Type Description"))
+    self.fields['resourceType-ResourceTypeGeneral'] = forms.ChoiceField(choices=RESOURCE_TYPES, label = _("Resource Type General"))
+    self.fields['resourceType'] = forms.CharField(required=False, label=_("Resource Type"))
 
 # Django faulty design: First formset allows blank form fields.
 # http://stackoverflow.com/questions/2406537/django-formsets-make-first-required

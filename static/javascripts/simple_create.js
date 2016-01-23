@@ -1,4 +1,5 @@
-/* include file to attach javascript actions to simple creation form */
+/* Include file to attach javascript actions to simple creation form 
+   Determines value of 'current_profile' based on shoulder that is selected   */
 
 $(document).ready(function() {
 	var orig_val = $('input[name=shoulder]:checked', '#create_form').val();

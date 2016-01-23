@@ -103,8 +103,8 @@ h2.id-creation {
   color: #FFF;
 }
 .alert-error {
-  background-color: #9E1919;
-  border-color: #9E1919;
+  background-color: $design-red-color; 
+  border-color: $design-red-color;
   color: #FFF;
   font-weight: bold;
 }

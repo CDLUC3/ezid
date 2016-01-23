@@ -2965,119 +2965,9 @@ p.italic {
   font-size: 0.9em;
   font-weight: bold; }
 
-.font-med {
-  line-height: 1.1em; }
-
-mark {
-  background-color: #fbb714;
-  padding: 0px; }
-
 .form-horizontal label.text-right {
   text-align: right;
   padding-right: 10px; }
-
-.form-control {
-  display: inline;
-  color: #000;
-  border-color: #beb6af;
-  background-color: #FFF; }
-
-.form-group-sm {
-  padding: 0px 15px 0px 0px; }
-
-.form-horizontal .radio,
-.form-horizontal .checkbox,
-.form-horizontal .radio-inline,
-.form-horizontal .checkbox-inline {
-  padding: 0px; }
-
-input[type="checkbox"] {
-  margin: 0px; }
-
-.input-sm, .form-horizontal .form-group-sm .form-control, .input-group-sm > .form-control,
-.input-group-sm > .input-group-addon,
-.input-group-sm > .input-group-btn > .btn, select.input-sm, .form-horizontal .form-group-sm select.form-control, .input-group-sm > select.form-control,
-.input-group-sm > select.input-group-addon,
-.input-group-sm > .input-group-btn > select.btn {
-  font-size: 1.05em;
-  border-radius: 0;
-  height: 30px; }
-
-select::-moz-focus-inner {
-  /*Remove button padding in FF*/
-  border: 0;
-  padding: 0; }
-
-@-moz-document url-prefix() {
-  /* targets Firefox only */
-  select {
-    padding: 2px 8px !important; } }
-
-select.form-control {
-  background-color: #EEE; }
-
-form.form-horizontal .second-col {
-  padding-left: 15px; }
-
-.form-horizontal .control-label {
-  text-align: left; }
-
-label {
-  font-size: 1.1em;
-  font-weight: normal;
-  color: #00778a;
-  margin-bottom: 1px; }
-
-label.text-color-reg {
-  color: #000; }
-
-.image-checkbox-label {
-  background: url("/static/images/checkbox.svg") no-repeat center left;
-  background-size: 20px;
-  color: #000; }
-
-.checkbox__icon:checked + .image-checkbox-label {
-  background: url("/static/images/checkboxCheck.svg") no-repeat center left;
-  background-size: 20px;
-  color: #000; }
-
-label.disabled {
-  color: #beb6af; }
-
-input[type="radio"] {
-  border: 0;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px; }
-
-/* One radio button per line */
-label.radio-css {
-  cursor: pointer; }
-
-input[type="radio"] + span {
-  display: block; }
-
-/* the basic, unchecked style */
-input[type="radio"] + span:before {
-  content: '';
-  display: inline-block;
-  width: 0.9em;
-  height: 0.9em;
-  vertical-align: -0.1em;
-  border-radius: 1em;
-  background-color: #FFF;
-  border: 0.112em solid #7c7e7f;
-  box-shadow: 0 0 0 0.1em #7c7e7f;
-  margin-right: 0.75em;
-  transition: 0.25s ease all; }
-
-/* the checked style using the :checked pseudo class */
-input[type="radio"]:checked + span:before {
-  background: #7c7e7f; }
 
 .footer__news-feed-link {
   align-self: flex-start;
@@ -3228,8 +3118,8 @@ h2.id-creation {
   color: #FFF; }
 
 .alert-error {
-  background-color: #9E1919;
-  border-color: #9E1919;
+  background-color: #9e1919;
+  border-color: #9e1919;
   color: #FFF;
   font-weight: bold; }
 
