@@ -22,16 +22,16 @@
     <!-- Home Banner -->
     <div class="home-banner">
       <div class="home-banner__lead">
-        <p class="home-banner__lead-text">Create and manage long-term globally unique IDs for data and other sources using EZID</p>
-        <a href="" class="home-banner__lead-button">Learn More</a>
+        <p class="home-banner__lead-text">{% trans "Create and manage long-term globally unique IDs for data and other sources using EZID" %}</p>
+        <a href="" class="home-banner__lead-button">{% trans "Learn More" %}</a>
       </div>
     </div>
 
     <div class="home__identifier-container">
 
       <div class="home__identifier-lead-box">
-        <p class="home__identifier-lead-heading">See how easy it is:</p>
-        <p class="home__identifier-lead-note"><b>NOTE:</b> This is just a demo. To create a real identifier, you must have an account.</p>
+        <p class="home__identifier-lead-heading">{% trans "See how easy it is" %}:</p>
+        <p class="home__identifier-lead-note"><b>{% trans "NOTE" %}:</b> {% trans "This is just a demo. To create a real identifier, you must have an account." %}</p>
       </div>
 
       <div class="home__identifier-form">
@@ -41,62 +41,37 @@
 
         <div class="fieldset-inline" role="group" aria-labelledby="fieldset__example2">
 
-          <span id="fieldset__example2" class="fieldset-inline__legend-number-1">Choose an identifier type</span>
-          
-          <label for="fcontrol__example-label8" class="fcontrol__radio-label-inline">
-            <input id="fcontrol__example-label8" class="fcontrol__radio-button-stacked" type="radio" value="" name="name2" checked> <span>ARK</span>
-          </label>
+          <span id="fieldset__example2" class="fieldset-inline__legend-number-1">{% trans "Choose an identifier type" %}</span>
 
-          <label for="fcontrol__example-label9" class="fcontrol__radio-label-inline">
-            <input id="fcontrol__example-label9" class="fcontrol__radio-button-stacked" type="radio" value="" name="name2"> <span>DOI</span>
+      {% for p in prefixes %}
+          <label for="{{p.prefix}}" class="fcontrol__radio-label-inline">
+            <input id="{{p.prefix}}" class="fcontrol__radio-button-stacked" type="radio" value="{{p.prefix}}" name="shoulder" {% selected_radio "shoulder" forloop.counter p.prefix %}> <span>{% shoulder_display p "True" %}</span>
           </label>
+      {% endfor %}
+          {% help_icon "choose_id_demo" %}
 
         </div>
 
         <div class="fieldset-stacked fieldset__top-border home__fieldset" role="group" aria-labelledby="fieldset__example1">
 
-          <div id="fieldset__example1" class="fieldset-stacked__legend-number-2">Describe the identified object</div>
+          <div id="fieldset__example1" class="fieldset-stacked__legend-number-2">{% trans "Describe the identified object" %}</div>
 
           <div class="row">
-          
+            {{ form.non_field_errors }}
+            {% for field in form %}
             <div class="col-md-5 home__text-field">
-              <div class="fcontrol__group-stacked">
-                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Location (URL)</label>
-                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="Location (URL) (required)" required>
-                <span class="fcontrol__invalid-flag">Error message</span>
+              <div class="fcontrol__group-stacked{% if field.errors %}--invalid{% endif %}">
+                <label for="{{ field.id_for_label }}" class="fcontrol__text-label-hidden">{{ field.label }}</label>
+                {{ field|add_attributes:"fcontrol__text-field-stacked" }}
+              {% if field.errors %}
+                <span class="fcontrol__invalid-flag">{% for error in field.errors %}{{ error|escape }}{% endfor %}</span>
+              {% endif %}
               </div>
             </div>
-
-            <div class="col-md-5 home__text-field">
-              <div class="fcontrol__group-stacked">
-                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">Who?</label>
-                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="Who? (required)" required>
-                <span class="fcontrol__invalid-flag">Error message</span>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="row">
-
-            <div class="col-md-5 home__text-field">
-              <div class="fcontrol__group-stacked">
-                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">What?</label>
-                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="What? (required)" required>
-                <span class="fcontrol__invalid-flag">Error message</span>
-              </div>
-            </div>
-
-            <div class="col-md-5 home__text-field">
-              <div class="fcontrol__group-stacked">
-                <label for="fcontrol__example-label3" class="fcontrol__text-label-hidden">When</label>
-                <input id="fcontrol__example-label3" class="fcontrol__text-field-stacked" type="text" placeholder="When? (required)" required>
-                <span class="fcontrol__invalid-flag">Error message</span>
-              </div>
-            </div>
+            {% endfor %}
 
             <div class="col-md-2 home__create-button">
-              <button class="home__button-primary">Create</button>
+              <button class="home__button-primary">{% trans "Create" %}</button>
             </div>
 
           </div>
@@ -109,7 +84,7 @@
       var rImg = "url(" + getImageTag() + ")";
       $(".home-banner").css({"backgroundImage": rImg});
 
-      // Load different fields depending on ID type
+      // ToDo: Load different fields depending on ID type
       $(document).ready(function () {
         toggleIdFields();
         //Whenever ID type changes
