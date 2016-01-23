@@ -8,26 +8,27 @@
 
 <div class="container vertical-buffer">
 <form method="post" action="{% url "ui_account.pwreset" %}" class="form-horizontal" role="form">
-  <div class="form-group form-group-sm">
-    <label for="username" class="col-sm-2 control-label">{% trans "Username" %}</label>
-    <div class="col-sm-4">
-      <input type="text" id="username" name="username" value="{{ username }}" class="form-control"/>
+  {{ form.non_field_errors }}
+  {% for field in form %}
+    <div class="row form-group form-group-sm{% if field.errors %} has-error{% endif %}">
+      <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}</label>
+      <div class="col-sm-4">
+        {{ field|add_attributes:"form-control"}}
+      </div>
+    {% if field.errors %}
+      <div class="col-sm-2">
+      {% for error in field.errors %}
+        {{ error|escape }}
+      {% endfor %}
+      </div>
+    {% endif %}
     </div>
-    <div class="col-sm-6">&nbsp;</div>
-  </div>
-  <div class="form-group form-group-sm">
-    <label for="email" class="col-sm-2 control-label">{% trans "Email address" %}</label>
-    <div class="col-sm-4">
-      <input type="text" id="email" name="email" value="{{ email }}" class="form-control"/>
-    </div>
-    <div class="col-sm-6">&nbsp;</div>
-  </div>
-  <div class="form-group form-group-sm">
+  {% endfor %}
+  <div class="row form-group form-group-sm">
     <label class="col-sm-2 control-label"></label>
     <div class="col-sm-4">
       <button type="submit" class="btn btn-primary padding-side-med">{% trans "SEND EMAIL" %}</button>
     </div>
-    <div class="col-sm-6">&nbsp;</div>
   </div>
 </form>
 

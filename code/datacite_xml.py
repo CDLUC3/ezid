@@ -3,21 +3,184 @@
 # EZID :: datacite_xml.py
 #
 # Allows processing a form with form elements named with simple XPATH
-# expressions and creates an XML document for attaching Datacite XML
-# metadata.
+# expressions 
+# 1) Generates form fields for use with Django form model.
+# 2) Creates an XML document for attaching Datacite XML metadata.
 #
-# Author:
-#   Scott Fisher <sfisher@ucop.edu>
+# Authors:
+#   Scott Fisher <sfisher@ucop.edu>, Greg Janee <gjanee@ucop.edu> 
 #
 # License:
-#   Copyright (c) 2013, Regents of the University of California
+#   Copyright (c) 2016, Regents of the University of California
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
 
-from lxml import etree
+import lxml.etree
+import util
 import re
 import copy
+
+_repeatableElementContainers = ["creators", "titles", "subjects",
+  "contributors", "dates", "alternateIdentifiers", "relatedIdentifiers",
+  "sizes", "formats", "rightsList", "descriptions", "geoLocations"]
+
+def dataciteXmlToFormElements (document):
+  """
+  Converts a DataCite XML record to a dictionary of form elements.
+  All non-content (comments, etc.) is discarded.  Whitespace is
+  processed and empty element and attribute values are discarded.
+  Dictionary keys follow the pattern of element and attribute XPaths,
+  e.g., the schemeURI attribute in the following XML fragment:
+
+    <resource>
+      <creators>
+        <creator>...</creator>
+        <creator>
+          <nameIdentifier schemeURI="...">
+
+  is identified by key:
+
+    creators-creator-2-nameIdentifier-schemeURI
+
+  Repeatable elements are indexed at the top level only; lower-level
+  repeatable elements (e.g., contributor affiliations) are
+  concatenated.  <br> elements in descriptions are replaced with
+  newlines.
+  """
+  d = {}
+  def tagName (tag):
+    return tag.split("}")[1]
+  def getElementChildren (node):
+    return list(node.iterchildren(lxml.etree.Element))
+  def getText (node):
+    t = node.text or ""
+    for c in node.iterchildren(): t += c.tail or ""
+    return t
+  def processNode (path, node, index=None):
+    tag = tagName(node.tag)
+    if path == "":
+      mypath = tag
+    else:
+      mypath = "%s-%s" % (path, tag)
+    if index != None: mypath += "-%d" % index
+    for a in node.attrib:
+      v = node.attrib[a].strip()
+      if v != "": d["%s-%s" % (mypath, a)] = v
+    if tag in _repeatableElementContainers:
+      for i, c in enumerate(getElementChildren(node)):
+        processNode(mypath, c, i+1)
+    else:
+      if tag == "description":
+        # The only mixed-content element type in the schema; <br>'s
+        # get replaced with newlines.
+        v = node.text or ""
+        for c in node.iterchildren():
+          if isinstance(c.tag, basestring) and tagName(c.tag) == "br":
+            v += "\n"
+          v += c.tail or ""
+        v = v.strip()
+        if v != "": d[mypath] = v
+      else:
+        children = getElementChildren(node)
+        if len(children) > 0:
+          for c in children: processNode(mypath, c)
+        else:
+          v = getText(node).strip()
+          if v != "":
+            if mypath in d:
+              # Repeatable elements not explicitly handled have their
+              # content concatenated.
+              d[mypath] += " ; " + v
+            else:
+              d[mypath] = v
+  root = util.parseXmlString(document)
+  for c in getElementChildren(root): processNode("", c)
+  return d
+
+def temp_mock():
+  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme=""></nameIdentifier><affiliation></affiliation></creator></creators><titles><title titleType=""><title>test</title></title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><resourceType ResourceTypeGeneral="Dataset"></resourceType><geoLocations><geoLocation><geoLocationPoint></geoLocationPoint><geoLocationBox></geoLocationBox><geoLocationPlace></geoLocationPlace></geoLocation></geoLocations></resource>')
+
+def _id_type(str):
+  m = re.compile("^[a-z]+")
+  if m.search(str) == None:
+    return u''
+  else:
+    return m.findall(str)[0].upper()
+
+# The following exhaustive list of DataCite XML elements must form a
+# partial topological order, that is, if two elements have the same
+# parent, they must appear in the list in the same order that they
+# must appear in an XML document.
+
+_elementList = ["identifier", "creators", "creator", "creatorName",
+  "titles", "title", "publisher", "publicationYear", "subjects", "subject",
+  "contributors", "contributor", "contributorName", "nameIdentifier",
+  "affiliation", "dates", "date", "language", "resourceType",
+  "alternateIdentifiers", "alternateIdentifier", "relatedIdentifiers",
+  "relatedIdentifier", "sizes", "size", "formats", "format", "version",
+  "rightsList", "rights", "descriptions", "description", "geoLocations",
+  "geoLocation", "geoLocationPoint", "geoLocationBox", "geoLocationPlace"]
+
+_elements = dict((e, i) for i, e in enumerate(_elementList))
+
+def formElementsToDataciteXml (d, shoulder, identifier=None):
+  """
+  The inverse of dataciteXmlToFormElements.
+  First, filter for only DataCite XML items. Remove unnecessary Django form variables
+      i.e.  (u'titles-title-MAX_NUM_FORMS', u'1000')
+      Also remove other fields from query object not related to datacite_xml fields
+      i.e.  (u'action', u'create') 
+  """
+  d = {k:v for (k,v) in d.iteritems() if '_FORMS' not in k}
+  d = {k:v for (k,v) in d.iteritems() if any(e in k for e in _elementList)}
+  d['identifier-identifierType'] = _id_type(shoulder)
+  if identifier is not None: d['identifier'] = identifier
+  namespace = "http://datacite.org/schema/kernel-3"
+  schemaLocation = "http://schema.datacite.org/meta/kernel-3/metadata.xsd"
+  def q (elementName):
+    return "{%s}%s" % (namespace, elementName)
+  def tagName (tag):
+    return tag.split("}")[1]
+  root = lxml.etree.Element(q("resource"), nsmap={ None: namespace })
+  root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
+    namespace + " " + schemaLocation
+  for key, value in d.items():
+    value = value.strip()
+    if value == "": continue
+    node = root
+    while len(key) > 0:
+      k, remainder = key.split("-", 1) if "-" in key else (key, "")
+      if k in _elements:
+        if tagName(node.tag) in _repeatableElementContainers:
+          i, remainder = remainder.split("-", 1) if "-" in remainder else\
+            (remainder, "")
+          i = int(i) + 1
+          while len(node) < i: lxml.etree.SubElement(node, q(k))
+          node = node[i-1]
+        else:
+          n = node.find(q(k))
+          if n != None:
+            node = n
+          else:
+            node = lxml.etree.SubElement(node, q(k))
+        if remainder == "": node.text = value
+      else:
+        node.attrib[k] = value
+      key = remainder
+  def sortChildren (node):
+    if tagName(node.tag) not in _repeatableElementContainers:
+      children = node.getchildren()
+      children.sort(key=lambda c: _elements[tagName(c.tag)])
+      for i, c in enumerate(children): node.insert(i, c)
+    for c in node.iterchildren(): sortChildren(c)
+  sortChildren(root)
+  return lxml.etree.tostring(root, encoding=unicode)
+
+# ToDo: remove rest of this, I believe it's no longer needed 
+# ============================================================================= 
+#   XML generation
+# =============================================================================
 
 # Order for XML elements. Schema specifies a sequence in some cases (geoLocations).
 RESOURCE_ORDER = ['resource', 'creators', 'creator', 'creatorName',
@@ -81,7 +244,6 @@ def generate_xml(param_items):
                        u' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + \
                        u' xsi:schemaLocation="http://datacite.org/schema/kernel-3' + \
                        u' http://schema.datacite.org/meta/kernel-3/metadata.xsd"/>')
-
   items = [x for x in param_items.items() if x[0].startswith(u"/resource") ]
   items = _removeEmptyDescriptions(items)
   items = sorted(items, cmp=compareXpaths, key=lambda i: i[0])
@@ -168,13 +330,6 @@ def _sort_get_ordinal(str):
     return [0]
   else:
     return [int(x) for x in m.findall(str)]
-  
-def _id_type(str):
-  m = re.compile("^[a-z]+")
-  if m.search(str) == None:
-    return u''
-  else:
-    return m.findall(str)[0].upper()
   
 def validate_document(xml_doc, xsd_path, err_msgs):
   """Validates the document against the XSD and adds

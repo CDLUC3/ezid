@@ -8,12 +8,25 @@
     <h2 class="id-creation">{% trans "Optional: Enter a custom remainder (suffix)" %}</h2>
      {% help_icon "custom_remainder" %}
   </div>
-  <div class="col-sm-12 form-group form-group-sm">
-    <div class="horizontal-buffer">
-      <input type="text" name="remainder" id="remainder"
-        value="{% form_or_default "remainder" remainder_box_default %}" class="element_customRemainder"/>
+  {{ form.remainder_form.non_field_errors }}
+  {% for field in form.remainder_form %}
+  <div class="col-sm-12 form-group form-group-sm{% if field.errors %} has-error{% endif %}">
+    <div class="row">
+      <div class="col-sm-5 horizontal-buffer">
+        {{ field|add_attributes:"element_customRemainder form-control"}}
+      </div>
     </div>
+  {% if field.errors %}
+    <div class="row">
+      <div class="col-sm-5 horizontal-buffer">
+      {% for error in field.errors %}
+        {{ error|escape }}
+      {% endfor %}
+      </div>
+    </div>
+  {% endif %}
   </div>
+  {% endfor %}
   <div class="col-sm-12 horizontal-buffer" id="preview_div">
     <h2>{% trans "Identifier Preview:" %}</h2>
     <div id="preview_div_value"></div>

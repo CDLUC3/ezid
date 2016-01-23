@@ -2,7 +2,7 @@
 {% load layout_extras %}
 {% load i18n %}
 
-{% block title %}{%trans "Search across EZID identifiers" %}{% endblock %}A
+{% block title %}{%trans "Search across EZID identifiers" %}{% endblock %}
 {% block description %}{%trans "Search across all EZID identifiers by keyword, title, creator, publisher, or identifier string." %}{% endblock %}
 {% block heading %}{% content_heading _("Search across EZID identifiers") %}{% endblock %}
 {% block content %}
@@ -10,11 +10,11 @@
 
 <section id="search">
   <form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" id="search-form" role="form">
+  {% comment "nonfield_errors" %}form.non_field_errors not used here, and will be displayed in django.contrib.messages.error{% endcomment %}
   <div class="row">
     <div class="vertical-buffer-sm"></div>
     <div class="col-sm-9 form-group form-group-sm">
-      <input type="text" class="form-control" id="search_keyword" 
-        placeholder="{% trans "Full text search using words about or describing the identifier." %}">
+      {{ form.keywords|add_attributes:"form-control" }}
     </div>
     <div class="col-sm-3 form-group form-group-sm">
       <input class="btn btn-primary padding-side-med" type="submit" value="{% trans "SEARCH" %}">
@@ -28,56 +28,71 @@
           <i class="indicator caret-right"></i><h3>{% trans "ADVANCED SEARCH" %}</h3><img id="search__icon--advanced" src="/static/images/searchAdvanced.svg" ALT="">
         </a>
       </div>
-      <div id="accordion_advanced_search_collapse" class="accordion-body collapse">
+      <div id="accordion_advanced_search_collapse" class="accordion-body collapse {{ show_advanced_search }}">
         <div class="accordion-inner">
   <!-- Row: Basic Search -->
   <div class="row">
-    <div class="col-sm-6 form-group form-group-sm">
-      <label for="search_id">{% trans "Identifier/Identifier Prefix" %}</label>
-      {# Translators: "Ex." is abbreviation for "example" #}
-      <input type="text" class="form-control" id="search_id" placeholder="{% trans "Ex." %} doi:10.17614/Q44F1NB79">
-    </div>
-
-    <div class="col-sm-6 form-group form-group-sm second-col">
-      <label for="search_title">{% trans "Object Title" %}</label>
-      <input type="text" class="form-control" id="search_title" placeholder="{% trans "Ex." %} 2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone">
-    </div>
-
-    <div class="col-sm-6 form-group form-group-sm">
-      <label for="search_creator">{% trans "Object Creator" %}</label>
-      <input type="text" class="form-control" id="search_creator" placeholder="{% trans "Ex. Pitt Quantum Repository" %}">
+    <div class="col-sm-6 form-group form-group-sm{% if form.identifier.errors %} has-error{% endif %}">
+      <label for="{{ form.identifier.id_for_label }}">{{ form.identifier.label }}</label>
+      {{ form.identifier|add_attributes:"form-control"}}
+      {% if form.identifier.errors %}
+        {% for error in form.identifier.errors %}
+          {{ error|escape }}
+        {% endfor %}
+      {% endif %}
     </div>
     <div class="col-sm-6 form-group form-group-sm second-col">
-      <label for="search_publisher">{% trans "Publisher" %}</label>
-      <input type="text" class="form-control" id="search_publisher" placeholder="{% trans "Ex. University of Pittsburgh" %}">
+      <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+      {{ form.title|add_attributes:"form-control"}}
+    </div>
+
+    <div class="col-sm-6 form-group form-group-sm">
+      <label for="{{ form.creator.id_for_label }}">{{ form.creator.label }}</label>
+      {{ form.creator|add_attributes:"form-control"}}
+    </div>
+    <div class="col-sm-6 form-group form-group-sm second-col">
+      <label for="{{ form.publisher.id_for_label }}">{{ form.publisher.label }}</label>
+      {{ form.publisher|add_attributes:"form-control"}}
     </div>
 
     <div class="col-sm-6">
       <div class="row">
-        <label for="search_publication_year_from">{% trans "Publication Year" %}</label>
+        <label for="search_publication_year_from">{% trans "Object Publication Year" %}</label>
       </div>
       <div class="form-group row">
         <div class="form-inline">
-          <div class="col-sm-6 form-group form-group-sm">
-            <label for="search_publication_year_from" class="col-sm-3 control-label text-right">{% trans "From" %}</label>
+          <div class="col-sm-6 form-group form-group-sm{% if form.pubyear_from.errors %} has-error{% endif %}">
+            <label for="{{ form.pubyear_from.id_for_label }}" class="col-sm-3 control-label text-right">{{ form.pubyear_from.label }}</label>
             <div class="col-sm-1">
-              <input type="text" class="form-control" id="search_publication_year_from" placeholder="Ex. 2015">
+              {{ form.pubyear_from|add_attributes:"form-control"}}
+              {% if form.pubyear_from.errors %}
+                {% for error in form.pubyear_from.errors %}
+                  {{ error|escape }}
+                {% endfor %}
+              {% endif %}
             </div>
           </div>
-          <div class="col-sm-6 form-group form-group-sm">
-            <label for="search_publication_year_to" class="col-sm-3 control-label text-right">To</label>
+          <div class="col-sm-6 form-group form-group-sm{% if form.pubyear_to.errors %} has-error{% endif %}">
+            <label for="{{ form.pubyear_to.id_for_label }}" class="col-sm-3 control-label text-right">{{ form.pubyear_to.label }}</label>
             <div class="col-sm-1">
-              <input type="text" class="form-control" id="search_publication_year_to">
+              {{ form.pubyear_to|add_attributes:"form-control"}}
+              {% if form.pubyear_to.errors %}
+                {% for error in form.pubyear_to.errors %}
+                  {{ error|escape }}
+                {% endfor %}
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="col-sm-6 form-group form-group-sm second-col">
-      <label for="search_resource_type">{% trans "Object Type" %}</label>
-      <select id="search_resource_type" class="form-control">
-        <option selected="true" disabled="true">{% trans "Select a type of object" %}</option><option value="Audiovisual" >Audiovisual</option><option value="Collection" >Collection</option><option value="Dataset" >Dataset</option><option value="Event" >Event</option><option value="Image" >Image</option><option value="InteractiveResource" >InteractiveResource</option><option value="Model" >Model</option><option value="PhysicalObject" >PhysicalObject</option><option value="Service" >Service</option><option value="Software" >Software</option><option value="Sound" >Sound</option><option value="Text" >Text</option><option value="Workflow" >Workflow</option><option value="Other" >Other</option></select>
-     </select>
+      <label for="{{ form.object_type.id_for_label }}">{{ form.object_type.label }}</label>
+      {{ form.object_type|add_attributes:"form-control"}}
+    </div>
+    <div class="col-sm-6 form-group form-group-sm">
+      <label for="{{ form.id_type.id_for_label }}">{{ form.id_type.label }}</label>
+      {{ form.id_type|add_attributes:"form-control"}}
     </div>
   </div>
         </div>  <!-- End accordion inner -->          

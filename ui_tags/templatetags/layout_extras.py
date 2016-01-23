@@ -6,6 +6,7 @@ from decorators import basictag
 from django.core.urlresolvers import reverse
 from operator import itemgetter
 import config 
+from django import forms
 import django.template
 import urllib
 import re
@@ -113,6 +114,19 @@ def url_force_https(context, url_path):
   else:
     return url_path
 
+@register.filter(name='add_attributes')
+def add_attributes(field, css):
+  """Add attributes to a django form field"""
+  attrs = {}
+  definition = css.split(',')
+  for d in definition:
+    if ':' not in d:
+      attrs['class'] = d
+    else:
+      t, v = d.split(':')
+      attrs[t] = v
+  return field.as_widget(attrs=attrs)
+
 @register.tag
 @basictag(takes_context=True)
 def host_based_include(context, template_path):
@@ -205,13 +219,6 @@ def _get_id_type (prefix):
   t = prefix.split(":")[0].upper()
   return t
 
-@register.simple_tag
-def search_display(dictionary, field):
-  if field in ['createTime', 'updateTime']:
-    return escape(datetime.datetime.fromtimestamp(dictionary[field]))
-  else:
-    return dictionary[field]
-  
 @register.simple_tag
 def unavailable_codes(for_field):
   items = ( ("unac", "temporarily inaccessible"),

@@ -7,87 +7,134 @@
 {% block content %}
 <div class="container vertical-buffer-xs">
   <form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" class="form-horizontal" role="form">
+  {{ form.non_field_errors }}
   <h3>{% trans "ACCOUNT INFORMATION" %}</h3>
-  <div class="row">
-    <div class="form-group form-group-sm">
-      <label for="account_username" class="col-sm-2">{%trans "Username" %}</label>
-      <div class="col-sm-5">{{ username }} </div>
+  <div class="row form-group form-group-sm">
+    <label for="account_username" class="col-sm-2">{%trans "Username" %}</label>
+    <div class="col-sm-5">{{ username }} </div>
+  </div>
+
+  <div class="row form-group form-group-sm{% if form.givenName.errors %} has-error{% endif %}">
+    <label for="{{ form.givenName.id_for_label }}" class="col-sm-2 control-label">{{ form.givenName.label }}</label>
+    <div class="col-sm-5">
+      {{ form.givenName|add_attributes:"form-control"}}
+    </div>
+  {% if form.givenName.errors %}
+    <div class="col-sm-2">
+    {% for error in form.givenName.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
+  <div class="row form-group form-group-sm{% if form.sn.errors %} has-error{% endif %}">
+    <label for="{{ form.sn.id_for_label }}" class="col-sm-2 control-label">{{ form.sn.label }}</label>
+    <div class="col-sm-5">
+      {{ form.sn|add_attributes:"form-control"}}
+    </div>
+  {% if form.sn.errors %}
+    <div class="col-sm-2">
+    {% for error in form.sn.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
+  <div class="row form-group form-group-sm{% if form.telephoneNumber.errors %} has-error{% endif %}">
+    <label for="{{ form.telephoneNumber.id_for_label }}" class="col-sm-2 control-label">{{ form.telephoneNumber.label }}</label>
+    <div class="col-sm-5">
+      {{ form.telephoneNumber|add_attributes:"form-control"}}
+    </div>
+  {% if form.telephoneNumber.errors %}
+    <div class="col-sm-2">
+    {% for error in form.telephoneNumber.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
+  <div class="row form-group form-group-sm{% if form.mail.errors %} has-error{% endif %}">
+    <label for="{{ form.mail.id_for_label }}" class="col-sm-2 control-label">{{ form.mail.label }}</label>
+    <div class="col-sm-5">
+      {{ form.mail|add_attributes:"form-control"}}
+    </div>
+  {% if form.mail.errors %}
+    <div class="col-sm-2">
+    {% for error in form.mail.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
+  <div class="row form-group form-group-sm">
+    <label class="col-sm-2 control-label">{% trans "Your Proxy Account(s)" %}</label>
+    <div class="col-sm-5">
+      UCI, ******* PLACEHOLDER ******
+      <div class="vertical-buffer-xs"></div>
+      <div class="font-small">
+        <span class="font-small-bold">{%trans "NOTE:" %}</span> {%trans "These are identifier groups where you have been designated as proxy user." %}
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="form-group form-group-sm">
-      <label for="givenName" class="col-sm-2">{%trans "First Name" %}</label>
-      <div class="col-sm-5">
-        <input type="text" class="form-control" name="givenName" id="givenName" value="{{ givenName }}" />
+  <div class="row form-group form-group-sm">
+    <label for="{{ form.ezidCoOwners.id_for_label }}" class="col-sm-2">{{ form.ezidCoOwners.label }}</label>
+    <div class="col-sm-5">
+      {{ form.ezidCoOwners|add_attributes:"form-control"}}
+      {% if form.ezidCoOwners.errors %}
+        {% for error in form.ezidCoOwners.errors %}
+          {{ error|escape }}<br/>
+        {% endfor %}
+      {% endif %}
+      <div class="vertical-buffer-xs"></div>
+      <div class="font-small">
+        <span class="font-small-bold">{%trans "NOTE:" %}</span> {%trans "Use commas to separate multiple entries." %}
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="form-group form-group-sm">
-      <label for="sn" class="col-sm-2">{%trans "Last Name" %}</label>
-      <div class="col-sm-5">
-        <input type="text" class="form-control" name="sn" id="sn" value="{{ sn }}" />
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="form-group form-group-sm">
-      <label for="telephoneNumber" class="col-sm-2">{%trans "Phone" %}</label>
-      <div class="col-sm-5">
-        <input type="tel" class="form-control" name="telephoneNumber" id="telephoneNumber" value="{{ telephoneNumber }}" />
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="form-group form-group-sm">
-      <label for="mail" class="col-sm-2">{%trans "Email Address" %}</label>
-      <div class="col-sm-5">
-        <input type="email" class="form-control" name="mail" id="mail" value="{% form_or_default "mail" mail %}" />
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="form-group form-group-sm">
-      <label for="ezidCoOwners" class="col-sm-2">{%trans "Co-owners" %}</label>
-      <div class="col-sm-5">
-        <input type="text" class="form-control" name="ezidCoOwners" id="ezidCoOwners" value="{{ ezidCoOwners }}" />
-        <div class="vertical-buffer-xs"></div>
-        <div class="font-small">
-          <span class="font-small-bold">{%trans "NOTE:" %}</span> {%trans "Use commas to separate multiple entries." %}
-        </div>
-      </div>
-      <div class="col-sm-3 padding-left">
-        <button class="btn" type="button">{%trans "Look Up Owners" %}</button>{% help_icon "lookup_owners" %} 
-      </div>
+    <div class="col-sm-3 padding-left">
+      <button class="btn" type="button">{%trans "Select Proxy User(s)" %}</button>{% help_icon "lookup_proxies" %} 
     </div>
   </div>
   <div class="vertical-buffer-sm"></div>
-  <!-- p>&nbsp;</p -->
   <h3>{% trans "CHANGE PASSWORD" %}</h3>
-  <div class="row">
-    <div class="form-group form-group-sm">
-      <label for="pwcurrent" class="col-sm-2">{%trans "Current password" %}</label>
-      <div class="col-sm-5">
-        <input type="password" class="form-control" name="pwcurrent" id="pwcurrent" value="" autocomplete="off" />
-      </div>
+  <div class="row form-group form-group-sm{% if form.pwcurrent.errors %} has-error{% endif %}">
+    <label for="{{ form.pwcurrent.id_for_label }}" class="col-sm-2 control-label">{{ form.pwcurrent.label }}</label>
+    <div class="col-sm-5">
+      {{ form.pwcurrent|add_attributes:"form-control"}}
     </div>
-  </div>      
-  <div class="row">
-    <div class="form-group form-group-sm">
-      <label for="pwnew" class="col-sm-2">{%trans "New password" %}</label>
-      <div class="col-sm-5">
-        <input type="password" class="form-control" name="pwnew" id="pwnew" value="" autocomplete="off" />
-      </div>
+  {% if form.pwcurrent.errors %}
+    <div class="col-sm-2">
+    {% for error in form.pwcurrent.errors %}
+      {{ error|escape }}
+    {% endfor %}
     </div>
-  </div>      
-  <div class="row">
-    <div class="form-group form-group-sm">
-      <label for="pwconfirm" class="col-sm-2">{%trans "Confirm new password" %}</label>
-      <div class="col-sm-5">
-      <input type="password" class="form-control" name="pwconfirm" id="pwconfirm" size="25" value="" autocomplete="off" /> 
-      </div>
+  {% endif %}
+  </div>
+  <div class="row form-group form-group-sm{% if form.pwnew.errors %} has-error{% endif %}">
+    <label for="{{ form.pwnew.id_for_label }}" class="col-sm-2 control-label">{{ form.pwnew.label }}</label>
+    <div class="col-sm-5">
+      {{ form.pwnew|add_attributes:"form-control"}}
     </div>
-  </div>      
+  {% if form.pwnew.errors %}
+    <div class="col-sm-2">
+    {% for error in form.pwnew.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
+  <div class="row form-group form-group-sm{% if form.pwconfirm.errors %} has-error{% endif %}">
+    <label for="{{ form.pwconfirm.id_for_label }}" class="col-sm-2 control-label">{{ form.pwconfirm.label }}</label>
+    <div class="col-sm-5">
+      {{ form.pwconfirm|add_attributes:"form-control"}}
+    </div>
+  {% if form.pwconfirm.errors %}
+    <div class="col-sm-2">
+    {% for error in form.pwconfirm.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
   <div class="vertical-buffer-sm"></div>
   <div class="row">
     <div class="col-sm-6 form-group form-group-sm">

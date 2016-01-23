@@ -20,26 +20,26 @@
     </h2>{% help_icon "describe_profile" %}
   </div>
 
-  <div class="form-group form-group-sm">
-    <label for="_target" class="col-sm-2">{{internal_profile.target.displayName}}:</label>
-    <div class="col-sm-5">
-      <input type="text" class="form-control" name="_target" id="_target" value="{% request_value "_target" %}" />
-      </div>
-  </div>
-
 {% if manual_profile %}
   {% include manual_template %}
 {% else %}
-  {% for e in current_profile.elements %}
-      <div class="form-group form-group-sm">
-        <label for="{{e.name}}" class="col-sm-2">{{e.displayName}}:</label>
-        <div class="col-sm-5">
-          {% display_form_element e %}
-          {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
-            {% datacite_field_help_icon e.name %}
-          {% endif %}
-        </div>
-      </div>
+  {{ form.form.non_field_errors }}
+  {% for field in form.form %}
+  <div class="form-group form-group-sm{% if field.errors %} has-error{% endif %}">
+    <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">
+      {{ field.label }}
+    </label>
+    <div class="col-sm-7">
+      {{ field|add_attributes:"form-control"}}
+    </div>
+  {% if field.errors %}
+    <div class="col-sm-2">
+    {% for error in field.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </div>
+  {% endif %}
+  </div>
   {% endfor %}
 {% endif %}
 </div>

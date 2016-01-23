@@ -10,13 +10,15 @@ def index(request):
   d = { 'menu_item' : 'ui_home.index'}
   d['ezid_home_url'] = "http://" + request.get_host() +"/"
   d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['namespace'].lower())
-  r = ui_create.simple_form_processing(request, d)
-  if r == 'bad_request':
+  d['form_placeholder']= True
+  d = ui_create.simple_form(request, d)
+  result = d['id_gen_result']
+  if result == 'edit_page':
+    return uic.render(request, 'index', d)  # ID Creation page 
+  elif result == 'bad_request':
     return uic.badRequest()
-  elif r.startswith('created_identifier:'):
-    return redirect("/id/" + urllib.quote(r.split()[1], ":/"))
-  else:
-    return uic.render(request, 'index', d)
+  elif result.startswith('created_identifier:'):
+    return redirect("/id/" + urllib.quote(result.split()[1], ":/"))   # ID Details page
 
 def learn(request):
   d = { 'menu_item' : 'ui_home.learn' }

@@ -1,27 +1,32 @@
 {% load layout_extras %}
 {% load i18n %}
-	<div class="optional">
-		<div name="/resource/geoLocations" class="element datacite-container">
-			<label for="/resource/geoLocations" class="element">{% trans "Geolocation" %}</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/geoLocations" nbelmtsadded="{{ num_geoLocations }}" class="addButton">
-			<input type="button" value="-" name="/resource/geoLocations" class="rmvButton">
-{% for geoLoc in datacite_obj_geoLocations.geoLocation %}
-			<div class="multiple">
-				<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]" class="element">
-					<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPoint" class="element">
-						<label for="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPoint" class="element">{% trans "Point" %}:</label>
-						<input type="text" name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPoint"{% if geoLoc.geoLocationPoint %} value="{{ geoLoc.geoLocationPoint.text|default_if_none:"" }}"{% endif %} class="data form-control">
-					</div>
-					<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationBox" class="element">
-						<label for="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationBox" class="element">{% trans "Box" %}:</label>
-						<input type="text" name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationBox"{% if geoLoc.geoLocationBox %} value="{{ geoLoc.geoLocationBox.text|default_if_none:"" }}"{% endif %} class="data form-control">
-					</div>
-					<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPlace" class="element">
-						<label for="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPlace" class="element">{% trans "Place" %}:</label>
-						<input type="text" name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPlace"{% if geoLoc.geoLocationPlace %} value="{{ geoLoc.geoLocationPlace.text|default_if_none:"" }}"{% endif %} class="data form-control">
-					</div>
-				</div>
-			</div>
+
+{{ form.geoloc_set.management_form }}
+<div name="geoLocations-" class="element datacite-container">
+  <label for="geoLocations-" class="element">{% trans "Geolocation" %}</label>
+  <input type="button" value="+" onclick="addOne(this)" name="geoLocations-" nbelmtsadded="1" class="addButton">
+  <input type="button" value="-" name="geoLocations-" class="rmvButton">
+
+  <div class="multiple">
+{% for form in form.geoloc_set %}
+  {% for field in form %}
+    <div name="geoLocations-[1]" class="element row{% if field.errors %} has-error{% endif %}">
+      <div name="{{ field.id_for_label }}" class="element form-group form-group-sm">
+        <label for="{{ field.id_for_label }}" class="element col-sm-3 control-label"><span>{{ field.label }}</span></label>
+        <div class="element col-sm-5">
+          {{ field|add_attributes:"data form-control"}}
+        </div>
+      {% if field.errors %}
+        <div class="element col-sm-2">
+        {% for error in field.errors %}
+          {{ error|escape }}
+        {% endfor %}
+        </div>
+      {% endif %}
+      </div>
+    </div>
+  {% endfor %}
 {% endfor %}
-		</div>
-	</div>
+  </div>
+</div>
+
