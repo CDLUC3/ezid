@@ -12,6 +12,7 @@
       </div>
       <div class="modal-body">
         <div class="row">
+          <p>{% trans "You may choose up to 8 informational columns to customize the browsing view for your identifiers." %}</p>
           {% column_choices field_order fields_mapped fields_selected %}
         </div>
           {% rewrite_hidden_except REQUEST field_norewrite %}

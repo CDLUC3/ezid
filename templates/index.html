@@ -23,7 +23,7 @@
     <div class="home-banner">
       <div class="home-banner__lead">
         <p class="home-banner__lead-text">{% trans "Create and manage long-term globally unique IDs for data and other sources using EZID" %}</p>
-        <a href="" class="home-banner__lead-button">{% trans "Learn More" %}</a>
+        <a href="{% url "ui_home.learn" %}" class="home-banner__lead-button">{% trans "Learn More" %}</a>
       </div>
     </div>
 
@@ -31,7 +31,15 @@
 
       <div class="home__identifier-lead-box">
         <p class="home__identifier-lead-heading">{% trans "See how easy it is" %}:</p>
-        <p class="home__identifier-lead-note"><b>{% trans "NOTE" %}:</b> {% trans "This is just a demo. To create a real identifier, you must have an account." %}</p>
+        <p class="home__identifier-lead-note">
+      {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+      i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
+      i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+      {% endcomment %}
+      {% blocktrans trimmed %}
+          <b>NOTE:</b> This is just a demo. To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
+      {% endblocktrans %}
+        </p>
       </div>
 
       <div class="home__identifier-form">

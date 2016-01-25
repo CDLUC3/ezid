@@ -379,9 +379,9 @@ hr {
   @media (min-width: 1000px) {
     .container {
       width: 1000px; } }
-  @media (min-width: 1200px) {
+  @media (min-width: 1000px) {
     .container {
-      width: 1200px; } }
+      width: 1000px; } }
 
 .container-fluid {
   margin-right: auto;
@@ -779,7 +779,7 @@ hr {
   .col-md-offset-12 {
     margin-left: 100%; } }
 
-@media (min-width: 1200px) {
+@media (min-width: 1000px) {
   .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12 {
     float: left; }
   .col-lg-1 {
@@ -2598,7 +2598,7 @@ tbody.collapse.in {
   .visible-sm-inline-block {
     display: inline-block !important; } }
 
-@media (min-width: 1000px) and (max-width: 1199px) {
+@media (min-width: 1000px) and (max-width: 999px) {
   .visible-md {
     display: block !important; }
   table.visible-md {
@@ -2609,19 +2609,19 @@ tbody.collapse.in {
   td.visible-md {
     display: table-cell !important; } }
 
-@media (min-width: 1000px) and (max-width: 1199px) {
+@media (min-width: 1000px) and (max-width: 999px) {
   .visible-md-block {
     display: block !important; } }
 
-@media (min-width: 1000px) and (max-width: 1199px) {
+@media (min-width: 1000px) and (max-width: 999px) {
   .visible-md-inline {
     display: inline !important; } }
 
-@media (min-width: 1000px) and (max-width: 1199px) {
+@media (min-width: 1000px) and (max-width: 999px) {
   .visible-md-inline-block {
     display: inline-block !important; } }
 
-@media (min-width: 1200px) {
+@media (min-width: 1000px) {
   .visible-lg {
     display: block !important; }
   table.visible-lg {
@@ -2632,15 +2632,15 @@ tbody.collapse.in {
   td.visible-lg {
     display: table-cell !important; } }
 
-@media (min-width: 1200px) {
+@media (min-width: 1000px) {
   .visible-lg-block {
     display: block !important; } }
 
-@media (min-width: 1200px) {
+@media (min-width: 1000px) {
   .visible-lg-inline {
     display: inline !important; } }
 
-@media (min-width: 1200px) {
+@media (min-width: 1000px) {
   .visible-lg-inline-block {
     display: inline-block !important; } }
 
@@ -2652,11 +2652,11 @@ tbody.collapse.in {
   .hidden-sm {
     display: none !important; } }
 
-@media (min-width: 1000px) and (max-width: 1199px) {
+@media (min-width: 1000px) and (max-width: 999px) {
   .hidden-md {
     display: none !important; } }
 
-@media (min-width: 1200px) {
+@media (min-width: 1000px) {
   .hidden-lg {
     display: none !important; } }
 
@@ -3049,20 +3049,28 @@ p.italic {
 .heading_2, h2.id-creation, .panel-body .heading_2 {
   font-family: KievitWebPro-Bold, Arial, sans-serif;
   color: #00778a;
-  font-weight: normal;
-  font-size: 1.4em; }
+  font-weight: normal; }
 
 .heading_2 {
-  margin: 8px 0px 17px 0px; }
+  margin: 8px 0px 17px 0px;
+  font-size: 1.4em; }
 
 h2.id-creation {
-  margin: 0px 0px 17px 10px; }
+  margin: 0px 0px 17px 10px;
+  font-size: 1.4em; }
 
 .heading_3 {
   margin-top: 18px;
   color: #d8402f;
   font-weight: bold;
   font-size: 1.1em; }
+
+.heading__iddetails-citation {
+  font-family: KievitWebPro-Bold, Arial, sans-serif;
+  color: black;
+  margin: 18px 0px 0px 10px;
+  font-weight: normal;
+  font-size: 1.2em; }
 
 .inline-header h2, .inline-header h3 {
   margin-top: 0px;
@@ -3280,29 +3288,9 @@ blockquote p {
   margin: 10px 0px 0px 0px;
   padding-left: 0px; }
 
-.accordion__title h1, .accordion__title .h1 {
-  font-size: 15px;
-  margin: 0; }
-
-.accordion__title h2, .accordion__title .h2 {
-  font-size: 15px;
-  margin: 0; }
-
-.accordion__title h3, .accordion__title .h3 {
-  font-size: 15px;
-  margin: 0; }
-
-.accordion__title h4, .accordion__title .h4 {
-  font-size: 15px;
-  margin: 0; }
-
-.accordion__title h5, .accordion__title .h5 {
-  font-size: 15px;
-  margin: 0; }
-
-.accordion__title h6, .accordion__title .h6 {
-  font-size: 15px;
-  margin: 0; }
+.accordion__title-heading {
+  margin: 0;
+  font-size: inherit; }
 
 .learn__title--ext-link {
   margin-bottom: 20px; }
@@ -3331,6 +3319,7 @@ blockquote p {
     margin: 28px 40px 30px 20px; } }
 
 .panel-body .heading_2 {
+  font-size: 1.4em;
   margin: 10px 0px 17px 0px; }
 
 .panel-body .heading_3 {

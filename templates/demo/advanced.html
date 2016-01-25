@@ -46,7 +46,14 @@
       <div class="row idcreate-content-row">
         <div class="col-sm-8 col-sm-offset-2">
           <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>{% trans "NOTE" %}:</strong> {% trans "This is a <strong>demo</strong>. To create a real identifier, you must have an account." %}
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+      i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
+      i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+      {% endcomment %}
+      {% blocktrans trimmed %}
+          <strong>NOTE:</strong> This is just a <strong>demo</strong>. To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
+      {% endblocktrans %}
           <p class="italic vertical-buffer-xs">
     {# Translators: Please preserve &quot; tags #}
             {% trans "Once created, an identifier cannot be renamed or deleted." %}

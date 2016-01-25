@@ -22,18 +22,19 @@
   font-family: KievitWebPro-Bold, Arial, sans-serif;
   color: $design-primary-color;
   font-weight: normal;
-  font-size: 1.4em;
 }
 
 .heading_2 {
   @extend %h2-base;
   margin: 8px 0px 17px 0px;
+  font-size: 1.4em;
 }
 
 // ID Creation Header (Front Page Demo)
 h2.id-creation {
   @extend %h2-base;
   margin: 0px 0px 17px 10px;
+  font-size: 1.4em;
 }
 
 .heading_3 {
@@ -41,6 +42,15 @@ h2.id-creation {
   color: $design-pop-dark;
   font-weight: bold;
   font-size: 1.1em;
+}
+
+// ID Details
+.heading__iddetails-citation {
+  font-family: KievitWebPro-Bold, Arial, sans-serif;
+  color: $design-black-color;
+  margin: 18px 0px 0px 10px;
+  font-weight: normal;
+  font-size: 1.2em;
 }
 
 // Headers with other content next to them

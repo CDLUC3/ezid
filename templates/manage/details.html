@@ -8,10 +8,10 @@
 {% block heading %}{% content_heading _("Identifier Details") %}{% endblock %}
 {% block content %}
 <div class="container vertical-buffer-20">
+  <p class="heading_2">{% trans "Edit and add descriptive information to your identifier." %}</p>
   <div class="row vertical-buffer-bot">
     <div class="inline-header">
-      <img id="id__icon--aboutid" src="/static/images/idAboutID.svg" ALT="">
-        <h3>{% trans "ABOUT THE IDENTIFIER" %}</h3>
+      <h2 class="heading__icon-8">{% trans "About the Identifier" %}</h2>
     </div>
   </div>
   <div class="row vertical-buffer-bot">
@@ -40,9 +40,9 @@
   {% if not has_block_data and current_profile.name == 'datacite' %}
   <div class="row vertical-buffer-20">
     <div class="call-out">
-      <h3>Citation Preview</h3>
+      <h2 class="heading__iddetails-citation">{% trans "Citation Preview" %}</h2>
       <p class="truncated">
- ............. TEMPORARY PLACEHOLDER TEXT TO DEMONSTRATE READ MORE/READ LESS CAPABILITY ................. iWaleed El-Sekelly; Tarek Abdoun; Ricardo Dobry (2005): TREND: Zillow. Zillow Real Estate Metrics: Median Rental Price - All Homes | State: California | Zip Code: 90001, 90002  SOUTH LAKE TAHOE (96150), TRUCKEE (96161), 01/2015. Data-Planet&trade; Statistical Datasets by Conquest Systems, Inc. Dataset-ID:  068-001-013 PRESHAKE: Centrifuge modeling of the effect of sei oijhqsd89 2deghg 8 82d 2 8d28  sjdhsd 82oi joiwdj  owidj 890 jwd j wjd8 jijwidj widj3do3iodjio ji3d 3id3
+ ............. TEMPORARY PLACEHOLDER TEXT TO DEMONSTRATE READ MORE/READ LESS CAPABILITY ................. iWaleed El-Sekelly; Tarek Abdoun; Ricardo Dobry (2005): TREND: Zillow. Zillow Real Estate Metrics: Median Rental Price - All Homes | State: California | Zip Code: 90001, 90002  SOUTH LAKE TAHOE (96150), TRUCKEE (96161), 01/2015. Data-Planet&trade; Statistical Datasets by Conquest Systems, Inc. Dataset-ID:  068-001-013 PRESHAKE: Centrifuge modeling of the effect of sei oijhqsd89 2deghg 8 82d 2 8d28  sjdhsd 82oi joiwdj  owidj 890 jwd j wjd8 jijwidj widj3do3iodjio ji3d 3id3<br/><br/>
         {% get_dict_value identifier "datacite.creator" %}
         ({% get_dict_value identifier "datacite.publicationyear" %}):
         {% get_dict_value identifier "datacite.title" %}.
@@ -61,8 +61,7 @@
   <hr/>
   <div class="row vertical-buffer-bot">
     <div class="inline-header">
-      <img id="id__icon--aboutobject" src="/static/images/idAboutObject.svg" ALT="">
-        <h3>{% trans "ABOUT THE IDENTIFIED OBJECT" %}</h3>
+      <h2 class="heading__icon-9">{% trans "About the Identified Object" %}</h2>
     </div>
   </div>
   <div class="row vertical-buffer-bot">
@@ -106,8 +105,7 @@
   <hr/>
   <div class="row vertical-buffer-bot">
     <div class="inline-header">
-      <img id="id__icon--aboutid" src="/static/images/idAboutID.svg" ALT="">
-        <h3>{% trans "ABOUT THE IDENTIFIER'S STATUS" %}</h3>
+      <h2 class="heading__icon-8">{% trans "About the Identifier's Status" %}</h2>
     </div>
   </div>
   <div class="row vertical-buffer-bot">
@@ -155,8 +153,8 @@
     <div class="row">
       <div class="form-group form-group-sm">
         <div class="col-sm-12">
-          <button type="submit" class="btn btn-primary padding-side-med">
-            {% trans "MAKE CHANGES" %}</button>
+          <button type="submit" class="button__primary-example">
+            {% trans "Make Changes" %}</button>
         </div>
       </div>
     </div>
