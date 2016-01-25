@@ -23,7 +23,7 @@
 	background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
 }
 
-.button__primary-example {
+.button__primary {
 	@extend %button__primary;
 }
 
@@ -32,6 +32,6 @@
 	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 }
 
-.button__pop-example {
+.button__pop {
 	@extend %button__pop;
 }
