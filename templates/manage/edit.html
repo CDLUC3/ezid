@@ -31,7 +31,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-12 col-md-3 col-md-push-9">
+    <div class="col-md-12 col-lg-3 col-lg-push-9">
     {% if not manual_profile %}
       <div class="call-out quick-start">
           {% if not manual_profile and current_profile.name == "datacite" %}
@@ -44,7 +44,7 @@
     {% endif %}
     </div>
 
-    <div class="col-xs-12 col-md-9 col-md-pull-3">
+    <div class="col-md-12 col-lg-9 col-lg-pull-3">
       <div class="row vertical-buffer-20 vertical-buffer-bot">
         <div class="inline-header">
           <h2 class="heading__icon-9">{% trans "About the Identified Object" %}</h2>
@@ -189,22 +189,6 @@
           {% trans "Save Changes" %}</button>
       </div>
     </div>
-  </div>
-
-  <div class="grid_3">
-    <br/><br/><br/><br/><br/><br/>
-    {% if not manual_profile %}
-      <div class="squarebox">
-        <div class="squareboxpad">
-          {% if not manual_profile and current_profile.name == "datacite" %}
-            <input id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Add more information to the record" onclick="profileSimpleToAdvanced(event);" class="link-lookalike"/>
-          {% elif not manual_profile and current_profile.name != "datacite" %}
-            Would you like to add more information to the record?
-            <input id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; Convert to the DataCite citation profile" onclick="profileSimpleToAdvanced(event);" class="link-lookalike"/> <span style="position:relative;top:-50px;left:83%"></span> 
-          {% endif %}
-        </div>
-      </div>
-    {% endif %}
   </div>
   </form>
   

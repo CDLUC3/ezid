@@ -373,12 +373,12 @@ hr {
     display: table; }
   .container:after {
     clear: both; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .container {
-      width: 780px; } }
-  @media (min-width: 1000px) {
+      width: 480px; } }
+  @media (min-width: 768px) {
     .container {
-      width: 1000px; } }
+      width: 768px; } }
   @media (min-width: 1000px) {
     .container {
       width: 1000px; } }
@@ -567,7 +567,7 @@ hr {
 .col-xs-offset-12 {
   margin-left: 100%; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
     float: left; }
   .col-sm-1 {
@@ -673,7 +673,7 @@ hr {
   .col-sm-offset-12 {
     margin-left: 100%; } }
 
-@media (min-width: 1000px) {
+@media (min-width: 768px) {
   .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
     float: left; }
   .col-md-1 {
@@ -1273,7 +1273,7 @@ select[multiple].input-lg, .form-horizontal .form-group-lg select[multiple].form
   margin-bottom: 10px;
   color: #404040; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .form-inline .form-group {
     display: inline-block;
     margin-bottom: 0;
@@ -1332,7 +1332,7 @@ select[multiple].input-lg, .form-horizontal .form-group-lg select[multiple].form
   .form-horizontal .form-group:after {
     clear: both; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .form-horizontal .control-label {
     text-align: right;
     margin-bottom: 0;
@@ -1342,11 +1342,11 @@ select[multiple].input-lg, .form-horizontal .form-group-lg select[multiple].form
   top: 0;
   right: 0; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .form-horizontal .form-group-lg .control-label {
     padding-top: 14.3px; } }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .form-horizontal .form-group-sm .control-label {
     padding-top: 6px; } }
 
@@ -1892,7 +1892,7 @@ tbody.collapse.in {
   .nav-justified > .dropdown .dropdown-menu {
     top: auto;
     left: auto; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .nav-justified > li, .nav-tabs.nav-justified > li {
       display: table-cell;
       width: 1%; }
@@ -1908,7 +1908,7 @@ tbody.collapse.in {
   .nav-tabs.nav-justified > .active > a, .nav-tabs-justified > .active > a:hover,
   .nav-tabs.nav-justified > .active > a:hover, .nav-tabs-justified > .active > a:focus, .nav-tabs.nav-justified > .active > a:focus {
     border: 1px solid #ddd; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .nav-tabs-justified > li > a, .nav-tabs.nav-justified > li > a {
       border-bottom: 1px solid #ddd;
       border-radius: 0 0 0 0; }
@@ -2104,7 +2104,7 @@ tbody.collapse.in {
   height: 50px;
   overflow: scroll; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .modal-dialog {
     width: 600px;
     margin: 30px auto; }
@@ -2114,7 +2114,7 @@ tbody.collapse.in {
   .modal-sm {
     width: 300px; } }
 
-@media (min-width: 1000px) {
+@media (min-width: 768px) {
   .modal-lg {
     width: 900px; } }
 
@@ -2466,7 +2466,7 @@ tbody.collapse.in {
   .carousel-caption .btn {
     text-shadow: none; }
 
-@media screen and (min-width: 780px) {
+@media screen and (min-width: 480px) {
   .carousel-control .glyphicon-chevron-left,
   .carousel-control .glyphicon-chevron-right,
   .carousel-control .icon-prev,
@@ -2552,7 +2552,7 @@ tbody.collapse.in {
 .visible-lg-inline-block {
   display: none !important; }
 
-@media (max-width: 779px) {
+@media (max-width: 479px) {
   .visible-xs {
     display: block !important; }
   table.visible-xs {
@@ -2563,19 +2563,19 @@ tbody.collapse.in {
   td.visible-xs {
     display: table-cell !important; } }
 
-@media (max-width: 779px) {
+@media (max-width: 479px) {
   .visible-xs-block {
     display: block !important; } }
 
-@media (max-width: 779px) {
+@media (max-width: 479px) {
   .visible-xs-inline {
     display: inline !important; } }
 
-@media (max-width: 779px) {
+@media (max-width: 479px) {
   .visible-xs-inline-block {
     display: inline-block !important; } }
 
-@media (min-width: 780px) and (max-width: 999px) {
+@media (min-width: 480px) and (max-width: 767px) {
   .visible-sm {
     display: block !important; }
   table.visible-sm {
@@ -2586,19 +2586,19 @@ tbody.collapse.in {
   td.visible-sm {
     display: table-cell !important; } }
 
-@media (min-width: 780px) and (max-width: 999px) {
+@media (min-width: 480px) and (max-width: 767px) {
   .visible-sm-block {
     display: block !important; } }
 
-@media (min-width: 780px) and (max-width: 999px) {
+@media (min-width: 480px) and (max-width: 767px) {
   .visible-sm-inline {
     display: inline !important; } }
 
-@media (min-width: 780px) and (max-width: 999px) {
+@media (min-width: 480px) and (max-width: 767px) {
   .visible-sm-inline-block {
     display: inline-block !important; } }
 
-@media (min-width: 1000px) and (max-width: 999px) {
+@media (min-width: 768px) and (max-width: 999px) {
   .visible-md {
     display: block !important; }
   table.visible-md {
@@ -2609,15 +2609,15 @@ tbody.collapse.in {
   td.visible-md {
     display: table-cell !important; } }
 
-@media (min-width: 1000px) and (max-width: 999px) {
+@media (min-width: 768px) and (max-width: 999px) {
   .visible-md-block {
     display: block !important; } }
 
-@media (min-width: 1000px) and (max-width: 999px) {
+@media (min-width: 768px) and (max-width: 999px) {
   .visible-md-inline {
     display: inline !important; } }
 
-@media (min-width: 1000px) and (max-width: 999px) {
+@media (min-width: 768px) and (max-width: 999px) {
   .visible-md-inline-block {
     display: inline-block !important; } }
 
@@ -2644,15 +2644,15 @@ tbody.collapse.in {
   .visible-lg-inline-block {
     display: inline-block !important; } }
 
-@media (max-width: 779px) {
+@media (max-width: 479px) {
   .hidden-xs {
     display: none !important; } }
 
-@media (min-width: 780px) and (max-width: 999px) {
+@media (min-width: 480px) and (max-width: 767px) {
   .hidden-sm {
     display: none !important; } }
 
-@media (min-width: 1000px) and (max-width: 999px) {
+@media (min-width: 768px) and (max-width: 999px) {
   .hidden-md {
     display: none !important; } }
 
@@ -3180,26 +3180,26 @@ h2.id-creation {
 .api th {
   padding: 5px; }
 
-@media (min-width: 1000px) {
+@media (min-width: 768px) {
   .contact-promotional-base, #contact-gutter-left, .promotional {
     min-height: 560px; } }
 
-@media (max-width: 780px) {
+@media (max-width: 480px) {
   .contact-promotional-base, #contact-gutter-left, .promotional {
     min-height: 300px; } }
 
 #contact-gutter-left {
   background: #b4975a;
-  width: calc(50% - 500px);
+  width: calc(50% - 384px);
   float: left; }
 
 #contact-content {
   padding: 0px;
-  max-width: 1000px;
+  max-width: 768px;
   float: left; }
 
 #contact-gutter-right {
-  width: calc(50% - 500px);
+  width: calc(50% - 384px);
   float: right; }
 
 blockquote {
@@ -3239,7 +3239,7 @@ blockquote p {
   .col-promotional .tagline a, .col-promotional .tagline a:visited, .col-promotional .tagline a:hover, .col-promotional .tagline a:active {
     color: #ff701c !important; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   #dashboard__usage--col {
     margin-right: 60px; } }
 
@@ -3320,11 +3320,11 @@ blockquote p {
 .breadcrumb > li + li:before {
   content: "/ "; }
 
-@media (max-width: 780px) {
+@media (max-width: 480px) {
   .panel-body {
     margin: 28px 4px 30px 6px; } }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .panel-body {
     margin: 28px 40px 30px 20px; } }
 
@@ -3442,11 +3442,11 @@ padding-left-base, .padding-left {
 .vertical-buffer-sm {
   margin-top: 30px; }
 
-@media (min-width: 1000px) {
+@media (min-width: 768px) {
   .vertical-buffer-sm-resp {
     margin-top: 40px; } }
 
-@media (max-width: 1000px) {
+@media (max-width: 768px) {
   .vertical-buffer-sm-resp {
     margin-top: 15px; } }
 
@@ -3514,14 +3514,6 @@ hr {
   left: 2px; }
 
 /* Responsive: Portrait tablets and up */
-@media screen and (min-width: 1024px) {
-  .container {
-    width: 1000px; } }
-
-@media screen and (max-width: 799px) {
-  .container {
-    padding: 0px 8px; } }
-
 /* a hidden field in the email form for screen scapers for
  * a "honeypot" like spam reducer.  If this field is filled
  * in then something is wrong since it should not be filled

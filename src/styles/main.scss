@@ -120,16 +120,16 @@ hr {
 }
 
 /* Responsive: Portrait tablets and up */
-@media screen and (min-width: 1024px) {
-  .container {
-    width: $container-md;
-  }
-}
-@media screen and (max-width: 799px) {
-  .container {
-    padding: 0px 8px;
-  }
-}
+// @media screen and (min-width: 1024px) {
+//  .container {
+//    width: $container-md;
+//  }
+// }
+// @media screen and (max-width: 799px) {
+//   .container {
+//     padding: 0px 8px;
+//   }
+// }
 
 /* a hidden field in the email form for screen scapers for
  * a "honeypot" like spam reducer.  If this field is filled

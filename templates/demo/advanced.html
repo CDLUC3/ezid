@@ -20,7 +20,7 @@
     <form id="create_form" action="{% url "ui_demo.advanced" %}" method="post" class="form-horizontal" role="form">
       <input name="action" id="action" type="hidden" value="create"/>
 
-        <div class="col-xs-12 col-md-5 col-md-push-7">
+        <div class="col-md-12 col-lg-5 col-lg-push-7">
         <div class="call-out quick-start">
           <h3>{% trans "Quick Start Guides" %}</h3>
           <ul>
@@ -35,7 +35,7 @@
         </div>
         </div>
 
-        <div class="col-xs-12 col-md-7 col-md-pull-5">
+        <div class="col-md-12 col-lg-7 col-lg-pull-5">
           {% include "includes/simple_id_type.html" with calling_page="Demo" %}
           {% include "includes/advanced_remainder.html" %}
           {% include "includes/advanced_publish_id.html" %}

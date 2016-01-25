@@ -330,12 +330,12 @@ hr {
     display: table; }
   .container:after {
     clear: both; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .container {
-      width: 780px; } }
-  @media (min-width: 1000px) {
+      width: 480px; } }
+  @media (min-width: 768px) {
     .container {
-      width: 1000px; } }
+      width: 768px; } }
   @media (min-width: 1000px) {
     .container {
       width: 1000px; } }
@@ -522,7 +522,7 @@ hr {
 .col-xs-offset-12 {
   margin-left: 100%; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
     float: left; }
   .col-sm-1 {
@@ -628,7 +628,7 @@ hr {
   .col-sm-offset-12 {
     margin-left: 100%; } }
 
-@media (min-width: 1000px) {
+@media (min-width: 768px) {
   .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
     float: left; }
   .col-md-1 {
@@ -1214,7 +1214,7 @@ select[multiple].input-lg,
   margin-bottom: 10px;
   color: #404040; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .form-inline .form-group {
     display: inline-block;
     margin-bottom: 0;
@@ -1272,7 +1272,7 @@ select[multiple].input-lg,
   .form-horizontal .form-group:after {
     clear: both; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .form-horizontal .control-label {
     text-align: right;
     margin-bottom: 0;
@@ -1282,11 +1282,11 @@ select[multiple].input-lg,
   top: 0;
   right: 0; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .form-horizontal .form-group-lg .control-label {
     padding-top: 14.3px; } }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .form-horizontal .form-group-sm .control-label {
     padding-top: 6px; } }
 
@@ -1726,7 +1726,7 @@ tbody.collapse.in {
   .nav-justified > .dropdown .dropdown-menu {
     top: auto;
     left: auto; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .nav-justified > li, .nav-tabs.nav-justified > li {
       display: table-cell;
       width: 1%; }
@@ -1742,7 +1742,7 @@ tbody.collapse.in {
   .nav-tabs-justified > .active > a:hover, .nav-tabs.nav-justified > .active > a:hover,
   .nav-tabs-justified > .active > a:focus, .nav-tabs.nav-justified > .active > a:focus {
     border: 1px solid #ddd; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .nav-tabs-justified > li > a, .nav-tabs.nav-justified > li > a {
       border-bottom: 1px solid #ddd;
       border-radius: 0 0 0 0; }
@@ -1937,7 +1937,7 @@ tbody.collapse.in {
   height: 50px;
   overflow: scroll; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .modal-dialog {
     width: 600px;
     margin: 30px auto; }
@@ -1946,7 +1946,7 @@ tbody.collapse.in {
   .modal-sm {
     width: 300px; } }
 
-@media (min-width: 1000px) {
+@media (min-width: 768px) {
   .modal-lg {
     width: 900px; } }
 
@@ -2289,7 +2289,7 @@ tbody.collapse.in {
   .carousel-caption .btn {
     text-shadow: none; }
 
-@media screen and (min-width: 780px) {
+@media screen and (min-width: 480px) {
   .carousel-control .glyphicon-chevron-left,
   .carousel-control .glyphicon-chevron-right,
   .carousel-control .icon-prev,
@@ -2374,7 +2374,7 @@ tbody.collapse.in {
 .visible-lg-inline-block {
   display: none !important; }
 
-@media (max-width: 779px) {
+@media (max-width: 479px) {
   .visible-xs {
     display: block !important; }
   table.visible-xs {
@@ -2385,19 +2385,19 @@ tbody.collapse.in {
   td.visible-xs {
     display: table-cell !important; } }
 
-@media (max-width: 779px) {
+@media (max-width: 479px) {
   .visible-xs-block {
     display: block !important; } }
 
-@media (max-width: 779px) {
+@media (max-width: 479px) {
   .visible-xs-inline {
     display: inline !important; } }
 
-@media (max-width: 779px) {
+@media (max-width: 479px) {
   .visible-xs-inline-block {
     display: inline-block !important; } }
 
-@media (min-width: 780px) and (max-width: 999px) {
+@media (min-width: 480px) and (max-width: 767px) {
   .visible-sm {
     display: block !important; }
   table.visible-sm {
@@ -2408,19 +2408,19 @@ tbody.collapse.in {
   td.visible-sm {
     display: table-cell !important; } }
 
-@media (min-width: 780px) and (max-width: 999px) {
+@media (min-width: 480px) and (max-width: 767px) {
   .visible-sm-block {
     display: block !important; } }
 
-@media (min-width: 780px) and (max-width: 999px) {
+@media (min-width: 480px) and (max-width: 767px) {
   .visible-sm-inline {
     display: inline !important; } }
 
-@media (min-width: 780px) and (max-width: 999px) {
+@media (min-width: 480px) and (max-width: 767px) {
   .visible-sm-inline-block {
     display: inline-block !important; } }
 
-@media (min-width: 1000px) and (max-width: 999px) {
+@media (min-width: 768px) and (max-width: 999px) {
   .visible-md {
     display: block !important; }
   table.visible-md {
@@ -2431,15 +2431,15 @@ tbody.collapse.in {
   td.visible-md {
     display: table-cell !important; } }
 
-@media (min-width: 1000px) and (max-width: 999px) {
+@media (min-width: 768px) and (max-width: 999px) {
   .visible-md-block {
     display: block !important; } }
 
-@media (min-width: 1000px) and (max-width: 999px) {
+@media (min-width: 768px) and (max-width: 999px) {
   .visible-md-inline {
     display: inline !important; } }
 
-@media (min-width: 1000px) and (max-width: 999px) {
+@media (min-width: 768px) and (max-width: 999px) {
   .visible-md-inline-block {
     display: inline-block !important; } }
 
@@ -2466,15 +2466,15 @@ tbody.collapse.in {
   .visible-lg-inline-block {
     display: inline-block !important; } }
 
-@media (max-width: 779px) {
+@media (max-width: 479px) {
   .hidden-xs {
     display: none !important; } }
 
-@media (min-width: 780px) and (max-width: 999px) {
+@media (min-width: 480px) and (max-width: 767px) {
   .hidden-sm {
     display: none !important; } }
 
-@media (min-width: 1000px) and (max-width: 999px) {
+@media (min-width: 768px) and (max-width: 999px) {
   .hidden-md {
     display: none !important; } }
 
@@ -2834,7 +2834,7 @@ Selector pattern using above mixin:
   width: 3em;
   text-align: right; }
 
-@media (min-width: 1000px) {
+@media (min-width: 768px) {
   .fcontrol__inline-groups {
     display: -webkit-flex;
     display: -ms-flexbox;
@@ -2976,7 +2976,7 @@ Selector pattern using above mixin:
   margin: 0 auto 10px;
   padding: 10px;
   background: linear-gradient(to bottom, #ff8e28, #ff701c); }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .customize-table {
       -webkit-flex-flow: row nowrap;
           -ms-flex-flow: row nowrap;
@@ -2988,7 +2988,7 @@ Selector pattern using above mixin:
   margin: 0 0 10px;
   font-size: 1.4em;
   font-weight: bold; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .customize-table__heading {
       margin: 0; } }
 
@@ -3000,7 +3000,7 @@ Selector pattern using above mixin:
 .footer {
   margin: 10px -10px 0;
   background-color: #ece5d6; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .footer {
       display: -webkit-flex;
       display: -ms-flexbox;
@@ -3018,7 +3018,7 @@ Selector pattern using above mixin:
 .footer__logo-link {
   margin: 10px 0 10px 10px;
   padding: 0 20px 0 0; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .footer__lang,
     .footer__logo-link {
       -webkit-order: 1;
@@ -3035,7 +3035,7 @@ Selector pattern using above mixin:
 .footer__news {
   padding: 10px;
   background-color: #ddd0b5; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .footer__news {
       display: -webkit-flex;
       display: -ms-flexbox;
@@ -3080,7 +3080,7 @@ Selector pattern using above mixin:
           justify-content: space-around;
   padding: 10px 50px;
   background-color: #e5dbc5; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .footer__icons {
       -webkit-flex-flow: column nowrap;
           -ms-flex-flow: column nowrap;
@@ -3096,7 +3096,7 @@ Selector pattern using above mixin:
 
 .footer__logo-link {
   display: none; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .footer__logo-link {
       display: block; } }
 
@@ -3109,7 +3109,7 @@ Selector pattern using above mixin:
       -ms-flex: 0 1 40%;
           flex: 0 1 40%;
   padding: 10px; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .footer__copyright {
       -webkit-order: 2;
           -ms-flex-order: 2;
@@ -3131,7 +3131,7 @@ Selector pattern using above mixin:
 
 .header__admin-text {
   display: none; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .header__admin-text {
       display: -webkit-flex;
       display: -ms-flexbox;
@@ -3159,7 +3159,7 @@ Selector pattern using above mixin:
           justify-content: space-between;
   max-width: 1000px;
   margin: 0 auto 15px; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .header {
       -webkit-flex-flow: row nowrap;
           -ms-flex-flow: row nowrap;
@@ -3169,7 +3169,7 @@ Selector pattern using above mixin:
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .header__logos {
       -webkit-flex: 1 0 auto;
           -ms-flex: 1 0 auto;
@@ -3179,7 +3179,7 @@ Selector pattern using above mixin:
 .header__main-logo-image {
   width: 40vw;
   height: 100%; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .header__main-logo-image {
       width: 320px; } }
 
@@ -3189,7 +3189,7 @@ Selector pattern using above mixin:
 .header__affiliate-logo-image {
   width: 15vw;
   height: 100%; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .header__affiliate-logo-image {
       width: 130px; } }
 
@@ -3200,7 +3200,7 @@ Selector pattern using above mixin:
   padding: 6px;
   border: 1px solid #beb6af;
   background: transparent; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .header__nav-button {
       display: none; } }
 
@@ -3211,7 +3211,7 @@ Selector pattern using above mixin:
   width: 100%;
   height: 0;
   overflow: hidden; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .header__nav, .header__nav--selected {
       display: -webkit-flex;
       display: -ms-flexbox;
@@ -3228,7 +3228,7 @@ Selector pattern using above mixin:
   height: auto;
   margin: 10px 0 0;
   padding: 0 0 1px; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .header__nav--selected {
       display: -webkit-flex;
       display: -ms-flexbox;
@@ -3252,7 +3252,7 @@ Selector pattern using above mixin:
   text-decoration: none;
   text-transform: uppercase;
   box-sizing: content-box; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .header__search-link, .header__learn-link, .header__contact-link {
       -webkit-align-items: flex-end;
           -ms-flex-align: end;
@@ -3268,7 +3268,7 @@ Selector pattern using above mixin:
         color: #b4975a; } }
   .header__search-link:last-of-type, .header__learn-link:last-of-type, .header__contact-link:last-of-type {
     margin: -1px 0; }
-    @media (min-width: 780px) {
+    @media (min-width: 480px) {
       .header__search-link:last-of-type, .header__learn-link:last-of-type, .header__contact-link:last-of-type {
         margin: 0; } }
 
@@ -3277,7 +3277,7 @@ Selector pattern using above mixin:
   .header__search-link:hover {
     background-image: url("../images/searchOn.svg"); }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .header__learn {
     position: relative; }
     .header__learn:hover .header__learn-subnav {
@@ -3322,7 +3322,7 @@ Selector pattern using above mixin:
 
 .header__loginout {
   display: none; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .header__loginout {
       display: block;
       position: relative;
@@ -3338,7 +3338,7 @@ Selector pattern using above mixin:
   background-repeat: no-repeat;
   background-position: bottom center;
   background-size: 100%; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .home-banner {
       height: 300px;
       background-position: top;
@@ -3350,7 +3350,7 @@ Selector pattern using above mixin:
   padding: 3vw 0 0;
   text-align: center;
   box-sizing: content-box; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .home-banner__lead {
       width: 430px;
       margin: 0;
@@ -3362,7 +3362,7 @@ Selector pattern using above mixin:
   color: white;
   font-size: 5vw;
   font-weight: bold; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .home-banner__lead-text {
       font-size: 2em; } }
 
@@ -3374,7 +3374,7 @@ Selector pattern using above mixin:
   background-position: right 10px center;
   background-size: 0.8em;
   font-size: 2vw; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .home-banner__lead-button {
       margin: 1em 0 0;
       padding: 0.7em 2.5em 0.7em 1.3em;
@@ -3393,7 +3393,7 @@ Selector pattern using above mixin:
   -webkit-flex-flow: column nowrap;
       -ms-flex-flow: column nowrap;
           flex-flow: column nowrap; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .login-menu {
       -webkit-flex-flow: row nowrap;
           -ms-flex-flow: row nowrap;
@@ -3419,7 +3419,7 @@ Selector pattern using above mixin:
   text-decoration: none;
   text-transform: uppercase;
   word-spacing: 0.3em; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .login-menu__link, .login-menu__link--selected {
       position: relative;
       -webkit-justify-content: center;
@@ -3430,7 +3430,7 @@ Selector pattern using above mixin:
         border-left: 1px solid black; } }
   .login-menu__link:not(:first-child), .login-menu__link--selected:not(:first-child) {
     border-top: 1px solid black; }
-    @media (min-width: 780px) {
+    @media (min-width: 480px) {
       .login-menu__link:not(:first-child), .login-menu__link--selected:not(:first-child) {
         border-top: none; } }
   .login-menu__link:hover, .login-menu__link--selected:hover, .login-menu__link:focus, .login-menu__link--selected:focus {
@@ -3438,7 +3438,7 @@ Selector pattern using above mixin:
 
 .login-menu__link--selected {
   color: white; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .login-menu__link--selected:before {
       position: absolute;
       top: 0;
@@ -3515,8 +3515,17 @@ Selector pattern using above mixin:
       -ms-flex: 0 0 auto;
           flex: 0 0 auto; }
 
-.pagination__min {
-  margin: 0 0.5em 0 0; }
+.pagination__first {
+  display: inline-block;
+  position: relative;
+  top: 0.15em;
+  width: 1em;
+  height: 1em;
+  margin: 0 0.5em 0 0;
+  background-image: url("../images/icon_double-arrow-first.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1em; }
 
 .pagination__label {
   font-weight: normal; }
@@ -3524,8 +3533,17 @@ Selector pattern using above mixin:
 .pagination__input {
   width: 3em; }
 
-.pagination__max {
-  margin: 0 0 0 0.5em; }
+.pagination__last {
+  display: inline-block;
+  position: relative;
+  top: 0.15em;
+  width: 1em;
+  height: 1em;
+  margin: 0 0 0 0.5em;
+  background-image: url("../images/icon_double-arrow-last.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1em; }
 
 .tab {
   display: -webkit-flex;
@@ -3571,7 +3589,7 @@ Selector pattern using above mixin:
 .table1 {
   width: 100%;
   border-collapse: collapse; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .table1 tbody tr:nth-child(even) {
       background: #ece5d6; } }
   .table1 th {
@@ -3581,7 +3599,7 @@ Selector pattern using above mixin:
     padding: 0.5em;
     background: #b4975a;
     text-align: left; }
-    @media (min-width: 780px) {
+    @media (min-width: 480px) {
       .table1 th {
         display: table-cell;
         position: static;
@@ -3592,13 +3610,13 @@ Selector pattern using above mixin:
     display: -ms-flexbox;
     display: flex;
     padding: 0.5em; }
-    @media (min-width: 780px) {
+    @media (min-width: 480px) {
       .table1 td {
         display: table-cell; } }
     .table1 td:first-child {
       background: #ece5d6;
       font-weight: bold; }
-      @media (min-width: 780px) {
+      @media (min-width: 480px) {
         .table1 td:first-child {
           background: transparent;
           font-weight: normal; } }
@@ -3609,7 +3627,7 @@ Selector pattern using above mixin:
       width: 10em;
       font-weight: bold;
       content: attr(data-th) ": "; }
-      @media (min-width: 780px) {
+      @media (min-width: 480px) {
         .table1 td:not(:first-child):before {
           display: none; } }
 
@@ -3651,7 +3669,7 @@ Selector pattern using above mixin:
     border-bottom: 1px solid #beb6af;
     vertical-align: top; }
 
-@media (min-width: 780px) {
+@media (min-width: 480px) {
   .table2 {
     display: table; }
   .table2 thead {
@@ -3685,7 +3703,7 @@ Selector pattern using above mixin:
   -webkit-flex-flow: column nowrap;
       -ms-flex-flow: column nowrap;
           flex-flow: column nowrap; }
-  @media (min-width: 1000px) {
+  @media (min-width: 768px) {
     .home__identifier-container {
       -webkit-flex-flow: row nowrap;
           -ms-flex-flow: row nowrap;
@@ -3695,7 +3713,7 @@ Selector pattern using above mixin:
 
 .home__identifier-lead-box {
   margin: 20px 0 0; }
-  @media (min-width: 1000px) {
+  @media (min-width: 768px) {
     .home__identifier-lead-box {
       width: 120px;
       margin: 30px 0 0; } }
@@ -3706,7 +3724,7 @@ Selector pattern using above mixin:
   font-size: 2em;
   line-height: 1;
   text-transform: uppercase; }
-  @media (min-width: 1000px) {
+  @media (min-width: 768px) {
     .home__identifier-lead-heading {
       font-size: 2.7em; } }
 
@@ -3715,7 +3733,7 @@ Selector pattern using above mixin:
   padding: 5px 15px;
   background-color: #f9f8f7;
   box-shadow: 0 0 14px 1px rgba(0, 0, 0, 0.24); }
-  @media (min-width: 1000px) {
+  @media (min-width: 768px) {
     .home__identifier-form {
       width: 100%;
       margin: 30px 15px;
@@ -3723,11 +3741,11 @@ Selector pattern using above mixin:
 
 .home__text-field {
   padding: 0 0 15px; }
-  @media (min-width: 1000px) {
+  @media (min-width: 768px) {
     .home__text-field:nth-child(even) {
       padding: 0 0 15px 15px; } }
 
-@media (min-width: 1000px) {
+@media (min-width: 768px) {
   .home__create-button {
     padding: 0 0 0 15px; } }
 
@@ -3737,7 +3755,7 @@ Selector pattern using above mixin:
   display: flex;
   max-width: 1000px;
   margin: 10px auto; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .search__simple {
       margin: 30px auto; } }
 
@@ -3755,7 +3773,7 @@ Selector pattern using above mixin:
 
 .search__form-element-container {
   padding: 0 0 30px; }
-  @media (min-width: 1000px) {
+  @media (min-width: 768px) {
     .search__form-element-container:nth-child(even) {
       padding: 0 0 30px 30px; } }
 
@@ -3776,7 +3794,7 @@ Selector pattern using above mixin:
           flex-flow: column nowrap;
   max-width: 1000px;
   margin: 10px auto; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .search-results__simple {
       -webkit-flex-flow: row nowrap;
           -ms-flex-flow: row nowrap;
@@ -3788,7 +3806,7 @@ Selector pattern using above mixin:
       -ms-flex-item-align: end;
           align-self: flex-end;
   margin: 10px 0 0; }
-  @media (min-width: 780px) {
+  @media (min-width: 480px) {
     .search-results__simple-button-group {
       margin: 0 0 0 15px; } }
 

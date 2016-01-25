@@ -14,7 +14,7 @@
     <form id="create_form" action="{% url "ui_demo.simple" %}" method="post" class="form-horizontal" role="form">
 
       <div class="row">
-        <div class="col-xs-12 col-md-5 col-md-push-7">
+        <div class="col-md-12 col-lg-5 col-lg-push-7">
         <div class="call-out quick-start">
           <h3>{% trans "Quick Start Guides" %}</h3>
           <ul>
@@ -23,14 +23,14 @@
         </div>
         </div>
 
-        <div class="col-xs-12 col-md-7 col-md-pull-5">
+        <div class="col-md-12 col-lg-7 col-lg-pull-5">
           {% include "includes/simple_id_type.html" with calling_page="Demo" %}
         </div>
       </div>
      
         {% include "includes/simple_describe.html" %}
       <div class="row">
-        <div class="col-sm-8 col-sm-offset-2">
+        <div class="col-md-8 col-md-offset-2">
           <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
