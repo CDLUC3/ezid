@@ -4,8 +4,17 @@
 	flex: 0 0 auto;
 }
 
-.pagination__min {
+.pagination__first {
+	display: inline-block;
+	position: relative;
+	top: 0.15em;
+	width: 1em;
+	height: 1em;
 	margin: 0 0.5em 0 0;
+	background-image: url('../images/icon_double-arrow-first.svg');
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 1em;
 }
 
 .pagination__prev {
@@ -17,13 +26,22 @@
 }
 
 .pagination__input {
-	width: 3em; // based on the max number of characters
+	width: 3em; // based on the max number of characters expected
 }
 
 .pagination__next {
 	// empty
 }
 
-.pagination__max {
+.pagination__last {
+	display: inline-block;
+	position: relative;
+	top: 0.15em;
+	width: 1em;
+	height: 1em;
 	margin: 0 0 0 0.5em;
+	background-image: url('../images/icon_double-arrow-last.svg');
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 1em;
 }
