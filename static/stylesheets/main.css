@@ -341,7 +341,7 @@ hr {
   margin-top: 15px;
   margin-bottom: 15px;
   border: 0;
-  border-top: 1px solid #eeeeee; }
+  border-top: 1px solid #b4975a; }
 
 .sr-only {
   position: absolute;
@@ -3055,6 +3055,16 @@ p.italic {
   margin: 8px 0px 17px 0px;
   font-size: 1.4em; }
 
+.heading_2_caps {
+  margin: 1em 0;
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 30px;
+  color: #00778a;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-transform: uppercase; }
+
 h2.id-creation {
   margin: 0px 0px 17px 10px;
   font-size: 1.4em; }
@@ -3473,7 +3483,7 @@ img.center {
   margin-right: auto; }
 
 hr {
-  border-color: #b4975a;
+  border-color: #b4975a !important;
   background-color: #b4975a;
   color: #b4975a;
   margin-top: 0px;

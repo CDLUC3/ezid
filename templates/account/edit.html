@@ -13,7 +13,7 @@
 <div class="container">
   <form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" class="form-horizontal" role="form">
   {{ form.non_field_errors }}
-  <h2 class="heading_2 vertical-buffer-xs">{% trans "Account Information" %}</h2>
+  <h2 class="heading_2_caps vertical-buffer-xs">{% trans "Account Information" %}</h2>
   <div class="row form-group form-group-sm">
     <label for="account_username" class="col-sm-2">{%trans "Username" %}</label>
     <div class="col-sm-5">{{ username }} </div>
@@ -100,7 +100,7 @@
     </div>
   </div>
   <div class="vertical-buffer-sm"></div>
-  <h2 class="heading_2">{% trans "Change Password" %}</h2>
+  <h2 class="heading_2_caps">{% trans "Change Password" %}</h2>
   <div class="row form-group form-group-sm{% if form.pwcurrent.errors %} has-error{% endif %}">
     <label for="{{ form.pwcurrent.id_for_label }}" class="col-sm-2 control-label">{{ form.pwcurrent.label }}</label>
     <div class="col-sm-5">

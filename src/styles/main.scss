@@ -95,7 +95,7 @@ img.center {
 }
 
 hr { 
-  border-color: $design-secondary-color; // works in Chrome and Safari
+  border-color: $design-secondary-color !important; // works in Chrome and Safari
   background-color: $design-secondary-color; // works in Firefox and Opera
   color: $design-secondary-color;  // works in IE7+
   margin-top: 0px;

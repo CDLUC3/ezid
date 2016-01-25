@@ -79,7 +79,7 @@ class DataciteForm(BaseForm):
                     'invalid': _("Please fill in a 4-digit publication year.")})
     # Translators: These options appear in drop-down on ID Creation page (DOIs)
     self.fields["datacite.resourcetype"] = \
-      forms.ChoiceField(choices=RESOURCE_TYPES, label=_("Resource type"))
+      forms.ChoiceField(required=False, choices=RESOURCE_TYPES, label=_("Resource type"))
     if self.placeholder is not None and self.placeholder == True:
       self.fields['datacite.creator'].widget.attrs['placeholder'] = _("Creator")
       self.fields['datacite.title'].widget.attrs['placeholder'] = _("Title")

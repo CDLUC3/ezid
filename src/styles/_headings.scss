@@ -30,6 +30,18 @@
   font-size: 1.4em;
 }
 
+.heading_2_caps {
+  // This is basically heading_icon with no icon next to it
+  margin: 1em 0;
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 30px;
+  color: $design-primary-color;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
 // ID Creation Header (Front Page Demo)
 h2.id-creation {
   @extend %h2-base;
