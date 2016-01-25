@@ -30,48 +30,60 @@
       {% include "includes/get_link.html" %}
     </div>
   </div>
-  <div class="row vertical-buffer-20 vertical-buffer-bot">
-    <div class="inline-header">
-      <img id="id__icon--aboutobject" src="/static/images/idAboutObject.svg" ALT="">
-        <h3>{% trans "ABOUT THE IDENTIFIED OBJECT" %}</h3>
-    </div>
-    <div class="row vertical-buffer-xs">
-      <label class="col-sm-7"><small>{% trans "This identified object uses the" %} <strong>{{ current_profile.displayName }}</strong> {% trans "profile" %}.</small></label>
-    </div>
-  </div>
-  <div class="row vertical-buffer-20">
-    <div class="form-group form-group-sm">
-      <label for="_target" class="col-sm-2">{{internal_profile.target.displayName}}: </label>
-      <div class="col-sm-7">
-        <input type="text" class="form-control" name="_target" id="_target" value="{% form_or_dict_value identifier "_target" %}" />
+  <div class="row">
+    <div class="col-xs-12 col-md-3 col-md-push-9">
+    {% if not manual_profile %}
+      <div class="call-out quick-start">
+          {% if not manual_profile and current_profile.name == "datacite" %}
+        <input id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; {% trans "Add more information to the record" %}" onclick="profileSimpleToAdvanced(event);" class="link-lookalike"/>
+          {% elif not manual_profile and current_profile.name != "datacite" %}
+        {% trans "Would you like to add more information to the record?" %}
+        <input id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; {% trans "Convert to the DataCite citation profile" %}" onclick="profileSimpleToAdvanced(event);" class="link-lookalike"/> <span style="position:relative;top:-50px;left:83%"></span>
+          {% endif %}
       </div>
+    {% endif %}
     </div>
-  </div>
+
+    <div class="col-xs-12 col-md-9 col-md-pull-3">
+      <div class="row vertical-buffer-20 vertical-buffer-bot">
+        <div class="inline-header">
+          <h2 class="heading__icon-9">{% trans "About the Identified Object" %}</h2>
+        </div>
+        <div class="row vertical-buffer-xs">
+          <label class="col-sm-7"><small>{% trans "This identified object uses the" %} <strong>{{ current_profile.displayName }}</strong> {% trans "profile" %}.</small></label>
+        </div>
+        <div class="form-group form-group-sm">
+          <label for="_target" class="col-sm-2">{{internal_profile.target.displayName}}: </label>
+          <div class="col-sm-7">
+            <input type="text" class="form-control" name="_target" id="_target" value="{% form_or_dict_value identifier "_target" %}" />
+          </div>
+        </div>
+      </div>
 
   {% if manual_profile %}
     {% include manual_template %}
   {% else %}
     {% for e in current_profile.elements %}
-  <div class="row">
-    <div class="form-group form-group-sm">
-      <label for="{{e.name}}" class="col-sm-2">
-        {{e.displayName}}:
-      </label>
-      <div class="col-sm-7">
+      <div class="row">
+        <div class="form-group form-group-sm">
+          <label for="{{e.name}}" class="col-sm-2">
+            {{e.displayName}}:
+          </label>
+          <div class="col-sm-7">
         {% display_form_element e identifier %}
         {% if current_profile.name == 'datacite' and e.name != 'datacite.resourcetype' %}
         {% endif %}
-      </div>        
-    </div>
-  </div>
+          </div>        
+        </div>
+      </div>
     {% endfor %}
   {% endif %}
-
+    </div>
+  </div>
   <div class="vertical-buffer-20"> </div>
   <div class="row vertical-buffer-bot">
     <div class="inline-header">
-      <img id="id__icon--aboutid" src="/static/images/idAboutID.svg" ALT="">
-        <h3>{% trans "ABOUT THE IDENTIFIER" %}</h3>
+      <h2 class="heading__icon-8">{% trans "About the Identifier" %}</h2>
     </div>
   </div>
   <div class="row vertical-buffer-bot">
@@ -173,8 +185,8 @@
   <div class="row vertical-buffer-sm">
     <div class="form-group form-group-sm">
       <div class="col-sm-12">
-        <button type="submit" class="btn btn-primary padding-side-med">
-          {% trans "SAVE CHANGES" %}</button>
+        <button type="submit" class="button__primary">
+          {% trans "Save Changes" %}</button>
       </div>
     </div>
   </div>

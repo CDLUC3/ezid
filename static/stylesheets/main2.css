@@ -2578,7 +2578,7 @@ Selector pattern using above mixin:
           flex: 1 0 auto;
   border: 1px solid #0c0; }
 
-.button__primary-example, .customize-table__button, .login-modal__submit, .home__button-primary, .search__simple-button, .search-results__simple-button, .button__pop-example, .header__loginout-link, .home-banner__lead-button {
+.button__primary, .customize-table__button, .login-modal__submit, .home__button-primary, .search__simple-button, .search-results__simple-button, .button__pop, .header__loginout-link, .home-banner__lead-button {
   display: inline-block;
   height: 30px;
   padding: 0 1.3em;
@@ -2589,13 +2589,13 @@ Selector pattern using above mixin:
   text-decoration: none;
   text-transform: uppercase;
   cursor: pointer; }
-  .button__primary-example:hover, .customize-table__button:hover, .login-modal__submit:hover, .home__button-primary:hover, .search__simple-button:hover, .search-results__simple-button:hover, .button__pop-example:hover, .header__loginout-link:hover, .home-banner__lead-button:hover {
+  .button__primary:hover, .customize-table__button:hover, .login-modal__submit:hover, .home__button-primary:hover, .search__simple-button:hover, .search-results__simple-button:hover, .button__pop:hover, .header__loginout-link:hover, .home-banner__lead-button:hover {
     color: white; }
 
-.button__primary-example, .customize-table__button, .login-modal__submit, .home__button-primary, .search__simple-button, .search-results__simple-button {
+.button__primary, .customize-table__button, .login-modal__submit, .home__button-primary, .search__simple-button, .search-results__simple-button {
   background: linear-gradient(to bottom, #168b99, #056a7b); }
 
-.button__pop-example, .header__loginout-link, .home-banner__lead-button {
+.button__pop, .header__loginout-link, .home-banner__lead-button {
   background: linear-gradient(to bottom, #ff8e28, #ff701c); }
 
 .fieldset-stacked,

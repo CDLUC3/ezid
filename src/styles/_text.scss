@@ -32,6 +32,10 @@ a:hover {
   margin-left: $layout-container-margin-lg;
 }
 
+html input[type="button"].link-lookalike {
+  @extend .link__primary;  
+}
+
 //Used on contact page
 blockquote a, 
 blockquote a:visited, 
