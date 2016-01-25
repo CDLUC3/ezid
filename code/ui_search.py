@@ -113,6 +113,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
     if not noConstraintsReqd:
       c = _buildConstraints(c, REQUEST, isPublicSearch)
       c = _buildTimeConstraints(c, REQUEST, isPublicSearch)
+    d['search_query'] = _buildQuerySyntax(c)
     d['total_results'] = search_util.formulateQuery(c).count()
     d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
     if d['p'] > d['total_pages']: d['p'] = d['total_pages']
@@ -178,7 +179,7 @@ def _buildConstraints(c, REQUEST, isPublicSearch=True):
       'harvesting': 'exported', 'hasMetadata': 'hasMetadata'}
     cmap.update(cmap_managePage)
   for k,v in cmap.iteritems(): 
-    if k in REQUEST and REQUEST[k]!='': c[v] = REQUEST[k]
+    if k in REQUEST and REQUEST[k]!='': c[v] = REQUEST[k].strip()
   return c
 
 def _buildTimeConstraints(c, REQUEST, isPublicSearch=True):
@@ -200,3 +201,38 @@ def _timeConstraintBuilder(c, REQUEST, constraint_name, begin_date_name, end_dat
       c[constraintName] = (int(REQUEST[begin_date_name]),None)
   return c
 
+def _buildQuerySyntax(c):
+  """ Takes dictionary like this:
+       {'keywords': u'marine fish', 'resourceTitle': u'"Aral Sea"'}
+      and returns string like this:
+       keywords:(marine OR fish) AND title:("Aral Sea")
+
+      Borrowing same logic from search_util.formulateQuery
+      in terms of removing characters that can't be hanled by MySQL.
+      For safety we remove all operators that are outside double 
+      quotes (i.e., quotes are the only operator we retain).
+  """
+  constraints = {i:c[i] for i in c if i!="publicSearchVisible"}
+  r = ""
+  dlength = len(constraints)
+  for key,value in constraints.items():
+    r += key + ":("
+    v = ""
+    inQuote = False
+    quoteOccurred = False
+    for c in value:
+      if c == '"':
+        quoteOccurred = True
+        inQuote = not inQuote
+      else:
+        if not inQuote and not c.isalnum() and c!=" ": c = ""
+      v += c
+    if inQuote: v += '"'
+    value = "".join(v)
+    # Being simplistic about how to treat quoted queries
+    if not quoteOccurred:
+      value = value.replace(" ", " OR ") 
+    r += value + ")"
+    dlength -= 1
+    if dlength >= 1: r += " AND "
+  return r 
