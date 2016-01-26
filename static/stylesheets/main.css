@@ -3065,6 +3065,9 @@ p.italic {
   font-weight: bold;
   text-transform: uppercase; }
 
+.heading__icon-5 .capitalized {
+  text-transform: capitalize; }
+
 h2.id-creation {
   margin: 0px 0px 17px 10px;
   font-size: 1.4em; }

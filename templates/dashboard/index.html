@@ -1,0 +1,64 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load i18n %}
+
+{% block title %}{%trans "Dashboard" %}{% endblock %}
+{% block content %}
+<div class="container vertical-buffer-xs">
+  <h2 class="heading__icon-5">{% trans "User Administration" %} - <span class="capitalized">{% trans "Manage User Accounts" %}</span></h2>
+  <hr/>
+  <h2 class="heading__icon-2">{% trans "View Report for" %}</h2>
+  <h2 class="heading__icon-4">{% trans "Total Identifiers" %}</h2>
+  <h2 class="heading__icon-4">{% trans "Total Identifiers Created By Month" %}</h2>
+<table class="table">
+<thead>
+<tr>
+<th>Month</th>
+<th>ARKs</th>
+<th>DOIs</th>
+<th>PURLs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>06-2014</td>
+<td>10,000</td>
+<td>22,456</td>
+<td>236</td>
+</tr>
+<tr>
+<td>07-2014</td>
+<td>10,000</td>
+<td>22,456</td>
+<td>236</td>
+</tr>
+<tr>
+<td>08-2014</td>
+<td>10,000</td>
+<td>22,456</td>
+<td>236</td>
+</tr>
+<tr>
+<td>09-2014</td>
+<td>10,000</td>
+<td>22,456</td>
+<td>236</td>
+</tr>
+<tr>
+<td>10-2014</td>
+<td>10,000</td>
+<td>22,456</td>
+<td>236</td>
+</tr>
+<tr>
+<td>11-2014</td>
+<td>10,000</td>
+<td>22,456</td>
+<td>236</td>
+</tr>
+</tbody>
+</table>
+  <hr/>
+  <h2 class="heading__icon-6">{% trans "Identifiers Issues" %}</h2>
+</div>
+{% endblock %}

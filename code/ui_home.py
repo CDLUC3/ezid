@@ -21,7 +21,7 @@ def index(request):
 
 def learn(request):
   d = { 'menu_item' : 'ui_home.learn' }
-  return uic.render(request, 'learn/index', d)
+  return uic.render(request, 'learn', d)
 
 def crossref_faq(request):
   d = { 'menu_item' : 'ui_home.learn' }
