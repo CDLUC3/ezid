@@ -63,12 +63,13 @@ summary {
 }
 
 // Remove spinner arrows from Chrome & Safari
+// scss-lint:disable QualifyingElement
 input[type=number] {
   -moz-appearance: textfield;
 
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
-    -webkit-appearance: none; 
+    -webkit-appearance: none;
   }
 
 }
