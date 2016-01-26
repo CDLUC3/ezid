@@ -3,7 +3,7 @@
 .header__admin-text {
 	display: none;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		display: flex;
 		justify-content: flex-end;
 		max-width: 1000px;
@@ -22,7 +22,7 @@
 	max-width: 1000px;
 	margin: 0 auto 15px;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		flex-flow: row nowrap;
 	}
 
@@ -31,7 +31,7 @@
 .header__logos {
 	display: flex;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		flex: 1 0 auto;
 		margin: 0 0 13px;
 	}
@@ -46,7 +46,7 @@
 	width: 40vw;
 	height: 100%;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		width: 320px;
 	}
 
@@ -60,7 +60,7 @@
 	width: 15vw;
 	height: 100%;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		width: 130px;
 	}
 
@@ -74,7 +74,7 @@
 	border: 1px solid $design-light-gray-border-color;
 	background: transparent;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		display: none;
 	}
 
@@ -89,7 +89,7 @@
 	height: 0; // hide small screen nav
 	overflow: hidden; // hide small screen nav
 
-	@include bp(screen1) {
+	@include bp(screen2) {
     display: flex;
 		justify-content: space-between;
 		width: 400px;
@@ -110,7 +110,7 @@
 	margin: 10px 0 0;
 	padding: 0 0 1px;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		display: flex;
 		margin: 0;
 		padding: 0;
@@ -133,7 +133,7 @@
 	text-transform: uppercase;
 	box-sizing: content-box;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		align-items: flex-end;
 		height: 50px;
 		margin: 0;
@@ -152,7 +152,7 @@
 	&:last-of-type {
 		margin: -1px 0; // collapse borders on 2nd menu element
 
-		@include bp(screen1) {
+		@include bp(screen2) {
 			margin: 0;
 		}
 
@@ -171,7 +171,7 @@
 }
 
 .header__learn {
-	@include bp(screen1) {
+	@include bp(screen2) {
 		position: relative; // for .header__learn-subnav
 
 		&:hover {
@@ -245,7 +245,7 @@
 .header__loginout {
 	display: none;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		display: block;
 		position: relative; // to .login-modal
 		align-self: flex-end; // align login button to bottom of other nav items
