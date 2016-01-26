@@ -4,6 +4,14 @@
 
 {% block title %}Learn About EZID{% endblock %}A
 {% block description %}{%trans "Learn more about EZID pricing, documentation and current users." %}{% endblock %}
+{% block javascript %}
+$(document).ready(function(){
+  $(".accordion__section-link").click(function() {
+    window.location.href = $(this).attr("href");
+    window.location.reload(false);
+  });
+});
+{% endblock %}
 
 {% block heading %}{% content_heading "Learn About EZID" %}{% endblock %}
 {% block content %}
