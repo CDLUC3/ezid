@@ -16,22 +16,3 @@ $bgreen: 1px solid #0c0;
 // [class^="col-"] {
 // 	border: 1px solid blue;
 // }
-
-// ***** Flexbox Layout of Form Elements ***** //
-
-.test1 {
-	display: flex;
-	flex-flow: row wrap;
-	width: 700px;
-	border: $bred;
-}
-
-.test1__text-field {
-	border: $bblue;
-	width: 43%;
-}
-
-.test1__button {
-	flex: 1 0 auto;
-	border: $bgreen;
-}
