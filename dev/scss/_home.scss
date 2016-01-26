@@ -10,7 +10,7 @@
 
 	@include bp(screen2) {
 		flex-flow: row nowrap;
-		width: 1000px;
+		max-width: 1000px;
 		margin: 0 auto;
 	}
 
@@ -44,15 +44,15 @@
 }
 
 .home__identifier-form {
-	margin: 15px 5px;
-	padding: 5px 15px;
+	margin: 10px 5px;
+	padding: 15px 15px 0;
 	background-color: $design-light-gray-bg-color;
 	box-shadow: 0 0 14px 1px rgba($design-black-color, 0.24);
 
 	@include bp(screen2) {
 		width: 100%;
 		margin: 30px 15px;
-		padding: 30px 50px 15px;
+		padding: 30px 50px 0;
 	}
 
 }
