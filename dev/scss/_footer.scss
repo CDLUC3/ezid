@@ -4,7 +4,7 @@
 	margin: 10px -10px 0;
 	background-color: $design-secondary-lightest;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -19,7 +19,7 @@
 	margin: $layout-box-padding 0 $layout-box-padding $layout-box-padding;
 	padding: 0 20px 0 0;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
     order: 1;
     border-right: 1px solid $design-black-color;
   }
@@ -37,7 +37,7 @@
 	padding: $layout-box-padding;
 	background-color: $design-secondary-footer-newsfeed;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
     display: flex;
     flex-flow: column nowrap;
     align-self: stretch;
@@ -71,7 +71,7 @@
 	padding: 10px 50px;
 	background-color: $design-secondary-footer-icon-bg;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
     flex-flow: column nowrap;
     order: 3;
     padding: 10px 20px;
@@ -91,7 +91,7 @@
 .footer__logo-link {
 	display: none;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
     display: block;
   }
 
@@ -106,7 +106,7 @@
 	flex: 0 1 40%;
 	padding: $layout-box-padding;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
     order: 2;
     padding: $layout-box-padding $layout-box-padding $layout-box-padding 20px;
   }
