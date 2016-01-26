@@ -18,10 +18,10 @@ from collections import *
 
 
 @uic.admin_login_required
-def index(request, ssl=False):
-  d = { 'menu_item' : 'ui_admin.index'}
+def dashboard(request, ssl=False):
+  d = { 'menu_item' : 'ui_admin.dashboard'}
   #return redirect("ui_admin.usage")
-  return uic.render(request, 'admin/index', d)
+  return uic.render(request, 'dashboard/index', d)
 
 @uic.admin_login_required
 def usage(request, ssl=False):

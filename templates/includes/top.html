@@ -29,12 +29,12 @@ Welcome {{ session.auth.user|first }}!
     <div class="header__learn">
       <a id="header__learn-link" class="header__learn-link" href="{% url "ui_home.learn" %}">Learn</a>
       <ul class="header__learn-subnav" aria-hidden="true">
-        <li><a id="learn-01" href="{% url "ui_home.learn" %}#01">What Is EZID?</a></li>
-        <li><a id="learn-02" href="{% url "ui_home.learn" %}#02">Current Users</a></li>
-        <li><a id="learn-03" href="{% url "ui_home.learn" %}#03">Pricing</a></li>
-        <li><a id="learn-04" href="{% url "ui_home.learn" %}#04">Documentation</a></li>
-        <li><a id="learn-05" href="{% url "ui_home.learn" %}#05">FAQ</a></li>
-        <li><a id="learn-06" href="{% url "ui_home.learn" %}#06">Media</a></li>
+        <li><a class="accordion__section-link" href="{% url "ui_home.learn" %}#01">What Is EZID?</a></li>
+        <li><a class="accordion__section-link" href="{% url "ui_home.learn" %}#02">Current Users</a></li>
+        <li><a class="accordion__section-link" href="{% url "ui_home.learn" %}#03">Pricing</a></li>
+        <li><a class="accordion__section-link" href="{% url "ui_home.learn" %}#04">Documentation</a></li>
+        <li><a class="accordion__section-link" href="{% url "ui_home.learn" %}#05">FAQ</a></li>
+        <li><a class="accordion__section-link" href="{% url "ui_home.learn" %}#06">Media</a></li>
         <li><a href="/doc/apidoc.html">API Guide</a></li>
         <li><a href="{% url "ui_demo.index" %}">EZID Demo</a></li>
       </ul>

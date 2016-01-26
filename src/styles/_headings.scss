@@ -42,6 +42,10 @@
   text-transform: uppercase;
 }
 
+.heading__icon-5 .capitalized {
+  text-transform: capitalize;
+}
+
 // ID Creation Header (Front Page Demo)
 h2.id-creation {
   @extend %h2-base;

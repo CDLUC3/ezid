@@ -1,5 +1,11 @@
 // Home/Index Page
 
+.home-banner__lead-container {
+    flex-flow: row nowrap;
+    max-width: 1000px;
+    margin: 0px auto;
+}
+
 .frontpage_idcreate_arrow {
   position: relative;
   background-image: url('/static/images/arrow.png');
