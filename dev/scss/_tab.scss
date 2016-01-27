@@ -25,7 +25,7 @@
 
 .tab__label {
   margin: 0 10px 0 0;
-  padding: 0.5em 1.2em;
+  padding: 0.5em 10px;
 	border: 1px solid $design-light-gray-border-color;
 	background: $design-white-color;
 	color: $design-primary-color;
@@ -34,8 +34,12 @@
 	cursor: pointer;
 	z-index: 1;
 
+  @include bp(screen2) {
+    padding: 0.5em 30px;
+  }
+
   &:not(:first-of-type) {
-  	margin-left: -1px;
+    margin-left: -1px;
   }
 
 }
@@ -45,7 +49,12 @@
   order: 1;
   width: 100%;
   margin-top: -1px;
-  padding: 30px;
+  padding: 10px;
   border: 1px solid $design-light-gray-border-color;
   background: $design-light-gray-bg-color;
+
+  @include bp(screen2) {
+    padding: 30px;
+  }
+
 }
