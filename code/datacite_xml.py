@@ -108,7 +108,7 @@ def dataciteXmlToFormElements (document):
   return d
 
 def temp_mock():
-  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme=""></nameIdentifier><affiliation></affiliation></creator></creators><titles><title titleType=""><title>test</title></title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><resourceType ResourceTypeGeneral="Dataset"></resourceType><geoLocations><geoLocation><geoLocationPoint></geoLocationPoint><geoLocationBox></geoLocationBox><geoLocationPlace></geoLocationPlace></geoLocation></geoLocations></resource>')
+  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme=""></nameIdentifier><affiliation></affiliation></creator></creators><titles><title titleType=""><title>test</title></title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><resourceType resourceTypeGeneral="Dataset"></resourceType><geoLocations><geoLocation><geoLocationPoint></geoLocationPoint><geoLocationBox></geoLocationBox><geoLocationPlace></geoLocationPlace></geoLocation></geoLocations></resource>')
 
 def _id_type(str):
   m = re.compile("^[a-z]+")
@@ -164,7 +164,7 @@ def formElementsToDataciteXml (d, shoulder, identifier=None):
         if tagName(node.tag) in _repeatableElementContainers:
           i, remainder = remainder.split("-", 1) if "-" in remainder else\
             (remainder, "")
-          i = int(i)
+          i = int(i) + 1
           while len(node) < i: lxml.etree.SubElement(node, q(k))
           node = node[i-1]
           if remainder == k: remainder = ""

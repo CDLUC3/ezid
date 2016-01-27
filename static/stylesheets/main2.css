@@ -2558,26 +2558,6 @@ Selector pattern using above mixin:
   src: url("../fonts/KievitWeb.eot?#iefix") format("embedded-opentype"), url("../fonts/KievitWeb.woff") format("woff");
   /* Modern Browsers */ }
 
-.test1 {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-flow: row wrap;
-      -ms-flex-flow: row wrap;
-          flex-flow: row wrap;
-  width: 700px;
-  border: 1px solid #f00; }
-
-.test1__text-field {
-  border: 1px solid #00f;
-  width: 43%; }
-
-.test1__button {
-  -webkit-flex: 1 0 auto;
-      -ms-flex: 1 0 auto;
-          flex: 1 0 auto;
-  border: 1px solid #0c0; }
-
 .button__primary, .customize-table__button, .login-modal__submit, .home__button-primary, .search__simple-button, .search-results__simple-button, .button__pop, .header__loginout-link, .home-banner__lead-button {
   display: inline-block;
   height: 30px;
@@ -3000,7 +2980,7 @@ Selector pattern using above mixin:
 .footer {
   margin: 10px -10px 0;
   background-color: #ece5d6; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .footer {
       display: -webkit-flex;
       display: -ms-flexbox;
@@ -3018,7 +2998,7 @@ Selector pattern using above mixin:
 .footer__logo-link {
   margin: 10px 0 10px 10px;
   padding: 0 20px 0 0; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .footer__lang,
     .footer__logo-link {
       -webkit-order: 1;
@@ -3035,7 +3015,7 @@ Selector pattern using above mixin:
 .footer__news {
   padding: 10px;
   background-color: #ddd0b5; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .footer__news {
       display: -webkit-flex;
       display: -ms-flexbox;
@@ -3080,7 +3060,7 @@ Selector pattern using above mixin:
           justify-content: space-around;
   padding: 10px 50px;
   background-color: #e5dbc5; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .footer__icons {
       -webkit-flex-flow: column nowrap;
           -ms-flex-flow: column nowrap;
@@ -3096,7 +3076,7 @@ Selector pattern using above mixin:
 
 .footer__logo-link {
   display: none; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .footer__logo-link {
       display: block; } }
 
@@ -3109,7 +3089,7 @@ Selector pattern using above mixin:
       -ms-flex: 0 1 40%;
           flex: 0 1 40%;
   padding: 10px; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .footer__copyright {
       -webkit-order: 2;
           -ms-flex-order: 2;
@@ -3131,7 +3111,7 @@ Selector pattern using above mixin:
 
 .header__admin-text {
   display: none; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .header__admin-text {
       display: -webkit-flex;
       display: -ms-flexbox;
@@ -3159,7 +3139,7 @@ Selector pattern using above mixin:
           justify-content: space-between;
   max-width: 1000px;
   margin: 0 auto 15px; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .header {
       -webkit-flex-flow: row nowrap;
           -ms-flex-flow: row nowrap;
@@ -3169,7 +3149,7 @@ Selector pattern using above mixin:
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .header__logos {
       -webkit-flex: 1 0 auto;
           -ms-flex: 1 0 auto;
@@ -3179,7 +3159,7 @@ Selector pattern using above mixin:
 .header__main-logo-image {
   width: 40vw;
   height: 100%; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .header__main-logo-image {
       width: 320px; } }
 
@@ -3189,7 +3169,7 @@ Selector pattern using above mixin:
 .header__affiliate-logo-image {
   width: 15vw;
   height: 100%; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .header__affiliate-logo-image {
       width: 130px; } }
 
@@ -3200,7 +3180,7 @@ Selector pattern using above mixin:
   padding: 6px;
   border: 1px solid #beb6af;
   background: transparent; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .header__nav-button {
       display: none; } }
 
@@ -3211,7 +3191,7 @@ Selector pattern using above mixin:
   width: 100%;
   height: 0;
   overflow: hidden; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .header__nav, .header__nav--selected {
       display: -webkit-flex;
       display: -ms-flexbox;
@@ -3228,7 +3208,7 @@ Selector pattern using above mixin:
   height: auto;
   margin: 10px 0 0;
   padding: 0 0 1px; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .header__nav--selected {
       display: -webkit-flex;
       display: -ms-flexbox;
@@ -3252,7 +3232,7 @@ Selector pattern using above mixin:
   text-decoration: none;
   text-transform: uppercase;
   box-sizing: content-box; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .header__search-link, .header__learn-link, .header__contact-link {
       -webkit-align-items: flex-end;
           -ms-flex-align: end;
@@ -3268,7 +3248,7 @@ Selector pattern using above mixin:
         color: #b4975a; } }
   .header__search-link:last-of-type, .header__learn-link:last-of-type, .header__contact-link:last-of-type {
     margin: -1px 0; }
-    @media (min-width: 480px) {
+    @media (min-width: 768px) {
       .header__search-link:last-of-type, .header__learn-link:last-of-type, .header__contact-link:last-of-type {
         margin: 0; } }
 
@@ -3277,7 +3257,7 @@ Selector pattern using above mixin:
   .header__search-link:hover {
     background-image: url("../images/searchOn.svg"); }
 
-@media (min-width: 480px) {
+@media (min-width: 768px) {
   .header__learn {
     position: relative; }
     .header__learn:hover .header__learn-subnav {
@@ -3322,7 +3302,7 @@ Selector pattern using above mixin:
 
 .header__loginout {
   display: none; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .header__loginout {
       display: block;
       position: relative;
@@ -3696,6 +3676,13 @@ Selector pattern using above mixin:
 .create__radio-buttons {
   padding: 0 0 0 2.4em; }
 
+.create__profile-fields {
+  margin: 0 0 15px; }
+
+.create__profile-labels {
+  width: 12em;
+  text-align: right; }
+
 .home__identifier-container {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -3708,7 +3695,7 @@ Selector pattern using above mixin:
       -webkit-flex-flow: row nowrap;
           -ms-flex-flow: row nowrap;
               flex-flow: row nowrap;
-      width: 1000px;
+      max-width: 1000px;
       margin: 0 auto; } }
 
 .home__identifier-lead-box {
@@ -3729,15 +3716,15 @@ Selector pattern using above mixin:
       font-size: 2.7em; } }
 
 .home__identifier-form {
-  margin: 15px 5px;
-  padding: 5px 15px;
+  margin: 10px 5px;
+  padding: 15px 15px 0;
   background-color: #f9f8f7;
   box-shadow: 0 0 14px 1px rgba(0, 0, 0, 0.24); }
   @media (min-width: 768px) {
     .home__identifier-form {
       width: 100%;
       margin: 30px 15px;
-      padding: 30px 50px 15px; } }
+      padding: 30px 50px 0; } }
 
 .home__text-field {
   padding: 0 0 15px; }

@@ -165,7 +165,8 @@ class ResourceTypeForm(forms.Form):
       By embedding them in a form object, this bypasses that problem. """
   def __init__(self, *args, **kwargs):
     super(ResourceTypeForm,self).__init__(*args,**kwargs)
-    self.fields['resourceType-ResourceTypeGeneral'] = forms.ChoiceField(choices=RESOURCE_TYPES, label = _("Resource Type General"))
+    self.fields['resourceType-resourceTypeGeneral'] = forms.ChoiceField(required=False,
+      choices=RESOURCE_TYPES, initial='Dataset', label = _("Resource Type General"))
     self.fields['resourceType'] = forms.CharField(required=False, label=_("Resource Type"))
 
 # Django faulty design: First formset allows blank form fields.

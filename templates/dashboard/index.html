@@ -26,6 +26,7 @@
   </form>
   </div>
 {% if report|length > 0 %}
+  <div class="col-md-6">
   <h2 class="heading__icon-4">{% trans "Total Identifiers" %}</h2>
 <table class="table2">
 <thead>
@@ -59,7 +60,8 @@
 </tr>
 </tbody>
 </table>
-
+  </div>
+  <div class="col-md-8">
   <h2 class="heading__icon-4">{% trans "Total Identifiers Created By Month" %}</h2>
 <table class="table2">
 <thead>
@@ -67,7 +69,7 @@
 <th>Month</th>
 <th>ARKs</th>
 <th>DOIs</th>
-<th>PURLs</th>
+<th>URNs</th>
 </tr>
 </thead>
 <tbody>
@@ -92,6 +94,10 @@
 
 </tbody>
 </table>
+<p>*Statistics calculated on {{last_tally}}.</p>
+{% else %}
+<p>There is no usage data for the selected group or user.</p>
+</div>
 {% endif %}
   <hr/>
   <h2 class="heading__icon-6">{% trans "Identifiers Issues" %}</h2>
