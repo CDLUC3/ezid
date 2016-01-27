@@ -57,7 +57,8 @@
 <td>{{totals.7}}</td>
 <td>{{totals.8}} have metadata</td>
 </tr>
-
+</tbody>
+</table>
 
   <h2 class="heading__icon-4">{% trans "Total Identifiers Created By Month" %}</h2>
 <table class="table2">
@@ -70,42 +71,25 @@
 </tr>
 </thead>
 <tbody>
+
+{% for row in report %}
 <tr>
-<td>06-2014</td>
-<td>10,000</td>
-<td>22,456</td>
-<td>236</td>
+<td>{{row.0}}</td>
+<td>
+  {{row.1}}
+  <span class="pct">({{row.2}})</span>
+</td>
+<td>
+  {{row.3}}
+  <span class="pct">({{row.4}})</span>
+</td>
+<td>
+  {{row.5}}
+  <span class="pct">({{row.6}})</span>
+</td>
 </tr>
-<tr>
-<td>07-2014</td>
-<td>10,000</td>
-<td>22,456</td>
-<td>236</td>
-</tr>
-<tr>
-<td>08-2014</td>
-<td>10,000</td>
-<td>22,456</td>
-<td>236</td>
-</tr>
-<tr>
-<td>09-2014</td>
-<td>10,000</td>
-<td>22,456</td>
-<td>236</td>
-</tr>
-<tr>
-<td>10-2014</td>
-<td>10,000</td>
-<td>22,456</td>
-<td>236</td>
-</tr>
-<tr>
-<td>11-2014</td>
-<td>10,000</td>
-<td>22,456</td>
-<td>236</td>
-</tr>
+{% endfor %}
+
 </tbody>
 </table>
 {% endif %}
