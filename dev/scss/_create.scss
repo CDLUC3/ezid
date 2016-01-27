@@ -6,7 +6,12 @@
 
 .create__tab {
 	max-width: 1000px;
-	margin: 30px auto 0;
+	margin: 10px auto 0;
+
+	@include bp(screen2) {
+		margin: 30px auto 20px;
+	}
+
 }
 
 .create__radio-buttons {
@@ -31,7 +36,11 @@
 }
 
 .create__fieldset {
-	margin: 20px 0 0;
+
+	@include bp(screen2) {
+		margin: 20px 0 0;
+	}
+
 }
 
 .create__profile-fields {
