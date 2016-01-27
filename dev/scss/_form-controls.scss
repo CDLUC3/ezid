@@ -15,7 +15,12 @@
 .fcontrol__text-label-stacked {
 	margin: 0 0 2px;
 	color: $design-primary-color;
-	font-size: 1.1em;
+	font-size: 1em;
+
+	@include bp(screen2) {
+		font-size: 1.1em;
+	}
+
 }
 
 .fcontrol__text-field-stacked {
@@ -24,7 +29,6 @@
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
-	font-size: 1em;
 }
 
 // ***** Inline Labels ***** //
@@ -43,7 +47,12 @@
 	align-self: center;
 	margin: 0 0.5em 0 0;
 	color: $design-primary-color;
-	font-size: 1.1em;
+	font-size: 1em;
+
+	@include bp(screen2) {
+		font-size: 1.1em;
+	}
+
 }
 
 .fcontrol__text-field-inline {
@@ -52,7 +61,6 @@
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
-	font-size: 1em;
 }
 
 // ***** Hidden Labels ***** //
@@ -67,7 +75,12 @@
 	display: block;
 	margin: 0 0 2px;
 	color: $design-primary-color;
-	font-size: 1.1em;
+	font-size: 1em;
+
+	@include bp(screen2) {
+		font-size: 1.1em;
+	}
+
 }
 
 %fcontrol__select {
@@ -77,7 +90,6 @@
 	padding: 0 0.3em;
 	border: 1px solid $design-light-gray-border-color;
 	background: linear-gradient(to bottom, lighten($design-dark-gray-color, 47%), lighten($design-dark-gray-color, 40%));
-	font-size: 1em;
 
 	option {
 		padding: 0.3em 0.5em;
@@ -100,7 +112,12 @@
 
 .fcontrol__select-label-inline {
 	color: $design-primary-color;
-	font-size: 1.1em;
+	font-size: 1em;
+
+	@include bp(screen2) {
+		font-size: 1.1em;
+	}
+
 }
 
 // ***** Radio Buttons ***** //
