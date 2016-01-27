@@ -44,9 +44,14 @@
 }
 
 .create__simple-button {
-	margin: 10px 0 0 15.3em;
+	margin: 20px 0 0;
+
+	@include bp(screen2) {
+		margin: 20px 0 0 13.8em;
+	}
+
 }
 
-.create__note {
-	margin: 20px 0 0 13.7em;
+.create__simple-buttton-note {
+	margin: 20px 0 0;
 }
