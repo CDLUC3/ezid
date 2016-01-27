@@ -45,8 +45,13 @@ def dataciteXmlToFormElements (document):
 
   Repeatable elements are indexed at the top level only; lower-level
   repeatable elements (e.g., contributor affiliations) are
-  concatenated.  <br> elements in descriptions are replaced with
-  newlines.
+  concatenated.  One exception to the above rule is that the key for
+  the content of a top-level repeatable element carries an extra
+  component that echoes the element name, as in:
+
+    creators-creator-2-creator
+
+  <br> elements in descriptions are replaced with newlines.
   """
   d = {}
   def tagName (tag):
@@ -63,7 +68,11 @@ def dataciteXmlToFormElements (document):
       mypath = tag
     else:
       mypath = "%s-%s" % (path, tag)
-    if index != None: mypath += "-%d" % index
+    if index != None:
+      mypath += "-%d" % index
+      mypathx = "%s-%s" % (mypath, tag)
+    else:
+      mypathx = mypath
     for a in node.attrib:
       v = node.attrib[a].strip()
       if v != "": d["%s-%s" % (mypath, a)] = v
@@ -80,7 +89,7 @@ def dataciteXmlToFormElements (document):
             v += "\n"
           v += c.tail or ""
         v = v.strip()
-        if v != "": d[mypath] = v
+        if v != "": d[mypathx] = v
       else:
         children = getElementChildren(node)
         if len(children) > 0:
@@ -91,9 +100,9 @@ def dataciteXmlToFormElements (document):
             if mypath in d:
               # Repeatable elements not explicitly handled have their
               # content concatenated.
-              d[mypath] += " ; " + v
+              d[mypathx] += " ; " + v
             else:
-              d[mypath] = v
+              d[mypathx] = v
   root = util.parseXmlString(document)
   for c in getElementChildren(root): processNode("", c)
   return d
@@ -155,9 +164,10 @@ def formElementsToDataciteXml (d, shoulder, identifier=None):
         if tagName(node.tag) in _repeatableElementContainers:
           i, remainder = remainder.split("-", 1) if "-" in remainder else\
             (remainder, "")
-          i = int(i) + 1
+          i = int(i)
           while len(node) < i: lxml.etree.SubElement(node, q(k))
           node = node[i-1]
+          if remainder == k: remainder = ""
         else:
           n = node.find(q(k))
           if n != None:
