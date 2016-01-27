@@ -16,16 +16,15 @@ from django.shortcuts import render_to_response, redirect
 from django import forms
 from collections import *
 
-
-@uic.admin_login_required
+@uic.user_login_required
 def dashboard(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.dashboard'}
+  d = _getUsage(request, d)
   #return redirect("ui_admin.usage")
   return uic.render(request, 'dashboard/index', d)
 
-@uic.admin_login_required
-def usage(request, ssl=False):
-  d = { 'menu_item' : 'ui_admin.usage'}
+def _getUsage(request, d):
+  # ToDo: Now that any user can access this pg, not just admin, make necessary changes.
   #make select list choices
   users = ezidadmin.getUsers()
   users.sort(key=lambda i: i['uid'].lower())
@@ -57,7 +56,7 @@ def usage(request, ssl=False):
   d['last_tally'] = last_calc.strftime('%B %d, %Y')
   d['yearly'] = _year_totals(user_id, group_id, last_calc)
   
-  return uic.render(request, 'admin/usage', d)
+  return d
 
 @uic.admin_login_required
 def add_user(request, ssl=False):

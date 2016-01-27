@@ -69,6 +69,26 @@ h2.id-creation {
   font-size: 1.2em;
 }
 
+// Copied from dev/scss/_headings.scss
+// ToDo: Integrate into dev
+$heading-icon-spacing: 40px;
+%heading__icon {
+	margin: 1em 0;
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: 30px;
+	color: $design-primary-color;
+	font-size: 1.2em;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.heading__icon-10 {
+        @extend %heading__icon;
+        padding: 0 $heading-icon-spacing;
+        background-image: url('../images/dashboardCrossRef.svg');
+}
+
 // Headers with other content next to them
 .inline-header h2, .inline-header h3 {
   margin-top: 0px;
