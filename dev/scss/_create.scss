@@ -13,6 +13,23 @@
 	padding: 0 0 0 2.4em;
 }
 
+.create__guide-box {
+	margin: 0 0 30px;
+	padding: 15px;
+	border: 2px solid $design-light-gray-border-color;
+
+	@include bp(screen2) {
+		margin: 0;
+	}
+
+}
+
+.create__guide-heading {
+	margin: 0 0 1em;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
 .create__profile-fields {
 	margin: 0 0 15px;
 }
