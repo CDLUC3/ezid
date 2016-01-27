@@ -193,6 +193,8 @@ def post_adv_form_datacite_xml(request, d):
     action_result = [_("editing"), _("edited successfully")]
     if not P['identifier']:
       error_msgs.append(_("Unable to edit. Identifier not supplied."))
+      d['id_gen_result'] = 'edit_page'
+      return d
     identifier = P['identifier']
   d['form'] = form_objects.getIdForm_datacite_xml(None, request)
   if not (d['form']['remainder_form'].is_valid() 

@@ -8,7 +8,9 @@
 {% block heading %}{% content_heading _("Identifier Details") %}{% endblock %}
 {% block content %}
 <div class="container vertical-buffer-20">
+  {% if allow_update %}
   <p class="heading_2">{% trans "Edit and add descriptive information to your identifier." %}</p>
+  {% endif %}
   <div class="row vertical-buffer-bot">
     <div class="inline-header">
       <h2 class="heading__icon-8">{% trans "About the Identifier" %}</h2>

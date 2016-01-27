@@ -3085,6 +3085,20 @@ h2.id-creation {
   font-weight: normal;
   font-size: 1.2em; }
 
+.heading__icon-10 {
+  margin: 1em 0;
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 30px;
+  color: #00778a;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-transform: uppercase; }
+
+.heading__icon-10 {
+  padding: 0 40px;
+  background-image: url("../images/dashboardCrossRef.svg"); }
+
 .inline-header h2, .inline-header h3 {
   margin-top: 0px;
   margin-right: 10px;
@@ -3241,18 +3255,6 @@ blockquote p {
   text-align: right; }
   .col-promotional .tagline a, .col-promotional .tagline a:visited, .col-promotional .tagline a:hover, .col-promotional .tagline a:active {
     color: #ff701c !important; }
-
-@media (min-width: 480px) {
-  #dashboard__usage--col {
-    margin-right: 60px; } }
-
-.arrow-right {
-  display: inline-block;
-  border-color: transparent #00778a;
-  border-style: solid;
-  border-width: 8px 0px 8px 16px;
-  height: 0px;
-  margin-right: 8px; }
 
 .idcreate-content {
   border-left: 1px solid #beb6af;

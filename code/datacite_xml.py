@@ -45,8 +45,13 @@ def dataciteXmlToFormElements (document):
 
   Repeatable elements are indexed at the top level only; lower-level
   repeatable elements (e.g., contributor affiliations) are
-  concatenated.  <br> elements in descriptions are replaced with
-  newlines.
+  concatenated.  One exception to the above rule is that the key for
+  the content of a top-level repeatable element carries an extra
+  component that echoes the element name, as in:
+
+    creators-creator-2-creator
+
+  <br> elements in descriptions are replaced with newlines.
   """
   d = {}
   def tagName (tag):
@@ -63,7 +68,11 @@ def dataciteXmlToFormElements (document):
       mypath = tag
     else:
       mypath = "%s-%s" % (path, tag)
-    if index != None: mypath += "-%d" % index
+    if index != None:
+      mypath += "-%d" % index
+      mypathx = "%s-%s" % (mypath, tag)
+    else:
+      mypathx = mypath
     for a in node.attrib:
       v = node.attrib[a].strip()
       if v != "": d["%s-%s" % (mypath, a)] = v
@@ -80,7 +89,7 @@ def dataciteXmlToFormElements (document):
             v += "\n"
           v += c.tail or ""
         v = v.strip()
-        if v != "": d[mypath] = v
+        if v != "": d[mypathx] = v
       else:
         children = getElementChildren(node)
         if len(children) > 0:
@@ -91,15 +100,15 @@ def dataciteXmlToFormElements (document):
             if mypath in d:
               # Repeatable elements not explicitly handled have their
               # content concatenated.
-              d[mypath] += " ; " + v
+              d[mypathx] += " ; " + v
             else:
-              d[mypath] = v
+              d[mypathx] = v
   root = util.parseXmlString(document)
   for c in getElementChildren(root): processNode("", c)
   return d
 
 def temp_mock():
-  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme=""></nameIdentifier><affiliation></affiliation></creator></creators><titles><title titleType=""><title>test</title></title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><resourceType ResourceTypeGeneral="Dataset"></resourceType><geoLocations><geoLocation><geoLocationPoint></geoLocationPoint><geoLocationBox></geoLocationBox><geoLocationPlace></geoLocationPlace></geoLocation></geoLocations></resource>')
+  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme=""></nameIdentifier><affiliation></affiliation></creator></creators><titles><title titleType=""><title>test</title></title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><resourceType resourceTypeGeneral="Dataset"></resourceType><geoLocations><geoLocation><geoLocationPoint></geoLocationPoint><geoLocationBox></geoLocationBox><geoLocationPlace></geoLocationPlace></geoLocation></geoLocations></resource>')
 
 def _id_type(str):
   m = re.compile("^[a-z]+")
@@ -158,6 +167,7 @@ def formElementsToDataciteXml (d, shoulder, identifier=None):
           i = int(i) + 1
           while len(node) < i: lxml.etree.SubElement(node, q(k))
           node = node[i-1]
+          if remainder == k: remainder = ""
         else:
           n = node.find(q(k))
           if n != None:
