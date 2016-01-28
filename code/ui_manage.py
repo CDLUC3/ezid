@@ -85,6 +85,7 @@ def _addDataciteXmlToDict(id_metadata, d):
   #    ERC + dc.publisher.] For now, just hide this profile. 
   if d['id_text'].startswith("doi:"):
     d['profiles'][:] = [p for p in d['profiles'] if not p.name == 'erc']
+  # ToDo: Remove old technique for presenting Datacite XML in a form
   datacite_obj = objectify.fromstring(id_metadata["datacite"])
   if datacite_obj is not None:
     d['datacite_obj'] = datacite_obj 
@@ -175,10 +176,8 @@ def edit(request, identifier):
       d['current_profile'] = metadata.getProfile('dc')
     if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
       d = _addDataciteXmlToDict(id_metadata, d)
-      d['dx_dict'] = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
-
-      # d['form'] gets assigned to {remainder_form, creator_set, title_set, etc...}
-      d['form']=form_objects.getIdForm_datacite_xml(d, request) 
+      form_coll = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
+      d['form']=form_objects.getIdForm_datacite_xml(form_coll, request) 
   return uic.render(request, "manage/edit", d)
 
 def _formatErcBlock (block):

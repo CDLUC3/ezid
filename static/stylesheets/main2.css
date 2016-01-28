@@ -2606,10 +2606,18 @@ Selector pattern using above mixin:
   -webkit-align-items: center;
       -ms-flex-align: center;
           align-items: center;
-  margin: 0 1em 0 0;
+  margin: 0 0.5em 0 0;
   color: #00778a;
-  font-size: 1.4em;
+  font-size: 1.2em;
   font-weight: bold; }
+  @media (min-width: 768px) {
+    .fieldset-stacked__legend,
+    .fieldset-inline__legend,
+    .fieldset__inline-select-text, .fieldset-stacked__legend-number-1,
+    .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
+    .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
+    .fieldset-inline__legend-number-3 {
+      font-size: 1.4em; } }
 
 .fieldset-stacked__legend {
   margin: 0 0 1em; }
@@ -2681,14 +2689,16 @@ Selector pattern using above mixin:
 .fcontrol__text-label-stacked {
   margin: 0 0 2px;
   color: #00778a;
-  font-size: 1.1em; }
+  font-size: 1em; }
+  @media (min-width: 768px) {
+    .fcontrol__text-label-stacked {
+      font-size: 1.1em; } }
 
 .fcontrol__text-field-stacked {
   height: 30px;
   margin: 0;
   padding: 0.3em 0.5em;
-  border: 1px solid #beb6af;
-  font-size: 1em; }
+  border: 1px solid #beb6af; }
 
 .fcontrol__group-inline, .fcontrol__group-inline--invalid {
   display: -webkit-flex;
@@ -2707,7 +2717,10 @@ Selector pattern using above mixin:
           align-self: center;
   margin: 0 0.5em 0 0;
   color: #00778a;
-  font-size: 1.1em; }
+  font-size: 1em; }
+  @media (min-width: 768px) {
+    .fcontrol__text-label-inline {
+      font-size: 1.1em; } }
 
 .fcontrol__text-field-inline {
   -webkit-flex: 1 0 auto;
@@ -2715,14 +2728,16 @@ Selector pattern using above mixin:
           flex: 1 0 auto;
   margin: 0;
   padding: 0.3em 0.5em;
-  border: 1px solid #beb6af;
-  font-size: 1em; }
+  border: 1px solid #beb6af; }
 
 .fcontrol__select-label {
   display: block;
   margin: 0 0 2px;
   color: #00778a;
-  font-size: 1.1em; }
+  font-size: 1em; }
+  @media (min-width: 768px) {
+    .fcontrol__select-label {
+      font-size: 1.1em; } }
 
 .fcontrol__select, .fcontrol__select-inline {
   display: block;
@@ -2731,8 +2746,7 @@ Selector pattern using above mixin:
           align-self: center;
   padding: 0 0.3em;
   border: 1px solid #beb6af;
-  background: linear-gradient(to bottom, whitesmoke, #e3e4e4);
-  font-size: 1em; }
+  background: linear-gradient(to bottom, whitesmoke, #e3e4e4); }
   .fcontrol__select option, .fcontrol__select-inline option {
     padding: 0.3em 0.5em;
     background: #e3e4e4; }
@@ -2745,7 +2759,10 @@ Selector pattern using above mixin:
 
 .fcontrol__select-label-inline {
   color: #00778a;
-  font-size: 1.1em; }
+  font-size: 1em; }
+  @media (min-width: 768px) {
+    .fcontrol__select-label-inline {
+      font-size: 1.1em; } }
 
 .fcontrol__radio-label-stacked, .fcontrol__radio-label-inline {
   color: #00778a;
@@ -3424,7 +3441,7 @@ Selector pattern using above mixin:
       top: 0;
       right: 0;
       left: 0;
-      height: 64px;
+      height: 63px;
       background-image: url("../images/icon_triangle.svg");
       background-repeat: no-repeat;
       background-position: bottom center;
@@ -3544,7 +3561,7 @@ Selector pattern using above mixin:
 
 .tab__label {
   margin: 0 10px 0 0;
-  padding: 0.5em 1.2em;
+  padding: 0.5em 10px;
   border: 1px solid #beb6af;
   background: white;
   color: #00778a;
@@ -3552,6 +3569,9 @@ Selector pattern using above mixin:
   font-weight: normal;
   cursor: pointer;
   z-index: 1; }
+  @media (min-width: 768px) {
+    .tab__label {
+      padding: 0.5em 30px; } }
   .tab__label:not(:first-of-type) {
     margin-left: -1px; }
 
@@ -3562,9 +3582,12 @@ Selector pattern using above mixin:
           order: 1;
   width: 100%;
   margin-top: -1px;
-  padding: 30px;
+  padding: 10px;
   border: 1px solid #beb6af;
   background: #f9f8f7; }
+  @media (min-width: 768px) {
+    .tab__content {
+      padding: 30px; } }
 
 .table1 {
   width: 100%;
@@ -3671,10 +3694,30 @@ Selector pattern using above mixin:
 
 .create__tab {
   max-width: 1000px;
-  margin: 30px auto 0; }
+  margin: 10px auto 0; }
+  @media (min-width: 768px) {
+    .create__tab {
+      margin: 30px auto 20px; } }
 
 .create__radio-buttons {
   padding: 0 0 0 2.4em; }
+
+.create__guide-box {
+  margin: 0 0 30px;
+  padding: 15px;
+  border: 2px solid #beb6af; }
+  @media (min-width: 768px) {
+    .create__guide-box {
+      margin: 0; } }
+
+.create__guide-heading {
+  margin: 0 0 1em;
+  font-size: 1.2em;
+  font-weight: bold; }
+
+@media (min-width: 768px) {
+  .create__fieldset {
+    margin: 20px 0 0; } }
 
 .create__profile-fields {
   margin: 0 0 15px; }
@@ -3682,6 +3725,15 @@ Selector pattern using above mixin:
 .create__profile-labels {
   width: 12em;
   text-align: right; }
+
+.create__simple-button {
+  margin: 20px 0 0; }
+  @media (min-width: 768px) {
+    .create__simple-button {
+      margin: 20px 0 0 13.8em; } }
+
+.create__simple-buttton-note {
+  margin: 20px 0 0; }
 
 .home__identifier-container {
   display: -webkit-flex;
