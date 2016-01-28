@@ -95,13 +95,15 @@
 </tbody>
 </table>
 <p>*Statistics calculated on {{last_tally}}.</p>
+</div>
 {% else %}
 <p>There is no usage data for the selected group or user.</p>
-</div>
 {% endif %}
-  <hr/>
-  <h2 class="heading__icon-6">{% trans "Identifiers Issues" %}</h2>
-  <h2 class="heading__icon-10">{% trans "CrossRef&reg; Submission Status" %}</h2>
+  <div class="col-md-12">
+    <hr/>
+    <h2 class="heading__icon-6">{% trans "Identifiers Issues" %}</h2>
+    <h2 class="heading__icon-10">{% trans "CrossRef&reg; Submission Status" %}</h2>
+  </div>
 </div>
   <script type="text/javascript">
   	$("#choice").bind("change", function(event){

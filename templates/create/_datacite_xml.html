@@ -9,7 +9,7 @@
 <br/>
 <div name="/resource" class="element">
 
-  {{ form.nonrepeating_form.non_field_errors }}
+{{ form.nonrepeating_form.non_field_errors }}
   <div class="row form-group form-group-sm{% if form.nonrepeating_form.target.errors %} has-error{% endif %}">
     <label for="{{ form.nonrepeating_form.target.id_for_label }}" class="col-sm-3 control-label">{{ form.nonrepeating_form.target.label }}</label>
     <div class="col-sm-5">
