@@ -4,6 +4,7 @@ import ui_common as uic
 import util
 import idmap
 import userauth 
+import re
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
@@ -21,6 +22,9 @@ RESOURCE_TYPES = (
 )
 REGEX_4DIGITYEAR='^\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
   \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\)$'
+PREFIX_CREATOR_SET='creators-creator'
+PREFIX_TITLE_SET='titles-title'
+PREFIX_GEOLOC_SET='geoLocations-geoLocation'
 
 ################# Basic ID Forms ####################
 
@@ -218,7 +222,7 @@ class GeoLocForm(forms.Form):
       decimal numbers separated by a space.")})
   geoLocationPlace = forms.CharField(required=False, label=_("Place"))
 
-def getIdForm_datacite_xml (d=None, request=None):
+def getIdForm_datacite_xml (form_coll=None, request=None):
   """ Accepts request.POST for base level variables (and when creating a new ID),
       When displaying an already created ID, accepts a dictionary of datacite_xml
       specific data.
@@ -233,36 +237,60 @@ def getIdForm_datacite_xml (d=None, request=None):
   CreatorSet = formset_factory(CreatorForm, formset=RequiredFormSet)
   TitleSet = formset_factory(TitleForm, formset=RequiredFormSet)
   GeoLocSet = formset_factory(GeoLocForm)
-  # On Create:GET
-  if not request and not d:  # Get an empty form
+# On Create:GET
+  if not request and not form_coll:  # Get an empty form
     remainder_form = RemainderForm(None, shoulder=None, auto_id='%s')
     nonrepeating_form = NonRepeatingForm(None, auto_id='%s')
     resourcetype_form = ResourceTypeForm(None, auto_id='%s')
-    creator_set = CreatorSet(prefix='creators-creator')
-    title_set = TitleSet(prefix='titles-title')
-    geoloc_set = GeoLocSet(prefix='geoLocations-geoLocation')
-  # On Edit:GET (Convert DataCite XML dict to form)
+    creator_set = CreatorSet(prefix=PREFIX_CREATOR_SET, auto_id='%s')
+    title_set = TitleSet(prefix=PREFIX_TITLE_SET, auto_id='%s')
+    geoloc_set = GeoLocSet(prefix=PREFIX_GEOLOC_SET, auto_id='%s')
+# On Edit:GET (Convert DataCite XML dict to form)
   elif request and request.method == "GET":
-    assert d is not None
+    assert form_coll is not None
     # Remainder form only needed upon ID creation
-    nonrepeating_form = NonRepeatingForm(d['dx_dict']['nonRepeating'], auto_id='%s')
-    resourcetype_form = ResourceTypeForm(d['dx_dict']['resourceType'], auto_id='%s')
-    creator_set = CreatorSet(d['dx_dict']['creators'], prefix='creators-creator', auto_id='%s')
-    title_set = TitleSet(d['dx_dict']['titles'], prefix='titles-title', auto_id='%s')
-    geoloc_set = GeoLocSet(d['dx_dict']['geoLocations'], prefix='geoLocations-geoLocation', auto_id='%s')
-  # On Create:POST, Edit:POST
+    nonrepeating_form = NonRepeatingForm(form_coll.nonRepeating, auto_id='%s')
+    resourcetype_form = ResourceTypeForm(form_coll.resourceType, auto_id='%s')
+    creator_set = CreatorSet(_inclMgmtData(form_coll.creators, PREFIX_CREATOR_SET),
+      prefix=PREFIX_CREATOR_SET, auto_id='%s')
+    title_set = TitleSet(_inclMgmtData(form_coll.titles, PREFIX_TITLE_SET),
+      prefix=PREFIX_TITLE_SET, auto_id='%s')
+    geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations, PREFIX_GEOLOC_SET),
+      prefix=PREFIX_GEOLOC_SET, auto_id='%s')
+# On Create:POST, Edit:POST
   elif request and request.method == "POST": 
     P = request.POST 
     shoulder = P['shoulder'] 
     remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
     nonrepeating_form = NonRepeatingForm(P, auto_id='%s')
     resourcetype_form = ResourceTypeForm(P, auto_id='%s')
-    creator_set = CreatorSet(P, prefix='creators-creator', auto_id='%s')
-    title_set = TitleSet(P, prefix='titles-title', auto_id='%s')
-    geoloc_set = GeoLocSet(P, prefix='geoLocations-geoLocation', auto_id='%s')
+    creator_set = CreatorSet(P, prefix=PREFIX_CREATOR_SET, auto_id='%s')
+    title_set = TitleSet(P, prefix=PREFIX_TITLE_SET, auto_id='%s')
+    geoloc_set = GeoLocSet(P, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
   return {'remainder_form': remainder_form, 'nonrepeating_form': nonrepeating_form,
     'resourcetype_form': resourcetype_form, 'creator_set': creator_set, 
     'title_set': title_set, 'geoloc_set' : geoloc_set}
+
+def _inclMgmtData(fields, prefix):
+  """ Only to be used for formsets with sytnax <prefix>-#-<field>
+      Build Req'd Management Form fields (basically counting # of forms in set) 
+      based on Formset specs. Consult Django documentation under: 'Understanding the ManagementForm' 
+  """
+  if not fields: return None
+  i_total = 0 
+  if prefix in list(fields)[0]:
+    for f in fields:
+      m = re.match("^.*(\d+)", f)
+      s = m.group(1) 
+      i = int(s) + 1   # First form is numbered '0', so add 1 for actual count 
+      if i > i_total: i_total = i
+  else:
+    i_total = 1   # Assume a form needs to be produced even if no data is being passed in
+  fields[prefix + "-TOTAL_FORMS"] = str(i_total)
+  fields[prefix + "-INITIAL_FORMS"] = '0'
+  fields[prefix + "-MAX_NUM_FORMS"] = '1000'
+  fields[prefix + "-MIN_NUM_FORMS"] = '0'
+  return fields
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ############## Remaining Forms (not related to ID creation/editing) #########

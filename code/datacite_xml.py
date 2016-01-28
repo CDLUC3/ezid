@@ -20,6 +20,7 @@ import lxml.etree
 import util
 import re
 import copy
+import collections
 
 _repeatableElementContainers = ["creators", "titles", "subjects",
   "contributors", "dates", "alternateIdentifiers", "relatedIdentifiers",
@@ -78,7 +79,7 @@ def dataciteXmlToFormElements (document):
       if v != "": d["%s-%s" % (mypath, a)] = v
     if tag in _repeatableElementContainers:
       for i, c in enumerate(getElementChildren(node)):
-        processNode(mypath, c, i+1)
+        processNode(mypath, c, i)
     else:
       if tag == "description":
         # The only mixed-content element type in the schema; <br>'s
@@ -105,10 +106,34 @@ def dataciteXmlToFormElements (document):
               d[mypathx] = v
   root = util.parseXmlString(document)
   for c in getElementChildren(root): processNode("", c)
-  return d
+  fc = _separateByFormType(d)
+  return fc 
+
+""" Representation of django forms and formsets used for DataCite XML """
+FormColl = collections.namedtuple('FormColl', 'nonRepeating resourceType creators titles geoLocations')
+
+def _separateByFormType(d):
+  """ Organize form elements into a manageable collection 
+      Turn empty dicts into None so that forms render properly
+  """
+  _nonRepeating = {k:v for (k,v) in d.iteritems() 
+    if not any(e in k for e in _repeatableElementContainers) and not k.startswith('resourceType')}
+  _resourceType = {k:v for (k,v) in d.iteritems() if k.startswith('resourceType')}
+  _creators = {k:v for (k,v) in d.iteritems() if k.startswith('creators')}
+  _titles = {k:v for (k,v) in d.iteritems() if k.startswith('titles')}
+  _geoLocations = {k:v for (k,v) in d.iteritems() if k.startswith('geoLocations')}
+  return FormColl(
+    nonRepeating=_nonRepeating if _nonRepeating else None, 
+    resourceType=_resourceType if _resourceType else None,
+    creators=_creators if _creators else None, 
+    titles=_titles if _titles else None, 
+    geoLocations=_geoLocations if _geoLocations else None
+  )
 
 def temp_mock():
-  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme=""></nameIdentifier><affiliation></affiliation></creator></creators><titles><title titleType=""><title>test</title></title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><resourceType resourceTypeGeneral="Dataset"></resourceType><geoLocations><geoLocation><geoLocationPoint></geoLocationPoint><geoLocationBox></geoLocationBox><geoLocationPlace></geoLocationPlace></geoLocation></geoLocations></resource>')
+  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme=""></nameIdentifier><affiliation></affiliation></creator><creator><creatorName>test2</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme="">testNameId</nameIdentifier><affiliation>testAffiliation</affiliation></creator></creators><titles><title titleType=""><title>test</title></title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><geoLocations><geoLocation><geoLocationPoint></geoLocationPoint><geoLocationBox></geoLocationBox><geoLocationPlace></geoLocationPlace></geoLocation></geoLocations></resource>')
+def temp_mock2():
+  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme=""></nameIdentifier><affiliation></affiliation></creator><creator><creatorName>test2</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme="">testNameId</nameIdentifier><affiliation>testAffiliation</affiliation></creator></creators><titles><title titleType=""><title>test</title></title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><resourceType resourceTypeGeneral="Dataset"></resourceType><geoLocations><geoLocation><geoLocationPoint></geoLocationPoint><geoLocationBox></geoLocationBox><geoLocationPlace></geoLocationPlace></geoLocation></geoLocations></resource>')
 
 def _id_type(str):
   m = re.compile("^[a-z]+")
