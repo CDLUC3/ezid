@@ -164,7 +164,8 @@
 	@extend %header__nav-element;
 	background-image: url('../images/searchOff.svg');
 
-	&:hover {
+	&:hover,
+	&:focus {
 		background-image: url('../images/searchOn.svg');
 	}
 
@@ -174,11 +175,11 @@
 	@include bp(screen2) {
 		position: relative; // for .header__learn-subnav
 
-		&:hover {
-			.header__learn-subnav { // show menu on hover
-				display: block;
-			}
+	}
 
+	&:hover {
+		.header__learn-subnav { // show menu on hover
+			display: block;
 		}
 
 	}
@@ -189,8 +190,16 @@
 	@extend %header__nav-element;
 	background-image: url('../images/learnOff.svg');
 
-	&:hover {
+	&:hover,
+	&:focus {
 		background-image: url('../images/learnOn.svg');
+	}
+
+	&:focus {
+		+ .header__learn-subnav { // show menu on focus
+			display: block;
+		}
+
 	}
 
 }
@@ -236,7 +245,8 @@
 
 	background-image: url('../images/contactOff.svg');
 
-	&:hover {
+	&:hover,
+	&:focus {
 		background-image: url('../images/contactOn.svg');
 	}
 
