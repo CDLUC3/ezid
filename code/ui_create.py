@@ -162,6 +162,10 @@ def adv_form(request, d):
     d['id_gen_result'] = 'edit_page' 
   else:     # request.method == "POST"
     P = REQUEST
+    pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
+    if not _verifyProperShoulder(request, P, pre_list): 
+      d['id_gen_result'] = 'edit_page'
+      return d
     if d['current_profile_name'] == 'datacite_xml':
       d = validate_adv_form_datacite_xml(request, d)
       if 'id_gen_result' in d: return d
@@ -171,10 +175,6 @@ def adv_form(request, d):
         d['id_gen_result'] = 'bad_request'
         return d
       d['form'] = form_objects.getAdvancedIdForm(d['current_profile'], request)
-      pre_list = [p['prefix'] for p in d['prefixes']]
-      if not _verifyProperShoulder(request, P, pre_list): 
-        d['id_gen_result'] = 'edit_page'
-        return d
       if not (d['form']['form'].is_valid() and d['form']['remainder_form'].is_valid()):
         django.contrib.messages.error(request, _validationErr(_("created")))
         d['id_gen_result'] = 'edit_page'
@@ -197,11 +197,7 @@ def validate_adv_form_datacite_xml(request, d):
   """
   P = request.POST
   assert P is not None
-  pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
   if (P['action'] == 'create'):
-    if not _verifyProperShoulder(request, P, pre_list):
-      d['id_gen_result'] = 'edit_page'
-      return d
     action_result = _("created")
     identifier = None
   else:   # action='edit'
@@ -218,7 +214,9 @@ def validate_adv_form_datacite_xml(request, d):
   else:
     # Testing:
     # d['generated_xml'] = datacite_xml.temp_mock()
-    d['generated_xml'] = datacite_xml.formElementsToDataciteXml(P.dict(), P['shoulder'], identifier)
+    import pdb; pdb.set_trace()
+    d['generated_xml'] = datacite_xml.formElementsToDataciteXml(
+      P.dict(), (P['shoulder'] if 'shoulder' in P else None), identifier)
     # ToDo: Verify XML validation occurs in ezid.py and I don't have to do it here
     # Old process:
     # xsd_path = django.conf.settings.PROJECT_ROOT + "/xsd/datacite-kernel-3/metadata.xsd"

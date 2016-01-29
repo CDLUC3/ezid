@@ -158,7 +158,7 @@ _elementList = ["identifier", "creators", "creator", "creatorName",
 
 _elements = dict((e, i) for i, e in enumerate(_elementList))
 
-def formElementsToDataciteXml (d, shoulder, identifier=None):
+def formElementsToDataciteXml (d, shoulder=None, identifier=None):
   """
   The inverse of dataciteXmlToFormElements.
   First, filter for only DataCite XML items. Remove unnecessary Django form variables
@@ -168,8 +168,7 @@ def formElementsToDataciteXml (d, shoulder, identifier=None):
   """
   d = {k:v for (k,v) in d.iteritems() if '_FORMS' not in k}
   d = {k:v for (k,v) in d.iteritems() if any(e in k for e in _elementList)}
-  d['identifier-identifierType'] = _id_type(shoulder)
-  if identifier is not None: d['identifier'] = identifier
+  d = _addIdentifierInfo(d, shoulder, identifier)
   namespace = "http://datacite.org/schema/kernel-3"
   schemaLocation = "http://schema.datacite.org/meta/kernel-3/metadata.xsd"
   def q (elementName):
@@ -211,6 +210,15 @@ def formElementsToDataciteXml (d, shoulder, identifier=None):
     for c in node.iterchildren(): sortChildren(c)
   sortChildren(root)
   return lxml.etree.tostring(root, encoding=unicode)
+
+def _addIdentifierInfo(d, shoulder=None, identifier=None):
+  if shoulder is None:
+    assert identifier
+    id_str = identifier
+  else: id_str = shoulder
+  d['identifier-identifierType'] = _id_type(id_str)        # Required
+  if identifier is not None: d['identifier'] = identifier  # Only for already created IDs
+  return d
 
 # ToDo: remove rest of this, I believe it's no longer needed 
 # ============================================================================= 
