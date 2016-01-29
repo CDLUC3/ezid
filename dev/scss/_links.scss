@@ -1,6 +1,7 @@
 // ##### Link Elements ##### //
 
 %link__primary {
+	position: relative;
 	border-bottom: 1px solid $design-light-gray-border-color;
 	color: $design-primary-color;
 	text-decoration: none;
@@ -9,6 +10,14 @@
 		border-bottom: 1px solid $design-primary-color;
 		color: $design-primary-color;
 		text-decoration: none; // bootstrap override
+	}
+
+	&[href$='.pdf']:after {
+		position: absolute;
+		right: -25px;
+		width: 15px;
+		height: 15px;
+		content: url('../images/pdf-icon_18x18.png');
 	}
 
 }
