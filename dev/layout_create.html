@@ -42,6 +42,7 @@
         <div class="row">
 
           <div class="col-md-8">
+            
             <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset1">
 
               <div id="create__fieldset1" class="fieldset-stacked__legend-number-1">Choose an identifier type</div>
@@ -59,13 +60,18 @@
           </div>
 
           <div class="col-md-4">
+
             <div class="sidebox">
+
               <h2 class="sidebox__heading">Quick Start Guide</h2>
               <ul class="sidebox__list">
                 <li><a class="link__primary" href="file.pdf">Simple ID Creation</a></li>
               </ul>
+
             </div>
+
           </div>
+
         </div>
 
         <div class="fieldset-stacked create__fieldset" role="group" aria-labelledby="create__fieldset2">
@@ -108,11 +114,70 @@
 
       </div>
 
-      <input class="tab__input" id="tab-2" type="radio" name="name" />
+      <input class="tab__input" id="tab-2" type="radio" name="name" checked>
       <label class="tab__label" for="tab-2">Advanced</label>
       <div class="tab__content">
-        [advanced form components to go here]
+        
+        <div class="row">
+
+          <div class="col-md-8">
+            
+            <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset1">
+
+              <div id="create__fieldset1" class="fieldset-stacked__legend-number-1">Choose an identifier type</div>
+            
+              <label for="create__radio-button1" class="fcontrol__radio-label-stacked create__radio-buttons">
+                <input id="create__radio-button1" class="fcontrol__radio-button-stacked" type="radio" value="" name="name1" checked> <span>ARK (ark:/99999/fk4/... )</span>
+              </label>
+
+              <label for="create__radio-button2" class="fcontrol__radio-label-stacked create__radio-buttons">
+                <input id="create__radio-button2" class="fcontrol__radio-button-stacked" type="radio" value="" name="name1"> <span>DOI (doi:10.5072/FK2/... )</span>
+              </label>
+
+            </div>
+
+            <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset1">
+
+              <div id="create__fieldset1" class="fieldset-stacked__legend-number-2">Optional: Enter a custom remainder (suffix)</div>
+
+              <div class="fcontrol__group-stacked">
+                <label for="fcontrol__example-label7" class="fcontrol__text-label-hidden">Last Name</label>
+                <input id="fcontrol__example-label7" class="fcontrol__text-field-stacked" type="text" placeholder="Recommended: Leave blank" required>
+                <span class="fcontrol__invalid-flag">Error message</span>
+              </div>
+
+            </div>
+
+            <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset1">
+
+              <div id="create__fieldset1" class="fieldset-stacked__legend-number-3">Decide</div>
+
+            </div>
+
+          </div>
+
+          <div class="col-md-4">
+
+            <div class="sidebox">
+              
+              <h2 class="sidebox__heading">Quick Start Guide</h2>
+              <ul class="sidebox__list">
+                <li><a class="link__primary" href="file.pdf">Custom Remainder Rules</a></li>
+                <li><a class="link__primary" href="file.pdf">Advanced Create for DOIs</a></li>
+                <li><a class="link__primary" href="file.pdf">Resource Types</a></li>
+                <li><a class="link__primary" href="file.pdf">Contributor Types</a></li>
+                <li><a class="link__primary" href="file.pdf">Relation Types</a></li>
+                <li><a class="link__primary" href="file.pdf">Don't have info for required fields? Use placeholder codes.</a></li>
+              </ul>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
+
     </div>
 
     <!--#include file="includes/footer_geo-off.html" -->
