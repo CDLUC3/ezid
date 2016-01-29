@@ -127,6 +127,8 @@ def edit(request, identifier):
   d['id_text'] = s.split()[1]
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
+  import pdb; pdb.set_trace()
+  
   if request.method == "GET": 
     if '_profile' in id_metadata:
       d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
@@ -146,20 +148,20 @@ def edit(request, identifier):
       if not d['form'].is_valid():
         django.contrib.messages.error(request, FORM_VALIDATION_ERROR_ON_LOAD)
   else:    # request.method == "POST":
-    d['pub_status'] = (request.POST['_status'] if '_status' in request.POST else d['pub_status'])
-    d['stat_reason'] = (request.POST['stat_reason'] if 'stat_reason' in request.POST else d['stat_reasons'])
-    d['export'] = request.POST['_export'] if '_export' in request.POST else d['export']
+    P = request.POST
+    d['pub_status'] = (P['_status'] if '_status' in P else d['pub_status'])
+    d['stat_reason'] = (P['stat_reason'] if 'stat_reason' in P else d['stat_reason'])
+    d['export'] = P['_export'] if '_export' in P else d['export']
     ''' Profiles could previously be switched in edit template, thus generating
         posibly two differing profiles (current vs original). So we previously did a 
         check here to confirm current_profile equals original profile before saving.''' 
-    d['current_profile'] = metadata.getProfile(request.POST['original_profile'])
+    d['current_profile'] = metadata.getProfile(P['original_profile'])
     #this means we're saving and going to a save confirmation page
-    if request.POST['_status'] == 'unavailable':
-      stts = request.POST['_status'] + " | " + request.POST['stat_reason']
+    if P['_status'] == 'unavailable':
+      stts = P['_status'] + " | " + P['stat_reason']
     else:
-      stts = request.POST['_status']
+      stts = P['_status']
 
-    import pdb; pdb.set_trace()
     if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
       d = ui_create.validate_adv_form_datacite_xml(request, d)
       if 'id_gen_result' in d:
@@ -168,12 +170,13 @@ def edit(request, identifier):
         assert 'generated_xml' in d
         to_write = { "_profile": 'datacite', '_target' : uic.fix_target(P['target']),
           "_status": stts, "_export": d['export'], "datacite": d['generated_xml'] }
-        s = ezid.setMetadata(request.POST['identifier'], uic.user_or_anon_tup(request),\
+        s = ezid.setMetadata(P['identifier'], uic.user_or_anon_tup(request),\
           uic.group_or_anon_tup(request), to_write)
         if s.startswith("success:"):
           _alertMessageUpdateSuccess(request)
           return redirect("/id/" + urllib.quote(identifier, ":/"))
         else:
+          d = _addDataciteXmlToDict(id_metadata, d)
           _alertMessageUpdateError(request)
           return uic.render(request, "manage/edit", d)
     else:
@@ -185,7 +188,7 @@ def edit(request, identifier):
           _alertMessageUpdateError(request)
           return uic.render(request, "manage/edit", d)
         else:
-          if 'simpleToAdvanced' in request.POST and request.POST['simpleToAdvanced'] == 'True':
+          if 'simpleToAdvanced' in P and P['simpleToAdvanced'] == 'True':
             # simpleToAdvanced button was selected 
             result = _updateMetadata(request, d, stts, id_metadata)
             r = _getLatestMetadata(identifier, request)

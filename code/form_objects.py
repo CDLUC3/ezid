@@ -144,6 +144,19 @@ def _validate_custom_remainder(shoulder):
         _("This combination of characters cannot be used as a remainder."))
   return innerfn
 
+def nameIdValidation(ni, ni_s, ni_s_uri):
+  err = {}
+  if ni and not ni_s:
+    err['nameIdentifier-nameIdentifierScheme'] = _("An Identifier Scheme must be filled in if you specify an Identifier.")
+  if ni_s and not ni:
+    err['nameIdentifier'] = _("An Identifier must be filled in if you specify an Identifier Scheme.")
+  if ni_s_uri:
+    if not ni:
+      err['nameIdentifier'] = _("An Identifier must be filled in if you specify a Scheme URI.")
+    if not ni_s:
+      err['nameIdentifier-nameIdentifierScheme'] = _("An Identifier Scheme must be filled in.")
+  return err
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ################# Advanced Datacite ID Form/Elements #################
 
@@ -161,8 +174,10 @@ class NonRepeatingForm(forms.Form):
 
 class ResourceTypeForm(forms.Form):
   """ This is also composed of single field elements like NonRepeatingForm,
-      but I wasn't sure how to display fields with hyphens directly in the template.
-      By embedding them in a form object, this bypasses that problem. """
+      but I wasn't sure how to call fields with hyphens (from NonRepeatingForm)
+      directly from the template.  By relegating them to their own form object, 
+      this bypasses that problem. 
+  """
   def __init__(self, *args, **kwargs):
     super(ResourceTypeForm,self).__init__(*args,**kwargs)
     self.fields['resourceType-resourceTypeGeneral'] = forms.ChoiceField(required=False,
@@ -187,6 +202,14 @@ class CreatorForm(forms.Form):
     self.fields["nameIdentifier-nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
     self.fields["nameIdentifier-schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
     self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
+  def clean(self):
+    cleaned_data = super(CreatorForm, self).clean()
+    ni = cleaned_data.get("nameIdentifier")
+    ni_s = cleaned_data.get("nameIdentifier-nameIdentifierScheme")
+    ni_s_uri = cleaned_data.get("nameIdentifier-schemeURI")
+    err = nameIdValidation(ni, ni_s, ni_s_uri)
+    if err: raise ValidationError(err)
+    return cleaned_data
 
 class TitleForm(forms.Form):
   """ Form object for Title Element in DataCite Advanced (XML) profile """
@@ -219,10 +242,11 @@ class GeoLocForm(forms.Form):
   geoLocationPlace = forms.CharField(required=False, label=_("Place"))
 
 def getIdForm_datacite_xml (form_coll=None, request=None):
-  """ Accepts request.POST for base level variables (and when creating a new ID),
-      When displaying an already created ID, accepts a named tuple 'form_coll' of 
-      datacite_xml specific data.
-      Returns Advanced Datacite elements as dict of Django forms and formsets
+  """ For Advanced Datacite elements 
+      On GET, displays 'form_coll' (named tuple) data translated from XML doc
+      On POST (when editing an ID or creating a new ID), uses request.POST
+
+      Returns elements as dict of Django forms and formsets
       Fields in Django FormSets follow this naming convention:
          prefix-#-elementName      
       Thus the creatorName field in the third Creator fieldset would be named:
@@ -233,18 +257,25 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
   CreatorSet = formset_factory(CreatorForm, formset=RequiredFormSet)
   TitleSet = formset_factory(TitleForm, formset=RequiredFormSet)
   GeoLocSet = formset_factory(GeoLocForm)
+  if not form_coll: 
 # On Create:GET
-  if not request and not form_coll:  # Get an empty form
-    remainder_form = RemainderForm(None, shoulder=None, auto_id='%s')
-    nonrepeating_form = NonRepeatingForm(None, auto_id='%s')
-    resourcetype_form = ResourceTypeForm(None, auto_id='%s')
-    creator_set = CreatorSet(prefix=PREFIX_CREATOR_SET, auto_id='%s')
-    title_set = TitleSet(prefix=PREFIX_TITLE_SET, auto_id='%s')
-    geoloc_set = GeoLocSet(prefix=PREFIX_GEOLOC_SET, auto_id='%s')
+    if not request:  # Get an empty form
+      P = shoulder = None 
+# On Create:POST, Edit:POST
+    elif request: 
+      assert request.method == "POST"
+      P = request.POST 
+      shoulder = P['shoulder'] if 'shoulder' in P else None 
+    remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
+    nonrepeating_form = NonRepeatingForm(P, auto_id='%s')
+    resourcetype_form = ResourceTypeForm(P, auto_id='%s')
+    creator_set = CreatorSet(P, prefix=PREFIX_CREATOR_SET, auto_id='%s')
+    title_set = TitleSet(P, prefix=PREFIX_TITLE_SET, auto_id='%s')
+    geoloc_set = GeoLocSet(P, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
 # On Edit:GET (Convert DataCite XML dict to form)
   elif request and request.method == "GET":
     assert form_coll is not None
-    # Remainder form only needed upon ID creation
+    # Note: Remainder form only needed upon ID creation
     nonrepeating_form = NonRepeatingForm(form_coll.nonRepeating, auto_id='%s')
     resourcetype_form = ResourceTypeForm(form_coll.resourceType, auto_id='%s')
     creator_set = CreatorSet(_inclMgmtData(form_coll.creators, PREFIX_CREATOR_SET),
@@ -253,34 +284,24 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
       prefix=PREFIX_TITLE_SET, auto_id='%s')
     geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations, PREFIX_GEOLOC_SET),
       prefix=PREFIX_GEOLOC_SET, auto_id='%s')
-# On Create:POST, Edit:POST
-  elif request and request.method == "POST": 
-    P = request.POST 
-    shoulder = P['shoulder'] 
-    remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
-    nonrepeating_form = NonRepeatingForm(P, auto_id='%s')
-    resourcetype_form = ResourceTypeForm(P, auto_id='%s')
-    creator_set = CreatorSet(P, prefix=PREFIX_CREATOR_SET, auto_id='%s')
-    title_set = TitleSet(P, prefix=PREFIX_TITLE_SET, auto_id='%s')
-    geoloc_set = GeoLocSet(P, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
   return {'remainder_form': remainder_form, 'nonrepeating_form': nonrepeating_form,
     'resourcetype_form': resourcetype_form, 'creator_set': creator_set, 
     'title_set': title_set, 'geoloc_set' : geoloc_set}
 
 def _inclMgmtData(fields, prefix):
-  """ Only to be used for formsets with sytnax <prefix>-#-<field>
+  """ Only to be used for formsets with syntax <prefix>-#-<field>
       Build Req'd Management Form fields (basically counting # of forms in set) 
-      based on Formset specs. Consult Django documentation under: 'Understanding the ManagementForm' 
+      based on Formset specs. Consult Django documentation titled: 'Understanding the ManagementForm' 
   """
-  if not fields: return None
   i_total = 0 
-  if prefix in list(fields)[0]:
+  if fields and prefix in list(fields)[0]:
     for f in fields:
       m = re.match("^.*(\d+)", f)
       s = m.group(1) 
       i = int(s) + 1   # First form is numbered '0', so add 1 for actual count 
       if i > i_total: i_total = i
   else:
+    fields = {}
     i_total = 1   # Assume a form needs to be produced even if no data is being passed in
   fields[prefix + "-TOTAL_FORMS"] = str(i_total)
   fields[prefix + "-INITIAL_FORMS"] = '0'
@@ -288,10 +309,15 @@ def _inclMgmtData(fields, prefix):
   fields[prefix + "-MIN_NUM_FORMS"] = '0'
   return fields
 
-def isValidDataciteXmlForm(f):
-  return (f['remainder_form'].is_valid() and f['nonrepeating_form'].is_valid() 
-    and f['resourcetype_form'].is_valid() and f['creator_set'].is_valid() 
-    and f['title_set'].is_valid())
+def isValidDataciteXmlForm(form):
+  """ Validate all forms and formsets included. Empty form objects are None, so just pass those.
+      Returns false if one or more items don't validate
+  """
+  numFailed = 0 
+  for f,v in form.iteritems(): 
+    r = True if v is None else v.is_valid()
+    if not r: numFailed += 1 
+  return (numFailed == 0)
   
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ############## Remaining Forms (not related to ID creation/editing) #########
@@ -384,6 +410,7 @@ class BaseSearchIdForm(forms.Form):
   id_type = forms.ChoiceField(required=False, choices=ID_TYPES, 
     label = _("Identifier Type"))
   def clean(self):
+    """ Invalid if all fields are empty """
     field_count = len(self.fields)
     cleaned_data = super(BaseSearchIdForm, self).clean()
     """ cleaned_data contains all valid fields. So if one or more fields
