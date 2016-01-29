@@ -71,7 +71,7 @@ $fieldset-legend-spacing: 1em;
 }
 
 
-@for $i from 1 through 3 { // add numbers to the classes
+@for $i from 1 through 4 { // add numbers to the classes
   .fieldset-stacked__legend-number-#{$i},
 	.fieldset-inline__legend-number-#{$i} {
 		@extend %fieldset__legend-numbered;
