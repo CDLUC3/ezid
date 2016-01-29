@@ -80,28 +80,19 @@
     {% endfor %}
   {% endif %}
 	    
-  {% if erc_block_list %}
-    {% for e in erc_block_list %}
-  <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{{ e.0|capfirst }}:</label>
-    <div class="col-sm-7">{{ e.1 }}</div>
-  </div>
-    {% endfor %}
-  {% endif %}
-
-	{% if datacite_html %}
-		<style type="text/css">
+  {% if datacite_html %}
+    <style type="text/css">
 			tr.dcms_identifier { display: none;}
-		</style>
-		{% autoescape off %}
-			{{datacite_html}}
-		{% endautoescape %}
-	    <p><a href="/manage/display_xml/{{ id_text }}" target="_blank">{% trans "See the DataCite XML Metadata record in a new window" %}</a></p>
-	{% endif %}
+    </style>
+    {% autoescape off %}
+      {{datacite_html}}
+    {% endautoescape %}
+    <p><a href="/manage/display_xml/{{ id_text }}" target="_blank">{% trans "See the DataCite XML Metadata record in a new window" %}</a></p>
+  {% endif %}
 	 
-	{% if has_crossref_metadata %}
-	    <p><a href="/manage/display_xml/{{ id_text }}" target="_blank" style="position:relative;top:10px;">{% trans "See the CrossRef XML Metadata record in a new window" %}</a></p>
-	{% endif %}
+  {% if has_crossref_metadata %}
+    <p><a href="/manage/display_xml/{{ id_text }}" target="_blank" style="position:relative;top:10px;">{% trans "See the CrossRef XML Metadata record in a new window" %}</a></p>
+  {% endif %}
 
   <div class="vertical-buffer-20"> </div>
   <hr/>

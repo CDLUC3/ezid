@@ -18,6 +18,10 @@ import os.path
 from lxml import etree, objectify
 import re
 import ezidapp.models
+from django.utils.translation import ugettext as _
+
+FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  Please check \
+  the highlighted fields below for details.")
 
 @uic.user_login_required
 def index(request):
@@ -177,26 +181,15 @@ def edit(request, identifier):
     if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
       d = _addDataciteXmlToDict(id_metadata, d)
       form_coll = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
+      # This is the only item from internal profile that needs inclusion in django form framework
+      form_coll.nonRepeating['target'] = id_metadata['_target']
       d['form']=form_objects.getIdForm_datacite_xml(form_coll, request) 
+    else:
+      if "form_placeholder" not in d: d['form_placeholder'] = None
+      d['form'] = form_objects.getIdForm(d['current_profile'], d['form_placeholder'], id_metadata)
+      if not d['form'].is_valid():
+        django.contrib.messages.error(request, FORM_VALIDATION_ERROR_ON_LOAD)
   return uic.render(request, "manage/edit", d)
-
-def _formatErcBlock (block):
-  try:
-    d = erc.parse(block, concatenateValues=False)
-  except erc.ErcParseException:
-    return [["error", "Invalid ERC metadata block."]]
-  l = []
-  # List profile elements first, in profile order.
-  for e in metadata.getProfile("erc").elements:
-    assert e.name.startswith("erc.")
-    n = e.name[4:]
-    if n in d:
-      for v in d[n]: l.append([n, v])
-      del d[n]
-  # Now list any remaining elements.
-  for k in d:
-    for v in d[k]: l.append([k, v])
-  return l
 
 def details(request):
   d = { 'menu_item' : 'ui_manage.null'}
@@ -219,14 +212,10 @@ def details(request):
         (time.time() - float(id_metadata['_created']) < 60 * 30)
   d['recent_update'] = identifier.startswith('doi') and \
         (time.time() - float(id_metadata['_updated']) < 60 * 30)
-  if d['current_profile'].name == 'erc' and 'erc' in id_metadata:
-    d['erc_block_list'] = _formatErcBlock(id_metadata['erc'])
-  elif d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
+  if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
     r = datacite.dcmsRecordToHtml(id_metadata["datacite"])
     if r:
       d['datacite_html'] = r
-    else:
-      d['erc_block_list'] = [["error", "Invalid DataCite metadata record."]]
   if d['current_profile'].name == 'crossref' and 'crossref' in id_metadata and \
     id_metadata['crossref'].strip() != "":
     d['has_crossref_metadata'] = True 

@@ -19,8 +19,8 @@
       {% trans "profile:" %}
     </h2>{% help_icon "describe_profile" %}
   </div>
-
 {% if manual_profile %}
+<!-- Including manual template -->
   {% include manual_template %}
 {% else %}
   {{ form.form.non_field_errors }}

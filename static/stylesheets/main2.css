@@ -3672,7 +3672,7 @@ Selector pattern using above mixin:
     border-bottom: 1px solid #beb6af;
     vertical-align: top; }
 
-@media (min-width: 480px) {
+@media (min-width: 768px) {
   .table2 {
     display: table; }
   .table2 thead {

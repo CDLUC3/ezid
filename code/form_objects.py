@@ -90,19 +90,15 @@ class DataciteForm(BaseForm):
       self.fields['datacite.publisher'].widget.attrs['placeholder'] = _("Publisher")
       self.fields['datacite.publicationyear'].widget.attrs['placeholder'] = _("Publication year")
 
-def getIdForm (profile, placeholder, request=None):
+def getIdForm (profile, placeholder, elements=None):
   """ Returns a simple ID Django form. If 'placeholder' is True
       set attribute to include specified placeholder text in text fields """
-  P = None
-  if request:
-    assert request.method == 'POST'
-    P = request.POST
   if profile.name == 'erc': 
-    form = ErcForm(P, placeholder=placeholder)
+    form = ErcForm(elements, placeholder=placeholder)
   elif profile.name == 'datacite': 
-    form = DataciteForm(P, placeholder=placeholder)
+    form = DataciteForm(elements, placeholder=placeholder)
   elif profile.name == 'dc': 
-    form = DcForm(P, placeholder=placeholder)
+    form = DcForm(elements, placeholder=placeholder)
   return form
 
 ################# Advanced ID Form Retrieval ###########################

@@ -83,13 +83,14 @@ def simple_form(request, d):
   if "form_placeholder" not in d: d['form_placeholder'] = None
   if request.method == "GET":
     # Begin ID Creation (empty form)
-    d['form'] = form_objects.getIdForm(d['current_profile'], d['form_placeholder'])
+    
+    d['form'] = form_objects.getIdForm(d['current_profile'], d['form_placeholder'], None)
     d['id_gen_result'] = 'edit_page'
   else:
     if "current_profile" not in REQUEST or "shoulder" not in REQUEST:
       d['id_gen_result'] = 'bad_request'
       return d
-    d['form'] = form_objects.getIdForm(d['current_profile'], d['form_placeholder'], request)
+    d['form'] = form_objects.getIdForm(d['current_profile'], d['form_placeholder'], REQUEST)
     pre_list = [pr['prefix'] for pr in d['prefixes']]
     if not _verifyProperShoulder(request, REQUEST, pre_list): 
       d['id_gen_result'] = 'edit_page'
