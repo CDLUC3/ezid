@@ -220,13 +220,13 @@ class GeoLocForm(forms.Form):
 
 def getIdForm_datacite_xml (form_coll=None, request=None):
   """ Accepts request.POST for base level variables (and when creating a new ID),
-      When displaying an already created ID, accepts a dictionary of datacite_xml
-      specific data.
+      When displaying an already created ID, accepts a named tuple 'form_coll' of 
+      datacite_xml specific data.
       Returns Advanced Datacite elements as dict of Django forms and formsets
       Fields in Django FormSets follow this naming convention:
          prefix-#-elementName      
       Thus the creatorName field in the third Creator fieldset would be named:
-         creators-creator-1-creatorName                                     """
+         creators-creator-2-creatorName                                     """
   # Initialize forms and FormSets
   remainder_form = nonrepeating_form = resourcetype_form = creator_set = \
     title_set = geoloc_set = None 
@@ -288,6 +288,11 @@ def _inclMgmtData(fields, prefix):
   fields[prefix + "-MIN_NUM_FORMS"] = '0'
   return fields
 
+def isValidDataciteXmlForm(f):
+  return (f['remainder_form'].is_valid() and f['nonrepeating_form'].is_valid() 
+    and f['resourcetype_form'].is_valid() and f['creator_set'].is_valid() 
+    and f['title_set'].is_valid())
+  
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ############## Remaining Forms (not related to ID creation/editing) #########
 

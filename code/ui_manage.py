@@ -127,7 +127,25 @@ def edit(request, identifier):
   d['id_text'] = s.split()[1]
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
-  if request.method == "POST":
+  if request.method == "GET": 
+    if '_profile' in id_metadata:
+      d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
+    else:
+      d['current_profile'] = metadata.getProfile('dc')
+    if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
+      d = _addDataciteXmlToDict(id_metadata, d)
+      form_coll = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
+      # This is the only item from internal profile that needs inclusion in django form framework
+      form_coll.nonRepeating['target'] = id_metadata['_target']
+      d['form']=form_objects.getIdForm_datacite_xml(form_coll, request) 
+      if not form_objects.isValidDataciteXmlForm(d['form']):
+        django.contrib.messages.error(request, FORM_VALIDATION_ERROR_ON_LOAD)
+    else:
+      if "form_placeholder" not in d: d['form_placeholder'] = None
+      d['form'] = form_objects.getIdForm(d['current_profile'], d['form_placeholder'], id_metadata)
+      if not d['form'].is_valid():
+        django.contrib.messages.error(request, FORM_VALIDATION_ERROR_ON_LOAD)
+  else:    # request.method == "POST":
     d['pub_status'] = (request.POST['_status'] if '_status' in request.POST else d['pub_status'])
     d['stat_reason'] = (request.POST['stat_reason'] if 'stat_reason' in request.POST else d['stat_reasons'])
     d['export'] = request.POST['_export'] if '_export' in request.POST else d['export']
@@ -141,54 +159,51 @@ def edit(request, identifier):
     else:
       stts = request.POST['_status']
 
-    # ToDo: Sort out whether we're editing advanced DataCite or something else
-    # ui_create.post_adv_form_datacite_xml(request, d):
-
-
-
-    # Even if converting from simple to advanced, let's validate fields first
-    if uic.validate_simple_metadata_form(request, d['current_profile']):
-      result = _updateMetadata(request, d, stts)
-      if not result.startswith("success:"):
-        d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
-        _alertMessageUpdateError(request)
-        return uic.render(request, "manage/edit", d)
+    import pdb; pdb.set_trace()
+    if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
+      d = ui_create.validate_adv_form_datacite_xml(request, d)
+      if 'id_gen_result' in d:
+        return uic.render(request, 'manage/edit', d)  # ID Creation page 
       else:
-        if 'simpleToAdvanced' in request.POST and request.POST['simpleToAdvanced'] == 'True':
-          # simpleToAdvanced button was selected 
-          result = _updateMetadata(request, d, stts, id_metadata)
-          r = _getLatestMetadata(identifier, request)
-          if type(r) is str:
-            django.contrib.messages.error(request, uic.formatError(r))
-            return redirect("ui_manage.index")
-          s, id_metadata = r 
-          if not result.startswith("success:"):
-            _alertMessageUpdateError(request)
-          else:
-            d['identifier'] = id_metadata
-            d['current_profile'] = metadata.getProfile('datacite')
-            d = _addDataciteXmlToDict(id_metadata, d)
-            _alertMessageUpdateSuccess(request)
-          return uic.render(request, "manage/edit", d)
-        else:
+        assert 'generated_xml' in d
+        to_write = { "_profile": 'datacite', '_target' : uic.fix_target(P['target']),
+          "_status": stts, "_export": d['export'], "datacite": d['generated_xml'] }
+        s = ezid.setMetadata(request.POST['identifier'], uic.user_or_anon_tup(request),\
+          uic.group_or_anon_tup(request), to_write)
+        if s.startswith("success:"):
           _alertMessageUpdateSuccess(request)
           return redirect("/id/" + urllib.quote(identifier, ":/"))
-  elif request.method == "GET": 
-    if '_profile' in id_metadata:
-      d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
+        else:
+          _alertMessageUpdateError(request)
+          return uic.render(request, "manage/edit", d)
     else:
-      d['current_profile'] = metadata.getProfile('dc')
-    if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
-      d = _addDataciteXmlToDict(id_metadata, d)
-      form_coll = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
-      # This is the only item from internal profile that needs inclusion in django form framework
-      form_coll.nonRepeating['target'] = id_metadata['_target']
-      d['form']=form_objects.getIdForm_datacite_xml(form_coll, request) 
-    else:
-      if "form_placeholder" not in d: d['form_placeholder'] = None
-      d['form'] = form_objects.getIdForm(d['current_profile'], d['form_placeholder'], id_metadata)
-      if not d['form'].is_valid():
-        django.contrib.messages.error(request, FORM_VALIDATION_ERROR_ON_LOAD)
+      # Even if converting from simple to advanced, let's validate fields first
+      if uic.validate_simple_metadata_form(request, d['current_profile']):
+        result = _updateMetadata(request, d, stts)
+        if not result.startswith("success:"):
+          d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
+          _alertMessageUpdateError(request)
+          return uic.render(request, "manage/edit", d)
+        else:
+          if 'simpleToAdvanced' in request.POST and request.POST['simpleToAdvanced'] == 'True':
+            # simpleToAdvanced button was selected 
+            result = _updateMetadata(request, d, stts, id_metadata)
+            r = _getLatestMetadata(identifier, request)
+            if type(r) is str:
+              django.contrib.messages.error(request, uic.formatError(r))
+              return redirect("ui_manage.index")
+            s, id_metadata = r 
+            if not result.startswith("success:"):
+              _alertMessageUpdateError(request)
+            else:
+              d['identifier'] = id_metadata
+              d['current_profile'] = metadata.getProfile('datacite')
+              d = _addDataciteXmlToDict(id_metadata, d)
+              _alertMessageUpdateSuccess(request)
+            return uic.render(request, "manage/edit", d)
+          else:
+            _alertMessageUpdateSuccess(request)
+            return redirect("/id/" + urllib.quote(identifier, ":/"))
   return uic.render(request, "manage/edit", d)
 
 def details(request):

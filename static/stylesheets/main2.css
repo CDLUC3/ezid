@@ -3271,19 +3271,22 @@ Selector pattern using above mixin:
 
 .header__search-link {
   background-image: url("../images/searchOff.svg"); }
-  .header__search-link:hover {
+  .header__search-link:hover, .header__search-link:focus {
     background-image: url("../images/searchOn.svg"); }
 
 @media (min-width: 768px) {
   .header__learn {
-    position: relative; }
-    .header__learn:hover .header__learn-subnav {
-      display: block; } }
+    position: relative; } }
+
+.header__learn:hover .header__learn-subnav {
+  display: block; }
 
 .header__learn-link {
   background-image: url("../images/learnOff.svg"); }
-  .header__learn-link:hover {
+  .header__learn-link:hover, .header__learn-link:focus {
     background-image: url("../images/learnOn.svg"); }
+  .header__learn-link:focus + .header__learn-subnav {
+    display: block; }
 
 .header__learn-subnav {
   display: none;
@@ -3314,7 +3317,7 @@ Selector pattern using above mixin:
 
 .header__contact-link {
   background-image: url("../images/contactOff.svg"); }
-  .header__contact-link:hover {
+  .header__contact-link:hover, .header__contact-link:focus {
     background-image: url("../images/contactOn.svg"); }
 
 .header__loginout {

@@ -12,7 +12,14 @@ import policy
 import os.path
 from django.utils.translation import ugettext as _
 
-FORM_VALIDATION_ERROR = _("Identifier could not be created as submitted.  Please check \
+"""
+    Handles simple and advanced ID creation. If d['id_gen_result'] == 'edit_page'
+    user is either about to create an ID, or there is an error condition, 
+    (typically field validation) that user is asked to correct.
+"""
+
+def _validationErr(action):
+  return _("Identifier could not be ") + action + _(" as submitted.  Please check \
   the highlighted fields below for details.")
 
 def index(request):
@@ -98,14 +105,17 @@ def simple_form(request, d):
     if d['form'].is_valid():
       d = _createSimpleId(d, request, REQUEST)
     else:
-      django.contrib.messages.error(request, FORM_VALIDATION_ERROR)
+      django.contrib.messages.error(request, _validationErr("created"))
       d['id_gen_result'] = 'edit_page'
   return d
 
 def adv_form(request, d):
   """ Like simple_form. Takes request and context object. d['prefixes'] should be set 
-      before calling. Sets manual_profile, current_profile, current_profile_name, 
-      internal_profile, profiles, profile_names                                   """
+      before calling.  Includes addtn'l features: 
+        custom remainder - optional
+        manual_profile - If true, use custom Datacite XML template
+        profile_names  - User can choose from different profiles
+  """
 
   d['remainder_box_default'] = form_objects.REMAINDER_BOX_DEFAULT
   #selects current_profile based on parameters or profile preferred for prefix type
@@ -153,7 +163,9 @@ def adv_form(request, d):
   else:     # request.method == "POST"
     P = REQUEST
     if d['current_profile_name'] == 'datacite_xml':
-      d = post_adv_form_datacite_xml(request, d)
+      d = validate_adv_form_datacite_xml(request, d)
+      if 'id_gen_result' in d: return d
+      d = _createAdvancedId(d, request, P)
     else:
       if "current_profile" not in P or "shoulder" not in P: 
         d['id_gen_result'] = 'bad_request'
@@ -164,7 +176,7 @@ def adv_form(request, d):
         d['id_gen_result'] = 'edit_page'
         return d
       if not (d['form']['form'].is_valid() and d['form']['remainder_form'].is_valid()):
-        django.contrib.messages.error(request, FORM_VALIDATION_ERROR)
+        django.contrib.messages.error(request, _validationErr(_("created")))
         d['id_gen_result'] = 'edit_page'
       else:
         d = _createAdvancedId(d, request, P)
@@ -177,32 +189,32 @@ def _engage_datacite_xml_profile(request, d, profile_name):
   d['current_profile'] = d['current_profile_name']
   return d
 
-def post_adv_form_datacite_xml(request, d):
-  """Processes create datacite advanced (xml) form using request object
-  from both create/demo and edit areas"""
-  error_msgs = []
-
+def validate_adv_form_datacite_xml(request, d):
+  """ Creates/validates datacite advanced (xml) form object using request.POST
+      from both create/demo and edit areas
+      Either sets d['id_gen_result'] = 'edit_page', (due to validation issue)
+      or successfully generates XML (sets d['generated_xml'])
+  """
   P = request.POST
+  assert P is not None
   pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
   if (P['action'] == 'create'):
     if not _verifyProperShoulder(request, P, pre_list):
       d['id_gen_result'] = 'edit_page'
       return d
-    action_result = [_("creating"), _("created")]
+    action_result = _("created")
     identifier = None
   else:   # action='edit'
-    action_result = [_("editing"), _("edited successfully")]
+    action_result = _("modified")
     if not P['identifier']:
-      error_msgs.append(_("Unable to edit. Identifier not supplied."))
+      django.contrib.messages.error(request, _("Unable to edit. Identifier not supplied."))
       d['id_gen_result'] = 'edit_page'
       return d
     identifier = P['identifier']
   d['form'] = form_objects.getIdForm_datacite_xml(None, request)
-  if not (d['form']['remainder_form'].is_valid() 
-    and d['form']['nonrepeating_form'].is_valid() and d['form']['resourcetype_form'].is_valid()
-    and d['form']['creator_set'].is_valid() and d['form']['title_set'].is_valid()):
-      django.contrib.messages.error(request, FORM_VALIDATION_ERROR)
-      d['id_gen_result'] = 'edit_page'
+  if not form_objects.isValidDataciteXmlForm(d['form']):
+    django.contrib.messages.error(request, _validationErr(action_result))
+    d['id_gen_result'] = 'edit_page'
   else:
     # Testing:
     # d['generated_xml'] = datacite_xml.temp_mock()
@@ -213,17 +225,7 @@ def post_adv_form_datacite_xml(request, d):
     # if datacite_xml.validate_document(d['generated_xml'], xsd_path, error_msgs) == False:
     #   django.contrib.messages.error(request, _("XML validation error") + ": " + error_msgs
     #   d['id_gen_result'] = 'edit_page'
-    d = _createAdvancedId(d, request, P)
   return d
-
-  #  if (P['action'] == 'edit'): 
-  #    if P['_status'] == 'unavailable':
-  #      stts = P['_status'] + " | " + P['stat_reason']
-  #    else:
-  #      stts = P['_status']
-  #    to_write = _assembleMetadata(request, stts, return_val) 
-  #    s = ezid.setMetadata(P['identifier'], uic.user_or_anon_tup(request),\
-  #        uic.group_or_anon_tup(request), to_write)
  
 def _createSimpleId (d, request, P):
   s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request),

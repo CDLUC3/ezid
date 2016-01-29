@@ -10,23 +10,17 @@
   </div>
   {{ form.remainder_form.non_field_errors }}
   {% for field in form.remainder_form %}
-  <div class="col-sm-12 form-group form-group-sm{% if field.errors %} has-error{% endif %}">
-    <div class="row">
-      <div class="col-sm-5 horizontal-buffer">
-        {{ field|add_attributes:"element_customRemainder form-control"}}
-      </div>
+  <div class="col-sm-12">
+    <div class="fcontrol__group-stacked{% if field.errors %}--invalid{% endif %}">
+      <label for="{{ field.id_for_label }}" class="fcontrol__text-label-hidden">{{ field.label }}</label>
+      {{ field|add_attributes:"fcontrol__text-field-stacked" }}
+    {% if field.errors %}
+      <span class="fcontrol__invalid-flag">{% for error in field.errors %}{{ error|escape }}{% endfor %}</span>
+    {% endif %}
     </div>
-  {% if field.errors %}
-    <div class="row">
-      <div class="col-sm-5 horizontal-buffer">
-      {% for error in field.errors %}
-        {{ error|escape }}
-      {% endfor %}
-      </div>
-    </div>
-  {% endif %}
   </div>
   {% endfor %}
+
   <div class="col-sm-12 horizontal-buffer" id="preview_div">
     <h2>{% trans "Identifier Preview:" %}</h2>
     <div id="preview_div_value"></div>
