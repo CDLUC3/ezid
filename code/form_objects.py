@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import BaseFormSet, formset_factory
-import ui_common as uic
+import django.core.validators
 import util
 import idmap
 import userauth 
@@ -20,8 +20,8 @@ RESOURCE_TYPES = (
   ('Software', _('Software')), ('Sound', _('Sound')), ('Text', _('Text')), 
   ('Workflow', _('Workflow')), ('Other', _('Other'))
 )
-REGEX_4DIGITYEAR='^\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
-  \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\)$'
+REGEX_4DIGITYEAR='^(\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
+   \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\))$'
 PREFIX_CREATOR_SET='creators-creator'
 PREFIX_TITLE_SET='titles-title'
 PREFIX_GEOLOC_SET='geoLocations-geoLocation'
@@ -132,8 +132,14 @@ def getAdvancedIdForm (profile, request=None):
 ################# ID Form Validation functions  #################
 
 def _validate_url(url):
-  if not uic.url_is_valid(url):
-    raise ValidationError(_("Please enter a valid location (URL)"))
+  """ Borrowed from code/ezid.py """
+  t = url.strip()
+  if t != "":
+    try:
+      assert len(t) <= 2000
+      django.core.validators.URLValidator()(t)
+    except:
+      raise ValidationError(_("Please enter a valid location (URL)"))
 
 def _validate_custom_remainder(shoulder):
   def innerfn(remainder_to_test):
@@ -273,8 +279,7 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     title_set = TitleSet(P, prefix=PREFIX_TITLE_SET, auto_id='%s')
     geoloc_set = GeoLocSet(P, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
 # On Edit:GET (Convert DataCite XML dict to form)
-  elif request and request.method == "GET":
-    assert form_coll is not None
+  else:
     # Note: Remainder form only needed upon ID creation
     nonrepeating_form = NonRepeatingForm(form_coll.nonRepeating, auto_id='%s')
     resourcetype_form = ResourceTypeForm(form_coll.resourceType, auto_id='%s')
@@ -310,12 +315,15 @@ def _inclMgmtData(fields, prefix):
   return fields
 
 def isValidDataciteXmlForm(form):
-  """ Validate all forms and formsets included. Empty form objects are None, so just pass those.
+  """ Validate all forms and formsets included. Just pass empty or unbound form objects. 
       Returns false if one or more items don't validate
   """
   numFailed = 0 
   for f,v in form.iteritems(): 
-    r = True if v is None else v.is_valid()
+    if v is None:
+      r = True
+    else: 
+      r = True if not v.is_bound else v.is_valid()
     if not r: numFailed += 1 
   return (numFailed == 0)
   

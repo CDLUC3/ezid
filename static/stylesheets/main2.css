@@ -2540,7 +2540,7 @@ Selector pattern using above mixin:
 }
 
 */
-.fieldset-hidden__legend, .fcontrol__text-label-hidden, .fcontrol__radio-button-stacked {
+.button__text, .fieldset-hidden__legend, .fcontrol__text-label-hidden, .fcontrol__radio-button-stacked {
   position: absolute;
   top: -9999px;
   left: -9999px; }
@@ -2578,6 +2578,21 @@ Selector pattern using above mixin:
 .button__pop, .header__loginout-link, .home-banner__lead-button {
   background: linear-gradient(to bottom, #ff8e28, #ff701c); }
 
+.button__plus, .button__minus {
+  padding: 15px;
+  border: 1px solid #beb6af;
+  border-radius: 3px;
+  background-color: #f9f8f7;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px; }
+
+.button__plus {
+  background-image: url("../images/icon_plus-sign.svg"); }
+
+.button__minus {
+  background-image: url("../images/icon_minus-sign.svg"); }
+
 .fieldset-stacked,
 .fieldset-inline,
 .fieldset-hidden {
@@ -2599,7 +2614,8 @@ Selector pattern using above mixin:
 .fieldset__inline-select-text, .fieldset-stacked__legend-number-1,
 .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
 .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
-.fieldset-inline__legend-number-3 {
+.fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
+.fieldset-inline__legend-number-4 {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
@@ -2616,7 +2632,8 @@ Selector pattern using above mixin:
     .fieldset__inline-select-text, .fieldset-stacked__legend-number-1,
     .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
     .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
-    .fieldset-inline__legend-number-3 {
+    .fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
+    .fieldset-inline__legend-number-4 {
       font-size: 1.4em; } }
 
 .fieldset-stacked__legend {
@@ -2625,7 +2642,8 @@ Selector pattern using above mixin:
 .fieldset-stacked__legend-number-1:before,
 .fieldset-inline__legend-number-1:before, .fieldset-stacked__legend-number-2:before,
 .fieldset-inline__legend-number-2:before, .fieldset-stacked__legend-number-3:before,
-.fieldset-inline__legend-number-3:before {
+.fieldset-inline__legend-number-3:before, .fieldset-stacked__legend-number-4:before,
+.fieldset-inline__legend-number-4:before {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
@@ -2655,6 +2673,10 @@ Selector pattern using above mixin:
 .fieldset-inline__legend-number-3:before {
   content: "3"; }
 
+.fieldset-stacked__legend-number-4:before,
+.fieldset-inline__legend-number-4:before {
+  content: "4"; }
+
 [class^='fieldset-stacked__legend-number'] {
   margin: 0 0 1em; }
 
@@ -2674,6 +2696,14 @@ Selector pattern using above mixin:
 .fieldset__inline-select-text {
   margin: 0 0 0 0.5em;
   padding: 5px 0; }
+
+.fieldset-stacked__controls {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between; }
 
 .fcontrol__group-stacked, .fcontrol__group-stacked--invalid {
   display: -webkit-flex;
@@ -2907,30 +2937,30 @@ Selector pattern using above mixin:
   padding: 14px 40px;
   background-image: url("../images/idAboutObject.svg"); }
 
-.link__primary, .login-modal__forgot, .link__over-beige, .footer__news-link, .footer__link, .footer__copyright-link, .link__pop, .login-modal__sign-up-link {
+.link__primary, .footer__news-link, .login-modal__forgot, .link__over-beige, .footer__link, .footer__copyright-link, .link__pop, .login-modal__sign-up-link {
   position: relative;
   text-decoration: none; }
-  .link__primary:hover, .login-modal__forgot:hover, .link__over-beige:hover, .footer__news-link:hover, .footer__link:hover, .footer__copyright-link:hover, .link__pop:hover, .login-modal__sign-up-link:hover {
+  .link__primary:hover, .footer__news-link:hover, .login-modal__forgot:hover, .link__over-beige:hover, .footer__link:hover, .footer__copyright-link:hover, .link__pop:hover, .login-modal__sign-up-link:hover {
     text-decoration: none; }
-  [href$='.pdf'].link__primary:after, [href$='.pdf'].login-modal__forgot:after, [href$='.pdf'].link__over-beige:after, [href$='.pdf'].footer__news-link:after, [href$='.pdf'].footer__link:after, [href$='.pdf'].footer__copyright-link:after, [href$='.pdf'].link__pop:after, [href$='.pdf'].login-modal__sign-up-link:after {
+  [href$='.pdf'].link__primary:after, [href$='.pdf'].footer__news-link:after, [href$='.pdf'].login-modal__forgot:after, [href$='.pdf'].link__over-beige:after, [href$='.pdf'].footer__link:after, [href$='.pdf'].footer__copyright-link:after, [href$='.pdf'].link__pop:after, [href$='.pdf'].login-modal__sign-up-link:after {
     position: absolute;
     right: -25px;
     width: 15px;
     height: 15px;
     content: url("../images/pdf-icon_18x18.png"); }
 
-.link__primary, .login-modal__forgot {
+.link__primary, .footer__news-link, .login-modal__forgot {
   border-bottom: 1px solid #beb6af;
   color: #00778a; }
-  .link__primary:hover, .login-modal__forgot:hover {
+  .link__primary:hover, .footer__news-link:hover, .login-modal__forgot:hover {
     border-bottom: 1px solid #00778a;
     color: #00778a; }
 
-.link__over-beige, .footer__news-link, .footer__link, .footer__copyright-link {
+.link__over-beige, .footer__link, .footer__copyright-link {
   border-bottom: 1px solid #beb6af;
   background: #ece5d6;
   color: #005695; }
-  .link__over-beige:hover, .footer__news-link:hover, .footer__link:hover, .footer__copyright-link:hover {
+  .link__over-beige:hover, .footer__link:hover, .footer__copyright-link:hover {
     border-bottom: 1px solid #005695;
     color: #005695; }
 
@@ -3564,6 +3594,8 @@ Selector pattern using above mixin:
 
 .sidebox__list {
   padding: 0 0 0 1em; }
+  .sidebox__list li {
+    margin: 0 0 0.5em; }
 
 .tab {
   display: -webkit-flex;
@@ -3724,22 +3756,6 @@ Selector pattern using above mixin:
 
 .create__radio-buttons {
   padding: 0 0 0 2.4em; }
-
-.create__guide-box {
-  margin: 0 0 30px;
-  padding: 15px 15px 0;
-  border: 2px solid #beb6af; }
-  @media (min-width: 768px) {
-    .create__guide-box {
-      margin: 0; } }
-
-.create__guide-heading {
-  margin: 0 0 1em;
-  font-size: 1.1em;
-  font-weight: bold; }
-
-.create__guide-list {
-  padding: 0 0 0 1em; }
 
 @media (min-width: 768px) {
   .create__fieldset {

@@ -129,6 +129,7 @@ def adv_form(request, d):
     or (len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'))):
       choice_is_doi = True 
   if 'current_profile' in REQUEST:
+    # import pdb; pdb.set_trace()
     if REQUEST['current_profile'] in uic.manual_profiles:
       d = _engage_datacite_xml_profile(request, d, REQUEST['current_profile'])
     else: 
@@ -183,6 +184,7 @@ def adv_form(request, d):
   return d 
 
 def _engage_datacite_xml_profile(request, d, profile_name):
+  # ToDo: Clean this up it's very confusing.
   d['manual_profile'] = True
   d['current_profile_name'] = profile_name
   d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
@@ -214,7 +216,6 @@ def validate_adv_form_datacite_xml(request, d):
   else:
     # Testing:
     # d['generated_xml'] = datacite_xml.temp_mock()
-    import pdb; pdb.set_trace()
     d['generated_xml'] = datacite_xml.formElementsToDataciteXml(
       P.dict(), (P['shoulder'] if 'shoulder' in P else None), identifier)
     # ToDo: Verify XML validation occurs in ezid.py and I don't have to do it here
