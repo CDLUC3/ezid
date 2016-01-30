@@ -113,3 +113,10 @@ $fieldset-legend-spacing: 1em;
 	margin: 0 0 0 0.5em;
 	padding: 5px 0;
 }
+
+// ***** Stacked Fieldset with Embedded Buttons ***** //
+
+.fieldset-stacked__controls {
+	display: flex;
+	justify-content: space-between;
+}
