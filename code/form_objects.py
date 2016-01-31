@@ -8,6 +8,11 @@ import re
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
+""" Django form framework added in 2016 release of EZID UI.
+    Bulk of form validation occurs here. Avoiding JavaScript form validation
+    in most cases in the UI.
+"""
+
 ################# Constants ####################
 
 REMAINDER_BOX_DEFAULT = _("Recommended: Leave blank")
@@ -29,19 +34,19 @@ PREFIX_GEOLOC_SET='geoLocations-geoLocation'
 ################# Basic ID Forms ####################
 
 class BaseForm(forms.Form):
-  """ Base Form object: all forms have a _target field. If 'placeholder' is True
+  """ Base Form object: all forms have a target field. If 'placeholder' is True
       set attribute to include specified placeholder text in text fields """
   def __init__(self, *args, **kwargs):
     self.placeholder = kwargs.pop('placeholder',None)
     super(BaseForm,self).__init__(*args,**kwargs)
-    self.fields["_target"]=forms.CharField(required=False, label=_("Location (URL)"),
+    self.fields["target"]=forms.CharField(required=False, label=_("Location (URL)"),
       validators=[_validate_url])
     if self.placeholder is not None and self.placeholder == True:
-      self.fields['_target'].widget.attrs['placeholder'] = _("Location (URL)")
+      self.fields['target'].widget.attrs['placeholder'] = _("Location (URL)")
 
 class ErcForm(BaseForm):
   """ Form object for ID with ERC profile (Used for simple or advanced ARK).
-      BaseForm parent brings in _target field. If 'placeholder' is True 
+      BaseForm parent brings in target field. If 'placeholder' is True 
       set attribute to include specified placeholder text in text fields """
   def __init__(self, *args, **kwargs):
     super(ErcForm,self).__init__(*args,**kwargs)
@@ -58,16 +63,25 @@ class DcForm(BaseForm):
       BaseForm parent brings in target field. If 'placeholder' is True set 
       attribute to include specified placeholder text in text fields """
   def __init__(self, *args, **kwargs):
+    self.isDoi = kwargs.pop('isDoi',None)
     super(DcForm,self).__init__(*args,**kwargs)
     self.fields["dc.creator"] = forms.CharField(required=False, label=_("Creator"))
     self.fields["dc.title"] = forms.CharField(required=False, label=_("Title"))
     self.fields["dc.publisher"] = forms.CharField(required=False, label=_("Publisher"))
     self.fields["dc.date"] = forms.CharField(required=False, label=_("Date"))
     self.fields["dc.type"] = forms.CharField(required=False, label=_("Type"))
+  # Creator is required only if ID is DOI
+  def clean(self):
+    import pdb; pdb.set_trace()
+    cleaned_data = super(DcForm, self).clean()
+    creator = cleaned_data.get("dc.creator")
+    if self.isDoi == 'True' and creator.strip() == '':
+      raise ValidationError({'dc.creator': _("Please fill in a value for creator.")})
+    return cleaned_data
 
 class DataciteForm(BaseForm):
   """ Form object for ID with (simple DOI) DataCite profile. BaseForm parent brings in 
-      _target field. If 'placeholder' is True set attribute to include specified
+      target field. If 'placeholder' is True set attribute to include specified
       placeholder text in text fields """
   def __init__(self, *args, **kwargs):
     super(DataciteForm,self).__init__(*args,**kwargs)
@@ -93,12 +107,15 @@ class DataciteForm(BaseForm):
 def getIdForm (profile, placeholder, elements=None):
   """ Returns a simple ID Django form. If 'placeholder' is True
       set attribute to include specified placeholder text in text fields """
+  # Django forms does not handle field names with underscores very well
+  if elements and '_target' in elements: elements['target'] = elements['_target']
   if profile.name == 'erc': 
-    form = ErcForm(elements, placeholder=placeholder)
+    form = ErcForm(elements, placeholder=placeholder, auto_id='%s')
   elif profile.name == 'datacite': 
-    form = DataciteForm(elements, placeholder=placeholder)
+    form = DataciteForm(elements, placeholder=placeholder, auto_id='%s')
   elif profile.name == 'dc': 
-    form = DcForm(elements, placeholder=placeholder)
+    testForDoi=None    # dc.creator is only required when creating a DOI
+    form = DcForm(elements, placeholder=placeholder, isDoi=testForDoi, auto_id='%s')
   return form
 
 ################# Advanced ID Form Retrieval ###########################
@@ -117,16 +134,16 @@ class RemainderForm(forms.Form):
 def getAdvancedIdForm (profile, request=None):
   """ For advanced ID (but not datacite_xml). Returns two forms: One w/a 
       single remainder field and one with profile-specific fields """
-  P = None
-  shoulder = None
+  P = shoulder = isDoi = None
   if request: 
     assert request.method == 'POST'
     P = request.POST
     shoulder=P['shoulder']
+    isDoi = "True" if shoulder.startswith("doi:") else None
   remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
   if profile.name == 'erc': form = ErcForm(P, auto_id='%s')
   elif profile.name == 'datacite': form = DataciteForm(P, auto_id='%s')
-  elif profile.name == 'dc': form = DcForm(P, auto_id='%s')
+  elif profile.name == 'dc': form = DcForm(P, isDoi=isDoi, auto_id='%s')
   return {'remainder_form': remainder_form, 'form': form}
 
 ################# ID Form Validation functions  #################
@@ -214,7 +231,7 @@ class CreatorForm(forms.Form):
     ni_s = cleaned_data.get("nameIdentifier-nameIdentifierScheme")
     ni_s_uri = cleaned_data.get("nameIdentifier-schemeURI")
     err = nameIdValidation(ni, ni_s, ni_s_uri)
-    if err: raise ValidationError(err)
+    if err: raise ValidationError(err) 
     return cleaned_data
 
 class TitleForm(forms.Form):

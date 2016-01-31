@@ -269,26 +269,6 @@ def extract(d, keys):
   """Gets subset of dictionary based on keys in an array"""
   return dict((k, d[k]) for k in keys if k in d)
 
-def fix_target(target):
-  """Fixes a target URL if it does not include the protocol at first so it defaults to http://"""
-  url = urlparse.urlparse(target)
-  if target != '' and not(url.scheme and url.netloc):
-    return 'http://' + target
-  else:
-    return target
-  
-def url_is_valid(target):
-  """ checks whether a url is likely valid, with our without scheme and allows for blank urls """
-  if target == '':
-    return True
-  url = urlparse.urlparse(target)
-  if url.scheme == '':
-    url = urlparse.urlparse('http://' + target)
-  netloc_regex = re.compile('^[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,30}(\:\d+)?$')
-  if not(url.scheme and url.netloc and netloc_regex.match(url.netloc)):
-    return False
-  return True
-  
 def random_password(size = 8):
   return ''.join([choice(string.letters + string.digits) for i in range(size)])
 

@@ -129,9 +129,8 @@ def adv_form(request, d):
     or (len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'))):
       choice_is_doi = True 
   if 'current_profile' in REQUEST:
-    # import pdb; pdb.set_trace()
     if REQUEST['current_profile'] in uic.manual_profiles:
-      d = _engage_datacite_xml_profile(request, d, REQUEST['current_profile'])
+      d = _engage_datacite_xml_profile(request, d, 'datacite_xml')
     else: 
       d['current_profile'] = metadata.getProfile(REQUEST['current_profile'])
       if d['current_profile'] == None:
@@ -184,11 +183,11 @@ def adv_form(request, d):
   return d 
 
 def _engage_datacite_xml_profile(request, d, profile_name):
-  # ToDo: Clean this up it's very confusing.
+  # Hack: For now, this is the only manual profile
+  d['current_profile'] = metadata.getProfile('datacite')
   d['manual_profile'] = True
   d['current_profile_name'] = profile_name
   d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
-  d['current_profile'] = d['current_profile_name']
   return d
 
 def validate_adv_form_datacite_xml(request, d):
@@ -229,8 +228,7 @@ def validate_adv_form_datacite_xml(request, d):
 def _createSimpleId (d, request, P):
   s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request),
     uic.group_or_anon_tup(request), uic.assembleUpdateDictionary(request, d['current_profile'],
-    { '_target' : uic.fix_target(P['_target']),
-      '_export': 'yes' }))
+    { '_target' : P['target'], '_export': 'yes' }))
   if s.startswith("success:"):
     new_id = s.split()[1]
     django.contrib.messages.success(request, _("IDENTIFIER CREATED."))
@@ -246,14 +244,14 @@ def _createAdvancedId (d, request, P):
       _status and _export variables; Adds datacite_xml if present. If no remainder 
       is supplied, simply mints an ID                                         """
   # ToDo: Clean this up
-  if d['current_profile'] == 'datacite_xml':
-    to_write = { "_profile": 'datacite', '_target' : uic.fix_target(P['target']), 
+  if d['current_profile'].name == 'datacite' and 'generated_xml' in d:
+    to_write = { "_profile": 'datacite', '_target' : P['target'], 
       "_status": ("public" if P["publish"] == "True" else "reserved"),
       "_export": ("yes" if P["export"] == "yes" else "no"),
       "datacite": d['generated_xml'] }
   else:
     to_write = uic.assembleUpdateDictionary(request, d['current_profile'],
-      { '_target' : uic.fix_target(P['_target']),
+      { '_target' : P['target'],
       "_status": ("public" if P["publish"] == "True" else "reserved"),
       "_export": ("yes" if P["export"] == "yes" else "no") } )
   if P['remainder'] == '' or P['remainder'] == form_objects.REMAINDER_BOX_DEFAULT:

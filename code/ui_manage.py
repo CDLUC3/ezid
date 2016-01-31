@@ -56,9 +56,10 @@ def _updateEzid(request, d, stts, m_to_upgrade=None):
   Returns ezid.setMetadata (successful return is the identifier string)
   Also removes tags related to old profile if converting to advanced datacite
   """
-  m_dict = { '_target' : uic.fix_target(request.POST['_target']), '_status': stts,
+  m_dict = { '_target' : request.POST['target'], '_status': stts,
       '_export' : ('yes' if (not 'export' in d) or d['export'] == 'yes' else 'no')}
   if m_to_upgrade: 
+    d['current_profile'] = metadata.getProfile('datacite')
     # datacite_xml ezid profile is defined by presence of 'datacite' assigned to the 
     # '_profile' key and XML present in the 'datacite' key 
     m_dict['datacite'] = datacite.formRecord(d['id_text'], m_to_upgrade, True)
@@ -124,7 +125,7 @@ def edit(request, identifier):
   d['id_text'] = s.split()[1]
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
-  
+ 
   if request.method == "GET": 
     if '_profile' in id_metadata:
       d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
