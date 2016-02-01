@@ -42,7 +42,7 @@ request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
       <form name="contact" action="{% url "ui.contact" %}" method="post" class="form-horizontal" role="form">
         {{ form.non_field_errors }}
 
-{% for field in form %}
+{% for field in form.visible_fields %}
     <div class="form-group form-group-sm{% if field.errors %} has-error{% endif %}">
       <label for="{{ field.id_for_label }}" class="col-sm-4 control-label">{{ field.label }}</label>
       <div class="col-sm-6">
@@ -57,7 +57,9 @@ request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
     {% endif %}
     </div>
 {% endfor %}
-
+  {% for hidden in form.hidden_fields %}
+    {{ hidden }}
+  {% endfor %}
 
         <div class="trapper_keeper">
         <div class="form-group form-group-sm">

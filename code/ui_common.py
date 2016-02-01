@@ -236,31 +236,6 @@ def assembleUpdateDictionary (request, profile, additionalElements={}):
   d.update(additionalElements)
   return d
 
-_dataciteResourceTypes = ["Audiovisual", "Collection", "Dataset", "Event", "Image",
-  "InteractiveResource", "Model", "PhysicalObject", "Service", "Software",
-  "Sound", "Text", "Workflow", "Other"]
-
-def validate_simple_metadata_form(request, profile):
-  """validates a simple id metadata form, profile is more or less irrelevant for now,
-  but may be useful later"""
-  is_valid = True
-  post = request.POST
-  msgs = django.contrib.messages
-  if "_target" not in post:
-    msgs.error(request, _("You must enter a location (URL) for your identifier"))
-    is_valid = False
-  if not(url_is_valid(post['_target'])):
-    msgs.error(request, _("Please enter a valid location (URL)"))
-    is_valid = False
-  if "datacite.resourcetype" in post:
-    rt = post["datacite.resourcetype"].strip()
-    if rt != "" and rt.split("/", 1)[0] not in _dataciteResourceTypes:
-      msgs.error(request, _("Invalid general resource type"))
-      is_valid = False
-  if profile.name == 'datacite' and _validate_datacite_metadata_form(request, profile) == False:
-    is_valid = False
-  return is_valid
-
 def user_or_anon_tup(request):
   """Gets user tuple from request.session, otherwise returns anonymous tuple"""
   if 'auth' in request.session:
@@ -294,26 +269,6 @@ def extract(d, keys):
   """Gets subset of dictionary based on keys in an array"""
   return dict((k, d[k]) for k in keys if k in d)
 
-def fix_target(target):
-  """Fixes a target URL if it does not include the protocol at first so it defaults to http://"""
-  url = urlparse.urlparse(target)
-  if target != '' and not(url.scheme and url.netloc):
-    return 'http://' + target
-  else:
-    return target
-  
-def url_is_valid(target):
-  """ checks whether a url is likely valid, with our without scheme and allows for blank urls """
-  if target == '':
-    return True
-  url = urlparse.urlparse(target)
-  if url.scheme == '':
-    url = urlparse.urlparse('http://' + target)
-  netloc_regex = re.compile('^[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,30}(\:\d+)?$')
-  if not(url.scheme and url.netloc and netloc_regex.match(url.netloc)):
-    return False
-  return True
-  
 def random_password(size = 8):
   return ''.join([choice(string.letters + string.digits) for i in range(size)])
 

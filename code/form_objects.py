@@ -1,12 +1,17 @@
 from django import forms
 from django.forms import BaseFormSet, formset_factory
-import ui_common as uic
+import django.core.validators
 import util
 import idmap
 import userauth 
 import re
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
+
+""" Django form framework added in 2016 release of EZID UI.
+    Bulk of form validation occurs here. Avoiding JavaScript form validation
+    in most cases in the UI.
+"""
 
 ################# Constants ####################
 
@@ -20,8 +25,12 @@ RESOURCE_TYPES = (
   ('Software', _('Software')), ('Sound', _('Sound')), ('Text', _('Text')), 
   ('Workflow', _('Workflow')), ('Other', _('Other'))
 )
-REGEX_4DIGITYEAR='^\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
-  \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\)$'
+REGEX_4DIGITYEAR='^(\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
+   \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\))$'
+ERR_4DIGITYEAR = _("Please fill in a 4-digit publication year.")
+ERR_CREATOR=_("Please fill in a value for creator.")
+ERR_TITLE=_("Please fill in a value for title.")
+ERR_PUBLISHER=_("Please fill in a value for publisher.")
 PREFIX_CREATOR_SET='creators-creator'
 PREFIX_TITLE_SET='titles-title'
 PREFIX_GEOLOC_SET='geoLocations-geoLocation'
@@ -29,19 +38,19 @@ PREFIX_GEOLOC_SET='geoLocations-geoLocation'
 ################# Basic ID Forms ####################
 
 class BaseForm(forms.Form):
-  """ Base Form object: all forms have a _target field. If 'placeholder' is True
+  """ Base Form object: all forms have a target field. If 'placeholder' is True
       set attribute to include specified placeholder text in text fields """
   def __init__(self, *args, **kwargs):
     self.placeholder = kwargs.pop('placeholder',None)
     super(BaseForm,self).__init__(*args,**kwargs)
-    self.fields["_target"]=forms.CharField(required=False, label=_("Location (URL)"),
+    self.fields["target"]=forms.CharField(required=False, label=_("Location (URL)"),
       validators=[_validate_url])
     if self.placeholder is not None and self.placeholder == True:
-      self.fields['_target'].widget.attrs['placeholder'] = _("Location (URL)")
+      self.fields['target'].widget.attrs['placeholder'] = _("Location (URL)")
 
 class ErcForm(BaseForm):
   """ Form object for ID with ERC profile (Used for simple or advanced ARK).
-      BaseForm parent brings in _target field. If 'placeholder' is True 
+      BaseForm parent brings in target field. If 'placeholder' is True 
       set attribute to include specified placeholder text in text fields """
   def __init__(self, *args, **kwargs):
     super(ErcForm,self).__init__(*args,**kwargs)
@@ -58,29 +67,34 @@ class DcForm(BaseForm):
       BaseForm parent brings in target field. If 'placeholder' is True set 
       attribute to include specified placeholder text in text fields """
   def __init__(self, *args, **kwargs):
+    self.isDoi = kwargs.pop('isDoi',None)
     super(DcForm,self).__init__(*args,**kwargs)
-    self.fields["dc.creator"] = forms.CharField(required=False, label=_("Creator"))
-    self.fields["dc.title"] = forms.CharField(required=False, label=_("Title"))
-    self.fields["dc.publisher"] = forms.CharField(required=False, label=_("Publisher"))
-    self.fields["dc.date"] = forms.CharField(required=False, label=_("Date"))
+    self.fields["dc.creator"] = forms.CharField(label=_("Creator"),
+      required=True if self.isDoi else False)
+    self.fields["dc.title"] = forms.CharField(label=_("Title"),
+      required=True if self.isDoi else False)
+    self.fields["dc.publisher"] = forms.CharField(label=_("Publisher"),
+      required=True if self.isDoi else False)
+    self.fields["dc.date"] = forms.CharField(label=_("Date"),
+      required=True if self.isDoi else False)
     self.fields["dc.type"] = forms.CharField(required=False, label=_("Type"))
 
 class DataciteForm(BaseForm):
   """ Form object for ID with (simple DOI) DataCite profile. BaseForm parent brings in 
-      _target field. If 'placeholder' is True set attribute to include specified
+      target field. If 'placeholder' is True set attribute to include specified
       placeholder text in text fields """
   def __init__(self, *args, **kwargs):
     super(DataciteForm,self).__init__(*args,**kwargs)
     self.fields["datacite.creator"] = forms.CharField(label=_("Creator"),
-      error_messages={'required': _("Please fill in a value for creator.")})
+      error_messages={'required': ERR_CREATOR}) 
     self.fields["datacite.title"] = forms.CharField(label=_("Title"),
-      error_messages={'required': _("Please fill in a value for title.")})
+      error_messages={'required': ERR_TITLE})
     self.fields["datacite.publisher"] = forms.CharField(label=_("Publisher"),
-      error_messages={'required': _("Please fill in a value for publisher.")})
+      error_messages={'required': ERR_PUBLISHER})
     self.fields["datacite.publicationyear"] = forms.RegexField(label=_("Publication year"),
       regex=REGEX_4DIGITYEAR,
       error_messages={'required': _("Please fill in a value for publication year."),
-                    'invalid': _("Please fill in a 4-digit publication year.")})
+                    'invalid': ERR_4DIGITYEAR })
     # Translators: These options appear in drop-down on ID Creation page (DOIs)
     self.fields["datacite.resourcetype"] = \
       forms.ChoiceField(required=False, choices=RESOURCE_TYPES, label=_("Resource type"))
@@ -93,12 +107,15 @@ class DataciteForm(BaseForm):
 def getIdForm (profile, placeholder, elements=None):
   """ Returns a simple ID Django form. If 'placeholder' is True
       set attribute to include specified placeholder text in text fields """
+  # Django forms does not handle field names with underscores very well
+  if elements and '_target' in elements: elements['target'] = elements['_target']
   if profile.name == 'erc': 
-    form = ErcForm(elements, placeholder=placeholder)
+    form = ErcForm(elements, placeholder=placeholder, auto_id='%s')
   elif profile.name == 'datacite': 
-    form = DataciteForm(elements, placeholder=placeholder)
+    form = DataciteForm(elements, placeholder=placeholder, auto_id='%s')
   elif profile.name == 'dc': 
-    form = DcForm(elements, placeholder=placeholder)
+    testForDoi=None    # dc.creator is only required when creating a DOI
+    form = DcForm(elements, placeholder=placeholder, isDoi=testForDoi, auto_id='%s')
   return form
 
 ################# Advanced ID Form Retrieval ###########################
@@ -117,23 +134,29 @@ class RemainderForm(forms.Form):
 def getAdvancedIdForm (profile, request=None):
   """ For advanced ID (but not datacite_xml). Returns two forms: One w/a 
       single remainder field and one with profile-specific fields """
-  P = None
-  shoulder = None
+  P = shoulder = isDoi = None
   if request: 
     assert request.method == 'POST'
     P = request.POST
     shoulder=P['shoulder']
+    isDoi = "True" if shoulder.startswith("doi:") else None
   remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
   if profile.name == 'erc': form = ErcForm(P, auto_id='%s')
   elif profile.name == 'datacite': form = DataciteForm(P, auto_id='%s')
-  elif profile.name == 'dc': form = DcForm(P, auto_id='%s')
+  elif profile.name == 'dc': form = DcForm(P, isDoi=isDoi, auto_id='%s')
   return {'remainder_form': remainder_form, 'form': form}
 
 ################# ID Form Validation functions  #################
 
 def _validate_url(url):
-  if not uic.url_is_valid(url):
-    raise ValidationError(_("Please enter a valid location (URL)"))
+  """ Borrowed from code/ezid.py """
+  t = url.strip()
+  if t != "":
+    try:
+      assert len(t) <= 2000
+      django.core.validators.URLValidator()(t)
+    except:
+      raise ValidationError(_("Please enter a valid location (URL)"))
 
 def _validate_custom_remainder(shoulder):
   def innerfn(remainder_to_test):
@@ -168,7 +191,7 @@ class NonRepeatingForm(forms.Form):
   publicationYear = forms.RegexField(label=_("Publication Year"),
     regex=REGEX_4DIGITYEAR,
     error_messages={'required': _("Please fill in a value for publication year."),
-                    'invalid': _("Please fill in a 4-digit publication year.")})
+                    'invalid': ERR_4DIGITYEAR })
   language = forms.CharField(required=False, label=_("Language"))
   version = forms.CharField(required=False, label=_("Version"))
 
@@ -208,7 +231,7 @@ class CreatorForm(forms.Form):
     ni_s = cleaned_data.get("nameIdentifier-nameIdentifierScheme")
     ni_s_uri = cleaned_data.get("nameIdentifier-schemeURI")
     err = nameIdValidation(ni, ni_s, ni_s_uri)
-    if err: raise ValidationError(err)
+    if err: raise ValidationError(err) 
     return cleaned_data
 
 class TitleForm(forms.Form):
@@ -224,7 +247,7 @@ class TitleForm(forms.Form):
     ) 
     self.fields["titleType"] = forms.ChoiceField(required=False, label = _("Type"),
       widget= forms.RadioSelect(), choices=TITLE_TYPES)
-    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
+    self.fields["title-{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
       label="Language(Hidden)", widget= forms.HiddenInput())
 
 class GeoLocForm(forms.Form):
@@ -273,8 +296,7 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     title_set = TitleSet(P, prefix=PREFIX_TITLE_SET, auto_id='%s')
     geoloc_set = GeoLocSet(P, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
 # On Edit:GET (Convert DataCite XML dict to form)
-  elif request and request.method == "GET":
-    assert form_coll is not None
+  else:
     # Note: Remainder form only needed upon ID creation
     nonrepeating_form = NonRepeatingForm(form_coll.nonRepeating, auto_id='%s')
     resourcetype_form = ResourceTypeForm(form_coll.resourceType, auto_id='%s')
@@ -296,7 +318,7 @@ def _inclMgmtData(fields, prefix):
   i_total = 0 
   if fields and prefix in list(fields)[0]:
     for f in fields:
-      m = re.match("^.*(\d+)", f)
+      m = re.match("^.*-(\d+)-", f)
       s = m.group(1) 
       i = int(s) + 1   # First form is numbered '0', so add 1 for actual count 
       if i > i_total: i_total = i
@@ -310,12 +332,15 @@ def _inclMgmtData(fields, prefix):
   return fields
 
 def isValidDataciteXmlForm(form):
-  """ Validate all forms and formsets included. Empty form objects are None, so just pass those.
+  """ Validate all forms and formsets included. Just pass empty or unbound form objects. 
       Returns false if one or more items don't validate
   """
   numFailed = 0 
   for f,v in form.iteritems(): 
-    r = True if v is None else v.is_valid()
+    if v is None:
+      r = True
+    else: 
+      r = True if not v.is_bound else v.is_valid()
     if not r: numFailed += 1 
   return (numFailed == 0)
   
@@ -394,11 +419,11 @@ class BaseSearchIdForm(forms.Form):
       _("Ex. University of Pittsburgh")}))
   pubyear_from = forms.RegexField(required=False, label=_("From"),
     regex='^\d{1,4}$',
-    error_messages={'invalid': _("Please fill in a 4-digit publication year.")},
+    error_messages={'invalid': ERR_4DIGITYEAR },
     widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015")}))
   pubyear_to = forms.RegexField(required=False, label=_("To"),
     regex='^\d{1,4}$', 
-    error_messages={'invalid': _("Please fill in a 4-digit publication year.")},
+    error_messages={'invalid': ERR_4DIGITYEAR },
     widget=forms.TextInput(attrs={'placeholder': _("Ex. 2016")}))
   object_type = forms.ChoiceField(required=False, choices=RESOURCE_TYPES, 
     label = _("Object Type"))
@@ -497,6 +522,7 @@ class ContactForm(forms.Form):
   )
   hear_about = forms.ChoiceField(required=False, choices=REFERRAL_SOURCES,
     label=_("How did you hear about us?"))
+  test = forms.CharField(label="Hidden",required=False, widget=forms.HiddenInput())
 
 ################  Password Reset Landing Page ##########
 
