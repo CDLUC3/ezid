@@ -20,3 +20,7 @@ $bgreen: 1px solid #0c0;
 .fieldset-stacked {
 	border: $bblue;
 }
+
+.fieldset-stacked .fieldset-stacked {
+	border: $bgreen;
+}
