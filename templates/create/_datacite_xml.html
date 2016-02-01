@@ -26,6 +26,7 @@
 
 {% include "create/_datacite_creator.html" %}
 {% include "create/_datacite_title.html" %}
+
   <div class="row form-group form-group-sm{% if form.nonrepeating_form.publisher.errors %} has-error{% endif %}">
     <label for="{{ form.nonrepeating_form.publisher.id_for_label }}" class="col-sm-3 control-label">{{ form.nonrepeating_form.publisher.label }}</label>
     <div class="col-sm-5">
@@ -52,6 +53,8 @@
     </div>
   {% endif %}
   </div>
+
+{{ form.resourcetype_form.non_field_errors }}
 {% for field in form.resourcetype_form %}
   <div class="row form-group form-group-sm{% if field.errors %} has-error{% endif %}">
     <label for="{{ field.id_for_label }}" class="element col-sm-3 control-label">{{ field.label }}</label>

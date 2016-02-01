@@ -9,6 +9,7 @@
 
   <div class="multiple">
 {% for form in form.creator_set %}
+  {{ form.non_field_errors }}
   {% for field in form %}
     <div name="creators-[1]" class="element row{% if field.errors %} has-error{% endif %}">
       <div name="{{ field.id_for_label }}" class="element form-group form-group-sm">

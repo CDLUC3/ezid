@@ -8,6 +8,10 @@
 
   <div class="multiple">
 {% for form in form.title_set %}
+  {{ form.non_field_errors }}
+  {% for hidden in form.hidden_fields %}
+    {{ hidden }}
+  {% endfor %}
     <!-- form.title -->
     <div name="titles-[1]" class="element row{% if form.title.errors %} has-error{% endif %}">
       <div name="{{ form.title.id_for_label }}" class="element form-group form-group-sm">

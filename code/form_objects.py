@@ -27,6 +27,10 @@ RESOURCE_TYPES = (
 )
 REGEX_4DIGITYEAR='^(\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
    \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\))$'
+ERR_4DIGITYEAR = _("Please fill in a 4-digit publication year.")
+ERR_CREATOR=_("Please fill in a value for creator.")
+ERR_TITLE=_("Please fill in a value for title.")
+ERR_PUBLISHER=_("Please fill in a value for publisher.")
 PREFIX_CREATOR_SET='creators-creator'
 PREFIX_TITLE_SET='titles-title'
 PREFIX_GEOLOC_SET='geoLocations-geoLocation'
@@ -65,19 +69,15 @@ class DcForm(BaseForm):
   def __init__(self, *args, **kwargs):
     self.isDoi = kwargs.pop('isDoi',None)
     super(DcForm,self).__init__(*args,**kwargs)
-    self.fields["dc.creator"] = forms.CharField(required=False, label=_("Creator"))
-    self.fields["dc.title"] = forms.CharField(required=False, label=_("Title"))
-    self.fields["dc.publisher"] = forms.CharField(required=False, label=_("Publisher"))
-    self.fields["dc.date"] = forms.CharField(required=False, label=_("Date"))
+    self.fields["dc.creator"] = forms.CharField(label=_("Creator"),
+      required=True if self.isDoi else False)
+    self.fields["dc.title"] = forms.CharField(label=_("Title"),
+      required=True if self.isDoi else False)
+    self.fields["dc.publisher"] = forms.CharField(label=_("Publisher"),
+      required=True if self.isDoi else False)
+    self.fields["dc.date"] = forms.CharField(label=_("Date"),
+      required=True if self.isDoi else False)
     self.fields["dc.type"] = forms.CharField(required=False, label=_("Type"))
-  # Creator is required only if ID is DOI
-  def clean(self):
-    import pdb; pdb.set_trace()
-    cleaned_data = super(DcForm, self).clean()
-    creator = cleaned_data.get("dc.creator")
-    if self.isDoi == 'True' and creator.strip() == '':
-      raise ValidationError({'dc.creator': _("Please fill in a value for creator.")})
-    return cleaned_data
 
 class DataciteForm(BaseForm):
   """ Form object for ID with (simple DOI) DataCite profile. BaseForm parent brings in 
@@ -86,15 +86,15 @@ class DataciteForm(BaseForm):
   def __init__(self, *args, **kwargs):
     super(DataciteForm,self).__init__(*args,**kwargs)
     self.fields["datacite.creator"] = forms.CharField(label=_("Creator"),
-      error_messages={'required': _("Please fill in a value for creator.")})
+      error_messages={'required': ERR_CREATOR}) 
     self.fields["datacite.title"] = forms.CharField(label=_("Title"),
-      error_messages={'required': _("Please fill in a value for title.")})
+      error_messages={'required': ERR_TITLE})
     self.fields["datacite.publisher"] = forms.CharField(label=_("Publisher"),
-      error_messages={'required': _("Please fill in a value for publisher.")})
+      error_messages={'required': ERR_PUBLISHER})
     self.fields["datacite.publicationyear"] = forms.RegexField(label=_("Publication year"),
       regex=REGEX_4DIGITYEAR,
       error_messages={'required': _("Please fill in a value for publication year."),
-                    'invalid': _("Please fill in a 4-digit publication year.")})
+                    'invalid': ERR_4DIGITYEAR })
     # Translators: These options appear in drop-down on ID Creation page (DOIs)
     self.fields["datacite.resourcetype"] = \
       forms.ChoiceField(required=False, choices=RESOURCE_TYPES, label=_("Resource type"))
@@ -191,7 +191,7 @@ class NonRepeatingForm(forms.Form):
   publicationYear = forms.RegexField(label=_("Publication Year"),
     regex=REGEX_4DIGITYEAR,
     error_messages={'required': _("Please fill in a value for publication year."),
-                    'invalid': _("Please fill in a 4-digit publication year.")})
+                    'invalid': ERR_4DIGITYEAR })
   language = forms.CharField(required=False, label=_("Language"))
   version = forms.CharField(required=False, label=_("Version"))
 
@@ -247,7 +247,7 @@ class TitleForm(forms.Form):
     ) 
     self.fields["titleType"] = forms.ChoiceField(required=False, label = _("Type"),
       widget= forms.RadioSelect(), choices=TITLE_TYPES)
-    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
+    self.fields["title-{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
       label="Language(Hidden)", widget= forms.HiddenInput())
 
 class GeoLocForm(forms.Form):
@@ -318,7 +318,7 @@ def _inclMgmtData(fields, prefix):
   i_total = 0 
   if fields and prefix in list(fields)[0]:
     for f in fields:
-      m = re.match("^.*(\d+)", f)
+      m = re.match("^.*-(\d+)-", f)
       s = m.group(1) 
       i = int(s) + 1   # First form is numbered '0', so add 1 for actual count 
       if i > i_total: i_total = i
@@ -419,11 +419,11 @@ class BaseSearchIdForm(forms.Form):
       _("Ex. University of Pittsburgh")}))
   pubyear_from = forms.RegexField(required=False, label=_("From"),
     regex='^\d{1,4}$',
-    error_messages={'invalid': _("Please fill in a 4-digit publication year.")},
+    error_messages={'invalid': ERR_4DIGITYEAR },
     widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015")}))
   pubyear_to = forms.RegexField(required=False, label=_("To"),
     regex='^\d{1,4}$', 
-    error_messages={'invalid': _("Please fill in a 4-digit publication year.")},
+    error_messages={'invalid': ERR_4DIGITYEAR },
     widget=forms.TextInput(attrs={'placeholder': _("Ex. 2016")}))
   object_type = forms.ChoiceField(required=False, choices=RESOURCE_TYPES, 
     label = _("Object Type"))
@@ -522,6 +522,7 @@ class ContactForm(forms.Form):
   )
   hear_about = forms.ChoiceField(required=False, choices=REFERRAL_SOURCES,
     label=_("How did you hear about us?"))
+  test = forms.CharField(label="Hidden",required=False, widget=forms.HiddenInput())
 
 ################  Password Reset Landing Page ##########
 

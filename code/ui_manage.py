@@ -98,6 +98,9 @@ def _assignManualTemplate(d):
 
 def _dataciteXmlToForm(request, d, id_metadata):
   form_coll = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
+  # Testing
+  # xml = datacite_xml.temp_mock()
+  # form_coll = datacite_xml.dataciteXmlToFormElements(xml) 
   # This is the only item from internal profile that needs inclusion in django form framework
   form_coll.nonRepeating['target'] = id_metadata['_target']
   d['form']=form_objects.getIdForm_datacite_xml(form_coll, request) 
@@ -162,7 +165,7 @@ def edit(request, identifier):
         return uic.render(request, 'manage/edit', d)  # ID Creation page 
       else:
         assert 'generated_xml' in d
-        to_write = { "_profile": 'datacite', '_target' : uic.fix_target(P['target']),
+        to_write = { "_profile": 'datacite', '_target' : P['target'],
           "_status": stts, "_export": d['export'], "datacite": d['generated_xml'] }
         s = ezid.setMetadata(P['identifier'], uic.user_or_anon_tup(request),\
           uic.group_or_anon_tup(request), to_write)
