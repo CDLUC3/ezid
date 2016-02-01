@@ -12,7 +12,8 @@ $fieldset-legend-spacing: 1em;
 
 .fieldset-stacked,
 .fieldset-inline,
-.fieldset-hidden {
+.fieldset-hidden,
+.fieldset-controls {
 	@extend %fieldset;
 }
 
@@ -40,7 +41,8 @@ $fieldset-legend-spacing: 1em;
 
 .fieldset-stacked__legend,
 .fieldset-inline__legend,
-.fieldset__inline-select-text {
+.fieldset__inline-select-text,
+.fieldset-controls__legend {
 	@extend %fieldset__legend;
 }
 
@@ -116,7 +118,15 @@ $fieldset-legend-spacing: 1em;
 
 // ***** Stacked Fieldset with Embedded Buttons ***** //
 
-.fieldset-stacked__controls {
+.fieldset-controls__container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0 0 $fieldset-legend-spacing;
+}
+
+.fieldset-controls__buttons {
 	display: flex;
 	justify-content: space-between;
+	width: 80px;
 }
