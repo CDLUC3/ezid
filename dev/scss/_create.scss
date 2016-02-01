@@ -26,7 +26,11 @@
 
 }
 
-.create__legend {
+.create__legend-nested-inline {
+	font-size: inherit;
+}
+
+.create__legend-nested-fixed-width {
 	width: 13.2em;
 	font-size: inherit;
 }
