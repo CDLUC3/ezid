@@ -1,5 +1,7 @@
 // ##### Create ID Layout ##### //
 
+$label-fixed-width-1: 200px;
+
 .create {
 	// empty
 }
@@ -27,12 +29,23 @@
 }
 
 .create__legend-nested-inline {
-	font-size: inherit;
+	width: $label-fixed-width-1;
+	font-size: 1em;
+
+	@include bp(screen2) {
+		font-size: 1.1em;
+	}
+
 }
 
 .create__legend-nested-fixed-width {
-	width: 13.2em;
-	font-size: inherit;
+	width: $label-fixed-width-1;
+	font-size: 1em;
+
+	@include bp(screen2) {
+		font-size: 1.1em;
+	}
+
 }
 
 .create__text-fields {
@@ -40,12 +53,12 @@
 }
 
 .create__text-labels-simple {
-	width: 12em;
+	width: $label-fixed-width-1;
 	text-align: right;
 }
 
 .create__text-labels-advanced {
-	width: 12em;
+	width: $label-fixed-width-1;
 }
 
 .create__button {
