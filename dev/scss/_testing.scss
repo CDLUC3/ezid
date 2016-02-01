@@ -14,5 +14,9 @@ $bgreen: 1px solid #0c0;
 // Highlight Bootstrap columns:
 
 // [class^="col-"] {
-// 	border: 1px solid blue;
+// 	border: $bblue;
 // }
+
+.fieldset-stacked {
+	border: $bblue;
+}
