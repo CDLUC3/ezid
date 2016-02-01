@@ -26,16 +26,16 @@
 
 }
 
-.create__profile-fields {
+.create__text-fields {
 	margin: 0 0 15px;
 }
 
-.create__profile-labels {
+.create__text-labels {
 	width: 12em;
 	text-align: right;
 }
 
-.create__simple-button {
+.create__button {
 	margin: 20px 0 0;
 
 	@include bp(screen2) {
@@ -44,6 +44,6 @@
 
 }
 
-.create__simple-buttton-note {
+.create__buttton-note {
 	margin: 20px 0 0;
 }
