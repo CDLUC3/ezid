@@ -48,6 +48,12 @@
 	font-weight: normal;
 }
 
-.search-results__select {
-	flex: 0 0 auto;
+.search-results__select-label {
+	color: $design-black-color;
+	font-size: inherit;
+	font-weight: inherit;
+}
+
+.search-results__select-appended-text {
+	margin: 0 0 0 5px;
 }
