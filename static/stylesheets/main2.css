@@ -2540,16 +2540,10 @@ Selector pattern using above mixin:
 }
 
 */
-.button__text, .fieldset-hidden__legend, .fcontrol__text-label-hidden, .fcontrol__radio-button-stacked {
+.button__text, .fieldset-hidden__legend, .fcontrol__text-label-hidden, .fcontrol__select-label-hidden, .fcontrol__radio-button-stacked {
   position: absolute;
   top: -9999px;
   left: -9999px; }
-
-.fcontrol__text-field-stacked:focus, .fcontrol__text-field-inline:focus, .fcontrol__select:focus, .fcontrol__select-inline:focus {
-  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
-  border-color: #00778a;
-  outline: 0;
-  box-shadow: 0 0 8px rgba(0, 119, 138, 0.6); }
 
 @font-face {
   font-family: 'KievitWeb';
@@ -2721,6 +2715,12 @@ Selector pattern using above mixin:
           justify-content: space-between;
   width: 80px; }
 
+.fcontrol__text-field-stacked:focus, .fcontrol__text-field-inline:focus, .fcontrol__select:focus, .fcontrol__select--fullwidth:focus {
+  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+  border-color: #00778a;
+  outline: 0;
+  box-shadow: 0 0 8px rgba(0, 119, 138, 0.6); }
+
 .fcontrol__group-stacked, .fcontrol__group-stacked--invalid {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -2776,40 +2776,53 @@ Selector pattern using above mixin:
   padding: 0.3em 0.5em;
   border: 1px solid #beb6af; }
 
-.fcontrol__select-label {
-  display: block;
-  margin: 0 0 2px;
+.fcontrol__select-group-stacked {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: column nowrap;
+      -ms-flex-flow: column nowrap;
+          flex-flow: column nowrap;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start; }
+
+.fcontrol__select-group-inline {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center; }
+
+.fcontrol__select-label-stacked, .fcontrol__select-label-inline {
   color: #00778a;
   font-size: 1em; }
   @media (min-width: 768px) {
-    .fcontrol__select-label {
+    .fcontrol__select-label-stacked, .fcontrol__select-label-inline {
       font-size: 1.1em; } }
 
-.fcontrol__select, .fcontrol__select-inline {
-  display: block;
-  -webkit-align-self: center;
-      -ms-flex-item-align: center;
-          align-self: center;
+.fcontrol__select-label-stacked {
+  margin: 0 0 2px; }
+
+.fcontrol__select-label-inline {
+  margin: 0 5px 0 0; }
+
+.fcontrol__select, .fcontrol__select--fullwidth {
   padding: 0 0.3em;
   border: 1px solid #beb6af;
   background: linear-gradient(to bottom, whitesmoke, #e3e4e4); }
-  .fcontrol__select option, .fcontrol__select-inline option {
+  .fcontrol__select option, .fcontrol__select--fullwidth option {
     padding: 0.3em 0.5em;
     background: #e3e4e4; }
 
-.fcontrol__select {
-  width: 100%; }
-
-.fcontrol__select-inline {
-  display: inline; }
-
-.fcontrol__select-label-inline {
-  margin: 0 2px 0 0;
-  color: #00778a;
-  font-size: 1em; }
-  @media (min-width: 768px) {
-    .fcontrol__select-label-inline {
-      font-size: 1.1em; } }
+.fcontrol__select--fullwidth {
+  -webkit-flex: 1 0 auto;
+      -ms-flex: 1 0 auto;
+          flex: 1 0 auto;
+  -webkit-align-self: stretch;
+      -ms-flex-item-align: stretch;
+          align-self: stretch; }
 
 .fcontrol__radio-label-stacked, .fcontrol__radio-label-inline {
   color: #00778a;
@@ -3957,10 +3970,13 @@ Selector pattern using above mixin:
   font-size: 1em;
   font-weight: normal; }
 
-.search-results__select {
-  -webkit-flex: 0 0 auto;
-      -ms-flex: 0 0 auto;
-          flex: 0 0 auto; }
+.search-results__select-label {
+  color: black;
+  font-size: inherit;
+  font-weight: inherit; }
+
+.search-results__select-appended-text {
+  margin: 0 0 0 5px; }
 
 body {
   margin: 0 10px;

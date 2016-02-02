@@ -5,6 +5,21 @@ a, a:visited, a:link {
 
 a:hover {
 }
+// Basic paragraph, now that we're using flex-box and not bootstrap containers
+.paragraph {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+//Demo identifiers with asterisk
+.fakeid:before {
+  content:"*";
+}
+
 //Used on Create ID pages
 .call-out h3 {
   font-size: 1.1em;

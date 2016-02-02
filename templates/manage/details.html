@@ -39,6 +39,11 @@
       {% include "includes/get_link.html" %}
     </div>
   </div>
+
+  {% if is_test_id %}
+  <p class="paragraph">Identifiers shown with an asterisk (&#42;) are demo/temporary identifiers.</p>
+  {% endif %}
+
   {% if not has_block_data and current_profile.name == 'datacite' %}
   <div class="row vertical-buffer-20">
     <div class="call-out">

@@ -24,11 +24,6 @@ FIELDS_MAPPED = {'identifier':_("Identifier"),  'owner':_("Owner"), 'coOwners':_
                   'status':_("Status"), 'mappedTitle':_("Object Title"), \
                   'mappedCreator':_("Object Creator")}
 
-# Weight to give each field for table display since many or few fields are present and can be customized
-FIELD_WIDTHS = {'identifier': 2.0,  'owner': 1.0, 'coOwners': 2.0, \
-                'createTime': 2.0, 'updateTime': 2.0, 'status' :1.0,\
-                'mappedTitle': 3.0, 'mappedCreator' : 2.0}
-
 #how to display each field, these are in custom tags for these display types
 FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', 'coOwners': 'coowners', \
                 'createTime': 'datetime', 'updateTime': 'datetime', 'status' :'string',\
@@ -83,7 +78,6 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
     # if len(d['fields_selected']) < 1: 
     d['fields_selected'] = FIELD_DEFAULTS
     d['REQUEST'] = REQUEST 
-    d['field_widths'] = FIELD_WIDTHS
     d['field_display_types'] = FIELD_DISPLAY_TYPES
 
     #ensure sorting defaults are set
