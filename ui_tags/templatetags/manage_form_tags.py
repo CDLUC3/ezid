@@ -7,6 +7,7 @@ import urllib
 from django.core.urlresolvers import reverse
 import idmap
 import itertools
+from django.utils.translation import ugettext as _
 
 register = template.Library()
 
@@ -122,31 +123,27 @@ def percent_width(item_weight, total):
 @register.simple_tag
 def pager_display(request, current_page, total_pages, page_size):
   if total_pages < 2: return ''
-  #half_to_first = (current_page - 1) / 2
-  #half_to_last = (total_pages - current_page) / 2 + current_page
-  temp_p = list(set(itertools.chain([1, 2, 3], \
-                                   #[half_to_first - 1, half_to_first, half_to_first + 1], \
-                                   #[half_to_last - 1, half_to_last, half_to_last + 1], \
-                                   [current_page -1, current_page, current_page + 1], \
-                                   [total_pages - 2, total_pages - 1, total_pages])))
-  disp_pages = sorted([x for x in temp_p if x>0 and x <= total_pages])
   p_out = ''
-  last_p = 0
+  s_total = str(total_pages)
+  empty = ''
   if current_page > 1:
-    p_out += page_link(request, current_page, current_page - 1, "< prev", page_size) + ' '
-  for p in disp_pages:
-    if last_p < p - 1:
-      p_out += '... '
-    p_out += page_link(request, current_page, p, str(p), page_size) + ' '
-    last_p = p
+    p_out += page_link(request, current_page, 1, empty, page_size, 'pagination__first', \
+      _("First page")) + ' '
+    p_out += page_link(request, current_page, current_page - 1, _("Previous"), page_size,\
+      'pagination__prev') + ' '
+  p_out += "<input type='number' class='pagination__input' min='1' " + \
+           "max='"  + s_total  + "' value='" + str(current_page) + "'/> " + \
+           _("of") + " " + s_total + " "
   if current_page < total_pages:
-    p_out += page_link(request, current_page, current_page + 1, "next >", page_size) + ' '
+    p_out += page_link(request, current_page, current_page + 1, _("Next"), page_size, \
+      'pagination__next') + ' '
+    p_out += page_link(request, current_page, total_pages, empty, page_size, \
+      'pagination__last', _("Last page")) + ' '
   return p_out
 
-def page_link(request, current_page, this_page, link_text, page_size):
+def page_link(request, current_page, this_page, link_text, page_size, cname, title=None):
   combined_params = dict(request, **{'p': this_page, 'ps': page_size})
   url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
-  if current_page == this_page:
-    return "<span class='pagercurrent'>" + escape(link_text) + "</span>"
-  else:
-    return "<a href='" + url + "' class='pagerlink'>" + escape(link_text) + "</a>"
+  attr_t = " title='" + title + "'" if title else ""
+  return "<a href='" + url + "' role='button' class='" + cname + "'" + \
+         attr_t + ">" + escape(link_text) + "</a>"

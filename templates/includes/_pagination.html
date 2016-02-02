@@ -1,0 +1,16 @@
+{% load manage_form_tags %}
+{% load i18n %}
+
+  <div class="search-results__pagination">
+    <div class="search-results__select">
+      <label for="search-results__pagination-label1" class="fcontrol__select-label-inline search-results__pagination-label">{% trans "Show" %}</label>
+      <select name="" id="search-results__pagination-label1" class="fcontrol__select-inline">
+        <option value="">50</option>
+        <option value="">100</option>
+      </select>
+      {% trans "entries" %}
+    </div>
+    <div class="pagination">
+    {% pager_display REQUEST p total_pages ps %}
+    </div>
+  </div>

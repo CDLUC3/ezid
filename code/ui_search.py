@@ -6,9 +6,7 @@ from django.utils.translation import ugettext as _
 import math
 import useradmin
  
-DEBUG_PAGING = 3
-
-# these are layout properties for the fields in the manage index page,
+# these are layout properties for the fields in the search and manage results pages,
 # if I had realized there were going to be so many properties up front, I probably would
 # have created a field layout object with a number of properties instead.
 
@@ -47,15 +45,13 @@ def index(request):
   d = { 'menu_item' : 'ui_search.index' }
   if request.method == "GET":
     d['form'] = form_objects.BaseSearchIdForm() # Build an empty form
-    return uic.render(request, 'search/index', d)
   elif request.method == "POST":
     d['form'] = form_objects.BaseSearchIdForm(request.POST)
     noConstraintsReqd = False
     d = searchIdentifiers(d, request, noConstraintsReqd)
     if d['search_success'] == True:
       return uic.render(request, 'search/results', d)
-    else:
-      return uic.render(request, 'search/index', d)
+  return uic.render(request, 'search/index', d)
 
 def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
   """ 
@@ -102,13 +98,14 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
       d['sort'] = REQUEST['sort']
     else:
       d['sort'] = 'desc'
-    #p=page and ps=pagesize -- I couldn't find an auto-paging that uses our type of models and does what we want
-    #sorry, had to roll our own
+    #p=page and ps=pagesize -- I couldn't find an auto-paging that uses our type of models and 
+    #does what we want. Sorry, had to roll our own
     d['p'] = 1
     d['ps'] = 10
     if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
     if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
-    # dictionary of search constraints
+
+    # Build dictionary of search constraints
     c = _buildAuthorityConstraints(request, isPublicSearch)
     if not noConstraintsReqd:
       c = _buildConstraints(c, REQUEST, isPublicSearch)
@@ -127,7 +124,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
     d['results'] = []
     # ToDo:  Greg also had this in his query for Manage Page:  select_related("owner").\
     for id in search_util.formulateQuery(c, orderBy=orderColumn)\
-      [(d['p']-1)*d['ps']:d['p']*d['ps']+DEBUG_PAGING]:
+      [(d['p']-1)*d['ps']:d['p']*d['ps']]:
       result = { "identifier": id.identifier, "owner": id.owner.username,
         "coOwners": "", "createTime": id.createTime,
         "updateTime": id.updateTime, "status": id.get_status_display(),
@@ -136,7 +133,6 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
         result["status"] += " | " + id.unavailableReason
       d['results'].append(result)
     d['search_success'] = True
-    return d
   else:
     d['show_advanced_search'] = "in" # Class name opens up adv. search html block
     if '__all__' in d['form'].errors:
@@ -150,7 +146,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
       django.contrib.messages.error(request, _("Could not complete search. \
         Please check the highlighted fields below for details."))
     d['search_success'] = False 
-    return d
+  return d
 
 def results(request):
   d = { 'menu_item' : 'ui_search.results' } 
@@ -159,7 +155,7 @@ def results(request):
 def _buildAuthorityConstraints(request, isPublicSearch=True):
   """ 
   A logged in user can use (public) Search page, but this would not limit the
-  results to just their IDs. It woiuld also include all public IDs.
+  results to just their IDs. It would also include all public IDs.
   """
   if isPublicSearch or "auth" not in request.session:
     c = {'publicSearchVisible': True}
@@ -190,15 +186,19 @@ def _buildTimeConstraints(c, REQUEST, isPublicSearch=True):
     c = _timeConstraintBuilder(c, REQUEST, 'updateTime', 'update_time_from', 'update_time_to')
   return c
 
-def _timeConstraintBuilder(c, REQUEST, constraint_name, begin_date_name, end_date_name):
-  if begin_date_name in REQUEST and REQUEST[begin_date_name]=='' and \
-    end_date_name in REQUEST and REQUEST[end_date_name]!='':
-      c[constraint_name] = (None,int(REQUEST[end_date_name]))
-  elif begin_date_name in REQUEST and REQUEST[begin_date_name]!='':
-    if end_date_name in REQUEST and REQUEST[end_date_name]!='':
-      c[constraint_name] = (int(REQUEST[begin_date_name]),int(REQUEST[end_date_name]))
+def _timeConstraintBuilder(c, P, cname, begin, end):
+  """ Adds time range constraints to dictionary of constraints. 
+      cname = Name of constraint to be generated
+      begin = key for begin date;   end = key for end date
+  """
+  if begin in P and P[begin]=='' and \
+    end in P and P[end]!='':
+      c[cname] = (None,int(P[end]))
+  elif begin in P and P[begin]!='':
+    if end in P and P[end]!='':
+      c[cname] = (int(P[begin]),int(P[end]))
     else:
-      c[constraintName] = (int(REQUEST[begin_date_name]),None)
+      c[cname] = (int(P[begin]),None)
   return c
 
 def _buildQuerySyntax(c):
