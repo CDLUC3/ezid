@@ -1,6 +1,7 @@
 // ##### Create ID Layout ##### //
 
-$label-fixed-width-1: 200px;
+$element-group-spacing: 20px;
+$label-fixed-width: 220px;
 
 .create {
 	// empty
@@ -16,20 +17,24 @@ $label-fixed-width-1: 200px;
 
 }
 
-.create__radio-buttons {
-	padding: 0 0 0 45px;
+.create__radio-button {
+	margin: 0 0 $element-group-spacing 45px;
+}
+
+.create__radio-button-fieldsets {
+	// empty
 }
 
 .create__fieldset {
 
 	@include bp(screen2) {
-		margin: 20px 0 0;
+		margin: 100px 0 0;
 	}
 
 }
 
-.create__legend-nested-inline {
-	width: $label-fixed-width-1;
+.create__inline-nested-legend {
+	width: $label-fixed-width;
 	font-size: 1em;
 
 	@include bp(screen2) {
@@ -38,40 +43,30 @@ $label-fixed-width-1: 200px;
 
 }
 
-.create__legend-nested-fixed-width {
-	width: $label-fixed-width-1;
-	font-size: 1em;
-
-	@include bp(screen2) {
-		font-size: 1.1em;
-	}
-
+.create__form-element-group {
+	margin: 0 0 $element-group-spacing;
 }
 
-.create__text-fields {
-	margin: 0 0 15px;
-}
-
-.create__text-labels-simple {
-	width: $label-fixed-width-1;
+.create__form-labels-simple {
+	width: $label-fixed-width;
 	text-align: right;
 }
 
-.create__text-labels-advanced {
-	width: $label-fixed-width-1;
+.create__form-labels-advanced {
+	width: $label-fixed-width;
 }
 
 .create__button {
-	margin: 20px 0 0;
+	margin: $element-group-spacing 0 0;
 
 	@include bp(screen2) {
-		margin: 20px 0 0 13.8em;
+		margin: $element-group-spacing 0 0 13.8em;
 	}
 
 }
 
 .create__buttton-note {
-	margin: 20px 0 0;
+	margin: $element-group-spacing 0 0;
 }
 
 .create__nested-fieldset {
