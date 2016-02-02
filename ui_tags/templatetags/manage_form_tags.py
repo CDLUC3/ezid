@@ -55,7 +55,7 @@ def column_head(request, field, fields_mapped, order_by, sort):
     overriding_params = {'order_by': field, 'sort': SORT_OPPOSITE[sort] }
   else:
     overriding_params = {'order_by': field, 'sort': sort }
-  combined_params = dict(request, **overriding_params)
+  combined_params = dict(request.dict(), **overriding_params)
   url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
   if field == order_by:
     sort_icon = "<div class='order_by_col'><a href='" + url + "' title='" + SORT_TIP[sort] + "'>" + \
@@ -139,7 +139,7 @@ def pager_display(request, current_page, total_pages, page_size):
   return p_out
 
 def page_link(request, current_page, this_page, link_text, page_size, cname, title=None):
-  combined_params = dict(request, **{'p': this_page, 'ps': page_size})
+  combined_params = dict(request.dict(), **{'p': this_page, 'ps': page_size})
   url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
   attr_t = " title='" + title + "'" if title else ""
   return "<a href='" + url + "' role='button' class='" + cname + "'" + \
