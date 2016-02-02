@@ -30,16 +30,18 @@
   
   {% include "includes/_pagination.html" %}
 
-  <table class="manage">
-  {% header_row REQUEST fields_selected fields_mapped field_widths order_by sort %}
+  <table class="table2">
+  {% header_row REQUEST fields_selected fields_mapped order_by sort %}
+  <tbody>
   {% for item in results %}
-  <tr class="{% cycle 'row1' 'row2' %}">
+  <tr>
     {% data_row item fields_selected field_display_types account_co_owners testPrefixes %}
   </tr>
   {% endfor %}
+  </tbody>
   </table>
 
-  <p>Identifiers shown with an asterisk (&#42;) are demo/temporary identifiers.</p>
+  <p class="paragraph">Identifiers shown with an asterisk (&#42;) are demo/temporary identifiers.</p>
   {% include "includes/_pagination.html" %}
 {% endif %}
 

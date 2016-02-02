@@ -39,13 +39,10 @@ def rewrite_hidden_except(request, field_order):
   return hidden
 
 @register.simple_tag
-def header_row(request, fields_selected, fields_mapped, field_widths, order_by, sort):
-  total_width = 0
-  for item in fields_selected:
-    total_width += field_widths[item]
-  return "<tr class='headrow'>" + ''.join([("<th style='width:" + percent_width(field_widths[x], total_width) + \
-                            "'>" + column_head(request, x, fields_mapped, order_by, sort) + "</th>"  ) \
-          for x in fields_selected]) + '</tr>'
+def header_row(request, fields_selected, fields_mapped, order_by, sort):
+  r = "<thead><tr>" + ''.join([("<th>" + column_head(request, x, fields_mapped, order_by, sort) + "</th>"  ) \
+      for x in fields_selected]) + '</tr></thead>'
+  return r
 
 #display column heading text, links, sort order that allow changing
 ORDER_BY_IMG = {'asc': '/static/images/tri_up.png', 'desc': '/static/images/tri_down.png'}

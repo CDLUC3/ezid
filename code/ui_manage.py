@@ -26,13 +26,14 @@ FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  Please c
 @uic.user_login_required
 def index(request):
   d = { 'menu_item' : 'ui_manage.index' }
+  isPublicSearch=False
   if request.method == "GET":
     d['form'] = form_objects.ManageSearchIdForm() # Build an empty form
     noConstraintsReqd =True 
   elif request.method == "POST":
     d['form'] = form_objects.ManageSearchIdForm(request.POST)
     noConstraintsReqd = False
-  d = ui_search.searchIdentifiers(d, request, noConstraintsReqd)
+  d = ui_search.searchIdentifiers(d, request, noConstraintsReqd, isPublicSearch)
   return uic.render(request, 'manage/index', d)
 
 def _getLatestMetadata(identifier, request):
@@ -219,6 +220,7 @@ def details(request):
   assert s.startswith("success:")
   d['identifier'] = id_metadata 
   d['id_text'] = s.split()[1]
+  d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes']) 
   d['internal_profile'] = metadata.getProfile('internal')
   d['target'] = id_metadata['_target']
   d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
@@ -267,3 +269,9 @@ def display_xml(request, identifier):
   r = django.http.HttpResponse(ec, content_type="application/xml; charset=UTF-8")
   r["Content-Length"] = len(ec)
   return r
+
+def _isTestId(id_text, testPrefixes):
+  for pre in testPrefixes:
+    if id_text.startswith(pre['prefix']):
+      return True
+  return False

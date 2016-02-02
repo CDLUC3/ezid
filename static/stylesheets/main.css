@@ -2860,6 +2860,17 @@ h2.panel-title > a {
     color: #00778a;
     text-decoration: none; }
 
+.paragraph {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 20px auto; }
+
+.fakeid:before {
+  content: "*"; }
+
 .call-out h3 {
   font-size: 1.1em;
   margin-left: 20px; }
