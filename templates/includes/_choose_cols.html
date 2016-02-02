@@ -5,10 +5,9 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <form method="get" action="{% url "ui_manage.index" %}">
-      <div class="modal-header">
-      <!-- div class="login-modal__header" -->
-        <img src="/static/images/icon-cross.svg" alt="close" class="close login-modal__close" data-dismiss="modal" aria-label="Close">
-        <div class="login-modal__title" id="myModalLabel">{% trans "Choose Columns to Display" %}</div>
+      <div id="customize-modal__header" class="modal-header login-modal__header">
+        <div class="customize-modal__title" id="myModalLabel">{% trans "Choose Columns to Display" %}</div>
+        <img src="/static/images/icon_cross.svg" alt="close" class="close login-modal__close" data-dismiss="modal" aria-label="Close">
       </div>
       <div class="modal-body">
         <div class="row">
@@ -16,7 +15,7 @@
           {% column_choices field_order fields_mapped fields_selected %}
         </div>
           {% rewrite_hidden_except REQUEST field_norewrite %}
-        <div class="login-modal__title">{% trans "Other Options" %}</div>
+        <div class="customize-modal__title">{% trans "Other Options" %}</div>
         <input type="checkbox" id="includeCoowned" name="includeCoowned" value="t"
           {% if includeCoowned %}
          checked="checked" 

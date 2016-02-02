@@ -2595,7 +2595,8 @@ Selector pattern using above mixin:
 
 .fieldset-stacked,
 .fieldset-inline,
-.fieldset-hidden {
+.fieldset-hidden,
+.fieldset-controls {
   margin: 0 0 1em; }
 
 .fieldset-inline {
@@ -2611,7 +2612,8 @@ Selector pattern using above mixin:
 
 .fieldset-stacked__legend,
 .fieldset-inline__legend,
-.fieldset__inline-select-text, .fieldset-stacked__legend-number-1,
+.fieldset__inline-select-text,
+.fieldset-controls__legend, .fieldset-stacked__legend-number-1,
 .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
 .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
 .fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
@@ -2629,7 +2631,8 @@ Selector pattern using above mixin:
   @media (min-width: 768px) {
     .fieldset-stacked__legend,
     .fieldset-inline__legend,
-    .fieldset__inline-select-text, .fieldset-stacked__legend-number-1,
+    .fieldset__inline-select-text,
+    .fieldset-controls__legend, .fieldset-stacked__legend-number-1,
     .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
     .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
     .fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
@@ -2697,13 +2700,26 @@ Selector pattern using above mixin:
   margin: 0 0 0 0.5em;
   padding: 5px 0; }
 
-.fieldset-stacked__controls {
+.fieldset-controls__container {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  margin: 0 0 1em; }
+
+.fieldset-controls__buttons {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
   -webkit-justify-content: space-between;
       -ms-flex-pack: justify;
-          justify-content: space-between; }
+          justify-content: space-between;
+  width: 80px; }
 
 .fcontrol__group-stacked, .fcontrol__group-stacked--invalid {
   display: -webkit-flex;
@@ -2745,7 +2761,7 @@ Selector pattern using above mixin:
   -webkit-align-self: center;
       -ms-flex-item-align: center;
           align-self: center;
-  margin: 0 0.5em 0 0;
+  margin: 0 5px 0 0;
   color: #00778a;
   font-size: 1em; }
   @media (min-width: 768px) {
@@ -2788,6 +2804,7 @@ Selector pattern using above mixin:
   display: inline; }
 
 .fcontrol__select-label-inline {
+  margin: 0 2px 0 0;
   color: #00778a;
   font-size: 1em; }
   @media (min-width: 768px) {
@@ -2796,7 +2813,7 @@ Selector pattern using above mixin:
 
 .fcontrol__radio-label-stacked, .fcontrol__radio-label-inline {
   color: #00778a;
-  font-size: 1.2em;
+  font-size: 1em;
   font-weight: normal;
   cursor: pointer; }
 
@@ -3755,27 +3772,49 @@ Selector pattern using above mixin:
       margin: 30px auto 20px; } }
 
 .create__radio-buttons {
-  padding: 0 0 0 2.4em; }
+  padding: 0 0 0 45px; }
 
 @media (min-width: 768px) {
   .create__fieldset {
     margin: 20px 0 0; } }
 
-.create__profile-fields {
+.create__legend-nested-inline {
+  width: 200px;
+  font-size: 1em; }
+  @media (min-width: 768px) {
+    .create__legend-nested-inline {
+      font-size: 1.1em; } }
+
+.create__legend-nested-fixed-width {
+  width: 200px;
+  font-size: 1em; }
+  @media (min-width: 768px) {
+    .create__legend-nested-fixed-width {
+      font-size: 1.1em; } }
+
+.create__text-fields {
   margin: 0 0 15px; }
 
-.create__profile-labels {
-  width: 12em;
+.create__text-labels-simple {
+  width: 200px;
   text-align: right; }
 
-.create__simple-button {
+.create__text-labels-advanced {
+  width: 200px; }
+
+.create__button {
   margin: 20px 0 0; }
   @media (min-width: 768px) {
-    .create__simple-button {
+    .create__button {
       margin: 20px 0 0 13.8em; } }
 
-.create__simple-buttton-note {
+.create__buttton-note {
   margin: 20px 0 0; }
+
+.create__nested-fieldset {
+  color: black;
+  font-size: inherit;
+  text-transform: uppercase; }
 
 .home__identifier-container {
   display: -webkit-flex;
@@ -3819,6 +3858,9 @@ Selector pattern using above mixin:
       width: 100%;
       margin: 30px 15px;
       padding: 30px 50px 0; } }
+
+.home__radio-labels {
+  font-size: 1.2em; }
 
 .home__text-field {
   padding: 0 0 15px; }

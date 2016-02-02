@@ -3167,6 +3167,16 @@ h2.id-creation {
 .login-modal {
   z-index: 99; }
 
+#customize-modal__header {
+  padding: 0px 5px 0px 15px; }
+  #customize-modal__header .close {
+    margin: 8px 8px; }
+
+.customize-modal__title {
+  margin: 20px 0 10px;
+  color: #00778a;
+  font-size: 1.3em; }
+
 .api h1 {
   border-bottom: 1px dotted black;
   color: #00778a; }

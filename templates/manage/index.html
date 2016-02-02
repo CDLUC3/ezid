@@ -5,30 +5,31 @@
 {% block title %}{% trans "Manage IDs" %}{% endblock %}
 {% comment %} No Heading necessary for this template {% endcomment %}
 {% block content %}
-<div class="container vertical-buffer-xs">
-  {% if results|length < 1 %}
-  <p>There are no recent results to display.<br/>
-  <br/><br/><br/><br/><br/><br/><br/><br/><br/></p>
-  {% else %}
-  <div class="vertical-buffer-bot-md">
-    <a href="{% url "ui_search.index" %}"><button class="btn btn-primary btn-fullwidth-sm" type="button">{% trans "SEARCH YOUR IDENTIFIERS" %}</button></a>
+<div class="search-results__simple">
+  <div class="fcontrol__group-stacked">
+    <label for="search__simple-label" class="fcontrol__text-label-hidden">{% trans "Search" %}</label>
+    <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="{% trans "Full text search using words about or describing the identifier" %}.">
+    <span class="fcontrol__invalid-flag">{% trans "Your search cannot not be empty" %}</span>
   </div>
-  <div class="vertical-buffer-xxs"></div>
+  <div class="search-results__simple-button-group">
+    <button class="search-results__simple-button">{% trans "Search Your Identifiers" %}</button>
+  </div>
+</div>
+<div class="customize-table">
+  <h2 class="customize-table__heading">{% trans "Your Identifiers" %} (#######) </h2>
+  {% if results|length > 0 %}
+  <button class="customize-table__button" data-toggle="modal" data-target="#myModal">{% trans "Customize View" %}</button>
+  {% endif %}
+</div>
+{% include "includes/_choose_cols.html" %}
 
-  <div class="row gradient-orange block-header">
-    <div class="col-sm-10">
-      <div class="inline-header">
-        <h3 id="search_table_id_info">{% trans "My Identifiers" %} (20,951) - 
-          {% trans "(Includes co-owned identifiers)" %}</h3>
-      </div>
-    </div>
-    <div class="col-sm-2">
-      <button type="button" class="btn btn-primary padding-side-xs" data-toggle="modal" data-target="#myModal">{% trans "CUSTOMIZE VIEW" %}</button>
-    </div>
-  </div> 
-  {% include "manage/_choose_cols.html" %}
-	  
-  {% pager_display REQUEST p total_pages ps %}
+{% if results|length < 1 %}
+  <p>No identifiers found.<br/>
+  <br/><br/><br/><br/><br/><br/><br/><br/><br/></p>
+{% else %}
+  
+  {% include "includes/_pagination.html" %}
+
   <table class="manage">
   {% header_row REQUEST fields_selected fields_mapped field_widths order_by sort %}
   {% for item in results %}
@@ -37,11 +38,11 @@
   </tr>
   {% endfor %}
   </table>
-  {% pager_display REQUEST p total_pages ps %}
 
   <p>Identifiers shown with an asterisk (&#42;) are demo/temporary identifiers.</p>
-  {% endif %}
-</div> 
+  {% include "includes/_pagination.html" %}
+{% endif %}
+
   <script type="text/javascript">
   // Add class for current column heading
     $(document).ready(function() {
