@@ -7,9 +7,6 @@
 # 1) Generates form fields for use with Django form model.
 # 2) Creates an XML document for attaching Datacite XML metadata.
 #
-# Authors:
-#   Scott Fisher <sfisher@ucop.edu>, Greg Janee <gjanee@ucop.edu> 
-#
 # License:
 #   Copyright (c) 2016, Regents of the University of California
 #   http://creativecommons.org/licenses/BSD/
@@ -42,7 +39,7 @@ def dataciteXmlToFormElements (document):
 
   is identified by key:
 
-    creators-creator-2-nameIdentifier-schemeURI
+    creators-creator-1-nameIdentifier-schemeURI
 
   Repeatable elements are indexed at the top level only; lower-level
   repeatable elements (e.g., contributor affiliations) are
@@ -50,7 +47,8 @@ def dataciteXmlToFormElements (document):
   the content of a top-level repeatable element carries an extra
   component that echoes the element name, as in:
 
-    creators-creator-2-creator
+    creators-creator-0-creator
+    creators-creator-1-creator
 
   <br> elements in descriptions are replaced with newlines.
   """
@@ -98,7 +96,7 @@ def dataciteXmlToFormElements (document):
         else:
           v = getText(node).strip()
           if v != "":
-            if mypath in d:
+            if mypathx in d:
               # Repeatable elements not explicitly handled have their
               # content concatenated.
               d[mypathx] += " ; " + v
