@@ -1,5 +1,12 @@
 // ##### Form Controls ##### //
 
+%fcontrol-focus:focus { // streamlining Bootstrap's form focus styles:
+  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+  border-color: $design-primary-color;
+  outline: 0;
+  box-shadow: 0 0 8px rgba($design-primary-color, 0.6);
+}
+
 // ***** Stacked Labels ***** //
 
 %fcontrol__group-stacked {
@@ -69,11 +76,20 @@
 	@extend %hide;
 }
 
-// ***** Select Stacked ***** //
+// ***** Drop-down List Stacked ***** //
 
-.fcontrol__select-label {
-	display: block;
-	margin: 0 0 2px;
+.fcontrol__select-group-stacked {
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: flex-start;
+}
+
+.fcontrol__select-group-inline {
+	display: flex;
+	align-items: center;
+}
+
+%fcontrol__select-label {
 	color: $design-primary-color;
 	font-size: 1em;
 
@@ -83,10 +99,22 @@
 
 }
 
+.fcontrol__select-label-stacked {
+	@extend %fcontrol__select-label;
+	margin: 0 0 2px;
+}
+
+.fcontrol__select-label-inline {
+	@extend %fcontrol__select-label;
+	margin: 0 5px 0 0;
+}
+
+.fcontrol__select-label-hidden {
+	@extend %hide;
+}
+
 %fcontrol__select {
 	@extend %fcontrol-focus;
-	display: block;
-	align-self: center; // For %fieldset__legend
 	padding: 0 0.3em;
 	border: 1px solid $design-light-gray-border-color;
 	background: linear-gradient(to bottom, lighten($design-dark-gray-color, 47%), lighten($design-dark-gray-color, 40%));
@@ -100,25 +128,12 @@
 
 .fcontrol__select {
 	@extend %fcontrol__select;
-	width: 100%;
 }
 
-.fcontrol__select-inline {
+.fcontrol__select--fullwidth {
 	@extend %fcontrol__select;
-	display: inline;
-}
-
-// ***** Select Inline ***** //
-
-.fcontrol__select-label-inline {
-	margin: 0 2px 0 0;
-	color: $design-primary-color;
-	font-size: 1em;
-
-	@include bp(screen2) {
-		font-size: 1.1em;
-	}
-
+	flex: 1 0 auto;
+	align-self: stretch;
 }
 
 // ***** Radio Buttons ***** //
