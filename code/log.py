@@ -33,6 +33,7 @@
 # -----------------------------------------------------------------------------
 
 import datetime
+import difflib
 import django.conf
 import django.core.mail
 import logging
@@ -50,14 +51,18 @@ import util
 _lock = threading.Lock()
 _suppressionWindow = None
 _errorLifetime = None
+_errorSimilarityThreshold = None
 _sentErrors = None
 
 def _loadConfig ():
-  global _suppressionWindow, _errorLifetime, _sentErrors
+  global _suppressionWindow, _errorLifetime, _errorSimilarityThreshold
+  global _sentErrors
   _lock.acquire()
   try:
     _suppressionWindow = int(config.get("email.error_suppression_window"))
     _errorLifetime = int(config.get("email.error_lifetime"))
+    _errorSimilarityThreshold =\
+      float(config.get("email.error_similarity_threshold"))
     _sentErrors = {}
   finally:
     _lock.release()
@@ -148,11 +153,19 @@ def _notifyAdmins (error):
   n = 1
   _lock.acquire()
   try:
-    # First clear expired errors out of the cache.
+    # Check if the error is sufficiently similar to a previously-sent
+    # error.
+    similarError = None
     for e, r in _sentErrors.items():
-      if t-r[0] > _errorLifetime: del _sentErrors[e]
-    if error in _sentErrors:
-      r = _sentErrors[error]
+      if t-r[0] > _errorLifetime:
+        # Error has expired; remove it from cache.
+        del _sentErrors[e]
+      else:
+        if e == error or difflib.SequenceMatcher(lambda c: c.isspace(),
+          error, e).ratio() >= _errorSimilarityThreshold:
+          similarError = e
+    if similarError != None:
+      r = _sentErrors[similarError]
       if t-r[0] <= _suppressionWindow:
         r[1] += 1
         suppress = True
@@ -166,8 +179,8 @@ def _notifyAdmins (error):
     _lock.release()
   if not suppress:
     if n > 1:
-      m = ("The following error has occurred %d times since the " +\
-        "last notification.") % n
+      m = ("The following error (or errors similar to it) have occurred " +\
+        "%d times since the last notification.") % n
     else:
       m = "The following error occurred."
     m += ("  Notifications of any additional occurrences of this error " +\
