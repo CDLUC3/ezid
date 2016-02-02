@@ -182,11 +182,10 @@ def formElementsToDataciteXml (d, shoulder=None, identifier=None):
       k, remainder = key.split("-", 1) if "-" in key else (key, "")
       if k in _elements:
         if tagName(node.tag) in _repeatableElementContainers:
-          i, remainder = remainder.split("-", 1) if "-" in remainder else\
-            (remainder, "")
-          i = int(i) + 1
-          while len(node) < i: lxml.etree.SubElement(node, q(k))
-          node = node[i-1]
+          i, remainder = remainder.split("-", 1)
+          i = int(i)
+          while len(node) <= i: lxml.etree.SubElement(node, q(k))
+          node = node[i]
           if remainder == k: remainder = ""
         else:
           n = node.find(q(k))
