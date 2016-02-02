@@ -41,7 +41,7 @@ $fieldset-legend-spacing: 1em;
 
 .fieldset-stacked__legend,
 .fieldset-inline__legend,
-.fieldset__inline-select-text,
+.fieldset-stacked__embedded-select-append-text,
 .fieldset-controls__legend {
 	@extend %fieldset__legend;
 }
@@ -105,15 +105,14 @@ $fieldset-legend-spacing: 1em;
 
 // ***** Stacked Fieldset with Inline Select ***** //
 
-.fieldset-stacked__inline-select {
+.fieldset-stacked__embedded-select {
 	display: flex;
 	flex-flow: row wrap;
 	margin: 0 0 $fieldset-legend-spacing;
 }
 
-.fieldset__inline-select-text {
-	margin: 0 0 0 0.5em;
-	padding: 5px 0;
+.fieldset-stacked__embedded-select-append-text {
+	margin: 0 0 0 5px;
 }
 
 // ***** Stacked Fieldset with Embedded Buttons ***** //
