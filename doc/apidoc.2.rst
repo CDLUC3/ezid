@@ -1160,9 +1160,9 @@ registration is updated automatically by EZID and may be polled by the
 client.  If a warning or error occurred during registration, the
 status is followed by another pipe character and the message received
 from CrossRef, e.g., "yes | registration failure | xml error...".
-Warnings and errors may also be viewed in the EZID UI and may also be
-emailed to a specified mailbox.  Warnings and errors can be removed
-only by submitting new metadata and re-registering identifiers.
+Warnings and errors may also be emailed to a specified mailbox.
+Warnings and errors can be removed only by submitting new metadata and
+re-registering identifiers.
 
 CrossRef deposit metadata should adhere to the `CrossRef Deposit
 Schema`_, version 4.3.0 or later.  The metadata should consist of the

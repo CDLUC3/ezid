@@ -121,7 +121,8 @@ def formulateQuery (constraints, orderBy=None,
   ownergroup          | Y | Y | str        | groupname
   createTime          |   | Y | (int, int) | time range as pair of Unix
                       |   |   |            | timestamps; bounds are
-                      |   |   |            | inclusive
+                      |   |   |            | inclusive; either/both bounds
+                      |   |   |            | may be None
   updateTime          |   | Y | (int, int) | ditto
   status              | Y | Y | str        | status display value, e.g.,
                       |   |   |            | "public"
@@ -131,14 +132,15 @@ def formulateQuery (constraints, orderBy=None,
   target              |   |   | str        | URL
   profile             | Y | Y | str        | profile label, e.g., "erc"
   isTest              |   | Y | bool       |
-  resourceCreator     |   | Y | str        | fulltext-style boolean
+  resourceCreator     |   | Y | str        | limited fulltext-style boolean
                       |   |   |            | expression, e.g.,
-                      |   |   |            | "green +eggs -ham"
+                      |   |   |            | '"green eggs" ham'
   resourceTitle       |   | Y | str        | ditto
   resourcePublisher   |   | Y | str        | ditto
   keywords            |   |   | str        | ditto
   resourcePublica-    |   | Y | (int, int) | time range as pair of years;
-    tionYear          |   |   |            | bounds are inclusive
+    tionYear          |   |   |            | bounds are inclusive; either/
+                      |   |   |            | both bounds may be None
   resourceType        | Y | Y | str        | general resource type, e.g.,
                       |   |   |            | "Image"
   hasMetadata         |   | Y | bool       |
@@ -187,7 +189,16 @@ def formulateQuery (constraints, orderBy=None,
         [django.db.models.Q(ownergroup__groupname=v) for v in value]))
       scopeRequirementMet = True
     elif column in ["createTime", "updateTime"]:
-      filters.append(django.db.models.Q(**{ (column + "__range"): value }))
+      if value[0] != None:
+        if value[1] != None:
+          filters.append(django.db.models.Q(**{ (column + "__range"): value }))
+        else:
+          filters.append(
+            django.db.models.Q(**{ (column + "__gte"): value[0] }))
+      else:
+        if value[1] != None:
+          filters.append(
+            django.db.models.Q(**{ (column + "__lte"): value[1] }))
     elif column == "status":
       if isinstance(value, basestring): value = [value]
       filters.append(reduce(operator.or_,
@@ -227,6 +238,21 @@ def formulateQuery (constraints, orderBy=None,
     elif column in ["resourceCreator", "resourceTitle", "resourcePublisher",
       "keywords"]:
       if _fulltextSupported:
+        # MySQL interprets some characters as operators, and will
+        # return an error if a query is malformed according to its
+        # less-than-well-defined rules.  For safety we remove all
+        # operators that are outside double quotes (i.e., quotes are
+        # the only operator we retain).
+        v = ""
+        inQuote = False
+        for c in value:
+          if c == '"':
+            inQuote = not inQuote
+          else:
+            if not inQuote and not c.isalnum(): c = " "
+          v += c
+        if inQuote: v += '"'
+        value = "".join(v)
         filters.append(django.db.models.Q(**{ (column + "__search"): value }))
       else:
         value = value.split()
@@ -235,11 +261,21 @@ def formulateQuery (constraints, orderBy=None,
             [django.db.models.Q(**{ (column + "__icontains"): v })\
             for v in value]))
     elif column == "resourcePublicationYear":
-      if value[0] == value[1]:
-        filters.append(django.db.models.Q(searchablePublicationYear=value[0]))
+      if value[0] != None:
+        if value[1] != None:
+          if value[0] == value[1]:
+            filters.append(
+              django.db.models.Q(searchablePublicationYear=value[0]))
+          else:
+            filters.append(django.db.models.Q(
+              searchablePublicationYear__range=value))
+        else:
+          filters.append(
+            django.db.models.Q(searchablePublicationYear__gte=value[0]))
       else:
-        filters.append(django.db.models.Q(
-          searchablePublicationYear__range=value))
+        if value[1] != None:
+          filters.append(
+            django.db.models.Q(searchablePublicationYear__lte=value[1]))
     elif column == "resourceType":
       if isinstance(value, basestring): value = [value]
       filters.append(reduce(operator.or_,
