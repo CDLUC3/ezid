@@ -21,18 +21,6 @@ $label-fixed-width: 220px;
 	margin: 0 0 $element-group-spacing 45px;
 }
 
-.create__radio-button-fieldsets {
-	// empty
-}
-
-.create__fieldset {
-
-	@include bp(screen2) {
-		margin: 100px 0 0;
-	}
-
-}
-
 .create__inline-nested-legend {
 	width: $label-fixed-width;
 	font-size: 1em;
