@@ -1,4 +1,5 @@
 {% extends "layouts/base.html" %}
+{% load layout_extras %}
 {% load manage_form_tags %}
 {% load i18n %}
 
@@ -8,7 +9,7 @@
 <div class="search-results__simple">
   <div class="fcontrol__group-stacked">
     <label for="search__simple-label" class="fcontrol__text-label-hidden">{% trans "Search" %}</label>
-    <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="{% trans "Full text search using words about or describing the identifier" %}.">
+    {{ form.keywords|add_attributes:"id:search__simple-label,class:fcontrol__text-field-stacked,type:search" }}
     <span class="fcontrol__invalid-flag">{% trans "Your search cannot not be empty" %}</span>
   </div>
   <div class="search-results__simple-button-group">
@@ -46,6 +47,8 @@
 {% endif %}
 
   <script type="text/javascript">
+  $("#search__simple-label").focus();
+
   // Add class for current column heading
     $(document).ready(function() {
       $("th:has(.order_by_col)").attr("id", "cur_sort");

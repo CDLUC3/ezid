@@ -6,110 +6,95 @@
 {% block description %}{%trans "Search across all EZID identifiers by keyword, title, creator, publisher, or identifier string." %}{% endblock %}
 {% block heading %}{% content_heading _("Search across EZID identifiers") %}{% endblock %}
 {% block content %}
-<div class="container vertical-buffer-xs">
-
-<section id="search">
-  <form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" id="search-form" role="form">
-  {% comment "nonfield_errors" %}form.non_field_errors not used here, and will be displayed in django.contrib.messages.error{% endcomment %}
-  <div class="row">
-    <div class="vertical-buffer-sm"></div>
-    <div class="col-sm-9 form-group form-group-sm">
-      {{ form.keywords|add_attributes:"form-control" }}
-    </div>
-    <div class="col-sm-3 form-group form-group-sm">
-      <input class="btn btn-primary padding-side-med" type="submit" value="{% trans "SEARCH" %}">
-    </div>
-    <div class="col-sm-12 vertical-buffer-xxs"></div>
+<form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" id="search-form" role="form">
+{% comment "nonfield_errors" %}form.non_field_errors not used here, and will be displayed in django.contrib.messages.error{% endcomment %}
+<div class="search__simple">
+  <div class="fcontrol__group-stacked">
+    <label for="search__simple-label" class="fcontrol__text-label-hidden">{% trans "Search" %}</label>
+    {{ form.keywords|add_attributes:"id:search__simple-label,class:fcontrol__text-field-stacked,type:search" }}
+    <span class="fcontrol__invalid-flag"></span>
   </div>
-  <div class="accordion" id="accordion_advanced_search">
-    <div class="accordion-group">
-      <div class="accordion-heading inline-header">
-        <a class="accordion-toggle not-text" data-toggle="collapse" data-parent="#accordion_advanced_search" href="#accordion_advanced_search_collapse">
-          <i class="indicator caret-right"></i><h3>{% trans "ADVANCED SEARCH" %}</h3><img id="search__icon--advanced" src="/static/images/searchAdvanced.svg" ALT="">
-        </a>
-      </div>
-      <div id="accordion_advanced_search_collapse" class="accordion-body collapse {{ show_advanced_search }}">
-        <div class="accordion-inner">
-  <!-- Row: Basic Search -->
+  <button class="search__simple-button" type="submit">{% trans "Search" %}</button>
+</div>
+<details {{ show_advanced_search }} class="search__advanced">
+  <summary class="heading__icon-1 search__summary">{% trans "Advanced Search" %}</summary>
   <div class="row">
-    <div class="col-sm-6 form-group form-group-sm{% if form.identifier.errors %} has-error{% endif %}">
-      <label for="{{ form.identifier.id_for_label }}">{{ form.identifier.label }}</label>
-      {{ form.identifier|add_attributes:"form-control"}}
+    <div class="col-md-6 search__form-element-container">
+      <div class="fcontrol__group-stacked{% if form.identifier.errors %}--invalid{% endif %}">
+        <label for="{{ form.identifier.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.identifier.label }}</label>
+        {{ form.identifier|add_attributes:"class:fcontrol__text-field-stacked,type:search" }}
       {% if form.identifier.errors %}
         {% for error in form.identifier.errors %}
-          {{ error|escape }}
+        <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
         {% endfor %}
       {% endif %}
-    </div>
-    <div class="col-sm-6 form-group form-group-sm second-col">
-      <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
-      {{ form.title|add_attributes:"form-control"}}
-    </div>
-
-    <div class="col-sm-6 form-group form-group-sm">
-      <label for="{{ form.creator.id_for_label }}">{{ form.creator.label }}</label>
-      {{ form.creator|add_attributes:"form-control"}}
-    </div>
-    <div class="col-sm-6 form-group form-group-sm second-col">
-      <label for="{{ form.publisher.id_for_label }}">{{ form.publisher.label }}</label>
-      {{ form.publisher|add_attributes:"form-control"}}
-    </div>
-
-    <div class="col-sm-6">
-      <div class="row">
-        <label for="search_publication_year_from">{% trans "Object Publication Year" %}</label>
       </div>
-      <div class="form-group row">
-        <div class="form-inline">
-          <div class="col-sm-6 form-group form-group-sm{% if form.pubyear_from.errors %} has-error{% endif %}">
-            <label for="{{ form.pubyear_from.id_for_label }}" class="col-sm-3 control-label text-right">{{ form.pubyear_from.label }}</label>
-            <div class="col-sm-1">
-              {{ form.pubyear_from|add_attributes:"form-control"}}
-              {% if form.pubyear_from.errors %}
-                {% for error in form.pubyear_from.errors %}
-                  {{ error|escape }}
-                {% endfor %}
-              {% endif %}
-            </div>
+    </div>
+    <div class="col-md-6 search__form-element-container">
+      <div class="fcontrol__group-stacked">
+        <label for="{{ form.title.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.title.label }}</label>
+        {{ form.title|add_attributes:"class:fcontrol__text-field-stacked,type:search" }}
+      </div>{% comment %}No validation necessary{% endcomment %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 search__form-element-container">
+      <div class="fcontrol__group-stacked">
+        <label for="{{ form.creator.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.creator.label }}</label>
+        {{ form.creator|add_attributes:"class:fcontrol__text-field-stacked,type:search" }}
+      </div>{% comment %}No validation necessary{% endcomment %}
+    </div>
+    <div class="col-md-6 search__form-element-container">
+      <div class="fcontrol__group-stacked">
+        <label for="{{ form.publisher.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.publisher.label }}</label>
+        {{ form.publisher|add_attributes:"class:fcontrol__text-field-stacked,type:search" }}
+      </div>{% comment %}No validation necessary{% endcomment %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="fieldset-stacked" role="group" aria-labelledby="object-publication-year">
+        <div id="object-publication-year" class="fieldset-stacked__legend search__publication-fieldset">{% trans "Object Publication Year" %}</div>
+        <div class="fcontrol__inline-groups search__inline-groups">
+          <div class="fcontrol__group-inline{% if form.pubyear_from.errors %}--invalid{% endif %}">
+            <label for="{{ form.pubyear_from.id_for_label }}" class="fcontrol__text-label-inline">{{ form.pubyear_from.label }}</label>
+            {{ form.pubyear_from|add_attributes:"fcontrol__text-field-inline" }}
+          {% if form.pubyear_from.errors %}
+            {% for error in form.pubyear_from.errors %}
+            <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+            {% endfor %}
+          {% endif %}
           </div>
-          <div class="col-sm-6 form-group form-group-sm{% if form.pubyear_to.errors %} has-error{% endif %}">
-            <label for="{{ form.pubyear_to.id_for_label }}" class="col-sm-3 control-label text-right">{{ form.pubyear_to.label }}</label>
-            <div class="col-sm-1">
-              {{ form.pubyear_to|add_attributes:"form-control"}}
-              {% if form.pubyear_to.errors %}
-                {% for error in form.pubyear_to.errors %}
-                  {{ error|escape }}
-                {% endfor %}
-              {% endif %}
-            </div>
+          <div class="fcontrol__group-inline{% if form.pubyear_to.errors %}--invalid{% endif %}">
+            <label for="{{ form.pubyear_to.id_for_label }}" class="fcontrol__text-label-inline">{{ form.pubyear_to.label }}</label>
+            {{ form.pubyear_to|add_attributes:"fcontrol__text-field-inline" }}
+          {% if form.pubyear_to.errors %}
+            {% for error in form.pubyear_to.errors %}
+            <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+            {% endfor %}
+          {% endif %}
           </div>
         </div>
       </div>
     </div>
-    <div class="col-sm-6 form-group form-group-sm second-col">
-      <label for="{{ form.object_type.id_for_label }}">{{ form.object_type.label }}</label>
-      {{ form.object_type|add_attributes:"form-control"}}
-    </div>
-    <div class="col-sm-6 form-group form-group-sm">
-      <label for="{{ form.id_type.id_for_label }}">{{ form.id_type.label }}</label>
-      {{ form.id_type|add_attributes:"form-control"}}
+    <div class="col-md-6 search__form-element-container">
+      <label for="{{ form.object_type.id_for_label }}" class="fcontrol__select-label">{{ form.object_type.label }}</label>
+      {{ form.object_type|add_attributes:"fcontrol__select"}}
+    </div>{% comment %}No validation necessary{% endcomment %}
+  </div>
+  <div class="row">
+    <div class="col-md-6 search__form-element-container">
+      <label for="{{ form.id_type.id_for_label }}" class="fcontrol__select-label">{{ form.id_type.label }}</label>
+      {{ form.id_type|add_attributes:"fcontrol__select"}}
+    </div>{% comment %}No validation necessary{% endcomment %}
+    <div class="col-md-6">
+      
     </div>
   </div>
-        </div>  <!-- End accordion inner -->          
-      </div>  <!-- End accordion collapse -->
-    </div> <!-- End accordion-group -->
-  </div> <!-- End accordion wrapper -->
-  </form>
-</section>
-</div>
-<script>
-function toggleChevron(e) {
-    $(e.target)
-    .prev('.accordion-heading')
-    .find("i.indicator")
-    .toggleClass('caret caret-right');
-}
-$('#accordion_advanced_search').on('hidden.bs.collapse', toggleChevron);
-$('#accordion_advanced_search').on('shown.bs.collapse', toggleChevron);
+</details>
+</form>
+
+<script type="text/javascript">
+  $("#search__simple-label").focus();
 </script>
 {% endblock %}

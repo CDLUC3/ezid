@@ -2971,7 +2971,8 @@ Selector pattern using above mixin:
 
 .link__primary, .footer__news-link, .login-modal__forgot, .link__over-beige, .footer__link, .footer__copyright-link, .link__pop, .login-modal__sign-up-link {
   position: relative;
-  text-decoration: none; }
+  text-decoration: none;
+  line-height: 1.2; }
   .link__primary:hover, .footer__news-link:hover, .login-modal__forgot:hover, .link__over-beige:hover, .footer__link:hover, .footer__copyright-link:hover, .link__pop:hover, .login-modal__sign-up-link:hover {
     text-decoration: none; }
   [href$='.pdf'].link__primary:after, [href$='.pdf'].footer__news-link:after, [href$='.pdf'].login-modal__forgot:after, [href$='.pdf'].link__over-beige:after, [href$='.pdf'].footer__link:after, [href$='.pdf'].footer__copyright-link:after, [href$='.pdf'].link__pop:after, [href$='.pdf'].login-modal__sign-up-link:after {
@@ -3612,12 +3613,8 @@ Selector pattern using above mixin:
   background-size: 1em; }
 
 .sidebox {
-  margin: 0 0 30px;
   padding: 15px 15px 0;
   border: 2px solid #beb6af; }
-  @media (min-width: 768px) {
-    .sidebox {
-      margin: 0; } }
 
 .sidebox__heading {
   margin: 0 0 1em;
@@ -3625,7 +3622,7 @@ Selector pattern using above mixin:
   font-weight: bold; }
 
 .sidebox__list {
-  padding: 0 0 0 1em; }
+  padding: 0 1em; }
   .sidebox__list li {
     margin: 0 0 0.5em; }
 
@@ -3785,6 +3782,12 @@ Selector pattern using above mixin:
   @media (min-width: 768px) {
     .create__tab {
       margin: 30px auto 20px; } }
+
+.create__sidebox {
+  padding: 0 0 20px; }
+  @media (min-width: 768px) {
+    .create__sidebox {
+      padding: 0 0 20px 20px; } }
 
 .create__radio-button {
   margin: 0 0 20px 45px; }

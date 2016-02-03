@@ -38,6 +38,7 @@ IS_ASCENDING = {'asc': True, 'desc': False }
 def index(request):
   """ (Public) Search Page """
   d = { 'menu_item' : 'ui_search.index' }
+  d['show_advanced_search'] = "closed"
   if request.method == "GET":
     d['form'] = form_objects.BaseSearchIdForm() # Build an empty form
   elif request.method == "POST":
@@ -128,7 +129,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
       d['results'].append(result)
     d['search_success'] = True
   else:
-    d['show_advanced_search'] = "in" # Class name opens up adv. search html block
+    d['show_advanced_search'] = "open" # Open up adv. search html block
     if '__all__' in d['form'].errors:
       # non_form_error, probably due to all fields being empty
       all_errors = ''

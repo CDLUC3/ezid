@@ -82,11 +82,12 @@ def _updateEzid(request, d, stts, m_to_upgrade=None):
   return ezid.setMetadata(d['id_text'], uic.user_or_anon_tup(request), 
     uic.group_or_anon_tup(request), to_write)
 
-def _alertMessageUpdateError(request):
-  django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
+def _alertMessageUpdateError(request, s):
+  django.contrib.messages.error(request, 
+    _("There was an error updating the metadata for your identifier") + ": " + s)
 
 def _alertMessageUpdateSuccess(request):
-  django.contrib.messages.success(request, "Identifier updated.")
+  django.contrib.messages.success(request, _("Identifier updated."))
 
 def _assignManualTemplate(d):
   # [TODO: Enhance advanced DOI ERC profile to allow for elements ERC + datacite.publisher or 
@@ -174,7 +175,7 @@ def edit(request, identifier):
           return redirect("/id/" + urllib.quote(identifier, ":/"))
         else:
           d = _assignManualTemplate(d)
-          _alertMessageUpdateError(request)
+          _alertMessageUpdateError(request, s)
     else:
       """ Even if converting from simple to advanced, let's make sure forms validate
           and update identifier first, else don't upgrade.
@@ -184,7 +185,7 @@ def edit(request, identifier):
         result = _updateEzid(request, d, stts)
         if not result.startswith("success:"):
           d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
-          _alertMessageUpdateError(request)
+          _alertMessageUpdateError(request, result)
           return uic.render(request, "manage/edit", d)
         else:
           if 'simpleToAdvanced' in P and P['simpleToAdvanced'] == 'True':
@@ -197,7 +198,7 @@ def edit(request, identifier):
             s, id_metadata = r 
             if not result.startswith("success:"):
                #  if things fail, just display same simple edit page with error 
-              _alertMessageUpdateError(request)
+              _alertMessageUpdateError(request, result)
             else:
               _alertMessageUpdateSuccess(request)
               return redirect("/id/" + urllib.quote(identifier, ":/"))
