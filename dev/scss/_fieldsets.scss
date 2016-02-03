@@ -99,12 +99,12 @@ $fieldset-legend-spacing: 1em;
 // ***** Fieldset Borders ***** //
 
 .fieldset__top-border {
-	padding: 20px 0 0;
+	padding: $form-element-group-spacing 0 0;
 	border-top: 1px solid $design-dark-gray-color;
 }
 
 .fieldset__bottom-border {
-	margin: 0 0 20px;
+	margin: 0 0 $form-element-group-spacing;
 	border-bottom: 1px solid $design-dark-gray-color;
 }
 

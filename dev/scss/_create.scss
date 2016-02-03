@@ -1,8 +1,5 @@
 // ##### Create ID Layout ##### //
 
-$element-group-spacing: 20px;
-$label-fixed-width: 26rem; // about 260px
-
 .create {
 	// empty
 }
@@ -18,11 +15,11 @@ $label-fixed-width: 26rem; // about 260px
 }
 
 .create__radio-button {
-	margin: 0 0 $element-group-spacing 45px;
+	margin: 0 0 $form-element-group-spacing 45px;
 }
 
 .create__inline-nested-legend {
-	width: $label-fixed-width;
+	width: $form-element-label-width;
 	font-size: 1em;
 
 	@include bp(screen2) {
@@ -32,29 +29,29 @@ $label-fixed-width: 26rem; // about 260px
 }
 
 .create__form-element-group {
-	margin: 0 0 $element-group-spacing;
+	margin: 0 0 $form-element-group-spacing;
 }
 
 .create__label-simple {
-	width: $label-fixed-width;
+	width: $form-element-label-width;
 	text-align: right;
 }
 
 .create__label-advanced {
-	width: $label-fixed-width;
+	width: $form-element-label-width;
 }
 
 .create__button {
-	margin: $element-group-spacing 0 0;
+	margin: $form-element-group-spacing 0 0;
 
 	@include bp(screen2) {
-		margin: $element-group-spacing 0 0 13.8em;
+		margin: $form-element-group-spacing 0 0 13.8em;
 	}
 
 }
 
 .create__buttton-note {
-	margin: $element-group-spacing 0 0;
+	margin: $form-element-group-spacing 0 0;
 }
 
 .create__nested-legend {
