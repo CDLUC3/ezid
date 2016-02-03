@@ -2575,8 +2575,7 @@ Selector pattern using above mixin:
 .button__plus, .button__minus {
   padding: 15px;
   border: 1px solid #beb6af;
-  border-radius: 3px;
-  background-color: #f9f8f7;
+  background-color: linear-gradient(to bottom, #ff8e28, #ff701c);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 12px; }
@@ -2606,7 +2605,7 @@ Selector pattern using above mixin:
 
 .fieldset-stacked__legend,
 .fieldset-inline__legend,
-.fieldset__inline-select-text,
+.fieldset-stacked__embedded-select-append-text,
 .fieldset-controls__legend, .fieldset-stacked__legend-number-1,
 .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
 .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
@@ -2625,7 +2624,7 @@ Selector pattern using above mixin:
   @media (min-width: 768px) {
     .fieldset-stacked__legend,
     .fieldset-inline__legend,
-    .fieldset__inline-select-text,
+    .fieldset-stacked__embedded-select-append-text,
     .fieldset-controls__legend, .fieldset-stacked__legend-number-1,
     .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
     .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
@@ -2678,10 +2677,14 @@ Selector pattern using above mixin:
   margin: 0 0 1em; }
 
 .fieldset__top-border {
-  padding: 1em 0 0;
+  padding: 20px 0 0;
   border-top: 1px solid #7c7e7f; }
 
-.fieldset-stacked__inline-select {
+.fieldset__bottom-border {
+  margin: 0 0 20px;
+  border-bottom: 1px solid #7c7e7f; }
+
+.fieldset-stacked__embedded-select {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
@@ -2690,9 +2693,8 @@ Selector pattern using above mixin:
           flex-flow: row wrap;
   margin: 0 0 1em; }
 
-.fieldset__inline-select-text {
-  margin: 0 0 0 0.5em;
-  padding: 5px 0; }
+.fieldset-stacked__embedded-select-append-text {
+  margin: 0 0 0 5px; }
 
 .fieldset-controls__container {
   display: -webkit-flex;
@@ -3784,36 +3786,25 @@ Selector pattern using above mixin:
     .create__tab {
       margin: 30px auto 20px; } }
 
-.create__radio-buttons {
-  padding: 0 0 0 45px; }
+.create__radio-button {
+  margin: 0 0 20px 45px; }
 
-@media (min-width: 768px) {
-  .create__fieldset {
-    margin: 20px 0 0; } }
-
-.create__legend-nested-inline {
-  width: 200px;
+.create__inline-nested-legend {
+  width: 26rem;
   font-size: 1em; }
   @media (min-width: 768px) {
-    .create__legend-nested-inline {
+    .create__inline-nested-legend {
       font-size: 1.1em; } }
 
-.create__legend-nested-fixed-width {
-  width: 200px;
-  font-size: 1em; }
-  @media (min-width: 768px) {
-    .create__legend-nested-fixed-width {
-      font-size: 1.1em; } }
+.create__form-element-group {
+  margin: 0 0 20px; }
 
-.create__text-fields {
-  margin: 0 0 15px; }
-
-.create__text-labels-simple {
-  width: 200px;
+.create__label-simple {
+  width: 26rem;
   text-align: right; }
 
-.create__text-labels-advanced {
-  width: 200px; }
+.create__label-advanced {
+  width: 26rem; }
 
 .create__button {
   margin: 20px 0 0; }
@@ -3824,9 +3815,9 @@ Selector pattern using above mixin:
 .create__buttton-note {
   margin: 20px 0 0; }
 
-.create__nested-fieldset {
+.create__nested-legend {
   color: black;
-  font-size: inherit;
+  font-size: 1.2em;
   text-transform: uppercase; }
 
 .home__identifier-container {

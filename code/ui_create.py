@@ -19,8 +19,8 @@ from django.utils.translation import ugettext as _
 """
 
 def _validationErr(action):
-  return _("Identifier could not be ") + action + _(" as submitted.  Please check \
-  the highlighted fields below for details.")
+  return _("Identifier could not be ") + action + _(" as submitted.  Please check ") +  \
+    _("the highlighted fields below for details.")
 
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
@@ -234,8 +234,8 @@ def _createSimpleId (d, request, P):
     django.contrib.messages.success(request, _("IDENTIFIER CREATED."))
     d['id_gen_result'] = "created_identifier: "+new_id
   else:
-    django.contrib.messages.error(request, _("Identifier could not be \
-      created as submitted") + ": "  + s)
+    django.contrib.messages.error(request, _("Identifier could not be created as submitted") +\
+      ": "  + s)
     d['id_gen_result'] = 'edit_page'
   return d
 
@@ -269,15 +269,15 @@ def _createAdvancedId (d, request, P):
       err_msg = re.search(r'^error: .+?- (.+)$', s).group(1)
     else:
       err_msg = re.search(r'^error: (.+)$', s).group(1)
-    django.contrib.messages.error(request, _("There was an error creating \
-      your identifier") + ": " + err_msg)
+    django.contrib.messages.error(request, _("There was an error creating your identifier") +\
+      ": " + err_msg)
     d['id_gen_result'] = 'edit_page'
   return d
 
 def _verifyProperShoulder (request, P, pre_list):
   if P['shoulder'] not in pre_list:
-    django.contrib.messages.error(request, _("Unauthorized to create with \
-      this identifier prefix") + ": " + P['shoulder'])
+    django.contrib.messages.error(request, 
+      _("Unauthorized to create with this identifier prefix") + ": " + P['shoulder'])
     return False
   return True
 

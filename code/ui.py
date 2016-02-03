@@ -50,8 +50,8 @@ def contact(request):
       except:
         django.contrib.messages.error(request, _("There was a problem sending your email"))
     elif not d['form'].is_valid() :
-      django.contrib.messages.error(request, _("Form could not be sent. Please check \
-        the highlighted field(s) below for details."))
+      django.contrib.messages.error(request, _("Form could not be sent. ") + \
+        _("Please check the highlighted field(s) below for details."))
       # fall through to re-render page; form already contains error info
   else:  # GET Request
     d['form'] = form_objects.ContactForm() # Build an empty form

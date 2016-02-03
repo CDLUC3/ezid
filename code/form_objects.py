@@ -255,13 +255,11 @@ class GeoLocForm(forms.Form):
   # Translators: A coordinate point  
   geoLocationPoint = forms.RegexField(required=False, label=_("Point"),
     regex='^(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)$',
-    error_messages={'invalid': _("A Geolocation Point must be made up of two \
-      decimal numbers separated by a space.")})
+    error_messages={'invalid': _("A Geolocation Point must be made up of two decimal numbers separated by a space.")})
   # Translators: A bounding box (with coordinates)
   geoLocationBox = forms.RegexField(required=False, label=_("Box"),
     regex='^(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)$',
-    error_messages={'invalid': _("A Geolocation Box must be made up of four \
-      decimal numbers separated by a space.")})
+    error_messages={'invalid': _("A Geolocation Box must be made up of four decimal numbers separated by a space.")})
   geoLocationPlace = forms.CharField(required=False, label=_("Place"))
 
 def getIdForm_datacite_xml (form_coll=None, request=None):
@@ -410,7 +408,8 @@ class BaseSearchIdForm(forms.Form):
       attrs={'placeholder': "doi:10.17614/Q44F1NB79"}))
   # Translators: "Ex." is abbreviation for "example"
   title = forms.CharField(required=False, label=_("Object Title (What)"),
-    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone")}))
+    widget=forms.TextInput(attrs={'placeholder': _("Ex.") + \
+      "2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone"}))
   creator = forms.CharField(required=False, label=_("Object Creator (Who)"),
     widget=forms.TextInput(attrs={'placeholder': 
       _("Ex. Pitt Quantum Repository")}))
@@ -493,8 +492,7 @@ class ContactForm(forms.Form):
   CONTACT_REASONS = (
     ("", _("Choose One")),
     ("account_new", _("I would like to inquire about getting a new account")),
-    ("account_existing", _("I have a problem or question about existing \
-      account")),
+    ("account_existing", _("I have a problem or question about existing account")),
     ("newsletter", _("I'd like to sign up for the EZID email newsletter")),
     ("other", _("Other")),
   )
@@ -507,8 +505,8 @@ class ContactForm(forms.Form):
                     'invalid': _("Please fill in a valid email address.")})
   affiliation = forms.CharField(required=False, label=_("Your Institution"), 
     max_length=200)
-  comment = forms.CharField(label=_("Please indicate any question or comment \
-    you may have"), widget=forms.Textarea(attrs={'rows': '4'}),
+  comment = forms.CharField(label=_("Please indicate any question or comment you may have"), 
+    widget=forms.Textarea(attrs={'rows': '4'}),
     error_messages={'required': _("Please fill in a question or comment.")})
 
   # Translators: These options appear in drop-down on contact page

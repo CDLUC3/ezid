@@ -4,7 +4,6 @@
 {% load i18n %}
 
 {% block title %}{% trans "Identifier Details" %}{% endblock %}
-
 {% block heading %}{% content_heading _("Identifier Details") %}{% endblock %}
 {% block content %}
 <div class="container vertical-buffer-20">
@@ -41,7 +40,7 @@
   </div>
 
   {% if is_test_id %}
-  <p class="paragraph">Identifiers shown with an asterisk (&#42;) are demo/temporary identifiers.</p>
+  <p class="paragraph">&#42; {% trans "Indicates demo identifier" %}</p>
   {% endif %}
 
   {% if not has_block_data and current_profile.name == 'datacite' %}

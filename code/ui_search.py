@@ -137,8 +137,8 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
         all_errors += e 
       django.contrib.messages.error(request, _("Could not complete search.   " + all_errors))
     else:
-      django.contrib.messages.error(request, _("Could not complete search. \
-        Please check the highlighted fields below for details."))
+      django.contrib.messages.error(request, _("Could not complete search.  ") +\ 
+        _("Please check the highlighted fields below for details."))
     d['search_success'] = False 
   return d
 

@@ -24,7 +24,7 @@
 {% include "includes/_choose_cols.html" %}
 
 {% if results|length < 1 %}
-  <p>No identifiers found.<br/>
+  <p>{% trans "No identifiers found" %}.<br/>
   <br/><br/><br/><br/><br/><br/><br/><br/><br/></p>
 {% else %}
   
@@ -41,7 +41,7 @@
   </tbody>
   </table>
 
-  <p class="paragraph">Identifiers shown with an asterisk (&#42;) are demo/temporary identifiers.</p>
+  <p class="paragraph">&#42; {% trans "Indicates demo identifier" %}</p>
   {% include "includes/_pagination.html" %}
 {% endif %}
 

@@ -20,8 +20,8 @@ import re
 import ezidapp.models
 from django.utils.translation import ugettext as _
 
-FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  Please check \
-  the highlighted fields below for details.")
+FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") +\
+  _("Please check the highlighted fields below for details.")
 
 @uic.user_login_required
 def index(request):
