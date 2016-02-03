@@ -2573,17 +2573,26 @@ Selector pattern using above mixin:
   background: linear-gradient(to bottom, #ff8e28, #ff701c); }
 
 .button__plus, .button__minus {
-  padding: 15px;
+  position: relative;
+  width: 30px;
+  height: 30px;
   border: 1px solid #beb6af;
-  background-color: linear-gradient(to bottom, #ff8e28, #ff701c);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 12px; }
+  background: linear-gradient(to bottom, whitesmoke, #e3e4e4); }
+  .button__plus:before, .button__minus:before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 12px;
+    content: ''; }
 
-.button__plus {
+.button__plus:before {
   background-image: url("../images/icon_plus-sign.svg"); }
 
-.button__minus {
+.button__minus:before {
   background-image: url("../images/icon_minus-sign.svg"); }
 
 .fieldset-stacked,
@@ -2971,8 +2980,8 @@ Selector pattern using above mixin:
 
 .link__primary, .footer__news-link, .login-modal__forgot, .link__over-beige, .footer__link, .footer__copyright-link, .link__pop, .login-modal__sign-up-link {
   position: relative;
-  text-decoration: none;
-  line-height: 1.2; }
+  line-height: 1.2;
+  text-decoration: none; }
   .link__primary:hover, .footer__news-link:hover, .login-modal__forgot:hover, .link__over-beige:hover, .footer__link:hover, .footer__copyright-link:hover, .link__pop:hover, .login-modal__sign-up-link:hover {
     text-decoration: none; }
   [href$='.pdf'].link__primary:after, [href$='.pdf'].footer__news-link:after, [href$='.pdf'].login-modal__forgot:after, [href$='.pdf'].link__over-beige:after, [href$='.pdf'].footer__link:after, [href$='.pdf'].footer__copyright-link:after, [href$='.pdf'].link__pop:after, [href$='.pdf'].login-modal__sign-up-link:after {
