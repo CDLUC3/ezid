@@ -129,7 +129,7 @@ def _separateByFormType(d):
   )
 
 def temp_mock():
-  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme=""></nameIdentifier><affiliation></affiliation></creator></creators><titles><title titleType=""><title xml:lang="en-us">test</title></title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><geoLocations><geoLocation><geoLocationPoint></geoLocationPoint><geoLocationBox></geoLocationBox><geoLocationPlace></geoLocationPlace></geoLocation></geoLocations></resource>')
+  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><nameIdentifier schemeURI="" nameIdentifierScheme=""></nameIdentifier><affiliation></affiliation></creator></creators><titles><title titleType="" xml:lang="en-us">test</title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><geoLocations><geoLocation><geoLocationPoint></geoLocationPoint><geoLocationBox></geoLocationBox><geoLocationPlace></geoLocationPlace></geoLocation></geoLocations></resource>')
 
 def _id_type(str):
   m = re.compile("^[a-z]+")

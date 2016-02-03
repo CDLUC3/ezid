@@ -247,7 +247,7 @@ class TitleForm(forms.Form):
     ) 
     self.fields["titleType"] = forms.ChoiceField(required=False, label = _("Type"),
       widget= forms.RadioSelect(), choices=TITLE_TYPES)
-    self.fields["title-{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
+    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
       label="Language(Hidden)", widget= forms.HiddenInput())
 
 class GeoLocForm(forms.Form):

@@ -154,7 +154,6 @@ def edit(request, identifier):
         posibly two differing profiles (current vs original). So we previously did a 
         check here to confirm current_profile equals original profile before saving.''' 
     d['current_profile'] = metadata.getProfile(P['original_profile'])
-    #this means we're saving and going to a save confirmation page
     if P['_status'] == 'unavailable':
       stts = P['_status'] + " | " + P['stat_reason']
     else:
@@ -177,8 +176,8 @@ def edit(request, identifier):
           d = _assignManualTemplate(d)
           _alertMessageUpdateError(request)
     else:
-      """ Even if converting from simple to advanced, let's validate and update 
-          identifier first, then worry about whether it should be upgraded or not.
+      """ Even if converting from simple to advanced, let's make sure forms validate
+          and update identifier first, else don't upgrade.
       """
       d['form'] = form_objects.getIdForm(d['current_profile'], None, P)
       if d['form'].is_valid():
@@ -189,7 +188,7 @@ def edit(request, identifier):
           return uic.render(request, "manage/edit", d)
         else:
           if 'simpleToAdvanced' in P and P['simpleToAdvanced'] == 'True':
-            # simpleToAdvanced button was selected 
+            # Convert simple ID to advanced (datacite with XML) 
             result = _updateEzid(request, d, stts, id_metadata)
             r = _getLatestMetadata(identifier, request)
             if type(r) is str:
@@ -197,6 +196,7 @@ def edit(request, identifier):
               return redirect("ui_manage.index")
             s, id_metadata = r 
             if not result.startswith("success:"):
+               #  if things fail, just display same simple edit page with error 
               _alertMessageUpdateError(request)
             else:
               _alertMessageUpdateSuccess(request)

@@ -234,8 +234,8 @@ def _createSimpleId (d, request, P):
     django.contrib.messages.success(request, _("IDENTIFIER CREATED."))
     d['id_gen_result'] = "created_identifier: "+new_id
   else:
-    django.contrib.messages.error(request, _("Identifier could not be created as submitted") +\
-      ": "  + s)
+    err = _("Identifier could not be created as submitted") + ": "  + s
+    django.contrib.messages.error(request, err)
     d['id_gen_result'] = 'edit_page'
   return d
 
