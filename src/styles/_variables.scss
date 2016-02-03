@@ -35,6 +35,9 @@ $design-light-gray-bg-color: rgb(249, 248, 247);  // #F9F8F7
 $design-light-gray-gradient-bottom: rgb(237,234,229); // #EDEAE5
 
 $design-dark-gray-color: rgb(124, 126, 127); // #7c7e7f
+
+$design-form-element-bg: linear-gradient(to bottom, lighten($design-dark-gray-color, 47%), lighten($design-dark-gray-color, 40%));
+
 $design-mark-color: rgb(251, 183, 20);  // orange highlight color  #FBB714
 
 $design-white-color: rgb(255, 255, 255); // white #fff

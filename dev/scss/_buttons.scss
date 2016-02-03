@@ -41,7 +41,7 @@
 	width: 30px;
 	height: 30px;
 	border: 1px solid $design-light-gray-border-color;
-	background: linear-gradient(to bottom, lighten($design-dark-gray-color, 47%), lighten($design-dark-gray-color, 40%));
+	background: $design-form-element-bg;
 
 	&:before {
 		position: absolute;
