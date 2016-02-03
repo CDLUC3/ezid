@@ -99,8 +99,13 @@ $fieldset-legend-spacing: 1em;
 // ***** Fieldset Borders ***** //
 
 .fieldset__top-border {
-	padding: 1em 0 0;
+	padding: 20px 0 0;
 	border-top: 1px solid $design-dark-gray-color;
+}
+
+.fieldset__bottom-border {
+	margin: 0 0 20px;
+	border-bottom: 1px solid $design-dark-gray-color;
 }
 
 // ***** Stacked Fieldset with Inline Select ***** //
