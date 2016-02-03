@@ -1,7 +1,7 @@
 // ##### Create ID Layout ##### //
 
 $element-group-spacing: 20px;
-$label-fixed-width: 26rem;
+$label-fixed-width: 26rem; // about 260px
 
 .create {
 	// empty
@@ -35,17 +35,12 @@ $label-fixed-width: 26rem;
 	margin: 0 0 $element-group-spacing;
 }
 
-.create__form-labels-simple {
+.create__label-simple {
 	width: $label-fixed-width;
 	text-align: right;
 }
 
-.create__label-level1 {
-	width: $label-fixed-width;
-	font-size: 1.4em;
-}
-
-.create__label-level2 {
+.create__label-advanced {
 	width: $label-fixed-width;
 }
 
@@ -64,6 +59,6 @@ $label-fixed-width: 26rem;
 
 .create__nested-legend {
 	color: $design-black-color;
-	font-size: inherit;
+	font-size: 1.2em;
 	text-transform: uppercase;
 }

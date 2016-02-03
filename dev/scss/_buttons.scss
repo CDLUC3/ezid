@@ -39,8 +39,7 @@
 %button__plus-minus {
 	padding: 15px;
 	border: 1px solid $design-light-gray-border-color;
-	border-radius: 3px;
-	background-color: $design-light-gray-bg-color;
+	background-color: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 12px;
