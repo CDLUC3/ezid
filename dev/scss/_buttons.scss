@@ -37,22 +37,42 @@
 }
 
 %button__plus-minus {
-	padding: 15px;
+	position: relative;
+	width: 30px;
+	height: 30px;
 	border: 1px solid $design-light-gray-border-color;
-	background-color: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: 12px;
+	background: linear-gradient(to bottom, lighten($design-dark-gray-color, 47%), lighten($design-dark-gray-color, 40%));
+
+	&:before {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: 12px;
+		content: '';
+	}
+
 }
 
 .button__plus {
 	@extend %button__plus-minus;
-	background-image: url('../images/icon_plus-sign.svg');
+
+	&:before {
+		background-image: url('../images/icon_plus-sign.svg');
+	}
+
 }
 
 .button__minus {
 	@extend %button__plus-minus;
-	background-image: url('../images/icon_minus-sign.svg');
+
+	&:before {
+		background-image: url('../images/icon_minus-sign.svg');
+	}
+
 }
 
 .button__text {
