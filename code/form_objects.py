@@ -417,11 +417,11 @@ class BaseSearchIdForm(forms.Form):
     widget=forms.TextInput(attrs={'placeholder': 
       _("Ex. University of Pittsburgh")}))
   pubyear_from = forms.RegexField(required=False, label=_("From"),
-    regex='^\d{1,4}$',
+    regex='^\d{4}$',
     error_messages={'invalid': ERR_4DIGITYEAR },
     widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015")}))
   pubyear_to = forms.RegexField(required=False, label=_("To"),
-    regex='^\d{1,4}$', 
+    regex='^\d{4}$', 
     error_messages={'invalid': ERR_4DIGITYEAR },
     widget=forms.TextInput(attrs={'placeholder': _("Ex. 2016")}))
   object_type = forms.ChoiceField(required=False, choices=RESOURCE_TYPES, 

@@ -200,34 +200,53 @@ def _buildQuerySyntax(c):
   """ Takes dictionary like this:
        {'keywords': u'marine fish', 'resourceTitle': u'"Aral Sea"'}
       and returns string like this:
-       keywords:(marine OR fish) AND title:("Aral Sea")
+       keywords:(marine OR fish) AND title:("Aral Sea") 
 
       Borrowing same logic from search_util.formulateQuery
-      in terms of removing characters that can't be hanled by MySQL.
-      For safety we remove all operators that are outside double 
-      quotes (i.e., quotes are the only operator we retain).
+       * Handling 2-tuple publication year
+       * Removing characters that can't be handled by MySQL.
+         For safety we remove all operators that are outside double 
+         quotes (i.e., quotes are the only operator we retain).
   """
   constraints = {i:c[i] for i in c if i!="publicSearchVisible"}
   r = ""
   dlength = len(constraints)
   for key,value in constraints.items():
-    r += key + ":("
+    r += key + ":"
     v = ""
-    inQuote = False
-    quoteOccurred = False
-    for c in value:
-      if c == '"':
-        quoteOccurred = True
-        inQuote = not inQuote
+    if type(value) is tuple:  # Year tuple i.e. (2001, 2002)
+      # i.e. publicationYear:>=2001 AND publicationYear:<=2002
+      x,y = value 
+      if x != None:
+        if y != None:
+          if x == y:
+            v += str(x) 
+          else:
+            v += ">=" + str(x) + " AND " + key + ":<=" + str(y) 
+        else:
+          v += ">=" + str(x) 
       else:
-        if not inQuote and not c.isalnum() and c!=" ": c = ""
-      v += c
-    if inQuote: v += '"'
-    value = "".join(v)
-    # Being simplistic about how to treat quoted queries
-    if not quoteOccurred:
-      value = value.replace(" ", " OR ") 
-    r += value + ")"
+        if y != None:
+          v += "<=" + str(y) 
+      value = "".join(v)
+      r += value
+    else:    # string-based query
+      inQuote = False
+      quoteOccurred = False
+      r += "("
+      for c in value:
+        if c == '"':
+          quoteOccurred = True
+          inQuote = not inQuote
+        else:
+          if not inQuote and not c.isalnum() and c!=" ": c = ""
+        v += c
+      if inQuote: v += '"'
+      value = "".join(v)
+      # Being simplistic about how to treat quoted queries
+      if not quoteOccurred:
+        value = value.replace(" ", " OR ") 
+      r += value + ")"
     dlength -= 1
     if dlength >= 1: r += " AND "
   return r 
