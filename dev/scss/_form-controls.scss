@@ -208,6 +208,7 @@
 	&:after {
 		color: $design-red-color;
 		content: ' (Required)';
+		font-weight: normal;
 	}
 
 }
