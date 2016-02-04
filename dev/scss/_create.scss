@@ -55,9 +55,16 @@
 }
 
 .create__accordion-section {
+	&[open] {
 
-	&[open] .create__accordion-title {
-		margin: 0 (-$accordion-padding) $form-element-group-spacing;
+		.create__form-element-group {
+			display: flex; // override jquery.details script, which sets all children to display: block by default
+		}
+
+		.create__accordion-title {
+			margin: 0 (-$accordion-padding) $form-element-group-spacing;
+		}
+
 	}
 
 }
