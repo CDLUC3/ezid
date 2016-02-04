@@ -2,9 +2,11 @@ import ui_common as uic
 import django.contrib.messages
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
+import django.db.models
 import ezid
 import metadata
 import math
+import policy
 import useradmin
 import erc
 import datacite
@@ -93,8 +95,12 @@ def index(request):
   d['ps'] = 10
   if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
   if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
+  ownerFilter = django.db.models.Q(owner__username=d['user'][0])
+  if d['includeCoowned']:
+    for co in policy.getReverseCoOwners(d['user'][0]):
+      ownerFilter |= django.db.models.Q(owner__username=co)
   d['total_results'] = ezidapp.models.SearchIdentifier.objects.\
-    filter(owner__username=d['user'][0]).count()
+    filter(ownerFilter).count()
   d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
   if d['p'] > d['total_pages']: d['p'] = d['total_pages']
   d['p'] = max(d['p'], 1)
@@ -105,8 +111,7 @@ def index(request):
     orderColumn = "updateTime" # arbitrary; co-owners not supported anymore
   if not IS_ASCENDING[d['sort']]: orderColumn = "-" + orderColumn
   d['results'] = []
-  for id in ezidapp.models.SearchIdentifier.objects.\
-    filter(owner__username=d['user'][0]).\
+  for id in ezidapp.models.SearchIdentifier.objects.filter(ownerFilter).\
     only("identifier", "owner__username", "createTime", "updateTime",
     "status", "unavailableReason", "resourceTitle", "resourceCreator").\
     select_related("owner").\

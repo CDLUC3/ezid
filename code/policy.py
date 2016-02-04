@@ -14,9 +14,11 @@
 # -----------------------------------------------------------------------------
 
 import ldap
+import re
 import threading
 
 import config
+import ezidadmin
 import log
 import shoulder
 import useradmin
@@ -32,6 +34,7 @@ _lock = threading.Lock()
 _testShoulders = None
 _groups = None
 _coOwners = None
+_reverseCoOwners = None
 _ldapEnabled = None
 _ldapServer = None
 _userDnTemplate = None
@@ -39,13 +42,14 @@ _adminUsername = None
 _adminPassword = None
 
 def _loadConfig ():
-  global _testShoulders, _groups, _coOwners, _ldapEnabled
+  global _testShoulders, _groups, _coOwners, _reverseCoOwners, _ldapEnabled
   global _ldapServer, _userDnTemplate, _adminUsername, _adminPassword
   _lock.acquire()
   try:
     _testShoulders = None
     _groups = {}
     _coOwners = {}
+    _reverseCoOwners = None
     _ldapEnabled = (config.get("ldap.enabled").lower() == "true")
     _ldapServer = config.get("ldap.server")
     _userDnTemplate = config.get("ldap.user_dn_template")
@@ -246,6 +250,60 @@ def clearCoOwnerCache (user):
   _lock.acquire()
   try:
     if user in _coOwners: del _coOwners[user]
+  finally:
+    _lock.release()
+
+def _loadReverseCoOwnersLdap ():
+  try:
+    d = {}
+    l = ezidadmin.getUsers()
+    assert type(l) is list, "ezidadmin.getUsers failed: " + l
+    for u, col in [(r["uid"], r["ezidCoOwners"]) for r in l]:
+      for co in re.split("[, ]+", col):
+        if len(co) == 0: continue
+        if co not in d: d[co] = []
+        if u not in d[co]: d[co].append(u)
+    return d
+  except Exception, e:
+    log.otherError("policy._loadReverseCoOwnersLdap", e)
+    return {}
+
+def _loadReverseCoOwnersLocal ():
+  d = {}
+  for u in config.get("users.keys").split(","):
+    for co in config.get("user_%s.co_owners" % u).split(","):
+      if len(co) == 0: continue
+      if co not in d: d[co] = []
+      if u not in d[co]: d[co].append(u)
+  return d
+
+def getReverseCoOwners (user):
+  """
+  Returns a list of other users that have named 'user' as an
+  account-level co-owner.  I.e., if users A and B both name user
+  'user' as an account-level co-owner, the return is [A, B].  All
+  users are identified by local names.
+  """
+  global _reverseCoOwners
+  _lock.acquire()
+  try:
+    if _reverseCoOwners is None:
+      if _ldapEnabled:
+        _reverseCoOwners = _loadReverseCoOwnersLdap()
+      else:
+        _reverseCoOwners = _loadReverseCoOwnersLocal()
+    return _reverseCoOwners.get(user, [])
+  finally:
+    _lock.release()
+
+def clearReverseCoOwnerCache ():
+  """
+  Clears the reverse co-ownership cache.
+  """
+  global _reverseCoOwners
+  _lock.acquire()
+  try:
+    _reverseCoOwners = None
   finally:
     _lock.release()
 

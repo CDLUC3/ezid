@@ -279,6 +279,7 @@ def setAccountProfile (username, coOwnerList):
         m = []
     if len(m) > 0: l.modify_s(dn, m)
     policy.clearCoOwnerCache(username)
+    policy.clearReverseCoOwnerCache()
     _cacheLdapInformation(l, dn, arkId)
     return None
   except Exception, e:
