@@ -43,10 +43,13 @@
 
 	th,
 	td {
+		width: 12em;
 		margin: 0;
 		padding: 0.5em;
 		border-right: 1px solid $design-light-gray-border-color;
 		border-bottom: 1px solid $design-light-gray-border-color;
+		text-overflow: ellipsis;
+		overflow: hidden;
 		vertical-align: top;
 	}
 
@@ -69,6 +72,8 @@
 
 	.table2 th {
 		display: table-cell;
+		width: auto;
+		overflow: visible;
 	}
 
 	.table2 tbody {
@@ -82,6 +87,8 @@
 
 	.table2 td {
 		display: table-cell;
+		width: auto;
+		overflow: visible;
 
 		&:first-child {
 			border-left: 1px solid $design-light-gray-border-color;

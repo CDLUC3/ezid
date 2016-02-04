@@ -207,6 +207,7 @@
 .fcontrol__label-required {
 	&:after {
 		color: $design-red-color;
+		font-weight: normal;
 		content: ' (Required)';
 	}
 
