@@ -13,7 +13,7 @@ from django.utils.translation import ugettext as _
     in most cases in the UI.
 """
 
-################# Constants ####################
+#### Constants ####
 
 REMAINDER_BOX_DEFAULT = _("Recommended: Leave blank")
 RESOURCE_TYPES = (
@@ -33,6 +33,9 @@ ERR_TITLE=_("Please fill in a value for title.")
 ERR_PUBLISHER=_("Please fill in a value for publisher.")
 PREFIX_CREATOR_SET='creators-creator'
 PREFIX_TITLE_SET='titles-title'
+PREFIX_DESCR_SET='descriptions-description'
+PREFIX_SUBJECT_SET='subjects-subject'
+PREFIX_CONTRIBUTOR_SET='contributors-contributor'
 PREFIX_GEOLOC_SET='geoLocations-geoLocation'
 
 ################# Basic ID Forms ####################
@@ -146,7 +149,7 @@ def getAdvancedIdForm (profile, request=None):
   elif profile.name == 'dc': form = DcForm(P, isDoi=isDoi, auto_id='%s')
   return {'remainder_form': remainder_form, 'form': form}
 
-################# ID Form Validation functions  #################
+################# Form Validation functions  #################
 
 def _validate_url(url):
   """ Borrowed from code/ezid.py """
@@ -187,7 +190,8 @@ class NonRepeatingForm(forms.Form):
   """ Form object for single field elements in DataCite Advanced (XML) profile """
   target=forms.CharField(required=False, label=_("Location (URL)"),
     validators=[_validate_url])
-  publisher = forms.CharField(label=_("Publisher"))
+  publisher = forms.CharField(label=_("Publisher"),
+    error_messages={'required': ERR_PUBLISHER})
   publicationYear = forms.RegexField(label=_("Publication Year"),
     regex=REGEX_4DIGITYEAR,
     error_messages={'required': _("Please fill in a value for publication year."),
@@ -220,7 +224,8 @@ class CreatorForm(forms.Form):
   """ Form object for Creator Element in DataCite Advanced (XML) profile """
   def __init__(self, *args, **kwargs):
     super(CreatorForm,self).__init__(*args,**kwargs)
-    self.fields["creatorName"] = forms.CharField(label=_("Name"))
+    self.fields["creatorName"] = forms.CharField(label=_("Name"),
+      error_messages={'required': _("Please fill in a value for creator name.")})
     self.fields["nameIdentifier"] = forms.CharField(required=False, label=_("Name Identifier"))
     self.fields["nameIdentifier-nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
     self.fields["nameIdentifier-schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
@@ -238,7 +243,8 @@ class TitleForm(forms.Form):
   """ Form object for Title Element in DataCite Advanced (XML) profile """
   def __init__(self, *args, **kwargs):
     super(TitleForm,self).__init__(*args,**kwargs)
-    self.fields["title"] = forms.CharField(label=_("Title"))
+    self.fields["title"] = forms.CharField(label=_("Title"),
+      error_messages={'required': ERR_TITLE}) 
     TITLE_TYPES = (
       ("", _("Main title")),
       ("AlternativeTitle", _("Alternative title")),
@@ -249,6 +255,100 @@ class TitleForm(forms.Form):
       widget= forms.RadioSelect(), choices=TITLE_TYPES)
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
       label="Language(Hidden)", widget= forms.HiddenInput())
+
+class DescrForm(forms.Form):
+  """ Form object for Description Element in DataCite Advanced (XML) profile """
+  def __init__(self, *args, **kwargs):
+    super(DescrForm,self).__init__(*args,**kwargs)
+    self.fields["description"] = forms.CharField(required=False, label=_("Descriptive information"))
+    DESCR_TYPES = (
+      ("", _("Select a type of description")),
+      ("Abstract", _("Abstract")),
+      ("SeriesInformation", _("Series Information")),
+      ("TableOfContents", _("Table of Contents")),
+      ("Methods", _("Methods")),
+      ("Other", _("Other")) 
+    ) 
+    self.fields["descriptionType"] = forms.ChoiceField(required=False, label = _("Type"),
+      choices=DESCR_TYPES)
+    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
+      label="Language(Hidden)", widget= forms.HiddenInput())
+
+class SubjectForm(forms.Form):
+  """ Form object for Subject Element in DataCite Advanced (XML) profile """
+  def __init__(self, *args, **kwargs):
+    super(SubjectForm,self).__init__(*args,**kwargs)
+    self.fields["subject"] = forms.CharField(required=False, label=_("Subject"))
+    self.fields["subjectScheme"] = forms.CharField(required=False, label=_("Subject Scheme"))
+    self.fields["schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
+    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
+      label="Language(Hidden)", widget= forms.HiddenInput())
+
+class ContributorForm(forms.Form):
+  """ Form object for Contributor Element in DataCite Advanced (XML) profile """
+  def __init__(self, *args, **kwargs):
+    super(ContributorForm,self).__init__(*args,**kwargs)
+    self.fields["contributorName"] = forms.CharField(required=False, label=_("Name"))
+    self.fields["nameIdentifier"] = forms.CharField(required=False, label=_("Name Identifier"))
+    self.fields["nameIdentifier-nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
+    self.fields["nameIdentifier-schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
+    CONTRIB_TYPES = (
+      ("", _("Select a type of contributor")),
+      ("ContactPerson", _("Contact Person")),
+      ("DataCollector", _("Data Collector")),
+      ("DataCurator", _("Data Curator")),
+      ("DataManager", _("Data Manager" )),
+      ("Distributor", _("Distributor")),
+      ("Editor", _("Editor")),
+      ("Funder", _("Funder")),
+      ("HostingInstitution", _("Hosting Institution")),
+      ("Producer", _("Producer")),
+      ("ProjectLeader", _("Project Leader")),
+      ("ProjectManager", _("Project Manager")),
+      ("ProjectMember", _("Project Member")),
+      ("RegistrationAgency", _("Registration Agency")),
+      ("RegistrationAuthority", _("Registration Authority")),
+      ("RelatedPerson", _("Related Person")),
+      ("Researcher", _("Researcher")),
+      ("ResearchGroup", _("Research Group")),
+      ("RightsHolder", _("Rights Holder")),
+      ("Sponsor", _("Sponsor")),
+      ("Supervisor", _("Supervisor")),
+      ("WorkPackageLeader", _("Work Package Leader")),
+      ("Other", _("Other"))
+    ) 
+    self.fields["contributorType"] = forms.ChoiceField(required=False, 
+      label = _("Contributor Type"), choices=CONTRIB_TYPES)
+    self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
+  def clean(self):
+    cleaned_data = super(ContributorForm, self).clean()
+    import pdb; pdb.set_trace()
+    err1 = {}
+    cname = cleaned_data.get("contributorName")
+    ctype = cleaned_data.get("contributorType")
+    caff = cleaned_data.get("affiliation")
+    ni = cleaned_data.get("nameIdentifier")
+    ni_s = cleaned_data.get("nameIdentifier-nameIdentifierScheme")
+    ni_s_uri = cleaned_data.get("nameIdentifier-schemeURI")
+    """ Use of contributor element requires name and type be populated """
+    if (cname or ctype or caff or ni or ni_s or ni_s_uri):
+      if not cname:
+        err1['contributorName'] = _("Contributor Name is required if you fill in contributor information.")
+      if not ctype:
+        err1['contributorType'] = _("Contributor Type is required if you fill in contributor information.")
+    err2 = nameIdValidation(ni, ni_s, ni_s_uri)
+    err = dict(err1.items() + err2.items())
+    if err: raise ValidationError(err) 
+    return cleaned_data
+
+""" ToDo:
+dates
+altIds 
+relIds
+sizes
+formats
+rights
+"""
 
 class GeoLocForm(forms.Form):
   """ Form object for GeoLocation Element in DataCite Advanced (XML) profile """
@@ -274,9 +374,12 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
          creators-creator-2-creatorName                                     """
   # Initialize forms and FormSets
   remainder_form = nonrepeating_form = resourcetype_form = creator_set = \
-    title_set = geoloc_set = None 
+    title_set = descr_set = subject_set = contributor_set = geoloc_set = None 
   CreatorSet = formset_factory(CreatorForm, formset=RequiredFormSet)
   TitleSet = formset_factory(TitleForm, formset=RequiredFormSet)
+  DescrSet = formset_factory(DescrForm)
+  SubjectSet = formset_factory(SubjectForm)
+  ContributorSet = formset_factory(ContributorForm)
   GeoLocSet = formset_factory(GeoLocForm)
   if not form_coll: 
 # On Create:GET
@@ -292,6 +395,9 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     resourcetype_form = ResourceTypeForm(P, auto_id='%s')
     creator_set = CreatorSet(P, prefix=PREFIX_CREATOR_SET, auto_id='%s')
     title_set = TitleSet(P, prefix=PREFIX_TITLE_SET, auto_id='%s')
+    descr_set = DescrSet(P, prefix=PREFIX_DESCR_SET, auto_id='%s')
+    subject_set = SubjectSet(P, prefix=PREFIX_SUBJECT_SET, auto_id='%s')
+    contributor_set = ContributorSet(P, prefix=PREFIX_CONTRIBUTOR_SET, auto_id='%s')
     geoloc_set = GeoLocSet(P, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
 # On Edit:GET (Convert DataCite XML dict to form)
   else:
@@ -302,11 +408,18 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
       prefix=PREFIX_CREATOR_SET, auto_id='%s')
     title_set = TitleSet(_inclMgmtData(form_coll.titles, PREFIX_TITLE_SET),
       prefix=PREFIX_TITLE_SET, auto_id='%s')
+    descr_set = DescrSet(_inclMgmtData(form_coll.descrs, PREFIX_DESCR_SET),
+      prefix=PREFIX_DESCR_SET, auto_id='%s')
+    subject_set = SubjectSet(_inclMgmtData(form_coll.subjects, PREFIX_SUBJECT_SET),
+      prefix=PREFIX_SUBJECT_SET, auto_id='%s')
+    contributor_set = ContributorSet(_inclMgmtData(form_coll.contributors, PREFIX_CONTRIBUTOR_SET),
+      prefix=PREFIX_CONTRIBUTOR_SET, auto_id='%s')
     geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations, PREFIX_GEOLOC_SET),
       prefix=PREFIX_GEOLOC_SET, auto_id='%s')
   return {'remainder_form': remainder_form, 'nonrepeating_form': nonrepeating_form,
     'resourcetype_form': resourcetype_form, 'creator_set': creator_set, 
-    'title_set': title_set, 'geoloc_set' : geoloc_set}
+    'title_set': title_set, 'descr_set':descr_set, 'subject_set':subject_set, 
+    'contributor_set':contributor_set, 'geoloc_set': geoloc_set}
 
 def _inclMgmtData(fields, prefix):
   """ Only to be used for formsets with syntax <prefix>-#-<field>

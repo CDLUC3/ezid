@@ -22,7 +22,7 @@
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked{% if form.identifier.errors %}--invalid{% endif %}">
         <label for="{{ form.identifier.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.identifier.label }}</label>
-        {{ form.identifier|add_attributes:"class:fcontrol__text-field-stacked,type:search" }}
+        {{ form.identifier|add_attributes:"fcontrol__text-field-stacked" }}
       {% if form.identifier.errors %}
         {% for error in form.identifier.errors %}
         <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
@@ -33,7 +33,7 @@
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked">
         <label for="{{ form.title.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.title.label }}</label>
-        {{ form.title|add_attributes:"class:fcontrol__text-field-stacked,type:search" }}
+        {{ form.title|add_attributes:"fcontrol__text-field-stacked" }}
       </div>{% comment %}No validation necessary{% endcomment %}
     </div>
   </div>
@@ -41,13 +41,13 @@
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked">
         <label for="{{ form.creator.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.creator.label }}</label>
-        {{ form.creator|add_attributes:"class:fcontrol__text-field-stacked,type:search" }}
+        {{ form.creator|add_attributes:"fcontrol__text-field-stacked" }}
       </div>{% comment %}No validation necessary{% endcomment %}
     </div>
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked">
         <label for="{{ form.publisher.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.publisher.label }}</label>
-        {{ form.publisher|add_attributes:"class:fcontrol__text-field-stacked,type:search" }}
+        {{ form.publisher|add_attributes:"fcontrol__text-field-stacked" }}
       </div>{% comment %}No validation necessary{% endcomment %}
     </div>
   </div>
