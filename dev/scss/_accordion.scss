@@ -28,7 +28,7 @@ $accordion-padding: 15px;
 	position: relative;
 	margin: 0 (-$accordion-padding);
 	padding: 10px 10px 10px ($accordion-padding + 25px);
-	background-color: $design-light-gray-bg-color;
+	background: $design-light-gray-bg-color;
 	font-weight: bold;
 
 	&:before {

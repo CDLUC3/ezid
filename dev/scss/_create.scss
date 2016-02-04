@@ -51,11 +51,15 @@
 }
 
 .create__accordion-section {
-	// empty
+
+	&[open] .create__accordion-title {
+		margin: 0 (-$accordion-padding) $form-element-group-spacing (-$accordion-padding);
+	}
+
 }
 
 .create__accordion-title {
-	// empty
+	background: $design-form-element-bg;
 }
 
 .create__button {
