@@ -50,10 +50,14 @@
 	width: $form-element-label-width;
 }
 
+.create__label-advanced--in-accordion {
+	width: ($form-element-label-width - 1.8rem);
+}
+
 .create__accordion-section {
 
 	&[open] .create__accordion-title {
-		margin: 0 (-$accordion-padding) $form-element-group-spacing (-$accordion-padding);
+		margin: 0 (-$accordion-padding) $form-element-group-spacing;
 	}
 
 }
