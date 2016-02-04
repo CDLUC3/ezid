@@ -252,8 +252,7 @@ def formulateQuery (constraints, orderBy=None,
             if not inQuote and not c.isalnum(): c = " "
           v += c
         if inQuote: v += '"'
-        value = "".join(v)
-        filters.append(django.db.models.Q(**{ (column + "__search"): value }))
+        filters.append(django.db.models.Q(**{ (column + "__search"): v }))
       else:
         value = value.split()
         if len(value) > 0:
