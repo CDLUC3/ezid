@@ -54,6 +54,8 @@
   {% endif %}
   </div>
 
+{% comment %}Put language here{% endcomment %}
+
 {{ form.resourcetype_form.non_field_errors }}
 {% for field in form.resourcetype_form %}
   <div class="row form-group form-group-sm{% if field.errors %} has-error{% endif %}">
@@ -70,6 +72,17 @@
   {% endif %}
   </div>
 {% endfor %}
+
+{% comment %}Put Description set here{% endcomment %}
+{% comment %}Put Subject set     here{% endcomment %}
+{% comment %}Put Contrib set     here{% endcomment %}
+{% comment %}Put Date set        here{% endcomment %}
+{% comment %}Put AltId set       here{% endcomment %}
+{% comment %}Put RelId set       here{% endcomment %}
+{% comment %}Put Size set        here{% endcomment %}
+{% comment %}Put Format set      here{% endcomment %}
+{% comment %}Put (nonrepeating) Version here{% endcomment %}
+{% comment %}Put Rights set      here{% endcomment %}
 
 {% include "create/_datacite_geoLoc.html" %}
 

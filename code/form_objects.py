@@ -11,6 +11,10 @@ from django.utils.translation import ugettext as _
 """ Django form framework added in 2016 release of EZID UI.
     Bulk of form validation occurs here. Avoiding JavaScript form validation
     in most cases in the UI.
+
+    Fields with hyphens, periods or leading underscores cause issues in python and in these cases
+    are defined using the fields dictionary of the Form class
+    i.e. self.fields["erc.who"] = ...
 """
 
 #### Constants ####
@@ -35,8 +39,20 @@ PREFIX_CREATOR_SET='creators-creator'
 PREFIX_TITLE_SET='titles-title'
 PREFIX_DESCR_SET='descriptions-description'
 PREFIX_SUBJECT_SET='subjects-subject'
-PREFIX_CONTRIBUTOR_SET='contributors-contributor'
+PREFIX_CONTRIB_SET='contributors-contributor'
+PREFIX_DATE_SET='dates-date'
+PREFIX_ALTID_SET='alternateIdentifiers-alternateIdentifier'
+PREFIX_RELID_SET='relatedIdentifiers-relatedIdentifier'
+PREFIX_SIZE_SET='sizes-size'
+PREFIX_FORMAT_SET='formats-format'
+PREFIX_RIGHTS_SET='rightsList-rights'
 PREFIX_GEOLOC_SET='geoLocations-geoLocation'
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#                                                                   #
+#               Forms for ID creation/editing                       #
+#                                                                   #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 ################# Basic ID Forms ####################
 
@@ -46,6 +62,7 @@ class BaseForm(forms.Form):
   def __init__(self, *args, **kwargs):
     self.placeholder = kwargs.pop('placeholder',None)
     super(BaseForm,self).__init__(*args,**kwargs)
+    # Easier to name this field as 'target', but this is reassigned in the view as '_target'
     self.fields["target"]=forms.CharField(required=False, label=_("Location (URL)"),
       validators=[_validate_url])
     if self.placeholder is not None and self.placeholder == True:
@@ -284,10 +301,12 @@ class SubjectForm(forms.Form):
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
       label="Language(Hidden)", widget= forms.HiddenInput())
 
-class ContributorForm(forms.Form):
-  """ Form object for Contributor Element in DataCite Advanced (XML) profile """
+class ContribForm(forms.Form):
+  """ Form object for Contributor Element in DataCite Advanced (XML) profile 
+      With specific validation rules
+  """
   def __init__(self, *args, **kwargs):
-    super(ContributorForm,self).__init__(*args,**kwargs)
+    super(ContribForm,self).__init__(*args,**kwargs)
     self.fields["contributorName"] = forms.CharField(required=False, label=_("Name"))
     self.fields["nameIdentifier"] = forms.CharField(required=False, label=_("Name Identifier"))
     self.fields["nameIdentifier-nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
@@ -321,34 +340,143 @@ class ContributorForm(forms.Form):
       label = _("Contributor Type"), choices=CONTRIB_TYPES)
     self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
   def clean(self):
-    cleaned_data = super(ContributorForm, self).clean()
+    cleaned_data = super(ContribForm, self).clean()
     import pdb; pdb.set_trace()
-    err1 = {}
     cname = cleaned_data.get("contributorName")
     ctype = cleaned_data.get("contributorType")
     caff = cleaned_data.get("affiliation")
     ni = cleaned_data.get("nameIdentifier")
     ni_s = cleaned_data.get("nameIdentifier-nameIdentifierScheme")
     ni_s_uri = cleaned_data.get("nameIdentifier-schemeURI")
+    err1 = {}
     """ Use of contributor element requires name and type be populated """
     if (cname or ctype or caff or ni or ni_s or ni_s_uri):
       if not cname:
-        err1['contributorName'] = _("Contributor Name is required if you fill in contributor information.")
+        err1['contributorName'] = _("Name is required if you fill in contributor information.")
       if not ctype:
-        err1['contributorType'] = _("Contributor Type is required if you fill in contributor information.")
+        err1['contributorType'] = _("Type is required if you fill in contributor information.")
     err2 = nameIdValidation(ni, ni_s, ni_s_uri)
     err = dict(err1.items() + err2.items())
     if err: raise ValidationError(err) 
     return cleaned_data
 
-""" ToDo:
-dates
-altIds 
-relIds
-sizes
-formats
-rights
-"""
+class DateForm(forms.Form):
+  """ Form object for Date Element in DataCite Advanced (XML) profile """
+  date = forms.CharField(required=False, label=_("Descriptive information"))
+  DATE_TYPES = (
+    ("", _("Select a type of date")),
+    ("Accepted", _("Accepted")),
+    ("Available", _("Available")),
+    ("Collected", _("Collected")),
+    ("Copyrighted", _("Copyrighted")),
+    ("Created", _("Created")),
+    ("Issued", _("Issued")),
+    ("Submitted", _("Submitted")),
+    ("Updated", _("Updated")),
+    ("Valid", _("Valid"))
+  ) 
+  dateType= forms.ChoiceField(required=False, label = _("Type"), choices=DATE_TYPES)
+
+class AltIdForm(forms.Form):
+  """ Form object for Alternate ID Element in DataCite Advanced (XML) profile """
+  alternateIdentifier = forms.CharField(required=False, label=_("Identifier"))
+  alternateIdentifierType = forms.CharField(required=False, label=_("Identifier Type"))
+
+class RelIdForm(forms.Form):
+  """ Form object for Related ID Element in DataCite Advanced (XML) profile
+      With specific validation rules
+  """
+  relatedIdentifier = forms.CharField(required=False, label=_("Identifier"))
+  ID_TYPES = (
+    ("", _("Select the type of related identifier")),
+    ("ARK", "ARK"),
+    ("arXiv", "arXiv"),
+    ("bibcode", "bibcode"),
+    ("DOI", "DOI"),
+    ("EAN13", "EAN13"),
+    ("EISSN", "EISSN"),
+    ("Handle", "Handle"),
+    ("ISBN", "ISBN"),
+    ("ISSN", "ISSN"),
+    ("ISTC", "ISTC"),
+    ("LISSN", "LISSN"),
+    ("LSID", "LSID"),
+    ("PMID", "PMID"),
+    ("PURL", "PURL"),
+    ("UPC", "UPC"),
+    ("URL", "URL"),
+    ("URN", "URN")
+  ) 
+  relatedIdentifierType = forms.ChoiceField(required=False, 
+    label = _("Identifier Type"), choices=ID_TYPES)
+  RELATION_TYPES = (
+    ("", _("Select relationship of A:resource being registered and B:related resource")),
+    ("Cites", _("Cites")),
+    ("Compiles", _("Compiles")),
+    ("Continues", _("Continues")),
+    ("Documents", _("Documents")),
+    ("HasMetadata", _("Has Metadata")),
+    ("HasPart", _("Has Part")),
+    ("IsCitedBy", _("Is Cited By")),
+    ("IsCompiledBy", _("Is Compiled By")),
+    ("IsContinuedBy", _("Is Continued By")),
+    ("IsDocumentedBy", _("Is Documented By")),
+    ("IsDerivedFrom", _("Is Derived From")),
+    ("IsIdenticalTo", _("Is Identical To")),
+    ("IsMetadataFor", _("Is Metadata For")),
+    ("IsPartOf", _("Is Part Of")),
+    ("IsNewVersionOf", _("Is New Version Of")),
+    ("IsOriginalFormOf", _("Is Original Form Of")),
+    ("IsPreviousVersionOf", _("Is Previous Version Of")),
+    ("IsReferencedBy", _("Is Referenced By")),
+    ("IsReviewedBy", _("Is Reviewed By")),
+    ("IsSourceOf", _("Is Source Of")),
+    ("IsSupplementedBy", _("Is Supplemented By")),
+    ("IsSupplementTo", _("Is Supplement To")),
+    ("IsVariantFormOf", _("Is Variant Form Of")),
+    ("References", _("References")),
+    ("Reviews", _("Reviews"))
+  ) 
+  relationType = forms.ChoiceField(required=False, label = _("Relation Type"), choices=ID_TYPES)
+  relatedMetadataScheme = forms.CharField(required=False, label=_("Related Metadata Scheme"))
+  schemeURI = forms.CharField(required=False, label=_("Scheme URI"))
+  schemeType = forms.CharField(required=False, label=_("Scheme Type"))
+  def clean(self):
+    cleaned_data = super(ContribForm, self).clean()
+    import pdb; pdb.set_trace()
+    ri = cleaned_data.get("relatedIdentifier")
+    ri_type = cleaned_data.get("relatedIdentifierType")
+    r_type = cleaned_data.get("relationType")
+    rm_s = cleaned_data.get("relatedMetadataScheme")
+    s_uri = cleaned_data.get("schemeURI")
+    s_type = cleaned_data.get("schemeType")
+    err={}
+    """ Use of RelId element requires relatedIdentifier and relatedIdentifierType be populated """
+    if (ri or ri_type or r_type or rm_s or s_uri or s_type):
+      if not ri_type:
+        err['relatedIdentifierType'] = _("Related Identifier Type is required if this property is used.")
+      if not r_type:
+        err['relationType'] = _("Relation Type is required if this property is used.")
+    if err: raise ValidationError(err) 
+    return cleaned_data
+
+class SizeForm(forms.Form):
+  """ Form object for Size Element in DataCite Advanced (XML) profile """
+  size = forms.CharField(required=False, label=_("Size"))
+
+class FormatForm(forms.Form):
+  """ Form object for Format Element in DataCite Advanced (XML) profile 
+      format() is a python method, so playing it safe and 
+      defining field using the fields dictionary of the Form class
+  """
+  def __init__(self, *args, **kwargs):
+    super(FormatForm,self).__init__(*args,**kwargs)
+    self.fields["format"] = forms.CharField(required=False, label=_("Format"))
+
+class RightsForm(forms.Form):
+  """ Form object for Rights Element in DataCite Advanced (XML) profile """
+  rights = forms.CharField(required=False, label=_("Rights"))
+  rightsURI = forms.CharField(required=False, label=_("Rights URI"))
 
 class GeoLocForm(forms.Form):
   """ Form object for GeoLocation Element in DataCite Advanced (XML) profile """
@@ -367,19 +495,26 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
       On GET, displays 'form_coll' (named tuple) data translated from XML doc
       On POST (when editing an ID or creating a new ID), uses request.POST
 
-      Returns elements as dict of Django forms and formsets
+      Returns all elements combined into one dict of Django forms and formsets
       Fields in Django FormSets follow this naming convention:
          prefix-#-elementName      
       Thus the creatorName field in the third Creator fieldset would be named:
          creators-creator-2-creatorName                                     """
   # Initialize forms and FormSets
   remainder_form = nonrepeating_form = resourcetype_form = creator_set = \
-    title_set = descr_set = subject_set = contributor_set = geoloc_set = None 
+    title_set = descr_set = subject_set = contrib_set = date_set = altid_set = \
+    relid_set = size_set = format_set = rights_set = geoloc_set = None 
   CreatorSet = formset_factory(CreatorForm, formset=RequiredFormSet)
   TitleSet = formset_factory(TitleForm, formset=RequiredFormSet)
   DescrSet = formset_factory(DescrForm)
   SubjectSet = formset_factory(SubjectForm)
-  ContributorSet = formset_factory(ContributorForm)
+  ContribSet = formset_factory(ContribForm)
+  DateSet = formset_factory(DateForm)
+  AltIdSet = formset_factory(AltIdForm)
+  RelIdSet = formset_factory(RelIdForm)
+  SizeSet = formset_factory(SizeForm)
+  FormatSet = formset_factory(FormatForm)
+  RightsSet = formset_factory(RightsForm)
   GeoLocSet = formset_factory(GeoLocForm)
   if not form_coll: 
 # On Create:GET
@@ -397,7 +532,13 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     title_set = TitleSet(P, prefix=PREFIX_TITLE_SET, auto_id='%s')
     descr_set = DescrSet(P, prefix=PREFIX_DESCR_SET, auto_id='%s')
     subject_set = SubjectSet(P, prefix=PREFIX_SUBJECT_SET, auto_id='%s')
-    contributor_set = ContributorSet(P, prefix=PREFIX_CONTRIBUTOR_SET, auto_id='%s')
+    contrib_set = ContribSet(P, prefix=PREFIX_CONTRIB_SET, auto_id='%s')
+    date_set = DateSet(P, prefix=PREFIX_DATE_SET, auto_id='%s')
+    altid_set = AltIdSet(P, prefix=PREFIX_ALTID_SET, auto_id='%s')
+    relid_set = RelIdSet(P, prefix=PREFIX_RELID_SET, auto_id='%s')
+    size_set = SizeSet(P, prefix=PREFIX_SIZE_SET, auto_id='%s')
+    format_set = FormatSet(P, prefix=PREFIX_FORMAT_SET, auto_id='%s')
+    rights_set = FormatSet(P, prefix=PREFIX_RIGHTS_SET, auto_id='%s')
     geoloc_set = GeoLocSet(P, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
 # On Edit:GET (Convert DataCite XML dict to form)
   else:
@@ -412,14 +553,28 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
       prefix=PREFIX_DESCR_SET, auto_id='%s')
     subject_set = SubjectSet(_inclMgmtData(form_coll.subjects, PREFIX_SUBJECT_SET),
       prefix=PREFIX_SUBJECT_SET, auto_id='%s')
-    contributor_set = ContributorSet(_inclMgmtData(form_coll.contributors, PREFIX_CONTRIBUTOR_SET),
+    contrib_set = ContribSet(_inclMgmtData(form_coll.contribs, PREFIX_CONTRIB_SET),
       prefix=PREFIX_CONTRIBUTOR_SET, auto_id='%s')
+    date_set = DateSet(_inclMgmtData(form_coll.dates, PREFIX_DATE_SET),
+      prefix=PREFIX_DATE_SET, auto_id='%s')
+    altid_set = AltIdSet(_inclMgmtData(form_coll.altids, PREFIX_ALTID_SET),
+      prefix=PREFIX_ALTID_SET, auto_id='%s')
+    relid_set = RelIdSet(_inclMgmtData(form_coll.relids, PREFIX_RELID_SET),
+      prefix=PREFIX_RELID_SET, auto_id='%s')
+    size_set = SizeSet(_inclMgmtData(form_coll.sizes, PREFIX_SIZE_SET),
+      prefix=PREFIX_SIZE_SET, auto_id='%s')
+    format_set = FormatSet(_inclMgmtData(form_coll.formats, PREFIX_FORMAT_SET),
+      prefix=PREFIX_FORMAT_SET, auto_id='%s')
+    rights_set = RightsSet(_inclMgmtData(form_coll.rights, PREFIX_RIGHTS_SET),
+      prefix=PREFIX_RIGHTS_SET, auto_id='%s')
     geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations, PREFIX_GEOLOC_SET),
       prefix=PREFIX_GEOLOC_SET, auto_id='%s')
   return {'remainder_form': remainder_form, 'nonrepeating_form': nonrepeating_form,
     'resourcetype_form': resourcetype_form, 'creator_set': creator_set, 
     'title_set': title_set, 'descr_set':descr_set, 'subject_set':subject_set, 
-    'contributor_set':contributor_set, 'geoloc_set': geoloc_set}
+    'contrib_set':contrib_set, 'date_set':date_set, 'altid_set':altid_set, 
+    'relid_set':relid_set, 'size_set':size_set, 'format_set':format_set, 
+    'rights_set':rights_set,'geoloc_set': geoloc_set}
 
 def _inclMgmtData(fields, prefix):
   """ Only to be used for formsets with syntax <prefix>-#-<field>
@@ -456,7 +611,10 @@ def isValidDataciteXmlForm(form):
   return (numFailed == 0)
   
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-############## Remaining Forms (not related to ID creation/editing) #########
+#                                                                   #
+#        Remaining Forms (not related to ID creation/editing)       #
+#                                                                   #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 ################# User Form Validation functions  #################
 
