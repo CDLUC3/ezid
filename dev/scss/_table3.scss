@@ -1,5 +1,70 @@
 // ##### Stackable Table v.2 ##### //
 
-.table3 {
-	// empty
+// Inspired from: https://css-tricks.com/examples/ResponsiveTables/responsive.php
+
+@include bp(screen2) {
+	.table3 {
+		// empty
+	}
+
+	.table3 thead tr {
+		background: $design-secondary-lightest;
+	}
+
+	.table3 th {
+		text-align: left;
+	}
+
+	.table3 th,
+	.table3 td {
+		padding: 0.5em;
+		border: 1px solid $design-light-gray-border-color;
+		vertical-align: top;
+	}
+
+}
+
+@media (max-width: $screen-md-min) {
+	.table3 table,
+	.table3 thead,
+	.table3 tbody,
+	.table3 th,
+	.table3 td,
+	.table3 tr {
+		display: block;
+	}
+
+	.table3 thead tr {
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+
+	.table3 tbody tr:nth-child(even) {
+	  background: $design-secondary-lightest;
+	}
+
+	.table3 td {
+		position: relative;
+		padding: 0.5em 0.5em 0.5em 50%;
+		border-top: 1px solid $design-light-gray-border-color;
+		border-right: 1px solid $design-light-gray-border-color;
+		border-left: 1px solid $design-light-gray-border-color;
+	}
+
+	.table3 td:before {
+		position: absolute;
+		top: 6px;
+		left: 6px;
+		width: 45%;
+		font-weight: bold;
+		white-space: nowrap;
+	}
+
+	.table3 td:nth-of-type(1):before { content: 'Object Title'; }
+	.table3 td:nth-of-type(2):before { content: 'Object Creator'; }
+	.table3 td:nth-of-type(3):before { content: 'Identifier'; }
+	.table3 td:nth-of-type(4):before { content: 'Object Publisher'; }
+	.table3 td:nth-of-type(5):before { content: 'Object Publication Date'; }
+	.table3 td:nth-of-type(6):before { content: 'Object Type'; }
 }
