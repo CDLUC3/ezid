@@ -77,7 +77,7 @@
 	margin: $form-element-group-spacing 0 0;
 
 	@include bp(screen2) {
-		margin: $form-element-group-spacing 0 0 13.8em;
+		margin: $form-element-group-spacing 0 0 ($form-element-label-width + 0.5rem);
 	}
 
 }
