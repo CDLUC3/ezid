@@ -62,6 +62,10 @@ blockquote a:hover {
   @include text-link2(#000);
 }
 
+.alert {
+  margin: 0 -10px;
+}
+
 //Used in alert div
 .alert-info a, 
 .alert-info a:visited, 

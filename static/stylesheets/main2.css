@@ -1804,7 +1804,7 @@ tbody.collapse.in {
     color: inherit; }
 
 .alert-success {
-  background-color: #dff0d8;
+  background-color: #86CA82;
   border-color: #d6e9c6;
   color: #3c763d; }
   .alert-success hr {
@@ -1813,7 +1813,7 @@ tbody.collapse.in {
     color: #2b542c; }
 
 .alert-info {
-  background-color: #d9edf7;
+  background-color: #c4ae7d;
   border-color: #bce8f1;
   color: #31708f; }
   .alert-info hr {
@@ -1822,7 +1822,7 @@ tbody.collapse.in {
     color: #245269; }
 
 .alert-warning {
-  background-color: #fcf8e3;
+  background-color: #ff8625;
   border-color: #faebcc;
   color: #8a6d3b; }
   .alert-warning hr {

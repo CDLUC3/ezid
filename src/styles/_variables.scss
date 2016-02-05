@@ -92,6 +92,15 @@ $container-lg: $screen-lg-min;
 $popover-bg: #eee;
 $popover-max-width: auto;
 $popover-arrow-color: $popover-bg;
+$alert-success-bg:            #86CA82;
+// $alert-success-text:          $state-success-text !default;
+// $alert-success-border:        $state-success-border !default;
+$alert-info-bg:               #c4ae7d ;
+// $alert-info-text:             $state-info-text !default;
+// $alert-info-border:           $state-info-border !default;
+$alert-warning-bg:            #ff8625;   // Slightly more muted version of $design-pop-color
+// $alert-warning-text:          $state-warning-text !default;
+// $alert-warning-border:        $state-warning-border !default;
 $breadcrumb-bg:   $design-white-color;
 $carousel-indicator-active-bg:       $design-primary-color !default;
 $carousel-indicator-border-color:    $design-primary-color !default;
