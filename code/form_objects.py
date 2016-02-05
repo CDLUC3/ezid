@@ -530,6 +530,7 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     resourcetype_form = ResourceTypeForm(P, auto_id='%s')
     creator_set = CreatorSet(P, prefix=PREFIX_CREATOR_SET, auto_id='%s')
     title_set = TitleSet(P, prefix=PREFIX_TITLE_SET, auto_id='%s')
+    """ 
     descr_set = DescrSet(P, prefix=PREFIX_DESCR_SET, auto_id='%s')
     subject_set = SubjectSet(P, prefix=PREFIX_SUBJECT_SET, auto_id='%s')
     contrib_set = ContribSet(P, prefix=PREFIX_CONTRIB_SET, auto_id='%s')
@@ -539,6 +540,7 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     size_set = SizeSet(P, prefix=PREFIX_SIZE_SET, auto_id='%s')
     format_set = FormatSet(P, prefix=PREFIX_FORMAT_SET, auto_id='%s')
     rights_set = FormatSet(P, prefix=PREFIX_RIGHTS_SET, auto_id='%s')
+    """
     geoloc_set = GeoLocSet(P, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
 # On Edit:GET (Convert DataCite XML dict to form)
   else:
@@ -549,6 +551,7 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
       prefix=PREFIX_CREATOR_SET, auto_id='%s')
     title_set = TitleSet(_inclMgmtData(form_coll.titles, PREFIX_TITLE_SET),
       prefix=PREFIX_TITLE_SET, auto_id='%s')
+    """
     descr_set = DescrSet(_inclMgmtData(form_coll.descrs, PREFIX_DESCR_SET),
       prefix=PREFIX_DESCR_SET, auto_id='%s')
     subject_set = SubjectSet(_inclMgmtData(form_coll.subjects, PREFIX_SUBJECT_SET),
@@ -567,14 +570,19 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
       prefix=PREFIX_FORMAT_SET, auto_id='%s')
     rights_set = RightsSet(_inclMgmtData(form_coll.rights, PREFIX_RIGHTS_SET),
       prefix=PREFIX_RIGHTS_SET, auto_id='%s')
+    """
     geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations, PREFIX_GEOLOC_SET),
       prefix=PREFIX_GEOLOC_SET, auto_id='%s')
   return {'remainder_form': remainder_form, 'nonrepeating_form': nonrepeating_form,
     'resourcetype_form': resourcetype_form, 'creator_set': creator_set, 
-    'title_set': title_set, 'descr_set':descr_set, 'subject_set':subject_set, 
+    'title_set': title_set, 
+    """
+    'descr_set':descr_set, 'subject_set':subject_set, 
     'contrib_set':contrib_set, 'date_set':date_set, 'altid_set':altid_set, 
     'relid_set':relid_set, 'size_set':size_set, 'format_set':format_set, 
-    'rights_set':rights_set,'geoloc_set': geoloc_set}
+    'rights_set':rights_set,
+    """
+    'geoloc_set': geoloc_set}
 
 def _inclMgmtData(fields, prefix):
   """ Only to be used for formsets with syntax <prefix>-#-<field>

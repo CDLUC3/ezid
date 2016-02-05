@@ -146,6 +146,7 @@ def adv_form(request, d):
   d['profiles'] = [p for p in metadata.getProfiles()[1:] if p.editable]
   profs = [(p.name, p.displayName, ) for p in d['profiles']] + uic.manual_profiles.items()
   d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
+  import pdb; pdb.set_trace()
   # 'datacite_xml' used for advanced profile instead of 'datacite'
   d['profile_names'].remove(('datacite','DataCite'))
   # [TODO: Enhance advanced DOI ERC profile to allow for elements ERC + datacite.publisher or 
@@ -231,7 +232,7 @@ def _createSimpleId (d, request, P):
     { '_target' : P['target'], '_export': 'yes' }))
   if s.startswith("success:"):
     new_id = s.split()[1]
-    django.contrib.messages.success(request, _("IDENTIFIER CREATED."))
+    django.contrib.messages.success(request, _("Identifier Created."))
     d['id_gen_result'] = "created_identifier: "+new_id
   else:
     err = _("Identifier could not be created as submitted") + ": "  + s
@@ -262,7 +263,7 @@ def _createAdvancedId (d, request, P):
       uic.user_or_anon_tup(request), uic.group_or_anon_tup(request), to_write)
   if s.startswith("success:"):
     new_id = s.split()[1]
-    django.contrib.messages.success(request, _("IDENTIFIER CREATED."))
+    django.contrib.messages.success(request, _("Identifier Created."))
     d['id_gen_result'] = 'created_identifier: ' + new_id
   else:
     if "-" in s:
