@@ -41,14 +41,22 @@
 		left: -9999px;
 	}
 
-	.table3 tbody tr:nth-child(even) {
-	  background: $design-secondary-lightest;
+	.table3 tbody {
+		border-top: 1px solid $design-light-gray-border-color;
+		border-bottom: 1px solid $design-light-gray-border-color;
+
+		tr:nth-child(even) {
+		  border-top: 2px solid $design-light-gray-border-color;
+		  border-bottom: 2px solid $design-light-gray-border-color;
+		  background: $design-secondary-lightest;
+		}
+
 	}
 
 	.table3 td {
 		position: relative;
 		padding: 0.5em 0.5em 0.5em 50%;
-		border-top: 1px solid $design-light-gray-border-color;
+		// border-top: 1px solid $design-light-gray-border-color;
 		border-right: 1px solid $design-light-gray-border-color;
 		border-left: 1px solid $design-light-gray-border-color;
 	}
@@ -66,6 +74,6 @@
 	.table3 td:nth-of-type(2):before { content: 'Object Creator'; }
 	.table3 td:nth-of-type(3):before { content: 'Identifier'; }
 	.table3 td:nth-of-type(4):before { content: 'Object Publisher'; }
-	.table3 td:nth-of-type(5):before { content: 'Object Publication Date'; }
+	.table3 td:nth-of-type(5):before { content: 'Object Pub Date'; }
 	.table3 td:nth-of-type(6):before { content: 'Object Type'; }
 }

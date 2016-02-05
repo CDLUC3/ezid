@@ -53,6 +53,11 @@ abbr {
   border: none; // for older browsers
   text-decoration: none; // for newer browsers
   cursor: inherit;
+
+  &[title] {
+    border: none; // from normalize.scss
+  }
+
 }
 
 summary {
