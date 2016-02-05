@@ -103,14 +103,6 @@ hr {
   margin-bottom: 20px;
 }
 
-.gradient-orange {
-  @include gradient-vertical($design-pop-gradient-top, $design-pop-gradient-bottom, 0%, 100%);
-}
-
-.gradient-form {
-  @include gradient-vertical($design-light-gray-bg-color, $design-light-gray-gradient-bottom, 0%, 100%);
-}
-
 .border-left-solid-blue {
   position: relative;
   border-left: 1px solid $design-primary-color;

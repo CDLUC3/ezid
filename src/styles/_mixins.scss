@@ -1,5 +1,23 @@
 // ##### Custom Mixins ##### //
 
+
+// ToDo: Copied from dev:
+// Abstract Bootstrap's responsive breakpoints for use in custom Sass.
+
+@mixin bp($point) {
+
+  @if $point == screen3 {
+    @media (min-width: $screen-lg-min) { @content; }
+
+  } @else if $point == screen2 {
+    @media (min-width: $screen-md-min) { @content; }
+
+  } @else if $point == screen1 {
+    @media (min-width: $screen-sm-min) { @content; }
+  }
+
+}
+
 // Vertical gradient, from top to bottom
 // https://github.com/twbs/bootstrap-sass/blob/881ce27c6b4101698ea849283933203e20861a33/assets/stylesheets/bootstrap/mixins/_gradients.scss
 //
