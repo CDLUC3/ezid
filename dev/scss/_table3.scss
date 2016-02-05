@@ -4,7 +4,8 @@
 
 @include bp(screen2) {
 	.table3 {
-		// empty
+		max-width: 1000px;
+		margin: 10px auto;
 	}
 
 	.table3 thead tr {
