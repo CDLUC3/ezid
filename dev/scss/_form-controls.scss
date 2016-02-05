@@ -76,7 +76,7 @@
 	@extend %hide;
 }
 
-// ***** Drop-down List Stacked ***** //
+// ***** Drop-down Lists ***** //
 
 .fcontrol__select-group-stacked {
 	display: flex;
@@ -115,13 +115,12 @@
 
 %fcontrol__select {
 	@extend %fcontrol-focus;
-	padding: 0 0.3em;
 	border: 1px solid $design-light-gray-border-color;
 	background: $design-form-element-bg;
 
-	option {
-		padding: 0.3em 0.5em;
-		background: lighten($design-dark-gray-color, 40%);
+	option,
+	optgroup {
+		margin: 0.3em 0;
 	}
 
 }
