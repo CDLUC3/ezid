@@ -3324,6 +3324,7 @@ blockquote p {
   display: none; }
   @media (min-width: 768px) {
     .frontpage_idcreate_arrow {
+      display: block;
       position: relative;
       background-image: url("/static/images/arrow.png");
       background-repeat: no-repeat;

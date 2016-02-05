@@ -10,6 +10,7 @@
     display: none;
 
   @include bp(screen2) {
+    display: block;
     position: relative;
     background-image: url('/static/images/arrow.png');
     background-repeat: no-repeat;
