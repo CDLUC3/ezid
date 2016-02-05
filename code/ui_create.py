@@ -146,7 +146,6 @@ def adv_form(request, d):
   d['profiles'] = [p for p in metadata.getProfiles()[1:] if p.editable]
   profs = [(p.name, p.displayName, ) for p in d['profiles']] + uic.manual_profiles.items()
   d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
-  import pdb; pdb.set_trace()
   # 'datacite_xml' used for advanced profile instead of 'datacite'
   d['profile_names'].remove(('datacite','DataCite'))
   # [TODO: Enhance advanced DOI ERC profile to allow for elements ERC + datacite.publisher or 
