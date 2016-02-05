@@ -340,8 +340,8 @@ class ContribForm(forms.Form):
       label = _("Contributor Type"), choices=CONTRIB_TYPES)
     self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
   def clean(self):
-    cleaned_data = super(ContribForm, self).clean()
     import pdb; pdb.set_trace()
+    cleaned_data = super(ContribForm, self).clean()
     cname = cleaned_data.get("contributorName")
     ctype = cleaned_data.get("contributorType")
     caff = cleaned_data.get("affiliation")
@@ -573,15 +573,15 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     """
     geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations, PREFIX_GEOLOC_SET),
       prefix=PREFIX_GEOLOC_SET, auto_id='%s')
-  return {'remainder_form': remainder_form, 'nonrepeating_form': nonrepeating_form,
-    'resourcetype_form': resourcetype_form, 'creator_set': creator_set, 
-    'title_set': title_set, 
     """
     'descr_set':descr_set, 'subject_set':subject_set, 
     'contrib_set':contrib_set, 'date_set':date_set, 'altid_set':altid_set, 
     'relid_set':relid_set, 'size_set':size_set, 'format_set':format_set, 
     'rights_set':rights_set,
     """
+  return {'remainder_form': remainder_form, 'nonrepeating_form': nonrepeating_form,
+    'resourcetype_form': resourcetype_form, 'creator_set': creator_set, 
+    'title_set': title_set, 
     'geoloc_set': geoloc_set}
 
 def _inclMgmtData(fields, prefix):

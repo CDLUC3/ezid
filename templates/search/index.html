@@ -78,14 +78,18 @@
       </div>
     </div>
     <div class="col-md-6 search__form-element-container">
-      <label for="{{ form.object_type.id_for_label }}" class="fcontrol__select-label">{{ form.object_type.label }}</label>
-      {{ form.object_type|add_attributes:"fcontrol__select"}}
+      <div class="fcontrol__select-group-inline">
+	<label for="{{ form.object_type.id_for_label }}" class="fcontrol__select-label-inline">{{ form.object_type.label }}</label>
+        {{ form.object_type|add_attributes:"fcontrol__select"}}
+      </div>
     </div>{% comment %}No validation necessary{% endcomment %}
   </div>
   <div class="row">
     <div class="col-md-6 search__form-element-container">
-      <label for="{{ form.id_type.id_for_label }}" class="fcontrol__select-label">{{ form.id_type.label }}</label>
-      {{ form.id_type|add_attributes:"fcontrol__select"}}
+      <div class="fcontrol__select-group-inline">
+	<label for="{{ form.id_type.id_for_label }}" class="fcontrol__select-label-inline">{{ form.id_type.label }}</label>
+        {{ form.id_type|add_attributes:"fcontrol__select"}}
+      </div>
     </div>{% comment %}No validation necessary{% endcomment %}
     <div class="col-md-6">
       

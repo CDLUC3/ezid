@@ -2820,12 +2820,10 @@ Selector pattern using above mixin:
   margin: 0 5px 0 0; }
 
 .fcontrol__select, .fcontrol__select--fullwidth {
-  padding: 0 0.3em;
   border: 1px solid #beb6af;
   background: linear-gradient(to bottom, whitesmoke, #e3e4e4); }
-  .fcontrol__select option, .fcontrol__select--fullwidth option {
-    padding: 0.3em 0.5em;
-    background: #e3e4e4; }
+  .fcontrol__select option, .fcontrol__select--fullwidth option, .fcontrol__select optgroup, .fcontrol__select--fullwidth optgroup {
+    margin: 0.3em 0; }
 
 .fcontrol__select--fullwidth {
   -webkit-flex: 1 0 auto;
@@ -3604,14 +3602,14 @@ Selector pattern using above mixin:
 .pagination__first {
   display: inline-block;
   position: relative;
-  top: 0.15em;
+  top: 0.2em;
   width: 1em;
   height: 1em;
   margin: 0 0.5em 0 0;
   background-image: url("../images/icon_double-arrow-first.svg");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 1em; }
+  background-size: 0.9em; }
 
 .pagination__label {
   font-weight: normal; }
@@ -3622,14 +3620,14 @@ Selector pattern using above mixin:
 .pagination__last {
   display: inline-block;
   position: relative;
-  top: 0.15em;
+  top: 0.2em;
   width: 1em;
   height: 1em;
   margin: 0 0 0 0.5em;
   background-image: url("../images/icon_double-arrow-last.svg");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 1em; }
+  background-size: 0.9em; }
 
 .sidebox {
   padding: 15px 15px 0;
