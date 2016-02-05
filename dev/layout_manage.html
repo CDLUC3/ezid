@@ -33,7 +33,146 @@
       <h1 class="heading__primary-text">Manage IDs</h1>
     </div>
 
-    [content to go here]
+    <div class="search__simple">
+      <div class="fcontrol__group-stacked">
+        <label for="search__simple-label" class="fcontrol__text-label-hidden">Search</label>
+        <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="Full text search using words about or describing the identifier.">
+        <span class="fcontrol__invalid-flag">Your search must not be empty</span>
+      </div>
+      <button class="search__simple-button">Search Your Identifiers</button>
+    </div>
+
+    <details class="search__advanced">
+      <summary class="heading__icon-1 search__summary">Advanced Search</summary>
+      <div class="row">
+        <div class="col-md-6 search__form-element-container">
+          <div class="fcontrol__group-stacked">
+            <label for="search__simple-label" class="fcontrol__text-label-stacked">Identifier/Identifier Prefix</label>
+            <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="doi:10.17614/Q44F1NB79" >
+            <span class="fcontrol__invalid-flag">Your search must not be empty</span>
+          </div>
+        </div>
+        <div class="col-md-6 search__form-element-container">
+          <div class="fcontrol__group-stacked">
+            <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Title (What)</label>
+            <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="Ex. 2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone" >
+            <span class="fcontrol__invalid-flag">Your search must not be empty</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 search__form-element-container">
+          <div class="fcontrol__group-stacked">
+            <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Creator (Who)</label>
+            <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="Ex. Pitt Quantum Repository" >
+            <span class="fcontrol__invalid-flag">Your search must not be empty</span>
+          </div>
+        </div>
+        <div class="col-md-6 search__form-element-container">
+          <div class="fcontrol__group-stacked">
+            <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Publisher</label>
+            <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="Ex. University of Pittsburgh" >
+            <span class="fcontrol__invalid-flag">Your search must not be empty</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="fieldset-stacked" role="group" aria-labelledby="fieldset__example4">
+            <div id="fieldset__example4" class="fieldset-stacked__legend search__publication-fieldset">Object Publication Date (When)</div>
+            <div class="fcontrol__inline-groups search__inline-groups">
+              <div class="fcontrol__group-inline">
+                <label for="fcontrol__example-label2" class="fcontrol__text-label-inline">From</label>
+                <input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Ex. 2015">
+              </div>
+              <div class="fcontrol__group-inline">
+                <label for="fcontrol__example-label2" class="fcontrol__text-label-inline">To</label>
+                <input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Ex. 2016">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 search__form-element-container">
+          <div class="fcontrol__select-group-stacked">
+            <label for="fcontrol__example-label12" class="fcontrol__select-label-stacked">Object Type</label>
+            <select name="url-here" id="fcontrol__example-label12" class="fcontrol__select--fullwidth">
+              <option value="">Select a type of object</option>
+              <option value="">Autovisual</option>
+              <option value="">Collection</option>
+              <option value="">Etc.</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 search__form-element-container">
+          <div class="fcontrol__select-group-stacked">
+            <label for="fcontrol__example-label12" class="fcontrol__select-label-stacked">ID Type</label>
+            <select name="url-here" id="fcontrol__example-label12" class="fcontrol__select--fullwidth">
+              <option value="">Select a type of identifier (ARK or DOI)</option>
+              <option value="">ARK</option>
+              <option value="">DOI</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <!-- empty bootstrap column-->
+        </div>
+      </div>
+    </details>
+
+    <div class="customize-table">
+     <h2 class="customize-table__heading">Your Identifiers (6000)</h2>
+     <button class="customize-table__button">Customize View</button>
+    </div>
+
+    <div class="fcontrol__select-group-inline">
+      <label for="manage__select3" class="fcontrol__select-label-inline">View identifiers owned by:</label>
+      <select name="url-here" id="manage__select3" class="fcontrol__select">
+        <option value="">Default top level ownership for logged in person</option>
+        <option value="">Department A</option>
+        <optgroup label="Institution B">
+          <option value="">Username 1</option>
+          <option value="">Username 2</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="search-results__pagination">
+
+      <div class="fcontrol__select-group-inline">
+        <label for="fcontrol__example-label1" class="fcontrol__select-label-inline search-results__select-label">Show</label>
+        <select name="url-here" id="fcontrol__example-label1" class="fcontrol__select">
+          <option value="">50</option>
+          <option value="">100</option>
+        </select>
+        <span class="search-results__select-appended-text">entries</span>
+      </div>
+
+      <!--#include file="includes/pagination.html" -->
+      
+    </div>
+
+    <!--#include file="includes/table2.html" -->
+
+    <div class="search-results__pagination">
+      
+      <div class="fcontrol__select-group-inline">
+        <label for="fcontrol__example-label2" class="fcontrol__select-label-inline search-results__select-label">Show</label>
+        <select name="url-here" id="fcontrol__example-label2" class="fcontrol__select">
+          <option value="">50</option>
+          <option value="">100</option>
+        </select>
+        <span class="search-results__select-appended-text">entries</span>
+      </div>
+
+      <!--#include file="includes/pagination.html" -->
+      
+    </div>
+
+    <p>*Indicates demo identifier</p>
+
+    <button class="button__primary">Download All</button>
 
     <!--#include file="includes/footer_geo-off.html" -->
 
