@@ -3,3 +3,39 @@
 .manage {
 	// empty
 }
+
+.manage__simple-search {
+	max-width: 1000px;
+	margin: 10px auto 30px;
+
+	@include bp(screen1) {
+		display: flex;
+		margin: 30px auto;
+	}
+
+}
+
+.manage__simple-search-button {
+	@extend %button__primary;
+	margin: 10px 0 0;
+
+	@include bp(screen1) {
+		margin: 0 0 0 10px;
+	}
+
+}
+
+.manage__identifiers-select {
+	max-width: 1000px;
+	margin: 0 auto 30px;
+}
+
+.manage__note {
+	max-width: 1000px;
+	margin: 30px auto;
+}
+
+.manage__download-button {
+	max-width: 1000px;
+	margin: 0 auto;
+}

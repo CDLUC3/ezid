@@ -33,13 +33,13 @@
       <h1 class="heading__primary-text">Manage IDs</h1>
     </div>
 
-    <div class="search__simple">
+    <div class="manage__simple-search">
       <div class="fcontrol__group-stacked">
-        <label for="search__simple-label" class="fcontrol__text-label-hidden">Search</label>
-        <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="Full text search using words about or describing the identifier.">
+        <label for="manage__simple-search-label" class="fcontrol__text-label-hidden">Search Your Identifiers</label>
+        <input id="manage__simple-search-label" class="fcontrol__text-field-stacked" type="search" placeholder="Full text search using words about or describing the identifier.">
         <span class="fcontrol__invalid-flag">Your search must not be empty</span>
       </div>
-      <button class="search__simple-button">Search Your Identifiers</button>
+      <button class="manage__simple-search-button">Search Your Identifiers</button>
     </div>
 
     <details class="search__advanced">
@@ -126,7 +126,7 @@
      <button class="customize-table__button">Customize View</button>
     </div>
 
-    <div class="fcontrol__select-group-inline">
+    <div class="fcontrol__select-group-inline manage__identifiers-select">
       <label for="manage__select3" class="fcontrol__select-label-inline">View identifiers owned by:</label>
       <select name="url-here" id="manage__select3" class="fcontrol__select">
         <option value="">Default top level ownership for logged in person</option>
@@ -170,9 +170,11 @@
       
     </div>
 
-    <p>*Indicates demo identifier</p>
+    <p class="manage__note">*Indicates demo identifier</p>
 
-    <button class="button__primary">Download All</button>
+    <div class="manage__download-button">
+      <button class="button__primary">Download All</button>
+    </div>
 
     <!--#include file="includes/footer_geo-off.html" -->
 
