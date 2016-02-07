@@ -2,27 +2,20 @@
 {% load metadata_tags %}
 {% load i18n %}
 
-<div class="row idcreate-content-row vertical-buffer-sm">
-  <div class="inline-header">
-    <span class="number-big">2</span>
-    <h2 class="id-creation">{% trans "Describe the identified object" %}</h2>
-  </div>
+<div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset2">
+  <span id="create__fieldset2" class="fieldset-stacked__legend-number-2">{% trans "Describe the identified object" %}</span>
   <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
 {{ form.non_field_errors }}
 {% for field in form %}
-  <div class="form-group form-group-sm{% if field.errors %} has-error{% endif %}">
-    <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">
-      {{ field.label }}
-    </label>
-    <div class="col-sm-7">
-      {{ field|add_attributes:"form-control"}}
-    </div>
+  <div class="fcontrol__group-inline{% if field.errors %}--invalid{% endif %} create__form-element-group">
+    <label for="{{ field.id_for_label }}" class="fcontrol__text-label-inline create__label-simple">{{ field.label }}</label>
+    {{ field|add_attributes:"fcontrol__text-field-inline"}}
   {% if field.errors %}
-    <div class="col-sm-2">
+    <span class="fcontrol__invalid-flag">
     {% for error in field.errors %}
       {{ error|escape }}
     {% endfor %}
-    </div>
+    </span>
   {% endif %}
   </div>
 {% endfor %}

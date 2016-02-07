@@ -5,33 +5,29 @@
 {% block description %}{%trans "Use the EZID demo to create a simple identifier." %}{% endblock %}
 {% block heading %}{% content_heading _("Create a Simple Demo Identifier") %}{% endblock %}
 {% block content %}
-<div class="container vertical-buffer-sm">
-  <div class="tab">
-    <input class="tab__input" id="tab-1" type="radio" name="name" checked="checked"/>
-    <label class="tab__label" for="tab-1">{% trans "Simple" %}</label>
-    <div class="tab__content gradient-form">
-    
+<div class="tab create__tab">
+  <input class="tab__input" id="tab-1" type="radio" name="name" checked="checked"/>
+  <label class="tab__label" for="tab-1">{% trans "Simple" %}</label>
+  <div class="tab__content">
     <form id="create_form" action="{% url "ui_demo.simple" %}" method="post" class="form-horizontal" role="form">
+    <div class="row">
 
-      <div class="row">
-        <div class="col-md-12 col-lg-5 col-lg-push-7">
-        <div class="call-out quick-start">
-          <h3>{% trans "Quick Start Guides" %}</h3>
-          <ul>
-            <li><a href="/static/locale/en/EZID_SimpleCreate.pdf" class="pdf-link" title="PDF Document" target="_blank">{% trans "Simple ID Creation" %}</a></li>
+      {% include "includes/simple_id_type.html" with calling_page="Demo" %} 
+
+      <div class="col-md-4 create__sidebox">
+        <div class="sidebox">
+          <h2 class="sidebox__heading">{% trans "Quick Start Guide" %}</h2>
+          <ul class="sidebox__list">
+            <li><a href="/static/locale/en/EZID_SimpleCreate.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Simple ID Creation" %}</a></li>
           </ul>
         </div>
-        </div>
-
-        <div class="col-md-12 col-lg-7 col-lg-pull-5">
-          {% include "includes/simple_id_type.html" with calling_page="Demo" %}
-        </div>
       </div>
-     
-        {% include "includes/simple_describe.html" %}
-      <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-          <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>
+    </div>
+
+    {% include "includes/simple_describe.html" %} 
+
+    <div class="create__button">
+      <button class="button__primary">{% trans "Create" %}</button>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
       i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
@@ -40,21 +36,20 @@
       {% blocktrans trimmed %}
           <strong>NOTE:</strong> This is just a <strong>demo</strong>. To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
       {% endblocktrans %}
-          <p class="italic vertical-buffer-xs">
-    {# Translators: Please preserve &quot; tags #}
-            {% trans "Clicking &quot;Create&quot; will create the identifier and make it public.  To defer making it public, use the Advanced form. Once created, an identifier cannot be renamed or deleted." %}
-          </p>
-        </div>
-      </div>
-    </form>
-    </div>
-
-    <input class="tab__input" id="tab-2" type="radio" name="name" />
-    <label class="tab__label" for="tab-2">{% trans "Advanced" %}</label>
-    <div class="tab__content">
-      <div>This page cannot be loaded unless you have JavaScript activated in your browser.</div>
+      {# Translators: Please preserve &quot; tags #}
+      <p class="create__buttton-note"><em>{% trans "Clicking &quot;Create&quot; will create the identifier and make it public. To defer making it public, use the Advanced form. Once created, an identifier cannot be renamed or deleted." %}</em></p>
     </div>
   </div>
+
+  <input class="tab__input" id="tab-2" type="radio" name="name">
+  <label class="tab__label" for="tab-2">Advanced</label>
+  <div class="tab__content">
+    <div class="row">
+      <div class="col-md-8">This page cannot be loaded unless you have JavaScript activated in your browser.</div>
+    </div>
+  </div>
+</div>
+
 
 <script type="text/javascript">
 /* ToDo: Bring in both simple and advanced content onto the same page
@@ -69,9 +64,6 @@ $(document).ready(function() {
   });
 });
 </script>
-
-
-</div> <!-- End Container -->
 
   <script type="text/javascript" src="/static/javascripts/simple_create.js"></script>
   <script type="text/javascript" src="/static/javascripts/fix_target.js"></script>

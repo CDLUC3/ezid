@@ -1,40 +1,25 @@
 {% load layout_extras %}
 {% load i18n %}
 
-<div class="row idcreate-content-row vertical-buffer-sm-resp">
-  <div class="col-sm-12">
-    <div class="inline-header">
-      <span class="number-big">1</span>
-      <h2 class="id-creation">{% trans "Choose an identifier type" %}</h2>
-      {% if calling_page == 'Demo' %}
-        {% help_icon "choose_id_demo" %}
-      {% else %}
-        {% help_icon "choose_id" %}
-      {% endif %}
-    </div>
+<div class="col-md-8">
+  <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset1">
+    <div id="create__fieldset1" class="fieldset-stacked__legend-number-1">{% trans "Choose an identifier type" %}</div>
+    {% if calling_page == 'Demo' %}
+      {% help_icon "choose_id_demo" %}
+    {% else %}
+      {% help_icon "choose_id" %}
+    {% endif %}
   {% if prefixes|duplicate_id_types %}
     {% for p in prefixes %}
-    <div class="form-group form-group-sm">
-      <div class="horizontal-buffer">
-        <label for="{{p.prefix}}" class="radio-css">
-          <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" 
-          {% selected_radio "shoulder" forloop.counter p.prefix %} />
-          <span>{% shoulder_display p "False" testPrefixes "False" %}</span>
-        </label>
-      </div>
-    </div>
+    <label for="{{p.prefix}}" class="fcontrol__radio-label-stacked create__radio-button">
+      <input id="{{p.prefix}}" class="fcontrol__radio-button-stacked" type="radio" value="{{p.prefix}}" name="shoulder" {% selected_radio "shoulder" forloop.counter p.prefix %} /> <span>{% shoulder_display p "False" testPrefixes "False" %}</span>
+    </label>
     {% endfor %}
   {% else %}
     {% for p in prefixes %}
-    <div class="form-group form-group-sm">
-      <div class="horizontal-buffer">
-        <label for="{{p.prefix}}" class="radio-css">
-          <input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}" 
-          {% selected_radio "shoulder" forloop.counter p.prefix %} />
-          <span>{% shoulder_display p "False" testPrefixes "True" %}</span>
-        </label>
-      </div>
-    </div>
+    <label for="{{p.prefix}}" class="fcontrol__radio-label-stacked create__radio-button">
+      <input id="{{p.prefix}}" class="fcontrol__radio-button-stacked" type="radio" value="{{p.prefix}}" name="shoulder" {% selected_radio "shoulder" forloop.counter p.prefix %} /> <span>{% shoulder_display p "False" testPrefixes "True" %}</span>
+    </label>
     {% endfor %}
   {% endif %}
   </div>
