@@ -3767,7 +3767,7 @@ Selector pattern using above mixin:
     display: block; }
   .table2 th,
   .table2 td {
-    width: 12em;
+    width: 10em;
     margin: 0;
     padding: 0.5em;
     border-right: 1px solid #beb6af;
@@ -3801,6 +3801,9 @@ Selector pattern using above mixin:
       border-left: 1px solid #beb6af; } }
 
 @media (min-width: 768px) {
+  .table3 {
+    max-width: 1000px;
+    margin: 10px auto; }
   .table3 thead tr {
     background: #ece5d6; }
   .table3 th {
@@ -3823,19 +3826,22 @@ Selector pattern using above mixin:
     position: absolute;
     top: -9999px;
     left: -9999px; }
-  .table3 tbody tr:nth-child(even) {
-    background: #ece5d6; }
+  .table3 tbody {
+    border-top: 1px solid #beb6af;
+    border-bottom: 1px solid #beb6af; }
+    .table3 tbody tr:nth-child(even) {
+      border-top: 2px solid #beb6af;
+      border-bottom: 2px solid #beb6af;
+      background: #ece5d6; }
   .table3 td {
     position: relative;
-    padding: 0.5em 0.5em 0.5em 50%;
-    border-top: 1px solid #beb6af;
+    padding: 0.5em 0.5em 0.5em 40%;
     border-right: 1px solid #beb6af;
     border-left: 1px solid #beb6af; }
   .table3 td:before {
     position: absolute;
     top: 6px;
     left: 6px;
-    width: 45%;
     font-weight: bold;
     white-space: nowrap; }
   .table3 td:nth-of-type(1):before {
@@ -3847,7 +3853,7 @@ Selector pattern using above mixin:
   .table3 td:nth-of-type(4):before {
     content: 'Object Publisher'; }
   .table3 td:nth-of-type(5):before {
-    content: 'Object Publication Date'; }
+    content: 'Object Pub Date'; }
   .table3 td:nth-of-type(6):before {
     content: 'Object Type'; } }
 
@@ -4097,6 +4103,8 @@ abbr {
   border: none;
   text-decoration: none;
   cursor: inherit; }
+  abbr[title] {
+    border: none; }
 
 summary {
   cursor: pointer; }

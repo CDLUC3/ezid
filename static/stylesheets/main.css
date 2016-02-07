@@ -2901,6 +2901,15 @@ blockquote a:hover {
 .alert {
   margin: 0 -10px; }
 
+.alert-error .alert-text {
+  color: white; }
+
+.alert-text {
+  color: black;
+  text-align: left;
+  max-width: 1000px;
+  margin: 0px auto; }
+
 .alert-info a,
 .alert-info a:visited,
 .alert-info a:link {

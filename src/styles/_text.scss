@@ -66,6 +66,17 @@ blockquote a:hover {
   margin: 0 -10px;
 }
 
+.alert-error .alert-text {
+  color: $design-white-color;
+}
+
+.alert-text {
+  color: $design-black-color;
+  text-align: left;
+  max-width: 1000px;
+  margin: 0px auto;
+}
+
 //Used in alert div
 .alert-info a, 
 .alert-info a:visited, 

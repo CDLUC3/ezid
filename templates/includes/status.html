@@ -1,8 +1,10 @@
 {% if alertMessage != "" %}
   {% if not session or not "hide_alert" in session or not session.hide_alert %}
   <div id="ustatus" class="alert alert-warning" role="alert">
-    <a href="#" class="close not-text" data-dismiss="alert">&times;</a>
-    {{ alertMessage }}
+    <div class="alert-text">
+      <a href="#" class="close not-text" data-dismiss="alert">&times;</a>
+      {{ alertMessage }}
+    </div>
   </div>
   {% endif %}
 {% endif %}

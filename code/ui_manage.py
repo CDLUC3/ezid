@@ -27,6 +27,7 @@ FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") +\
 
 @uic.user_login_required
 def index(request):
+  """ Manage Page, listing all Ids owned by user """
   d = { 'menu_item' : 'ui_manage.index' }
   isPublicSearch=False
   if request.method == "GET":
@@ -111,6 +112,7 @@ def _dataciteXmlToForm(request, d, id_metadata):
   return d
 
 def edit(request, identifier):
+  """ Edit page for a given ID """
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
   r = _getLatestMetadata(identifier, request)
@@ -210,6 +212,7 @@ def edit(request, identifier):
   return uic.render(request, "manage/edit", d)
 
 def details(request):
+  """ ID Details page for a given ID """
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
   my_path = "/id/"
