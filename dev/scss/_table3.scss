@@ -42,8 +42,7 @@
 	}
 
 	.table3 tbody {
-		border-top: 1px solid $design-light-gray-border-color;
-		border-bottom: 1px solid $design-light-gray-border-color;
+		border: 1px solid $design-light-gray-border-color;
 
 		tr:nth-child(even) {
 		  border-top: 2px solid $design-light-gray-border-color;
@@ -55,18 +54,26 @@
 
 	.table3 td {
 		position: relative;
-		padding: 0.5em 0.5em 0.5em 40%;
-		// border-top: 1px solid $design-light-gray-border-color;
-		border-right: 1px solid $design-light-gray-border-color;
+		margin: 0 0 0 150px;
+		padding: 6px;
 		border-left: 1px solid $design-light-gray-border-color;
-	}
 
-	.table3 td:before {
-		position: absolute;
-		top: 6px;
-		left: 6px;
-		font-weight: bold;
-		white-space: nowrap;
+		&:before {
+			position: absolute;
+			top: 6px;
+			left: -145px;
+			font-weight: bold;
+			white-space: nowrap;
+		}
+
+		// truncate identifier table cell:
+		&:nth-of-type(3) {
+			max-width: 50vw;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
+		}
+
 	}
 
 	.table3 td:nth-of-type(1):before { content: 'Object Title'; }
