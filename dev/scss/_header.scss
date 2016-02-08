@@ -20,10 +20,11 @@
 	align-items: flex-end;
 	justify-content: space-between;
 	max-width: 1000px;
-	margin: 0 auto 15px;
+	margin: 15px auto;
 
 	@include bp(screen2) {
 		flex-flow: row nowrap;
+		margin: 0 auto 15px;
 	}
 
 }
