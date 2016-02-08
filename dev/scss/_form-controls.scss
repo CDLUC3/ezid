@@ -86,7 +86,14 @@
 
 .fcontrol__select-group-inline {
 	display: flex;
-	align-items: center;
+	flex-flow: column nowrap;
+	align-items: flex-start;
+
+	@include bp(screen1) {
+		flex-flow: row nowrap;
+		align-items: center;
+	}
+
 }
 
 %fcontrol__select-label {
