@@ -2802,9 +2802,20 @@ Selector pattern using above mixin:
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center; }
+  -webkit-flex-flow: column nowrap;
+      -ms-flex-flow: column nowrap;
+          flex-flow: column nowrap;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start; }
+  @media (min-width: 480px) {
+    .fcontrol__select-group-inline {
+      -webkit-flex-flow: row nowrap;
+          -ms-flex-flow: row nowrap;
+              flex-flow: row nowrap;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center; } }
 
 .fcontrol__select-label-stacked, .fcontrol__select-label-inline {
   color: #00778a;
@@ -3981,6 +3992,21 @@ Selector pattern using above mixin:
 @media (min-width: 768px) {
   .home__create-button {
     padding: 0 0 0 15px; } }
+
+.manage__form-element-container {
+  margin: 0 0 30px; }
+  @media (min-width: 768px) {
+    .manage__form-element-container:nth-child(even) {
+      padding: 0 0 0 30px; } }
+
+.manage__fieldset {
+  margin: 0; }
+
+.manage__fieldset-legend {
+  font-size: 1.1em; }
+
+.manage__text-label-inline {
+  font-weight: normal; }
 
 .manage__simple-search {
   max-width: 1000px;

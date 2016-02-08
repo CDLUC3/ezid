@@ -21,19 +21,19 @@ FIELD_DEFAULTS = ['mappedTitle', 'mappedCreator', 'identifier', 'owner', 'create
                   'updateTime', 'status']
 
 # Column names for display for each field
-FIELDS_MAPPED = {'identifier':_("Identifier"),  'owner':_("Owner"), 'coOwners':_("Co-Owners"), \
+FIELDS_MAPPED = {'identifier':_("Identifier"),  'owner':_("Owner"), \
                   'createTime':_("Date Created"), 'updateTime':_("Date Last Modified"), \
                   'status':_("Status"), 'mappedTitle':_("Object Title"), \
                   'mappedCreator':_("Object Creator")}
 
 #how to display each field, these are in custom tags for these display types
-FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', 'coOwners': 'coowners', \
+FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', \
                 'createTime': 'datetime', 'updateTime': 'datetime', 'status' :'string',\
                 'mappedTitle': 'string', 'mappedCreator' : 'string'}
 
 # priority for the sort order if it is not set, choose the first field that exists in this order
 FIELD_DEFAULT_SORT_PRIORITY = ['updateTime', 'identifier', 'createTime', 'owner', 'mappedTitle', \
-                'mappedCreator', 'status', 'coOwners']
+                'mappedCreator', 'status']
 
 IS_ASCENDING = {'asc': True, 'desc': False }
 
@@ -72,21 +72,15 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
     # else:
     d['account_co_owners'] = ''
     d['field_order'] = FIELD_ORDER
-    d['field_norewrite'] = FIELD_ORDER + ['includeCoowned']
     d['fields_mapped'] = FIELDS_MAPPED
     d['field_defaults'] = FIELD_DEFAULTS
-    # ToDo: Map fields approprately from both customize and from Search Query
-    # d['fields_selected'] = [x for x in FIELD_ORDER if x in REQUEST ]
-    # Temporary setup:
-    # if len(d['fields_selected']) < 1: 
-    d['fields_selected'] = FIELD_DEFAULTS
+    # ToDo: Map fields appropriately from both customize and from Search Query
+    d['fields_selected'] = [x for x in FIELD_ORDER if x in REQUEST ]
+    if len(d['fields_selected']) < 1: d['fields_selected'] = FIELD_DEFAULTS
     d['REQUEST'] = REQUEST 
     d['field_display_types'] = FIELD_DISPLAY_TYPES
 
     #ensure sorting defaults are set
-    d['includeCoowned'] = True
-    if 'submit_checks' in REQUEST and not ('includeCoowned' in REQUEST):
-      d['includeCoowned'] = False    
     if 'order_by' in REQUEST and REQUEST['order_by'] in d['fields_selected']:
       d['order_by'] = REQUEST['order_by']
     else:
@@ -124,8 +118,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
     for id in search_util.formulateQuery(c, orderBy=orderColumn)\
       [(d['p']-1)*d['ps']:d['p']*d['ps']]:
       result = { "identifier": id.identifier, "owner": id.owner.username,
-        "coOwners": "", "createTime": id.createTime,
-        "updateTime": id.updateTime, "status": id.get_status_display(),
+        "createTime": id.createTime, "updateTime": id.updateTime, "status": id.get_status_display(),
         "mappedTitle": id.resourceTitle, "mappedCreator": id.resourceCreator }
       if id.isUnavailable and id.unavailableReason != "":
         result["status"] += " | " + id.unavailableReason

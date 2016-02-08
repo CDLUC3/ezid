@@ -14,13 +14,7 @@
           <p>{% trans "You may choose up to 8 informational columns to customize the browsing view for your identifiers." %}</p>
           {% column_choices field_order fields_mapped fields_selected %}
         </div>
-          {% rewrite_hidden_except REQUEST field_norewrite %}
-        <div class="customize-modal__title">{% trans "Other Options" %}</div>
-        <input type="checkbox" id="includeCoowned" name="includeCoowned" value="t"
-          {% if includeCoowned %}
-         checked="checked" 
-          {% endif %} \>
-        <label for="includeCoowned">{% trans "include co-owned identifiers" %}</label>
+          {% rewrite_hidden_except REQUEST field_order %}
       </div>
       <div class="modal-footer">
         <a href="#restore_defaults" id="restore_defaults">{% trans "Restore Defaults" %}</a>&nbsp;&nbsp;&nbsp;&nbsp;
