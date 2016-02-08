@@ -3239,12 +3239,13 @@ Selector pattern using above mixin:
       -ms-flex-pack: justify;
           justify-content: space-between;
   max-width: 1000px;
-  margin: 0 auto 15px; }
+  margin: 15px auto; }
   @media (min-width: 768px) {
     .header {
       -webkit-flex-flow: row nowrap;
           -ms-flex-flow: row nowrap;
-              flex-flow: row nowrap; } }
+              flex-flow: row nowrap;
+      margin: 0 auto 15px; } }
 
 .header__logos {
   display: -webkit-flex;
@@ -3827,23 +3828,27 @@ Selector pattern using above mixin:
     top: -9999px;
     left: -9999px; }
   .table3 tbody {
-    border-top: 1px solid #beb6af;
-    border-bottom: 1px solid #beb6af; }
+    border: 1px solid #beb6af; }
     .table3 tbody tr:nth-child(even) {
       border-top: 2px solid #beb6af;
       border-bottom: 2px solid #beb6af;
       background: #ece5d6; }
   .table3 td {
     position: relative;
-    padding: 0.5em 0.5em 0.5em 40%;
-    border-right: 1px solid #beb6af;
+    margin: 0 0 0 150px;
+    padding: 6px;
     border-left: 1px solid #beb6af; }
-  .table3 td:before {
-    position: absolute;
-    top: 6px;
-    left: 6px;
-    font-weight: bold;
-    white-space: nowrap; }
+    .table3 td:before {
+      position: absolute;
+      top: 6px;
+      left: -145px;
+      font-weight: bold;
+      white-space: nowrap; }
+    .table3 td:nth-of-type(3) {
+      max-width: 50vw;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden; }
   .table3 td:nth-of-type(1):before {
     content: 'Object Title'; }
   .table3 td:nth-of-type(2):before {
@@ -3959,7 +3964,10 @@ Selector pattern using above mixin:
     .home__identifier-form {
       width: 100%;
       margin: 30px 15px;
-      padding: 30px 50px 0; } }
+      padding: 30px 50px 0;
+      background-image: url("../images/arrow.png");
+      background-repeat: no-repeat;
+      background-position: top 27px left -8px; } }
 
 .home__radio-labels {
   font-size: 1.2em; }

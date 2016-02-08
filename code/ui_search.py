@@ -5,7 +5,9 @@ import form_objects
 from django.utils.translation import ugettext as _
 import math
 import useradmin
- 
+import locale
+locale.setlocale(locale.LC_ALL, '')
+
 # these are layout properties for the fields in the search and manage results pages,
 # if I had realized there were going to be so many properties up front, I probably would
 # have created a field layout object with a number of properties instead.
@@ -107,6 +109,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
       c = _buildTimeConstraints(c, REQUEST, isPublicSearch)
     d['search_query'] = _buildQuerySyntax(c)
     d['total_results'] = search_util.formulateQuery(c).count()
+    d['total_results_str'] = format(d['total_results'], "n") 
     d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
     if d['p'] > d['total_pages']: d['p'] = d['total_pages']
     d['p'] = max(d['p'], 1)
