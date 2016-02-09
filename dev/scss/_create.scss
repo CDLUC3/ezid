@@ -43,7 +43,11 @@
 
 .create__label-simple {
 	width: $form-element-label-width;
-	text-align: right;
+
+	@include bp(screen1) {
+		text-align: right;
+	}
+
 }
 
 .create__label-advanced {
