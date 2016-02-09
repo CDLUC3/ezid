@@ -3,43 +3,42 @@
 {% load i18n %}
 
 <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
-<div class="row idcreate-content-row">
-  <div class="col-sm-12 inline-header vertical-buffer-sm">
-    <span class="number-big">4</span>
-    <h2 class="id-creation">{% trans "Describe the identified object using the" %}
-      <select name="current_profile" id="current_profile">
-        {% for prof in profile_names %}
-          <option value="{{prof.0}}"
-            {% if prof.0 == current_profile_name %}
-              selected="selected"
-            {% endif %}
-          >{{prof.1}}</option>
-        {% endfor %}
-      </select>
-      {% trans "profile:" %}
-    </h2>{% help_icon "describe_profile" %}
-  </div>
+<div class="fieldset-stacked__embedded-select">
+  <span id="create__fieldset7" class="fieldset-inline__legend-number-4">{% trans "Describe the identified object using the" %}</span>
+  <label for="current_profile" class="fcontrol__text-label-hidden">{% trans "Profile" %}</label>
+  <select name="current_profile" id="current_profile" class="fcontrol__select">
+    {% for prof in profile_names %}
+    <option value="{{prof.0}}"
+    {% if prof.0 == current_profile_name %}
+      selected="selected"
+    {% endif %}
+    >{{prof.1}}</option>
+    {% endfor %}
+  </select>
+  <span class="fieldset-stacked__embedded-select-append-text">{% trans "profile" %}</span>
+  {% help_icon "describe_profile" %}
+</div>
+
 {% if manual_profile %}
+<div class="row idcreate-content-row">
 <!-- Including manual template -->
   {% include manual_template %}
-{% else %}
-  {{ form.form.non_field_errors }}
-  {% for field in form.form %}
-  <div class="form-group form-group-sm{% if field.errors %} has-error{% endif %}">
-    <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">
-      {{ field.label }}
-    </label>
-    <div class="col-sm-7">
-      {{ field|add_attributes:"form-control"}}
-    </div>
-  {% if field.errors %}
-    <div class="col-sm-2">
-    {% for error in field.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </div>
-  {% endif %}
-  </div>
-  {% endfor %}
-{% endif %}
 </div>
+{% else %}
+
+{{ form.form.non_field_errors }}
+{% for field in form.form %}
+ <div class="fcontrol__group-inline{% if field.errors %}--invalid{% endif %} create__form-element-group">
+  <label for="{{ field.id_for_label }}" class="fcontrol__text-label-inline create__label-simple">{{ field.label }}</label>
+  {{ field|add_attributes:"fcontrol__text-field-inline"}}
+  {% if field.errors %}
+  <span class="fcontrol__invalid-flag">
+  {% for error in field.errors %}
+    {{ error|escape }}
+  {% endfor %}
+  </span>
+  {% endif %}
+</div>
+{% endfor %}
+
+{% endif %}

@@ -1,29 +1,22 @@
 {% load layout_extras %}
 {% load i18n %}
 
-
-<div class="row idcreate-content-row vertical-buffer-sm">
-  <div class="col-sm-12 inline-header">
-    <span class="number-big">2</span>
-    <h2 class="id-creation">{% trans "Optional: Enter a custom remainder (suffix)" %}</h2>
-     {% help_icon "custom_remainder" %}
-  </div>
+<div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset4">
+  <div id="create__fieldset4" class="fieldset-stacked__legend-number-2">{% trans "Optional: Enter a custom remainder (suffix)" %}</div>
+  {% help_icon "custom_remainder" %}
   {{ form.remainder_form.non_field_errors }}
   {% for field in form.remainder_form %}
-  <div class="col-sm-12">
-    <div class="fcontrol__group-stacked{% if field.errors %}--invalid{% endif %}">
-      <label for="{{ field.id_for_label }}" class="fcontrol__text-label-hidden">{{ field.label }}</label>
-      {{ field|add_attributes:"fcontrol__text-field-stacked" }}
+  <div class="fcontrol__group-stacked{% if field.errors %}--invalid{% endif %} create__form-element-group">
+    <label for="{{ field.id_for_label }}" class="fcontrol__text-label-hidden">{{ field.label }}</label>
+    {{ field|add_attributes:"fcontrol__text-field-stacked" }}
     {% if field.errors %}
       <span class="fcontrol__invalid-flag">{% for error in field.errors %}{{ error|escape }}{% endfor %}</span>
     {% endif %}
-    </div>
   </div>
   {% endfor %}
-
-  <div class="col-sm-12 horizontal-buffer" id="preview_div">
-    <h2>{% trans "Identifier Preview:" %}</h2>
-    <div id="preview_div_value"></div>
+  <div id="preview_div" class="fcontrol__group-inline">
+    <div class="fcontrol__text-label-inline">{% trans "Identifier Preview:" %}</div>
+    <div id="preview_div_value" class="fcontrol__text-field-inline"></div>
   </div>
 </div>
 

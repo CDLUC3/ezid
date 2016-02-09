@@ -2764,9 +2764,9 @@ Selector pattern using above mixin:
   -webkit-flex: 1 0 auto;
       -ms-flex: 1 0 auto;
           flex: 1 0 auto;
-  -webkit-flex-flow: row nowrap;
-      -ms-flex-flow: row nowrap;
-          flex-flow: row nowrap; }
+  -webkit-flex-flow: row wrap;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap; }
 
 .fcontrol__text-label-inline {
   -webkit-align-self: center;
@@ -2802,20 +2802,9 @@ Selector pattern using above mixin:
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-flex-flow: column nowrap;
-      -ms-flex-flow: column nowrap;
-          flex-flow: column nowrap;
-  -webkit-align-items: flex-start;
-      -ms-flex-align: start;
-          align-items: flex-start; }
-  @media (min-width: 480px) {
-    .fcontrol__select-group-inline {
-      -webkit-flex-flow: row nowrap;
-          -ms-flex-flow: row nowrap;
-              flex-flow: row nowrap;
-      -webkit-align-items: center;
-          -ms-flex-align: center;
-              align-items: center; } }
+  -webkit-flex-flow: row wrap;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap; }
 
 .fcontrol__select-label-stacked, .fcontrol__select-label-inline {
   color: #00778a;
@@ -2888,10 +2877,18 @@ Selector pattern using above mixin:
 
 .fcontrol__invalid-flag {
   display: none;
+  -webkit-flex: 1 0 auto;
+      -ms-flex: 1 0 auto;
+          flex: 1 0 auto;
   padding: 0.3em 0.5em;
   border: 1px solid #9e1919;
   background: #9e1919;
   color: white; }
+  @media (min-width: 768px) {
+    .fcontrol__invalid-flag {
+      -webkit-flex: 0 1 auto;
+          -ms-flex: 0 1 auto;
+              flex: 0 1 auto; } }
 
 .fcontrol__group-stacked--invalid [class^='fcontrol__text-field'] {
   border: 1px solid #9e1919; }
@@ -3900,8 +3897,10 @@ Selector pattern using above mixin:
   margin: 0 0 20px; }
 
 .create__label-simple {
-  width: 23rem;
-  text-align: right; }
+  width: 23rem; }
+  @media (min-width: 480px) {
+    .create__label-simple {
+      text-align: right; } }
 
 .create__label-advanced {
   width: 23rem; }

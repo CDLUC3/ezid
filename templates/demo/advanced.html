@@ -6,62 +6,46 @@
 {% block description %}{%trans "Use the EZID demo to create an advanced identifier." %}{% endblock %}
 {% block heading %}{% content_heading _("Create an Advanced Demo Identifier") %}{% endblock %}
 {% block content %}
-<div class="container vertical-buffer-sm">
-  <div class="tab">
-    <input class="tab__input" id="tab-1" type="radio" name="name"/>
-    <label class="tab__label" for="tab-1">{% trans "Simple" %}</label>
-    <div class="tab__content">
-      <div>This page cannot be loaded unless you have JavaScript activated in your browser.</div>
-    </div>
-    <input class="tab__input" id="tab-2" type="radio" name="name" checked="checked"/>
-    <label class="tab__label" for="tab-2">{% trans "Advanced" %}</label>
-    <div class="tab__content gradient-form">
-
+<div class="tab create__tab">
+  <input class="tab__input" id="tab-1" type="radio" name="name"/>
+  <label class="tab__label" for="tab-1">{% trans "Simple" %}</label>
+  <div class="tab__content">
+    <div>This page cannot be loaded unless you have JavaScript activated in your browser.</div>
+  </div>
+  <input class="tab__input" id="tab-2" type="radio" name="name" checked="checked"/>
+  <label class="tab__label" for="tab-2">{% trans "Advanced" %}</label>
+  <div class="tab__content">
     <form id="create_form" action="{% url "ui_demo.advanced" %}" method="post" class="form-horizontal" role="form">
-      <input name="action" id="action" type="hidden" value="create"/>
-
-        <div class="col-md-12 col-lg-5 col-lg-push-7">
-        <div class="call-out quick-start">
-          <h3>{% trans "Quick Start Guides" %}</h3>
-          <ul>
-            <li><a href="/static/locale/en/EZID_CustomRemainders.pdf" class="pdf-link" title="PDF Document" target="_blank">{% trans "Custom Remainder Rules" %}</a></li>
-            <li><a href="/static/locale/en/EZID_AdvancedCreate.pdf" class="pdf-link" title="PDF Document" target="_blank">{% trans "Advanced Create for DOIs" %}</a></li>
-            <li><a href="/static/locale/en/EZID_ResourceTypes.pdf" title="PDF Document" class="pdf-link" target="_blank">{% trans "Resource Types" %}</a></li>
-            <li><a href="/static/locale/en/EZID_ContributorTypes.pdf" title="PDF Document" class="pdf-link" target="_blank">{% trans "Contributor Types" %}</a></li>
-            <li><a href="/static/locale/en/EZID_RelationTypes.pdf" title="PDF Document" class="pdf-link" target="_blank">{% trans "Relation Types" %}</a></li>
-            <li><a href="/static/locale/en/EZID_InfoUnavailable.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Don't have info for required fields?" %}</a><br/>
-                <a href="/static/locale/en/EZID_InfoUnavailable.pdf" title="PDF Document" class="pdf-link" target="_blank">{% trans "Use placeholder codes." %}</a></li>
+    <input name="action" id="action" type="hidden" value="create"/>
+    <div class="row">
+      {% include "includes/simple_id_type.html" with calling_page="demo" %}
+      <div class="col-md-8">
+        {% include "includes/advanced_remainder.html" %}
+        {% include "includes/advanced_publish_id.html" %}
+      </div>
+      <div class="col-md-4 create__sidebox">
+        <div class="sidebox">
+          <h2 class="sidebox__heading">{% trans "Quick Start Guides" %}</h2>
+          <ul class="sidebox__list">
+            <li><a href="/static/locale/en/EZID_CustomRemainders.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Custom Remainder Rules" %}</a></li>
+            <li><a href="/static/locale/en/EZID_AdvancedCreate.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Advanced Create for DOIs" %}</a></li>
+            <li><a href="/static/locale/en/EZID_ResourceTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Resource Types" %}</a></li>
+            <li><a href="/static/locale/en/EZID_ContributorTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Contributor Types" %}</a></li>
+            <li><a href="/static/locale/en/EZID_RelationTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Relation Types" %}</a></li>
+            <li><a href="/static/locale/en/EZID_InfoUnavailable.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Don't have info for required fields? Use placeholder codes." %}</a></li>
           </ul>
         </div>
-        </div>
-
-        <div class="col-md-12 col-lg-7 col-lg-pull-5">
-          {% include "includes/simple_id_type.html" with calling_page="Demo" %}
-          {% include "includes/advanced_remainder.html" %}
-          {% include "includes/advanced_publish_id.html" %}
-        </div>
-      
-        {% include "includes/advanced_describe.html" %}
-     
-      <div class="row idcreate-content-row">
-        <div class="col-sm-8 col-sm-offset-2">
-          <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
-      i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
-      i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
-      {% endcomment %}
-      {% blocktrans trimmed %}
-          <strong>NOTE:</strong> This is just a <strong>demo</strong>. To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
-      {% endblocktrans %}
-          <p class="italic vertical-buffer-xs">
-    {# Translators: Please preserve &quot; tags #}
-            {% trans "Once created, an identifier cannot be renamed or deleted." %}
-          </p>
-        </div>
-      </div> 
-    </form>
+      </div>
     </div>
+
+    <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset7">
+
+      {% include "includes/advanced_describe.html" %} 
+     
+      {% include "includes/create_button.html" with calling_page="demo" id_type="advanced" %} 
+
+    </div>
+    </form>
   </div>
 <script type="text/javascript">
 /* ToDo: Bring in both simple and advanced content onto the same page

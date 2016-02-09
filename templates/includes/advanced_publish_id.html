@@ -1,71 +1,58 @@
 {% load layout_extras %}
 {% load i18n %}
 
-  <div class="row idcreate-content-row vertical-buffer-sm">
-    <div class="col-sm-12 inline-header">
-      <span class="number-big">3</span>
-      <h2 class="id-creation">{% trans "Decide" %}</h2>
-    </div>
+<div class="fieldset-stacked" role="group" aria-labelledby="fieldset-publish">
+  <div id="fieldset-publish" class="fieldset-stacked__legend-number-3">{% trans "Decide" %}</div>
+  <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="create__fieldset5">
+    <span id="create__fieldset5" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Make this identifier" %}</span>
+    <label for="publish_true" class="fcontrol__radio-label-inline">
+      <input id="publish_true" class="fcontrol__radio-button-stacked" type="radio" value="True" name="publish" 
+      {% if request.POST.publish != 'False' %}
+        checked="checked"
+      {% endif %} 
+      ><span>{% trans "Public" %}</span>
+    </label>
+    <label for="publish_false" class="fcontrol__radio-label-inline">
+      <input id="publish_false" class="fcontrol__radio-button-stacked" type="radio" value="False" name="publish"
+      {% if request.POST.publish == 'False' %}
+        checked="checked"
+      {% endif %} 
+      ><span>{% trans "Reserved" %}</span>
+    </label>
+    {% help_icon "decide_public" %}
   </div>
+  <div id="harv_index" class="fieldset-inline create__form-element-group" role="group" aria-labelledby="fieldset-harvesting">
+    <span id="fieldset-harvesting" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Allow harvesting/indexing?" %}</span>
+    <label for="export_yes" class="fcontrol__radio-label-inline">
+      <input id="export_yes" class="fcontrol__radio-button-stacked" type="radio" value="yes" name="export"
+      {% if request.POST.export != 'no' %}
+        checked="checked"
+      {% endif %}
+      > <span>{% trans "Yes" %}</span>
+    </label>
+    <label for="export_no" class="fcontrol__radio-label-inline">
+      <input id="export_no" class="fcontrol__radio-button-stacked" type="radio" value="no" name="export"
+      {% if request.POST.export == 'no' %}
+        checked="checked"
+      {% endif %}
+      > <span>{% trans "No" %}</span>
+    </label>
+    {% help_icon "decide_export" %}
+  </div>
+</div>
 
-  <div class="row horizontal-buffer">
-    <div class="col-xs-5 form-group form-group-sm">
-      {% trans "Make this identifier ..." %}
-    </div>
-    <div class="col-xs-7 form-group form-group-sm">
-      <label for="publish_true" class="radio-css">
-        <input type="radio" name="publish" value="True" id="publish_true"
-          {% if request.POST.publish != 'False' %}
-            checked="checked"
-          {% endif %} 
-        /><span>{% trans "PUBLIC" %}</span>
-      </label>
-      <label for="publish_false" class="radio-css">
-        <input type="radio" name="publish" value="False" id="publish_false"
-          {% if request.POST.publish == 'False' %}
-            checked="checked"
-          {% endif %} 
-        /><span>{% trans "RESERVED" %}</span>
-      </label>
-      {% help_icon "decide_public" %}
-    </div>
-  </div>
-
-  <div class="row horizontal-buffer" id="harv_index">
-    <div class="col-xs-5 form-group form-group-sm">
-      {% trans "Allow harvesting/indexing?" %}
-    </div>
-    <div class="col-xs-7 form-group form-group-sm">
-      <label for="export_yes" class="radio-css">
-        <input type="radio" name="export" value="yes" id="export_yes"
-          {% if request.POST.export != 'no' %}
-            checked="checked"
-          {% endif %}
-        /><span>{% trans "YES" %}</span>
-      </label>
-      <label for="export_no" class="radio-css">
-        <input type="radio" name="export" value="no" id="export_no"
-          {% if request.POST.export == 'no' %}
-            checked="checked"
-          {% endif %}
-        /><span>{% trans "NO" %}</span>
-      </label>
-      {% help_icon "decide_export" %}
-    </div>
-  </div>
- 
 <script type="application/javascript">
-	function setHidden(){
-  	if ($('#publish_true').is(':checked')) {
- 			// public
-  		$("#harv_index").show();
-		}else{
-			// reserved
-			$("#harv_index").hide();
-		}
+  function setHidden(){
+    if ($('#publish_true').is(':checked')) {
+	// public
+      $("#harv_index").show();
+    }else{
+	// reserved
+      $("#harv_index").hide();
+    }
   }
-	$("[name='publish']").bind("change", function(){
-		setHidden();
+  $("[name='publish']").bind("change", function(){
+    setHidden();
   });
   setHidden();
 </script>
