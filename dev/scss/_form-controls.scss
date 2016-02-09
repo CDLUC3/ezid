@@ -43,7 +43,7 @@
 %fcontrol__group-inline {
 	display: flex;
 	flex: 1 0 auto; // for when parent containers of this component use flex
-	flex-flow: row nowrap;
+	flex-flow: row wrap;
 }
 
 .fcontrol__group-inline {
@@ -223,10 +223,16 @@
 
 .fcontrol__invalid-flag {
 	display: none;
+	flex: 1 0 auto;
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-red-color;
 	background: $design-red-color;
 	color: $design-white-color;
+
+	@include bp(screen2) {
+		flex: 0 1 auto;
+	}
+
 }
 
 .fcontrol__group-stacked--invalid {
