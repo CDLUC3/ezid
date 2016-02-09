@@ -1805,12 +1805,12 @@ tbody.collapse.in {
 
 .alert-success {
   background-color: #86CA82;
-  border-color: #d6e9c6;
-  color: #3c763d; }
+  border-color: #86CA82;
+  color: black; }
   .alert-success hr {
-    border-top-color: #c9e2b3; }
+    border-top-color: #75c270; }
   .alert-success .alert-link {
-    color: #2b542c; }
+    color: black; }
 
 .alert-info {
   background-color: #c4ae7d;
@@ -1823,12 +1823,12 @@ tbody.collapse.in {
 
 .alert-warning {
   background-color: #ff8625;
-  border-color: #faebcc;
-  color: #8a6d3b; }
+  border-color: #ff8625;
+  color: black; }
   .alert-warning hr {
-    border-top-color: #f7e1b5; }
+    border-top-color: #ff780c; }
   .alert-warning .alert-link {
-    color: #66512c; }
+    color: black; }
 
 .alert-danger {
   background-color: #f2dede;
@@ -2601,21 +2601,20 @@ Selector pattern using above mixin:
 .fieldset-controls {
   margin: 0 0 1em; }
 
-.fieldset-inline {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-flow: row wrap;
-      -ms-flex-flow: row wrap;
-          flex-flow: row wrap;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center; }
+@media (min-width: 480px) {
+  .fieldset-inline {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-flow: row wrap;
+        -ms-flex-flow: row wrap;
+            flex-flow: row wrap;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center; } }
 
-.fieldset-stacked__legend,
-.fieldset-inline__legend,
 .fieldset-stacked__embedded-select-append-text,
-.fieldset-controls__legend, .fieldset-stacked__legend-number-1,
+.fieldset-controls__legend, .fieldset-stacked__legend, .fieldset-inline__legend, .fieldset-stacked__legend-number-1,
 .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
 .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
 .fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
@@ -2631,10 +2630,8 @@ Selector pattern using above mixin:
   font-size: 1.2em;
   font-weight: bold; }
   @media (min-width: 768px) {
-    .fieldset-stacked__legend,
-    .fieldset-inline__legend,
     .fieldset-stacked__embedded-select-append-text,
-    .fieldset-controls__legend, .fieldset-stacked__legend-number-1,
+    .fieldset-controls__legend, .fieldset-stacked__legend, .fieldset-inline__legend, .fieldset-stacked__legend-number-1,
     .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
     .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
     .fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
@@ -2643,6 +2640,20 @@ Selector pattern using above mixin:
 
 .fieldset-stacked__legend {
   margin: 0 0 1em; }
+
+.fieldset-inline__legend, .fieldset-stacked__legend-number-1,
+.fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
+.fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
+.fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
+.fieldset-inline__legend-number-4 {
+  margin: 0 0 0.5em; }
+  @media (min-width: 480px) {
+    .fieldset-inline__legend, .fieldset-stacked__legend-number-1,
+    .fieldset-inline__legend-number-1, .fieldset-stacked__legend-number-2,
+    .fieldset-inline__legend-number-2, .fieldset-stacked__legend-number-3,
+    .fieldset-inline__legend-number-3, .fieldset-stacked__legend-number-4,
+    .fieldset-inline__legend-number-4 {
+      margin: 0 1em 0 0; } }
 
 .fieldset-stacked__legend-number-1:before,
 .fieldset-inline__legend-number-1:before, .fieldset-stacked__legend-number-2:before,
@@ -3447,8 +3458,11 @@ Selector pattern using above mixin:
     .home-banner__lead {
       width: 430px;
       margin: 0;
-      padding: 80px 0 0 100px;
+      padding: 80px 0 0 10px;
       text-align: left; } }
+  @media (min-width: 768px) {
+    .home-banner__lead {
+      padding: 80px 0 0 100px; } }
 
 .home-banner__lead-text {
   margin: 0;

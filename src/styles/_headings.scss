@@ -125,33 +125,18 @@ $heading-icon-spacing: 40px;
   color:#000;
 }
 
-.alert-info {
-  background-color: #c4ae7d;
-  border-color:  #c4ae7d;
-  color: #000;
-}
 .alert-warning {
   line-height: 1.55em;
-  background-color: #ff8625;
-  border-color:  #ff8625;
-  color: #000;
 }
 .alert-success {
   line-height: 1.55em;
-  background-color: #86CA82;
-  border-color:  #86CA82;
-  color: #000;
   font-size: 1.1em;
 }
 .alert-warning-text {
   font-size: 1.1em;
   font-weight: 900;
-  color: #FFF;
 }
 .alert-error {
-  background-color: $design-red-color; 
-  border-color: $design-red-color;
-  color: #FFF;
   font-weight: bold;
 }
 .close {

@@ -1969,12 +1969,12 @@ tbody.collapse.in {
 
 .alert-success {
   background-color: #86CA82;
-  border-color: #d6e9c6;
-  color: #3c763d; }
+  border-color: #86CA82;
+  color: black; }
   .alert-success hr {
-    border-top-color: #c9e2b3; }
+    border-top-color: #75c270; }
   .alert-success .alert-link {
-    color: #2b542c; }
+    color: black; }
 
 .alert-info {
   background-color: #c4ae7d;
@@ -1987,12 +1987,12 @@ tbody.collapse.in {
 
 .alert-warning {
   background-color: #ff8625;
-  border-color: #faebcc;
-  color: #8a6d3b; }
+  border-color: #ff8625;
+  color: black; }
   .alert-warning hr {
-    border-top-color: #f7e1b5; }
+    border-top-color: #ff780c; }
   .alert-warning .alert-link {
-    color: #66512c; }
+    color: black; }
 
 .alert-danger {
   background-color: #f2dede;
@@ -3152,33 +3152,18 @@ h2.id-creation {
 .alert a {
   color: #000; }
 
-.alert-info {
-  background-color: #c4ae7d;
-  border-color: #c4ae7d;
-  color: #000; }
-
 .alert-warning {
-  line-height: 1.55em;
-  background-color: #ff8625;
-  border-color: #ff8625;
-  color: #000; }
+  line-height: 1.55em; }
 
 .alert-success {
   line-height: 1.55em;
-  background-color: #86CA82;
-  border-color: #86CA82;
-  color: #000;
   font-size: 1.1em; }
 
 .alert-warning-text {
   font-size: 1.1em;
-  font-weight: 900;
-  color: #FFF; }
+  font-weight: 900; }
 
 .alert-error {
-  background-color: #9e1919;
-  border-color: #9e1919;
-  color: #FFF;
   font-weight: bold; }
 
 .close {
