@@ -91,7 +91,12 @@ _fields = {
     "is_supershoulder": False,
     "is_subshoulder": False,
     "crossref": False,
-    "prefix_shares_datacenter": False }
+    "prefix_shares_datacenter": False },
+  "datacenter": {
+    "manager": True,
+    "name": True,
+    "active": False,
+    "date": False }
 }
 
 _shoulderManagers = ["ezid", "oca", "other"]
@@ -212,6 +217,8 @@ def _validateEntry (entry, errors, warnings):
     if missing: return False
     if entry.type == "shoulder":
       return _validateShoulder(entry, errors, warnings)
+    elif entry.type == "datacenter":
+      return False
   except AssertionError:
     return False
 
