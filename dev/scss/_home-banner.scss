@@ -27,8 +27,12 @@
 	@include bp(screen1) {
 		width: 430px;
 		margin: 0;
-		padding: 80px 0 0 100px;
+		padding: 80px 0 0 10px;
 		text-align: left;
+	}
+
+	@include bp(screen2) {
+		padding: 80px 0 0 100px;
 	}
 
 }
