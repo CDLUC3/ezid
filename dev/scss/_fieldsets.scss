@@ -18,12 +18,16 @@ $fieldset-legend-spacing: 1em;
 }
 
 .fieldset-inline {
-	display: flex;
-	flex-flow: row wrap;
-	align-items: center;
+
+	@include bp(screen1) {
+		display: flex;
+		flex-flow: row wrap;
+		align-items: center;
+	}
+
 }
 
-// ***** Unnumbered Legends ***** //
+// ***** Legends ***** //
 
 %fieldset__legend {
 	display: flex;
@@ -39,23 +43,34 @@ $fieldset-legend-spacing: 1em;
 
 }
 
-.fieldset-stacked__legend,
-.fieldset-inline__legend,
 .fieldset-stacked__embedded-select-append-text,
 .fieldset-controls__legend {
 	@extend %fieldset__legend;
 }
 
 .fieldset-stacked__legend {
+	@extend %fieldset__legend;
 	margin: 0 0 $fieldset-legend-spacing;
+}
+
+%fieldset-inline__legend {
+	@extend %fieldset__legend;
+	margin: 0 0 0.5em;
+
+	@include bp(screen1) {
+		margin: 0 1em 0 0;
+	}
+
+}
+
+.fieldset-inline__legend {
+	@extend %fieldset-inline__legend;
 }
 
 // ***** Numbered Legends ***** //
 
 %fieldset__legend-numbered {
-
-	// extend from the unnumbered legends:
-	@extend %fieldset__legend;
+	@extend %fieldset-inline__legend;
 
 	&:before {
 		display: flex;
