@@ -6,16 +6,23 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
   i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
-  i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+  i.e.: <a class="don't_translate_classes" href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
   {% endcomment %}
   {% blocktrans trimmed %}
-      <strong>NOTE:</strong> This is just a <strong>demo</strong>. To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
+      <b>NOTE:</b> This is just a demo.
   {% endblocktrans %}
+      &nbsp;&nbsp;
+  {% if not session.auth %}
+    {% blocktrans trimmed %}
+      To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
+    {% endblocktrans %}
+  {% endif %}
 {% endif %}
   <p class="create__buttton-note"><em>
 {% if id_type == 'simple' %}
-  {# Translators: Please preserve &quot; tags and spacing at end of sentence. #}
-  {% trans "Clicking &quot;Create&quot; will create the identifier and make it public. To defer making it public, use the Advanced form.  " %}
+  {# Translators: Please preserve &quot; tags. #}
+  {% trans "Clicking &quot;Create&quot; will create the identifier and make it public. To defer making it public, use the Advanced form." %}
+    &nbsp;&nbsp;
 {% endif %}
   {% trans "Once created, an identifier cannot be renamed or deleted." %}
   </em></p>

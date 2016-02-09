@@ -37,11 +37,17 @@
         <p class="home__identifier-lead-note">
       {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
       i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
-      i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+      i.e.: <a class="don't_translate_classes" href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
       {% endcomment %}
       {% blocktrans trimmed %}
-          <b>NOTE:</b> This is just a demo. To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
+          <b>NOTE:</b> This is just a demo.
       {% endblocktrans %}
+          &nbsp;&nbsp;
+      {% if not session.auth %}
+        {% blocktrans trimmed %}
+          To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
+        {% endblocktrans %}
+      {% endif %}
         </p>
       </div>
       <div class="frontpage_idcreate_arrow"></div>
