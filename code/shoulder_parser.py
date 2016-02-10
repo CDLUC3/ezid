@@ -16,10 +16,10 @@
 #
 # Empty lines and lines beginning with "#" are ignored.
 #
-# There is currently one type of entry, shoulders.  For a shoulder,
-# the entry key is the shoulder itself, in qualified and normalized
-# form, as in "ark:/12345/xyz" or "doi:10.1234/XYZ".  The required
-# fields for a shoulder are:
+# There are currently two types of entries, shoulders and datacenters.
+# For a shoulder, the entry key is the shoulder itself, in qualified
+# and normalized form, as in "ark:/12345/xyz" or "doi:10.1234/XYZ".
+# The required fields for a shoulder are:
 #
 #    type
 #       Must be "shoulder".
@@ -35,7 +35,8 @@
 #
 #    datacenter
 #       For DOI shoulders (only), the qualified name of the DataCite
-#       datacenter to use, e.g., "CDL.BUL".
+#       datacenter to use, e.g., "CDL.BUL".  Note that each referenced
+#       datacenter must be defined by a datacenter entry (see below).
 #
 # The optional fields for a shoulder are:
 #
@@ -66,6 +67,30 @@
 #       different DOI prefix.  Useful for silencing warnings.  May be
 #       used with DOI shoulders only.
 #
+# For a datacenter, the entry key is the datacenter symbol, prefixed
+# with "datacite:" and uppercased, as in "datacite:CDL.BUL".  The
+# required fields for a datacenter are:
+#
+#    type
+#       Must be "datacenter".
+#
+#    manager
+#       The entity that manages the datacenter; typically "ezid".
+#
+#    name
+#       The datacenter's name, e.g., "Brown University Library".
+#
+# The optional fields for a datacenter are:
+#
+#    active
+#       Must be "true" or "false"; defaults to "true".  If "false",
+#       the datacenter is not in active use, meaning that it is
+#       ignored by EZID and that it does not participate in global
+#       validation checks.
+#
+#    date
+#      The date the datacenter was created in the syntax YYYY.MM.DD.
+#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
@@ -91,7 +116,12 @@ _fields = {
     "is_supershoulder": False,
     "is_subshoulder": False,
     "crossref": False,
-    "prefix_shares_datacenter": False }
+    "prefix_shares_datacenter": False },
+  "datacenter": {
+    "manager": True,
+    "name": True,
+    "active": False,
+    "date": False }
 }
 
 _shoulderManagers = ["ezid", "oca", "other"]
@@ -195,6 +225,31 @@ def _validateShoulder (entry, errors, warnings):
         entry[field] = (entry[field] == "true")
   return returnValue[0]
 
+def _validateDatacenter (entry, errors, warnings):
+  returnValue = [True]
+  def mytest (condition, message, lineNum):
+    if not _test(condition, message, lineNum, errors): returnValue[0] = False
+    return condition
+  if mytest(entry.key.startswith("datacite:"),
+    "missing 'datacite:' prefix", entry.lineNum.key):
+    entry.key = entry.key[9:]
+    mytest(
+      re.match("[A-Z][-A-Z0-9]{0,6}[A-Z0-9]\.[A-Z][-A-Z0-9]{0,6}[A-Z0-9]$",
+      entry.key), "invalid datacenter syntax", entry.lineNum.key)
+  mytest(entry.manager in _shoulderManagers, "invalid datacenter manager",
+    entry.lineNum.manager)
+  mytest(entry.name != "", "empty datacenter name", entry.lineNum.name)
+  if "active" in entry:
+    if mytest(entry.active in ["true", "false"],
+      "invalid boolean value", entry.lineNum.active):
+      entry["active"] = (entry.active == "true")
+  else:
+    entry["active"] = True
+  if "date" in entry:
+    mytest(re.match("\d{4}\.\d{2}\.\d{2}$", entry.date), "invalid date",
+      entry.lineNum.date)
+  return returnValue[0]
+
 def _validateEntry (entry, errors, warnings):
   try:
     _testAbort("type" in entry, "missing entry type", entry.lineNum.key,
@@ -212,6 +267,8 @@ def _validateEntry (entry, errors, warnings):
     if missing: return False
     if entry.type == "shoulder":
       return _validateShoulder(entry, errors, warnings)
+    elif entry.type == "datacenter":
+      return _validateDatacenter(entry, errors, warnings)
   except AssertionError:
     return False
 
@@ -286,6 +343,23 @@ def _globalValidations (entries, errors, warnings):
             warnings.append((s.lineNum.key,
               "datacenter is shared across DOI prefixes at lines " +\
               ", ".join("%d" % ss.lineNum.key for ss in l)))
+  # Test for duplicate datacenters.
+  datacenters = [e for e in entries if e.type == "datacenter" and e.active]
+  datacenters.sort(key=lambda e: (e.key, e.lineNum.key))
+  for i in range(len(datacenters)-1):
+    _test(datacenters[i].key != datacenters[i+1].key, "duplicate datacenter",
+      datacenters[i+1].lineNum.key, errors)
+  # Test for duplicate datacenter names.
+  datacenters.sort(key=lambda e: (e.name, e.lineNum.name))
+  for i in range(len(datacenters)-1):
+    _test(datacenters[i].name != datacenters[i+1].name,
+      "duplicate datacenter name", datacenters[i+1].lineNum.name, errors)
+  # Test for presence of datacenter definitions.
+  datacenters = set(e.key for e in datacenters)
+  for s in shoulders:
+    if "datacenter" in s:
+      _test(s.datacenter in datacenters, "undefined datacenter",
+        s.lineNum.datacenter, errors)
 
 def parse (fileContent):
   """
