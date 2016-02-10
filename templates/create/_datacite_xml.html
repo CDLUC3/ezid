@@ -7,22 +7,9 @@
 
 <link type="text/css" rel="stylesheet" href="/static/stylesheets/datacite_xml.css"/>
 <br/>
-<div name="/resource" class="element">
 
 {{ form.nonrepeating_form.non_field_errors }}
-  <div class="row form-group form-group-sm{% if form.nonrepeating_form.target.errors %} has-error{% endif %}">
-    <label for="{{ form.nonrepeating_form.target.id_for_label }}" class="col-sm-3 control-label">{{ form.nonrepeating_form.target.label }}</label>
-    <div class="col-sm-5">
-      {{ form.nonrepeating_form.target|add_attributes:"form-control"}}
-    </div>
-  {% if form.nonrepeating_form.target.errors %}
-    <div class="col-sm-2">
-    {% for error in form.nonrepeating_form.target.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </div>
-  {% endif %}
-  </div>
+{% include "create/_datacite_nonrepeating.html" with field=form.nonrepeating_form.target %}
 
 {% include "create/_datacite_creator.html" %}
 {% include "create/_datacite_title.html" %}
@@ -85,8 +72,6 @@
 {% comment %}Put Rights set      here{% endcomment %}
 
 {% include "create/_datacite_geoLoc.html" %}
-
-</div>
 
 <label class="element sized">&nbsp;</label><div><span class="required">*</span> {% trans "required item" %}</div>
 
