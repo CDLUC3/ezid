@@ -43,8 +43,8 @@ import ezidapp.models
 import idmap
 import log
 import mapping
-import shoulder
 import store
+import util2
 
 _ezidUrl = None
 _usedFilenames = None
@@ -53,11 +53,10 @@ _daemonEnabled = None
 _threadName = None
 _idleSleep = None
 _gzipCommand = None
-_testShoulders = None
 
 def _loadConfig ():
   global _ezidUrl, _usedFilenames, _daemonEnabled, _threadName, _idleSleep
-  global _gzipCommand, _testShoulders
+  global _gzipCommand
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
   _lock.acquire()
   try:
@@ -66,7 +65,6 @@ def _loadConfig ():
         ezidapp.models.DownloadQueue.objects.all()] +\
         [f.split(".")[0] for f in\
         os.listdir(django.conf.settings.DOWNLOAD_PUBLIC_DIR)]
-    _testShoulders = None
   finally:
     _lock.release()
   _idleSleep = int(config.get("daemons.download_processing_idle_sleep"))
@@ -78,20 +76,6 @@ def _loadConfig ():
     t = threading.Thread(target=_daemonThread, name=_threadName)
     t.setDaemon(True)
     t.start()
-
-def _getTestShoulders ():
-  global _testShoulders
-  _lock.acquire()
-  try:
-    if _testShoulders == None:
-      _testShoulders = []
-      s = shoulder.getArkTestShoulder()
-      if s != None: _testShoulders.append(s.key)
-      s = shoulder.getDoiTestShoulder()
-      if s != None: _testShoulders.append(s.key)
-    return _testShoulders
-  finally:
-    _lock.release()
 
 _suffix = {
   "anvl": "txt",
@@ -385,9 +369,7 @@ def _satisfiesConstraints (id, record, constraints):
     elif k == "ownergroup":
       if idmap.getGroupId(record["_ownergroup"]) not in v: return False
     elif k == "permanence":
-      t = (v == "test")
-      it = any(id.startswith(s) for s in _getTestShoulders())
-      if t^it: return False
+      if (v == "test") ^ util2.isTestIdentifier(id): return False
     elif k == "profile":
       if record["_profile"] not in v: return False
     elif k == "status":
