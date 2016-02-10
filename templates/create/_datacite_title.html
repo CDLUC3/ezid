@@ -19,7 +19,7 @@
     {{ hidden }}
   {% endfor %}
 
-  {% include "create/_datacite_inlinetext.html" with field=form.title %}
+  {% include "create/_datacite_inlinetext.html" with field=form.title reqd="true" %}
 
   <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="{{ form.titleType.id_for_label }}">
     <span id="{{ form.titleType.id_for_label }}" class="fieldset-inline__legend create__inline-nested-legend">{{ form.titleType.label }}</span>

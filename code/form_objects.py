@@ -16,7 +16,13 @@ from django.utils.translation import ugettext as _
     are defined using the fields dictionary of the Form class
     i.e. self.fields["erc.who"] = ...
 
-    CSS styling (using "class=") are done using the add_attributes template tag
+    Designating a field as required involves:
+      * removing required=false from field definition
+      * including custom error text in the field's error_messages['required'] variable
+      * properly labelling the field within the template by including reqd="true" here:
+        {% include "create/_datacite_inlineselect.html" with field=rt_field reqd="true" %}
+
+    CSS styling (using "class=") is done using the add_attributes template tag
       in ui_tags/templatetags/layout_extras.py
     But for radio buttons this doesn't work for some reason, and so is being initialized here
     i.e. forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'})

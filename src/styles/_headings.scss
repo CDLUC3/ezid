@@ -137,6 +137,9 @@ $heading-icon-spacing: 40px;
   font-weight: 900;
 }
 .alert-error {
+  // For some reason I need to specify colors here, even though they're already defined in variables.scss
+  background-color: $design-red-color; 
+  border-color: $design-red-color;
   font-weight: bold;
 }
 .close {

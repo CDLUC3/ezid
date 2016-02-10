@@ -11,8 +11,8 @@
 {% include "create/_datacite_creator.html" %}
 {% include "create/_datacite_title.html" %}
 
-{% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publisher %}
-{% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publicationYear %}
+{% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publisher reqd="true" %}
+{% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publicationYear reqd="true" %}
 {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.language %}
 
 {% include "create/_datacite_resourceType.html" %}

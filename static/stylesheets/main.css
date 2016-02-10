@@ -2699,6 +2699,8 @@ h2.id-creation {
   font-weight: 900; }
 
 .alert-error {
+  background-color: #9e1919;
+  border-color: #9e1919;
   font-weight: bold; }
 
 .close {

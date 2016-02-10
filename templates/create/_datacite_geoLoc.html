@@ -1,33 +1,22 @@
-{% load layout_extras %}
 {% load i18n %}
 
 {{ form.geoloc_set.management_form }}
-<div name="geoLocations-" class="element datacite-container">
-  <label for="geoLocations-" class="element">{% trans "Geolocation" %}</label>
-  <input type="button" value="+" onclick="addOne(this)" name="geoLocations-" nbelmtsadded="1" class="addButton">
-  <input type="button" value="-" name="geoLocations-" class="rmvButton">
-
-  <div class="multiple">
-{% for form in form.geoloc_set %}
-  {{ form.non_field_errors }}
-  {% for field in form %}
-    <div name="geoLocations-[1]" class="element row{% if field.errors %} has-error{% endif %}">
-      <div name="{{ field.id_for_label }}" class="element form-group form-group-sm">
-        <label for="{{ field.id_for_label }}" class="element col-sm-3 control-label"><span>{{ field.label }}</span></label>
-        <div class="element col-sm-5">
-          {{ field|add_attributes:"data form-control"}}
-        </div>
-      {% if field.errors %}
-        <div class="element col-sm-2">
-        {% for error in field.errors %}
-          {{ error|escape }}
-        {% endfor %}
-        </div>
-      {% endif %}
-      </div>
+<div class="fieldset-stacked fieldset__top-border" role="group" aria-labelledby="geoLocations-geoLocation">
+  <div class="fieldset-controls__container">
+    <div id="descriptions-description" class="fieldset-controls__legend create__nested-legend">{% trans "Geolocation" %}</div>
+    <div class="fieldset-controls__buttons">
+      <button class="button__plus">
+        <span class="button__text">{% trans "Add" %}</span>
+      </button>
+      <button class="button__minus">
+        <span class="button__text">{% trans "Remove" %}</span>
+      </button>
     </div>
-  {% endfor %}
-{% endfor %}
   </div>
+{% for form in form.geoloc_set %}
+{{ form.non_field_errors }}
+  {% include "create/_datacite_inlinetext.html" with field=form.geoLocationPoint %}
+  {% include "create/_datacite_inlinetext.html" with field=form.geoLocationBox %}
+  {% include "create/_datacite_inlinetext.html" with field=form.geoLocationPlace %}
+{% endfor %}
 </div>
-

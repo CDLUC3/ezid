@@ -19,7 +19,7 @@
   {% for cr_field in form %}
 
   {% if forloop.first %}
-    {% include "create/_datacite_inlinetext.html" with field=cr_field %}
+    {% include "create/_datacite_inlinetext.html" with field=cr_field reqd="true" %}
   <details id="accordion__section-1" class="accordion__section create__accordion-section">
     <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
   {% else %}
