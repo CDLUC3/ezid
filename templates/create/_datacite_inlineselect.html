@@ -1,0 +1,12 @@
+{% load layout_extras %}
+
+{% comment  %}
+Formatting used for typical inline ***select*** field for a form that is not repeating 
+(appears only one time for a given ID as defined by DataCite schema)
+{% endcomment %}
+
+<div class="fcontrol__select-group-inline create__form-element-group">
+  <label for="{{ field.id_for_label }}" class="fcontrol__select-label-inline create__label-advanced">{{ field.label }}</label>
+  {{ field|add_attributes:"fcontrol__select--fullwidth"}}
+</div>
+

@@ -1,5 +1,9 @@
 {% load layout_extras %}
-{% load i18n %}
+
+{% comment  %}
+Formatting used for typical inline field for a form that is not repeating 
+(appears only one time for a given ID as defined by DataCite schema)
+{% endcomment %}
 
 <div class="fcontrol__group-inline{% if field.errors %}--invalid{% endif %} create__form-element-group">
   <label for="{{ field.id_for_label }}" class="fcontrol__text-label-inline create__label-advanced">{{ field.label }}</label>
@@ -12,4 +16,3 @@
   </span>
   {% endif %}
 </div>
-

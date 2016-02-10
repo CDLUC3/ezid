@@ -16,35 +16,18 @@
   </div>
 {% for form in form.creator_set %}
 {{ form.non_field_errors }}
-  {% for field in form %}
+  {% for cr_field in form %}
+
   {% if forloop.first %}
-  <div class="fcontrol__group-inline{% if field.errors %}--invalid{% endif %} create__form-element-group">
-    <label for="{{ field.id_for_label }}" class="fcontrol__text-label-inline create__label-advanced">{{ field.label }}</label>
-    {{ field|add_attributes:"fcontrol__text-field-inline"}}
-    {% if field.errors %}
-      <span class="fcontrol__invalid-flag">
-      {% for error in field.errors %}
-        {{ error|escape }}
-      {% endfor %}
-      </span>
-    {% endif %}
-  </div>
+    {% include "create/_datacite_inlinetext.html" with field=cr_field %}
   <details id="accordion__section-1" class="accordion__section create__accordion-section">
     <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
   {% else %}
-    <div class="fcontrol__group-inline{% if field.errors %}--invalid{% endif %} create__form-element-group">
-      <label for="{{ field.id_for_label }}" class="fcontrol__text-label-inline create__label-advanced--in-accordion">{{ field.label }}</label>
-      {{ field|add_attributes:"fcontrol__text-field-inline"}}
-      {% if field.errors %}
-        <span class="fcontrol__invalid-flag">
-        {% for error in field.errors %}
-          {{ error|escape }}
-        {% endfor %}
-        </span>
-      {% endif %}
-    </div>
+    {% include "create/_datacite_inlinetext.html" with field=cr_field %}
   {% endif %}
+
   {% endfor %}
   </details>
+
 {% endfor %}
 </div>

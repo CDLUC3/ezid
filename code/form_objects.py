@@ -15,6 +15,11 @@ from django.utils.translation import ugettext as _
     Fields with hyphens, periods or leading underscores cause issues in python and in these cases
     are defined using the fields dictionary of the Form class
     i.e. self.fields["erc.who"] = ...
+
+    CSS styling (using "class=") are done using the add_attributes template tag
+      in ui_tags/templatetags/layout_extras.py
+    But for radio buttons this doesn't work for some reason, and so is being initialized here
+    i.e. forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'})
 """
 
 #### Constants ####
@@ -24,8 +29,8 @@ RESOURCE_TYPES = (
   ('', _("Select a type of object")), ('Audiovisual', _('Audiovisual')), 
   ('Collection', _('Collection')), ('Dataset', _('Dataset')), 
   ('Event', _('Event')), ('Image', _('Image')), 
-  ('InteractiveResource', _('InteractiveResource')), ('Model', _('Model')), 
-  ('PhysicalObject', _('PhysicalObject')), ('Service', _('Service')), 
+  ('InteractiveResource', _('Interactive Resource')), ('Model', _('Model')), 
+  ('PhysicalObject', _('Physical Object')), ('Service', _('Service')), 
   ('Software', _('Software')), ('Sound', _('Sound')), ('Text', _('Text')), 
   ('Workflow', _('Workflow')), ('Other', _('Other'))
 )
@@ -269,7 +274,7 @@ class TitleForm(forms.Form):
       ("TranslatedTitle", _("Translated title"))
     ) 
     self.fields["titleType"] = forms.ChoiceField(required=False, label = _("Type"),
-      widget= forms.RadioSelect(), choices=TITLE_TYPES)
+      widget= forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}), choices=TITLE_TYPES)
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
       label="Language(Hidden)", widget= forms.HiddenInput())
 
@@ -530,8 +535,8 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     resourcetype_form = ResourceTypeForm(P, auto_id='%s')
     creator_set = CreatorSet(P, prefix=PREFIX_CREATOR_SET, auto_id='%s')
     title_set = TitleSet(P, prefix=PREFIX_TITLE_SET, auto_id='%s')
-    """ 
     descr_set = DescrSet(P, prefix=PREFIX_DESCR_SET, auto_id='%s')
+    """ 
     subject_set = SubjectSet(P, prefix=PREFIX_SUBJECT_SET, auto_id='%s')
     contrib_set = ContribSet(P, prefix=PREFIX_CONTRIB_SET, auto_id='%s')
     date_set = DateSet(P, prefix=PREFIX_DATE_SET, auto_id='%s')
@@ -551,9 +556,9 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
       prefix=PREFIX_CREATOR_SET, auto_id='%s')
     title_set = TitleSet(_inclMgmtData(form_coll.titles, PREFIX_TITLE_SET),
       prefix=PREFIX_TITLE_SET, auto_id='%s')
-    """
     descr_set = DescrSet(_inclMgmtData(form_coll.descrs, PREFIX_DESCR_SET),
       prefix=PREFIX_DESCR_SET, auto_id='%s')
+    """
     subject_set = SubjectSet(_inclMgmtData(form_coll.subjects, PREFIX_SUBJECT_SET),
       prefix=PREFIX_SUBJECT_SET, auto_id='%s')
     contrib_set = ContribSet(_inclMgmtData(form_coll.contribs, PREFIX_CONTRIB_SET),
@@ -574,14 +579,14 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations, PREFIX_GEOLOC_SET),
       prefix=PREFIX_GEOLOC_SET, auto_id='%s')
     """
-    'descr_set':descr_set, 'subject_set':subject_set, 
+    'subject_set':subject_set, 
     'contrib_set':contrib_set, 'date_set':date_set, 'altid_set':altid_set, 
     'relid_set':relid_set, 'size_set':size_set, 'format_set':format_set, 
     'rights_set':rights_set,
     """
   return {'remainder_form': remainder_form, 'nonrepeating_form': nonrepeating_form,
     'resourcetype_form': resourcetype_form, 'creator_set': creator_set, 
-    'title_set': title_set, 
+    'title_set': title_set, 'descr_set':descr_set, 
     'geoloc_set': geoloc_set}
 
 def _inclMgmtData(fields, prefix):

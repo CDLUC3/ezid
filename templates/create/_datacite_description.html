@@ -1,36 +1,26 @@
 {% load layout_extras %}
 {% load i18n %}
-  <div class="optional">
-    <div name="/resource/descriptions" class="element datacite-container">
-      <label for="/resource/descriptions" class="element">{% trans "Description" %}</label>
-      <input type="button" value="+" onclick="addOne(this)" name="/resource/descriptions" nbelmtsadded="{{ num_descriptions }}" class="addButton">
-      <input type="button" value="-" name="/resource/descriptions" class="rmvButton">
-{% for descr in datacite_obj_descriptions.description %}
-      <div class="multiple">
-      <div class="row">
-        <div name="/resource/descriptions/description[{{ forloop.counter }}]" class="element form-group form-group-sm">
-  	  <label for="/resource/descriptions/description[{{ forloop.counter }}]" class="element col-sm-3 control-label">{% trans "Descriptive information" %}:</label>
-          <div class="col-sm-5">
-            <input type="text" name="/resource/descriptions/description[{{ forloop.counter }}]" value="{{ descr.text|default_if_none:"" }}" class="data form-control" />
-          </div>
-        </div>
-      </div>
-      <div class="attribute row">
-        <div class="attribute form-group form-group-sm">
-          <label for="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" class="attribute col-sm-3 control-label">{% trans "Type" %}:</label>
-          <div class="col-sm-5">
-            <select name="/resource/descriptions/description[{{ forloop.counter }}]/@descriptionType" sendselect="yes" class="choice form-control">
-              <option value=""></option>
-              <option value="Abstract"{% if descr.attrib.descriptionType == "Abstract" or descr.attrib.descriptionType == "" %} selected="selected"{% endif %}>Abstract</option>
-              <option value="SeriesInformation"{% if descr.attrib.descriptionType == "SeriesInformation" %} selected="selected"{% endif %}>Series Information</option>
-              <option value="TableOfContents"{% if descr.attrib.descriptionType == "TableOfContents" %} selected="selected"{% endif %}>Table of Contents</option>
-              <option value="Methods"{% if descr.attrib.descriptionType == "Methods" %} selected="selected"{% endif %}>Methods</option>
-              <option value="Other"{% if descr.attrib.descriptionType == "Other" %} selected="selected"{% endif %}>Other</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      </div>
-{% endfor %}
+
+{{ form.descr_set.management_form }}
+<div class="fieldset-stacked fieldset__top-border" role="group" aria-labelledby="descriptions-description">
+  <div class="fieldset-controls__container">
+    <div id="descriptions-description" class="fieldset-controls__legend create__nested-legend">{% trans "Description" %}</div>
+    <div class="fieldset-controls__buttons">
+      <button class="button__plus">
+        <span class="button__text">{% trans "Add" %}</span>
+      </button>
+      <button class="button__minus">
+        <span class="button__text">{% trans "Remove" %}</span>
+      </button>
     </div>
   </div>
+{% for form in form.descr_set %}
+{{ form.non_field_errors }}
+  {% for hidden in form.hidden_fields %}
+    {{ hidden }}
+  {% endfor %}
+
+  {% include "create/_datacite_inlinetext.html" with field=form.description %}
+  {% include "create/_datacite_inlineselect.html" with field=form.descriptionType %}
+{% endfor %}
+</div>

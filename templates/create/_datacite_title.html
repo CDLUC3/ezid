@@ -1,56 +1,36 @@
 {% load layout_extras %}
 {% load i18n %}
 {{ form.title_set.management_form }}
-<div name="titles-" class="element datacite-container">
-  <label for="titles-" class="element"><span title="Title is a required section">{% trans "Title" %}</span> <span class="required">*</span></label>
-  <input type="button" value="+" onclick="addOne(this)" name="titles" nbelmtsadded="1" class="addButton">
-  <input type="button" value="-" name="titles-" class="rmvButton">
-
-  <div class="multiple">
+<div class="fieldset-stacked fieldset__top-border fieldset__bottom-border" role="group" aria-labelledby="titles-title">
+  <div class="fieldset-controls__container">
+    <div id="titles-title" class="fieldset-controls__legend create__nested-legend">{% trans "Title" %}</div>
+    <div class="fieldset-controls__buttons">
+      <button class="button__plus">
+        <span class="button__text">{% trans "Add" %}</span>
+      </button>
+      <button class="button__minus">
+        <span class="button__text">{% trans "Remove" %}</span>
+      </button>
+    </div>
+  </div>
 {% for form in form.title_set %}
   {{ form.non_field_errors }}
   {% for hidden in form.hidden_fields %}
     {{ hidden }}
   {% endfor %}
-    <!-- form.title -->
-    <div name="titles-[1]" class="element row{% if form.title.errors %} has-error{% endif %}">
-      <div name="{{ form.title.id_for_label }}" class="element form-group form-group-sm">
-        <label for="{{ form.title.id_for_label }}" class="element col-sm-3 control-label">
-          <span>{{ form.title.label }}</span>
-            {% if forloop.first %}
-            <span class="required">*</span>
-            {% endif %}
-        </label>
-        <div class="element col-sm-5">
-          {{ form.title|add_attributes:"data form-control"}}
-        </div>
-      {% if form.title.errors %}
-        <div class="element col-sm-2">
-        {% for error in form.title.errors %}
-          {{ error|escape }}
-        {% endfor %}
-        </div>
-      {% endif %}
-      </div>
-    </div>
-    <!-- form.titleType -->
-    <div name="titles-[1]" class="attribute row{% if form.titleType.errors %} has-error{% endif %}">
-      <div name="{{ form.titleType.id_for_label }}" class="element form-group form-group-sm">
-        <label for="{{ form.titleType.id_for_label }}" class="element col-sm-3 control-label">
-          {{ form.titleType.label }}
-        </label>
-        <div class="attribute col-sm-7">
-          <label class="radio-css" for="id_titles-0-titleType_0">
-          {{ form.titleType.0.tag }}<span>{{ form.titleType.0.choice_label }}</span></label>
-          <label class="radio-css" for="id_titles-0-titleType_1">
-          {{ form.titleType.1.tag }}<span>{{ form.titleType.1.choice_label }}</span></label>
-          <label class="radio-css" for="id_titles-0-titleType_2">
-          {{ form.titleType.2.tag }}<span>{{ form.titleType.2.choice_label }}</span></label>
-          <label class="radio-css" for="id_titles-0-titleType_3">
-          {{ form.titleType.3.tag }}<span>{{ form.titleType.3.choice_label }}</span></label>
-        </div>
-      </div>
-    </div>
-{% endfor %}
+
+  {% include "create/_datacite_inlinetext.html" with field=form.title %}
+
+  <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="{{ form.titleType.id_for_label }}">
+    <span id="{{ form.titleType.id_for_label }}" class="fieldset-inline__legend create__inline-nested-legend">{{ form.titleType.label }}</span>
+    {% for radio in form.titleType %}
+    <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
+      {{ radio.tag }}
+      <span>{{ radio.choice_label }}</span>
+    </label>
+    {% endfor %}
   </div>
+
+{% endfor %}
+
 </div>
