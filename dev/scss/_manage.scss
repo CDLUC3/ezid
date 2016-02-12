@@ -17,6 +17,15 @@
 
 }
 
+.manage__form-element-container--harvesting {
+
+	@include bp(screen2) {
+		margin: 20px 0 0;
+		padding: 0 0 0 30px;
+  }
+
+}
+
 .manage__fieldset {
 	margin: 0;
 }
