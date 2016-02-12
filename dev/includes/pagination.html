@@ -2,10 +2,20 @@
 <!-- Note: Make sure to dynamically set the "max" attribute below to the maximum pagination number -->
 
 <div class="pagination">
-	<a href="" role="button" class="pagination__first" title="First page"></a>
-	<a href="" role="button" class="pagination__prev">Previous</a>
-	<label for="pagination__input" class="pagination__label">Page</label>
-	<input type="number" class="pagination__input" id="pagination__input" min="1" max="100"> of #
-	<a href="" role="button" class="pagination__next">Next</a>
-	<a href="" role="button" class="pagination__last" title="Last page"></a>
+	<div class="pagination__prev-next-group">
+		<a href="" role="button" class="pagination__first" title="First page"></a>
+		<a href="" role="button" class="pagination__prev">Previous</a>
+		<label for="pagination__input" class="pagination__input1">Page</label>
+		<input type="number" class="pagination__input" id="pagination__input" min="1" max="100"> of #
+		<a href="" role="button" class="pagination__next">Next</a>
+		<a href="" role="button" class="pagination__last" title="Last page"></a>
+	</div>
+	<div class="pagination__select-group">
+    <label for="pagination__select1" class="pagination__select-label">Show</label>
+    <select name="url-here" id="pagination__select1" class="pagination__select">
+      <option value="">50</option>
+      <option value="">100</option>
+    </select>
+    <span class="search-results__select-appended-text">entries</span>
+  </div>
 </div>
