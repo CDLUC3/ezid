@@ -160,6 +160,40 @@ def validateIdentifier (identifier):
   else:
     return None
 
+def validateShoulder (shoulder):
+  """
+  Returns True if the supplied string is a valid shoulder, which is to
+  say, if the string is a certain allowable prefix of a qualified,
+  syntactically valid identifier.
+  """
+  # Strategy: a shoulder is valid if adding a single character yields
+  # a valid identifier.
+  if shoulder.startswith("ark:/"):
+    id = shoulder[5:] + "x"
+    return validateArk(id) == id
+  elif shoulder.startswith("doi:"):
+    id = shoulder[4:] + "X"
+    return validateDoi(id) == id
+  elif shoulder == "urn:uuid:":
+    return True
+  else:
+    return False
+
+datacenterSymbolRE = re.compile(
+  "^([A-Z][-A-Z0-9]{0,6}[A-Z0-9])\.([A-Z][-A-Z0-9]{0,6}[A-Z0-9])$", re.I)
+maxDatacenterSymbolLength = 17
+
+def validateDatacenter (symbol):
+  """
+  If the supplied string (e.g., "CDL.BUL") is a valid DataCite
+  datacenter symbol, returns the canonical form of the symbol (namely,
+  uppercased).  Otherwise, returns None.
+  """
+  if datacenterSymbolRE.match(symbol) and symbol[-1] != "\n":
+    return symbol.upper()
+  else:
+    return None
+
 def _percentEncodeCdr (m):
   s = m.group(0)
   return s[0] + "".join("%%%02x" % ord(c) for c in s[1:])

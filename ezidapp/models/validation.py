@@ -56,13 +56,9 @@ def crossrefDoi (identifier):
     raise django.core.exceptions.ValidationError(
       "Identifier does not satisfy CrossRef syntax requirements.")
 
-datacenterSymbolRE = re.compile(
-  "^([A-Z][-A-Z0-9]{0,6}[A-Z0-9])\.([A-Z][-A-Z0-9]{0,6}[A-Z0-9])$", re.I)
-maxDatacenterSymbolLength = 17
-
 def datacenterSymbol (symbol):
   # Validates a DataCite datacenter symbol, per DataCite rules.
-  if not datacenterSymbolRE.match(symbol) or symbol[-1] == "\n":
+  if util.validateDatacenter(symbol) is None:
     raise django.core.exceptions.ValidationError("Invalid datacenter symbol.")
 
 _timespecs = [

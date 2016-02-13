@@ -158,22 +158,8 @@ def _validateShoulder (entry, errors, warnings):
   def mytest (condition, message, lineNum):
     if not _test(condition, message, lineNum, errors): returnValue[0] = False
     return condition
-  # Strategy for validating shoulders: a shoulder is valid if adding a
-  # single character yields a valid identifier.
-  if entry.key.startswith("ark:/"):
-    v = util.validateArk(entry.key[5:] + "x")
-    if mytest(v != None, "invalid ARK shoulder", entry.lineNum.key):
-      mytest(v == entry.key[5:]+"x",
-        "ARK shoulder is not in normalized form", entry.lineNum.key)
-  elif entry.key.startswith("doi:"):
-    v = util.validateDoi(entry.key[4:] + "X")
-    if mytest(v != None, "invalid DOI shoulder", entry.lineNum.key):
-      mytest(v == entry.key[4:]+"X",
-        "DOI shoulder is not in normalized form", entry.lineNum.key)
-  elif entry.key == "urn:uuid:":
-    pass
-  else:
-    mytest(False, "invalid shoulder scheme", entry.lineNum.key)
+  mytest(util.validateShoulder(entry.key), "invalid shoulder",
+    entry.lineNum.key)
   mytest(entry.manager in _shoulderManagers, "invalid shoulder manager",
     entry.lineNum.manager)
   mytest(entry.name != "", "empty shoulder name", entry.lineNum.name)
@@ -191,10 +177,8 @@ def _validateShoulder (entry, errors, warnings):
   if entry.key.startswith("doi:"):
     if mytest("datacenter" in entry, "missing DOI shoulder datacenter",
       entry.lineNum.key):
-      mytest(
-        re.match("[A-Z][-A-Z0-9]{0,6}[A-Z0-9]\.[A-Z][-A-Z0-9]{0,6}[A-Z0-9]$",
-        entry.datacenter), "invalid datacenter syntax",
-        entry.lineNum.datacenter)
+      mytest(util.validateDatacenter(entry.datacenter) == entry.datacenter,
+        "invalid datacenter symbol", entry.lineNum.datacenter)
     if "crossref" in entry:
       if mytest(entry.crossref in ["true", "false"],
         "invalid boolean value", entry.lineNum.crossref):
@@ -233,9 +217,8 @@ def _validateDatacenter (entry, errors, warnings):
   if mytest(entry.key.startswith("datacite:"),
     "missing 'datacite:' prefix", entry.lineNum.key):
     entry.key = entry.key[9:]
-    mytest(
-      re.match("[A-Z][-A-Z0-9]{0,6}[A-Z0-9]\.[A-Z][-A-Z0-9]{0,6}[A-Z0-9]$",
-      entry.key), "invalid datacenter syntax", entry.lineNum.key)
+    mytest(util.validateDatacenter(entry.key) == entry.key,
+      "invalid datacenter symbol", entry.lineNum.key)
   mytest(entry.manager in _shoulderManagers, "invalid datacenter manager",
     entry.lineNum.manager)
   mytest(entry.name != "", "empty datacenter name", entry.lineNum.name)
