@@ -29,7 +29,8 @@
 	background-image: url('../images/icon_double-arrow-first.svg');
 }
 
-.pagination__prev {
+.pagination__prev,
+.pagination__next {
 	color: $design-primary-color;
 	border: none;
 	background-color: transparent;
@@ -41,12 +42,6 @@
 
 .pagination__input {
 	width: 3em; // based on the max number of characters expected
-}
-
-.pagination__next {
-	color: $design-primary-color;
-	border: none;
-	background-color: transparent;
 }
 
 .pagination__last {
