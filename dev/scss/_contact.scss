@@ -1,2 +1,14 @@
 // ##### Contact Layout ##### //
 
+.contact {
+	// empty
+}
+
+.contact__note {
+	max-width: 1000px;
+	margin: 30px auto;
+	padding: 0 25% 0 0;
+	color: $design-primary-color;
+	font-size: 1.4em;
+	font-weight: bold;
+}
