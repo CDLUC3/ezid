@@ -7,13 +7,22 @@
 .contact__note {
 	max-width: 1000px;
 	margin: 30px auto;
-	padding: 0 25% 0 0;
 	color: $design-primary-color;
 	font-size: 1.4em;
 	font-weight: bold;
+
+	@include bp(screen1) {
+		padding: 0 25% 0 0;
+	}
+
 }
 
-.contact__label {
+.contact__form {
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+.contact__form-label {
 	width: $form-element-label-width;
 
 	@include bp(screen1) {
@@ -23,6 +32,13 @@
 }
 
 .contact__form-element {
-	max-width: 1000px;
-	margin: 30px auto 0;
+	margin: 0 0 30px;
+}
+
+.contact__form-submit {
+
+	@include bp(screen1) {
+		margin: 0 0 25px $form-element-label-width + 0.5rem;
+	}
+
 }
