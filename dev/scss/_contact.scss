@@ -11,7 +11,7 @@
 	font-size: 1.4em;
 	font-weight: bold;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		padding: 0 25% 0 0;
 	}
 
@@ -20,6 +20,11 @@
 .contact__form {
 	max-width: 1000px;
 	margin: 0 auto;
+
+	@include bp(screen2) {
+		padding: 0 25% 0 0;
+	}
+
 }
 
 .contact__form-label {
