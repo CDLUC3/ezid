@@ -24,11 +24,6 @@
 
 .contact__form-label {
 	width: $form-element-label-width;
-
-	@include bp(screen1) {
-		text-align: right;
-	}
-
 }
 
 .contact__form-element {
