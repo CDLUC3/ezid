@@ -43,7 +43,12 @@
 %fcontrol__group-inline {
 	display: flex;
 	flex: 1 0 auto; // for when parent containers of this component use flex
-	flex-flow: row wrap;
+	flex-flow: column wrap;
+
+	@include bp(screen1) {
+		flex-flow: row wrap;
+	}
+
 }
 
 .fcontrol__group-inline {
@@ -51,10 +56,13 @@
 }
 
 .fcontrol__text-label-inline {
-	align-self: center;
 	margin: 0 5px 0 0;
 	color: $design-primary-color;
 	font-size: 1em;
+
+	@include bp(screen1) {
+		align-self: center;
+	}
 
 	@include bp(screen2) {
 		font-size: 1.1em;
@@ -86,7 +94,12 @@
 
 .fcontrol__select-group-inline {
 	display: flex;
-	flex-flow: row wrap;
+	flex-flow: column wrap;
+
+	@include bp(screen1) {
+		flex-flow: row wrap;
+	}
+
 }
 
 %fcontrol__select-label {
