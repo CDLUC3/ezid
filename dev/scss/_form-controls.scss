@@ -78,6 +78,52 @@
 	border: 1px solid $design-light-gray-border-color;
 }
 
+// ***** Text Areas ***** //
+
+.fcontrol__textarea-group {
+	display: flex;
+	flex: 1 0 auto;
+	flex-flow: column nowrap;
+}
+
+.fcontrol__textarea-label-stacked {
+	margin: 0 0 2px;
+	color: $design-primary-color;
+	font-size: 1em;
+
+	@include bp(screen2) {
+		font-size: 1.1em;
+	}
+
+}
+
+.fcontrol__textarea-stacked {
+	@extend %fcontrol-focus;
+	height: 5em;
+	margin: 0; // normalize across browsers
+	padding: 0.3em 0.5em;
+	border: 1px solid $design-light-gray-border-color;
+}
+
+.fcontrol__textarea-label-inline {
+	margin: 0 5px 0 0;
+	color: $design-primary-color;
+	font-size: 1em;
+
+	@include bp(screen2) {
+		font-size: 1.1em;
+	}
+
+}
+
+.fcontrol__textarea-inline {
+	@extend %fcontrol-focus;
+	height: 5em;
+	margin: 0; // normalize across browsers
+	padding: 0.3em 0.5em;
+	border: 1px solid $design-light-gray-border-color;
+}
+
 // ***** Hidden Labels ***** //
 
 .fcontrol__text-label-hidden {
@@ -248,6 +294,15 @@
 		border: 1px solid $design-red-color;
 	}
 
+	.fcontrol__textarea-group {
+		border: 1px solid $design-red-color;
+
+		.fcontrol__textarea-stacked {
+			border: none;
+		}
+
+	}
+
 	.fcontrol__invalid-flag {
 		display: block;
 	}
@@ -259,6 +314,15 @@
 
 	[class^='fcontrol__text-field'] {
 		border: 1px solid $design-red-color;
+	}
+
+	.fcontrol__textarea-group {
+		border: 1px solid $design-red-color;
+
+		.fcontrol__textarea-inline {
+			border: none;
+		}
+
 	}
 
 	.fcontrol__invalid-flag {
