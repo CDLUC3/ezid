@@ -144,6 +144,7 @@
 
 	@include bp(screen1) {
 		flex-flow: row wrap;
+		align-items: center;
 	}
 
 }
@@ -175,17 +176,20 @@
 %fcontrol__select {
 	@extend %fcontrol-focus;
 	height: $form-element-height;
-	padding: 0 35px 0 0;
+	padding: 0 35px 0 0.5em;
 	border: 1px solid $design-light-gray-border-color;
 	border-radius: 0;
-	// background: $design-form-element-bg;
-	background: url('../images/icon_plus-sign.svg') right 10px center / 12px no-repeat, $design-form-element-bg;
-	appearance: none;
+	background: url('../images/icon_down-arrow2.svg') right 10px center / 12px no-repeat, $design-form-element-bg;
+	appearance: none; // removes default down arrow for Chrome and FF 35 and higher
 
 	option,
 	optgroup {
 		margin: 0.3em 0;
 	}
+
+	&::-ms-expand { // removes default down arrow for IE 10 and higher
+  	display: none;
+  }
 
 }
 
