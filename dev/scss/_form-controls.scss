@@ -73,6 +73,7 @@
 .fcontrol__text-field-inline {
 	@extend %fcontrol-focus;
 	flex: 1 0 auto;
+	height: $form-element-height;
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
