@@ -174,8 +174,13 @@
 
 %fcontrol__select {
 	@extend %fcontrol-focus;
+	height: $form-element-height;
+	padding: 0 35px 0 0;
 	border: 1px solid $design-light-gray-border-color;
-	background: $design-form-element-bg;
+	border-radius: 0;
+	// background: $design-form-element-bg;
+	background: url('../images/icon_plus-sign.svg') right 10px center / 12px no-repeat, $design-form-element-bg;
+	appearance: none;
 
 	option,
 	optgroup {
