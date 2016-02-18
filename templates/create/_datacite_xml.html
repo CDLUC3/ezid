@@ -13,15 +13,15 @@
 {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.target %}
 
 {% include "create/_datacite_geoLoc.html" %}
-{% include "create/_datacite_description.html" %}
-{% include "create/_datacite_creator.html" %}
-{% include "create/_datacite_title.html" %}
+{% comment %} include "create/_datacite_description.html" {% endcomment %}
+{% comment %} include "create/_datacite_creator.html" {% endcomment %}
+{% comment %} include "create/_datacite_title.html" {% endcomment %}
 
-{% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publisher reqd="true" %}
-{% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publicationYear reqd="true" %}
-{% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.language %}
+{% comment %} include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publisher reqd="true" {% endcomment %}
+{% comment %} include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publicationYear reqd="true" {% endcomment %}
+{% comment %} include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.language {% endcomment %}
 
-{% include "create/_datacite_resourceType.html" %}
+{% comment %} include "create/_datacite_resourceType.html" {% endcomment %}
 
 {% comment %}Put Subject set     here{% endcomment %}
 {% comment %}Put Contrib set     here{% endcomment %}
@@ -53,6 +53,6 @@
   /* Confirmation step before user removes an element */
     var continue_removal = confirm ("Please confirm you want to remove last item.");
     if (continue_removal) { 
-
+      // unimplemented
     });
 </script>
