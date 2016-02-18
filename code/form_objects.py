@@ -17,9 +17,9 @@ from django.utils.translation import ugettext as _
     i.e. self.fields["erc.who"] = ...
 
     Designating a field as required involves:
-      * removing required=false from field definition
-      * including custom error text in the field's error_messages['required'] variable
-      * properly labelling the field within the template by including reqd="true" here:
+      * remove required=false from field definition
+      * (optional) include custom error text in the field's error_messages['required'] variable
+      * properly label the field within the template by including reqd="true" here:
         {% include "create/_datacite_inlineselect.html" with field=rt_field reqd="true" %}
 
     CSS styling (using "class=") is done using the add_attributes template tag

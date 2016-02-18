@@ -1,8 +1,6 @@
-{% load layout_extras %}
 {% load i18n %}
 
-{{ form.descr_set.management_form }}
-<div class="fieldset-stacked fieldset__top-border" role="group" aria-labelledby="descriptions-description">
+<div id="descr_set" class="fieldset-stacked fieldset__top-border" role="group" aria-labelledby="descriptions-description">
   <div class="fieldset-controls__container">
     <div id="descriptions-description" class="fieldset-controls__legend create__nested-legend">{% trans "Description" %}</div>
     <div class="fieldset-controls__buttons">
@@ -15,6 +13,7 @@
     </div>
   </div>
 {% for form in form.descr_set %}
+  <div class="form-container">
 {{ form.non_field_errors }}
   {% for hidden in form.hidden_fields %}
     {{ hidden }}
@@ -23,4 +22,6 @@
   {% include "create/_datacite_inlinetext.html" with field=form.description %}
   {% include "create/_datacite_inlineselect.html" with field=form.descriptionType %}
 {% endfor %}
+  </div>
 </div>
+{{ form.descr_set.management_form }}

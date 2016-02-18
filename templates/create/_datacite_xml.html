@@ -1,13 +1,19 @@
 {% load layout_extras %}
 {% load i18n %}
-<script type="text/javascript" src="/static/javascripts/rng_to_html/extras.js"></script>
-<script type="text/javascript" src="/static/javascripts/rng_to_html/form_initialization.js"></script>
-<script type="text/javascript" src="/static/javascripts/rng_to_html/formFunctions.js"></script>
-<script type="text/javascript" src="/static/javascripts/rng_to_html/dom_utils.js"></script>
+<script type="text/javascript" src="/static/javascripts/jquery.formset.js"></script>
+<script type="text/javascript">
+  $(function() {
+    $('#geoloc_set .form-container').formset({
+      prefix: '{{ form.geoloc_set.prefix }}'
+    });
+  })
+</script>
 
 {{ form.nonrepeating_form.non_field_errors }}
 {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.target %}
 
+{% include "create/_datacite_geoLoc.html" %}
+{% include "create/_datacite_description.html" %}
 {% include "create/_datacite_creator.html" %}
 {% include "create/_datacite_title.html" %}
 
@@ -17,7 +23,6 @@
 
 {% include "create/_datacite_resourceType.html" %}
 
-{% include "create/_datacite_description.html" %}
 {% comment %}Put Subject set     here{% endcomment %}
 {% comment %}Put Contrib set     here{% endcomment %}
 {% comment %}Put Date set        here{% endcomment %}
@@ -28,33 +33,9 @@
 {% comment %}Put (nonrepeating) Version here{% endcomment %}
 {% comment %}Put Rights set      here{% endcomment %}
 
-{% include "create/_datacite_geoLoc.html" %}
-
-<label class="element sized">&nbsp;</label><div><span class="required">*</span> {% trans "required item" %}</div>
 
 <script type="text/javascript">
   $(document).ready(function() {
-    /* change the behavior when adding a section to erase contents of new text boxes
-     * which the obfuscated javascript form the external library uses.
-     */
-    $('input[type=button].addButton').click(function (e)
-    {
-      if(!e.isDefaultPrevented())
-      {
-        var items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=text].data');
-        items.each(function() {
-          var $this = $(this);
-          $this[0].value = '';
-        })
-        items = $(e.target).parent().children('div.multiple').children('div.element').last().find('select');
-        items.each(function() {
-          $(this).prop('selectedIndex', 0);
-        })
-        items = $(e.target).parent().children('div.multiple').children('div.element').last().find('input[type=radio]');
-        if(items.length > 0)
-          items[0].checked = true;
-      }
-    });
 		
     //* set the resourceType to the same as resourceTypeGeneral
     $(':submit').click(function(e)
@@ -72,30 +53,6 @@
   /* Confirmation step before user removes an element */
     var continue_removal = confirm ("Please confirm you want to remove last item.");
     if (continue_removal) { 
-      var addButton = getPreviousSiblingElement(e.target, "input");
-      var nbElementsAdded = parseInt(addButton.getAttribute("nbelmtsadded"));
-      // The element to remove is the last <div class="multiple"> brother element of the removeButton
-      var parentNode = e.target.parentNode;
-      var divTag = getLastChildElementByTagAndAtt(parentNode, "div", "class", "multiple");
-      /* If only one element remains, then set element's items to empty 
-       * This differs from external javascript library, which only hides
-       * the element.                                        */
-      if (nbElementsAdded == 1) {
-        var items = $(divTag).find('input[type=text].data');
-        items.each(function() {
-          var $this = $(this);
-          $this[0].value = '';
-        })
-        items = $(divTag).find('select');
-        items.each(function() {
-          $(this).prop('selectedIndex', 0);
-        })
-        items = $(divTag).find('input[type=radio]');
-        if(items.length > 0)
-          items[0].checked = true;
-        } else {
-          removeOne(e.target); 
-        }
-      }
+
     });
 </script>

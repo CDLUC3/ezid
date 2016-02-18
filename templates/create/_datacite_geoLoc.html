@@ -1,7 +1,6 @@
 {% load i18n %}
 
-{{ form.geoloc_set.management_form }}
-<div class="fieldset-stacked fieldset__top-border" role="group" aria-labelledby="geoLocations-geoLocation">
+<div id="geoloc_set" class="fieldset-stacked fieldset__top-border" role="group" aria-labelledby="geoLocations-geoLocation">
   <div class="fieldset-controls__container">
     <div id="descriptions-description" class="fieldset-controls__legend create__nested-legend">{% trans "Geolocation" %}</div>
     <div class="fieldset-controls__buttons">
@@ -14,9 +13,12 @@
     </div>
   </div>
 {% for form in form.geoloc_set %}
+  <div class="form-container">
 {{ form.non_field_errors }}
   {% include "create/_datacite_inlinetext.html" with field=form.geoLocationPoint %}
   {% include "create/_datacite_inlinetext.html" with field=form.geoLocationBox %}
   {% include "create/_datacite_inlinetext.html" with field=form.geoLocationPlace %}
 {% endfor %}
+  </div>
 </div>
+{{ form.geoloc_set.management_form }}
