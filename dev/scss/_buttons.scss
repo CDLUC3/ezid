@@ -41,38 +41,16 @@
 	width: 32px;
 	height: 32px;
 	border: 1px solid $design-light-gray-border-color;
-	background: $design-form-element-bg;
-
-	&:before {
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		background-repeat: no-repeat;
-		background-position: center;
-		background-size: 12px;
-		content: '';
-	}
-
 }
 
 .button__plus {
 	@extend %button__plus-minus;
-
-	&:before {
-		background-image: url('../images/icon_plus-sign.svg');
-	}
-
+	background: url('../images/icon_plus-sign.svg') center / 12px no-repeat, $design-form-element-bg;
 }
 
 .button__minus {
 	@extend %button__plus-minus;
-
-	&:before {
-		background-image: url('../images/icon_minus-sign.svg');
-	}
-
+	background: url('../images/icon_minus-sign.svg') center / 12px no-repeat, $design-form-element-bg;
 }
 
 .button__text {
