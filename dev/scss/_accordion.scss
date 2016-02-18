@@ -14,11 +14,7 @@ $accordion-padding: 15px;
 
 	&[open] .accordion__title {
 		border-bottom: 1px solid $design-light-gray-border-color;
-
-		&:before {
-			background-image: url('../images/icon_minus-sign.svg');
-		}
-
+		background: url('../images/icon_minus-sign.svg') left $accordion-padding center / 12px no-repeat, $design-light-gray-bg-color;
 	}
 
 }
@@ -28,20 +24,6 @@ $accordion-padding: 15px;
 	position: relative;
 	margin: 0 (-$accordion-padding);
 	padding: 8px 8px 8px ($accordion-padding + 25px);
-	background: $design-light-gray-bg-color;
+	background: url('../images/icon_plus-sign.svg') left $accordion-padding center / 12px no-repeat, $design-light-gray-bg-color;
 	font-weight: bold;
-
-	&:before {
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		background-image: url('../images/icon_plus-sign.svg');
-		background-repeat: no-repeat;
-		background-position: left $accordion-padding center;
-		background-size: 12px;
-		content: '';
-	}
-
 }
