@@ -304,8 +304,9 @@
 .fcontrol__group-stacked--invalid {
 	@extend %fcontrol__group-stacked;
 
-	[class^='fcontrol__text-field'] {
+	.fcontrol__text-field-stacked {
 		border: 1px solid $design-red-color;
+		border-radius: $form-element-border-radius $form-element-border-radius 0 0;
 	}
 
 	.fcontrol__textarea-group {
@@ -320,15 +321,18 @@
 
 	.fcontrol__invalid-flag {
 		display: block;
+		border-radius: 0 0 $form-element-border-radius $form-element-border-radius;
 	}
 
 }
 
+// scss-lint:disable DeclarationOrder
 .fcontrol__group-inline--invalid {
 	@extend %fcontrol__group-inline;
 
-	[class^='fcontrol__text-field'] {
+	.fcontrol__text-field-inline {
 		border: 1px solid $design-red-color;
+		border-radius: $form-element-border-radius $form-element-border-radius 0 0;
 	}
 
 	.fcontrol__textarea-group {
@@ -339,10 +343,28 @@
 			border: none;
 		}
 
+		.fcontrol__invalid-flag {
+			border-radius: 0 0 $form-element-border-radius $form-element-border-radius;
+		}
+
 	}
 
 	.fcontrol__invalid-flag {
 		display: block;
+		border-radius: 0 0 $form-element-border-radius $form-element-border-radius;
+	}
+
+	@include bp(screen1) {
+
+		.fcontrol__text-field-inline {
+			border-radius: $form-element-border-radius 0 0 $form-element-border-radius;
+		}
+
+		.fcontrol__invalid-flag {
+			display: block;
+			border-radius: 0 $form-element-border-radius $form-element-border-radius 0;
+		}
+
 	}
 
 }
