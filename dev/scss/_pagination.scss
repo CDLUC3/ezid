@@ -1,5 +1,7 @@
 // ##### Pagination Component ##### //
 
+$pagination-element-height: 20px;
+
 .pagination {
 	display: flex;
 	flex-flow: row wrap;
@@ -10,7 +12,7 @@
 }
 
 .pagination__input-group {
-	margin: 0 20px 10px 0;
+	margin: 0 0 10px;
 }
 
 %pagination__first-last-buttons {
@@ -42,7 +44,8 @@
 
 .pagination__input {
 	width: 3em; // based on the max number of characters expected
-	padding: 0.2em 0.2em 0 0.2em;
+	height: $pagination-element-height;
+	padding: 0 0.2em;
 	border: 1px solid $design-light-gray-border-color;
 	border-radius: $form-element-border-radius;
 }
@@ -53,11 +56,12 @@
 }
 
 .pagination__select-group {
-	margin: 0 0 10px;
+	margin: 0 10px 10px 0;
 }
 
 .pagination__select {
-	padding: 0.2em 20px 0 0.2em;
+	height: $pagination-element-height;
+	padding: 0 20px 0 0.2em;
 	border: 1px solid $design-light-gray-border-color;
 	border-radius: $form-element-border-radius;
 	background: url('../images/icon_down-arrow2.svg') right 6px center / 10px no-repeat, $design-form-element-bg;

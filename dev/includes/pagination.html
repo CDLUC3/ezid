@@ -2,14 +2,6 @@
 <!-- Note: Make sure to dynamically set the "max" attribute below to the maximum pagination number -->
 
 <div class="pagination">
-	<div class="pagination__input-group">
-		<button aria-label="First page of results" class="pagination__first"></button>
-		<button aria-label="Previous page of results" class="pagination__prev">Previous</button>
-		<label for="pagination__input" class="pagination__input1">Page</label>
-		<input type="number" class="pagination__input" id="pagination__input" min="1" max="100"> of #
-		<button aria-label="Next page of results" class="pagination__next">Next</button>
-		<button aria-label="Last page of results" class="pagination__last"></button>
-	</div>
 	<div class="pagination__select-group">
     <label for="pagination__select1" class="pagination__select-label">Show</label>
     <select aria-label="Show number of entries" name="url-here" id="pagination__select1" class="pagination__select">
@@ -18,4 +10,12 @@
     </select>
     <span class="search-results__select-appended-text">entries</span>
   </div>
+	<div class="pagination__input-group">
+		<button aria-label="First page of results" class="pagination__first"></button>
+		<button aria-label="Previous page of results" class="pagination__prev">Previous</button>
+		<label for="pagination__input" class="pagination__input1">Page</label>
+		<input type="number" class="pagination__input" id="pagination__input" min="1" max="100"> of #
+		<button aria-label="Next page of results" class="pagination__next">Next</button>
+		<button aria-label="Last page of results" class="pagination__last"></button>
+	</div>
 </div>
