@@ -22,21 +22,6 @@ $search-layout-element-spacing: 30px;
 	margin: 0 0 0 10px;
 }
 
-.search__advanced {
-	max-width: 1000px;
-	margin: 0 auto;
-
-	// replace down arrow with up arrow when details is toggled open
-	&[open] .search__summary {
-		background-image: url('../images/icon_up-arrow.svg');
-	}
-
-}
-
-.search__summary {
-	margin: 0 0 $search-layout-element-spacing;
-}
-
 .search__form-element-container {
 	padding: 0 0 $search-layout-element-spacing;
 
