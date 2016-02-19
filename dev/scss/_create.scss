@@ -59,9 +59,9 @@
 }
 
 .create__accordion-section {
-	
+
 	&[open] {
-		
+
 		.create__form-element-group {
 			display: flex; // override jquery.details script, which sets all children to display: block by default
 		}
