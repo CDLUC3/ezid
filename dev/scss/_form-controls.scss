@@ -378,9 +378,13 @@
 			margin: 15px 0 0;
 		}
 
-	.fcontrol__text-label-inline {
-		width: 3em;
-		text-align: right;
+	@include bp(screen1) {
+
+		.fcontrol__text-label-inline {
+			width: 3em;
+			text-align: right;
+		}
+
 	}
 
 	@include bp(screen2) {
