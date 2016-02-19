@@ -87,6 +87,11 @@
 	margin: $form-element-group-spacing 0 0;
 }
 
+.create__nested-fieldset {
+	padding: 40px 0 30px;
+	border-top: 1px solid $design-dark-gray-color;
+}
+
 .create__nested-legend {
 	color: $design-black-color;
 	font-size: 1.2em;
