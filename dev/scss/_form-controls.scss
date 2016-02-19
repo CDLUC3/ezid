@@ -36,6 +36,7 @@
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
+	border-radius: $form-element-border-radius;
 }
 
 // ***** Inline Labels ***** //
@@ -77,6 +78,7 @@
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
+	border-radius: $form-element-border-radius;
 }
 
 // ***** Text Areas ***** //
@@ -104,6 +106,7 @@
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
+	border-radius: $form-element-border-radius;
 }
 
 .fcontrol__textarea-label-inline {
@@ -123,6 +126,7 @@
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
+	border-radius: $form-element-border-radius;
 }
 
 // ***** Hidden Labels ***** //
@@ -179,7 +183,7 @@
 	height: $form-element-height;
 	padding: 0 35px 0 0.5em;
 	border: 1px solid $design-light-gray-border-color;
-	border-radius: 0;
+	border-radius: $form-element-border-radius;
 	background: url('../images/icon_down-arrow2.svg') right 10px center / 12px no-repeat, $design-form-element-bg;
 	appearance: none; // removes default down arrow for Chrome and FF 35 and higher
 
@@ -306,6 +310,7 @@
 
 	.fcontrol__textarea-group {
 		border: 1px solid $design-red-color;
+		border-radius: $form-element-border-radius;
 
 		.fcontrol__textarea-stacked {
 			border: none;
@@ -328,6 +333,7 @@
 
 	.fcontrol__textarea-group {
 		border: 1px solid $design-red-color;
+		border-radius: $form-element-border-radius;
 
 		.fcontrol__textarea-inline {
 			border: none;
