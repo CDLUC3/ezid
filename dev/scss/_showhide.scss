@@ -1,6 +1,8 @@
 // ##### Show / Hide Component ##### //
 
 .showhide {
+	max-width: 1000px;
+	margin: 0 auto 30px;
 
 	&[open] .showhide__summary {
 
