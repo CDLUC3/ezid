@@ -35,6 +35,7 @@
 	&:before { // icon background
 		@extend %showhide-icon-base;
 		border: 1px solid $design-light-gray-border-color;
+		border-radius: $form-element-border-radius;
 		background: $design-form-element-bg;
 		content: '';
 	}
