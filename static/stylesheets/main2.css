@@ -2126,24 +2126,13 @@ Selector pattern using above mixin:
   position: relative;
   width: 32px;
   height: 32px;
-  border: 1px solid #beb6af;
-  background: linear-gradient(to bottom, whitesmoke, #e3e4e4); }
-  .button__plus:before, .button__minus:before {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 12px;
-    content: ''; }
+  border: 1px solid #beb6af; }
 
-.button__plus:before {
-  background-image: url("../images/icon_plus-sign.svg"); }
+.button__plus {
+  background: url("../images/icon_plus-sign.svg") center/12px no-repeat, linear-gradient(to bottom, whitesmoke, #e3e4e4); }
 
-.button__minus:before {
-  background-image: url("../images/icon_minus-sign.svg"); }
+.button__minus {
+  background: url("../images/icon_minus-sign.svg") center/12px no-repeat, linear-gradient(to bottom, whitesmoke, #e3e4e4); }
 
 .fieldset-stacked,
 .fieldset-inline,
@@ -2351,6 +2340,7 @@ Selector pattern using above mixin:
   -webkit-flex: 1 0 auto;
       -ms-flex: 1 0 auto;
           flex: 1 0 auto;
+  height: 30px;
   margin: 0;
   padding: 0.3em 0.5em;
   border: 1px solid #beb6af; }
@@ -2416,7 +2406,10 @@ Selector pattern using above mixin:
     .fcontrol__select-group-inline {
       -webkit-flex-flow: row wrap;
           -ms-flex-flow: row wrap;
-              flex-flow: row wrap; } }
+              flex-flow: row wrap;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center; } }
 
 .fcontrol__select-label-stacked, .fcontrol__select-label-inline {
   color: #00778a;
@@ -2432,10 +2425,18 @@ Selector pattern using above mixin:
   margin: 0 5px 0 0; }
 
 .fcontrol__select, .fcontrol__select--fullwidth {
+  height: 30px;
+  padding: 0 35px 0 0.5em;
   border: 1px solid #beb6af;
-  background: linear-gradient(to bottom, whitesmoke, #e3e4e4); }
+  border-radius: 0;
+  background: url("../images/icon_down-arrow2.svg") right 10px center/12px no-repeat, linear-gradient(to bottom, whitesmoke, #e3e4e4);
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none; }
   .fcontrol__select option, .fcontrol__select--fullwidth option, .fcontrol__select optgroup, .fcontrol__select--fullwidth optgroup {
     margin: 0.3em 0; }
+  .fcontrol__select::-ms-expand, .fcontrol__select--fullwidth::-ms-expand {
+    display: none; }
 
 .fcontrol__select--fullwidth {
   -webkit-flex: 1 0 auto;
@@ -2647,28 +2648,16 @@ Selector pattern using above mixin:
   padding: 0 15px;
   border: 1px solid #beb6af; }
   .accordion__section[open] .accordion__title {
-    border-bottom: 1px solid #beb6af; }
-    .accordion__section[open] .accordion__title:before {
-      background-image: url("../images/icon_minus-sign.svg"); }
+    border-bottom: 1px solid #beb6af;
+    background: url("../images/icon_minus-sign.svg") left 15px center/12px no-repeat, #f9f8f7; }
 
 .accordion__title {
   display: block;
   position: relative;
   margin: 0 -15px;
   padding: 8px 8px 8px 40px;
-  background: #f9f8f7;
+  background: url("../images/icon_plus-sign.svg") left 15px center/12px no-repeat, #f9f8f7;
   font-weight: bold; }
-  .accordion__title:before {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-image: url("../images/icon_plus-sign.svg");
-    background-repeat: no-repeat;
-    background-position: left 15px center;
-    background-size: 12px;
-    content: ''; }
 
 .customize-table {
   display: -webkit-flex;
@@ -3279,8 +3268,46 @@ Selector pattern using above mixin:
   margin: 0 0 10px; }
 
 .pagination__select {
+  padding: 0.2em 20px 0 0.2em;
   border: 1px solid #beb6af;
-  background: linear-gradient(to bottom, whitesmoke, #e3e4e4); }
+  border-radius: 0;
+  background: url("../images/icon_down-arrow2.svg") right 6px center/10px no-repeat, linear-gradient(to bottom, whitesmoke, #e3e4e4);
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none; }
+  .pagination__select::-ms-expand {
+    display: none; }
+
+.showhide {
+  max-width: 1000px;
+  margin: 0 auto 30px; }
+  .showhide[open] .showhide__summary:after {
+    -webkit-transform: rotate(-180deg);
+            transform: rotate(-180deg); }
+
+.showhide__summary:before, .showhide__summary:after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 32px;
+  height: 32px; }
+
+.showhide__summary {
+  position: relative;
+  margin: 0 0 30px;
+  padding: 7px 0 7px 40px;
+  color: #00778a;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-transform: uppercase; }
+  .showhide__summary:before {
+    border: 1px solid #beb6af;
+    background: linear-gradient(to bottom, whitesmoke, #e3e4e4);
+    content: ''; }
+  .showhide__summary:after {
+    background: url("../images/icon_down-arrow2.svg") center/12px no-repeat;
+    content: ''; }
 
 .sidebox {
   padding: 15px 15px 0;
@@ -3724,15 +3751,6 @@ Selector pattern using above mixin:
 
 .search__simple-button {
   margin: 0 0 0 10px; }
-
-.search__advanced {
-  max-width: 1000px;
-  margin: 0 auto; }
-  .search__advanced[open] .search__summary {
-    background-image: url("../images/icon_up-arrow.svg"); }
-
-.search__summary {
-  margin: 0 0 30px; }
 
 .search__form-element-container {
   padding: 0 0 30px; }

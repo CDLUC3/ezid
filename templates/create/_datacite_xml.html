@@ -1,13 +1,6 @@
 {% load layout_extras %}
 {% load i18n %}
 <script type="text/javascript" src="/static/javascripts/jquery.formset.js"></script>
-<script type="text/javascript">
-  $(function() {
-    $('#geoloc_set .form-container').formset({
-      prefix: '{{ form.geoloc_set.prefix }}'
-    });
-  })
-</script>
 
 {{ form.nonrepeating_form.non_field_errors }}
 {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.target %}

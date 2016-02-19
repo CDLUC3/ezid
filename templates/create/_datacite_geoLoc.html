@@ -1,4 +1,16 @@
+{% load layout_extras %}
 {% load i18n %}
+<script type="text/javascript">
+  $(function() {
+    $('#geoloc_set .form-container').formset({
+      prefix: '{{ form.geoloc_set.prefix }}',
+      deleteCssClass: 'button__minus',
+      deleteText: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+      addCssClass: 'button__plus',
+      addText: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+    });
+  })
+</script>
 
 <div id="geoloc_set" class="fieldset-stacked fieldset__top-border" role="group" aria-labelledby="geoLocations-geoLocation">
   <div class="fieldset-controls__container">
@@ -15,9 +27,39 @@
 {% for form in form.geoloc_set %}
   <div class="form-container">
 {{ form.non_field_errors }}
-  {% include "create/_datacite_inlinetext.html" with field=form.geoLocationPoint %}
-  {% include "create/_datacite_inlinetext.html" with field=form.geoLocationBox %}
-  {% include "create/_datacite_inlinetext.html" with field=form.geoLocationPlace %}
+<div class="fcontrol__group-inline{% if form.geoLocationPoint.errors %}--invalid{% endif %} create__form-element-group">
+  <label for="{{ form.geoLocationPoint.id_for_label }}" class="fcontrol__text-label-inline create__label-advanced {% if reqd %}fcontrol__label-required{% endif %}">{{ form.geoLocationPoint.label }}</label>
+  {{ form.geoLocationPoint|add_attributes:"fcontrol__text-field-inline"}}
+  {% if form.geoLocationPoint.errors %}
+  <span class="fcontrol__invalid-flag">
+  {% for error in form.geoLocationPoint.errors %}
+    {{ error|escape }}
+  {% endfor %}
+  </span>
+  {% endif %}
+</div>
+<div class="fcontrol__group-inline{% if form.geoLocationBox.errors %}--invalid{% endif %} create__form-element-group">
+  <label for="{{ form.geoLocationBox.id_for_label }}" class="fcontrol__text-label-inline create__label-advanced {% if reqd %}fcontrol__label-required{% endif %}">{{ form.geoLocationBox.label }}</label>
+  {{ form.geoLocationBox|add_attributes:"fcontrol__text-field-inline"}}
+  {% if form.geoLocationBox.errors %}
+  <span class="fcontrol__invalid-flag">
+  {% for error in form.geoLocationBox.errors %}
+    {{ error|escape }}
+  {% endfor %}
+  </span>
+  {% endif %}
+</div>
+<div class="fcontrol__group-inline{% if form.geoLocationPlace.errors %}--invalid{% endif %} create__form-element-group">
+  <label for="{{ form.geoLocationPlace.id_for_label }}" class="fcontrol__text-label-inline create__label-advanced {% if reqd %}fcontrol__label-required{% endif %}">{{ form.geoLocationPlace.label }}</label>
+  {{ form.geoLocationPlace|add_attributes:"fcontrol__text-field-inline"}}
+  {% if form.geoLocationPlace.errors %}
+  <span class="fcontrol__invalid-flag">
+  {% for error in form.geoLocationPlace.errors %}
+    {{ error|escape }}
+  {% endfor %}
+  </span>
+  {% endif %}
+</div>
 {% endfor %}
   </div>
 </div>
