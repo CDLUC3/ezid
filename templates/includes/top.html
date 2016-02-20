@@ -42,7 +42,9 @@ Welcome {{ session.auth.user|first }}!
     <a class="header__contact-link" href="{% url "ui.contact" %}">Contact</a>
     <div class="header__loginout">
       {% if session.auth %}
-      <a class="not-text" href="/logout"><button class="header__loginout-link">Logout</button></a>
+        <form action="/logout" role="form">
+          <button class="header__loginout-link">Logout</button>
+        </form>
       {% else %}
       <button id="js-header__loginout-button" class="header__loginout-link">Login</button>
       {% endif %}

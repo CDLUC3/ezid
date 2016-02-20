@@ -1,11 +1,11 @@
 {% load manage_form_tags %}
 {% load i18n %}
 
-<form method="get" action="{% url "ui_manage.index" %}" id="manage-pagination-{{ select_position }}" role="form">
 <div class="pagination">
-  <div class="pagination__input-group">
-  {% pager_display REQUEST p total_pages ps %}
-  </div>
+  <form method="get" action="{% url primary_page %}" id="ps-{{ select_position }}" role="form">
+    <input type="hidden" name="sort" value="{{ sort }}" /> 
+    <input type="hidden" name="order_by" value="{{ order_by }}" /> 
+    <input type="hidden" name="p" value="{{ p }}" /> 
   <div class="pagination__select-group">
     <label for="page-size-{{ select_position }}" class="pagination__select-label">{% trans "Show" %}</label>
     <select aria-label="{% trans "Show number of entries" %}" name="ps" id="page-size-{{ select_position }}" class="pagination__select">
@@ -19,10 +19,18 @@
     </select>
     <span class="search-results__select-appended-text">{% trans "entries" %}</span>
   </div>
+  </form>
+  <form method="get" action="{% url primary_page %}" id="p-{{ select_position }}" role="form">
+    <input type="hidden" name="sort" value="{{ sort }}" /> 
+    <input type="hidden" name="order_by" value="{{ order_by }}" /> 
+    <input type="hidden" name="ps" value="{{ ps }}" /> 
+  <div class="pagination__input-group">
+  {% pager_display REQUEST p total_pages ps %}
+  </div>
+  </form>
 </div>
-</form>
 <script type="text/javascript">
   $("#page-size-{{ select_position }}").bind("change", function(event){
-    $("#manage-pagination-{{ select_position }}").submit();
+    $("#ps-{{ select_position }}").submit();
   });
 </script>

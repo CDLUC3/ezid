@@ -732,7 +732,6 @@ class BaseSearchIdForm(forms.Form):
       return cleaned_data
     form_empty = True
     for field_value in cleaned_data.itervalues():
-      # import pdb; pdb.set_trace()
       # Check for None or '', so IntegerFields with 0 or similar things don't seem empty.
       if not isinstance(field_value, bool):
         if field_value is not None and field_value != '' and not field_value.isspace():

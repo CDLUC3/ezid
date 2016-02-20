@@ -173,7 +173,7 @@
     </div>{% comment %}No validation necessary{% endcomment %}
   </div>
   <div class="row">
-    <div class="col-md-6 manage__form-element-container">
+    <div class="col-md-6">
       <div class="fieldset-inline" role="group" aria-labelledby="{{ form.hasMetadata.id_for_label }}">
         <div id="{{ form.hasMetadata.id_for_label }}" class="fieldset-inline__legend manage__fieldset-legend">{{ form.hasMetadata.label }}</div>
       {% for radio in form.hasMetadata %}
@@ -198,35 +198,54 @@
 </div>
 {% include "includes/_choose_cols.html" %}
 
+<div class="fcontrol__select-group-inline manage__identifiers-select">
+  <label for="manage__select4" class="fcontrol__select-label-inline">{% trans "View identifiers owned by" %}:</label>
+  <select name="url-here" id="manage__select4" class="fcontrol__select">
+    <option value="">Default top level ownership for logged in person</option>
+    <option value="">Department A</option>
+    <optgroup label="Institution B">
+      <option value="">Username 1</option>
+      <option value="">Username 2</option>
+    </optgroup>
+  </select>
+</div>
+
 {% if results|length < 1 %}
   <p>{% trans "No identifiers found" %}.<br/>
   <br/><br/><br/><br/><br/><br/><br/><br/><br/></p>
 {% else %}
   
-  {% include "includes/_pagination.html" with select_position="top" %}
+  {% include "includes/_pagination.html" with primary_page="ui_manage.index" select_position="top" %}
 
-  <table class="table2">
+<table class="table2">
   {% header_row REQUEST fields_selected fields_mapped order_by sort %}
-  <tbody>
-  {% for item in results %}
-  <tr>
-    {% data_row item fields_selected field_display_types account_co_owners testPrefixes %}
-  </tr>
-  {% endfor %}
-  </tbody>
-  </table>
+<tbody>
+{% for item in results %}
+<tr>
+  {% data_row item fields_selected field_display_types account_co_owners testPrefixes %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
 
-  <p class="paragraph">&#42; {% trans "Indicates demo identifier" %}</p>
-  {% include "includes/_pagination.html" with select_position="bottom" %}
+  {% include "includes/_pagination.html" with primary_page="ui_manage.index" select_position="bottom" %}
+
+<p class="manage__note">&#42; {% trans "Indicates demo identifier" %}</p>
+
+<div class="manage__download-button">
+  <!--  url "ui_download.index" -->
+  <form action="" role="form">
+    <button id="download" class="button__primary">{% trans "Download All" %}</button>
+  </form>
+</div>
 {% endif %}
-  <script type="text/javascript">
+
+<script type="text/javascript">
   $("#manage__keywords").focus();
 
   // Add class for current column heading
     $(document).ready(function() {
       $("th:has(.order_by_col)").attr("id", "cur_sort");
     });
-  </script>
+</script>
 {% endblock %}
-
-

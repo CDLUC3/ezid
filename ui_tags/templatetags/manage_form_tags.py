@@ -139,8 +139,6 @@ def pager_display(request, current_page, total_pages, page_size):
   return p_out
 
 def page_link(request, current_page, this_page, link_text, page_size, cname, title=None):
-  combined_params = dict(request.dict(), **{'p': this_page, 'ps': page_size})
-  url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
-  attr_t = " aria-label='" + title + "'" if title else ""
-  return "<a href='" + url + "' role='button' class='" + cname + "'" + \
-         attr_t + ">" + escape(link_text) + "</a>"
+  attr_aria = " aria-label='" + title + "'" if title else ""
+  return "<button name='p' value='" + str(this_page) + "' class='" + cname + "'" + \
+    attr_aria + ">" + escape(link_text) + "</button>"
