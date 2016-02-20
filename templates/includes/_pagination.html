@@ -1,17 +1,28 @@
 {% load manage_form_tags %}
 {% load i18n %}
 
-  <div class="search-results__pagination">
-    <div class="search-results__select">
-      <label for="search-results__pagination-label1" class="fcontrol__select-label-inline search-results__pagination-label">{% trans "Show" %}</label>
-      <select name="" id="search-results__pagination-label1" class="fcontrol__select-inline">
-        <option value="">10</option>
-        <option value="">50</option>
-        <option value="">100</option>
-      </select>
-      {% trans "entries" %}
-    </div>
-    <div class="pagination">
-    {% pager_display REQUEST p total_pages ps %}
-    </div>
+<form method="get" action="{% url "ui_manage.index" %}" id="manage-pagination-{{ select_position }}" role="form">
+<div class="pagination">
+  <div class="pagination__input-group">
+  {% pager_display REQUEST p total_pages ps %}
   </div>
+  <div class="pagination__select-group">
+    <label for="page-size-{{ select_position }}" class="pagination__select-label">{% trans "Show" %}</label>
+    <select aria-label="{% trans "Show number of entries" %}" name="ps" id="page-size-{{ select_position }}" class="pagination__select">
+    {% for size in page_sizes %}
+      <option value="{{ size }}"
+        {% if size == ps %}
+          selected="selected"
+        {% endif %}
+      >{{ size }}</option>
+    {% endfor %}
+    </select>
+    <span class="search-results__select-appended-text">{% trans "entries" %}</span>
+  </div>
+</div>
+</form>
+<script type="text/javascript">
+  $("#page-size-{{ select_position }}").bind("change", function(event){
+    $("#manage-pagination-{{ select_position }}").submit();
+  });
+</script>

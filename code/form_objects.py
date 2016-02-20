@@ -351,7 +351,6 @@ class ContribForm(forms.Form):
       label = _("Contributor Type"), choices=CONTRIB_TYPES)
     self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
   def clean(self):
-    import pdb; pdb.set_trace()
     cleaned_data = super(ContribForm, self).clean()
     cname = cleaned_data.get("contributorName")
     ctype = cleaned_data.get("contributorType")
@@ -722,7 +721,7 @@ class BaseSearchIdForm(forms.Form):
     ('doi', "DOI"),
   )
   id_type = forms.ChoiceField(required=False, choices=ID_TYPES, 
-    label = _("Identifier Type"))
+    label = _("ID Type"))
   def clean(self):
     """ Invalid if all fields are empty """
     field_count = len(self.fields)
@@ -733,10 +732,12 @@ class BaseSearchIdForm(forms.Form):
       return cleaned_data
     form_empty = True
     for field_value in cleaned_data.itervalues():
+      # import pdb; pdb.set_trace()
       # Check for None or '', so IntegerFields with 0 or similar things don't seem empty.
-      if field_value is not None and field_value != '' and not field_value.isspace():
-        form_empty = False
-        break
+      if not isinstance(field_value, bool):
+        if field_value is not None and field_value != '' and not field_value.isspace():
+          form_empty = False
+          break
     if form_empty:
       raise forms.ValidationError(_("Please enter information in at least one field."))
     return cleaned_data
@@ -768,11 +769,19 @@ class ManageSearchIdForm(BaseSearchIdForm):
     ('unavailable', "Unavailable"),
   )
   id_status = forms.ChoiceField(required=False, choices=ID_STATUS, 
-    label = _("Identifier Status"))
-  harvesting = forms.BooleanField(label=_("Allows Harvesting/Indexing?"),
-    widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
-  hasMetadata = forms.BooleanField(label=_("Has Metadata?"),
-    widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
+    label = _("ID Status"))
+  # render BooleanField as two radio buttons instead of a checkbox:
+  # http://stackoverflow.com/questions/854683/django-booleanfield-as-radio-buttons
+  harvesting = forms.TypedChoiceField(
+    label=_("Allows Harvesting/Indexing?"),
+    coerce=lambda x: x == 'True',
+    choices=((True, _('Yes')), (False, _('No'))), initial=True,
+    widget=forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}))
+  hasMetadata = forms.TypedChoiceField(
+    label=_("Has Metadata?"),
+    coerce=lambda x: x == 'True',
+    choices=((True, _('Yes')), (False, _('No'))), initial=True,
+    widget=forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}))
 
 ################# Contact Us Form  #################
 

@@ -16,8 +16,8 @@
   </div>
   <button class="search__simple-button" type="submit">{% trans "Search" %}</button>
 </div>
-<details {{ show_advanced_search }} class="search__advanced">
-  <summary class="heading__icon-1 search__summary">{% trans "Advanced Search" %}</summary>
+<details {{ show_advanced_search }} class="showhide">
+  <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
   <div class="row">
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked{% if form.identifier.errors %}--invalid{% endif %}">
@@ -85,7 +85,7 @@
     </div>{% comment %}No validation necessary{% endcomment %}
   </div>
   <div class="row">
-    <div class="col-md-6 search__form-element-container">
+    <div class="col-md-6">
       <div class="fcontrol__select-group-stacked">
 	<label for="{{ form.id_type.id_for_label }}" class="fcontrol__select-label-stacked">{{ form.id_type.label }}</label>
         {{ form.id_type|add_attributes:"fcontrol__select--fullwidth"}}

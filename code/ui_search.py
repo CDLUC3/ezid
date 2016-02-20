@@ -92,6 +92,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
     #p=page and ps=pagesize -- I couldn't find an auto-paging that uses our type of models and 
     #does what we want. Sorry, had to roll our own
     d['p'] = 1
+    d['page_sizes'] = [10, 50, 100]
     d['ps'] = 10
     if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
     if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])

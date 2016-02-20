@@ -2126,7 +2126,8 @@ Selector pattern using above mixin:
   position: relative;
   width: 32px;
   height: 32px;
-  border: 1px solid #beb6af; }
+  border: 1px solid #beb6af;
+  border-radius: 3px; }
 
 .button__plus {
   background: url("../images/icon_plus-sign.svg") center/12px no-repeat, linear-gradient(to bottom, whitesmoke, #e3e4e4); }
@@ -2305,7 +2306,8 @@ Selector pattern using above mixin:
   height: 30px;
   margin: 0;
   padding: 0.3em 0.5em;
-  border: 1px solid #beb6af; }
+  border: 1px solid #beb6af;
+  border-radius: 3px; }
 
 .fcontrol__group-inline, .fcontrol__group-inline--invalid {
   display: -webkit-flex;
@@ -2343,7 +2345,8 @@ Selector pattern using above mixin:
   height: 30px;
   margin: 0;
   padding: 0.3em 0.5em;
-  border: 1px solid #beb6af; }
+  border: 1px solid #beb6af;
+  border-radius: 3px; }
 
 .fcontrol__textarea-group {
   display: -webkit-flex;
@@ -2368,7 +2371,8 @@ Selector pattern using above mixin:
   height: 5em;
   margin: 0;
   padding: 0.3em 0.5em;
-  border: 1px solid #beb6af; }
+  border: 1px solid #beb6af;
+  border-radius: 3px; }
 
 .fcontrol__textarea-label-inline {
   margin: 0 5px 0 0;
@@ -2382,7 +2386,8 @@ Selector pattern using above mixin:
   height: 5em;
   margin: 0;
   padding: 0.3em 0.5em;
-  border: 1px solid #beb6af; }
+  border: 1px solid #beb6af;
+  border-radius: 3px; }
 
 .fcontrol__select-group-stacked {
   display: -webkit-flex;
@@ -2428,7 +2433,7 @@ Selector pattern using above mixin:
   height: 30px;
   padding: 0 35px 0 0.5em;
   border: 1px solid #beb6af;
-  border-radius: 0;
+  border-radius: 3px;
   background: url("../images/icon_down-arrow2.svg") right 10px center/12px no-repeat, linear-gradient(to bottom, whitesmoke, #e3e4e4);
   -webkit-appearance: none;
      -moz-appearance: none;
@@ -2503,34 +2508,50 @@ Selector pattern using above mixin:
           -ms-flex: 0 1 auto;
               flex: 0 1 auto; } }
 
-.fcontrol__group-stacked--invalid [class^='fcontrol__text-field'] {
-  border: 1px solid #9e1919; }
+.fcontrol__group-stacked--invalid .fcontrol__text-field-stacked {
+  border: 1px solid #9e1919;
+  border-radius: 3px 3px 0 0; }
 
 .fcontrol__group-stacked--invalid .fcontrol__textarea-group {
-  border: 1px solid #9e1919; }
+  border: 1px solid #9e1919;
+  border-radius: 3px; }
   .fcontrol__group-stacked--invalid .fcontrol__textarea-group .fcontrol__textarea-stacked {
     border: none; }
 
 .fcontrol__group-stacked--invalid .fcontrol__invalid-flag {
-  display: block; }
+  display: block;
+  border-radius: 0 0 3px 3px; }
 
-.fcontrol__group-inline--invalid [class^='fcontrol__text-field'] {
-  border: 1px solid #9e1919; }
+.fcontrol__group-inline--invalid .fcontrol__text-field-inline {
+  border: 1px solid #9e1919;
+  border-radius: 3px 3px 0 0; }
 
 .fcontrol__group-inline--invalid .fcontrol__textarea-group {
-  border: 1px solid #9e1919; }
+  border: 1px solid #9e1919;
+  border-radius: 3px; }
   .fcontrol__group-inline--invalid .fcontrol__textarea-group .fcontrol__textarea-inline {
     border: none; }
+  .fcontrol__group-inline--invalid .fcontrol__textarea-group .fcontrol__invalid-flag {
+    border-radius: 0 0 3px 3px; }
 
 .fcontrol__group-inline--invalid .fcontrol__invalid-flag {
-  display: block; }
+  display: block;
+  border-radius: 0 0 3px 3px; }
+
+@media (min-width: 480px) {
+  .fcontrol__group-inline--invalid .fcontrol__text-field-inline {
+    border-radius: 3px 0 0 3px; }
+  .fcontrol__group-inline--invalid .fcontrol__invalid-flag {
+    display: block;
+    border-radius: 0 3px 3px 0; } }
 
 .fcontrol__inline-groups .fcontrol__group-inline:not(:first-child) {
   margin: 15px 0 0; }
 
-.fcontrol__inline-groups .fcontrol__text-label-inline {
-  width: 3em;
-  text-align: right; }
+@media (min-width: 480px) {
+  .fcontrol__inline-groups .fcontrol__text-label-inline {
+    width: 3em;
+    text-align: right; } }
 
 @media (min-width: 768px) {
   .fcontrol__inline-groups {
@@ -2646,17 +2667,17 @@ Selector pattern using above mixin:
   display: block;
   margin: 0 0 10px;
   padding: 0 15px;
-  border: 1px solid #beb6af; }
+  border: 1px solid #beb6af;
+  border-radius: 3px; }
   .accordion__section[open] .accordion__title {
     border-bottom: 1px solid #beb6af;
-    background: url("../images/icon_minus-sign.svg") left 15px center/12px no-repeat, #f9f8f7; }
+    background: url("../images/icon_minus-sign.svg") left 15px center/12px no-repeat, linear-gradient(to bottom, whitesmoke, #e3e4e4); }
 
 .accordion__title {
   display: block;
-  position: relative;
   margin: 0 -15px;
   padding: 8px 8px 8px 40px;
-  background: url("../images/icon_plus-sign.svg") left 15px center/12px no-repeat, #f9f8f7;
+  background: url("../images/icon_plus-sign.svg") left 15px center/12px no-repeat, linear-gradient(to bottom, whitesmoke, #e3e4e4);
   font-weight: bold; }
 
 .customize-table {
@@ -3234,7 +3255,7 @@ Selector pattern using above mixin:
   margin: 0 auto; }
 
 .pagination__input-group {
-  margin: 0 20px 10px 0; }
+  margin: 0 0 10px; }
 
 .pagination__first, .pagination__last {
   position: relative;
@@ -3259,18 +3280,23 @@ Selector pattern using above mixin:
   font-weight: normal; }
 
 .pagination__input {
-  width: 3em; }
+  width: 3em;
+  height: 20px;
+  padding: 0 0.2em;
+  border: 1px solid #beb6af;
+  border-radius: 3px; }
 
 .pagination__last {
   background-image: url("../images/icon_double-arrow-last.svg"); }
 
 .pagination__select-group {
-  margin: 0 0 10px; }
+  margin: 0 10px 10px 0; }
 
 .pagination__select {
-  padding: 0.2em 20px 0 0.2em;
+  height: 20px;
+  padding: 0 20px 0 0.2em;
   border: 1px solid #beb6af;
-  border-radius: 0;
+  border-radius: 3px;
   background: url("../images/icon_down-arrow2.svg") right 6px center/10px no-repeat, linear-gradient(to bottom, whitesmoke, #e3e4e4);
   -webkit-appearance: none;
      -moz-appearance: none;
@@ -3303,6 +3329,7 @@ Selector pattern using above mixin:
   text-transform: uppercase; }
   .showhide__summary:before {
     border: 1px solid #beb6af;
+    border-radius: 3px;
     background: linear-gradient(to bottom, whitesmoke, #e3e4e4);
     content: ''; }
   .showhide__summary:after {
@@ -3419,7 +3446,7 @@ Selector pattern using above mixin:
   display: block;
   width: 100%;
   max-width: 1000px;
-  margin: 10px auto; }
+  margin: 0 auto 10px; }
   .table2 thead {
     display: block;
     float: left;
@@ -3549,14 +3576,14 @@ Selector pattern using above mixin:
   font-weight: bold; }
   @media (min-width: 768px) {
     .contact__note {
-      padding: 0 25% 0 0; } }
+      padding: 0 20% 0 0; } }
 
 .contact__form {
   max-width: 1000px;
   margin: 0 auto; }
   @media (min-width: 768px) {
     .contact__form {
-      padding: 0 25% 0 0; } }
+      padding: 0 20% 0 0; } }
 
 @media (min-width: 480px) {
   .contact__form-label {
@@ -3615,9 +3642,6 @@ Selector pattern using above mixin:
 .create__accordion-section[open] .create__accordion-title {
   margin: 0 -15px 20px; }
 
-.create__accordion-title {
-  background: linear-gradient(to bottom, whitesmoke, #e3e4e4); }
-
 .create__button {
   margin: 20px 0 0; }
   @media (min-width: 768px) {
@@ -3627,10 +3651,17 @@ Selector pattern using above mixin:
 .create__buttton-note {
   margin: 20px 0 0; }
 
+.create__nested-fieldset {
+  padding: 40px 0 30px;
+  border-top: 1px solid #7c7e7f; }
+
 .create__nested-legend {
   color: black;
   font-size: 1.2em;
   text-transform: uppercase; }
+
+.create__fcontrol-group {
+  padding: 30px 0 0; }
 
 .home__identifier-container {
   display: -webkit-flex;
@@ -3706,7 +3737,9 @@ Selector pattern using above mixin:
   margin: 0; }
 
 .manage__fieldset-legend {
-  font-size: 1.1em; }
+  margin: 0 20px 2px 0;
+  font-size: 1.1em;
+  font-weight: normal; }
 
 .manage__text-label-inline {
   font-weight: normal; }
@@ -3759,7 +3792,9 @@ Selector pattern using above mixin:
       padding: 0 0 30px 30px; } }
 
 .search__publication-fieldset {
-  font-size: 1.1em; }
+  margin: 0 0 2px;
+  font-size: 1.1em;
+  font-weight: normal; }
 
 .search__inline-groups {
   padding: 0 0 15px; }

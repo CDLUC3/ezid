@@ -125,22 +125,22 @@ def pager_display(request, current_page, total_pages, page_size):
   empty = ''
   if current_page > 1:
     p_out += page_link(request, current_page, 1, empty, page_size, 'pagination__first', \
-      _("First page")) + ' '
+      _("First page of results")) + ' '
     p_out += page_link(request, current_page, current_page - 1, _("Previous"), page_size,\
-      'pagination__prev') + ' '
+      'pagination__prev', _("Previous page of results")) + ' '
   p_out += "<input type='number' class='pagination__input' min='1' " + \
            "max='"  + s_total  + "' value='" + str(current_page) + "'/> " + \
            _("of") + " " + s_total + " "
   if current_page < total_pages:
     p_out += page_link(request, current_page, current_page + 1, _("Next"), page_size, \
-      'pagination__next') + ' '
+      'pagination__next', _("Next page of results")) + ' '
     p_out += page_link(request, current_page, total_pages, empty, page_size, \
-      'pagination__last', _("Last page")) + ' '
+      'pagination__last', _("Last page of results")) + ' '
   return p_out
 
 def page_link(request, current_page, this_page, link_text, page_size, cname, title=None):
   combined_params = dict(request.dict(), **{'p': this_page, 'ps': page_size})
   url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
-  attr_t = " title='" + title + "'" if title else ""
+  attr_t = " aria-label='" + title + "'" if title else ""
   return "<a href='" + url + "' role='button' class='" + cname + "'" + \
          attr_t + ">" + escape(link_text) + "</a>"
