@@ -30,6 +30,7 @@
 .create__inline-nested-legend {
 	width: $form-element-label-width;
 	font-size: 1em;
+	font-weight: normal;
 
 	@include bp(screen2) {
 		font-size: 1.1em;
