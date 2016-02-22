@@ -56,6 +56,8 @@ def column_head(request, field, fields_mapped, order_by, sort):
   else:
     overriding_params = {'order_by': field, 'sort': sort }
   combined_params = dict(request.dict(), **overriding_params)
+  # If sorting, set result to first page
+  if 'p' in combined_params: combined_params['p'] = 1
   url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
   if field == order_by:
     sort_icon = "<div class='order_by_col'><a href='" + url + "' title='" + SORT_TIP[sort] + "'>" + \
@@ -118,7 +120,7 @@ def percent_width(item_weight, total):
   return str(int(round(item_weight/total*1000))/10.0) + '%'
 
 @register.simple_tag
-def pager_display(request, current_page, total_pages, page_size):
+def pager_display(request, current_page, total_pages, page_size, select_position):
   if total_pages < 2: return ''
   p_out = ''
   s_total = str(total_pages)
@@ -128,8 +130,9 @@ def pager_display(request, current_page, total_pages, page_size):
       _("First page of results")) + ' '
     p_out += page_link(request, current_page, current_page - 1, _("Previous"), page_size,\
       'pagination__prev', _("Previous page of results")) + ' '
-  p_out += "<input type='number' class='pagination__input' min='1' " + \
-           "max='"  + s_total  + "' value='" + str(current_page) + "'/> " + \
+  p_out += "<input id='page-directselect-" + select_position + \
+           "' type='number' class='pagination__input' min='1' " + \
+           "max='"  + s_total  + "' name='p' value='" + str(current_page) + "'/> " + \
            _("of") + " " + s_total + " "
   if current_page < total_pages:
     p_out += page_link(request, current_page, current_page + 1, _("Next"), page_size, \

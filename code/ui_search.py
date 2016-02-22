@@ -12,19 +12,14 @@ locale.setlocale(locale.LC_ALL, '')
 # if I had realized there were going to be so many properties up front, I probably would
 # have created a field layout object with a number of properties instead.
 
-# The order to display fields both in the customize check boxes and the columns
-FIELD_ORDER = ['mappedTitle', 'mappedCreator', 'identifier', 'owner', 'createTime',\
-               'updateTime', 'status']
-
-# The default selected fields for display if custom fields haven't been defined
-FIELD_DEFAULTS = ['mappedTitle', 'mappedCreator', 'identifier', 'owner', 'createTime',\
-                  'updateTime', 'status']
-
 # Column names for display for each field
-FIELDS_MAPPED = {'identifier':_("Identifier"),  'owner':_("Owner"), \
-                  'createTime':_("Date Created"), 'updateTime':_("Date Last Modified"), \
-                  'status':_("Status"), 'mappedTitle':_("Object Title"), \
-                  'mappedCreator':_("Object Creator")}
+FIELDS_MAPPED = {
+  'createTime':_("ID Date Created"), 'identifier':_("Identifier"), \
+  'mappedTitle':_("Object Title"), 'mappedCreator':_("Object Creator"), \
+  'owner':_("ID Owner"), 'resourcePublisher':_("Object Publisher"), \
+  'resourcePublicationYear':_("Object Publication Year"), 'resourceType':_("Object Type"),\
+  'status':_("ID Status"), 'updateTime':_("ID Date Last Modified"),
+}
 
 #how to display each field, these are in custom tags for these display types
 FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', \
@@ -32,10 +27,31 @@ FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', \
                 'mappedTitle': 'string', 'mappedCreator' : 'string'}
 
 # priority for the sort order if it is not set, choose the first field that exists in this order
-FIELD_DEFAULT_SORT_PRIORITY = ['updateTime', 'identifier', 'createTime', 'owner', 'mappedTitle', \
-                'mappedCreator', 'status']
+FIELD_DEFAULT_SORT_PRIORITY = ['updateTime', 'identifier', 'createTime', \
+                'owner', 'mappedTitle', 'mappedCreator', 'status']
+
+# The order to display fields both in the customize check boxes and the columns
+SEARCH_FIELD_ORDER = ['mappedTitle', 'mappedCreator', 'identifier', 'resourcePublisher', \
+               'resourcePublicationYear', 'resourceType']
+MANAGE_FIELD_ORDER = ['mappedTitle', 'mappedCreator', 'identifier', 'owner', 'createTime',\
+               'updateTime', 'resourcePublisher', 'resourcePublicationYear', \
+               'resourceType', 'status']
+
+# The default selected fields for display if custom fields haven't been defined
+SEARCH_FIELD_DEFAULTS = ['mappedTitle', 'mappedCreator', 'identifier', 'resourcePublisher', \
+               'resourcePublicationYear', 'resourceType']
+
+MANAGE_FIELD_DEFAULTS = ['mappedTitle', 'mappedCreator', 'identifier', 'owner', 'createTime',\
+               'updateTime', 'status']
+
 
 IS_ASCENDING = {'asc': True, 'desc': False }
+
+def _getFieldOrder(isPublicSearch):
+  return SEARCH_FIELD_ORDER if isPublicSearch else MANAGE_FIELD_ORDER
+
+def _getFieldDefaults(isPublicSearch):
+  return SEARCH_FIELD_DEFAULTS if isPublicSearch else MANAGE_FIELD_DEFAULTS
 
 def index(request):
   """ (Public) Search Page """
@@ -63,22 +79,19 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
       REQUEST = request.GET
     else:
       REQUEST = request.POST
-    d['testPrefixes'] = uic.testPrefixes
-    d['jquery_checked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) & set(FIELD_DEFAULTS))])
-    d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) - set(FIELD_DEFAULTS))])
-    # r = useradmin.getAccountProfile(request.session["auth"].user[0])
-    # if 'ezidCoOwners' in r:
-    #   d['account_co_owners'] = r['ezidCoOwners']
-    # else:
-    d['account_co_owners'] = ''
-    d['field_order'] = FIELD_ORDER
-    d['fields_mapped'] = FIELDS_MAPPED
-    d['field_defaults'] = FIELD_DEFAULTS
-    # ToDo: Map fields appropriately from both customize and from Search Query
-    d['fields_selected'] = [x for x in FIELD_ORDER if x in REQUEST ]
-    if len(d['fields_selected']) < 1: d['fields_selected'] = FIELD_DEFAULTS
     d['REQUEST'] = REQUEST 
+    d['testPrefixes'] = uic.testPrefixes
+    d['fields_mapped'] = FIELDS_MAPPED
     d['field_display_types'] = FIELD_DISPLAY_TYPES
+    f_order = _getFieldOrder(isPublicSearch)
+    f_defaults = _getFieldDefaults(isPublicSearch)
+    d['jquery_checked'] = ','.join(['#' + x for x in list(set(f_order) & set(f_defaults))])
+    d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(f_order) - set(f_defaults))])
+    d['field_order'] = f_order 
+    d['field_defaults'] = f_defaults 
+    # ToDo: Map fields appropriately from both customize and from Search Query
+    d['fields_selected'] = [x for x in f_order if x in REQUEST ]
+    if len(d['fields_selected']) < 1: d['fields_selected'] = f_defaults 
 
     #ensure sorting defaults are set
     if 'order_by' in REQUEST and REQUEST['order_by'] in d['fields_selected']:
@@ -89,6 +102,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
       d['sort'] = REQUEST['sort']
     else:
       d['sort'] = 'desc'
+
     #p=page and ps=pagesize -- I couldn't find an auto-paging that uses our type of models and 
     #does what we want. Sorry, had to roll our own
     d['p'] = 1

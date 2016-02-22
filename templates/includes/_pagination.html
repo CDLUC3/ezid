@@ -25,12 +25,27 @@
     <input type="hidden" name="order_by" value="{{ order_by }}" /> 
     <input type="hidden" name="ps" value="{{ ps }}" /> 
   <div class="pagination__input-group">
-  {% pager_display REQUEST p total_pages ps %}
+  {% pager_display REQUEST p total_pages ps select_position %}
   </div>
   </form>
 </div>
 <script type="text/javascript">
+  // page size: submit on change
   $("#page-size-{{ select_position }}").bind("change", function(event){
     $("#ps-{{ select_position }}").submit();
+  });
+  // page selection input field: submit on enter 
+  $("#page-directselect-{{ select_position }}").keyup(function(e){ 
+    var code = e.which;
+    if(code==13)e.preventDefault();
+    if(code==32||code==13||code==188||code==186){
+      // Remove values from other buttons in this form since 
+      // we only want to submit value from thsi input field
+      // $('#p-{{ select_position }} :button').attr('name', '');
+      var b = $('p-{{ select_position }}').getElementsByTagName("button");
+      for(var i=0;i<b.length;i++)
+        b[i].value = '';
+      $("#p-{{ select_position }}").submit();
+    }
   });
 </script>
