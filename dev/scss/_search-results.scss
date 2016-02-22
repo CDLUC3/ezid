@@ -6,7 +6,7 @@
 	max-width: 1000px;
 	margin: 10px auto;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		flex-flow: row nowrap;
 		margin: $search-layout-element-spacing auto;
 	}
@@ -14,10 +14,11 @@
 }
 
 .search-results__simple-button-group {
+	display: flex;
 	align-self: flex-end;
 	margin: 10px 0 0;
 
-	@include bp(screen1) {
+	@include bp(screen2) {
 		margin: 0 0 0 15px;
 	}
 
