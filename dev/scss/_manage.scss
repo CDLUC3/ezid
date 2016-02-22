@@ -61,17 +61,23 @@
 
 }
 
-.manage__identifiers-select {
+.manage__identifiers-submit-controls {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
 	max-width: 1000px;
-	margin: 0 auto 30px;
+	margin: 0 auto;
+}
+
+.manage__identifiers-select {
+	margin: 0 0 30px;
+}
+
+.manage__download-button {
+	margin: 0 0 30px;
 }
 
 .manage__note {
 	max-width: 1000px;
 	margin: 30px auto;
-}
-
-.manage__download-button {
-	max-width: 1000px;
-	margin: 0 auto;
 }

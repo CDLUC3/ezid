@@ -42,7 +42,7 @@
       <button class="manage__simple-search-button">Search Your Identifiers</button>
     </div>
 
-    <details class="showhide" open>
+    <details class="showhide">
       <summary class="showhide__summary">Advanced Search</summary>
       <div class="row">
         <div class="col-md-6 manage__form-element-container">
@@ -202,16 +202,22 @@
      <button class="customize-table__button">Customize View</button>
     </div>
 
-    <div class="fcontrol__select-group-inline manage__identifiers-select">
-      <label for="manage__select4" class="fcontrol__select-label-inline">View identifiers owned by:</label>
-      <select name="url-here" id="manage__select4" class="fcontrol__select">
-        <option value="">Default top level ownership for logged in person</option>
-        <option value="">Department A</option>
-        <optgroup label="Institution B">
-          <option value="">Username 1</option>
-          <option value="">Username 2</option>
-        </optgroup>
-      </select>
+    <div class="manage__identifiers-submit-controls">
+
+      <div class="fcontrol__select-group-inline manage__identifiers-select">
+        <label for="manage__select4" class="fcontrol__select-label-inline">View identifiers owned by:</label>
+        <select name="url-here" id="manage__select4" class="fcontrol__select">
+          <option value="">Default top level ownership for logged in person</option>
+          <option value="">Department A</option>
+          <optgroup label="Institution B">
+            <option value="">Username 1</option>
+            <option value="">Username 2</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <button class="button__primary manage__download-button">Download All</button>
+
     </div>
 
     <!--#include file="includes/pagination.html" -->
@@ -221,10 +227,6 @@
     <!--#include file="includes/pagination.html" -->
 
     <p class="manage__note">*Indicates demo identifier</p>
-
-    <div class="manage__download-button">
-      <button class="button__primary">Download All</button>
-    </div>
 
     <!--#include file="includes/footer_geo-off.html" -->
 
