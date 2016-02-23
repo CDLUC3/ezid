@@ -29,14 +29,21 @@ def make_check_tag(item, friendly_names, selected):
   return "<input type='checkbox' id='" + escape(item) + "' name='" + escape(item) + "' value='t'" + checked_str + " \> " \
        + "<label for='" + escape(item) + "'>" + escape(friendly_names[item]) + "</label>"
 
-@register.simple_tag   
-def rewrite_hidden_except(request, field_order):
-  exclude = field_order + ['submit_checks']
+def rewrite_hidden(request, exclude=None):
   hidden = ''
   for key, value in request.iteritems():
-    if not (key in exclude):
+    if exclude is None or not (key in exclude):
       hidden += "<input type='hidden' name='" + escape(key) + "' value='" + escape(value) + "'/>"
   return hidden
+
+@register.simple_tag   
+def rewrite_hidden_except(request, x):
+  return rewrite_hidden(request, [x])
+
+@register.simple_tag   
+def rewrite_hidden_nocols(request, field_order):
+  exclude = field_order + ['submit_checks']
+  return rewrite_hidden(request, exclude)
 
 @register.simple_tag
 def header_row(request, fields_selected, fields_mapped, order_by, sort):
@@ -71,26 +78,30 @@ def column_head(request, field, fields_mapped, order_by, sort):
 #to database values instead of being a purer value 
 @register.simple_tag
 def data_row(record, fields_selected, field_display_types, account_co_owners, testPrefixes):
-  return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, account_co_owners, testPrefixes) \
-               for f in fields_selected]) + '</td>'
+  assert 'identifier' in record
+  id_href_tag_head = "<a href='/id/" + record['identifier'] + "'>" 
+  return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, \
+    account_co_owners, testPrefixes, id_href_tag_head) for f in fields_selected]) + '</td>'
 
-FUNCTIONS_FOR_FORMATTING = { \
-  'string'         : lambda x, coown, tp: string_value(x), \
-  'identifier'     : lambda x, coown, tp: identifier_disp(x, tp), \
-  'datetime'       : lambda x, coown, tp: escape(datetime.datetime.utcfromtimestamp(x).strftime(settings.TIME_FORMAT_UI_METADATA)) + " UTC", \
-  'owner_lookup'   : lambda x, coown, tp: id_lookup(x), \
-  'coowners'       : lambda x, coown, tp: co_owner_disp(x, coown) }
+FUNCTIONS_FOR_FORMATTING = {
+  'string'         : lambda x, coown, tp, href: string_value(x, href),
+  'identifier'     : lambda x, coown, tp, href: identifier_disp(x, tp),
+  'datetime'       : lambda x, coown, tp, href: datetime_disp(x, href), 
+  'owner_lookup'   : lambda x, coown, tp, href: id_lookup(x),
+  'coowners'       : lambda x, coown, tp, href: co_owner_disp(x, coown)
+}
 
-def formatted_field(record, field_name, field_display_types, account_co_owners, testPrefixes):
-  value = record[field_name]
-  formatting = field_display_types[field_name]
-  return FUNCTIONS_FOR_FORMATTING[formatting](value, account_co_owners, testPrefixes)
+def formatted_field(
+  record, field_name, field_display_types, account_co_owners, testPrefixes, href):
+    value = record[field_name]
+    formatting = field_display_types[field_name]
+    return FUNCTIONS_FOR_FORMATTING[formatting](value, account_co_owners, testPrefixes, href)
 
-def string_value(x):
+def string_value(x, href):
   if x is None:
     return ''
   else:
-    return escape(x)
+    return href + escape(x) + "</a>"
 
 @register.simple_tag  
 def identifier_disp(x, testPrefixes):
@@ -99,7 +110,11 @@ def identifier_disp(x, testPrefixes):
       return "<a href='/id/" + x + "' class='fakeid'>" + escape(x) + "</a>"
   return "<a href='/id/" + x + "'>" + escape(x) + "</a>"
   
-  
+def datetime_disp(x, href):
+  return href +\
+    escape(datetime.datetime.utcfromtimestamp(x).strftime(settings.TIME_FORMAT_UI_METADATA)) +\
+    " UTC</a>"
+
 def co_owner_disp(x, coown):
   str_x = ''
   if not x is None:

@@ -17,14 +17,17 @@ FIELDS_MAPPED = {
   'createTime':_("ID Date Created"), 'identifier':_("Identifier"), \
   'mappedTitle':_("Object Title"), 'mappedCreator':_("Object Creator"), \
   'owner':_("ID Owner"), 'resourcePublisher':_("Object Publisher"), \
-  'resourcePublicationYear':_("Object Publication Year"), 'resourceType':_("Object Type"),\
+  'resourcePublicationDate':_("Object Publication Date"), 'resourceType':_("Object Type"),\
   'status':_("ID Status"), 'updateTime':_("ID Date Last Modified"),
 }
 
 #how to display each field, these are in custom tags for these display types
-FIELD_DISPLAY_TYPES = {'identifier': 'identifier',  'owner': 'string', \
-                'createTime': 'datetime', 'updateTime': 'datetime', 'status' :'string',\
-                'mappedTitle': 'string', 'mappedCreator' : 'string'}
+FIELD_DISPLAY_TYPES = {
+  'createTime': 'datetime', 'identifier': 'identifier',  'mappedTitle': 'string',\
+  'mappedCreator' : 'string', 'owner': 'string', 'resourcePublisher': 'string',\
+  'resourcePublicationDate': 'string', 'resourceType': 'string', 'status' :'string',\
+  'updateTime': 'datetime'
+}
 
 # priority for the sort order if it is not set, choose the first field that exists in this order
 FIELD_DEFAULT_SORT_PRIORITY = ['updateTime', 'identifier', 'createTime', \
@@ -32,14 +35,14 @@ FIELD_DEFAULT_SORT_PRIORITY = ['updateTime', 'identifier', 'createTime', \
 
 # The order to display fields both in the customize check boxes and the columns
 SEARCH_FIELD_ORDER = ['mappedTitle', 'mappedCreator', 'identifier', 'resourcePublisher', \
-               'resourcePublicationYear', 'resourceType']
+               'resourcePublicationDate', 'resourceType']
 MANAGE_FIELD_ORDER = ['mappedTitle', 'mappedCreator', 'identifier', 'owner', 'createTime',\
-               'updateTime', 'resourcePublisher', 'resourcePublicationYear', \
+               'updateTime', 'resourcePublisher', 'resourcePublicationDate', \
                'resourceType', 'status']
 
 # The default selected fields for display if custom fields haven't been defined
 SEARCH_FIELD_DEFAULTS = ['mappedTitle', 'mappedCreator', 'identifier', 'resourcePublisher', \
-               'resourcePublicationYear', 'resourceType']
+               'resourcePublicationDate', 'resourceType']
 
 MANAGE_FIELD_DEFAULTS = ['mappedTitle', 'mappedCreator', 'identifier', 'owner', 'createTime',\
                'updateTime', 'status']
@@ -132,9 +135,18 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
     # ToDo:  Greg also had this in his query for Manage Page:  select_related("owner").\
     for id in search_util.formulateQuery(c, orderBy=orderColumn)\
       [(d['p']-1)*d['ps']:d['p']*d['ps']]:
-      result = { "identifier": id.identifier, "owner": id.owner.username,
-        "createTime": id.createTime, "updateTime": id.updateTime, "status": id.get_status_display(),
-        "mappedTitle": id.resourceTitle, "mappedCreator": id.resourceCreator }
+      result = {
+        "createTime": id.createTime,
+        "identifier": id.identifier,
+        "mappedTitle": id.resourceTitle,
+        "mappedCreator": id.resourceCreator,
+        "owner": id.owner.username,
+        "resourceType": id.resourceType,
+        "resourcePublisher": id.resourcePublisher,
+        "resourcePublicationDate": id.resourcePublicationDate,
+        "status": id.get_status_display(),
+        "updateTime": id.updateTime,
+      }
       if id.isUnavailable and id.unavailableReason != "":
         result["status"] += " | " + id.unavailableReason
       d['results'].append(result)

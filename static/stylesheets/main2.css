@@ -3614,7 +3614,8 @@ Selector pattern using above mixin:
 
 .create__inline-nested-legend {
   width: 23rem;
-  font-size: 1em; }
+  font-size: 1em;
+  font-weight: normal; }
   @media (min-width: 768px) {
     .create__inline-nested-legend {
       font-size: 1.1em; } }
@@ -3737,7 +3738,7 @@ Selector pattern using above mixin:
   margin: 0; }
 
 .manage__fieldset-legend {
-  margin: 0 20px 2px 0;
+  margin: 0 0 2px;
   font-size: 1.1em;
   font-weight: normal; }
 
@@ -3760,17 +3761,28 @@ Selector pattern using above mixin:
     .manage__simple-search-button {
       margin: 0 0 0 10px; } }
 
-.manage__identifiers-select {
+.manage__identifiers-submit-controls {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row wrap;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
   max-width: 1000px;
-  margin: 0 auto 30px; }
+  margin: 0 auto; }
+
+.manage__identifiers-select {
+  margin: 0 0 30px; }
+
+.manage__download-button {
+  margin: 0 0 30px; }
 
 .manage__note {
   max-width: 1000px;
   margin: 30px auto; }
-
-.manage__download-button {
-  max-width: 1000px;
-  margin: 0 auto; }
 
 .search__simple {
   display: -webkit-flex;
@@ -3810,7 +3822,7 @@ Selector pattern using above mixin:
           flex-flow: column nowrap;
   max-width: 1000px;
   margin: 10px auto; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .search-results__simple {
       -webkit-flex-flow: row nowrap;
           -ms-flex-flow: row nowrap;
@@ -3818,11 +3830,14 @@ Selector pattern using above mixin:
       margin: 30px auto; } }
 
 .search-results__simple-button-group {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   -webkit-align-self: flex-end;
       -ms-flex-item-align: end;
           align-self: flex-end;
   margin: 10px 0 0; }
-  @media (min-width: 480px) {
+  @media (min-width: 768px) {
     .search-results__simple-button-group {
       margin: 0 0 0 15px; } }
 
