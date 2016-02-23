@@ -30,6 +30,8 @@ def index(request):
   """ Manage Page, listing all Ids owned by user """
   d = { 'menu_item' : 'ui_manage.index' }
   isPublicSearch=False
+  # import pdb; pdb.set_trace()
+  # d['coowners'] = policy.getReverseCoOwners(request.session["auth"].user)
   if request.method == "GET":
     d['form'] = form_objects.ManageSearchIdForm() # Build an empty form
     noConstraintsReqd =True 

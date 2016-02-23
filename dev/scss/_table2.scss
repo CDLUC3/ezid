@@ -22,6 +22,22 @@
 		display: block;
 		background: $design-secondary-lightest;
 		text-align: left;
+
+		.sorting:after {
+			position: absolute;
+			top: 0;
+			right: 6px;
+			bottom: 0;
+			left: auto;
+			height: 11px;
+			margin: auto;
+			line-height: 1;
+			content: url('../images/sort.png');
+			// background-image: url('../images/sort.png');
+			// background-position: right center;
+			// background-size: 9px 11px;
+		}
+
 	}
 
 	tbody {

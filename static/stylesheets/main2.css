@@ -3458,6 +3458,16 @@ Selector pattern using above mixin:
     display: block;
     background: #ece5d6;
     text-align: left; }
+    .table2 th .sorting:after {
+      position: absolute;
+      top: 0;
+      right: 6px;
+      bottom: 0;
+      left: auto;
+      height: 11px;
+      margin: auto;
+      line-height: 1;
+      content: url("../images/sort.png"); }
   .table2 tbody {
     display: -webkit-flex;
     display: -ms-flexbox;
