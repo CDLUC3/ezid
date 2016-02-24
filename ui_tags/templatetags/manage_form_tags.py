@@ -141,22 +141,22 @@ def pager_display(request, current_page, total_pages, page_size, select_position
   s_total = str(total_pages)
   empty = ''
   if current_page > 1:
-    p_out += page_link(request, current_page, 1, empty, page_size, 'pagination__first', \
+    p_out += page_link(request, 1, empty, page_size, 'pagination__first', \
       _("First page of results")) + ' '
-    p_out += page_link(request, current_page, current_page - 1, _("Previous"), page_size,\
+    p_out += page_link(request, current_page - 1, _("Previous"), page_size,\
       'pagination__prev', _("Previous page of results")) + ' '
   p_out += "<input id='page-directselect-" + select_position + \
            "' type='number' class='pagination__input' min='1' " + \
            "max='"  + s_total  + "' name='p' value='" + str(current_page) + "'/> " + \
            _("of") + " " + s_total + " "
   if current_page < total_pages:
-    p_out += page_link(request, current_page, current_page + 1, _("Next"), page_size, \
+    p_out += page_link(request, current_page + 1, _("Next"), page_size, \
       'pagination__next', _("Next page of results")) + ' '
-    p_out += page_link(request, current_page, total_pages, empty, page_size, \
+    p_out += page_link(request, total_pages, empty, page_size, \
       'pagination__last', _("Last page of results")) + ' '
   return p_out
 
-def page_link(request, current_page, this_page, link_text, page_size, cname, title=None):
+def page_link(request, this_page, link_text, page_size, cname, title=None):
   attr_aria = " aria-label='" + title + "'" if title else ""
-  return "<button name='p' value='" + str(this_page) + "' class='" + cname + "'" + \
+  return "<button data-page='" + str(this_page) + "' class='" + cname + "'" + \
     attr_aria + ">" + escape(link_text) + "</button>"

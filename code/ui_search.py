@@ -83,6 +83,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
     else:
       REQUEST = request.POST
     d['REQUEST'] = REQUEST 
+    if 'filtered' in REQUEST: d['filtered'] = True
     d['testPrefixes'] = uic.testPrefixes
     d['fields_mapped'] = FIELDS_MAPPED
     d['field_display_types'] = FIELD_DISPLAY_TYPES

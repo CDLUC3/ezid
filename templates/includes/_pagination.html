@@ -3,6 +3,9 @@
 
 <div class="pagination">
   <form method="get" action="{% url primary_page %}" id="ps-{{ select_position }}" role="form">
+  {% if filtered %}
+  <input name="filtered" type="hidden" value="t"/>
+  {% endif %}
   {% rewrite_hidden_except REQUEST 'ps' %}
   <div class="pagination__select-group">
     <label for="page-size-{{ select_position }}" class="pagination__select-label">{% trans "Show" %}</label>
@@ -19,6 +22,9 @@
   </div>
   </form>
   <form method="get" action="{% url primary_page %}" id="p-{{ select_position }}" role="form">
+  {% if filtered %}
+  <input name="filtered" type="hidden" value="t"/>
+  {% endif %}
   {% rewrite_hidden_except REQUEST 'p' %}
   <div class="pagination__input-group">
   {% pager_display REQUEST p total_pages ps select_position %}
@@ -26,23 +32,26 @@
   </form>
 </div>
 <script type="text/javascript">
-  // page size: submit on change
+  // ******* PAGE SIZE *******
+  // submit on change
   $("#page-size-{{ select_position }}").bind("change", function(event){
     $("#ps-{{ select_position }}").submit();
   });
-  // page selection input field: submit on enter 
+
+  // *******   PAGE   *******
+  // page selection input field: submit on enter key
   $("#page-directselect-{{ select_position }}").keyup(function(e){ 
+    // submit value in input on enter key
     var code = e.which;
-    // if(code==13)e.preventDefault();
+    if(code==13)e.preventDefault();
     if(code==32||code==13||code==188||code==186){
-      // Remove values from other buttons in this form since 
-      // we only want to submit value from thsi input field
-      var b = $('#p-{{ select_position }} :button');
-      for(var i=0;i<b.length;i++) {
-        b[i].value = '';
-        b[i].disable(true);
-      }
       $("#p-{{ select_position }}").submit();
     }
+  });
+  // page selection buttons change value in input field and submit on click
+  $("#p-{{ select_position }} button").click(function(e){
+    var p = $(e.currentTarget).data('page');
+    $('#page-directselect-{{ select_position }}').val(p);
+    $("#p-{{ select_position }}").submit();
   });
 </script>

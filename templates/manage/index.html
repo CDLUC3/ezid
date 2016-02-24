@@ -7,6 +7,9 @@
 {% comment %} No Heading necessary for this template {% endcomment %}
 {% block content %}
 <form method="post" action="{% url "ui_manage.index" %}" class="form-horizontal" id="manage-form" role="form">
+{% if filtered %}
+<input name="filtered" type="hidden" value="t"/> 
+{% endif %}
 <div class="manage__simple-search">
   <div class="fcontrol__group-stacked">
     <label for="manage__keywords" class="fcontrol__text-label-hidden">{% trans "Search Your Identifiers" %}</label>
@@ -191,29 +194,42 @@
 </form>
 
 <div class="customize-table">
-  <div class="customize-table__heading-wrapper">
+  <form class="customize-table__heading-wrapper" action="{% url "ui_manage.index" %}" role="form">
     <h2 class="customize-table__heading">{% trans "Your Identifiers" %} ({{ total_results_str }}) </h2>
-    {% if search_filtered %}
-    <button class="customize-table__button-all">See All</button>
+    {% if filtered %}
+    <button class="customize-table__button-all">{% trans "See All" %}</button>
     {% endif %}
-  </div>
+  </form>
   {% if results|length > 0 %}
   <button class="customize-table__button-customize" data-toggle="modal" data-target="#myModal">{% trans "Customize View" %}</button>
   {% endif %}
 </div>
 {% include "includes/_choose_cols.html" %}
 
-<div class="fcontrol__select-group-inline manage__identifiers-select">
-  <label for="manage__select4" class="fcontrol__select-label-inline">{% trans "View identifiers owned by" %}:</label>
-  <select name="url-here" id="manage__select4" class="fcontrol__select">
-    <option value="">Default top level ownership for logged in person</option>
-    <option value="">Department A</option>
-    <optgroup label="Institution B">
-      <option value="">Username 1</option>
-      <option value="">Username 2</option>
-    </optgroup>
-  </select>
+{% if session.auth %}
+<div class="manage__identifiers-submit-controls">
+  <div class="fcontrol__select-group-inline manage__identifiers-select">
+    <label for="manage__select4" class="fcontrol__select-label-inline">{% trans "View identifiers owned by" %}:</label>
+    <select name="url-here" id="manage__select4" class="fcontrol__select">
+      <option value="">{{ session.auth.user|first }} ({% trans "me" %})</option>
+    {% if coowners %} 
+      {% for c in coowners %}
+      <option value="">{{ c }} ({% trans "co-owned by me" %})</option>
+      {% endfor %}
+    {% endif %}
+      <option value="">Department A</option>
+      <optgroup label="Institution B">
+        <option value="">Username 1</option>
+        <option value="">Username 2</option>
+      </optgroup>
+    </select>
+  </div>
+  <!--  url "ui_download.index" -->
+  <form action="" role="form">
+    <button id="download" class="button__primary manage__download-button">{% trans "Download All" %}</button>
+  </form>
 </div>
+{% endif %}
 
 {% if results|length < 1 %}
   <p>{% trans "No identifiers found" %}.<br/>
@@ -238,10 +254,6 @@
 <p class="manage__note">&#42; {% trans "Indicates demo identifier" %}</p>
 
 <div class="manage__download-button">
-  <!--  url "ui_download.index" -->
-  <form action="" role="form">
-    <button id="download" class="button__primary">{% trans "Download All" %}</button>
-  </form>
 </div>
 {% endif %}
 
