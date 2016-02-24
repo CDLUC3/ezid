@@ -111,6 +111,11 @@ def url_force_https(context, url_path):
   else:
     return url_path
 
+@register.filter('fieldtype')
+def fieldtype(field):
+  """Get the type of a django form field (thus helps you know what class to apply to it)"""
+  return field.field.widget.__class__.__name__
+
 @register.filter(name='add_attributes')
 def add_attributes(field, css):
   """Add attributes to a django form field"""

@@ -50,7 +50,6 @@
       {% endif %}
         </p>
       </div>
-      <div class="frontpage_idcreate_arrow"></div>
 
       <div class="home__identifier-form">
         <form id="create_form" action="{% url "ui_home.index" %}" method="post" class="form-horizontal" role="form">
@@ -61,7 +60,7 @@
           <span id="fieldset__example2" class="fieldset-inline__legend-number-1">{% trans "Choose an identifier type" %}</span>
 
       {% for p in prefixes %}
-          <label for="{{p.prefix}}" class="fcontrol__radio-label-inline">
+          <label for="{{p.prefix}}" class="fcontrol__radio-label-inline home__radio-labels">
             <input id="{{p.prefix}}" class="fcontrol__radio-button-stacked" type="radio" value="{{p.prefix}}" name="shoulder" {% selected_radio "shoulder" forloop.counter p.prefix %}> <span>{% shoulder_display p "True" %}</span>
           </label>
       {% endfor %}
@@ -78,8 +77,13 @@
             {% for field in form %}
             <div class="col-md-5 home__text-field">
               <div class="fcontrol__group-stacked{% if field.errors %}--invalid{% endif %}">
+              {% if field|fieldtype == "TextInput" %}
                 <label for="{{ field.id_for_label }}" class="fcontrol__text-label-hidden">{{ field.label }}</label>
                 {{ field|add_attributes:"fcontrol__text-field-stacked" }}
+              {% else %}
+                <label for="{{ field.id_for_label }}" class="fcontrol__select-label-hidden">{{ field.label }}</label>
+                {{ field|add_attributes:"fcontrol__select" }}
+              {% endif %}
               {% if field.errors %}
                 <span class="fcontrol__invalid-flag">{% for error in field.errors %}{{ error|escape }}{% endfor %}</span>
               {% endif %}
