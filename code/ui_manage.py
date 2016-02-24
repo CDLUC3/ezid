@@ -31,11 +31,12 @@ def index(request):
   d = { 'menu_item' : 'ui_manage.index' }
   isPublicSearch=False
   # import pdb; pdb.set_trace()
-  # d['coowners'] = policy.getReverseCoOwners(request.session["auth"].user)
+  # d['coowners'] = policy.getReverseCoOwners(request.session["auth"].user[0])
   if request.method == "GET":
     d['form'] = form_objects.ManageSearchIdForm() # Build an empty form
     noConstraintsReqd =True 
   elif request.method == "POST":
+    d['search_filtered'] = True 
     d['form'] = form_objects.ManageSearchIdForm(request.POST)
     noConstraintsReqd = False
   d = ui_search.searchIdentifiers(d, request, noConstraintsReqd, isPublicSearch)

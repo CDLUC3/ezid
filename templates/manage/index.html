@@ -191,9 +191,14 @@
 </form>
 
 <div class="customize-table">
-  <h2 class="customize-table__heading">{% trans "Your Identifiers" %} ({{ total_results_str }}) </h2>
+  <div class="customize-table__heading-wrapper">
+    <h2 class="customize-table__heading">{% trans "Your Identifiers" %} ({{ total_results_str }}) </h2>
+    {% if search_filtered %}
+    <button class="customize-table__button-all">See All</button>
+    {% endif %}
+  </div>
   {% if results|length > 0 %}
-  <button class="customize-table__button" data-toggle="modal" data-target="#myModal">{% trans "Customize View" %}</button>
+  <button class="customize-table__button-customize" data-toggle="modal" data-target="#myModal">{% trans "Customize View" %}</button>
   {% endif %}
 </div>
 {% include "includes/_choose_cols.html" %}

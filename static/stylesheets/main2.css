@@ -2102,7 +2102,7 @@ Selector pattern using above mixin:
   src: url("../fonts/KievitWeb.eot?#iefix") format("embedded-opentype"), url("../fonts/KievitWeb.woff") format("woff");
   /* Modern Browsers */ }
 
-.button__primary, .customize-table__button, .login-modal__submit, .home__button-primary, .manage__simple-search-button, .search__simple-button, .search-results__simple-button, .button__pop, .header__loginout-link, .home-banner__lead-button {
+.button__primary, .customize-table__button-all, .customize-table__button-customize, .login-modal__submit, .home__button-primary, .manage__simple-search-button, .search__simple-button, .search-results__simple-button, .button__pop, .header__loginout-link, .home-banner__lead-button {
   display: inline-block;
   height: 30px;
   padding: 0 1.3em;
@@ -2113,10 +2113,10 @@ Selector pattern using above mixin:
   text-decoration: none;
   text-transform: uppercase;
   cursor: pointer; }
-  .button__primary:hover, .customize-table__button:hover, .login-modal__submit:hover, .home__button-primary:hover, .manage__simple-search-button:hover, .search__simple-button:hover, .search-results__simple-button:hover, .button__pop:hover, .header__loginout-link:hover, .home-banner__lead-button:hover {
+  .button__primary:hover, .customize-table__button-all:hover, .customize-table__button-customize:hover, .login-modal__submit:hover, .home__button-primary:hover, .manage__simple-search-button:hover, .search__simple-button:hover, .search-results__simple-button:hover, .button__pop:hover, .header__loginout-link:hover, .home-banner__lead-button:hover {
     color: white; }
 
-.button__primary, .customize-table__button, .login-modal__submit, .home__button-primary, .manage__simple-search-button, .search__simple-button, .search-results__simple-button {
+.button__primary, .customize-table__button-all, .customize-table__button-customize, .login-modal__submit, .home__button-primary, .manage__simple-search-button, .search__simple-button, .search-results__simple-button {
   background: linear-gradient(to bottom, #168b99, #056a7b); }
 
 .button__pop, .header__loginout-link, .home-banner__lead-button {
@@ -2703,17 +2703,26 @@ Selector pattern using above mixin:
           -ms-flex-flow: row nowrap;
               flex-flow: row nowrap;
       margin: 0 auto 30px;
-      padding: 15px; } }
+      padding: 12px; } }
 
 .customize-table__heading {
+  display: inline-block;
   margin: 0 0 10px;
   font-size: 1.4em;
-  font-weight: bold; }
+  font-weight: bold;
+  vertical-align: baseline; }
   @media (min-width: 480px) {
     .customize-table__heading {
       margin: 0; } }
 
-.customize-table__button {
+.customize-table__button-all {
+  -webkit-flex: 0 0 auto;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+  margin-left: 15px;
+  float: right; }
+
+.customize-table__button-customize {
   -webkit-flex: 0 0 auto;
       -ms-flex: 0 0 auto;
           flex: 0 0 auto; }
@@ -3459,7 +3468,7 @@ Selector pattern using above mixin:
     background: #ece5d6;
     text-align: left; }
     .table2 th .sorting:after {
-      position: absolute;
+      position: relative;
       top: 0;
       right: 6px;
       bottom: 0;

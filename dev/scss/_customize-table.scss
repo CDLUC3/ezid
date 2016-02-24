@@ -13,15 +13,17 @@
 	@include bp(screen1) {
 		flex-flow: row nowrap;
 		margin: 0 auto 30px;
-		padding: 15px;
+		padding: 12px;
 	}
 
 }
 
 .customize-table__heading {
+	display: inline-block;
 	margin: 0 0 10px;
 	font-size: 1.4em;
 	font-weight: bold;
+	vertical-align: baseline;
 
 	@include bp(screen1) {
 		margin: 0;
@@ -29,7 +31,14 @@
 
 }
 
-.customize-table__button {
+.customize-table__button-all {
+	@extend %button__primary;
+	flex: 0 0 auto;
+	margin-left: 15px;
+	float: right;
+}
+
+.customize-table__button-customize {
 	@extend %button__primary;
 	flex: 0 0 auto;
 }
