@@ -82,53 +82,22 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
   """ 
   Run query and organize result set for UI, used for both Search page and 
   Manage Search page, the latter of which works with slightly larger set of constraints.
-  If noConstraintsReqd==True, provide a result set even though form itself is empty.
+  If noConstraintsReqd==True, provide a result set even though form itself is unbound/unvalidated.
   If isPublicSearch==True, don't include owner credentials in constraints.
   """
-  import pdb; pdb.set_trace()
+  if request.method == "GET":
+    REQUEST = request.GET
+  else:
+    REQUEST = request.POST
+  d['REQUEST'] = REQUEST 
+  d = _fieldLayout(d, REQUEST, isPublicSearch)
   if d['form'].is_valid() or noConstraintsReqd:
-    if request.method == "GET":
-      REQUEST = request.GET
-    else:
-      REQUEST = request.POST
-    d['REQUEST'] = REQUEST 
-    if 'filtered' in REQUEST: d['filtered'] = True
-    d['testPrefixes'] = uic.testPrefixes
-    d['fields_mapped'] = FIELDS_MAPPED
-    d['field_display_types'] = FIELD_DISPLAY_TYPES
-    f_order = _getFieldOrder(isPublicSearch)
-    f_defaults = _getFieldDefaults(isPublicSearch)
-    d['jquery_checked'] = ','.join(['#' + x for x in list(set(f_order) & set(f_defaults))])
-    d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(f_order) - set(f_defaults))])
-    d['field_order'] = f_order 
-    d['field_defaults'] = f_defaults 
-    # ToDo: Map fields appropriately from both customize and from Search Query
-    d['fields_selected'] = [x for x in f_order if x in REQUEST ]
-    if len(d['fields_selected']) < 1: d['fields_selected'] = f_defaults 
-
-    #ensure sorting defaults are set
-    if 'order_by' in REQUEST and REQUEST['order_by'] in d['fields_selected']:
-      d['order_by'] = REQUEST['order_by']
-    else:
-      d['order_by'] = [x for x in FIELD_DEFAULT_SORT_PRIORITY if x in d['fields_selected'] ][0]
-    if 'sort' in REQUEST and REQUEST['sort'] in ['asc', 'desc']:
-      d['sort'] = REQUEST['sort']
-    else:
-      d['sort'] = 'desc'
-
-    #p=page and ps=pagesize -- I couldn't find an auto-paging that uses our type of models and 
-    #does what we want. Sorry, had to roll our own
-    d['p'] = 1
-    d['page_sizes'] = [10, 50, 100]
-    d['ps'] = 10
-    if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
-    if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
-
     # Build dictionary of search constraints
     c = _buildAuthorityConstraints(request, isPublicSearch)
-    if not noConstraintsReqd:
-      c = _buildConstraints(c, REQUEST, isPublicSearch)
-      c = _buildTimeConstraints(c, REQUEST, isPublicSearch)
+    q = d['queries'] if 'queries' in d and d['queries'] else REQUEST
+    if d['filtered']:
+      c = _buildConstraints(c, q, isPublicSearch)
+      c = _buildTimeConstraints(c, q, isPublicSearch)
     d['search_query'] = _buildQuerySyntax(c)
     d['total_results'] = search_util.formulateQuery(c).count()
     d['total_results_str'] = format(d['total_results'], "n") 
@@ -157,7 +126,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
         result["c_id_status"] += " | " + id.unavailableReason
       d['results'].append(result)
     d['search_success'] = True
-  else:
+  else:  # Form did not validate
     d['show_advanced_search'] = "open" # Open up adv. search html block
     if '__all__' in d['form'].errors:
       # non_form_error, probably due to all fields being empty
@@ -170,6 +139,40 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
       err = _("Could not complete search.  Please check the highlighted fields below for details.")
       django.contrib.messages.error(request, err) 
     d['search_success'] = False 
+  return d
+
+def _fieldLayout(d, REQUEST, isPublicSearch):
+  d['filtered'] = True if 'filtered' in REQUEST else False
+  d['testPrefixes'] = uic.testPrefixes
+  d['fields_mapped'] = FIELDS_MAPPED
+  d['field_display_types'] = FIELD_DISPLAY_TYPES
+  f_order = _getFieldOrder(isPublicSearch)
+  f_defaults = _getFieldDefaults(isPublicSearch)
+  d['jquery_checked'] = ','.join(['#' + x for x in list(set(f_order) & set(f_defaults))])
+  d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(f_order) - set(f_defaults))])
+  d['field_order'] = f_order 
+  d['field_defaults'] = f_defaults 
+  # ToDo: Map fields appropriately from both customize and from Search Query
+  d['fields_selected'] = [x for x in f_order if x in REQUEST ]
+  if len(d['fields_selected']) < 1: d['fields_selected'] = f_defaults 
+
+  #ensure sorting defaults are set
+  if 'order_by' in REQUEST and REQUEST['order_by'] in d['fields_selected']:
+    d['order_by'] = REQUEST['order_by']
+  else:
+    d['order_by'] = [x for x in FIELD_DEFAULT_SORT_PRIORITY if x in d['fields_selected'] ][0]
+  if 'sort' in REQUEST and REQUEST['sort'] in ['asc', 'desc']:
+    d['sort'] = REQUEST['sort']
+  else:
+    d['sort'] = 'desc'
+
+  #p=page and ps=pagesize -- I couldn't find an auto-paging that uses our type of models and 
+  #does what we want. Sorry, had to roll our own
+  d['p'] = 1
+  d['page_sizes'] = [10, 50, 100]
+  d['ps'] = 10
+  if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
+  if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
   return d
 
 def results(request):

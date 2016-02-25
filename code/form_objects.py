@@ -453,7 +453,6 @@ class RelIdForm(forms.Form):
   schemeType = forms.CharField(required=False, label=_("Scheme Type"))
   def clean(self):
     cleaned_data = super(ContribForm, self).clean()
-    import pdb; pdb.set_trace()
     ri = cleaned_data.get("relatedIdentifier")
     ri_type = cleaned_data.get("relatedIdentifierType")
     r_type = cleaned_data.get("relationType")
@@ -737,7 +736,8 @@ class BaseSearchIdForm(forms.Form):
         if field_value is not None and field_value != '' and not field_value.isspace():
           form_empty = False
           break
-    if form_empty:
+    # In manage page case, just output all owners IDs - no need to throw validation error
+    if form_empty and type(self).__name__ != 'ManageSearchIdForm':
       raise forms.ValidationError(_("Please enter information in at least one field."))
     return cleaned_data
 
@@ -772,13 +772,13 @@ class ManageSearchIdForm(BaseSearchIdForm):
   # render BooleanField as two radio buttons instead of a checkbox:
   # http://stackoverflow.com/questions/854683/django-booleanfield-as-radio-buttons
   harvesting = forms.TypedChoiceField(
-    label=_("Allows Harvesting/Indexing?"),
-    coerce=lambda x: x == 'True',
+    required=False, label=_("Allows Harvesting/Indexing?"),
+    coerce=lambda x: x == True, empty_value=True,
     choices=((True, _('Yes')), (False, _('No'))), initial=True,
     widget=forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}))
   hasMetadata = forms.TypedChoiceField(
-    label=_("Has Metadata?"),
-    coerce=lambda x: x == 'True',
+    required=False, label=_("Has Metadata?"),
+    coerce=lambda x: x == True, empty_value=True,
     choices=((True, _('Yes')), (False, _('No'))), initial=True,
     widget=forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}))
 

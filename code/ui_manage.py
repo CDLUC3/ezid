@@ -31,9 +31,19 @@ def index(request):
   d = { 'menu_item' : 'ui_manage.index' }
   isPublicSearch=False
   d['coowners'] = policy.getReverseCoOwners(request.session["auth"].user[0])
-  # import pdb; pdb.set_trace()
   if request.method == "GET":
-    d['form'] = form_objects.ManageSearchIdForm() # Build an empty form
+    # Preserve search query across get requests
+    queries = {} 
+    if request.GET:
+      c = request.GET.copy()
+      for key in c:
+        if not key.startswith('c_') and not key == 'p':
+          queries[key] = c[key]
+    d['queries'] = queries if queries else \
+      {'hasMetadata': True, 'harvesting': True} # I was unable to get these to show as True 
+                                               # by default within form_objects, so doing it here
+    # And preserve query in form object
+    d['form'] = form_objects.ManageSearchIdForm(d['queries'])
     noConstraintsReqd =True 
   elif request.method == "POST":
     d['filtered'] = True 

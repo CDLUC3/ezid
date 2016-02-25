@@ -7,9 +7,7 @@
 {% comment %} No Heading necessary for this template {% endcomment %}
 {% block content %}
 <form method="post" action="{% url "ui_manage.index" %}" class="form-horizontal" id="manage-form" role="form">
-{% if filtered %}
 <input name="filtered" type="hidden" value="t"/> 
-{% endif %}
 {% column_choices_hidden fields_selected %}
 <div class="manage__simple-search">
   <div class="fcontrol__group-stacked">
@@ -166,8 +164,8 @@
       </div>
     </div>{% comment %}No validation necessary{% endcomment %}
     <div class="col-md-6 manage__form-element-container--harvesting">
-      <div class="fieldset-inline" role="group" aria-labelledby="{{ form.harvesting.id_for_label }}">
-        <div id="{{ form.harvesting.id_for_label }}" class="fieldset-inline__legend manage__fieldset-legend">{{ form.harvesting.label }}</div>
+      <div class="fieldset-stacked" role="group" aria-labelledby="Allows-Harvesting-Indexing">
+        <div id="Allows-Harvesting-Indexing" class="fieldset-stacked__legend manage__fieldset-legend">{{ form.harvesting.label }}</div>
       {% for radio in form.harvesting %}
         <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
           {{ radio.tag }} <span>{{ radio.choice_label }}</span>
@@ -178,8 +176,8 @@
   </div>
   <div class="row">
     <div class="col-md-6">
-      <div class="fieldset-inline" role="group" aria-labelledby="{{ form.hasMetadata.id_for_label }}">
-        <div id="{{ form.hasMetadata.id_for_label }}" class="fieldset-inline__legend manage__fieldset-legend">{{ form.hasMetadata.label }}</div>
+      <div class="fieldset-stacked" role="group" aria-labelledby="Has-Metadata">
+        <div id="Has-Metadata" class="fieldset-stacked__legend manage__fieldset-legend">{{ form.hasMetadata.label }}</div>
       {% for radio in form.hasMetadata %}
         <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
           {{ radio.tag }} <span>{{ radio.choice_label }}</span>
@@ -232,12 +230,14 @@
 </div>
 {% endif %}
 
-{% if results|length < 1 %}
+{% if total_results < 1 %}
   <p>{% trans "No identifiers found" %}.<br/>
   <br/><br/><br/><br/><br/><br/><br/><br/><br/></p>
 {% else %}
   
+  {% if total_results > 10 %}
   {% include "includes/_pagination.html" with primary_page="ui_manage.index" select_position="top" %}
+  {% endif %}
 
 <table class="table2">
   {% header_row REQUEST fields_selected fields_mapped order_by sort %}
@@ -250,7 +250,9 @@
 </tbody>
 </table>
 
+  {% if total_results > 10 %}
   {% include "includes/_pagination.html" with primary_page="ui_manage.index" select_position="bottom" %}
+  {% endif %}
 
 <p class="manage__note">&#42; {% trans "Indicates demo identifier" %}</p>
 
