@@ -31,6 +31,7 @@ def index(request):
   d = { 'menu_item' : 'ui_manage.index' }
   isPublicSearch=False
   d['coowners'] = policy.getReverseCoOwners(request.session["auth"].user[0])
+  # import pdb; pdb.set_trace()
   if request.method == "GET":
     d['form'] = form_objects.ManageSearchIdForm() # Build an empty form
     noConstraintsReqd =True 

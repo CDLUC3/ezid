@@ -8,44 +8,52 @@ import useradmin
 import locale
 locale.setlocale(locale.LC_ALL, '')
 
+# Form fields from search are defined in code/form_objects.py.
+# Corresponding fields used for column display include a 'c_' prefix.
+
 # these are layout properties for the fields in the search and manage results pages,
 # if I had realized there were going to be so many properties up front, I probably would
 # have created a field layout object with a number of properties instead.
 
-# Column names for display for each field
+# Column IDs mapped to 1) DB constraints names and 2) UI display
 FIELDS_MAPPED = {
-  'createTime':_("ID Date Created"), 'identifier':_("Identifier"), \
-  'mappedTitle':_("Object Title"), 'mappedCreator':_("Object Creator"), \
-  'owner':_("ID Owner"), 'resourcePublisher':_("Object Publisher"), \
-  'resourcePublicationDate':_("Object Publication Date"), 'resourceType':_("Object Type"),\
-  'status':_("ID Status"), 'updateTime':_("ID Date Last Modified"),
+  'c_create_time': ['createTime',             _("ID Date Created")], 
+  'c_identifier':  ['identifier',             _("Identifier")], 
+  'c_title':       ['resourceTitle',          _("Object Title")], 
+  'c_creator':     ['resourceCreator',        _("Object Creator")],
+  'c_owner':       ['owner',                  _("ID Owner")],
+  'c_publisher':   ['resourcePublisher',      _("Object Publisher")],
+  'c_pubyear':     ['resourcePublicationYear', _("Object Publication Date")],
+  'c_object_type': ['resourceType',           _("Object Type")],
+  'c_id_status':   ['status',                 _("ID Status")],
+  'c_update_time': ['updateTime',             _("ID Date Last Modified")]
 }
 
 #how to display each field, these are in custom tags for these display types
 FIELD_DISPLAY_TYPES = {
-  'createTime': 'datetime', 'identifier': 'identifier',  'mappedTitle': 'string',\
-  'mappedCreator' : 'string', 'owner': 'string', 'resourcePublisher': 'string',\
-  'resourcePublicationDate': 'string', 'resourceType': 'string', 'status' :'string',\
-  'updateTime': 'datetime'
+  'c_create_time': 'datetime', 'c_identifier': 'identifier',  'c_title': 'string',\
+  'c_creator' : 'string', 'c_owner': 'string', 'c_publisher': 'string',\
+  'c_pubyear': 'string', 'c_object_type': 'string', 'c_id_status' :'string',\
+  'c_update_time': 'datetime'
 }
 
 # priority for the sort order if it is not set, choose the first field that exists in this order
-FIELD_DEFAULT_SORT_PRIORITY = ['updateTime', 'identifier', 'createTime', \
-                'owner', 'mappedTitle', 'mappedCreator', 'status']
+FIELD_DEFAULT_SORT_PRIORITY = ['c_update_time', 'c_identifier', 'c_create_time', \
+                'c_owner', 'c_title', 'c_creator', 'c_id_status']
 
 # The order to display fields both in the customize check boxes and the columns
-SEARCH_FIELD_ORDER = ['mappedTitle', 'mappedCreator', 'identifier', 'resourcePublisher', \
-               'resourcePublicationDate', 'resourceType']
-MANAGE_FIELD_ORDER = ['mappedTitle', 'mappedCreator', 'identifier', 'owner', 'createTime',\
-               'updateTime', 'resourcePublisher', 'resourcePublicationDate', \
-               'resourceType', 'status']
+SEARCH_FIELD_ORDER = ['c_title', 'c_creator', 'c_identifier', 'c_publisher', \
+               'c_pubyear', 'c_object_type']
+MANAGE_FIELD_ORDER = ['c_title', 'c_creator', 'c_identifier', 'c_owner', 'c_create_time',\
+               'c_update_time', 'c_publisher', 'c_pubyear', \
+               'c_object_type', 'c_id_status']
 
 # The default selected fields for display if custom fields haven't been defined
-SEARCH_FIELD_DEFAULTS = ['mappedTitle', 'mappedCreator', 'identifier', 'resourcePublisher', \
-               'resourcePublicationDate', 'resourceType']
+SEARCH_FIELD_DEFAULTS = ['c_title', 'c_creator', 'c_identifier', 'c_publisher', \
+               'c_pubyear', 'c_object_type']
 
-MANAGE_FIELD_DEFAULTS = ['mappedTitle', 'mappedCreator', 'identifier', 'owner', 'createTime',\
-               'updateTime', 'status']
+MANAGE_FIELD_DEFAULTS = ['c_title', 'c_creator', 'c_identifier', 'c_owner', 'c_create_time',\
+               'c_update_time', 'c_id_status']
 
 
 IS_ASCENDING = {'asc': True, 'desc': False }
@@ -77,6 +85,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
   If noConstraintsReqd==True, provide a result set even though form itself is empty.
   If isPublicSearch==True, don't include owner credentials in constraints.
   """
+  import pdb; pdb.set_trace()
   if d['form'].is_valid() or noConstraintsReqd:
     if request.method == "GET":
       REQUEST = request.GET
@@ -126,30 +135,26 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
     d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
     if d['p'] > d['total_pages']: d['p'] = d['total_pages']
     d['p'] = max(d['p'], 1)
-    orderColumn = d['order_by']
-    if orderColumn in ["mappedTitle", "mappedCreator"]:
-      orderColumn = "resource" + orderColumn[6:] + "Prefix"
-    elif orderColumn == "coOwners":
-      orderColumn = "updateTime" # arbitrary; co-owners not supported anymore
+    orderColumn = FIELDS_MAPPED[d['order_by']][0] 
     if not IS_ASCENDING[d['sort']]: orderColumn = "-" + orderColumn
     d['results'] = []
     # ToDo:  Greg also had this in his query for Manage Page:  select_related("owner").\
     for id in search_util.formulateQuery(c, orderBy=orderColumn)\
       [(d['p']-1)*d['ps']:d['p']*d['ps']]:
       result = {
-        "createTime": id.createTime,
-        "identifier": id.identifier,
-        "mappedTitle": id.resourceTitle,
-        "mappedCreator": id.resourceCreator,
-        "owner": id.owner.username,
-        "resourceType": id.resourceType,
-        "resourcePublisher": id.resourcePublisher,
-        "resourcePublicationDate": id.resourcePublicationDate,
-        "status": id.get_status_display(),
-        "updateTime": id.updateTime,
+        "c_create_time": id.createTime,
+        "c_identifier": id.identifier,
+        "c_title": id.resourceTitle,
+        "c_creator": id.resourceCreator,
+        "c_owner": id.owner.username,
+        "c_object_type": id.resourceType,
+        "c_publisher": id.resourcePublisher,
+        "c_pubyear": id.resourcePublicationDate,
+        "c_id_status": id.get_status_display(),
+        "c_update_time": id.updateTime,
       }
       if id.isUnavailable and id.unavailableReason != "":
-        result["status"] += " | " + id.unavailableReason
+        result["c_id_status"] += " | " + id.unavailableReason
       d['results'].append(result)
     d['search_success'] = True
   else:

@@ -15,11 +15,19 @@ register = template.Library()
 def column_choices(field_order, fields_mapped, fields_selected):
   """this only works when the following context variables are set from the django view:
   field_order is the ordered list of the fields
-  fields_mapped is mapping of fields to texual names
+  fields_mapped is mapping of fields to texual names (second item in list of mapped objects)
   fields_selected is ordered list of selected fields"""
   return "<div class='col-sm-4'>" + "</div><div class='col-sm-4'>".join(\
          [make_check_tag(f, fields_mapped, fields_selected) for f in field_order])\
          + '</div>'
+
+@register.simple_tag 
+def column_choices_hidden(fields_selected):
+  """Include column choices in request query as hidden fields"""
+  hidden = ''
+  for f in fields_selected:
+    hidden += "<input type='hidden' name='" + f + "' value='t'/>"
+  return hidden
 
 def make_check_tag(item, friendly_names, selected):
   if item in selected:
@@ -27,7 +35,7 @@ def make_check_tag(item, friendly_names, selected):
   else:
     checked_str = ""
   return "<input type='checkbox' id='" + escape(item) + "' name='" + escape(item) + "' value='t'" + checked_str + " \> " \
-       + "<label for='" + escape(item) + "'>" + escape(friendly_names[item]) + "</label>"
+       + "<label for='" + escape(item) + "'>" + escape(friendly_names[item][1]) + "</label>"
 
 def rewrite_hidden(request, exclude=None):
   hidden = ''
@@ -71,15 +79,15 @@ def column_head(request, field, fields_mapped, order_by, sort):
         "<img src='" + ORDER_BY_IMG[sort] + "' alt='" + SORT_TIP[sort] + "'></a></div>"
   else:
     sort_icon = ''
-  column_link = "<a href='" + url + "' title='Sort on this column'>" + escape(fields_mapped[field]) + "</a>"
+  column_link = "<a href='" + url + "' title='Sort on this column'>" + escape(fields_mapped[field][1]) + "</a>"
   return sort_icon + column_link
 
 #need to pass in account co owners because it's obnoxiously used in the co-owners field and is added
 #to database values instead of being a purer value 
 @register.simple_tag
 def data_row(record, fields_selected, field_display_types, account_co_owners, testPrefixes):
-  assert 'identifier' in record
-  id_href_tag_head = "<a href='/id/" + record['identifier'] + "'>" 
+  assert 'c_identifier' in record
+  id_href_tag_head = "<a href='/id/" + record['c_identifier'] + "'>" 
   return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, \
     account_co_owners, testPrefixes, id_href_tag_head) for f in fields_selected]) + '</td>'
 

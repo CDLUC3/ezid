@@ -10,6 +10,7 @@
 {% if filtered %}
 <input name="filtered" type="hidden" value="t"/> 
 {% endif %}
+{% column_choices_hidden fields_selected %}
 <div class="manage__simple-search">
   <div class="fcontrol__group-stacked">
     <label for="manage__keywords" class="fcontrol__text-label-hidden">{% trans "Search Your Identifiers" %}</label>
