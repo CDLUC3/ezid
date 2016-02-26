@@ -3,6 +3,7 @@
 .search-results__simple {
 	display: flex;
 	flex-flow: column nowrap;
+	justify-content: space-between;
 	max-width: 1000px;
 	margin: 10px auto;
 
@@ -13,9 +14,12 @@
 
 }
 
+.search-results__simple-query {
+	margin: 10px 0 0;
+}
 .search-results__simple-button-group {
 	display: flex;
-	align-self: flex-end;
+	align-self: flex-start;
 	margin: 10px 0 0;
 
 	@include bp(screen2) {
