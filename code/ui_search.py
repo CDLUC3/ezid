@@ -73,19 +73,36 @@ def index(request):
   elif request.method == "POST":
     d['form'] = form_objects.BaseSearchIdForm(request.POST)
     noConstraintsReqd = False
-    d = searchIdentifiers(d, request, noConstraintsReqd)
+    d = search(d, request, noConstraintsReqd)
     if d['search_success'] == True:
       return uic.render(request, 'search/results', d)
   return uic.render(request, 'search/index', d)
 
-def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
+def results(request):
+  d = { 'menu_item' : 'ui_search.results' } 
+  d['filtered'] = True
+  if request.method == "GET":
+    # Preserve search query across get requests
+    queries = {}
+    if request.GET:
+      c = request.GET.copy()
+      for key in c:
+        if not key.startswith('c_') and not key == 'p':
+          queries[key] = c[key]
+    d['queries'] = queries if queries else {}
+    d['form'] = form_objects.BaseSearchIdForm(d['queries'])
+  noConstraintsReqd = False
+  d = search(d, request, noConstraintsReqd)
+  return uic.render(request, 'search/results', d)
+
+def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
   """ 
   Run query and organize result set for UI, used for both Search page and 
   Manage Search page, the latter of which works with slightly larger set of constraints.
-
-  If noConstraintsReqd==True, provide a result set even though form itself is unbound/unvalidated.
-  If isPublicSearch==True, don't include owner credentials in constraints.
-  'filtered' means form fields have been submitted w/a search request 
+  * noConstraintsReqd==True is used by manage page, to provide a result set even though 
+    form itself is unbound/unvalidated.
+  * If isPublicSearch==True, don't include owner credentials in constraints.
+  * 'filtered' means form fields have been submitted w/a search request 
     (nice to know this for the manage page)
   """
   if request.method == "GET":
@@ -177,10 +194,6 @@ def _pageLayout(d, REQUEST, isPublicSearch):
   if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
   if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
   return d
-
-def results(request):
-  d = { 'menu_item' : 'ui_search.results' } 
-  return uic.render(request, 'search/results', d)
 
 def _buildAuthorityConstraints(request, isPublicSearch=True):
   """ 
