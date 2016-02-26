@@ -82,15 +82,18 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
   """ 
   Run query and organize result set for UI, used for both Search page and 
   Manage Search page, the latter of which works with slightly larger set of constraints.
+
   If noConstraintsReqd==True, provide a result set even though form itself is unbound/unvalidated.
   If isPublicSearch==True, don't include owner credentials in constraints.
+  'filtered' means form fields have been submitted w/a search request 
+    (nice to know this for the manage page)
   """
   if request.method == "GET":
     REQUEST = request.GET
   else:
     REQUEST = request.POST
   d['REQUEST'] = REQUEST 
-  d = _fieldLayout(d, REQUEST, isPublicSearch)
+  d = _pageLayout(d, REQUEST, isPublicSearch)
   if d['form'].is_valid() or noConstraintsReqd:
     # Build dictionary of search constraints
     c = _buildAuthorityConstraints(request, isPublicSearch)
@@ -98,7 +101,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
     if d['filtered']:
       c = _buildConstraints(c, q, isPublicSearch)
       c = _buildTimeConstraints(c, q, isPublicSearch)
-    d['search_query'] = _buildQuerySyntax(c)
+    if isPublicSearch: d['search_query'] = _buildQuerySyntax(c)
     d['total_results'] = search_util.formulateQuery(c).count()
     d['total_results_str'] = format(d['total_results'], "n") 
     d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
@@ -141,7 +144,7 @@ def searchIdentifiers(d, request, noConstraintsReqd=False, isPublicSearch=True):
     d['search_success'] = False 
   return d
 
-def _fieldLayout(d, REQUEST, isPublicSearch):
+def _pageLayout(d, REQUEST, isPublicSearch):
   d['filtered'] = True if 'filtered' in REQUEST else False
   d['testPrefixes'] = uic.testPrefixes
   d['fields_mapped'] = FIELDS_MAPPED
@@ -192,7 +195,8 @@ def _buildAuthorityConstraints(request, isPublicSearch=True):
 
 def _buildConstraints(c, REQUEST, isPublicSearch=True):
   """ Map form field values to values defined in DB model.
-      Manage Page includes additional elements. """
+      Manage Page includes additional elements. 
+      Convert unicode True/False to actual boolean."""
   cmap = {'keywords': 'keywords', 'identifier': 'identifier', 
     'id_type': 'identifierType', 'title': 'resourceTitle', 
     'creator': 'resourceCreator', 'publisher': 'resourcePublisher', 
@@ -202,7 +206,11 @@ def _buildConstraints(c, REQUEST, isPublicSearch=True):
       'harvesting': 'exported', 'hasMetadata': 'hasMetadata'}
     cmap.update(cmap_managePage)
   for k,v in cmap.iteritems(): 
-    if k in REQUEST and REQUEST[k]!='': c[v] = REQUEST[k].strip()
+    # Handle boolean values
+    if k in REQUEST and REQUEST[k]!='': 
+      if   REQUEST[k] == u'True':    c[v] = True
+      elif REQUEST[k] == u'False':   c[v] = False 
+      else:                          c[v] = REQUEST[k]
   return c
 
 def _buildTimeConstraints(c, REQUEST, isPublicSearch=True):
@@ -246,7 +254,9 @@ def _buildQuerySyntax(c):
   for key,value in constraints.items():
     r += key + ":"
     v = ""
-    if type(value) is tuple:  # Year tuple i.e. (2001, 2002)
+    if type(value) is bool:
+      r += str(value)
+    elif type(value) is tuple:  # Year tuple i.e. (2001, 2002)
       # i.e. publicationYear:>=2001 AND publicationYear:<=2002
       x,y = value 
       if x != None:

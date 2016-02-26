@@ -8,6 +8,7 @@
 {% block content %}
 <form method="post" action="{% url "ui_manage.index" %}" class="form-horizontal" id="manage-form" role="form">
 <input name="filtered" type="hidden" value="t"/> 
+<input name="ps" type="hidden" value="{{ ps }}"/> 
 {% column_choices_hidden fields_selected %}
 <div class="manage__simple-search">
   <div class="fcontrol__group-stacked">
@@ -231,8 +232,8 @@
 {% endif %}
 
 {% if total_results < 1 %}
-  <p>{% trans "No identifiers found" %}.<br/>
-  <br/><br/><br/><br/><br/><br/><br/><br/><br/></p>
+  <p class="manage__note"><strong>{% trans "No identifiers found for the query you entered" %}.</strong></p>
+  <br/><br/><br/><br/><br/><br/><br/>
 {% else %}
   
   {% if total_results > 10 %}
