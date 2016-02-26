@@ -1,0 +1,73 @@
+{% load manage_form_tags %}
+{% load i18n %}
+
+<div class="customize-table">
+  <form class="customize-table__heading-wrapper" action="{% url primary_page %}" role="form">
+    {% if primary_page == "ui_manage.index" %}
+    <h2 class="customize-table__heading">{% trans "Your Identifiers" %} ({{ total_results_str }}) </h2>
+      {% if filtered %}
+    <button class="customize-table__button-all">{% trans "See All" %}</button>
+      {% endif %}
+    {% else %}
+    <h2 class="customize-table__heading">{% trans "Showing" %} ### {% trans "to" %} ### 
+      {% trans "of" %} {{ total_results_str }} {% trans "Search Results" %}</h2>
+    {% endif %}
+  </form>
+  {% if results|length > 0 %}
+  <button class="customize-table__button-customize" data-toggle="modal" data-target="#myModal">{% trans "Customize View" %}</button>
+  {% endif %}
+</div>
+{% include "search/_choose_cols.html" with primary_page=primary_page %}
+
+{% if primary_page == "ui_manage.index" and session.auth %}
+<div class="manage__identifiers-submit-controls">
+  <div class="fcontrol__select-group-inline manage__identifiers-select">
+    <label for="manage__select4" class="fcontrol__select-label-inline">{% trans "View identifiers owned by" %}:</label>
+    <select name="url-here" id="manage__select4" class="fcontrol__select">
+      <option value="">{{ session.auth.user|first }} ({% trans "me" %})</option>
+    {% if coowners %}
+      {% for c in coowners %}
+      <option value="">{{ c }} ({% trans "co-owned by me" %})</option>
+      {% endfor %}
+    {% endif %}
+      <option value="">Department A</option>
+      <optgroup label="Institution B">
+        <option value="">Username 1</option>
+        <option value="">Username 2</option>
+      </optgroup>
+    </select>
+  </div>
+  <!--  url "ui_download.index" -->
+  <form action="" role="form">
+    <button id="download" class="button__primary manage__download-button">{% trans "Download All" %}</button>
+  </form>
+</div>
+{% endif %}
+
+{% if total_results < 1 %}
+  <p class="manage__note"><strong>{% trans "No identifiers found for the query you entered" %}.</strong></p>
+  <br/><br/><br/><br/><br/><br/><br/>
+{% else %}
+  
+  {% if total_results > 10 %}
+  {% include "search/_pagination.html" with primary_page=primary_page select_position="top" %}
+  {% endif %}
+
+<table class="table2">
+  {% header_row REQUEST fields_selected fields_mapped order_by sort %}
+<tbody>
+{% for item in results %}
+<tr>
+  {% data_row item fields_selected field_display_types account_co_owners testPrefixes %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+  {% if total_results > 10 %}
+  {% include "search/_pagination.html" with primary_page=primary_page select_position="bottom" %}
+  {% endif %}
+
+<p class="manage__note">&#42; {% trans "Indicates demo identifier" %}</p>
+{% endif %}
+
