@@ -3,20 +3,18 @@
 {% load manage_form_tags %}
 {% load i18n %}
 
-{% block title %}{%trans "Search across all identifiers" %}{% endblock %}
+{% block title %}{{ heading_title }}{% endblock %}
 {% block heading %}{% content_heading _("Search Results") %}{% endblock %}
 {% block content %}
+<form method="get" action="{% url "ui_search.index" %}" id="return-to-search" role="form">
+{% rewrite_hidden REQUEST %}
 <div class="search-results__simple">
-  <form method="get" action="{% url "ui_search.index" %}" id="return-to-search" role="form">
-  <div class="fcontrol__group-stacked">
-    <label for="search__simple-label" class="fcontrol__text-label-hidden">{% trans "Search" %}</label>
-    <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="{% trans "Full text search using words about or describing the identifier" %}.">
-  </div>
+  <div class="search-results__simple-query"><strong>{% trans "Your query" %}:</strong>{{ search_query }}</div>
   <div class="search-results__simple-button-group">
     <button class="search-results__simple-button">{% trans "Modify original search" %}</button>
   </div>
-  </form>
 </div>
+</form>
 
 {% include "search/_results.html" with primary_page="ui_search.results" %}
 

@@ -4,10 +4,8 @@ import ui_search
 import ui_create
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
-import django.db.models
 import ezid
 import metadata
-import math
 import policy
 import useradmin
 import erc
@@ -17,9 +15,6 @@ import form_objects
 import urllib
 import time
 import os.path
-from lxml import etree, objectify
-import re
-import ezidapp.models
 from django.utils.translation import ugettext as _
 
 FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") +\
@@ -32,16 +27,7 @@ def index(request):
   isPublicSearch=False
   d['coowners'] = policy.getReverseCoOwners(request.session["auth"].user[0])
   if request.method == "GET":
-    # Preserve search query across get requests
-    queries = {} 
-    if request.GET:
-      c = request.GET.copy()
-      for key in c:
-        if not key.startswith('c_') and not key == 'p':
-          queries[key] = c[key]
-    d['queries'] = queries if queries else \
-      {'hasMetadata': True, 'harvesting': True} # I was unable to get these to show as True 
-                                               # by default within form_objects, so doing it here
+    d['queries'] = ui_search.queryDict(request)
     # And preserve query in form object
     d['form'] = form_objects.ManageSearchIdForm(d['queries'])
     noConstraintsReqd =True 

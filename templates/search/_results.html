@@ -3,14 +3,9 @@
 
 <div class="customize-table">
   <form class="customize-table__heading-wrapper" action="{% url primary_page %}" role="form">
-    {% if primary_page == "ui_manage.index" %}
-    <h2 class="customize-table__heading">{% trans "Your Identifiers" %} ({{ total_results_str }}) </h2>
-      {% if filtered %}
+    <h2 class="customize-table__heading">{{ heading_title }}</h2>
+    {% if primary_page == "ui_manage.index" and filtered %}
     <button class="customize-table__button-all">{% trans "See All" %}</button>
-      {% endif %}
-    {% else %}
-    <h2 class="customize-table__heading">{% trans "Showing" %} ### {% trans "to" %} ### 
-      {% trans "of" %} {{ total_results_str }} {% trans "Search Results" %}</h2>
     {% endif %}
   </form>
   {% if results|length > 0 %}

@@ -3532,13 +3532,20 @@ Selector pattern using above mixin:
     margin: 10px auto; }
   .table3 thead tr {
     background: #ece5d6; }
-  .table3 th {
-    text-align: left; }
   .table3 th,
   .table3 td {
     padding: 0.5em;
     border: 1px solid #beb6af;
-    vertical-align: top; } }
+    vertical-align: top; }
+  .table3 th {
+    position: relative;
+    padding: 0.5em 30px 0.5em 0.5em;
+    text-align: left;
+    cursor: pointer; }
+    .table3 th::before {
+      position: absolute;
+      right: 10px;
+      content: url("../images/sort.png"); } }
 
 @media (max-width: 768px) {
   .table3 table,
@@ -3839,6 +3846,9 @@ Selector pattern using above mixin:
   -webkit-flex-flow: column nowrap;
       -ms-flex-flow: column nowrap;
           flex-flow: column nowrap;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
   max-width: 1000px;
   margin: 10px auto; }
   @media (min-width: 768px) {
@@ -3848,13 +3858,16 @@ Selector pattern using above mixin:
               flex-flow: row nowrap;
       margin: 30px auto; } }
 
+.search-results__simple-query {
+  margin: 10px 0 0; }
+
 .search-results__simple-button-group {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-align-self: flex-end;
-      -ms-flex-item-align: end;
-          align-self: flex-end;
+  -webkit-align-self: flex-start;
+      -ms-flex-item-align: start;
+          align-self: flex-start;
   margin: 10px 0 0; }
   @media (min-width: 768px) {
     .search-results__simple-button-group {

@@ -64,35 +64,44 @@ def _getFieldOrder(isPublicSearch):
 def _getFieldDefaults(isPublicSearch):
   return SEARCH_FIELD_DEFAULTS if isPublicSearch else MANAGE_FIELD_DEFAULTS
 
+def queryDict(request):
+  """
+  Preserve search query across get requests 
+  This dictionary will be injected back into form fields
+  """
+  assert request.method == "GET"
+  queries = {}
+  c = request.GET.copy()
+  for key in c:
+    if not key.startswith('c_') and not key == 'p':
+      queries[key] = c[key]
+  return queries if queries else {}
+
 def index(request):
   """ (Public) Search Page """
   d = { 'menu_item' : 'ui_search.index' }
   d['show_advanced_search'] = "closed"
   if request.method == "GET":
-    d['form'] = form_objects.BaseSearchIdForm() # Build an empty form
+    d['queries'] = queryDict(request)
+    # if users are coming back to an advanced search, auto-open adv. search block
+    if d['queries'] and d['queries']['keywords'].strip() == '':
+      d['show_advanced_search'] = "open"
+    d['form'] = form_objects.BaseSearchIdForm(d['queries'])
+    d['REQUEST'] = request.GET 
+    d = _pageLayout(d, request.GET)
   elif request.method == "POST":
     d['form'] = form_objects.BaseSearchIdForm(request.POST)
-    noConstraintsReqd = False
-    d = search(d, request, noConstraintsReqd)
+    d = search(d, request)
     if d['search_success'] == True:
       return uic.render(request, 'search/results', d)
   return uic.render(request, 'search/index', d)
 
 def results(request):
   d = { 'menu_item' : 'ui_search.results' } 
-  d['filtered'] = True
   if request.method == "GET":
-    # Preserve search query across get requests
-    queries = {}
-    if request.GET:
-      c = request.GET.copy()
-      for key in c:
-        if not key.startswith('c_') and not key == 'p':
-          queries[key] = c[key]
-    d['queries'] = queries if queries else {}
+    d['queries'] = queryDict(request)
     d['form'] = form_objects.BaseSearchIdForm(d['queries'])
-  noConstraintsReqd = False
-  d = search(d, request, noConstraintsReqd)
+  d = search(d, request)
   return uic.render(request, 'search/results', d)
 
 def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
@@ -118,7 +127,6 @@ def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
     if d['filtered']:
       c = _buildConstraints(c, q, isPublicSearch)
       c = _buildTimeConstraints(c, q, isPublicSearch)
-    if isPublicSearch: d['search_query'] = _buildQuerySyntax(c)
     d['total_results'] = search_util.formulateQuery(c).count()
     d['total_results_str'] = format(d['total_results'], "n") 
     d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
@@ -127,9 +135,11 @@ def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
     orderColumn = FIELDS_MAPPED[d['order_by']][0] 
     if not IS_ASCENDING[d['sort']]: orderColumn = "-" + orderColumn
     d['results'] = []
-    # ToDo:  Greg also had this in his query for Manage Page:  select_related("owner").\
+    # ToDo:  Add in ownership constraints (user, proxy, etc)
+    rec_beg = (d['p']-1)*d['ps']
+    rec_end = d['p']*d['ps']
     for id in search_util.formulateQuery(c, orderBy=orderColumn)\
-      [(d['p']-1)*d['ps']:d['p']*d['ps']]:
+      [rec_beg:rec_end]:
       result = {
         "c_create_time": id.createTime,
         "c_identifier": id.identifier,
@@ -145,6 +155,13 @@ def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
       if id.isUnavailable and id.unavailableReason != "":
         result["c_id_status"] += " | " + id.unavailableReason
       d['results'].append(result)
+    if isPublicSearch: 
+      d['heading_title'] = _("Showing ") + str(rec_beg + 1)  + _(" to ") + \
+        str(min(rec_end, d['total_results'])) + _(" of ") + d['total_results_str'] + \
+        _(" Search Results")
+      d['search_query'] = _buildQuerySyntax(c)
+    else:
+      d['heading_title'] = _("Your Identifiers") + " (" + d['total_results_str'] + ")"
     d['search_success'] = True
   else:  # Form did not validate
     d['show_advanced_search'] = "open" # Open up adv. search html block
@@ -161,7 +178,10 @@ def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
     d['search_success'] = False 
   return d
 
-def _pageLayout(d, REQUEST, isPublicSearch):
+def _pageLayout(d, REQUEST, isPublicSearch=True):
+  """
+  Track user preferences for selected fields, field order, page, and page size
+  """
   d['filtered'] = True if 'filtered' in REQUEST else False
   d['testPrefixes'] = uic.testPrefixes
   d['fields_mapped'] = FIELDS_MAPPED

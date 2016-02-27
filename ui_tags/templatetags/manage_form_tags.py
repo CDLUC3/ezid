@@ -37,6 +37,7 @@ def make_check_tag(item, friendly_names, selected):
   return "<input type='checkbox' id='" + escape(item) + "' name='" + escape(item) + "' value='t'" + checked_str + " \> " \
        + "<label for='" + escape(item) + "'>" + escape(friendly_names[item][1]) + "</label>"
 
+@register.simple_tag   
 def rewrite_hidden(request, exclude=None):
   hidden = ''
   for key, value in request.iteritems():
