@@ -9,7 +9,7 @@
 <form method="get" action="{% url "ui_search.index" %}" id="return-to-search" role="form">
 {% rewrite_hidden REQUEST %}
 <div class="search-results__simple">
-  <div class="search-results__simple-query"><strong>{% trans "Your query" %}:</strong>{{ search_query }}</div>
+  <div class="search-results__simple-query"><strong>{% trans "Your query" %}:</strong>&nbsp;&nbsp;{{ search_query }}</div>
   <div class="search-results__simple-button-group">
     <button class="search-results__simple-button">{% trans "Modify original search" %}</button>
   </div>

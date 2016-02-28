@@ -313,8 +313,6 @@ def _buildQuerySyntax(c):
         if c == '"':
           quoteOccurred = True
           inQuote = not inQuote
-        else:
-          if not inQuote and not c.isalnum() and c!=" ": c = ""
         v += c
       if inQuote: v += '"'
       value = "".join(v)
