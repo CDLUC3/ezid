@@ -282,7 +282,7 @@ html {
 body {
   font-family: KievitWeb, Arial, sans-serif;
   font-size: 15px;
-  line-height: 1;
+  line-height: 1.3;
   color: #000;
   background-color: #fff; }
 
@@ -323,7 +323,7 @@ img {
 
 .img-thumbnail {
   padding: 4px;
-  line-height: 1;
+  line-height: 1.3;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 0;
@@ -339,8 +339,8 @@ img {
   border-radius: 50%; }
 
 hr {
-  margin-top: 15px;
-  margin-bottom: 15px;
+  margin-top: 19px;
+  margin-bottom: 19px;
   border: 0;
   border-top: 1px solid #b4975a; }
 
@@ -898,7 +898,7 @@ hr {
   white-space: nowrap;
   padding: 6px 12px;
   font-size: 15px;
-  line-height: 1;
+  line-height: 1.3;
   border-radius: 0;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -1373,7 +1373,7 @@ tbody.collapse.in {
     border-color: #00778a; }
   .nav .nav-divider {
     height: 1px;
-    margin: 6.5px 0;
+    margin: 8.5px 0;
     overflow: hidden;
     background-color: #e5e5e5; }
   .nav > li > a > img {
@@ -1386,7 +1386,7 @@ tbody.collapse.in {
     margin-bottom: -1px; }
     .nav-tabs > li > a {
       margin-right: 2px;
-      line-height: 1;
+      line-height: 1.3;
       border: 1px solid transparent;
       border-radius: 0 0 0 0; }
       .nav-tabs > li > a:hover {
@@ -1466,7 +1466,7 @@ tbody.collapse.in {
 
 .breadcrumb {
   padding: 8px 15px;
-  margin-bottom: 15px;
+  margin-bottom: 19px;
   list-style: none;
   background-color: white;
   border-radius: 0; }
@@ -1481,7 +1481,7 @@ tbody.collapse.in {
 
 .alert {
   padding: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 19px;
   border: 1px solid transparent;
   border-radius: 0; }
   .alert h4 {
@@ -1602,14 +1602,14 @@ tbody.collapse.in {
 .modal-header {
   padding: 15px;
   border-bottom: 1px solid #e5e5e5;
-  min-height: 16px; }
+  min-height: 16.3px; }
 
 .modal-header .close {
   margin-top: -2px; }
 
 .modal-title {
   margin: 0;
-  line-height: 1; }
+  line-height: 1.3; }
 
 .modal-body {
   position: relative;
@@ -2877,18 +2877,6 @@ blockquote p {
 .learn__title--ext-link {
   margin-bottom: 20px; }
 
-.learn-preformatted {
-  font-family: monospace;
-  word-break: keep-all;
-  /* webkit */
-  word-wrap: break-word;
-  white-space: pre;
-  white-space: -moz-pre-wrap;
-  /* fennec */
-  white-space: pre-wrap;
-  white-space: pre\9;
-  /* IE7+ */ }
-
 .breadcrumb > li + li:before {
   content: "/ "; }
 
@@ -2916,13 +2904,6 @@ blockquote p {
   font-weight: bold;
   font-size: 1em;
   font-style: italic; }
-
-.learn__img-diagram-wrapper {
-  padding: 0px 0px 10px 20px;
-  float: right; }
-
-.learn__img-diagram {
-  border: 1px solid black; }
 
 .search__tooltip--container {
   position: absolute;

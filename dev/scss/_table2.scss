@@ -22,21 +22,40 @@
 		display: block;
 		background: $design-secondary-lightest;
 		text-align: left;
+		position: relative;
+		padding: 0.5em 30px 0.5em 0.5em;
+		text-align: left;
+		cursor: pointer;
 
-		.sorting:after {
-			position: relative;
-			top: 0;
-			right: 6px;
-			bottom: 0;
-			left: auto;
-			height: 11px;
-			margin: auto;
-			line-height: 1;
-			content: url('../images/sort.png');
-			// background-image: url('../images/sort.png');
-			// background-position: right center;
-			// background-size: 9px 11px;
+		a.table__th-link {
+			color: $design-black-color;
+			text-decoration: none;
+			cursor:pointer;
+			display:block;
+			padding: 10px;
+			margin: -10px;
 		}
+
+	}
+
+	th.sorting::before, th.sort_desc::before, th.sort_asc::before {
+		position: absolute;
+		right: 5px;
+
+	}
+
+	th.sorting::before {
+		content: url('../images/sort.png');
+
+	}
+
+	th.sort_desc::before {
+		content: url('../images/sort_desc.png');
+
+	}
+
+	th.sort_asc::before {
+		content: url('../images/sort_asc.png');
 
 	}
 
@@ -57,7 +76,7 @@
 		display: block;
 	}
 
-	th,
+	th.sorting,
 	td {
 		width: 10em;
 		margin: 0;
@@ -75,6 +94,13 @@
 
 	.table2 {
 		display: table;
+
+		th.sorting, th.sort_desc, th.sort_asc {
+			display: table-cell;
+			width: auto;
+			overflow: visible;
+		}
+
 	}
 
 	.table2 thead {
@@ -84,12 +110,6 @@
 
 	.table2 thead tr {
 		display: table-row;
-	}
-
-	.table2 th {
-		display: table-cell;
-		width: auto;
-		overflow: visible;
 	}
 
 	.table2 tbody {
