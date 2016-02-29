@@ -3489,18 +3489,29 @@ Selector pattern using above mixin:
       display: block; }
   .table2 th {
     display: block;
+    position: relative;
+    padding: 0.5em 30px 0.5em 0.5em;
     background: #ece5d6;
-    text-align: left; }
-    .table2 th .sorting:after {
-      position: relative;
-      top: 0;
-      right: 6px;
-      bottom: 0;
-      left: auto;
-      height: 11px;
-      margin: auto;
-      line-height: 1;
-      content: url("../images/sort.png"); }
+    text-align: left;
+    cursor: pointer; }
+    .table2 th .table__th-link {
+      display: block;
+      margin: -10px;
+      padding: 10px;
+      color: black;
+      text-decoration: none;
+      cursor: pointer; }
+  .table2 .sorting::before,
+  .table2 .sort__desc::before,
+  .table2 .sort__asc::before {
+    position: absolute;
+    right: 5px; }
+  .table2 .sorting::before {
+    content: url("../images/sort.png"); }
+  .table2 .sort__desc::before {
+    content: url("../images/sort_desc.png"); }
+  .table2 .sort__asc::before {
+    content: url("../images/sort_asc.png"); }
   .table2 tbody {
     display: -webkit-flex;
     display: -ms-flexbox;
@@ -3515,7 +3526,9 @@ Selector pattern using above mixin:
       border-top: 1px solid #beb6af; }
   .table2 td {
     display: block; }
-  .table2 th,
+  .table2 .sorting,
+  .table2 .sort__desc,
+  .table2 .sort__asc,
   .table2 td {
     width: 10em;
     margin: 0;
@@ -3529,15 +3542,17 @@ Selector pattern using above mixin:
 @media (min-width: 768px) {
   .table2 {
     display: table; }
+    .table2 .sorting,
+    .table2 .sort__desc,
+    .table2 .sort__asc {
+      display: table-cell;
+      width: auto;
+      overflow: visible; }
   .table2 thead {
     display: table-header-group;
     float: none; }
   .table2 thead tr {
     display: table-row; }
-  .table2 th {
-    display: table-cell;
-    width: auto;
-    overflow: visible; }
   .table2 tbody {
     display: table-row-group;
     white-space: normal; }

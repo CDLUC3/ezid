@@ -20,41 +20,42 @@
 
 	th {
 		display: block;
-		background: $design-secondary-lightest;
-		text-align: left;
 		position: relative;
 		padding: 0.5em 30px 0.5em 0.5em;
+		background: $design-secondary-lightest;
 		text-align: left;
 		cursor: pointer;
 
-		a.table__th-link {
+		.table__th-link {
+			display: block;
+			margin: -10px;
+			padding: 10px;
 			color: $design-black-color;
 			text-decoration: none;
-			cursor:pointer;
-			display:block;
-			padding: 10px;
-			margin: -10px;
+			cursor: pointer;
 		}
 
 	}
 
-	th.sorting::before, th.sort_desc::before, th.sort_asc::before {
+	.sorting::before,
+	.sort__desc::before,
+	.sort__asc::before {
 		position: absolute;
 		right: 5px;
 
 	}
 
-	th.sorting::before {
+	.sorting::before {
 		content: url('../images/sort.png');
 
 	}
 
-	th.sort_desc::before {
+	.sort__desc::before {
 		content: url('../images/sort_desc.png');
 
 	}
 
-	th.sort_asc::before {
+	.sort__asc::before {
 		content: url('../images/sort_asc.png');
 
 	}
@@ -76,7 +77,9 @@
 		display: block;
 	}
 
-	th.sorting,
+	.sorting,
+	.sort__desc,
+	.sort__asc,
 	td {
 		width: 10em;
 		margin: 0;
@@ -95,7 +98,9 @@
 	.table2 {
 		display: table;
 
-		th.sorting, th.sort_desc, th.sort_asc {
+		.sorting,
+		.sort__desc,
+		.sort__asc {
 			display: table-cell;
 			width: auto;
 			overflow: visible;
