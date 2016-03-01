@@ -13,9 +13,7 @@
     <input name="action" id="action"  type="hidden" value="create"/> 
     <div class="row">
 
-      {% include "includes/simple_id_type.html" %}
-
-      <div class="col-md-4 create__sidebox">
+      <div class="col-md-4 col-md-push-8 create__sidebox">
         <div class="sidebox">
           <h2 class="sidebox__heading">{% trans "Quick Start Guide" %}</h2>
           <ul class="sidebox__list">
@@ -23,15 +21,17 @@
           </ul>
         </div>
       </div>
+
+      <div class="col-md-8 col-md-pull-4">
+      {% include "includes/simple_id_type.html" %}
+      </div>
+
     </div>
 
     {% include "includes/simple_describe.html" %}
 
-    <div class="create__button">
-      <button class="button__primary">{% trans "Create" %}</button>
-      {# Translators: Please preserve &quot; tags #}
-      <p class="create__buttton-note"><em>{% trans "Clicking &quot;Create&quot; will create the identifier and make it public. To defer making it public, use the Advanced form. Once created, an identifier cannot be renamed or deleted." %}</em></p>
-    </div>
+    {% include "includes/create_button.html" with calling_page="create" id_type="simple" %} 
+
     </form>
   </div>
 

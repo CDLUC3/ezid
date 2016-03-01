@@ -12,9 +12,7 @@
     <form id="create_form" action="{% url "ui_demo.simple" %}" method="post" class="form-horizontal" role="form">
     <div class="row">
 
-      {% include "includes/simple_id_type.html" with calling_page="demo" %} 
-
-      <div class="col-md-4 create__sidebox">
+      <div class="col-md-4 col-md-push-8 create__sidebox">
         <div class="sidebox">
           <h2 class="sidebox__heading">{% trans "Quick Start Guide" %}</h2>
           <ul class="sidebox__list">
@@ -22,6 +20,11 @@
           </ul>
         </div>
       </div>
+
+      <div class="col-md-8 col-md-pull-4">
+      {% include "includes/simple_id_type.html" with calling_page="demo" %} 
+      </div>
+
     </div>
 
     {% include "includes/simple_describe.html" %} 

@@ -130,10 +130,11 @@ class DataciteForm(BaseForm):
     self.fields["datacite.resourcetype"] = \
       forms.ChoiceField(required=False, choices=RESOURCE_TYPES, label=_("Resource type"))
     if self.placeholder is not None and self.placeholder == True:
-      self.fields['datacite.creator'].widget.attrs['placeholder'] = _("Creator")
-      self.fields['datacite.title'].widget.attrs['placeholder'] = _("Title")
-      self.fields['datacite.publisher'].widget.attrs['placeholder'] = _("Publisher")
-      self.fields['datacite.publicationyear'].widget.attrs['placeholder'] = _("Publication year")
+      self.fields['datacite.creator'].widget.attrs['placeholder'] = _("Creator (required)")
+      self.fields['datacite.title'].widget.attrs['placeholder'] = _("Title (required)")
+      self.fields['datacite.publisher'].widget.attrs['placeholder'] = _("Publisher (required)")
+      self.fields['datacite.publicationyear'].widget.attrs['placeholder'] = \
+        _("Publication year (required)")
 
 def getIdForm (profile, placeholder, elements=None):
   """ Returns a simple ID Django form. If 'placeholder' is True
@@ -585,7 +586,6 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     rights_set = RightsSet(_inclMgmtData(form_coll.rights if hasattr(form_coll, 'rights')\
       else None, PREFIX_RIGHTS_SET), prefix=PREFIX_RIGHTS_SET, auto_id='%s')
     """
-    import pdb; pdb.set_trace()
     geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations if\
       hasattr(form_coll, 'geoLocations') else None, PREFIX_GEOLOC_SET), 
       prefix=PREFIX_GEOLOC_SET, auto_id='%s')
@@ -615,7 +615,7 @@ def _inclMgmtData(fields, prefix):
   else:
     fields = {}
     i_total = 1   # Assume a form needs to be produced even if no data is being passed in
-  fields[prefix + "-TOTAL_FORMS"] = str(i_total + 1)
+  fields[prefix + "-TOTAL_FORMS"] = str(i_total)
   fields[prefix + "-INITIAL_FORMS"] = str(i_total) 
   fields[prefix + "-MAX_NUM_FORMS"] = '1000'
   fields[prefix + "-MIN_NUM_FORMS"] = '0'
