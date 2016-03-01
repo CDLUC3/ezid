@@ -2586,7 +2586,7 @@ Selector pattern using above mixin:
   font-size: 1.6em;
   font-weight: bold; }
 
-.heading__icon-1, .heading__icon-2, .heading__icon-3, .heading__icon-4, .heading__icon-5, .heading__icon-6, .heading__icon-7, .heading__icon-8, .heading__icon-9 {
+.heading__icon-1, .heading__icon-2, .heading__icon-3, .heading__icon-4, .heading__icon-5, .heading__icon-6, .heading__icon-7, .heading__icon-8, .heading__icon-9, .heading__icon-10 {
   margin: 1em 0;
   background-repeat: no-repeat;
   background-position: left center;
@@ -2611,8 +2611,10 @@ Selector pattern using above mixin:
   background-image: url("../images/dashboardUsage.svg"); }
 
 .heading__icon-4 {
-  padding: 20px 40px;
-  background-image: url("../images/dashboardIDsByMonth.svg"); }
+  padding: 10px 40px;
+  background-image: url("../images/dashboardIDsByMonth.svg");
+  background-position: left 4px center;
+  background-size: 20px; }
 
 .heading__icon-5 {
   padding: 0 40px;
@@ -2629,6 +2631,10 @@ Selector pattern using above mixin:
 .heading__icon-9 {
   padding: 14px 40px;
   background-image: url("../images/idAboutObject.svg"); }
+
+.heading__icon-10 {
+  padding: 0 40px;
+  background-image: url("../images/dashboardCrossRef.svg"); }
 
 .link__primary, .footer__news-link, .login-modal__forgot, .link__over-beige, .footer__link, .footer__copyright-link, .link__pop, .login-modal__sign-up-link {
   position: relative;
@@ -3542,6 +3548,7 @@ Selector pattern using above mixin:
 @media (min-width: 768px) {
   .table2 {
     display: table; }
+    .table2 th,
     .table2 .sorting,
     .table2 .sort__desc,
     .table2 .sort__asc {
@@ -3898,7 +3905,11 @@ Selector pattern using above mixin:
       margin: 30px auto; } }
 
 .search-results__simple-query {
-  margin: 10px 0 0; }
+  display: none; }
+  @media (min-width: 768px) {
+    .search-results__simple-query {
+      display: block;
+      margin: 10px 0 0; } }
 
 .search-results__simple-button-group {
   display: -webkit-flex;

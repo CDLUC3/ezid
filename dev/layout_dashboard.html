@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<title>Dashboard Layout</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+	<!-- build:css css/main2.min.css -->
+	<link rel="stylesheet" href="css/main2.css">
+	<!-- endbuild -->
+
+</head>
+<body>
+
+<div class="container">
+
+    <h1><a href="index.html">EZID UI Library</a></h1>
+
+    <h2>Dashboard Layout</h2>
+
+    <!--#include file="includes/header.html" -->
+
+    <div class="heading__primary-container">
+      <h1 class="heading__primary-text">Dashboard</h1>
+    </div>
+
+ <h2 class="heading__icon-5">User Administration - <span class="capitalized">Manage User Accounts</span></h2>
+  <hr/>
+  <div role="group" aria-labelledby="fieldset__owner-filter">
+  <form action="" method="post">
+    <div class="fieldset-stacked__inline-select">
+      <span id="fieldset__owner-filter" class="heading__icon-2">View Report for</span>
+      <label for="tbd" class="fcontrol__text-label-hidden">Specific User or Group</label>
+
+        <select id="choice" name="choice" class="fcontrol__select-inline">
+      
+          <option value="all"
+        
+            selected="selected"
+        
+          >All EZID</option>
+      
+          <option value=""
+        
+          ></option>
+      
+          <option value=""
+        
+          >-- Groups --</option>
+      
+          <option value="group_ark:/99166/p9g44hq02"
+        
+          >admin</option>
+      
+          <option value="group_ark:/99166/p9pg1hn29"
+        
+          >apitest</option>
+      
+          <option value="group_ark:/99166/p9z60c16v"
+        
+          >cdl</option>
+      
+          <option value=""
+        
+          ></option>
+      
+          <option value=""
+        
+          >-- Users --</option>
+      
+          <option value="user_ark:/99166/p9kw57h4w"
+        
+          >admin</option>
+      
+          <option value="user_ark:/99166/p9jq0st8j"
+        
+          >apitest</option>
+      
+          <option value="user_ark:/99166/p9sb3wx94"
+        
+          >jak</option>
+      
+          <option value="user_ark:/99166/p9ws8hk40"
+        
+          >jstarr</option>
+      
+          <option value="user_ark:/99166/p9xg9fb15"
+        
+          >rhu</option>
+      
+          <option value="user_ark:/99166/p9j09w423"
+        
+          >uitesting</option>
+      
+        </select>
+    </div>
+  </form>
+  </div>
+
+  <div class="col-md-6">
+  <h2 class="heading__icon-4">Total Identifiers</h2>
+<table class="table2">
+<thead>
+<tr>
+<th>ID Type</th>
+<th>Number of IDs</th>
+<th>Percentage of Metadata Complete</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ARKs</td>
+<td>13</td>
+<td>53% have metadata</td>
+</tr>
+<tr>
+<tr>
+<td>DOIs</td>
+<td>1,420</td>
+<td>99% have metadata</td>
+</tr>
+<tr>
+<td>URNs</td>
+<td>1</td>
+<td>0% have metadata</td>
+</tr>
+<tr>
+<td>Totals</td>
+<td>1,434</td>
+<td>99% have metadata</td>
+</tr>
+</tbody>
+</table>
+  </div>
+  <div class="col-md-8">
+  <h2 class="heading__icon-4">Total Identifiers Created By Month</h2>
+<table class="table2">
+<thead>
+<tr>
+<th>Month</th>
+<th>ARKs</th>
+<th>DOIs</th>
+<th>URNs</th>
+</tr>
+</thead>
+<tbody>
+
+
+<tr>
+<td>2016-03</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+<tr>
+<td>2016-02</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+<tr>
+<td>2016-01</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  1,413
+  <span class="pct">(100%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+<tr>
+<td>2015-12</td>
+<td>
+  1
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+<tr>
+<td>2015-11</td>
+<td>
+  1
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+<tr>
+<td>2015-10</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  1
+  <span class="pct">(100%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+<tr>
+<td>2015-09</td>
+<td>
+  1
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  1
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+<tr>
+<td>2015-08</td>
+<td>
+  4
+  <span class="pct">(100%)</span>
+</td>
+<td>
+  3
+  <span class="pct">(100%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+<tr>
+<td>2015-07</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+<tr>
+<td>2015-06</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  1
+  <span class="pct">(100%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+<tr>
+<td>2015-05</td>
+<td>
+  2
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  1
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+<tr>
+<td>2015-04</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+<tr>
+<td>2015-03</td>
+<td>
+  4
+  <span class="pct">(75%)</span>
+</td>
+<td>
+  1
+  <span class="pct">(100%)</span>
+</td>
+<td>
+  0
+  <span class="pct">(0%)</span>
+</td>
+</tr>
+
+</tbody>
+</table>
+<p>*Statistics calculated on February 28, 2016.</p>
+</div>
+
+
+<div class="col-md-12">
+  <hr></hr>
+    <h2 class="heading__icon-6">Identifier Issues</h2>    
+    <!--#include file="includes/pagination.html" -->
+
+    <!--#include file="includes/table2_idissues.html" -->
+
+    <!--#include file="includes/pagination.html" -->
+
+    <h2 class="heading__icon-10">CrossRef&reg; Submission Status</h2>
+    <!--#include file="includes/pagination.html" -->
+
+    <!--#include file="includes/table2_crossref.html" -->
+
+    <!--#include file="includes/pagination.html" -->
+
+
+    <!--#include file="includes/footer_geo-off.html" -->
+  </div>
+
+</div>
+	
+  <!-- build:js js/main2.min.js -->
+  <script src="js/vendor/jquery.min.js"></script>
+  <script src="js/vendor/jquery-ui.min.js"></script>
+  <script src="js/vendor/better-dom.min.js"></script>
+  <script src="js/vendor/better-details-polyfill.js"></script>
+  <script src="js/vendor/picturefill.min.js"></script>
+  <script src="js/vendor/modernizr-custombuild.js"></script>
+  <script src="js/main2.js"></script>
+  <!-- endbuild -->
+	
+</body>
+</html>

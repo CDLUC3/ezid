@@ -59,8 +59,10 @@ $heading-icon-spacing: 40px;
 
 .heading__icon-4 {
 	@extend %heading__icon;
-	padding: 20px $heading-icon-spacing;
+	padding: 10px $heading-icon-spacing;
 	background-image: url('../images/dashboardIDsByMonth.svg');
+	background-position: left 4px center;
+	background-size: 20px;
 }
 
 .heading__icon-5 {
@@ -91,4 +93,10 @@ $heading-icon-spacing: 40px;
 	@extend %heading__icon;
 	padding: 14px $heading-icon-spacing;
 	background-image: url('../images/idAboutObject.svg');
+}
+
+.heading__icon-10 {
+        @extend %heading__icon;
+        padding: 0 $heading-icon-spacing;
+        background-image: url('../images/dashboardCrossRef.svg');
 }

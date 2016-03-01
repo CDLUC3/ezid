@@ -61,7 +61,7 @@ def header_row(request, fields_selected, fields_mapped, order_by, sort, primary_
   return r
 
 #display column heading text, links, sort order that allow changing
-ORDER_BY_CLASS = {'asc': 'sort_asc', 'desc': 'sort_desc'}
+ORDER_BY_CLASS = {'asc': 'sort__asc', 'desc': 'sort__desc'}
 SORT_OPPOSITE = {'asc': 'desc', 'desc': 'asc'}
 SORT_TIP = {'asc': 'Sorting in ascending order. Click to change to descending order.',
             'desc': 'Sorting in descending order. Click to change to ascending order.'}
@@ -78,11 +78,8 @@ def column_head(request, field, fields_mapped, order_by, sort, primary_page):
   r = "<th "
   if field == order_by:
     r += "class='" + ORDER_BY_CLASS[sort] + "'><a title='" + SORT_TIP[sort] + "' "
-    # "<div class='order_by_col'><a href='" + url + "' title='" + SORT_TIP[sort] + "'>" + \
-    #   "<img src='" + ORDER_BY_IMG[sort] + "' alt='" + SORT_TIP[sort] + "'></a></div>"
   else:
     r += "class='sorting'><a title='Sort on this column' "
-  # column_link = "<a href='" + url + "' title='Sort on this column'>" + escape(fields_mapped[field][1]) + "</a>"
   r += "class='table__th-link' href='" + url + "'>" + escape(fields_mapped[field][1]) + "</a></th>"
   return r 
 

@@ -15,7 +15,12 @@
 }
 
 .search-results__simple-query {
-	margin: 10px 0 0;
+	display: none;
+
+	@include bp(screen2) {
+		display: block;
+		margin: 10px 0 0;
+	}
 }
 
 .search-results__simple-button-group {
