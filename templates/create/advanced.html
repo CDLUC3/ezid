@@ -2,40 +2,64 @@
 {% load layout_extras %}
 {% load i18n %}
 {% block title %}{% trans "Create an Advanced Identifier" %}{% endblock %}
-{% block heading %}{% content_heading _("Create an Identifier") %}{% endblock %}
+{% block heading %}{% content_heading _("Create an Advanced Identifier") %}{% endblock %}
 {% block content %}
-<div class="container vertical-buffer-sm">
-  <ul class="nav nav-tabs nav-idcreate">
-    <li role="presentation"><a href="{% url "ui_create.simple" %}">{% trans "Simple" %}</a></li>
-    <li role="presentation" class="active">{% trans "Advanced" %}</li>
-  </ul>
-  <div class="idcreate-content gradient-form">
-
-
-    <form id="create_form" action="{% url "ui_create.advanced" %}" method="post" class="form-horizontal" role="form">
-      <input name="action" id="action"  type="hidden" value="create"/>      
-      {% include "includes/simple_id_type.html" %}
-      {% include "includes/advanced_remainder.html" %}
-      {% include "includes/advanced_publish_id.html" %}
-      {% include "includes/advanced_describe.html" %}
-
-      <div class="row idcreate-content-row">
-        <div class="col-sm-3">
-          <!-- TODO: This should instead be positioned using an offset -->
-        </div>
-        <div class="col-sm-8">
-          <button type="submit" class="btn btn-primary padding-side-xs">{% trans "CREATE" %}</button>
-          <p class="italic vertical-buffer-xs">
-            {% trans "Once created, an identifier  cannot be renamed  or deleted." %}
-          </p>
-        </div>
-
-      </div>
-    </form>
-
+<div class="tab create__tab">
+  <input class="tab__input" id="tab-1" type="radio" name="name"/>
+  <label class="tab__label" for="tab-1">{% trans "Simple" %}</label>
+  <div class="tab__content">
+    <div>This page cannot be loaded unless you have JavaScript activated in your browser.</div>
   </div>
-</div> <!-- End Container -->     
-  
+  <input class="tab__input" id="tab-2" type="radio" name="name" checked="checked"/>
+  <label class="tab__label" for="tab-2">{% trans "Advanced" %}</label>
+  <div class="tab__content">
+    <form id="create_form" action="{% url "ui_create.advanced" %}" method="post" class="form-horizontal" role="form">
+    <input name="action" id="action" type="hidden" value="create"/>
+    <div class="row">
+      <div class="col-md-4 col-md-push-8 create__sidebox">
+        <div class="sidebox">
+          <h2 class="sidebox__heading">{% trans "Quick Start Guides" %}</h2>
+          <ul class="sidebox__list">
+            <li><a href="/static/locale/en/EZID_CustomRemainders.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Custom Remainder Rules" %}</a></li>
+            <li><a href="/static/locale/en/EZID_AdvancedCreate.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Advanced Create for DOIs" %}</a></li>
+            <li><a href="/static/locale/en/EZID_ResourceTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Resource Types" %}</a></li>
+            <li><a href="/static/locale/en/EZID_ContributorTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Contributor Types" %}</a></li>
+            <li><a href="/static/locale/en/EZID_RelationTypes.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Relation Types" %}</a></li>
+            <li><a href="/static/locale/en/EZID_InfoUnavailable.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Don't have info for required fields? Use placeholder codes." %}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-8 col-md-pull-4">
+      {% include "includes/simple_id_type.html" with calling_page="create" %}
+        {% include "includes/advanced_remainder.html" %}
+        {% include "includes/advanced_publish_id.html" %}
+      </div>
+    </div>
+
+    <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset7">
+
+      {% include "includes/advanced_describe.html" %} 
+     
+      {% include "includes/create_button.html" with calling_page="create" id_type="advanced" %} 
+
+    </div>
+    </form>
+  </div>
+<script type="text/javascript">
+/* ToDo: Bring in both simple and advanced content onto the same page
+   Then this JavaScript will be unnecessary since tabs will swap quickly
+   btwn simple/advanced content */
+$(document).ready(function() {
+  // redirect to Advanced ID create 
+  $('#tab-1:not(:checked)').on('change', function() {
+    document.getElementById('tab-1').checked = false;
+    document.getElementById('tab-2').checked = true;
+    window.location.href = "{% url "ui_create.simple" %}";
+  });
+});
+</script>
+</div>
+
   <script type="text/javascript" src="/static/javascripts/advanced_create.js"></script>
   <script type="text/javascript" src="/static/javascripts/fix_target.js"></script>
   {% include "info/popup_help.html" %}

@@ -49,7 +49,7 @@
   {% endif %}
 
 <table class="table2">
-  {% header_row REQUEST fields_selected fields_mapped order_by sort %}
+  {% header_row REQUEST fields_selected fields_mapped order_by sort primary_page %}
 <tbody>
 {% for item in results %}
 <tr>
@@ -63,6 +63,8 @@
   {% include "search/_pagination.html" with primary_page=primary_page select_position="bottom" %}
   {% endif %}
 
+{% if primary_page == "ui_manage.index" %}
 <p class="manage__note">&#42; {% trans "Indicates demo identifier" %}</p>
+{% endif %}
 {% endif %}
 

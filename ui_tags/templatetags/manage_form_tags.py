@@ -55,17 +55,17 @@ def rewrite_hidden_nocols(request, field_order):
   return rewrite_hidden(request, exclude)
 
 @register.simple_tag
-def header_row(request, fields_selected, fields_mapped, order_by, sort):
-  r = "<thead><tr>" + ''.join([("<th>" + column_head(request, x, fields_mapped, order_by, sort) + "</th>"  ) \
-      for x in fields_selected]) + '</tr></thead>'
+def header_row(request, fields_selected, fields_mapped, order_by, sort, primary_page):
+  r = "<thead><tr>" + ''.join([column_head(request, x, fields_mapped, order_by, sort, \
+      primary_page) for x in fields_selected]) + '</tr></thead>'
   return r
 
 #display column heading text, links, sort order that allow changing
-ORDER_BY_IMG = {'asc': '/static/images/tri_up.png', 'desc': '/static/images/tri_down.png'}
+ORDER_BY_CLASS = {'asc': 'sort_asc', 'desc': 'sort_desc'}
 SORT_OPPOSITE = {'asc': 'desc', 'desc': 'asc'}
 SORT_TIP = {'asc': 'Sorting in ascending order. Click to change to descending order.',
             'desc': 'Sorting in descending order. Click to change to ascending order.'}
-def column_head(request, field, fields_mapped, order_by, sort):
+def column_head(request, field, fields_mapped, order_by, sort, primary_page):
   #if current fields is being ordered by then should show icon, also clicking link or icon will switch order
   if field == order_by:
     overriding_params = {'order_by': field, 'sort': SORT_OPPOSITE[sort] }
@@ -74,14 +74,17 @@ def column_head(request, field, fields_mapped, order_by, sort):
   combined_params = dict(request.dict(), **overriding_params)
   # If sorting, set result to first page
   if 'p' in combined_params: combined_params['p'] = 1
-  url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
+  url = reverse(primary_page) + "?" + urllib.urlencode(combined_params)
+  r = "<th "
   if field == order_by:
-    sort_icon = "<div class='order_by_col'><a href='" + url + "' title='" + SORT_TIP[sort] + "'>" + \
-        "<img src='" + ORDER_BY_IMG[sort] + "' alt='" + SORT_TIP[sort] + "'></a></div>"
+    r += "class='" + ORDER_BY_CLASS[sort] + "'><a title='" + SORT_TIP[sort] + "' "
+    # "<div class='order_by_col'><a href='" + url + "' title='" + SORT_TIP[sort] + "'>" + \
+    #   "<img src='" + ORDER_BY_IMG[sort] + "' alt='" + SORT_TIP[sort] + "'></a></div>"
   else:
-    sort_icon = ''
-  column_link = "<a href='" + url + "' title='Sort on this column'>" + escape(fields_mapped[field][1]) + "</a>"
-  return sort_icon + column_link
+    r += "class='sorting'><a title='Sort on this column' "
+  # column_link = "<a href='" + url + "' title='Sort on this column'>" + escape(fields_mapped[field][1]) + "</a>"
+  r += "class='table__th-link' href='" + url + "'>" + escape(fields_mapped[field][1]) + "</a></th>"
+  return r 
 
 #need to pass in account co owners because it's obnoxiously used in the co-owners field and is added
 #to database values instead of being a purer value 

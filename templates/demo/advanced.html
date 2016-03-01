@@ -18,12 +18,7 @@
     <form id="create_form" action="{% url "ui_demo.advanced" %}" method="post" class="form-horizontal" role="form">
     <input name="action" id="action" type="hidden" value="create"/>
     <div class="row">
-      {% include "includes/simple_id_type.html" with calling_page="demo" %}
-      <div class="col-md-8">
-        {% include "includes/advanced_remainder.html" %}
-        {% include "includes/advanced_publish_id.html" %}
-      </div>
-      <div class="col-md-4 create__sidebox">
+      <div class="col-md-4 col-md-push-8 create__sidebox">
         <div class="sidebox">
           <h2 class="sidebox__heading">{% trans "Quick Start Guides" %}</h2>
           <ul class="sidebox__list">
@@ -35,6 +30,11 @@
             <li><a href="/static/locale/en/EZID_InfoUnavailable.pdf" title="PDF Document" class="link__primary" target="_blank">{% trans "Don't have info for required fields? Use placeholder codes." %}</a></li>
           </ul>
         </div>
+      </div>
+      <div class="col-md-8 col-md-pull-4">
+        {% include "includes/simple_id_type.html" with calling_page="demo" %}
+        {% include "includes/advanced_remainder.html" %}
+        {% include "includes/advanced_publish_id.html" %}
       </div>
     </div>
 
