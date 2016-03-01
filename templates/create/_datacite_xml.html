@@ -6,15 +6,15 @@
 {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.target %}
 
 {% include "create/_datacite_geoLoc.html" %}
-{% comment %} include "create/_datacite_description.html" {% endcomment %}
-{% comment %} include "create/_datacite_creator.html" {% endcomment %}
-{% comment %} include "create/_datacite_title.html" {% endcomment %}
+{% include "create/_datacite_creator.html" %}
+{% include "create/_datacite_title.html" %}
 
-{% comment %} include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publisher reqd="true" {% endcomment %}
-{% comment %} include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publicationYear reqd="true" {% endcomment %}
-{% comment %} include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.language {% endcomment %}
+{% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publisher reqd="true" %}
+{% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.publicationYear reqd="true" %}
+{% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.language %}
 
-{% comment %} include "create/_datacite_resourceType.html" {% endcomment %}
+{% include "create/_datacite_resourceType.html" %}
+{% include "create/_datacite_description.html" %}
 
 {% comment %}Put Subject set     here{% endcomment %}
 {% comment %}Put Contrib set     here{% endcomment %}
@@ -26,22 +26,7 @@
 {% comment %}Put (nonrepeating) Version here{% endcomment %}
 {% comment %}Put Rights set      here{% endcomment %}
 
-
 <script type="text/javascript">
-  $(document).ready(function() {
-		
-    //* set the resourceType to the same as resourceTypeGeneral
-    $(':submit').click(function(e)
-    {
-      var gen = $('#resource_type_general').val();
-      var res_type = $('#resource_type').val();			
-      if(gen != '' && res_type == ''){
-        $('#resource_type').val(gen);
-      }
-    });
-  });
-
-
   $('input[type=button].rmvButton').click(function (e)  {
   /* Confirmation step before user removes an element */
     var continue_removal = confirm ("Please confirm you want to remove last item.");

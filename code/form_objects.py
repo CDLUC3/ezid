@@ -554,33 +554,40 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
 # On Edit:GET (Convert DataCite XML dict to form)
   else:
     # Note: Remainder form only needed upon ID creation
-    nonrepeating_form = NonRepeatingForm(form_coll.nonRepeating, auto_id='%s')
-    resourcetype_form = ResourceTypeForm(form_coll.resourceType, auto_id='%s')
-    creator_set = CreatorSet(_inclMgmtData(form_coll.creators, PREFIX_CREATOR_SET),
+    nonrepeating_form = NonRepeatingForm(form_coll.nonRepeating if\
+      hasattr(form_coll, 'nonRepeating') else None, auto_id='%s')
+    resourcetype_form = ResourceTypeForm(form_coll.resourceType if\
+      hasattr(form_coll, 'resourceType') else None, auto_id='%s')
+    creator_set = CreatorSet(_inclMgmtData(form_coll.creators if\
+      hasattr(form_coll, 'creators') else None, PREFIX_CREATOR_SET), \
       prefix=PREFIX_CREATOR_SET, auto_id='%s')
-    title_set = TitleSet(_inclMgmtData(form_coll.titles, PREFIX_TITLE_SET),
-      prefix=PREFIX_TITLE_SET, auto_id='%s')
-    descr_set = DescrSet(_inclMgmtData(form_coll.descrs, PREFIX_DESCR_SET),
-      prefix=PREFIX_DESCR_SET, auto_id='%s')
+    title_set = TitleSet(_inclMgmtData(form_coll.titles if hasattr(form_coll, 'titles')\
+      else None, PREFIX_TITLE_SET), prefix=PREFIX_TITLE_SET, auto_id='%s')
+    descr_set = DescrSet(_inclMgmtData(form_coll.descrs if hasattr(form_coll, 'descrs')\
+      else None, PREFIX_DESCR_SET), prefix=PREFIX_DESCR_SET, auto_id='%s')
     """
-    subject_set = SubjectSet(_inclMgmtData(form_coll.subjects, PREFIX_SUBJECT_SET),
+    subject_set = SubjectSet(_inclMgmtData(form_coll.subjects if\
+      hasattr(form_coll, 'subjects') else None, PREFIX_SUBJECT_SET),
       prefix=PREFIX_SUBJECT_SET, auto_id='%s')
-    contrib_set = ContribSet(_inclMgmtData(form_coll.contribs, PREFIX_CONTRIB_SET),
+    contrib_set = ContribSet(_inclMgmtData(form_coll.contribs if\
+      hasattr(form_coll, 'contribs') else None, PREFIX_CONTRIB_SET),
       prefix=PREFIX_CONTRIBUTOR_SET, auto_id='%s')
-    date_set = DateSet(_inclMgmtData(form_coll.dates, PREFIX_DATE_SET),
-      prefix=PREFIX_DATE_SET, auto_id='%s')
-    altid_set = AltIdSet(_inclMgmtData(form_coll.altids, PREFIX_ALTID_SET),
-      prefix=PREFIX_ALTID_SET, auto_id='%s')
-    relid_set = RelIdSet(_inclMgmtData(form_coll.relids, PREFIX_RELID_SET),
-      prefix=PREFIX_RELID_SET, auto_id='%s')
-    size_set = SizeSet(_inclMgmtData(form_coll.sizes, PREFIX_SIZE_SET),
-      prefix=PREFIX_SIZE_SET, auto_id='%s')
-    format_set = FormatSet(_inclMgmtData(form_coll.formats, PREFIX_FORMAT_SET),
-      prefix=PREFIX_FORMAT_SET, auto_id='%s')
-    rights_set = RightsSet(_inclMgmtData(form_coll.rights, PREFIX_RIGHTS_SET),
-      prefix=PREFIX_RIGHTS_SET, auto_id='%s')
+    date_set = DateSet(_inclMgmtData(form_coll.dates if hasattr(form_coll, 'dates')\
+      else None, PREFIX_DATE_SET), prefix=PREFIX_DATE_SET, auto_id='%s')
+    altid_set = AltIdSet(_inclMgmtData(form_coll.altids if hasattr(form_coll, 'altids')\
+      else None, PREFIX_ALTID_SET), prefix=PREFIX_ALTID_SET, auto_id='%s')
+    relid_set = RelIdSet(_inclMgmtData(form_coll.relids if hasattr(form_coll, 'relids')\
+      else None, PREFIX_RELID_SET), prefix=PREFIX_RELID_SET, auto_id='%s')
+    size_set = SizeSet(_inclMgmtData(form_coll.sizes if hasattr(form_coll, 'sizes')\
+      else None, PREFIX_SIZE_SET), prefix=PREFIX_SIZE_SET, auto_id='%s')
+    format_set = FormatSet(_inclMgmtData(form_coll.formats if hasattr(form_coll, 'formats')\
+      else None, PREFIX_FORMAT_SET), prefix=PREFIX_FORMAT_SET, auto_id='%s')
+    rights_set = RightsSet(_inclMgmtData(form_coll.rights if hasattr(form_coll, 'rights')\
+      else None, PREFIX_RIGHTS_SET), prefix=PREFIX_RIGHTS_SET, auto_id='%s')
     """
-    geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations, PREFIX_GEOLOC_SET),
+    import pdb; pdb.set_trace()
+    geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations if\
+      hasattr(form_coll, 'geoLocations') else None, PREFIX_GEOLOC_SET), 
       prefix=PREFIX_GEOLOC_SET, auto_id='%s')
     """
     'subject_set':subject_set, 
@@ -608,8 +615,8 @@ def _inclMgmtData(fields, prefix):
   else:
     fields = {}
     i_total = 1   # Assume a form needs to be produced even if no data is being passed in
-  fields[prefix + "-TOTAL_FORMS"] = str(i_total)
-  fields[prefix + "-INITIAL_FORMS"] = '0'
+  fields[prefix + "-TOTAL_FORMS"] = str(i_total + 1)
+  fields[prefix + "-INITIAL_FORMS"] = str(i_total) 
   fields[prefix + "-MAX_NUM_FORMS"] = '1000'
   fields[prefix + "-MIN_NUM_FORMS"] = '0'
   return fields

@@ -21,14 +21,6 @@ def column_choices(field_order, fields_mapped, fields_selected):
          [make_check_tag(f, fields_mapped, fields_selected) for f in field_order])\
          + '</div>'
 
-@register.simple_tag 
-def column_choices_hidden(fields_selected):
-  """Include column choices in request query as hidden fields"""
-  hidden = ''
-  for f in fields_selected:
-    hidden += "<input type='hidden' name='" + f + "' value='t'/>"
-  return hidden
-
 def make_check_tag(item, friendly_names, selected):
   if item in selected:
     checked_str = " checked='checked' "
@@ -36,6 +28,14 @@ def make_check_tag(item, friendly_names, selected):
     checked_str = ""
   return "<input type='checkbox' id='" + escape(item) + "' name='" + escape(item) + "' value='t'" + checked_str + " \> " \
        + "<label for='" + escape(item) + "'>" + escape(friendly_names[item][1]) + "</label>"
+
+@register.simple_tag 
+def column_choices_hidden(fields_selected):
+  """Include column choices in request query as hidden fields"""
+  hidden = ''
+  for f in fields_selected:
+    hidden += "<input type='hidden' name='" + f + "' value='t'/>"
+  return hidden
 
 @register.simple_tag   
 def rewrite_hidden(request, exclude=None):
@@ -107,8 +107,8 @@ def formatted_field(
     return FUNCTIONS_FOR_FORMATTING[formatting](value, account_co_owners, testPrefixes, href)
 
 def string_value(x, href):
-  if x is None:
-    return ''
+  if x is None or x.strip() == '':
+    return '&nbsp;'
   else:
     return href + escape(x) + "</a>"
 

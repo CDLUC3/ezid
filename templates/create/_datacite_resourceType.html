@@ -21,3 +21,17 @@ The resourceType form consists of two fields
     {% include "create/_datacite_inlinetext.html" with field=rt_field %}
   {% endif %}
 {% endfor %}
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    //* set the resourceType to the same as resourceTypeGeneral
+    $(':submit').click(function(e)
+    {
+      var gen = $('#resourceType-resourceTypeGeneral').val();
+      var res_type = $('#resourceType').val();                 
+      if(gen != '' && res_type == ''){
+        $('#resourceType').val(gen);
+      }
+    });
+  });
+</script>
