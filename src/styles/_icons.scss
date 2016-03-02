@@ -53,41 +53,8 @@
   height: 15px;
 }
 
-.checkbox__icon {
-  width: 17px;
-  margin-left: 7px;
+input[type=checkbox] {
+  transform: scale(1.5);
+  -webkit-transform: scale(1.5);
 }
 
-#dashboard__icon--viewreport {
-  @extend .icon__header--base;
-  width: 25px;
-}
-#dashboard__icon--usage {
-  @extend .icon__header--base;
-  width: 28px;
-}
-#dashboard__icon--idsbymonth {
-  @extend .icon__header--base;
-  width: 14px;
-}
-#dashboard__icon--brokenlinks {
-  @extend .icon__header--base;
-  width: 35px; 
-}
-#dashboard__icon--crossref {
-  @extend .icon__header--base;
-  width: 35px; 
-}
-#id__icon--aboutobject {
-  @extend .icon__header--base;
-  width: 17px; 
-}
-#id__icon--aboutid {
-  @extend .icon__header--base;
-  width: 17px; 
-}
-#search__icon--advanced {
-  margin-left: 4px;
-  margin-bottom : 6px;
-  width: 32px; 
-}

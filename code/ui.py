@@ -26,7 +26,7 @@ def contact(request):
   if request.method == "POST":
     P = request.POST
     d['form'] = form_objects.ContactForm(P)
-    if P['url'] != '':
+    if 'url' in P and P['url'] != '':
       #url is hidden.  If it's filled in then probably a spam bot
       pass 
     elif d['form'].is_valid():
