@@ -19,8 +19,8 @@ from django.utils.translation import ugettext as _
 """
 
 def _validationErr(action):
-  return _("Identifier could not be ") + action + _(" as submitted.  Please check ") +  \
-    _("the highlighted fields below for details.")
+  return _("Identifier could not be ") + action +\
+    _(" as submitted.  Please check the highlighted fields below for details.")
 
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
@@ -105,7 +105,7 @@ def simple_form(request, d):
     if d['form'].is_valid():
       d = _createSimpleId(d, request, REQUEST)
     else:
-      django.contrib.messages.error(request, _validationErr("created"))
+      django.contrib.messages.error(request, _validationErr(_("created")))
       d['id_gen_result'] = 'edit_page'
   return d
 

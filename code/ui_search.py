@@ -171,7 +171,7 @@ def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
       errors = d['form'].errors['__all__']
       for e in errors:
         all_errors += e 
-      django.contrib.messages.error(request, _("Could not complete search.   " + all_errors))
+      django.contrib.messages.error(request, _("Could not complete search.   ") + all_errors)
     else:
       err = _("Could not complete search.  Please check the highlighted fields below for details.")
       django.contrib.messages.error(request, err) 

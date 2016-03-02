@@ -2356,10 +2356,6 @@ h2.panel-title > a {
   width: 15px;
   height: 15px; }
 
-input[type=checkbox] {
-  transform: scale(1.5);
-  -webkit-transform: scale(1.5); }
-
 .ext-link, .pdf-link, .ppt-link, .api .reference, .accordion-toggle {
   position: relative;
   border-bottom: 1px solid #beb6af;

@@ -5,72 +5,24 @@
 {% block title %}{%trans "My Account" %}{% endblock %}
 {% block heading %}{% content_heading _("My Account") %}{% endblock %}
 {% block content %}
-<div class="container vertical-buffer-xs">
-  <div class="width-reduced-md">
-    <div class="heading_2">To edit your account information, proxy users, or account password, make changes in the fields below, then click Save.</div>
-  </div>
-</div>
-<div class="container">
-  <form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" class="form-horizontal" role="form">
-  {{ form.non_field_errors }}
+
+<p class="contact__note">{% trans "To edit your account information, proxy users, or account password, make changes in the fields below, then click Save." %}</p>
+
+<form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" class="contact__form" role="form">
+{% comment "nonfield_errors" %}form.non_field_errors not used here, and will be displayed in django.contrib.messages.error{% endcomment %}
   <h2 class="heading_2_caps vertical-buffer-xs">{% trans "Account Information" %}</h2>
+  
   <div class="row form-group form-group-sm">
     <label for="account_username" class="col-sm-2">{%trans "Username" %}</label>
     <div class="col-sm-5">{{ username }} </div>
   </div>
 
-  <div class="row form-group form-group-sm{% if form.givenName.errors %} has-error{% endif %}">
-    <label for="{{ form.givenName.id_for_label }}" class="col-sm-2 control-label">{{ form.givenName.label }}</label>
-    <div class="col-sm-5">
-      {{ form.givenName|add_attributes:"form-control"}}
-    </div>
-  {% if form.givenName.errors %}
-    <div class="col-sm-2">
-    {% for error in form.givenName.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </div>
-  {% endif %}
-  </div>
-  <div class="row form-group form-group-sm{% if form.sn.errors %} has-error{% endif %}">
-    <label for="{{ form.sn.id_for_label }}" class="col-sm-2 control-label">{{ form.sn.label }}</label>
-    <div class="col-sm-5">
-      {{ form.sn|add_attributes:"form-control"}}
-    </div>
-  {% if form.sn.errors %}
-    <div class="col-sm-2">
-    {% for error in form.sn.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </div>
-  {% endif %}
-  </div>
-  <div class="row form-group form-group-sm{% if form.telephoneNumber.errors %} has-error{% endif %}">
-    <label for="{{ form.telephoneNumber.id_for_label }}" class="col-sm-2 control-label">{{ form.telephoneNumber.label }}</label>
-    <div class="col-sm-5">
-      {{ form.telephoneNumber|add_attributes:"form-control"}}
-    </div>
-  {% if form.telephoneNumber.errors %}
-    <div class="col-sm-2">
-    {% for error in form.telephoneNumber.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </div>
-  {% endif %}
-  </div>
-  <div class="row form-group form-group-sm{% if form.mail.errors %} has-error{% endif %}">
-    <label for="{{ form.mail.id_for_label }}" class="col-sm-2 control-label">{{ form.mail.label }}</label>
-    <div class="col-sm-5">
-      {{ form.mail|add_attributes:"form-control"}}
-    </div>
-  {% if form.mail.errors %}
-    <div class="col-sm-2">
-    {% for error in form.mail.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </div>
-  {% endif %}
-  </div>
+  {% include "includes/_inlinetext.html" with field=form.givenName form_name="contact__form" %}
+  {% include "includes/_inlinetext.html" with field=form.sn form_name="contact__form" %}
+  {% include "includes/_inlinetext.html" with field=form.telephoneNumber form_name="contact__form" %}
+  {% include "includes/_inlinetext.html" with field=form.mail form_name="contact__form" %}
+  {% include "includes/_inlinetext.html" with field=form.telephoneNumber form_name="contact__form" %}
+  
   <div class="row form-group form-group-sm">
     <label class="col-sm-2 control-label">{% trans "Your Proxy Account(s)" %}</label>
     <div class="col-sm-5">
@@ -80,7 +32,7 @@
         <span class="font-small-bold">{%trans "NOTE:" %}</span> {%trans "These are identifier groups where you have been designated as proxy user." %}
       </div>
     </div>
-  </div>
+  </div>  
   <div class="row form-group form-group-sm">
     <label for="{{ form.ezidCoOwners.id_for_label }}" class="col-sm-2">{{ form.ezidCoOwners.label }}</label>
     <div class="col-sm-5">
@@ -100,55 +52,18 @@
     </div>
   </div>
   <div class="vertical-buffer-sm"></div>
+
+
   <h2 class="heading_2_caps">{% trans "Change Password" %}</h2>
-  <div class="row form-group form-group-sm{% if form.pwcurrent.errors %} has-error{% endif %}">
-    <label for="{{ form.pwcurrent.id_for_label }}" class="col-sm-2 control-label">{{ form.pwcurrent.label }}</label>
-    <div class="col-sm-5">
-      {{ form.pwcurrent|add_attributes:"form-control"}}
-    </div>
-  {% if form.pwcurrent.errors %}
-    <div class="col-sm-2">
-    {% for error in form.pwcurrent.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </div>
-  {% endif %}
-  </div>
-  <div class="row form-group form-group-sm{% if form.pwnew.errors %} has-error{% endif %}">
-    <label for="{{ form.pwnew.id_for_label }}" class="col-sm-2 control-label">{{ form.pwnew.label }}</label>
-    <div class="col-sm-5">
-      {{ form.pwnew|add_attributes:"form-control"}}
-    </div>
-  {% if form.pwnew.errors %}
-    <div class="col-sm-2">
-    {% for error in form.pwnew.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </div>
-  {% endif %}
-  </div>
-  <div class="row form-group form-group-sm{% if form.pwconfirm.errors %} has-error{% endif %}">
-    <label for="{{ form.pwconfirm.id_for_label }}" class="col-sm-2 control-label">{{ form.pwconfirm.label }}</label>
-    <div class="col-sm-5">
-      {{ form.pwconfirm|add_attributes:"form-control"}}
-    </div>
-  {% if form.pwconfirm.errors %}
-    <div class="col-sm-2">
-    {% for error in form.pwconfirm.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </div>
-  {% endif %}
-  </div>
-  <div class="vertical-buffer-sm"></div>
-  <div class="row">
-    <div class="col-sm-6 form-group form-group-sm">
-      <button type="submit" class="button__primary">{%trans "Save" %}</button>
-    </div>
-  </div>
-  </form>
-</div>     
- 
-  {% include "info/popup_help.html" %}
-  <script type="text/javascript" src="/static/javascripts/help_box.js"></script>
+
+  {% include "includes/_inlinetext.html" with field=form.pwcurrent form_name="contact__form" %}
+  {% include "includes/_inlinetext.html" with field=form.pwnew form_name="contact__form" %}
+  {% include "includes/_inlinetext.html" with field=form.pwconfirm form_name="contact__form" %}
+
+  <button class="button__primary account__form-submit">{% trans "Submit" %}</button>
+</form>
+
+{% include "info/popup_help.html" %}
+<script type="text/javascript" src="/static/javascripts/help_box.js"></script>
+
 {% endblock %}

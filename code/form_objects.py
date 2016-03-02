@@ -654,7 +654,7 @@ def _validate_proxies(proxies):
 
 def _validate_current_pw(username):
   def innerfn(pwcurrent):
-    auth = userauth.authenticate(username, request.POST["pwcurrent"])
+    auth = userauth.authenticate(username, pwcurrent)
     if type(auth) is str or not auth:
       raise ValidationError(_("Your current password is incorrect."))
   return innerfn
@@ -663,25 +663,24 @@ def _validate_current_pw(username):
 
 class UserForm(forms.Form):
   """ Form object for My Account Page (User editing) """
-  username = '' 
   def __init__(self, *args, **kwargs):
-    username = kwargs.pop('username',None)
+    self.username = kwargs.pop('username',None)
     super(UserForm,self).__init__(*args,**kwargs)
-  givenName = forms.CharField(required=False, label=_("First Name"))
-  sn = forms.CharField(label=_("Last Name"),
-    error_messages={'required': _("Please fill in your last name")})
-  telephoneNumber = forms.CharField(required=False, label=_("Phone"))
-  mail = forms.EmailField(label=_("Email Address"),
-    error_messages={'required': _("Please fill in your email."),
-                    'invalid': _("Please fill in a valid email address.")})
-  ezidCoOwners = forms.CharField(required=False, label=_("Proxy User(s)"),
-    validators=[_validate_proxies])
-  pwcurrent = forms.CharField(required=False, label=_("Current Password"),
-    widget=forms.PasswordInput(), validators=[_validate_current_pw(username)])
-  pwnew = forms.CharField(required=False, label=_("New Password"),
-    widget=forms.PasswordInput())
-  pwconfirm = forms.CharField(required=False, label=_("Confirm New Password"),
-    widget=forms.PasswordInput())
+    self.fields["givenName"] = forms.CharField(required=False, label=_("First Name"))
+    self.fields["sn"] = forms.CharField(label=_("Last Name"),
+      error_messages={'required': _("Please fill in your last name")})
+    self.fields["telephoneNumber"] = forms.CharField(required=False, label=_("Phone"))
+    self.fields["mail"] = forms.EmailField(label=_("Email Address"),
+      error_messages={'required': _("Please fill in your email."),
+                      'invalid': _("Please fill in a valid email address.")})
+    self.fields["ezidCoOwners"] = forms.CharField(required=False, label=_("Proxy User(s)"),
+      validators=[_validate_proxies])
+    self.fields["pwcurrent"] = forms.CharField(required=False, label=_("Current Password"),
+      widget=forms.PasswordInput(), validators=[_validate_current_pw(self.username)])
+    self.fields["pwnew"] = forms.CharField(required=False, label=_("New Password"),
+      widget=forms.PasswordInput())
+    self.fields["pwconfirm"] = forms.CharField(required=False, label=_("Confirm New Password"),
+      widget=forms.PasswordInput())
   def clean(self):
     cleaned_data = super(UserForm, self).clean()
     pwnew_c = cleaned_data.get("pwnew")

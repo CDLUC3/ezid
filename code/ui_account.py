@@ -5,6 +5,7 @@ import form_objects
 import re
 import time
 from django.shortcuts import redirect
+from django.utils.translation import ugettext as _
 
 def edit(request, ssl=False):
   """Edit account information form"""
@@ -30,6 +31,17 @@ def edit(request, ssl=False):
     d['form'] = form_objects.UserForm(request.POST, username=d['username'])
     if d['form'].is_valid():
       update_edit_user(request, d['form'].has_changed())
+    else: # Form did not validate
+      if '__all__' in d['form'].errors:
+        # non_form_error, probably due to all fields being empty
+        all_errors = ''
+        errors = d['form'].errors['__all__']
+        for e in errors:
+          all_errors += e 
+        django.contrib.messages.error(request, _("Form could not be sent.   ") + all_errors)
+      else:
+        err = _("Form could not be sent.  Please check the highlighted field(s) below for details.")
+        django.contrib.messages.error(request, err)
   return uic.render(request, "account/edit", d)
 
 def login(request, ssl=False):
@@ -51,7 +63,7 @@ def login(request, ssl=False):
       return uic.render(request, 'account/login', d)
     if auth:
       request.session["auth"] = auth
-      django.contrib.messages.success(request, "Login successful.")
+      django.contrib.messages.success(request, _("Login successful."))
       #request.session['hide_alert'] = False
       if 'redirect_to' in request.POST:
         return redirect(_filterBadRedirect(request.POST['redirect_to']))
@@ -60,7 +72,7 @@ def login(request, ssl=False):
       else:
         return redirect('ui_home.index')
     else:
-      django.contrib.messages.error(request, "Login failed.")
+      django.contrib.messages.error(request, _("Login failed."))
       return uic.render(request, "account/login", d)
   else:
     return uic.methodNotAllowed(request)
@@ -75,7 +87,7 @@ def logout(request):
   d = { 'menu_item' : 'ui_null.null'}
   if request.method != "GET": return uic.methodNotAllowed(request)
   request.session.flush()
-  django.contrib.messages.success(request, "You have been logged out.")
+  django.contrib.messages.success(request, _("You have been logged out."))
   return redirect("ui_home.index")
 
 def update_edit_user(request, basic_info_changed):
@@ -93,14 +105,15 @@ def update_edit_user(request, basic_info_changed):
   if type(r) is str:
     django.contrib.messages.error(request, r)
   else:
-    if basic_info_changed: django.contrib.messages.success(request, "Your information has been updated.")
+    if basic_info_changed: django.contrib.messages.success(request,
+      _("Your information has been updated."))
   
   if request.POST['pwcurrent'].strip() != '':
     r = useradmin.resetPassword(uid, request.POST["pwnew"].strip())
     if type(r) is str:
       django.contrib.messages.error(request, r)
     else:
-      django.contrib.messages.success(request, "Your password has been updated.")
+      django.contrib.messages.success(request, _("Your password has been updated."))
       
 def pwreset(request, pwrr, ssl=False):
   """
@@ -109,12 +122,11 @@ def pwreset(request, pwrr, ssl=False):
   if pwrr:
     r = useradmin.decodePasswordResetRequest(pwrr)
     if not r:
-      django.contrib.messages.error(request, "Invalid password reset request.")
+      django.contrib.messages.error(request, _("Invalid password reset request."))
       return uic.redirect("/")
     username, t = r
     if int(time.time())-t >= 24*60*60:
-      django.contrib.messages.error(request,
-        "Password reset request has expired.")
+      django.contrib.messages.error(request, _("Password reset request has expired."))
       return uic.redirect("/")
     if request.method == "GET":
       return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
@@ -126,11 +138,11 @@ def pwreset(request, pwrr, ssl=False):
       confirm = request.POST["confirm"]
       if password != confirm:
         django.contrib.messages.error(request,
-          "Password and confirmation do not match.")
+          _("Password and confirmation do not match."))
         return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
           "username": username, 'menu_item' : 'ui_null.null' })
       if password == "":
-        django.contrib.messages.error(request, "Password required.")
+        django.contrib.messages.error(request, _("Password required."))
         return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
           "username": username, 'menu_item' : 'ui_null.null' })
       r = useradmin.resetPassword(username, password)
@@ -139,7 +151,7 @@ def pwreset(request, pwrr, ssl=False):
         return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
           "username": username,  'menu_item' : 'ui_null.null' })
       else:
-        django.contrib.messages.success(request, "Password changed.")
+        django.contrib.messages.success(request, _("Password changed."))
         return uic.redirect("/")
     else:
       return uic.methodNotAllowed(request)
@@ -159,7 +171,7 @@ def pwreset(request, pwrr, ssl=False):
           django.contrib.messages.error(request, r)
           return uic.render(request, "account/pwreset1", d)
         else:
-          django.contrib.messages.success(request, "Email sent.")
+          django.contrib.messages.success(request, _("Email sent."))
           return uic.redirect("/")
       return uic.render(request, "account/pwreset1", d)
     else:

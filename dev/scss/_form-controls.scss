@@ -274,6 +274,20 @@
 	font-size: 1em;
 }
 
+
+
+// ***** Checkbox ***** //
+
+.fcontrol__checkbox-label-inline {
+	@extend %fcontrol__select-label;
+	margin: 0 5px 0 0;
+}
+
+.fcontrol__checkbox-inline {
+	transform: scale(1.5);
+}
+
+
 // ***** Required Styles ***** //
 
 .fcontrol__label-required {

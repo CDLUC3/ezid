@@ -2417,11 +2417,11 @@ Selector pattern using above mixin:
           -ms-flex-align: center;
               align-items: center; } }
 
-.fcontrol__select-label-stacked, .fcontrol__select-label-inline {
+.fcontrol__select-label-stacked, .fcontrol__select-label-inline, .fcontrol__checkbox-label-inline {
   color: #00778a;
   font-size: 1em; }
   @media (min-width: 768px) {
-    .fcontrol__select-label-stacked, .fcontrol__select-label-inline {
+    .fcontrol__select-label-stacked, .fcontrol__select-label-inline, .fcontrol__checkbox-label-inline {
       font-size: 1.1em; } }
 
 .fcontrol__select-label-stacked {
@@ -2488,6 +2488,13 @@ Selector pattern using above mixin:
 
 .fcontrol__radio-button-inline {
   font-size: 1em; }
+
+.fcontrol__checkbox-label-inline {
+  margin: 0 5px 0 0; }
+
+.fcontrol__checkbox-inline {
+  -webkit-transform: scale(1.5);
+          transform: scale(1.5); }
 
 .fcontrol__label-required:after {
   color: #9e1919;
