@@ -28,127 +28,31 @@ Name in English: {{ lang.name }}<br />
 Bi-directional: {{ lang.bidi }}<br />
 request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
 -->
-<div class="vertical-buffer-xs"></div>
-<div class="container">
-<div class="width-reduced-md">
-<div class="heading_2">{% trans "Please fill out this form if you would like more information about our services, have a question or comment, or would like to request an EZID account." %}</div>
-</div>
-</div>
+    <p class="contact__note">{% trans "Have a question, comment, or want to request an EZID account? Fill out this form and EZID will get in touch with you." %}</p>
 
-<div class="container">
-  <div class="row">
-    <div class="col-sm-8 col-sm-push-4 padding-left">
-      <div class="row vertical-buffer-xs">
-      <form name="contact" action="{% url "ui.contact" %}" method="post" class="form-horizontal" role="form">
-        {{ form.non_field_errors }}
+    <form name="contact" action="{% url "ui.contact" %}" method="post" class="contact__form" role="form">
+    {{ form.non_field_errors }}
 
-{% for field in form.visible_fields %}
-    <div class="form-group form-group-sm{% if field.errors %} has-error{% endif %}">
-      <label for="{{ field.id_for_label }}" class="col-sm-4 control-label">{{ field.label }}</label>
-      <div class="col-sm-6">
-        {{ field|add_attributes:"form-control"}}
-      </div>
-    {% if field.errors %}
-      <div class="col-sm-2">
-      {% for error in field.errors %}
-        {{ error|escape }}
-      {% endfor %}
-      </div>
-    {% endif %}
-    </div>
+{% for field in form %}
+  {% if field|fieldtype == "TextInput" or field|fieldtype == "EmailInput" %}
+    {% include "includes/_inlinetext.html" with field=field form_name="contact__form" %}
+  {% elif field|fieldtype == "Textarea" %}
+    {% include "includes/_inlinetextarea.html" with field=field form_name="contact__form" %}
+  {% elif field|fieldtype == "Select" %}
+    {% include "includes/_inlineselect.html" with field=field form_name="contact__form" %}
+  {% elif field|fieldtype == "CheckboxInput" %}
+    {% include "includes/_inlinecheckbox.html" with field=field form_name="contact__form" %}
+  {% endif %}
 {% endfor %}
-  {% for hidden in form.hidden_fields %}
-    {{ hidden }}
-  {% endfor %}
 
-        <div class="trapper_keeper">
-        <div class="form-group form-group-sm">
-          <label for="url" class="trapper_keeper col-sm-4 control-label">{% trans "Your URL" %}</label>
-          <div class="col-sm-6">
-          <input type="text" id="url" name="url" value="" class="form-control" maxlength="200"/>
-          </div>
-        </div>
-        </div>
-        <div class="form-group form-group-sm">
-          <div class="col-sm-6 col-sm-offset-4">
-          <button type="submit" class="btn btn-primary padding-side-med">
-            {# Translators: This is the Submit button. All uppercase. #}
-            {% trans "SUBMIT" %}</button>
-          </div>
-        </div>
-      </form>
+    <div class="trapper_keeper">
+      <div class="fcontrol__group-inline contact__form-element">
+        <label for="url" class="fcontrol__text-label-inline contact__form-label">Your URL</label>
+        <input id="url" name="url" class="fcontrol__text-field-inline" type="text" placeholder="" maxlength="200" value="" />
       </div>
     </div>
-    <div class="col-sm-4 col-sm-pull-8 col-promotional call-out">
-      <div id="myCarousel" class="promotional carousel slide" data-ride="carousel">
-        <!-- Carousel indicators -->
-        <ol class="carousel-indicators">
-            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-            <li data-target="#myCarousel" data-slide-to="1"></li>
-            <li data-target="#myCarousel" data-slide-to="2"></li>
-            <li data-target="#myCarousel" data-slide-to="3"></li>
-        </ol>
-        <!-- Carousel items -->
-        <div class="carousel-inner">
-          <div class="item active">
-            <blockquote>
-              <p>{% trans "Assigning DOIs to figshare content through the EZID system allows researchers to efficiently share and cite their research.  The great team at the California Digital Library makes assigning DOIs a simple yet well structured process." %}</p>
-            </blockquote>
-            <div class="blockquote-footer">
-              {% trans "Mark Hahnel, Ph. D." %}<br/>
-              {# Translators: "figshare" does not need to be translated: company name #}
-              {% trans "Founder, figshare" %}
-            </div>
-          </div>
-          <div class="item">
-            <blockquote>
-              <p>{% trans "We're very pleased to see EZID working on behalf of its clients to create new partnerships that expand the reach and impact of research and scholarship. Sponsored memberships to CrossRef through the California Digital Library open up new possibilities for smaller organizations and those who work with scholars to innovate at the fringes of new publication models, integrating the future of online publication as it assumes various forms." %}</p>
-            </blockquote>
-            <div class="blockquote-footer">
-              {% trans "Rebecca Kennison, Director" %}<br/>
-              {% trans "Center for Digital Research and Scholarship" %}<br/>
-              {% trans "Columbia University Libraries/Information Services" %}
-            </div>
-          </div>
-          <div class="item">
-            <blockquote>
-              <p>{% trans "EZID gives Open Context critical services that help make our data publications lasting contributions to the scholarly record.  Because of EZID, we can explore innovative new approaches in publishing that can be used and cited in years to come." %}</p>
-            </blockquote>
-            <div class="blockquote-footer">
-              {% trans "Eric C. Kansa, Ph. D." %}<br/>
-              {% trans "Cofounder and Technology Director" %}<br/>
-              Open Context
-            </div>
-          </div>
-          <div class="item">
-            <blockquote>
-              <p>{% trans "The partnership between EZID and CrossRef presents an exciting opportunity for eScholarship and our journal partners. The inclusion of our Open Access publications in new discovery services via CrossRef, particularly its metadata feed, will dramatically increase the exposure of the important scholarship published on our platform." %}</p>
-            </blockquote>
-            <div class="blockquote-footer">
-              {% trans "Catherine Mitchell, Director" %}<br/>
-              {% trans "Access and Publishing" %}<br/>
-              {% trans "California Digital Library/University of California" %}
-            </div>
-          </div>
-        </div>
-      </div>
+    <button class="button__primary contact__form-submit">{% trans "Submit" %}</button>
 
-      <p class="tagline">
-        <a href="#">{% trans "SIGN UP FOR OUR NEWSLETTER" %} &raquo;</a>
-      </p>
-    </div>
-    <div class="row vertical-buffer"></div>
-  </div>
-</div>
-
-
-<script type="text/javascript">
-$(document).ready(function(){
-     $("#myCarousel").carousel({
-         interval : 10000,
-         // pause: "false"
-     });
-});
-</script>
+    </form>
 
 {% endblock %}

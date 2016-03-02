@@ -1,0 +1,10 @@
+{% load layout_extras %}
+
+{% comment  %}
+Formatting used for typical inline ***select*** field for a form that is not repeating 
+{% endcomment %}
+
+<div class="fcontrol__select-group-inline {{ form_name }}-element">
+  <label for="{{ field.id_for_label }}" class="fcontrol__select-label-inline {{ form_name }}-label {% if reqd %}fcontrol__label-required{% endif %}">{{ field.label }}</label>
+  {{ field|add_attributes:"fcontrol__select--fullwidth"}}
+</div>

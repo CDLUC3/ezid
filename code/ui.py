@@ -26,9 +26,9 @@ def contact(request):
   if request.method == "POST":
     P = request.POST
     d['form'] = form_objects.ContactForm(P)
-    if not 'url' in P or P['url'] != '':
+    if P['url'] != '':
       #url is hidden.  If it's filled in then probably a spam bot
-      pass
+      pass 
     elif d['form'].is_valid():
       emails = __emails(request)
       title = "EZID contact form email"
@@ -41,7 +41,11 @@ def contact(request):
       if 'affiliation' in P:
         message += "Institution: " +  P['affiliation'] + "\r\n\r\n"
         message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
-          "Heard about from: " + P['hear_about']
+          "Heard about from: " + P['hear_about'] + "\r\n\r\n"
+      if 'newsletter' in P and P['newsletter'] == 'on':
+        message += "YES, I'd like to subscribe to the EZID newsletter."
+      else:
+        message += "Newsletter option NOT checked." 
       try:
         django.core.mail.send_mail(title, message, P['email'], emails)
 

@@ -798,7 +798,6 @@ class ContactForm(forms.Form):
     ("", _("Choose One")),
     ("account_new", _("I would like to inquire about getting a new account")),
     ("account_existing", _("I have a problem or question about existing account")),
-    ("newsletter", _("I'd like to sign up for the EZID email newsletter")),
     ("other", _("Other")),
   )
   contact_reason = forms.ChoiceField(required=False, choices=CONTACT_REASONS, 
@@ -825,7 +824,7 @@ class ContactForm(forms.Form):
   )
   hear_about = forms.ChoiceField(required=False, choices=REFERRAL_SOURCES,
     label=_("How did you hear about us?"))
-  test = forms.CharField(label="Hidden",required=False, widget=forms.HiddenInput())
+  newsletter = forms.BooleanField(required=False, label=_("Subscribe to the EZID newsletter"))
 
 ################  Password Reset Landing Page ##########
 
