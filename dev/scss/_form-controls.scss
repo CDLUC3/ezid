@@ -71,6 +71,10 @@
 
 }
 
+.fcontrol__text-nofield {
+	// empty
+}
+
 .fcontrol__text-field-inline {
 	@extend %fcontrol-focus;
 	flex: 1 0 auto;
@@ -79,6 +83,19 @@
 	padding: 0.3em 0.5em;
 	border: 1px solid $design-light-gray-border-color;
 	border-radius: $form-element-border-radius;
+}
+
+.fcontrol__text-field-group {
+	// empty
+}
+
+.fcontrol__caption {
+	margin: 12px 0 0;
+}
+
+.fcontrol__textarea-caption {
+	flex: 1 0 auto;
+	margin: 12px 0 0;
 }
 
 // ***** Text Areas ***** //

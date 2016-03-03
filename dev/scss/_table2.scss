@@ -9,8 +9,8 @@
 	thead {
 		display: block;
 		float: left;
-		border-top: 1px solid $design-light-gray-border-color;
-		border-left: 1px solid $design-light-gray-border-color;
+		border-top: 1px solid $design-secondary-color;
+		border-left: 1px solid $design-secondary-color;
 
 		tr {
 			display: block;
@@ -22,9 +22,8 @@
 		display: block;
 		position: relative;
 		padding: 0.5em 30px 0.5em 0.5em;
-		background: $design-secondary-lightest;
+		background: $design-secondary-lighter;
 		text-align: left;
-		cursor: pointer;
 
 		.table__th-link {
 			display: block;
@@ -46,17 +45,17 @@
 	}
 
 	.sorting::before {
-		content: url('../images/sort.png');
+		content: url('../images/sort_brown.png');
 
 	}
 
 	.sort__desc::before {
-		content: url('../images/sort_desc.png');
+		content: url('../images/sort_desc_brown.png');
 
 	}
 
 	.sort__asc::before {
-		content: url('../images/sort_asc.png');
+		content: url('../images/sort_asc_brown.png');
 
 	}
 
@@ -68,7 +67,7 @@
 		tr {
 			display: inline-block;
 			flex: 1 0 auto;
-			border-top: 1px solid $design-light-gray-border-color;
+			border-top: 1px solid $design-secondary-color;
 		}
 
 	}
@@ -84,8 +83,8 @@
 		width: 10em;
 		margin: 0;
 		padding: 0.5em;
-		border-right: 1px solid $design-light-gray-border-color;
-		border-bottom: 1px solid $design-light-gray-border-color;
+		border-right: 1px solid $design-secondary-color;
+		border-bottom: 1px solid $design-secondary-color;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		vertical-align: top;
@@ -133,7 +132,7 @@
 		overflow: visible;
 
 		&:first-child {
-			border-left: 1px solid $design-light-gray-border-color;
+			border-left: 1px solid $design-secondary-color;
 		}
 
 	}

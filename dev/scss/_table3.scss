@@ -9,13 +9,13 @@
 	}
 
 	.table3 thead tr {
-		background: $design-secondary-lightest;
+		background: $design-secondary-lighter;
 	}
 
 	.table3 th,
 	.table3 td {
 		padding: 0.5em;
-		border: 1px solid $design-light-gray-border-color;
+		border: 1px solid $design-secondary-color;
 		vertical-align: top;
 	}
 
@@ -52,12 +52,12 @@
 	}
 
 	.table3 tbody {
-		border: 1px solid $design-light-gray-border-color;
+		border: 1px solid $design-secondary-color;
 
 		tr:nth-child(even) {
-		  border-top: 2px solid $design-light-gray-border-color;
-		  border-bottom: 2px solid $design-light-gray-border-color;
-		  background: $design-secondary-lightest;
+		  border-top: 2px solid $design-secondary-color;
+		  border-bottom: 2px solid $design-secondary-color;
+		  background: $design-secondary-lighter;
 		}
 
 	}
@@ -66,7 +66,7 @@
 		position: relative;
 		margin: 0 0 0 150px;
 		padding: 6px;
-		border-left: 1px solid $design-light-gray-border-color;
+		border-left: 1px solid $design-secondary-color;
 
 		&:before {
 			position: absolute;

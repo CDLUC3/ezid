@@ -12,18 +12,17 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container-fluid">
 
     <h1><a href="index.html">EZID UI Library</a></h1>
 
     <h2>Dashboard Layout</h2>
 
     <!--#include file="includes/header.html" -->
+    <!--#include file="includes/login-menu.html" -->
+</div>
 
-    <div class="heading__primary-container">
-      <h1 class="heading__primary-text">Dashboard</h1>
-    </div>
-
+<div class="container">
  <h2 class="heading__icon-5">User Administration - <span class="capitalized">Manage User Accounts</span></h2>
   <hr/>
   <div role="group" aria-labelledby="fieldset__owner-filter">
@@ -99,7 +98,7 @@
 
   <div class="col-md-6">
   <h2 class="heading__icon-4">Total Identifiers</h2>
-<table class="table2">
+<table class="table2 dashboard__table-identifiers">
 <thead>
 <tr>
 <th>ID Type</th>
@@ -134,7 +133,7 @@
   </div>
   <div class="col-md-8">
   <h2 class="heading__icon-4">Total Identifiers Created By Month</h2>
-<table class="table2">
+<table class="table2 dashboard__table-identifiers">
 <thead>
 <tr>
 <th>Month</th>
@@ -376,9 +375,11 @@
     <!--#include file="includes/pagination.html" -->
 
 
-    <!--#include file="includes/footer_geo-off.html" -->
-  </div>
+</div>
+</div>
 
+<div class="container-fluid">
+    <!--#include file="includes/footer_geo-off.html" -->
 </div>
 	
   <!-- build:js js/main2.min.js -->

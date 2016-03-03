@@ -26,19 +26,36 @@ $heading-icon-spacing: 40px;
 	font-weight: bold;
 }
 
-%heading__icon {
+.heading__noicon {
 	margin: 1em 0;
-	background-repeat: no-repeat;
-	background-position: left center;
-	background-size: 30px;
 	color: $design-primary-color;
 	font-size: 1.2em;
 	font-weight: bold;
 	text-transform: uppercase;
 }
 
-.heading__icon-1 {
+%heading__icon {
+	margin: 1em 0;
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: 30px;
+	color: $design-primary-color;
+	text-transform: uppercase;
+}
+
+%heading__icon-big {
 	@extend %heading__icon;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+%heading__icon-sm {
+	@extend %heading__icon;
+	font-size: 1em;
+}
+
+.heading__icon-1 {
+	@extend %heading__icon-big;
 	padding: 8px 45px;
 	background-image: url('../images/icon_down-arrow.svg');
 	background-position: left -2px center;
@@ -46,57 +63,55 @@ $heading-icon-spacing: 40px;
 }
 
 .heading__icon-2 {
-	@extend %heading__icon;
+	@extend %heading__icon-big;
 	padding: 8px $heading-icon-spacing;
 	background-image: url('../images/dashboardViewReport.svg');
 }
 
 .heading__icon-3 {
-	@extend %heading__icon;
+	@extend %heading__icon-big;
 	padding: 4px $heading-icon-spacing;
 	background-image: url('../images/dashboardUsage.svg');
 }
 
 .heading__icon-4 {
-	@extend %heading__icon;
+	@extend %heading__icon-sm;
 	padding: 10px $heading-icon-spacing;
 	background-image: url('../images/dashboardIDsByMonth.svg');
-	background-position: left 4px center;
-	background-size: 20px;
+	background-position: left 14px center;
+	background-size: 15px;
 }
 
 .heading__icon-5 {
-	@extend %heading__icon;
+	@extend %heading__icon-big;
 	padding: 0 $heading-icon-spacing;
 	background-image: url('../images/dashboardAdmin.svg');
 }
 
 .heading__icon-6 {
-	@extend %heading__icon;
+	@extend %heading__icon-big;
 	padding: 2px $heading-icon-spacing;
 	background-image: url('../images/dashboardBrokenLinks.svg');
 }
 
 .heading__icon-7 {
-	@extend %heading__icon;
-	// padding: 20px $heading-icon-spacing;
-	// background-image: url('../images/searchAdvanced.svg');
+	@extend %heading__icon-big;
 }
 
 .heading__icon-8 {
-	@extend %heading__icon;
+	@extend %heading__icon-big;
 	padding: 15px $heading-icon-spacing;
 	background-image: url('../images/idAboutID.svg');
 }
 
 .heading__icon-9 {
-	@extend %heading__icon;
+	@extend %heading__icon-big;
 	padding: 14px $heading-icon-spacing;
 	background-image: url('../images/idAboutObject.svg');
 }
 
 .heading__icon-10 {
-        @extend %heading__icon;
+        @extend %heading__icon-big;
         padding: 0 $heading-icon-spacing;
         background-image: url('../images/dashboardCrossRef.svg');
 }
