@@ -23,20 +23,22 @@
   height: 15px;
 }
 
-// Links to PDFs (png background image)
-.pdf-link {
-  @extend %link__primary;
-  margin-right: 24px;
-}
+// This doesn't wrap properly. This has been re-implemented in dev/sass/_links.scss 
+//    although the underline border styling still extends too far in this 
+//    latest implementation (2016-03-04)
+// .pdf-link {
+//   @extend %link__primary;
+//   margin-right: 24px;
+// }
 
-.pdf-link:after {
-  position: absolute;
-  top: -0.1em;
-  right: -25px;
-  content: url('/static/images/pdf-icon_18x18.png');
-  width: 15px;
-  height: 15px;
-}
+// .pdf-link:after {
+//   position: absolute;
+//   top: -0.1em;
+//   right: -25px;
+//   content: url('/static/images/pdf-icon_18x18.png');
+//   width: 15px;
+//   height: 15px;
+// }
 
 // Links to PDFs (png background image)
 .ppt-link {
@@ -49,6 +51,21 @@
   top: -0.1em;
   right: -20px;
   content: url('/static/images/powerpoint.svg');
+  width: 15px;
+  height: 15px;
+}
+
+// Links to PDFs (png background image)
+.msword-link {
+  @extend %link__primary;
+  margin-right: 24px;
+}
+
+.msword-link:after {
+  position: absolute;
+  top: -0.1em;
+  right: -20px;
+  content: url('/static/images/word-icon.svg');
   width: 15px;
   height: 15px;
 }

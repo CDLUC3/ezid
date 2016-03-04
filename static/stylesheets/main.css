@@ -2334,17 +2334,6 @@ h2.panel-title > a {
   width: 15px;
   height: 15px; }
 
-.pdf-link {
-  margin-right: 24px; }
-
-.pdf-link:after {
-  position: absolute;
-  top: -0.1em;
-  right: -25px;
-  content: url("/static/images/pdf-icon_18x18.png");
-  width: 15px;
-  height: 15px; }
-
 .ppt-link {
   margin-right: 24px; }
 
@@ -2356,12 +2345,23 @@ h2.panel-title > a {
   width: 15px;
   height: 15px; }
 
-.ext-link, .pdf-link, .ppt-link, .api .reference, .accordion-toggle {
+.msword-link {
+  margin-right: 24px; }
+
+.msword-link:after {
+  position: absolute;
+  top: -0.1em;
+  right: -20px;
+  content: url("/static/images/word-icon.svg");
+  width: 15px;
+  height: 15px; }
+
+.ext-link, .ppt-link, .msword-link, .api .reference, .accordion-toggle {
   position: relative;
   border-bottom: 1px solid #beb6af;
   color: #00778a;
   text-decoration: none; }
-  .ext-link:hover, .pdf-link:hover, .ppt-link:hover, .api .reference:hover, .accordion-toggle:hover {
+  .ext-link:hover, .ppt-link:hover, .msword-link:hover, .api .reference:hover, .accordion-toggle:hover {
     border-bottom: 1px solid #00778a;
     color: #00778a;
     text-decoration: none; }
