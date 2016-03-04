@@ -6,6 +6,14 @@ STANDALONE = True
 SSL = False
 RELOAD_TEMPLATES = True
 
+DATABASES["store"] = {
+  "ENGINE": "django.db.backends.sqlite3",
+  "NAME": os.path.join(SITE_ROOT, "db", "store.sqlite3"),
+  "OPTIONS": { "timeout": 60 }
+}
+SECRET_PATHS.remove(("DATABASES", "store", "HOST"))
+SECRET_PATHS.remove(("DATABASES", "store", "PASSWORD"))
+
 ALLOWED_HOSTS = ["localhost"]
 LOCALIZATIONS = { "default": ("cdl", ["andy.mardesich@ucop.edu"]) }
 LOCALIZATIONS["localhost:8001"] = ("purdue", ["gjanee@ucop.edu"])

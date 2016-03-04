@@ -10,11 +10,23 @@ SSL = False
 
 ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
 
-MYSQL = False
+STORE_MYSQL = False
+if STORE_MYSQL:
+  DATABASES["store"]["HOST"] = "127.0.0.1"
+  SECRET_PATHS.remove(("DATABASES", "store", "HOST"))
+else:
+  DATABASES["store"] = {
+    "ENGINE": "django.db.backends.sqlite3",
+    "NAME": os.path.join(SITE_ROOT, "db", "store.sqlite3"),
+    "OPTIONS": { "timeout": 60 }
+  }
+  SECRET_PATHS.remove(("DATABASES", "store", "HOST"))
+  SECRET_PATHS.remove(("DATABASES", "store", "PASSWORD"))
 
-if MYSQL:
+SEARCH_MYSQL = False
+if SEARCH_MYSQL:
   DATABASES["search"]["HOST"] = "127.0.0.1"
-  del SECRET_PATHS[0]
+  SECRET_PATHS.remove(("DATABASES", "search", "HOST"))
 else:
   DATABASES["search"] = {
     "ENGINE": "django.db.backends.sqlite3",
@@ -22,7 +34,8 @@ else:
     "OPTIONS": { "timeout": 60 },
     "fulltextSearchSupported": False
   }
-  del SECRET_PATHS[0:len(SECRET_PATHS)]
+  SECRET_PATHS.remove(("DATABASES", "search", "HOST"))
+  SECRET_PATHS.remove(("DATABASES", "search", "PASSWORD"))
 
 ALLOWED_HOSTS = ["localhost"]
 LOCALIZATIONS["localhost:8001"] = ("purdue", ["gjanee@ucop.edu"])

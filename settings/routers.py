@@ -3,7 +3,8 @@ class Router (object):
     if model._meta.db_table.startswith("ezidapp_search"):
       return "search"
     else:
-      return None
+      return "store"
   db_for_write = db_for_read
   def allow_migrate (self, db, app_label, model_name=None, **hints):
-    return not ((db == "search") ^ model_name.startswith("search"))
+    return db != "default" and not ((db == "search") ^\
+      (app_label == "ezidapp" and model_name.startswith("search")))

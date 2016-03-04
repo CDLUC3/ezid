@@ -65,12 +65,11 @@ layout:
             xsd/
         db/
             alert_message
-            django.sqlite3
             search.sqlite3 (if using SQLite)
             secret_key
             shoulders_cache.txt
             stats
-            store.sqlite3
+            store.sqlite3 (if using SQLite)
         download/
             public/
         logs/
@@ -127,7 +126,7 @@ Initial setup
 To create the initial databases, assuming the above environment
 variables have been set:
 
-    django-admin migrate
+    django-admin migrate --database=store
     django-admin migrate --database=search
 
     sqlite3 .../SITE_ROOT/db/store.sqlite3 \
