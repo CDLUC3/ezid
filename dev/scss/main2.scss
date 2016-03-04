@@ -39,11 +39,13 @@
 
 // ***** Layouts ***** //
 
+// Account page uses the 'contact' css
 @import 'contact';
 @import 'create';
 @import 'dashboard';
 @import 'home';
 @import 'manage';
+// Pwreset page uses the 'contact' css
 @import 'search';
 @import 'search-results';
 

@@ -66,7 +66,7 @@
                 } else {
                     // Otherwise, just insert the remove button as the
                     // last child element of the form's container:
-                    row.append('<a class="' + options.deleteCssClass + '" href="javascript:void(0)">' + options.deleteText +'</a>');
+                    row.append('<button class="' + options.deleteCssClass + '"></button>');
                 }
                 // Check if we're under the minimum number of forms - not to display delete link at rendering
                 if (!showDeleteLinks()){
@@ -112,7 +112,29 @@
                     if (options.removed) options.removed(row);
                     return false;
                 });
+
+                $('#button__minus-geoloc').click(function() {
+                    var my_parent = $(this).closest('.fieldset-stacked'),
+                        row = my_parent.children('.form-container').last(),
+                        forms;
+                    row.remove();
+                    // Update the TOTAL_FORMS count:
+                    forms = $('.' + options.formCssClass).not('.formset-custom-template');
+                    totalForms.val(forms.length);
+                    for (var i=0, formCount=forms.length; i<formCount; i++) {
+                        // Apply `extraClasses` to form rows so they're nicely alternating:
+                        applyExtraClasses(forms.eq(i), i);
+                        // Also update names and IDs for all child controls (if this isn't
+                        // a delete-able inline formset) so they remain in sequence:
+                        forms.eq(i).find(childElementSelector).each(function() {
+                            updateElementIndex($(this), options.prefix, i);
+                        });
+                    }
+                    return false;
+                });
+
             };
+
 
         $$.each(function(i) {
             var row = $(this),
@@ -183,9 +205,11 @@
                 if (hideAddButton) buttonRow.hide();
                 addButton = buttonRow.find('a');
             } else {
-                // Otherwise, insert it immediately after the last form:
-                $$.filter(':last').after('<a class="' + options.addCssClass + '" href="javascript:void(0)">' + options.addText + '</a>');
-                addButton = $$.filter(':last').next();
+                // Otherwise, insert it immediately before the last form:
+                var button_html = '<button class="' + options.addCssClass + 
+                  '"><span class="button__text">Add</span></button>'
+                $$.filter(':first').before(button_html);
+                addButton = $$.filter(':first').prev();
                 if (hideAddButton) addButton.hide();
             }
             addButton.click(function() {

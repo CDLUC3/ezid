@@ -54,6 +54,10 @@
 	background: url('../images/icon_minus-sign.svg') center / 12px no-repeat, $design-form-element-bg;
 }
 
+.button__minus-hideme {
+	display: none;
+}
+
 .button__text {
 	@extend %hide;
 }
