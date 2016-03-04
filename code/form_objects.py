@@ -58,6 +58,8 @@ PREFIX_SIZE_SET='sizes-size'
 PREFIX_FORMAT_SET='formats-format'
 PREFIX_RIGHTS_SET='rightsList-rights'
 PREFIX_GEOLOC_SET='geoLocations-geoLocation'
+# Translators: "Ex. " is abbreviation for "example". Please include one space at end.
+ABBR_EX = _("Ex. ")
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #                                                                   #
@@ -700,24 +702,23 @@ class BaseSearchIdForm(forms.Form):
   identifier = forms.CharField(required=False, 
     label=_("Identifier/Identifier Prefix"), widget=forms.TextInput(
       attrs={'placeholder': "doi:10.17614/Q44F1NB79"}))
-  # Translators: "Ex." is abbreviation for "example"
   title = forms.CharField(required=False, label=_("Object Title (What)"),
-    widget=forms.TextInput(attrs={'placeholder': _("Ex.") + \
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + \
       "2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone"}))
   creator = forms.CharField(required=False, label=_("Object Creator (Who)"),
     widget=forms.TextInput(attrs={'placeholder': 
-      _("Ex. Pitt Quantum Repository")}))
+      ABBR_EX + _("Pitt Quantum Repository")}))
   publisher = forms.CharField(required=False, label=_("Object Publisher"),
     widget=forms.TextInput(attrs={'placeholder': 
-      _("Ex. University of Pittsburgh")}))
+      ABBR_EX _("University of Pittsburgh")}))
   pubyear_from = forms.RegexField(required=False, label=_("From"),
     regex='^\d{4}$',
     error_messages={'invalid': ERR_4DIGITYEAR },
-    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015")}))
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2015"}))
   pubyear_to = forms.RegexField(required=False, label=_("To"),
     regex='^\d{4}$', 
     error_messages={'invalid': ERR_4DIGITYEAR },
-    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2016")}))
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2016"}))
   object_type = forms.ChoiceField(required=False, choices=RESOURCE_TYPES, 
     label = _("Object Type"))
   ID_TYPES = (
@@ -750,23 +751,23 @@ class BaseSearchIdForm(forms.Form):
 class ManageSearchIdForm(BaseSearchIdForm):
   """ Used for Searching on Manage ID page. Inherits from BaseSearchIdForm """ 
   target = forms.CharField(required=False, label=_("Target URL"),
-    widget=forms.TextInput(attrs={'placeholder': _("Ex. http://pqr.pitt.edu/mol/KQSWENSZQKJHSQ-SCSAIBSYSA-N")}))
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "http://pqr.pitt.edu/mol/KQSWENSZQKJHSQ-SCSAIBSYSA-N"}))
   create_time_from = forms.RegexField(required=False, label=_("From"),
     regex='^\d{4}-\d{2}-\d{2}$',
     error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
-    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015-08-13")}))
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2015-08-13"}))
   create_time_to = forms.RegexField(required=False, label=_("To"),
     regex='^\d{4}-\d{2}-\d{2}$',
     error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
-    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015-08-13")}))
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2015-08-13"}))
   update_time_from = forms.RegexField(required=False, label=_("From"),
     regex='^\d{4}-\d{2}-\d{2}$',
     error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
-    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015-08-13")}))
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2015-08-13"}))
   update_time_to = forms.RegexField(required=False, label=_("To"),
     regex='^\d{4}-\d{2}-\d{2}$',
     error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
-    widget=forms.TextInput(attrs={'placeholder': _("Ex. 2015-08-13")}))
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2015-08-13"}))
   ID_STATUS = (
     ('', _("Select a status")),
     ('public', "Public"),

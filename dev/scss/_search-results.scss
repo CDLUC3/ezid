@@ -18,6 +18,8 @@
 	display: none;
 
 	@include bp(screen2) {
+		// width: 70%;
+		font-size: 1.4em;
 		display: block;
 		margin: 10px 0 0;
 	}
@@ -25,7 +27,6 @@
 
 .search-results__text-strong {
 	margin-right: 12px;
-	font-size: 1.4em;
 	font-weight: bold;
 }
 
@@ -43,6 +44,7 @@
 
 .search-results__simple-button {
 	@extend %button__primary;
+	white-space: nowrap;
 
 	&:last-child {
 		margin: 0 0 0 10px;

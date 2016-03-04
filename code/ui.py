@@ -26,7 +26,7 @@ def contact(request):
   if request.method == "POST":
     P = request.POST
     d['form'] = form_objects.ContactForm(P)
-    if 'url' in P and P['url'] != '':
+    if not 'url' in P or ('url' in P and P['url'] != ''):
       #url is hidden.  If it's filled in then probably a spam bot
       pass 
     elif d['form'].is_valid():
@@ -36,12 +36,12 @@ def contact(request):
         message = 'Sent FROM: ' + request.META['HTTP_REFERER'] +"\r\n\r\n"
       else:
         message = ''
-        message += "Name: " + P['your_name'] + "\r\n\r\n" + \
-          "Email: " + P['email'] + "\r\n\r\n"
+      message += "Name: " + P['your_name'] + "\r\n\r\n" + \
+        "Email: " + P['email'] + "\r\n\r\n"
       if 'affiliation' in P:
         message += "Institution: " +  P['affiliation'] + "\r\n\r\n"
-        message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
-          "Heard about from: " + P['hear_about'] + "\r\n\r\n"
+      message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
+        "Heard about from: " + P['hear_about'] + "\r\n\r\n"
       if 'newsletter' in P and P['newsletter'] == 'on':
         message += "YES, I'd like to subscribe to the EZID newsletter."
       else:
@@ -53,7 +53,7 @@ def contact(request):
         d['form'] = form_objects.ContactForm() # Build an empty form
       except:
         django.contrib.messages.error(request, _("There was a problem sending your email"))
-    elif not d['form'].is_valid() :
+    elif not d['form'].is_valid():
       err = _("Form could not be sent.  Please check the highlighted field(s) below for details.")
       django.contrib.messages.error(request, err)
       # fall through to re-render page; form already contains error info

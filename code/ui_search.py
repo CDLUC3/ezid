@@ -155,10 +155,12 @@ def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
       if id.isUnavailable and id.unavailableReason != "":
         result["c_id_status"] += " | " + id.unavailableReason
       d['results'].append(result)
-    if isPublicSearch: 
-      d['heading_title'] = _("Showing ") + str(rec_beg + 1)  + _(" to ") + \
-        str(min(rec_end, d['total_results'])) + _(" of ") + d['total_results_str'] + \
-        _(" Search Results")
+    if isPublicSearch:
+      rec_range = '0' 
+      if d['total_results'] > 0:
+        rec_range = str(rec_beg + 1) +  " " + _("to") +  " " +\
+           str(min(rec_end, d['total_results'])) + " " + _("of") + " " +  d['total_results_str']
+      d['heading_title'] = _("Showing") +  " " + rec_range + " " +  _("Search Results")
       d['search_query'] = _buildQuerySyntax(c)
     else:
       d['heading_title'] = _("Your Identifiers") + " (" + d['total_results_str'] + ")"
@@ -171,7 +173,7 @@ def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
       errors = d['form'].errors['__all__']
       for e in errors:
         all_errors += e 
-      django.contrib.messages.error(request, _("Could not complete search.   ") + all_errors)
+      django.contrib.messages.error(request, _("Could not complete search.") + "   " + all_errors)
     else:
       err = _("Could not complete search.  Please check the highlighted fields below for details.")
       django.contrib.messages.error(request, err) 

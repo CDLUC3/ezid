@@ -14,7 +14,9 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <p>{% trans "You may choose up to 8 informational columns to customize the browsing view for your identifiers." %}</p>
+          <p>{% blocktrans with field_count=field_order|length %}
+          You may choose up to {{ field_count }} informational columns to customize the browsing view for your identifiers.
+          {% endblocktrans %}</p>
           {% column_choices field_order fields_mapped fields_selected %}
         </div>
           {% rewrite_hidden_nocols REQUEST field_order %}
