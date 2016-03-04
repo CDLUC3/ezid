@@ -10,10 +10,12 @@
 	}
 
 	&[href$='.pdf']:after {
-		position: absolute;
-		right: -25px;
-		width: 15px;
-		height: 15px;
+		display: inline-block;
+		position: relative;
+		top: 5px;
+		right: 4px;
+		left: 4px;
+		margin-right: 4px;
 		content: url('../images/pdf-icon_18x18.png');
 	}
 

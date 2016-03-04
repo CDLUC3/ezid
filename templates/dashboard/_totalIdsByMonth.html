@@ -1,0 +1,39 @@
+{% load layout_extras %}
+{% load i18n %}
+
+  <div class="col-md-8">
+  <h2 class="heading__icon-4">{% trans "Total Identifiers Created By Month" %}</h2>
+<table class="table2">
+<thead>
+<tr>
+<th>{% trans "Month" %}</th>
+<th>ARKs</th>
+<th>DOIs</th>
+<th>URNs</th>
+</tr>
+</thead>
+<tbody>
+
+{% for row in report %}
+<tr>
+<td>{{row.0}}</td>
+<td>
+  {{row.1}}
+  <span class="pct">({{row.2}})</span>
+</td>
+<td>
+  {{row.3}}
+  <span class="pct">({{row.4}})</span>
+</td>
+<td>
+  {{row.5}}
+  <span class="pct">({{row.6}})</span>
+</td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+<p>* {% trans "Statistics calculated on" %} {{last_tally}}.</p>
+</div>
+
