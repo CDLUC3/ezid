@@ -706,11 +706,9 @@ class BaseSearchIdForm(forms.Form):
     widget=forms.TextInput(attrs={'placeholder': ABBR_EX + \
       "2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone"}))
   creator = forms.CharField(required=False, label=_("Object Creator (Who)"),
-    widget=forms.TextInput(attrs={'placeholder': 
-      ABBR_EX + _("Pitt Quantum Repository")}))
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + _("Pitt Quantum Repository")}))
   publisher = forms.CharField(required=False, label=_("Object Publisher"),
-    widget=forms.TextInput(attrs={'placeholder': 
-      ABBR_EX _("University of Pittsburgh")}))
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + _("University of Pittsburgh")}))
   pubyear_from = forms.RegexField(required=False, label=_("From"),
     regex='^\d{4}$',
     error_messages={'invalid': ERR_4DIGITYEAR },

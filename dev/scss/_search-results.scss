@@ -18,10 +18,9 @@
 	display: none;
 
 	@include bp(screen2) {
-		// width: 70%;
-		font-size: 1.4em;
 		display: block;
 		margin: 10px 0 0;
+		font-size: 1.4em;
 	}
 }
 
