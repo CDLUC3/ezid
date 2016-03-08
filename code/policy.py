@@ -22,6 +22,7 @@ import ezidadmin
 import log
 import shoulder
 import useradmin
+import util2
 
 # Below, _groups maps groups (identified by 2- or 3-tuples; see NOTES)
 # to 4-tuples (shoulders, crossrefEnabled, crossrefMail,
@@ -31,7 +32,6 @@ import useradmin
 # string email addresses.
 
 _lock = threading.Lock()
-_testShoulders = None
 _groups = None
 _coOwners = None
 _reverseCoOwners = None
@@ -42,11 +42,10 @@ _adminUsername = None
 _adminPassword = None
 
 def _loadConfig ():
-  global _testShoulders, _groups, _coOwners, _reverseCoOwners, _ldapEnabled
+  global _groups, _coOwners, _reverseCoOwners, _ldapEnabled
   global _ldapServer, _userDnTemplate, _adminUsername, _adminPassword
   _lock.acquire()
   try:
-    _testShoulders = None
     _groups = {}
     _coOwners = {}
     _reverseCoOwners = None
@@ -173,30 +172,6 @@ def clearGroupCache (group):
       if g[0] == group:
         del _groups[g]
         break
-  finally:
-    _lock.release()
-
-def _getTestShoulders ():
-  global _testShoulders
-  _lock.acquire()
-  try:
-    if _testShoulders is None:
-      _testShoulders = []
-      s = shoulder.getArkTestShoulder()
-      try:
-        assert s is not None, "no ARK test shoulder"
-      except AssertionError, e:
-        log.otherError("policy._getTestShoulders", e)
-      else:
-        _testShoulders.append(s)
-      s = shoulder.getDoiTestShoulder()
-      try:
-        assert s is not None, "no DOI test shoulder"
-      except AssertionError, e:
-        log.otherError("policy._getTestShoulders", e)
-      else:
-        _testShoulders.append(s)
-    return _testShoulders
   finally:
     _lock.release()
 
@@ -327,8 +302,7 @@ def authorizeCreate (user, group, identifier):
   just a shoulder; in either case it must be qualified, e.g.,
   "doi:10.5060/".  Throws an exception on error.
   """
-  if any(map(lambda s: identifier.startswith(s.key), _getTestShoulders())):
-    return True
+  if util2.isTestIdentifier(identifier): return True
   if any(map(lambda s: identifier.startswith(s.key), _getShoulders(group))):
     return True
   return False

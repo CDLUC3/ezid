@@ -15,6 +15,7 @@
 
 import django.db.models
 
+import util
 import validation
 
 class Datacenter (django.db.models.Model):
@@ -24,7 +25,7 @@ class Datacenter (django.db.models.Model):
     abstract = True
 
   symbol = django.db.models.CharField(
-    max_length=validation.maxDatacenterSymbolLength, unique=True,
+    max_length=util.maxDatacenterSymbolLength, unique=True,
     validators=[validation.datacenterSymbol])
   # The datacenter's so-called symbol, e.g., "CDL.BUL".
 

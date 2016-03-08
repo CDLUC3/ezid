@@ -26,9 +26,9 @@ import urllib
 import config
 import datacite
 import mapping
-import shoulder
 import store
 import util
+import util2
 
 _enabled = None
 _baseUrl = None
@@ -36,36 +36,19 @@ _repositoryName = None
 _adminEmail = None
 _batchSize = None
 _lock = threading.Lock()
-_testShoulders = None
 
 def _loadConfig ():
   global _enabled, _baseUrl, _repositoryName, _adminEmail, _batchSize
-  global _testShoulders
   _enabled = (config.get("oai.enabled").lower() == "true")
   _baseUrl = config.get("DEFAULT.ezid_base_url")
   _repositoryName = config.get("oai.repository_name")
   _adminEmail = config.get("oai.admin_email")
   _batchSize = int(config.get("oai.batch_size"))
   _lock.acquire()
-  _testShoulders = None
   _lock.release()
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
-
-def _getTestShoulders ():
-  global _testShoulders
-  _lock.acquire()
-  try:
-    if _testShoulders is None:
-      _testShoulders = []
-      s = shoulder.getArkTestShoulder()
-      if s is not None: _testShoulders.append(s.key)
-      s = shoulder.getDoiTestShoulder()
-      if s is not None: _testShoulders.append(s.key)
-    return _testShoulders
-  finally:
-    _lock.release()
 
 def _defaultTarget (identifier):
   return "%s/id/%s" % (_baseUrl, urllib.quote(identifier, ":/"))
@@ -77,7 +60,7 @@ def isVisible (identifier, metadata):
   e.g., "doi:10.5060/FOO".  'metadata' should be the identifier's
   metadata as a dictionary.
   """
-  if any(identifier.startswith(s) for s in _getTestShoulders()): return False
+  if util2.isTestIdentifier(identifier): return False
   # Well, isn't this subtle and ugly: this function gets called by the
   # 'store' module, in which case the metadata dictionary contains
   # noid commands to *change* metadata values, not the final stored

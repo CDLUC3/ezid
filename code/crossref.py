@@ -32,9 +32,9 @@ import idmap
 import log
 import policy
 import search_util
-import shoulder
 import userauth
 import util
+import util2
 
 _enabled = None
 _depositorName = None
@@ -45,7 +45,6 @@ _depositUrl = None
 _resultsUrl = None
 _username = None
 _password = None
-_doiTestShoulder = None
 _daemonEnabled = None
 _threadName = None
 _idleSleep = None
@@ -53,7 +52,7 @@ _ezidUrl = None
 
 def _loadConfig ():
   global _enabled, _depositorName, _depositorEmail, _realServer, _testServer
-  global _depositUrl, _resultsUrl, _username, _password, _doiTestShoulder
+  global _depositUrl, _resultsUrl, _username, _password
   global _daemonEnabled, _threadName, _idleSleep, _ezidUrl
   _enabled = (config.get("crossref.enabled").lower() == "true")
   _depositorName = config.get("crossref.depositor_name")
@@ -64,13 +63,6 @@ def _loadConfig ():
   _resultsUrl = config.get("crossref.results_url")
   _username = config.get("crossref.username")
   _password = config.get("crossref.password")
-  s = shoulder.getDoiTestShoulder()
-  if s != None:
-    assert s.key.startswith("doi:")
-    _doiTestShoulder = s.key[4:]
-  else:
-    # Shoulder never happen.
-    _doiTestShoulder = "10.????"
   _idleSleep = int(config.get("daemons.crossref_processing_idle_sleep"))
   _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
     config.get("daemons.crossref_enabled").lower() == "true")
@@ -182,9 +174,6 @@ def validateBody (body):
   except Exception, e:
     assert False, "XML serialization error: " + str(e)
 
-def _isTestIdentifier (doi):
-  return doi.startswith(_doiTestShoulder)
-
 # In the CrossRef deposit schema, version 4.3.4, the <doi_data>
 # element can occur in 20 different places.  An analysis shows that
 # the resource title corresponding to the DOI being defined can be
@@ -244,7 +233,7 @@ def _buildDeposit (body, registrant, doi, targetUrl, withdrawTitles=False,
   lxml.etree.SubElement(head, q("registrant")).text = registrant
   e = lxml.etree.SubElement(root, q("body"))
   del body.attrib[_schemaLocation]
-  if _isTestIdentifier(doi): doiElement.text = _crossrefTestPrefix + doi
+  if util2.isTestDoi(doi): doiElement.text = _crossrefTestPrefix + doi
   if withdrawTitles:
     for p in _titlePaths:
       for t in doiData.xpath(p, namespaces=ns): t.text = "WITHDRAWN: " + t.text
@@ -310,7 +299,7 @@ def _submitDeposit (deposit, batchId, doi):
     ("login_id", _username), ("login_passwd", _password),
     ("fname", batchId + ".xml", "application/xml; charset=UTF-8",
     deposit.encode("UTF-8")))
-  url = _depositUrl % (_testServer if _isTestIdentifier(doi) else _realServer)
+  url = _depositUrl % (_testServer if util2.isTestDoi(doi) else _realServer)
   try:
     c = None
     try:
@@ -366,7 +355,7 @@ def _pollDepositStatus (batchId, doi):
     ...
   """
   if not _enabled: return ("completed successfully", None)
-  url = _resultsUrl % (_testServer if _isTestIdentifier(doi) else _realServer)
+  url = _resultsUrl % (_testServer if util2.isTestDoi(doi) else _realServer)
   try:
     c = None
     try:

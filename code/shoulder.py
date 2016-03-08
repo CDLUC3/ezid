@@ -197,12 +197,3 @@ def getDoiTestShoulder ():
   defined).
   """
   return _doiTestShoulder
-
-@_loadAndLock
-def getAgentShoulder ():
-  """
-  Returns the agent shoulder as a shoulder_parser.Entry object (or
-  None in the erroneous and exceptional case that the shoulder isn't
-  defined).
-  """
-  return _agentShoulder
