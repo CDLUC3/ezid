@@ -27,8 +27,9 @@
   </div>
 {% if report|length > 0 %}
 
-{% comment include "dashboard/_totalIds.html" %}
-include "dashboard/_totalIdsByMonth.html"
+{% include "dashboard/_totalIds.html" %}
+{% include "dashboard/_totalIdsByMonth.html" %}
+{% comment     include "dashboard/_totalIds.html" %}
 {% endcomment %}
 
 {% else %}
@@ -37,6 +38,7 @@ include "dashboard/_totalIdsByMonth.html"
   <div class="col-md-12">
     <hr/>
     <h2 class="heading__icon-6">{% trans "Identifier Issues" %}</h2>
+{% include "search/_results.html" with primary_page="ui_admin.dashboard" %}
     <h2 class="heading__icon-10">{% trans "CrossRef&reg; Submission Status" %}</h2>
   </div>
 </div>

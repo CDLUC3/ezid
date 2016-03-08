@@ -8,45 +8,60 @@ import useradmin
 import locale
 locale.setlocale(locale.LC_ALL, '')
 
+# Search is executed from the following areas, and these names determine search parameters:
+# Public Search:               ui_search   "public"
+# Manage:                      ui_manage   "manage"
+# Dashboard - ID Issues:       ui_admin    "id_issues"
+# Dashboard - CrossRef Status: ui_admin    "crossref"
+
 # Form fields from search are defined in code/form_objects.py.
 # Corresponding fields used for column display include a 'c_' prefix.
 
-# these are layout properties for the fields in the search and manage results pages,
+#######     LAYOUT PROPERTIES     #########
 # if I had realized there were going to be so many properties up front, I probably would
 # have created a field layout object with a number of properties instead.
 
 # Column IDs mapped to 1) DB constraints names and 2) UI display
 FIELDS_MAPPED = {
-  'c_create_time': ['createTime',             _("ID Date Created")], 
-  'c_identifier':  ['identifier',             _("Identifier")], 
-  'c_title':       ['resourceTitle',          _("Object Title")], 
-  'c_creator':     ['resourceCreator',        _("Object Creator")],
-  'c_owner':       ['owner',                  _("ID Owner")],
-  'c_publisher':   ['resourcePublisher',      _("Object Publisher")],
-  'c_pubyear':     ['resourcePublicationYear', _("Object Publication Date")],
-  'c_object_type': ['resourceType',           _("Object Type")],
-  'c_id_status':   ['status',                 _("ID Status")],
-  'c_update_time': ['updateTime',             _("ID Date Last Modified")]
+  'c_create_time':        ['createTime',            _("ID Date Created")], 
+  'c_crossref_submitted': ['createTime',            _("Date Submitted")], # same as above, labelled difftly
+  'c_identifier':         ['identifier',            _("Identifier")], 
+  'c_title':              ['resourceTitle',         _("Object Title")], 
+  'c_creator':            ['resourceCreator',       _("Object Creator")],
+  'c_owner':              ['owner',                 _("ID Owner")],
+  'c_publisher':          ['resourcePublisher',     _("Object Publisher")],
+  'c_pubyear':            ['resourcePublicationYear', _("Object Publication Date")],
+  'c_object_type':        ['resourceType',          _("Object Type")],
+  'c_id_status':          ['status',                _("ID Status")],
+  'c_update_time':        ['updateTime',            _("ID Date Last Modified")],
+  'c_id_issue':           ['hasIssues',             _("Issue")],
+  'c_crossref':           ['crossref',              _("Is CrossRef")]
 }
 
 #how to display each field, these are in custom tags for these display types
 FIELD_DISPLAY_TYPES = {
-  'c_create_time': 'datetime', 'c_identifier': 'identifier',  'c_title': 'string',\
-  'c_creator' : 'string', 'c_owner': 'string', 'c_publisher': 'string',\
+  'c_create_time': 'datetime', 'c_crossref_submitted': 'datetime', 'c_identifier': 'identifier',
+  'c_title': 'string', 'c_creator' : 'string', 'c_owner': 'string', 'c_publisher': 'string',\
   'c_pubyear': 'string', 'c_object_type': 'string', 'c_id_status' :'string',\
-  'c_update_time': 'datetime'
+  'c_update_time': 'datetime', 'c_id_issue': 'string', 'c_crossref': 'string'
 }
 
 # priority for the sort order if it is not set, choose the first field that exists in this order
 FIELD_DEFAULT_SORT_PRIORITY = ['c_update_time', 'c_identifier', 'c_create_time', \
                 'c_owner', 'c_title', 'c_creator', 'c_id_status']
 
-# The order to display fields both in the customize check boxes and the columns
-SEARCH_FIELD_ORDER = ['c_title', 'c_creator', 'c_identifier', 'c_publisher', \
-               'c_pubyear', 'c_object_type']
-MANAGE_FIELD_ORDER = ['c_title', 'c_creator', 'c_identifier', 'c_owner', 'c_create_time',\
-               'c_update_time', 'c_publisher', 'c_pubyear', \
-               'c_object_type', 'c_id_status']
+# Columns to choose from for given search pages
+_fieldOrderByType = {
+  'public':
+          ['c_title', 'c_creator', 'c_identifier', 'c_publisher', 'c_pubyear', 'c_object_type'],
+  'manage':
+          ['c_title', 'c_creator', 'c_identifier', 'c_owner', 'c_create_time', 'c_update_time',\
+           'c_publisher', 'c_pubyear', 'c_object_type', 'c_id_status'],
+  'id_issues':   # fixed
+          ['c_identifier', 'c_id_issue', 'c_title', 'c_update_time'],
+  'crossref':    # fixed
+          ['c_identifier', 'c_crossref_submitted', 'c_crossref']
+}
 
 # The default selected fields for display if custom fields haven't been defined
 SEARCH_FIELD_DEFAULTS = ['c_title', 'c_creator', 'c_identifier', 'c_publisher', \
@@ -55,14 +70,7 @@ SEARCH_FIELD_DEFAULTS = ['c_title', 'c_creator', 'c_identifier', 'c_publisher', 
 MANAGE_FIELD_DEFAULTS = ['c_title', 'c_creator', 'c_identifier', 'c_owner', 'c_create_time',\
                'c_update_time', 'c_id_status']
 
-
 IS_ASCENDING = {'asc': True, 'desc': False }
-
-def _getFieldOrder(isPublicSearch):
-  return SEARCH_FIELD_ORDER if isPublicSearch else MANAGE_FIELD_ORDER
-
-def _getFieldDefaults(isPublicSearch):
-  return SEARCH_FIELD_DEFAULTS if isPublicSearch else MANAGE_FIELD_DEFAULTS
 
 def queryDict(request):
   """
@@ -104,13 +112,13 @@ def results(request):
   d = search(d, request)
   return uic.render(request, 'search/results', d)
 
-def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
+def search(d, request, noConstraintsReqd=False, s_type="public"):
   """ 
   Run query and organize result set for UI, used for both Search page and 
   Manage Search page, the latter of which works with slightly larger set of constraints.
-  * noConstraintsReqd==True is used by manage page, to provide a result set even though 
-    form itself is unbound/unvalidated.
-  * If isPublicSearch==True, don't include owner credentials in constraints.
+  * noConstraintsReqd==True is used by pages that don't require form validation (dashboard, and
+    manage page, whose form is unbound/unvalidated if nothing has been entered/posted.
+  * If s_type=="public", don't include owner credentials in constraints.
   * 'filtered' means form fields have been submitted w/a search request 
     (nice to know this for the manage page)
   """
@@ -119,14 +127,17 @@ def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
   else:
     REQUEST = request.POST
   d['REQUEST'] = REQUEST 
-  d = _pageLayout(d, REQUEST, isPublicSearch)
-  if d['form'].is_valid() or noConstraintsReqd:
+  d = _pageLayout(d, REQUEST, s_type)
+  if noConstraintsReqd or 'form' in d and d['form'].is_valid():
     # Build dictionary of search constraints
-    c = _buildAuthorityConstraints(request, isPublicSearch)
-    q = d['queries'] if 'queries' in d and d['queries'] else REQUEST
-    if d['filtered']:
-      c = _buildConstraints(c, q, isPublicSearch)
-      c = _buildTimeConstraints(c, q, isPublicSearch)
+    c = _buildAuthorityConstraints(request, s_type)
+    if s_type in ('public', 'manage'):
+      q = d['queries'] if 'queries' in d and d['queries'] else REQUEST
+      if d['filtered']:
+        c = _buildConstraints(c, q, s_type)
+        c = _buildTimeConstraints(c, q, s_type)
+    else:
+      c['hasIssues'] = True
     d['total_results'] = search_util.formulateQuery(c).count()
     d['total_results_str'] = format(d['total_results'], "n") 
     d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
@@ -138,24 +149,34 @@ def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
     # ToDo:  Add in ownership constraints (user, proxy, etc)
     rec_beg = (d['p']-1)*d['ps']
     rec_end = d['p']*d['ps']
-    for id in search_util.formulateQuery(c, orderBy=orderColumn)\
-      [rec_beg:rec_end]:
-      result = {
-        "c_create_time": id.createTime,
-        "c_identifier": id.identifier,
-        "c_title": id.resourceTitle,
-        "c_creator": id.resourceCreator,
-        "c_owner": id.owner.username,
-        "c_object_type": id.resourceType,
-        "c_publisher": id.resourcePublisher,
-        "c_pubyear": id.resourcePublicationDate,
-        "c_id_status": id.get_status_display(),
-        "c_update_time": id.updateTime,
-      }
-      if id.isUnavailable and id.unavailableReason != "":
-        result["c_id_status"] += " | " + id.unavailableReason
+    for id in search_util.formulateQuery(c, orderBy=orderColumn)[rec_beg:rec_end]:
+      if s_type in ('public', 'manage'):
+        result = {
+          "c_create_time": id.createTime,
+          "c_identifier": id.identifier,
+          "c_title": id.resourceTitle,
+          "c_creator": id.resourceCreator,
+          "c_owner": id.owner.username,
+          "c_object_type": id.resourceType,
+          "c_publisher": id.resourcePublisher,
+          "c_pubyear": id.resourcePublicationDate,
+          "c_id_status": id.get_status_display(),
+          "c_update_time": id.updateTime,
+        }
+        if id.isUnavailable and id.unavailableReason != "":
+          result["c_id_status"] += " | " + id.unavailableReason
+      else:
+        result = {
+          "c_identifier": id.identifier,
+          "c_id_issue": "",
+          "c_title": id.resourceTitle,
+          "c_update_time": id.updateTime,
+        }
+        # if id.hasIssues and id.issueReasons:
+        #  result["c_id_issue"] += ";".join(id.issueReasons)
       d['results'].append(result)
-    if isPublicSearch:
+    # end of result iteration loop 
+    if s_type == "public":
       rec_range = '0' 
       if d['total_results'] > 0:
         rec_range = str(rec_beg + 1) +  " " + _("to") +  " " +\
@@ -180,7 +201,7 @@ def search(d, request, noConstraintsReqd=False, isPublicSearch=True):
     d['search_success'] = False 
   return d
 
-def _pageLayout(d, REQUEST, isPublicSearch=True):
+def _pageLayout(d, REQUEST, s_type="public"):
   """
   Track user preferences for selected fields, field order, page, and page size
   """
@@ -188,15 +209,18 @@ def _pageLayout(d, REQUEST, isPublicSearch=True):
   d['testPrefixes'] = uic.testPrefixes
   d['fields_mapped'] = FIELDS_MAPPED
   d['field_display_types'] = FIELD_DISPLAY_TYPES
-  f_order = _getFieldOrder(isPublicSearch)
-  f_defaults = _getFieldDefaults(isPublicSearch)
-  d['jquery_checked'] = ','.join(['#' + x for x in list(set(f_order) & set(f_defaults))])
-  d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(f_order) - set(f_defaults))])
+  f_order = _fieldOrderByType[s_type] 
   d['field_order'] = f_order 
-  d['field_defaults'] = f_defaults 
-  # ToDo: Map fields appropriately from both customize and from Search Query
-  d['fields_selected'] = [x for x in f_order if x in REQUEST ]
-  if len(d['fields_selected']) < 1: d['fields_selected'] = f_defaults 
+
+  if s_type in ("id_issues", "crossref"):
+    d['fields_selected'] = f_order 
+  else:
+    f_defaults = SEARCH_FIELD_DEFAULTS if s_type == 'public' else MANAGE_FIELD_DEFAULTS
+    d['jquery_checked'] = ','.join(['#' + x for x in list(set(f_order) & set(f_defaults))])
+    d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(f_order) - set(f_defaults))])
+    d['field_defaults'] = f_defaults 
+    d['fields_selected'] = [x for x in f_order if x in REQUEST ]
+    if len(d['fields_selected']) < 1: d['fields_selected'] = f_defaults 
 
   #ensure sorting defaults are set
   if 'order_by' in REQUEST and REQUEST['order_by'] in d['fields_selected']:
@@ -217,18 +241,18 @@ def _pageLayout(d, REQUEST, isPublicSearch=True):
   if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
   return d
 
-def _buildAuthorityConstraints(request, isPublicSearch=True):
+def _buildAuthorityConstraints(request, s_type="public"):
   """ 
   A logged in user can use (public) Search page, but this would not limit the
   results to just their IDs. It would also include all public IDs.
   """
-  if isPublicSearch or "auth" not in request.session:
+  if s_type == "public" or "auth" not in request.session:
     c = {'publicSearchVisible': True}
   else:
     c = {'owner': request.session['auth'].user[0]}
   return c
 
-def _buildConstraints(c, REQUEST, isPublicSearch=True):
+def _buildConstraints(c, REQUEST, s_type="public"):
   """ Map form field values to values defined in DB model.
       Manage Page includes additional elements. 
       Convert unicode True/False to actual boolean."""
@@ -236,7 +260,7 @@ def _buildConstraints(c, REQUEST, isPublicSearch=True):
     'id_type': 'identifierType', 'title': 'resourceTitle', 
     'creator': 'resourceCreator', 'publisher': 'resourcePublisher', 
     'object_type': 'resourceType'}
-  if not isPublicSearch:
+  if s_type != "public":
     cmap_managePage = {'target': 'target', 'id_status': 'status',
       'harvesting': 'exported', 'hasMetadata': 'hasMetadata'}
     cmap.update(cmap_managePage)
@@ -248,10 +272,10 @@ def _buildConstraints(c, REQUEST, isPublicSearch=True):
       else:                          c[v] = REQUEST[k]
   return c
 
-def _buildTimeConstraints(c, REQUEST, isPublicSearch=True):
+def _buildTimeConstraints(c, REQUEST, s_type="public"):
   """ Add any date related constraints """
   c = _timeConstraintBuilder(c, REQUEST, 'resourcePublicationYear', 'pubyear_from', 'pubyear_to')
-  if not isPublicSearch:
+  if s_type != "public":
     c = _timeConstraintBuilder(c, REQUEST, 'createTime', 'create_time_from', 'create_time_to')
     c = _timeConstraintBuilder(c, REQUEST, 'updateTime', 'update_time_from', 'update_time_to')
   return c

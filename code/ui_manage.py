@@ -24,7 +24,6 @@ FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") +\
 def index(request):
   """ Manage Page, listing all Ids owned by user """
   d = { 'menu_item' : 'ui_manage.index' }
-  isPublicSearch=False
   d['coowners'] = policy.getReverseCoOwners(request.session["auth"].user[0])
   if request.method == "GET":
     d['queries'] = ui_search.queryDict(request)
@@ -35,7 +34,7 @@ def index(request):
     d['filtered'] = True 
     d['form'] = form_objects.ManageSearchIdForm(request.POST)
     noConstraintsReqd = False
-  d = ui_search.search(d, request, noConstraintsReqd, isPublicSearch)
+  d = ui_search.search(d, request, noConstraintsReqd, "manage")
   return uic.render(request, 'manage/index', d)
 
 def _getLatestMetadata(identifier, request):
@@ -55,7 +54,7 @@ def _getLatestMetadata(identifier, request):
 def _updateEzid(request, d, stts, m_to_upgrade=None):
   """
   Takes data from form fields in /manage/edit and applies them to IDs metadata
-  If _id_metadata is specified, converts record to advanced datacite 
+  If m_to_upgrade is specified, converts record to advanced datacite 
   Returns ezid.setMetadata (successful return is the identifier string)
   Also removes tags related to old profile if converting to advanced datacite
   """

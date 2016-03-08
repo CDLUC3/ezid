@@ -1,18 +1,20 @@
 {% load manage_form_tags %}
 {% load i18n %}
 
-<div class="customize-table">
-  <form class="customize-table__heading-wrapper" action="{% url primary_page %}" role="form">
-    <h2 class="customize-table__heading">{{ heading_title }}</h2>
-    {% if primary_page == "ui_manage.index" and filtered %}
-    <button class="customize-table__button-all">{% trans "See All" %}</button>
+{% if primary_page == "ui_search.index" or primary_page == "ui_manage.index" and session.auth %}
+  <div class="customize-table">
+    <form class="customize-table__heading-wrapper" action="{% url primary_page %}" role="form">
+      <h2 class="customize-table__heading">{{ heading_title }}</h2>
+      {% if primary_page == "ui_manage.index" and filtered %}
+      <button class="customize-table__button-all">{% trans "See All" %}</button>
+      {% endif %}
+    </form>
+    {% if results|length > 0 %}
+    <button class="customize-table__button-customize" data-toggle="modal" data-target="#myModal">{% trans "Customize View" %}</button>
     {% endif %}
-  </form>
-  {% if results|length > 0 %}
-  <button class="customize-table__button-customize" data-toggle="modal" data-target="#myModal">{% trans "Customize View" %}</button>
-  {% endif %}
-</div>
-{% include "search/_choose_cols.html" with primary_page=primary_page %}
+  </div>
+  {% include "search/_choose_cols.html" with primary_page=primary_page %}
+{% endif %}
 
 {% if primary_page == "ui_manage.index" and session.auth %}
 <div class="manage__identifiers-submit-controls">
