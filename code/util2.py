@@ -59,6 +59,20 @@ def isTestIdentifier (identifier):
   return identifier.startswith(_arkTestPrefix) or\
     identifier.startswith(_doiTestPrefix)
 
+def isTestArk (identifier):
+  """
+  Returns True if the supplied unqualified ARK (e.g., "12345/foo") is
+  a test identifier.
+  """
+  return identifier.startswith(_arkTestPrefix[5:])
+
+def isTestDoi (identifier):
+  """
+  Returns True if the supplied unqualified DOI (e.g., "10.1234/FOO")
+  is a test identifier.
+  """
+  return identifier.startswith(_doiTestPrefix[4:])
+
 def defaultProfile (identifier):
   """
   Returns the label of the default metadata profile (e.g., "erc") for

@@ -385,14 +385,15 @@ def _validateMetadata1 (identifier, user, metadata):
     e = "_t" if identifier.startswith("ark:/") else "_st"
     t = metadata["_target"].strip()
     if t != "":
-      # The following matches the validation done by the forthcoming
-      # Identifier model.
+      # The following matches the validation and normalization done by
+      # the forthcoming Identifier model.
       try:
         assert len(t) <= 2000
         django.core.validators.URLValidator()(t)
       except:
         return "invalid target URL"
-      metadata[e] = t
+      scheme, rest = t.split(":", 1)
+      metadata[e] = "%s:%s" % (scheme.lower(), rest)
     else:
       metadata[e] = _defaultTarget(identifier)
     del metadata["_target"]

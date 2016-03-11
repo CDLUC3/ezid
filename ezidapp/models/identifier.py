@@ -317,6 +317,10 @@ class Identifier (django.db.models.Model):
           { "crossrefMessage": "Non-DOI identifier has nonempty " +\
           "CrossRef message." })
     if self.target == "": self.target = self.defaultTarget
+    # Per RFC 3986, URI schemes are case-insensitive, but some systems
+    # we interact with require the scheme to be lowercase.
+    scheme, rest = self.target.split(":", 1)
+    self.target = "%s:%s" % (scheme.lower(), rest)
     if self.profile == None: self.profile = self.defaultProfile
     for k, v in self.cm.items():
       if k.strip() != k or k == "" or k.startswith("_"):
