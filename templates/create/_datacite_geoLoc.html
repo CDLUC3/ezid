@@ -13,14 +13,7 @@
 <div id="geoloc_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="geoLocations-geoLocation">
   <div class="fieldset-controls__container">
     <div id="descriptions-description" class="fieldset-controls__legend create__nested-legend">{% trans "Geolocation" %}</div>
-    <div class="fieldset-controls__buttons">
-      <button id="button__plus-geoloc" class="button__plus" type="button">
-        <span class="button__text">{% trans "Add" %}</span>
-      </button>
-      <button id="button__minus-geoloc" class="button__minus" type="button">
-        <span class="button__text">{% trans "Remove" %}</span>
-      </button>
-    </div>
+  {% include "create/_datacite_buttons.html" with element="geoloc" %}
   </div>
 {% for form in form.geoloc_set %}
   <div class="form-container">

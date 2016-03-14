@@ -5,7 +5,6 @@
 {{ form.nonrepeating_form.non_field_errors }}
 {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.target %}
 
-{% include "create/_datacite_geoLoc.html" %}
 {% include "create/_datacite_creator.html" %}
 {% include "create/_datacite_title.html" %}
 
@@ -26,3 +25,4 @@
 {% comment %}Put (nonrepeating) Version here{% endcomment %}
 {% comment %}Put Rights set      here{% endcomment %}
 
+{% include "create/_datacite_geoLoc.html" %}

@@ -1,20 +1,22 @@
-{% load layout_extras %}
 {% load i18n %}
+<script type="text/javascript">
+  $(function() {
+    $('#creator_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.creator_set.prefix }}',
+      deleteCssId: 'button__minus-creator',
+      addCssId: 'button__plus-creator'
+    });
+  })
+</script>
 
-{{ form.creator_set.management_form }}
-<div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="creators-creator">
+<div id="creator_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="creators-creator">
   <div class="fieldset-controls__container">
     <div id="creators-creator" class="fieldset-controls__legend create__nested-legend">{% trans "Creator" %}</div>
-    <div class="fieldset-controls__buttons">
-      <button class="button__plus">
-        <span class="button__text">{% trans "Add" %}</span>
-      </button>
-      <button class="button__minus">
-        <span class="button__text">{% trans "Remove" %}</span>
-      </button>
-    </div>
+  {% include "create/_datacite_buttons.html" with element="creator" %}
   </div>
 {% for form in form.creator_set %}
+  <div class="form-container">
 {{ form.non_field_errors }}
   {% for cr_field in form %}
 
@@ -29,5 +31,7 @@
   {% endfor %}
   </details>
 
+  </div>
 {% endfor %}
 </div>
+{{ form.creator_set.management_form }}

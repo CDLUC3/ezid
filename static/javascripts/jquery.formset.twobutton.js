@@ -70,7 +70,7 @@
             },
 
             lastRow = function() {
-              return $('.' + options.formCssClass + ':last');
+                return $('.' + options.formCssClass + ':last');
             };
 
         $$.each(function(i) {
@@ -119,6 +119,7 @@
                 row = options.formTemplate.clone(true).removeClass('formset-custom-template');
             applyExtraClasses(row, formCount);
             row.insertAfter(lastRow()).show();
+            console.dir(lastRow());
             row.find(childElementSelector).each(function() {
                 updateElementIndex($(this), options.prefix, formCount);
             });
