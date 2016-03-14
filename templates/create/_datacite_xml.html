@@ -1,6 +1,6 @@
 {% load layout_extras %}
 {% load i18n %}
-<script type="text/javascript" src="/static/javascripts/jquery.formset.js"></script>
+<script type="text/javascript" src="/static/javascripts/jquery.formset.twobutton.js"></script>
 
 {{ form.nonrepeating_form.non_field_errors }}
 {% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.target %}
@@ -26,12 +26,3 @@
 {% comment %}Put (nonrepeating) Version here{% endcomment %}
 {% comment %}Put Rights set      here{% endcomment %}
 
-<script type="text/javascript">
-  $('input[type=button].rmvButton').click(function (e)  {
-  /* Confirmation step before user removes an element */
-    var continue_removal = confirm ("Please confirm you want to remove last item.");
-    if (continue_removal) { 
-      // unimplemented
-    };
-  });
-</script>

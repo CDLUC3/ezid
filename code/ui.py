@@ -40,7 +40,8 @@ def contact(request):
         "Email: " + P['email'] + "\r\n\r\n"
       if 'affiliation' in P:
         message += "Institution: " +  P['affiliation'] + "\r\n\r\n"
-      message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
+      message += "Reason for contact: " + P['contact_reason'] + "\r\n\r\n" + \
+        "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
         "Heard about from: " + P['hear_about'] + "\r\n\r\n"
       if 'newsletter' in P and P['newsletter'] == 'on':
         message += "YES, I'd like to subscribe to the EZID newsletter."

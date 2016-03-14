@@ -4,10 +4,8 @@
     $('#geoloc_set .form-container').formset({
       auto_id: '',
       prefix: '{{ form.geoloc_set.prefix }}',
-      deleteCssClass: 'button__minus-hideme',
-      deleteText: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-      addCssClass: 'button__plus', 
-      addText: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+      deleteCssId: 'button__minus-geoloc',
+      addCssId: 'button__plus-geoloc'
     });
   })
 </script>
@@ -16,10 +14,10 @@
   <div class="fieldset-controls__container">
     <div id="descriptions-description" class="fieldset-controls__legend create__nested-legend">{% trans "Geolocation" %}</div>
     <div class="fieldset-controls__buttons">
-      <!-- button class="button__plus">
+      <button id="button__plus-geoloc" class="button__plus" type="button">
         <span class="button__text">{% trans "Add" %}</span>
-      </button -->
-      <button id="button__minus-geoloc" class="button__minus">
+      </button>
+      <button id="button__minus-geoloc" class="button__minus" type="button">
         <span class="button__text">{% trans "Remove" %}</span>
       </button>
     </div>

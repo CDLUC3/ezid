@@ -793,10 +793,10 @@ class ContactForm(forms.Form):
   """ Form object for Contact Us form """
   # Translators: These options will appear in drop-down on contact page
   CONTACT_REASONS = (
-    ("", _("Choose One")),
-    ("account_new", _("I would like to inquire about getting a new account")),
-    ("account_existing", _("I have a problem or question about existing account")),
-    ("other", _("Other")),
+    ("None Entered", _("Choose One")),
+    ("I would like to inquire about getting a new account", _("I would like to inquire about getting a new account")),
+    ("I have a problem or question about existing account", _("I have a problem or question about existing account")),
+    ("Other", _("Other")),
   )
   contact_reason = forms.ChoiceField(required=False, choices=CONTACT_REASONS, 
     label = _("Reason for contacting EZID"))
