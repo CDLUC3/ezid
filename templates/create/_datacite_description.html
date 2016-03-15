@@ -1,16 +1,19 @@
 {% load i18n %}
+<script type="text/javascript">
+  $(function() {
+    $('#descr_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.descr_set.prefix }}',
+      deleteCssId: 'button__minus-description',
+      addCssId: 'button__plus-description'
+    });
+  })
+</script>
 
 <div id="descr_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="descriptions-description">
   <div class="fieldset-controls__container">
     <div id="descriptions-description" class="fieldset-controls__legend create__nested-legend">{% trans "Description" %}</div>
-    <div class="fieldset-controls__buttons">
-      <button class="button__plus">
-        <span class="button__text">{% trans "Add" %}</span>
-      </button>
-      <button class="button__minus">
-        <span class="button__text">{% trans "Remove" %}</span>
-      </button>
-    </div>
+  {% include "create/_datacite_buttons.html" with element="description" %}
   </div>
 {% for form in form.descr_set %}
   <div class="form-container">

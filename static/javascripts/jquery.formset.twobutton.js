@@ -20,7 +20,7 @@
             totalForms = $('#' + options.auto_id + options.prefix + '-TOTAL_FORMS'),
             maxForms = $('#' + options.auto_id  + options.prefix + '-MAX_NUM_FORMS'),
             minForms = $('#' + options.auto_id  + options.prefix + '-MIN_NUM_FORMS'),
-            childElementSelector = 'input,select,textarea,label,div',
+            childElementSelector = 'input,select,textarea,label,div,span',
             $$ = $(this),
 
             applyExtraClasses = function(row, ndx) {
@@ -67,10 +67,6 @@
             showDeleteButton = function() {
                 return minForms.length === 0 ||   // For Django versions pre 1.7
                     (minForms.val() === '' || (totalForms.val() - minForms.val() > 0));
-            },
-
-            lastRow = function() {
-                return $('.' + options.formCssClass + ':last');
             };
 
         $$.each(function(i) {
@@ -84,7 +80,8 @@
         });
 
         if ($$.length) {
-            var template;
+            var template,
+                myid = $(this).closest('.fieldset-stacked').attr('id');
             if (options.formTemplate) {
                 // If a form template was specified, we'll clone it to generate new form instances:
                 template = (options.formTemplate instanceof $) ? options.formTemplate : $(options.formTemplate);
@@ -118,13 +115,12 @@
             var formCount = parseInt(totalForms.val()),
                 row = options.formTemplate.clone(true).removeClass('formset-custom-template');
             applyExtraClasses(row, formCount);
-            row.insertAfter(lastRow()).show();
-            console.dir(lastRow());
+            row.insertAfter($$.filter(':last')).show();
             row.find(childElementSelector).each(function() {
                 updateElementIndex($(this), options.prefix, formCount);
             });
             totalForms.val(formCount + 1);
-            console.log("totalForms = %s", totalForms.val());
+            console.log("id=%s, totalForms = %s", myid, totalForms.val());
             // Check if we've exceeded the maximum allowed number of forms:
             if (!showAddButton()) $(this).hide();
             if (delButton.is(':hidden') && showDeleteButton()) delButton.show();
@@ -133,10 +129,10 @@
 
         delButton.click(function() {
             if (confirm("Please confirm you want to remove last item.")) {
-                console.log("totalForms = %s", totalForms.val());
+                var lastRow = $$.filter(':last');
                 if (totalForms.val() == 1) {
                     // Just erase values (don't remove form completely)
-                    lastRow().find(childElementSelector).not(options.keepFieldValues).each(function() {
+                    lastRow.find(childElementSelector).not(options.keepFieldValues).each(function() {
                         var elem = $(this);
                         // If this is a checkbox or radiobutton, uncheck it.
                         // http://stackoverflow.com/questions/6364289/clear-form-fields-with-jquery
@@ -147,16 +143,16 @@
                         }
                     });
                 } else {
-                    lastRow().remove();
+                    lastRow.remove();
                     // Update the TOTAL_FORMS count:
                     var forms = $('.' + options.formCssClass).not('.formset-custom-template');
                     totalForms.val(forms.length);
-                    console.log("totalForms = %s", totalForms.val());
                     // Check if we've reached the minimum number of forms
                     if (!showDeleteButton()) $(this).hide();
                     // Check if we need to show the add button:
                     if (addButton.is(':hidden') && showAddButton()) addButton.show();
                 }
+                console.log("id=%s, totalForms = %s", myid, totalForms.val());
             }
             return false;
         });
