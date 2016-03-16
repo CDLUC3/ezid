@@ -47,21 +47,6 @@ a:hover {
   margin-left: $layout-container-margin-lg;
 }
 
-html input[type="button"].link-lookalike {
-  @extend .link__primary;  
-}
-
-//Used on contact page
-blockquote a, 
-blockquote a:visited, 
-blockquote a:link {
-  @include text-link2(#FFF);
-}
-
-blockquote a:hover {
-  @include text-link2(#000);
-}
-
 .alert {
   margin: 0 -10px;
 }
@@ -88,17 +73,6 @@ blockquote a:hover {
   @include text-link2(#000);
 }
 
-//Contact Page Sign Up For Our Newsletter
-.tagline {
-  a, a:visited, a:link {
-    border-bottom: none;
-    padding-bottom: 0px;
-  }
-  a:hover {
-    @include text-link2($design-pop-gradient-bottom);
-  }
-}
-
 // All other links
 a.not-text, 
 a[data-toggle=popover] {
@@ -119,13 +93,6 @@ a.boxy-pop:link,
 a.boxy-pop:hover {
   @include boxy(6px, 17px, $design-pop-color, #FFF);
   text-decoration: underline;
-}
-.number-big-pop {
-  @include boxy(5px, 9px, $design-pop-color, #FFF);
-}
-// Demo EZID Page
-.number-big {
-  @include boxy(5px, 9px, $design-secondary-color, #FFF);
 }
 
 p.italic {

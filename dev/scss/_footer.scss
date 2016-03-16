@@ -58,6 +58,11 @@
 	flex: 1 0 auto;
 }
 
+.footer__news-feed-link {
+	@extend %link__primary;
+	align-self: flex-start;
+}
+
 .footer__news-link {
 	@extend %link__primary;
 	align-self: flex-start;
