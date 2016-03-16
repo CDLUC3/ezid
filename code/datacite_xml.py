@@ -108,24 +108,37 @@ def dataciteXmlToFormElements (document):
   return fc 
 
 """ Representation of django forms and formsets used for DataCite XML """
-FormColl = collections.namedtuple('FormColl', 'nonRepeating resourceType creators titles geoLocations')
+FormColl = collections.namedtuple('FormColl', 'nonRepeating resourceType creators titles descrs subjects contribs dates altids relids sizes formats rights geoLocations')
 
 def _separateByFormType(d):
   """ Organize form elements into a manageable collection 
       Turn empty dicts into None so that forms render properly
+
+      Nonrepeating fields (fields that can't be repeated into multiple forms) are: 
+         identifier, identifier-identifierType, language, publisher, publicationYear, version
   """
   _nonRepeating = {k:v for (k,v) in d.iteritems() 
     if not any(e in k for e in _repeatableElementContainers) and not k.startswith('resourceType')}
-  _resourceType = {k:v for (k,v) in d.iteritems() if k.startswith('resourceType')}
-  _creators = {k:v for (k,v) in d.iteritems() if k.startswith('creators')}
-  _titles = {k:v for (k,v) in d.iteritems() if k.startswith('titles')}
-  _geoLocations = {k:v for (k,v) in d.iteritems() if k.startswith('geoLocations')}
+
+  def dict_generate(d, s):
+    dr = {k:v for (k,v) in d.iteritems() if k.startswith(s)}
+    return dr if dr else None
+
   return FormColl(
     nonRepeating=_nonRepeating if _nonRepeating else None, 
-    resourceType=_resourceType if _resourceType else None,
-    creators=_creators if _creators else None, 
-    titles=_titles if _titles else None, 
-    geoLocations=_geoLocations if _geoLocations else None
+    resourceType = dict_generate(d, 'resourceType'),
+    creators = dict_generate(d, 'creators'),
+    titles = dict_generate(d, 'titles'),
+    descrs = dict_generate(d, 'descriptions'),
+    subjects = dict_generate(d, 'subjects'),
+    contribs = dict_generate(d, 'contributors'),
+    dates = dict_generate(d, 'dates'),
+    altids = dict_generate(d, 'alternateIdentifiers'),
+    relids = dict_generate(d, 'relatedIdentifiers'),
+    sizes = dict_generate(d, 'sizes'),
+    formats = dict_generate(d, 'formats'),
+    rights = dict_generate(d, 'rightsList'),
+    geoLocations = dict_generate(d, 'geoLocations')
   )
 
 def temp_mock():

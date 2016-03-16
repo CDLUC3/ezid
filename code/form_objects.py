@@ -450,12 +450,12 @@ class RelIdForm(forms.Form):
     ("References", _("References")),
     ("Reviews", _("Reviews"))
   ) 
-  relationType = forms.ChoiceField(required=False, label = _("Relation Type"), choices=ID_TYPES)
+  relationType = forms.ChoiceField(required=False, label = _("Relation Type"), choices=RELATION_TYPES)
   relatedMetadataScheme = forms.CharField(required=False, label=_("Related Metadata Scheme"))
   schemeURI = forms.CharField(required=False, label=_("Scheme URI"))
   schemeType = forms.CharField(required=False, label=_("Scheme Type"))
   def clean(self):
-    cleaned_data = super(ContribForm, self).clean()
+    cleaned_data = super(RelIdForm, self).clean()
     ri = cleaned_data.get("relatedIdentifier")
     ri_type = cleaned_data.get("relatedIdentifierType")
     r_type = cleaned_data.get("relationType")
@@ -571,7 +571,7 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
       prefix=PREFIX_SUBJECT_SET, auto_id='%s')
     contrib_set = ContribSet(_inclMgmtData(form_coll.contribs if\
       hasattr(form_coll, 'contribs') else None, PREFIX_CONTRIB_SET),
-      prefix=PREFIX_CONTRIBUTOR_SET, auto_id='%s')
+      prefix=PREFIX_CONTRIB_SET, auto_id='%s')
     date_set = DateSet(_inclMgmtData(form_coll.dates if hasattr(form_coll, 'dates')\
       else None, PREFIX_DATE_SET), prefix=PREFIX_DATE_SET, auto_id='%s')
     altid_set = AltIdSet(_inclMgmtData(form_coll.altids if hasattr(form_coll, 'altids')\
