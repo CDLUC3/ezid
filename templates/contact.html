@@ -35,18 +35,18 @@ request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
 
 {% for field in form %}
   {% if field|fieldtype == "TextInput" or field|fieldtype == "EmailInput" %}
-    {% include "includes/_inlinetext.html" with field=field form_name="contact__form" %}
+    {% include "includes/_inlinetext.html" with field=field form_name="contact__" %}
   {% elif field|fieldtype == "Textarea" %}
-    {% include "includes/_inlinetextarea.html" with field=field form_name="contact__form" %}
+    {% include "includes/_inlinetextarea.html" with field=field form_name="contact__" %}
   {% elif field|fieldtype == "Select" %}
-    {% include "includes/_inlineselect.html" with field=field form_name="contact__form" %}
+    {% include "includes/_inlineselect.html" with field=field form_name="contact__" %}
   {% elif field|fieldtype == "CheckboxInput" %}
-    {% include "includes/_inlinecheckbox.html" with field=field form_name="contact__form" %}
+    {% include "includes/_inlinecheckbox.html" with field=field form_name="contact__" %}
   {% endif %}
 {% endfor %}
 
     <div class="trapper_keeper">
-      <div class="fcontrol__group-inline contact__form-element">
+      <div class="fcontrol__group-inline contact__form-element-group">
         <label for="url" class="fcontrol__text-label-inline contact__form-label">Your URL</label>
         <input id="url" name="url" class="fcontrol__text-field-inline" type="text" placeholder="" maxlength="200" value="" />
       </div>

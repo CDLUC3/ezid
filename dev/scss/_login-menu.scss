@@ -64,7 +64,7 @@
 	@extend %login-menu__link;
 	color: $design-white-color;
 
-	&:before {
+	&::before {
 		@include bp(screen1) {
 			position: absolute;
 			top: 0;

@@ -1,5 +1,4 @@
 {% load layout_extras %}
-{% load metadata_tags %}
 {% load i18n %}
 
 <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset2">
@@ -7,16 +6,10 @@
   <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
 {{ form.non_field_errors }}
 {% for field in form %}
-  <div class="fcontrol__group-inline{% if field.errors %}--invalid{% endif %} create__form-element-group">
-    <label for="{{ field.id_for_label }}" class="fcontrol__text-label-inline create__label-simple">{{ field.label }}</label>
-    {{ field|add_attributes:"fcontrol__text-field-inline"}}
-  {% if field.errors %}
-    <span class="fcontrol__invalid-flag">
-    {% for error in field.errors %}
-      {{ error|escape }}
-    {% endfor %}
-    </span>
+  {% if field|fieldtype == "TextInput" %}
+    {% include "includes/_inlinetext.html" with field=field form_name="create__" %}
+  {% elif field|fieldtype == "Select" %}
+    {% include "includes/_inlineselect.html" with field=field form_name="create__" %}
   {% endif %}
-  </div>
 {% endfor %}
 </div>

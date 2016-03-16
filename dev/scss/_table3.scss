@@ -68,7 +68,7 @@
 		padding: 6px;
 		border-left: 1px solid $design-secondary-color;
 
-		&:before {
+		&::before {
 			position: absolute;
 			top: 6px;
 			left: -145px;
@@ -86,10 +86,10 @@
 
 	}
 
-	.table3 td:nth-of-type(1):before { content: 'Object Title'; }
-	.table3 td:nth-of-type(2):before { content: 'Object Creator'; }
-	.table3 td:nth-of-type(3):before { content: 'Identifier'; }
-	.table3 td:nth-of-type(4):before { content: 'Object Publisher'; }
-	.table3 td:nth-of-type(5):before { content: 'Object Pub Date'; }
-	.table3 td:nth-of-type(6):before { content: 'Object Type'; }
+	.table3 td:nth-of-type(1)::before { content: 'Object Title'; }
+	.table3 td:nth-of-type(2)::before { content: 'Object Creator'; }
+	.table3 td:nth-of-type(3)::before { content: 'Identifier'; }
+	.table3 td:nth-of-type(4)::before { content: 'Object Publisher'; }
+	.table3 td:nth-of-type(5)::before { content: 'Object Pub Date'; }
+	.table3 td:nth-of-type(6)::before { content: 'Object Type'; }
 }

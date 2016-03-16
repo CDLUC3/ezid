@@ -42,7 +42,7 @@
 	margin: 0 0 $form-element-group-spacing;
 }
 
-.create__label-simple {
+.create__form-label {
 	width: $form-element-label-width;
 
 	@include bp(screen1) {

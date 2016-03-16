@@ -17,11 +17,11 @@
     <div class="col-sm-5">{{ username }} </div>
   </div>
 
-  {% include "includes/_inlinetext.html" with field=form.givenName form_name="contact__form" %}
-  {% include "includes/_inlinetext.html" with field=form.sn form_name="contact__form" %}
-  {% include "includes/_inlinetext.html" with field=form.telephoneNumber form_name="contact__form" %}
-  {% include "includes/_inlinetext.html" with field=form.mail form_name="contact__form" %}
-  {% include "includes/_inlinetext.html" with field=form.telephoneNumber form_name="contact__form" %}
+  {% include "includes/_inlinetext.html" with field=form.givenName form_name="contact__" %}
+  {% include "includes/_inlinetext.html" with field=form.sn form_name="contact__" %}
+  {% include "includes/_inlinetext.html" with field=form.telephoneNumber form_name="contact__" %}
+  {% include "includes/_inlinetext.html" with field=form.mail form_name="contact__" %}
+  {% include "includes/_inlinetext.html" with field=form.telephoneNumber form_name="contact__" %}
   
   <div class="row form-group form-group-sm">
     <label class="col-sm-2 control-label">{% trans "Your Proxy Account(s)" %}</label>
@@ -56,9 +56,9 @@
 
   <h2 class="heading_2_caps">{% trans "Change Password" %}</h2>
 
-  {% include "includes/_inlinetext.html" with field=form.pwcurrent form_name="contact__form" %}
-  {% include "includes/_inlinetext.html" with field=form.pwnew form_name="contact__form" %}
-  {% include "includes/_inlinetext.html" with field=form.pwconfirm form_name="contact__form" %}
+  {% include "includes/_inlinetext.html" with field=form.pwcurrent form_name="contact__" %}
+  {% include "includes/_inlinetext.html" with field=form.pwnew form_name="contact__" %}
+  {% include "includes/_inlinetext.html" with field=form.pwconfirm form_name="contact__" %}
 
   <button class="button__primary account__form-submit">{% trans "Submit" %}</button>
 </form>

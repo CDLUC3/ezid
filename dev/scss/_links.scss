@@ -9,7 +9,7 @@
 		text-decoration: none; // bootstrap override
 	}
 
-	&[href$='.pdf']:after {
+	&[href$='.pdf']::after {
 		display: inline-block;
 		position: relative;
 		top: 5px;

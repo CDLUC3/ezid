@@ -18,6 +18,11 @@
 
 }
 
+.contact__button-icon-help {
+	@extend %button__icon-help-base;
+	position: absolute;
+}
+
 .contact__form {
 	max-width: 1000px;
 	margin: 0 auto;
@@ -36,7 +41,7 @@
 
 }
 
-.contact__form-element {
+.contact__form-element-group {
 	margin: 0 0 30px;
 }
 

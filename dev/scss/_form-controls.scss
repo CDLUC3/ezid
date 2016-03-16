@@ -260,7 +260,7 @@
   	display: block;
 
 		// Pseudo button styling:
-  	&:before {
+  	&::before {
   		display: inline-block;
 		  width: 1em;
 		  height: 1em;
@@ -278,12 +278,12 @@
 }
 
 // Checked style:
-.fcontrol__radio-button-stacked:checked + span:before {
+.fcontrol__radio-button-stacked:checked + span::before {
   background: $design-dark-gray-color;
 }
 
 // Focus style:
-.fcontrol__radio-button-stacked:focus + span:before {
+.fcontrol__radio-button-stacked:focus + span::before {
   border-color: $design-primary-color;
 }
 
@@ -308,7 +308,7 @@
 // ***** Required Styles ***** //
 
 .fcontrol__label-required {
-	&:after {
+	&::after {
 		color: $design-red-color;
 		font-weight: normal;
 		content: ' (Required)';

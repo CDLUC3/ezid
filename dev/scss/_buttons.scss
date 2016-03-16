@@ -54,17 +54,17 @@
 	background: url('../images/icon_minus-sign.svg') center / 12px no-repeat, $design-form-element-bg;
 }
 
-.button__minus-hideme {
-	display: none;
-}
-
 .button__text {
 	@extend %hide;
 }
 
 
-.button__icon-help {
+%button__icon-help-base {
 	display: inline-block;
-	position: relative;
 	margin: 0 0 0 8px;
+}
+
+.button__icon-help {
+	@extend %button__icon-help-base;
+	position: relative;
 }
