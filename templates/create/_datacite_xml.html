@@ -14,15 +14,15 @@
 
 {% include "create/_datacite_resourceType.html" %}
 {% include "create/_datacite_description.html" %}
+{% include "create/_datacite_subject.html" %}
+{% include "create/_datacite_contributor.html" %}
+{% include "create/_datacite_date.html" %}
+{% include "create/_datacite_altId.html" %}
+{% include "create/_datacite_relId.html" %}
+{% include "create/_datacite_size.html" %}
+{% include "create/_datacite_format.html" %}
 
-{% comment %}Put Subject set     here{% endcomment %}
-{% comment %}Put Contrib set     here{% endcomment %}
-{% comment %}Put Date set        here{% endcomment %}
-{% comment %}Put AltId set       here{% endcomment %}
-{% comment %}Put RelId set       here{% endcomment %}
-{% comment %}Put Size set        here{% endcomment %}
-{% comment %}Put Format set      here{% endcomment %}
-{% comment %}Put (nonrepeating) Version here{% endcomment %}
-{% comment %}Put Rights set      here{% endcomment %}
+{% include "create/_datacite_inlinetext.html" with field=form.nonrepeating_form.version %}
 
+{% include "create/_datacite_rights.html" %}
 {% include "create/_datacite_geoLoc.html" %}

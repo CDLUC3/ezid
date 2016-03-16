@@ -42,7 +42,7 @@ RESOURCE_TYPES = (
 )
 REGEX_4DIGITYEAR='^(\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
    \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\))$'
-ERR_4DIGITYEAR = _("4-digits")
+ERR_4DIGITYEAR = _("Four digits required")
 ERR_CREATOR=_("Please fill in a value for creator.")
 ERR_TITLE=_("Please fill in a value for title.")
 ERR_PUBLISHER=_("Please fill in a value for publisher.")
@@ -126,7 +126,7 @@ class DataciteForm(BaseForm):
       error_messages={'required': ERR_PUBLISHER})
     self.fields["datacite.publicationyear"] = forms.RegexField(label=_("Publication year"),
       regex=REGEX_4DIGITYEAR,
-      error_messages={'required': _("Please fill in a value for publication year."),
+      error_messages={'required': _("Please fill in a four digit value for publication year."),
                     'invalid': ERR_4DIGITYEAR })
     # Translators: These options appear in drop-down on ID Creation page (DOIs)
     self.fields["datacite.resourcetype"] = \
@@ -225,7 +225,7 @@ class NonRepeatingForm(forms.Form):
     error_messages={'required': ERR_PUBLISHER})
   publicationYear = forms.RegexField(label=_("Publication Year"),
     regex=REGEX_4DIGITYEAR,
-    error_messages={'required': _("Please fill in a value for publication year."),
+    error_messages={'required': _("Please fill in a four digit value for publication year."),
                     'invalid': ERR_4DIGITYEAR })
   language = forms.CharField(required=False, label=_("Language"))
   version = forms.CharField(required=False, label=_("Version"))
@@ -375,7 +375,7 @@ class ContribForm(forms.Form):
 
 class DateForm(forms.Form):
   """ Form object for Date Element in DataCite Advanced (XML) profile """
-  date = forms.CharField(required=False, label=_("Descriptive information"))
+  date = forms.CharField(required=False, label=_("Date"))
   DATE_TYPES = (
     ("", _("Select a type of date")),
     ("Accepted", _("Accepted")),
@@ -543,7 +543,6 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     creator_set = CreatorSet(P, prefix=PREFIX_CREATOR_SET, auto_id='%s')
     title_set = TitleSet(P, prefix=PREFIX_TITLE_SET, auto_id='%s')
     descr_set = DescrSet(P, prefix=PREFIX_DESCR_SET, auto_id='%s')
-    """ 
     subject_set = SubjectSet(P, prefix=PREFIX_SUBJECT_SET, auto_id='%s')
     contrib_set = ContribSet(P, prefix=PREFIX_CONTRIB_SET, auto_id='%s')
     date_set = DateSet(P, prefix=PREFIX_DATE_SET, auto_id='%s')
@@ -551,8 +550,7 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     relid_set = RelIdSet(P, prefix=PREFIX_RELID_SET, auto_id='%s')
     size_set = SizeSet(P, prefix=PREFIX_SIZE_SET, auto_id='%s')
     format_set = FormatSet(P, prefix=PREFIX_FORMAT_SET, auto_id='%s')
-    rights_set = FormatSet(P, prefix=PREFIX_RIGHTS_SET, auto_id='%s')
-    """
+    rights_set = RightsSet(P, prefix=PREFIX_RIGHTS_SET, auto_id='%s')
     geoloc_set = GeoLocSet(P, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
 # On Edit:GET (Convert DataCite XML dict to form)
   else:
@@ -568,7 +566,6 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
       else None, PREFIX_TITLE_SET), prefix=PREFIX_TITLE_SET, auto_id='%s')
     descr_set = DescrSet(_inclMgmtData(form_coll.descrs if hasattr(form_coll, 'descrs')\
       else None, PREFIX_DESCR_SET), prefix=PREFIX_DESCR_SET, auto_id='%s')
-    """
     subject_set = SubjectSet(_inclMgmtData(form_coll.subjects if\
       hasattr(form_coll, 'subjects') else None, PREFIX_SUBJECT_SET),
       prefix=PREFIX_SUBJECT_SET, auto_id='%s')
@@ -587,20 +584,15 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
       else None, PREFIX_FORMAT_SET), prefix=PREFIX_FORMAT_SET, auto_id='%s')
     rights_set = RightsSet(_inclMgmtData(form_coll.rights if hasattr(form_coll, 'rights')\
       else None, PREFIX_RIGHTS_SET), prefix=PREFIX_RIGHTS_SET, auto_id='%s')
-    """
     geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations if\
       hasattr(form_coll, 'geoLocations') else None, PREFIX_GEOLOC_SET), 
       prefix=PREFIX_GEOLOC_SET, auto_id='%s')
-    """
-    'subject_set':subject_set, 
-    'contrib_set':contrib_set, 'date_set':date_set, 'altid_set':altid_set, 
-    'relid_set':relid_set, 'size_set':size_set, 'format_set':format_set, 
-    'rights_set':rights_set,
-    """
   return {'remainder_form': remainder_form, 'nonrepeating_form': nonrepeating_form,
     'resourcetype_form': resourcetype_form, 'creator_set': creator_set, 
-    'title_set': title_set, 'descr_set':descr_set, 
-    'geoloc_set': geoloc_set}
+    'title_set': title_set, 'descr_set':descr_set, 'subject_set':subject_set, 
+    'contrib_set':contrib_set, 'date_set':date_set, 'altid_set':altid_set, 
+    'relid_set':relid_set, 'size_set':size_set, 'format_set':format_set, 
+    'rights_set':rights_set, 'geoloc_set': geoloc_set}
 
 def _inclMgmtData(fields, prefix):
   """ Only to be used for formsets with syntax <prefix>-#-<field>

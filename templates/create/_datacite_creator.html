@@ -10,9 +10,9 @@
   })
 </script>
 
-<div id="creator_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="creators-creator">
+<div id="creator_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="creator_form_set">
   <div class="fieldset-controls__container">
-    <div id="creators-creator" class="fieldset-controls__legend create__nested-legend">{% trans "Creator" %}</div>
+    <div id="creator_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Creator" %}</div>
   {% include "create/_datacite_buttons.html" with element="creator" %}
   </div>
 {% for form in form.creator_set %}
@@ -22,7 +22,7 @@
 
   {% if forloop.first %}
     {% include "create/_datacite_inlinetext.html" with field=cr_field reqd="true" %}
-  <details id="accordion__section-1" class="accordion__section create__accordion-section">
+  <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
     <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
   {% else %}
     {% include "create/_datacite_inlinetext.html" with field=cr_field %}

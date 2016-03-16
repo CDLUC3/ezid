@@ -81,7 +81,7 @@
 
         if ($$.length) {
             var template,
-                myid = $(this).closest('.fieldset-stacked').attr('id');
+                myid = $(this).closest('.fieldset-stacked').attr('id');  // for testing
             if (options.formTemplate) {
                 // If a form template was specified, we'll clone it to generate new form instances:
                 template = (options.formTemplate instanceof $) ? options.formTemplate : $(options.formTemplate);

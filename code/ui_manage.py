@@ -163,6 +163,7 @@ def edit(request, identifier):
       stts = P['_status']
 
     if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
+      d = _assignManualTemplate(d)
       d = ui_create.validate_adv_form_datacite_xml(request, d)
       if 'id_gen_result' in d:
         return uic.render(request, 'manage/edit', d)  # ID Creation page 
@@ -176,7 +177,6 @@ def edit(request, identifier):
           _alertMessageUpdateSuccess(request)
           return redirect("/id/" + urllib.quote(identifier, ":/"))
         else:
-          d = _assignManualTemplate(d)
           _alertMessageUpdateError(request, s)
     else:
       """ Even if converting from simple to advanced, let's make sure forms validate

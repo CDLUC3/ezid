@@ -1,37 +1,36 @@
-{% load layout_extras %}
 {% load i18n %}
-  <div class="optional">
-    <div name="/resource/subjects" class="element datacite-container">
-      <label for="/resource/subjects" class="element">{% trans "Subject" %}</label>
-      <input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="{{ num_subjects }}" class="addButton">
-      <input type="button" value="-" name="/resource/subjects" class="rmvButton">
-{% for subject in datacite_obj_subjects.subject %}
-      <div class="multiple">
-        <div class="row">
-          <div name="/resource/subjects/subject[{{ forloop.counter }}]" class="element form-group form-group-sm">
-            <label for="/resource/subjects/subject[{{ forloop.counter }}]" class="element col-sm-3 control-label">{% trans "Subject" %}:</label>
-            <div class="col-sm-5">
-              <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]" value="{{ subject.text|default_if_none:"" }}" class="data form-control" />
-            </div>
-          </div>
-        </div>
-        <div class=" attribute row">
-          <div class="form-group form-group-sm">
-            <label for="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" class="attribute col-sm-3 control-label">{% trans "Scheme" %}:</label>
-            <div class="col-sm-5">
-              <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" value="{{ subject.attrib.subjectScheme }}" class="data form-control" />
-            </div>
-          </div>
-        </div>
-        <div class="attribute row">
-          <div class="form-group form-group-sm">
-            <label for="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" class="attribute col-sm-3 control-label">{% trans "Scheme URI" %}:</label>
-            <div class="col-sm-5">
-              <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" value="{{ subject.attrib.schemeURI }}" class="data form-control">
-            </div>
-          </div>
-        </div>
-      </div>
-{% endfor %}
-    </div>
+<script type="text/javascript">
+  $(function() {
+    $('#subject_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.subject_set.prefix }}',
+      deleteCssId: 'button__minus-subject',
+      addCssId: 'button__plus-subject'
+    });
+  })
+</script>
+
+<div id="subject_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="subject_form_set">
+  <div class="fieldset-controls__container">
+    <div id="subject_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Subject" %}</div>
+  {% include "create/_datacite_buttons.html" with element="subject" %}
   </div>
+{% for form in form.subject_set %}
+  <div class="form-container">
+{{ form.non_field_errors }}
+  {% for s_field in form %}
+
+    {% if forloop.first %}
+      {% include "create/_datacite_inlinetext.html" with field=s_field %}
+    <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
+      <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
+    {% else %}
+      {% include "create/_datacite_inlinetext.html" with field=s_field %}
+    {% endif %}
+
+  {% endfor %}
+    </details>
+  </div>
+{% endfor %}
+</div>
+{{ form.subject_set.management_form }}

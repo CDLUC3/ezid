@@ -2,12 +2,13 @@
 {% load i18n %}
 
   <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset1">
-    <div id="create__fieldset1" class="fieldset-stacked__legend-number-1">{% trans "Choose an identifier type" %}</div>
+    <div id="create__fieldset1" class="fieldset-stacked__legend-number-1">{% trans "Choose an identifier type" %}
     {% if calling_page == 'demo' %}
       {% help_icon "choose_id_demo" %}
     {% else %}
       {% help_icon "choose_id" %}
     {% endif %}
+    </div>
   {% if prefixes|duplicate_id_types %}
     {% for p in prefixes %}
     <label for="{{p.prefix}}" class="fcontrol__radio-label-stacked create__radio-button">

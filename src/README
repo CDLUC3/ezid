@@ -47,8 +47,6 @@ if [ ${1} == "src" ]; then
   sassc ~/SITE/PROJECT/src/styles/main.scss ~/SITE/PROJECT/static/stylesheets/main.css
   echo -e "ran sassc on src/styles/main.scss\n"
 elif [ ${1} == "dev" ]; then
-  cp ~/SITE/PROJECT/dev/css/main2.css ~/SITE/PROJECT/static/stylesheets/
-  echo -e "Copied dev/css/main2.css to static/stylesheets"
   cp ~/SITE/PROJECT/ui_library/css/main2.min.css ~/SITE/PROJECT/static/stylesheets/
   echo -e "Copied ui_library/css/main2.min.css to static/stylesheets"
   cp ~/SITE/PROJECT/ui_library/js/main2.min.js ~/SITE/PROJECT/static/javascripts/

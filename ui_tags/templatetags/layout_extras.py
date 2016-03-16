@@ -91,7 +91,7 @@ def active_id_display(id_text, testPrefixes):
 def help_icon(id_of_help):
   return '<a id="' + id_of_help + '" role="button" data-toggle="popover" data-trigger="click">' + \
     '<img src="/static/images/iconHelp.svg" alt="Click for additional help"' + \
-    ' class="icon-help" title="Click for additional help"/></a>'
+    ' class="button__icon-help" title="Click for additional help"/></a>'
 
 @register.simple_tag
 def datacite_field_help_icon(id_of_help):

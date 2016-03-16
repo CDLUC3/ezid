@@ -1,73 +1,36 @@
-{% load layout_extras %}	
 {% load i18n %}	
-	<div class="optional">
-		<div name="/resource/relatedIdentifiers" class="element datacite-container">
-			<label for="/resource/relatedIdentifiers" class="element">{% trans "Related Identifier" %}</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/relatedIdentifiers" nbelmtsadded="{{ num_relIds }}" class="addButton">
-			<input type="button" value="-" name="/resource/relatedIdentifiers" class="rmvButton">
-{% for relId in datacite_obj_relatedIdentifiers.relatedIdentifier %}
-			<div class="multiple">
-				<div class="element">
-					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]" class="element">{% trans "Identifier" %}:</label>
-					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]" value="{{ relId.text|default_if_none:"" }}"  class="data form-control" />
-					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedIdentifierType" class="attribute">{% trans "Identifier Type" %}:</label>
-					<select name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedIdentifierType" sendselect="yes" class="choice">
-						<option value=""></option>
-						<option value="ARK"{% if relId.attrib.relatedIdentifierType == "ARK"%} selected="selected"{% endif %}>ARK</option>
-						<option value="arXiv"{% if relId.attrib.relatedIdentifierType == "arXiv"%} selected="selected"{% endif %}>arXiv</option>
-						<option value="bibcode"{% if relId.attrib.relatedIdentifierType == "bibcode"%} selected="selected"{% endif %}>bibcode</option>
-						<option value="DOI"{% if relId.attrib.relatedIdentifierType == "DOI"%} selected="selected"{% endif %}>DOI</option>
-						<option value="EAN13"{% if relId.attrib.relatedIdentifierType == "EAN13"%} selected="selected"{% endif %}>EAN13</option>
-						<option value="EISSN"{% if relId.attrib.relatedIdentifierType == "EISSN"%} selected="selected"{% endif %}>eISSN</option>
-						<option value="Handle"{% if relId.attrib.relatedIdentifierType == "Handle"%} selected="selected"{% endif %}>Handle</option>
-						<option value="ISBN"{% if relId.attrib.relatedIdentifierType == "ISBN"%} selected="selected"{% endif %}>ISBN</option>
-						<option value="ISSN"{% if relId.attrib.relatedIdentifierType == "ISSN"%} selected="selected"{% endif %}>ISSN</option>
-						<option value="ISTC"{% if relId.attrib.relatedIdentifierType == "ISTC"%} selected="selected"{% endif %}>ISTC</option>
-						<option value="LISSN"{% if relId.attrib.relatedIdentifierType == "LISSN"%} selected="selected"{% endif %}>LISSN</option>
-						<option value="LSID"{% if relId.attrib.relatedIdentifierType == "LSID"%} selected="selected"{% endif %}>LSID</option>
-						<option value="PMID"{% if relId.attrib.relatedIdentifierType == "PMID"%} selected="selected"{% endif %}>PMID</option>
-						<option value="PURL"{% if relId.attrib.relatedIdentifierType == "PURL"%} selected="selected"{% endif %}>PURL</option>
-						<option value="UPC"{% if relId.attrib.relatedIdentifierType == "UPC"%} selected="selected"{% endif %}>UPC</option>
-						<option value="URL"{% if relId.attrib.relatedIdentifierType == "URL"%} selected="selected"{% endif %}>URL</option>
-						<option value="URN"{% if relId.attrib.relatedIdentifierType == "URN"%} selected="selected"{% endif %}>URN</option>
-					</select>
-					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relationType" class="attribute">Relation Type:</label>
-					<select name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relationType" sendselect="yes" class="choice">
-						<option value=""></option>
-						<option value="Cites"{% if relId.attrib.relationType == "Cities"%} selected="selected"{% endif %}>Cites</option>
-						<option value="Compiles"{% if relId.attrib.relationType == "Compiles"%} selected="selected"{% endif %}>Compiles</option>
-						<option value="Continues"{% if relId.attrib.relationType == "Continues"%} selected="selected"{% endif %}>Continues</option>
-						<option value="Documents"{% if relId.attrib.relationType == "Documents"%} selected="selected"{% endif %}>Documents</option>
-						<option value="HasMetadata"{% if relId.attrib.relationType == "HasMetadata"%} selected="selected"{% endif %}>HasMetadata</option>
-						<option value="HasPart"{% if relId.attrib.relationType == "HasPart"%} selected="selected"{% endif %}>HasPart</option>
-						<option value="IsCitedBy"{% if relId.attrib.relationType == "IsCitedBy"%} selected="selected"{% endif %}>IsCitedBy</option>
-						<option value="IsCompiledBy"{% if relId.attrib.relationType == "IsCompiledBy"%} selected="selected"{% endif %}>IsCompiledBy</option>
-						<option value="IsContinuedBy"{% if relId.attrib.relationType == "IsContinuedBy"%} selected="selected"{% endif %}>IsContinuedBy</option>
-						<option value="IsDocumentedBy"{% if relId.attrib.relationType == "IsDocumentedBy"%} selected="selected"{% endif %}>IsDocumentedBy</option>
-						<option value="IsDerivedFrom"{% if relId.attrib.relationType == "IsDerivedFrom"%} selected="selected"{% endif %}>IsDerivedFrom</option>
-						<option value="IsIdenticalTo"{% if relId.attrib.relationType == "IsIdenticalTo"%} selected="selected"{% endif %}>IsIdenticalTo</option>
-						<option value="IsMetadataFor"{% if relId.attrib.relationType == "IsMetadataFor"%} selected="selected"{% endif %}>IsMetadataFor</option>
-						<option value="IsPartOf"{% if relId.attrib.relationType == "IsPartOf"%} selected="selected"{% endif %}>IsPartOf</option>
-						<option value="IsNewVersionOf"{% if relId.attrib.relationType == "IsNewVersionOf"%} selected="selected"{% endif %}>IsNewVersionOf</option>
-						<option value="IsOriginalFormOf"{% if relId.attrib.relationType == "IsOriginalVersionOf"%} selected="selected"{% endif %}>IsOriginalFormOf</option>
-						<option value="IsPreviousVersionOf"{% if relId.attrib.relationType == "IsPreviousVersionOf"%} selected="selected"{% endif %}>IsPreviousVersionOf</option>
-						<option value="IsReferencedBy"{% if relId.attrib.relationType == "IsReferencedBy"%} selected="selected"{% endif %}>IsReferencedBy</option>
-						<option value="IsReviewedBy"{% if relId.attrib.relationType == "IsReviewedBy"%} selected="selected"{% endif %}>IsReviewedBy</option>
-						<option value="IsSourceOf"{% if relId.attrib.relationType == "IsSourceOf"%} selected="selected"{% endif %}>IsSourceOf</option>
-						<option value="IsSupplementedBy"{% if relId.attrib.relationType == "IsSupplementedBy"%} selected="selected"{% endif %}>IsSupplementedBy</option>
-						<option value="IsSupplementTo"{% if relId.attrib.relationType == "IsSupplementTo"%} selected="selected"{% endif %}>IsSupplementTo</option>
-						<option value="IsVariantFormOf"{% if relId.attrib.relationType == "IsVariantOf"%} selected="selected"{% endif %}>IsVariantFormOf</option>
-						<option value="References"{% if relId.attrib.relationType == "References"%} selected="selected"{% endif %}>References</option>
-						<option value="Reviews"{% if relId.attrib.relationType == "Reviews"%} selected="selected"{% endif %}>Reviews</option>
-					</select>
-					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedMetadataScheme" class="element">{% trans "Related Metadata Scheme" %}:</label>
-					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@relatedMetadataScheme" value="{{ relId.attrib.relatedMetadataScheme }}" class="data form-control" />
-					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@schemeURI" class="element">{% trans "Scheme URI" %}:</label>
-					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@schemeURI" value="{{ relId.attrib.schemeURI }}" class="data form-control" />
-					<label for="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@schemeType" class="element">{% trans "Scheme Type" %}:</label>
-					<input type="text" name="/resource/relatedIdentifiers/relatedIdentifier[{{ forloop.counter }}]/@schemeType" value="{{ relId.attrib.schemeType }}" class="data form-control" />
-				</div>
-			</div>
+
+<script type="text/javascript">
+  $(function() {
+    $('#relid_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.relid_set.prefix }}',
+      deleteCssId: 'button__minus-relid',
+      addCssId: 'button__plus-relid'
+    });
+  })
+</script>
+
+<div id="relid_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="related_id_form_set">
+  <div class="fieldset-controls__container">
+    <div id="related_id_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Related Identifier" %}</div>
+  {% include "create/_datacite_buttons.html" with element="relid" %}
+  </div>
+{% for form in form.relid_set %}
+  <div class="form-container">
+  {{ form.non_field_errors }}
+
+  {% include "create/_datacite_inlinetext.html" with field=form.relatedIdentifier %}
+  {% include "create/_datacite_inlineselect.html" with field=form.relatedIdentifierType %}
+  {% include "create/_datacite_inlineselect.html" with field=form.relationType %}
+  <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
+    <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
+    {% include "create/_datacite_inlinetext.html" with field=form.relatedMetadataScheme %}
+    {% include "create/_datacite_inlinetext.html" with field=form.schemeURI %}
+    {% include "create/_datacite_inlinetext.html" with field=form.schemeType %}
+  </details>
+
+  </div>
 {% endfor %}
-		</div>
-	</div>
+</div>
+{{ form.relid_set.management_form }}

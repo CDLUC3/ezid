@@ -211,18 +211,13 @@ def validate_adv_form_datacite_xml(request, d):
   d['form'] = form_objects.getIdForm_datacite_xml(None, request)
   if not form_objects.isValidDataciteXmlForm(d['form']):
     django.contrib.messages.error(request, _validationErr(action_result))
+    d['accordions_open'] = 'open'
     d['id_gen_result'] = 'edit_page'
   else:
     # Testing:
     # d['generated_xml'] = datacite_xml.temp_mock()
     d['generated_xml'] = datacite_xml.formElementsToDataciteXml(
       P.dict(), (P['shoulder'] if 'shoulder' in P else None), identifier)
-    # ToDo: Verify XML validation occurs in ezid.py and I don't have to do it here
-    # Old process:
-    # xsd_path = django.conf.settings.PROJECT_ROOT + "/xsd/datacite-kernel-3/metadata.xsd"
-    # if datacite_xml.validate_document(d['generated_xml'], xsd_path, error_msgs) == False:
-    #   django.contrib.messages.error(request, _("XML validation error") + ": " + error_msgs
-    #   d['id_gen_result'] = 'edit_page'
   return d
  
 def _createSimpleId (d, request, P):
@@ -271,6 +266,7 @@ def _createAdvancedId (d, request, P):
       err_msg = re.search(r'^error: (.+)$', s).group(1)
     django.contrib.messages.error(request, _("There was an error creating your identifier") +\
       ": " + err_msg)
+    d['accordions_open'] = 'open'
     d['id_gen_result'] = 'edit_page'
   return d
 

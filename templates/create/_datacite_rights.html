@@ -1,22 +1,31 @@
-{% load layout_extras %}
 {% load i18n %}
-	<div class="optional">
-		<div name="/resource/rightsList" class="element datacite-container">
-			<label for="/resource/rightsList" class="element">{% trans "Rights" %}</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/rightsList" nbelmtsadded="{{ num_rights }}" class="addButton" />
-			<input type="button" value="-" name="/resource/rightsList" class="rmvButton" />
-{% for rights in datacite_obj_rightsList.rights %}
-			<div class="multiple" style="/* border: solid; border-width: 1px; padding: 5px;background:#ffffff */">
-				<div name="/resource/rightsList/rights[{{ forloop.counter }}]" class="element">
-					<label for="/resource/rightsList/rights[{{ forloop.counter }}]" class="element">{% trans "Rights" %}:</label>
-					<input type="text" name="/resource/rightsList/rights[{{ forloop.counter }}]" value="{{ rights.text|default_if_none:"" }}" class="data form-control" />
-					
-					<div class="attribute">
-						<label for="/resource/rightsList/rights[{{ forloop.counter }}]/@rightsURI" class="attribute">URI:</label>
-						<input type="text" name="/resource/rightsList/rights[{{ forloop.counter }}]/@rightsURI" value="{{ rights.attrib.rightsURI }}" class="data form-control">
-					</div>
-				</div>
-			</div>
+
+<script type="text/javascript">
+  $(function() {
+    $('#rights_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.rights_set.prefix }}',
+      deleteCssId: 'button__minus-rights',
+      addCssId: 'button__plus-rights'
+    });
+  })
+</script>
+
+<div id="rights_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="rights_form_set">
+  <div class="fieldset-controls__container">
+    <div id="rights_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Rights" %}</div>
+  {% include "create/_datacite_buttons.html" with element="rights" %}
+  </div>
+{% for form in form.rights_set %}
+  <div class="form-container">
+  {{ form.non_field_errors }}
+  {% for hidden in form.hidden_fields %}
+    {{ hidden }}
+  {% endfor %}
+
+  {% include "create/_datacite_inlinetext.html" with field=form.rights %}
+  {% include "create/_datacite_inlinetext.html" with field=form.rightsURI %}
 {% endfor %}
-		</div>
-	</div>
+  </div>
+</div>
+{{ form.rights_set.management_form }}

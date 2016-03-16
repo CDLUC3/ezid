@@ -10,9 +10,9 @@
   })
 </script>
 
-<div id="geoloc_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="geoLocations-geoLocation">
+<div id="geoloc_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="geoLocation_form_set">
   <div class="fieldset-controls__container">
-    <div id="descriptions-description" class="fieldset-controls__legend create__nested-legend">{% trans "Geolocation" %}</div>
+    <div id="geoLocation_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Geolocation" %}</div>
   {% include "create/_datacite_buttons.html" with element="geoloc" %}
   </div>
 {% for form in form.geoloc_set %}

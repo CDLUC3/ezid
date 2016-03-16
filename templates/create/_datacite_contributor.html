@@ -1,89 +1,43 @@
 {% load layout_extras %}
 {% load i18n %}
-  <div class="optional" >
-    <div name="/resource/contributors" class="element datacite-container">
-      <label for="/resource/contributors" class="element">{% trans "Contributor" %}</label>
-      <input type="button" value="+" onclick="addOne(this)" name="/resource/contributors" nbelmtsadded="{{ num_contributors }}" class="addButton">
-      <input type="button" value="-" name="/resource/contributors" class="rmvButton">
-{% for contributor in datacite_obj_contributors.contributor %}
-      <div class="multiple">
-        <div class="row">
-          <div name="/resource/contributors/contributor[{{ forloop.counter }}]" class="element">
-            <div name="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" class="element form-group form-group-sm">
-              <label for="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" class="element col-sm-3 control-label">{% trans "Name" %}:</label>
-              <div class="col-sm-5">
-                <input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/contributorName" value="{{ contributor.contributorName.text|default_if_none:"" }}" class="data form-control">
-              </div>
-            </div>
-          </div>
-        </div>
-	<div class="optional">
-	  <div class="row">
-            <div name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" class="element form-group form-group-sm">
-              <label for="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" class="element col-sm-3 control-label">{% trans "Name Identifier" %}:</label>
-              <div class="col-sm-5">
-                <input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier" value="{{ contributor.nameIdentifier.text|default_if_none:"" }}" class="data form-control" />
-              </div>
-            </div>
-          </div>
-          <div class="attribute row">
-            <div class="form-group form-group-sm">
-              <label for="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" class="attribute col-sm-3 control-label">{% trans "Name Identifier Scheme" %}:</label>
-                <div class="col-sm-5">
-                  <input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" value="{{ contributor.nameIdentifier.attrib.nameIdentifierScheme }}" class="data form-control">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="attribute row">
-            <div class="form-group form-group-sm">
-              <label for="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@schemeURI" class="attribute col-sm-3 control-label">{% trans "Scheme URI" %}:</label>
-              <div class="col-sm-5">
-                <input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/nameIdentifier/@schemeURI" value="{{ contributor.nameIdentifier.attrib.schemeURI }}" class="data form-control">
-              </div>
-            </div>
-          </div>
-          <div class="attribute row">
-            <div class="form-group form-group-sm">
-              <label for="/resource/contributors/contributor[{{ forloop.counter }}]/@contributorType" class="attribute col-sm-3 control-label">{% trans "Contributor Type" %}:</label>
-              <div class="col-sm-5">
-                <select name="/resource/contributors/contributor[{{ forloop.counter }}]/@contributorType" sendselect="yes" class="choice form-control">
-                <option value=""></option>
-                <option value="ContactPerson"{% if contributor.attrib.contributorType == "ContactPerson"%} selected="selected"{% endif %}>Contact Person</option>
-                <option value="DataCollector"{% if contributor.attrib.contributorType == "DataCollector"%} selected="selected"{% endif %}>Data Collector</option>
-                <option value="DataCurator"{% if contributor.attrib.contributorType == "DataCurator"%} selected="selected"{% endif %}>Data Curator</option>
-                <option value="DataManager"{% if contributor.attrib.contributorType == "DataManager"%} selected="selected"{% endif %}>Data Manager</option>
-                <option value="Distributor"{% if contributor.attrib.contributorType == "Distributor"%} selected="selected"{% endif %}>Distributor</option>
-                <option value="Editor"{% if contributor.attrib.contributorType == "Editor"%} selected="selected"{% endif %}>Editor</option>
-                <option value="Funder"{% if contributor.attrib.contributorType == "Funder"%} selected="selected"{% endif %}>Funder</option>
-                <option value="HostingInstitution"{% if contributor.attrib.contributorType == "HostingInstitution"%} selected="selected"{% endif %}>Hosting Institution</option>
-                <option value="Producer"{% if contributor.attrib.contributorType == "Producer"%} selected="selected"{% endif %}>Producer</option>
-                <option value="ProjectLeader"{% if contributor.attrib.contributorType == "ProjectLeader"%} selected="selected"{% endif %}>Project Leader</option>
-                <option value="ProjectMember"{% if contributor.attrib.contributorType == "ProjectMember"%} selected="selected"{% endif %}>Project Member</option>
-                <option value="RegistrationAgency"{% if contributor.attrib.contributorType == "RegistrationAgency"%} selected="selected"{% endif %}>Registration Agency</option>
-                <option value="RegistrationAuthority"{% if contributor.attrib.contributorType == "RegistrationAuthority"%} selected="selected"{% endif %}>Registration Authority</option>
-                <option value="RelatedPerson"{% if contributor.attrib.contributorType == "RelatedPerson"%} selected="selected"{% endif %}>Related Person</option>
-                <option value="ResearchGroup"{% if contributor.attrib.contributorType == "ResearchGroup"%} selected="selected"{% endif %}>Research Group</option>
-                <option value="RightsHolder"{% if contributor.attrib.contributorType == "RightsHolder"%} selected="selected"{% endif %}>Rights Holder</option>
-                <option value="Researcher"{% if contributor.attrib.contributorType == "Researcher"%} selected="selected"{% endif %}>Researcher</option>
-                <option value="Sponsor"{% if contributor.attrib.contributorType == "Sponsor"%} selected="selected"{% endif %}>Sponsor</option>
-                <option value="Supervisor"{% if contributor.attrib.contributorType == "Supervisor"%} selected="selected"{% endif %}>Supervisor</option>
-                <option value="WorkPackageLeader"{% if contributor.attrib.contributorType == "WorkPackageLeader"%} selected="selected"{% endif %}>Work Package Leader</option>
-                <option value="Other"{% if contributor.attrib.contributorType == "Other"%} selected="selected"{% endif %}>Other</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div name="/resource/contributors/contributor[{{ forloop.counter }}]/affiliation" class="element form-group form-group-sm">
-              <label for="/resource/contributors/contributor[{{ forloop.counter }}]/affiliation" class="element col-sm-3 control-label">{% trans "Affiliation" %}:</label>
-              <div class="col-sm-5">
-                <input type="text" name="/resource/contributors/contributor[{{ forloop.counter }}]/affiliation" value="{{ contributor.affiliation.text|default_if_none:"" }}" class="data form-control">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-{% endfor %}
-    </div>
+
+<script type="text/javascript">
+  $(function() {
+    $('#contrib_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.contrib_set.prefix }}',
+      deleteCssId: 'button__minus-contributor',
+      addCssId: 'button__plus-contributor'
+    });
+  })
+</script>
+
+<div id="contrib_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="contributor_form_set">
+  <div class="fieldset-controls__container">
+    <div id="contributor_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Contributor" %}</div>
+  {% include "create/_datacite_buttons.html" with element="contributor" %}
   </div>
+{% for form in form.contrib_set %}
+  <div class="form-container">
+{{ form.non_field_errors }}
+  {% for c_field in form %}
+
+  {% if forloop.first %}
+    {% include "create/_datacite_inlinetext.html" with field=c_field %}
+  <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
+    <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
+  {% else %}
+    {% if c_field|fieldtype == "TextInput" %}
+      {% include "create/_datacite_inlinetext.html" with field=c_field %}
+    {% elif c_field|fieldtype == "Select" %}
+      {% include "create/_datacite_inlineselect.html" with field=c_field %}
+    {% endif %}
+  {% endif %}
+
+  {% endfor %}
+  </details>
+
+  </div>
+{% endfor %}
+</div>
+{{ form.contrib_set.management_form }}

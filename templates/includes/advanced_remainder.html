@@ -2,8 +2,9 @@
 {% load i18n %}
 
 <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset4">
-  <div id="create__fieldset4" class="fieldset-stacked__legend-number-2">{% trans "Optional: Enter a custom remainder (suffix)" %}</div>
+  <div id="create__fieldset4" class="fieldset-stacked__legend-number-2">{% trans "Optional: Enter a custom remainder (suffix)" %}
   {% help_icon "custom_remainder" %}
+  </div>
   {{ form.remainder_form.non_field_errors }}
   {% for field in form.remainder_form %}
   <div class="fcontrol__group-stacked{% if field.errors %}--invalid{% endif %} create__form-element-group">
