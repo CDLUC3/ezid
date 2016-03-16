@@ -69,10 +69,6 @@ def get_dict_value(dt, key_name):
     return ''
   
 @register.simple_tag
-def tooltip_class(profile_element_string):
-  return escape('element_' + profile_element_string.replace('.',''))
-
-@register.simple_tag
 def identifier_display(id_text, testPrefixes):
   for pre in testPrefixes:
     if id_text.startswith(pre['prefix']):
@@ -88,17 +84,11 @@ def active_id_display(id_text, testPrefixes):
   return '<a href="' + _urlForm(id_text) + '">' + _urlForm(id_text) + '</a>'
 
 @register.simple_tag
-def help_icon(id_of_help):
+def help_icon(id_of_help, css_class="button__icon-help"):
+  title = _("Click for additional help")
   return '<a id="' + id_of_help + '" role="button" data-toggle="popover" data-trigger="click">' + \
-    '<img src="/static/images/iconHelp.svg" alt="Click for additional help"' + \
-    ' class="button__icon-help" title="Click for additional help"/></a>'
-
-@register.simple_tag
-def datacite_field_help_icon(id_of_help):
-  temp_id = id_of_help.replace(".", "_") + '_help'
-  return '<a id="' + temp_id + '" role="button" data-toggle="popover" data-trigger="click">' + \
-    '<img src="/static/images/iconHelp.svg" alt="Click for additional help"' + \
-    ' class="icon-help" title="Click for additional help"/></a>'  
+    '<img src="/static/images/iconHelp.svg" alt="' + title + '"' + \
+    ' class="' + css_class + '" title="' + title + '"/></a>'
 
 @register.tag
 @basictag(takes_context=True)
