@@ -21,18 +21,13 @@
 
 import ldap
 import re
-import threading
-import uuid
 
 import config
-import datacite
 import django_util
 import ezid
 import ezidapp.models
 import idmap
 import log
-import noid_egg
-import noid_nog
 import policy
 import shoulder
 import userauth
@@ -50,14 +45,11 @@ _adminPassword = None
 _ldapAdminDn = None
 _ldapAdminPassword = None
 _agentShoulder = None
-_lock = threading.Lock()
-_statusProbes = None
 
 def _loadConfig ():
   global _ldapEnabled, _updatesEnabled, _ldapServer, _baseDn, _userDnTemplate
   global _userDnPattern, _groupDnTemplate, _adminUsername, _adminPassword
   global _ldapAdminDn, _ldapAdminPassword, _agentShoulder
-  global _statusProbes
   _ldapEnabled = (config.get("ldap.enabled").lower() == "true")
   _updatesEnabled = (config.get("ldap.updates_enabled").lower() == "true")
   _ldapServer = config.get("ldap.server")
@@ -73,11 +65,6 @@ def _loadConfig ():
   _ldapAdminPassword = config.get("ldap.ldap_admin_password")
   _agentShoulder = config.get("shoulders.agent")
   assert _agentShoulder.startswith("ark:/")
-  _lock.acquire()
-  try:
-    _statusProbes = {}
-  finally:
-    _lock.release()
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
@@ -735,15 +722,6 @@ def changeGroup (uid, newGroupDn, user, group):
   finally:
     if l: l.unbind()
 
-def _addStatusProbe (type, url):
-  id = uuid.uuid1().hex
-  _lock.acquire()
-  try:
-    _statusProbes[id] = (type, url)
-  finally:
-    _lock.release()
-  return id
-
 def pingLdap ():
   """
   Pings the LDAP server, returning "up" or "down".
@@ -757,41 +735,3 @@ def pingLdap ():
     return "up"
   except Exception:
     return "down"
-
-def systemStatus (id=None):
-  """
-  Returns system status information.  If 'id' is None, a list of
-  subsystems is returned; each subsystem is described by a dictionary
-  with keys 'id' (a globally unique identifier) and 'name' (a
-  human-readable name).  If 'id' is not None, the identified subsystem
-  is tested and "up" or "down" is returned.  ("down" is also returned
-  if 'id' doesn't identify a subsystem.)
-  """
-  if id is None:
-    probes = []
-    probes.append({ "id": _addStatusProbe("ldap", None), "name": "LDAP" })
-    probes.append({ "id": _addStatusProbe("noid_egg", None),
-      "name": "Noid \"bind\" database" })
-    probes.append({ "id": _addStatusProbe("datacite", None),
-      "name": "DataCite API and Handle System" })
-    for s in shoulder.getAll():
-      if s.minter != "":
-        probes.append({ "id": _addStatusProbe("noid_nog", s.minter),
-          "name": "%s (%s) minter" % (s.name, s.key) })
-    return probes
-  else:
-    _lock.acquire()
-    try:
-      if id not in _statusProbes: return "down"
-      type, url = _statusProbes[id]
-      del _statusProbes[id]
-    finally:
-      _lock.release()
-    if type == "ldap":
-      return pingLdap()
-    elif type == "noid_egg":
-      return noid_egg.ping()
-    elif type == "noid_nog":
-      return noid_nog.Minter(url).ping()
-    elif type == "datacite":
-      return datacite.ping()

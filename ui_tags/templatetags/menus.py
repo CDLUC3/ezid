@@ -35,10 +35,7 @@ MENUS = (
           ("Admin", 'ui_admin.index', 'admin',
             ( ("Usage", 'ui_admin.usage', 'admin', ()),
               ("Users", 'ui_admin.manage_users', 'admin', ()),
-              ("Groups", 'ui_admin.manage_groups', 'admin', ()),
-              ("Status", 'ui_admin.system_status', 'admin', ()),
-              ("Alerts", 'ui_admin.alert_message', 'admin', ()),
-              ("New account", 'ui_admin.new_account', 'admin', ())
+              ("Groups", 'ui_admin.manage_groups', 'admin', ())
             )
           )
         )
