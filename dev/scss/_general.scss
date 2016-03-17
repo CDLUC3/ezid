@@ -1,0 +1,14 @@
+// ##### General Page Layout ##### //
+
+.general {
+	// empty
+}
+
+.general__note {
+	max-width: 1000px;
+	margin: 30px auto;
+
+	@include bp(screen2) {
+		padding: 0 20% 0 0;
+	}
+}

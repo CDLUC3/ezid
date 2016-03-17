@@ -286,9 +286,8 @@ def download(request):
   Enqueue a batch download request and display link to user
   """
   d = { 'menu_item' : 'ui_manage.null'}
-  if request.method != "POST": return uic.methodNotAllowed(request)
   d['mail'] = useradmin.getContactInfo(request.session['auth'].user[0])['mail']
   # Something like this but waiting for Greg to provide method for csv version
   # return _response(download.enqueueRequest(request.session['auth'], request))
-  # d['link'] = ?
+  d['link'] = "PLACEHOLDER.csv.gz" 
   return uic.render(request, "manage/download", d)

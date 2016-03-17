@@ -9,6 +9,31 @@ import datetime
 import ui_search 
 from collections import *
 
+@uic.admin_login_required
+def alert_message(request, ssl=False):
+  """ ToDo: remove? """
+  d = { 'menu_item' : 'ui_admin.alert_message' }
+  if request.method == "POST":
+    if 'remove_it' in request.POST and request.POST['remove_it'] == 'remove_it':
+      if os.path.exists(os.path.join(django.conf.settings.SITE_ROOT, "db","alert_message")):
+        os.remove(os.path.join(django.conf.settings.SITE_ROOT, "db",
+                               "alert_message"))
+      #global alertMessage  
+      uic.alertMessage = ''
+      request.session['hide_alert'] = False
+      django.contrib.messages.success(request, "Message removed.")
+    elif 'message' in request.POST:
+      m = request.POST["message"].strip()
+      f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
+        "alert_message"), "w")
+      f.write(m)
+      f.close()
+      #global alertMessage
+      uic.alertMessage = m
+      request.session['hide_alert'] = False
+      django.contrib.messages.success(request, "Message updated.")
+  return uic.render(request, 'admin/alert_message', d)
+
 @uic.user_login_required
 def dashboard(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.dashboard'}
@@ -46,37 +71,15 @@ def _getUsage(request, d):
   if len(d['report']) > 0:
     d['totals'] = d['report'][0]
     d['report'] = d['report'][1:]
+  # old code, to be replaced by function being written by Greg
   s = stats.getStats()
   last_calc = datetime.datetime.fromtimestamp(s.getComputeTime())
   d['last_tally'] = last_calc.strftime('%B %d, %Y')
-  d['yearly'] = _year_totals(user_id, group_id, last_calc)
+
+  # Used for totals of last 12 months. No longer used.
+  # d['yearly'] = _year_totals(user_id, group_id, last_calc)
   
   return d
-
-@uic.admin_login_required
-def alert_message(request, ssl=False):
-  d = { 'menu_item' : 'ui_admin.alert_message' }
-  if request.method == "POST":
-    if 'remove_it' in request.POST and request.POST['remove_it'] == 'remove_it':
-      if os.path.exists(os.path.join(django.conf.settings.SITE_ROOT, "db","alert_message")):
-        os.remove(os.path.join(django.conf.settings.SITE_ROOT, "db",
-                               "alert_message"))
-      #global alertMessage  
-      uic.alertMessage = ''
-      request.session['hide_alert'] = False
-      django.contrib.messages.success(request, "Message removed.")
-    elif 'message' in request.POST:
-      m = request.POST["message"].strip()
-      f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
-        "alert_message"), "w")
-      f.write(m)
-      f.close()
-      #global alertMessage
-      uic.alertMessage = m
-      request.session['hide_alert'] = False
-      django.contrib.messages.success(request, "Message updated.")
-  return uic.render(request, 'admin/alert_message', d)
-
 
 def _month_range_for_display(user, group):
   """
