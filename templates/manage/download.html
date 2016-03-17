@@ -1,0 +1,20 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load i18n %}
+
+{% block title %}{% trans "Download Request" %}{% endblock %}
+{% block heading %}{% content_heading _("Download Request Received") %}{% endblock %}
+{% block content %}
+
+<p>{% trans "Your download request is being processed and will be available in a few minutes." %}</p>
+ 
+<p>{% trans "When it is ready to download, an email with the download link will been sent to the email address affiliated with your EZID account" %}: {{ mail }}. {% trans "To update your email address, go to"%} <a href="{% url "ui_account.edit" %}" class="link__primary">{% trans "My Account" %}</a>.</p>
+ 
+ 
+<p>{% trans "After you receive the email, you may also download a .csv file of the requested identifiers using the link below:" %}</p>
+
+<a href class="download__link">{{ link }}</a>
+ 
+<p>{% trans "The download link will expire in 1 week." %}</p>
+
+{% endblock %}

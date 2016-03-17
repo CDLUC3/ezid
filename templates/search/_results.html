@@ -34,8 +34,7 @@
       </optgroup>
     </select>
   </div>
-  <!--  url "ui_download.index" -->
-  <form action="" role="form">
+  <form action="{% url "ui_manage.download" %}" method="post" role="form">
     <button id="download" class="button__primary manage__download-button">{% trans "Download All" %}</button>
   </form>
 </div>

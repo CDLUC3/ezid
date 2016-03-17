@@ -68,3 +68,9 @@
 .link__pop {
 	@extend %link__pop;
 }
+
+.download__link {
+	@extend %link__primary;
+	font-size: 1.1em;
+	font-weight: bold;
+}
