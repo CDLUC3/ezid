@@ -27,11 +27,11 @@
   <hr/>
   <div role="group" aria-labelledby="fieldset__owner-filter">
   <form action="" method="post">
-    <div class="fieldset-stacked__inline-select">
+    <div class="fieldset-stacked__inline-select dashboard__report-heading">
       <span id="fieldset__owner-filter" class="heading__icon-2">View Report for</span>
       <label for="tbd" class="fcontrol__text-label-hidden">Specific User or Group</label>
 
-        <select id="choice" name="choice" class="fcontrol__select-inline">
+        <select id="choice" name="choice" class="fcontrol__select">
       
           <option value="all"
         
@@ -92,6 +92,8 @@
           >uitesting</option>
       
         </select>
+        <button class="dashboard__button-go">Go</button>
+        <a href class="dashboard__csv-link">View CSV format of Identifier Creation and Use</a>
     </div>
   </form>
   </div>
@@ -133,6 +135,21 @@
   </div>
   <div class="col-md-8">
   <h2 class="heading__icon-4">Total Identifiers Created By Month</h2>
+  <div class="dashboard__month-range">
+    <div class="fcontrol__select-group-inline">
+      <label for="month_begin" class="fcontrol__select-label-hidden">Month Begin</label>
+      <select name="month-range" class="fcontrol__select">
+        <option value="">June 2011</option>
+        <option value="">June 2013</option>
+      </select>
+      to
+      <label for="month_begin" class="fcontrol__select-label-hidden">Month Begin</label>
+      <select name="month-range" class="fcontrol__select">
+        <option value="">June 2011</option>
+        <option value="">June 2013</option>
+      </select>
+    </div>
+  </div>
 <table class="table2 dashboard__table-identifiers">
 <thead>
 <tr>
