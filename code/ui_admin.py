@@ -21,7 +21,7 @@ from collections import *
 def index(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.index'}
   #return redirect("ui_admin.usage")
-  return uic.render(request, 'admin/index', d)
+  return uic.render(request, 'admin-old/index', d)
 
 @uic.admin_login_required
 def usage(request, ssl=False):
@@ -57,7 +57,7 @@ def usage(request, ssl=False):
   d['last_tally'] = last_calc.strftime('%B %d, %Y')
   d['yearly'] = _year_totals(user_id, group_id, last_calc)
   
-  return uic.render(request, 'admin/usage', d)
+  return uic.render(request, 'admin-old/usage', d)
 
 @uic.admin_login_required
 def add_user(request, ssl=False):
@@ -102,27 +102,27 @@ def manage_users(request, ssl=False):
   else:
     REQUEST = request.POST
   if 'user' in REQUEST and REQUEST['user'] in users_by_dn:
-    d['user'] = users_by_dn[REQUEST['user']]
+    d['selected_user'] = users_by_dn[REQUEST['user']]
   else:
-    d['user'] = d['users'][0]
-  if d['user']['sn'] == 'please supply':
-    d['user']['sn'] = ''
-  if d['user']['mail'] == 'please supply':
-    d['user']['mail'] = ''
+    d['selected_user'] = d['users'][0]
+  if d['selected_user']['sn'] == 'please supply':
+    d['selected_user']['sn'] = ''
+  if d['selected_user']['mail'] == 'please supply':
+    d['selected_user']['mail'] = ''
   
   d['groups'] = ezidadmin.getGroups()
   d['groups'].sort(key=lambda i: i['gid'].lower())
-  d['group'] = idmap.getGroupId(d['user']['groupGid'])
-  d['group_dn'] = d['user']['groupDn']
+  d['group'] = idmap.getGroupId(d['selected_user']['groupGid'])
+  d['group_dn'] = d['selected_user']['groupDn']
   #now for saving
   if request.method == "POST" and request.POST['user'] == request.POST['original_user']:
-    u, p = d['user'], request.POST
+    u, p = d['selected_user'], request.POST
     d['group_dn'] = p['group_dn']
     u['givenName'], u['sn'], u['mail'], u['telephoneNumber'], u['description'] = \
       p['givenName'], p['sn'], p['mail'], p['telephoneNumber'], p['description']
     u['ezidCoOwners'] = ','.join([x.strip() for x in p['ezidCoOwners'].strip().split("\n")])
     if validate_edit_user(request, u):
-      d['user']['currentlyEnabled'] = update_edit_user(request, u)
+      d['selected_user']['currentlyEnabled'] = update_edit_user(request, u)
       #if group has changed, update
       if p['group_dn'] != u['groupDn']:
         res = ezidadmin.changeGroup(u['uid'], p['group_dn'], \
@@ -131,11 +131,11 @@ def manage_users(request, ssl=False):
           django.contrib.messages.error(request, res)
     else:
       if 'currentlyEnabled' in request.POST and request.POST['currentlyEnabled'].lower() == 'true':
-        d['user']['currentlyEnabled'] = 'true'
+        d['selected_user']['currentlyEnabled'] = 'true'
       else:
-        d['user']['currentlyEnabled'] = 'false'
-  d['ezidCoOwners'] = "\n".join([x.strip() for x in d['user']['ezidCoOwners'].split(',')])
-  return uic.render(request, 'admin/manage_users', d)
+        d['selected_user']['currentlyEnabled'] = 'false'
+  d['ezidCoOwners'] = "\n".join([x.strip() for x in d['selected_user']['ezidCoOwners'].split(',')])
+  return uic.render(request, 'admin-old/manage_users', d)
 
 @uic.admin_login_required
 def add_group(request, ssl=False):
@@ -230,7 +230,7 @@ def manage_groups(request, ssl=False):
   else:
     sels = d['group']['shoulderList'].split()
   d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels)
-  return uic.render(request, 'admin/manage_groups', d)
+  return uic.render(request, 'admin-old/manage_groups', d)
 
 @uic.admin_login_required
 def system_status(request, ssl=False):
@@ -243,7 +243,7 @@ def system_status(request, ssl=False):
     django.contrib.messages.success(request, "EZID reloaded.")
     django.contrib.messages.success(request, "You have been logged out.")
     return uic.redirect("/")
-  return uic.render(request, 'admin/system_status', d)
+  return uic.render(request, 'admin-old/system_status', d)
 
 @uic.admin_login_required
 def ajax_system_status(request):
@@ -274,7 +274,7 @@ def alert_message(request, ssl=False):
       uic.alertMessage = m
       request.session['hide_alert'] = False
       django.contrib.messages.success(request, "Message updated.")
-  return uic.render(request, 'admin/alert_message', d)
+  return uic.render(request, 'admin-old/alert_message', d)
 
 @uic.admin_login_required
 def new_account(request, ssl=False):
@@ -326,10 +326,10 @@ def new_account(request, ssl=False):
                                django.conf.settings.SERVER_EMAIL, emails)
     django.contrib.messages.success(request, "Form information has been emailed.")
     d['field_info'], d['field_order'] = field_info, field_order
-    return uic.render(request, 'admin/new_account_display', d)
+    return uic.render(request, 'admin-old/new_account_display', d)
   
   d['field_info'], d['field_order'] = field_info, field_order
-  return uic.render(request, 'admin/new_account', d)
+  return uic.render(request, 'admin-old/new_account', d)
 
 def select_shoulder_lists(selected_val_list):
   """Makes list of selected and deselected shoulders in format [value, friendly label]
