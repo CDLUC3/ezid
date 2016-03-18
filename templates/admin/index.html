@@ -20,6 +20,7 @@
             <a href="{{ app.app_url }}" class="section" title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}">{{ app.name }}</a>
         </caption>
         {% for model in app.models %}
+          {% if model.object_name not in readonly_models %}
             <tr class="model-{{ model.object_name|lower }}">
             {% if model.admin_url %}
                 <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
@@ -39,6 +40,30 @@
                 <td>&nbsp;</td>
             {% endif %}
             </tr>
+          {% endif %}
+        {% endfor %}
+        {% for model in app.models %}
+          {% if model.object_name in readonly_models %}
+            <tr class="model-{{ model.object_name|lower }}">
+            {% if model.admin_url %}
+                <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a> <span style="font-weight: normal">(readonly)</span></th>
+            {% else %}
+                <th scope="row">{{ model.name }} (readonly)</th>
+            {% endif %}
+
+            {% if model.add_url %}
+                <td><a href="{{ model.add_url }}" class="addlink">{% trans 'Add' %}</a></td>
+            {% else %}
+                <td>&nbsp;</td>
+            {% endif %}
+
+            {% if model.admin_url %}
+                <td><a href="{{ model.admin_url }}" class="changelink">{% trans 'Change' %}</a></td>
+            {% else %}
+                <td>&nbsp;</td>
+            {% endif %}
+            </tr>
+          {% endif %}
         {% endfor %}
         </table>
         </div>
