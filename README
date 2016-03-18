@@ -36,6 +36,14 @@ essential component in the grand scheme of things); additional Noid
 DataCite services for creating DOI identifiers; and an LDAP server, if
 LDAP authentication is used.
 
+There is an additional dependency on the Django version: certain files
+have been copied and in some cases modified from the Django admin
+app's source code into the EZID repository.  Running under a Django
+version different from that used during development may cause
+problems.  See the READMEs in directories
+.../SITE_ROOT/PROJECT_ROOT/static/admin and
+.../SITE_ROOT/PROJECT_ROOT/templates/admin.
+
 General layout and configuration
 ================================
 
@@ -126,7 +134,7 @@ Initial setup
 To create the initial databases, assuming the above environment
 variables have been set:
 
-    django-admin migrate --database=store
+    django-admin migrate
     django-admin migrate --database=search
 
     sqlite3 .../SITE_ROOT/db/store.sqlite3 \

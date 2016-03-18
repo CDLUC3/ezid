@@ -35,8 +35,9 @@ else:
   SERVER_EMAIL = "ezid@" + socket.gethostname()
 
 DATABASES = {
-  "default": {},
-  "store": {
+  # To keep the Django admin app happy, the store database must be
+  # referred to as 'default', despite our use of a router below.
+  "default": {
     "ENGINE": "django.db.backends.mysql",
     "HOST": "databases.store_host", # see below
     "NAME": "ezid",
@@ -130,8 +131,8 @@ LOCALIZATIONS = { "default": ("cdl", ["ezid@ucop.edu"]) }
 # in place.
 
 SECRET_PATHS = [
-  ("DATABASES", "store", "HOST"),
-  ("DATABASES", "store", "PASSWORD"),
+  ("DATABASES", "default", "HOST"),
+  ("DATABASES", "default", "PASSWORD"),
   ("DATABASES", "search", "HOST"),
   ("DATABASES", "search", "PASSWORD")
 ]
