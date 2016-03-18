@@ -2669,6 +2669,7 @@ blockquote p {
 
 .dcms_label {
   text-align: left;
+  vertical-align: top;
   padding-right: 42px; }
 
 .home-banner__lead-container {
