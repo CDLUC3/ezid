@@ -72,9 +72,7 @@ layout:
             ui_tags/
             xsd/
         db/
-            alert_message
             search.sqlite3 (if using SQLite)
-            secret_key
             shoulders_cache.txt
             stats
             store.sqlite3 (if using SQLite)
@@ -144,12 +142,13 @@ Also, if using MySQL for the search database:
 
     mysql < .../SITE_ROOT/PROJECT_ROOT/etc/search-mysql-addendum.sql
 
-To load initial data into the search database, run the following
-command.  (search-init.json is stored in
+To load initial data into the databases, run the following commands.
+(The *.json files are stored in
 .../SITE_ROOT/PROJECT_ROOT/ezidapp/fixtures, but the full path need
 not be specified on the command line.)  The users, groups, and realms
-defined in this file are just examples.
+defined in these file are just examples.
 
+    django-admin loaddata store-init.json
     django-admin loaddata --database=search search-init.json
 
 Running under Apache
