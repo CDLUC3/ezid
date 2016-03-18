@@ -2656,9 +2656,12 @@ blockquote p {
   color: red; }
 
 #id_as_url__box {
-  height: 26px;
+  flex-flow: column wrap;
   border: 1px solid #beb6af;
   padding: 4px; }
+
+#url_to_copy {
+  flex: 0 1 auto; }
 
 #copy_message {
   display: none; }

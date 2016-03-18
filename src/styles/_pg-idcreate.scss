@@ -34,9 +34,16 @@
 }
 
 #id_as_url__box {
-  height: 26px;
+  // display: block;
+  flex-flow: column wrap;
+  // height: 26px;
   border: 1px solid $design-light-gray-border-color;
   padding: 4px;
+}
+
+#url_to_copy {
+  // display: block;
+  flex: 0 1 auto;
 }
 
 #copy_message {
