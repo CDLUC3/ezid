@@ -19,6 +19,7 @@
 
 import django.contrib.admin
 import django.contrib.messages
+import django.core.urlresolvers
 import django.core.validators
 import django.forms
 
@@ -67,6 +68,24 @@ class ServerVariablesAdmin (django.contrib.admin.ModelAdmin):
     return obj
 
 superuser.register(models.ServerVariables, ServerVariablesAdmin)
+
+class ShoulderInline (django.contrib.admin.TabularInline):
+  model = models.Shoulder
+  verbose_name_plural = "Shoulders using this datacenter"
+  def shoulderLink (self, obj):
+    link = django.core.urlresolvers.reverse("admin:ezidapp_shoulder_change",
+      args=[obj.id])
+    return "<a href=\"%s\">%s</a>" % (link, obj.prefix)
+  shoulderLink.allow_tags = True
+  shoulderLink.short_description = "prefix"
+  fields = ["shoulderLink", "name", "crossrefEnabled"]
+  readonly_fields = ["shoulderLink", "name", "crossrefEnabled"]
+  ordering = ["name"]
+  extra = 0
+  def has_add_permission (self, request):
+    return False
+  def has_delete_permission (self, request, obj=None):
+    return False
 
 class StoreDatacenterForm (django.forms.ModelForm):
   def clean (self):
