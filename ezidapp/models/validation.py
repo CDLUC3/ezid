@@ -56,6 +56,11 @@ def crossrefDoi (identifier):
     raise django.core.exceptions.ValidationError(
       "Identifier does not satisfy CrossRef syntax requirements.")
 
+def shoulder (shoulder):
+  # Validates a shoulder.
+  if not util.validateShoulder(shoulder):
+    raise django.core.exceptions.ValidationError("Invalid shoulder.")
+
 def datacenterSymbol (symbol):
   # Validates a DataCite datacenter symbol, per DataCite rules.
   if util.validateDatacenter(symbol) is None:
