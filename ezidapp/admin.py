@@ -21,6 +21,7 @@ import django.contrib.admin
 import django.contrib.messages
 import django.core.urlresolvers
 import django.core.validators
+import django.db.models
 import django.forms
 
 import config
@@ -68,6 +69,58 @@ class ServerVariablesAdmin (django.contrib.admin.ModelAdmin):
     return obj
 
 superuser.register(models.ServerVariables, ServerVariablesAdmin)
+
+class ShoulderForm (django.forms.ModelForm):
+  def clean (self):
+    raise django.core.validators.ValidationError(
+      "Object cannot be updated using this interface.")
+
+class ShoulderTypeFilter (django.contrib.admin.SimpleListFilter):
+  title = "type"
+  parameter_name = "type"
+  def lookups (self, request, model_admin):
+    return [(t, t) for t in ["ARK", "DOI", "URN"]]
+  def queryset (self, request, queryset):
+    if self.value() != None:
+      queryset = queryset.filter(prefix__startswith=self.value().lower()+":")
+    return queryset
+
+class ShoulderHasMinterFilter (django.contrib.admin.SimpleListFilter):
+  title = "has minter"
+  parameter_name = "hasMinter"
+  def lookups (self, request, model_admin):
+    return [("Yes", "Yes"), ("No", "No")]
+  def queryset (self, request, queryset):
+    if self.value() != None:
+      if self.value() == "Yes":
+        queryset = queryset.filter(~django.db.models.Q(minter=""))
+      else:
+        queryset = queryset.filter(minter="")
+    return queryset
+
+class ShoulderAdmin (django.contrib.admin.ModelAdmin):
+  def datacenterLink (self, obj):
+    link = django.core.urlresolvers.reverse(
+      "admin:ezidapp_storedatacenter_change", args=[obj.datacenter.id])
+    return "<a href=\"%s\">%s</a>" % (link, obj.datacenter.symbol)
+  datacenterLink.allow_tags = True
+  datacenterLink.short_description = "datacenter"
+  search_fields = ["prefix", "name"]
+  actions = None
+  list_filter = [ShoulderTypeFilter, ShoulderHasMinterFilter,
+    "crossrefEnabled"]
+  ordering = ["name"]
+  list_display = ["prefix", "name"]
+  fields = ["prefix", "name", "minter", "datacenterLink", "crossrefEnabled"]
+  readonly_fields = ["prefix", "name", "minter", "datacenterLink",
+    "crossrefEnabled"]
+  form = ShoulderForm
+  def has_add_permission (self, request):
+    return False
+  def has_delete_permission (self, request, obj=None):
+    return False
+
+superuser.register(models.Shoulder, ShoulderAdmin)
 
 class ShoulderInline (django.contrib.admin.TabularInline):
   model = models.Shoulder
