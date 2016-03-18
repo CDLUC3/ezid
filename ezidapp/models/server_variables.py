@@ -29,10 +29,13 @@ class ServerVariables (django.db.models.Model):
   secretKey = django.db.models.CharField("secret key",
     max_length=_secretKeyLength, blank=True,
     help_text="The secret key identifies the server; " +\
-    "changing it invalidates every session cookie, password reset URL, " +\
+    "changing it invalidates every API session cookie, password reset URL, " +\
     "and OAI-PMH resumption token.  Set it to blank to generate a new " +\
     "random key.")
   # Stored value of django.conf.settings.SECRET_KEY.
+
+  def clean (self):
+    self.alertMessage = self.alertMessage.strip()
 
   def __unicode__ (self):
     return "Row 1"

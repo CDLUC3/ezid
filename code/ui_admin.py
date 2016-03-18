@@ -232,30 +232,6 @@ def manage_groups(request, ssl=False):
   d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels)
   return uic.render(request, 'admin-old/manage_groups', d)
 
-@uic.admin_login_required
-def alert_message(request, ssl=False):
-  d = { 'menu_item' : 'ui_admin.alert_message' }
-  if request.method == "POST":
-    if 'remove_it' in request.POST and request.POST['remove_it'] == 'remove_it':
-      if os.path.exists(os.path.join(django.conf.settings.SITE_ROOT, "db","alert_message")):
-        os.remove(os.path.join(django.conf.settings.SITE_ROOT, "db",
-                               "alert_message"))
-      #global alertMessage  
-      uic.alertMessage = ''
-      request.session['hide_alert'] = False
-      django.contrib.messages.success(request, "Message removed.")
-    elif 'message' in request.POST:
-      m = request.POST["message"].strip()
-      f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
-        "alert_message"), "w")
-      f.write(m)
-      f.close()
-      #global alertMessage
-      uic.alertMessage = m
-      request.session['hide_alert'] = False
-      django.contrib.messages.success(request, "Message updated.")
-  return uic.render(request, 'admin-old/alert_message', d)
-
 def select_shoulder_lists(selected_val_list):
   """Makes list of selected and deselected shoulders in format [value, friendly label]
   and returns (selected_list, deselected_list)"""
