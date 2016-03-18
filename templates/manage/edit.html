@@ -14,22 +14,23 @@
     <input name="identifier" id="identifier"  type="hidden" value="{{ id_text }}"/>
     <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
     <input name="simpleToAdvanced" id="simpleToAdvanced"  type="hidden" value="False"/>
-  <div class="row vertical-buffer-bot">
-    <label class="col-xs-2">{% trans "Identifier" %}:</label>
-    <div class="col-sm-7 col-xs-10"><strong>{% identifier_display id_text testPrefixes %}</strong></div>
+
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{% trans "Identifier" %}</label>
+    <div class="fcontrol__text-nofield"><strong>{% identifier_display id_text testPrefixes %}</strong></div>
   </div>
-  <div class="row vertical-buffer-bot">
-    <label class="col-sm-2 col-xs-2">{% trans "Identifier as URL" %}:</label>
-    <div class="col-sm-5 col-xs-8">
-      <div id="id_as_url__box" class="vertical-buffer-xxs">
-        <span id="url_to_copy">{% full_url_to_id_details id_text %}</span>
-        <span id="copy_message">{% trans "Link copied to your clipboard" %}</span>
-      </div>
+
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{% trans "Identifier as URL" %}</label>
+    <div id="id_as_url__box" class="fcontrol__text-nofield">
+      <span id="url_to_copy">{% full_url_to_id_details id_text %}</span>
+      <span id="copy_message">{% trans "Link copied to your clipboard" %}</span>
     </div>
     <!-- div class="col-xs-2">
       include "includes/get_link.html"
     </div -->
   </div>
+
   <div class="row">
     <div class="col-md-12 col-lg-3 col-lg-push-9">
     {% if not manual_profile %}
@@ -39,7 +40,7 @@
             <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; {% trans "Add more information to the record" %}" onclick="profileSimpleToAdvanced(event);" class="link__primary">
             &gt;&gt;&nbsp; {% trans "Add more information to the record" %}</button>
           {% elif not manual_profile and current_profile.name != "datacite" %}
-            {% trans "Would you like to add more information to the record?" %}<br/>
+            {% trans "Would you like to add more information to the record?" %}<br/><br/>
             <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" onclick="profileSimpleToAdvanced(event);" class="link__primary">
             &gt;&gt;&nbsp; {% trans "Convert to the DataCite citation profile" %}</button>
           {% endif %}
@@ -50,7 +51,7 @@
     </div>
 
     <div class="col-md-12 col-lg-9 col-lg-pull-3">
-      <div class="row vertical-buffer-20 vertical-buffer-bot">
+      <div class="row vertical-buffer-bot">
         <div class="inline-header">
           <h2 class="heading__icon-9">{% trans "About the Identified Object" %}</h2>
         </div>
@@ -71,65 +72,62 @@
   {% endif %}
     </div>
   </div>
-  <div class="vertical-buffer-20"> </div>
   <div class="row vertical-buffer-bot">
     <div class="inline-header">
       <h2 class="heading__icon-8">{% trans "About the Identifier" %}</h2>
     </div>
   </div>
-  <div class="row vertical-buffer-bot">
-    <label class="col-sm-2 col-xs-3">{{internal_profile.owner.displayName}}:</label>
-    <div class="col-sm-7 col-xs-9">{% display_value identifier internal_profile.owner %}</div>
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{{internal_profile.owner.displayName}}</label>
+    <div class="fcontrol__text-nofield">{% display_value identifier internal_profile.owner %}</div>
   </div>
-  <div class="row vertical-buffer-bot">
-    <label class="col-sm-2 col-xs-3">{{internal_profile.ownergroup.displayName}}:</label>
-    <div class="col-sm-7 col-xs-9">{% display_value identifier internal_profile.ownergroup %}</div>
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{{internal_profile.ownergroup.displayName}}</label>
+    <div class="fcontrol__text-nofield">{% display_value identifier internal_profile.ownergroup %}</div>
   </div>
-  <div class="row vertical-buffer-bot">
-    <label class="col-sm-2 col-xs-3">{{internal_profile.coowners.displayName}}:</label>
-    <div class="col-sm-7 col-xs-9">{% display_value identifier internal_profile.coowners %}</div>
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{{internal_profile.coowners.displayName}}</label>
+    <div class="fcontrol__text-nofield">{% display_value identifier internal_profile.coowners %}</div>
   </div>
-  <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{{internal_profile.created.displayName}}:</label>
-    <div class="col-sm-7">{% display_value identifier internal_profile.created %}</div>
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{{internal_profile.created.displayName}}</label>
+    <div class="fcontrol__text-nofield">{% display_value identifier internal_profile.created %}</div>
   </div>
-  <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{{internal_profile.updated.displayName}}:</label>
-    <div class="col-sm-7">{% display_value identifier internal_profile.updated %}</div>
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{{internal_profile.updated.displayName}}</label>
+    <div class="fcontrol__text-nofield">{% display_value identifier internal_profile.updated %}</div>
   </div>
-  <div class="row vertical-buffer-bot">
-    <label class="col-xs-2">{{internal_profile.status.displayName}}:</label>
-    <div class="col-xs-7">
-      <div class="form-group form-group-sm">
-      {% if orig_status == 'reserved' %}
-        <label class="radio-css" for="_status_reserved">
-          <input type="radio" name="_status" id="_status_reserved" value="reserved"
-          {% if pub_status == 'reserved' %}
-            checked="checked"
-          {% endif %}
-          /><span>{% trans "reserved" %}</span>
-        </label>
-      {% endif %}		            
-        <label class="radio-css" for="_status_public">
-          <input type="radio" name="_status" id="_status_public" value="public"
-          {% if pub_status == 'public' %}
-            checked="checked"
-          {% endif %}
-          /><span>{% trans "public" %}</span>
-        </label>
-      {% if orig_status != 'reserved' %}    
-        <label class="radio-css" for="_status_unavailable">
-          <input type="radio" name="_status" id="_status_unavailable" value="unavailable"
-          {% if pub_status == 'unavailable' %}
-            checked="checked"
-          {% endif %}
-          /><span>{% trans "unavailable" %}</span>
-        </label>
 
+
+<div class="fieldset-stacked" role="group" aria-labelledby="fieldset-publish">
+  <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="status">
+    <span id="status" class="fieldset-inline__legend create__inline-nested-legend">{{internal_profile.status.displayName}}</span>
+  {% if orig_status == 'reserved' %}
+    <label for="_status_reserved" class="fcontrol__radio-label-inline">
+      <input id="_status_reserved" class="fcontrol__radio-button-stacked" type="radio" value="reserved" name="_status" 
+      {% if pub_status == 'reserved' %}
+        checked="checked"
       {% endif %}
-      {% help_icon "decide_public" %}
-      </div>
-    </div>
+      ><span>{% trans "reserved" %}</span>
+    </label>
+  {% endif %}
+    <label for="_status_public" class="fcontrol__radio-label-inline">
+      <input id="_status_public" class="fcontrol__radio-button-stacked" type="radio" value="public" name="_status" 
+      {% if pub_status == 'public' %}
+        checked="checked"
+      {% endif %}
+      ><span>{% trans "public" %}</span>
+    </label>
+  {% if orig_status != 'reserved' %}
+    <label for="_status_unavailable" class="fcontrol__radio-label-inline">
+      <input id="_status_unavailable" class="fcontrol__radio-button-stacked" type="radio" value="unavailable" name="_status" 
+      {% if pub_status == 'unavailable' %}
+        checked="checked"
+      {% endif %}
+      ><span>{% trans "unavailable" %}</span>
+    </label>
+  {% endif %}
+    {% help_icon "decide_public" %}
   </div>
   <div id="unavailable_reason_row" 
     {% if pub_status == 'unavailable' %}
@@ -137,42 +135,37 @@
     {% else %}
       style="display: none;"
     {% endif %}
-    class="row vertical-buffer-bot">
-    <label class="col-sm-2">{% trans "Unavailable reason" %}:</label>
-    <div class="col-sm-7">
-      <div class="form-group form-group-sm">
-        <input type="text" name="stat_reason" id="stat_reason" 
-          {% if stat_reason %}
-            value="{{stat_reason}}"
-          {% else %}
-            value=""
-          {% endif %}
-          class="form-control" />
-      </div>
-    </div>
+    class="fcontrol__group-inline general__form-element-group">
+    <label for="stat_reason" class="fcontrol__text-label-inline general__form-label">{% trans "Unavailable reason" %}</label>
+    <input id="stat_reason" type="text" name="stat_reason" 
+      {% if stat_reason %}
+        value="{{stat_reason}}"
+      {% else %}
+        value=""
+      {% endif %}
+      class="fcontrol__text-field-inline" />
   </div>
-  <div id="indexing_row" class="row vertical-buffer-bot">
-    <label class="col-sm-2 col-xs-3">{% trans "Allow harvesting/indexing?" %}</label>
-    <div class="col-sm-7 col-xs-9">
-      <div class="form-group form-group-sm">
-        <label class="radio-css" for="export_yes">
-          <input type="radio" name="_export" id="export_yes" value="yes"
-          {% if export == 'yes' %}
-            checked="checked"
-          {% endif %}
-          /><span>{% trans "Yes" %}</span>
-        </label>
-        <label class="radio-css" for="export_no">
-          <input type="radio" name="_export" id="export_no" value="no"
-          {% if export != 'yes' %}
-            checked="checked"
-          {% endif %}
-          /><span>{% trans "No" %}</span>
-        </label>
-        {% help_icon "decide_export" %}
-      </div>
-    </div>
+  <div id="harv_index" class="fieldset-inline create__form-element-group" role="group" aria-labelledby="fieldset-harvesting">
+    <span id="fieldset-harvesting" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Allow harvesting/indexing?" %}</span>
+    <label for="export_yes" class="fcontrol__radio-label-inline">
+      <input id="export_yes" class="fcontrol__radio-button-stacked" type="radio" value="yes" name="_export"
+      {% if export == 'yes' %}
+        checked="checked"
+      {% endif %}
+      > <span>{% trans "Yes" %}</span>
+    </label>
+    <label for="export_no" class="fcontrol__radio-label-inline">
+      <input id="export_no" class="fcontrol__radio-button-stacked" type="radio" value="no" name="_export"
+      {% if export == 'no' %}
+        checked="checked"
+      {% endif %}
+      > <span>{% trans "No" %}</span>
+    </label>
+    {% help_icon "decide_export" %}
   </div>
+</div>
+
+
   <div class="row vertical-buffer-sm">
     <div class="form-group form-group-sm">
       <div class="col-sm-12">

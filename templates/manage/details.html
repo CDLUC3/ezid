@@ -48,7 +48,6 @@
     <div class="call-out">
       <h2 class="heading__iddetails-citation">{% trans "Citation Preview" %}</h2>
       <p class="truncated">
- ............. TEMPORARY PLACEHOLDER TEXT TO DEMONSTRATE READ MORE/READ LESS CAPABILITY ................. iWaleed El-Sekelly; Tarek Abdoun; Ricardo Dobry (2005): TREND: Zillow. Zillow Real Estate Metrics: Median Rental Price - All Homes | State: California | Zip Code: 90001, 90002  SOUTH LAKE TAHOE (96150), TRUCKEE (96161), 01/2015. Data-Planet&trade; Statistical Datasets by Conquest Systems, Inc. Dataset-ID:  068-001-013 PRESHAKE: Centrifuge modeling of the effect of sei oijhqsd89 2deghg 8 82d 2 8d28  sjdhsd 82oi joiwdj  owidj 890 jwd j wjd8 jijwidj widj3do3iodjio ji3d 3id3<br/><br/>
         {% get_dict_value identifier "datacite.creator" %}
         ({% get_dict_value identifier "datacite.publicationyear" %}):
         {% get_dict_value identifier "datacite.title" %}.
@@ -91,11 +90,11 @@
     {% autoescape off %}
       {{datacite_html}}
     {% endautoescape %}
-    <p><a href="/manage/display_xml/{{ id_text }}" target="_blank">{% trans "See the DataCite XML Metadata record in a new window" %}</a></p>
+    <p><a class="link__primary" href="/manage/display_xml/{{ id_text }}" target="_blank">{% trans "See the DataCite XML Metadata record in a new window" %}</a></p>
   {% endif %}
 	 
   {% if has_crossref_metadata %}
-    <p><a href="/manage/display_xml/{{ id_text }}" target="_blank" style="position:relative;top:10px;">{% trans "See the CrossRef XML Metadata record in a new window" %}</a></p>
+    <p><a class="link__primary" href="/manage/display_xml/{{ id_text }}" target="_blank" style="position:relative;top:10px;">{% trans "See the CrossRef XML Metadata record in a new window" %}</a></p>
   {% endif %}
 
   <div class="vertical-buffer-20"> </div>
