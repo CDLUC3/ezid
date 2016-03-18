@@ -108,7 +108,7 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
 # EZID-specific settings...
 STANDALONE = False
-SSL = True
+USE_SSL = True
 DAEMON_THREADS_ENABLED = True
 LOCALIZATIONS = { "default": ("cdl", ["ezid@ucop.edu"]) }
 

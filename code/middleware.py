@@ -43,9 +43,16 @@ class SslMiddleware:
   Django setting is true.
   """
   def process_view (self, request, view_func, view_args, view_kwargs):
-    if not django.conf.settings.SSL: return None
+    # The Django admin won't accept an 'ssl' keyword argument, so we
+    # have to remove it from the request if present.
+    if "ssl" in view_kwargs:
+      sslRequired = True
+      del view_kwargs["ssl"]
+    else:
+      sslRequired = False
+    if not django.conf.settings.USE_SSL: return None
     if request.is_ajax() or not _isUiRequest(request, view_func): return None
-    if view_kwargs.get("ssl", False):
+    if sslRequired:
       if request.is_secure(): return None
       if request.method == "GET":
         u = request.build_absolute_uri()

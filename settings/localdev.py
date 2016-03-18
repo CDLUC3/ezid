@@ -3,7 +3,7 @@ from common import *
 DEPLOYMENT_LEVEL = "localdev"
 
 STANDALONE = True
-SSL = False
+USE_SSL = False
 RELOAD_TEMPLATES = True
 
 DATABASES["default"] = {

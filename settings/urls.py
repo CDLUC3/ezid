@@ -61,7 +61,7 @@ urlpatterns = django.conf.urls.patterns("",
 
   # ADMIN
   django.conf.urls.url("^admin/",
-    django.conf.urls.include(ezidapp.admin.superuser.urls))
+    django.conf.urls.include(ezidapp.admin.superuser.urls), { "ssl": True })
 
 )
 
