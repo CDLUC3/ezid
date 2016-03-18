@@ -67,3 +67,37 @@ class ServerVariablesAdmin (django.contrib.admin.ModelAdmin):
     return obj
 
 superuser.register(models.ServerVariables, ServerVariablesAdmin)
+
+class StoreDatacenterForm (django.forms.ModelForm):
+  def clean (self):
+    raise django.core.validators.ValidationError(
+      "Object cannot be updated using this interface.")
+
+class StoreDatacenterAllocatorFilter (django.contrib.admin.SimpleListFilter):
+  title = "allocator"
+  parameter_name = "allocator"
+  def lookups (self, request, model_admin):
+    allocators = set()
+    for dc in models.StoreDatacenter.objects.all():
+      allocators.add(dc.allocator)
+    return [(a, a) for a in sorted(list(allocators))]
+  def queryset (self, request, queryset):
+    if self.value() != None:
+      queryset = queryset.filter(symbol__startswith=self.value()+".")
+    return queryset
+
+class StoreDatacenterAdmin (django.contrib.admin.ModelAdmin):
+  search_fields = ["symbol", "name"]
+  actions = None
+  list_filter = [StoreDatacenterAllocatorFilter]
+  ordering = ["symbol"]
+  list_display = ["symbol", "name"]
+  readonly_fields = ["symbol", "name"]
+  inlines = [ShoulderInline]
+  form = StoreDatacenterForm
+  def has_add_permission (self, request):
+    return False
+  def has_delete_permission (self, request, obj=None):
+    return False
+
+superuser.register(models.StoreDatacenter, StoreDatacenterAdmin)
