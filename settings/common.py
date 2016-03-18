@@ -59,8 +59,8 @@ DATABASE_ROUTERS = ["settings.routers.Router"]
 TIME_ZONE = "America/Los_Angeles"
 TIME_FORMAT_UI_METADATA = "%Y-%m-%d %H:%M:%S"
 
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, "static")
-MEDIA_URL = "static/"
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
+STATIC_URL = "/static/"
 
 # The secret key is loaded from the store database by config._load.
 SECRET_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -69,6 +69,7 @@ MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
   "django.contrib.sessions.middleware.SessionMiddleware",
   "django.contrib.messages.middleware.MessageMiddleware",
+  "django.contrib.auth.middleware.AuthenticationMiddleware",
   "middleware.SslMiddleware",
   "middleware.ExceptionScrubberMiddleware"
 )
@@ -87,7 +88,8 @@ TEMPLATES = [
     "OPTIONS": {
       "context_processors": [
         "django.contrib.messages.context_processors.messages",
-        "django.template.context_processors.request"]
+        "django.template.context_processors.request",
+        "django.contrib.auth.context_processors.auth"]
     }
   }
 ]
@@ -95,6 +97,9 @@ TEMPLATES = [
 INSTALLED_APPS = (
   "django.contrib.sessions",
   "django.contrib.messages",
+  "django.contrib.admin",
+  "django.contrib.auth",
+  "django.contrib.contenttypes",
   "ezidapp",
   "ui_tags"
 )

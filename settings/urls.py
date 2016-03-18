@@ -1,6 +1,8 @@
 import django.conf
 import django.conf.urls
 
+import ezidapp.admin
+
 urlpatterns = django.conf.urls.patterns("",
 
   # UI - RENDERED FROM TEMPLATES IN INFO REPOSITORY
@@ -55,14 +57,18 @@ urlpatterns = django.conf.urls.patterns("",
   ("^admin/reload$", "api.reload"),
 
   # OAI
-  ("^oai$", "oai.dispatch")
+  ("^oai$", "oai.dispatch"),
+
+  # ADMIN
+  django.conf.urls.url("^admin/",
+    django.conf.urls.include(ezidapp.admin.superuser.urls))
 
 )
 
 if django.conf.settings.STANDALONE:
   urlpatterns += django.conf.urls.patterns("",
     ("^static/(?P<path>.*)$", "django.views.static.serve",
-      { "document_root": django.conf.settings.MEDIA_ROOT }),
+      { "document_root": django.conf.settings.STATIC_ROOT }),
     ("^download/(?P<path>.*)$", "django.views.static.serve",
       { "document_root": django.conf.settings.DOWNLOAD_PUBLIC_DIR }))
 
