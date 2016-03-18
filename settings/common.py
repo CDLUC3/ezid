@@ -1,7 +1,6 @@
 import ldap
 import os
 import os.path
-import random
 import socket
 import sys
 
@@ -63,24 +62,8 @@ TIME_FORMAT_UI_METADATA = "%Y-%m-%d %H:%M:%S"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "static")
 MEDIA_URL = "static/"
 
-def _loadSecretKey ():
-  try:
-    f = open(os.path.join(SITE_ROOT, "db", "secret_key"))
-    k = f.read().strip()
-    f.close()
-  except IOError:
-    rng = random.SystemRandom()
-    alphabet = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
-    k = "".join(rng.choice(alphabet) for i in range(50))
-    try:
-      f = open(os.path.join(SITE_ROOT, "db", "secret_key"), "w")
-      f.write(k + "\n")
-      f.close()
-    except IOError:
-      pass
-  return k
-
-SECRET_KEY = _loadSecretKey()
+# The secret key is loaded from the store database by config._load.
+SECRET_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
