@@ -75,7 +75,7 @@ layout:
             search.sqlite3 (if using SQLite)
             shoulders_cache.txt
             stats
-            store.sqlite3 (if using SQLite)
+            store.sqlite3
         download/
             public/
         logs/
@@ -138,8 +138,9 @@ variables have been set:
     sqlite3 .../SITE_ROOT/db/store.sqlite3 \
       < .../SITE_ROOT/PROJECT_ROOT/etc/store-schema.sql
 
-Also, if using MySQL for the search database:
+Also, if using MySQL:
 
+    mysql < .../SITE_ROOT/PROJECT_ROOT/etc/store-mysql-addendum.sql
     mysql < .../SITE_ROOT/PROJECT_ROOT/etc/search-mysql-addendum.sql
 
 To load initial data into the databases, run the following commands.
