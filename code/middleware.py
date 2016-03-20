@@ -29,7 +29,7 @@ def _methodNotAllowed ():
 
 def _isUiRequest (request, view_func):
   m = view_func.__module__
-  return m.startswith("ui") or m.startswith("django") or\
+  return m.startswith("ui") or m.startswith("django.contrib.admin") or\
     (m == "dispatch" and dispatch.isUiRequest(request))
 
 class SslMiddleware:
