@@ -48,20 +48,20 @@
     		<select id='user' name='user'>
     			{% for u in users %}
     				<option value='{{u.dn}}'
-    				  {% if u.dn == user.dn %}
+    				  {% if u.dn == selected_user.dn %}
     				  	selected="selected"
     				  {% endif %}
     				>{{u.uid}}</option>
     			{% endfor %}
     		</select>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#addnew_dialog" name="modal" />Create a new user</a>
     		
-    		<input type="hidden" name="original_user" value="{{user.dn}}" />
+    		<input type="hidden" name="original_user" value="{{selected_user.dn}}" />
     	</div>
     	
     	
     	<label class="left" for="arkId">ARK identifier:</label>
     	<div class="field_right">
-    		<a href="/id/{{ user.arkId }}" id="arkId">{{user.arkId}}</a>
+    		<a href="/id/{{ selected_user.arkId }}" id="arkId">{{selected_user.arkId}}</a>
     	</div>
     	
     	<label class="left" for="group">Group:</label>
@@ -79,33 +79,33 @@
 			
 			<!--
     	<div class="field_right">
-    		<a href="{% url "ui_admin.manage_groups" %}?group={{ group_dn|urlencode }}" id="group">{{user.groupGid}}</a>
+    		<a href="{% url "ui_admin.manage_groups" %}?group={{ group_dn|urlencode }}" id="group">{{selected_user.groupGid}}</a>
     	</div>
     	-->
     	
     	<label for="givenName" class="left">First name:</label>
   		<div class="field_right">
-    		<input type="text" name="givenName" id="givenName" size="35" value="{{user.givenName}}" />
+    		<input type="text" name="givenName" id="givenName" size="35" value="{{selected_user.givenName}}" />
   		</div>
   		
   		<label for="sn" class="left">Last name:</label>
   		<div class="field_right">
-    		<input type="text" name="sn" id="sn" size="35" value="{{user.sn}}" />
+    		<input type="text" name="sn" id="sn" size="35" value="{{selected_user.sn}}" />
   		</div>
     	
     	<label for="mail" class="left">Email:</label>
   		<div class="field_right">
-    		<input type="text" name="mail" id="mail" size="35" value="{{user.mail}}" />
+    		<input type="text" name="mail" id="mail" size="35" value="{{selected_user.mail}}" />
   		</div>
     	
     	<label for="telephoneNumber" class="left">Phone:</label>
   		<div class="field_right">
-    		<input type="text" name="telephoneNumber" id="telephoneNumber" size="35" value="{{user.telephoneNumber}}" />
+    		<input type="text" name="telephoneNumber" id="telephoneNumber" size="35" value="{{selected_user.telephoneNumber}}" />
   		</div>
     	
     	<label class="left" for="description">Description:</label>
     	<div class="field_right">
-    		<textarea rows="4" cols='40' name="description" id="description">{{user.description}}</textarea>
+    		<textarea rows="4" cols='40' name="description" id="description">{{selected_user.description}}</textarea>
     	</div>
  
       <label class="left" for="ezidCoOwners">Co-owners:</label>
@@ -121,7 +121,7 @@
     	<label class="left" for="currentlyEnabled">Login enabled:</label>
     	<div class="field_right">
     		<input type="checkbox" name="currentlyEnabled" id="currentlyEnabled" value="true"
-    			{% if user.currentlyEnabled == 'true' %}
+    			{% if selected_user.currentlyEnabled == 'true' %}
     				checked="checked"
     			{% endif %}
     		/>  		

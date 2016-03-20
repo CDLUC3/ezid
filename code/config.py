@@ -40,6 +40,7 @@ import time
 
 import config_loader
 import ezidapp.models.search_identifier
+import ezidapp.models.server_variables
 
 _reloadFunctions = []
 
@@ -77,6 +78,8 @@ def _load ():
     django.conf.settings.EZID_SHADOW_CONFIG_FILE,
     django.conf.settings.DEPLOYMENT_LEVEL)
   _version = (int(time.time()),) + _getVersion()
+  django.conf.settings.SECRET_KEY =\
+    ezidapp.models.server_variables.getOrSetSecretKey()
 
 def reload ():
   """

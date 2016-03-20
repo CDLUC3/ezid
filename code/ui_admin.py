@@ -21,7 +21,7 @@ from collections import *
 def index(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.index'}
   #return redirect("ui_admin.usage")
-  return uic.render(request, 'admin/index', d)
+  return uic.render(request, 'admin-old/index', d)
 
 @uic.admin_login_required
 def usage(request, ssl=False):
@@ -57,7 +57,7 @@ def usage(request, ssl=False):
   d['last_tally'] = last_calc.strftime('%B %d, %Y')
   d['yearly'] = _year_totals(user_id, group_id, last_calc)
   
-  return uic.render(request, 'admin/usage', d)
+  return uic.render(request, 'admin-old/usage', d)
 
 @uic.admin_login_required
 def add_user(request, ssl=False):
@@ -102,27 +102,27 @@ def manage_users(request, ssl=False):
   else:
     REQUEST = request.POST
   if 'user' in REQUEST and REQUEST['user'] in users_by_dn:
-    d['user'] = users_by_dn[REQUEST['user']]
+    d['selected_user'] = users_by_dn[REQUEST['user']]
   else:
-    d['user'] = d['users'][0]
-  if d['user']['sn'] == 'please supply':
-    d['user']['sn'] = ''
-  if d['user']['mail'] == 'please supply':
-    d['user']['mail'] = ''
+    d['selected_user'] = d['users'][0]
+  if d['selected_user']['sn'] == 'please supply':
+    d['selected_user']['sn'] = ''
+  if d['selected_user']['mail'] == 'please supply':
+    d['selected_user']['mail'] = ''
   
   d['groups'] = ezidadmin.getGroups()
   d['groups'].sort(key=lambda i: i['gid'].lower())
-  d['group'] = idmap.getGroupId(d['user']['groupGid'])
-  d['group_dn'] = d['user']['groupDn']
+  d['group'] = idmap.getGroupId(d['selected_user']['groupGid'])
+  d['group_dn'] = d['selected_user']['groupDn']
   #now for saving
   if request.method == "POST" and request.POST['user'] == request.POST['original_user']:
-    u, p = d['user'], request.POST
+    u, p = d['selected_user'], request.POST
     d['group_dn'] = p['group_dn']
     u['givenName'], u['sn'], u['mail'], u['telephoneNumber'], u['description'] = \
       p['givenName'], p['sn'], p['mail'], p['telephoneNumber'], p['description']
     u['ezidCoOwners'] = ','.join([x.strip() for x in p['ezidCoOwners'].strip().split("\n")])
     if validate_edit_user(request, u):
-      d['user']['currentlyEnabled'] = update_edit_user(request, u)
+      d['selected_user']['currentlyEnabled'] = update_edit_user(request, u)
       #if group has changed, update
       if p['group_dn'] != u['groupDn']:
         res = ezidadmin.changeGroup(u['uid'], p['group_dn'], \
@@ -131,11 +131,11 @@ def manage_users(request, ssl=False):
           django.contrib.messages.error(request, res)
     else:
       if 'currentlyEnabled' in request.POST and request.POST['currentlyEnabled'].lower() == 'true':
-        d['user']['currentlyEnabled'] = 'true'
+        d['selected_user']['currentlyEnabled'] = 'true'
       else:
-        d['user']['currentlyEnabled'] = 'false'
-  d['ezidCoOwners'] = "\n".join([x.strip() for x in d['user']['ezidCoOwners'].split(',')])
-  return uic.render(request, 'admin/manage_users', d)
+        d['selected_user']['currentlyEnabled'] = 'false'
+  d['ezidCoOwners'] = "\n".join([x.strip() for x in d['selected_user']['ezidCoOwners'].split(',')])
+  return uic.render(request, 'admin-old/manage_users', d)
 
 @uic.admin_login_required
 def add_group(request, ssl=False):
@@ -230,106 +230,7 @@ def manage_groups(request, ssl=False):
   else:
     sels = d['group']['shoulderList'].split()
   d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels)
-  return uic.render(request, 'admin/manage_groups', d)
-
-@uic.admin_login_required
-def system_status(request, ssl=False):
-  d = { 'menu_item' :  'ui_admin.system_status' }
-  d['status_list'] = ezidadmin.systemStatus(None)
-  d['js_ids'] =  '[' + ','.join(["'" + x['id'] + "'" for x in d['status_list']]) + ']'
-  if request.method == "POST":
-    config.reload()
-    request.session.flush()
-    django.contrib.messages.success(request, "EZID reloaded.")
-    django.contrib.messages.success(request, "You have been logged out.")
-    return uic.redirect("/")
-  return uic.render(request, 'admin/system_status', d)
-
-@uic.admin_login_required
-def ajax_system_status(request):
-  if request.method != "GET": return uic.methodNotAllowed()
-  if "id" in request.GET:
-    status = ezidadmin.systemStatus(request.GET["id"])
-    return uic.plainTextResponse(request.GET["id"] + ":" + status)
-
-@uic.admin_login_required
-def alert_message(request, ssl=False):
-  d = { 'menu_item' : 'ui_admin.alert_message' }
-  if request.method == "POST":
-    if 'remove_it' in request.POST and request.POST['remove_it'] == 'remove_it':
-      if os.path.exists(os.path.join(django.conf.settings.SITE_ROOT, "db","alert_message")):
-        os.remove(os.path.join(django.conf.settings.SITE_ROOT, "db",
-                               "alert_message"))
-      #global alertMessage  
-      uic.alertMessage = ''
-      request.session['hide_alert'] = False
-      django.contrib.messages.success(request, "Message removed.")
-    elif 'message' in request.POST:
-      m = request.POST["message"].strip()
-      f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
-        "alert_message"), "w")
-      f.write(m)
-      f.close()
-      #global alertMessage
-      uic.alertMessage = m
-      request.session['hide_alert'] = False
-      django.contrib.messages.success(request, "Message updated.")
-  return uic.render(request, 'admin/alert_message', d)
-
-@uic.admin_login_required
-def new_account(request, ssl=False):
-  d = { 'menu_item' : 'ui_admin.new_account' }
-  # id : [defaultvalue, label, type, help_text]
-  field_info = { \
-      'todays_date': [datetime.datetime.now().strftime("%m/%d/%Y"), "Today's date", "text", ""], \
-      'realm': ["", "Realm", "text", ""], \
-      'submitters_name': ["", "Your name", "text", ""], \
-      'acct_name': ["", "Account name", "text", "Choose a name that is lowercase, 10 characters or less; no spaces.  Underscore or dash ok"], \
-      'acct_email': ["", "Email Address", "text", "To be associated with the account"], \
-      'primary_contact': ["", "Primary contact", "text", "An individual associated with this account"], \
-      'contact_email': ["", "Contact's email address", "text", ""], \
-      'contact_phone': ["", "Contact's phone number", "text", ""], \
-      'contact_fax': ["", "Contact's fax number", "text", ""], \
-      'org': ["", "Organization", "text", ""], \
-      'org_acroynm': ["", "Organization acronym", "text", "Suggest an acronym that is between 3-10 characters in length.  It will be used for identification purposes"], \
-      'org_www': ["", "Organization's web address", "text", ""], \
-      'mailing_address1': ["", "Address line 1", "text", ""], \
-      'mailing_address2': ["", "Address line 2", "text", ""], \
-      'mailing_city': ["", "City", "text", ""], \
-      'mailing_state': ["", "State", "text", ""], \
-      'mailing_zip': ["", "Zip code", "text", ""], \
-      'mailing_country': ["", "Country", "text", ""], \
-      'identifiers': ["", "Identifiers", "ARKs|DOIs and ARKs", "This choice affects the subscription pricing. If you have questions, please enter them below."], \
-      'created_before': ["", "Have you created DOIs or ARKs before?", "NO|YES", ""], \
-      'internal_identifiers': ["", "Do you use any internal or local identifiers?", "NO|YES", ""], \
-      'identifier_plans': ["", "How do you plan to use identifiers in the next year?", "long_text", ""], \
-      'comments': ["", "Comments or questions?", "long_text", ""] }
-  
-  field_order = ("todays_date realm submitters_name acct_name acct_email " + \
-    "primary_contact contact_email contact_phone contact_fax org " + \
-    "org_acroynm org_www mailing_address1 mailing_address2 mailing_city " + \
-    "mailing_state mailing_zip mailing_country identifiers created_before " + \
-    "internal_identifiers identifier_plans comments").split()
-  
-  #populate form values back into form
-  if request.method == "POST":
-    message = ""
-    for key in field_order:
-      if key in request.POST:
-        field_info[key][0] = request.POST[key]
-        v = (request.POST[key] if key in request.POST else '')
-        message += anvl.formatPair(key, v)
-    emails = [x.strip() for x in uic.new_account_email.split(',')]
-    #print "new ezid account: " + request.POST['acct_name']
-    #print message
-    django.core.mail.send_mail("new ezid account: " + request.POST['acct_name'], message,
-                               django.conf.settings.SERVER_EMAIL, emails)
-    django.contrib.messages.success(request, "Form information has been emailed.")
-    d['field_info'], d['field_order'] = field_info, field_order
-    return uic.render(request, 'admin/new_account_display', d)
-  
-  d['field_info'], d['field_order'] = field_info, field_order
-  return uic.render(request, 'admin/new_account', d)
+  return uic.render(request, 'admin-old/manage_groups', d)
 
 def select_shoulder_lists(selected_val_list):
   """Makes list of selected and deselected shoulders in format [value, friendly label]

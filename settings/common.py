@@ -1,7 +1,6 @@
 import ldap
 import os
 import os.path
-import random
 import socket
 import sys
 
@@ -35,10 +34,15 @@ else:
   SERVER_EMAIL = "ezid@" + socket.gethostname()
 
 DATABASES = {
+  # To keep the Django admin app happy, the store database must be
+  # referred to as 'default', despite our use of a router below.
   "default": {
-    "ENGINE": "django.db.backends.sqlite3",
-    "NAME": os.path.join(SITE_ROOT, "db", "django.sqlite3"),
-    "OPTIONS": { "timeout": 60 }
+    "ENGINE": "django.db.backends.mysql",
+    "HOST": "databases.store_host", # see below
+    "NAME": "ezid",
+    "USER": "ezidrw",
+    "PASSWORD": "databases.store_password", # see below
+    "OPTIONS": { "charset": "utf8mb4" }
   },
   "search": {
     "ENGINE": "django.db.backends.mysql",
@@ -55,32 +59,17 @@ DATABASE_ROUTERS = ["settings.routers.Router"]
 TIME_ZONE = "America/Los_Angeles"
 TIME_FORMAT_UI_METADATA = "%Y-%m-%d %H:%M:%S"
 
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, "static")
-MEDIA_URL = "static/"
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
+STATIC_URL = "/static/"
 
-def _loadSecretKey ():
-  try:
-    f = open(os.path.join(SITE_ROOT, "db", "secret_key"))
-    k = f.read().strip()
-    f.close()
-  except IOError:
-    rng = random.SystemRandom()
-    alphabet = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
-    k = "".join(rng.choice(alphabet) for i in range(50))
-    try:
-      f = open(os.path.join(SITE_ROOT, "db", "secret_key"), "w")
-      f.write(k + "\n")
-      f.close()
-    except IOError:
-      pass
-  return k
-
-SECRET_KEY = _loadSecretKey()
+# The secret key is loaded from the store database by config._load.
+SECRET_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
   "django.contrib.sessions.middleware.SessionMiddleware",
   "django.contrib.messages.middleware.MessageMiddleware",
+  "django.contrib.auth.middleware.AuthenticationMiddleware",
   "middleware.SslMiddleware",
   "middleware.ExceptionScrubberMiddleware"
 )
@@ -99,7 +88,8 @@ TEMPLATES = [
     "OPTIONS": {
       "context_processors": [
         "django.contrib.messages.context_processors.messages",
-        "django.template.context_processors.request"]
+        "django.template.context_processors.request",
+        "django.contrib.auth.context_processors.auth"]
     }
   }
 ]
@@ -107,6 +97,9 @@ TEMPLATES = [
 INSTALLED_APPS = (
   "django.contrib.sessions",
   "django.contrib.messages",
+  "django.contrib.admin",
+  "django.contrib.auth",
+  "django.contrib.contenttypes",
   "ezidapp",
   "ui_tags"
 )
@@ -115,7 +108,7 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
 # EZID-specific settings...
 STANDALONE = False
-SSL = True
+USE_SSL = True
 DAEMON_THREADS_ENABLED = True
 LOCALIZATIONS = { "default": ("cdl", ["ezid@ucop.edu"]) }
 
@@ -126,6 +119,8 @@ LOCALIZATIONS = { "default": ("cdl", ["ezid@ucop.edu"]) }
 # in place.
 
 SECRET_PATHS = [
+  ("DATABASES", "default", "HOST"),
+  ("DATABASES", "default", "PASSWORD"),
   ("DATABASES", "search", "HOST"),
   ("DATABASES", "search", "PASSWORD")
 ]

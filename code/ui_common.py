@@ -15,6 +15,7 @@ import config
 import datacite
 import ezid
 import ezidadmin
+import ezidapp.models.server_variables
 import idmap
 import log
 import policy
@@ -51,16 +52,7 @@ def _loadConfig():
   templates = {}
   _load_templates([d for t in django.conf.settings.TEMPLATES\
     for d in t["DIRS"]])
-  try:
-    f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
-      "alert_message"))
-    alertMessage = f.read().strip()
-    f.close()
-  except IOError, e:
-    if e.errno == errno.ENOENT:
-      alertMessage = ""
-    else:
-      raise
+  alertMessage = ezidapp.models.server_variables.getAlertMessage()
   reload_templates = hasattr(django.conf.settings, 'RELOAD_TEMPLATES')
   if reload_templates:
     reload_templates = django.conf.settings.RELOAD_TEMPLATES

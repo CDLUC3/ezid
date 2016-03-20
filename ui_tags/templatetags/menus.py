@@ -36,9 +36,7 @@ MENUS = (
             ( ("Usage", 'ui_admin.usage', 'admin', ()),
               ("Users", 'ui_admin.manage_users', 'admin', ()),
               ("Groups", 'ui_admin.manage_groups', 'admin', ()),
-              ("Status", 'ui_admin.system_status', 'admin', ()),
-              ("Alerts", 'ui_admin.alert_message', 'admin', ()),
-              ("New account", 'ui_admin.new_account', 'admin', ())
+              ("New admin site", "ui_admin.admin:index", "admin", ())
             )
           )
         )
@@ -74,7 +72,10 @@ def top_menu_item(tup, session, is_current):
 
 
 def display_item(tup, session, is_current):
-  u = reverse(tup[1])
+  if ":" in tup[1]:
+    u = reverse(tup[1].split(".")[1])
+  else:
+    u = reverse(tup[1])
   if is_current:
     if tup[2] == 'public' or (tup[2] == 'user' and session.has_key('auth')):
       return """<a href="%(path)s" class="menu_current">%(text)s</a>""" % {'path':u, 'text':tup[0] }

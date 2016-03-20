@@ -1,0 +1,3 @@
+This directory contains modified copies of selected template files
+from {django-1.8.1}/contrib/admin/templates/admin/.  To make it easier
+to see the modifications, the originals have been copied here as well.
