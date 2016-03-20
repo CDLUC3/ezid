@@ -28,8 +28,9 @@ def _methodNotAllowed ():
     status=405)
 
 def _isUiRequest (request, view_func):
-  return view_func.__module__.startswith("ui") or\
-    (view_func.__module__ == "dispatch" and dispatch.isUiRequest(request))
+  m = view_func.__module__
+  return m.startswith("ui") or m.startswith("django") or\
+    (m == "dispatch" and dispatch.isUiRequest(request))
 
 class SslMiddleware:
   """
