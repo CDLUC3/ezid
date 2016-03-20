@@ -26,21 +26,13 @@ import django.core.validators
 import django.db.models
 import django.forms
 
-import config
 import models
+
+# Deferred imports...
+"""
+import config
 import ui_common
-
-_ezidUrl = None
-_newAccountEmailAddresses = None
-
-def _loadConfig ():
-  global _ezidUrl, _newAccountEmailAddresses
-  _ezidUrl = config.get("DEFAULT.ezid_base_url")
-  _newAccountEmailAddresses = [a for a in\
-    config.get("email.new_account_email").split(",") if len(a) > 0]
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
+"""
 
 class SuperuserSite (django.contrib.admin.sites.AdminSite):
   # This administrative site allows full access.
@@ -76,8 +68,10 @@ class ServerVariablesAdmin (django.contrib.admin.ModelAdmin):
     assert change
     obj.save()
     if "alertMessage" in form.changed_data:
+      import ui_common
       ui_common.alertMessage = obj.alertMessage
     if obj.secretKey == "":
+      import config
       config.reload()
       django.contrib.messages.success(request, "Server reloaded.")
     return obj
@@ -231,23 +225,28 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
       if f in form.changed_data and getattr(obj, f):
         newStatus.append(obj._meta.get_field(f).verbose_name)
     if len(newStatus) > 0:
-      m = ("The status of a new account request has changed.\n\n" +\
-        "Organization: %s\n" +\
-        "Request date: %s\n" +\
-        "New status: %s\n\n" +
-        "View the account's worksheet at:\n\n" +\
-        "%s%s\n\n" +\
-        "This is an automated email.  Please do not reply.") %\
-        (obj.orgName, str(obj.requestDate), ", ".join(newStatus),
-        _ezidUrl, django.core.urlresolvers.reverse(
-        "admin:ezidapp_newaccountworksheet_change", args=[obj.id]))
-      try:
-        django.core.mail.send_mail("New account request status change", m,
-          django.conf.settings.SERVER_EMAIL, _newAccountEmailAddresses)
-      except Exception, e:
-        django.contrib.messages.error(request,
-          "Error sending status change email: " + str(e))
-      else:
-        django.contrib.messages.success(request, "Status change email sent.")
+      import config
+      addresses = [a for a in\
+        config.get("email.new_account_email").split(",") if len(a) > 0]
+      if len(addresses) > 0:
+        m = ("The status of a new account request has changed.\n\n" +\
+          "Organization: %s\n" +\
+          "Request date: %s\n" +\
+          "New status: %s\n\n" +
+          "View the account's worksheet at:\n\n" +\
+          "%s%s\n\n" +\
+          "This is an automated email.  Please do not reply.") %\
+          (obj.orgName, str(obj.requestDate), ", ".join(newStatus),
+          config.get("DEFAULT.ezid_base_url"),
+          django.core.urlresolvers.reverse(
+          "admin:ezidapp_newaccountworksheet_change", args=[obj.id]))
+        try:
+          django.core.mail.send_mail("New account request status change", m,
+            django.conf.settings.SERVER_EMAIL, addresses)
+        except Exception, e:
+          django.contrib.messages.error(request,
+            "Error sending status change email: " + str(e))
+        else:
+          django.contrib.messages.success(request, "Status change email sent.")
 
 superuser.register(models.NewAccountWorksheet, NewAccountWorksheetAdmin)
