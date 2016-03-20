@@ -1,6 +1,8 @@
 import django.conf
 import django.conf.urls
 
+import ezidapp.admin
+
 urlpatterns = django.conf.urls.patterns("",
 
   # UI - RENDERED FROM TEMPLATES IN INFO REPOSITORY
@@ -25,16 +27,12 @@ urlpatterns = django.conf.urls.patterns("",
   ("^demo/?$", "ui_demo.index"),
   ("^demo/simple$", "ui_demo.simple"),
   ("^demo/advanced$", "ui_demo.advanced"),
-  ("^admin/?$", "ui_admin.index", { "ssl": True }),
-  ("^admin/usage$", "ui_admin.usage", { "ssl": True }),
-  ("^admin/manage_users$", "ui_admin.manage_users", { "ssl": True }),
-  ("^admin/add_user$", "ui_admin.add_user", { "ssl": True }),
-  ("^admin/manage_groups$", "ui_admin.manage_groups", { "ssl": True }),
-  ("^admin/add_group$", "ui_admin.add_group", { "ssl": True }),
-  ("^admin/system_status$", "ui_admin.system_status", { "ssl": True }),
-  ("^admin/ajax_system_status$", "ui_admin.ajax_system_status"),
-  ("^admin/alert_message$", "ui_admin.alert_message", { "ssl": True }),
-  ("^admin/new_account$", "ui_admin.new_account", { "ssl": True }),
+  ("^admin-old/?$", "ui_admin.index", { "ssl": True }),
+  ("^admin-old/usage$", "ui_admin.usage", { "ssl": True }),
+  ("^admin-old/manage_users$", "ui_admin.manage_users", { "ssl": True }),
+  ("^admin-old/add_user$", "ui_admin.add_user", { "ssl": True }),
+  ("^admin-old/manage_groups$", "ui_admin.manage_groups", { "ssl": True }),
+  ("^admin-old/add_group$", "ui_admin.add_group", { "ssl": True }),
   ("^account/edit$", "ui_account.edit", { "ssl": True }),
   ("^account/pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", { "ssl": True }),
   ("^ajax_hide_alert$", "ui.ajax_hide_alert"),
@@ -59,14 +57,18 @@ urlpatterns = django.conf.urls.patterns("",
   ("^admin/reload$", "api.reload"),
 
   # OAI
-  ("^oai$", "oai.dispatch")
+  ("^oai$", "oai.dispatch"),
+
+  # ADMIN
+  django.conf.urls.url("^admin/",
+    django.conf.urls.include(ezidapp.admin.superuser.urls), { "ssl": True })
 
 )
 
 if django.conf.settings.STANDALONE:
   urlpatterns += django.conf.urls.patterns("",
     ("^static/(?P<path>.*)$", "django.views.static.serve",
-      { "document_root": django.conf.settings.MEDIA_ROOT }),
+      { "document_root": django.conf.settings.STATIC_ROOT }),
     ("^download/(?P<path>.*)$", "django.views.static.serve",
       { "document_root": django.conf.settings.DOWNLOAD_PUBLIC_DIR }))
 
