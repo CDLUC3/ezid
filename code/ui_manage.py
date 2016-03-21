@@ -118,7 +118,8 @@ def edit(request, identifier):
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_manage.index")
   if not uic.authorizeUpdate(request, r):
-    django.contrib.messages.error(request, "You are not allowed to edit this identifier")
+    django.contrib.messages.error(request, _("You are not allowed to edit this identifier.  " +\
+      "If this ID belongs to you and you'd like to edit, please log in."))
     return redirect("/id/" + urllib.quote(identifier, ":/"))
   s, id_metadata = r 
   d['identifier'] = id_metadata 

@@ -32,30 +32,23 @@
   </div>
 
   <div class="row">
-    <div class="col-md-12 col-lg-3 col-lg-push-9">
-    {% if not manual_profile %}
-      <div class="create__sidebox">
-        <div class="sidebox">
-          {% if not manual_profile and current_profile.name == "datacite" %}
-            <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; {% trans "Add more information to the record" %}" onclick="profileSimpleToAdvanced(event);" class="link__primary">
-            &gt;&gt;&nbsp; {% trans "Add more information to the record" %}</button>
-          {% elif not manual_profile and current_profile.name != "datacite" %}
-            {% trans "Would you like to add more information to the record?" %}<br/><br/>
-            <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" onclick="profileSimpleToAdvanced(event);" class="link__primary">
-            &gt;&gt;&nbsp; {% trans "Convert to the DataCite citation profile" %}</button>
-          {% endif %}
-          <br/> <br/>
-        </div>
-      </div>
-    {% endif %}
-    </div>
-
-    <div class="col-md-12 col-lg-9 col-lg-pull-3">
+    <div class="col-md-9">
       <div class="row vertical-buffer-bot">
         <div class="inline-header">
           <h2 class="heading__icon-9">{% trans "About the Identified Object" %}</h2>
         </div>
-        <p class="col-sm-7">{% trans "This identified object uses the" %} <strong>{{ current_profile.displayName }}</strong> {% trans "profile" %}.</p>
+        <p>{% trans "This identified object uses the" %} <strong>{{ current_profile.displayName }}</strong> {% trans "profile" %}.
+      {% if not manual_profile %}
+        {% if current_profile.name == "datacite" %}
+          <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; {% trans "Add more information to the record" %}" onclick="profileSimpleToAdvanced(event);" class="button__primary">
+          &gt;&gt;&nbsp; {% trans "Add more information to the record" %}</button>
+        {% else %}
+          {% trans "If you would like to add additional information for this record, consider using the DataCite citation profile." %}<br />
+          <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" onclick="profileSimpleToAdvanced(event);" class="button__primary">
+          &gt;&gt;&nbsp; {% trans "Convert to the DataCite citation profile" %}</button>
+        {% endif %}
+      {% endif %}
+        </p>
       </div>
 
   {% if manual_profile %}
