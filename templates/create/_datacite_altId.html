@@ -18,14 +18,10 @@
   </div>
 {% for form in form.altid_set %}
   <div class="form-container">
-{{ form.non_field_errors }}
-  {% for hidden in form.hidden_fields %}
-    {{ hidden }}
-  {% endfor %}
-
+  {{ form.non_field_errors }}
   {% include "create/_datacite_inlinetext.html" with field=form.alternateIdentifier %}
   {% include "create/_datacite_inlinetext.html" with field=form.alternateIdentifierType %}
-{% endfor %}
   </div>
+{% endfor %}
 </div>
 {{ form.altid_set.management_form }}

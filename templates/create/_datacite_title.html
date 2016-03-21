@@ -18,12 +18,8 @@
 {% for form in form.title_set %}
   <div class="form-container">
     {{ form.non_field_errors }}
-    {% for hidden in form.hidden_fields %}
-      {{ hidden }}
-    {% endfor %}
 
     {% include "create/_datacite_inlinetext.html" with field=form.title reqd="true" %}
-
     <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="{{ form.titleType.id_for_label }}">
       <span id="{{ form.titleType.id_for_label }}" class="fieldset-inline__legend create__inline-nested-legend">{{ form.titleType.label }}</span>
       {% for radio in form.titleType %}
@@ -33,6 +29,9 @@
       </label>
       {% endfor %}
     </div>
+    {% for hidden in form.hidden_fields %}
+      {{ hidden }}
+    {% endfor %}
   </div>
 {% endfor %}
 </div>

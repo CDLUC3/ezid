@@ -19,13 +19,10 @@
 {% for form in form.rights_set %}
   <div class="form-container">
   {{ form.non_field_errors }}
-  {% for hidden in form.hidden_fields %}
-    {{ hidden }}
-  {% endfor %}
 
   {% include "create/_datacite_inlinetext.html" with field=form.rights %}
   {% include "create/_datacite_inlinetext.html" with field=form.rightsURI %}
-{% endfor %}
   </div>
+{% endfor %}
 </div>
 {{ form.rights_set.management_form }}
