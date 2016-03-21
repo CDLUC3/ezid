@@ -135,13 +135,26 @@ variables have been set:
     django-admin migrate
     django-admin migrate --database=search
 
-    sqlite3 .../SITE_ROOT/db/store.sqlite3 \
-      < .../SITE_ROOT/PROJECT_ROOT/etc/store-schema.sql
+(Caution: in a multi-database environment such as EZID's, the
+'migrate' command writes migration action records to the
+django_migrations table in every database, even if the actions were
+not performed in that database.  If EZID's "store" and "search"
+databases are in fact the same database (which they are in some
+configurations), then that behavior may fool 'migrate' and cause
+certain migrations to not be run.  On a virgin system, the above
+commands work because the search database contains no migrated apps.
+In general, though, it may be necessary to remove entries from
+django_migrations between invocations of 'migrate'.)
 
-Also, if using MySQL:
+If using MySQL:
 
     mysql < .../SITE_ROOT/PROJECT_ROOT/etc/store-mysql-addendum.sql
     mysql < .../SITE_ROOT/PROJECT_ROOT/etc/search-mysql-addendum.sql
+
+Also, to create the legacy store database:
+
+    sqlite3 .../SITE_ROOT/db/store.sqlite3 \
+      < .../SITE_ROOT/PROJECT_ROOT/etc/store-schema.sql
 
 To load initial data into the databases, run the following commands.
 (The *.json files are stored in
