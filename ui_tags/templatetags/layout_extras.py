@@ -95,7 +95,7 @@ def help_icon(id_of_help, css_class="button__icon-help"):
 def url_force_https(context, url_path):
   """Force link to be prefixed wth https"""
   request = context['request']
-  if django.conf.settings.SSL and ('HTTP_HOST' in request.META):
+  if django.conf.settings.USE_SSL and ('HTTP_HOST' in request.META):
     url_path_no_lead_slash = url_path[1:] if re.match('^\/.*', url_path) else url_path
     return "%s//%s/%s" % ('https:', request.META.get("HTTP_HOST"), url_path_no_lead_slash)
   else:
