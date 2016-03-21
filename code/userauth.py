@@ -247,7 +247,7 @@ def authenticateRequest (request, storeSessionCookie=False):
   if "auth" in request.session:
     return request.session["auth"]
   elif "HTTP_AUTHORIZATION" in request.META:
-    if django.conf.settings.SSL and not request.is_secure():
+    if django.conf.settings.USE_SSL and not request.is_secure():
       return "error: bad request - credentials sent over insecure channel"
     h = request.META["HTTP_AUTHORIZATION"].split()
     if len(h) != 2 or h[0] != "Basic": return None

@@ -1,0 +1,13 @@
+[
+
+{ "model": "ezidapp.StoreRealm",
+  "pk": 1,
+  "fields": { "name": "CDL" }
+},
+
+{ "model": "ezidapp.ServerVariables",
+  "pk": 1,
+  "fields": { "alertMessage": "", "secretKey": "" }
+}
+
+]

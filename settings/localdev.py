@@ -3,8 +3,16 @@ from common import *
 DEPLOYMENT_LEVEL = "localdev"
 
 STANDALONE = True
-SSL = False
+USE_SSL = False
 RELOAD_TEMPLATES = True
+
+DATABASES["default"] = {
+  "ENGINE": "django.db.backends.sqlite3",
+  "NAME": os.path.join(SITE_ROOT, "db", "store.sqlite3"),
+  "OPTIONS": { "timeout": 60 }
+}
+SECRET_PATHS.remove(("DATABASES", "default", "HOST"))
+SECRET_PATHS.remove(("DATABASES", "default", "PASSWORD"))
 
 ALLOWED_HOSTS = ["localhost"]
 LOCALIZATIONS = { "default": ("cdl", ["andy.mardesich@ucop.edu"]) }
