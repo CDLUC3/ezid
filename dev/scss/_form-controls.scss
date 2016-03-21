@@ -154,13 +154,17 @@
 
 // ***** Drop-down Lists ***** //
 
+.fcontrol__select-group {
+	flex-flow: column wrap;
+}
+
 .fcontrol__select-group-stacked {
 	display: flex;
 	flex-flow: column nowrap;
 	align-items: flex-start;
 }
 
-.fcontrol__select-group-inline {
+%fcontrol__select-group-inline {
 	display: flex;
 	flex-flow: column wrap;
 
@@ -169,6 +173,10 @@
 		align-items: center;
 	}
 
+}
+
+.fcontrol__select-group-inline {
+	@extend %fcontrol__select-group-inline;
 }
 
 %fcontrol__select-label {
@@ -398,6 +406,25 @@
 
 	}
 
+}
+
+.fcontrol__select-group-inline--invalid {
+	@extend %fcontrol__select-group-inline;
+
+	.fcontrol__select {
+		border: 1px solid $design-red-color;
+		border-radius: $form-element-border-radius $form-element-border-radius 0 0;
+	}
+
+	.fcontrol__select-group {
+		border: 1px solid $design-red-color;
+		border-radius: $form-element-border-radius;
+	}
+
+	.fcontrol__invalid-flag {
+		display: block;
+		border-radius: 0 0 $form-element-border-radius $form-element-border-radius;
+	}
 }
 
 // Place inline groups inline and add margin in-between
