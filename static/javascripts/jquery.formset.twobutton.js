@@ -50,6 +50,7 @@
                     elem.attr('checked', false);
                 } else {
                     elem.val('');
+                    elem.selectedIndex = -1;
                 }
             },
 

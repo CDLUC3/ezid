@@ -1,0 +1,22 @@
+{% load i18n %}
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form method="get" action="">
+      <div id="customize-modal__header" class="modal-header login-modal__header">
+        <div class="customize-modal__title" id="myModalLabel">{% trans "Choose Columns to Display" %}</div>
+        <img src="/static/images/icon_cross.svg" alt="close" class="close login-modal__close" data-dismiss="modal" aria-label="Close">
+      </div>
+      <div class="modal-body">
+        <div class="row">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+        <button type="submit" class="btn btn-primary" name="submit_checks" value="Apply Changes">{% trans "Apply Changes" %}</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -19,7 +19,7 @@
   </div>
 {% for form in form.contrib_set %}
   <div class="form-container">
-{{ form.non_field_errors }}
+  {{ form.non_field_errors }}
   {% for c_field in form %}
 
   {% if forloop.first %}
