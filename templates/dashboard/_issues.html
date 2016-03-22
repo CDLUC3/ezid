@@ -1,0 +1,90 @@
+<form method="POST" id="p" role="form">
+  <div class="pagination__input-group">
+    <input id='page-directselect' type='number' class='pagination__input' min='1' max='5' name='p' value='1'/> 
+    of 5 
+    <button data-page='2' class='pagination__next' aria-label='Next page of results'>Next</button> 
+    <button data-page='5' class='pagination__last' aria-label='Last page of results'></button> 
+  </div>
+</form>
+
+<!--table class="table2">
+   header_row REQUEST fields_selected fields_mapped order_by sort primary_page
+<tbody>
+ for item in results 
+<tr>
+   data_row item fields_selected field_display_types account_co_owners testPrefixes
+</tr>
+ endfor
+</tbody>
+</table -->
+
+<div id="test"></div>
+<div id="results"></div>
+<table class="table2">
+  <thead>
+    <tr>
+    <th class='sorting'><a title='Sort on this column' class='table__th-link' href=''>Identifier</a></th>
+    <th class='sorting'><a title='Sort on this column' class='table__th-link' href=''>Issue</a></th>
+    <th class='sorting'><a title='Sort on this column' class='table__th-link' href=''>Object Title</a></th>
+    <th class='sort__desc'><a title='Sorting in descending order. Click to change to ascending order.' class='table__th-link' href=''>ID Date Last Modified</a></th>
+    </tr>
+  </thead>
+<tbody>
+
+<tr>
+  <td><a href='/id/ark:/99999/fk4zg6wd6q' class='fakeid'>ark:/99999/fk4zg6wd6q</a></td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td><a href='/id/ark:/99999/fk4zg6wd6q'>2016-03-21 22:21:37 UTC</a></td>
+</tr>
+
+</tbody>
+</table>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    // change form to submit by AJAX
+    // var options = {
+    // url:      '/dashboard/ajax_ssues',
+    // target:   '#test'
+    // };   	
+    // $('#p').ajaxForm(options);
+    $('#p').on('submit', function(e){
+        e.preventDefault();
+        $.ajax({
+            url : "dashboard/ajax_issues",
+            type : "POST", 
+            data : { p : $('#page-directselect').val() },
+            success : function(json) {
+                alert(json);
+                // $('#test').val('');
+                $('Blah').appendTo('#test');
+                console.log(json);
+                console.log("success");
+            },
+            error : function(xhr,errmsg,err) {
+                $('#results').html("<div class='alert-box alert' data-alert>Oops! We have encountered an error: "+errmsg+
+                    " <a href='#' class='close'>&times;</a></div>");
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    });
+  });
+
+  // *******   PAGE   *******
+  // page selection input field: submit on enter key
+  $("#page-directselect").keyup(function(e){ 
+    // submit value in input on enter key
+    var code = e.which;
+    if(code==13)e.preventDefault();
+    if(code==32||code==13||code==188||code==186){
+      $("#p").submit();
+    }
+  });
+  // page selection buttons change value in input field and submit on click
+  $("#p button").click(function(e){
+    var p = $(e.currentTarget).data('page');
+    $('#page-directselect').val(p);
+    $("#p").submit();
+  });
+</script>

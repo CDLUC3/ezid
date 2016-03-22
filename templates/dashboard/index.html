@@ -5,10 +5,12 @@
 {% block title %}{%trans "Dashboard" %}{% endblock %}
 {% block content %}
 <div class="container vertical-buffer-xs">
+{% if display_adminlink %}
   <form action="/admin" role="form">
     <button class="button__primary">{% trans "Administration" %}&nbsp;<span title="External Link" class="ext-icon"></span></button>
   </form>
   <hr/>
+{% endif %}
   <div role="group" aria-labelledby="fieldset__owner-filter">
   <form id="usage_form" action="{% url "ui_admin.dashboard" %}" method="post">
     <div class="fieldset-stacked__inline-select dashboard__report-heading">
@@ -41,7 +43,7 @@
   <div class="col-md-12">
     <hr/>
     <h2 class="heading__icon-6">{% trans "Identifier Issues" %}</h2>
-      {% include "search/_results.html" with primary_page="ui_admin.dashboard" %}
+      {% include "dashboard/_issues.html" %}
     <h2 class="heading__icon-10">{% trans "CrossRef&reg; Submission Status" %}</h2>
       {% include "search/_results.html" with primary_page="ui_admin.dashboard" %}
   </div>

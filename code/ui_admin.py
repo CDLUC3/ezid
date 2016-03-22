@@ -1,5 +1,7 @@
 import ui_common as uic
 import django.contrib.messages
+from django.http import JsonResponse
+import config
 import os
 import ezidadmin
 import shoulder
@@ -9,39 +11,27 @@ import datetime
 import ui_search 
 from collections import *
 
-@uic.admin_login_required
-def alert_message(request, ssl=False):
-  """ ToDo: remove? """
-  d = { 'menu_item' : 'ui_admin.alert_message' }
-  if request.method == "POST":
-    if 'remove_it' in request.POST and request.POST['remove_it'] == 'remove_it':
-      if os.path.exists(os.path.join(django.conf.settings.SITE_ROOT, "db","alert_message")):
-        os.remove(os.path.join(django.conf.settings.SITE_ROOT, "db",
-                               "alert_message"))
-      #global alertMessage  
-      uic.alertMessage = ''
-      request.session['hide_alert'] = False
-      django.contrib.messages.success(request, "Message removed.")
-    elif 'message' in request.POST:
-      m = request.POST["message"].strip()
-      f = open(os.path.join(django.conf.settings.SITE_ROOT, "db",
-        "alert_message"), "w")
-      f.write(m)
-      f.close()
-      #global alertMessage
-      uic.alertMessage = m
-      request.session['hide_alert'] = False
-      django.contrib.messages.success(request, "Message updated.")
-  return uic.render(request, 'admin/alert_message', d)
+NO_CONSTRAINTS = True 
 
 @uic.user_login_required
 def dashboard(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.dashboard'}
+  d['display_adminlink'] = \
+    request.session["auth"].user[0] in [config.get("ldap.admin_username")]
   d = _getUsage(request, d)
   # d['filtered'] = True 
-  noConstraintsReqd = True 
-  d = ui_search.search(d, request, noConstraintsReqd, "id_issues")
+  d = ui_search.search(d, request, NO_CONSTRAINTS, "id_issues")
   return uic.render(request, 'dashboard/index', d)
+
+@uic.user_login_required
+def ajax_issues(request):
+  if request.is_ajax():
+    d = {}
+    d = ui_search.search(d, request, NO_CONSTRAINTS, "id_issues")
+    if request.method == 'POST':
+      return JsonResponse({'status': 'post_success'})
+    else:
+      return JsonResponse({'status': 'intial_get'})
 
 def _getUsage(request, d):
   # ToDo: Now that any user can access this pg, not just admin, make necessary changes.
