@@ -653,10 +653,27 @@ def _validate_current_pw(username):
 
 ################# User (My Account) Form  #################
 
-class UserForm(forms.Form):
-  """ Form object for My Account Page (User editing) """
+class BasePasswordForm(forms.Form):
+  """ Base Password Form object: used for Password Reset as well as for Account Settings """
   def __init__(self, *args, **kwargs):
     self.username = kwargs.pop('username',None)
+    pw_reqd = kwargs.pop('pw_reqd',None)
+    super(BasePasswordForm,self).__init__(*args,**kwargs)
+    self.fields["pwnew"] = forms.CharField(required=pw_reqd, label=_("New Password"),
+      widget=forms.PasswordInput())
+    self.fields["pwconfirm"] = forms.CharField(required=pw_reqd, label=_("Confirm New Password"),
+      widget=forms.PasswordInput())
+  def clean(self):
+    cleaned_data = super(BasePasswordForm, self).clean()
+    pwnew_c = cleaned_data.get("pwnew")
+    pwconfirm_c = cleaned_data.get("pwconfirm")
+    if pwnew_c and pwnew_c != pwconfirm_c:
+      raise ValidationError("Password and confirmation do not match")
+    return cleaned_data
+
+class UserForm(BasePasswordForm):
+  """ Form object for My Account Page (User editing) """
+  def __init__(self, *args, **kwargs):
     super(UserForm,self).__init__(*args,**kwargs)
     self.fields["givenName"] = forms.CharField(required=False, label=_("First Name"))
     self.fields["sn"] = forms.CharField(label=_("Last Name"),
@@ -669,17 +686,6 @@ class UserForm(forms.Form):
       validators=[_validate_proxies])
     self.fields["pwcurrent"] = forms.CharField(required=False, label=_("Current Password"),
       widget=forms.PasswordInput(), validators=[_validate_current_pw(self.username)])
-    self.fields["pwnew"] = forms.CharField(required=False, label=_("New Password"),
-      widget=forms.PasswordInput())
-    self.fields["pwconfirm"] = forms.CharField(required=False, label=_("Confirm New Password"),
-      widget=forms.PasswordInput())
-  def clean(self):
-    cleaned_data = super(UserForm, self).clean()
-    pwnew_c = cleaned_data.get("pwnew")
-    pwconfirm_c = cleaned_data.get("pwconfirm")
-    if pwnew_c and pwnew_c != pwconfirm_c:
-      raise ValidationError("Passwords don't match")
-    return cleaned_data
 
 ################# Search ID Form  #################
 

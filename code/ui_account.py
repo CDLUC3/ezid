@@ -26,11 +26,15 @@ def edit(request, ssl=False):
   # ToDo: Replace with proxy data .... Is this line even needed?
   if not 'ezidCoOwners' in d: d['ezidCoOwners'] = ''
   if request.method == "GET":
-    d['form'] = form_objects.UserForm(d, username=d['username'])
+    d['form'] = form_objects.UserForm(d, username=d['username'], pw_reqd=False)
   else:
-    d['form'] = form_objects.UserForm(request.POST, username=d['username'])
+    d['form'] = form_objects.UserForm(request.POST, initial=d, username=d['username'], pw_reqd=False)
+    basic_info_changed=False
     if d['form'].is_valid():
-      update_edit_user(request, d['form'].has_changed())
+      if d['form'].has_changed():
+        basic_info_changed = any(ch in d['form'].changed_data for ch in \
+          ['givenName', 'sn', 'telephoneNumber', 'mail', 'ezidCoOwners'])
+      update_edit_user(request, basic_info_changed)
     else: # Form did not validate
       if '__all__' in d['form'].errors:
         # non_form_error, probably due to all fields being empty
@@ -38,9 +42,9 @@ def edit(request, ssl=False):
         errors = d['form'].errors['__all__']
         for e in errors:
           all_errors += e 
-        django.contrib.messages.error(request, _("Form could not be sent.   ") + all_errors)
+        django.contrib.messages.error(request, _("Change(s) could not be made.   ") + all_errors)
       else:
-        err = _("Form could not be sent.  Please check the highlighted field(s) below for details.")
+        err = _("Change(s) could not be made.  Please check the highlighted field(s) below for details.")
         django.contrib.messages.error(request, err)
   return uic.render(request, "account/edit", d)
 
@@ -91,7 +95,9 @@ def logout(request):
   return redirect("ui_home.index")
 
 def update_edit_user(request, basic_info_changed):
-  """method to update the user editing his information.  Not a view for a page"""
+  """
+  Method to update the user editing her information.  Not a view for a page
+  """
   uid = request.session['auth'].user[0]
   di = {}
   for item in ['givenName', 'sn', 'mail', 'telephoneNumber']:
@@ -120,6 +126,7 @@ def pwreset(request, pwrr, ssl=False):
   Handles all GET and POST interactions related to password resets.
   """
   if pwrr:
+    d = { 'menu_item' : 'ui_null.null'}
     r = useradmin.decodePasswordResetRequest(pwrr)
     if not r:
       django.contrib.messages.error(request, _("Invalid password reset request."))
@@ -128,33 +135,24 @@ def pwreset(request, pwrr, ssl=False):
     if int(time.time())-t >= 24*60*60:
       django.contrib.messages.error(request, _("Password reset request has expired."))
       return uic.redirect("/")
+    d['pwrr'] = pwrr
     if request.method == "GET":
-      return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
-        "username": username, 'menu_item' : 'ui_null.null' })
+      d['form'] = form_objects.BasePasswordForm(d, username=username, pw_reqd=True)
     elif request.method == "POST":
-      if "password" not in request.POST or "confirm" not in request.POST:
-        return uic.badRequest(request)
-      password = request.POST["password"]
-      confirm = request.POST["confirm"]
-      if password != confirm:
-        django.contrib.messages.error(request,
-          _("Password and confirmation do not match."))
-        return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
-          "username": username, 'menu_item' : 'ui_null.null' })
-      if password == "":
-        django.contrib.messages.error(request, _("Password required."))
-        return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
-          "username": username, 'menu_item' : 'ui_null.null' })
-      r = useradmin.resetPassword(username, password)
-      if type(r) is str:
-        django.contrib.messages.error(request, r)
-        return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
-          "username": username,  'menu_item' : 'ui_null.null' })
+      d['form'] = form_objects.BasePasswordForm(request.POST, username=username, pw_reqd=True)
+      if not d['form'].is_valid():
+        err = _("Changes could not be made.  Please check the highlighted field(s) below for details.")
+        django.contrib.messages.error(request, err)
       else:
-        django.contrib.messages.success(request, _("Password changed."))
-        return uic.redirect("/")
+        r = useradmin.resetPassword(username, password)
+        if type(r) is str:
+          django.contrib.messages.error(request, r)
+        else:
+          django.contrib.messages.success(request, _("Password changed."))
+          return uic.redirect("/")
     else:
       return uic.methodNotAllowed(request)
+    return uic.render(request, "account/pwreset2", d) 
   else:
     d = { 'menu_item' : 'ui_null.null'}
     if request.method == "GET":

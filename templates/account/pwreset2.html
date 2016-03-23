@@ -5,8 +5,9 @@
 {% block title %}EZID : {% trans "Reset Password" %}{% endblock %}
 {% block heading %}{% content_heading _("Reset Password") %}{% endblock %}
 {% block content %}
-<div class="container vertical-buffer">
-  <form method="post" action="{% url "ui_account.pwreset" pwrr %}" class="form-horizontal" role="form">
+<p><br/></p>
+<form method="post" action="{% url "ui_account.pwreset" pwrr %}" class="general__form" role="form">
+
     <div class="form-group form-group-sm">
       <label for="username" class="col-sm-2 control-label">{% trans "Username" %}</label>
       <div class="col-sm-8">
@@ -30,6 +31,6 @@
         <button type="submit" class="btn btn-primary padding-side-med">{% trans "SUBMIT" %}</button>
       </div>
     </div>
-  </form>
-</div>
+
+</form>
 {% endblock %}

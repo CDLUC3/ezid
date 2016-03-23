@@ -16,6 +16,7 @@ NO_CONSTRAINTS = True
 @uic.user_login_required
 def dashboard(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.dashboard'}
+  # ToDo: Add realm users here as well
   d['display_adminlink'] = \
     request.session["auth"].user[0] in [config.get("ldap.admin_username")]
   d = _getUsage(request, d)

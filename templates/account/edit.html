@@ -19,7 +19,6 @@
  
   {% include "includes/_inlinetext.html" with field=form.givenName form_name="general__" %}
   {% include "includes/_inlinetext.html" with field=form.sn form_name="general__" %}
-  {% include "includes/_inlinetext.html" with field=form.telephoneNumber form_name="general__" %}
   {% include "includes/_inlinetext.html" with field=form.mail form_name="general__" %}
   {% include "includes/_inlinetext.html" with field=form.telephoneNumber form_name="general__" %}
  
@@ -48,7 +47,7 @@
     <button class="home__button-primary" data-toggle="modal" data-target="#proxyModal">{% trans "Select Proxy User(s)" %}</button>
     {% help_icon "lookup_proxies" "account__button-icon-help" %} 
   </div>
-  {% include "account/_proxyModal.html" %}
+  <!-- include "account/_proxyModal.html" -->
  
   <h2 class="heading_2_caps">{% trans "Change Password" %}</h2>
 

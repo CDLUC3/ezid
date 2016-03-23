@@ -50,7 +50,7 @@ def contact(request):
       try:
         django.core.mail.send_mail(title, message, P['email'], emails)
 
-        django.contrib.messages.success(request, _("Message sent"))
+        django.contrib.messages.success(request, _("Thank you for your message. We will respond as soon as possible."))
         d['form'] = form_objects.ContactForm() # Build an empty form
       except:
         django.contrib.messages.error(request, _("There was a problem sending your email"))
