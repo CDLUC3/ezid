@@ -7,30 +7,15 @@
 {% block content %}
 <p><br/></p>
 <form method="post" action="{% url "ui_account.pwreset" pwrr %}" class="general__form" role="form">
+  {{ form.non_field_errors }}
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{% trans "Username" %}</label>
+    <div class="fcontrol__text-nofield">{{ username }}</div>
+  </div>
 
-    <div class="form-group form-group-sm">
-      <label for="username" class="col-sm-2 control-label">{% trans "Username" %}</label>
-      <div class="col-sm-8">
-        <input type="text" name="username" value="{{ username }}" readonly="readonly"/>
-      </div>
-    </div>
-    <div class="form-group form-group-sm">
-      <label for="password" class="col-sm-2 control-label">{% trans "New password" %}</label>
-      <div class="col-sm-8">
-        <input type="password" id="password" name="password" size="20"/>
-      </div>
-    </div>
-    <div class="form-group form-group-sm">
-      <label for="confirm" class="col-sm-2 control-label">{% trans "Confirm password" %}</label>
-      <div class="col-sm-8">
-        <input type="password" id="confirm" name="confirm" size="20"/>
-      </div>
-    </div>
-    <div class="form-group form-group-sm">
-      <div class="col-sm-4 col-sm-offset-2">
-        <button type="submit" class="btn btn-primary padding-side-med">{% trans "SUBMIT" %}</button>
-      </div>
-    </div>
-
+  {% for field in form %}
+  {% include "includes/_inlinetext.html" with field=field form_name="general__" %}
+  {% endfor %}
+  <button class="button__primary general__form-submit">{% trans "Send Email" %}</button>
 </form>
 {% endblock %}

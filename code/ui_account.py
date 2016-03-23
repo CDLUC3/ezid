@@ -125,7 +125,7 @@ def pwreset(request, pwrr, ssl=False):
   """
   Handles all GET and POST interactions related to password resets.
   """
-  if pwrr:
+  if pwrr:  # Change password here after receiving email
     d = { 'menu_item' : 'ui_null.null'}
     r = useradmin.decodePasswordResetRequest(pwrr)
     if not r:
@@ -137,6 +137,7 @@ def pwreset(request, pwrr, ssl=False):
       return uic.redirect("/")
     d['pwrr'] = pwrr
     if request.method == "GET":
+      d['username'] = username 
       d['form'] = form_objects.BasePasswordForm(d, username=username, pw_reqd=True)
     elif request.method == "POST":
       d['form'] = form_objects.BasePasswordForm(request.POST, username=username, pw_reqd=True)
@@ -154,6 +155,7 @@ def pwreset(request, pwrr, ssl=False):
       return uic.methodNotAllowed(request)
     return uic.render(request, "account/pwreset2", d) 
   else:
+    # First step: enter your username and email to get sent an email contiaing link for password change
     d = { 'menu_item' : 'ui_null.null'}
     if request.method == "GET":
       d['form'] = form_objects.PwResetLandingForm()
