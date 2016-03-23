@@ -145,7 +145,7 @@ def pwreset(request, pwrr, ssl=False):
         err = _("Changes could not be made.  Please check the highlighted field(s) below for details.")
         django.contrib.messages.error(request, err)
       else:
-        r = useradmin.resetPassword(username, d['form']['pwnew'])
+        r = useradmin.resetPassword(username, d['form']['pwnew'].data)
         if type(r) is str:
           django.contrib.messages.error(request, r)
         else:
