@@ -138,14 +138,14 @@ def pwreset(request, pwrr, ssl=False):
     d['pwrr'] = pwrr
     if request.method == "GET":
       d['username'] = username 
-      d['form'] = form_objects.BasePasswordForm(d, username=username, pw_reqd=True)
+      d['form'] = form_objects.BasePasswordForm(None, username=username, pw_reqd=True)
     elif request.method == "POST":
       d['form'] = form_objects.BasePasswordForm(request.POST, username=username, pw_reqd=True)
       if not d['form'].is_valid():
         err = _("Changes could not be made.  Please check the highlighted field(s) below for details.")
         django.contrib.messages.error(request, err)
       else:
-        r = useradmin.resetPassword(username, password)
+        r = useradmin.resetPassword(username, d['form']['pwnew'])
         if type(r) is str:
           django.contrib.messages.error(request, r)
         else:
