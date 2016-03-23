@@ -28,11 +28,6 @@
 
 }
 
-.account__button-icon-help {
-	@extend %button__icon-help-base;
-	position: absolute;
-}
-
 .general__form {
 	max-width: 1000px;
 	margin: 0 auto;

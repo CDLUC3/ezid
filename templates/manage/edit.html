@@ -40,12 +40,14 @@
         <p>{% trans "This identified object uses the" %} <strong>{{ current_profile.displayName }}</strong> {% trans "profile" %}.
       {% if not manual_profile %}
         {% if current_profile.name == "datacite" %}
-          <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; {% trans "Add more information to the record" %}" onclick="profileSimpleToAdvanced(event);" class="button__primary">
-          &gt;&gt;&nbsp; {% trans "Add more information to the record" %}</button>
+          &nbsp;&nbsp;
+          <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" value="&gt;&gt;&nbsp; {% trans "Add more information to the record" %}" onclick="profileSimpleToAdvanced(event);" class="button__primary id-details__button-convert">
+          {% trans "Add more information to the record" %}</button>
         {% else %}
-          {% trans "If you would like to add additional information for this record, consider using the DataCite citation profile." %}<br />
-          <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" onclick="profileSimpleToAdvanced(event);" class="button__primary">
-          &gt;&gt;&nbsp; {% trans "Convert to the DataCite citation profile" %}</button>
+          {% trans "If you would like to add additional information for this record, consider using the DataCite citation profile." %}
+          {% help_icon "which_profile" %}<br/>
+          <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" onclick="profileSimpleToAdvanced(event);" class="button__multline id-details__button-convert">
+          {% trans "Convert to the DataCite<br/> citation profile" %}</button>
         {% endif %}
       {% endif %}
         </p>

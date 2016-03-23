@@ -27,6 +27,15 @@
 	@extend %button__primary;
 }
 
+.button__multline {
+	@extend %button__primary;
+	height: 46px;
+}
+
+.id-details__button-convert {
+	margin-top: 15px;
+}
+
 %button__pop {
 	@extend %button__base;
 	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
@@ -68,3 +77,9 @@
 	@extend %button__icon-help-base;
 	position: relative;
 }
+
+.account__button-icon-help {
+        @extend %button__icon-help-base;
+        position: absolute;
+}
+
