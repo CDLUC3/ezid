@@ -217,8 +217,10 @@ def enqueueRequest (auth, request):
   """
   Enqueues a batch download request.  The request must be
   authenticated; 'auth' should be a userauth.AuthenticatedUser object.
-  'request' should be an HTTP POST request.  The successful return is
-  a string that includes the download URL, as in:
+  'request' should be a django.http.QueryDict object (from a POST
+  request or manually created) containing the parameters of the
+  request.  The successful return is a string that includes the
+  download URL, as in:
 
     success: http://ezid.cdlib.org/download/da543b91a0.xml.gz
 
@@ -231,16 +233,16 @@ def enqueueRequest (auth, request):
     return "error: bad request - " + s
   try:
     d = {}
-    for k in request.POST:
+    for k in request:
       if k not in _parameters:
         return error("invalid parameter: " + _oneline(k))
       try:
         if _parameters[k][0]:
-          d[k] = map(_parameters[k][1], request.POST.getlist(k))
+          d[k] = map(_parameters[k][1], request.getlist(k))
         else:
-          if len(request.POST.getlist(k)) > 1:
+          if len(request.getlist(k)) > 1:
             return error("parameter is not repeatable: " + k)
-          d[k] = _parameters[k][1](request.POST[k])
+          d[k] = _parameters[k][1](request[k])
       except _ValidationException, e:
         return error("parameter '%s': %s" % (k, str(e)))
     if "format" not in d:
@@ -273,7 +275,7 @@ def enqueueRequest (auth, request):
     # ownership model is in place, the 'coOwners' field will be
     # replaced by a more general list of users to harvest.
     r = ezidapp.models.DownloadQueue(requestTime=int(time.time()),
-      rawRequest=request.POST.urlencode(),
+      rawRequest=request.urlencode(),
       requestor=requestor, coOwners="", format=_formatCode[format],
       columns=_encode(columns), constraints=_encode(d),
       options=_encode(options), notify=_encode(notify), filename=filename)
