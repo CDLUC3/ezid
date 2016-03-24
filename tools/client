@@ -10,6 +10,7 @@
 #   options:
 #     -d          decode ANVL responses
 #     -e ENCODING output character encoding
+#     -k          disable SSL certificate checking
 #     -o          one line per ANVL value: convert newlines to spaces
 #     -t          format timestamps
 #
@@ -68,6 +69,7 @@
 import codecs
 import optparse
 import re
+import ssl
 import sys
 import time
 import types
@@ -102,6 +104,7 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
   options:
     -d          decode ANVL responses
     -e ENCODING output character encoding
+    -k          disable SSL certificate checking
     -o          one line per ANVL value: convert newlines to spaces
     -t          format timestamps
 
@@ -231,12 +234,20 @@ def printAnvlResponse (response, sortLines=False):
 parser = optparse.OptionParser(formatter=MyHelpFormatter())
 parser.add_option("-d", action="store_true", dest="decode", default=False)
 parser.add_option("-e", action="store", dest="outputEncoding", default="UTF-8")
+parser.add_option("-k", action="store_true", dest="disableCertificateChecking",
+  default=False)
 parser.add_option("-o", action="store_true", dest="oneLine", default=False)
 parser.add_option("-t", action="store_true", dest="formatTimestamps",
   default=False)
 
 _options, args = parser.parse_args()
 if len(args) < 3: parser.error("insufficient arguments")
+
+if _options.disableCertificateChecking:
+  try:
+    ssl._create_default_https_context = ssl._create_unverified_context
+  except AttributeError:
+    pass
 
 _server = KNOWN_SERVERS.get(args[0], args[0])
 
