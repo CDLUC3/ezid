@@ -77,7 +77,7 @@ summary {
 	cursor: pointer;
 
 	// Remove native arrow icon from Chrome & Safari
-	&:-webkit-details-marker {
+	&::-webkit-details-marker {
 	  display: none;
 	}
 

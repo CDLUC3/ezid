@@ -75,6 +75,14 @@ $heading-icon-spacing: 40px;
 }
 
 .heading__icon-4 {
+	@extend %heading__icon-big;
+	padding: 10px 34px;
+	background-image: url('../images/dashboardIDsByMonth.svg');
+	background-position: left 4px center;
+	background-size: 20px;
+}
+
+.heading-sub__icon-4 {
 	@extend %heading__icon-sm;
 	padding: 10px $heading-icon-spacing;
 	background-image: url('../images/dashboardIDsByMonth.svg');

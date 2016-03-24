@@ -45,7 +45,7 @@
           {% trans "Add more information to the record" %}</button>
         {% else %}
           {% trans "If you would like to add additional information for this record, consider using the DataCite citation profile." %}
-          {% help_icon "which_profile" %}<br/>
+          {% help_icon "describe_profile" %}<br/>
           <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" onclick="profileSimpleToAdvanced(event);" class="button__multline id-details__button-convert">
           {% trans "Convert to the DataCite<br/> citation profile" %}</button>
         {% endif %}
@@ -69,7 +69,7 @@
   </div>
   <div class="row vertical-buffer-bot">
     <div class="inline-header">
-      <h2 class="heading__icon-8">{% trans "About the Identifier" %}</h2>
+      <h2 class="heading__icon-4">{% trans "About the Identifier" %}</h2>
     </div>
   </div>
   <div class="fcontrol__group-inline general__form-element-group">
