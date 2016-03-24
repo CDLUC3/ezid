@@ -65,6 +65,10 @@ $(document).ready(function(){
     $('#js-login-modal').fadeToggle(200);
   });
 
+  $('#js-login-modal').on('shown', function () {
+    $("#js-login-modal #username").focus();
+  });
+
   // Close when close icon is clicked
 
   $('#js-login-modal__close').click(function(){

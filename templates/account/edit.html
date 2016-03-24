@@ -44,10 +44,10 @@
       {% endif %}
       <div class="fcontrol__textarea-caption">{%trans "NOTE: Use commas to separate multiple entries." %}</div>
     </div>
-    <button class="home__button-primary" data-toggle="modal" data-target="#proxyModal">{% trans "Select Proxy User(s)" %}</button>
+    <button class="home__button-primary" data-toggle="modal" data-target="#proxyModal" type="button">{% trans "Select Proxy User(s)" %}</button>
     {% help_icon "lookup_proxies" "account__button-icon-help" %} 
   </div>
-  <!-- include "account/_proxyModal.html" -->
+  {% include "account/_proxyModal.html" %}
  
   <h2 class="heading_2_caps">{% trans "Change Password" %}</h2>
 
