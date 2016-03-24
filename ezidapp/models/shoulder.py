@@ -61,7 +61,7 @@ class Shoulder (django.db.models.Model):
   # The absolute URL of the associated minter, or empty if none.
 
   datacenter = django.db.models.ForeignKey(store_datacenter.StoreDatacenter,
-    blank=True, null=True, default=None)
+    blank=True, null=True, default=None, on_delete=django.db.models.PROTECT)
   # For DOI shoulders only, the shoulder's default datacenter;
   # otherwise, None.
 
