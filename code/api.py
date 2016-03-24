@@ -403,4 +403,4 @@ def batchDownloadRequest (request):
     return _response(auth)
   elif not auth:
     return _unauthorized()
-  return _response(download.enqueueRequest(auth, request))
+  return _response(download.enqueueRequest(auth, request.POST))
