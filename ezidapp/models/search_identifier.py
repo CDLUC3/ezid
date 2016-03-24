@@ -198,6 +198,8 @@ class SearchIdentifier (identifier.Identifier):
       not self.isTest
     self.oaiVisible = self.publicSearchVisible and self.hasMetadata and\
       self.target != self.defaultTarget
+    # Caution: crossref._updateSearchDatabase independently modifies
+    # hasIssues.
     self.hasIssues = not self.hasMetadata or self.isCrossrefBad
 
   # Note that MySQL FULLTEXT indexes must be created outside Django;

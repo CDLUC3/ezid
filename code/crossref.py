@@ -508,19 +508,22 @@ def _oneline (s):
   return re.sub("\s", " ", s)
 
 def _updateSearchDatabase (identifier, status):
+  updates = {}
   if status == "successfully registered":
-    status = ezidapp.models.SearchIdentifier.CR_SUCCESS
-    message = ""
+    updates["crossrefStatus"] = ezidapp.models.SearchIdentifier.CR_SUCCESS
+    updates["crossrefMessage"] = ""
   elif status.startswith("registered with warning | "):
-    message = status[26:]
-    status = ezidapp.models.SearchIdentifier.CR_WARNING
+    updates["crossrefMessage"] = status[26:]
+    updates["crossrefStatus"] = ezidapp.models.SearchIdentifier.CR_WARNING
+    updates["hasIssues"] = True
   elif status.startswith("registration failure | "):
-    message = status[23:]
-    status = ezidapp.models.SearchIdentifier.CR_FAILURE
+    updates["crossrefMessage"] = status[23:]
+    updates["crossrefStatus"] = ezidapp.models.SearchIdentifier.CR_FAILURE
+    updates["hasIssues"] = True
   else:
     assert False, "unhandled case"
   ezidapp.models.SearchIdentifier.objects.filter(identifier=identifier).\
-    update(crossrefStatus=status, crossrefMessage=message)
+    update(**updates)
 
 def _doPoll (r):
   t = _pollDepositStatus(r.batchId, r.identifier[4:])
