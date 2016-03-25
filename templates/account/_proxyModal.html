@@ -3,7 +3,6 @@
 <div class="modal fade" id="proxyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="proxy-dialog" role="document">
     <div class="modal-content">
-      <form method="get" action="">
       <div id="proxy-modal__header" class="modal-header proxy-modal__header">
         <div class="proxy-modal__title" id="myModalLabel">{% trans "Select Proxy User(s)" %}</div>
         <img src="/static/images/icon_cross.svg" alt="close" class="close login-modal__close" data-dismiss="modal" aria-label="Close">
@@ -11,7 +10,7 @@
       <div class="modal-body">
         <div class="row">
           <select multiple size="10">
-            <option value="a" selected="selected">[ucsd_signaling_gateway]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Center for International Earth Science Information Network (CIESIN)
+            <option value="a" selected="selected">[ucsd_signaling_gateway]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Center] for International Earth Science Information Network (CIESIN)
             <option value="b">[aasdata]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ESIPCommon Federation of Earth Science Information Partners (ESIP) Commons</option>
             <option value="c" selected="selected">[acsess]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Indiana University Sustainable Environment-Actionable Data (SEAD)</option>
             <option value="d">[aep]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Laboratory for Basic and Translational Cognitive Neuroscience</option>
@@ -30,19 +29,20 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
         <button id="submit_close" type="button" class="btn btn-primary" name="submit_checks" value="Apply Changes">{% trans "Add user(s)" %}</button>
       </div>
-      </form>
     </div>
   </div>
 </div>
 <script type="text/javascript">
 $("#submit_close").click(function(e){
-  var str = "";
-  var s = $('select option:selected');
+  var s = $('select option:selected'),
+      re = /^\[(.*?)\]/,
+      usernames = [],
+      return_str = "";
   s.each(function() {
-    str += $( this ).text() + " ";
-    console.log("str = %s", str);
+    usernames.push(re.exec($( this ).text())[1]);
   });
-  // $('#name').val($('#firstname').val() + " " + $('#lastname').val());
-  // $( this ).dialog( "close" );
+  return_str = usernames.join(", ");
+  $('#id_ezidCoOwners').val(return_str);
+  $('#proxyModal').modal('hide');
 });
 </script>
