@@ -30,6 +30,9 @@ import datacite
 import util2
 """
 
+def _emptyDict ():
+  return {}
+
 class Identifier (django.db.models.Model):
   # Describes an identifier.  This class is abstract; there are
   # separate instantiated subclasses of this class for the store and
@@ -217,7 +220,7 @@ class Identifier (django.db.models.Model):
   def usesErcProfile (self):
     return self.profile.label == "erc"
 
-  cm = custom_fields.CompressedJsonField(default=lambda: {})
+  cm = custom_fields.CompressedJsonField(default=_emptyDict)
   # All of the identifier's citation metadata as a dictionary of
   # name/value pairs, e.g., { "erc.who": "Proust, Marcel", ... }.
 
