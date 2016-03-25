@@ -13,6 +13,7 @@ DATABASES["default"] = {
 }
 SECRET_PATHS.remove(("DATABASES", "default", "HOST"))
 SECRET_PATHS.remove(("DATABASES", "default", "PASSWORD"))
+SEARCH_STORE_SAME_DATABASE = False
 
 ALLOWED_HOSTS = ["localhost"]
 LOCALIZATIONS = { "default": ("cdl", ["andy.mardesich@ucop.edu"]) }
