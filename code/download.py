@@ -77,10 +77,16 @@ def _loadConfig ():
     t.setDaemon(True)
     t.start()
 
-_suffix = {
-  "anvl": "txt",
-  "csv": "csv",
-  "xml": "xml"
+_formatCode = {
+  "anvl": ezidapp.models.DownloadQueue.ANVL,
+  "csv": ezidapp.models.DownloadQueue.CSV,
+  "xml": ezidapp.models.DownloadQueue.XML
+}
+
+_formatSuffix = {
+  ezidapp.models.DownloadQueue.ANVL: "txt",
+  ezidapp.models.DownloadQueue.CSV: "csv",
+  ezidapp.models.DownloadQueue.XML: "xml"
 }
 
 def _oneline (s):
@@ -211,8 +217,10 @@ def enqueueRequest (auth, request):
   """
   Enqueues a batch download request.  The request must be
   authenticated; 'auth' should be a userauth.AuthenticatedUser object.
-  'request' should be an HTTP POST request.  The successful return is
-  a string that includes the download URL, as in:
+  'request' should be a django.http.QueryDict object (from a POST
+  request or manually created) containing the parameters of the
+  request.  The successful return is a string that includes the
+  download URL, as in:
 
     success: http://ezid.cdlib.org/download/da543b91a0.xml.gz
 
@@ -225,16 +233,16 @@ def enqueueRequest (auth, request):
     return "error: bad request - " + s
   try:
     d = {}
-    for k in request.POST:
+    for k in request:
       if k not in _parameters:
         return error("invalid parameter: " + _oneline(k))
       try:
         if _parameters[k][0]:
-          d[k] = map(_parameters[k][1], request.POST.getlist(k))
+          d[k] = map(_parameters[k][1], request.getlist(k))
         else:
-          if len(request.POST.getlist(k)) > 1:
+          if len(request.getlist(k)) > 1:
             return error("parameter is not repeatable: " + k)
-          d[k] = _parameters[k][1](request.POST[k])
+          d[k] = _parameters[k][1](request[k])
       except _ValidationException, e:
         return error("parameter '%s': %s" % (k, str(e)))
     if "format" not in d:
@@ -267,13 +275,13 @@ def enqueueRequest (auth, request):
     # ownership model is in place, the 'coOwners' field will be
     # replaced by a more general list of users to harvest.
     r = ezidapp.models.DownloadQueue(requestTime=int(time.time()),
-      rawRequest=request.POST.urlencode(),
-      requestor=requestor, coOwners="",
-      format=format, columns=_encode(columns), constraints=_encode(d),
+      rawRequest=request.urlencode(),
+      requestor=requestor, coOwners="", format=_formatCode[format],
+      columns=_encode(columns), constraints=_encode(d),
       options=_encode(options), notify=_encode(notify), filename=filename)
     r.save()
     return "success: %s/download/%s.%s.gz" % (_ezidUrl, filename,
-      _suffix[format])
+      _formatSuffix[_formatCode[format]])
   except Exception, e:
     log.otherError("download.enqueueRequest", e)
     return "error: internal server error"
@@ -312,7 +320,7 @@ def _path (r, i):
   else:
     d = django.conf.settings.DOWNLOAD_PUBLIC_DIR
   if i != 4:
-    s = _suffix[r.format]
+    s = _formatSuffix[r.format]
   else:
     s = "request"
   if i in [2, 3]:
@@ -332,11 +340,11 @@ def _createFile (r):
   f = None
   try:
     f = open(_path(r, 1), "wb")
-    if r.format == "csv":
+    if r.format == ezidapp.models.DownloadQueue.CSV:
       w = csv.writer(f)
       w.writerow([_csvEncode(c) for c in _decode(r.columns)])
       _flushFile(f)
-    elif r.format == "xml":
+    elif r.format == ezidapp.models.DownloadQueue.XML:
       f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<records>")
       _flushFile(f)
     # We don't know exactly what the CSV writer wrote, so we must
@@ -453,11 +461,11 @@ def _harvest1 (r, f):
             record["_updated"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
               time.gmtime(int(record["_updated"])))
           _checkAbort()
-          if r.format == "anvl":
+          if r.format == ezidapp.models.DownloadQueue.ANVL:
             _writeAnvl(f, nqidentifier, record)
-          elif r.format == "csv":
+          elif r.format == ezidapp.models.DownloadQueue.CSV:
             _writeCsv(f, nqidentifier, record, columns)
-          elif r.format == "xml":
+          elif r.format == ezidapp.models.DownloadQueue.XML:
             _writeXml(f, nqidentifier, record)
           else:
             assert False, "unhandled case"
@@ -496,7 +504,7 @@ def _harvest (r):
       if "owner" not in constraints or owner in constraints["owner"]:
         _harvest1(r, f)
     _checkAbort()
-    if r.format == "xml":
+    if r.format == ezidapp.models.DownloadQueue.XML:
       try:
         f.write("</records>")
         _flushFile(f)
@@ -573,7 +581,7 @@ def _notifyRequestor (r):
       "%s/download/%s.%s.gz\n\n" +\
       "The download will be deleted in 1 week.\n" +\
       "This is an automated email.  Please do not reply.\n") %\
-      (_ezidUrl, r.filename, _suffix[r.format])
+      (_ezidUrl, r.filename, _formatSuffix[r.format])
     try:
       django.core.mail.send_mail("EZID batch download available", m,
         django.conf.settings.SERVER_EMAIL, emailAddresses, fail_silently=True)

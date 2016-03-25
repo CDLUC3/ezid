@@ -8,6 +8,7 @@ from new_account_worksheet import NewAccountWorksheet
 from profile import Profile
 from realm import Realm
 from search_datacenter import SearchDatacenter
+from search_group import SearchGroup
 from search_identifier import SearchIdentifier
 from search_profile import SearchProfile
 from search_realm import SearchRealm
