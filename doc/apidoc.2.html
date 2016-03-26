@@ -1954,7 +1954,8 @@ week.</p>
 <p id="download-formats"><strong>Download formats</strong></p>
 <p>Identifier metadata is returned in one of three formats; which format
 is determined by the &quot;format&quot; parameter.  In all cases, the text
-encoding is UTF-8 and the metadata is compressed with <a class="reference external" href="http://www.gzip.org/">gzip</a>.</p>
+encoding is UTF-8 and the metadata is compressed with either <a class="reference external" href="http://www.gzip.org/">gzip</a> or
+<a class="reference external" href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">ZIP</a> as determined by the &quot;compression&quot; parameter.</p>
 <ol class="arabic">
 <li><p class="first"><strong>Format &quot;anvl&quot;</strong>.  This format is effectively the concatenation of
 performing a get metadata operation (see <a class="reference internal" href="#operation-get-identifier-metadata">Operation: get identifier
@@ -2099,6 +2100,9 @@ would be:</p>
 <ul>
 <li><p class="first">format={anvl|csv|xml} <em>(required)</em></p>
 <p>The download format, as described above.</p>
+</li>
+<li><p class="first">compression={gzip|zip}</p>
+<p>The compression to use, <a class="reference external" href="http://www.gzip.org/">gzip</a> or <a class="reference external" href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">ZIP</a>.  gzip is the default.</p>
 </li>
 <li><p class="first">column=<span class="hl1">c</span> <em>(repeatable)</em></p>
 <p>Return column <span class="hl1">c</span>.  Applies to the &quot;csv&quot; format only, in which
