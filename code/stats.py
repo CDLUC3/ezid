@@ -92,6 +92,10 @@ class Stats (object):
     self._dimensions = dimensions
     self._histogram = histogram
     try:
+      self._monthIndex = dimensions.index("month")
+    except:
+      self._monthIndex = -1
+    try:
       self._ownerIndex = dimensions.index("owner")
     except:
       self._ownerIndex = -1
@@ -158,6 +162,69 @@ class Stats (object):
           break
       if include: count += c
     return count
+  def getTable (self, owner=None, group=None, useLocalNames=True):
+    """
+    Returns a table (a list) of histogram counts ordered by month.
+    Each element of the list is a pair consisting of a month and a
+    dictionary; the latter maps histogram tuples (sans month, owner,
+    and group) to counts.  For example:
+
+      ("2016-01", { ("ARK", "False"): 14837, ("ARK", "True"): 1789,
+        ("DOI", "False"): 173, ("DOI", "True"): 11267 })
+
+    In dictionaries zero counts are not represented, and thus
+    dictionaries will not necessarily be complete with respect to the
+    Cartesian product of the histogram dimensions.  The range of
+    months returned is determined by the range of nonzero counts, but
+    within that range months are guaranteed to be consecutive.  Empty
+    entries will resemble:
+
+      ("2016-02", {})
+
+    The table can optionally be limited by owner and/or group.  If
+    useLocalNames is True, 'owner' and 'group' are interpreted as
+    local names and are converted to agent identifiers.
+    """
+    assert self._monthIndex >= 0, "no month dimension"
+    excludeIndexes = [self._monthIndex]
+    if owner is not None:
+      assert self._ownerIndex >= 0, "no owner dimension"
+      if useLocalNames: owner = idmap.getUserId(owner)
+    if group is not None:
+      assert self._groupIndex >= 0, "no group dimension"
+      if useLocalNames: group = idmap.getGroupId(group)
+    if self._ownerIndex >= 0: excludeIndexes.append(self._ownerIndex)
+    if self._groupIndex >= 0: excludeIndexes.append(self._groupIndex)
+    includeIndexes = [i for i in range(len(_defaultDimensions))\
+      if i not in excludeIndexes]
+    counts = {}
+    for t, c in self._histogram.items():
+      if (owner is None or t[self._ownerIndex] == owner) and\
+        (group is None or t[self._groupIndex] == group):
+        tt = tuple(t[i] for i in includeIndexes)
+        d = counts.get(t[self._monthIndex], {})
+        dc = d.get(tt, 0)
+        d[tt] = dc + c
+        counts[t[self._monthIndex]] = d
+    def incrementMonth (month):
+      y, m = [int(c) for c in month.split("-")]
+      m += 1
+      if m > 12:
+        m = 1
+        y += 1
+      return "%04d-%02d" % (y, m)
+    table = []
+    months = counts.keys()
+    months.sort()
+    for m in months:
+      if m != months[0]:
+        nextM = incrementMonth(lastM)
+        while nextM != m:
+          table.append((nextM, {}))
+          nextM = incrementMonth(nextM)
+      table.append((m, counts[m]))
+      lastM = m
+    return table
 
 def getStats ():
   """
