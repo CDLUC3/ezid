@@ -10,7 +10,7 @@ Prerequisites
 
 EZID requires:
 
-- Django <http://www.djangoproject.com/> (version 1.8+);
+- Django <http://www.djangoproject.com/> (version 1.8+; see below);
 - Python <http://www.python.org/> (version 2.7+);
 - a relational database (SQLite <http://www.sqlite.org/> and MySQL
   <http://www.mysql.com/> have both been used);
@@ -36,11 +36,11 @@ essential component in the grand scheme of things); additional Noid
 DataCite services for creating DOI identifiers; and an LDAP server, if
 LDAP authentication is used.
 
-There is an additional dependency on the Django version: certain files
-have been copied and in some cases modified from the Django admin
-app's source code into the EZID repository.  Running under a Django
-version different from that used during development may cause
-problems.  See the READMEs in directories
+Caution: there may be a dependency on the specific version of Django:
+certain files have been copied and in some cases modified from the
+Django admin app's source code into the EZID repository.  Running
+under a Django version different from that used during development may
+cause problems.  See the READMEs in directories
 .../SITE_ROOT/PROJECT_ROOT/static/admin and
 .../SITE_ROOT/PROJECT_ROOT/templates/admin.
 
@@ -130,23 +130,22 @@ Initial setup
 =============
 
 To create the initial databases, assuming the above environment
-variables have been set:
+variables have been set, and if EZID's "store" and "search" databases
+are co-located in the same database instance (see Django setting
+SEARCH_STORE_SAME_DATABASE), then:
+
+    django-admin migrate
+
+But if the store and search databases are different databases (whether
+different architectures or simply different instances):
 
     django-admin migrate
     django-admin migrate --database=search
 
-(Caution: in a multi-database environment such as EZID's, the
-'migrate' command writes migration action records to the
-django_migrations table in every database, even if the actions were
-not performed in that database.  If EZID's "store" and "search"
-databases are in fact the same database (which they are in some
-configurations), then that behavior may fool 'migrate' and cause
-certain migrations to not be run.  On a virgin system, the above
-commands work because the search database contains no migrated apps.
-In general, though, it may be necessary to remove entries from
-django_migrations between invocations of 'migrate'.)
+(Confusingly, for technical reasons the store database is to Django
+the default database.)
 
-If using MySQL:
+And if using MySQL:
 
     mysql < .../SITE_ROOT/PROJECT_ROOT/etc/store-mysql-addendum.sql
     mysql < .../SITE_ROOT/PROJECT_ROOT/etc/search-mysql-addendum.sql
