@@ -65,13 +65,21 @@ class NewAccountWorksheet (django.db.models.Model):
   # REQUEST
   reqUsername = django.db.models.CharField("requested username",
     max_length=255, blank=True)
+  reqAccountDisplayNameUseOrganization = django.db.models.BooleanField(
+    "use organization name", default=False)
+  reqAccountDisplayName = django.db.models.CharField("account display name",
+    max_length=255, blank=True)
   reqAccountEmailUsePrimary = django.db.models.BooleanField(
     "use primary contact's email", default=False)
   reqAccountEmail = django.db.models.EmailField("account email",
     max_length=255, blank=True, validators=[validation.unicodeBmpOnly])
   reqArks = django.db.models.BooleanField("ARKs", default=False)
   reqDois = django.db.models.BooleanField("DOIs", default=False)
-  reqShoulders = django.db.models.CharField("requested shoulders/ branding",
+  reqShoulderNameUseOrganization = django.db.models.BooleanField(
+    "use organization name", default=False)
+  reqShoulderName = django.db.models.CharField("shoulder name",
+    max_length=255, blank=True)
+  reqShoulders = django.db.models.CharField("requested shoulder branding",
     max_length=255, blank=True)
   reqCrossref = django.db.models.BooleanField("CrossRef", default=False)
   reqCrossrefEmailUseAccount = django.db.models.BooleanField(
@@ -96,6 +104,10 @@ class NewAccountWorksheet (django.db.models.Model):
     default=False)
   setNeedMinters = django.db.models.BooleanField("minters required",
     default=False)
+  setExistingDatacenter = django.db.models.BooleanField("existing datacenter",
+    default=False)
+  setDatacenter = django.db.models.CharField("datacenter",
+    max_length=255, blank=True)
   setNotes = django.db.models.TextField("notes", blank=True)
 
   # STATUS
@@ -117,29 +129,28 @@ class NewAccountWorksheet (django.db.models.Model):
     self.secName = self.secName.strip()
     self.secPhone = self.secPhone.strip()
     self.reqUsername = self.reqUsername.strip()
+    self.reqAccountDisplayName = self.reqAccountDisplayName.strip()
+    self.reqShoulderName = self.reqShoulderName.strip()
     self.reqShoulders = self.reqShoulders.strip()
     self.reqComments = self.reqComments.strip()
     self.setRealm = self.setRealm.strip()
     self.setGroupname = self.setGroupname.strip()
     self.setUsername = self.setUsername.strip()
+    self.setDatacenter = self.setDatacenter.strip()
     self.setNotes = self.setNotes.strip()
     if self.priUseRequestor:
       self.priName = self.reqName
       self.priEmail = self.reqEmail
       self.priPhone = self.reqPhone
+    if self.reqAccountDisplayNameUseOrganization:
+      self.reqAccountDisplayName = self.orgName
     if self.reqAccountEmailUsePrimary: self.reqAccountEmail = self.priEmail
+    if self.reqShoulderNameUseOrganization: self.reqShoulderName = self.orgName
     if self.reqCrossrefEmailUseAccount:
       self.reqCrossrefEmail = self.reqAccountEmail
     if self.setUsernameUseRequested: self.setUsername = self.reqUsername
     errors = {}
     if self.staReady:
-      for f in ["orgUrl", "orgStreetAddress", "reqName", "reqEmail",
-        "reqPhone", "priName", "priEmail", "priPhone", "reqUsername",
-        "reqAccountEmail", "setRealm", "setGroupname", "setUsername"]:
-        if getattr(self, f) == "": errors[f] = "This field is required."
-      if not any(getattr(self, f) for f in ["reqArks", "reqDois"]):
-        errors["reqArks"] = "Some type of identifier must be requested."
-        errors["reqDois"] = "Some type of identifier must be requested."
       if not self.reqCrossref:
         if self.reqCrossrefEmailUseAccount:
           errors["reqCrossrefEmailUseAccount"] = "CrossRef is not checked."
