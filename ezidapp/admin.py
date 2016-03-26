@@ -193,8 +193,9 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
     return obj.orgName
   organizationName.short_description = "organization name"
   search_fields = ["orgName", "orgAcronym", "orgStreetAddress", "reqName",
-    "priName", "secName", "reqUsername", "reqComments", "setGroupname",
-    "setUsername", "setNotes"]
+    "priName", "secName", "reqUsername", "reqAccountDisplayName",
+    "reqShoulderName", "reqComments", "setGroupname", "setUsername",
+    "setDatacenter", "setNotes"]
   actions = None
   list_filter = ["staReady", "staShouldersCreated", "staAccountCreated"]
   ordering = ["-requestDate", "orgName"]
@@ -208,13 +209,16 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
       "priEmail", "priPhone"] }),
     ("Secondary contact (optional)", { "fields": ["secName", "secEmail",
       "secPhone"] }),
-    ("Request", { "fields": ["reqUsername", ("reqAccountEmail",
-      "reqAccountEmailUsePrimary"), ("reqArks", "reqDois"), "reqShoulders",
+    ("Request", { "fields": ["reqUsername", ("reqAccountDisplayName",
+      "reqAccountDisplayNameUseOrganization"), ("reqAccountEmail",
+      "reqAccountEmailUsePrimary"), ("reqArks", "reqDois"),
+      ("reqShoulderName", "reqShoulderNameUseOrganization"), "reqShoulders",
       "reqCrossref", ("reqCrossrefEmail", "reqCrossrefEmailUseAccount"),
       "reqHasExistingIdentifiers", "reqComments"] }),
     ("Setup", { "fields": ["setRealm", ("setGroupname", "setExistingGroup"),
       ("setUsername", "setUsernameUseRequested"), "setNeedShoulders",
-      "setNeedMinters", "setNotes"] }),
+      "setNeedMinters", ("setDatacenter", "setExistingDatacenter"),
+      "setNotes"] }),
     ("Status", { "fields": ["staReady", "staShouldersCreated",
       "staAccountCreated"] })]
   form = NewAccountWorksheetForm
@@ -229,19 +233,36 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
       addresses = [a for a in\
         config.get("email.new_account_email").split(",") if len(a) > 0]
       if len(addresses) > 0:
-        m = ("The status of a new account request has changed.\n\n" +\
+        subject = "New account \"%s, %s\": %s" % (obj.orgName,
+          str(obj.requestDate), ", ".join(newStatus))
+        message = ("The status of a new account request has changed.\n\n" +\
           "Organization: %s\n" +\
           "Request date: %s\n" +\
-          "New status: %s\n\n" +
+          "New status: %s\n\n" +\
           "View the account's worksheet at:\n\n" +\
           "%s%s\n\n" +\
-          "This is an automated email.  Please do not reply.") %\
+          "This is an automated email.  Please do not reply.\n\n" +\
+          "::\n" +\
+          "new_shoulders_required: %s\n" +\
+          "arks: %s\n" +\
+          "dois: %s\n" +\
+          "minters_required: %s\n" +\
+          "shoulder_name: %s\n" +\
+          "requested_shoulder_branding: %s\n" +\
+          "realm: %s\n" +\
+          "datacenter: %s\n" +\
+          "existing_datacenter: %s\n" +\
+          "crossref: %s\n") %\
           (obj.orgName, str(obj.requestDate), ", ".join(newStatus),
           config.get("DEFAULT.ezid_base_url"),
           django.core.urlresolvers.reverse(
-          "admin:ezidapp_newaccountworksheet_change", args=[obj.id]))
+          "admin:ezidapp_newaccountworksheet_change", args=[obj.id]),
+          str(obj.setNeedShoulders), str(obj.reqArks), str(obj.reqDois),
+          str(obj.setNeedMinters), obj.reqShoulderName, obj.reqShoulders,
+          obj.setRealm, obj.setDatacenter,
+          str(obj.setExistingDatacenter), str(obj.reqCrossref))
         try:
-          django.core.mail.send_mail("New account request status change", m,
+          django.core.mail.send_mail(subject, message,
             django.conf.settings.SERVER_EMAIL, addresses)
         except Exception, e:
           django.contrib.messages.error(request,
