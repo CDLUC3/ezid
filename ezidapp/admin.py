@@ -27,6 +27,7 @@ import django.db.models
 import django.forms
 
 import models
+import util
 
 # Deferred imports...
 """
@@ -243,6 +244,8 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
           "%s%s\n\n" +\
           "This is an automated email.  Please do not reply.\n\n" +\
           "::\n" +\
+          "organization_name: %s\n" +\
+          "organization_acronym: %s\n" +\
           "new_shoulders_required: %s\n" +\
           "arks: %s\n" +\
           "dois: %s\n" +\
@@ -252,15 +255,18 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
           "realm: %s\n" +\
           "datacenter: %s\n" +\
           "existing_datacenter: %s\n" +\
-          "crossref: %s\n") %\
+          "crossref: %s\n" +\
+          "notes: %s\n") %\
           (obj.orgName, str(obj.requestDate), ", ".join(newStatus),
           config.get("DEFAULT.ezid_base_url"),
           django.core.urlresolvers.reverse(
           "admin:ezidapp_newaccountworksheet_change", args=[obj.id]),
+          obj.orgName, obj.orgAcronym,
           str(obj.setNeedShoulders), str(obj.reqArks), str(obj.reqDois),
           str(obj.setNeedMinters), obj.reqShoulderName, obj.reqShoulders,
           obj.setRealm, obj.setDatacenter,
-          str(obj.setExistingDatacenter), str(obj.reqCrossref))
+          str(obj.setExistingDatacenter), str(obj.reqCrossref),
+          util.oneLine(obj.setNotes))
         try:
           django.core.mail.send_mail(subject, message,
             django.conf.settings.SERVER_EMAIL, addresses)
@@ -271,3 +277,22 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
           django.contrib.messages.success(request, "Status change email sent.")
 
 superuser.register(models.NewAccountWorksheet, NewAccountWorksheetAdmin)
+
+class StoreRealmAdmin (django.contrib.admin.ModelAdmin):
+  actions = None
+  ordering = ["name"]
+  def save_model (self, request, obj, form, change):
+    if change:
+      oldName = models.StoreRealm.objects.get(pk=obj.pk).name
+      obj.save()
+      models.SearchRealm.objects.filter(name=oldName).update(name=obj.name)
+    else:
+      sr = models.SearchRealm(name=obj.name)
+      sr.full_clean()
+      obj.save()
+      sr.save()
+  def delete_model (self, request, obj):
+    models.SearchRealm.objects.filter(name=obj.name).delete()
+    obj.delete()
+
+superuser.register(models.StoreRealm, StoreRealmAdmin)
