@@ -27,6 +27,7 @@ import django.db.models
 import django.forms
 
 import models
+import util
 
 # Deferred imports...
 """
@@ -243,6 +244,8 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
           "%s%s\n\n" +\
           "This is an automated email.  Please do not reply.\n\n" +\
           "::\n" +\
+          "organization_name: %s\n" +\
+          "organization_acronym: %s\n" +\
           "new_shoulders_required: %s\n" +\
           "arks: %s\n" +\
           "dois: %s\n" +\
@@ -252,15 +255,18 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
           "realm: %s\n" +\
           "datacenter: %s\n" +\
           "existing_datacenter: %s\n" +\
-          "crossref: %s\n") %\
+          "crossref: %s\n" +\
+          "notes: %s\n") %\
           (obj.orgName, str(obj.requestDate), ", ".join(newStatus),
           config.get("DEFAULT.ezid_base_url"),
           django.core.urlresolvers.reverse(
           "admin:ezidapp_newaccountworksheet_change", args=[obj.id]),
+          obj.orgName, obj.orgAcronym,
           str(obj.setNeedShoulders), str(obj.reqArks), str(obj.reqDois),
           str(obj.setNeedMinters), obj.reqShoulderName, obj.reqShoulders,
           obj.setRealm, obj.setDatacenter,
-          str(obj.setExistingDatacenter), str(obj.reqCrossref))
+          str(obj.setExistingDatacenter), str(obj.reqCrossref),
+          util.oneLine(obj.setNotes))
         try:
           django.core.mail.send_mail(subject, message,
             django.conf.settings.SERVER_EMAIL, addresses)
