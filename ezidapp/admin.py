@@ -271,3 +271,22 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
           django.contrib.messages.success(request, "Status change email sent.")
 
 superuser.register(models.NewAccountWorksheet, NewAccountWorksheetAdmin)
+
+class StoreRealmAdmin (django.contrib.admin.ModelAdmin):
+  actions = None
+  ordering = ["name"]
+  def save_model (self, request, obj, form, change):
+    if change:
+      oldName = models.StoreRealm.objects.get(pk=obj.pk).name
+      obj.save()
+      models.SearchRealm.objects.filter(name=oldName).update(name=obj.name)
+    else:
+      sr = models.SearchRealm(name=obj.name)
+      sr.full_clean()
+      obj.save()
+      sr.save()
+  def delete_model (self, request, obj):
+    models.SearchRealm.objects.filter(name=obj.name).delete()
+    obj.delete()
+
+superuser.register(models.StoreRealm, StoreRealmAdmin)

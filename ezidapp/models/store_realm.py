@@ -16,4 +16,7 @@
 import realm
 
 class StoreRealm (realm.Realm):
-  pass
+
+  class Meta:
+    verbose_name = "realm"
+    verbose_name_plural = "realms"
