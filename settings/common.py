@@ -62,6 +62,11 @@ DATABASES = {
     "fulltextSearchSupported": True
   }
 }
+
+# Set the following to True if the two databases are actually one and
+# the same.
+SEARCH_STORE_SAME_DATABASE = True
+
 DATABASE_ROUTERS = ["settings.routers.Router"]
 
 TIME_ZONE = "America/Los_Angeles"

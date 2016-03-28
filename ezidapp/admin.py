@@ -27,6 +27,7 @@ import django.db.models
 import django.forms
 
 import models
+import util
 
 # Deferred imports...
 """
@@ -193,8 +194,9 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
     return obj.orgName
   organizationName.short_description = "organization name"
   search_fields = ["orgName", "orgAcronym", "orgStreetAddress", "reqName",
-    "priName", "secName", "reqUsername", "reqComments", "setGroupname",
-    "setUsername", "setNotes"]
+    "priName", "secName", "reqUsername", "reqAccountDisplayName",
+    "reqShoulderName", "reqComments", "setGroupname", "setUsername",
+    "setDatacenter", "setNotes"]
   actions = None
   list_filter = ["staReady", "staShouldersCreated", "staAccountCreated"]
   ordering = ["-requestDate", "orgName"]
@@ -208,13 +210,16 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
       "priEmail", "priPhone"] }),
     ("Secondary contact (optional)", { "fields": ["secName", "secEmail",
       "secPhone"] }),
-    ("Request", { "fields": ["reqUsername", ("reqAccountEmail",
-      "reqAccountEmailUsePrimary"), ("reqArks", "reqDois"), "reqShoulders",
+    ("Request", { "fields": ["reqUsername", ("reqAccountDisplayName",
+      "reqAccountDisplayNameUseOrganization"), ("reqAccountEmail",
+      "reqAccountEmailUsePrimary"), ("reqArks", "reqDois"),
+      ("reqShoulderName", "reqShoulderNameUseOrganization"), "reqShoulders",
       "reqCrossref", ("reqCrossrefEmail", "reqCrossrefEmailUseAccount"),
       "reqHasExistingIdentifiers", "reqComments"] }),
     ("Setup", { "fields": ["setRealm", ("setGroupname", "setExistingGroup"),
       ("setUsername", "setUsernameUseRequested"), "setNeedShoulders",
-      "setNeedMinters", "setNotes"] }),
+      "setNeedMinters", ("setDatacenter", "setExistingDatacenter"),
+      "setNotes"] }),
     ("Status", { "fields": ["staReady", "staShouldersCreated",
       "staAccountCreated"] })]
   form = NewAccountWorksheetForm
@@ -229,19 +234,41 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
       addresses = [a for a in\
         config.get("email.new_account_email").split(",") if len(a) > 0]
       if len(addresses) > 0:
-        m = ("The status of a new account request has changed.\n\n" +\
+        subject = "New account \"%s, %s\": %s" % (obj.orgName,
+          str(obj.requestDate), ", ".join(newStatus))
+        message = ("The status of a new account request has changed.\n\n" +\
           "Organization: %s\n" +\
           "Request date: %s\n" +\
-          "New status: %s\n\n" +
+          "New status: %s\n\n" +\
           "View the account's worksheet at:\n\n" +\
           "%s%s\n\n" +\
-          "This is an automated email.  Please do not reply.") %\
+          "This is an automated email.  Please do not reply.\n\n" +\
+          "::\n" +\
+          "organization_name: %s\n" +\
+          "organization_acronym: %s\n" +\
+          "new_shoulders_required: %s\n" +\
+          "arks: %s\n" +\
+          "dois: %s\n" +\
+          "minters_required: %s\n" +\
+          "shoulder_name: %s\n" +\
+          "requested_shoulder_branding: %s\n" +\
+          "realm: %s\n" +\
+          "datacenter: %s\n" +\
+          "existing_datacenter: %s\n" +\
+          "crossref: %s\n" +\
+          "notes: %s\n") %\
           (obj.orgName, str(obj.requestDate), ", ".join(newStatus),
           config.get("DEFAULT.ezid_base_url"),
           django.core.urlresolvers.reverse(
-          "admin:ezidapp_newaccountworksheet_change", args=[obj.id]))
+          "admin:ezidapp_newaccountworksheet_change", args=[obj.id]),
+          obj.orgName, obj.orgAcronym,
+          str(obj.setNeedShoulders), str(obj.reqArks), str(obj.reqDois),
+          str(obj.setNeedMinters), obj.reqShoulderName, obj.reqShoulders,
+          obj.setRealm, obj.setDatacenter,
+          str(obj.setExistingDatacenter), str(obj.reqCrossref),
+          util.oneLine(obj.setNotes))
         try:
-          django.core.mail.send_mail("New account request status change", m,
+          django.core.mail.send_mail(subject, message,
             django.conf.settings.SERVER_EMAIL, addresses)
         except Exception, e:
           django.contrib.messages.error(request,
@@ -250,3 +277,22 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
           django.contrib.messages.success(request, "Status change email sent.")
 
 superuser.register(models.NewAccountWorksheet, NewAccountWorksheetAdmin)
+
+class StoreRealmAdmin (django.contrib.admin.ModelAdmin):
+  actions = None
+  ordering = ["name"]
+  def save_model (self, request, obj, form, change):
+    if change:
+      oldName = models.StoreRealm.objects.get(pk=obj.pk).name
+      obj.save()
+      models.SearchRealm.objects.filter(name=oldName).update(name=obj.name)
+    else:
+      sr = models.SearchRealm(name=obj.name)
+      sr.full_clean()
+      obj.save()
+      sr.save()
+  def delete_model (self, request, obj):
+    models.SearchRealm.objects.filter(name=obj.name).delete()
+    obj.delete()
+
+superuser.register(models.StoreRealm, StoreRealmAdmin)

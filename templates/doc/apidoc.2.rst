@@ -28,6 +28,7 @@
 .. _OAI-PMH: http://www.openarchives.org/OAI/openarchivesprotocol.html
 .. _percent-encoding: http://en.wikipedia.org/wiki/Percent-encoding
 .. _REST-style: http://oreilly.com/catalog/9780596529260
+.. _ZIP: https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
 
 The EZID API, Version 2
 =======================
@@ -1908,7 +1909,9 @@ week.
 
 Identifier metadata is returned in one of three formats; which format
 is determined by the "format" parameter.  In all cases, the text
-encoding is UTF-8 and the metadata is compressed with gzip_ `\ `:ext-icon:.
+encoding is UTF-8 and the metadata is compressed with either gzip_ 
+`\ `:ext-icon: or ZIP_ `\ `:ext-icon: as determined by the 
+"compression" parameter.
 
 1. **Format "anvl"**.  This format is effectively the concatenation of
    performing a get metadata operation (see `Operation: get identifier
@@ -2067,7 +2070,12 @@ Unless otherwise noted, parameters are optional and *not* repeatable.
 
   The download format, as described above.
 
-- column=\ `c`:hl1: *(repeatable)*
+- compression={gzip|zip}
+
+  The compression to use, gzip_ `\ `:ext-icon: or ZIP_ `\ `:ext-icon:
+  .  gzip is the default.
+
+  column=\ `c`:hl1: *(repeatable)*
 
   Return column `c`:hl1:.  Applies to the "csv" format only, in which
   case at least one column is required.

@@ -52,6 +52,12 @@ class DownloadQueue (django.db.models.Model):
     choices=[(ANVL, "ANVL"), (CSV, "CSV"), (XML, "XML")])
   # The download format.
 
+  GZIP = "G"
+  ZIP = "Z"
+  compression = django.db.models.CharField(max_length=1,
+    choices=[(GZIP, "GZIP"), (ZIP, "ZIP")])
+  # The compression algorithm.
+
   columns = django.db.models.TextField(blank=True)
   # For the CSV format only, a list of the columns to return, e.g.,
   # "LS_id,Serc.what".  Encoded per download._encode.

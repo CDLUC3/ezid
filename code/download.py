@@ -53,10 +53,11 @@ _daemonEnabled = None
 _threadName = None
 _idleSleep = None
 _gzipCommand = None
+_zipCommand = None
 
 def _loadConfig ():
   global _ezidUrl, _usedFilenames, _daemonEnabled, _threadName, _idleSleep
-  global _gzipCommand
+  global _gzipCommand, _zipCommand
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
   _lock.acquire()
   try:
@@ -69,6 +70,7 @@ def _loadConfig ():
     _lock.release()
   _idleSleep = int(config.get("daemons.download_processing_idle_sleep"))
   _gzipCommand = config.get("DEFAULT.gzip_command")
+  _zipCommand = config.get("DEFAULT.zip_command")
   _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
     config.get("daemons.download_enabled").lower() == "true")
   if _daemonEnabled:
@@ -87,6 +89,11 @@ _formatSuffix = {
   ezidapp.models.DownloadQueue.ANVL: "txt",
   ezidapp.models.DownloadQueue.CSV: "csv",
   ezidapp.models.DownloadQueue.XML: "xml"
+}
+
+_compressionCode = {
+  "gzip": ezidapp.models.DownloadQueue.GZIP,
+  "zip": ezidapp.models.DownloadQueue.ZIP
 }
 
 def _oneline (s):
@@ -189,6 +196,7 @@ _parameters = {
   "crossref": (False, _validateBoolean),
   "exported": (False, _validateBoolean),
   "format": (False, lambda v: _validateEnumerated(v, ["anvl", "csv", "xml"])),
+  "compression": (False, lambda v: _validateEnumerated(v, ["gzip", "zip"])),
   "notify": (True, _validateString),
   "owner": (True, _validateUser),
   "ownergroup": (True, _validateGroup),
@@ -249,6 +257,11 @@ def enqueueRequest (auth, request):
       return error("missing required parameter: format")
     format = d["format"]
     del d["format"]
+    if "compression" in d:
+      compression = d["compression"]
+      del d["compression"]
+    else:
+      compression = "gzip"
     if format == "csv":
       if "column" not in d:
         return error("format 'csv' requires at least one column")
@@ -277,11 +290,12 @@ def enqueueRequest (auth, request):
     r = ezidapp.models.DownloadQueue(requestTime=int(time.time()),
       rawRequest=request.urlencode(),
       requestor=requestor, coOwners="", format=_formatCode[format],
+      compression=_compressionCode[compression],
       columns=_encode(columns), constraints=_encode(d),
       options=_encode(options), notify=_encode(notify), filename=filename)
     r.save()
-    return "success: %s/download/%s.%s.gz" % (_ezidUrl, filename,
-      _formatSuffix[_formatCode[format]])
+    return "success: %s/download/%s.%s" % (_ezidUrl, filename,
+      _fileSuffix(r))
   except Exception, e:
     log.otherError("download.enqueueRequest", e)
     return "error: internal server error"
@@ -310,6 +324,12 @@ def _wrapException (context, exception):
   return Exception("batch download error: %s: %s%s" % (context,
     type(exception).__name__, m))
 
+def _fileSuffix (r):
+  if r.compression == ezidapp.models.DownloadQueue.GZIP:
+    return _formatSuffix[r.format] + ".gz"
+  else:
+    return "zip"
+
 def _path (r, i):
   # i=1: uncompressed work file
   # i=2: compressed work file
@@ -319,15 +339,13 @@ def _path (r, i):
     d = django.conf.settings.DOWNLOAD_WORK_DIR
   else:
     d = django.conf.settings.DOWNLOAD_PUBLIC_DIR
-  if i != 4:
+  if i == 1:
     s = _formatSuffix[r.format]
+  elif i in [2, 3]:
+    s = _fileSuffix(r)
   else:
     s = "request"
-  if i in [2, 3]:
-    z = ".gz"
-  else:
-    z = ""
-  return os.path.join(d, "%s.%s%s" % (r.filename, s, z))
+  return os.path.join(d, "%s.%s" % (r.filename, s))
 
 def _csvEncode (s):
   return _oneline(s).encode("UTF-8")
@@ -519,20 +537,27 @@ def _compressFile (r):
   infile = None
   outfile = None
   try:
-    infile = open(_path(r, 1))
-    # The gzip command may be long-lived, and a new daemon thread may
-    # be created by a server restart or reload while gzip is still
-    # running, in which case we don't try to kill the old process, but
-    # simply delete its output file and let it die a natural death.
+    # The compression command may be long-lived, and a new daemon
+    # thread may be created by a server restart or reload while it is
+    # still running, in which case we don't try to kill the old
+    # process, but simply delete its output file and let it die a
+    # natural death.
     if os.path.exists(_path(r, 2)): os.unlink(_path(r, 2))
-    outfile = open(_path(r, 2), "w")
-    p = subprocess.Popen([_gzipCommand], stdin=infile, stdout=outfile,
-      stderr=subprocess.PIPE, close_fds=True, env={})
-    stderr = p.communicate()[1]
+    if r.compression == ezidapp.models.DownloadQueue.GZIP:
+      infile = open(_path(r, 1))
+      outfile = open(_path(r, 2), "w")
+      p = subprocess.Popen([_gzipCommand], stdin=infile, stdout=outfile,
+        stderr=subprocess.PIPE, close_fds=True, env={})
+      stderr = p.communicate()[1]
+    else:
+      p = subprocess.Popen([_zipCommand, "-jq", _path(r, 2), _path(r, 1)],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT, close_fds=True, env={})
+      stderr = p.communicate()[0]
     _checkAbort()
     assert p.returncode == 0 and stderr == "",\
-      "gzip command returned status code %d, stderr '%s'" % (p.returncode,
-      stderr)
+      "compression command returned status code %d, stderr '%s'" %\
+      (p.returncode, stderr)
   except _AbortException:
     raise
   except Exception, e:
@@ -578,10 +603,10 @@ def _notifyRequestor (r):
   emailAddresses = _decode(r.notify)
   if len(emailAddresses) > 0:
     m = ("The batch download you requested is available at:\n\n" +\
-      "%s/download/%s.%s.gz\n\n" +\
+      "%s/download/%s.%s\n\n" +\
       "The download will be deleted in 1 week.\n" +\
       "This is an automated email.  Please do not reply.\n") %\
-      (_ezidUrl, r.filename, _formatSuffix[r.format])
+      (_ezidUrl, r.filename, _fileSuffix(r))
     try:
       django.core.mail.send_mail("EZID batch download available", m,
         django.conf.settings.SERVER_EMAIL, emailAddresses, fail_silently=True)
