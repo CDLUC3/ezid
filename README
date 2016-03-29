@@ -36,7 +36,7 @@ essential component in the grand scheme of things); additional Noid
 DataCite services for creating DOI identifiers; and an LDAP server, if
 LDAP authentication is used.
 
-Caution: there may be a dependency on the specific version of Django:
+Caution: there may be dependencies on the specific version of Django:
 certain files have been copied and in some cases modified from the
 Django admin app's source code into the EZID repository.  Running
 under a Django version different from that used during development may
@@ -73,7 +73,6 @@ layout:
             xsd/
         db/
             search.sqlite3 (if using SQLite)
-            shoulders_cache.txt
             stats
             store.sqlite3
         download/

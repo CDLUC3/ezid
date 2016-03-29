@@ -264,6 +264,8 @@ def _read (fileContent, errors, warnings):
     line = line.strip()
     if line.startswith("#") or line == "": continue
     try:
+      _testAbort(util.validateAsciiSafeCharset(line), "illegal character",
+        lineNum, errors)
       if line.startswith("::"):
         if entry != None:
           if _validateEntry(entry, errors, warnings): entries.append(entry)
