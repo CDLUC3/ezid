@@ -47,7 +47,11 @@ def rewrite_hidden(request, exclude=None):
 
 @register.simple_tag   
 def rewrite_hidden_except(request, x):
-  return rewrite_hidden(request, [x])
+  if ',' not in x:
+    vals = [x]
+  else:
+    vals = x.split(",")
+  return rewrite_hidden(request, vals)
 
 @register.simple_tag   
 def rewrite_hidden_nocols(request, field_order):

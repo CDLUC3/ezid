@@ -43,8 +43,7 @@
             data : { p : $('#page-directselect').val() },
             dataType : "json",
             success : function(json) {
-                var out = "",
-                    count = 0;
+                var out = "";
                 // [{"c_title":"","c_update_time":1458756654,"c_id_issue":"","c_identifier":"ark:/99999/fk4kk9jk46"},
                 for (var line in json) {
                     var id = json[line].c_identifier,
@@ -52,7 +51,6 @@
                         t = json[line].c_title,
                         u = json[line].c_update_time,
                         url = "<a href='/id/" + id + "'>";
-                    count++;
                     out += "<tr><td>" + url + id + "</a></td>";
                     out += "<td>" + url + i + "</a></td>";
                     out += "<td>" + url + t + "</a></td>";

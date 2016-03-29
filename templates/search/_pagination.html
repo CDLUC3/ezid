@@ -6,7 +6,8 @@
   {% if filtered %}
   <input name="filtered" type="hidden" value="t"/>
   {% endif %}
-  {% rewrite_hidden_except REQUEST 'ps' %}
+  {% rewrite_hidden_except REQUEST 'ps,p' %}
+  <input name="p" type="hidden" value="1"/>
   <div class="pagination__select-group">
     <label for="page-size-{{ select_position }}" class="pagination__select-label">{% trans "Show" %}</label>
     <select aria-label="{% trans "Show number of entries" %}" name="ps" id="page-size-{{ select_position }}" class="pagination__select">

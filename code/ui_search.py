@@ -98,6 +98,7 @@ def index(request):
     d['REQUEST'] = request.GET 
     d = _pageLayout(d, request.GET)
   elif request.method == "POST":
+    d['p'] = 1
     d['form'] = form_objects.BaseSearchIdForm(request.POST)
     d = search(d, request)
     if d['search_success'] == True:
@@ -105,6 +106,7 @@ def index(request):
   return uic.render(request, 'search/index', d)
 
 def results(request):
+  """ Display different page or columns from search results page """
   d = { 'menu_item' : 'ui_search.results' } 
   if request.method == "GET":
     d['queries'] = queryDict(request)
