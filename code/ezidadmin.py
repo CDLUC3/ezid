@@ -26,10 +26,10 @@ import config
 import django_util
 import ezid
 import ezidapp.models
+import ezidapp.models.shoulder
 import idmap
 import log
 import policy
-import shoulder
 import userauth
 import util
 
@@ -74,7 +74,7 @@ def _validateShoulderList (dn, sl, swallowErrors=True):
   l = []
   for s in sl.split():
     try:
-      assert shoulder.getExactMatch(s) != None,\
+      assert ezidapp.models.shoulder.getExactMatch(s) != None,\
         "undefined shoulder: %s, DN='%s'" % (s, dn)
       if s not in l: l.append(s)
     except AssertionError, e:
