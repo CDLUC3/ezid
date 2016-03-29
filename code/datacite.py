@@ -29,9 +29,9 @@ import urllib2
 import xml.sax.saxutils
 
 import config
+import ezidapp.models.shoulder
 import ezidapp.models.validation
 import mapping
-import shoulder
 import util
 
 _lock = threading.Lock()
@@ -111,10 +111,10 @@ class _HTTPErrorProcessor (urllib2.HTTPErrorProcessor):
 
 def _authorization (doi, datacenter=None):
   if datacenter == None:
-    s = shoulder.getLongestMatch("doi:" + doi)
+    s = ezidapp.models.shoulder.getLongestMatch("doi:" + doi)
     # Should never happen.
     assert s is not None, "shoulder not found"
-    datacenter = s.datacenter
+    datacenter = s.datacenter.symbol
   a = datacenter.split(".")[0]
   p = _allocators.get(a, None)
   assert p is not None, "no such allocator: " + a
