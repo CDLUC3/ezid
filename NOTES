@@ -44,12 +44,6 @@ EZID is reloaded.
     the "Reload EZID" admin function causes all settings to be
     reloaded (except Django and logging settings).
 
-  shoulder._shoulders dictionary
-  shoulders_cache.txt file
-    The former is a dictionary that maps shoulders to
-    shoulder_parser.Entry objects; loaded on demand.  The latter is a
-    local copy of the (remote) shoulder database file.
-
   userauth._ldapCache authentication cache
     A dictionary that maps local usernames to (hashed password, time,
     AuthenticatedUser) tuples.  (The time in a tuple effectively puts
@@ -93,6 +87,11 @@ EZID is reloaded.
     Caches user, group, datacenter, and profile objects from the
     search database.  Loads objects on demand, as they're referenced,
     and also inserts referenced objects that don't exist yet.
+
+  shoulder.py
+    Caches shoulder and datacenter objects from the store database,
+    which are themselves a cache of the content of the external
+    shoulder file.
 
 4. Identifier metadata
 ----------------------
