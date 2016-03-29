@@ -171,13 +171,13 @@ import uuid
 import config
 import crossref
 import datacite
+import ezidapp.models.shoulder
 import ezidapp.models.validation
 import idmap
 import log
 import noid_egg
 import noid_nog
 import policy
-import shoulder
 import store
 import userauth
 import util
@@ -518,7 +518,7 @@ def mintDoi (prefix, user, group, metadata={}):
     error: internal server error
   """
   qprefix = "doi:" + prefix
-  s = shoulder.getExactMatch(qprefix)
+  s = ezidapp.models.shoulder.getExactMatch(qprefix)
   if s is None: return "error: bad request - unrecognized DOI shoulder"
   tid = uuid.uuid1()
   try:
@@ -615,12 +615,12 @@ def createDoi (doi, user, group, metadata={}):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
-    s = shoulder.getLongestMatch(qdoi)
+    s = ezidapp.models.shoulder.getLongestMatch(qdoi)
     # Should never happen.
     assert s is not None, "shoulder not found"
     _softUpdate(m, { "_o": user[1], "_g": group[1], "_c": t, "_u": t,
       "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qdoi,
-      "_d": s.datacenter })
+      "_d": s.datacenter.symbol })
     if m.get("_is", "public") == "reserved":
       m["_t1"] = m["_t"]
       m["_st1"] = m["_st"]
@@ -669,7 +669,7 @@ def mintArk (prefix, user, group, metadata={}):
     error: internal server error
   """
   qprefix = "ark:/" + prefix
-  s = shoulder.getExactMatch(qprefix)
+  s = ezidapp.models.shoulder.getExactMatch(qprefix)
   if s is None: return "error: bad request - unrecognized ARK shoulder"
   tid = uuid.uuid1()
   try:

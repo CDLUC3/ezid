@@ -239,7 +239,7 @@ def select_shoulder_lists(selected_val_list):
   sorted_shoulders = sorted([{\
     "name": s.name+" "+s.type, "prefix": s.prefix,
     "label": s.prefix }\
-    for s in ezidapp.models.shoulder.getAll()],
+    for s in ezidapp.models.shoulder.getAll() if not s.isTest],
     key=lambda p: (p['name'] + ' ' + p['prefix']).lower())
   selected_shoulders = []
   deselected_shoulders = []
