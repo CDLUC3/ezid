@@ -2,8 +2,8 @@
   <div class="pagination__input-group">
     <input id='page-directselect' type='number' class='pagination__input' min='1' max='5' name='p' value='1'/> 
     of 5 
-    <button data-page='2' class='pagination__next' aria-label='Next page of results'>Next</button> 
-    <button data-page='5' class='pagination__last' aria-label='Last page of results'></button> 
+    <button data-page='2' class='pagination__next' aria-label='Next page of results' type='button'>Next</button> 
+    <button data-page='5' class='pagination__last' aria-label='Last page of results' type='button'></button> 
   </div>
 </form>
 
@@ -18,9 +18,8 @@
 </tbody>
 </table -->
 
-<div id="test"></div>
-<div id="results"></div>
-<table class="table2">
+<div id="error"></div>
+<table id="id_issues_table" class="table2">
   <thead>
     <tr>
     <th class='sorting'><a title='Sort on this column' class='table__th-link' href=''>Identifier</a></th>
@@ -31,41 +30,41 @@
   </thead>
 <tbody>
 
-<tr>
-  <td><a href='/id/ark:/99999/fk4zg6wd6q' class='fakeid'>ark:/99999/fk4zg6wd6q</a></td>
-  <td>&nbsp;</td>
-  <td>&nbsp;</td>
-  <td><a href='/id/ark:/99999/fk4zg6wd6q'>2016-03-21 22:21:37 UTC</a></td>
-</tr>
-
 </tbody>
 </table>
 
 <script type="text/javascript">
   $(document).ready(function() {
-    // change form to submit by AJAX
-    // var options = {
-    // url:      '/dashboard/ajax_ssues',
-    // target:   '#test'
-    // };   	
-    // $('#p').ajaxForm(options);
     $('#p').on('submit', function(e){
         e.preventDefault();
         $.ajax({
             url : "dashboard/ajax_issues",
             type : "POST", 
             data : { p : $('#page-directselect').val() },
+            dataType : "json",
             success : function(json) {
-                alert(json);
-                // $('#test').val('');
-                $('Blah').appendTo('#test');
-                console.log(json);
-                console.log("success");
+                var out = "",
+                    count = 0;
+                // [{"c_title":"","c_update_time":1458756654,"c_id_issue":"","c_identifier":"ark:/99999/fk4kk9jk46"},
+                for (var line in json) {
+                    var id = json[line].c_identifier,
+                        i = json[line].c_id_issue,
+                        t = json[line].c_title,
+                        u = json[line].c_update_time,
+                        url = "<a href='/id/" + id + "'>";
+                    count++;
+                    out += "<tr><td>" + url + id + "</a></td>";
+                    out += "<td>" + url + i + "</a></td>";
+                    out += "<td>" + url + t + "</a></td>";
+                    out += "<td>" + url + u + "</a></td></tr>";
+                }
+                $('#id_issues_table tbody').html(out);
             },
             error : function(xhr,errmsg,err) {
-                $('#results').html("<div class='alert-box alert' data-alert>Oops! We have encountered an error: "+errmsg+
-                    " <a href='#' class='close'>&times;</a></div>");
-                console.log(xhr.status + ": " + xhr.responseText);
+                $('#error').html("<div class='alert alert-error' role='alert'>" +
+                                      "<div class='alert-text'>Oops! We have encountered an error: " + errmsg +
+                                   "</div></div>");
+                // console.log(xhr.status + ": " + xhr.responseText);
             }
         });
     });

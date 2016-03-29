@@ -168,4 +168,4 @@ def pager_display(request, current_page, total_pages, page_size, select_position
 def page_link(request, this_page, link_text, page_size, cname, title=None):
   attr_aria = " aria-label='" + title + "'" if title else ""
   return "<button data-page='" + str(this_page) + "' class='" + cname + "'" + \
-    attr_aria + ">" + escape(link_text) + "</button>"
+    attr_aria + " type='button'>" + escape(link_text) + "</button>"

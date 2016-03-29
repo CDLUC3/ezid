@@ -30,7 +30,8 @@ def ajax_issues(request):
     d = {}
     d = ui_search.search(d, request, NO_CONSTRAINTS, "id_issues")
     if request.method == 'POST':
-      return JsonResponse({'status': 'post_success'})
+      j = JsonResponse(d['results'], safe=False)
+      return j
     else:
       return JsonResponse({'status': 'intial_get'})
 
