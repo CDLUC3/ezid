@@ -298,5 +298,4 @@ def download(request):
     return redirect("ui_manage.index")
   else:
     d['link'] = s.split()[1]
-  # ToDo: Handle errors like "error: bad request - parameter 'format': invalid parameter value"
   return uic.render(request, "manage/download", d)

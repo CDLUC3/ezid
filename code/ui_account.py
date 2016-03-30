@@ -34,7 +34,7 @@ def edit(request, ssl=False):
       if d['form'].has_changed():
         basic_info_changed = any(ch in d['form'].changed_data for ch in \
           ['givenName', 'sn', 'telephoneNumber', 'mail', 'ezidCoOwners'])
-      update_edit_user(request, basic_info_changed)
+      _update_edit_user(request, basic_info_changed)
     else: # Form did not validate
       if '__all__' in d['form'].errors:
         # non_form_error, probably due to all fields being empty
@@ -94,28 +94,30 @@ def logout(request):
   django.contrib.messages.success(request, _("You have been logged out."))
   return redirect("ui_home.index")
 
-def update_edit_user(request, basic_info_changed):
+def _update_edit_user(request, basic_info_changed):
   """
-  Method to update the user editing her information.  Not a view for a page
+  Method to update the user editing his/her information.
   """
   uid = request.session['auth'].user[0]
   di = {}
+  P = request.POST
   for item in ['givenName', 'sn', 'mail', 'telephoneNumber']:
-    di[item] = request.POST[item].strip()
+    di[item] = P[item].strip()
   r = useradmin.setContactInfo(uid, di)
   if type(r) is str: django.contrib.messages.error(request, r)
-  if request.POST['ezidCoOwners'].strip() == '':
+  # ToDo: Change to proxy users
+  if P['ezidCoOwners'].strip() == '':
     r = useradmin.setAccountProfile(uid, '')
   else:
-    r = useradmin.setAccountProfile(uid, request.POST['ezidCoOwners'].strip())
+    r = useradmin.setAccountProfile(uid, P['ezidCoOwners'].strip())
   if type(r) is str:
     django.contrib.messages.error(request, r)
   else:
     if basic_info_changed: django.contrib.messages.success(request,
       _("Your information has been updated."))
   
-  if request.POST['pwcurrent'].strip() != '':
-    r = useradmin.resetPassword(uid, request.POST["pwnew"].strip())
+  if P['pwcurrent'].strip() != '' and P['pwnew'].strip() != '':
+    r = useradmin.resetPassword(uid, P["pwnew"].strip())
     if type(r) is str:
       django.contrib.messages.error(request, r)
     else:
