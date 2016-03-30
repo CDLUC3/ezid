@@ -6,6 +6,7 @@ from django.utils.translation import ugettext as _
 import math
 import useradmin
 import locale
+import util
 locale.setlocale(locale.LC_ALL, '')
 
 # Search is executed from the following areas, and these names determine search parameters:
@@ -71,6 +72,8 @@ MANAGE_FIELD_DEFAULTS = ['c_title', 'c_creator', 'c_identifier', 'c_owner', 'c_c
                'c_update_time', 'c_id_status']
 
 IS_ASCENDING = {'asc': True, 'desc': False }
+DATE_FLOOR = False 
+DATE_CEILING = True 
 
 def queryDict(request):
   """
@@ -289,13 +292,21 @@ def _timeConstraintBuilder(c, P, cname, begin, end):
   """
   if begin in P and P[begin]=='' and \
     end in P and P[end]!='':
-      c[cname] = (None,int(P[end]))
+      c[cname] = (None, _handleDate(P[end], DATE_CEILING))
   elif begin in P and P[begin]!='':
     if end in P and P[end]!='':
-      c[cname] = (int(P[begin]),int(P[end]))
+      c[cname] = (_handleDate(P[begin], DATE_FLOOR), _handleDate(P[end], DATE_CEILING))
     else:
-      c[cname] = (int(P[begin]),None)
+      c[cname] = (_handleDate(P[begin], DATE_FLOOR), None)
   return c
+
+def _handleDate(d, ceiling=None):
+  """ Convert any dates with format "YYYY-MM-DD" to Unix Timestamp"""
+  if d.isdigit(): return int(d)
+  if ceiling:
+    return util.dateToUpperTimestamp(d)
+  else:
+    return util.dateToLowerTimestamp(d)
 
 def _buildQuerySyntax(c):
   """ Takes dictionary like this:

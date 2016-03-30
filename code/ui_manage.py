@@ -2,6 +2,7 @@ import ui_common as uic
 import django.contrib.messages
 import ui_search
 import ui_create
+import download as ezid_download
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 import ezid
@@ -287,8 +288,15 @@ def download(request):
   Enqueue a batch download request and display link to user
   """
   d = { 'menu_item' : 'ui_manage.null'}
-  d['mail'] = useradmin.getContactInfo(request.session['auth'].user[0])['mail']
-  # Something like this but waiting for Greg to provide method for csv version
-  # return _response(download.enqueueRequest(request.session['auth'], request))
-  d['link'] = "PLACEHOLDER.csv.gz" 
+  q = django.http.QueryDict("format=csv&convertTimestamps=yes&compression=zip", mutable=True)
+  q.setlist('column', ["_mappedTitle", "_mappedCreator", "_id", "_owner", "_created", "_updated", "_status"])
+  q['notify'] = d['mail'] = useradmin.getContactInfo(request.session['auth'].user[0])['mail']
+
+  s = ezid_download.enqueueRequest(request.session['auth'], q)
+  if not s.startswith("success:"):
+    django.contrib.messages.error(request, s)
+    return redirect("ui_manage.index")
+  else:
+    d['link'] = s.split()[1]
+  # ToDo: Handle errors like "error: bad request - parameter 'format': invalid parameter value"
   return uic.render(request, "manage/download", d)
