@@ -30,7 +30,7 @@ def index(request):
 def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.key }\
+  d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.prefix }\
     for s in policy.getShoulders(request.session["auth"].user,
     request.session["auth"].group)],
     key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
@@ -49,7 +49,7 @@ def simple(request):
 def advanced(request):
   d = { 'menu_item' :'ui_create.advanced' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.key }\
+  d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.prefix }\
     for s in policy.getShoulders(request.session["auth"].user,
     request.session["auth"].group)],
     key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())

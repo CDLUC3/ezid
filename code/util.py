@@ -409,6 +409,15 @@ def formatException (exception):
   if len(s) > 0: s = ": " + s
   return type(exception).__name__ + s
 
+_illegalAsciiCharsRE = re.compile("[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\xFF]")
+
+def validateAsciiSafeCharset (s):
+  """
+  Returns true if the given ASCII string contains only non-control
+  7-bit characters.
+  """
+  return _illegalAsciiCharsRE.search(s) == None
+
 # The following definitions are taken from the XML 1.1 specification.
 # The characters we consider illegal include restricted and
 # discouraged characters, but compatibility characters are still

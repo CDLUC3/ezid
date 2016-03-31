@@ -20,7 +20,7 @@ import idmap
 import log
 import newsfeed 
 import policy
-import shoulder
+import ezidapp.models.shoulder
 import useradmin
 import userauth
 import django.contrib.messages
@@ -58,10 +58,10 @@ def _loadConfig():
   if reload_templates:
     reload_templates = django.conf.settings.RELOAD_TEMPLATES
   testPrefixes = []
-  p = shoulder.getArkTestShoulder()
-  if p != None: testPrefixes.append({ "namespace": p.name, "prefix": p.key })
-  p = shoulder.getDoiTestShoulder()
-  if p != None: testPrefixes.append({ "namespace": p.name, "prefix": p.key })
+  p = ezidapp.models.shoulder.getArkTestShoulder()
+  if p != None: testPrefixes.append({ "namespace": p.name, "prefix": p.prefix })
+  p = ezidapp.models.shoulder.getDoiTestShoulder()
+  if p != None: testPrefixes.append({ "namespace": p.name, "prefix": p.prefix })
   defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
   defaultArkProfile = config.get("DEFAULT.default_ark_profile")
   defaultUrnUuidProfile = config.get("DEFAULT.default_urn_uuid_profile")
@@ -169,7 +169,7 @@ def formatError (message):
 
 def getPrefixes (user, group):
   try:
-    return [{ "namespace": s.name, "prefix": s.key }\
+    return [{ "namespace": s.name, "prefix": s.prefix }\
       for s in policy.getShoulders(user, group)]
   except Exception, e:
     log.otherError("ui_common.getPrefixes", e)

@@ -19,15 +19,15 @@ import threading
 
 import config
 import ezidadmin
+import ezidapp.models.shoulder
 import log
-import shoulder
 import useradmin
 import util2
 
 # Below, _groups maps groups (identified by 2- or 3-tuples; see NOTES)
 # to 4-tuples (shoulders, crossrefEnabled, crossrefMail,
 # crossrefSendMailOnError).  In the latter, 'shoulders' is a list of
-# shoulder_parser.Entry objects.  'crossrefEnabled' and
+# ezidapp.models.Shoulder objects.  'crossrefEnabled' and
 # 'crossrefSendMailOnError' are booleans.  'crossrefMail' is a list of
 # string email addresses.
 
@@ -65,10 +65,10 @@ def _lookupShoulders (group, shoulderText):
   l = []
   for s in shoulderText.split():
     try:
-      entry = shoulder.getExactMatch(s)
-      assert entry != None, "group '%s' has undefined shoulder: %s" %\
+      so = ezidapp.models.shoulder.getExactMatch(s)
+      assert so != None, "group '%s' has undefined shoulder: %s" %\
         (group[0], s)
-      if entry not in l: l.append(entry)
+      if so not in l: l.append(so)
     except AssertionError, e:
       log.otherError("policy._lookupShoulders", e)
   return l
@@ -114,7 +114,7 @@ def _loadGroupLocal (group):
 
 def _loadGroup (group):
   if group[0] == _adminUsername:
-    return ([s for s in shoulder.getAll() if not s.is_test_shoulder],
+    return ([s for s in ezidapp.models.shoulder.getAll() if not s.isTest],
       True, [], False)
   elif group[0] == "anonymous":
     return ([], False, [], False)
@@ -144,8 +144,8 @@ def getShoulders (user, group):
   Returns a list of the shoulders available to a user not including
   the test shoulders.  'user' and 'group' should each be authenticated
   (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  Each shoulder is described by a
-  shoulder_parser.Entry object.  Throws an exception on error.
+  "ark:/13030/foo").  Each shoulder is described by an
+  ezidapp.models.Shoulder object.  Throws an exception on error.
   """
   return _getShoulders(group)[:]
 
@@ -303,7 +303,7 @@ def authorizeCreate (user, group, identifier):
   "doi:10.5060/".  Throws an exception on error.
   """
   if util2.isTestIdentifier(identifier): return True
-  if any(map(lambda s: identifier.startswith(s.key), _getShoulders(group))):
+  if any(map(lambda s: identifier.startswith(s.prefix), _getShoulders(group))):
     return True
   return False
 
@@ -359,8 +359,8 @@ def authorizeCrossref (user, group, identifier):
   in question; it must be qualified, as in "doi:10.5060/foo".  Throws
   an exception on error.
   """
-  s = shoulder.getLongestMatch(identifier)
+  s = ezidapp.models.shoulder.getLongestMatch(identifier)
   # Should never happen.
   assert s is not None, "shoulder not found"
   return (user[0] == _adminUsername or _getCrossrefInfo(group)[0]) and\
-    identifier.startswith("doi:") and s.crossref
+    identifier.startswith("doi:") and s.crossrefEnabled

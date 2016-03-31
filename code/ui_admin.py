@@ -1,10 +1,12 @@
 import ui_common as uic
 import django.contrib.messages
 from django.http import JsonResponse
-import config
 import os
 import ezidadmin
-import shoulder
+import config
+import idmap
+import re
+import ezidapp.models.shoulder
 import useradmin
 import stats
 import datetime
@@ -250,9 +252,9 @@ def select_shoulder_lists(selected_val_list):
   and returns (selected_list, deselected_list)"""
   #make lists of selected and deselected shoulders
   sorted_shoulders = sorted([{\
-    "name": s.name+" "+s.key.split(":")[0].upper(), "prefix": s.key,
-    "label": s.key }\
-    for s in shoulder.getAll() if not s.is_test_shoulder],
+    "name": s.name+" "+s.type, "prefix": s.prefix,
+    "label": s.prefix }\
+    for s in ezidapp.models.shoulder.getAll() if not s.isTest],
     key=lambda p: (p['name'] + ' ' + p['prefix']).lower())
   selected_shoulders = []
   deselected_shoulders = []
