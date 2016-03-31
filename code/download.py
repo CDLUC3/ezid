@@ -227,8 +227,15 @@ def enqueueRequest (auth, request):
   authenticated; 'auth' should be a userauth.AuthenticatedUser object.
   'request' should be a django.http.QueryDict object (from a POST
   request or manually created) containing the parameters of the
-  request.  The successful return is a string that includes the
-  download URL, as in:
+  request.  The available parameters are described in the API
+  documentation.  One feature not mentioned in the documentation: for
+  the 'notify' parameter, an email address may be a straight address
+  ("fred@slate.com") or may include an addressee name
+  ("Fred Flintstone <fred@slate.com>"); in the latter case a
+  salutation line will be added to the email message.
+
+  The successful return is a string that includes the download URL, as
+  in:
 
     success: http://ezid.cdlib.org/download/da543b91a0.xml.gz
 
@@ -600,16 +607,21 @@ def _notifyRequestor (r):
     raise _wrapException("error writing sidecar file", e)
   finally:
     if f: f.close()
-  emailAddresses = _decode(r.notify)
-  if len(emailAddresses) > 0:
-    m = ("The batch download you requested is available at:\n\n" +\
+  for emailAddress in _decode(r.notify):
+    m = re.match("(.*)<([^>]*)>$", emailAddress)
+    if m and m.group(1).strip() != "" and m.group(2).strip() != "":
+      salutation = "Dear %s,\n\n" % m.group(1).strip()
+      emailAddress = m.group(2).strip()
+    else:
+      salutation = ""
+    message = ("%sThe batch download you requested is available at:\n\n" +\
       "%s/download/%s.%s\n\n" +\
       "The download will be deleted in 1 week.\n" +\
       "This is an automated email.  Please do not reply.\n") %\
-      (_ezidUrl, r.filename, _fileSuffix(r))
+      (salutation, _ezidUrl, r.filename, _fileSuffix(r))
     try:
-      django.core.mail.send_mail("EZID batch download available", m,
-        django.conf.settings.SERVER_EMAIL, emailAddresses, fail_silently=True)
+      django.core.mail.send_mail("EZID batch download available", message,
+        django.conf.settings.SERVER_EMAIL, [emailAddress], fail_silently=True)
     except Exception, e:
       raise _wrapException("error sending email", e)
   r.delete()
