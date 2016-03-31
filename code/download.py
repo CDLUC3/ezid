@@ -620,7 +620,7 @@ def _notifyRequestor (r):
       "This is an automated email.  Please do not reply.\n") %\
       (salutation, _ezidUrl, r.filename, _fileSuffix(r))
     try:
-      django.core.mail.send_mail("EZID batch download available", message,
+      django.core.mail.send_mail("Your EZID Batch Download Link", message,
         django.conf.settings.SERVER_EMAIL, [emailAddress], fail_silently=True)
     except Exception, e:
       raise _wrapException("error sending email", e)

@@ -299,3 +299,11 @@ def download(request):
   else:
     d['link'] = s.split()[1]
   return uic.render(request, "manage/download", d)
+
+def download_error(request):
+  """
+  Download link error
+  """
+  d = { 'menu_item' : 'ui_manage.null'}
+  return uic.render(request, "manage/download_error", d)
+
