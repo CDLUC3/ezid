@@ -21,43 +21,33 @@
 	th {
 		display: block;
 		position: relative;
-		padding: 0.5em 30px 0.5em 0.5em;
 		background: $design-secondary-lighter;
 		text-align: left;
 
-		.table__th-link {
-			display: block;
-			margin: -10px;
-			padding: 10px;
-			color: $design-black-color;
-			text-decoration: none;
-			cursor: pointer;
-		}
-
 	}
 
-	.sorting::before,
-	.sort__desc::before,
-	.sort__asc::before {
+	%sorting-base {
 		position: absolute;
-		right: 10px;
-		cursor: pointer;
+		top: 0;
+		right: 2px;
+		padding: 12px;
+		border: none;
 
 	}
 
-	.sorting::before {
-		content: url('../images/sort_brown.png');
-
+	.sorting {
+		@extend %sorting-base;
+		background: no-repeat url('../images/sort_brown.png') 12px 8px;
 	}
 
-	.sort__desc::before {
-		content: url('../images/sort_desc_brown.png');
-
+	.sort__desc {
+		@extend %sorting-base;
+		background: no-repeat url('../images/sort_desc_brown.png') 12px 8px;
 	}
 
-	.sort__asc::before {
-		content: url('../images/sort_asc_brown.png');
-
+	.sort__asc {
+		@extend %sorting-base;
+		background: no-repeat url('../images/sort_asc_brown.png') 12px 8px;
 	}
 
 	tbody {
@@ -77,9 +67,7 @@
 		display: block;
 	}
 
-	.sorting,
-	.sort__desc,
-	.sort__asc,
+	th,
 	td {
 		width: 10em;
 		margin: 0;
@@ -98,10 +86,7 @@
 	.table2 {
 		display: table;
 
-		th,
-		.sorting,
-		.sort__desc,
-		.sort__asc {
+		th {
 			display: table-cell;
 			width: auto;
 			overflow: visible;

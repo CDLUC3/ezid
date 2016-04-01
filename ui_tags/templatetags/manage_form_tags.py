@@ -70,21 +70,23 @@ SORT_OPPOSITE = {'asc': 'desc', 'desc': 'asc'}
 SORT_TIP = {'asc': 'Sorting in ascending order. Click to change to descending order.',
             'desc': 'Sorting in descending order. Click to change to ascending order.'}
 def column_head(request, field, fields_mapped, order_by, sort, primary_page):
+  c = request.copy()
+  c['order_by'] = field
   #if current fields is being ordered by then should show icon, also clicking link or icon will switch order
   if field == order_by:
-    overriding_params = {'order_by': field, 'sort': SORT_OPPOSITE[sort] }
+    c['sort'] = SORT_OPPOSITE[sort]
   else:
-    overriding_params = {'order_by': field, 'sort': sort }
-  combined_params = dict(request.dict(), **overriding_params)
+    c['sort'] = sort
   # If sorting, set result to first page
-  if 'p' in combined_params: combined_params['p'] = 1
-  url = reverse(primary_page) + "?" + urllib.urlencode(combined_params)
-  r = "<th "
+  if 'p' in c: c['p'] = 1
+  form_and_hidden = "<form method='get' action='" + reverse(primary_page) +\
+    "' role='form'>" + rewrite_hidden(c)
+  r = "<th>" + escape(fields_mapped[field][1]) + form_and_hidden
   if field == order_by:
-    r += "class='" + ORDER_BY_CLASS[sort] + "'><a title='" + SORT_TIP[sort] + "' "
+    r += "<button class='" + ORDER_BY_CLASS[sort] + "' aria-label='" + SORT_TIP[sort] + "'>"
   else:
-    r += "class='sorting'><a title='Sort on this column' "
-  r += "class='table__th-link' href='" + url + "'>" + escape(fields_mapped[field][1]) + "</a></th>"
+    r += "<button class='sorting' aria-label='Sort on this column'>"
+  r += "</button></form></th>"
   return r 
 
 #need to pass in account co owners because it's obnoxiously used in the co-owners field and is added
