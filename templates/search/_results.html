@@ -8,6 +8,8 @@
     {% if primary_page == "ui_manage.index" and filtered %}
       <input name="ps" type="hidden" value="{{ ps }}"/>
       <input name="p" type="hidden" value="{{ p }}"/>
+      <input name="order_by" type="hidden" value="{{ order_by }}"/>
+      <input name="sort" type="hidden" value="{{ sort }}"/>
       {% column_choices_hidden fields_selected %}
       <button class="customize-table__button-all">{% trans "See All" %}</button>
     {% endif %}

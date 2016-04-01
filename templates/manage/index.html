@@ -9,6 +9,8 @@
 <form method="post" action="{% url "ui_manage.index" %}" class="form-horizontal" id="manage-form" role="form">
 <input name="filtered" type="hidden" value="t"/> 
 <input name="ps" type="hidden" value="{{ ps }}"/> 
+<input name="order_by" type="hidden" value="{{ order_by }}"/>
+<input name="sort" type="hidden" value="{{ sort }}"/>
 {% column_choices_hidden fields_selected %}
 <div class="manage__simple-search">
   <div class="fcontrol__group-stacked">

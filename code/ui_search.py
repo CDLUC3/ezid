@@ -230,8 +230,10 @@ def _pageLayout(d, REQUEST, s_type="public"):
   #ensure sorting defaults are set
   if 'order_by' in REQUEST and REQUEST['order_by'] in d['fields_selected']:
     d['order_by'] = REQUEST['order_by']
-  else:
+  elif any((True for x in FIELD_DEFAULT_SORT_PRIORITY if x in d['fields_selected'])):
     d['order_by'] = [x for x in FIELD_DEFAULT_SORT_PRIORITY if x in d['fields_selected'] ][0]
+  else:
+    d['order_by'] = d['fields_selected'][0]
   if 'sort' in REQUEST and REQUEST['sort'] in ['asc', 'desc']:
     d['sort'] = REQUEST['sort']
   else:
