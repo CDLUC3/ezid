@@ -196,11 +196,15 @@ def _reconcileShoulders ():
             s.save()
         else:
           try:
+            # Unfortunately, Django doesn't offer on_delete=PROTECT on
+            # many-to-many relationships, so we have to check
+            # manually.
+            if s.storegroup_set.count() > 0: raise django.db.IntegrityError()
             s.delete()
           except django.db.IntegrityError, e:
             raise django.db.IntegrityError(
               "error deleting shoulder %s, shoulder is in use: %s" %\
-              (s.prefix, str(e)))
+              (s.prefix, util.formatException(e)))
           del shoulders[prefix]
       # 2. Similarly for datacenters.
       datacenterFixups = []
