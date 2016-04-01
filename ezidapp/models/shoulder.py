@@ -80,8 +80,7 @@ class Shoulder (django.db.models.Model):
     validators=[validation.nonEmpty])
   # The shoulder's name, e.g., "Brown University Library".
 
-  minter = django.db.models.URLField(max_length=255, blank=True,
-    validators=[validation.unicodeBmpOnly])
+  minter = django.db.models.URLField(max_length=255, blank=True)
   # The absolute URL of the associated minter, or empty if none.
 
   datacenter = django.db.models.ForeignKey(store_datacenter.StoreDatacenter,

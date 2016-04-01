@@ -37,29 +37,25 @@ class NewAccountWorksheet (django.db.models.Model):
     validators=[validation.nonEmpty])
   orgAcronym = django.db.models.CharField("acronym", max_length=255,
     blank=True)
-  orgUrl = django.db.models.URLField("URL", max_length=255, blank=True,
-    validators=[validation.unicodeBmpOnly])
+  orgUrl = django.db.models.URLField("URL", max_length=255, blank=True)
   orgStreetAddress = django.db.models.CharField("street address",
     max_length=255, blank=True)
 
   # REQUESTOR
   reqName = django.db.models.CharField("name", max_length=255, blank=True)
-  reqEmail = django.db.models.EmailField("email", max_length=255, blank=True,
-    validators=[validation.unicodeBmpOnly])
+  reqEmail = django.db.models.EmailField("email", max_length=255, blank=True)
   reqPhone = django.db.models.CharField("phone", max_length=255, blank=True)
 
   # PRIMARY CONTACT
   priUseRequestor = django.db.models.BooleanField("use requestor",
     default=False)
   priName = django.db.models.CharField("name", max_length=255, blank=True)
-  priEmail = django.db.models.EmailField("email", max_length=255, blank=True,
-    validators=[validation.unicodeBmpOnly])
+  priEmail = django.db.models.EmailField("email", max_length=255, blank=True)
   priPhone = django.db.models.CharField("phone", max_length=255, blank=True)
 
   # SECONDARY CONTACT
   secName = django.db.models.CharField("name", max_length=255, blank=True)
-  secEmail = django.db.models.EmailField("email", max_length=255, blank=True,
-    validators=[validation.unicodeBmpOnly])
+  secEmail = django.db.models.EmailField("email", max_length=255, blank=True)
   secPhone = django.db.models.CharField("phone", max_length=255, blank=True)
 
   # REQUEST
@@ -72,7 +68,7 @@ class NewAccountWorksheet (django.db.models.Model):
   reqAccountEmailUsePrimary = django.db.models.BooleanField(
     "use primary contact's email", default=False)
   reqAccountEmail = django.db.models.EmailField("account email",
-    max_length=255, blank=True, validators=[validation.unicodeBmpOnly])
+    max_length=255, blank=True)
   reqArks = django.db.models.BooleanField("ARKs", default=False)
   reqDois = django.db.models.BooleanField("DOIs", default=False)
   reqShoulderNameUseOrganization = django.db.models.BooleanField(
@@ -85,7 +81,7 @@ class NewAccountWorksheet (django.db.models.Model):
   reqCrossrefEmailUseAccount = django.db.models.BooleanField(
     "use account email", default=False)
   reqCrossrefEmail = django.db.models.EmailField("CrossRef email",
-    max_length=255, blank=True, validators=[validation.unicodeBmpOnly])
+    max_length=255, blank=True)
   reqHasExistingIdentifiers = django.db.models.BooleanField(
     "has existing identifiers", default=False)
   reqComments = django.db.models.TextField("requestor comments", blank=True)
