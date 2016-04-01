@@ -23,8 +23,10 @@ import django.contrib.messages
 import django.core.mail
 import django.core.urlresolvers
 import django.core.validators
+import django.db
 import django.db.models
 import django.forms
+import django.utils.html
 
 import models
 import util
@@ -32,6 +34,8 @@ import util
 # Deferred imports...
 """
 import config
+import ezid
+import log
 import ui_common
 """
 
@@ -107,6 +111,29 @@ class ShoulderHasMinterFilter (django.contrib.admin.SimpleListFilter):
         queryset = queryset.filter(minter="")
     return queryset
 
+class StoreGroupInline (django.contrib.admin.TabularInline):
+  model = models.StoreGroup.shoulders.through
+  verbose_name_plural = "Groups using this shoulder"
+  def groupLink (self, obj):
+    link = django.core.urlresolvers.reverse("admin:ezidapp_storegroup_change",
+      args=[obj.storegroup.id])
+    return "<a href=\"%s\">%s</a>" % (link, obj.storegroup.groupname)
+  groupLink.allow_tags = True
+  groupLink.short_description = "groupname"
+  def organizationName (self, obj):
+    return obj.storegroup.organizationName
+  organizationName.short_description = "organization name"
+  def realm (self, obj):
+    return obj.storegroup.realm.name
+  fields = ["groupLink", "organizationName", "realm"]
+  readonly_fields = ["groupLink", "organizationName", "realm"]
+  ordering = ["storegroup__groupname"]
+  extra = 0
+  def has_add_permission (self, request):
+    return False
+  def has_delete_permission (self, request, obj=None):
+    return False
+
 class ShoulderAdmin (django.contrib.admin.ModelAdmin):
   def datacenterLink (self, obj):
     link = django.core.urlresolvers.reverse(
@@ -123,6 +150,7 @@ class ShoulderAdmin (django.contrib.admin.ModelAdmin):
   fields = ["prefix", "name", "minter", "datacenterLink", "crossrefEnabled"]
   readonly_fields = ["prefix", "name", "minter", "datacenterLink",
     "crossrefEnabled"]
+  inlines = [StoreGroupInline]
   form = ShoulderForm
   def has_add_permission (self, request):
     return False
@@ -292,7 +320,101 @@ class StoreRealmAdmin (django.contrib.admin.ModelAdmin):
       obj.save()
       sr.save()
   def delete_model (self, request, obj):
-    models.SearchRealm.objects.filter(name=obj.name).delete()
     obj.delete()
+    models.SearchRealm.objects.filter(name=obj.name).delete()
 
 superuser.register(models.StoreRealm, StoreRealmAdmin)
+
+class StoreGroupRealmFilter (django.contrib.admin.RelatedFieldListFilter):
+  def __new__ (cls, *args, **kwargs):
+    i = django.contrib.admin.RelatedFieldListFilter.create(*args, **kwargs)
+    i.title = "realm"
+    return i
+
+class StoreGroupShoulderlessFilter (django.contrib.admin.SimpleListFilter):
+  title = "shoulderless"
+  parameter_name = "shoulderless"
+  def lookups (self, request, model_admin):
+    return [("Yes", "Yes"), ("No", "No")]
+  def queryset (self, request, queryset):
+    if self.value() != None:
+      if self.value() == "Yes":
+        queryset = queryset.filter(shoulders=None)
+      else:
+        queryset = queryset.filter(~django.db.models.Q(shoulders=None))
+    return queryset
+
+class StoreGroupForm (django.forms.ModelForm):
+  def __init__ (self, *args, **kwargs):
+    super(StoreGroupForm, self).__init__(*args, **kwargs)
+    self.fields["organizationStreetAddress"].widget =\
+      django.contrib.admin.widgets.AdminTextareaWidget()
+    self.fields["shoulders"].queryset = models.Shoulder.objects.filter(
+      isTest=False).order_by("name", "type")
+
+def createOrUpdateGroupPid (request, obj, change):
+  import config
+  import ezid
+  import log
+  r = ezid.asAdmin(ezid.setMetadata if change else ezid.createIdentifier,
+    obj.pid,
+    { "_ezid_role": "group", "_export": "no", "_profile": "ezid",
+    "ezid.group.groupname": obj.groupname,
+    "ezid.group.realm": obj.realm.name,
+    "ezid.group.organizationName": obj.organizationName,
+    "ezid.group.organizationAcronym": obj.organizationAcronym,
+    "ezid.group.organizationUrl": obj.organizationUrl,
+    "ezid.group.organizationStreetAddress": obj.organizationStreetAddress,
+    "ezid.group.agreementOnFile": str(obj.agreementOnFile),
+    "ezid.group.crossrefEnabled": str(obj.crossrefEnabled),
+    "ezid.group.shoulders": " ".join(s.prefix for s in obj.shoulders.all()),
+    "ezid.group.notes": obj.notes })
+  if r.startswith("success:"):
+    django.contrib.messages.success(request, "Group PID %s." %\
+      ("updated" if change else "created"))
+  else:
+    log.otherError("admin.createOrUpdateGroupPid", Exception(
+      "ezid.%s call failed: %s" % ("setMetadata" if change else\
+      "createIdentifier", r)))
+    django.contrib.messages.error(request, "Error %s group PID." %\
+      ("updating" if change else "creating"))
+
+class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
+  def shoulderLinks (self, obj):
+    return "<br/>".join("<a href=\"%s\">%s (%s)</a>" % (
+      django.core.urlresolvers.reverse("admin:ezidapp_shoulder_change",
+      args=[s.id]), django.utils.html.escape(s.name), s.prefix)\
+      for s in obj.shoulders.all().order_by("name", "type"))
+  shoulderLinks.allow_tags = True
+  shoulderLinks.short_description = "links to shoulders"
+  search_fields = ["groupname", "organizationName", "organizationAcronym",
+    "organizationStreetAddress", "notes"]
+  actions = None
+  list_filter = [("realm__name", StoreGroupRealmFilter), "crossrefEnabled",
+    StoreGroupShoulderlessFilter]
+  ordering = ["groupname"]
+  list_display = ["groupname", "organizationName", "realm"]
+  fieldsets = [
+    (None, { "fields": ["pid", "groupname", "realm"] }),
+    ("Organization", { "fields": ["organizationName", "organizationAcronym",
+      "organizationUrl", "organizationStreetAddress"] }),
+    (None, { "fields": ["agreementOnFile", "crossrefEnabled", "shoulders",
+      "shoulderLinks", "notes"] })]
+  readonly_fields = ["pid", "shoulderLinks"]
+  filter_vertical = ["shoulders"]
+  form = StoreGroupForm
+  def save_model (self, request, obj, form, change):
+    obj.save()
+    # Oy vay was this difficult.  A conflict in SQLite between the
+    # Django transaction mechanism and the explicit transactions done
+    # in the legacy 'store' module means that the PID update must be
+    # done outside the Django transaction.  But the Django admin app
+    # puts a transaction around the entire HTTP request, so our only
+    # choice is to perform the update upon commit.  However, on-commit
+    # hooks were added only in Django 1.9, which, as of this writing,
+    # we are not yet using.  So, while not obvious, the following call
+    # relies on the django-transaction-hooks 3rd party package.
+    django.db.connection.on_commit(
+      lambda: createOrUpdateGroupPid(request, obj, change))
+
+superuser.register(models.StoreGroup, StoreGroupAdmin)
