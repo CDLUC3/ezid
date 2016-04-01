@@ -45,7 +45,7 @@ DATABASES = {
   # To keep the Django admin app happy, the store database must be
   # referred to as 'default', despite our use of a router below.
   "default": {
-    "ENGINE": "django.db.backends.mysql",
+    "ENGINE": "transaction_hooks.backends.mysql",
     "HOST": "databases.store_host", # see below
     "NAME": "ezid",
     "USER": "ezidrw",
@@ -53,7 +53,7 @@ DATABASES = {
     "OPTIONS": { "charset": "utf8mb4" }
   },
   "search": {
-    "ENGINE": "django.db.backends.mysql",
+    "ENGINE": "transaction_hooks.backends.mysql",
     "HOST": "databases.search_host", # see below
     "NAME": "ezid",
     "USER": "ezidrw",

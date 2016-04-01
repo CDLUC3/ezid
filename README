@@ -16,13 +16,13 @@ EZID requires:
   <http://www.mysql.com/> have both been used);
 - if using MySQL, a MySQL API driver, e.g., mysqlclient
   <https://pypi.python.org/pypi/mysqlclient>;
+- django-transaction-hooks <http://django-transaction-hooks.readthedocs.org/>
+  (needed only until EZID has been migrated to Django 1.9);
 - lxml <http://lxml.de/> for processing XML;
 - Apache <http://httpd.apache.org/> if running under that, and
 - mod_wsgi <http://code.google.com/p/modwsgi/> (note that to work with
   mod_wsgi Python will have to have been compiled with shared object
   support);
-- an SSL library, e.g., OpenSSL <http://www.openssl.org/>, to
-  communicate with DataCite and LDAP;
 - OpenLDAP <http://www.openldap.org/> if LDAP authentication is used,
   and
 - python-ldap <http://www.python-ldap.org/>.

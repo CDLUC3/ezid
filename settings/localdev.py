@@ -7,7 +7,7 @@ USE_SSL = False
 RELOAD_TEMPLATES = True
 
 DATABASES["default"] = {
-  "ENGINE": "django.db.backends.sqlite3",
+  "ENGINE": "transaction_hooks.backends.sqlite3",
   "NAME": os.path.join(SITE_ROOT, "db", "store.sqlite3"),
   "OPTIONS": { "timeout": 60 }
 }
