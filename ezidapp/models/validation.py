@@ -46,6 +46,10 @@ def agentPid (pid):
     raise django.core.exceptions.ValidationError(
       "Invalid agent persistent identifier.")
 
+def agentPidOrEmpty (pid):
+  # Validates an agent persistent identifier or empty string.
+  if pid != "": agentPid(pid)
+
 _crossrefDoiRE = re.compile("doi:10\.[1-9]\d{3,4}/[-\w.;()/]+$")
 
 def crossrefDoi (identifier):
