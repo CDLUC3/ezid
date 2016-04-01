@@ -44,6 +44,7 @@ _username = None
 _password = None
 _arkTestPrefix = None
 _doiTestPrefix = None
+_agentPrefix = None
 _shoulders = None
 
 class Shoulder (django.db.models.Model):
@@ -93,10 +94,14 @@ class Shoulder (django.db.models.Model):
   # For DOI shoulders only, True if the shoulder supports CrossRef
   # registration; otherwise, False.
 
+  isTest = django.db.models.BooleanField(editable=False)
+  # Computed value.  True if the shoulder is a test shoulder.
+
   class Meta:
     unique_together = ("name", "type")
 
   def clean (self):
+    import util2
     self.type = self.prefix.split(":")[0].upper()
     self.name = self.name.strip()
     if self.isDoi:
@@ -111,18 +116,14 @@ class Shoulder (django.db.models.Model):
         raise django.core.exceptions.ValidationError(
           { "crossrefEnabled":
           "Only DOI shoulders may be CrossRef-enabled." })
-
-  @property
-  def isTest (self):
-    # Returns True if the shoulder is a test shoulder.
-    import util2
-    return util2.isTestIdentifier(self.prefix)
+    self.isTest = util2.isTestIdentifier(self.prefix)
 
   def __unicode__ (self):
-    return self.prefix
+    return "%s (%s)" % (self.name, self.prefix)
 
 def _loadConfig (acquireLock=True):
-  global _url, _username, _password, _arkTestPrefix, _doiTestPrefix, _shoulders
+  global _url, _username, _password, _arkTestPrefix, _doiTestPrefix
+  global _agentPrefix, _shoulders
   import config
   if acquireLock: _lock.acquire()
   try:
@@ -135,6 +136,7 @@ def _loadConfig (acquireLock=True):
       _password = None
     _arkTestPrefix = config.get("shoulders.ark_test")
     _doiTestPrefix = config.get("shoulders.doi_test")
+    _agentPrefix = config.get("shoulders.agent")
     _shoulders = None
   finally:
     if acquireLock: _lock.release()
@@ -303,3 +305,8 @@ def getArkTestShoulder ():
 def getDoiTestShoulder ():
   # Returns the DOI test shoulder.
   return _shoulders[_doiTestPrefix]
+
+@_lockAndLoad
+def getAgentShoulder ():
+  # Returns the shoulder used to mint agent persistent identifiers.
+  return _shoulders[_agentPrefix]
