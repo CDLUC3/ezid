@@ -44,6 +44,7 @@ RESOURCE_TYPES = (
 REGEX_4DIGITYEAR='^(\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
    \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\))$'
 ERR_4DIGITYEAR = _("Four digits required")
+ERR_DATE = _("Please use format YYYY-MM-DD.")
 ERR_CREATOR=_("Please fill in a value for creator.")
 ERR_TITLE=_("Please fill in a value for title.")
 ERR_PUBLISHER=_("Please fill in a value for publisher.")
@@ -748,19 +749,19 @@ class ManageSearchIdForm(BaseSearchIdForm):
     widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "http://pqr.pitt.edu/mol/KQSWENSZQKJHSQ-SCSAIBSYSA-N"}))
   create_time_from = forms.RegexField(required=False, label=_("From"),
     regex='^\d{4}-\d{2}-\d{2}$',
-    error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
+    error_messages={'invalid': ERR_DATE},
     widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-03-30"}))
   create_time_to = forms.RegexField(required=False, label=_("To"),
     regex='^\d{4}-\d{2}-\d{2}$',
-    error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
+    error_messages={'invalid': ERR_DATE},
     widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-04-29"}))
   update_time_from = forms.RegexField(required=False, label=_("From"),
     regex='^\d{4}-\d{2}-\d{2}$',
-    error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
+    error_messages={'invalid': ERR_DATE},
     widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-03-30"}))
   update_time_to = forms.RegexField(required=False, label=_("To"),
     regex='^\d{4}-\d{2}-\d{2}$',
-    error_messages={'invalid': _("Please fill in a date using format YYYY-MM-DD.")},
+    error_messages={'invalid': ERR_DATE},
     widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-04-29"}))
   ID_STATUS = (
     ('', _("Select a status")),

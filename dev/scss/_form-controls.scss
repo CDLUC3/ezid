@@ -369,6 +369,10 @@
 .fcontrol__group-inline--invalid {
 	@extend %fcontrol__group-inline;
 
+	.fcontrol__text-label-inline {
+		align-self: flex-start;
+	}
+
 	.fcontrol__text-field-inline {
 		border: 1px solid $design-red-color;
 		border-radius: $form-element-border-radius $form-element-border-radius 0 0;
