@@ -199,7 +199,8 @@ def _reconcileShoulders ():
             # Unfortunately, Django doesn't offer on_delete=PROTECT on
             # many-to-many relationships, so we have to check
             # manually.
-            if s.storegroup_set.count() > 0: raise django.db.IntegrityError()
+            if s.storegroup_set.count() > 0:
+              raise django.db.IntegrityError("shoulder is referenced by group")
             s.delete()
           except django.db.IntegrityError, e:
             raise django.db.IntegrityError(
