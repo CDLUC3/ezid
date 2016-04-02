@@ -401,6 +401,11 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
     (None, { "fields": ["agreementOnFile", "crossrefEnabled", "shoulders",
       "shoulderLinks", "notes"] })]
   readonly_fields = ["pid", "shoulderLinks"]
+  def get_readonly_fields (self, request, obj=None):
+    if obj:
+      return self.readonly_fields + ["realm"]
+    else:
+      return self.readonly_fields
   filter_vertical = ["shoulders"]
   form = StoreGroupForm
   def save_model (self, request, obj, form, change):
