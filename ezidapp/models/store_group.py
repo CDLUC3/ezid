@@ -37,9 +37,20 @@ class StoreGroup (group.Group):
   # organization, institution, or group; these fields describe that
   # entity.
 
+  BACHELORS = "B"
+  CORPORATE = "C"
+  GROUP = "G"
+  INSTITUTION = "I"
+  MASTERS = "M"
+  NONPAYING = "N"
+  accountType = django.db.models.CharField("account type", max_length=1,
+    choices=[(BACHELORS, "Associate/bachelors-granting"),
+    (CORPORATE, "Corporate"), (GROUP, "Group"),
+    (INSTITUTION, "Institution"), (MASTERS, "Masters-granting"),
+    (NONPAYING, "Non-paying")], blank=True)
   agreementOnFile = django.db.models.BooleanField("agreement on file",
     default=False)
-  # Flag for business purposes only; not used by EZID.
+  # Fields for business purposes only; not used by EZID.
 
   crossrefEnabled = django.db.models.BooleanField("CrossRef enabled",
     default=False)

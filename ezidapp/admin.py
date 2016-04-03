@@ -393,16 +393,16 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
   search_fields = ["groupname", "organizationName", "organizationAcronym",
     "organizationStreetAddress", "notes"]
   actions = None
-  list_filter = [("realm__name", StoreGroupRealmFilter), "crossrefEnabled",
-    StoreGroupShoulderlessFilter]
+  list_filter = [("realm__name", StoreGroupRealmFilter), "accountType",
+    "crossrefEnabled", StoreGroupShoulderlessFilter]
   ordering = ["groupname"]
   list_display = ["groupname", "organizationNameSpelledOut", "realm"]
   fieldsets = [
     (None, { "fields": ["pid", "groupname", "realm"] }),
     ("Organization", { "fields": ["organizationName", "organizationAcronym",
       "organizationUrl", "organizationStreetAddress"] }),
-    (None, { "fields": ["agreementOnFile", "crossrefEnabled", "shoulders",
-      "shoulderLinks", "notes"] })]
+    (None, { "fields": ["accountType", "agreementOnFile", "crossrefEnabled",
+      "shoulders", "shoulderLinks", "notes"] })]
   readonly_fields = ["pid", "shoulderLinks"]
   def get_readonly_fields (self, request, obj=None):
     if obj:
