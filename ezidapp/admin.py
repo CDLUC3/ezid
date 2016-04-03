@@ -414,18 +414,24 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
   filter_vertical = ["shoulders"]
   form = StoreGroupForm
   def save_model (self, request, obj, form, change):
+    clearCaches = False
     if change:
       obj.save()
       models.SearchGroup.objects.filter(pid=obj.pid).\
         update(groupname=obj.groupname)
-      models.store_group.clearCaches()
-      models.search_identifier.clearGroupCache()
+      clearCaches = True
     else:
       sg = models.SearchGroup(pid=obj.pid, groupname=obj.groupname,
         realm=models.SearchRealm.objects.get(name=obj.realm.name))
       sg.full_clean()
       obj.save()
       sg.save()
+    # Our actions won't take effect until the Django admin's
+    # transaction commits sometime in the future, so we defer clearing
+    # the relevant caches.
+    if clearCaches:
+      django.db.connection.on_commit(models.store_group.clearCaches)
+      django.db.connection.on_commit(models.search_identifier.clearGroupCache)
     # Oy vay was this difficult.  A conflict in SQLite between the
     # Django transaction mechanism and the explicit transactions done
     # in the legacy 'store' module means that the PID update must be
@@ -440,7 +446,11 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
   def delete_model (self, request, obj):
     obj.delete()
     models.SearchGroup.objects.filter(pid=obj.pid).delete()
-    models.store_group.clearCaches()
-    models.search_identifier.clearGroupCache()
+    django.contrib.messages.warning(request,
+      "Now-defunct group PID %s not deleted; you may consider doing so." %\
+      obj.pid)
+    # See comment above.
+    django.db.connection.on_commit(models.store_group.clearCaches)
+    django.db.connection.on_commit(models.search_identifier.clearGroupCache)
 
 superuser.register(models.StoreGroup, StoreGroupAdmin)
