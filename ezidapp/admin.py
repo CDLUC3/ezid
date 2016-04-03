@@ -380,6 +380,9 @@ def createOrUpdateGroupPid (request, obj, change):
       ("updating" if change else "creating"))
 
 class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
+  def organizationNameSpelledOut (self, obj):
+    return obj.organizationName
+  organizationNameSpelledOut.short_description = "organization name"
   def shoulderLinks (self, obj):
     return "<br/>".join("<a href=\"%s\">%s (%s)</a>" % (
       django.core.urlresolvers.reverse("admin:ezidapp_shoulder_change",
@@ -393,7 +396,7 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
   list_filter = [("realm__name", StoreGroupRealmFilter), "crossrefEnabled",
     StoreGroupShoulderlessFilter]
   ordering = ["groupname"]
-  list_display = ["groupname", "organizationName", "realm"]
+  list_display = ["groupname", "organizationNameSpelledOut", "realm"]
   fieldsets = [
     (None, { "fields": ["pid", "groupname", "realm"] }),
     ("Organization", { "fields": ["organizationName", "organizationAcronym",
