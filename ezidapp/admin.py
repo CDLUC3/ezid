@@ -29,6 +29,7 @@ import django.forms
 import django.utils.html
 
 import models
+import models.search_identifier
 import util
 
 # Deferred imports...
@@ -412,7 +413,17 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
   filter_vertical = ["shoulders"]
   form = StoreGroupForm
   def save_model (self, request, obj, form, change):
-    obj.save()
+    if change:
+      obj.save()
+      models.SearchGroup.objects.filter(pid=obj.pid).\
+        update(groupname=obj.groupname)
+      models.search_identifier.clearGroupCache()
+    else:
+      sg = models.SearchGroup(pid=obj.pid, groupname=obj.groupname,
+        realm=models.SearchRealm.objects.get(name=obj.realm.name))
+      sg.full_clean()
+      obj.save()
+      sg.save()
     # Oy vay was this difficult.  A conflict in SQLite between the
     # Django transaction mechanism and the explicit transactions done
     # in the legacy 'store' module means that the PID update must be
@@ -424,5 +435,9 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
     # relies on the django-transaction-hooks 3rd party package.
     django.db.connection.on_commit(
       lambda: createOrUpdateGroupPid(request, obj, change))
+  def delete_model (self, request, obj):
+    obj.delete()
+    models.SearchGroup.objects.filter(pid=obj.pid).delete()
+    models.search_identifier.clearGroupCache()
 
 superuser.register(models.StoreGroup, StoreGroupAdmin)
