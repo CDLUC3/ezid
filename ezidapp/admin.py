@@ -30,6 +30,7 @@ import django.utils.html
 
 import models
 import models.search_identifier
+import models.store_group
 import util
 
 # Deferred imports...
@@ -417,6 +418,7 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
       obj.save()
       models.SearchGroup.objects.filter(pid=obj.pid).\
         update(groupname=obj.groupname)
+      models.store_group.clearCaches()
       models.search_identifier.clearGroupCache()
     else:
       sg = models.SearchGroup(pid=obj.pid, groupname=obj.groupname,
@@ -438,6 +440,7 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
   def delete_model (self, request, obj):
     obj.delete()
     models.SearchGroup.objects.filter(pid=obj.pid).delete()
+    models.store_group.clearCaches()
     models.search_identifier.clearGroupCache()
 
 superuser.register(models.StoreGroup, StoreGroupAdmin)

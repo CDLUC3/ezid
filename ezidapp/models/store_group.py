@@ -75,3 +75,52 @@ class StoreGroup (group.Group):
   class Meta:
     verbose_name = "group"
     verbose_name_plural = "groups"
+
+# The following caches are only added to or replaced entirely;
+# existing entries are never modified.  Thus, with appropriate coding
+# below, they are threadsafe without needing locking.
+
+_caches = None # (pidCache, groupnameCache)
+
+def clearCaches ():
+  global _caches
+  _caches = None
+
+def _getCaches ():
+  global _caches
+  caches = _caches
+  if caches == None:
+    pidCache = dict((g.pid, g) for g in StoreGroup.objects\
+      .select_related("realm").prefetch_related("shoulders").all())
+    groupnameCache = dict((g.groupname, g) for g in pidCache.values())
+    caches = (pidCache, groupnameCache)
+    _caches = caches
+  return caches
+
+def getByPid (pid):
+  # Returns the group identified by persistent identifier 'pid', or
+  # None if there is no such group.
+  pidCache, groupnameCache = _getCaches()
+  if pid not in pidCache:
+    try:
+      g = StoreGroup.objects\
+        .select_related("realm").prefetch_related("shoulders").get(pid=pid)
+    except StoreGroup.DoesNotExist:
+      return None
+    pidCache[pid] = g
+    groupnameCache[g.groupname] = g
+  return pidCache[pid]
+
+def getByGroupname (groupname):
+  # Returns the group identified by local name 'groupname', or None if
+  # there is no such group.
+  pidCache, groupnameCache = _getCaches()
+  if groupname not in groupnameCache:
+    try:
+      g = StoreGroup.objects.select_related("realm").\
+        prefetch_related("shoulders").get(groupname=groupname)
+    except StoreGroup.DoesNotExist:
+      return None
+    pidCache[g.pid] = g
+    groupnameCache[groupname] = g
+  return groupnameCache[groupname]
