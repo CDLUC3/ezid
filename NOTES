@@ -83,10 +83,20 @@ EZID is reloaded.
     Cached in agent identifiers for the purposes of storage redundancy
     and locality only.  Written only, never read.
 
+  search database
+    The search database is not a cache, strictly speaking, but as a
+    quasi-clone of the store database it engenders the same kinds of
+    issues that caches do.  In the search database, profiles and
+    datacenters are added as they are encountered (and they are never
+    deleted, so it is possible for extraneous entries to remain in the
+    database).  Users, groups, and realms are kept in sync between the
+    two databases.
+
   search_identifier.py
     Caches user, group, datacenter, and profile objects from the
     search database.  Loads objects on demand, as they're referenced,
-    and also inserts referenced objects that don't exist yet.
+    and also inserts referenced datacenters and profiles that aren't
+    in the database yet.
 
   shoulder.py
     Caches shoulder and datacenter objects from the store database,
