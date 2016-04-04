@@ -43,11 +43,12 @@ class StoreGroup (group.Group):
   INSTITUTION = "I"
   MASTERS = "M"
   NONPAYING = "N"
+  SERVICE = "S"
   accountType = django.db.models.CharField("account type", max_length=1,
     choices=[(BACHELORS, "Associate/bachelors-granting"),
     (CORPORATE, "Corporate"), (GROUP, "Group"),
     (INSTITUTION, "Institution"), (MASTERS, "Masters-granting"),
-    (NONPAYING, "Non-paying")], blank=True)
+    (NONPAYING, "Non-paying"), (SERVICE, "Service")], blank=True)
   agreementOnFile = django.db.models.BooleanField("agreement on file",
     default=False)
   # Fields for business purposes only; not used by EZID.
