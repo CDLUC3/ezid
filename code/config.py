@@ -41,6 +41,7 @@ import time
 import config_loader
 import ezidapp.models.search_identifier
 import ezidapp.models.server_variables
+import ezidapp.models.store_group
 
 _reloadFunctions = []
 
@@ -90,6 +91,7 @@ def reload ():
   # The following functions are explicitly listed here, and don't use
   # the registerReloadListener mechanism, to avoid circular import
   # problems.
+  ezidapp.models.store_group.clearCaches()
   ezidapp.models.search_identifier.clearCaches()
 
 _load()

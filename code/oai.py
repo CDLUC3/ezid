@@ -19,7 +19,6 @@ import django.conf
 import django.http
 import hashlib
 import lxml.etree
-import threading
 import time
 import urllib
 
@@ -35,7 +34,6 @@ _baseUrl = None
 _repositoryName = None
 _adminEmail = None
 _batchSize = None
-_lock = threading.Lock()
 
 def _loadConfig ():
   global _enabled, _baseUrl, _repositoryName, _adminEmail, _batchSize
@@ -44,8 +42,6 @@ def _loadConfig ():
   _repositoryName = config.get("oai.repository_name")
   _adminEmail = config.get("oai.admin_email")
   _batchSize = int(config.get("oai.batch_size"))
-  _lock.acquire()
-  _lock.release()
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)

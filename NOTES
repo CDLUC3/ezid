@@ -40,9 +40,9 @@ Caching is employed in several places.  All caches are emptied when
 EZID is reloaded.
 
   ezid.conf settings
-    Cached in various modules.  Loaded at module load time.  Invoking
-    the "Reload EZID" admin function causes all settings to be
-    reloaded (except Django and logging settings).
+    The settings used in modules are cached by those modules.  Loaded
+    at module load time.  Reloading EZID causes all settings to be
+    reloaded except Django and logging settings.
 
   userauth._ldapCache authentication cache
     A dictionary that maps local usernames to (hashed password, time,
@@ -83,15 +83,29 @@ EZID is reloaded.
     Cached in agent identifiers for the purposes of storage redundancy
     and locality only.  Written only, never read.
 
+  shoulder.py
+    Caches shoulder and datacenter objects from the store database;
+    the database itself caches the content of the external shoulder
+    file.  Loaded when shoulders are first referenced.  Note that
+    shoulders and datacenters are never changed within EZID.
+
+  store_group.py
+    Caches group objects from the store database.  Loads objects on
+    demand, as they're referenced.  Emptied when EZID is reloaded and
+    when groups are modified or deleted.
+
+  search database
+    The search database is not a cache, strictly speaking, but as a
+    quasi-clone of the store database it engenders the same kinds of
+    issues that caches do.  In the search database, profiles and
+    datacenters are added as they are encountered (and they are never
+    deleted, so it is possible for extraneous entries to remain in the
+    database).  Users, groups, and realms are kept in sync between the
+    two databases.
+
   search_identifier.py
     Caches user, group, datacenter, and profile objects from the
-    search database.  Loads objects on demand, as they're referenced,
-    and also inserts referenced objects that don't exist yet.
-
-  shoulder.py
-    Caches shoulder and datacenter objects from the store database,
-    which are themselves a cache of the content of the external
-    shoulder file.
+    search database.  Loads objects on demand, as they're referenced.
 
 4. Identifier metadata
 ----------------------
