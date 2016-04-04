@@ -31,13 +31,14 @@
     </div>
   </div>
 
+{% if proxy_users %}
   <div class="fcontrol__group-inline">
-    <label for="{{ form.ezidCoOwners.id_for_label }}" class="fcontrol__textarea-label-inline general__form-label">{{ form.ezidCoOwners.label }}</label>
+    <label for="{{ form.proxy_users_picked.id_for_label }}" class="fcontrol__textarea-label-inline general__form-label">{{ form.proxy_users_picked.label }}</label>
     <div class="fcontrol__text-field-group">
-      {{ form.ezidCoOwners|add_attributes:"readonly:true,class=fcontrol__text-field-inline"}}
-      {% if form.ezidCoOwners.errors %}
+      {{ form.proxy_users_picked|add_attributes:"readonly:true,class=fcontrol__text-field-inline"}}
+      {% if form.proxy_users_picked.errors %}
       <span class="fcontrol__invalid-flag">
-        {% for error in form.ezidCoOwners.errors %}
+        {% for error in form.proxy_users_picked.errors %}
           {{ error|escape }}<br/>
         {% endfor %}
       </span>
@@ -48,6 +49,7 @@
     {% help_icon "lookup_proxies" "account__button-icon-help" %} 
   </div>
   {% include "account/_proxyModal.html" %}
+{% endif %}
  
   <h2 class="heading_2_caps">{% trans "Change Password" %}</h2>
 

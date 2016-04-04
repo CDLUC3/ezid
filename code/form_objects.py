@@ -683,7 +683,7 @@ class UserForm(BasePasswordForm):
     self.fields["mail"] = forms.EmailField(label=_("Email Address"),
       error_messages={'required': _("Please fill in your email."),
                       'invalid': _("Please fill in a valid email address.")})
-    self.fields["ezidCoOwners"] = forms.CharField(required=False, label=_("Proxy User(s)"),
+    self.fields["proxy_users_picked"] = forms.CharField(required=False, label=_("Proxy User(s)"),
       validators=[_validate_proxies])
     self.fields["pwcurrent"] = forms.CharField(required=False, label=_("Current Password"),
       widget=forms.PasswordInput(), validators=[_validate_current_pw(self.username)])

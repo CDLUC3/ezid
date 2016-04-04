@@ -7,6 +7,18 @@ import time
 from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
 
+# Temporary, for testing
+proxy_users_mock = {'ucsd_signaling_gateway': 'Center for International Earth Science Information Network (CIESIN)', 
+'aasdata': 'ESIPCommon Federation of Earth Science Information Partners (ESIP) Commons', 
+'acsess': 'Indiana University Sustainable Environment-Actionable Data (SEAD)', 
+'aep': 'Laboratory for Basic and Translational Cognitive Neuroscience', 
+'artlas': 'Partnership for Interdisciplinary Studies of Coastal Oceans (PISCO)', 
+'ualberta': 'UAlberta Journal of Professional Continuing and Online Education', 
+'benchfly': 'Center for International Earth Science Information Network (CIESIN)', 
+'biocaddie': 'ESIPCommon Federation of Earth Science Information Partners (ESIP) Commons', 
+'biocaddie-api': 'Indiana University Sustainable Environment-Actionable Data (SEAD)'}
+proxy_users_mock_picked = "aasdata, acsess"
+
 def edit(request, ssl=False):
   """Edit account information form"""
   d = { 'menu_item' : 'ui_account.edit'}
@@ -23,11 +35,12 @@ def edit(request, ssl=False):
     return redirect("ui_home.index")
   r.update(r2)
   d.update(r)
-  # ToDo: Replace with proxy data .... Is this line even needed?
-  if not 'ezidCoOwners' in d: d['ezidCoOwners'] = ''
   if request.method == "GET":
+    d['proxy_users_picked'] = proxy_users_mock_picked
+    d['proxy_users'] = proxy_users_mock
     d['form'] = form_objects.UserForm(d, username=d['username'], pw_reqd=False)
   else:
+    # ToDo: Email new proxy users 
     d['form'] = form_objects.UserForm(request.POST, initial=d, username=d['username'], pw_reqd=False)
     basic_info_changed=False
     if d['form'].is_valid():

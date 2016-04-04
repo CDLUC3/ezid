@@ -80,6 +80,10 @@
 
 .account__button-icon-help {
         @extend %button__icon-help-base;
-        position: absolute;
+        position: relative;
+
+	@include bp(screen2) {
+		top: -15px;
+	}
 }
 
