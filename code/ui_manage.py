@@ -304,6 +304,7 @@ def download_error(request):
   """
   Download link error
   """
-  d = { 'menu_item' : 'ui_manage.null'}
-  return uic.render(request, "manage/download_error", d)
+  content = [_("You tried to access something that doesn't exist. You may have requested a file currently being processed and not yet completed."),
+    _("Please <a class='link__primary' href='/contact'>contact us</a> if you need assistance.")]
+  return uic.error(request, 404, content)
 
