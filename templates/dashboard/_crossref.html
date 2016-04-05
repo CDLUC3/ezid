@@ -1,32 +1,32 @@
-<form method="GET" id="p_issues" role="form">
+<form method="GET" id="p_crossref" role="form">
   <div class="pagination__input-group">
-    <input id='page-issues-directselect' type='number' class='pagination__input' min='1' max='5' name='p' value='1'/> 
+    <input id='page-crossref-directselect' type='number' class='pagination__input' min='1' max='5' name='p' value='1'/> 
     of 5 
     <button data-page='2' class='pagination__next' aria-label='Next page of results' type='button'>Next</button> 
     <button data-page='5' class='pagination__last' aria-label='Last page of results' type='button'></button> 
   </div>
 </form>
 
-<div id="error_issues"></div>
-<table id="id_issues_table" class="table2">
+<div id="error_crossref"></div>
+<table id="crossref_table" class="table2">
   <thead>
     <tr>
     <th>Identifier</th>
-    <th>Issue</th>
-    <th>Object Title</th>
-    <th>ID Date Last Modified</th>
+    <th>Date Submitted</th>
+    <th>Description</th>
+    <th>Required Action</th>
     </tr>
   </thead>
 <tbody>
 </tbody>
 </table>
-<div id="loading_issues" class="loading"></div>
+<div id="loading_crossref" class="loading"></div>
 
 <script type="text/javascript">
   $(document).ready(function() {
-    $('#p_issues').on('submit', function(e){
+    $('#p_crossref').on('submit', function(e){
         e.preventDefault();
-        $('#id_issues_table tbody').html('&nbsp;').load('dashboard/ajax_table?name=id_issues&p=' + $('#page-issues-directselect').val());
+        $('#crossref_table tbody').html('&nbsp;').load('dashboard/ajax_table?name=crossref&p=' + $('#page-crossref-directselect').val());
         // error : function(xhr,errmsg,err) {
         //        $('#error').html("<div class='alert alert-error' role='alert'>" +
         //                              "<div class='alert-text'>Oops! We have encountered an error: " + errmsg +
@@ -38,18 +38,18 @@
 
   // *******   PAGE   *******
   // page selection input field: submit on enter key
-  $("#page-issues-directselect").keyup(function(e){ 
+  $("#page-crossref-directselect").keyup(function(e){ 
     // submit value in input on enter key
     var code = e.which;
     if(code==13)e.preventDefault();
     if(code==32||code==13||code==188||code==186){
-      $("#p_issues").submit();
+      $("#p_crossref").submit();
     }
   });
   // page selection buttons change value in input field and submit on click
-  $("#p_issues button").click(function(e){
+  $("#p_crossref button").click(function(e){
     var p = $(e.currentTarget).data('page');
-    $('#page-issues-directselect').val(p).change();
-    $("#p_issues").submit();
+    $('#page-crossref-directselect').val(p).change();
+    $("#p_crossref").submit();
   });
 </script>

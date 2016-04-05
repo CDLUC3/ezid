@@ -38,3 +38,13 @@
 .dashboard__table-identifiers {
 	@extend %dashboard__indent;
 }
+
+.loading {
+  width: 100%;
+  height: 100px;
+  background: url('/static/images/loading.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 60px 60px;
+}
+

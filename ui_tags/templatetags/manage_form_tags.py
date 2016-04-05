@@ -92,25 +92,23 @@ def column_head(request, field, fields_mapped, order_by, sort, primary_page):
 #need to pass in account co owners because it's obnoxiously used in the co-owners field and is added
 #to database values instead of being a purer value 
 @register.simple_tag
-def data_row(record, fields_selected, field_display_types, account_co_owners, testPrefixes):
+def data_row(record, fields_selected, field_display_types, testPrefixes):
   assert 'c_identifier' in record
-  id_href_tag_head = "<a href='/id/" + record['c_identifier'] + "'>" 
+  id_href_tag_head = "<a href='/id/" + record['c_identifier'] + "' class='link__primary'>" 
   return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, \
-    account_co_owners, testPrefixes, id_href_tag_head) for f in fields_selected]) + '</td>'
+    testPrefixes, id_href_tag_head) for f in fields_selected]) + '</td>'
 
 FUNCTIONS_FOR_FORMATTING = {
-  'string'         : lambda x, coown, tp, href: string_value(x, href),
-  'identifier'     : lambda x, coown, tp, href: identifier_disp(x, tp),
-  'datetime'       : lambda x, coown, tp, href: datetime_disp(x, href), 
-  'owner_lookup'   : lambda x, coown, tp, href: id_lookup(x),
-  'coowners'       : lambda x, coown, tp, href: co_owner_disp(x, coown)
+  'datetime'       : lambda x, tp, href: datetime_disp(x, href), 
+  'identifier'     : lambda x, tp, href: identifier_disp(x, tp),
+  'string'         : lambda x, tp, href: string_value(x, href),
 }
 
 def formatted_field(
-  record, field_name, field_display_types, account_co_owners, testPrefixes, href):
+  record, field_name, field_display_types, testPrefixes, href):
     value = record[field_name]
     formatting = field_display_types[field_name]
-    return FUNCTIONS_FOR_FORMATTING[formatting](value, account_co_owners, testPrefixes, href)
+    return FUNCTIONS_FOR_FORMATTING[formatting](value, testPrefixes, href)
 
 def string_value(x, href):
   if x is None or x.strip() == '':
@@ -122,32 +120,13 @@ def string_value(x, href):
 def identifier_disp(x, testPrefixes):
   for pre in testPrefixes:
     if x.startswith(pre['prefix']):
-      return "<a href='/id/" + x + "' class='fakeid'>" + escape(x) + "</a>"
-  return "<a href='/id/" + x + "'>" + escape(x) + "</a>"
+      return "<a href='/id/" + x + "' class='link__primary fakeid'>" + escape(x) + "</a>"
+  return "<a href='/id/" + x + "' class='link__primary'>" + escape(x) + "</a>"
   
 def datetime_disp(x, href):
   return href +\
     escape(datetime.datetime.utcfromtimestamp(x).strftime(settings.TIME_FORMAT_UI_METADATA)) +\
     " UTC</a>"
-
-def co_owner_disp(x, coown):
-  str_x = ''
-  if not x is None:
-    str_x = x
-  if str_x != '' and coown != '':
-    return escape(str_x) + "," + "<span class='account_co_owners'>" + escape(coown) + "</span>"
-  else:
-    return escape(str_x) + "<span class='small_co_owners'>" + escape(coown) + "</span>"
-
-def id_lookup(x):
-  try:
-    return escape(idmap.getAgent(x)[0])
-  except:
-    return 'unknown'
-  
-
-def percent_width(item_weight, total):
-  return str(int(round(item_weight/total*1000))/10.0) + '%'
 
 @register.simple_tag
 def pager_display(request, current_page, total_pages, page_size, select_position):

@@ -27,14 +27,14 @@ def dashboard(request, ssl=False):
   return uic.render(request, 'dashboard/index', d)
 
 @uic.user_login_required
-def ajax_issues(request):
+def ajax_dashboard_table(request):
   if request.is_ajax():
     d = {}
-    d = ui_search.search(d, request, NO_CONSTRAINTS, "id_issues")
-    if request.method == 'POST':
-      return JsonResponse(d['results'], safe=False)
-    else:
-      return JsonResponse({'status': 'intial_get'})
+    d['p'] = request.GET.get('p')
+    name = request.GET.get('name')
+    if d['p'] is not None and d['p'].isdigit():
+      d = ui_search.search(d, request, NO_CONSTRAINTS, name)
+      return uic.render(request, 'dashboard/_table_row', d)
 
 def _getUsage(request, d):
   # ToDo: Now that any user can access this pg, not just admin, make necessary changes.
