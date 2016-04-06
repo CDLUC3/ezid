@@ -314,8 +314,6 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
           obj.setRealm, obj.setGroupname, obj.setUsername,
           obj.setUserDisplayName, obj.setShoulderDisplayName,
           str(obj.setNonDefaultSetup), util.oneLine(obj.setNotes))
-        print "SUBJECT:", subject###
-        print message###
         try:
           django.core.mail.send_mail(subject, message,
             django.conf.settings.SERVER_EMAIL, addresses)
