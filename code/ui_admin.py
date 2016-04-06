@@ -23,7 +23,12 @@ def dashboard(request, ssl=False):
     request.session["auth"].user[0] in [config.get("ldap.admin_username")]
   d = _getUsage(request, d)
   # d['filtered'] = True 
-  d = ui_search.search(d, request, NO_CONSTRAINTS, "id_issues")
+  d = ui_search.search(d, request, NO_CONSTRAINTS, "issues")
+  d['results_issues'] = d['results']
+  d['field_display_types_issues'] = d['field_display_types']
+  d['fields_selected_issues'] = d['fields_selected']
+  d = ui_search.search(d, request, NO_CONSTRAINTS, "crossref")
+  d['results_crossref'] = d['results']
   return uic.render(request, 'dashboard/index', d)
 
 @uic.user_login_required

@@ -1,14 +1,14 @@
-<form method="GET" id="p_issues" role="form">
+{% load manage_form_tags %}
+
+<form method="get" id="p_issues" role="form">
+  {% rewrite_hidden_except REQUEST 'p' %}
   <div class="pagination__input-group">
-    <input id='page-issues-directselect' type='number' class='pagination__input' min='1' max='5' name='p' value='1'/> 
-    of 5 
-    <button data-page='2' class='pagination__next' aria-label='Next page of results' type='button'>Next</button> 
-    <button data-page='5' class='pagination__last' aria-label='Last page of results' type='button'></button> 
+  {% pager_display REQUEST p total_pages ps "issues" %}
   </div>
 </form>
 
 <div id="error_issues"></div>
-<table id="id_issues_table" class="table2">
+<table id="issues_table" class="table2">
   <thead>
     <tr>
     <th>Identifier</th>
@@ -18,38 +18,14 @@
     </tr>
   </thead>
 <tbody>
+{% for item in results_issues %}
+<tr>
+   {% data_row item fields_selected_issues field_display_types_issues testPrefixes %}
+</tr>
+{% endfor %}
+
 </tbody>
 </table>
 <div id="loading_issues" class="loading"></div>
 
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#p_issues').on('submit', function(e){
-        e.preventDefault();
-        $('#id_issues_table tbody').html('&nbsp;').load('dashboard/ajax_table?name=id_issues&p=' + $('#page-issues-directselect').val());
-        // error : function(xhr,errmsg,err) {
-        //        $('#error').html("<div class='alert alert-error' role='alert'>" +
-        //                              "<div class='alert-text'>Oops! We have encountered an error: " + errmsg +
-        //                           "</div></div>");
-        // console.log(xhr.status + ": " + xhr.responseText);
-        //    }
-        });
-  });
-
-  // *******   PAGE   *******
-  // page selection input field: submit on enter key
-  $("#page-issues-directselect").keyup(function(e){ 
-    // submit value in input on enter key
-    var code = e.which;
-    if(code==13)e.preventDefault();
-    if(code==32||code==13||code==188||code==186){
-      $("#p_issues").submit();
-    }
-  });
-  // page selection buttons change value in input field and submit on click
-  $("#p_issues button").click(function(e){
-    var p = $(e.currentTarget).data('page');
-    $('#page-issues-directselect').val(p).change();
-    $("#p_issues").submit();
-  });
-</script>
+{% include "dashboard/_dashboard_js.html" with name="issues" %}

@@ -12,7 +12,7 @@ locale.setlocale(locale.LC_ALL, '')
 # Search is executed from the following areas, and these names determine search parameters:
 # Public Search:               ui_search   "public"
 # Manage:                      ui_manage   "manage"
-# Dashboard - ID Issues:       ui_admin    "id_issues"
+# Dashboard - ID Issues:       ui_admin    "issues"
 # Dashboard - CrossRef Status: ui_admin    "crossref"
 
 # Form fields from search are defined in code/form_objects.py.
@@ -58,7 +58,7 @@ _fieldOrderByType = {
   'manage':
           ['c_title', 'c_creator', 'c_identifier', 'c_owner', 'c_create_time', 'c_update_time',\
            'c_publisher', 'c_pubyear', 'c_object_type', 'c_id_status'],
-  'id_issues':   # fixed
+  'issues':   # fixed
           ['c_identifier', 'c_id_issue', 'c_title', 'c_update_time'],
   'crossref':    # fixed
           ['c_identifier', 'c_crossref_submitted', 'c_crossref']
@@ -217,7 +217,7 @@ def _pageLayout(d, REQUEST, s_type="public"):
   f_order = _fieldOrderByType[s_type] 
   d['field_order'] = f_order 
 
-  if s_type in ("id_issues", "crossref"):
+  if s_type in ("issues", "crossref"):
     d['fields_selected'] = f_order 
   else:
     f_defaults = SEARCH_FIELD_DEFAULTS if s_type == 'public' else MANAGE_FIELD_DEFAULTS

@@ -1,9 +1,9 @@
-<form method="GET" id="p_crossref" role="form">
+{% load manage_form_tags %}
+
+<form method="get" id="p_crossref" role="form">
+  {% rewrite_hidden_except REQUEST 'p' %}
   <div class="pagination__input-group">
-    <input id='page-crossref-directselect' type='number' class='pagination__input' min='1' max='5' name='p' value='1'/> 
-    of 5 
-    <button data-page='2' class='pagination__next' aria-label='Next page of results' type='button'>Next</button> 
-    <button data-page='5' class='pagination__last' aria-label='Last page of results' type='button'></button> 
+  {% pager_display REQUEST p total_pages ps "crossref" %}
   </div>
 </form>
 
@@ -22,34 +22,4 @@
 </table>
 <div id="loading_crossref" class="loading"></div>
 
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#p_crossref').on('submit', function(e){
-        e.preventDefault();
-        $('#crossref_table tbody').html('&nbsp;').load('dashboard/ajax_table?name=crossref&p=' + $('#page-crossref-directselect').val());
-        // error : function(xhr,errmsg,err) {
-        //        $('#error').html("<div class='alert alert-error' role='alert'>" +
-        //                              "<div class='alert-text'>Oops! We have encountered an error: " + errmsg +
-        //                           "</div></div>");
-        // console.log(xhr.status + ": " + xhr.responseText);
-        //    }
-        });
-  });
-
-  // *******   PAGE   *******
-  // page selection input field: submit on enter key
-  $("#page-crossref-directselect").keyup(function(e){ 
-    // submit value in input on enter key
-    var code = e.which;
-    if(code==13)e.preventDefault();
-    if(code==32||code==13||code==188||code==186){
-      $("#p_crossref").submit();
-    }
-  });
-  // page selection buttons change value in input field and submit on click
-  $("#p_crossref button").click(function(e){
-    var p = $(e.currentTarget).data('page');
-    $('#page-crossref-directselect').val(p).change();
-    $("#p_crossref").submit();
-  });
-</script>
+{% include "dashboard/_dashboard_js.html" with name="crossref" %}

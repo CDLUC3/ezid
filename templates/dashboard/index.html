@@ -55,7 +55,7 @@ $(document).ready(function() {
 });
 var li = $('#loading_issues').hide(),
     lc = $('#loading_crossref').hide();
-$('#page-issues-directselect').change(function() {
+$('#page-directselect-issues').change(function() {
     //Make a namespace for distinguishing ajax calls from issues table vs crossref table
     $(document).off(".crossRefCall");
     $(document).on("ajaxStart.issuesCall", function () {
@@ -64,7 +64,7 @@ $('#page-issues-directselect').change(function() {
         li.hide();
     });
 });
-$('#page-crossref-directselect').change(function() {
+$('#page-directselect-crossref').change(function() {
     $(document).off(".issuesCall");
     $(document).on("ajaxStart.crossRefCall", function () {
         lc.show();
