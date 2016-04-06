@@ -141,8 +141,10 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
       if d['filtered']:
         c = _buildConstraints(c, q, s_type)
         c = _buildTimeConstraints(c, q, s_type)
-    else:
+    elif s_type == 'issues':
       c['hasIssues'] = True
+    elif s_type == 'crossref':
+      c['crossref'] = True
     d['total_results'] = search_util.formulateQuery(c).count()
     d['total_results_str'] = format(d['total_results'], "n") 
     d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
@@ -170,15 +172,23 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         }
         if id.isUnavailable and id.unavailableReason != "":
           result["c_id_status"] += " | " + id.unavailableReason
-      else:
+      elif s_type == 'issues':
         result = {
           "c_identifier": id.identifier,
           "c_id_issue": "",
           "c_title": id.resourceTitle,
           "c_update_time": id.updateTime,
         }
-        # if id.hasIssues and id.issueReasons:
-        #  result["c_id_issue"] += ";".join(id.issueReasons)
+        ir = id.issueReasons()
+        if ir:
+          result["c_id_issue"] += ";".join(ir)
+      elif s_type == 'crossref':
+        result = {
+          "c_identifier": id.identifier,
+          #ToDo: Are these the right properties to be using here?
+          "c_crossref_submitted": id.createTime, 
+          "c_crossref": id.get_crossrefStatus_display(), 
+        }
       d['results'].append(result)
     # end of result iteration loop 
     if s_type == "public":

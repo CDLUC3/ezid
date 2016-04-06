@@ -43,16 +43,21 @@
   <div class="col-md-12">
     <hr/>
     <h2 class="heading__icon-6">{% trans "Identifier Issues" %}</h2>
-      {% include "dashboard/_issues.html" %}
+      <div id="error_issues"></div>
+      <div id="loading_issues" class="loading"></div>
+      <div id="ajax_issues">
+        {% include "dashboard/_issues.html" %}
+      </div>
     <h2 class="heading__icon-10">{% trans "CrossRef&reg; Submission Status" %}</h2>
-      {% include "dashboard/_crossref.html" %}
+      <div id="error_crossref"></div>
+      <div id="loading_crossref" class="loading"></div>
+      <div id="ajax_crossref">
+        {% include "dashboard/_crossref.html" %}
+      </div>
   </div>
 </div>
 
 <script type="text/javascript">
-$(document).ready(function() {
-   $('#loading_issues').hide();
-});
 var li = $('#loading_issues').hide(),
     lc = $('#loading_crossref').hide();
 $('#page-directselect-issues').change(function() {

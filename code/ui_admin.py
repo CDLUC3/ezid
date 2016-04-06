@@ -17,29 +17,45 @@ NO_CONSTRAINTS = True
 
 @uic.user_login_required
 def dashboard(request, ssl=False):
+  """ 
+  ID Issues and Crossref tables load for the first time w/o ajax
+  All subsequent searches are done via ajax (ajax_dashboard_table method below)
+  """
   d = { 'menu_item' : 'ui_admin.dashboard'}
   # ToDo: Add realm users here as well
   d['display_adminlink'] = \
     request.session["auth"].user[0] in [config.get("ldap.admin_username")]
   d = _getUsage(request, d)
-  # d['filtered'] = True 
+
+  d['ajax'] = False
+  # Search:    ID Issues
   d = ui_search.search(d, request, NO_CONSTRAINTS, "issues")
+  # Tables need data named uniquely to distinguish them apart
   d['results_issues'] = d['results']
+  d['total_pages_issues'] = d['total_pages']
   d['field_display_types_issues'] = d['field_display_types']
   d['fields_selected_issues'] = d['fields_selected']
+
+  # Search:    Crossref Submission Status 
   d = ui_search.search(d, request, NO_CONSTRAINTS, "crossref")
   d['results_crossref'] = d['results']
+  d['total_pages_crossref'] = d['total_pages']
+  d['field_display_types_crossref'] = d['field_display_types']
+  d['fields_selected_crossref'] = d['fields_selected']
   return uic.render(request, 'dashboard/index', d)
 
-@uic.user_login_required
 def ajax_dashboard_table(request):
   if request.is_ajax():
     d = {}
     d['p'] = request.GET.get('p')
-    name = request.GET.get('name')
     if d['p'] is not None and d['p'].isdigit():
+      d['ajax'] = True
+      name = request.GET.get('name')
       d = ui_search.search(d, request, NO_CONSTRAINTS, name)
-      return uic.render(request, 'dashboard/_table_row', d)
+      if name == 'issues':
+        return uic.render(request, 'dashboard/_issues', d)
+      else:
+        return uic.render(request, 'dashboard/_crossref', d)
 
 def _getUsage(request, d):
   # ToDo: Now that any user can access this pg, not just admin, make necessary changes.

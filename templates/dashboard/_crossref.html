@@ -1,25 +1,47 @@
 {% load manage_form_tags %}
+{% load i18n %}
 
-<form method="get" id="p_crossref" role="form">
-  {% rewrite_hidden_except REQUEST 'p' %}
-  <div class="pagination__input-group">
-  {% pager_display REQUEST p total_pages ps "crossref" %}
-  </div>
-</form>
+{% if results_crossref|length > 0 or results|length > 0 %} 
+  <form method="get" id="p_crossref" role="form">
+    {% rewrite_hidden_except REQUEST 'p' %}
+    <div class="pagination__input-group">
+  {% if not ajax %}
+    {% pager_display REQUEST p total_pages_crossref ps "crossref" %}
+  {% else %}
+    {% pager_display REQUEST p total_pages ps "crossref" %}
+  {% endif %}
+    </div>
+  </form>
 
-<div id="error_crossref"></div>
-<table id="crossref_table" class="table2">
-  <thead>
-    <tr>
-    <th>Identifier</th>
-    <th>Date Submitted</th>
-    <th>Description</th>
-    <th>Required Action</th>
-    </tr>
-  </thead>
-<tbody>
-</tbody>
-</table>
-<div id="loading_crossref" class="loading"></div>
+  <table id="crossref_table" class="table2">
+    <thead>
+      <tr>
+      <th>{% trans "Identifier" %}</th>
+      <th>{% trans "Date Submitted" %}</th>
+      <th>{% trans "Description" %}</th>
+      <!-- th>{% trans "Required Action" %}</th -->
+      </tr>
+    </thead>
+  <tbody>
+  {% if not ajax %}
+    {% for item in results_crossref %}
+  <tr>
+     {% data_row item fields_selected_crossref field_display_types_crossref testPrefixes %}
+  </tr>
+    {% endfor %}
+  {% else %}
+    {% for item in results %}
+  <tr>
+     {% data_row item fields_selected field_display_types testPrefixes %}
+  </tr>
+    {% endfor %}
+  {% endif %}
 
-{% include "dashboard/_dashboard_js.html" with name="crossref" %}
+  </tbody>
+  </table>
+  {% include "dashboard/_dashboard_js.html" with name="crossref" %}
+
+{% else %}
+  <p class="general__p"><strong>{% trans "Currently no Crossref submission information available" %}.</strong></p>
+  <br/><br/><br/>
+{% endif %}

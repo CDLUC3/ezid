@@ -3,14 +3,12 @@ $(document).ready(function() {
   $('#p_{{name}}').on('submit', function(e){
       e.preventDefault();
       var newpage = $('#page-directselect-{{name}}').val()
-      $('#{{name}}_table tbody').html('&nbsp;').load('dashboard/ajax_table?name={{name}}&p=' + newpage, function( response, status, xhr ) {
+      $('#ajax_{{name}}').html('&nbsp;').load('dashboard/ajax_table?name={{name}}&p=' + newpage, function( response, status, xhr ) {
           if ( status == "error" ) {
               $('#error_{{name}}').html("<div class='alert alert-error' role='alert'>" +
                 "<div class='alert-text'>Oops! We have encountered an error: " +
                 xhr.status + " " + xhr.statusText ); 
-          } else {
-              $("#p_{{name}} .pagination__next").data('page', parseInt(newpage)+1);
-          }
+          } 
       });
   });
 
