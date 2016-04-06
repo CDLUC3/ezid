@@ -34,9 +34,10 @@ class NewAccountWorksheet (django.db.models.Model):
 
   # ORGANIZATION
   orgName = django.db.models.CharField("name", max_length=255,
-    validators=[validation.nonEmpty])
+    validators=[validation.nonEmpty],
+    help_text="Ex: The Digital Archaeological Record")
   orgAcronym = django.db.models.CharField("acronym", max_length=255,
-    blank=True)
+    blank=True, help_text="Ex: tDAR")
   orgUrl = django.db.models.URLField("URL", max_length=255, blank=True)
   orgStreetAddress = django.db.models.CharField("street address",
     max_length=255, blank=True)
@@ -47,8 +48,6 @@ class NewAccountWorksheet (django.db.models.Model):
   reqPhone = django.db.models.CharField("phone", max_length=255, blank=True)
 
   # PRIMARY CONTACT
-  priUseRequestor = django.db.models.BooleanField("use requestor",
-    default=False)
   priName = django.db.models.CharField("name", max_length=255, blank=True)
   priEmail = django.db.models.EmailField("email", max_length=255, blank=True)
   priPhone = django.db.models.CharField("phone", max_length=255, blank=True)
@@ -58,52 +57,32 @@ class NewAccountWorksheet (django.db.models.Model):
   secEmail = django.db.models.EmailField("email", max_length=255, blank=True)
   secPhone = django.db.models.CharField("phone", max_length=255, blank=True)
 
+  accountEmail = django.db.models.EmailField("account email",
+    max_length=255, blank=True,
+    help_text="Defaults to the primary contact's email.")
+
   # REQUEST
-  reqUsername = django.db.models.CharField("requested username",
-    max_length=255, blank=True)
-  reqAccountDisplayNameUseOrganization = django.db.models.BooleanField(
-    "use organization name", default=False)
-  reqAccountDisplayName = django.db.models.CharField("account display name",
-    max_length=255, blank=True)
-  reqAccountEmailUsePrimary = django.db.models.BooleanField(
-    "use primary contact's email", default=False)
-  reqAccountEmail = django.db.models.EmailField("account email",
-    max_length=255, blank=True)
   reqArks = django.db.models.BooleanField("ARKs", default=False)
   reqDois = django.db.models.BooleanField("DOIs", default=False)
-  reqShoulderNameUseOrganization = django.db.models.BooleanField(
-    "use organization name", default=False)
-  reqShoulderName = django.db.models.CharField("shoulder name",
-    max_length=255, blank=True)
-  reqShoulders = django.db.models.CharField("requested shoulder branding",
-    max_length=255, blank=True)
   reqCrossref = django.db.models.BooleanField("CrossRef", default=False)
-  reqCrossrefEmailUseAccount = django.db.models.BooleanField(
-    "use account email", default=False)
   reqCrossrefEmail = django.db.models.EmailField("CrossRef email",
     max_length=255, blank=True)
-  reqHasExistingIdentifiers = django.db.models.BooleanField(
-    "has existing identifiers", default=False)
   reqComments = django.db.models.TextField("requestor comments", blank=True)
 
   # SETUP
   setRealm = django.db.models.CharField("realm", max_length=255, blank=True)
-  setExistingGroup = django.db.models.BooleanField("existing group",
-    default=False)
   setGroupname = django.db.models.CharField("groupname", max_length=255,
     blank=True)
-  setUsernameUseRequested = django.db.models.BooleanField(
-    "use requested", default=False)
   setUsername = django.db.models.CharField("username", max_length=255,
     blank=True)
-  setNeedShoulders = django.db.models.BooleanField("new shoulders required",
-    default=False)
-  setNeedMinters = django.db.models.BooleanField("minters required",
-    default=False)
-  setExistingDatacenter = django.db.models.BooleanField("existing datacenter",
-    default=False)
-  setDatacenter = django.db.models.CharField("datacenter",
-    max_length=255, blank=True)
+  setUserDisplayName = django.db.models.CharField("user display name",
+    max_length=255, blank=True,
+    help_text="Defaults to the organization name.")
+  setShoulderDisplayName = django.db.models.CharField("shoulder display name",
+    max_length=255, blank=True,
+    help_text="Defaults to the organization name.")
+  setNonDefaultSetup = django.db.models.BooleanField(
+    "non-default setup", default=False)
   setNotes = django.db.models.TextField("notes", blank=True)
 
   # STATUS
@@ -116,7 +95,6 @@ class NewAccountWorksheet (django.db.models.Model):
   def clean (self):
     self.orgName = self.orgName.strip()
     self.orgAcronym = self.orgAcronym.strip()
-    self.orgUrl = self.orgUrl.strip()
     self.orgStreetAddress = self.orgStreetAddress.strip()
     self.reqName = self.reqName.strip()
     self.reqPhone = self.reqPhone.strip()
@@ -124,34 +102,17 @@ class NewAccountWorksheet (django.db.models.Model):
     self.priPhone = self.priPhone.strip()
     self.secName = self.secName.strip()
     self.secPhone = self.secPhone.strip()
-    self.reqUsername = self.reqUsername.strip()
-    self.reqAccountDisplayName = self.reqAccountDisplayName.strip()
-    self.reqShoulderName = self.reqShoulderName.strip()
-    self.reqShoulders = self.reqShoulders.strip()
     self.reqComments = self.reqComments.strip()
     self.setRealm = self.setRealm.strip()
     self.setGroupname = self.setGroupname.strip()
     self.setUsername = self.setUsername.strip()
-    self.setDatacenter = self.setDatacenter.strip()
+    self.setUserDisplayName = self.setUserDisplayName.strip()
+    self.setShoulderDisplayName = self.setShoulderDisplayName.strip()
     self.setNotes = self.setNotes.strip()
-    if self.priUseRequestor:
-      self.priName = self.reqName
-      self.priEmail = self.reqEmail
-      self.priPhone = self.reqPhone
-    if self.reqAccountDisplayNameUseOrganization:
-      self.reqAccountDisplayName = self.orgName
-    if self.reqAccountEmailUsePrimary: self.reqAccountEmail = self.priEmail
-    if self.reqShoulderNameUseOrganization: self.reqShoulderName = self.orgName
-    if self.reqCrossrefEmailUseAccount:
-      self.reqCrossrefEmail = self.reqAccountEmail
-    if self.setUsernameUseRequested: self.setUsername = self.reqUsername
     errors = {}
     if self.staReady:
-      if not self.reqCrossref:
-        if self.reqCrossrefEmailUseAccount:
-          errors["reqCrossrefEmailUseAccount"] = "CrossRef is not checked."
-        if self.reqCrossrefEmail != "":
-          errors["reqCrossrefEmail"] = "CrossRef is not checked."
+      if not self.reqCrossref and self.reqCrossrefEmail != "":
+        errors["reqCrossrefEmail"] = "CrossRef is not checked."
     else:
       if self.staShouldersCreated:
         errors["staShouldersCreated"] = "Request ready is not checked."
@@ -161,4 +122,8 @@ class NewAccountWorksheet (django.db.models.Model):
       raise django.core.validators.ValidationError(errors)
 
   def __unicode__ (self):
-    return "%s, %s" % (self.orgName, str(self.requestDate))
+    if self.orgAcronym != "":
+      o = "%s (%s)" % (self.orgName, self.orgAcronym)
+    else:
+      o = self.orgName
+    return "%s, %s" % (o, str(self.requestDate))
