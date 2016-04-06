@@ -1,13 +1,38 @@
 [
 
+{ "model": "ezidapp.ServerVariables",
+  "pk": 1,
+  "fields": { "alertMessage": "", "secretKey": "" }
+},
+
 { "model": "ezidapp.StoreRealm",
   "pk": 1,
   "fields": { "name": "CDL" }
 },
 
-{ "model": "ezidapp.ServerVariables",
+{ "model": "ezidapp.StoreGroup",
   "pk": 1,
-  "fields": { "alertMessage": "", "secretKey": "" }
+  "fields": {
+    "pid": "ark:/99166/p9g44hq02",
+    "groupname": "admin",
+    "realm": 1,
+    "organizationName": "EZID superuser",
+    "organizationUrl": "http://ezid.cdlib.org/",
+    "organizationStreetAddress": "(:unap)"
+  }
+},
+
+{ "model": "ezidapp.StoreGroup",
+  "pk": 2,
+  "fields": {
+    "pid": "ark:/99166/p9pg1hn29",
+    "groupname": "apitest",
+    "realm": 1,
+    "organizationName": "EZID API test account",
+    "organizationUrl": "http://ezid.cdlib.org/",
+    "organizationStreetAddress": "(:unap)",
+    "crossrefEnabled": 1
+  }
 }
 
 ]

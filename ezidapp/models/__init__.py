@@ -16,5 +16,6 @@ from search_user import SearchUser
 from server_variables import ServerVariables
 from shoulder import Shoulder
 from store_datacenter import StoreDatacenter
+from store_group import StoreGroup
 from store_realm import StoreRealm
 from user import User

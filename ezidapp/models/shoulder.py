@@ -80,8 +80,7 @@ class Shoulder (django.db.models.Model):
     validators=[validation.nonEmpty])
   # The shoulder's name, e.g., "Brown University Library".
 
-  minter = django.db.models.URLField(max_length=255, blank=True,
-    validators=[validation.unicodeBmpOnly])
+  minter = django.db.models.URLField(max_length=255, blank=True)
   # The absolute URL of the associated minter, or empty if none.
 
   datacenter = django.db.models.ForeignKey(store_datacenter.StoreDatacenter,
@@ -197,11 +196,16 @@ def _reconcileShoulders ():
             s.save()
         else:
           try:
+            # Unfortunately, Django doesn't offer on_delete=PROTECT on
+            # many-to-many relationships, so we have to check
+            # manually.
+            if s.storegroup_set.count() > 0:
+              raise django.db.IntegrityError("shoulder is referenced by group")
             s.delete()
           except django.db.IntegrityError, e:
             raise django.db.IntegrityError(
               "error deleting shoulder %s, shoulder is in use: %s" %\
-              (s.prefix, str(e)))
+              (s.prefix, util.formatException(e)))
           del shoulders[prefix]
       # 2. Similarly for datacenters.
       datacenterFixups = []

@@ -21,6 +21,8 @@ ALTER TABLE ezidapp_downloadqueue MODIFY lastId VARCHAR(255) NOT NULL
   COLLATE 'ascii_bin';
 ALTER TABLE ezidapp_shoulder MODIFY prefix VARCHAR(255) NOT NULL
   COLLATE 'ascii_bin';
+ALTER TABLE ezidapp_storegroup MODIFY pid VARCHAR(255) NOT NULL
+  COLLATE 'ascii_bin';
 
 -- A gotcha: MySQL's UTF-8 character set is capable of storing the
 -- Basic Multilingual Plane only (surprise!), so for those fields that
