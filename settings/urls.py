@@ -3,6 +3,8 @@ import django.conf.urls
 
 import ezidapp.admin
 
+SSL = { "ssl": True }
+
 urlpatterns = django.conf.urls.patterns("",
 
   # UI - RENDERED FROM TEMPLATES IN INFO REPOSITORY
@@ -27,12 +29,12 @@ urlpatterns = django.conf.urls.patterns("",
   ("^demo/?$", "ui_demo.index"),
   ("^demo/simple$", "ui_demo.simple"),
   ("^demo/advanced$", "ui_demo.advanced"),
-  ("^admin-old/?$", "ui_admin.index", { "ssl": True }),
-  ("^admin-old/usage$", "ui_admin.usage", { "ssl": True }),
-  ("^admin-old/manage_users$", "ui_admin.manage_users", { "ssl": True }),
-  ("^admin-old/add_user$", "ui_admin.add_user", { "ssl": True }),
-  ("^account/edit$", "ui_account.edit", { "ssl": True }),
-  ("^account/pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", { "ssl": True }),
+  ("^admin-old/?$", "ui_admin.index", SSL),
+  ("^admin-old/usage$", "ui_admin.usage", SSL),
+  ("^admin-old/manage_users$", "ui_admin.manage_users", SSL),
+  ("^admin-old/add_user$", "ui_admin.add_user", SSL),
+  ("^account/edit$", "ui_account.edit", SSL),
+  ("^account/pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", SSL),
   ("^ajax_hide_alert$", "ui.ajax_hide_alert"),
   ("^contact$", "ui.contact"),
   ("^doc/[-\w.]*\\.(?:html|py)$", "ui.doc"),
@@ -41,8 +43,8 @@ urlpatterns = django.conf.urls.patterns("",
   # SHARED BETWEEN UI AND API
   ("^id/", "dispatch.d", { "uiFunction": "ui_manage.details",
     "apiFunction": "api.identifierDispatcher" }),
-  ("^login$", "dispatch.d", { "uiFunction": "ui_account.login",
-    "apiFunction": "api.login", "ssl": True }),
+  ("^login$", "dispatch.d", dict({ "uiFunction": "ui_account.login",
+    "apiFunction": "api.login" }, **SSL)),
   ("^logout$", "dispatch.d", { "uiFunction": "ui_account.logout",
     "apiFunction": "api.logout" }),
 
@@ -58,8 +60,10 @@ urlpatterns = django.conf.urls.patterns("",
   ("^oai$", "oai.dispatch"),
 
   # ADMIN
+  ("^admin/login/?$", "ui_account.login", SSL),
+  ("^admin/logout/?$", "ui_account.logout"),
   django.conf.urls.url("^admin/",
-    django.conf.urls.include(ezidapp.admin.superuser.urls), { "ssl": True })
+    django.conf.urls.include(ezidapp.admin.superuser.urls), SSL)
 
 )
 

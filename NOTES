@@ -21,17 +21,12 @@ ownership and access control.
 2. Session cookies
 ------------------
 
-Session cookies store the following key/value pairs:
+Session cookies store the following key/value pair:
 
   auth
     A userauth.AuthenticatedUser object which has 'user' and 'group'
     attributes, each of which is a tuple as described above.
     Presence of this key indicates that the user is authenticated.
-
-  redirect_to
-    The full URL path to which the user should be redirected following
-    a successful login.  UI only.  May or may not be present; not
-    cleared.
 
 3. Caching
 ----------
