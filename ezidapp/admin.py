@@ -221,12 +221,14 @@ class NewAccountWorksheetForm (django.forms.ModelForm):
 
 class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
   def organizationName (self, obj):
-    return obj.orgName
+    if obj.orgAcronym != "":
+      return "%s (%s)" % (obj.orgName, obj.orgAcronym)
+    else:
+      return obj.orgName
   organizationName.short_description = "organization name"
   search_fields = ["orgName", "orgAcronym", "orgStreetAddress", "reqName",
-    "priName", "secName", "reqUsername", "reqAccountDisplayName",
-    "reqShoulderName", "reqComments", "setGroupname", "setUsername",
-    "setDatacenter", "setNotes"]
+    "priName", "secName", "reqComments", "setGroupname", "setUsername",
+    "setUserDisplayName", "setShoulderDisplayName", "setNotes"]
   actions = None
   list_filter = ["staReady", "staShouldersCreated", "staAccountCreated"]
   ordering = ["-requestDate", "orgName"]
@@ -236,19 +238,15 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
     ("Organization", { "fields": ["orgName", "orgAcronym", "orgUrl",
       "orgStreetAddress"] }),
     ("Requestor", { "fields": ["reqName", "reqEmail", "reqPhone"] }),
-    ("Primary contact", { "fields": [("priName", "priUseRequestor"),
+    ("Primary contact (defaults to requestor)", { "fields": ["priName",
       "priEmail", "priPhone"] }),
     ("Secondary contact (optional)", { "fields": ["secName", "secEmail",
       "secPhone"] }),
-    ("Request", { "fields": ["reqUsername", ("reqAccountDisplayName",
-      "reqAccountDisplayNameUseOrganization"), ("reqAccountEmail",
-      "reqAccountEmailUsePrimary"), ("reqArks", "reqDois"),
-      ("reqShoulderName", "reqShoulderNameUseOrganization"), "reqShoulders",
-      "reqCrossref", ("reqCrossrefEmail", "reqCrossrefEmailUseAccount"),
-      "reqHasExistingIdentifiers", "reqComments"] }),
-    ("Setup", { "fields": ["setRealm", ("setGroupname", "setExistingGroup"),
-      ("setUsername", "setUsernameUseRequested"), "setNeedShoulders",
-      "setNeedMinters", ("setDatacenter", "setExistingDatacenter"),
+    (None, { "fields": ["accountEmail"] }),
+    ("Request", { "fields": [("reqArks", "reqDois"), "reqCrossref",
+      "reqCrossrefEmail", "reqComments"] }),
+    ("Setup", { "fields": ["setRealm", "setGroupname", "setUsername",
+      "setUserDisplayName", "setShoulderDisplayName", "setNonDefaultSetup",
       "setNotes"] }),
     ("Status", { "fields": ["staReady", "staShouldersCreated",
       "staAccountCreated"] })]
@@ -264,10 +262,9 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
       addresses = [a for a in\
         config.get("email.new_account_email").split(",") if len(a) > 0]
       if len(addresses) > 0:
-        subject = "New account \"%s, %s\": %s" % (obj.orgName,
-          str(obj.requestDate), ", ".join(newStatus))
+        subject = "New account \"%s\": %s" % (str(obj), ", ".join(newStatus))
         message = ("The status of a new account request has changed.\n\n" +\
-          "Organization: %s\n" +\
+          "Organization: %s%s\n" +\
           "Request date: %s\n" +\
           "New status: %s\n\n" +\
           "View the account's worksheet at:\n\n" +\
@@ -276,27 +273,49 @@ class NewAccountWorksheetAdmin (django.contrib.admin.ModelAdmin):
           "::\n" +\
           "organization_name: %s\n" +\
           "organization_acronym: %s\n" +\
-          "new_shoulders_required: %s\n" +\
+          "organization_url: %s\n" +\
+          "organization_street_address: %s\n" +\
+          "requestor_name: %s\n" +\
+          "requestor_email: %s\n" +\
+          "requestor_phone: %s\n" +\
+          "primary_contact_name: %s\n" +\
+          "primary_contact_email: %s\n" +\
+          "primary_contact_phone: %s\n" +\
+          "secondary_contact_name: %s\n" +\
+          "secondary_contact_email: %s\n" +\
+          "secondary_contact_phone: %s\n" +\
+          "account_email: %s\n" +\
           "arks: %s\n" +\
           "dois: %s\n" +\
-          "minters_required: %s\n" +\
-          "shoulder_name: %s\n" +\
-          "requested_shoulder_branding: %s\n" +\
-          "realm: %s\n" +\
-          "datacenter: %s\n" +\
-          "existing_datacenter: %s\n" +\
           "crossref: %s\n" +\
-          "notes: %s\n") %\
-          (obj.orgName, str(obj.requestDate), ", ".join(newStatus),
+          "crossref_email: %s\n" +\
+          "requestor_comments: %s\n" +\
+          "realm: %s\n" +\
+          "groupname: %s\n" +\
+          "username: %s\n" +\
+          "user_display_name: %s\n" +\
+          "shoulder_display_name: %s\n" +\
+          "non_default_setup: %s\n" +\
+          "setup_notes: %s\n") %\
+          (obj.orgName,
+          " (%s)" % obj.orgAcronym if obj.orgAcronym != "" else "",
+          str(obj.requestDate), ", ".join(newStatus),
           config.get("DEFAULT.ezid_base_url"),
           django.core.urlresolvers.reverse(
           "admin:ezidapp_newaccountworksheet_change", args=[obj.id]),
-          obj.orgName, obj.orgAcronym,
-          str(obj.setNeedShoulders), str(obj.reqArks), str(obj.reqDois),
-          str(obj.setNeedMinters), obj.reqShoulderName, obj.reqShoulders,
-          obj.setRealm, obj.setDatacenter,
-          str(obj.setExistingDatacenter), str(obj.reqCrossref),
-          util.oneLine(obj.setNotes))
+          obj.orgName, obj.orgAcronym, obj.orgUrl,
+          util.oneLine(obj.orgStreetAddress),
+          obj.reqName, obj.reqEmail, obj.reqPhone,
+          obj.priName, obj.priEmail, obj.priPhone,
+          obj.secName, obj.secEmail, obj.secPhone,
+          obj.accountEmail, str(obj.reqArks), str(obj.reqDois),
+          str(obj.reqCrossref), obj.reqCrossrefEmail,
+          util.oneLine(obj.reqComments),
+          obj.setRealm, obj.setGroupname, obj.setUsername,
+          obj.setUserDisplayName, obj.setShoulderDisplayName,
+          str(obj.setNonDefaultSetup), util.oneLine(obj.setNotes))
+        print "SUBJECT:", subject###
+        print message###
         try:
           django.core.mail.send_mail(subject, message,
             django.conf.settings.SERVER_EMAIL, addresses)
