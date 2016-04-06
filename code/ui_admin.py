@@ -25,7 +25,7 @@ def dashboard(request, ssl=False):
   # ToDo: Add realm users here as well
   d['display_adminlink'] = \
     request.session["auth"].user[0] in [config.get("ldap.admin_username")]
-  d = _getUsage(request, d)
+  # d = _getUsage(request, d)
 
   d['ajax'] = False
   # Search:    ID Issues
@@ -48,9 +48,9 @@ def ajax_dashboard_table(request):
   if request.is_ajax():
     d = {}
     d['p'] = request.GET.get('p')
-    if d['p'] is not None and d['p'].isdigit():
+    name = request.GET.get('name')
+    if name and d['p'] is not None and d['p'].isdigit():
       d['ajax'] = True
-      name = request.GET.get('name')
       d = ui_search.search(d, request, NO_CONSTRAINTS, name)
       if name == 'issues':
         return uic.render(request, 'dashboard/_issues', d)
