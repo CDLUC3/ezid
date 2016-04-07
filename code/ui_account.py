@@ -5,6 +5,7 @@ import django.contrib.messages
 import django.core.urlresolvers
 import django.utils.http
 import idmap
+import log
 import re
 import time
 from django.shortcuts import redirect
@@ -71,9 +72,14 @@ def login (request, ssl=False):
       django.contrib.messages.success(request, "Login successful.")
       if d["username"] == uic.adminUsername:
         # Add session variables to support the Django admin interface.
-        django.contrib.auth.login(request,
-          django.contrib.auth.authenticate(username=d["username"],
-          password=d["password"]))
+        user = django.contrib.auth.authenticate(username=d["username"],
+          password=d["password"])
+        if user:
+          django.contrib.auth.login(request, user)
+        else:
+          log.otherError("ui_account.login", Exception(
+            "administrator password mismatch; run " +\
+            "'django-admin ezidadminsetpassword' to correct"))
       if django.utils.http.is_safe_url(url=d["next"], host=request.get_host()):
         return redirect(d["next"])
       else:
