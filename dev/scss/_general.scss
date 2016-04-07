@@ -48,6 +48,10 @@
 
 .general__form-element-group {
 	margin: 0 0 30px;
+
+	@include bp(screen2) {
+		flex-flow: row nowrap;
+	}
 }
 
 .general__form-submit {
@@ -56,4 +60,10 @@
 		margin: 0 0 25px $form-element-label-width + 0.5rem;
 	}
 
+}
+
+.account__proxy-text {
+	display: inline-block;
+	max-width: 280px;
+	margin: 0 20px 0 0;
 }

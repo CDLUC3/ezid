@@ -78,6 +78,12 @@
 	position: relative;
 }
 
+.account__button-proxy-select {
+        @extend %button__primary;
+	display: inline-block;
+	vertical-align: top;
+}
+
 .account__button-icon-help {
         @extend %button__icon-help-base;
         position: relative;

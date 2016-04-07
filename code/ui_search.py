@@ -119,13 +119,12 @@ def results(request):
 
 def search(d, request, noConstraintsReqd=False, s_type="public"):
   """ 
-  Run query and organize result set for UI, used for both Search page and 
-  Manage Search page, the latter of which works with slightly larger set of constraints.
+  Run query and organize result set for UI, used for Search, Manage, and Dashboard pages.
   * noConstraintsReqd==True is used by pages that don't require form validation (dashboard, and
     manage page, whose form is unbound/unvalidated if nothing has been entered/posted.
   * If s_type=="public", don't include owner credentials in constraints.
   * 'filtered' means form fields have been submitted w/a search request 
-    (nice to know this for the manage page)
+    (useful to know this for the manage page)
   """
   if request.method == "GET":
     REQUEST = request.GET
