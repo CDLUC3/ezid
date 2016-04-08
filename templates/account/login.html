@@ -7,6 +7,7 @@
 {% block content %}
 <p><br/></p>
 <form method="post" action="/login" class="general__form" role="form">
+  <input type="hidden" name="next" value="{{ next }}"/>
   <div class="fcontrol__group-inline general__form-element-group">
     <label for="username" class="fcontrol__text-label-inline general__form-label">{% trans "Username" %}</label>
     <input class="fcontrol__text-field-inline" type="text" id="username" name="username" value="{{ username }}"/>
@@ -20,7 +21,7 @@
 
   <button class="button__primary general__form-submit">{% trans "Login" %}</button>
 </form>
-    
+ 
 {% url "ui.contact" as url_contact %}
 {% url "ui_account.pwreset" as url_pwreset %}
 {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 

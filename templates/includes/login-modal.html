@@ -5,6 +5,7 @@
     <img id="js-login-modal__close" src="/static/images/icon_cross.svg" alt="close" class="login-modal__close">
   </div>
   <form id="js-login-modal__form" method="post" action="{% url_force_https "/login" %}" class="login-modal__form">
+    <input type="hidden" name="next" value="{{ next }}"/>
     <div class="login-modal__form-element fcontrol__group-stacked">
       <label for="username" class="fcontrol__text-label-hidden">Username</label>
       <input id="username" class="fcontrol__text-field-stacked" type="text" name="username" value="{{ username }}" placeholder="Username">

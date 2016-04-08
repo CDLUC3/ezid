@@ -1,7 +1,12 @@
 import ui_common as uic
 import userauth, useradmin
+import django.contrib.auth
 import django.contrib.messages
+import django.core.urlresolvers
+import django.utils.http
 import form_objects
+import idmap
+import log
 import re
 import time
 from django.shortcuts import redirect
@@ -61,33 +66,58 @@ def edit(request, ssl=False):
         django.contrib.messages.error(request, err)
   return uic.render(request, "account/edit", d)
 
-def login(request, ssl=False):
+def login (request, ssl=False):
   """
   Renders the login page (GET) or processes a login form submission
-  (POST).  A successful login redirects to the home page.
+  (POST).  A successful login redirects to the URL specified by
+  ?next=... or, failing that, the home page.
   """
-  d = { 'menu_item' : 'ui_null.null'}
+  d = { "menu_item": "ui_null.null" }
   if request.method == "GET":
-    return uic.render(request, 'account/login', d)
+    if "next" in request.GET:
+      try:
+        m = django.core.urlresolvers.resolve(request.GET["next"])
+        if m.app_name == "admin":
+          django.contrib.messages.error(request,
+            "You must be logged in as an administrator to view this page.")
+      except django.core.urlresolvers.Resolver404:
+        pass
+      d["next"] = request.GET["next"]
+    else:
+      d["next"] = django.core.urlresolvers.reverse("ui_home.index")
+    return uic.render(request, "account/login", d)
   elif request.method == "POST":
-    d.update(uic.extract(request.POST, ['username', 'password']))
-    if "username" not in request.POST or "password" not in request.POST:
-      return uic.badRequest(request)
-    auth = userauth.authenticate(request.POST["username"],
-      request.POST["password"])
+    if "username" not in request.POST or "password" not in request.POST or\
+      "next" not in request.POST:
+      return uic.badRequest()
+    d.update(uic.extract(request.POST, ["username", "password", "next"]))
+    auth = userauth.authenticate(d["username"], d["password"])
     if type(auth) is str:
       django.contrib.messages.error(request, uic.formatError(auth))
-      return uic.render(request, 'account/login', d)
+      return uic.render(request, "account/login", d)
     if auth:
       request.session["auth"] = auth
       django.contrib.messages.success(request, _("Login successful."))
       #request.session['hide_alert'] = False
-      if 'redirect_to' in request.POST:
-        return redirect(_filterBadRedirect(request.POST['redirect_to']))
-      if 'redirect_to' in request.session and request.session['redirect_to']:
-        return redirect(_filterBadRedirect(request.session['redirect_to']))
+      if d["username"] == uic.adminUsername:
+        # Add session variables to support the Django admin interface.
+        user = django.contrib.auth.authenticate(username=d["username"],
+          password=d["password"])
+        if user:
+          django.contrib.auth.login(request, user)
+        else:
+          log.otherError("ui_account.login", Exception(
+            "administrator password mismatch; run " +\
+            "'django-admin ezidadminsetpassword' to correct"))
+      if django.utils.http.is_safe_url(url=d["next"], host=request.get_host()):
+        return redirect(d["next"])
+      # ToDo: Old code, is this needed anymore?
+      # if 'redirect_to' in request.POST:
+      #   return redirect(_filterBadRedirect(request.POST['redirect_to']))
+      # if 'redirect_to' in request.session and request.session['redirect_to']:
+      #   return redirect(_filterBadRedirect(request.session['redirect_to']))
       else:
-        return redirect('ui_home.index')
+        return redirect("ui_home.index")
     else:
       django.contrib.messages.error(request, _("Login failed."))
       return uic.render(request, "account/login", d)

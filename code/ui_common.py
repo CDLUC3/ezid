@@ -3,6 +3,7 @@ import django.contrib.messages
 import django.http
 import django.template
 import django.template.loader
+import django.utils.http
 import errno
 import os
 import re
@@ -180,13 +181,6 @@ def getPrefixes (user, group):
     log.otherError("ui_common.getPrefixes", e)
     return _("error: internal server error")
   
-def is_logged_in(request):
-  if "auth" not in request.session:
-    django.contrib.messages.error(request, _("You must be logged in to view this page"))
-    request.session['redirect_to'] = request.get_full_path()
-    return False
-  return True
-
 def authorizeCreate(request, prefix):
   """a simple function to decide if a user (gotten from request.session)
   is allowed to create with the prefix"""
@@ -273,9 +267,9 @@ def user_login_required(f):
   """defining a decorator to require a user to be logged in"""
   def wrap(request, *args, **kwargs):
     if 'auth' not in request.session.keys():
-      request.session['redirect_to'] = request.get_full_path()
       django.contrib.messages.error(request, _("You must be logged in to view this page."))
-      return django.http.HttpResponseRedirect("/login")
+      return django.http.HttpResponseRedirect("/login?next=" +\
+        django.utils.http.urlquote(request.get_full_path()))
     return f(request, *args, **kwargs)
   wrap.__doc__=f.__doc__
   wrap.__name__=f.__name__
@@ -285,9 +279,9 @@ def admin_login_required(f):
   """defining a decorator to require an admin to be logged in"""
   def wrap(request, *args, **kwargs):
     if "auth" not in request.session or request.session["auth"].user[0] != adminUsername:
-      request.session['redirect_to'] = request.get_full_path()
       django.contrib.messages.error(request, _("You must be logged in as an administrator to view this page."))
-      return django.http.HttpResponseRedirect("/login")
+      return django.http.HttpResponseRedirect("/login?next=" +\
+        django.utils.http.urlquote(request.get_full_path()))
     return f(request, *args, **kwargs)
   wrap.__doc__=f.__doc__
   wrap.__name__=f.__name__

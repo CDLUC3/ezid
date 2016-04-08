@@ -47,7 +47,7 @@ class SslMiddleware:
     # The Django admin won't accept an 'ssl' keyword argument, so we
     # have to remove it from the request if present.
     if "ssl" in view_kwargs:
-      sslRequired = True
+      sslRequired = view_kwargs["ssl"]
       del view_kwargs["ssl"]
     else:
       sslRequired = False

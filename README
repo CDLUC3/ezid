@@ -157,18 +157,26 @@ Also, to create the legacy store database:
 To load initial data into the databases, run the following commands.
 (The *.json files are stored in
 .../SITE_ROOT/PROJECT_ROOT/ezidapp/fixtures, but the full path need
-not be specified on the command line.)  A user named 'admin' and a
-group named 'admin' are required for the system to function, but
-otherwise the users, groups, and realms defined in these file are just
-examples.
+not be specified on the command line.)  An EZID administrator user and
+group are required for the system to function, but otherwise the
+users, groups, and realms defined in these file are just examples.
 
     django-admin loaddata store-init.json
     django-admin loaddata --database=search search-init.json
 
-To make the groups defined in these files fully functional their
-persistent identifiers must be created, which is a two-step process.
-For each group, first create the identifier using the command line
-client, e.g.:
+To give the EZID administrator account the password defined in the
+settings/ezid.conf or settings/ezid.conf.shadow file, do not use
+Django's built-in 'createsuperuser' or 'changepassword' commands, but
+instead:
+
+    django-admin ezidadminsetpassword
+
+Passwords for other accounts can be set using the admin interface.
+
+Finally, to make the groups defined in these files fully functional
+their persistent identifiers must be created, which is a two-step
+process.  For each group, first create the identifier using the
+command line client, e.g.:
 
     .../SITE_ROOT/PROJECT_ROOT/tools/client l admin:********
       create ark:/99166/p9g44hq02
