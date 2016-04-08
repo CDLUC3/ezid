@@ -21,8 +21,6 @@ urlpatterns = django.conf.urls.patterns("",
   # UI - OTHER
   ("^account/edit$", "ui_account.edit", SSL),
   ("^account/pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", SSL),
-  ("^admin-old/?$", "ui_admin.index", SSL),
-  ("^admin-old/usage$", "ui_admin.usage", SSL),
   ("^admin-old/manage_users$", "ui_admin.manage_users", SSL),
   ("^admin-old/add_user$", "ui_admin.add_user", SSL),
   ("^admin-old/manage_groups$", "ui_admin.manage_groups", SSL),
