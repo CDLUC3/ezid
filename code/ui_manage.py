@@ -229,7 +229,8 @@ def details(request):
   d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes']) 
   d['internal_profile'] = metadata.getProfile('internal')
   d['target'] = id_metadata['_target']
-  d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
+  d['current_profile'] = metadata.getProfile(id_metadata['_profile']) or\
+    metadata.getProfile('erc')
   d['recent_creation'] = identifier.startswith('doi') and \
         (time.time() - float(id_metadata['_created']) < 60 * 30)
   d['recent_update'] = identifier.startswith('doi') and \
