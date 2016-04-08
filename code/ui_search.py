@@ -24,27 +24,29 @@ locale.setlocale(locale.LC_ALL, '')
 
 # Column IDs mapped to 1) DB constraints names and 2) UI display
 FIELDS_MAPPED = {
-  'c_create_time':        ['createTime',            _("ID Date Created")], 
-  'c_crossref_submitted': ['createTime',            _("Date Submitted")], # same as above, labelled difftly
-  'c_identifier':         ['identifier',            _("Identifier")], 
-  'c_title':              ['resourceTitle',         _("Object Title")], 
-  'c_creator':            ['resourceCreator',       _("Object Creator")],
-  'c_owner':              ['owner',                 _("ID Owner")],
-  'c_publisher':          ['resourcePublisher',     _("Object Publisher")],
+  'c_create_time':        ['createTime',          _("ID Date Created")], 
+  'c_creator':            ['resourceCreator',     _("Object Creator")],
+  'c_crossref_date':      ['createTime',          _("Date Submitted")], # same as above, labelled difftly
+  'c_crossref_descr':     ['',                    _("Description")],
+  'c_crossref_msg':       ['',                    _("Required Action")],
+  'c_id_issue':           ['hasIssues',           _("Issue")],
+  'c_id_status':          ['status',              _("ID Status")],
+  'c_identifier':         ['identifier',          _("Identifier")], 
+  'c_object_type':        ['resourceType',        _("Object Type")],
+  'c_owner':              ['owner',               _("ID Owner")],
+  'c_publisher':          ['resourcePublisher',   _("Object Publisher")],
   'c_pubyear':            ['resourcePublicationYear', _("Object Publication Date")],
-  'c_object_type':        ['resourceType',          _("Object Type")],
-  'c_id_status':          ['status',                _("ID Status")],
-  'c_update_time':        ['updateTime',            _("ID Date Last Modified")],
-  'c_id_issue':           ['hasIssues',             _("Issue")],
-  'c_crossref':           ['crossref',              _("Is CrossRef")]
+  'c_title':              ['resourceTitle',       _("Object Title")], 
+  'c_update_time':        ['updateTime',          _("ID Date Last Modified")],
 }
 
 #how to display each field, these are in custom tags for these display types
 FIELD_DISPLAY_TYPES = {
-  'c_create_time': 'datetime', 'c_crossref_submitted': 'datetime', 'c_identifier': 'identifier',
+  'c_create_time': 'datetime', 'c_crossref_date': 'datetime', 'c_identifier': 'identifier',
   'c_title': 'string', 'c_creator' : 'string', 'c_owner': 'string', 'c_publisher': 'string',\
   'c_pubyear': 'string', 'c_object_type': 'string', 'c_id_status' :'string',\
-  'c_update_time': 'datetime', 'c_id_issue': 'string', 'c_crossref': 'string'
+  'c_update_time': 'datetime', 'c_id_issue': 'string', 'c_crossref_descr': 'string',\
+  'c_crossref_msg': 'string'
 }
 
 # priority for the sort order if it is not set, choose the first field that exists in this order
@@ -61,7 +63,7 @@ _fieldOrderByType = {
   'issues':   # fixed
           ['c_identifier', 'c_id_issue', 'c_title', 'c_update_time'],
   'crossref':    # fixed
-          ['c_identifier', 'c_crossref_submitted', 'c_crossref']
+          ['c_identifier', 'c_crossref_date', 'c_crossref_descr', 'c_crossref_msg']
 }
 
 # The default selected fields for display if custom fields haven't been defined
@@ -184,10 +186,13 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
       elif s_type == 'crossref':
         result = {
           "c_identifier": id.identifier,
-          #ToDo: Are these the right properties to be using here?
-          "c_crossref_submitted": id.createTime, 
-          "c_crossref": id.get_crossrefStatus_display(), 
+          "c_crossref_date": id.createTime,
+          "c_crossref_descr": id.get_crossrefStatus_display(),
         }
+        if id.isCrossrefGood and id.get_crossrefStatus_display() in [id.CR_WORKING, id.CR_RESERVED]:
+          result["c_crossref_msg"] = _("No action necessary")
+        else:
+          result["c_crossref_msg"] = id.get_crossrefMessage_display() 
       d['results'].append(result)
     # end of result iteration loop 
     if s_type == "public":

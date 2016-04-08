@@ -5,20 +5,39 @@
 <html class="no-js" lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>EZID: {% block title %}Identifiers made easy{% endblock %}</title>
-    <meta name="description" content="{% block description %}{% endblock %}" />
+    <title>EZID: {% block title %}{% trans "Identifiers made easy" %}{% endblock %}</title>
     <meta name="keywords" content="" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="EZID"/>
+    <meta name="og:image" content="/static/images/social_card.jpg" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@ezidCDL" />
+    <meta name="twitter:title" property="og:title" content="{% block title-twitter %}{% trans "Identifiers made easy" %}{% endblock %}" />
+    <meta name="twitter:description" property="og:description" content="{% block description %}{% endblock %}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"> 
     <link rel="shortcut icon" type="image/png" href="/static/images/favicon.ico"/>
     <link rel="icon" sizes="16x16 32x32" href="/static/images/favicon.ico">
+
     <link rel="stylesheet" type="text/css" href="/static/stylesheets/main.css"/>
     <link rel="stylesheet" type="text/css" href="/static/stylesheets/main2.min.css"/>
+
     <script type="text/javascript" src="/static/javascripts/main2.min.js"></script>
     <script type="text/javascript" src="/static/javascripts/message_box.js"></script>
+
     {% block header %}{% endblock %}
     <script type="text/javascript">
     {% block javascript %}{% endblock %}
     </script>
+  {% if not google_analytics_id == 'none' %}
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', '{{ google_analytics_id }}', 'auto');
+      ga('send', 'pageview');
+    </script>
+  {% endif %}
   </head>
   <body>
     <!--[if lt IE 10]>
@@ -38,29 +57,15 @@
       
       {% include "includes/footer.html" %}
 
-  <!-- script type="text/javascript" src="/static/javascripts/bootstrap/affix.js"></script -->
   <script type="text/javascript" src="/static/javascripts/bootstrap/alert.js"></script>
   <script type="text/javascript" src="/static/javascripts/bootstrap/button.js"></script>
   <script type="text/javascript" src="/static/javascripts/bootstrap/carousel.js"></script>
   <script type="text/javascript" src="/static/javascripts/bootstrap/collapse.js"></script>
-  <!-- script type="text/javascript" src="/static/javascripts/bootstrap/dropdown.js"></script -->
-  <!-- script type="text/javascript" src="/static/javascripts/bootstrap/tab.js"></script -->
   <script type="text/javascript" src="/static/javascripts/bootstrap/transition.js"></script>
-  <!-- script type="text/javascript" src="/static/javascripts/bootstrap/scrollspy.js"></script -->
   <script type="text/javascript" src="/static/javascripts/bootstrap/modal.js"></script>
   <script type="text/javascript" src="/static/javascripts/bootstrap/tooltip.js"></script>
   <script type="text/javascript" src="/static/javascripts/bootstrap/popover.js"></script>
 
-    {% if not google_analytics_id == 'none' %}
-      <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-        ga('create', '{{ google_analytics_id }}', 'auto');
-        ga('send', 'pageview');
-      </script>
-    {% endif %}
     <script type="text/javascript">
       $('input:visible:enabled').first().focus();
       window.scrollTo(0, 0);
