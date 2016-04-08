@@ -198,7 +198,10 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
       d['heading_title'] = _("Showing") +  " " + rec_range + " " +  _("Search Results")
       d['search_query'] = _buildQuerySyntax(c)
     else:
-      d['heading_title'] = _("Your Identifiers") + " (" + d['total_results_str'] + ")"
+      if d['filtered']:
+        d['heading_title'] = d['total_results_str'] + " " + _("matches found")
+      else:
+        d['heading_title'] = _("Your Identifiers") + " (" + d['total_results_str'] + ")"
     d['search_success'] = True
   else:  # Form did not validate
     d['show_advanced_search'] = "open" # Open up adv. search html block

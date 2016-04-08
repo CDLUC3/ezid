@@ -5,6 +5,15 @@
 
 {% block title %}{% trans "Your IDs" %}: {{ total_results_str }}{% endblock %}
 {% comment %} No Heading necessary for this template {% endcomment %}
+{% block javascript %}
+$(document).ready(function(){
+  $("#manage__keywords").focus();
+  $("#reset_search").click(function(e){
+    $("#manage-form").find('input[type="text"], input[type="password"], input[type="file"], input[type="search"], select, textarea').val('');
+    $("#manage-form").find('input[type="radio"], input[type="checkbox"]').removeAttr('checked').removeAttr('selected');
+  });
+});
+{% endblock %}
 {% block content %}
 <form method="post" action="{% url "ui_manage.index" %}" class="form-horizontal" id="manage-form" role="form">
 <input name="filtered" type="hidden" value="t"/> 
@@ -18,7 +27,7 @@
     {{ form.keywords|add_attributes:"id:manage__keywords,class:fcontrol__text-field-stacked,type:search" }}
     <span class="fcontrol__invalid-flag">{% trans "Your search cannot not be empty" %}</span>
   </div>
-  <button class="manage__simple-search-button">{% trans "Search Your Identifiers" %}</button>
+  <button class="manage__simple-search-button" type="submit">{% trans "Search Your Identifiers" %}</button>
 </div>
 <details {{ show_advanced_search }} class="showhide">
   <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
@@ -197,7 +206,7 @@
       </div>
     </div>{% comment %}No validation necessary{% endcomment %}
     <div class="col-md-6">
-      <!-- empty bootstrap column -->
+      <button id="reset_search" type="button" class="button__primary manage__reset-button">Reset Search Fields</button>
     </div>
   </div>
 </details>
@@ -205,7 +214,4 @@
 
 {% include "search/_results.html" with primary_page="ui_manage.index" %}
 
-<script type="text/javascript">
-  $("#manage__keywords").focus();
-</script>
 {% endblock %}

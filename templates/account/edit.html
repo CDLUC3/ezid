@@ -34,8 +34,10 @@
 {% if proxy_users %}
   <div class="fcontrol__group-inline">
     <label for="{{ form.proxy_users_picked.id_for_label }}" class="fcontrol__textarea-label-inline general__form-label">{{ form.proxy_users_picked.label }}</label>
-    <div class="fcontrol__text-field-group">
-      {{ form.proxy_users_picked|add_attributes:"readonly:true,class=fcontrol__text-field-inline"}}
+    <div class="fcontrol__text-nofield">
+      <div class="account__proxy-text" id="proxy_users_picked">
+        {{ form.proxy_users_picked.value }}
+      </div>
       {% if form.proxy_users_picked.errors %}
       <span class="fcontrol__invalid-flag">
         {% for error in form.proxy_users_picked.errors %}
@@ -43,10 +45,9 @@
         {% endfor %}
       </span>
       {% endif %}
-      <div class="fcontrol__textarea-caption">{%trans "NOTE: Use commas to separate multiple entries." %}</div>
+      <button class="account__button-proxy-select"data-toggle="modal" data-target="#proxyModal" type="button">{% trans "Select Proxy User(s)" %}</button>
+      {% help_icon "lookup_proxies" "account__button-icon-help" %} 
     </div>
-    <button class="home__button-primary" data-toggle="modal" data-target="#proxyModal" type="button">{% trans "Select Proxy User(s)" %}</button>
-    {% help_icon "lookup_proxies" "account__button-icon-help" %} 
   </div>
   {% include "account/_proxyModal.html" %}
 {% endif %}

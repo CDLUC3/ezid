@@ -46,7 +46,7 @@ def edit(request, ssl=False):
     if d['form'].is_valid():
       if d['form'].has_changed():
         basic_info_changed = any(ch in d['form'].changed_data for ch in \
-          ['givenName', 'sn', 'telephoneNumber', 'mail', 'ezidCoOwners'])
+          ['givenName', 'sn', 'telephoneNumber', 'mail', 'proxy_users_picked'])
       _update_edit_user(request, basic_info_changed)
     else: # Form did not validate
       if '__all__' in d['form'].errors:
@@ -119,10 +119,10 @@ def _update_edit_user(request, basic_info_changed):
   r = useradmin.setContactInfo(uid, di)
   if type(r) is str: django.contrib.messages.error(request, r)
   # ToDo: Change to proxy users
-  if P['ezidCoOwners'].strip() == '':
-    r = useradmin.setAccountProfile(uid, '')
-  else:
-    r = useradmin.setAccountProfile(uid, P['ezidCoOwners'].strip())
+  # if P['ezidCoOwners'].strip() == '':
+  #  r = useradmin.setAccountProfile(uid, '')
+  # else:
+  #   r = useradmin.setAccountProfile(uid, P['ezidCoOwners'].strip())
   if type(r) is str:
     django.contrib.messages.error(request, r)
   else:

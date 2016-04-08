@@ -25,7 +25,7 @@
 </div>
 <script type="text/javascript">
 $("#submit_close").click(function(e){
-  var assigned = $('#id_proxy_users_picked').val().split(', '),
+  var assigned = $('#proxy_users_picked').text().split(', '),
       s = $('select option:selected'),
       re = /^\[(.*?)\]/;
   // Only add items not already found in list of already assigned proxy users
@@ -35,7 +35,7 @@ $("#submit_close").click(function(e){
           assigned.push(i);
       }
   });
-  $('#id_proxy_users_picked').val(assigned.join(", "));
+  $('#proxy_users_picked').text(assigned.join(", "));
   $('#proxyModal').modal('hide');
 });
 </script>

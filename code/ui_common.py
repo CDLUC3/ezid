@@ -149,7 +149,10 @@ def jsonResponse (data):
 redirect = django.http.HttpResponseRedirect
 
 def error (request, code, content_custom=None):
+  global alertMessage, google_analytics_id
   t = django.template.RequestContext(request, {'menu_item' : 'ui_home.null', 
+    'session': request.session, 'alertMessage': alertMessage, 'feed_cache': newsfeed.getLatestItem(), 
+    'rss_feed': newsfeed_url, 'google_analytics_id': google_analytics_id, 
     'content_custom' : content_custom})
   content = templates[str(code)][0].render(t)
   return django.http.HttpResponse(content, status=code)
