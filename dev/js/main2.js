@@ -57,6 +57,10 @@ $(document).ready(function(){
     $(this).siblings('.fcontrol__text-label-inline').addClass('fcontrol__label-required');
   });
 
+  $('.fcontrol__select--fullwidth[required]').map(function() {
+    $(this).siblings('.fcontrol__select-label-inline').addClass('fcontrol__label-required');
+  });
+
   // ***** Modal Login ***** //
 
   // Toggle open and closed from login button

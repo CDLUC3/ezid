@@ -30,9 +30,11 @@
 <h3>Text Field Inline With Label and Error Message</h3>
 
 <div class="fcontrol__group-inline--invalid">
-	<label for="fcontrol__example-label4" class="fcontrol__text-label-inline">Last Name</label>
-	<input id="fcontrol__example-label4" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
-	<span class="fcontrol__invalid-flag">Error message</span>
+	<label for="fcontrol__example-label4" class="fcontrol__text-label-inline">Last Name Test Test</label>
+	<div class="fcontrol__group">
+		<input id="fcontrol__example-label4" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+		<span class="fcontrol__invalid-flag">Really long Error message needs to wrap properly</span>
+	</div>
 </div>
 
 <h3>Text Field Inline With Label and Error Message; Stacked</h3>
@@ -136,7 +138,7 @@
 
 <div class="fcontrol__select-group-stacked">
 	<label for="fcontrol__example-label11" class="fcontrol__select-label-stacked">Food</label>
-	<div class="fcontrol__select-group">
+	<div class="fcontrol__group">
 		<select name="url-here" id="fcontrol__example-label11" class="fcontrol__select">
 			<option value="">Beef</option>
 			<option value="">Tofu</option>
@@ -178,7 +180,7 @@
 
 <div class="fcontrol__select-group-inline">
 	<label for="fcontrol__example-label13" class="fcontrol__select-label-inline">Food</label>
-	<div class="fcontrol__select-group">
+	<div class="fcontrol__group">
 		<select name="url-here" id="fcontrol__example-label13" class="fcontrol__select">
 			<option value="">Beef</option>
 			<option value="">Tofu</option>
@@ -199,10 +201,10 @@
 <h3>Drop-down List Inline with Error Message</h3>
 
 <div class="fcontrol__select-group-inline--invalid">
-	<label for="fcontrol__example-label13" class="fcontrol__select-label-inline">Food</label>
-	<div class="fcontrol__select-group">
+	<label for="fcontrol__example-label13" class="fcontrol__select-label-inline">Food Test Test Test Test Test</label>
+	<div class="fcontrol__group">
 		<select name="url-here" id="fcontrol__example-label13" class="fcontrol__select">
-			<option value="">Beef</option>
+			<option value="">Beef tes test test tset teste</option>
 			<option value="">Tofu</option>
 			<optgroup label="Fruits">
 				<option value="">Apples</option>
@@ -215,8 +217,8 @@
 				<option value="">Potatos</option>
 			</optgroup>
 		</select>
+		<span class="fcontrol__invalid-flag">Error message that is really long</span>
 	</div>
-	<span class="fcontrol__invalid-flag">Error message</span>
 </div>
 
 <h3>Drop-down List Inline - Full Width</h3>
@@ -243,7 +245,7 @@
 
 <div class="fcontrol__select-group-inline">
 	<label for="fcontrol__example-label15" class="fcontrol__select-label-hidden">Food</label>
-	<div class="fcontrol__select-group">
+	<div class="fcontrol__group">
 		<select name="url-here" id="fcontrol__example-label15" class="fcontrol__select">
 			<option value="">Beef</option>
 			<option value="">Tofu</option>
@@ -265,7 +267,7 @@
 
 <div class="fcontrol__select-group-inline--invalid">
 	<label for="fcontrol__example-label15" class="fcontrol__select-label-hidden">Food</label>
-	<div class="fcontrol__select-group">
+	<div class="fcontrol__group">
 		<select name="url-here" id="fcontrol__example-label15" class="fcontrol__select">
 			<option value="">Beef</option>
 			<option value="">Tofu</option>

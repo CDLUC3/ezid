@@ -240,6 +240,13 @@ class ResourceTypeForm(forms.Form):
     self.fields['resourceType-resourceTypeGeneral'] = forms.ChoiceField(required=False,
       choices=RESOURCE_TYPES, initial='Dataset', label = _("Resource Type General"))
     self.fields['resourceType'] = forms.CharField(required=False, label=_("Resource Type"))
+  def clean(self):
+    cleaned_data = super(ResourceTypeForm, self).clean()
+    rtg = cleaned_data.get("resourceType-resourceTypeGeneral")
+    rt = cleaned_data.get("resourceType")
+    if rtg == '' and rt != '':
+      raise ValidationError({'resourceType-resourceTypeGeneral': _("Resource Type General is required if you fill in Resource Type.")})
+    return cleaned_data
 
 # Django faulty design: First formset allows blank form fields.
 # http://stackoverflow.com/questions/2406537/django-formsets-make-first-required
@@ -643,7 +650,7 @@ def _validate_proxies(proxies):
       idmap.getUserId(proxy)
     except AssertionError:
       raise ValidationError(proxy + " " + \
-        _("is not a correct username for a co-owner."))
+        _("is not a correct username for a co-owner") + ".")
 
 def _validate_current_pw(username):
   def innerfn(pwcurrent):
@@ -669,7 +676,7 @@ class BasePasswordForm(forms.Form):
     pwnew_c = cleaned_data.get("pwnew")
     pwconfirm_c = cleaned_data.get("pwconfirm")
     if pwnew_c and pwnew_c != pwconfirm_c:
-      raise ValidationError("Password and confirmation do not match")
+      raise ValidationError(_("Password and confirmation do not match"))
     return cleaned_data
 
 class UserForm(BasePasswordForm):
@@ -765,9 +772,9 @@ class ManageSearchIdForm(BaseSearchIdForm):
     widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-04-29"}))
   ID_STATUS = (
     ('', _("Select a status")),
-    ('public', "Public"),
-    ('reserved', "Reserved"),
-    ('unavailable', "Unavailable"),
+    ('public', _("Public")),
+    ('reserved', _("Reserved")),
+    ('unavailable', _("Unavailable")),
   )
   id_status = forms.ChoiceField(required=False, choices=ID_STATUS, 
     label = _("ID Status"))

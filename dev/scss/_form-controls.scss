@@ -154,7 +154,7 @@
 
 // ***** Drop-down Lists ***** //
 
-.fcontrol__select-group {
+.fcontrol__group {
 	flex-flow: column wrap;
 }
 
@@ -196,6 +196,7 @@
 
 .fcontrol__select-label-inline {
 	@extend %fcontrol__select-label;
+	align-self: flex-start;
 	margin: 0 5px 0 0;
 }
 
@@ -420,7 +421,7 @@
 		border-radius: $form-element-border-radius $form-element-border-radius 0 0;
 	}
 
-	.fcontrol__select-group {
+	.fcontrol__group {
 		border: 1px solid $design-red-color;
 		border-radius: $form-element-border-radius;
 	}
