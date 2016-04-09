@@ -155,7 +155,9 @@
 // ***** Drop-down Lists ***** //
 
 .fcontrol__group {
-	flex-flow: column wrap;
+	display: flex;
+	flex: 1 0 auto;
+	flex-flow: row wrap;
 }
 
 .fcontrol__select-group-stacked {
@@ -422,6 +424,7 @@
 	}
 
 	.fcontrol__group {
+		flex-flow: row wrap;
 		border: 1px solid $design-red-color;
 		border-radius: $form-element-border-radius;
 	}

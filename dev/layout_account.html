@@ -37,7 +37,6 @@
 <div class="fcontrol__group-inline general__form-element-group">
   <label for="id_givenName" class="fcontrol__text-label-inline general__form-label ">First Name</label>
   <input class="fcontrol__text-field-inline" id="id_givenName" name="givenName" type="text" />
-  
 </div>
 
 <div class="fcontrol__group-inline general__form-element-group">
@@ -54,8 +53,10 @@
 
 <div class="fcontrol__group-inline general__form-element-group">
   <label for="id_mail" class="fcontrol__text-label-inline general__form-label ">Email Address</label>
-  <input class="fcontrol__text-field-inline" id="id_mail" name="mail" type="email" value="gjanee@ucop.edu" />
-  
+  <div class="fcontrol__group">
+    <input class="fcontrol__text-field-inline" id="id_mail" name="mail" type="email" value="gjanee@ucop.edu" />
+    <span class="fcontrol__invalid-flag">Error message</span>
+  </div> 
 </div>
 
 <div class="fcontrol__group-inline general__form-element-group">
@@ -96,22 +97,27 @@
   <h2 class="heading__noicon">Change Password</h2>
 
   
-<div class="fcontrol__group-inline general__form-element-group">
+<div class="fcontrol__group-inline--invalid general__form-element-group">
   <label for="id_pwcurrent" class="fcontrol__text-label-inline general__form-label ">Current Password</label>
-  <input class="fcontrol__text-field-inline" id="id_pwcurrent" name="pwcurrent" type="password" />
-  
+  <div class="fcontrol__group"> 
+    <input class="fcontrol__text-field-inline" id="id_pwcurrent" name="pwcurrent" type="password" />
+    <span class="fcontrol__invalid-flag">Error message</span>
+  </div> 
 </div>
 
 <div class="fcontrol__group-inline general__form-element-group">
   <label for="id_pwnew" class="fcontrol__text-label-inline general__form-label ">New Password</label>
-  <input class="fcontrol__text-field-inline" id="id_pwnew" name="pwnew" type="password" />
-  
+  <div class="fcontrol__group">
+    <input class="fcontrol__text-field-inline" id="id_pwnew" name="pwnew" type="password" />
+  </div> 
 </div>
 
 <div class="fcontrol__group-inline general__form-element-group">
   <label for="id_pwconfirm" class="fcontrol__text-label-inline general__form-label ">Confirm New Password</label>
-  <input class="fcontrol__text-field-inline" id="id_pwconfirm" name="pwconfirm" type="password" />
-  
+  <div class="fcontrol__group">
+    <input class="fcontrol__text-field-inline" id="id_pwconfirm" name="pwconfirm" type="password" />
+    <span class="fcontrol__invalid-flag">Error message</span>
+  </div> 
 </div>
 
   <button class="button__primary general__form-submit">Submit</button>

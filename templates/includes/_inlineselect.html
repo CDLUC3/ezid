@@ -4,7 +4,16 @@
 Formatting used for typical inline ***select*** field for a form that is not repeating 
 {% endcomment %}
 
-<div class="fcontrol__select-group-inline {{ form_name }}form-element-group">
+<div class="fcontrol__select-group-inline{% if field.errors %}--invalid{% endif %} {{ form_name }}form-element-group">
   <label for="{{ field.id_for_label }}" class="fcontrol__select-label-inline {{ form_name }}form-label {% if reqd %}fcontrol__label-required{% endif %}">{{ field.label }}</label>
-  {{ field|add_attributes:"fcontrol__select--fullwidth"}}
+  <div class="fcontrol__group">
+    {{ field|add_attributes:"fcontrol__select--fullwidth"}}
+    {% if field.errors %}
+    <span class="fcontrol__invalid-flag">
+    {% for error in field.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </span>
+  {% endif %}
+  </div>
 </div>

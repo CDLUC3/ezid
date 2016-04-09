@@ -7,12 +7,14 @@ Formatting used for typical inline field for a form that is not repeating
 
 <div class="fcontrol__group-inline{% if field.errors %}--invalid{% endif %} create__form-element-group">
   <label for="{{ field.id_for_label }}" class="fcontrol__text-label-inline create__label-advanced {% if reqd %}fcontrol__label-required{% endif %}">{{ field.label }}</label>
-  {{ field|add_attributes:"fcontrol__text-field-inline"}}
+  <div class="fcontrol__group">
+    {{ field|add_attributes:"fcontrol__text-field-inline"}}
   {% if field.errors %}
-  <span class="fcontrol__invalid-flag">
-  {% for error in field.errors %}
-    {{ error|escape }}
-  {% endfor %}
-  </span>
+    <span class="fcontrol__invalid-flag">
+    {% for error in field.errors %}
+      {{ error|escape }}
+    {% endfor %}
+    </span>
   {% endif %}
+  </div>
 </div>
