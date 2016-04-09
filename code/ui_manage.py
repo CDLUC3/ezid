@@ -307,6 +307,8 @@ def download_error(request):
   """
   Download link error
   """
+  #. Translators: Copy HTML tags over and only translate words outside of these tags
+  #. i.e.: <a class="don't_translate_class_names" href="don't_translate_urls">Translate this text</a>
   content = [_("You tried to access something that doesn't exist. You may have requested a file currently being processed and not yet completed."),
     _("Please <a class='link__primary' href='/contact'>contact us</a> if you need assistance.")]
   return uic.error(request, 404, content)
