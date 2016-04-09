@@ -30,6 +30,8 @@ def index(request):
     d['queries'] = ui_search.queryDict(request)
     # And preserve query in form object
     d['form'] = form_objects.ManageSearchIdForm(d['queries'])
+    d['order_by'] = 'c_update_time'
+    d['sort'] = 'asc'
     noConstraintsReqd =True 
   elif request.method == "POST":
     d['filtered'] = True 

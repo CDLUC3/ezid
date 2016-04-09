@@ -7,6 +7,7 @@ import math
 import useradmin
 import locale
 import util
+import operator
 locale.setlocale(locale.LC_ALL, '')
 
 # Search is executed from the following areas, and these names determine search parameters:
@@ -26,7 +27,7 @@ locale.setlocale(locale.LC_ALL, '')
 FIELDS_MAPPED = {
   'c_create_time':        ['createTime',          _("ID Date Created")], 
   'c_creator':            ['resourceCreator',     _("Object Creator")],
-  'c_crossref_date':      ['createTime',          _("Date Submitted")], # same as above, labelled difftly
+  'c_crossref_date':      ['',                    _("Date Submitted")], # i.e. createTime 
   'c_crossref_descr':     ['',                    _("Description")],
   'c_crossref_msg':       ['',                    _("Required Action")],
   'c_id_issue':           ['hasIssues',           _("Issue")],
@@ -49,11 +50,7 @@ FIELD_DISPLAY_TYPES = {
   'c_crossref_msg': 'string'
 }
 
-# priority for the sort order if it is not set, choose the first field that exists in this order
-FIELD_DEFAULT_SORT_PRIORITY = ['c_update_time', 'c_identifier', 'c_create_time', \
-                'c_owner', 'c_title', 'c_creator', 'c_id_status']
-
-# Columns to choose from for given search pages
+# Table columns to choose from for given search pages, to be displayed in this order
 _fieldOrderByType = {
   'public':
           ['c_title', 'c_creator', 'c_identifier', 'c_publisher', 'c_pubyear', 'c_object_type'],
@@ -67,11 +64,17 @@ _fieldOrderByType = {
 }
 
 # The default selected fields for display if custom fields haven't been defined
-SEARCH_FIELD_DEFAULTS = ['c_title', 'c_creator', 'c_identifier', 'c_publisher', \
-               'c_pubyear', 'c_object_type']
+SEARCH_FIELD_DEFAULTS = _fieldOrderByType['public']
+MANAGE_FIELD_DEFAULTS = operator.itemgetter(0,1,2,3,4,5,9)(_fieldOrderByType['manage'])
 
-MANAGE_FIELD_DEFAULTS = ['c_title', 'c_creator', 'c_identifier', 'c_owner', 'c_create_time',\
-               'c_update_time', 'c_id_status']
+DEFAULT_SORT_PRIORITY = ['c_update_time', 'c_identifier', 'c_create_time', \
+                'c_owner', 'c_title', 'c_creator', 'c_id_status']
+
+_fieldDefaultSortPriority = {
+  'public': [],
+  'manage': DEFAULT_SORT_PRIORITY,
+  'issues': DEFAULT_SORT_PRIORITY,
+  'crossref': DEFAULT_SORT_PRIORITY }
 
 IS_ASCENDING = {'asc': True, 'desc': False }
 DATE_FLOOR = False 
@@ -151,8 +154,11 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
     d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
     if d['p'] > d['total_pages']: d['p'] = d['total_pages']
     d['p'] = max(d['p'], 1)
-    orderColumn = FIELDS_MAPPED[d['order_by']][0] 
-    if not IS_ASCENDING[d['sort']]: orderColumn = "-" + orderColumn
+    if d['order_by']:
+      orderColumn = FIELDS_MAPPED[d['order_by']][0]
+      if IS_ASCENDING[d['sort']]: orderColumn = "-" + orderColumn
+    else:
+      orderColumn = None
     d['results'] = []
     # ToDo:  Add in ownership constraints (user, proxy, etc)
     rec_beg = (d['p']-1)*d['ps']
@@ -247,13 +253,13 @@ def _pageLayout(d, REQUEST, s_type="public"):
   #ensure sorting defaults are set
   if 'order_by' in REQUEST and REQUEST['order_by'] in d['fields_selected']:
     d['order_by'] = REQUEST['order_by']
-  elif any((True for x in FIELD_DEFAULT_SORT_PRIORITY if x in d['fields_selected'])):
-    d['order_by'] = [x for x in FIELD_DEFAULT_SORT_PRIORITY if x in d['fields_selected'] ][0]
+  elif any((True for x in _fieldDefaultSortPriority[s_type] if x in d['fields_selected'])):
+    d['order_by'] = [x for x in _fieldDefaultSortPriority[s_type] if x in d['fields_selected'] ][0]
   else:
-    d['order_by'] = d['fields_selected'][0]
+    d['order_by'] = None 
   if 'sort' in REQUEST and REQUEST['sort'] in ['asc', 'desc']:
     d['sort'] = REQUEST['sort']
-  else:
+  elif 'sort' not in d:
     d['sort'] = 'desc'
 
   #p=page and ps=pagesize -- I couldn't find an auto-paging that uses our type of models and 

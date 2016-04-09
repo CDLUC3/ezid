@@ -76,7 +76,7 @@ def column_head(request, field, fields_mapped, order_by, sort, primary_page):
   if field == order_by:
     c['sort'] = SORT_OPPOSITE[sort]
   else:
-    c['sort'] = sort
+    c['sort'] = 'desc'
   # If sorting, set result to first page
   if 'p' in c: c['p'] = 1
   form_and_hidden = "<form method='get' action='" + reverse(primary_page) +\
