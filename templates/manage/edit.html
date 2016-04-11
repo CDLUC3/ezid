@@ -122,7 +122,11 @@
       ><span>{% trans "unavailable" %}</span>
     </label>
   {% endif %}
+  {% if orig_status == 'reserved' %}
     {% help_icon "decide_public" %}
+  {% else %}
+    {% help_icon "decide_public_unavail" %}
+  {% endif %}
   </div>
   <div id="unavailable_reason_row" 
     {% if pub_status == 'unavailable' %}

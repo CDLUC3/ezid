@@ -112,9 +112,9 @@ def tombstone (request):
     return uic.redirect("/id/%s" % urllib.quote(id, ":/"))
   if "|" in m["_status"]:
     # Translators: Output for tombstone page (unavailable IDs)
-    reason = "_(Not available: )" + m["_status"].split("|", 1)[1].strip()
+    reason = _("Not available") + ": " + m["_status"].split("|", 1)[1].strip()
   else:
-    reason = "_(Not available)"
+    reason = _("Not available")
   htmlMode = False
   if m["_profile"] == "datacite" and "datacite" in m:
     md = datacite.dcmsRecordToHtml(m["datacite"])
