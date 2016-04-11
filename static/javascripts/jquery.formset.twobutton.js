@@ -38,6 +38,24 @@
                 if (elem.attr('name')) elem.attr('name', elem.attr('name').replace(idRegex, replacement));
             },
 
+            clearInvalidReqd = function(elem) {
+                if (elem.attr('class')) {
+                    var rx_invalid = /(.+)--invalid/,
+                        rx_reqd = /(.+)-required/,
+                        cNames = elem.attr('class').toString().split(' ');
+                    $.each(cNames, function (i, className) {
+                        var match_inv = rx_invalid.exec(className);
+                        if (match_inv) {
+                            elem.removeClass(className).addClass(match_inv[1]);
+                        }
+                        var match_reqd = rx_reqd.exec(className);
+                        if (match_reqd) {
+                            elem.removeClass(className).addClass(match_reqd[1]);
+                        }
+                    });
+                }
+            },
+
             hasChildElements = function(row) {
                 return row.find(childElementSelector).length > 0;
             },
@@ -119,6 +137,7 @@
             row.insertAfter($$.filter(':last')).show();
             row.find(childElementSelector).each(function() {
                 updateElementIndex($(this), options.prefix, formCount);
+                clearInvalidReqd($(this));
             });
             totalForms.val(formCount + 1);
             console.log("id=%s, totalForms = %s", myid, totalForms.val());
@@ -130,7 +149,7 @@
 
         delButton.click(function() {
             if (confirm("Please confirm you want to remove last item.")) {
-                var lastRow = $$.filter(':last');
+                var lastRow = $$.parent().children('.' + options.formCssClass + ':last');
                 if (totalForms.val() == 1) {
                     // Just erase values (don't remove form completely)
                     lastRow.find(childElementSelector).not(options.keepFieldValues).each(function() {
@@ -146,7 +165,7 @@
                 } else {
                     lastRow.remove();
                     // Update the TOTAL_FORMS count:
-                    var forms = $('.' + options.formCssClass).not('.formset-custom-template');
+                    var forms = $$.parent().children('.' + options.formCssClass).not('.formset-custom-template');
                     totalForms.val(forms.length);
                     // Check if we've reached the minimum number of forms
                     if (!showDeleteButton()) $(this).hide();
