@@ -77,6 +77,9 @@ class StoreGroup (group.Group):
     verbose_name = "group"
     verbose_name_plural = "groups"
 
+  def __unicode__ (self):
+    return "%s (%s)" % (self.groupname, self.organizationName)
+
 # The following caches are only added to or replaced entirely;
 # existing entries are never modified.  Thus, with appropriate coding
 # below, they are threadsafe without needing locking.
