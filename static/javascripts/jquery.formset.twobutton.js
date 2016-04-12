@@ -20,7 +20,7 @@
             totalForms = $('#' + options.auto_id + options.prefix + '-TOTAL_FORMS'),
             maxForms = $('#' + options.auto_id  + options.prefix + '-MAX_NUM_FORMS'),
             minForms = $('#' + options.auto_id  + options.prefix + '-MIN_NUM_FORMS'),
-            childElementSelector = 'input,select,textarea,label,div,span',
+            childElementSelector = 'input,select,textarea,label,div,span,details',
             $$ = $(this),
 
             applyExtraClasses = function(row, ndx) {
@@ -70,6 +70,10 @@
                     elem.val('');
                     elem.selectedIndex = -1;
                 }
+            },
+
+            getLastRow = function() {
+                return $$.parent().children('.' + options.formCssClass + ':last');
             },
 
             /**
@@ -132,9 +136,10 @@
 
         addButton.click(function() {
             var formCount = parseInt(totalForms.val()),
-                row = options.formTemplate.clone(true).removeClass('formset-custom-template');
+                row = options.formTemplate.clone(true).removeClass('formset-custom-template'),
+                lastRow = getLastRow();
             applyExtraClasses(row, formCount);
-            row.insertAfter($$.filter(':last')).show();
+            row.insertAfter(lastRow).show();
             row.find(childElementSelector).each(function() {
                 updateElementIndex($(this), options.prefix, formCount);
                 clearInvalidReqd($(this));
@@ -149,7 +154,7 @@
 
         delButton.click(function() {
             if (confirm("Please confirm you want to remove last item.")) {
-                var lastRow = $$.parent().children('.' + options.formCssClass + ':last');
+                var lastRow = getLastRow();
                 if (totalForms.val() == 1) {
                     // Just erase values (don't remove form completely)
                     lastRow.find(childElementSelector).not(options.keepFieldValues).each(function() {
@@ -158,6 +163,8 @@
                         // http://stackoverflow.com/questions/6364289/clear-form-fields-with-jquery
                         if (elem.is('input:checkbox') || elem.is('input:radio')) {
                             elem.attr('checked', false);
+                        } else if (elem.is('details')) {
+                            elem.removeAttr('open');
                         } else {
                             elem.val('');
                         }
