@@ -1,0 +1,169 @@
+# =============================================================================
+#
+# EZID :: ezidapp/models/store_user.py
+#
+# Database model for users in the store database.
+#
+# Author:
+#   Greg Janee <gjanee@ucop.edu>
+#
+# License:
+#   Copyright (c) 2016, Regents of the University of California
+#   http://creativecommons.org/licenses/BSD/
+#
+# -----------------------------------------------------------------------------
+
+import django.contrib.auth.hashers
+import django.core.validators
+import django.db.models
+
+import shoulder
+import store_group
+import store_realm
+import user
+import validation
+
+class StoreUser (user.User):
+
+  # Inherited foreign key declarations...
+  group = django.db.models.ForeignKey(store_group.StoreGroup,
+    on_delete=django.db.models.PROTECT)
+  realm = django.db.models.ForeignKey(store_realm.StoreRealm,
+    on_delete=django.db.models.PROTECT)
+
+  displayName = django.db.models.CharField("display name", max_length=255,
+    validators=[validation.nonEmpty])
+  # The user's display name, e.g., "Brown University Library", which
+  # is displayed in the UI wherever the username is.  Editable by the
+  # user.
+
+  accountEmail = django.db.models.EmailField("account email", max_length=255,
+    help_text="The email address to which account-related notifications " +\
+    "are sent other than CrossRef notifications.")
+  # Editable by the user.
+
+  primaryContactName = django.db.models.CharField("name", max_length=255,
+    validators=[validation.nonEmpty])
+  primaryContactEmail = django.db.models.EmailField("email", max_length=255)
+  primaryContactPhone = django.db.models.CharField("phone", max_length=255,
+    validators=[validation.nonEmpty])
+  # Primary contact info, which is required.  Editable by the user.
+
+  secondaryContactName = django.db.models.CharField("name", max_length=255,
+    blank=True)
+  secondaryContactEmail = django.db.models.EmailField("email", max_length=255,
+    blank=True)
+  secondaryContactPhone = django.db.models.CharField("phone", max_length=255,
+    blank=True)
+  # Secondary contact info, which is optional.  Editable by the user.
+
+  inheritGroupShoulders = django.db.models.BooleanField(
+    "inherit group shoulders", default=True,
+    help_text="If checked, the user has access to all group " +\
+    "shoulders; if not checked, the user has access only to the shoulders " +\
+    "explicitly selected below.")
+  # If True, the user may use any of the group's shoulders; if False,
+  # shoulders visible to the user are limited to those explicitly
+  # listed in 'shoulders'.
+
+  shoulders = django.db.models.ManyToManyField(shoulder.Shoulder, blank=True)
+  # The shoulders to which the user has access.  If
+  # inheritGroupShoulders is True, the set matches the group's set; if
+  # inheritGroupShoulders if False, the user's set may be a proper
+  # subset of the group's set.  Test shoulders are not included in
+  # this relation.
+
+  crossrefEnabled = django.db.models.BooleanField("CrossRef enabled",
+    default=False)
+  # If the user's group is CrossRef-enabled, determines if the user
+  # may register identifiers with CrossRef; otherwise, False.  Note
+  # that CrossRef registration requires the enablement of both the
+  # user and the shoulder.
+
+  crossrefEmail = django.db.models.EmailField("CrossRef email", max_length=255,
+    blank=True)
+  # If the user is Crossref-enabled, the optional email address to
+  # which CrossRef notifications are sent; otherwise, empty.  If there
+  # is no email address, notifications are simply not sent.
+
+  proxies = django.db.models.ManyToManyField("self", blank=True,
+    symmetrical=False,
+    help_text="A proxy is another user that may act on behalf of this user.")
+  # Other users that may act as a proxy for this user.  Editable by
+  # the user.  Self-referential proxies are disallowed.  Privileged
+  # users (group and realm administrators, superusers) are not allowed
+  # to have proxies.
+
+  @property
+  def proxy_for (self):
+    # Returns a Django related manager for the set of users this user
+    # is a proxy for.
+    return self.storeuser_set
+
+  isGroupAdministrator = django.db.models.BooleanField("group administrator",
+    default=False)
+  # True if the user is an administrator of its group.  A group
+  # administrator may act on behalf of any user in the group (i.e., is
+  # effectively a proxy for every group member); may perform
+  # group-level operations; and may change identifier ownership within
+  # the group.
+
+  isRealmAdministrator = django.db.models.BooleanField("realm administrator",
+    default=False)
+  # True if the user is an administrator of its realm.  A realm
+  # administrator is effectively an administrator of every group in
+  # the realm, and may change identifier ownership within the realm.
+  # A realm administrator has no special privileges regarding
+  # shoulders, however.
+
+  isSuperuser = django.db.models.BooleanField("superuser", default=False)
+
+  @property
+  def isPrivileged (self):
+    return self.isGroupAdministrator or self.isRealmAdministrator or\
+      self.isSuperuser
+
+  loginEnabled = django.db.models.BooleanField("login enabled", default=True)
+  # Determines if the user may login.
+
+  password = django.db.models.CharField("set password", max_length=128,
+    blank=True)
+  # The user's password in salted/hashed/encoded form.  Despite the
+  # declaration, this field will never actually be empty.  It is
+  # initially given an unusable value.
+
+  notes = django.db.models.TextField(blank=True)
+  # Any additional notes.
+
+  def clean (self):
+    super(StoreUser, self).clean()
+    self.displayName = self.displayName.strip()
+    self.primaryContactName = self.primaryContactName.strip()
+    self.primaryContactPhone = self.primaryContactPhone.strip()
+    self.secondaryContactName = self.secondaryContactName.strip()
+    self.secondaryContactPhone = self.secondaryContactPhone.strip()
+    self.notes = self.notes.strip()
+    # In the following, if there is no group, there are other problems
+    # anyway.
+    if hasattr(self, "group") and self.crossrefEnabled and\
+      not self.group.crossrefEnabled:
+      raise django.core.validators.ValidationError({ "crossrefEnabled":
+        "Group is not CrossRef enabled." })
+    if self.crossrefEmail != "" and not self.crossrefEnabled:
+      raise django.core.validators.ValidationError({ "crossrefEmail":
+        "CrossRef enabled is not checked." })
+    if self.password == "": self.setPassword(None)
+    # Because the Django admin app performs many-to-many operations
+    # only after creating or updating objects, sadly, we can't perform
+    # any validations related to shoulders or proxies here.
+
+  def setPassword (self, password):
+    # Sets the password; 'password' should be a bare password.
+    self.password = django.contrib.auth.hashers.make_password(password)
+
+  class Meta:
+    verbose_name = "user"
+    verbose_name_plural = "users"
+
+  def __unicode__ (self):
+    return "%s (%s)" % (self.username, self.displayName)
