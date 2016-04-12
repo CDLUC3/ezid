@@ -14,6 +14,7 @@
 # -----------------------------------------------------------------------------
 
 import django.contrib.auth.hashers
+import django.contrib.auth.models
 import django.core.validators
 import django.db.models
 
@@ -158,8 +159,23 @@ class StoreUser (user.User):
     # any validations related to shoulders or proxies here.
 
   def setPassword (self, password):
-    # Sets the password; 'password' should be a bare password.
+    # Sets the user's password; 'password' should be a bare password.
+    # Caution: this method sets the password in the object, but does
+    # not save the object to the database.  However, if there is a
+    # corresponding user in the Django auth app, that user's password
+    # is both set and saved.  Thus calls to this method should
+    # generally be wrapped in a transaction.
     self.password = django.contrib.auth.hashers.make_password(password)
+    try:
+      au = django.contrib.auth.models.User.objects.get(username=self.username)
+      au.set_password(password)
+      au.save()
+    except django.contrib.auth.models.User.DoesNotExist:
+      pass
+
+  def authenticate (self, password):
+    # Returns True if the supplied password matches the user's.
+    return django.contrib.auth.hashers.check_password(password, self.password)
 
   class Meta:
     verbose_name = "user"
