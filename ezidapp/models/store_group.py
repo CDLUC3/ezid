@@ -66,6 +66,12 @@ class StoreGroup (group.Group):
   notes = django.db.models.TextField(blank=True)
   # Any additional notes.
 
+  @property
+  def users (self):
+    # Returns a Django related manager for the set of users in this
+    # group.
+    return self.storeuser_set
+
   def clean (self):
     super(StoreGroup, self).clean()
     self.organizationName = self.organizationName.strip()
