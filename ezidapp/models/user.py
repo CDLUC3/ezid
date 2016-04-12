@@ -18,8 +18,15 @@ import django.core.validators
 import django.db.models
 import re
 
+import shoulder
 import util
 import validation
+
+# Deferred imports...
+"""
+import log
+import noid_nog
+"""
 
 class User (django.db.models.Model):
   # An EZID user, i.e., a login account.
@@ -52,9 +59,26 @@ class User (django.db.models.Model):
   # The user's realm.
 
   def clean (self):
+    import log
+    import noid_nog
+    # The following two statements are here just to support the Django
+    # admin app, which has its own rules about how model objects are
+    # constructed.  If no group has been assigned, we can return
+    # immediately because a validation error will already have been
+    # triggered.
+    if not hasattr(self, "group"): return
+    if not hasattr(self, "realm"): self.realm = self.group.realm
     if self.realm != self.group.realm:
       raise django.core.exceptions.ValidationError(
         "User's realm does not match user's group's realm.")
+    if self.pid == "":
+      try:
+        s = shoulder.getAgentShoulder()
+        assert s.isArk, "agent shoulder type must be ARK"
+        self.pid = "ark:/" + noid_nog.Minter(s.minter).mintIdentifier()
+      except Exception, e:
+        log.otherError("user.User.clean", e)
+        raise
 
   def __unicode__ (self):
     return self.username
