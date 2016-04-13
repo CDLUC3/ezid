@@ -96,12 +96,15 @@ def clearCaches ():
   global _caches
   _caches = None
 
+def _databaseQuery ():
+  return StoreGroup.objects.select_related("realm")\
+    .prefetch_related("shoulders")
+
 def _getCaches ():
   global _caches
   caches = _caches
   if caches == None:
-    pidCache = dict((g.pid, g) for g in StoreGroup.objects\
-      .select_related("realm").prefetch_related("shoulders").all())
+    pidCache = dict((g.pid, g) for g in _databaseQuery().all())
     groupnameCache = dict((g.groupname, g) for g in pidCache.values())
     caches = (pidCache, groupnameCache)
     _caches = caches
@@ -113,8 +116,7 @@ def getByPid (pid):
   pidCache, groupnameCache = _getCaches()
   if pid not in pidCache:
     try:
-      g = StoreGroup.objects\
-        .select_related("realm").prefetch_related("shoulders").get(pid=pid)
+      g = _databaseQuery().get(pid=pid)
     except StoreGroup.DoesNotExist:
       return None
     pidCache[pid] = g
@@ -127,8 +129,7 @@ def getByGroupname (groupname):
   pidCache, groupnameCache = _getCaches()
   if groupname not in groupnameCache:
     try:
-      g = StoreGroup.objects.select_related("realm").\
-        prefetch_related("shoulders").get(groupname=groupname)
+      g = _databaseQuery().get(groupname=groupname)
     except StoreGroup.DoesNotExist:
       return None
     pidCache[g.pid] = g
