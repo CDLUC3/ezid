@@ -65,6 +65,7 @@ layout:
             ezidapp/
             profiles/
             settings/
+                ezid.conf.shadow (not included in distribution)
             static/
             templates/
                 info/ (separate distribution)
@@ -101,7 +102,8 @@ indicates the deployment level.  Possible values:
 See the corresponding modules in the settings directory for the
 effects the deployment level has.  In addition, the deployment level
 is used to define deployment-level-specific values for options in
-settings/ezid.conf and settings/ezid.conf.shadow, as in:
+.../SITE_ROOT/PROJECT_ROOT/settings/ezid.conf and
+.../SITE_ROOT/PROJECT_ROOT/settings/ezid.conf.shadow, as in:
 
     [datacite]
     enabled: false
@@ -165,7 +167,8 @@ users, groups, and realms defined in these file are just examples.
     django-admin loaddata --database=search search-init.json
 
 To give the EZID administrator account the password defined in the
-settings/ezid.conf or settings/ezid.conf.shadow file, do not use
+.../SITE_ROOT/PROJECT_ROOT/settings/ezid.conf or
+.../SITE_ROOT/PROJECT_ROOT/settings/ezid.conf.shadow file, do not use
 Django's built-in 'createsuperuser' or 'changepassword' commands, but
 instead:
 
@@ -173,15 +176,16 @@ instead:
 
 Passwords for other accounts can be set using the admin interface.
 
-Finally, to make the groups defined in these files fully functional
-their persistent identifiers must be created, which is a two-step
-process.  For each group, first create the identifier using the
-command line client, e.g.:
+Finally, to make the users and groups defined in these files fully
+functional their persistent identifiers must be created, which is a
+two-step process.  For each user and group, first create the
+identifier using the command line client, e.g.:
 
     .../SITE_ROOT/PROJECT_ROOT/tools/client l admin:********
       create ark:/99166/p9g44hq02
 
-Then visit the group's page in the admin interface and click "Save".
+Then visit the user's or group's page in the admin interface and click
+"Save".
 
 Running under Apache
 ====================
@@ -197,8 +201,8 @@ hosted at http://{host}/.
 
 2. Tell mod_wsgi to run EZID as a single, separate, multithreaded
 process.  (Actually, this directive applies to all mod_wsgi
-applications within the same server or virtual host.)  The name is
-arbitrary.
+applications within the same server or virtual host.)  The name
+"site-1" is arbitrary.
 
     WSGIDaemonProcess site-1 threads=50 shutdown-timeout=60
 
