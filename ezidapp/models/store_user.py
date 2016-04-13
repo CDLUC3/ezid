@@ -131,7 +131,7 @@ class StoreUser (user.User):
     blank=True)
   # The user's password in salted/hashed/encoded form.  Despite the
   # declaration, this field will never actually be empty.  It is
-  # initially given an unusable value.
+  # initially given an unusable value.  Editable by the user.
 
   notes = django.db.models.TextField(blank=True)
   # Any additional notes.
