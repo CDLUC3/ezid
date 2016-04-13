@@ -183,3 +183,70 @@ class StoreUser (user.User):
 
   def __unicode__ (self):
     return "%s (%s)" % (self.username, self.displayName)
+
+# The following caches are only added to or replaced entirely;
+# existing entries are never modified.  Thus, with appropriate coding
+# below, they are threadsafe without needing locking.
+
+_caches = None # (pidCache, usernameCache, idCache)
+
+def clearCaches ():
+  global _caches
+  _caches = None
+
+def _databaseQuery ():
+  return StoreUser.objects.select_related("group", "realm")\
+    .prefetch_related("shoulders", "proxies")
+
+def _getCaches ():
+  global _caches
+  caches = _caches
+  if caches == None:
+    pidCache = dict((u.pid, u) for u in _databaseQuery().all())
+    usernameCache = dict((u.username, u) for u in pidCache.values())
+    idCache = dict((u.id, u) for u in pidCache.values())
+    caches = (pidCache, usernameCache, idCache)
+    _caches = caches
+  return caches
+
+def getByPid (pid):
+  # Returns the user identified by persistent identifier 'pid', or
+  # None if there is no such user.
+  pidCache, usernameCache, idCache = _getCaches()
+  if pid not in pidCache:
+    try:
+      u = _databaseQuery().get(pid=pid)
+    except StoreUser.DoesNotExist:
+      return None
+    pidCache[pid] = u
+    usernameCache[u.username] = u
+    idCache[u.id] = u
+  return pidCache[pid]
+
+def getByUsername (username):
+  # Returns the user identified by local name 'username', or None if
+  # there is no such user.
+  pidCache, usernameCache, idCache = _getCaches()
+  if username not in usernameCache:
+    try:
+      u = _databaseQuery().get(username=username)
+    except StoreUser.DoesNotExist:
+      return None
+    pidCache[u.pid] = u
+    usernameCache[username] = u
+    idCache[u.id] = u
+  return usernameCache[username]
+
+def getById (id):
+  # Returns the user identified by internal identifier 'id', or None
+  # if there is no such user.
+  pidCache, usernameCache, idCache = _getCaches()
+  if id not in idCache:
+    try:
+      u = _databaseQuery().get(id=id)
+    except StoreUser.DoesNotExist:
+      return None
+    pidCache[u.pid] = u
+    usernameCache[u.username] = u
+    idCache[id] = u
+  return idCache[id]
