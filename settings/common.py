@@ -23,10 +23,7 @@ ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
 DEBUG = True
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
-MANAGERS = ADMINS = (
-  ("Greg Janee", "gjanee@ucop.edu"),
-  ("John Kunze", "john.kunze@ucop.edu")
-)
+MANAGERS = ADMINS = [("Greg Janee", "gjanee@ucop.edu")]
 
 if "HOSTNAME" in os.environ:
   SERVER_EMAIL = "ezid@" + os.environ["HOSTNAME"]
