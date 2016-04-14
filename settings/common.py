@@ -67,6 +67,11 @@ STATIC_URL = "/static/"
 # The secret key is loaded from the store database by config._load.
 SECRET_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
+PASSWORD_HASHERS = [
+  "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+  "userauth.LdapSha1PasswordHasher"
+]
+
 MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
   "django.contrib.sessions.middleware.SessionMiddleware",
