@@ -263,6 +263,10 @@ _groupCache = None
 _datacenterCache = None
 _profileCache = None
 
+def clearUserCache ():
+  global _userCache
+  _userCache = None
+
 def clearGroupCache ():
   global _groupCache
   _groupCache = None

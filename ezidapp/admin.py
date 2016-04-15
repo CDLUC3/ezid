@@ -722,9 +722,33 @@ class StoreUserAdmin (django.contrib.admin.ModelAdmin):
   def save_model (self, request, obj, form, change):
     if "password" in form.cleaned_data:
       obj.setPassword(form.cleaned_data["password"])
-    obj.save()
+    clearCaches = False
+    if change:
+      obj.save()
+      models.SearchUser.objects.filter(pid=obj.pid).\
+        update(username=obj.username)
+      clearCaches = True
+    else:
+      su = models.SearchUser(pid=obj.pid, username=obj.username,
+        group=models.SearchGroup.objects.get(pid=obj.group.pid),
+        realm=models.SearchRealm.objects.get(name=obj.realm.name))
+      su.full_clean()
+      obj.save()
+      su.save()
+    # See discussion in StoreGroupAdmin above.
+    if clearCaches:
+      django.db.connection.on_commit(models.store_user.clearCaches)
+      django.db.connection.on_commit(models.search_identifier.clearUserCache)
     django.db.connection.on_commit(
       lambda: createOrUpdateUserPid(request, obj, change))
+  def delete_model (self, request, obj):
+    obj.delete()
+    models.SearchUser.objects.filter(pid=obj.pid).delete()
+    django.contrib.messages.warning(request,
+      "Now-defunct user PID %s not deleted; you may consider doing so." %\
+      obj.pid)
+    django.db.connection.on_commit(models.store_user.clearCaches)
+    django.db.connection.on_commit(models.search_identifier.clearUserCache)
   class Media:
     css = { "all": ["admin/css/base-user.css"] }
 
