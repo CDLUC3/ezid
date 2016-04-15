@@ -503,14 +503,6 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
     # relies on the django-transaction-hooks 3rd party package.
     django.db.connection.on_commit(
       lambda: createOrUpdateGroupPid(request, obj, change))
-    # TEMPORARY LDAP BRIDGE
-    import ezidadmin
-    if change:
-      django.db.connection.on_commit(
-        lambda: ezidadmin.groupUpdateBridge(request, obj))
-    else:
-      django.db.connection.on_commit(
-        lambda: ezidadmin.groupCreateBridge(request, obj))
   def delete_model (self, request, obj):
     obj.delete()
     models.SearchGroup.objects.filter(pid=obj.pid).delete()
@@ -520,10 +512,6 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
     # See comment above.
     django.db.connection.on_commit(models.store_group.clearCaches)
     django.db.connection.on_commit(models.search_identifier.clearGroupCache)
-    # TEMPORARY LDAP BRIDGE
-    import ezidadmin
-    django.db.connection.on_commit(
-      lambda: ezidadmin.groupDeleteBridge(request, obj))
   class Media:
     css = { "all": ["admin/css/base-group.css"] }
 
