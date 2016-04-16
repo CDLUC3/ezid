@@ -164,11 +164,7 @@ def getGroups ():
         "duplicate ARK identifier, DN='%s'" % dn
       seenArkIds.add(d["arkId"])
       d["shoulderList"] = attrs["shoulderList"][0].decode("UTF-8")
-      if d["gid"] == _adminUsername:
-        assert d["shoulderList"] == "*",\
-          "invalid EZID administrator shoulder list"
-      else:
-        d["shoulderList"] = _validateShoulderList(dn, d["shoulderList"])
+      d["shoulderList"] = _validateShoulderList(dn, d["shoulderList"])
       if "description" in attrs:
         d["description"] = attrs["description"][0].decode("UTF-8")
       else:
@@ -431,14 +427,8 @@ def updateGroup (dn, description, agreementOnFile, shoulderList,
   if not _ldapEnabled: return "Functionality unavailable."
   if not _updatesEnabled: return "Prohibited by configuration."
   if len(shoulderList) == 0: return "Shoulder list required."
-  # Technically the following test is a bug, as it assumes that the
-  # admin group's LDAP entry resides within _groupDnTemplate, an
-  # assumption that is made nowhere else.
-  if dn == _groupDnTemplate % _adminUsername:
-    if shoulderList != "*": return "Administrator shoulder list must be '*'."
-  else:
-    shoulderList = _validateShoulderList(dn, shoulderList, swallowErrors=False)
-    if shoulderList == None: return "Unrecognized shoulder."
+  shoulderList = _validateShoulderList(dn, shoulderList, swallowErrors=False)
+  if shoulderList == None: return "Unrecognized shoulder."
   l = None
   try:
     l = ldap.initialize(_ldapServer)
