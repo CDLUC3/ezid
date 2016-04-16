@@ -64,7 +64,7 @@ class StoreUser (user.User):
   # Secondary contact info, which is optional.  Editable by the user.
 
   inheritGroupShoulders = django.db.models.BooleanField(
-    "inherit group shoulders", default=True,
+    "inherit group shoulders", default=False,
     help_text="If checked, the user has access to all group " +\
     "shoulders; if not checked, the user has access only to the shoulders " +\
     "explicitly selected below.")
