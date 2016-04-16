@@ -17,6 +17,12 @@ import realm
 
 class StoreRealm (realm.Realm):
 
+  @property
+  def groups (self):
+    # Returns a Django related manager for the set of groups in this
+    # realm.
+    return self.storegroup_set
+
   class Meta:
     verbose_name = "realm"
     verbose_name_plural = "realms"

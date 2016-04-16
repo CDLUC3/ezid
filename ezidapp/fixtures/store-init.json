@@ -2,7 +2,10 @@
 
 { "model": "ezidapp.ServerVariables",
   "pk": 1,
-  "fields": { "alertMessage": "", "secretKey": "" }
+  "fields": {
+    "alertMessage": "",
+    "secretKey": ""
+  }
 },
 
 { "model": "ezidapp.StoreRealm",
@@ -22,6 +25,22 @@
   }
 },
 
+{ "model": "ezidapp.StoreUser",
+  "pk": 1,
+  "fields": {
+    "pid": "ark:/99166/p9kw57h4w",
+    "username": "admin",
+    "group": 1,
+    "realm": 1,
+    "displayName": "EZID superuser",
+    "accountEmail": "gjanee@ucop.edu",
+    "primaryContactName": "Greg Janée",
+    "primaryContactEmail": "gjanee@ucop.edu",
+    "primaryContactPhone": "+1 805 893 8453",
+    "isSuperuser": 1
+  }
+},
+
 { "model": "ezidapp.StoreGroup",
   "pk": 2,
   "fields": {
@@ -31,6 +50,22 @@
     "organizationName": "EZID API test account",
     "organizationUrl": "http://ezid.cdlib.org/",
     "organizationStreetAddress": "(:unap)",
+    "crossrefEnabled": 1
+  }
+},
+
+{ "model": "ezidapp.StoreUser",
+  "pk": 2,
+  "fields": {
+    "pid": "ark:/99166/p9jq0st8j",
+    "username": "apitest",
+    "group": 2,
+    "realm": 1,
+    "displayName": "EZID API test account",
+    "accountEmail": "gjanee@ucop.edu",
+    "primaryContactName": "Greg Janée",
+    "primaryContactEmail": "gjanee@ucop.edu",
+    "primaryContactPhone": "+1 805 893 8453",
     "crossrefEnabled": 1
   }
 }

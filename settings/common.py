@@ -23,10 +23,7 @@ ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
 DEBUG = True
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
-MANAGERS = ADMINS = (
-  ("Greg Janee", "gjanee@ucop.edu"),
-  ("John Kunze", "john.kunze@ucop.edu")
-)
+MANAGERS = ADMINS = [("Greg Janee", "gjanee@ucop.edu")]
 
 if "HOSTNAME" in os.environ:
   SERVER_EMAIL = "ezid@" + os.environ["HOSTNAME"]
@@ -69,6 +66,11 @@ STATIC_URL = "/static/"
 
 # The secret key is loaded from the store database by config._load.
 SECRET_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+PASSWORD_HASHERS = [
+  "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+  "userauth.LdapSha1PasswordHasher"
+]
 
 MIDDLEWARE_CLASSES = (
   "django.middleware.common.CommonMiddleware",
