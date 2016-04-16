@@ -70,6 +70,7 @@ _loadConfig()
 config.registerReloadListener(_loadConfig)
 
 def _validateShoulderList (dn, sl, swallowErrors=True):
+  if sl == "*": return "NONE"
   if sl == "NONE": return sl
   l = []
   for s in sl.split():
