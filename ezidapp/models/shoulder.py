@@ -114,7 +114,7 @@ class Shoulder (django.db.models.Model):
       if self.crossrefEnabled:
         raise django.core.exceptions.ValidationError(
           { "crossrefEnabled":
-          "Only DOI shoulders may be CrossRef-enabled." })
+          "Only DOI shoulders may be CrossRef enabled." })
     self.isTest = util2.isTestIdentifier(self.prefix)
 
   def __unicode__ (self):

@@ -848,11 +848,3 @@ table#change-history tbody th {
     background: #eee url(../img/nav-bg.gif) bottom left repeat-x;
     color: #666;
 }
-
-tr.model-storegroup {
-    background-color: #FEBF6C;
-}
-
-tr.model-storeuser {
-    background-color: #FDFF9B;
-}

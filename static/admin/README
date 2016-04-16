@@ -1,1 +1,4 @@
-This directory is a deep copy of {django-1.8.1}/contrib/admin/static/admin/.
+This directory is a deep copy of
+{django-1.8.1}/contrib/admin/static/admin/, except for
+css/base-group.css and css/base-user.css, which are EZID additions.
+Where files have been modified, the originals have been retained.
