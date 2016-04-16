@@ -1,0 +1,138 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Manage Groups{% endblock %}
+
+{% block content %}
+  <div class="grid_9">
+    <h1>Manage Groups</h1>
+    
+    <div class="dialog_window" id="addnew_dialog">
+    	<form id="new_group_form" action="{% url "ui_admin.add_group" %}" method="post">
+    		<label class="left" for="grouphandle">Group handle:</label>
+    		<div class="field_right">
+    			<input type="text" id="grouphandle" name="grouphandle"/>&nbsp;&nbsp;e.g. &quot;labarchives&quot;
+    		</div>
+    		<label class="left">&nbsp;</label>
+    		<div class="field_right">
+    			<input type="submit" value="Make group"/>&nbsp;&nbsp;&nbsp;&nbsp;
+    			<a href='#close' class="close">Cancel</a>
+    		</div>
+    	</form>
+    	<div style="clear:both;"></div>&nbsp;
+    </div>
+    
+    <form id="groupform" action="{% url "ui_admin.manage_groups" %}" method="post">
+    	
+    	<label class="left" for="group">Group handle:</label>
+    	<div class="field_right">
+    		<select id='group' name='group'>
+    			{% for g in groups %}
+    				<option value='{{g.dn}}'
+    				  {% if g.dn == group.dn %}
+    				  	selected="selected"
+    				  {% endif %}
+    				>{{g.gid}}</option>
+    			{% endfor %}
+    		</select>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#addnew_dialog" name="modal" />Create a new group</a>
+    		
+    		<input type="hidden" name="original_group" value="{{group.dn}}" />
+    	</div>
+    	
+    	
+    	<label class="left" for="arkId">ARK identifier:</label>
+    	<div class="field_right">
+    		<a href="/id/{{ group.arkId }}" id="arkId">{{group.arkId}}</a>
+    	</div>
+    	
+    	<label class="left" for="description">Description:</label>
+    	<div class="field_right">
+    		<textarea rows="4" cols='40' name="description" id="description">{{group.description}}</textarea>
+    	</div>
+    	
+    	<label class="left" for="agreementOnFile">Agreement on file:</label>
+    	<div class="field_right">
+    		<input type="checkbox" name="agreementOnFile" id="agreementOnFile" value="True"
+    			{% if group.agreementOnFile %}
+    				checked="checked"
+    			{% endif %}
+    		/>  		
+    	</div>
+
+        <label class="left" for="crossrefEnabled">CrossRef Enabled:</label>
+        <div class="field_right">
+                <input type="checkbox" name="crossrefEnabled" id="crossrefEnabled" value="True"
+                        {% if group.crossrefEnabled %}
+                                checked="checked"
+                        {% endif %}
+                />
+        </div>
+    
+        <div id="crossrefMail_div"
+          {% if group.crossrefEnabled %}
+            style="display: visible;"
+          {% else %}
+            style="display: none;"
+          {% endif %}
+        >
+          <label class="left" for="crossrefMail">CrossRef Email Addresses:</label>
+          <div class="field_right">
+                <input type="text" name="crossrefMail" id="crossrefMail" size="30" value="{{ group.crossrefMail }}" /> <br/>(Separate email addresses with commas)
+          </div>
+          <label class="left" for="crossrefSendMailOnError">Send Mail On CrossRef Error:</label>
+          <div class="field_right">
+                <input type="checkbox" name="crossrefSendMailOnError" id="crossrefSendMailOnError" value="True"
+                        {% if group.crossrefSendMailOnError %}
+                                checked="checked"
+                        {% endif %}
+                />
+          </div>
+        </div>
+
+    	<label class="left" for="users">Users:</label>
+    	<div class="field_right" id='users'>
+    		{% if group.users|length > 0 %}
+    			{% for u in group.users %}
+    				<a href="{% url "ui_admin.manage_users" %}?user={{ u.dn|urlencode }}">{{u.uid}}</a><br/>
+    			{% endfor %}
+    		{% else %}
+    			No users are in this group
+    		{% endif %}
+    	</div>
+    	
+    	<label class="left" for="shoulderList">Shoulders:</label>
+    	<div class="field_right">
+    		<select id='shoulderList' name='shoulderList' size="30" multiple="multiple">
+					{% for s in selected_shoulders  %}
+						<option value="{{s.0}}" selected="selected">{{s.1}}</option>
+					{% endfor %}
+					{% for s in deselected_shoulders  %}
+						<option value="{{s.0}}">{{s.1}}</option>
+					{% endfor %}
+    		</select>
+    	</div>
+    	<label class="left">&nbsp;</label>
+    	<div class="field_right">
+    		<input type="submit" value="Save changes"/>
+    	</div>
+    </form>
+  </div>
+  <script type="text/javascript" src="/static/javascripts/dialog_box.js"></script>
+  <script type="text/javascript">
+  	$("#group").bind("change", function(event){
+      $("#groupform").submit();
+    });
+
+    function setHidden(){
+        if ($('#crossrefEnabled').is(':checked')) {
+               $("#crossrefMail_div").show();
+        }else{
+               $("#crossrefMail_div").hide();
+        }
+    }
+    $("[name='crossrefEnabled']").bind("change", function(){
+        setHidden();
+    });
+    setHidden();
+  </script>
+
+{% endblock %}

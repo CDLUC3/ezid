@@ -19,7 +19,6 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.contrib.messages
 import ldap
 import re
 
@@ -290,33 +289,25 @@ def getUsers ():
   finally:
     if l: l.unbind()
 
-def makeShoulderListBridge (group):
-  sl = " ".join(s.prefix for s in group.shoulders.all())
-  if sl != "":
-    return sl
-  else:
-    return "NONE"
-
-def groupCreateBridge (request, group):
-  r = makeLdapGroup(group.groupname)
-  if type(r) is str:
-    django.contrib.messages.error(request,
-      "LDAP create error: makeLdapGroup: " + r)
+def _cacheLdapInformation (l, dn, arkId, user, group):
+  attrs = l.search_s(dn, ldap.SCOPE_BASE)[0][1]
+  d = {}
+  for a in attrs:
+    if a != "userPassword":
+      d["ldap." + a] = " ; ".join(v.decode("UTF-8") for v in attrs[a])
+  # We're somewhat forgiving if the agent identifier doesn't exist, as
+  # we might be running in a non-production environment.
+  try:
+    r = ezid.getMetadata(arkId, user, group)
+    assert type(r) is tuple, "ezid.getMetadata failed: " + r
+  except AssertionError, e:
+    log.otherError("ezidadmin._cacheLdapInformation", e)
     return
-  dn = r[0]
-  r = makeGroup(dn, group.groupname, group.agreementOnFile,
-    makeShoulderListBridge(group), None, None, group.pid)
-  if type(r) is str:
-    django.contrib.messages.error(request,
-      "LDAP create error: makeGroup: " + r)
-  r = updateGroup(dn, group.notes, group.agreementOnFile,
-    makeShoulderListBridge(group), group.crossrefEnabled,
-    None, None, None, None)
-  if type(r) is str:
-    django.contrib.messages.error(request,
-      "LDAP create error: updateGroup: " + r)
-    return
-  django.contrib.messages.success(request, "LDAP entry created.")
+  for k in r[1]:
+    # If an attribute has disappeared, blank out its cached value.
+    if k.startswith("ldap.") and k not in d: d[k] = ""
+  r = ezid.setMetadata(arkId, user, group, d)
+  assert r.startswith("success:"), "ezid.setMetadata failed: " + r
 
 def makeLdapGroup (gid):
   """
@@ -351,7 +342,7 @@ def makeLdapGroup (gid):
   finally:
     if l: l.unbind()
 
-def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group, arkId):
+def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group):
   """
   Makes an existing LDAP entry an EZID group, returning None on
   success or a string message on error.  'dn' should be the entry's
@@ -396,34 +387,33 @@ def makeGroup (dn, gid, agreementOnFile, shoulderList, user, group, arkId):
       "crossrefEnabled" not in r[0][1] and "crossrefMail" not in r[0][1] and\
       "crossrefSendMailOnError" not in r[0][1],\
       "unexpected LDAP attribute, DN='%s'" % dn
+    r = ezid.mintIdentifier(_agentShoulder, user, group,
+      { "_ezid_role": "group", "_profile": "erc", "erc.who": dn,
+      "erc.what": "EZID group", "_export": "no" })
+    if r.startswith("success:"):
+      arkId = r.split()[1]
+    else:
+      assert False, "ezid.mintIdentifier failed: " + r
     l.modify_s(dn, [(ldap.MOD_ADD, "objectClass", "ezidGroup"),
       (ldap.MOD_ADD, "gid", gid.encode("UTF-8")),
       (ldap.MOD_ADD, "groupArkId", arkId.encode("UTF-8")),
       (ldap.MOD_ADD, "agreementOnFile",
         "true" if agreementOnFile else "false"),
       (ldap.MOD_ADD, "shoulderList", shoulderList.encode("UTF-8"))])
+    _cacheLdapInformation(l, dn, arkId, user, group)
     idmap.addGroup(gid, arkId)
+    # The following is temporary.  Note the assumption here that there
+    # is just one realm.
+    g = ezidapp.models.SearchGroup(pid=arkId, groupname=gid,
+      realm=ezidapp.models.SearchRealm.objects.all()[0])
+    g.full_clean()
+    g.save()
     return None
   except Exception, e:
     log.otherError("ezidadmin.makeGroup", e)
     return "Internal server error."
   finally:
     if l: l.unbind()
-
-def groupUpdateBridge (request, group):
-  dn = "o=%s,ou=ezid-groups,ou=uc3,dc=cdlib,dc=org" %\
-    ldap.dn.escape_dn_chars(group.groupname)
-  r = updateGroup(dn, group.notes, group.agreementOnFile,
-    makeShoulderListBridge(group), group.crossrefEnabled,
-    None, None, None, None)
-  if type(r) is str:
-    django.contrib.messages.error(request,
-      "LDAP update error: updateGroup: " + r)
-    return
-  django.contrib.messages.success(request, "LDAP entry updated.")
-
-def groupDeleteBridge (request, group):
-  django.contrib.messages.warning(request, "LDAP entry not deleted.")
 
 def updateGroup (dn, description, agreementOnFile, shoulderList,
   crossrefEnabled, crossrefMail, crossrefSendMailOnError, user, group):
@@ -468,17 +458,31 @@ def updateGroup (dn, description, agreementOnFile, shoulderList,
         dm = [(ldap.MOD_DELETE, "description", None)]
       else:
         dm = []
+    crm = [m.strip().encode("UTF-8")\
+      for m in crossrefMail.split(",") if len(m.strip()) > 0]
+    if len(crm) > 0:
+      dm.append((ldap.MOD_REPLACE if "crossrefMail" in r[0][1] else\
+        ldap.MOD_ADD, "crossrefMail", crm))
+    else:
+      if "crossrefMail" in r[0][1]:
+        dm.append((ldap.MOD_DELETE, "crossrefMail", None))
     l.modify_s(dn,
       [(ldap.MOD_REPLACE, "shoulderList", shoulderList.encode("UTF-8")),
       (ldap.MOD_REPLACE if "agreementOnFile" in r[0][1] else ldap.MOD_ADD,
       "agreementOnFile", "true" if agreementOnFile else "false"),
       (ldap.MOD_REPLACE if "crossrefEnabled" in r[0][1] else ldap.MOD_ADD,
-      "crossrefEnabled", "true" if crossrefEnabled else "false")] + dm)
+      "crossrefEnabled", "true" if crossrefEnabled else "false"),
+      (ldap.MOD_REPLACE if "crossrefSendMailOnError" in r[0][1] else\
+      ldap.MOD_ADD, "crossrefSendMailOnError",
+      "true" if crossrefSendMailOnError else "false")] + dm)
     if "gid" in r[0][1]:
       gid = r[0][1]["gid"][0].decode("UTF-8")
     else:
       gid = r[0][1]["uid"][0].decode("UTF-8")
     policy.clearGroupCache(gid)
+    arkId = r[0][1]["groupArkId" if "groupArkId" in r[0][1] else "arkId"]\
+      [0].decode("UTF-8")
+    _cacheLdapInformation(l, dn, arkId, user, group)
     return None
   except Exception, e:
     log.otherError("ezidadmin.updateGroup", e)
@@ -601,6 +605,7 @@ def makeUser (uid, groupDn, user, group):
     m += [(ldap.MOD_ADD, "objectClass", "ezidUser"),
       (ldap.MOD_ADD, "ezidOwnerGroup", groupDn.encode("UTF-8"))]
     l.modify_s(dn, m)
+    _cacheLdapInformation(l, dn, arkId, user, group)
     idmap.addUser(uid, arkId)
     # The following is temporary.  Note the assumption here that there
     # is just one realm.
@@ -690,6 +695,7 @@ def changeGroup (uid, newGroupDn, user, group):
       newGroupDn.encode("UTF-8"))])
     userauth.clearLdapCache(uid)
     django_util.deleteSessions(uid)
+    _cacheLdapInformation(l, dn, arkId, user, group)
     # The following is temporary.  Note the assumption here that there
     # is just one realm.
     u = ezidapp.models.SearchUser.objects.get(username=uid)
