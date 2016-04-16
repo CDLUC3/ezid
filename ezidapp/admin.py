@@ -414,7 +414,6 @@ class StoreGroupForm (django.forms.ModelForm):
       isTest=False).order_by("name", "type")
 
 def createOrUpdateGroupPid (request, obj, change):
-  import config
   import ezid
   import log
   r = ezid.asAdmin(ezid.setMetadata if change else ezid.createIdentifier,
@@ -439,6 +438,24 @@ def createOrUpdateGroupPid (request, obj, change):
       "createIdentifier", r)))
     django.contrib.messages.error(request, "Error %s group PID." %\
       ("updating" if change else "creating"))
+
+def updateUserPids (request, users):
+  import ezid
+  import log
+  errors = False
+  for u in users:
+    r = ezid.asAdmin(ezid.setMetadata, u.pid,
+      { "ezid.user.shoulders": " ".join(s.prefix for s in u.shoulders.all()),
+        "ezid.user.crossrefEnabled": str(u.crossrefEnabled),
+        "ezid.user.crossrefEmail": u.crossrefEmail })
+    if not r.startswith("success:"):
+      errors = True
+      log.otherError("admin.updateUserPids",
+        Exception("ezid.setMetadata call failed: " + r))
+  if errors:
+    django.contrib.messages.error(request, "Error updating user PIDs.")
+  else:
+    django.contrib.messages.success(request, "User PIDs updated.")
 
 class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
   def organizationNameSpelledOut (self, obj):
@@ -503,6 +520,31 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
     # relies on the django-transaction-hooks 3rd party package.
     django.db.connection.on_commit(
       lambda: createOrUpdateGroupPid(request, obj, change))
+    # Changes to shoulders and CrossRef enablement may trigger
+    # adjustments to users in the group.
+    if change:
+      doUpdateUserPids = False
+      # Though the group object has been saved above, its shoulder set
+      # is still unchanged at this point because the Django admin app
+      # performs many-to-many operations only after updating the
+      # object.
+      oldShoulders = obj.shoulders.all()
+      newShoulders = form.cleaned_data["shoulders"]
+      for s in oldShoulders:
+        if s not in newShoulders:
+          for u in obj.users.all(): u.shoulders.remove(s)
+          doUpdateUserPids = True
+      for s in newShoulders:
+        if s not in oldShoulders:
+          for u in obj.users.filter(inheritGroupShoulders=True):
+            u.shoulders.add(s)
+          doUpdateUserPids = True
+      if "crossrefEnabled" in form.changed_data and not obj.crossrefEnabled:
+        obj.users.all().update(crossrefEnabled=False, crossrefEmail="")
+        doUpdateUserPids = True
+      if doUpdateUserPids:
+        users = list(obj.users.all())
+        django.db.connection.on_commit(lambda: updateUserPids(request, users))
   def delete_model (self, request, obj):
     obj.delete()
     models.SearchGroup.objects.filter(pid=obj.pid).delete()
@@ -576,6 +618,13 @@ class StoreUserForm (django.forms.ModelForm):
         # Should never happen.
         raise django.core.validators.ValidationError({ "shoulders":
           "User's shoulder set is not a subset of group's." })
+    if cd["crossrefEnabled"]:
+      if (self.instance.pk != None and\
+        not self.instance.group.crossrefEnabled) or\
+        (self.instance.pk == None and "group" in cd and\
+        not cd["group"].crossrefEnabled):
+        raise django.core.validators.ValidationError({ "crossrefEnabled":
+          "Group is not CrossRef enabled." })
     if (cd["isGroupAdministrator"] or cd["isRealmAdministrator"] or\
       cd["isSuperuser"]) and len(cd["proxies"]) > 0:
       raise django.core.validators.ValidationError({ "proxies":
@@ -594,7 +643,6 @@ class StoreUserForm (django.forms.ModelForm):
     return cd
 
 def createOrUpdateUserPid (request, obj, change):
-  import config
   import ezid
   import log
   r = ezid.asAdmin(ezid.setMetadata if change else ezid.createIdentifier,

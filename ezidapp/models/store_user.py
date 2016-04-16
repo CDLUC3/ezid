@@ -24,6 +24,11 @@ import store_realm
 import user
 import validation
 
+# Deferred imports...
+"""
+import config
+"""
+
 class StoreUser (user.User):
 
   # Inherited foreign key declarations...
@@ -144,12 +149,6 @@ class StoreUser (user.User):
     self.secondaryContactName = self.secondaryContactName.strip()
     self.secondaryContactPhone = self.secondaryContactPhone.strip()
     self.notes = self.notes.strip()
-    # In the following, if there is no group, there are other problems
-    # anyway.
-    if hasattr(self, "group") and self.crossrefEnabled and\
-      not self.group.crossrefEnabled:
-      raise django.core.validators.ValidationError({ "crossrefEnabled":
-        "Group is not CrossRef enabled." })
     if self.crossrefEmail != "" and not self.crossrefEnabled:
       raise django.core.validators.ValidationError({ "crossrefEmail":
         "CrossRef enabled is not checked." })
@@ -157,6 +156,10 @@ class StoreUser (user.User):
     # Because the Django admin app performs many-to-many operations
     # only after creating or updating objects, sadly, we can't perform
     # any validations related to shoulders or proxies here.
+    # Addendum: moreover, because users are displayed inline in group
+    # change pages, they get validated along with groups, before
+    # StoreGroupAdmin.save_model is called.  Therefore we can't check
+    # group-user CrossRef-enabled consistency here.
 
   def setPassword (self, password):
     # Sets the user's password; 'password' should be a bare password.
@@ -250,3 +253,8 @@ def getById (id):
     usernameCache[u.username] = u
     idCache[id] = u
   return idCache[id]
+
+def getAdminUser ():
+  # Returns the EZID administrator user.
+  import config
+  return getByUsername(config.get("ldap.admin_username"))
