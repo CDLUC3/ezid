@@ -1,82 +1,36 @@
 Architecture notes...
 
-1. Internal identification of users and groups
-----------------------------------------------
+1. User identification and authentication
+-----------------------------------------
 
-Users and groups are both identified by 2- or 3-element tuples of the
-form:
+In requests and sessions, users are identified by StoreUser objects
+(and, indirectly, StoreGroup and StoreRealm objects).
 
-  (name, persistent identifier [, DN])
+A session is authenticated if there is a session cookie with key
+"ezidAuthenticatedUser", if the key's associated value is the primary
+key of a StoreUser object, and if logins are enabled for that user.
 
-For example:
+Anonymously-owned identifiers are identified by having an owner and
+group, and owner PID and group PID, all equal to "anonymous".  Note
+that anonymously-owned identifiers are not stored in the search
+database.
 
-  ("dryad", "ark:/13030/foo", "uid=dryad,ou=People,ou=uc3,dc=cdlib,dc=org")
+In requests, anonymous users are identified using the AnonymousUser
+and AnonymousGroup classes, which are not Django model classes and are
+not stored in the database, but replicate the StoreUser and StoreGroup
+functionality to a sufficient fidelity that they can stand in as
+replacements in access and policy computations.
 
-The last tuple element is present only if LDAP is enabled.
-
-In the UI, if the user is not logged in, the user and group are both
-set to ("anonymous", "anonymous") for the purposes of identifier
-ownership and access control.
-
-2. Session cookies
-------------------
-
-Session cookies store the following key/value pair:
-
-  auth
-    A userauth.AuthenticatedUser object which has 'user' and 'group'
-    attributes, each of which is a tuple as described above.
-    Presence of this key indicates that the user is authenticated.
-
-3. Caching
+2. Caching
 ----------
 
-Caching is employed in several places.  All caches are emptied when
-EZID is reloaded.
+Caching is employed in several places.  All in-memory caches are
+emptied when EZID is reloaded.
 
   ezid.conf settings
     The settings used in modules are cached by those modules.  Loaded
     at module load time.  Reloading EZID causes all settings to be
     reloaded except Django and logging settings.
-
-  userauth._ldapCache authentication cache
-    A dictionary that maps local usernames to (hashed password, time,
-    AuthenticatedUser) tuples.  (The time in a tuple effectively puts
-    a lifetime on the associated cached password.)  Loaded on demand
-    as usernames are encountered.  Individual entries are removed when
-    users change passwords, change groups, etc.
-
-  policy._groups cache
-    A dictionary that maps groups (identified by tuples; see above) to
-    group information tuples (containing shoulders, CrossRef
-    attributes, etc.).  Loaded on demand as groups are encountered.
-    Individual entries are removed when groups are modified through
-    the admin interface.
-
-  policy._coOwners cache
-    A dictionary that maps users (identified by simple names) to
-    co-owner lists (in which users are also identified by simple
-    names).  Loaded on demand as users are encountered.  Individual
-    entries are removed when co-owner lists are modified through the
-    account and admin interfaces.
-
-  session cookies
-    See above.  With a couple caveats, a session cookie is deleted if
-    and only if a user explicitly logs out
-    (SESSION_EXPIRE_AT_BROWSER_CLOSE is set to true, but that only
-    directs browsers to drop cookies, it doesn't have any server-side
-    effect).  First caveat: expired cookies are deleted by a weekly
-    cron job.  Second caveat: all of a user's session cookies are
-    deleted if the user's account is disabled or if the user's group
-    changes.
-
-  idmap.py: _idMap, _groupMap, _userMap
-    These dictionaries cache correspondences between agent identifiers
-    and user and group local names.  Loaded on demand.
-
-  LDAP information
-    Cached in agent identifiers for the purposes of storage redundancy
-    and locality only.  Written only, never read.
 
   shoulder.py
     Caches shoulder and datacenter objects from the store database;
@@ -106,32 +60,28 @@ EZID is reloaded.
     Caches user, group, datacenter, and profile objects from the
     search database.  Loads objects on demand, as they're referenced.
 
-4. Identifier metadata
+  user and group account information
+    Cached in agent identifiers for the purposes of storage redundancy
+    and locality only.  Written only, never read.
+
+3. Identifier metadata
 ----------------------
 
 See ezid.py.
 
-5. Agent identifiers
+4. Agent identifiers
 --------------------
 
 "Agents" (users and groups) are internally referred to and stored as
 ARK identifiers (e.g., "ark:/99166/foo"), but are externally referred
 to by local names (e.g., "dryad").  Identifiers that identify agents
-are termed "agent identifiers;" see ezid.py and idmap.py for more
-information.  Because potentially sensitive LDAP information is cached
-in agent identifiers (see above), not only are agent identifiers not
-revealed to clients, they are owned by the EZID administrator and can
-only be viewed by the EZID administrator.
+are termed "agent identifiers;" see ezid.py for more information.
+Because potentially sensitive account information is cached in agent
+identifiers (see above), not only are agent identifiers not revealed
+to clients, they are owned by the EZID administrator and can only be
+viewed by the EZID administrator.
 
-6. Case sensitivity of LDAP UIDs
---------------------------------
-
-LDAP UIDs are case-insensitive.  Whenever EZID stores a UID (e.g., in
-session cookies and in co-owner lists), it always uses the UID as
-retrieved from LDAP.  In other words, when LDAP is enabled, EZID's
-behavior regarding UIDs is case-insensitive and case-preserving.
-
-7. Use of DataCite's active flag
+5. Use of DataCite's active flag
 --------------------------------
 
 DataCite's 'active' flag (a DataCite-specific attribute of a DOI)
@@ -178,7 +128,7 @@ identifier's target URL is overriden with a tombstone URL.  Second, a
 public-but-not-exported identifier's metadata is still uploaded to
 DataCite.
 
-8. Offline scripts
+6. Offline scripts
 ------------------
 
 Offline scripts (dump-store, stats, dashboard, populate-store-2, etc.)
@@ -196,7 +146,7 @@ expunge script performs its update actions through the EZID API.
 
 See .../SITE_ROOT/PROJECT_ROOT/tools/offline.py for more information.
 
-9. Log file formats
+7. Log file formats
 -------------------
 
 There are two slightly different log file formats.  The transaction
@@ -235,8 +185,8 @@ Note that record arguments in both types of log files are separated by
 single spaces, and thus an empty argument will result in adjacent
 spaces.
 
-10. Database dump formats
--------------------------
+8. Database dump formats
+------------------------
 
 There are two slightly different database dump formats.  A "raw" dump
 (produced by 'dump -r' and 'dump-store -r') lists identifiers as
@@ -275,8 +225,8 @@ names (by omitting the '-n' option in the above commands), as in:
 The select and project tools are intended to work on normal dumps,
 though certain operations work on raw dumps as well.
 
-11. CrossRef
-------------
+9. CrossRef
+-----------
 
 CrossRef does not provide an 'active' flag like DataCite does, and
 this limits our ability to implement identifier status changes.  Our
