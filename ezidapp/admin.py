@@ -32,6 +32,7 @@ import django.utils.html
 import models
 import models.search_identifier
 import models.store_group
+import models.store_user
 import util
 
 # Deferred imports...
