@@ -13,6 +13,8 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.core.validators
+
 import realm
 
 class StoreRealm (realm.Realm):
@@ -23,6 +25,22 @@ class StoreRealm (realm.Realm):
     # realm.
     return self.storegroup_set
 
+  def clean (self):
+    super(StoreRealm, self).clean()
+    if self.name == "anonymous":
+      raise django.core.validators.ValidationError({ "name":
+        "The name 'anonymous' is reserved." })
+
   class Meta:
     verbose_name = "realm"
     verbose_name_plural = "realms"
+
+  isAnonymous = False
+  # See below.
+
+class AnonymousRealm (object):
+  # A class to represent the realm in which the anonymous user
+  # resides.  Note that this class can be used directly--- an object
+  # need not be instantiated.
+  name = "anonymous"
+  isAnonymous = True

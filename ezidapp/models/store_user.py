@@ -143,6 +143,9 @@ class StoreUser (user.User):
 
   def clean (self):
     super(StoreUser, self).clean()
+    if self.username == "anonymous":
+      raise django.core.validators.ValidationError({ "username":
+        "The name 'anonymous' is reserved." })
     self.displayName = self.displayName.strip()
     self.primaryContactName = self.primaryContactName.strip()
     self.primaryContactPhone = self.primaryContactPhone.strip()
@@ -178,7 +181,8 @@ class StoreUser (user.User):
 
   def authenticate (self, password):
     # Returns True if the supplied password matches the user's.
-    return django.contrib.auth.hashers.check_password(password, self.password)
+    return self.loginEnabled and\
+      django.contrib.auth.hashers.check_password(password, self.password)
 
   class Meta:
     verbose_name = "user"
@@ -186,6 +190,9 @@ class StoreUser (user.User):
 
   def __unicode__ (self):
     return "%s (%s)" % (self.username, self.displayName)
+
+  isAnonymous = False
+  # See below.
 
 # The following caches are only added to or replaced entirely;
 # existing entries are never modified.  Thus, with appropriate coding
@@ -258,3 +265,24 @@ def getAdminUser ():
   # Returns the EZID administrator user.
   import config
   return getByUsername(config.get("ldap.admin_username"))
+
+class AnonymousUser (object):
+  # A class to represent an anonymous user.  Note that this class can
+  # be used directly--- an object need not be instantiated.
+  pid = "anonymous"
+  username = "anonymous"
+  group = store_group.AnonymousGroup
+  realm = store_realm.AnonymousRealm
+  class inner (object):
+    def all (self):
+      return []
+  shoulders = inner()
+  crossrefEnabled = False
+  proxies = inner()
+  proxy_for = inner()
+  isGroupAdministrator = False
+  isRealmAdministrator = False
+  isSuperuser = False
+  isPrivileged = False
+  loginEnabled = False
+  isAnonymous = True
