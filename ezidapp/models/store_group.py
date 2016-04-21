@@ -119,7 +119,9 @@ def _getCaches ():
 
 def getByPid (pid):
   # Returns the group identified by persistent identifier 'pid', or
-  # None if there is no such group.
+  # None if there is no such group.  AnonymousGroup is returned in
+  # response to "anonymous".
+  if pid == "anonymous": return AnonymousGroup
   pidCache, groupnameCache = _getCaches()
   if pid not in pidCache:
     try:
@@ -132,7 +134,9 @@ def getByPid (pid):
 
 def getByGroupname (groupname):
   # Returns the group identified by local name 'groupname', or None if
-  # there is no such group.
+  # there is no such group.  AnonymousGroup is returned in response to
+  # "anonymous".
+  if groupname == "anonymous": return AnonymousGroup
   pidCache, groupnameCache = _getCaches()
   if groupname not in groupnameCache:
     try:

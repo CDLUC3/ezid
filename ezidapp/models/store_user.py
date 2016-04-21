@@ -221,7 +221,9 @@ def _getCaches ():
 
 def getByPid (pid):
   # Returns the user identified by persistent identifier 'pid', or
-  # None if there is no such user.
+  # None if there is no such user.  AnonymousUser is returned in
+  # response to "anonymous".
+  if pid == "anonymous": return AnonymousUser
   pidCache, usernameCache, idCache = _getCaches()
   if pid not in pidCache:
     try:
@@ -235,7 +237,9 @@ def getByPid (pid):
 
 def getByUsername (username):
   # Returns the user identified by local name 'username', or None if
-  # there is no such user.
+  # there is no such user.  AnonymousUser is returned in response to
+  # "anonymous".
+  if username == "anonymous": return AnonymousUser
   pidCache, usernameCache, idCache = _getCaches()
   if username not in usernameCache:
     try:
@@ -286,3 +290,6 @@ class AnonymousUser (object):
   isPrivileged = False
   loginEnabled = False
   isAnonymous = True
+  @staticmethod
+  def authenticate (password):
+    return False

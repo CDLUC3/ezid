@@ -10,6 +10,13 @@ A session is authenticated if there is a session cookie with key
 "ezidAuthenticatedUser", if the key's associated value is the primary
 key of a StoreUser object, and if logins are enabled for that user.
 
+The Django admin app is inextricably tied to the Django auth app,
+which EZID does not use.  To unify these two systems, those users (and
+only those users) that have access to the Django admin (currently just
+the EZID administrator) have parallel user entries inserted in the
+auth app, and when such users authenticate with EZID they are
+authenticated with the auth app at the same time.
+
 Anonymously-owned identifiers are identified by having an owner and
 group, and owner PID and group PID, all equal to "anonymous".  Note
 that anonymously-owned identifiers are not stored in the search
