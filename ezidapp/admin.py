@@ -17,6 +17,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import copy
 import django.conf
 import django.contrib.admin
 import django.contrib.messages
@@ -136,6 +137,29 @@ class StoreGroupInline (django.contrib.admin.TabularInline):
   def has_delete_permission (self, request, obj=None):
     return False
 
+class StoreUserInlineForShoulder (django.contrib.admin.TabularInline):
+  model = models.StoreUser.shoulders.through
+  verbose_name_plural = "Users using this shoulder"
+  def userLink (self, obj):
+    link = django.core.urlresolvers.reverse("admin:ezidapp_storeuser_change",
+      args=[obj.storeuser.id])
+    return "<a href=\"%s\">%s</a>" % (link, obj.storeuser.username)
+  userLink.allow_tags = True
+  userLink.short_description = "username"
+  def displayName (self, obj):
+    return obj.storeuser.displayName
+  displayName.short_description = "display name"
+  def group (self, obj):
+    return obj.storeuser.group.groupname
+  fields = ["userLink", "displayName", "group"]
+  readonly_fields = ["userLink", "displayName", "group"]
+  ordering = ["storeuser__username"]
+  extra = 0
+  def has_add_permission (self, request):
+    return False
+  def has_delete_permission (self, request, obj=None):
+    return False
+
 class ShoulderAdmin (django.contrib.admin.ModelAdmin):
   def datacenterLink (self, obj):
     link = django.core.urlresolvers.reverse(
@@ -152,7 +176,7 @@ class ShoulderAdmin (django.contrib.admin.ModelAdmin):
   fields = ["prefix", "name", "minter", "datacenterLink", "crossrefEnabled"]
   readonly_fields = ["prefix", "name", "minter", "datacenterLink",
     "crossrefEnabled"]
-  inlines = [StoreGroupInline]
+  inlines = [StoreGroupInline, StoreUserInlineForShoulder]
   form = ShoulderForm
   def has_add_permission (self, request):
     return False
@@ -363,6 +387,24 @@ class StoreGroupShoulderlessFilter (django.contrib.admin.SimpleListFilter):
         queryset = queryset.filter(~django.db.models.Q(shoulders=None))
     return queryset
 
+class StoreUserInlineForGroup (django.contrib.admin.TabularInline):
+  model = models.StoreUser
+  verbose_name_plural = "Users in this group"
+  def userLink (self, obj):
+    link = django.core.urlresolvers.reverse("admin:ezidapp_storeuser_change",
+      args=[obj.id])
+    return "<a href=\"%s\">%s</a>" % (link, obj.username)
+  userLink.allow_tags = True
+  userLink.short_description = "username"
+  fields = ["userLink", "displayName", "isGroupAdministrator"]
+  readonly_fields = ["userLink", "displayName", "isGroupAdministrator"]
+  ordering = ["username"]
+  extra = 0
+  def has_add_permission (self, request):
+    return False
+  def has_delete_permission (self, request, obj=None):
+    return False
+
 class StoreGroupForm (django.forms.ModelForm):
   def __init__ (self, *args, **kwargs):
     super(StoreGroupForm, self).__init__(*args, **kwargs)
@@ -372,7 +414,6 @@ class StoreGroupForm (django.forms.ModelForm):
       isTest=False).order_by("name", "type")
 
 def createOrUpdateGroupPid (request, obj, change):
-  import config
   import ezid
   import log
   r = ezid.asAdmin(ezid.setMetadata if change else ezid.createIdentifier,
@@ -397,6 +438,24 @@ def createOrUpdateGroupPid (request, obj, change):
       "createIdentifier", r)))
     django.contrib.messages.error(request, "Error %s group PID." %\
       ("updating" if change else "creating"))
+
+def updateUserPids (request, users):
+  import ezid
+  import log
+  errors = False
+  for u in users:
+    r = ezid.asAdmin(ezid.setMetadata, u.pid,
+      { "ezid.user.shoulders": " ".join(s.prefix for s in u.shoulders.all()),
+        "ezid.user.crossrefEnabled": str(u.crossrefEnabled),
+        "ezid.user.crossrefEmail": u.crossrefEmail })
+    if not r.startswith("success:"):
+      errors = True
+      log.otherError("admin.updateUserPids",
+        Exception("ezid.setMetadata call failed: " + r))
+  if errors:
+    django.contrib.messages.error(request, "Error updating user PIDs.")
+  else:
+    django.contrib.messages.success(request, "User PIDs updated.")
 
 class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
   def organizationNameSpelledOut (self, obj):
@@ -429,6 +488,7 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
     else:
       return self.readonly_fields
   filter_vertical = ["shoulders"]
+  inlines = [StoreUserInlineForGroup]
   form = StoreGroupForm
   def save_model (self, request, obj, form, change):
     clearCaches = False
@@ -460,6 +520,31 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
     # relies on the django-transaction-hooks 3rd party package.
     django.db.connection.on_commit(
       lambda: createOrUpdateGroupPid(request, obj, change))
+    # Changes to shoulders and CrossRef enablement may trigger
+    # adjustments to users in the group.
+    if change:
+      doUpdateUserPids = False
+      # Though the group object has been saved above, its shoulder set
+      # is still unchanged at this point because the Django admin app
+      # performs many-to-many operations only after updating the
+      # object.
+      oldShoulders = obj.shoulders.all()
+      newShoulders = form.cleaned_data["shoulders"]
+      for s in oldShoulders:
+        if s not in newShoulders:
+          for u in obj.users.all(): u.shoulders.remove(s)
+          doUpdateUserPids = True
+      for s in newShoulders:
+        if s not in oldShoulders:
+          for u in obj.users.filter(inheritGroupShoulders=True):
+            u.shoulders.add(s)
+          doUpdateUserPids = True
+      if "crossrefEnabled" in form.changed_data and not obj.crossrefEnabled:
+        obj.users.all().update(crossrefEnabled=False, crossrefEmail="")
+        doUpdateUserPids = True
+      if doUpdateUserPids:
+        users = list(obj.users.all())
+        django.db.connection.on_commit(lambda: updateUserPids(request, users))
   def delete_model (self, request, obj):
     obj.delete()
     models.SearchGroup.objects.filter(pid=obj.pid).delete()
@@ -469,5 +554,250 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
     # See comment above.
     django.db.connection.on_commit(models.store_group.clearCaches)
     django.db.connection.on_commit(models.search_identifier.clearGroupCache)
+  class Media:
+    css = { "all": ["admin/css/base-group.css"] }
 
 superuser.register(models.StoreGroup, StoreGroupAdmin)
+
+class StoreUserRealmFilter (django.contrib.admin.RelatedFieldListFilter):
+  def __new__ (cls, *args, **kwargs):
+    i = django.contrib.admin.RelatedFieldListFilter.create(*args, **kwargs)
+    i.title = "realm"
+    return i
+
+class StoreUserHasProxiesFilter (django.contrib.admin.SimpleListFilter):
+  title = "has proxies"
+  parameter_name = "hasProxies"
+  def lookups (self, request, model_admin):
+    return [("Yes", "Yes"), ("No", "No")]
+  def queryset (self, request, queryset):
+    if self.value() != None:
+      if self.value() == "Yes":
+        queryset = queryset.filter(~django.db.models.Q(proxies=None))
+      else:
+        queryset = queryset.filter(proxies=None)
+    return queryset
+
+class StoreUserAdministratorFilter (django.contrib.admin.SimpleListFilter):
+  title = "is administrator"
+  parameter_name = "administrator"
+  def lookups (self, request, model_admin):
+    return [("No", "No"), ("Group", "Group"), ("Realm", "Realm")]
+  def queryset (self, request, queryset):
+    if self.value() != None:
+      if self.value() == "No":
+        queryset = queryset.filter(isGroupAdministrator=False)\
+          .filter(isRealmAdministrator=False).filter(isSuperuser=False)
+      elif self.value() == "Group":
+        queryset = queryset.filter(isGroupAdministrator=True)
+      elif self.value() == "Realm":
+        queryset = queryset.filter(isRealmAdministrator=True)
+    return queryset
+
+class SetPasswordWidget (django.forms.widgets.TextInput):
+  def render (self, name, value, attrs=None):
+    return super(SetPasswordWidget, self).render(name, "", attrs=attrs)
+
+class StoreUserForm (django.forms.ModelForm):
+  def clean (self):
+    cd = super(StoreUserForm, self).clean()
+    if cd["inheritGroupShoulders"]:
+      if self.instance.pk != None:
+        cd["shoulders"] = self.instance.group.shoulders.all()
+      else:
+        if "group" in cd: cd["shoulders"] = cd["group"].shoulders.all()
+    else:
+      if self.instance.pk != None:
+        groupShoulders = self.instance.group.shoulders.all()
+      else:
+        if "group" in cd:
+          groupShoulders = cd["group"].shoulders.all()
+        else:
+          groupShoulders = []
+      if any(s not in groupShoulders for s in cd["shoulders"]):
+        # Should never happen.
+        raise django.core.validators.ValidationError({ "shoulders":
+          "User's shoulder set is not a subset of group's." })
+    if cd["crossrefEnabled"]:
+      if (self.instance.pk != None and\
+        not self.instance.group.crossrefEnabled) or\
+        (self.instance.pk == None and "group" in cd and\
+        not cd["group"].crossrefEnabled):
+        raise django.core.validators.ValidationError({ "crossrefEnabled":
+          "Group is not CrossRef enabled." })
+    if (cd["isGroupAdministrator"] or cd["isRealmAdministrator"] or\
+      cd["isSuperuser"]) and len(cd["proxies"]) > 0:
+      raise django.core.validators.ValidationError({ "proxies":
+        "Privileged users may not have proxies." })
+    if self.instance in cd["proxies"]:
+      # Should never happen.
+      raise django.core.validators.ValidationError({ "proxies":
+        "User cannot be a proxy for itself." })
+    # In a slight abuse of Django's forms logic, if the user didn't
+    # enter a new password we delete the password field from the
+    # cleaned data, thereby preventing it from being set in the model.
+    if cd["password"].strip() != "":
+      cd["password"] = cd["password"].strip()
+    else:
+      del cd["password"]
+    return cd
+
+def createOrUpdateUserPid (request, obj, change):
+  import ezid
+  import log
+  r = ezid.asAdmin(ezid.setMetadata if change else ezid.createIdentifier,
+    obj.pid,
+    { "_ezid_role": "user", "_export": "no", "_profile": "ezid",
+    "ezid.user.username": obj.username,
+    "ezid.user.group": "%s|%s " % (obj.group.groupname, obj.group.pid),
+    "ezid.user.realm": obj.realm.name,
+    "ezid.user.displayName": obj.displayName,
+    "ezid.user.accountEmail": obj.accountEmail,
+    "ezid.user.primaryContactName": obj.primaryContactName,
+    "ezid.user.primaryContactEmail": obj.primaryContactEmail,
+    "ezid.user.primaryContactPhone": obj.primaryContactPhone,
+    "ezid.user.secondaryContactName": obj.secondaryContactName,
+    "ezid.user.secondaryContactEmail": obj.secondaryContactEmail,
+    "ezid.user.secondaryContactPhone": obj.secondaryContactPhone,
+    "ezid.user.inheritGroupShoulders": str(obj.inheritGroupShoulders),
+    "ezid.user.shoulders": " ".join(s.prefix for s in obj.shoulders.all()),
+    "ezid.user.crossrefEnabled": str(obj.crossrefEnabled),
+    "ezid.user.crossrefEmail": obj.crossrefEmail,
+    "ezid.user.proxies": " ".join("%s|%s" % (u.username, u.pid)\
+      for u in obj.proxies.all()),
+    "ezid.user.isGroupAdministrator": str(obj.isGroupAdministrator),
+    "ezid.user.isRealmAdministrator": str(obj.isRealmAdministrator),
+    "ezid.user.isSuperuser": str(obj.isSuperuser),
+    "ezid.user.loginEnabled": str(obj.loginEnabled),
+    "ezid.user.password": obj.password,
+    "ezid.user.notes": obj.notes })
+  if r.startswith("success:"):
+    django.contrib.messages.success(request, "User PID %s." %\
+      ("updated" if change else "created"))
+  else:
+    log.otherError("admin.createOrUpdateUserPid", Exception(
+      "ezid.%s call failed: %s" % ("setMetadata" if change else\
+      "createIdentifier", r)))
+    django.contrib.messages.error(request, "Error %s user PID." %\
+      ("updating" if change else "creating"))
+
+class StoreUserAdmin (django.contrib.admin.ModelAdmin):
+  def groupLink (self, obj):
+    link = django.core.urlresolvers.reverse("admin:ezidapp_storegroup_change",
+      args=[obj.group.id])
+    return "<a href=\"%s\">%s</a>" % (link, obj.group.groupname)
+  groupLink.allow_tags = True
+  groupLink.short_description = "group"
+  def groupGroupname (self, obj):
+    return obj.group.groupname
+  groupGroupname.short_description = "group"
+  def shoulderLinks (self, obj):
+    return "<br/>".join("<a href=\"%s\">%s (%s)</a>" % (
+      django.core.urlresolvers.reverse("admin:ezidapp_shoulder_change",
+      args=[s.id]), django.utils.html.escape(s.name), s.prefix)\
+      for s in obj.shoulders.all().order_by("name", "type"))
+  shoulderLinks.allow_tags = True
+  shoulderLinks.short_description = "links to shoulders"
+  def proxyLinks (self, obj):
+    return "<br/>".join("<a href=\"%s\">%s (%s)</a>" % (
+      django.core.urlresolvers.reverse("admin:ezidapp_storeuser_change",
+      args=[u.id]), u.username, django.utils.html.escape(u.displayName))\
+      for u in obj.proxies.all().order_by("username"))
+  proxyLinks.allow_tags = True
+  proxyLinks.short_description = "links to proxies"
+  def reverseProxyLinks (self, obj):
+    return "<br/>".join("<a href=\"%s\">%s (%s)</a>" % (
+      django.core.urlresolvers.reverse("admin:ezidapp_storeuser_change",
+      args=[u.id]), u.username, django.utils.html.escape(u.displayName))\
+      for u in obj.proxy_for.all().order_by("username"))
+  reverseProxyLinks.allow_tags = True
+  reverseProxyLinks.short_description = "users this user is a proxy for"
+  search_fields = ["username", "displayName", "primaryContactName",
+    "secondaryContactName", "notes"]
+  actions = None
+  list_filter = [("realm__name", StoreUserRealmFilter),
+    "crossrefEnabled", StoreUserHasProxiesFilter, "loginEnabled",
+    StoreUserAdministratorFilter]
+  ordering = ["username"]
+  list_display = ["username", "displayName", "groupGroupname", "realm"]
+  _fieldsets = [
+    (None, { "fields": ["pid", "username", None, "realm",
+      "displayName", "accountEmail"] }),
+    ("Primary contact", { "fields": ["primaryContactName",
+      "primaryContactEmail", "primaryContactPhone"] }),
+    ("Secondary contact", { "fields": ["secondaryContactName",
+      "secondaryContactEmail", "secondaryContactPhone"] }),
+    (None, { "fields": ["inheritGroupShoulders", "shoulders", "shoulderLinks",
+      "crossrefEnabled", "crossrefEmail"] }),
+    ("Proxy users", { "fields": ["proxies", "proxyLinks",
+      "reverseProxyLinks"], "classes": ["collapse"] }),
+    ("Authentication", { "fields": ["loginEnabled", "password",
+      "isGroupAdministrator"] }),
+    ("Authentication - advanced", { "fields": ["isRealmAdministrator",
+      "isSuperuser"], "classes": ["collapse"] }),
+    (None, { "fields": ["notes"] })]
+  def get_fieldsets (self, request, obj=None):
+    fs = copy.deepcopy(self._fieldsets)
+    if obj != None:
+      fs[0][1]["fields"][2] = "groupLink"
+    else:
+      fs[0][1]["fields"][2] = "group"
+    return fs
+  readonly_fields = ["pid", "realm", "shoulderLinks", "proxyLinks",
+    "reverseProxyLinks", "groupGroupname"]
+  def get_readonly_fields (self, request, obj=None):
+    if obj:
+      return self.readonly_fields + ["group", "groupLink"]
+    else:
+      return self.readonly_fields
+  filter_vertical = ["proxies"]
+  form = StoreUserForm
+  def get_form (self, request, obj=None, **kwargs):
+    form = super(StoreUserAdmin, self).get_form(request, obj, **kwargs)
+    if obj != None:
+      form.base_fields["shoulders"].queryset =\
+        obj.group.shoulders.all().order_by("name", "type")
+    else:
+      form.base_fields["shoulders"].queryset = models.Shoulder.objects.none()
+    form.base_fields["shoulders"].widget =\
+      django.forms.CheckboxSelectMultiple()
+    form.base_fields["shoulders"].help_text = None
+    if obj != None:
+      form.base_fields["proxies"].queryset =\
+        form.base_fields["proxies"].queryset.exclude(pk=obj.pk)
+    form.base_fields["password"].widget = SetPasswordWidget()
+    return form
+  def save_model (self, request, obj, form, change):
+    if "password" in form.cleaned_data:
+      obj.setPassword(form.cleaned_data["password"])
+    clearCaches = False
+    if change:
+      obj.save()
+      models.SearchUser.objects.filter(pid=obj.pid).\
+        update(username=obj.username)
+      clearCaches = True
+    else:
+      su = models.SearchUser(pid=obj.pid, username=obj.username,
+        group=models.SearchGroup.objects.get(pid=obj.group.pid),
+        realm=models.SearchRealm.objects.get(name=obj.realm.name))
+      su.full_clean()
+      obj.save()
+      su.save()
+    # See discussion in StoreGroupAdmin above.
+    if clearCaches:
+      django.db.connection.on_commit(models.store_user.clearCaches)
+      django.db.connection.on_commit(models.search_identifier.clearUserCache)
+    django.db.connection.on_commit(
+      lambda: createOrUpdateUserPid(request, obj, change))
+  def delete_model (self, request, obj):
+    obj.delete()
+    models.SearchUser.objects.filter(pid=obj.pid).delete()
+    django.contrib.messages.warning(request,
+      "Now-defunct user PID %s not deleted; you may consider doing so." %\
+      obj.pid)
+    django.db.connection.on_commit(models.store_user.clearCaches)
+    django.db.connection.on_commit(models.search_identifier.clearUserCache)
+  class Media:
+    css = { "all": ["admin/css/base-user.css"] }
+
+superuser.register(models.StoreUser, StoreUserAdmin)

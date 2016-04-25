@@ -89,6 +89,10 @@ EZID is reloaded.
     demand, as they're referenced.  Emptied when EZID is reloaded and
     when groups are modified or deleted.
 
+  store_user.py
+    Caches user objects from the store database.  Analogous to the
+    above.
+
   search database
     The search database is not a cache, strictly speaking, but as a
     quasi-clone of the store database it engenders the same kinds of

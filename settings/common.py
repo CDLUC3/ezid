@@ -31,10 +31,7 @@ LANGUAGES = (
     ('fr-CA', _('Canadian French')),
 )
 
-MANAGERS = ADMINS = (
-  ("Greg Janee", "gjanee@ucop.edu"),
-  ("John Kunze", "john.kunze@ucop.edu")
-)
+MANAGERS = ADMINS = [("Greg Janee", "gjanee@ucop.edu")]
 
 if "HOSTNAME" in os.environ:
   SERVER_EMAIL = "ezid@" + os.environ["HOSTNAME"]
@@ -77,6 +74,11 @@ STATIC_URL = "/static/"
 
 # The secret key is loaded from the store database by config._load.
 SECRET_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+PASSWORD_HASHERS = [
+  "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+  "userauth.LdapSha1PasswordHasher"
+]
 
 MIDDLEWARE_CLASSES = (
   "django.contrib.sessions.middleware.SessionMiddleware",

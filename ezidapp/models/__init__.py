@@ -18,4 +18,5 @@ from shoulder import Shoulder
 from store_datacenter import StoreDatacenter
 from store_group import StoreGroup
 from store_realm import StoreRealm
+from store_user import StoreUser
 from user import User
