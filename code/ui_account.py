@@ -111,11 +111,6 @@ def login (request, ssl=False):
             "'django-admin ezidadminsetpassword' to correct"))
       if django.utils.http.is_safe_url(url=d["next"], host=request.get_host()):
         return redirect(d["next"])
-      # ToDo: Old code, is this needed anymore?
-      # if 'redirect_to' in request.POST:
-      #   return redirect(_filterBadRedirect(request.POST['redirect_to']))
-      # if 'redirect_to' in request.session and request.session['redirect_to']:
-      #   return redirect(_filterBadRedirect(request.session['redirect_to']))
       else:
         return redirect("ui_home.index")
     else:
