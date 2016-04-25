@@ -400,6 +400,15 @@ class AltIdForm(forms.Form):
   """ Form object for Alternate ID Element in DataCite Advanced (XML) profile """
   alternateIdentifier = forms.CharField(required=False, label=_("Identifier"))
   alternateIdentifierType = forms.CharField(required=False, label=_("Identifier Type"))
+  def clean(self):
+    cleaned_data = super(AltIdForm, self).clean()
+    a_c = cleaned_data.get("alternateIdentifier")
+    at_c = cleaned_data.get("alternateIdentifierType")
+    if a_c == '' and at_c != '':
+      raise ValidationError({'alternateIdentifier': _("Identifier is required if you fill in identifier type information.")})
+    if a_c != '' and at_c == '':
+      raise ValidationError({'alternateIdentifierType': _("Identifier Type is required if you fill in identifier information.")})
+    return cleaned_data
 
 class RelIdForm(forms.Form):
   """ Form object for Related ID Element in DataCite Advanced (XML) profile
