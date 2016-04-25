@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <div class="create__button">
-  <button class="button__primary">{% trans "Create" %}</button>
+  <button id="create__button" class="button__primary">{% trans "Create" %}</button>
 {% if calling_page == 'demo' %}
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 

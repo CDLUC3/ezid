@@ -168,11 +168,15 @@ def getAdvancedIdForm (profile, request=None):
   """ For advanced ID (but not datacite_xml). Returns two forms: One w/a 
       single remainder field and one with profile-specific fields """
   P = shoulder = isDoi = None
-  if request: 
-    assert request.method == 'POST'
-    P = request.POST
-    shoulder=P['shoulder']
-    isDoi = "True" if shoulder.startswith("doi:") else None
+  if request:
+    if request.method == 'POST':
+      P = request.POST
+      shoulder=P['shoulder']
+      isDoi=shoulder.startswith("doi:")
+    elif request.method == 'GET':
+      if 'shoulder' in request.GET:
+        shoulder=request.GET['shoulder']
+        isDoi=shoulder.startswith("doi:")
   remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
   if profile.name == 'erc': form = ErcForm(P, auto_id='%s')
   elif profile.name == 'datacite': form = DataciteForm(P, auto_id='%s')

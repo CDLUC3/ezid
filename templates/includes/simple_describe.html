@@ -7,9 +7,9 @@
 {{ form.non_field_errors }}
 {% for field in form %}
   {% if field|fieldtype == "TextInput" %}
-    {% include "includes/_inlinetext.html" with field=field form_name="create__" %}
+    {% include "includes/_inlinetext.html" with field=field form_name="create__" reqd=field.field.required %}
   {% elif field|fieldtype == "Select" %}
-    {% include "includes/_inlineselect.html" with field=field form_name="create__" %}
+    {% include "includes/_inlineselect.html" with field=field form_name="create__" reqd=field.field.required %}
   {% endif %}
 {% endfor %}
 </div>

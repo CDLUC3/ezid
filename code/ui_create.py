@@ -158,7 +158,7 @@ def adv_form(request, d):
     if d['current_profile_name'] == 'datacite_xml':
       d['form'] = form_objects.getIdForm_datacite_xml()
     else:
-      d['form'] = form_objects.getAdvancedIdForm(d['current_profile']) 
+      d['form'] = form_objects.getAdvancedIdForm(d['current_profile'], request) 
     d['id_gen_result'] = 'edit_page' 
   else:     # request.method == "POST"
     P = REQUEST
@@ -166,7 +166,6 @@ def adv_form(request, d):
     if not _verifyProperShoulder(request, P, pre_list): 
       d['id_gen_result'] = 'edit_page'
       return d
-    # if P["publish"] == "False":
     if d['current_profile_name'] == 'datacite_xml':
       d = validate_adv_form_datacite_xml(request, d)
       if 'id_gen_result' in d: return d

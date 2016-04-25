@@ -40,19 +40,3 @@
     {% help_icon "decide_export" %}
   </div>
 </div>
-
-<script type="application/javascript">
-  function setHidden(){
-    if ($('#publish_true').is(':checked')) {
-	// public
-      $("#harv_index").show();
-    }else{
-	// reserved
-      $("#harv_index").hide();
-    }
-  }
-  $("[name='publish']").bind("change", function(){
-    setHidden();
-  });
-  setHidden();
-</script>
