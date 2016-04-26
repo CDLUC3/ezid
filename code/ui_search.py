@@ -190,15 +190,18 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         if ir:
           result["c_id_issue"] += ";".join(ir)
       elif s_type == 'crossref':
-        result = {
-          "c_identifier": id.identifier,
-          "c_crossref_date": id.createTime,
-          "c_crossref_descr": id.get_crossrefStatus_display(),
-        }
-        if id.isCrossrefGood and id.crossrefStatus in [id.CR_WORKING, id.CR_RESERVED]:
-          result["c_crossref_msg"] = _("No action necessary")
+        if id.isCrossrefGood and id.crossrefStatus not in [id.CR_WORKING, id.CR_RESERVED]:
+          continue 
         else:
-          result["c_crossref_msg"] = id.crossrefMessage 
+          result = {
+            "c_identifier": id.identifier,
+            "c_crossref_date": id.createTime,
+            "c_crossref_descr": id.get_crossrefStatus_display(),
+          }
+          if id.isCrossrefGood and id.crossrefStatus in [id.CR_WORKING, id.CR_RESERVED]:
+            result["c_crossref_msg"] = _("No action necessary")
+          else:
+            result["c_crossref_msg"] = id.crossrefMessage 
       d['results'].append(result)
     # end of result iteration loop 
     if s_type == "public":
