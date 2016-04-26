@@ -3,6 +3,15 @@
 $(document).ready(function() {
   var orig_val = $('input[name=shoulder]:checked', '#create_form').val();
 	
+  function do_get(){
+      var frm = $('#create_form');
+      frm.attr('action', location.pathname + '?publish=' + $("[name='publish']").val());
+      frm.unbind('submit');
+      frm.attr('method', 'get');
+      frm.submit();
+  }
+
+  // submit form when shoulder changes 
   $("input[name=shoulder]").change(function(e) {
       var new_scheme = e.target.value.split(':')[0];
       if(orig_val.split(':')[0] != new_scheme){
@@ -12,11 +21,7 @@ $(document).ready(function() {
           }else{
               $('#current_profile').val('erc');
           }
-          var frm = $('#create_form');
-          frm.attr('action', location.pathname);
-          frm.unbind('submit');
-          frm.attr('method', 'get');
-          frm.submit();
+          do_get();
       }
       orig_val = e.target.value;
   });
@@ -37,15 +42,12 @@ $(document).ready(function() {
   });
   setHarvestingHidden();
 
-  // submit form when profile changed
+  // submit form when profile changes
   $("#current_profile").bind("change", function(event){
-      var frm = $('#create_form');
-      frm.attr('action', location.pathname);
-      frm.unbind('submit');
-      frm.attr('method', 'get');
-      frm.submit();
+      do_get();
   });
 
+  // When user submits: 
   // If ID is submitted as reserved (publish=="False")
   // populate any empty required form fields with '(:tba)'
   $('#create__button').click(function() {

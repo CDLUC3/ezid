@@ -7,14 +7,14 @@
     <span id="create__fieldset5" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Make this identifier" %}</span>
     <label for="publish_true" class="fcontrol__radio-label-inline">
       <input id="publish_true" class="fcontrol__radio-button-stacked" type="radio" value="True" name="publish" 
-      {% if request.POST.publish != 'False' %}
+      {% if request.POST.publish != 'False' or request.GET.publish != 'False' %}
         checked="checked"
       {% endif %} 
       ><span>{% trans "Public" %}</span>
     </label>
     <label for="publish_false" class="fcontrol__radio-label-inline">
       <input id="publish_false" class="fcontrol__radio-button-stacked" type="radio" value="False" name="publish"
-      {% if request.POST.publish == 'False' %}
+      {% if request.POST.publish == 'False' or request.GET.publish == 'False' %}
         checked="checked"
       {% endif %} 
       ><span>{% trans "Reserved" %}</span>
