@@ -90,6 +90,8 @@ def doc (request):
   else:
     return uic.error(request, 404)
 
+tombstone_text = _("The URL for this identifier cannot be resolved")
+
 def tombstone (request):
   """
   Renders a tombstone (i.e., unavailable identifier) page.
@@ -112,9 +114,9 @@ def tombstone (request):
     return uic.redirect("/id/%s" % urllib.quote(id, ":/"))
   if "|" in m["_status"]:
     # Translators: Output for tombstone page (unavailable IDs)
-    reason = _("Not available") + ": " + m["_status"].split("|", 1)[1].strip()
+    reason = tombstone_text + ". " + _("Reason:") + " " + m["_status"].split("|", 1)[1].strip()
   else:
-    reason = _("Not available")
+    reason = tombstone_text
   htmlMode = False
   if m["_profile"] == "datacite" and "datacite" in m:
     md = datacite.dcmsRecordToHtml(m["datacite"])

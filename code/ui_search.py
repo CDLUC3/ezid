@@ -195,10 +195,10 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
           "c_crossref_date": id.createTime,
           "c_crossref_descr": id.get_crossrefStatus_display(),
         }
-        if id.isCrossrefGood and id.get_crossrefStatus_display() in [id.CR_WORKING, id.CR_RESERVED]:
+        if id.isCrossrefGood and id.crossrefStatus in [id.CR_WORKING, id.CR_RESERVED]:
           result["c_crossref_msg"] = _("No action necessary")
         else:
-          result["c_crossref_msg"] = id.get_crossrefMessage_display() 
+          result["c_crossref_msg"] = id.crossrefMessage 
       d['results'].append(result)
     # end of result iteration loop 
     if s_type == "public":

@@ -38,6 +38,8 @@ def dashboard(request, ssl=False):
 
   # Search:    Crossref Submission Status 
   d = ui_search.search(d, request, NO_CONSTRAINTS, "crossref")
+  d['order_by'] = 'c_crossref_date'
+  d['sort'] = 'asc'
   d['results_crossref'] = d['results']
   d['total_pages_crossref'] = d['total_pages']
   d['field_display_types_crossref'] = d['field_display_types']
