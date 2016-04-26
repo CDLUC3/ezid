@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
 {% load i18n %}
-{% block title %}{% trans "Create a Simple Identifier" %}{% endblock %}
+{% block title %}{% block title-twitter %}{% trans "Create a Simple Identifier" %}{% endblock %}{% endblock %}
 
 {% block heading %}{% content_heading _("Create a Simple Identifier") %}{% endblock %}
 {% block content %}

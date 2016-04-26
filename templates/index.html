@@ -3,7 +3,7 @@
 {% load layout_extras %}
 {% load i18n %}
 
-{% block title %}EZID Home{% endblock %}
+{% block title %}{% block title-twitter %}EZID {% trans "Home" %}{% endblock %}{% endblock %}
 {% block description %}{%trans "EZID service creates long-term identifiers and is a key component for keeping data and digital objects safe while fulfilling grant requirements for data management plans." %}{% endblock %}
 {% block javascript %}
   var imageURLs = [
@@ -19,7 +19,7 @@
   }
 {% endblock %}
 {% block content %}
-    <h1 style="display: none;">EZID: Identifiers made easy</h1>
+    <h1 style="display: none;">EZID: {% trans "Identifiers made easy" %}</h1>
     <!-- Home Banner -->
     <div class="home-banner">
       <div class="home-banner__lead-container">

@@ -2,7 +2,7 @@
 {% load layout_extras %}
 {% load i18n %}
 
-{% block title %}Learn About EZID{% endblock %}A
+{% block title %}{% block title-twitter %}{% trans "Learn About EZID" %}{% endblock %}{% endblock %}
 {% block description %}{%trans "Learn more about EZID pricing, documentation and current users." %}{% endblock %}
 {% block javascript %}
 $(document).ready(function(){
@@ -13,7 +13,7 @@ $(document).ready(function(){
 });
 {% endblock %}
 
-{% block heading %}{% content_heading "Learn About EZID" %}{% endblock %}
+{% block heading %}{% content_heading _("Learn About EZID") %}{% endblock %}
 {% block content %}
 <div class="container accordion vertical-buffer-xs">
   <div class="accordion">

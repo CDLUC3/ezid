@@ -2,7 +2,7 @@
 {% load layout_extras %}
 {% load i18n %}
 
-{% block title %}{% trans "Login" %}{% endblock %}
+{% block title %}{% block title-twitter %}{% trans "Login" %}{% endblock %}{% endblock %}
 {% block heading %}{% content_heading _("Login") %}{% endblock %}
 {% block content %}
 <p><br/></p>

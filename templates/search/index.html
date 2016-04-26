@@ -3,7 +3,7 @@
 {% load manage_form_tags %}
 {% load i18n %}
 
-{% block title %}{%trans "Search across EZID identifiers" %}{% endblock %}
+{% block title %}{% block title-twitter %}{%trans "Search across EZID identifiers" %}{% endblock %}{% endblock %}
 {% block description %}{%trans "Search across all EZID identifiers by keyword, title, creator, publisher, or identifier string." %}{% endblock %}
 {% block heading %}{% content_heading _("Search across EZID identifiers") %}{% endblock %}
 {% block content %}

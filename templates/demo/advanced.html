@@ -2,7 +2,7 @@
 {% load layout_extras %}
 {% load i18n %}
 
-{% block title %}{% trans "Create Advanced Demo ID" %}{% endblock %}
+{% block title %}{% block title-twitter %}{% trans "Create Advanced Demo ID" %}{% endblock %}{% endblock %}
 {% block description %}{%trans "Use the EZID demo to create an advanced identifier." %}{% endblock %}
 {% block heading %}{% content_heading _("Create an Advanced Demo Identifier") %}{% endblock %}
 {% block content %}

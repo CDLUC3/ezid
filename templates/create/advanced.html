@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
 {% load i18n %}
-{% block title %}{% trans "Create an Advanced Identifier" %}{% endblock %}
+{% block title %}{% block title-twitter %}{% trans "Create an Advanced Identifier" %}{% endblock %}{% endblock %}
 {% block heading %}{% content_heading _("Create an Advanced Identifier") %}{% endblock %}
 {% block content %}
 <div class="tab create__tab">

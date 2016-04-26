@@ -50,7 +50,7 @@ f.write(
 {%% load layout_extras %%}
 {%% load i18n %%}
 {%% load menus %%}
-{%% block title %%}{%% trans "The EZID API, Version %s" %%}{%% endblock %%}
+{%% block title %%}{%% block title-twitter %%}{%% trans "The EZID API, Version %s" %%}{%% endblock %%}{%% endblock %%}
 {%% block heading %%}
 {%% content_heading _("The EZID API, Version %s") %%}
 {%% endblock %%}

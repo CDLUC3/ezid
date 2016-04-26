@@ -55,7 +55,8 @@ $(document).ready(function() {
           $('.create__form-element-group').find('input').each(function() {
               reqd_label = $(this).parents('.create__form-element-group').find('.fcontrol__label-required');
               if ((reqd_label.length > 0) && ($.trim( $(this).val() ) == '')) { 
-                  if (reqd_label.attr('for') == 'dc.date') {
+                  if ((reqd_label.attr('for') == 'dc.date') || 
+                    (reqd_label.attr('for') == 'publicationYear')) {
                       $(this).val('0000');
                   } else {
                       $(this).val('(:tba)');

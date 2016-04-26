@@ -2,7 +2,7 @@
 {% load layout_extras %}
 {% load i18n %}
 
-{% block title %}{%trans "My Account" %}{% endblock %}
+{% block title %}{% block title-twitter %}{% trans "My Account" %}{% endblock %}{% endblock %}
 {% block heading %}{% content_heading _("My Account") %}{% endblock %}
 {% block content %}
 

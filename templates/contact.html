@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
 {% load i18n %}
-{% block title %}{%trans "Contact Us" %}{% endblock %}
+{% block title %}{% block title-twitter %}{% trans "Contact Us" %}{% endblock %}{% endblock %}
 {% block description %}{%trans "Contact EZID for more information about our services or ask a specific question." %}{% endblock %}
 {% block heading %}{% content_heading _("Contact Us") %}{% endblock %}
 {% block content %}

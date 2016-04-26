@@ -4,6 +4,7 @@
 {% load i18n %}
 
 {% block title %}{{ heading_title }}{% endblock %}
+{% block title-twitter %}{% trans "Search Results" %}{% endblock %}
 {% block heading %}{% content_heading _("Search Results") %}{% endblock %}
 {% block content %}
 <form method="get" action="{% url "ui_search.index" %}" id="return-to-search" role="form">

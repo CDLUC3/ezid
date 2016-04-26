@@ -2,7 +2,7 @@
 {% load layout_extras %}
 {% load i18n %}
 {% load menus %}
-{% block title %}{% trans "The EZID API, Version 1" %}{% endblock %}
+{% block title %}{% block title-twitter %}{% trans "The EZID API, Version 1" %}{% endblock %}{% endblock %}
 {% block heading %}
 {% content_heading _("The EZID API, Version 1") %}
 {% endblock %}
