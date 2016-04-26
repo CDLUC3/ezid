@@ -38,6 +38,8 @@ def index(request):
     d['form'] = form_objects.ManageSearchIdForm(request.POST)
     noConstraintsReqd = False
   d = ui_search.search(d, request, noConstraintsReqd, "manage")
+  if not d['form'].has_changed():
+    d['filtered'] = False
   return uic.render(request, 'manage/index', d)
 
 def _getLatestMetadata(identifier, request):
