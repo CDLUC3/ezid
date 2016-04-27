@@ -809,37 +809,40 @@ class ManageSearchIdForm(BaseSearchIdForm):
 class ContactForm(forms.Form):
   """ Form object for Contact Us form """
   # Translators: These options will appear in drop-down on contact page
-  CONTACT_REASONS = (
-    ("None Entered", _("Choose One")),
-    ("I would like to inquire about getting a new account", _("I would like to inquire about getting a new account")),
-    ("I have a problem or question about existing account", _("I have a problem or question about existing account")),
-    ("Other", _("Other")),
-  )
-  contact_reason = forms.ChoiceField(required=False, choices=CONTACT_REASONS, 
-    label = _("Reason for contacting EZID"))
-  your_name = forms.CharField(max_length=200, label=_("Your Name"),
-    error_messages={'required': _("Please fill in your name")})
-  email = forms.EmailField(max_length=200, label=_("Your Email"),
-    error_messages={'required': _("Please fill in your email."),
+  def __init__(self, *args, **kwargs):
+    CONTACT_REASONS = (
+      ("None Entered", _("Choose One")),
+      ("I would like to inquire about getting a new account", _("I would like to inquire about getting a new account")),
+      ("I have a problem or question about existing account", _("I have a problem or question about existing account")),
+      ("Other", _("Other")),
+    )
+    # Translators: These options appear in drop-down on contact page
+    REFERRAL_SOURCES = (
+      ("", _("Choose One")),
+      ("website", _("Website")),
+      ("conference", _("Conference")),
+      ("colleagues", _("Colleagues")),
+      ("webinar", _("Webinar")),
+      ("other", _("Other")),
+    )
+    self.localized = kwargs.pop('localized',None)
+    super(ContactForm,self).__init__(*args,**kwargs)
+    self.fields["contact_reason"] = forms.ChoiceField(required=False, choices=CONTACT_REASONS, 
+      label = _("Reason for contacting EZID"))
+    self.fields["your_name"] = forms.CharField(max_length=200, label=_("Your Name"),
+      error_messages={'required': _("Please fill in your name")})
+    self.fields["email"] = forms.EmailField(max_length=200, label=_("Your Email"),
+      error_messages={'required': _("Please fill in your email."),
                     'invalid': _("Please fill in a valid email address.")})
-  affiliation = forms.CharField(required=False, label=_("Your Institution"), 
-    max_length=200)
-  comment = forms.CharField(label=_("Please indicate any question or comment you may have"), 
-    widget=forms.Textarea(attrs={'rows': '4'}),
-    error_messages={'required': _("Please fill in a question or comment.")})
-
-  # Translators: These options appear in drop-down on contact page
-  REFERRAL_SOURCES = (
-    ("", _("Choose One")),
-    ("website", _("Website")),
-    ("conference", _("Conference")),
-    ("colleagues", _("Colleagues")),
-    ("webinar", _("Webinar")),
-    ("other", _("Other")),
-  )
-  hear_about = forms.ChoiceField(required=False, choices=REFERRAL_SOURCES,
-    label=_("How did you hear about us?"))
-  newsletter = forms.BooleanField(required=False, label=_("Subscribe to the EZID newsletter"))
+    self.fields["affiliation"] = forms.CharField(required=False, label=_("Your Institution"), 
+      max_length=200)
+    self.fields["comment"] = forms.CharField(label=_("Please indicate any question or comment you may have"), 
+      widget=forms.Textarea(attrs={'rows': '4'}),
+      error_messages={'required': _("Please fill in a question or comment.")})
+    self.fields["hear_about"] = forms.ChoiceField(required=False, choices=REFERRAL_SOURCES,
+      label=_("How did you hear about us?"))
+    if self.localized == False:
+      self.fields["newsletter"] = forms.BooleanField(required=False, label=_("Subscribe to the EZID newsletter"))
 
 ################  Password Reset Landing Page ##########
 

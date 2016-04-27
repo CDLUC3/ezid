@@ -23,9 +23,14 @@ def ajax_hide_alert(request):
 
 def contact(request):
   d = { 'menu_item': 'ui_null.contact'}
+  localized = False 
+  host = request.META.get("HTTP_HOST", "default")
+  if host not in django.conf.settings.LOCALIZATIONS: host = "default"
+  if host != "default":
+    localized = True
   if request.method == "POST":
     P = request.POST
-    d['form'] = form_objects.ContactForm(P)
+    d['form'] = form_objects.ContactForm(P, localized=localized)
     if not 'url' in P or ('url' in P and P['url'] != ''):
       #url is hidden.  If it's filled in then probably a spam bot
       pass 
@@ -43,10 +48,11 @@ def contact(request):
       message += "Reason for contact: " + P['contact_reason'] + "\r\n\r\n" + \
         "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
         "Heard about from: " + P['hear_about'] + "\r\n\r\n"
-      if 'newsletter' in P and P['newsletter'] == 'on':
-        message += "YES, I'd like to subscribe to the EZID newsletter."
-      else:
-        message += "Newsletter option NOT checked." 
+      if 'newsletter' in P:
+        if P['newsletter'] == 'on':
+          message += "YES, I'd like to subscribe to the EZID newsletter."
+        else:
+          message += "Newsletter option NOT checked." 
       try:
         django.core.mail.send_mail(title, message, P['email'], emails)
 
@@ -59,7 +65,7 @@ def contact(request):
       django.contrib.messages.error(request, err)
       # fall through to re-render page; form already contains error info
   else:  # GET Request
-    d['form'] = form_objects.ContactForm() # Build an empty form
+    d['form'] = form_objects.ContactForm(None, localized=localized) # Build an empty form
   return uic.render(request, 'contact', d)
 
 def __emails(request):
