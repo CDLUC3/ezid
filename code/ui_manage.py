@@ -311,10 +311,10 @@ def download_error(request):
   """
   #. Translators: Copy HTML tags over and only translate words outside of these tags
   #. i.e.: <a class="don't_translate_class_names" href="don't_translate_urls">Translate this text</a>
-  content = [_("If you have recently requested a batch download of your identifiers, the file may not
+  content = [_("If you have recently requested a batch download of your identifiers, the file may not\
     be complete. Please close this window, then try the download link again in a few minutes."),
-    _("If you are trying to download a file of identifiers from a link that was generated over
-    seven days ago, the download link has expired. Go to <a class='link__primary' 
+    _("If you are trying to download a file of identifiers from a link that was generated over\
+    seven days ago, the download link has expired. Go to <a class='link__primary' \
     href='/manage'>Manage IDs</a> and click &quot;Download All&quot; to generate a new download link."),
     _("Please <a class='link__primary' href='/contact'>contact us</a> if you need assistance.")]
   return uic.error(request, 404, content)
