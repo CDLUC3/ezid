@@ -7,7 +7,6 @@ from decorators import basictag
 import datetime
 import urllib
 from django.core.urlresolvers import reverse
-import idmap
 import itertools
 
 register = template.Library()
@@ -82,7 +81,6 @@ FUNCTIONS_FOR_FORMATTING = { \
   'string'         : lambda x, coown, tp: string_value(x), \
   'identifier'     : lambda x, coown, tp: identifier_disp(x, tp), \
   'datetime'       : lambda x, coown, tp: escape(datetime.datetime.utcfromtimestamp(x).strftime(settings.TIME_FORMAT_UI_METADATA)) + " UTC", \
-  'owner_lookup'   : lambda x, coown, tp: id_lookup(x), \
   'coowners'       : lambda x, coown, tp: co_owner_disp(x, coown) }
 
 def formatted_field(record, field_name, field_display_types, account_co_owners, testPrefixes):
@@ -112,13 +110,6 @@ def co_owner_disp(x, coown):
     return escape(str_x) + "," + "<span class='account_co_owners'>" + escape(coown) + "</span>"
   else:
     return escape(str_x) + "<span class='small_co_owners'>" + escape(coown) + "</span>"
-
-def id_lookup(x):
-  try:
-    return escape(idmap.getAgent(x)[0])
-  except:
-    return 'unknown'
-  
 
 def percent_width(item_weight, total):
   return str(int(round(item_weight/total*1000))/10.0) + '%'
