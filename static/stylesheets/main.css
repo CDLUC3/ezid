@@ -2219,7 +2219,8 @@ h2.panel-title > a {
   height: 15px; }
 
 .ext-link {
-  margin-right: 24px; }
+  margin-right: 24px;
+  white-space: nowrap; }
 
 .ext-link:after {
   position: absolute;

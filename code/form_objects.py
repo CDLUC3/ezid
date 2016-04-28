@@ -146,6 +146,8 @@ def getIdForm (profile, placeholder, elements=None):
     form = ErcForm(elements, placeholder=placeholder, auto_id='%s')
   elif profile.name == 'datacite': 
     form = DataciteForm(elements, placeholder=placeholder, auto_id='%s')
+  elif profile.name == 'crossref': 
+    form = BaseForm(elements, placeholder=placeholder, auto_id='%s')
   elif profile.name == 'dc': 
     testForDoi=None    # dc.creator is only required when creating a DOI
     form = DcForm(elements, placeholder=placeholder, isDoi=testForDoi, auto_id='%s')
