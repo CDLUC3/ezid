@@ -70,19 +70,20 @@ def authenticate (username, password, request=None, coAuthenticate=True):
   else:
     return None
 
-def getUser (request):
+def getUser (request, returnAnonymous=False):
   """
-  Returns a StoreUser object for the authenticated user if the session
-  is authenticated, or None if not.
+  If the session is authenticated, returns a StoreUser object for the
+  authenticated user; otherwise, returns None.  If returnAnonymous is
+  True, AnonymousUser is returned instead of None.
   """
   if SESSION_KEY in request.session:
     user = ezidapp.models.getUserById(request.session[SESSION_KEY])
     if user != None and user.loginEnabled:
       return user
     else:
-      return None
+      return ezidapp.models.AnonymousUser if returnAnonymous else None
   else:
-    return None
+    return ezidapp.models.AnonymousUser if returnAnonymous else None
 
 def authenticateRequest (request, storeSessionCookie=False):
   """
