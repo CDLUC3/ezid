@@ -1,38 +1,26 @@
 import ui_common as uic
 import django.contrib.messages
-import os
-import ezidadmin
-import config
-import idmap
 import re
-import ezidapp.models.shoulder
+import ezidapp.models
 import useradmin
 import stats
 import datetime
-import anvl
-from django.utils.http import urlencode
-from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response, redirect
-from django import forms
 from collections import *
 
 
 @uic.admin_login_required
 def index(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.index'}
-  #return redirect("ui_admin.usage")
   return uic.render(request, 'admin-old/index', d)
 
 @uic.admin_login_required
 def usage(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.usage'}
   #make select list choices
-  users = ezidadmin.getUsers()
-  users.sort(key=lambda i: i['uid'].lower())
-  groups = ezidadmin.getGroups()
-  groups.sort(key=lambda i: i['gid'].lower())
-  user_choices = [("user_" + x['arkId'], x['uid']) for x in users]
-  group_choices = [("group_" + x['arkId'], x['gid']) for x in groups]
+  users = ezidapp.models.StoreUser.objects.all().order_by("username")
+  groups = ezidapp.models.StoreGroup.objects.all().order_by("groupname")
+  user_choices = [("user_" + x.pid, x.username) for x in users]
+  group_choices = [("group_" + x.pid, x.groupname) for x in groups]
   d['choices'] = [("all", "All EZID")] + [('',''), ('', '-- Groups --')] + \
       group_choices + [('',''), ('', '-- Users --')] + user_choices
       
@@ -58,205 +46,6 @@ def usage(request, ssl=False):
   d['yearly'] = _year_totals(user_id, group_id, last_calc)
   
   return uic.render(request, 'admin-old/usage', d)
-
-@uic.admin_login_required
-def add_user(request, ssl=False):
-  if request.method != "POST" or not 'nu_uid' in request.POST \
-      or not 'nu_group' in request.POST:
-    uic.badRequest()
-  P = request.POST
-  uid = P['nu_uid'].strip()
-  if uid == '':
-    django.contrib.messages.error(request, 'You must enter a username or choose one to add a new user')
-    return redirect("ui_admin.manage_users")
-
-  if P['nu_user_status'] == 'new_user':
-    try:
-      r = idmap.getUserId(uid)
-      if r != '':
-        django.contrib.messages.error(request, 'The new user you are trying to add already exists.')
-        return redirect("ui_admin.manage_users") 
-    except AssertionError:
-      pass
-    r = ezidadmin.makeLdapUser(uid)
-    if type(r) is str:
-      django.contrib.messages.error(request, r)
-      return redirect("ui_admin.manage_users")
-  r = ezidadmin.makeUser(uid, P["nu_group"], request.session["auth"].user, request.session["auth"].group)   
-  if type(r) is str:
-    django.contrib.messages.error(request, r)
-    return redirect("ui_admin.manage_users")
-  else:
-    django.contrib.messages.success(request, "User successfully created")
-    success_url = reverse("ui_admin.manage_users") + "?" + urlencode({'user': r[0]})
-    return redirect(success_url)
-
-@uic.admin_login_required
-def manage_users(request, ssl=False):
-  d = { 'menu_item' : 'ui_admin.manage_users' }
-  d['users'] = ezidadmin.getUsers()
-  d['users'].sort(key=lambda i: i['uid'].lower())
-  users_by_dn = dict(zip([ x['dn'] for x in d['users']], d['users']))
-  if request.method == "GET":
-    REQUEST = request.GET
-  else:
-    REQUEST = request.POST
-  if 'user' in REQUEST and REQUEST['user'] in users_by_dn:
-    d['selected_user'] = users_by_dn[REQUEST['user']]
-  else:
-    d['selected_user'] = d['users'][0]
-  if d['selected_user']['sn'] == 'please supply':
-    d['selected_user']['sn'] = ''
-  if d['selected_user']['mail'] == 'please supply':
-    d['selected_user']['mail'] = ''
-  
-  d['groups'] = ezidadmin.getGroups()
-  d['groups'].sort(key=lambda i: i['gid'].lower())
-  d['group'] = idmap.getGroupId(d['selected_user']['groupGid'])
-  d['group_dn'] = d['selected_user']['groupDn']
-  #now for saving
-  if request.method == "POST" and request.POST['user'] == request.POST['original_user']:
-    u, p = d['selected_user'], request.POST
-    d['group_dn'] = p['group_dn']
-    u['givenName'], u['sn'], u['mail'], u['telephoneNumber'], u['description'] = \
-      p['givenName'], p['sn'], p['mail'], p['telephoneNumber'], p['description']
-    u['ezidCoOwners'] = ','.join([x.strip() for x in p['ezidCoOwners'].strip().split("\n")])
-    if validate_edit_user(request, u):
-      d['selected_user']['currentlyEnabled'] = update_edit_user(request, u)
-      #if group has changed, update
-      if p['group_dn'] != u['groupDn']:
-        res = ezidadmin.changeGroup(u['uid'], p['group_dn'], \
-                request.session["auth"].user, request.session["auth"].group)
-        if type(res) == str:
-          django.contrib.messages.error(request, res)
-    else:
-      if 'currentlyEnabled' in request.POST and request.POST['currentlyEnabled'].lower() == 'true':
-        d['selected_user']['currentlyEnabled'] = 'true'
-      else:
-        d['selected_user']['currentlyEnabled'] = 'false'
-  d['ezidCoOwners'] = "\n".join([x.strip() for x in d['selected_user']['ezidCoOwners'].split(',')])
-  return uic.render(request, 'admin-old/manage_users', d)
-
-@uic.admin_login_required
-def add_group(request, ssl=False):
-  if request.method != "POST" or not 'grouphandle' in request.POST:
-    uic.badRequest()
-  P = request.POST
-  r = ezidadmin.makeLdapGroup(P["grouphandle"].strip())
-  if type(r) is str:
-    django.contrib.messages.error(request, r)
-    return redirect("ui_admin.manage_groups")
-  dn = r[0]
-  r = ezidadmin.makeGroup(dn, P["grouphandle"].strip(), False, "NONE",
-         request.session["auth"].user, request.session["auth"].group)
-  if type(r) is str:
-    django.contrib.messages.error(request, r)
-    return redirect("ui_admin.manage_groups")
-  else:
-    django.contrib.messages.success(request, "Group successfully created.")
-    success_url = reverse("ui_admin.manage_groups") + "?" + urlencode({'group': dn})
-    return redirect(success_url)
-
-@uic.admin_login_required
-def manage_groups(request, ssl=False):
-  d = { 'menu_item' : 'ui_admin.manage_groups' }
-  
-  # load group information
-  d['groups'] = ezidadmin.getGroups()
-  d['groups'].sort(key=lambda i: i['gid'].lower())
-  groups_by_dn = dict(zip([ x['dn'] for x in d['groups']], d['groups']))
-  
-  #get current group
-  if request.method == "GET":
-    REQUEST = request.GET
-  else:
-    REQUEST = request.POST
-  if len(d['groups']) > 0:
-    if 'group' in REQUEST:
-      if REQUEST['group'] in groups_by_dn:
-        d['group'] = groups_by_dn[REQUEST['group']]
-      else:
-        d['group'] = d['groups'][0]
-    else:
-      d['group'] = d['groups'][0]
-  
-  # the section for saving
-  if request.method == "POST" and request.POST['group'] == request.POST['original_group']:
-    validated = True
-    P = request.POST
-    if "group" not in P or "description" not in P:
-      validated = False
-      django.contrib.messages.error(request, "You must submit a description to save this group.")
-      #return uic.badRequest()
-    grp = d['group']
-    grp['description'] = P['description']
-    if 'agreementOnFile' in P and P['agreementOnFile'] == 'True':
-      grp['agreementOnFile'] = True
-    else:
-      grp['agreementOnFile'] = False
-    if 'crossrefEnabled' in P and P['crossrefEnabled'] == 'True':
-      grp['crossrefEnabled'] = True
-    else:
-      grp['crossrefEnabled'] = False
-    if 'crossrefSendMailOnError' in P and P['crossrefSendMailOnError'] == 'True':
-      grp['crossrefSendMailOnError'] = True
-    else:
-      grp['crossrefSendMailOnError'] = False
-    grp['crossrefMail'] = P['crossrefMail']
-    sels = P.getlist('shoulderList')
-    if '-' in sels:
-      sels.remove('-')
-    if len(sels) < 1:
-      validated = False
-      django.contrib.messages.error(request, "You must select at least one shoulder from the shoulder list (or choose NONE).")
-    if len(sels) > 1 and ('*' in sels or 'NONE' in sels):
-      validated = False
-      django.contrib.messages.error(request, "If you select * or NONE you may not select other items in the shoulder list.")
-    if grp['crossrefEnabled']:
-      for email in [x.strip() for x in grp['crossrefMail'].split(',')\
-        if len(x.strip()) > 0]:
-          if not _is_email_valid(email):
-            django.contrib.messages.error(request, email + " is not a valid email address. Please enter a valid email address.")
-            validated = False
-    if validated:
-      r = ezidadmin.updateGroup(grp["dn"], grp["description"].strip(),
-        grp["agreementOnFile"], " ".join(sels),
-        grp["crossrefEnabled"], grp['crossrefMail'], grp['crossrefSendMailOnError'],
-        request.session["auth"].user, request.session["auth"].group)
-      if type(r) is str:
-        django.contrib.messages.error(request, r)
-      else:
-        django.contrib.messages.success(request, "Successfully updated group")
-  else:
-    sels = d['group']['shoulderList'].split()
-  d['selected_shoulders'], d['deselected_shoulders'] = select_shoulder_lists(sels)
-  return uic.render(request, 'admin-old/manage_groups', d)
-
-def select_shoulder_lists(selected_val_list):
-  """Makes list of selected and deselected shoulders in format [value, friendly label]
-  and returns (selected_list, deselected_list)"""
-  #make lists of selected and deselected shoulders
-  sorted_shoulders = sorted([{\
-    "name": s.name+" "+s.type, "prefix": s.prefix,
-    "label": s.prefix }\
-    for s in ezidapp.models.shoulder.getAll() if not s.isTest],
-    key=lambda p: (p['name'] + ' ' + p['prefix']).lower())
-  selected_shoulders = []
-  deselected_shoulders = []
-  selected_labels = [x.strip() for x in selected_val_list]
-  for x in ['*', 'NONE']:
-    if x in selected_labels:
-      selected_shoulders.append([x, x])
-    else:
-      deselected_shoulders.append([x, x])
-  deselected_shoulders.insert(0, ['-', ''])
-  
-  for x in sorted_shoulders:
-    if x['label'] in selected_labels:
-      selected_shoulders.append([x['label'], x['name'] + " (" + x['prefix'] + ")"])
-    else:
-      deselected_shoulders.append([x['label'], x['name'] + " (" + x['prefix'] + ")"])
-  return (selected_shoulders, deselected_shoulders)
 
 def validate_edit_user(request, user_obj):
   """validates that the fields required to update a user are set, helper function"""

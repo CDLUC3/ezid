@@ -34,8 +34,6 @@ MENUS = (
           ),
           ("Admin", 'ui_admin.index', 'admin',
             ( ("Usage", 'ui_admin.usage', 'admin', ()),
-              ("Users", 'ui_admin.manage_users', 'admin', ()),
-              ("Groups", 'ui_admin.manage_groups', 'admin', ()),
               ("New admin site", "ui_admin.admin:index", "admin", ())
             )
           )
