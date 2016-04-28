@@ -2548,6 +2548,7 @@ h2.id-creation {
   margin: 15 0 20 40;
   padding: 0; }
   .api blockquote > * {
+    margin-left: 30px;
     color: black;
     font-size: 0.9em;
     font-style: normal;
@@ -2568,6 +2569,10 @@ h2.id-creation {
 .api tr td,
 .api th {
   padding: 5px; }
+
+.api th {
+  text-align: left;
+  background-color: #eeeeee; }
 
 @media (min-width: 768px) {
   .contact-promotional-base, #contact-gutter-left, .promotional {
