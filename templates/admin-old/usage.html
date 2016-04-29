@@ -34,43 +34,35 @@
     	.wm {float:right; text-align: right;width: 150px;}
     	.tot {float:right; text-align: right;width: 7em;}
     </style>
-    {% if report|length > 0 %}
+    {% if months|length > 0 %}
     	<h3>Totals</h3>
     	
     	<div class="summ">
-    		<div class="wm">{{totals.2}} have metadata</div>
-    		ARKs: <div class="tot">{{totals.1}}</div>
+    		<div class="wm">{{totals.ARK.hasMetadataPercentage}}% have metadata</div>
+    		ARKs: <div class="tot">{{totals.ARK.total}}</div>
     	</div>
     	<div class="summ">
-    		<div class="wm">{{totals.4}} have metadata</div>
-    		DOIs: <div class="tot">{{totals.3}}</div>
+    		<div class="wm">{{totals.DOI.hasMetadataPercentage}}% have metadata</div>
+    		DOIs: <div class="tot">{{totals.DOI.total}}</div>
     	</div>
     	<div class="summ">
-    		<div class="wm">{{totals.6}} have metadata</div>
-    		URNs: <div class="tot">{{totals.5}}</div>
-    	</div>
-    	<div class="summ">
-    		<div class="wm">{{totals.8}} have metadata</div>
-    		Totals: <div class="tot">{{totals.7}}</div>
+    		<div class="wm">{{totals.grand.hasMetadataPercentage}}% have metadata</div>
+    		Totals: <div class="tot">{{totals.grand.total}}</div>
     	</div>
     	<br/>
-    	<h3>{{yearly.text}}</h3>
+    	<h3>Totals from {{lastYearFrom}} through {{lastYearTo}}</h3>
     	
     	<div class="summ">
-    		<div class="wm">{{yearly.ARK_percent}} have metadata</div>
-    		ARKs: <div class="tot">{{yearly.ARK_total}}</div>
+    		<div class="wm">{{lastYear.ARK.hasMetadataPercentage}}% have metadata</div>
+    		ARKs: <div class="tot">{{lastYear.ARK.total}}</div>
     	</div>
     	<div class="summ">
-    		<div class="wm">{{yearly.DOI_percent}} have metadata</div>
-    		DOIs: <div class="tot">{{yearly.DOI_total}}</div>
+    		<div class="wm">{{lastYear.DOI.hasMetadataPercentage}}% have metadata</div>
+    		DOIs: <div class="tot">{{lastYear.DOI.total}}</div>
     	</div>
     	<div class="summ">
-    		<div class="wm">{{yearly.URN_percent}} have metadata</div>
-    		URNs: <div class="tot">{{yearly.URN_total}}</div>
-    	</div>
-    	<div class="summ">
-    		<div class="wm">{{yearly.tot_percent}} have metadata</div>
-    		Total: <div class="tot">{{yearly.totals}}</div>
+    		<div class="wm">{{lastYear.grand.hasMetadataPercentage}}% have metadata</div>
+    		Total: <div class="tot">{{lastYear.grand.total}}</div>
     	</div>
    		<br/>
    
@@ -80,24 +72,18 @@
 	    		<th>Month</th>
 	    		<th>ARKs</th>
 	    		<th>DOIs</th>
-	    		<th>URNs</th>
 	    	</tr>
 	    	
-	    	{% for row in report %}
+	    	{% for row in months %}
 	    		<tr>
-	    			<td class="a">{{row.0}}</td>
+	    			<td class="a">{{row.month}}</td>
 	    			<td class="b">
-	    				<div class="pct">({{row.2}})</div>
-	    				{{row.1}}
+	    				<div class="pct">({{row.ARK.hasMetadataPercentage}}%)</div>
+	    				{{row.ARK.total}}
 	    			</td>
 	    			<td class="c">
-	    				<div class="pct">({{row.4}})</div>
-	    				{{row.3}}
-	    			</td>
-	    			  
-	    			<td class="d">
-	    				<div class="pct">({{row.6}})</div>
-	    				{{row.5}}
+	    				<div class="pct">({{row.DOI.hasMetadataPercentage}}%)</div>
+	    				{{row.DOI.total}}
 	    			</td>
 	    		</tr>
 	    	{% endfor %}
