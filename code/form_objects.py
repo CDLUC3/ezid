@@ -754,12 +754,12 @@ class BaseSearchIdForm(forms.Form):
     if len(cleaned_data) < field_count:
       return cleaned_data
     form_empty = True
-    for field_value in cleaned_data.itervalues():
+    for k,v in cleaned_data.iteritems():
       # Check for None or '', so IntegerFields with 0 or similar things don't seem empty.
-      if not isinstance(field_value, bool):
-        if field_value is not None and field_value != '' and not field_value.isspace():
+      if not isinstance(v, bool):
+        cleaned_data[k] = cleaned_data[k].strip()
+        if v is not None and v != '' and not v.isspace():
           form_empty = False
-          break
     # In manage page case, just output all owners IDs - no need to throw validation error
     if form_empty and type(self).__name__ != 'ManageSearchIdForm':
       raise forms.ValidationError(_("Please enter information in at least one field."))

@@ -8,6 +8,7 @@ import useradmin
 import locale
 import util
 import operator
+import re
 locale.setlocale(locale.LC_ALL, '')
 
 # Search is executed from the following areas, and these names determine search parameters:
@@ -141,10 +142,14 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
     # Build dictionary of search constraints
     c = _buildAuthorityConstraints(request, s_type)
     if s_type in ('public', 'manage'):
+      q2 = {}
       q = d['queries'] if 'queries' in d and d['queries'] else REQUEST
+      for k,v in q.iteritems():
+        if isinstance(v, basestring): q2[k] = q[k].strip()
+        else: q2[k] = q[k]
       if d['filtered']:
-        c = _buildConstraints(c, q, s_type)
-        c = _buildTimeConstraints(c, q, s_type)
+        c = _buildConstraints(c, q2, s_type)
+        c = _buildTimeConstraints(c, q2, s_type)
     elif s_type == 'issues':
       c['hasIssues'] = True
     elif s_type == 'crossref':
@@ -373,6 +378,7 @@ def _buildQuerySyntax(c):
       value = "".join(v)
       r += value
     else:    # string-based query
+      value = value.strip()
       inQuote = False
       quoteOccurred = False
       r += "("
@@ -385,7 +391,7 @@ def _buildQuerySyntax(c):
       value = "".join(v)
       # Being simplistic about how to treat quoted queries
       if not quoteOccurred:
-        value = value.replace(" ", " OR ") 
+        value = re.sub(r'\s+', ' OR ', value)
       r += value + ")"
     dlength -= 1
     if dlength >= 1: r += " AND "
