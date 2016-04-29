@@ -50,7 +50,7 @@ only) to ask questions or report problems:</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#metadata-requirements-mapping">Metadata requirements &amp; mapping</a></li>
-<li><a class="reference internal" href="#crossref-registration">CrossRef registration</a></li>
+<li><a class="reference internal" href="#crossref-registration">Crossref registration</a></li>
 <li><a class="reference internal" href="#testing-the-api">Testing the API</a></li>
 <li><a class="reference internal" href="#server-status">Server status</a></li>
 <li><a class="reference internal" href="#python-example">Python example</a></li>
@@ -800,12 +800,12 @@ identifier).</td>
 <tr><td>✓</td>
 <td>_crossref</td>
 <td>If returned, indicates that the identifier
-is registered with CrossRef (or, in the case
+is registered with Crossref (or, in the case
 of a reserved identifier, will be
 registered), and also indicates the status
 of the registration process.  When setting,
 must be set to &quot;yes&quot; or &quot;no&quot;.  See
-<a class="reference internal" href="#crossref-registration">CrossRef registration</a> below for more
+<a class="reference internal" href="#crossref-registration">Crossref registration</a> below for more
 information.</td>
 <td>yes |
 successfully
@@ -1099,10 +1099,10 @@ Vocabulary:</p>
 </table>
 </blockquote>
 <p id="profile-crossref">4. <strong>Profile &quot;crossref&quot;</strong>.  This profile consists of a single element,
-&quot;crossref&quot;, whose value is CrossRef deposit metadata (an XML
+&quot;crossref&quot;, whose value is Crossref deposit metadata (an XML
 document).  Care should be taken to escape line terminators and
 percent signs in the document (as is true for all metadata element
-values; see <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above).  See <a class="reference internal" href="#crossref-registration">CrossRef
+values; see <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above).  See <a class="reference internal" href="#crossref-registration">Crossref
 registration</a> below for more information on usage of this profile and
 element.</p>
 </div>
@@ -1188,30 +1188,30 @@ who: (:unkn) anonymous donor
 </pre>
 </div>
 <div class="section" id="crossref-registration">
-<h1>CrossRef registration</h1>
-<p>A DOI identifier may be registered with <a class="reference external" href="http://www.crossref.org/">CrossRef</a> <span class="ext-icon"></span>
+<h1>Crossref registration</h1>
+<p>A DOI identifier may be registered with <a class="reference external" href="http://www.crossref.org/">Crossref</a> <span class="ext-icon"></span>
 in addition to being registered with <a class="reference external" href="http://www.datacite.org/">DataCite</a> <span class="ext-icon"></span>, thereby
-making it available to CrossRef's indexing and linking services.
+making it available to Crossref's indexing and linking services.
 <strong>Note:</strong> to take advantage of this, both the identifier shoulder and
-the user making the request must be enabled for CrossRef registration by
+the user making the request must be enabled for Crossref registration by
 an EZID administrator.  In addition, the user must have an account with
-CrossRef.</p>
-<p>Once registered, an identifier cannot be removed from CrossRef.  If
+Crossref.</p>
+<p>Once registered, an identifier cannot be removed from Crossref.  If
 the identifier's status is set to unavailable (recall <a class="reference internal" href="#identifier-status">Identifier
 status</a>, above), EZID will prepend &quot;WITHDRAWN&quot; to the title of the
 resource associated with the identifier, but the identifier remains in
-CrossRef's systems.</p>
-<p>Registering an identifier with CrossRef requires three steps:</p>
+Crossref's systems.</p>
+<p>Registering an identifier with Crossref requires three steps:</p>
 <ol class="arabic simple">
 <li>Set the &quot;_crossref&quot; reserved metadata element to &quot;yes&quot;.</li>
-<li>Supply CrossRef deposit metadata as the value of the &quot;crossref&quot;
+<li>Supply Crossref deposit metadata as the value of the &quot;crossref&quot;
 element.</li>
 <li>Set the &quot;_profile&quot; reserved metadata element to &quot;crossref&quot; to
 support DataCite metadata mapping and to be able to view the
 metadata in the EZID UI.</li>
 </ol>
 <p>These steps are discussed in more detail next.</p>
-<p>CrossRef registration is asynchronous.  Registration is requested by,
+<p>Crossref registration is asynchronous.  Registration is requested by,
 in a create, mint, or modify identifier request, setting the
 &quot;_crossref&quot; reserved metadata element to &quot;yes&quot;.  (Registration may be
 removed from reserved identifiers, and reserved identifiers only, by
@@ -1222,11 +1222,11 @@ in progress&quot; or &quot;yes | successfully registered&quot;.  The status of t
 registration is updated automatically by EZID and may be polled by the
 client.  If a warning or error occurred during registration, the
 status is followed by another pipe character and the message received
-from CrossRef, e.g., &quot;yes | registration failure | xml error...&quot;.
+from Crossref, e.g., &quot;yes | registration failure | xml error...&quot;.
 Warnings and errors may also be viewed in the EZID UI and may also be
 emailed to a specified mailbox.  Warnings and errors can be removed
 only by submitting new metadata and re-registering identifiers.</p>
-<p>CrossRef deposit metadata should adhere to the <a class="reference external" href="http://help.crossref.org/deposit_schema">CrossRef Deposit
+<p>Crossref deposit metadata should adhere to the <a class="reference external" href="http://help.crossref.org/deposit_schema">Crossref Deposit
 Schema</a> <span class="ext-icon"></span>, version 4.3.0 or later.  The metadata should
 consist of the immediate child element of a &lt;body&gt; element, i.e., one of
 the following elements:</p>
@@ -1242,7 +1242,7 @@ the following elements:</p>
 </ul>
 <p>(If an outer element such as &lt;doi_batch&gt; or &lt;body&gt; is nevertheless
 supplied, it will be stripped off.)</p>
-<p>Although the CrossRef deposit schema is quite flexible, and supports
+<p>Although the Crossref deposit schema is quite flexible, and supports
 batch operations, EZID requires that the deposit metadata specify a
 single DOI identifier, i.e., a single &lt;doi_data&gt; element.  This
 element should contain &lt;doi&gt; and &lt;resource&gt; subelements, which may be
@@ -1281,7 +1281,7 @@ document (as is true for all metadata element values; see <a class="reference in
 response bodies</a> above).</p>
 <p>If the identifier's preferred metadata profile is &quot;crossref&quot;, EZID
 automatically creates a DataCite Metadata Scheme record from the
-CrossRef deposit metadata to satisfy DOI metadata requirements (recall
+Crossref deposit metadata to satisfy DOI metadata requirements (recall
 <a class="reference internal" href="#metadata-requirements-mapping">Metadata requirements &amp; mapping</a> above).  Where conversion values
 are missing (e.g., a journal does not have a creator) EZID supplies
 the code &quot;(:unav)&quot;.  This automatic conversion can be overriden by
@@ -1290,7 +1290,7 @@ of the &quot;datacite&quot; element (see <a class="reference internal" href="#pr
 Additionally, individual DataCite elements (e.g., &quot;datacite.title&quot;)
 may be specified to override selected portions of the automatic
 conversion.</p>
-<p>Putting it all together, uploaded metadata in a CrossRef registration
+<p>Putting it all together, uploaded metadata in a Crossref registration
 request will resemble:</p>
 <pre class="literal-block">
 _crossref: yes
@@ -1309,10 +1309,10 @@ respects, including resolvability, except that EZID deletes them after
 2 weeks.</p>
 <p>Test DOI identifiers resolve through the universal DOI resolver
 (http://dx.doi.org/), but do not appear in any of DataCite's other
-systems.  Test DOI identifiers registered with CrossRef appear only in
-CrossRef's test server (http://test.crossref.org/), and are prefixed
+systems.  Test DOI identifiers registered with Crossref appear only in
+Crossref's test server (http://test.crossref.org/), and are prefixed
 there with 10.15697.  For example, test identifier doi:10.5072/FK2TEST
-will appear as doi:10.15697/10.5072/FK2TEST in CrossRef.</p>
+will appear as doi:10.15697/10.5072/FK2TEST in Crossref.</p>
 <p>All user accounts are permitted to create test identifiers.  EZID also
 provides an &quot;apitest&quot; account that is permitted to create only test
 identifiers.  <a class="reference external" href="http://www.cdlib.org/services/uc3/contact.html">Contact UC3</a> for the password for this account.</p>
@@ -2050,7 +2050,7 @@ format.  Note that upper time bounds are exclusive.</p>
 </li>
 <li><p class="first">crossref={yes|no}</p>
 <p>Return identifiers that either are or are not registered with
-CrossRef.</p>
+Crossref.</p>
 </li>
 <li><p class="first">exported={yes|no}</p>
 <p>Return identifiers that either are or are not exported.</p>
