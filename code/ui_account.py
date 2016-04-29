@@ -2,37 +2,35 @@ import ui_common as uic
 import userauth, useradmin
 import django.contrib.messages
 import django.core.urlresolvers
+import django.core.validators
 import django.utils.http
+import django.db
+import django.db.transaction
 import re
 import time
 from django.shortcuts import redirect
+import ezidapp.models
 
+@uic.user_login_required
 def edit(request, ssl=False):
   """Edit account information form"""
   d = { 'menu_item' : 'ui_null.null'}
-  if "auth" not in request.session: return uic.unauthorized()
-  d['username'] = request.session['auth'].user[0]
-  #used to do the following only for GET, but needed for post also to compare what has changed
-  r = useradmin.getAccountProfile(request.session["auth"].user[0])
-  if type(r) is str:
-    django.contrib.messages.error(request, r)
-    return redirect('ui_home.index')
-  r2 = useradmin.getContactInfo(request.session["auth"].user[0])
-  if type(r2) is str:
-    django.contrib.messages.error(request, r2)
-    return redirect("ui_home.index")
-  r.update(r2)
-  d.update(r)
-  if not 'ezidCoOwners' in d:
-    d['ezidCoOwners'] = ''
+  user = userauth.getUser(request)
+  d["username"] = user.username
+  d["givenName"] = user.primaryContactName
+  d["sn"] = ""
+  d["mail"] = user.primaryContactEmail
+  d["telephoneNumber"] = user.primaryContactPhone
+  d["ezidCoOwners"] =\
+    ", ".join(u.username for u in user.proxies.all().order_by("username"))
       
   if request.method == "POST":
     orig_vals = uic.extract(d, ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners'])
     form_vals = uic.extract(request.POST, \
                 ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners'])
     d.update(form_vals)
-    if validate_edit_user(request):
-      update_edit_user(request, orig_vals != form_vals)
+    if validate_edit_user(request, user):
+      update_edit_user(request, user, orig_vals != form_vals)
   return uic.render(request, "account/edit", d)
 
 def login (request, ssl=False):
@@ -86,7 +84,7 @@ def logout(request):
   django.contrib.messages.success(request, "You have been logged out.")
   return redirect("ui_home.index")
 
-def validate_edit_user(request):
+def validate_edit_user(request, user):
   """validates that the fields required to update a user are set, not a view for a page"""
   valid_form = True
   fields = ['givenName', 'sn', 'mail', 'telephoneNumber', 'ezidCoOwners', 'pwcurrent','pwnew', 'pwconfirm']
@@ -96,7 +94,7 @@ def validate_edit_user(request):
       django.contrib.messages.error(request, "Form submission error.")
       return False
   
-  required_fields = {'sn': 'Last name', 'mail': 'Email address'}
+  required_fields = {'givenName': 'First name', 'mail': 'Email address'}
   for field in required_fields:
     if request.POST[field].strip() == '':
       django.contrib.messages.error(request, required_fields[field] + " must be filled in.")
@@ -109,17 +107,14 @@ def validate_edit_user(request):
   if request.POST['ezidCoOwners'] != '':
     coowners = [co.strip() for co in request.POST['ezidCoOwners'].split(',')]
     for coowner in coowners:
-      #import pdb; pdb.set_trace()
-      try:
-        idmap.getUserId(coowner)
-      except AssertionError:
+      u = ezidapp.models.getUserByUsername(coowner)
+      if u == None or u == user or u.isAnonymous:
         django.contrib.messages.error(request, coowner + " is not a correct username for a co-owner.")
         valid_form = False
   
   if not request.POST['pwcurrent'].strip() == '':
-    user = userauth.authenticate(getattr(userauth.getUser(request),
-      "username", ""), request.POST["pwcurrent"])
-    if type(user) is str or not user:
+    u = userauth.authenticate(user.username, request.POST["pwcurrent"])
+    if type(u) is str or not u:
       django.contrib.messages.error(request, "Your current password is incorrect.")
       valid_form = False
     if request.POST['pwnew'] != request.POST['pwconfirm']:
@@ -130,29 +125,33 @@ def validate_edit_user(request):
       valid_form = False
   return valid_form
   
-def update_edit_user(request, basic_info_changed):
+def update_edit_user(request, user, basic_info_changed):
   """method to update the user editing his information.  Not a view for a page"""
-  uid = request.session['auth'].user[0]
-  di = {}
-  for item in ['givenName', 'sn', 'mail', 'telephoneNumber']:
-    di[item] = request.POST[item].strip()
-  r = useradmin.setContactInfo(uid, di)
-  if type(r) is str: django.contrib.messages.error(request, r)
-  if request.POST['ezidCoOwners'].strip() == '':
-    r = useradmin.setAccountProfile(uid, '')
+  d = request.POST
+  try:
+    with django.db.transaction.atomic():
+      user.primaryContactName = d["givenName"] + " " + d["sn"]
+      user.primaryContactEmail = d["mail"]
+      user.primaryContactPhone = d["telephoneNumber"]
+      user.proxies.clear()
+      for coowner in [co.strip() for co in d["ezidCoOwners"].split(",")]:
+        if coowner != "":
+          user.proxies.add(ezidapp.models.getUserByUsername(coowner))
+      if d["pwcurrent"].strip() != "": user.setPassword(d["pwnew"].strip())
+      user.full_clean(validate_unique=False)
+      user.save()
+      django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
+      django.db.connection.on_commit(
+        ezidapp.models.search_identifier.clearUserCache)
+  except django.core.validators.ValidationError, e:
+    django.contrib.messages.error(request, str(e))
   else:
-    r = useradmin.setAccountProfile(uid, request.POST['ezidCoOwners'].strip())
-  if type(r) is str:
-    django.contrib.messages.error(request, r)
-  else:
-    if basic_info_changed: django.contrib.messages.success(request, "Your information has been updated.")
-  
-  if request.POST['pwcurrent'].strip() != '':
-    r = useradmin.resetPassword(uid, request.POST["pwnew"].strip())
-    if type(r) is str:
-      django.contrib.messages.error(request, r)
-    else:
-      django.contrib.messages.success(request, "Your password has been updated.")
+    if basic_info_changed:
+      django.contrib.messages.success(request,
+        "Your information has been updated.")
+    if d["pwcurrent"].strip() != "":
+      django.contrib.messages.success(request,
+        "Your password has been updated.")
       
 def pwreset(request, pwrr, ssl=False):
   """
