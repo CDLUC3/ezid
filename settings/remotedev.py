@@ -1,4 +1,3 @@
-import ldap
 import os.path
 
 from common import *
@@ -7,8 +6,6 @@ DEPLOYMENT_LEVEL = "remotedev"
 
 STANDALONE = True
 USE_SSL = False
-
-ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
 
 STORE_MYSQL = False
 if STORE_MYSQL:
