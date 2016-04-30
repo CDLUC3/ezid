@@ -1435,16 +1435,16 @@ response will resemble the following:</p>
 listing one or more subsystem names, separated by commas, as the value
 of the &quot;subsystems&quot; query parameter.  For example:</p>
 <pre class="literal-block">
-⇒ GET /status?subsystems=noid,ldap HTTP/1.1
+⇒ GET /status?subsystems=noid,search HTTP/1.1
 ⇒ Host: ezid.cdlib.org
 
 ⇐ HTTP/1.1 200 OK
 ⇐ Content-Type: text/plain; charset=UTF-8
-⇐ Content-Length: 38
+⇐ Content-Length: 40
 ⇐
 ⇐ success: EZID is up
 ⇐ noid: up
-⇐ ldap: up
+⇐ search: up
 </pre>
 <p>Use the URL http://ezid.cdlib.org/status?subsystems=* to discover
 subsystem names and probe all subsystems.</p>

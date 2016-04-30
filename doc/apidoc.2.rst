@@ -1296,16 +1296,16 @@ of the "subsystems" query parameter.  For example:
 
 .. parsed-literal::
 
-  |rArr| GET /status?subsystems=noid,ldap HTTP/1.1
+  |rArr| GET /status?subsystems=noid,search HTTP/1.1
   |rArr| Host: ezid.cdlib.org
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 38
+  |lArr| Content-Length: 40
   |lArr|
   |lArr| success: EZID is up
   |lArr| noid: up
-  |lArr| ldap: up
+  |lArr| search: up
 
 Use the URL \http://ezid.cdlib.org/status?subsystems=* to discover
 subsystem names and probe all subsystems.
