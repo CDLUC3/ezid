@@ -14,6 +14,7 @@ import ezidapp.models
 import userauth
 import urlparse
 
+ezidUrl = None
 templates = None # { name: (template, path), ... }
 alertMessage = None
 testPrefixes = None
@@ -27,9 +28,10 @@ manual_profiles = {'datacite_xml': 'DataCite'}
 def _loadConfig():
   #these aren't really globals for the whole app, but globals for ui_common
   #outside of this module, use ui_common.varname
-  global templates, alertMessage, testPrefixes
+  global ezidUrl, templates, alertMessage, testPrefixes
   global google_analytics_id
   global reload_templates, newsfeed_url
+  ezidUrl = config.get("DEFAULT.ezid_base_url")
   templates = {}
   _load_templates([d for t in django.conf.settings.TEMPLATES\
     for d in t["DIRS"]])

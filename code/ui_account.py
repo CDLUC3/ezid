@@ -1,13 +1,17 @@
 import ui_common as uic
-import userauth, useradmin
+import userauth
+import django.conf
 import django.contrib.messages
+import django.core.mail
 import django.core.urlresolvers
 import django.core.validators
 import django.utils.http
 import django.db
 import django.db.transaction
+import hashlib
 import re
 import time
+import urllib
 from django.shortcuts import redirect
 import ezidapp.models
 
@@ -158,7 +162,7 @@ def pwreset(request, pwrr, ssl=False):
   Handles all GET and POST interactions related to password resets.
   """
   if pwrr:
-    r = useradmin.decodePasswordResetRequest(pwrr)
+    r = decodePasswordResetRequest(pwrr)
     if not r:
       django.contrib.messages.error(request, "Invalid password reset request.")
       return uic.redirect("/")
@@ -184,14 +188,19 @@ def pwreset(request, pwrr, ssl=False):
         django.contrib.messages.error(request, "Password required.")
         return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
           "username": username, 'menu_item' : 'ui_null.null' })
-      r = useradmin.resetPassword(username, password)
-      if type(r) is str:
-        django.contrib.messages.error(request, r)
+      user = ezidapp.models.getUserByUsername(username)
+      if user == None or user.isAnonymous:
+        django.contrib.messages.error(request, "No such user.")
         return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
-          "username": username,  'menu_item' : 'ui_null.null' })
-      else:
-        django.contrib.messages.success(request, "Password changed.")
-        return uic.redirect("/")
+          "username": username, 'menu_item' : 'ui_null.null' })
+      with django.db.transaction.atomic():
+        user.setPassword(password)
+        user.save()
+        django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
+        django.db.connection.on_commit(
+          ezidapp.models.search_identifier.clearUserCache)
+      django.contrib.messages.success(request, "Password changed.")
+      return uic.redirect("/")
     else:
       return uic.methodNotAllowed()
   else:
@@ -208,7 +217,7 @@ def pwreset(request, pwrr, ssl=False):
       if email == "":
         django.contrib.messages.error(request, "Email address required.")
         return uic.render(request, "account/pwreset1", { "username": username,  'menu_item' : 'ui_null.null' })
-      r = useradmin.sendPasswordResetEmail(username, email)
+      r = sendPasswordResetEmail(username, email)
       if type(r) is str:
         django.contrib.messages.error(request, r)
         return uic.render(request, "account/pwreset1", { "username": username,
@@ -218,3 +227,40 @@ def pwreset(request, pwrr, ssl=False):
         return uic.redirect("/")
     else:
       return uic.methodNotAllowed()
+
+def sendPasswordResetEmail (username, emailAddress):
+  """
+  Sends an email containing a password reset request link.  Returns
+  None on success or a string message on error.
+  """
+  user = ezidapp.models.getUserByUsername(username)
+  if user == None or user.isAnonymous: return "No such user."
+  if emailAddress not in [user.accountEmail, user.primaryContactEmail,
+    user.secondaryContactEmail]:
+    return "Email address does not match any address registered for username."
+  t = int(time.time())
+  hash = hashlib.sha1("%s|%d|%s" % (username, t,
+    django.conf.settings.SECRET_KEY)).hexdigest()[::4]
+  link = "%s/account/pwreset/%s,%d,%s" %\
+    (uic.ezidUrl, urllib.quote(username), t, hash)
+  message = "You have requested to reset your EZID password.\n" +\
+    "Click the link below to complete the process:\n\n" +\
+    link + "\n\n" +\
+    "Please do not reply to this email.\n"
+  django.core.mail.send_mail("EZID password reset request", message,
+    django.conf.settings.SERVER_EMAIL, [emailAddress])
+  return None
+
+def decodePasswordResetRequest (request):
+  """
+  Decodes a password reset request, returning a tuple (username,
+  timestamp) on success or None on error.
+  """
+  m = re.match("/([^ ,]+),(\d+),([\da-f]+)$", request)
+  if not m: return None
+  username = m.group(1)
+  t = m.group(2)
+  hash = m.group(3)
+  if hashlib.sha1("%s|%s|%s" % (username, t,
+    django.conf.settings.SECRET_KEY)).hexdigest()[::4] != hash: return None
+  return (username, int(t))
