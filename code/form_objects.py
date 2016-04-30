@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import BaseFormSet, formset_factory
 import django.core.validators
+import ezidapp.models
 import util
 import idmap
 import userauth 
@@ -657,15 +658,16 @@ def isValidDataciteXmlForm(form):
 
 ################# User Form Validation functions  #################
 
-def _validate_proxies(proxies):
-  p_list = [p.strip() for p in proxies.split(',')]
-  for proxy in p_list:
-    try:
-      # ToDo: Make sure this validates a proxy user and not a coowner like it's doing now.
-      idmap.getUserId(proxy)
-    except AssertionError:
-      raise ValidationError(proxy + " " + \
-        _("is not a correct username for a co-owner") + ".")
+def _validate_proxies(user):
+  def innerfn(proxies):
+    p_list = [p.strip() for p in proxies.split(',')]
+    for proxy in p_list:
+      # u = ezidapp.models.getUserByUsername(proxy)
+      # if u == None or u == user or u.isAnonymous:
+      try:
+        idmap.getUserId(proxy)
+      except AssertionError:
+        raise ValidationError(_("Cannot assign this username as proxy: \"") + proxy + "\".")
 
 def _validate_current_pw(username):
   def innerfn(pwcurrent):
@@ -697,16 +699,32 @@ class BasePasswordForm(forms.Form):
 class UserForm(BasePasswordForm):
   """ Form object for My Account Page (User editing) """
   def __init__(self, *args, **kwargs):
+    self.user = kwargs.pop('user',None)
     super(UserForm,self).__init__(*args,**kwargs)
-    self.fields["givenName"] = forms.CharField(required=False, label=_("First Name"))
-    self.fields["sn"] = forms.CharField(label=_("Last Name"),
-      error_messages={'required': _("Please fill in your last name")})
-    self.fields["telephoneNumber"] = forms.CharField(required=False, label=_("Phone"))
-    self.fields["mail"] = forms.EmailField(label=_("Email Address"),
+    self.fields["primaryContactName"] = forms.CharField(label=_("Primary Contact Name"),
+      error_messages={'required': _("Please fill in the full name for the primary contact.")})
+    self.fields["primaryContactMail"] = forms.EmailField(label=_("Primary Contact Email"),
       error_messages={'required': _("Please fill in your email."),
                       'invalid': _("Please fill in a valid email address.")})
+    self.fields["primaryContactPhone"] = forms.CharField(label=_("Primary Contact Phone"),
+      error_messages={'required': _("Please fill in the phone number for the primary contact.")})
+
+    self.fields["secondaryContactName"] = forms.CharField(required=False, 
+      label=_("Secondary Contact Name"))
+    self.fields["secondaryContactMail"] = forms.EmailField(required=False, 
+      label=_("Secondary Contact Email"),
+      error_messages={'invalid': _("Please fill in a valid email address.")})
+    self.fields["secondaryContactPhone"] = forms.CharField(required=False, 
+      label=_("Primary Contact Phone"))
+
+    self.fields["accountDisplayName"] = forms.CharField(label=_("Account Display Name"),
+      error_messages={'required': _("Please fill in the name as it should be displayed for the account.")})
+    self.fields["accountEmail"] = forms.EmailField(label=_("Account Email"),
+      error_messages={'required': _("Please fill in the email for the account.")})
+
+    # This is not a form field per se, but representing here anyway since it needs validation
     self.fields["proxy_users_picked"] = forms.CharField(required=False, label=_("Proxy User(s)"),
-      validators=[_validate_proxies])
+      validators=[_validate_proxies(self.user)])
     self.fields["pwcurrent"] = forms.CharField(required=False, label=_("Current Password"),
       widget=forms.PasswordInput(), validators=[_validate_current_pw(self.username)])
 

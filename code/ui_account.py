@@ -12,6 +12,10 @@ import time
 from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
 
+ACCOUNT_FIELDS_EDITABLE = ['primaryContactName', 'primaryContactMail', 'primaryContactPhone', 
+           'secondaryContactName', 'secondaryContactMail', 'secondaryContactPhone', 
+           'accountDisplayName', 'accountEmail']
+
 # Temporary, for testing
 proxy_users_mock = {'ucsd_signaling_gateway': 'Center for International Earth Science Information Network (CIESIN)', 
 'aasdata': 'ESIPCommon Federation of Earth Science Information Partners (ESIP) Commons', 
@@ -24,12 +28,16 @@ proxy_users_mock = {'ucsd_signaling_gateway': 'Center for International Earth Sc
 'biocaddie-api': 'Indiana University Sustainable Environment-Actionable Data (SEAD)'}
 proxy_users_mock_picked = "aasdata, acsess"
 
+@uic.user_login_required
 def edit(request, ssl=False):
   """Edit account information form"""
   d = { 'menu_item' : 'ui_account.edit'}
-  if "auth" not in request.session: return uic.unauthorized(request)
+
+  # new:
+  # user = userauth.getUser(request)
+  # d["username"] = user.username
   d['username'] = request.session['auth'].user[0]
-  #used to do the following only for GET, but needed for post also to compare what has changed
+
   r = useradmin.getAccountProfile(d['username'])
   if type(r) is str:
     django.contrib.messages.error(request, r)
@@ -41,17 +49,25 @@ def edit(request, ssl=False):
   r.update(r2)
   d.update(r)
   if request.method == "GET":
+    # d['proxy_for'] =\
+    #   ", ".join(u.username for u in user.proxy_for.all().order_by("username"))
+    d['proxy_for'] = "UCI, ******* PLACEHOLDER ******"
+    # d['proxy_users_picked'] =\
+    #   ", ".join(u.username for u in user.proxies.all().order_by("username"))
     d['proxy_users_picked'] = proxy_users_mock_picked
-    d['proxy_users'] = proxy_users_mock
-    d['form'] = form_objects.UserForm(d, username=d['username'], pw_reqd=False)
+    # d['proxy_users_choose'] = u.username for u in user.group.users.all().order_by("username")
+    d['proxy_users_choose'] = proxy_users_mock
+    # d['form'] = form_objects.UserForm(d, user=user, username=d['username'], pw_reqd=False)
+    d['form'] = form_objects.UserForm(d, user=None, username=d['username'], pw_reqd=False)
   else:
     # ToDo: Email new proxy users 
-    d['form'] = form_objects.UserForm(request.POST, initial=d, username=d['username'], pw_reqd=False)
+    # d['form'] = form_objects.UserForm(request.POST, initial=d, user=user, username=d['username'], pw_reqd=False)
+    d['form'] = form_objects.UserForm(request.POST, initial=d, user=None, username=d['username'], pw_reqd=False)
     basic_info_changed=False
     if d['form'].is_valid():
       if d['form'].has_changed():
-        basic_info_changed = any(ch in d['form'].changed_data for ch in \
-          ['givenName', 'sn', 'telephoneNumber', 'mail', 'proxy_users_picked'])
+        basic_info_changed = any(ch in d['form'].changed_data for ch in ACCOUNT_FIELDS_EDITABLE)
+      # _update_edit_user(request, user, basic_info_changed)
       _update_edit_user(request, basic_info_changed)
     else: # Form did not validate
       if '__all__' in d['form'].errors:
@@ -132,6 +148,7 @@ def logout(request):
   django.contrib.messages.success(request, _("You have been logged out."))
   return redirect("ui_home.index")
 
+# def _update_edit_user(request, user, basic_info_changed):
 def _update_edit_user(request, basic_info_changed):
   """
   Method to update the user editing his/her information.
@@ -139,7 +156,7 @@ def _update_edit_user(request, basic_info_changed):
   uid = request.session['auth'].user[0]
   di = {}
   P = request.POST
-  for item in ['givenName', 'sn', 'mail', 'telephoneNumber']:
+  for item in ACCOUNT_FIELDS_EDITABLE:
     di[item] = P[item].strip()
   r = useradmin.setContactInfo(uid, di)
   if type(r) is str: django.contrib.messages.error(request, r)

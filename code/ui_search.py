@@ -142,11 +142,10 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
     # Build dictionary of search constraints
     c = _buildAuthorityConstraints(request, s_type)
     if s_type in ('public', 'manage'):
-      q2 = {}
       q = d['queries'] if 'queries' in d and d['queries'] else REQUEST
+      q2 = {}
       for k,v in q.iteritems():
-        if isinstance(v, basestring): q2[k] = q[k].strip()
-        else: q2[k] = q[k]
+        q2[k] = q[k].strip() if isinstance(v, basestring) else q[k]
       if d['filtered']:
         c = _buildConstraints(c, q2, s_type)
         c = _buildTimeConstraints(c, q2, s_type)

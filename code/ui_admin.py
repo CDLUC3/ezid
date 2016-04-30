@@ -22,7 +22,8 @@ def dashboard(request, ssl=False):
   All subsequent searches are done via ajax (ajax_dashboard_table method below)
   """
   d = { 'menu_item' : 'ui_admin.dashboard'}
-  # ToDo: Add realm users here as well
+  # user = userauth.getUser(request)
+  # d['display_adminlink'] = user.username == 'admin' 
   d['display_adminlink'] = \
     request.session["auth"].user[0] in [config.get("ldap.admin_username")]
   # d = _getUsage(request, d)
@@ -68,6 +69,10 @@ def _getUsage(request, d):
   groups.sort(key=lambda i: i['gid'].lower())
   user_choices = [("user_" + x['arkId'], x['uid']) for x in users]
   group_choices = [("group_" + x['arkId'], x['gid']) for x in groups]
+  # users = ezidapp.models.StoreUser.objects.all().order_by("username")
+  # groups = ezidapp.models.StoreGroup.objects.all().order_by("groupname")
+  # user_choices = [("user_" + x.pid, x.username) for x in users]
+  # group_choices = [("group_" + x.pid, x.groupname) for x in groups]
   d['choices'] = [("all", "All EZID")] + [('',''), ('', '-- Groups --')] + \
       group_choices + [('',''), ('', '-- Users --')] + user_choices
       

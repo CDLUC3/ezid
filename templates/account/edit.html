@@ -17,21 +17,24 @@
     <div class="fcontrol__text-nofield">{{ username }}</div>
   </div>
  
-  {% include "includes/_inlinetext.html" with field=form.givenName form_name="general__" %}
-  {% include "includes/_inlinetext.html" with field=form.sn form_name="general__" %}
-  {% include "includes/_inlinetext.html" with field=form.mail form_name="general__" %}
-  {% include "includes/_inlinetext.html" with field=form.telephoneNumber form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.primaryContactName reqd=True form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.primaryContactMail reqd=True form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.primaryContactPhone reqd=True form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.secondaryContactName form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.secondaryContactMail form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.secondaryContactPhone form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.accountDisplayName reqd=True form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.accountEmail reqd=True form_name="general__" %}
  
   <div class="fcontrol__group-inline general__form-element-group">
     <label for="account_username" class="fcontrol__textarea-label-inline general__form-label">{% trans "Your Proxy Account(s)" %}</label>
     <div class="fcontrol__text-nofield">
-    UCI, ******* PLACEHOLDER ******
-    
+      {{ proxy_for }} 
       <div class="fcontrol__caption">{% trans "NOTE: These are identifier groups where you have been designated as proxy user." %}</div>
     </div>
   </div>
 
-{% if proxy_users %}
+{% if proxy_users_choose %}
   <div class="fcontrol__group-inline">
     <label for="{{ form.proxy_users_picked.id_for_label }}" class="fcontrol__textarea-label-inline general__form-label">{{ form.proxy_users_picked.label }}</label>
     <div class="fcontrol__text-nofield">
