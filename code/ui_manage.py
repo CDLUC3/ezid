@@ -7,7 +7,7 @@ import ezid
 import metadata
 import math
 import policy
-import useradmin
+import userauth
 import erc
 import datacite
 import urllib
@@ -60,12 +60,8 @@ def index(request):
   d['testPrefixes'] = uic.testPrefixes
   d['jquery_checked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) & set(FIELD_DEFAULTS))])
   d['jquery_unchecked'] = ','.join(['#' + x for x in list(set(FIELD_ORDER) - set(FIELD_DEFAULTS))])
-  d['user'] = request.session['auth'].user
-  r = useradmin.getAccountProfile(request.session["auth"].user[0])
-  if 'ezidCoOwners' in r:
-    d['account_co_owners'] = r['ezidCoOwners']
-  else:
-    d['account_co_owners'] = ''
+  user = userauth.getUser(request)
+  d['account_co_owners'] = ", ".join(u.username for u in user.proxies.all())
   d['field_order'] = FIELD_ORDER
   d['field_norewrite'] = FIELD_ORDER + ['includeCoowned']
   d['fields_mapped'] = FIELDS_MAPPED
@@ -95,10 +91,10 @@ def index(request):
   d['ps'] = 10
   if 'p' in REQUEST and REQUEST['p'].isdigit(): d['p'] = int(REQUEST['p'])
   if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
-  ownerFilter = django.db.models.Q(owner__username=d['user'][0])
+  ownerFilter = django.db.models.Q(owner__username=user.username)
   if d['includeCoowned']:
-    for co in policy.getReverseCoOwners(d['user'][0]):
-      ownerFilter |= django.db.models.Q(owner__username=co)
+    for u in user.proxy_for.all():
+      ownerFilter |= django.db.models.Q(owner__username=u.username)
   d['total_results'] = ezidapp.models.SearchIdentifier.objects.\
     filter(ownerFilter).count()
   d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
@@ -126,12 +122,8 @@ def index(request):
   return uic.render(request, 'manage/index', d)
 
 def _getLatestMetadata(identifier, request):
-  if "auth" in request.session:
-    r = ezid.getMetadata(identifier, request.session["auth"].user,
-      request.session["auth"].group)
-  else:
-    r = ezid.getMetadata(identifier)
-  return r
+  return ezid.getMetadata(identifier,
+    userauth.getUser(request, returnAnonymous=True))
 
 def _updateMetadata(request, d, stts, _id_metadata=None):
   """
@@ -158,8 +150,8 @@ def _updateMetadata(request, d, stts, _id_metadata=None):
       metadata_dict['erc.who'] = ''; metadata_dict['erc.what'] = '' 
       metadata_dict['erc.when'] = '' 
   to_write = uic.assembleUpdateDictionary(request, d['current_profile'], metadata_dict)
-  return ezid.setMetadata(d['id_text'], uic.user_or_anon_tup(request), 
-    uic.group_or_anon_tup(request), to_write)
+  return ezid.setMetadata(d['id_text'],
+    userauth.getUser(request, returnAnonymous=True), to_write)
 
 def _alertMessageUpdateError(request):
   django.contrib.messages.error(request, "There was an error updating the metadata for your identifier")
@@ -195,10 +187,11 @@ def edit(request, identifier):
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_manage.index")
-  if not uic.authorizeUpdate(request, r):
+  s, id_metadata = r 
+  if not policy.authorizeUpdate(userauth.getUser(request, returnAnonymous=True), identifier,
+    id_metadata["_owner"], id_metadata["_ownergroup"], localNames=True):
     django.contrib.messages.error(request, "You are not allowed to edit this identifier")
     return redirect("/id/" + urllib.quote(identifier, ":/"))
-  s, id_metadata = r 
   d['identifier'] = id_metadata 
   t_stat = [x.strip() for x in id_metadata['_status'].split("|", 1)]
   d['pub_status'] = t_stat[0]
@@ -287,9 +280,10 @@ def details(request):
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_manage.index")
-  d['allow_update'] = uic.authorizeUpdate(request, r)
   s, id_metadata = r
   assert s.startswith("success:")
+  d['allow_update'] = policy.authorizeUpdate(userauth.getUser(request, returnAnonymous=True),
+    identifier, id_metadata["_owner"], id_metadata["_ownergroup"], localNames=True)
   d['identifier'] = id_metadata 
   d['id_text'] = s.split()[1]
   d['internal_profile'] = metadata.getProfile('internal')
