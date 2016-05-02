@@ -13,8 +13,8 @@ import ezidapp.models
 class Command (django.core.management.base.BaseCommand):
   help = "Set the EZID administrator password"
   def handle (self, *args, **options):
-    u = config.get("ldap.admin_username")
-    p = config.get("ldap.admin_password")
+    u = config.get("auth.admin_username")
+    p = config.get("auth.admin_password")
     with django.db.transaction.atomic():
       if not django.contrib.auth.models.User.objects.filter(username=u)\
         .exists():

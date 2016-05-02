@@ -54,7 +54,7 @@ testDoiPrefix = util.doi2shadow(config.get("shoulders.doi_test")[4:])
 lifetime = 2*7*24*60*60 # seconds
 baseUrl = config.get("DEFAULT.ezid_base_url")
 if baseUrl.startswith("http:"): baseUrl = "https:" + baseUrl[5:]
-adminPassword = config.get("ldap.admin_password")
+adminPassword = config.get("auth.admin_password")
 
 usageText = """Usage:
 

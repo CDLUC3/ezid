@@ -343,7 +343,7 @@ class Identifier (django.db.models.Model):
       raise django.core.exceptions.ValidationError(
         { "identifier": "Agent PID is not an ARK." })
     if self.owner == None or\
-      self.owner.username != config.get("ldap.admin_username"):
+      self.owner.username != config.get("auth.admin_username"):
       raise django.core.exceptions.ValidationError(
         { "owner": "Agent PID is not owned by the EZID administrator." })
     if not self.isPublic:

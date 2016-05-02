@@ -268,7 +268,7 @@ def getById (id):
 def getAdminUser ():
   # Returns the EZID administrator user.
   import config
-  return getByUsername(config.get("ldap.admin_username"))
+  return getByUsername(config.get("auth.admin_username"))
 
 class AnonymousUser (object):
   # A class to represent an anonymous user.  Note that this class can
