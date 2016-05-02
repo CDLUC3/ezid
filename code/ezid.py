@@ -78,7 +78,7 @@
 #        |             | identifier.  (See _t1 below for
 #        |             | qualifications.)
 # _s     | _shadows    | Shadow ARKs only.  The shadowed identifier,
-#        |             | e.g., "doi:10.5060/foo".
+#        |             | e.g., "doi:10.5060/FOO".
 # _su    | _updated    | Shadow ARKs only.  The time the shadowed
 #        |             | identifier was last modified expressed as a
 #        |             | Unix timestamp, e.g., "1280889190".
@@ -147,9 +147,9 @@
 # are treated specially by EZID.  Such identifiers are identified by
 # the presence of an _ezid_role metadata element, which may have the
 # value "user" or "group".  Additional metadata elements cache
-# information stored primarily in LDAP.  Agent identifiers are owned
-# by the EZID administrator, and to protect user privacy, they may be
-# viewed by the EZID administrator only.
+# contact and other administrative information.  Agent identifiers are
+# owned by the EZID administrator, and to protect user privacy, they
+# may be viewed by the EZID administrator only.
 #
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
@@ -161,7 +161,6 @@
 # -----------------------------------------------------------------------------
 
 import django.core.validators
-import exceptions
 import re
 import threading
 import time
@@ -171,15 +170,13 @@ import uuid
 import config
 import crossref
 import datacite
-import ezidapp.models.shoulder
+import ezidapp.models
 import ezidapp.models.validation
-import idmap
 import log
 import noid_egg
 import noid_nog
 import policy
 import store
-import userauth
 import util
 
 _ezidUrl = None
@@ -187,27 +184,18 @@ _noidEnabled = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
 _defaultUrnUuidProfile = None
-_adminUsername = None
-_adminPassword = None
-_adminAuthenticatedUser = None
 _perUserThreadLimit = None
 _perUserThrottle = None
 
 def _loadConfig ():
   global _ezidUrl, _noidEnabled, _defaultDoiProfile, _defaultArkProfile
-  global _defaultUrnUuidProfile, _adminUsername, _adminPassword
-  global _adminAuthenticatedUser, _perUserThreadLimit, _perUserThrottle
+  global _defaultUrnUuidProfile
+  global _perUserThreadLimit, _perUserThrottle
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
   _noidEnabled = (config.get("binder.enabled").lower() == "true")
   _defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.get("DEFAULT.default_ark_profile")
   _defaultUrnUuidProfile = config.get("DEFAULT.default_urn_uuid_profile")
-  _adminUsername = config.get("ldap.admin_username")
-  if config.get("ldap.enabled").lower() == "true":
-    _adminPassword = config.get("ldap.admin_password")
-  else:
-    _adminPassword = config.get("user_%s.password" % _adminUsername)
-  _adminAuthenticatedUser = None
   _perUserThreadLimit = int(config.get("DEFAULT.max_threads_per_user"))
   _perUserThrottle =\
     int(config.get("DEFAULT.max_concurrent_operations_per_user"))
@@ -340,11 +328,10 @@ def _validateMetadata1 (identifier, user, metadata):
   internal server error, and hence can be performed outside a
   transaction.  'identifier' is the identifier in question, and should
   be qualified and normalized, e.g., "doi:10.5060/FOO".  'user' is the
-  requesting user and should be an authenticated (local name,
-  persistent identifier) tuple, e.g., ("dryad", "ark:/13030/foo").
+  requestor and should be an authenticated StoreUser object.
   """
   if any(map(lambda k: len(k) == 0, metadata)): return "empty element name"
-  if user[0] != _adminUsername and any(map(lambda k: k.startswith("_") and\
+  if not user.isSuperuser and any(map(lambda k: k.startswith("_") and\
     k not in _userSettableReservedElements, metadata)):
     return "use of reserved element name"
   if "_export" in metadata:
@@ -426,23 +413,17 @@ def _validateMetadata2 (owner, metadata):
   Similar to _validateMetadata1, but performs validations and
   normalizations that might raise an internal server error, and hence
   must be performed inside a transaction.  'owner' should be the
-  identifier's owner expressed as a (local name, persistent
-  identifier) tuple, e.g., ("dryad", "ark:/13030/foo").
+  identifier's owner as an ARK persistent identifier, e.g.,
+  "ark:/13030/foo".
   """
   if "_coowners" in metadata:
     coOwners = []
     for co in metadata["_coowners"].split(";"):
       co = co.strip()
-      if co in ["", "anonymous", _adminUsername]: continue
-      try:
-        id = idmap.getUserId(co)
-      except Exception, e:
-        if type(e) is exceptions.AssertionError and\
-          "unknown user" in str(e):
-          return "no such user in co-owner list"
-        else:
-          raise
-      if id != owner[1] and id not in coOwners: coOwners.append(id)
+      if co in ["", "anonymous"]: continue
+      co = ezidapp.models.getUserByUsername(co)
+      if co == None: return "no such user in co-owner list"
+      if co.pid != owner and co.pid not in coOwners: coOwners.append(co.pid)
     metadata["_co"] = " ; ".join(coOwners)
     del metadata["_coowners"]
   return None
@@ -497,12 +478,11 @@ def _getElements (identifier):
     else:
       return None
 
-def mintDoi (prefix, user, group, metadata={}):
+def mintDoi (prefix, user, metadata={}):
   """
   Mints a DOI identifier under the given scheme-less shoulder, e.g.,
-  "10.5060/".  'user' and 'group' should each be authenticated (local
-  name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  'metadata' should be a dictionary of element
+  "10.5060/".  'user' is the requestor and should be an authenticated
+  StoreUser object.  'metadata' should be a dictionary of element
   (name, value) pairs.  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, scheme-less form of
@@ -513,19 +493,20 @@ def mintDoi (prefix, user, group, metadata={}):
 
   Unsuccessful returns include the strings:
 
-    error: unauthorized
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
   """
   qprefix = "doi:" + prefix
-  s = ezidapp.models.shoulder.getExactMatch(qprefix)
+  s = ezidapp.models.getExactShoulderMatch(qprefix)
   if s is None: return "error: bad request - unrecognized DOI shoulder"
   tid = uuid.uuid1()
   try:
-    log.begin(tid, "mintDoi", prefix, user[0], user[1], group[0], group[1])
-    if not policy.authorizeCreate(user, group, qprefix):
-      log.unauthorized(tid)
-      return "error: unauthorized"
+    log.begin(tid, "mintDoi", prefix, user.username, user.pid,
+      user.group.groupname, user.group.pid)
+    if not policy.authorizeCreate(user, qprefix):
+      log.forbidden(tid)
+      return "error: forbidden"
     if s.minter == "":
       log.badRequest(tid)
       return "error: bad request - no minter for shoulder"
@@ -540,16 +521,15 @@ def mintDoi (prefix, user, group, metadata={}):
     return "error: internal server error"
   else:
     log.success(tid, doi)
-  return createDoi(doi, user, group, metadata)
+  return createDoi(doi, user, metadata)
 
-def createDoi (doi, user, group, metadata={}):
+def createDoi (doi, user, metadata={}):
   """
   Creates a DOI identifier having the given scheme-less name, e.g.,
-  "10.5060/FOO".  The identifier must not already exist.  'user' and
-  'group' should each be authenticated (local name, persistent
-  identifier) tuples, e.g., ("dryad", "ark:/13030/foo").  'metadata'
-  should be a dictionary of element (name, value) pairs.  If an
-  initial target URL is not supplied, the identifier is given a
+  "10.5060/FOO".  The identifier must not already exist.  'user' is
+  the requestor and should be an authenticated StoreUser object.
+  'metadata' should be a dictionary of element (name, value) pairs.
+  If an initial target URL is not supplied, the identifier is given a
   self-referential target URL.  The successful return is a string that
   includes the canonical, scheme-less form of the new identifier,
   followed by the new identifier's qualified shadow ARK, as in:
@@ -558,7 +538,7 @@ def createDoi (doi, user, group, metadata={}):
 
   Unsuccessful returns include the strings:
 
-    error: unauthorized
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
     error: concurrency limit exceeded
@@ -588,20 +568,25 @@ def createDoi (doi, user, group, metadata={}):
   r = _validateDatacite(qdoi, m, "_is" not in m)
   if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
-  if not _acquireIdentifierLock(shadowArk, user[0]):
+  if not _acquireIdentifierLock(shadowArk, user.username):
     return "error: concurrency limit exceeded"
   try:
-    log.begin(tid, "createDoi", doi, user[0], user[1], group[0], group[1],
+    log.begin(tid, "createDoi", doi, user.username, user.pid,
+      user.group.groupname, user.group.pid,
       *[a for p in metadata.items() for a in p])
-    r = _validateMetadata2(user, m)
+    r = _validateMetadata2(user.pid, m)
     if type(r) is str:
       log.badRequest(tid)
       return "error: bad request - " + r
-    if not policy.authorizeCreate(user, group, qdoi):
-      log.unauthorized(tid)
-      return "error: unauthorized"
+    if not policy.authorizeCreate(user, qdoi):
+      if ezidapp.models.getLongestShoulderMatch(qdoi) != None:
+        log.forbidden(tid)
+        return "error: forbidden"
+      else:
+        log.badRequest(tid)
+        return "error: bad request - no matching shoulder found"
     if "_cr" in m:
-      if not policy.authorizeCrossref(user, group, qdoi):
+      if not policy.authorizeCrossref(user, qdoi):
         # Technically it's an authorization error, but it makes more
         # sense to clients to receive a bad request.
         log.badRequest(tid)
@@ -615,10 +600,10 @@ def createDoi (doi, user, group, metadata={}):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
-    s = ezidapp.models.shoulder.getLongestMatch(qdoi)
+    s = ezidapp.models.getLongestShoulderMatch(qdoi)
     # Should never happen.
     assert s is not None, "shoulder not found"
-    _softUpdate(m, { "_o": user[1], "_g": group[1], "_c": t, "_u": t,
+    _softUpdate(m, { "_o": user.pid, "_g": user.group.pid, "_c": t, "_u": t,
       "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qdoi,
       "_d": s.datacenter.symbol })
     if m.get("_is", "public") == "reserved":
@@ -647,14 +632,13 @@ def createDoi (doi, user, group, metadata={}):
     log.success(tid)
     return "success: " + doi + " | ark:/" + shadowArk
   finally:
-    _releaseIdentifierLock(shadowArk, user[0])
+    _releaseIdentifierLock(shadowArk, user.username)
 
-def mintArk (prefix, user, group, metadata={}):
+def mintArk (prefix, user, metadata={}):
   """
   Mints an ARK identifier under the given scheme-less shoulder, e.g.,
-  "13030/fk4".  'user' and 'group' should each be authenticated (local
-  name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  'metadata' should be a dictionary of element
+  "13030/fk4".  'user' is the requestor and should be an authenticated
+  StoreUser object.  'metadata' should be a dictionary of element
   (name, value) pairs.  If an initial target URL is not supplied, the
   identifier is given a self-referential target URL.  The successful
   return is a string that includes the canonical, scheme-less form of
@@ -664,19 +648,20 @@ def mintArk (prefix, user, group, metadata={}):
 
   Unsuccessful returns include the strings:
 
-    error: unauthorized
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
   """
   qprefix = "ark:/" + prefix
-  s = ezidapp.models.shoulder.getExactMatch(qprefix)
+  s = ezidapp.models.getExactShoulderMatch(qprefix)
   if s is None: return "error: bad request - unrecognized ARK shoulder"
   tid = uuid.uuid1()
   try:
-    log.begin(tid, "mintArk", prefix, user[0], user[1], group[0], group[1])
-    if not policy.authorizeCreate(user, group, qprefix):
-      log.unauthorized(tid)
-      return "error: unauthorized"
+    log.begin(tid, "mintArk", prefix, user.username, user.pid,
+      user.group.groupname, user.group.pid)
+    if not policy.authorizeCreate(user, qprefix):
+      log.forbidden(tid)
+      return "error: forbidden"
     if s.minter == "":
       log.badRequest(tid)
       return "error: bad request - no minter for shoulder"
@@ -688,16 +673,15 @@ def mintArk (prefix, user, group, metadata={}):
     return "error: internal server error"
   else:
     log.success(tid, ark)
-  return createArk(ark, user, group, metadata)
+  return createArk(ark, user, metadata)
 
-def createArk (ark, user, group, metadata={}):
+def createArk (ark, user, metadata={}):
   """
   Creates an ARK identifier having the given scheme-less name, e.g.,
-  "13030/bar".  The identifier must not already exist.  'user' and
-  'group' should each be authenticated (local name, persistent
-  identifier) tuples, e.g., ("dryad", "ark:/13030/foo").  'metadata'
-  should be a dictionary of element (name, value) pairs.  If an
-  initial target URL is not supplied, the identifier is given a
+  "13030/bar".  The identifier must not already exist.  'user' is the
+  requestor and should be an authenticated StoreUser object.
+  'metadata' should be a dictionary of element (name, value) pairs.
+  If an initial target URL is not supplied, the identifier is given a
   self-referential target URL.  The successful return is a string that
   includes the canonical, scheme-less form of the new identifier, as
   in:
@@ -706,7 +690,7 @@ def createArk (ark, user, group, metadata={}):
 
   Unsuccessful returns include the strings:
 
-    error: unauthorized
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
     error: concurrency limit exceeded
@@ -727,23 +711,28 @@ def createArk (ark, user, group, metadata={}):
   r = _validateDatacite(qark, m, "_is" not in m)
   if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
-  if not _acquireIdentifierLock(ark, user[0]):
+  if not _acquireIdentifierLock(ark, user.username):
     return "error: concurrency limit exceeded"
   try:
-    log.begin(tid, "createArk", ark, user[0], user[1], group[0], group[1],
+    log.begin(tid, "createArk", ark, user.username, user.pid,
+      user.group.groupname, user.group.pid,
       *[a for p in metadata.items() for a in p])
-    r = _validateMetadata2(user, m)
+    r = _validateMetadata2(user.pid, m)
     if type(r) is str:
       log.badRequest(tid)
       return "error: bad request - " + r
-    if not policy.authorizeCreate(user, group, qark):
-      log.unauthorized(tid)
-      return "error: unauthorized"
+    if not policy.authorizeCreate(user, qark):
+      if ezidapp.models.getLongestShoulderMatch(qark) != None:
+        log.forbidden(tid)
+        return "error: forbidden"
+      else:
+        log.badRequest(tid)
+        return "error: bad request - no matching shoulder found"
     if _identifierExists(ark):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
-    _softUpdate(m, { "_o": user[1], "_g": group[1], "_c": t, "_u": t })
+    _softUpdate(m, { "_o": user.pid, "_g": user.group.pid, "_c": t, "_u": t })
     if m.get("_is", "public") == "reserved":
       m["_t1"] = m["_t"]
       m["_t"] = _defaultTarget(qark)
@@ -757,47 +746,45 @@ def createArk (ark, user, group, metadata={}):
     log.success(tid)
     return "success: " + ark
   finally:
-    _releaseIdentifierLock(ark, user[0])
+    _releaseIdentifierLock(ark, user.username)
 
-def mintUrnUuid (user, group, metadata={}):
+def mintUrnUuid (user, metadata={}):
   """
-  Mints a UUID URN.  'user' and 'group' should each be authenticated
-  (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  'metadata' should be a dictionary of element
-  (name, value) pairs.  If an initial target URL is not supplied, the
-  identifier is given a self-referential target URL.  The successful
-  return is a string that includes the canonical, scheme-less form of
-  the new identifier, followed by the new identifier's qualified
-  shadow ARK, as in:
+  Mints a UUID URN.  'user' is the requestor and should be an
+  authenticated StoreUser object.  'metadata' should be a dictionary
+  of element (name, value) pairs.  If an initial target URL is not
+  supplied, the identifier is given a self-referential target URL.
+  The successful return is a string that includes the canonical,
+  scheme-less form of the new identifier, followed by the new
+  identifier's qualified shadow ARK, as in:
 
     success: f81d4fae-7dec-11d0-a765-00a0c91e6bf6 | ark:/97720/f81...
 
   Unsuccessful returns include the strings:
 
-    error: unauthorized
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
   """
-  return createUrnUuid(uuid.uuid1().urn[9:], user, group, metadata)
+  return createUrnUuid(uuid.uuid1().urn[9:], user, metadata)
 
-def createUrnUuid (urn, user, group, metadata={}):
+def createUrnUuid (urn, user, metadata={}):
   """
   Creates a UUID URN identifier having the given scheme-less name,
   e.g., "f81d4fae-7dec-11d0-a765-00a0c91e6bf6".  The identifier must
-  not already exist.  'user' and 'group' should each be authenticated
-  (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  'metadata' should be a dictionary of element
-  (name, value) pairs.  If an initial target URL is not supplied, the
-  identifier is given a self-referential target URL.  The successful
-  return is a string that includes the canonical, scheme-less form of
-  the new identifier, followed by the new identifier's qualified
-  shadow ARK, as in:
+  not already exist.  'user' is the requestor and should be an
+  authenticated StoreUser object.  'metadata' should be a dictionary
+  of element (name, value) pairs.  If an initial target URL is not
+  supplied, the identifier is given a self-referential target URL.
+  The successful return is a string that includes the canonical,
+  scheme-less form of the new identifier, followed by the new
+  identifier's qualified shadow ARK, as in:
 
     success: f81d4fae-7dec-11d0-a765-00a0c91e6bf6 | ark:/97720/f81...
 
   Unsuccessful returns include the strings:
 
-    error: unauthorized
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
     error: concurrency limit exceeded
@@ -819,23 +806,24 @@ def createUrnUuid (urn, user, group, metadata={}):
   r = _validateDatacite(qurn, m, "_is" not in m)
   if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
-  if not _acquireIdentifierLock(shadowArk, user[0]):
+  if not _acquireIdentifierLock(shadowArk, user.username):
     return "error: concurrency limit exceeded"
   try:
-    log.begin(tid, "createUrnUuid", urn, user[0], user[1], group[0], group[1],
+    log.begin(tid, "createUrnUuid", urn, user.username, user.pid,
+      user.group.groupname, user.group.pid,
       *[a for p in metadata.items() for a in p])
-    r = _validateMetadata2(user, m)
+    r = _validateMetadata2(user.pid, m)
     if type(r) is str:
       log.badRequest(tid)
       return "error: bad request - " + r
-    if not policy.authorizeCreate(user, group, qurn):
-      log.unauthorized(tid)
-      return "error: unauthorized"
+    if not policy.authorizeCreate(user, qurn):
+      log.forbidden(tid)
+      return "error: forbidden"
     if _identifierExists(shadowArk):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
-    _softUpdate(m, { "_o": user[1], "_g": group[1], "_c": t, "_u": t,
+    _softUpdate(m, { "_o": user.pid, "_g": user.group.pid, "_c": t, "_u": t,
       "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qurn })
     if m.get("_is", "public") == "reserved":
       m["_t1"] = m["_t"]
@@ -855,18 +843,17 @@ def createUrnUuid (urn, user, group, metadata={}):
     log.success(tid)
     return "success: " + urn + " | ark:/" + shadowArk
   finally:
-    _releaseIdentifierLock(shadowArk, user[0])
+    _releaseIdentifierLock(shadowArk, user.username)
 
-def mintIdentifier (prefix, user, group, metadata={}):
+def mintIdentifier (prefix, user, metadata={}):
   """
   Mints an identifier under the given qualified shoulder, e.g.,
-  "doi:10.5060/".  'user' and 'group' should each be authenticated
-  (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  'metadata' should be a dictionary of element
-  (name, value) pairs.  If an initial target URL is not supplied, the
-  identifier is given a self-referential target URL.  The successful
-  return is a string that includes the canonical, qualified form of
-  the new identifier, as in:
+  "doi:10.5060/".  'user' is the requestor and should be an
+  authenticated StoreUser object.  'metadata' should be a dictionary
+  of element (name, value) pairs.  If an initial target URL is not
+  supplied, the identifier is given a self-referential target URL.
+  The successful return is a string that includes the canonical,
+  qualified form of the new identifier, as in:
 
     success: ark:/95060/fk35717n0h
 
@@ -877,24 +864,24 @@ def mintIdentifier (prefix, user, group, metadata={}):
 
   Unsuccessful returns include the strings:
 
-    error: unauthorized
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
   """
   if prefix.startswith("doi:"):
-    s = mintDoi(prefix[4:], user, group, metadata)
+    s = mintDoi(prefix[4:], user, metadata)
     if s.startswith("success: "):
       return "success: doi:" + s[9:]
     else:
       return s
   elif prefix.startswith("ark:/"):
-    s = mintArk(prefix[5:], user, group, metadata)
+    s = mintArk(prefix[5:], user, metadata)
     if s.startswith("success: "):
       return "success: ark:/" + s[9:]
     else:
       return s
   elif prefix == "urn:uuid:":
-    s = mintUrnUuid(user, group, metadata)
+    s = mintUrnUuid(user, metadata)
     if s.startswith("success: "):
       return "success: urn:uuid:" + s[9:]
     else:
@@ -902,16 +889,15 @@ def mintIdentifier (prefix, user, group, metadata={}):
   else:
     return "error: bad request - unrecognized identifier scheme"
 
-def createIdentifier (identifier, user, group, metadata={}):
+def createIdentifier (identifier, user, metadata={}):
   """
   Creates an identifier having the given qualified name, e.g.,
-  "doi:10.5060/foo".  'user' and 'group' should each be authenticated
-  (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  'metadata' should be a dictionary of element
-  (name, value) pairs.  If an initial target URL is not supplied, the
-  identifier is given a self-referential target URL.  The successful
-  return is a string that includes the canonical, qualified form of
-  the new identifier, as in:
+  "doi:10.5060/FOO".  'user' is the requestor and should be an
+  authenticated StoreUser object.  'metadata' should be a dictionary
+  of element (name, value) pairs.  If an initial target URL is not
+  supplied, the identifier is given a self-referential target URL.
+  The successful return is a string that includes the canonical,
+  qualified form of the new identifier, as in:
 
     success: ark:/95060/foo
 
@@ -922,24 +908,24 @@ def createIdentifier (identifier, user, group, metadata={}):
 
   Unsuccessful returns include the strings:
 
-    error: unauthorized
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
   """
   if identifier.startswith("doi:"):
-    s = createDoi(identifier[4:], user, group, metadata)
+    s = createDoi(identifier[4:], user, metadata)
     if s.startswith("success: "):
       return "success: doi:" + s[9:]
     else:
       return s
   elif identifier.startswith("ark:/"):
-    s = createArk(identifier[5:], user, group, metadata)
+    s = createArk(identifier[5:], user, metadata)
     if s.startswith("success: "):
       return "success: ark:/" + s[9:]
     else:
       return s
   elif identifier.startswith("urn:uuid:"):
-    s = createUrnUuid(identifier[9:], user, group, metadata)
+    s = createUrnUuid(identifier[9:], user, metadata)
     if s.startswith("success: "):
       return "success: urn:uuid:" + s[9:]
     else:
@@ -976,31 +962,30 @@ def convertMetadataDictionary (d, ark, shadowArkView=False):
     if k in _labelMapping:
       d[_labelMapping[k]] = d[k]
       del d[k]
-  d["_owner"] = idmap.getAgent(d["_owner"])[0]
-  d["_ownergroup"] = idmap.getAgent(d["_ownergroup"])[0]
+  d["_owner"] = ezidapp.models.getUserByPid(d["_owner"]).username
+  d["_ownergroup"] = ezidapp.models.getGroupByPid(d["_ownergroup"]).groupname
   if "_coowners" in d:
     # Semicolons are not valid characters in ARK identifiers.
-    d["_coowners"] = " ; ".join(idmap.getAgent(id.strip())[0]\
+    d["_coowners"] =\
+      " ; ".join(ezidapp.models.getUserByPid(id.strip()).username\
       for id in d["_coowners"].split(";") if len(id.strip()) > 0)
   if "_status" not in d: d["_status"] = "public"
   if "_export" not in d: d["_export"] = "yes"
 
-def getMetadata (identifier, user=None, group=None):
+def getMetadata (identifier, user=ezidapp.models.AnonymousUser):
   """
   Returns all metadata for a given qualified identifier, e.g.,
-  "doi:10.5060/foo".  If 'user' and 'group' are supplied, they should
-  each be authenticated (local name, persistent identifier) tuples,
-  e.g., ("dryad", "ark:/13030/foo"); if not supplied, the request is
-  treated as anonymous.  The successful return is a pair (status,
-  dictionary) where 'status' is a string that includes the canonical,
-  qualified form of the identifier, as in:
+  "doi:10.5060/FOO".  'user' is the requestor and should be an
+  authenticated StoreUser object.  The successful return is a pair
+  (status, dictionary) where 'status' is a string that includes the
+  canonical, qualified form of the identifier, as in:
 
     success: doi:10.5060/FOO
 
   and 'dictionary' contains element (name, value) pairs.  Unsuccessful
   returns include the strings:
 
-    error: unauthorized
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
     error: concurrency limit exceeded
@@ -1021,21 +1006,19 @@ def getMetadata (identifier, user=None, group=None):
     nqidentifier = "urn:uuid:" + urn
   else:
     return "error: bad request - unrecognized identifier scheme"
-  if user == None: user = ("anonymous", "anonymous")
-  if group == None: group = ("anonymous", "anonymous")
   tid = uuid.uuid1()
-  if not _acquireIdentifierLock(ark, user[0]):
+  if not _acquireIdentifierLock(ark, user.username):
     return "error: concurrency limit exceeded"
   try:
-    log.begin(tid, "getMetadata", nqidentifier, user[0], user[1], group[0],
-      group[1])
+    log.begin(tid, "getMetadata", nqidentifier, user.username, user.pid,
+      user.group.groupname, user.group.pid)
     d = _getElements(ark)
     if d is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
-    if not policy.authorizeView(user, group, nqidentifier, d):
-      log.unauthorized(tid)
-      return "error: unauthorized"
+    if not policy.authorizeView(user, nqidentifier, d):
+      log.forbidden(tid)
+      return "error: forbidden"
     # TRANSITION BEGIN
     if "_s" in d:
       d["_t"] = d["_st"]
@@ -1049,7 +1032,7 @@ def getMetadata (identifier, user=None, group=None):
     log.error(tid, e)
     return "error: internal server error"
   finally:
-    _releaseIdentifierLock(ark, user[0])
+    _releaseIdentifierLock(ark, user.username)
 
 def _fixupNonPublicTargets (d):
   if "_t" in d:
@@ -1059,15 +1042,14 @@ def _fixupNonPublicTargets (d):
     d["_st1"] = d["_st"]
     del d["_st"]
 
-def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
+def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
   """
   Sets metadata elements of a given qualified identifier, e.g.,
-  "doi:10.5060/foo".  'user' and 'group' should each be authenticated
-  (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  'metadata' should be a dictionary of element
-  (name, value) pairs.  If an element being set already exists, it is
-  overwritten, if not, it is created; existing elements not set are
-  left unchanged.  Of the reserved metadata elements, only
+  "doi:10.5060/FOO".  'user' is the requestor and should be an
+  authenticated StoreUser object.  'metadata' should be a dictionary
+  of element (name, value) pairs.  If an element being set already
+  exists, it is overwritten, if not, it is created; existing elements
+  not set are left unchanged.  Of the reserved metadata elements, only
   "_coowners", "_target", "_profile", "_status", and "_export" may be
   set (unless the user is the EZID administrator, in which case the
   other reserved metadata elements may be set using their stored
@@ -1079,7 +1061,7 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
 
   Unsuccessful returns include the strings:
 
-    error: unauthorized
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
     error: concurrency limit exceeded
@@ -1106,16 +1088,17 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
   r = _validateMetadata1(nqidentifier, user, d)
   if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
-  if not _acquireIdentifierLock(ark, user[0]):
+  if not _acquireIdentifierLock(ark, user.username):
     return "error: concurrency limit exceeded"
   try:
-    log.begin(tid, "setMetadata", nqidentifier, user[0], user[1], group[0],
-      group[1], *[a for p in metadata.items() for a in p])
+    log.begin(tid, "setMetadata", nqidentifier, user.username, user.pid,
+      user.group.groupname, user.group.pid,
+      *[a for p in metadata.items() for a in p])
     m = _getElements(ark)
     if m is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
-    r = _validateMetadata2((idmap.getAgent(m["_o"])[0], m["_o"]), d)
+    r = _validateMetadata2(m["_o"], d)
     if type(r) is str:
       log.badRequest(tid)
       return "error: bad request - " + r
@@ -1127,11 +1110,9 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
         if len(co.strip()) > 0]
     else:
       iCoOwners = []
-    if not policy.authorizeUpdate(user, group, nqidentifier,
-      (idmap.getAgent(iUser)[0], iUser), (idmap.getAgent(iGroup)[0], iGroup),
-      [(idmap.getAgent(co)[0], co) for co in iCoOwners], metadata.keys()):
-      log.unauthorized(tid)
-      return "error: unauthorized"
+    if not policy.authorizeUpdate(user, nqidentifier, iUser, iGroup):
+      log.forbidden(tid)
+      return "error: forbidden"
     # Deal with any status change first; subsequent processing will
     # then be performed according to the updated status.
     iStatus = m.get("_is", "public")
@@ -1171,17 +1152,6 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
       if iStatus != "public": _fixupNonPublicTargets(d)
     newStatus = d.get("_is", iStatus)
     if newStatus == "": newStatus = "public"
-    # If the user is not the owner of the identifier, add the user to
-    # the identifier's co-owner list.
-    if user[1] != iUser and user[0] != _adminUsername:
-      if "_co" in d:
-        l = [co.strip() for co in d["_co"].split(";") if len(co.strip()) > 0]
-        if user[1] not in l: l.append(user[1])
-        d["_co"] = " ; ".join(l)
-      else:
-        if user[1] not in iCoOwners:
-          iCoOwners.append(user[1])
-          d["_co"] = " ; ".join(iCoOwners)
     # Update time.
     if nqidentifier.startswith("ark:/"):
       _softUpdate(d, { "_u": str(int(time.time())) })
@@ -1205,7 +1175,7 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
         if "_cr" in m:
           if d["_cr"] == "yes": del d["_cr"]
         else:
-          if not policy.authorizeCrossref(user, group, nqidentifier):
+          if not policy.authorizeCrossref(user, nqidentifier):
             # Technically it's an authorization error, but it makes more
             # sense to clients to receive a bad request.
             log.badRequest(tid)
@@ -1224,7 +1194,7 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
     # elements in certain cases.  To preserve the administrator's
     # ability to set *any* metadata, we include the totally
     # undocumented ability below.
-    if user[0] == _adminUsername:
+    if user.isSuperuser:
       for k in d.keys():
         if k.startswith("_") and k.endswith("!"):
           d[k[:-1]] = d[k]
@@ -1296,22 +1266,21 @@ def setMetadata (identifier, user, group, metadata, updateUpdateQueue=True):
     log.success(tid)
     return "success: " + nqidentifier
   finally:
-    _releaseIdentifierLock(ark, user[0])
+    _releaseIdentifierLock(ark, user.username)
 
-def deleteIdentifier (identifier, user, group):
+def deleteIdentifier (identifier, user):
   """
   Deletes an identifier having the given qualified name, e.g.,
-  "doi:10.5060/foo".  'user' and 'group' should each be authenticated
-  (local name, persistent identifier) tuples, e.g., ("dryad",
-  "ark:/13030/foo").  The successful return is a string that includes
-  the canonical, qualified form of the now-nonexistent identifier, as
-  in:
+  "doi:10.5060/FOO".  'user' is the requestor and should be an
+  authenticated StoreUser object.  The successful return is a string
+  that includes the canonical, qualified form of the now-nonexistent
+  identifier, as in:
 
     success: doi:/10.5060/FOO
 
   Unsuccessful returns include the strings:
 
-    error: unauthorized
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
     error: concurrency limit exceeded
@@ -1333,30 +1302,22 @@ def deleteIdentifier (identifier, user, group):
   else:
     return "error: bad request - unrecognized identifier scheme"
   tid = uuid.uuid1()
-  if not _acquireIdentifierLock(ark, user[0]):
+  if not _acquireIdentifierLock(ark, user.username):
     return "error: concurrency limit exceeded"
   try:
-    log.begin(tid, "deleteIdentifier", nqidentifier, user[0], user[1],
-      group[0], group[1])
+    log.begin(tid, "deleteIdentifier", nqidentifier, user.username, user.pid,
+      user.group.groupname, user.group.pid)
     m = _getElements(ark)
     if m is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
     iUser = m["_o"]
     iGroup = m["_g"]
-    if "_co" in m:
-      # Semicolons are not valid characters in ARK identifiers.
-      iCoOwners = [co.strip() for co in m["_co"].split(";")\
-        if len(co.strip()) > 0]
-    else:
-      iCoOwners = []
-    if not policy.authorizeDelete(user, group, nqidentifier,
-      (idmap.getAgent(iUser)[0], iUser), (idmap.getAgent(iGroup)[0], iGroup),
-      [(idmap.getAgent(co)[0], co) for co in iCoOwners]):
-      log.unauthorized(tid)
-      return "error: unauthorized"
+    if not policy.authorizeDelete(user, nqidentifier, m["_o"], m["_g"]):
+      log.forbidden(tid)
+      return "error: forbidden"
     if m.get("_is", "public") != "reserved":
-      if user[0] != _adminUsername:
+      if not user.isSuperuser:
         log.badRequest(tid)
         return "error: bad request - identifier status does not support " +\
           "deletion"
@@ -1370,52 +1331,36 @@ def deleteIdentifier (identifier, user, group):
     log.success(tid)
     return "success: " + nqidentifier
   finally:
-    _releaseIdentifierLock(ark, user[0])
+    _releaseIdentifierLock(ark, user.username)
 
 def asAdmin (function, *args):
   """
   Calls 'function' defined in this module (e.g., ezid.setMetadata)
   with the given arguments, using EZID administrator credentials.  The
-  given arguments should omit the 'user' and 'group' arguments the
-  function nominally accepts.  If the administrator credentials can't
-  be obtained, the string "error: internal server error" is returned.
+  given arguments should omit the 'user' argument the function
+  nominally accepts.
   """
-  global _adminAuthenticatedUser
-  # We're careful below in getting and caching the administrator
-  # credentials.  There's still the possibility of a race condition
-  # with _loadConfig, though.
-  auth = _adminAuthenticatedUser
-  if auth == None:
-    try:
-      auth = userauth.authenticate(_adminUsername, _adminPassword)
-      assert type(auth) is userauth.AuthenticatedUser,\
-        "authentication failure: " + (auth if type(auth) is str else\
-        "credentials not accepted")
-    except Exception, e:
-      log.otherError("ezid.asAdmin", e)
-      return "error: internal server error"
-    _adminAuthenticatedUser = auth
   if function == mintDoi:
-    return mintDoi(args[0], auth.user, auth.group, *args[1:])
+    return mintDoi(args[0], ezidapp.models.getAdminUser(), *args[1:])
   elif function == createDoi:
-    return createDoi(args[0], auth.user, auth.group, *args[1:])
+    return createDoi(args[0], ezidapp.models.getAdminUser(), *args[1:])
   elif function == mintArk:
-    return mintArk(args[0], auth.user, auth.group, *args[1:])
+    return mintArk(args[0], ezidapp.models.getAdminUser(), *args[1:])
   elif function == createArk:
-    return createArk(args[0], auth.user, auth.group, *args[1:])
+    return createArk(args[0], ezidapp.models.getAdminUser(), *args[1:])
   elif function == mintUrnUuid:
-    return mintUrnUuid(auth.user, auth.group, *args)
+    return mintUrnUuid(ezidapp.models.getAdminUser(), *args)
   elif function == createUrnUuid:
-    return createUrnUuid(args[0], auth.user, auth.group, *args[1:])
+    return createUrnUuid(args[0], ezidapp.models.getAdminUser(), *args[1:])
   elif function == mintIdentifier:
-    return mintIdentifier(args[0], auth.user, auth.group, *args[1:])
+    return mintIdentifier(args[0], ezidapp.models.getAdminUser(), *args[1:])
   elif function == createIdentifier:
-    return createIdentifier(args[0], auth.user, auth.group, *args[1:])
+    return createIdentifier(args[0], ezidapp.models.getAdminUser(), *args[1:])
   elif function == getMetadata:
-    return getMetadata(args[0], auth.user, auth.group)
+    return getMetadata(args[0], ezidapp.models.getAdminUser())
   elif function == setMetadata:
-    return setMetadata(args[0], auth.user, auth.group, *args[1:])
+    return setMetadata(args[0], ezidapp.models.getAdminUser(), *args[1:])
   elif function == deleteIdentifier:
-    return deleteIdentifier(args[0], auth.user, auth.group)
+    return deleteIdentifier(args[0], ezidapp.models.getAdminUser())
   else:
     assert False, "unhandled case"
