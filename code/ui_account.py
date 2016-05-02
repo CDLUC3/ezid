@@ -6,13 +6,13 @@ import django.core.mail
 import django.core.urlresolvers
 import django.core.validators
 import django.utils.http
-import django.db
 import django.db.transaction
 import hashlib
 import re
 import time
 import urllib
 from django.shortcuts import redirect
+import ezidapp.admin
 import ezidapp.models
 
 @uic.user_login_required
@@ -144,9 +144,7 @@ def update_edit_user(request, user, basic_info_changed):
       if d["pwcurrent"].strip() != "": user.setPassword(d["pwnew"].strip())
       user.full_clean(validate_unique=False)
       user.save()
-      django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
-      django.db.connection.on_commit(
-        ezidapp.models.search_identifier.clearUserCache)
+      ezidapp.admin.scheduleUserChangePostCommitActions(user)
   except django.core.validators.ValidationError, e:
     django.contrib.messages.error(request, str(e))
   else:
@@ -196,9 +194,7 @@ def pwreset(request, pwrr, ssl=False):
       with django.db.transaction.atomic():
         user.setPassword(password)
         user.save()
-        django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
-        django.db.connection.on_commit(
-          ezidapp.models.search_identifier.clearUserCache)
+        ezidapp.admin.scheduleUserChangePostCommitActions(user)
       django.contrib.messages.success(request, "Password changed.")
       return uic.redirect("/")
     else:
