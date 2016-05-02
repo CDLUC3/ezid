@@ -40,7 +40,6 @@ import anvl
 import config
 import ezid
 import ezidapp.models
-import idmap
 import log
 import mapping
 import store
