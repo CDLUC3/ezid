@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 import django.contrib.messages
 import metadata
 import ezid
+import ezidapp.models
 import urllib
 import re
 import datacite_xml
@@ -18,8 +19,14 @@ def index(request):
 def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = [{ "namespace": s.name, "prefix": s.prefix }\
-    for s in userauth.getUser(request).shoulders.all().order_by("name", "type")]
+  user = userauth.getUser(request)
+  if user.isSuperuser:
+    shoulders = [s for s in ezidapp.models.getAllShoulders() if not s.isTest]
+  else:
+    shoulders = user.shoulders.all()
+  d["prefixes"] = sorted([{ "namespace": s.name, "prefix": s.prefix } for\
+    s in shoulders],
+    key=lambda p: ("%s %s" % (p["namespace"], p["prefix"])).lower())
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   r = simple_form_processing(request, d)
@@ -34,8 +41,14 @@ def simple(request):
 def advanced(request):
   d = { 'menu_item' :'ui_create.advanced' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = [{ "namespace": s.name, "prefix": s.prefix }\
-    for s in userauth.getUser(request).shoulders.all().order_by("name", "type")]
+  user = userauth.getUser(request)
+  if user.isSuperuser:
+    shoulders = [s for s in ezidapp.models.getAllShoulders() if not s.isTest]
+  else:
+    shoulders = user.shoulders.all()
+  d["prefixes"] = sorted([{ "namespace": s.name, "prefix": s.prefix } for\
+    s in shoulders],
+    key=lambda p: ("%s %s" % (p["namespace"], p["prefix"])).lower())
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   r = advanced_form_processing(request, d)
@@ -200,9 +213,14 @@ def ajax_advanced(request):
       if not request.POST['identifier']:
         error_msgs.append("Unable to edit. Identifier not supplied.")
     d["testPrefixes"] = uic.testPrefixes
-    d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.prefix }\
-      for s in userauth.getUser(request, returnAnonymous=True).shoulders.all()],
-      key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
+    user = userauth.getUser(request, returnAnonymous=True)
+    if user.isSuperuser:
+      shoulders = [s for s in ezidapp.models.getAllShoulders() if not s.isTest]
+    else:
+      shoulders = user.shoulders.all()
+    d["prefixes"] = sorted([{ "namespace": s.name, "prefix": s.prefix } for\
+      s in shoulders],
+      key=lambda p: ("%s %s" % (p["namespace"], p["prefix"])).lower())
     pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
     if (request.POST['action'] == 'create' and\
         request.POST['shoulder'] not in pre_list):
