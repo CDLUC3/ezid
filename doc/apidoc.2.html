@@ -1900,11 +1900,11 @@ done
 <p>The metadata for all identifiers matching a set of constraints can be
 downloaded in one batch operation.  Authentication is required, and
 the scope of the identifiers that can be downloaded in this way is
-implicitly restricted to those that are owned or co-owned by the
-requestor.</p>
+implicitly restricted to those that are directly owned by or otherwise
+modifiable by the requestor.</p>
 <p>Batch download and harvesting (see <a class="reference internal" href="#oai-pmh-harvesting">OAI-PMH harvesting</a> below) are
 similar but different operations.  With batch download, the
-identifiers returned are restricted to those owned or co-owned by the
+identifiers returned are restricted to those modifiable by the
 requestor as noted above, but within that scope it is possible to
 download <em>all</em> identifiers, including reserved, unavailable, and test
 identifiers.  By contrast, with harvesting, no authentication is
@@ -2148,11 +2148,15 @@ CrossRef.</p>
 </li>
 <li><p class="first">owner=<span class="hl1">u</span> (<em>repeatable</em>)</p>
 <p>Return identifiers owned by user <span class="hl1">u</span>, where <span class="hl1">u</span> is an EZID
-username, e.g., &quot;apitest&quot;.</p>
+username, e.g., &quot;apitest&quot;.  All &quot;owner&quot; and &quot;ownergroup&quot; parameters
+are ORed together; if none are specified, the identifiers directly
+owned by the requestor are returned.</p>
 </li>
 <li><p class="first">ownergroup=<span class="hl1">g</span> <em>(repeatable)</em></p>
 <p>Return identifiers owned by group <span class="hl1">g</span>, where <span class="hl1">g</span> is an
-EZID group name, e.g., &quot;cdl&quot;.</p>
+EZID group name, e.g., &quot;cdl&quot;.  All &quot;owner&quot; and &quot;ownergroup&quot;
+parameters are ORed together; if none are specified, the identifiers
+directly owned by the requestor are returned.</p>
 </li>
 <li><p class="first">permanence={test|real}</p>
 <p>Return only test identifiers or only real identifiers.</p>
