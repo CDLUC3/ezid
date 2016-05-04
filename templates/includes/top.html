@@ -3,8 +3,8 @@
 
 <div class="header__admin-text">
 &nbsp;
-{% if session.auth %}
-Welcome {{ session.auth.user|first }}!
+{% if authenticatedUser %}
+Welcome {{ authenticatedUser.username }}!
 {% endif %}
 </div>
 
@@ -31,7 +31,7 @@ Welcome {{ session.auth.user|first }}!
     </div>
     <a class="header__contact-link" href="{% url "ui.contact" %}">Contact</a>
     <div class="header__loginout">
-      {% if session.auth %}
+      {% if authenticatedUser %}
         <form action="/logout" role="form">
           <button class="header__loginout-link">Logout</button>
         </form>
@@ -42,7 +42,7 @@ Welcome {{ session.auth.user|first }}!
     </div>
   </nav>
 </header>
-{% if session.auth %}
+{% if authenticatedUser %}
 <div class="login-menu__container">
   <div class="login-menu">
   {% menu_user menu_item session %}

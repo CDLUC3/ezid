@@ -21,15 +21,15 @@
   {% include "search/_choose_cols.html" with primary_page=primary_page %}
 {% endif %}
 
-{% if primary_page == "ui_manage.index" and session.auth %}
+{% if primary_page == "ui_manage.index" and authenticatedUser %}
 <div class="manage__identifiers-submit-controls">
   <div class="fcontrol__select-group-inline manage__identifiers-select">
     <label for="manage__select4" class="fcontrol__select-label-inline">{% trans "View identifiers owned by" %}:</label>
     <select name="url-here" id="manage__select4" class="fcontrol__select">
-      <option value="">{{ session.auth.user|first }} ({% trans "me" %})</option>
+      <option value="">{{ authenticatedUser.username }} ({% trans "me" %})</option>
     {% if coowners %}
       {% for c in coowners %}
-      <option value="">{{ c }} ({% trans "co-owned by me" %})</option>
+      <option value="">{{ c }} ({% trans "by proxy" %})</option>
       {% endfor %}
     {% endif %}
       <option value="">Department A</option>

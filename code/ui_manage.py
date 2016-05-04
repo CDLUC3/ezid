@@ -28,7 +28,6 @@ FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") +\
 def index(request):
   """ Manage Page, listing all Ids owned by user """
   d = { 'menu_item' : 'ui_manage.index' }
-  d['coowners'] = policy.getReverseCoOwners(request.session["auth"].user[0])
   if request.method == "GET":
     d['queries'] = ui_search.queryDict(request)
     # And preserve query in form object

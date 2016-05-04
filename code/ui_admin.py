@@ -1,4 +1,5 @@
 import ui_common as uic
+import userauth
 import ezidapp.models
 import stats
 import datetime
@@ -14,7 +15,7 @@ def dashboard(request, ssl=False):
   All subsequent searches are done via ajax (ajax_dashboard_table method below)
   """
   d = { 'menu_item' : 'ui_admin.dashboard'}
-  # user = userauth.getUser(request)
+  user = userauth.getUser(request)
   d['display_adminlink'] = user.username == 'admin' 
   # d = _getUsage(request, d)
 

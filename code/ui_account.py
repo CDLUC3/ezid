@@ -17,8 +17,8 @@ import ezidapp.admin
 import ezidapp.models
 from django.utils.translation import ugettext as _
 
-ACCOUNT_FIELDS_EDITABLE = ['primaryContactName', 'primaryContactMail', 'primaryContactPhone', 
-           'secondaryContactName', 'secondaryContactMail', 'secondaryContactPhone', 
+ACCOUNT_FIELDS_EDITABLE = ['primaryContactName', 'primaryContactEmail', 'primaryContactPhone', 
+           'secondaryContactName', 'secondaryContactEmail', 'secondaryContactPhone', 
            'accountDisplayName', 'accountEmail']
 
 # Temporary, for testing
@@ -42,10 +42,10 @@ def edit(request, ssl=False):
 
   if request.method == "GET":
     d['primaryContactName'] = user.primaryContactName
-    d['primaryContactMail'] = user.primaryContactMail
+    d['primaryContactEmail'] = user.primaryContactEmail
     d['primaryContactPhone'] = user.primaryContactPhone
     d['secondaryContactName'] = user.secondaryContactName
-    d['secondaryContactMail'] = user.secondaryContactMail
+    d['secondaryContactEmail'] = user.secondaryContactEmail
     d['secondaryContactPhone'] = user.secondaryContactPhone
     d['accountDisplayName'] = user.displayName
     d['accountEmail'] = user.accountEmail
@@ -134,10 +134,10 @@ def _update_edit_user(request, user, basic_info_changed):
   try:
     with django.db.transaction.atomic():
       user.primaryContactName = d["primaryContactName"].strip()
-      user.primaryContactEmail = d["primaryContactMail"].strip()
+      user.primaryContactEmail = d["primaryContactEmail"].strip()
       user.primaryContactPhone = d["primaryContactPhone"].strip()
       user.secondaryContactName = d["secondaryContactName"].strip()
-      user.secondaryContactEmail = d["secondaryContactMail"].strip()
+      user.secondaryContactEmail = d["secondaryContactEmail"].strip()
       user.secondaryContactPhone = d["secondaryContactPhone"].strip()
       user.displayName = d["accountDisplayName"].strip()
       user.accountEmail = d["accountEmail"].strip()

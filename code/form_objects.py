@@ -699,7 +699,7 @@ class UserForm(BasePasswordForm):
     super(UserForm,self).__init__(*args,**kwargs)
     self.fields["primaryContactName"] = forms.CharField(label=_("Primary Contact Name"),
       error_messages={'required': _("Please fill in the full name for the primary contact.")})
-    self.fields["primaryContactMail"] = forms.EmailField(label=_("Primary Contact Email"),
+    self.fields["primaryContactEmail"] = forms.EmailField(label=_("Primary Contact Email"),
       error_messages={'required': _("Please fill in your email."),
                       'invalid': _("Please fill in a valid email address.")})
     self.fields["primaryContactPhone"] = forms.CharField(label=_("Primary Contact Phone"),
@@ -707,7 +707,7 @@ class UserForm(BasePasswordForm):
 
     self.fields["secondaryContactName"] = forms.CharField(required=False, 
       label=_("Secondary Contact Name"))
-    self.fields["secondaryContactMail"] = forms.EmailField(required=False, 
+    self.fields["secondaryContactEmail"] = forms.EmailField(required=False, 
       label=_("Secondary Contact Email"),
       error_messages={'invalid': _("Please fill in a valid email address.")})
     self.fields["secondaryContactPhone"] = forms.CharField(required=False, 
