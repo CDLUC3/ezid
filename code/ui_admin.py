@@ -15,9 +15,7 @@ def dashboard(request, ssl=False):
   """
   d = { 'menu_item' : 'ui_admin.dashboard'}
   # user = userauth.getUser(request)
-  # d['display_adminlink'] = user.username == 'admin' 
-  d['display_adminlink'] = \
-    request.session["auth"].user[0] in [config.get("ldap.admin_username")]
+  d['display_adminlink'] = user.username == 'admin' 
   # d = _getUsage(request, d)
 
   d['ajax'] = False

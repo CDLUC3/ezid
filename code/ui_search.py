@@ -4,7 +4,6 @@ import django.contrib.messages
 import form_objects
 from django.utils.translation import ugettext as _
 import math
-import useradmin
 import locale
 import util
 import operator

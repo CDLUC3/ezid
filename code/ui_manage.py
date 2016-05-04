@@ -296,14 +296,14 @@ def download(request):
   d = { 'menu_item' : 'ui_manage.null'}
   q = django.http.QueryDict("format=csv&convertTimestamps=yes&compression=zip", mutable=True)
   q.setlist('column', ["_mappedTitle", "_mappedCreator", "_id", "_owner", "_created", "_updated", "_status"])
-  q['notify'] = d['mail'] = useradmin.getContactInfo(request.session['auth'].user[0])['mail']
+  # q['notify'] = d['mail'] = useradmin.getContactInfo(request.session['auth'].user[0])['mail']
 
-  s = ezid_download.enqueueRequest(request.session['auth'], q)
-  if not s.startswith("success:"):
-    django.contrib.messages.error(request, s)
-    return redirect("ui_manage.index")
-  else:
-    d['link'] = s.split()[1]
+  # s = ezid_download.enqueueRequest(request.session['auth'], q)
+  # if not s.startswith("success:"):
+  #   django.contrib.messages.error(request, s)
+  #   return redirect("ui_manage.index")
+  # else:
+  #   d['link'] = s.split()[1]
   return uic.render(request, "manage/download", d)
 
 def download_error(request):
