@@ -1,15 +1,20 @@
 import ui_common as uic
-import userauth, useradmin
-import django.contrib.auth
+import userauth
+import django.conf
 import django.contrib.messages
+import django.core.mail
 import django.core.urlresolvers
+import django.core.validators
 import django.utils.http
+import django.db.transaction
 import form_objects
-import idmap
-import log
+import hashlib
 import re
 import time
+import urllib
 from django.shortcuts import redirect
+import ezidapp.admin
+import ezidapp.models
 from django.utils.translation import ugettext as _
 
 ACCOUNT_FIELDS_EDITABLE = ['primaryContactName', 'primaryContactMail', 'primaryContactPhone', 
@@ -32,43 +37,33 @@ proxy_users_mock_picked = "aasdata, acsess"
 def edit(request, ssl=False):
   """Edit account information form"""
   d = { 'menu_item' : 'ui_account.edit'}
+  user = userauth.getUser(request)
+  d["username"] = user.username
 
-  # new:
-  # user = userauth.getUser(request)
-  # d["username"] = user.username
-  d['username'] = request.session['auth'].user[0]
-
-  r = useradmin.getAccountProfile(d['username'])
-  if type(r) is str:
-    django.contrib.messages.error(request, r)
-    return redirect('ui_home.index')
-  r2 = useradmin.getContactInfo(d['username'])
-  if type(r2) is str:
-    django.contrib.messages.error(request, r2)
-    return redirect("ui_home.index")
-  r.update(r2)
-  d.update(r)
   if request.method == "GET":
-    # d['proxy_for'] =\
-    #   ", ".join(u.username for u in user.proxy_for.all().order_by("username"))
-    d['proxy_for'] = "UCI, ******* PLACEHOLDER ******"
-    # d['proxy_users_picked'] =\
-    #   ", ".join(u.username for u in user.proxies.all().order_by("username"))
-    d['proxy_users_picked'] = proxy_users_mock_picked
-    # d['proxy_users_choose'] = u.username for u in user.group.users.all().order_by("username")
-    d['proxy_users_choose'] = proxy_users_mock
-    # d['form'] = form_objects.UserForm(d, user=user, username=d['username'], pw_reqd=False)
-    d['form'] = form_objects.UserForm(d, user=None, username=d['username'], pw_reqd=False)
+    d['primaryContactName'] = user.primaryContactName
+    d['primaryContactMail'] = user.primaryContactMail
+    d['primaryContactPhone'] = user.primaryContactPhone
+    d['secondaryContactName'] = user.secondaryContactName
+    d['secondaryContactMail'] = user.secondaryContactMail
+    d['secondaryContactPhone'] = user.secondaryContactPhone
+    d['accountDisplayName'] = user.displayName
+    d['accountEmail'] = user.accountEmail
+    d['proxy_for'] =\
+      ", ".join(u.username for u in user.proxy_for.all().order_by("username"))
+    d['proxy_users_picked'] =\
+      ", ".join(u.username for u in user.proxies.all().order_by("username"))
+    d['proxy_users_choose'] = (u.username for u in user.group.users.all().order_by("username"))
+    # d['proxy_users_choose'] = proxy_users_mock
+    d['form'] = form_objects.UserForm(d, user=user, username=d['username'], pw_reqd=False)
   else:
     # ToDo: Email new proxy users 
-    # d['form'] = form_objects.UserForm(request.POST, initial=d, user=user, username=d['username'], pw_reqd=False)
-    d['form'] = form_objects.UserForm(request.POST, initial=d, user=None, username=d['username'], pw_reqd=False)
+    d['form'] = form_objects.UserForm(request.POST, initial=d, user=user, username=d['username'], pw_reqd=False)
     basic_info_changed=False
     if d['form'].is_valid():
       if d['form'].has_changed():
         basic_info_changed = any(ch in d['form'].changed_data for ch in ACCOUNT_FIELDS_EDITABLE)
-      # _update_edit_user(request, user, basic_info_changed)
-      _update_edit_user(request, basic_info_changed)
+      _update_edit_user(request, user, basic_info_changed)
     else: # Form did not validate
       if '__all__' in d['form'].errors:
         # non_form_error, probably due to all fields being empty
@@ -107,24 +102,12 @@ def login (request, ssl=False):
       "next" not in request.POST:
       return uic.badRequest()
     d.update(uic.extract(request.POST, ["username", "password", "next"]))
-    auth = userauth.authenticate(d["username"], d["password"])
-    if type(auth) is str:
-      django.contrib.messages.error(request, uic.formatError(auth))
+    user = userauth.authenticate(d["username"], d["password"], request)
+    if type(user) is str:
+      django.contrib.messages.error(request, uic.formatError(user))
       return uic.render(request, "account/login", d)
-    if auth:
-      request.session["auth"] = auth
+    if user != None:
       django.contrib.messages.success(request, _("Login successful."))
-      #request.session['hide_alert'] = False
-      if d["username"] == uic.adminUsername:
-        # Add session variables to support the Django admin interface.
-        user = django.contrib.auth.authenticate(username=d["username"],
-          password=d["password"])
-        if user:
-          django.contrib.auth.login(request, user)
-        else:
-          log.otherError("ui_account.login", Exception(
-            "administrator password mismatch; run " +\
-            "'django-admin ezidadminsetpassword' to correct"))
       if django.utils.http.is_safe_url(url=d["next"], host=request.get_host()):
         return redirect(d["next"])
       else:
@@ -134,9 +117,6 @@ def login (request, ssl=False):
       return uic.render(request, "account/login", d)
   else:
     return uic.methodNotAllowed(request)
-
-def _filterBadRedirect(url):
-  return "/" if url.startswith("/login") else url
 
 def logout(request):
   """
@@ -148,34 +128,33 @@ def logout(request):
   django.contrib.messages.success(request, _("You have been logged out."))
   return redirect("ui_home.index")
 
-# def _update_edit_user(request, user, basic_info_changed):
-def _update_edit_user(request, basic_info_changed):
-  """
-  Method to update the user editing his/her information.
-  """
-  uid = request.session['auth'].user[0]
-  di = {}
-  P = request.POST
-  for item in ACCOUNT_FIELDS_EDITABLE:
-    di[item] = P[item].strip()
-  r = useradmin.setContactInfo(uid, di)
-  if type(r) is str: django.contrib.messages.error(request, r)
-  # ToDo: Change to proxy users
-  # if P['ezidCoOwners'].strip() == '':
-  #  r = useradmin.setAccountProfile(uid, '')
-  # else:
-  #   r = useradmin.setAccountProfile(uid, P['ezidCoOwners'].strip())
-  if type(r) is str:
-    django.contrib.messages.error(request, r)
+def _update_edit_user(request, user, basic_info_changed):
+  """method to update the user editing his/her information"""
+  d = request.POST
+  try:
+    with django.db.transaction.atomic():
+      user.primaryContactName = d["primaryContactName"].strip()
+      user.primaryContactEmail = d["primaryContactMail"].strip()
+      user.primaryContactPhone = d["primaryContactPhone"].strip()
+      user.secondaryContactName = d["secondaryContactName"].strip()
+      user.secondaryContactEmail = d["secondaryContactMail"].strip()
+      user.secondaryContactPhone = d["secondaryContactPhone"].strip()
+      user.displayName = d["accountDisplayName"].strip()
+      user.accountEmail = d["accountEmail"].strip()
+      user.proxies.clear()
+      for p_user in [p_user.strip() for p_user in d["proxy_users_picked"].split(",")]:
+        if p_user != "":
+          user.proxies.add(ezidapp.models.getUserByUsername(p_user))
+      if d["pwcurrent"].strip() != "": user.setPassword(d["pwnew"].strip())
+      user.full_clean(validate_unique=False)
+      user.save()
+      ezidapp.admin.scheduleUserChangePostCommitActions(user)
+  except django.core.validators.ValidationError, e:
+    django.contrib.messages.error(request, str(e))
   else:
     if basic_info_changed: django.contrib.messages.success(request,
       _("Your information has been updated."))
-  
-  if P['pwcurrent'].strip() != '' and P['pwnew'].strip() != '':
-    r = useradmin.resetPassword(uid, P["pwnew"].strip())
-    if type(r) is str:
-      django.contrib.messages.error(request, r)
-    else:
+    if d['pwcurrent'].strip() != '' and d['pwnew'].strip() != '':
       django.contrib.messages.success(request, _("Your password has been updated."))
       
 def pwreset(request, pwrr, ssl=False):
@@ -184,7 +163,7 @@ def pwreset(request, pwrr, ssl=False):
   """
   if pwrr:  # Change password here after receiving email
     d = { 'menu_item' : 'ui_null.null'}
-    r = useradmin.decodePasswordResetRequest(pwrr)
+    r = decodePasswordResetRequest(pwrr)
     if not r:
       django.contrib.messages.error(request, _("Invalid password reset request."))
       return uic.redirect("/")
@@ -197,22 +176,30 @@ def pwreset(request, pwrr, ssl=False):
       d['username'] = username 
       d['form'] = form_objects.BasePasswordForm(None, username=username, pw_reqd=True)
     elif request.method == "POST":
+      if "password" not in request.POST or "confirm" not in request.POST:
+        return uic.badRequest()
+      password = request.POST["password"]
       d['form'] = form_objects.BasePasswordForm(request.POST, username=username, pw_reqd=True)
       if not d['form'].is_valid():
         err = _("Changes could not be made.  Please check the highlighted field(s) below for details.")
         django.contrib.messages.error(request, err)
       else:
-        r = useradmin.resetPassword(username, d['form']['pwnew'].data)
-        if type(r) is str:
-          django.contrib.messages.error(request, r)
-        else:
-          django.contrib.messages.success(request, _("Password changed."))
-          return uic.redirect("/")
+        user = ezidapp.models.getUserByUsername(username)
+        if user == None or user.isAnonymous:
+          django.contrib.messages.error(request, "No such user.")
+          return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
+            "username": username, 'menu_item' : 'ui_null.null' })
+        with django.db.transaction.atomic():
+          user.setPassword(password)
+          user.save()
+          ezidapp.admin.scheduleUserChangePostCommitActions(user)
+        django.contrib.messages.success(request, _("Password changed."))
+        return uic.redirect("/")
     else:
       return uic.methodNotAllowed(request)
     return uic.render(request, "account/pwreset2", d) 
   else:
-    # First step: enter your username and email to get sent an email contiaing link for password change
+    # First step: enter your username and email to get sent an email containing link for password change
     d = { 'menu_item' : 'ui_null.null'}
     if request.method == "GET":
       d['form'] = form_objects.PwResetLandingForm()
@@ -221,15 +208,56 @@ def pwreset(request, pwrr, ssl=False):
       P = request.POST
       if "username" not in P or "email" not in P:
         return uic.badRequest(request)
+      username = P["username"].strip()
+      email = P["email"].strip()
       d['form'] = form_objects.PwResetLandingForm(P)
-      if d['form'].is_valid():
-        r = useradmin.sendPasswordResetEmail(P['username'], P['email'])
+      if not d['form'].is_valid():
+        return uic.render(request, "account/pwreset1", d)
+      else:
+        r = sendPasswordResetEmail(username, email)
         if type(r) is str:
           django.contrib.messages.error(request, r)
-          return uic.render(request, "account/pwreset1", d)
+          return uic.render(request, "account/pwreset1", { "username": username,
+            "email": email,  'menu_item' : 'ui_null.null' })
         else:
           django.contrib.messages.success(request, _("Email sent."))
           return uic.redirect("/")
-      return uic.render(request, "account/pwreset1", d)
     else:
       return uic.methodNotAllowed(request)
+
+def sendPasswordResetEmail (username, emailAddress):
+  """
+  Sends an email containing a password reset request link.  Returns
+  None on success or a string message on error.
+  """
+  user = ezidapp.models.getUserByUsername(username)
+  if user == None or user.isAnonymous: return _("No such user.")
+  if emailAddress not in [user.accountEmail, user.primaryContactEmail,
+    user.secondaryContactEmail]:
+    return _("Email address does not match any address registered for username.")
+  t = int(time.time())
+  hash = hashlib.sha1("%s|%d|%s" % (username, t,
+    django.conf.settings.SECRET_KEY)).hexdigest()[::4]
+  link = "%s/account/pwreset/%s,%d,%s" %\
+    (uic.ezidUrl, urllib.quote(username), t, hash)
+  message = _("You have requested to reset your EZID password") + ".\n" +\
+    _("Click the link below to complete the process") + ":\n\n" +\
+    link + "\n\n" +\
+    _("Please do not reply to this email") + ".\n"
+  django.core.mail.send_mail(_("EZID password reset request"), message,
+    django.conf.settings.SERVER_EMAIL, [emailAddress])
+  return None
+
+def decodePasswordResetRequest (request):
+  """
+  Decodes a password reset request, returning a tuple (username,
+  timestamp) on success or None on error.
+  """
+  m = re.match("/([^ ,]+),(\d+),([\da-f]+)$", request)
+  if not m: return None
+  username = m.group(1)
+  t = m.group(2)
+  hash = m.group(3)
+  if hashlib.sha1("%s|%s|%s" % (username, t,
+    django.conf.settings.SECRET_KEY)).hexdigest()[::4] != hash: return None
+  return (username, int(t))

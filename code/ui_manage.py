@@ -5,10 +5,12 @@ import ui_create
 import download as ezid_download
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
+import django.db.models
 import ezid
 import metadata
+import math
 import policy
-import useradmin
+import userauth
 import erc
 import datacite
 import datacite_xml
@@ -16,6 +18,7 @@ import form_objects
 import urllib
 import time
 import os.path
+import ezidapp.models
 from django.utils.translation import ugettext as _
 
 FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") +\
@@ -49,12 +52,8 @@ def _getLatestMetadata(identifier, request):
     success: doi:10.5060/FOO
   and 'dictionary' contains element (name, value) pairs.
   """
-  if "auth" in request.session:
-    r = ezid.getMetadata(identifier, request.session["auth"].user,
-      request.session["auth"].group)
-  else:
-    r = ezid.getMetadata(identifier)
-  return r
+  return ezid.getMetadata(identifier,
+    userauth.getUser(request, returnAnonymous=True))
 
 def _updateEzid(request, d, stts, m_to_upgrade=None):
   """
@@ -85,8 +84,8 @@ def _updateEzid(request, d, stts, m_to_upgrade=None):
       m_dict['erc.when'] = '' 
   # ToDo: Using current_profile here, but isn't this confusing if executing simpleToAdvanced 
   to_write = uic.assembleUpdateDictionary(request, d['current_profile'], m_dict)
-  return ezid.setMetadata(d['id_text'], uic.user_or_anon_tup(request), 
-    uic.group_or_anon_tup(request), to_write)
+  return ezid.setMetadata(d['id_text'],
+    userauth.getUser(request, returnAnonymous=True), to_write)
 
 def _alertMessageUpdateError(request, s):
   django.contrib.messages.error(request, 
@@ -122,11 +121,12 @@ def edit(request, identifier):
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_manage.index")
-  if not uic.authorizeUpdate(request, r):
+  s, id_metadata = r 
+  if not policy.authorizeUpdate(userauth.getUser(request, returnAnonymous=True), identifier,
+    id_metadata["_owner"], id_metadata["_ownergroup"], localNames=True):
     django.contrib.messages.error(request, _("You are not allowed to edit this identifier.  " +\
       "If this ID belongs to you and you'd like to edit, please log in."))
     return redirect("/id/" + urllib.quote(identifier, ":/"))
-  s, id_metadata = r 
   d['identifier'] = id_metadata 
   t_stat = [x.strip() for x in id_metadata['_status'].split("|", 1)]
   d['pub_status'] = t_stat[0]
@@ -225,9 +225,10 @@ def details(request):
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_manage.index")
-  d['allow_update'] = uic.authorizeUpdate(request, r)
   s, id_metadata = r
   assert s.startswith("success:")
+  d['allow_update'] = policy.authorizeUpdate(userauth.getUser(request, returnAnonymous=True),
+    identifier, id_metadata["_owner"], id_metadata["_ownergroup"], localNames=True)
   d['identifier'] = id_metadata 
   d['id_text'] = s.split()[1]
   d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes']) 

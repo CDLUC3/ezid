@@ -4,12 +4,11 @@ import django.contrib.messages
 import metadata
 import ezid
 import form_objects
-import logging
 import urllib
 import re
 import datacite_xml
-import policy
 import os.path
+import userauth
 from django.utils.translation import ugettext as _
 
 """
@@ -30,10 +29,8 @@ def index(request):
 def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.prefix }\
-    for s in policy.getShoulders(request.session["auth"].user,
-    request.session["auth"].group)],
-    key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
+  d['prefixes'] = [{ "namespace": s.name, "prefix": s.prefix }\
+    for s in userauth.getUser(request).shoulders.all().order_by("name", "type")]
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   d = simple_form(request, d)
@@ -49,10 +46,8 @@ def simple(request):
 def advanced(request):
   d = { 'menu_item' :'ui_create.advanced' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.prefix }\
-    for s in policy.getShoulders(request.session["auth"].user,
-    request.session["auth"].group)],
-    key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
+  d['prefixes'] = [{ "namespace": s.name, "prefix": s.prefix }\
+    for s in userauth.getUser(request).shoulders.all().order_by("name", "type")]
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   d = adv_form(request, d)
@@ -221,9 +216,10 @@ def validate_adv_form_datacite_xml(request, d):
   return d
  
 def _createSimpleId (d, request, P):
-  s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request),
-    uic.group_or_anon_tup(request), uic.assembleUpdateDictionary(request, d['current_profile'],
-    { '_target' : P['target'], '_export': 'yes' }))
+  s = ezid.mintIdentifier(request.POST['shoulder'],
+    userauth.getUser(request, returnAnonymous=True),
+    uic.assembleUpdateDictionary(request, d['current_profile'],
+      { '_target' : P['target'], '_export': 'yes' }))
   if s.startswith("success:"):
     new_id = s.split()[1]
     django.contrib.messages.success(request, _("Identifier Created."))
@@ -250,11 +246,11 @@ def _createAdvancedId (d, request, P):
       "_status": ("public" if P["publish"] == "True" else "reserved"),
       "_export": ("yes" if P["export"] == "yes" else "no") } )
   if P['remainder'] == '' or P['remainder'] == form_objects.REMAINDER_BOX_DEFAULT:
-    s = ezid.mintIdentifier(P['shoulder'], uic.user_or_anon_tup(request),
-        uic.group_or_anon_tup(request), to_write)
+    s = ezid.mintIdentifier(P['shoulder'],
+      userauth.getUser(request, returnAnonymous=True), to_write)
   else:
     s = ezid.createIdentifier(P['shoulder'] + P['remainder'],
-      uic.user_or_anon_tup(request), uic.group_or_anon_tup(request), to_write)
+      userauth.getUser(request, returnAnonymous=True), to_write)
   if s.startswith("success:"):
     new_id = s.split()[1]
     django.contrib.messages.success(request, _("Identifier Created."))
@@ -276,4 +272,3 @@ def _verifyProperShoulder (request, P, pre_list):
       _("Unauthorized to create with this identifier prefix") + ": " + P['shoulder'])
     return False
   return True
-

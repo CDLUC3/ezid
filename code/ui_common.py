@@ -4,27 +4,15 @@ import django.http
 import django.template
 import django.template.loader
 import django.utils.http
-import errno
 import os
 import re
-import time
-import urllib
 import string
 from random import choice
 
 import config
-import datacite
-import ezid
-import ezidadmin
-import ezidapp.models.server_variables
-import idmap
-import log
+import ezidapp.models
 import newsfeed 
-import policy
-import ezidapp.models.shoulder
-import useradmin
 import userauth
-import django.contrib.messages
 import urlparse
 from django.utils.translation import ugettext as _
 
@@ -32,12 +20,7 @@ ezidUrl = None
 templates = None # { name: (template, path), ... }
 alertMessage = None
 testPrefixes = None
-defaultDoiProfile = None
-defaultArkProfile = None
-defaultUrnUuidProfile = None
-adminUsername = None
 google_analytics_id = None
-new_account_email = None
 reload_templates = None
 newsfeed_url = None
 
@@ -47,28 +30,22 @@ def _loadConfig():
   #these aren't really globals for the whole app, but globals for ui_common
   #outside of this module, use ui_common.varname
   global ezidUrl, templates, alertMessage, testPrefixes
-  global defaultDoiProfile, defaultArkProfile, defaultUrnUuidProfile
-  global adminUsername, google_analytics_id
-  global new_account_email, reload_templates, newsfeed_url
+  global google_analytics_id
+  global reload_templates, newsfeed_url
   ezidUrl = config.get("DEFAULT.ezid_base_url")
   templates = {}
   _load_templates([d for t in django.conf.settings.TEMPLATES\
     for d in t["DIRS"]])
-  alertMessage = ezidapp.models.server_variables.getAlertMessage()
+  alertMessage = ezidapp.models.getAlertMessage()
   reload_templates = hasattr(django.conf.settings, 'RELOAD_TEMPLATES')
   if reload_templates:
     reload_templates = django.conf.settings.RELOAD_TEMPLATES
   testPrefixes = []
-  p = ezidapp.models.shoulder.getArkTestShoulder()
-  if p != None: testPrefixes.append({ "namespace": p.name, "prefix": p.prefix })
-  p = ezidapp.models.shoulder.getDoiTestShoulder()
-  if p != None: testPrefixes.append({ "namespace": p.name, "prefix": p.prefix })
-  defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
-  defaultArkProfile = config.get("DEFAULT.default_ark_profile")
-  defaultUrnUuidProfile = config.get("DEFAULT.default_urn_uuid_profile")
-  adminUsername = config.get("ldap.admin_username")
+  p = ezidapp.models.getArkTestShoulder()
+  testPrefixes.append({ "namespace": p.name, "prefix": p.prefix })
+  p = ezidapp.models.getDoiTestShoulder()
+  testPrefixes.append({ "namespace": p.name, "prefix": p.prefix })
   google_analytics_id = config.get("DEFAULT.google_analytics_id")
-  new_account_email = config.get("email.new_account_email")
   newsfeed_url = config.get("newsfeed.url")
   
 #loads the templates directory recursively (dir_list is a list)
@@ -88,7 +65,10 @@ config.registerReloadListener(_loadConfig)
   
 def render(request, template, context={}):
   global alertMessage, google_analytics_id, reload_templates
-  c = { "session": request.session, "alertMessage": alertMessage, "feed_cache": newsfeed.getLatestItem(), "rss_feed": newsfeed_url, "google_analytics_id": google_analytics_id }
+  c = { "session": request.session,
+    "authenticatedUser": userauth.getUser(request),
+    "alertMessage": alertMessage, "feed_cache": newsfeed.getLatestItem(), 
+    "google_analytics_id": google_analytics_id }
   c.update(context)
   #this is to keep from having to restart the server every 3 seconds
   #to see template changes in development, only reloads if set for optimal performance
@@ -173,53 +153,6 @@ def formatError (message):
       return message[len(p)].upper() + message[len(p)+1:] + "."
   return message
 
-def getPrefixes (user, group):
-  try:
-    return [{ "namespace": s.name, "prefix": s.prefix }\
-      for s in policy.getShoulders(user, group)]
-  except Exception, e:
-    log.otherError("ui_common.getPrefixes", e)
-    return _("error: internal server error")
-  
-def authorizeCreate(request, prefix):
-  """a simple function to decide if a user (gotten from request.session)
-  is allowed to create with the prefix"""
-  return policy.authorizeCreate(user_or_anon_tup(request), group_or_anon_tup(request),
-        prefix)
-
-def authorizeUpdate(request, metadata_tup):
-  """a simple function to decide if identifier can updated/edited based in ui values.
-  It takes the request object (for session) and presumed object metadata tuple. It wraps
-  the much more complicated policy function calls so they're simple to use in multiple places
-  without repeating a lot of code."""
-  if not (type(metadata_tup) is tuple):
-    return False
-  s, m = metadata_tup
-  if not s.startswith("success:"):
-    return False
-  the_id = s.split()[1]
-  #just gets the updating items found on the edit screen
-  to_update = [x for x in m.keys() if not (x.startswith('_') and not x in ['_status','_target', '_profile']) ]
-  return policy.authorizeUpdate(user_or_anon_tup(request), group_or_anon_tup(request),
-        the_id, get_user_tup(m['_owner']), get_group_tup(m['_ownergroup']),
-        get_coowners_tup(m), to_update)
-
-# simple function to decide if identifier can be deleted based on ui context
-def authorizeDelete(request, metadata_tup):
-  """a simple function to decide if identifier can be deleted based in ui values.
-  It takes the request object (for session) and presumed object metadata tuple. It wraps
-  the much more complicated policy function calls so they're simple to use in multiple places
-  without repeating a lot of code."""
-  if not (type(metadata_tup) is tuple):
-    return False
-  s, m = metadata_tup
-  if not s.startswith("success:"):
-    return False
-  the_id = s.split()[1]
-  return policy.authorizeDelete(user_or_anon_tup(request), group_or_anon_tup(request),
-        the_id, get_user_tup(m['_owner']), get_group_tup(m['_ownergroup']),
-        get_coowners_tup(m))
-
 def assembleUpdateDictionary (request, profile, additionalElements={}):
   d = { "_profile": profile.name }
   for e in profile.elements:
@@ -227,35 +160,6 @@ def assembleUpdateDictionary (request, profile, additionalElements={}):
   d.update(additionalElements)
   return d
 
-def user_or_anon_tup(request):
-  """Gets user tuple from request.session, otherwise returns anonymous tuple"""
-  if 'auth' in request.session:
-    return request.session["auth"].user
-  else:
-    return ("anonymous", "anonymous")
-    
-def group_or_anon_tup(request):
-  """Gets group tuple from request.session, otherwise returns anonymous tuple"""
-  if 'auth' in request.session:
-    return request.session["auth"].group
-  else:
-    return ("anonymous", "anonymous")
-  
-def get_user_tup(user_id):
-  """Gets user tuple from user_id"""
-  return (user_id, idmap.getUserId(user_id) )
-
-def get_group_tup(group_id):
-  """Gets group tuple from group_id"""
-  return (group_id, idmap.getGroupId(group_id))
-
-def get_coowners_tup(id_meta):
-  if "_coowners" not in id_meta:
-    return []
-  else:
-    return [get_user_tup(co.strip())\
-      for co in id_meta["_coowners"].split(";") if len(co.strip()) > 0]
-    
 def extract(d, keys):
   """Gets subset of dictionary based on keys in an array"""
   return dict((k, d[k]) for k in keys if k in d)
@@ -266,8 +170,8 @@ def random_password(size = 8):
 def user_login_required(f):
   """defining a decorator to require a user to be logged in"""
   def wrap(request, *args, **kwargs):
-    if 'auth' not in request.session.keys():
-      django.contrib.messages.error(request, _("You must be logged in to view this page."))
+    if userauth.getUser(request) == None:
+      django.contrib.messages.error(request, _('You must be logged in to view this page.'))
       return django.http.HttpResponseRedirect("/login?next=" +\
         django.utils.http.urlquote(request.get_full_path()))
     return f(request, *args, **kwargs)
@@ -278,8 +182,8 @@ def user_login_required(f):
 def admin_login_required(f):
   """defining a decorator to require an admin to be logged in"""
   def wrap(request, *args, **kwargs):
-    if "auth" not in request.session or request.session["auth"].user[0] != adminUsername:
-      django.contrib.messages.error(request, _("You must be logged in as an administrator to view this page."))
+    if not userauth.getUser(request, returnAnonymous=True).isSuperuser:
+      django.contrib.messages.error(request, _('You must be logged in as an administrator to view this page.'))
       return django.http.HttpResponseRedirect("/login?next=" +\
         django.utils.http.urlquote(request.get_full_path()))
     return f(request, *args, **kwargs)

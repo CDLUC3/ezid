@@ -3,7 +3,6 @@ from django.forms import BaseFormSet, formset_factory
 import django.core.validators
 import ezidapp.models
 import util
-import idmap
 import userauth 
 import re
 from django.core.exceptions import ValidationError
@@ -662,11 +661,8 @@ def _validate_proxies(user):
   def innerfn(proxies):
     p_list = [p.strip() for p in proxies.split(',')]
     for proxy in p_list:
-      # u = ezidapp.models.getUserByUsername(proxy)
-      # if u == None or u == user or u.isAnonymous:
-      try:
-        idmap.getUserId(proxy)
-      except AssertionError:
+      u = ezidapp.models.getUserByUsername(proxy)
+      if u == None or u == user or u.isAnonymous:
         raise ValidationError(_("Cannot assign this username as proxy: \"") + proxy + "\".")
 
 def _validate_current_pw(username):

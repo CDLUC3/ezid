@@ -5,7 +5,6 @@ from decorators import basictag
 import datetime
 import urllib
 from django.core.urlresolvers import reverse
-import idmap
 import itertools
 from django.utils.translation import ugettext as _
 

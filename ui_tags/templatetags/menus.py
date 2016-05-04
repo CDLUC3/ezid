@@ -33,8 +33,6 @@ MENU_DEMO = (
 #Dynamically created menu for subnav; Only displays for logged in users
 @register.simple_tag
 def menu_user(current_func, session):
-  #print type(session['auth']).__name__
-  #print session.keys()
   acc = ''
   for i, menu in enumerate(MENU_USER):
     acc += menu_user_item(menu, session,

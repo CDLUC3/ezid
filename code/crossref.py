@@ -28,11 +28,8 @@ import uuid
 import ezid
 import ezidapp.models
 import config
-import idmap
 import log
-import policy
 import search_util
-import userauth
 import util
 import util2
 
@@ -462,7 +459,7 @@ def _doDeposit (r):
   else:
     url = m["_st"]
   submission, body, batchId = _buildDeposit(m["crossref"],
-    idmap.getAgent(r.owner)[0], r.identifier[4:], url,
+    ezidapp.models.getUserByPid(r.owner).username, r.identifier[4:], url,
     withdrawTitles=(r.operation == ezidapp.models.CrossrefQueue.DELETE or\
     m.get("_is", "public").startswith("unavailable")))
   if _submitDeposit(submission, batchId, r.identifier[4:]):
@@ -480,7 +477,7 @@ def _doDeposit (r):
       _checkAbort()
       r.save()
 
-def _sendEmail (emailAddresses, r):
+def _sendEmail (emailAddress, r):
   if r.status == ezidapp.models.CrossrefQueue.WARNING:
     s = "warning"
   else:
@@ -500,7 +497,7 @@ def _sendEmail (emailAddresses, r):
     r.message if r.message != "" else "(unknown reason)", l)
   try:
     django.core.mail.send_mail("CrossRef registration " + s, m,
-      django.conf.settings.SERVER_EMAIL, emailAddresses, fail_silently=True)
+      django.conf.settings.SERVER_EMAIL, [emailAddress], fail_silently=True)
   except Exception, e:
     raise _wrapException("error sending email", e)
 
@@ -565,11 +562,10 @@ def _doPoll (r):
       else:
         r.status = ezidapp.models.CrossrefQueue.FAILURE
       r.message = t[1]
-      au = userauth.getAuthenticatedUser(idmap.getAgent(r.owner)[0])
-      info = policy.getCrossrefInfo(au.user, au.group)
-      if info[2] and len(info[1]) > 0:
+      u = ezidapp.models.getUserByPid(r.owner)
+      if u.crossrefEmail != "":
         _checkAbort()
-        _sendEmail(info[1], r)
+        _sendEmail(u.crossrefEmail, r)
       _checkAbort()
       r.save()
   else:

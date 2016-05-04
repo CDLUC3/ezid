@@ -12,7 +12,7 @@
 #   INFO   transactionId PROGRESS function
 #   INFO   transactionId END SUCCESS [args...]
 #   INFO   transactionId END BADREQUEST
-#   INFO   transactionId END UNAUTHORIZED
+#   INFO   transactionId END FORBIDDEN
 #   INFO   - STATUS ...
 #   ERROR  transactionId END ERROR exception...
 #   ERROR  - ERROR caller exception...
@@ -108,12 +108,12 @@ def badRequest (transactionId):
   """
   _log.info("%s END BADREQUEST" % transactionId.hex)
 
-def unauthorized (transactionId):
+def forbidden (transactionId):
   """
   Logs the end of a transaction that terminated due to an
   authorization failure.
   """
-  _log.info("%s END UNAUTHORIZED" % transactionId.hex)
+  _log.info("%s END FORBIDDEN" % transactionId.hex)
 
 def _extractRaiser (tbList):
   # Given a list of traceback frames, returns the qualified name of

@@ -28,7 +28,7 @@
 #
 #   Filter by operation status:
 #     -s        success
-#     -b        bad request or unauthorized
+#     -b        bad request or forbidden
 #     -e        internal server error (transactional or other)
 #     -p        partial transaction
 #
@@ -76,7 +76,7 @@ g = optparse.OptionGroup(p, "Filter by operation status")
 g.add_option("-s", action="store_true", dest="statusSuccess", default=False,
   help="success")
 g.add_option("-b", action="store_true", dest="statusBadRequest", default=False,
-  help="bad request or unauthorized")
+  help="bad request or forbidden")
 g.add_option("-e", action="store_true", dest="statusError", default=False,
   help="internal server error (transactional or other)")
 g.add_option("-p", action="store_true", dest="statusPartial", default=False,
@@ -146,7 +146,7 @@ def statusFilter (endRecord):
     not options.statusError and not options.statusPartial:
     return True
   if endRecord[0] == "SUCCESS" and options.statusSuccess: return True
-  if endRecord[0] in ["BADREQUEST", "UNAUTHORIZED"] and\
+  if endRecord[0] in ["BADREQUEST", "FORBIDDEN"] and\
     options.statusBadRequest:
     return True
   if endRecord[0] == "ERROR" and options.statusError: return True
