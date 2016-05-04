@@ -17,6 +17,7 @@
 # -----------------------------------------------------------------------------
 
 import django.conf
+import django.db
 import os
 import threading
 import time
@@ -65,6 +66,7 @@ def _statusDaemon ():
         "downloadQueueLength=%d" % download.getQueueLength())
     except Exception, e:
       log.otherError("status._statusDaemon", e)
+    django.db.connections["default"].close()
     time.sleep(_reportingInterval)
 
 def _loadConfig ():
