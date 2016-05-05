@@ -38,6 +38,7 @@ class DownloadQueue (django.db.models.Model):
   # identifier, e.g., "ark:/99166/p92z12p14".
 
   coOwners = django.db.models.TextField(blank=True)
+  # DEPRECATED; WILL BE REMOVED
   # A comma-separated list of zero or more persistent identifiers of
   # users for which the requestor is a co-owner, e.g.,
   # "ark:/99166/p9jm23f63,ark:/99166/p99k45t25".  I.e., if the
@@ -93,8 +94,19 @@ class DownloadQueue (django.db.models.Model):
 
   currentOwner = django.db.models.CharField(
     max_length=util.maxIdentifierLength, blank=True)
+  # DEPRECATED; WILL BE REMOVED
   # The owner currently being harvested (either 'requestor' above or
   # one of the users in 'coOwners').  HARVEST stage only.
+
+  toHarvest = django.db.models.TextField()
+  # A comma-separated list of persistent identifiers of one or more
+  # users to harvest, e.g.,
+  # "ark:/99166/p9jm23f63,ark:/99166/p99k45t25".  The list is computed
+  # at the time the request is made and not changed thereafter.
+
+  currentIndex = django.db.models.IntegerField(default=0)
+  # The index into toHarvest of the user currently being harvested.
+  # HARVEST stage only.
 
   lastId = django.db.models.CharField(max_length=util.maxIdentifierLength,
     blank=True)

@@ -29,7 +29,7 @@ import urllib2
 import xml.sax.saxutils
 
 import config
-import ezidapp.models.shoulder
+import ezidapp.models
 import ezidapp.models.validation
 import mapping
 import util
@@ -111,7 +111,7 @@ class _HTTPErrorProcessor (urllib2.HTTPErrorProcessor):
 
 def _authorization (doi, datacenter=None):
   if datacenter == None:
-    s = ezidapp.models.shoulder.getLongestMatch("doi:" + doi)
+    s = ezidapp.models.getLongestShoulderMatch("doi:" + doi)
     # Should never happen.
     assert s is not None, "shoulder not found"
     datacenter = s.datacenter.symbol
@@ -122,7 +122,7 @@ def _authorization (doi, datacenter=None):
 
 def registerIdentifier (doi, targetUrl, datacenter=None):
   """
-  Registers a scheme-less DOI identifier (e.g., "10.5060/foo") and
+  Registers a scheme-less DOI identifier (e.g., "10.5060/FOO") and
   target URL (e.g., "http://whatever...") with DataCite.
   'datacenter', if specified, should be the identifier's datacenter,
   e.g., "CDL.BUL".  There are three possible returns: None on success;
@@ -165,7 +165,7 @@ def registerIdentifier (doi, targetUrl, datacenter=None):
 def setTargetUrl (doi, targetUrl, datacenter=None):
   """
   Sets the target URL of an existing scheme-less DOI identifier (e.g.,
-  "10.5060/foo").  'datacenter', if specified, should be the
+  "10.5060/FOO").  'datacenter', if specified, should be the
   identifier's datacenter, e.g., "CDL.BUL".  There are three possible
   returns: None on success; a string error message if the target URL
   was not accepted by DataCite; or a thrown exception on other error.
@@ -175,7 +175,7 @@ def setTargetUrl (doi, targetUrl, datacenter=None):
 def getTargetUrl (doi, datacenter=None):
   """
   Returns the target URL of a scheme-less DOI identifier (e.g.,
-  "10.5060/foo") as registered with DataCite, or None if the
+  "10.5060/FOO") as registered with DataCite, or None if the
   identifier is not registered.  'datacenter', if specified, should be
   the identifier's datacenter, e.g., "CDL.BUL".
   """
@@ -212,7 +212,7 @@ def validateDcmsRecord (identifier, record, schemaValidate=True):
   """
   Validates and normalizes a DataCite Metadata Scheme
   <http://schema.datacite.org/> record for a qualified identifier
-  (e.g., "doi:10.5060/foo").  The record should be unencoded.  Either
+  (e.g., "doi:10.5060/FOO").  The record should be unencoded.  Either
   the normalized record is returned or an assertion error is raised.
   If 'schemaValidate' is true, the record is validated against the
   appropriate XML schema; otherwise, only a more forgiving
@@ -400,7 +400,7 @@ def formRecord (identifier, metadata, supplyMissing=False):
 def uploadMetadata (doi, current, delta, forceUpload=False, datacenter=None):
   """
   Uploads citation metadata for the resource identified by an existing
-  scheme-less DOI identifier (e.g., "10.5060/foo") to DataCite.  This
+  scheme-less DOI identifier (e.g., "10.5060/FOO") to DataCite.  This
   same function can be used to overwrite previously-uploaded metadata.
   'current' and 'delta' should be dictionaries mapping metadata
   element names (e.g., "Title") to values.  'current+delta' is
@@ -486,7 +486,7 @@ def _deactivate (doi, datacenter):
 def deactivate (doi, datacenter=None):
   """
   Deactivates an existing, scheme-less DOI identifier (e.g.,
-  "10.5060/foo") in DataCite.  This removes the identifier from
+  "10.5060/FOO") in DataCite.  This removes the identifier from
   DataCite's search index, but has no effect on the identifier's
   existence in the Handle system or on the ability to change the
   identifier's target URL.  The identifier can and will be reactivated

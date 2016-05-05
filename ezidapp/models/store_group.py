@@ -13,6 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.core.validators
 import django.db.models
 
 import group
@@ -74,6 +75,9 @@ class StoreGroup (group.Group):
 
   def clean (self):
     super(StoreGroup, self).clean()
+    if self.groupname == "anonymous":
+      raise django.core.validators.ValidationError({ "groupname":
+        "The name 'anonymous' is reserved." })
     self.organizationName = self.organizationName.strip()
     self.organizationAcronym = self.organizationAcronym.strip()
     self.organizationStreetAddress = self.organizationStreetAddress.strip()
@@ -85,6 +89,9 @@ class StoreGroup (group.Group):
 
   def __unicode__ (self):
     return "%s (%s)" % (self.groupname, self.organizationName)
+
+  isAnonymous = False
+  # See below.
 
 # The following caches are only added to or replaced entirely;
 # existing entries are never modified.  Thus, with appropriate coding
@@ -112,7 +119,9 @@ def _getCaches ():
 
 def getByPid (pid):
   # Returns the group identified by persistent identifier 'pid', or
-  # None if there is no such group.
+  # None if there is no such group.  AnonymousGroup is returned in
+  # response to "anonymous".
+  if pid == "anonymous": return AnonymousGroup
   pidCache, groupnameCache = _getCaches()
   if pid not in pidCache:
     try:
@@ -125,7 +134,9 @@ def getByPid (pid):
 
 def getByGroupname (groupname):
   # Returns the group identified by local name 'groupname', or None if
-  # there is no such group.
+  # there is no such group.  AnonymousGroup is returned in response to
+  # "anonymous".
+  if groupname == "anonymous": return AnonymousGroup
   pidCache, groupnameCache = _getCaches()
   if groupname not in groupnameCache:
     try:
@@ -135,3 +146,18 @@ def getByGroupname (groupname):
     pidCache[g.pid] = g
     groupnameCache[groupname] = g
   return groupnameCache[groupname]
+
+class AnonymousGroup (object):
+  # A class to represent the group in which the anonymous user
+  # resides.  Note that this class can be used directly--- an object
+  # need not be instantiated.
+  pid = "anonymous"
+  groupname = "anonymous"
+  realm = store_realm.AnonymousRealm
+  crossrefEnabled = False
+  class inner (object):
+    def all (self):
+      return []
+  shoulders = inner()
+  users = inner()
+  isAnonymous = True

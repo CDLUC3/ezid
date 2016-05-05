@@ -3,13 +3,13 @@ from django.shortcuts import redirect
 import django.contrib.messages
 import metadata
 import ezid
-import logging
+import ezidapp.models
 import urllib
 import re
 import datacite_xml
-import policy
 import os.path
 from lxml import etree, objectify
+import userauth
 
 def index(request):
   d = { 'menu_item' : 'ui_create.index'}
@@ -19,10 +19,14 @@ def index(request):
 def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.prefix }\
-    for s in policy.getShoulders(request.session["auth"].user,
-    request.session["auth"].group)],
-    key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
+  user = userauth.getUser(request)
+  if user.isSuperuser:
+    shoulders = [s for s in ezidapp.models.getAllShoulders() if not s.isTest]
+  else:
+    shoulders = user.shoulders.all()
+  d["prefixes"] = sorted([{ "namespace": s.name, "prefix": s.prefix } for\
+    s in shoulders],
+    key=lambda p: ("%s %s" % (p["namespace"], p["prefix"])).lower())
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   r = simple_form_processing(request, d)
@@ -37,10 +41,14 @@ def simple(request):
 def advanced(request):
   d = { 'menu_item' :'ui_create.advanced' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.prefix }\
-    for s in policy.getShoulders(request.session["auth"].user,
-    request.session["auth"].group)],
-    key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
+  user = userauth.getUser(request)
+  if user.isSuperuser:
+    shoulders = [s for s in ezidapp.models.getAllShoulders() if not s.isTest]
+  else:
+    shoulders = user.shoulders.all()
+  d["prefixes"] = sorted([{ "namespace": s.name, "prefix": s.prefix } for\
+    s in shoulders],
+    key=lambda p: ("%s %s" % (p["namespace"], p["prefix"])).lower())
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   r = advanced_form_processing(request, d)
@@ -80,8 +88,9 @@ def simple_form_processing(request, d):
       return "edit_page"
     
     if uic.validate_simple_metadata_form(request, d['current_profile']):
-      s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request),
-          uic.group_or_anon_tup(request), uic.assembleUpdateDictionary(request, d['current_profile'],
+      s = ezid.mintIdentifier(request.POST['shoulder'],
+        userauth.getUser(request, returnAnonymous=True),
+        uic.assembleUpdateDictionary(request, d['current_profile'],
           { '_target' : uic.fix_target(request.POST['_target']),
            '_export': 'yes' }))
       if s.startswith("success:"):
@@ -153,11 +162,11 @@ def advanced_form_processing(request, d):
       
       #write out ID and metadata (one variation with special remainder, one without)
       if request.POST['remainder'] == '' or request.POST['remainder'] == uic.remainder_box_default:
-        s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request), 
-            uic.group_or_anon_tup(request), to_write)
+        s = ezid.mintIdentifier(request.POST['shoulder'],
+          userauth.getUser(request, returnAnonymous=True), to_write)
       else:
-        s = ezid.createIdentifier(request.POST['shoulder'] + request.POST['remainder'], uic.user_or_anon_tup(request),
-          uic.group_or_anon_tup(request), to_write)
+        s = ezid.createIdentifier(request.POST['shoulder'] + request.POST['remainder'],
+          userauth.getUser(request, returnAnonymous=True), to_write)
       if s.startswith("success:"):
         new_id = s.split()[1]
         django.contrib.messages.success(request, "Identifier created.")
@@ -204,13 +213,14 @@ def ajax_advanced(request):
       if not request.POST['identifier']:
         error_msgs.append("Unable to edit. Identifier not supplied.")
     d["testPrefixes"] = uic.testPrefixes
-    if 'auth' in request.session:
-      d['prefixes'] = sorted([{ "namespace": s.name, "prefix": s.prefix }\
-        for s in policy.getShoulders(request.session["auth"].user,
-        request.session["auth"].group)],
-        key=lambda p: (p['namespace'] + ' ' + p['prefix']).lower())
+    user = userauth.getUser(request, returnAnonymous=True)
+    if user.isSuperuser:
+      shoulders = [s for s in ezidapp.models.getAllShoulders() if not s.isTest]
     else:
-      d['prefixes'] = []
+      shoulders = user.shoulders.all()
+    d["prefixes"] = sorted([{ "namespace": s.name, "prefix": s.prefix } for\
+      s in shoulders],
+      key=lambda p: ("%s %s" % (p["namespace"], p["prefix"])).lower())
     pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
     if (request.POST['action'] == 'create' and\
         request.POST['shoulder'] not in pre_list):
@@ -250,8 +260,8 @@ def ajax_advanced(request):
       else:
         stts = request.POST['_status']
       to_write = _assembleMetadata(request, stts, return_val) 
-      s = ezid.setMetadata(request.POST['identifier'], uic.user_or_anon_tup(request),\
-          uic.group_or_anon_tup(request), to_write)
+      s = ezid.setMetadata(request.POST['identifier'],
+        userauth.getUser(request, returnAnonymous=True), to_write)
     else:  # action=='create'
       stts = ("public" if request.POST["publish"] == "True" else "reserved")
       to_write = _assembleMetadata(request, stts, return_val) 
@@ -259,12 +269,12 @@ def ajax_advanced(request):
       #write out ID and metadata (one variation with special remainder, one without)
       if request.POST['remainder'] == '' or\
          request.POST['remainder'] == uic.remainder_box_default:
-        s = ezid.mintIdentifier(request.POST['shoulder'], uic.user_or_anon_tup(request), 
-          uic.group_or_anon_tup(request), to_write)
+        s = ezid.mintIdentifier(request.POST['shoulder'],
+          userauth.getUser(request, returnAnonymous=True), to_write)
       else:
         s = ezid.createIdentifier(request.POST['shoulder'] +\
-            request.POST['remainder'], uic.user_or_anon_tup(request),
-        uic.group_or_anon_tup(request), to_write)
+          request.POST['remainder'],
+          userauth.getUser(request, returnAnonymous=True), to_write)
 
     if s.startswith("success:"):
       new_id = s.split()[1]

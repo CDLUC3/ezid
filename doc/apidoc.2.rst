@@ -1296,16 +1296,16 @@ of the "subsystems" query parameter.  For example:
 
 .. parsed-literal::
 
-  |rArr| GET /status?subsystems=noid,ldap HTTP/1.1
+  |rArr| GET /status?subsystems=noid,search HTTP/1.1
   |rArr| Host: ezid.cdlib.org
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 38
+  |lArr| Content-Length: 40
   |lArr|
   |lArr| success: EZID is up
   |lArr| noid: up
-  |lArr| ldap: up
+  |lArr| search: up
 
 Use the URL \http://ezid.cdlib.org/status?subsystems=* to discover
 subsystem names and probe all subsystems.
@@ -1832,12 +1832,12 @@ Batch download
 The metadata for all identifiers matching a set of constraints can be
 downloaded in one batch operation.  Authentication is required, and
 the scope of the identifiers that can be downloaded in this way is
-implicitly restricted to those that are owned or co-owned by the
-requestor.
+implicitly restricted to those that are directly owned by or otherwise
+modifiable by the requestor.
 
 Batch download and harvesting (see `OAI-PMH harvesting`_ below) are
 similar but different operations.  With batch download, the
-identifiers returned are restricted to those owned or co-owned by the
+identifiers returned are restricted to those modifiable by the
 requestor as noted above, but within that scope it is possible to
 download *all* identifiers, including reserved, unavailable, and test
 identifiers.  By contrast, with harvesting, no authentication is
@@ -2114,12 +2114,16 @@ identifiers).
 - owner=\ `u`:hl1: (*repeatable*)
 
   Return identifiers owned by user `u`:hl1:, where `u`:hl1: is an EZID
-  username, e.g., "apitest".
+  username, e.g., "apitest".  All "owner" and "ownergroup" parameters
+  are ORed together; if none are specified, the identifiers directly
+  owned by the requestor are returned.
 
 - ownergroup=\ `g`:hl1: *(repeatable)*
 
   Return identifiers owned by group `g`:hl1:, where `g`:hl1: is an
-  EZID group name, e.g., "cdl".
+  EZID group name, e.g., "cdl".  All "owner" and "ownergroup"
+  parameters are ORed together; if none are specified, the identifiers
+  directly owned by the requestor are returned.
 
 - permanence={test|real}
 

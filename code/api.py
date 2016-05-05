@@ -23,7 +23,7 @@
 #   response body: status line
 #
 # View an identifier:
-#   GET /id/{identifier}
+#   GET /id/{identifier}   [authentication optional]
 #   response body: status line, metadata
 #
 # Update an identifier:
@@ -77,7 +77,6 @@
 # -----------------------------------------------------------------------------
 
 import django.http
-import threading
 import time
 
 import anvl
@@ -86,19 +85,16 @@ import datacite
 import datacite_async
 import download
 import ezid
-import ezidadmin
 import noid_egg
 import search_util
 import store
 import userauth
 import util
 
-_adminUsername = None
 _idlewaitSleep = None
 
 def _loadConfig ():
-  global _adminUsername, _idlewaitSleep
-  _adminUsername = config.get("ldap.admin_username")
+  global _idlewaitSleep
   _idlewaitSleep = float(config.get("DEFAULT.idlewait_sleep"))
 
 _loadConfig()
@@ -131,6 +127,8 @@ def _statusMapping (content, createRequest):
     return 400
   elif content.startswith("error: unauthorized"):
     return 401
+  elif content.startswith("error: forbidden"):
+    return 403
   elif content.startswith("error: method not allowed"):
     return 405
   elif content.startswith("error: concurrency limit exceeded"):
@@ -152,12 +150,11 @@ def _response (status, createRequest=False, addAuthenticateHeader=False,
   if addAuthenticateHeader: r["WWW-Authenticate"] = "Basic realm=\"EZID\""
   return r
 
-def _unauthorized (authenticationFailure=True):
-  if authenticationFailure:
-    s = " - authentication failure"
-  else:
-    s = ""
-  return _response("error: unauthorized" + s, addAuthenticateHeader=True)
+def _unauthorized ():
+  return _response("error: unauthorized", addAuthenticateHeader=True)
+
+def _forbidden ():
+  return _response("error: forbidden")
 
 def _methodNotAllowed ():
   return _response("error: method not allowed")
@@ -167,17 +164,17 @@ def mintIdentifier (request):
   Mints an identifier; interface to ezid.mintIdentifier.
   """
   if request.method != "POST": return _methodNotAllowed()
-  auth = userauth.authenticateRequest(request)
-  if type(auth) is str:
-    return _response(auth)
-  elif not auth:
+  user = userauth.authenticateRequest(request)
+  if type(user) is str:
+    return _response(user)
+  elif not user:
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
   assert request.path_info.startswith("/shoulder/")
   shoulder = request.path_info[10:]
-  return _response(ezid.mintIdentifier(shoulder, auth.user, auth.group,
-    metadata), createRequest=True)
+  return _response(ezid.mintIdentifier(shoulder, user, metadata),
+    createRequest=True)
 
 def identifierDispatcher (request):
   """
@@ -198,65 +195,67 @@ def identifierDispatcher (request):
 
 def _getMetadata (request):
   assert request.path_info.startswith("/id/")
-  auth = userauth.authenticateRequest(request)
-  if type(auth) is str: return _response(auth)
-  if auth:
-    r = ezid.getMetadata(request.path_info[4:], auth.user, auth.group)
+  user = userauth.authenticateRequest(request)
+  if type(user) is str: return _response(user)
+  if user != None:
+    r = ezid.getMetadata(request.path_info[4:], user)
   else:
     r = ezid.getMetadata(request.path_info[4:])
   if type(r) is str:
-    if r.startswith("error: unauthorized"):
-      return _unauthorized(not auth)
+    if r.startswith("error: forbidden"):
+      if user != None:
+        return _forbidden()
+      else:
+        return _unauthorized()
     else:
       return _response(r)
   s, metadata = r
   return _response(s, anvlBody=anvl.format(metadata))
 
 def _setMetadata (request):
-  auth = userauth.authenticateRequest(request)
-  if type(auth) is str:
-    return _response(auth)
-  elif not auth:
+  user = userauth.authenticateRequest(request)
+  if type(user) is str:
+    return _response(user)
+  elif user == None:
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
   assert request.path_info.startswith("/id/")
   identifier = request.path_info[4:]
-  return _response(ezid.setMetadata(identifier, auth.user, auth.group,
-    metadata))
+  return _response(ezid.setMetadata(identifier, user, metadata))
 
 def _createIdentifier (request):
-  auth = userauth.authenticateRequest(request)
-  if type(auth) is str:
-    return _response(auth)
-  elif not auth:
+  user = userauth.authenticateRequest(request)
+  if type(user) is str:
+    return _response(user)
+  elif not user:
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
   assert request.path_info.startswith("/id/")
   identifier = request.path_info[4:]
-  return _response(ezid.createIdentifier(identifier, auth.user, auth.group,
-    metadata), createRequest=True)
+  return _response(ezid.createIdentifier(identifier, user, metadata),
+    createRequest=True)
 
 def _deleteIdentifier (request):
-  auth = userauth.authenticateRequest(request)
-  if type(auth) is str:
-    return _response(auth)
-  elif not auth:
+  user = userauth.authenticateRequest(request)
+  if type(user) is str:
+    return _response(user)
+  elif not user:
     return _unauthorized()
   assert request.path_info.startswith("/id/")
   identifier = request.path_info[4:]
-  return _response(ezid.deleteIdentifier(identifier, auth.user, auth.group))
+  return _response(ezid.deleteIdentifier(identifier, user))
 
 def login (request):
   """
   Logs in a user.
   """
   if request.method != "GET": return _methodNotAllowed()
-  auth = userauth.authenticateRequest(request, storeSessionCookie=True)
-  if type(auth) is str:
-    return _response(auth)
-  elif not auth:
+  user = userauth.authenticateRequest(request, storeSessionCookie=True)
+  if type(user) is str:
+    return _response(user)
+  elif user == None:
     return _unauthorized()
   else:
     return _response("success: session cookie returned")
@@ -277,12 +276,10 @@ def getStatus (request):
   body = ""
   if "subsystems" in request.GET:
     l = request.GET["subsystems"]
-    if l == "*": l = "datacite,ldap,noid,search"
+    if l == "*": l = "datacite,noid,search"
     for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
       if ss == "datacite":
         body += "datacite: %s\n" % datacite.ping()
-      elif ss == "ldap":
-        body += "ldap: %s\n" % ezidadmin.pingLdap()
       elif ss == "noid":
         body += "noid: %s\n" % noid_egg.ping()
       elif ss == "search":
@@ -341,13 +338,13 @@ def pause (request):
   status records are streamed back to the client indefinitely.
   """
   if request.method != "GET": return _methodNotAllowed()
-  auth = userauth.authenticateRequest(request)
-  if type(auth) is str:
-    return _response(auth)
-  elif not auth:
+  user = userauth.authenticateRequest(request)
+  if type(user) is str:
+    return _response(user)
+  elif user == None:
     return _unauthorized()
-  elif auth.user[0] != _adminUsername:
-    return _unauthorized(False)
+  elif not user.isSuperuser:
+    return _forbidden()
   if "op" not in request.GET:
     return _response("error: bad request - no 'op' parameter")
   if request.GET["op"].lower() == "on":
@@ -375,13 +372,13 @@ def reload (request):
   Reloads the configuration file; interface to config.reload.
   """
   if request.method != "POST": return _methodNotAllowed()
-  auth = userauth.authenticateRequest(request)
-  if type(auth) is str:
-    return _response(auth)
-  elif not auth:
+  user = userauth.authenticateRequest(request)
+  if type(user) is str:
+    return _response(user)
+  elif user == None:
     return _unauthorized()
-  elif auth.user[0] != _adminUsername:
-    return _unauthorized(False)
+  elif not user.isSuperuser:
+    return _forbidden()
   try:
     oldValue = ezid.pause(True)
     # Wait for the system to become quiescent.
@@ -398,9 +395,9 @@ def batchDownloadRequest (request):
   Enqueues a batch download request.
   """
   if request.method != "POST": return _methodNotAllowed()
-  auth = userauth.authenticateRequest(request)
-  if type(auth) is str:
-    return _response(auth)
-  elif not auth:
+  user = userauth.authenticateRequest(request)
+  if type(user) is str:
+    return _response(user)
+  elif not user:
     return _unauthorized()
-  return _response(download.enqueueRequest(auth, request.POST))
+  return _response(download.enqueueRequest(user, request.POST))

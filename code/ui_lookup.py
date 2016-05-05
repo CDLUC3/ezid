@@ -2,8 +2,8 @@ import ui_common as uic
 import django.contrib.messages
 from django.shortcuts import redirect
 import ezid
-import metadata
 import urllib
+import userauth
 
 def index(request):
   """
@@ -17,11 +17,7 @@ def index(request):
   elif request.method == "POST":
     if "identifier" not in request.POST: return uic.badRequest()
     id = request.POST["identifier"].strip()
-    if "auth" in request.session:
-      r = ezid.getMetadata(id, request.session["auth"].user,
-        request.session["auth"].group)
-    else:
-      r = ezid.getMetadata(id)
+    r = ezid.getMetadata(id, userauth.getUser(request, returnAnonymous=True))
     if type(r) is tuple:
       s, m = r
       assert s.startswith("success:")
