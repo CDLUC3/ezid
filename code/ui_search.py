@@ -3,6 +3,7 @@ import search_util
 import django.contrib.messages
 import form_objects
 from django.utils.translation import ugettext as _
+import userauth
 import math
 import locale
 import util
@@ -130,6 +131,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
   * If s_type=="public", don't include owner credentials in constraints.
   * 'filtered' means form fields have been submitted w/a search request 
     (useful to know this for the manage page)
+  * use owner or ownergroup, not both, otherwise ownergroup takes precedence
   """
   if request.method == "GET":
     REQUEST = request.GET
@@ -139,7 +141,12 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
   d = _pageLayout(d, REQUEST, s_type)
   if noConstraintsReqd or 'form' in d and d['form'].is_valid():
     # Build dictionary of search constraints
-    c = _buildAuthorityConstraints(request, s_type)
+    owner = ownergroup = None
+    if 'ownergroup_selected' in d: 
+      ownergroup = d['ownergroup_selected']
+    else:
+      owner = d['owner_selected'] if 'owner_selected' in d else None
+    c = _buildAuthorityConstraints(request, s_type, owner, ownergroup)
     if s_type in ('public', 'manage'):
       q = d['queries'] if 'queries' in d and d['queries'] else REQUEST
       q2 = {}
@@ -277,15 +284,17 @@ def _pageLayout(d, REQUEST, s_type="public"):
   if 'ps' in REQUEST and REQUEST['ps'].isdigit(): d['ps'] = int(REQUEST['ps'])
   return d
 
-def _buildAuthorityConstraints(request, s_type="public"):
+def _buildAuthorityConstraints(request, s_type="public", owner=None, ownergroup=None):
   """ 
   A logged in user can use (public) Search page, but this would not limit the
   results to just their IDs. It would also include all public IDs.
+  owner = username of owner; ownergroup = group name 
   """
-  if s_type == "public" or "auth" not in request.session:
+  if s_type == "public" or userauth.getUser(request) == None:
     c = {'publicSearchVisible': True}
   else:
-    c = {'owner': request.session['auth'].user[0]}
+    assert owner or ownergroup, "Owner information missing"
+    c = {'owner': owner} if (ownergroup == None) else {'ownergroup': ownergroup}
   return c
 
 def _buildConstraints(c, REQUEST, s_type="public"):
@@ -343,7 +352,7 @@ def _buildQuerySyntax(c):
   """ Takes dictionary like this:
        {'keywords': u'marine fish', 'resourceTitle': u'"Aral Sea"'}
       and returns string like this:
-       keywords:(marine OR fish) AND title:("Aral Sea") 
+       keywords:(marine OR fish) AND resourceTitle:("Aral Sea") 
 
       Borrowing same logic from search_util.formulateQuery
        * Handling 2-tuple publication year

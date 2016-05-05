@@ -26,9 +26,12 @@ FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") +\
 
 @uic.user_login_required
 def index(request):
-  """ Manage Page, listing all Ids owned by user """
+  """ Manage Page, listing all Ids owned by user, or if groupadmin, all group users """
   d = { 'menu_item' : 'ui_manage.index' }
+  user = userauth.getUser(request)
   if request.method == "GET":
+    d['owner_selected'] = request.GET['owner_selected'] \
+      if 'owner_selected' in request.GET else user.username
     d['queries'] = ui_search.queryDict(request)
     # And preserve query in form object
     d['form'] = form_objects.ManageSearchIdForm(d['queries'])
@@ -36,9 +39,17 @@ def index(request):
     d['sort'] = 'asc'
     noConstraintsReqd =True 
   elif request.method == "POST":
+    d['owner_selected'] = request.POST['owner_selected']
     d['filtered'] = True 
     d['form'] = form_objects.ManageSearchIdForm(request.POST)
     noConstraintsReqd = False
+  d['owner_names'] = [(user.username, user.displayName + " (" + _("me") + ")")]
+  if user.isGroupAdministrator:
+    users_group = [(u.username, u.displayName, ) for u in user.group.users.all()\
+      if u.displayName != user.displayName]
+    d['owner_names'].extend(sorted(users_group, key=lambda x: x[1].lower()))
+    if d['owner_selected'] == user.username:
+      d['ownergroup_selected'] = user.group.groupname
   d = ui_search.search(d, request, noConstraintsReqd, "manage")
   if not d['form'].has_changed():
     d['filtered'] = False
@@ -176,8 +187,8 @@ def edit(request, identifier):
         assert 'generated_xml' in d
         to_write = { "_profile": 'datacite', '_target' : P['target'],
           "_status": stts, "_export": d['export'], "datacite": d['generated_xml'] }
-        s = ezid.setMetadata(P['identifier'], uic.user_or_anon_tup(request),\
-          uic.group_or_anon_tup(request), to_write)
+        s = ezid.setMetadata(P['identifier'], 
+          userauth.getUser(request, returnAnonymous=True), to_write)
         if s.startswith("success:"):
           _alertMessageUpdateSuccess(request)
           return redirect("/id/" + urllib.quote(identifier, ":/"))

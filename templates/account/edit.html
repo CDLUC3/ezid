@@ -26,8 +26,19 @@
   {% include "includes/_inlinetext.html" with field=form.accountDisplayName reqd=True form_name="general__" %}
   {% include "includes/_inlinetext.html" with field=form.accountEmail reqd=True form_name="general__" %}
  
+{% if crossrefEmail %} 
   <div class="fcontrol__group-inline general__form-element-group">
-    <label for="account_username" class="fcontrol__textarea-label-inline general__form-label">{% trans "Your Proxy Account(s)" %}</label>
+    <label for="account_username" class="fcontrol__textarea-label-inline general__form-label">{% trans "Crossref Email" %}</label>
+    <div class="fcontrol__text-nofield">
+      {{ crossrefEmail }} 
+      <div class="fcontrol__caption">{% trans "NOTE: If you want to change this email address" %}
+        , <a class="link__primary" href="/contact">{% trans "contact us" %}</a>.</div>
+    </div>
+  </div>
+{% endif %}
+
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="" class="fcontrol__textarea-label-inline general__form-label">{% trans "Your Proxy Account(s)" %}</label>
     <div class="fcontrol__text-nofield">
       {{ proxy_for }} 
       <div class="fcontrol__caption">{% trans "NOTE: These are identifier groups where you have been designated as proxy user." %}</div>

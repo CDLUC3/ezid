@@ -49,12 +49,12 @@ def edit(request, ssl=False):
     d['secondaryContactPhone'] = user.secondaryContactPhone
     d['accountDisplayName'] = user.displayName
     d['accountEmail'] = user.accountEmail
-    d['proxy_for'] =\
-      ", ".join(u.username for u in user.proxy_for.all().order_by("username"))
+    if user.crossrefEnabled: d['crossrefEmail'] = user.crossrefEmail
+    proxy_for_list = user.proxy_for.all().order_by("username")
+    d['proxy_for'] = ", ".join(u.username for u in proxy_for_list) if proxy_for_list else "N/A"
     d['proxy_users_picked'] =\
       ", ".join(u.username for u in user.proxies.all().order_by("username"))
     d['proxy_users_choose'] = (u.username for u in user.group.users.all().order_by("username"))
-    # d['proxy_users_choose'] = proxy_users_mock
     d['form'] = form_objects.UserForm(d, user=user, username=d['username'], pw_reqd=False)
   else:
     # ToDo: Email new proxy users 

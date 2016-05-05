@@ -16,6 +16,7 @@ def dashboard(request, ssl=False):
   """
   d = { 'menu_item' : 'ui_admin.dashboard'}
   user = userauth.getUser(request)
+  d['owner_selected'] = user.username
   d['display_adminlink'] = user.username == 'admin' 
   # d = _getUsage(request, d)
 

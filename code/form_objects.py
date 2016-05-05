@@ -723,6 +723,14 @@ class UserForm(BasePasswordForm):
       validators=[_validate_proxies(self.user)])
     self.fields["pwcurrent"] = forms.CharField(required=False, label=_("Current Password"),
       widget=forms.PasswordInput(), validators=[_validate_current_pw(self.username)])
+  def clean_proxy_users_picked(self):
+    data = self.cleaned_data['proxy_users_picked']
+    if data == '':
+      data = _("None Chosen") 
+    return data
+  #  cleaned_data = super(UserForm, self).clean()
+  #  if cleaned_data["proxy_users_picked"] == '':
+  #    cleaned_data["proxy_users_picked"] = _("None Chosen") 
 
 ################# Search ID Form  #################
 

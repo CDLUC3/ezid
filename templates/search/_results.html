@@ -24,25 +24,39 @@
 {% if primary_page == "ui_manage.index" and authenticatedUser %}
 <div class="manage__identifiers-submit-controls">
   <div class="fcontrol__select-group-inline manage__identifiers-select">
-    <label for="manage__select4" class="fcontrol__select-label-inline">{% trans "View identifiers owned by" %}:</label>
-    <select name="url-here" id="manage__select4" class="fcontrol__select">
-      <option value="">{{ authenticatedUser.username }} ({% trans "me" %})</option>
-    {% if coowners %}
-      {% for c in coowners %}
-      <option value="">{{ c }} ({% trans "by proxy" %})</option>
+    <form id="owner_filter_form" action="{% url primary_page %}" role="form">
+      <input name="ps" type="hidden" value="{{ ps }}"/>
+      <input name="order_by" type="hidden" value="{{ order_by }}"/>
+      <input name="sort" type="hidden" value="{{ sort }}"/>
+      {% rewrite_hidden REQUEST %}
+      <label for="owner_selected" class="fcontrol__select-label-inline">{% trans "View identifiers owned by" %}:</label>
+      <select name="owner_selected" id="owner_selected" class="fcontrol__select">
+      {% for owner in owner_names %}
+        <option value="{{owner.0}}"
+        {% if owner.0 == owner_selected %}
+          selected="selected"
+        {% endif %}
+        >{{owner.1}}</option>
       {% endfor %}
-    {% endif %}
-      <option value="">Department A</option>
-      <optgroup label="Institution B">
-        <option value="">Username 1</option>
-        <option value="">Username 2</option>
-      </optgroup>
-    </select>
+      </select>
+    </form>
   </div>
+  {% if total_results > 0 %}
   <form action="{% url "ui_manage.download" %}" method="get" role="form">
     <button id="download" class="button__primary manage__download-button">{% trans "Download All" %}</button>
   </form>
+  {% endif %}
 </div>
+<script type="text/javascript">
+  // submit form when owner filter changes
+  $("#owner_selected").bind("change", function(event){
+      var frm = $('#owner_filter_form');
+      frm.attr('action', location.pathname);
+      frm.unbind('submit');
+      frm.attr('method', 'get');
+      frm.submit();
+  });
+</script>
 {% endif %}
 
 {% if total_results < 1 %}
