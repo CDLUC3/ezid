@@ -34,25 +34,21 @@ MENUS = (
           ),
           ("Admin", 'ui_admin.index', 'admin',
             ( ("Usage", 'ui_admin.usage', 'admin', ()),
-              ("Users", 'ui_admin.manage_users', 'admin', ()),
-              ("Groups", 'ui_admin.manage_groups', 'admin', ()),
               ("New admin site", "ui_admin.admin:index", "admin", ())
             )
           )
         )
 
 @register.simple_tag
-def top_menu(current_func, session):
-  #print type(session['auth']).__name__
-  #print session.keys()
+def top_menu(current_func, authenticatedUser):
   acc = ''
   for menu in MENUS:
-    acc += top_menu_item(menu, session,
+    acc += top_menu_item(menu, authenticatedUser,
       string.split(current_func, '.')[0] == string.split(menu[1], '.')[0])
   return acc
   
 @register.simple_tag
-def secondary_menu(current_func, session):
+def secondary_menu(current_func, authenticatedUser):
   matched = False
   for menu in MENUS:
     if string.split(current_func,'.')[0] == string.split(menu[1], '.')[0]:
@@ -61,32 +57,32 @@ def secondary_menu(current_func, session):
   if not matched or not menu[3]: return ''
   acc = []
   for m in menu[3]:
-    acc.append(display_item(m, session,
+    acc.append(display_item(m, authenticatedUser,
                 string.split(current_func, '.')[1] == string.split(m[1], '.')[1]))
   return '<span class="pad">|</span>'.join(acc)
   
   
 
-def top_menu_item(tup, session, is_current):
-  return "<div>" + display_item(tup, session, is_current) + "</div>"
+def top_menu_item(tup, authenticatedUser, is_current):
+  return "<div>" + display_item(tup, authenticatedUser, is_current) + "</div>"
 
 
-def display_item(tup, session, is_current):
+def display_item(tup, authenticatedUser, is_current):
   if ":" in tup[1]:
     u = reverse(tup[1].split(".")[1])
   else:
     u = reverse(tup[1])
   if is_current:
-    if tup[2] == 'public' or (tup[2] == 'user' and session.has_key('auth')):
+    if tup[2] == 'public' or (tup[2] == 'user' and authenticatedUser):
       return """<a href="%(path)s" class="menu_current">%(text)s</a>""" % {'path':u, 'text':tup[0] }
     else:
       return """<span class="menu_current">""" + tup[0] + """</span>"""
   else:
-    if tup[2] == 'public' or (tup[2] == 'user' and session.has_key('auth')):
+    if tup[2] == 'public' or (tup[2] == 'user' and authenticatedUser):
       return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
     elif tup[2] == 'user':
       return """<span class="menu_disabled">""" + tup[0] + """</span>"""
-    elif tup[2] == 'admin' and session.has_key('auth') and config.get("ldap.admin_username") == session['auth'].user[0]:
+    elif tup[2] == 'admin' and authenticatedUser and authenticatedUser.isSuperuser:
       return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
     else:
       return ''

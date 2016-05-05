@@ -40,7 +40,7 @@ import threading
 import time
 
 import config
-import idmap
+import ezidapp.models
 import log
 
 _defaultDimensions = ["month", "owner", "group", "type", "hasMetadata"]
@@ -124,8 +124,10 @@ class Stats (object):
     i = self._dimensions.index(dimension)
     s = set()
     for t in self._histogram:
-      if dimension in ["owner", "group"] and useLocalNames:
-        s.add(idmap.getAgent(t[i])[0])
+      if dimension == "owner" and useLocalNames:
+        s.add(ezidapp.models.getUserByPid(t[i]).username)
+      elif dimension == "group" and useLocalNames:
+        s.add(ezidapp.models.getGroupByPid(t[i]).groupname)
       else:
         s.add(t[i])
     l = list(s)
@@ -149,10 +151,10 @@ class Stats (object):
     if useLocalNames:
       if self._ownerIndex >= 0 and constraints[self._ownerIndex] is not None:
         constraints[self._ownerIndex] =\
-          idmap.getUserId(constraints[self._ownerIndex])
+          ezidapp.models.getUserByUsername(constraints[self._ownerIndex]).pid
       if self._groupIndex >= 0 and constraints[self._groupIndex] is not None:
         constraints[self._groupIndex] =\
-          idmap.getGroupId(constraints[self._groupIndex])
+          ezidapp.models.getGroupByGroupname(constraints[self._groupIndex]).pid
     count = 0
     for t, c in self._histogram.items():
       include = True
@@ -189,10 +191,10 @@ class Stats (object):
     excludeIndexes = [self._monthIndex]
     if owner is not None:
       assert self._ownerIndex >= 0, "no owner dimension"
-      if useLocalNames: owner = idmap.getUserId(owner)
+      if useLocalNames: owner = ezidapp.models.getUserByUsername(owner).pid
     if group is not None:
       assert self._groupIndex >= 0, "no group dimension"
-      if useLocalNames: group = idmap.getGroupId(group)
+      if useLocalNames: group = ezidapp.models.getGroupByGroupname(group).pid
     if self._ownerIndex >= 0: excludeIndexes.append(self._ownerIndex)
     if self._groupIndex >= 0: excludeIndexes.append(self._groupIndex)
     includeIndexes = [i for i in range(len(_defaultDimensions))\

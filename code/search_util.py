@@ -172,7 +172,7 @@ def formulateQuery (constraints, orderBy=None,
           v = util.validateDoi(value)
           if v != None: v = "doi:" + v
         if v == None: v = value
-      filters.append(django.db.models.Q(identifier=v))
+      filters.append(django.db.models.Q(identifier__startswith=v))
     elif column == "identifierType":
       if isinstance(value, basestring): value = [value]
       filters.append(reduce(operator.or_,

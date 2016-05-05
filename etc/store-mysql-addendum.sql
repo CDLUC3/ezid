@@ -13,9 +13,7 @@ ALTER TABLE ezidapp_datacitequeue MODIFY identifier VARCHAR(255) NOT NULL
   COLLATE 'ascii_bin';
 ALTER TABLE ezidapp_downloadqueue MODIFY requestor VARCHAR(255) NOT NULL
   COLLATE 'ascii_bin';
-ALTER TABLE ezidapp_downloadqueue MODIFY coOwners LONGTEXT NOT NULL
-  COLLATE 'ascii_bin';
-ALTER TABLE ezidapp_downloadqueue MODIFY currentOwner VARCHAR(255) NOT NULL
+ALTER TABLE ezidapp_downloadqueue MODIFY toHarvest LONGTEXT NOT NULL
   COLLATE 'ascii_bin';
 ALTER TABLE ezidapp_downloadqueue MODIFY lastId VARCHAR(255) NOT NULL
   COLLATE 'ascii_bin';

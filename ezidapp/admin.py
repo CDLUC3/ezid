@@ -32,6 +32,7 @@ import django.utils.html
 import models
 import models.search_identifier
 import models.store_group
+import models.store_user
 import util
 
 # Deferred imports...
@@ -672,14 +673,16 @@ def createOrUpdateUserPid (request, obj, change):
     "ezid.user.password": obj.password,
     "ezid.user.notes": obj.notes })
   if r.startswith("success:"):
-    django.contrib.messages.success(request, "User PID %s." %\
-      ("updated" if change else "created"))
+    if request != None:
+      django.contrib.messages.success(request, "User PID %s." %\
+        ("updated" if change else "created"))
   else:
     log.otherError("admin.createOrUpdateUserPid", Exception(
       "ezid.%s call failed: %s" % ("setMetadata" if change else\
       "createIdentifier", r)))
-    django.contrib.messages.error(request, "Error %s user PID." %\
-      ("updating" if change else "creating"))
+    if request != None:
+      django.contrib.messages.error(request, "Error %s user PID." %\
+        ("updating" if change else "creating"))
 
 class StoreUserAdmin (django.contrib.admin.ModelAdmin):
   def groupLink (self, obj):
@@ -801,3 +804,12 @@ class StoreUserAdmin (django.contrib.admin.ModelAdmin):
     css = { "all": ["admin/css/base-user.css"] }
 
 superuser.register(models.StoreUser, StoreUserAdmin)
+
+def scheduleUserChangePostCommitActions (user):
+  # This function should be called when a StoreUser object is updated
+  # and saved outside this module; it should be called within the
+  # transaction making the updates.
+  django.db.connection.on_commit(models.store_user.clearCaches)
+  django.db.connection.on_commit(models.search_identifier.clearUserCache)
+  django.db.connection.on_commit(
+    lambda: createOrUpdateUserPid(None, user, True))

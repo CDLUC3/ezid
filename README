@@ -19,13 +19,10 @@ EZID requires:
 - django-transaction-hooks <http://django-transaction-hooks.readthedocs.org/>
   (needed only until EZID has been migrated to Django 1.9);
 - lxml <http://lxml.de/> for processing XML;
-- Apache <http://httpd.apache.org/> if running under that, and
+- Apache <http://httpd.apache.org/> if running under that, and if so,
 - mod_wsgi <http://code.google.com/p/modwsgi/> (note that to work with
   mod_wsgi Python will have to have been compiled with shared object
-  support);
-- OpenLDAP <http://www.openldap.org/> if LDAP authentication is used,
-  and
-- python-ldap <http://www.python-ldap.org/>.
+  support).
 
 Those are the core prerequisites for running EZID standalone.  But
 EZID is of little value unless there are some other, external servers
@@ -33,8 +30,7 @@ running: a Noid <http://wiki.ucop.edu/display/Curation/NOID> "egg"
 server for storing metadata (strictly speaking, optional, but an
 essential component in the grand scheme of things); additional Noid
 "nog" servers for minting identifiers; a shoulder server (optional);
-DataCite services for creating DOI identifiers; and an LDAP server, if
-LDAP authentication is used.
+and DataCite services for creating DOI identifiers.
 
 Caution: there may be dependencies on the specific version of Django:
 certain files have been copied and in some cases modified from the
@@ -54,7 +50,6 @@ layout:
     .../SITE_ROOT/
         PROJECT_ROOT/
             (this software distribution:)
-            LDAP
             LOCALIZATION
             NOTES
             README

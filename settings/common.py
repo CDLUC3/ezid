@@ -1,4 +1,3 @@
-import ldap
 import os
 import os.path
 import socket
@@ -15,10 +14,6 @@ EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
 LOGGING_CONFIG_FILE = "logging.server.conf"
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))
-
-ldap.set_option(ldap.OPT_X_TLS_CACERTDIR, os.path.join(PROJECT_ROOT,
-  "settings", "certs"))
-ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
 
 DEBUG = True
 TEST_RUNNER = "django.test.runner.DiscoverRunner"

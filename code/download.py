@@ -25,7 +25,6 @@ import calendar
 import csv
 import django.conf
 import django.core.mail
-import exceptions
 import hashlib
 import os
 import os.path
@@ -40,9 +39,9 @@ import anvl
 import config
 import ezid
 import ezidapp.models
-import idmap
 import log
 import mapping
+import policy
 import store
 import util2
 
@@ -124,22 +123,18 @@ def _validateTimestamp (v):
     raise _ValidationException("invalid timestamp")
 
 def _validateUser (v):
-  try:
-    return idmap.getUserId(v)
-  except Exception, e:
-    if type(e) is exceptions.AssertionError and "unknown user" in str(e):
-      raise _ValidationException("no such user")
-    else:
-      raise
+  u = ezidapp.models.getUserByUsername(v)
+  if u != None and not u.isAnonymous:
+    return u
+  else:
+    raise _ValidationException("no such user")
 
 def _validateGroup (v):
-  try:
-    return idmap.getGroupId(v)
-  except Exception, e:
-    if type(e) is exceptions.AssertionError and "unknown group" in str(e):
-      raise _ValidationException("no such group")
-    else:
-      raise
+  g = ezidapp.models.getGroupByGroupname(v)
+  if g != None and not g.isAnonymous:
+    return g
+  else:
+    raise _ValidationException("no such group")
 
 # A simple encoding mechanism for storing Python objects as strings
 # follows.  We could use pickling, but this technique makes debugging
@@ -221,18 +216,18 @@ def _generateFilename (requestor):
     finally:
       _lock.release()
 
-def enqueueRequest (auth, request):
+def enqueueRequest (user, request):
   """
   Enqueues a batch download request.  The request must be
-  authenticated; 'auth' should be a userauth.AuthenticatedUser object.
-  'request' should be a django.http.QueryDict object (from a POST
-  request or manually created) containing the parameters of the
-  request.  The available parameters are described in the API
-  documentation.  One feature not mentioned in the documentation: for
-  the 'notify' parameter, an email address may be a straight address
-  ("fred@slate.com") or may include an addressee name
-  ("Fred Flintstone <fred@slate.com>"); in the latter case a
-  salutation line will be added to the email message.
+  authenticated; 'user' should be a StoreUser object.  'request'
+  should be a django.http.QueryDict object (from a POST request or
+  manually created) containing the parameters of the request.  The
+  available parameters are described in the API documentation.  One
+  feature not mentioned in the documentation: for the 'notify'
+  parameter, an email address may be a straight address
+  ("fred@slate.com") or may include an addressee name ("Fred
+  Flintstone <fred@slate.com>"); in the latter case a salutation line
+  will be added to the email message.
 
   The successful return is a string that includes the download URL, as
   in:
@@ -241,6 +236,7 @@ def enqueueRequest (auth, request):
 
   Unsuccessful returns include the strings:
 
+    error: forbidden
     error: bad request - subreason...
     error: internal server error
   """
@@ -278,6 +274,21 @@ def enqueueRequest (auth, request):
       if "column" in d:
         return error("parameter is incompatible with format: column")
       columns = []
+    toHarvest = []
+    if "owner" in d:
+      for o in d["owner"]:
+        if not policy.authorizeDownload(user, owner=o):
+          return "error: forbidden"
+        if o.pid not in toHarvest: toHarvest.append(o.pid)
+      del d["owner"]
+    if "ownergroup" in d:
+      for g in d["ownergroup"]:
+        if not policy.authorizeDownload(user, ownergroup=g):
+          return "error: forbidden"
+        for u in g.users.all():
+          if u.pid not in toHarvest: toHarvest.append(u.pid)
+      del d["ownergroup"]
+    if len(toHarvest) == 0: toHarvest = [user.pid]
     if "notify" in d:
       notify = d["notify"]
       del d["notify"]
@@ -288,18 +299,15 @@ def enqueueRequest (auth, request):
       del d["convertTimestamps"]
     else:
       options = { "convertTimestamps": False }
-    requestor = auth.user[1]
+    requestor = user.pid
     filename = _generateFilename(requestor)
-    # Transition alert: co-ownership is being phased out and as a
-    # result 'coOwners' is always set to empty below.  When the new
-    # ownership model is in place, the 'coOwners' field will be
-    # replaced by a more general list of users to harvest.
     r = ezidapp.models.DownloadQueue(requestTime=int(time.time()),
       rawRequest=request.urlencode(),
-      requestor=requestor, coOwners="", format=_formatCode[format],
+      requestor=requestor, format=_formatCode[format],
       compression=_compressionCode[compression],
       columns=_encode(columns), constraints=_encode(d),
-      options=_encode(options), notify=_encode(notify), filename=filename)
+      options=_encode(options), notify=_encode(notify), filename=filename,
+      toHarvest=",".join(toHarvest))
     r.save()
     return "success: %s/download/%s.%s" % (_ezidUrl, filename,
       _fileSuffix(r))
@@ -379,7 +387,6 @@ def _createFile (r):
     raise _wrapException("error creating file", e)
   else:
     r.stage = ezidapp.models.DownloadQueue.HARVEST
-    r.currentOwner = r.requestor
     r.fileSize = n
     r.save()
   finally:
@@ -397,10 +404,6 @@ def _satisfiesConstraints (id, record, constraints):
     elif k == "exported":
       e = (record["_export"] == "yes")
       if v^e: return False
-    elif k == "owner":
-      if idmap.getUserId(record["_owner"]) not in v: return False
-    elif k == "ownergroup":
-      if idmap.getGroupId(record["_ownergroup"]) not in v: return False
     elif k == "permanence":
       if (v == "test") ^ util2.isTestIdentifier(id): return False
     elif k == "profile":
@@ -473,7 +476,8 @@ def _harvest1 (r, f):
   options = _decode(r.options)
   while True:
     _checkAbort()
-    ids = store.harvest(owner=r.currentOwner, start=r.lastId, maximum=1000)
+    ids = store.harvest(owner=r.toHarvest.split(",")[r.currentIndex],
+      start=r.lastId, maximum=1000)
     if len(ids) == 0: break
     try:
       for id, record in ids:
@@ -514,20 +518,14 @@ def _harvest (r):
       f.truncate()
     except Exception, e:
       raise _wrapException("error re-opening/seeking/truncating file", e)
-    constraints = _decode(r.constraints)
-    owners = [r.requestor] +\
-      [co for co in r.coOwners.split(",") if len(co) > 0]
-    for i, owner in enumerate(owners[owners.index(r.currentOwner):]):
+    start = r.currentIndex
+    for i in range(r.currentIndex, len(r.toHarvest.split(","))):
       _checkAbort()
-      if i > 0:
-        r.currentOwner = owner
+      if i > start:
+        r.currentIndex = i
         r.lastId = ""
         r.save()
-      # A potentially major optimization: there's no point in
-      # harvesting an owner if the owner is going to be excluded by a
-      # constraint.
-      if "owner" not in constraints or owner in constraints["owner"]:
-        _harvest1(r, f)
+      _harvest1(r, f)
     _checkAbort()
     if r.format == ezidapp.models.DownloadQueue.XML:
       try:
@@ -601,7 +599,7 @@ def _notifyRequestor (r):
   f = None
   try:
     f = open(_path(r, 4), "w")
-    f.write("%s\n%s\n" % (idmap.getAgent(r.requestor)[0],
+    f.write("%s\n%s\n" % (ezidapp.models.getUserByPid(r.requestor).username,
       r.rawRequest.encode("UTF-8")))
   except Exception, e:
     raise _wrapException("error writing sidecar file", e)
@@ -629,7 +627,9 @@ def _notifyRequestor (r):
 def _daemonThread ():
   doSleep = True
   while True:
-    if doSleep: time.sleep(_idleSleep)
+    if doSleep:
+      django.db.connections["default"].close()
+      time.sleep(_idleSleep)
     try:
       _checkAbort()
       r = ezidapp.models.DownloadQueue.objects.all().order_by("seq")[:1]
