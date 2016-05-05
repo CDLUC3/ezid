@@ -14,6 +14,7 @@
 # -----------------------------------------------------------------------------
 
 import django.conf
+import django.db
 import random
 import threading
 import time
@@ -110,20 +111,24 @@ def _loadRows (limit=1000):
   _setLoadedRows(rows)
   return n
 
+def _sleep (duration=None):
+  django.db.connections["default"].close()
+  time.sleep(duration or _idleSleep)
+
 def _daemonThread ():
-  time.sleep(_idleSleep)
+  _sleep()
   while True:
     try:
       while True:
         n = _loadRows()
         if n > 0: break
-        time.sleep(_idleSleep)
-      while _loadedRowsLength() > 0: time.sleep(_idleSleep)
+        _sleep()
+      while _loadedRowsLength() > 0: _sleep()
     except _AbortException:
       break
     except Exception, e:
       log.otherError("datacite_async._daemonThread", e)
-      time.sleep(_idleSleep)
+      _sleep()
 
 def _dataciteCallWrapper (row, methodName, function, *args):
   # This function hides all transient errors.  There are three
@@ -158,7 +163,7 @@ def _dataciteCallWrapper (row, methodName, function, *args):
         row.error = formatException(e)
         _checkAbort()
         row.save()
-        time.sleep(_reattemptDelay)
+        _sleep(_reattemptDelay)
     except Exception, e:
       permanentError(e)
       return False
@@ -173,7 +178,7 @@ def _workerThread ():
       while True:
         row = _nextUnprocessedLoadedRow()
         if row != None: break
-        time.sleep(_idleSleep)
+        _sleep()
       doi = row.identifier[4:]
       m = util.deblobify(row.metadata)
       if row.operation == ezidapp.models.DataciteQueue.OVERWRITE:
@@ -204,7 +209,7 @@ def _workerThread ():
       break
     except Exception, e:
       log.otherError("datacite_async._workerThread", e)
-      time.sleep(_idleSleep)
+      _sleep()
 
 def enqueueIdentifier (identifier, operation, metadata, blob):
   """

@@ -574,6 +574,8 @@ def _doPoll (r):
 def _daemonThread ():
   maxSeq = None
   while True:
+    django.db.connections["default"].close()
+    django.db.connections["search"].close()
     time.sleep(_idleSleep)
     try:
       _checkAbort()
@@ -614,8 +616,6 @@ def _daemonThread ():
     except Exception, e:
       log.otherError("crossref._daemonThread", e)
       maxSeq = None
-  # Make sure our connection to the search database gets cleaned up...
-  django.db.connections["search"].close()
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)

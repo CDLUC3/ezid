@@ -4,6 +4,7 @@ import django.contrib.messages
 import metadata
 import ezid
 import form_objects
+import ezidapp.models
 import urllib
 import re
 import datacite_xml
@@ -29,8 +30,14 @@ def index(request):
 def simple(request):
   d = { 'menu_item' : 'ui_create.simple' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = [{ "namespace": s.name, "prefix": s.prefix }\
-    for s in userauth.getUser(request).shoulders.all().order_by("name", "type")]
+  user = userauth.getUser(request)
+  if user.isSuperuser:
+    shoulders = [s for s in ezidapp.models.getAllShoulders() if not s.isTest]
+  else:
+    shoulders = user.shoulders.all()
+  d["prefixes"] = sorted([{ "namespace": s.name, "prefix": s.prefix } for\
+    s in shoulders],
+    key=lambda p: ("%s %s" % (p["namespace"], p["prefix"])).lower())
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   d = simple_form(request, d)
@@ -46,8 +53,14 @@ def simple(request):
 def advanced(request):
   d = { 'menu_item' :'ui_create.advanced' }
   d["testPrefixes"] = uic.testPrefixes
-  d['prefixes'] = [{ "namespace": s.name, "prefix": s.prefix }\
-    for s in userauth.getUser(request).shoulders.all().order_by("name", "type")]
+  user = userauth.getUser(request)
+  if user.isSuperuser:
+    shoulders = [s for s in ezidapp.models.getAllShoulders() if not s.isTest]
+  else:
+    shoulders = user.shoulders.all()
+  d["prefixes"] = sorted([{ "namespace": s.name, "prefix": s.prefix } for\
+    s in shoulders],
+    key=lambda p: ("%s %s" % (p["namespace"], p["prefix"])).lower())
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   d = adv_form(request, d)

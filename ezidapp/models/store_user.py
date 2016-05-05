@@ -282,6 +282,7 @@ class AnonymousUser (object):
       return []
   shoulders = inner()
   crossrefEnabled = False
+  crossrefEmail = ""
   proxies = inner()
   proxy_for = inner()
   isGroupAdministrator = False

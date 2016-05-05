@@ -119,6 +119,23 @@ def authorizeOwnershipChange (user, identifier, currentOwner, newOwner,
   if user.isSuperuser: return True
   return False
 
+def authorizeDownload (user, owner=None, ownergroup=None):
+  """
+  Returns True if a request to download all identifiers owned by
+  'owner' (given as a StoreUser object) or 'ownergroup' (given as a
+  StoreGroup object) is authorized.  'user' is the requestor and
+  should be an authenticated StoreUser object.  Only one of 'owner'
+  and 'ownergroup' should be specified.
+  """
+  if owner != None:
+    if user == owner: return True
+    if user in owner.proxies.all(): return True
+    ownergroup = owner.group
+  if user.isGroupAdministrator and user.group == ownergroup: return True
+  if user.isRealmAdministrator and user.realm == ownergroup.realm: return True
+  if user.isSuperuser: return True
+  return False
+
 def authorizeCrossref (user, identifier):
   """
   Returns True if a request to register an identifier with CrossRef is

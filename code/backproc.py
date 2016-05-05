@@ -109,17 +109,19 @@ def _backprocDaemon ():
           _updateCrossrefQueue(identifier, operation, metadata, blob)
           store.deleteFromUpdateQueue(seq)
       else:
+        django.db.connections["default"].close()
+        django.db.connections["search"].close()
         time.sleep(_idleSleep)
     except Exception, e:
       log.otherError("backproc._backprocDaemon", e)
+      django.db.connections["default"].close()
+      django.db.connections["search"].close()
       time.sleep(_idleSleep)
   _lock.acquire()
   try:
     _runningThreads.remove(threading.currentThread().getName())
   finally:
     _lock.release()
-  # Make sure our connection to the search database gets cleaned up...
-  django.db.connections["search"].close()
 
 def _loadConfig ():
   global _enabled, _idleSleep, _threadName
