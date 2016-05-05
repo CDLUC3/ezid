@@ -33,6 +33,10 @@
 
   }
 
+  table.dcms_table, tr.dcms_element, td.dcms_value {
+    border: 1px solid black;
+  }
+
   table.leftheaders {
     margin: 5 0 15 5;
 

@@ -5,6 +5,7 @@ import django.core.mail
 import django.http
 import django.template
 import django.template.loader
+import userauth
 import form_objects
 import errno
 import os
@@ -106,8 +107,7 @@ def tombstone (request):
   assert request.path_info.startswith("/tombstone/id/")
   id = request.path_info[14:]
   if "auth" in request.session:
-    r = ezid.getMetadata(id, request.session["auth"].user,
-      request.session["auth"].group)
+    r = ezid.getMetadata(id, userauth.getUser(request, returnAnonymous=True))
   else:
     r = ezid.getMetadata(id)
   if type(r) is str:

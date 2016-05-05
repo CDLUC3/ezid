@@ -2560,6 +2560,9 @@ h2.id-creation {
     font-style: normal;
     font-weight: normal; }
 
+.api table.dcms_table, .api tr.dcms_element, .api td.dcms_value {
+  border: 1px solid black; }
+
 .api table.leftheaders {
   margin: 5 0 15 5; }
   .api table.leftheaders tr > td:first-child {

@@ -1,3 +1,4 @@
+{% load layout_extras %}
 {% load i18n %}
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -19,7 +20,7 @@
 
 <link rel="stylesheet" type="text/css" href="/static/stylesheets/main.css"/>
 <link rel="stylesheet" type="text/css" href="/static/stylesheets/main2.min.css"/>
-{% if not google_analytics_id == 'none' %}
+{% if google_analytics_id %}
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -35,7 +36,17 @@
 <div class="container api">
   <div id="tombstone">
   <br/>
-  {% include "includes/_top_header_logos.html" %}
+  <div class="header__logos">
+
+    <a class="header__main-logo-link" href="/">
+      <picture>
+        <source srcset="/static/images/logo_small-screen.svg" media="(max-width: 767px)">
+        <img srcset="/static/images/logo.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAADs=" class="header__main-logo-image" alt="University of California, Easy ID, identifiers made easy">
+      </picture>
+    </a>
+    {% host_based_include "includes/localized/_/logo.html" %}
+  </div>
+
   <p class="general__note">{{ identifier }}</p>
   <p id="title" class="general__note">{{ reason }}</p>
 
