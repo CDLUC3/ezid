@@ -146,13 +146,25 @@
 
 }
 
-.fcontrol__textarea-inline {
+%fcontrol__textarea-inline-base {
 	@extend %fcontrol-focus;
 	height: 5em;
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
-	border: 1px solid $design-light-gray-border-color;
 	border-radius: $form-element-border-radius;
+}
+
+.fcontrol__textarea-inline {
+	@extend %fcontrol__textarea-inline-base;
+	border: 1px solid $design-light-gray-border-color;
+}
+
+.fcontrol__textarea-inline-noborder {
+	@extend %fcontrol__textarea-inline-base;
+	width: 250px;
+	height: 30px;
+	border: none;
+	resize: none;
 }
 
 // ***** Hidden Labels ***** //

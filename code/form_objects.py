@@ -721,7 +721,7 @@ class UserForm(BasePasswordForm):
 
     # This is not a form field per se, but representing here anyway since it needs validation
     self.fields["proxy_users_picked"] = forms.CharField(required=False, label=_("Proxy User(s)"),
-      widget=forms.TextInput(attrs={'readonly':'readonly'}))
+      widget=forms.Textarea(attrs={'readonly':'readonly'}))
       # validators=[_validate_proxies(self.user)])
     self.fields["pwcurrent"] = forms.CharField(required=False, label=_("Current Password"),
       widget=forms.PasswordInput(), validators=[_validate_current_pw(self.username)])

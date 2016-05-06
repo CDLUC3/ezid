@@ -24,23 +24,29 @@
   </div>
 </div>
 <script type="text/javascript">
+// Populate textarea with selected proxy usernames.
 $("#submit_close").click(function(e){
   var assigned = [],
       s = $('select option:selected'),
       comma = new RegExp(","),
-      re = /^\[(.*?)\]/;         // Grab username from "[username]   displayName"
-  if (comma.test($('#id_proxy_users_picked'))) {
-    assigned = $('#id_proxy_users_picked').text().trim().split(', ');
+      re = /^\[(.*?)\]/,
+      txt = $('#id_proxy_users_picked');
+  // Grab what's already been picked 
+  if (comma.test(txt)) {
+    assigned = txt.text().trim().split(', ');
   }
   // Only add items not already found in list of already assigned proxy users
   s.each(function() {
+      // Grab username from "[username]   displayName"
       i = re.exec($( this ).text())[1];
       if ($.inArray( i, assigned ) == -1) {
           assigned.push(i);
       }
   });
-  // $('#id_proxy_users_picked').text(assigned.join(", "));
-  $('#id_proxy_users_picked').val(assigned.join(", "));
+  txt.val(assigned.join(", "));
+  var div = Math.floor(txt.val().length/39);
+  var h = div * 25;
+  txt.css('height', h);
   $('#proxyModal').modal('hide');
 });
 </script>

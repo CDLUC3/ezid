@@ -40,10 +40,9 @@
 
 // ***** Layouts ***** //
 
-// Account page uses the 'general' css
 @import 'create';
 @import 'dashboard';
-@import 'general';  // used for all non-primary pages
+@import 'general';  // used for all non-primary pages (e.g. contact)
 @import 'home';
 @import 'manage';
 // Pwreset page uses the 'general' css
