@@ -15,23 +15,12 @@ import urllib
 from django.shortcuts import redirect
 import ezidapp.admin
 import ezidapp.models
+import json
 from django.utils.translation import ugettext as _
 
 ACCOUNT_FIELDS_EDITABLE = ['primaryContactName', 'primaryContactEmail', 'primaryContactPhone', 
            'secondaryContactName', 'secondaryContactEmail', 'secondaryContactPhone', 
            'accountDisplayName', 'accountEmail']
-
-# Temporary, for testing
-proxy_users_mock = {'ucsd_signaling_gateway': 'Center for International Earth Science Information Network (CIESIN)', 
-'aasdata': 'ESIPCommon Federation of Earth Science Information Partners (ESIP) Commons', 
-'acsess': 'Indiana University Sustainable Environment-Actionable Data (SEAD)', 
-'aep': 'Laboratory for Basic and Translational Cognitive Neuroscience', 
-'artlas': 'Partnership for Interdisciplinary Studies of Coastal Oceans (PISCO)', 
-'ualberta': 'UAlberta Journal of Professional Continuing and Online Education', 
-'benchfly': 'Center for International Earth Science Information Network (CIESIN)', 
-'biocaddie': 'ESIPCommon Federation of Earth Science Information Partners (ESIP) Commons', 
-'biocaddie-api': 'Indiana University Sustainable Environment-Actionable Data (SEAD)'}
-proxy_users_mock_picked = "aasdata, acsess"
 
 @uic.user_login_required
 def edit(request, ssl=False):
@@ -58,8 +47,9 @@ def edit(request, ssl=False):
     if user.crossrefEnabled: d['crossrefEmail'] = user.crossrefEmail
     proxy_for_list = user.proxy_for.all().order_by("username")
     d['proxy_for'] = ", ".join(u.username for u in proxy_for_list) if proxy_for_list else "N/A"
-    d['proxy_users_picked'] =\
-      ",".join(u.username for u in user.proxies.all().order_by("username"))
+    picked = [u.username for u in user.proxies.all().order_by("username")]
+    d['proxy_users_picked_list'] = json.dumps(picked)
+    d['proxy_users_picked'] = ', '.join(picked)
     d['form'] = form_objects.UserForm(d, user=user, username=d['username'], pw_reqd=False)
   else:
     # ToDo: Email new proxy users 
