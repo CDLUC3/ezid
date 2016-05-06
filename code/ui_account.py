@@ -40,6 +40,12 @@ def edit(request, ssl=False):
   user = userauth.getUser(request)
   d["username"] = user.username
 
+  realmusers = []
+  for group in user.realm.groups.all():
+    realmusers.extend(group.users.all())
+  ru = sorted(realmusers, key=lambda k: k.username)
+  d['proxy_users_choose'] = {u.username: u.displayName for u in\
+    ru if u.displayName != user.displayName}
   if request.method == "GET":
     d['primaryContactName'] = user.primaryContactName
     d['primaryContactEmail'] = user.primaryContactEmail
@@ -53,8 +59,7 @@ def edit(request, ssl=False):
     proxy_for_list = user.proxy_for.all().order_by("username")
     d['proxy_for'] = ", ".join(u.username for u in proxy_for_list) if proxy_for_list else "N/A"
     d['proxy_users_picked'] =\
-      ", ".join(u.username for u in user.proxies.all().order_by("username"))
-    d['proxy_users_choose'] = (u.username for u in user.group.users.all().order_by("username"))
+      ",".join(u.username for u in user.proxies.all().order_by("username"))
     d['form'] = form_objects.UserForm(d, user=user, username=d['username'], pw_reqd=False)
   else:
     # ToDo: Email new proxy users 

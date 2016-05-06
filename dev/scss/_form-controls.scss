@@ -75,14 +75,23 @@
 	//
 }
 
-.fcontrol__text-field-inline {
+%fcontrol__text-field-inline-base {
 	@extend %fcontrol-focus;
 	flex: 1 0 auto;
 	height: $form-element-height;
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
-	border: 1px solid $design-light-gray-border-color;
 	border-radius: $form-element-border-radius;
+}
+
+.fcontrol__text-field-inline {
+	@extend %fcontrol__text-field-inline-base;
+	border: 1px solid $design-light-gray-border-color;
+}
+
+.fcontrol__text-field-inline-noborder {
+	@extend %fcontrol__text-field-inline-base;
+	border: none;
 }
 
 .fcontrol__text-field-group {

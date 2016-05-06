@@ -25,9 +25,13 @@
 </div>
 <script type="text/javascript">
 $("#submit_close").click(function(e){
-  var assigned = $('#proxy_users_picked').text().split(', '),
+  var assigned = [],
       s = $('select option:selected'),
-      re = /^\[(.*?)\]/;
+      comma = new RegExp(","),
+      re = /^\[(.*?)\]/;         // Grab username from "[username]   displayName"
+  if (comma.test($('#id_proxy_users_picked'))) {
+    assigned = $('#id_proxy_users_picked').text().trim().split(', ');
+  }
   // Only add items not already found in list of already assigned proxy users
   s.each(function() {
       i = re.exec($( this ).text())[1];
@@ -35,7 +39,8 @@ $("#submit_close").click(function(e){
           assigned.push(i);
       }
   });
-  $('#proxy_users_picked').text(assigned.join(", "));
+  // $('#id_proxy_users_picked').text(assigned.join(", "));
+  $('#id_proxy_users_picked').val(assigned.join(", "));
   $('#proxyModal').modal('hide');
 });
 </script>
