@@ -29,12 +29,9 @@ def edit(request, ssl=False):
   user = userauth.getUser(request)
   d["username"] = user.username
 
-  realmusers = []
-  for group in user.realm.groups.all():
-    realmusers.extend(group.users.all())
-  ru = sorted(realmusers, key=lambda k: k.username)
+  proxies_orig = [u.username for u in user.proxies.all().order_by("username")]
   d['proxy_users_choose'] = {u.username: u.displayName for u in\
-    ru if u.displayName != user.displayName}
+    allUsersInRealm(user) if u.displayName != user.displayName}
   if request.method == "GET":
     d['primaryContactName'] = user.primaryContactName
     d['primaryContactEmail'] = user.primaryContactEmail
@@ -48,9 +45,8 @@ def edit(request, ssl=False):
     proxy_for_list = user.proxy_for.all().order_by("username")
     d['proxy_for'] = "<br/> ".join("[" + u.username + "]&nbsp;&nbsp;&nbsp;" + u.displayName \
       for u in proxy_for_list) if proxy_for_list else "N/A"
-    picked = [u.username for u in user.proxies.all().order_by("username")]
-    d['proxy_users_picked_list'] = json.dumps(picked)
-    d['proxy_users_picked'] = ', '.join(picked)
+    d['proxy_users_picked_list'] = json.dumps(proxies_orig)
+    d['proxy_users_picked'] = ', '.join(proxies_orig)
     d['form'] = form_objects.UserForm(d, user=user, username=d['username'], pw_reqd=False)
   else:
     # ToDo: Email new proxy users 
@@ -59,7 +55,8 @@ def edit(request, ssl=False):
     if d['form'].is_valid():
       if d['form'].has_changed():
         basic_info_changed = any(ch in d['form'].changed_data for ch in ACCOUNT_FIELDS_EDITABLE)
-      _update_edit_user(request, user, basic_info_changed)
+      # ToDo: Implement new proxies to be added
+      _update_edit_user(request, user, None, basic_info_changed)
     else: # Form did not validate
       if '__all__' in d['form'].errors:
         # non_form_error, probably due to all fields being empty
@@ -72,6 +69,12 @@ def edit(request, ssl=False):
         err = _("Change(s) could not be made.  Please check the highlighted field(s) below for details.")
         django.contrib.messages.error(request, err)
   return uic.render(request, "account/edit", d)
+
+def allUsersInRealm(user):
+  realmusers = []
+  for group in user.realm.groups.all():
+    realmusers.extend(group.users.all())
+  return sorted(realmusers, key=lambda k: k.username)
 
 def login (request, ssl=False):
   """
@@ -124,19 +127,19 @@ def logout(request):
   django.contrib.messages.success(request, _("You have been logged out."))
   return redirect("ui_home.index")
 
-def _update_edit_user(request, user, basic_info_changed):
+def _update_edit_user(request, user, new_proxies_selected, basic_info_changed):
   """method to update the user editing his/her information"""
   d = request.POST
   try:
     with django.db.transaction.atomic():
-      user.primaryContactName = d["primaryContactName"].strip()
-      user.primaryContactEmail = d["primaryContactEmail"].strip()
-      user.primaryContactPhone = d["primaryContactPhone"].strip()
-      user.secondaryContactName = d["secondaryContactName"].strip()
-      user.secondaryContactEmail = d["secondaryContactEmail"].strip()
-      user.secondaryContactPhone = d["secondaryContactPhone"].strip()
-      user.displayName = d["accountDisplayName"].strip()
-      user.accountEmail = d["accountEmail"].strip()
+      user.primaryContactName = d["primaryContactName"]
+      user.primaryContactEmail = d["primaryContactEmail"]
+      user.primaryContactPhone = d["primaryContactPhone"]
+      user.secondaryContactName = d["secondaryContactName"]
+      user.secondaryContactEmail = d["secondaryContactEmail"]
+      user.secondaryContactPhone = d["secondaryContactPhone"]
+      user.displayName = d["accountDisplayName"]
+      user.accountEmail = d["accountEmail"]
       user.proxies.clear()
       for p_user in [p_user.strip() for p_user in d["proxy_users_picked"].split(",")]:
         if p_user != "":
@@ -148,10 +151,37 @@ def _update_edit_user(request, user, basic_info_changed):
   except django.core.validators.ValidationError, e:
     django.contrib.messages.error(request, str(e))
   else:
-    if basic_info_changed: django.contrib.messages.success(request,
-      _("Your information has been updated."))
+    if new_proxies_selected:
+      for new_p in new_proxies_selected:
+        _sendEmail(new_p, user)
+    if basic_info_changed:
+      django.contrib.messages.success(request,
+        _("Your information has been updated."))
     if d['pwcurrent'].strip() != '' and d['pwnew'].strip() != '':
       django.contrib.messages.success(request, _("Your password has been updated."))
+
+def _sendEmail (p_user, user):
+  m = (_("Dear") + "%s,\n\n" +\
+    _("You have been added as a proxy user to the identifiers owned by the following ") +\
+    _("primary user") + ":\n\n" +\
+    "   " + _("User") + ": %s\n" +\
+    "   " + _("Username") + ": %s\n" +\
+    "   " + _("Account") + ": %s\n" +\
+    "   " + _("Account Email") + ": %s\n" +\
+    _("As a proxy user, you can create and modify identifiers owned by the primary user") + ". " +\
+    _("If you need more information about proxy ownership of EZID identifiers, ") +\
+    _("please don't hesitate to contact us: http://ezid.cdlib.org/contact\n\n") +\
+    _("Best,\nEZID Team\n\n\nThis is an automated email. Please do not reply.\n")) %\
+    (p_user.primaryContactName, 
+     user.primaryContactName, user.username, user.displayName, user.accountEmail)
+  try:
+    django.core.mail.send_mail(_("You've Been Added to an EZID Account"), m,
+      django.conf.settings.SERVER_EMAIL, [p_user.accountEmail], fail_silently=True)
+  except Exception, e:
+    u = p_user.primaryContactName + "<" + p_user.accountEmail + ">"
+    django.contrib.messages.error(request, "error sending email to " + u + ":" + e)
+
+
       
 def pwreset(request, pwrr, ssl=False):
   """
