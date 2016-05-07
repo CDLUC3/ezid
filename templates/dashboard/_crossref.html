@@ -4,6 +4,8 @@
 {% if results_crossref|length > 0 or results|length > 0 %} 
   <form method="get" id="p_crossref" role="form">
     {% rewrite_hidden_except REQUEST 'p' %}
+    <input name="owner_selected" type="hidden" value="{{ owner_selected }}"/>
+    <input name="name" type="hidden" value="crossref"/>
     <div class="pagination__input-group">
   {% if not ajax %}
     {% pager_display REQUEST p total_pages_crossref ps "crossref" %}

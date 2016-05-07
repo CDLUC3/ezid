@@ -5,6 +5,7 @@ import stats
 import datetime
 import ui_search 
 from collections import *
+from django.utils.translation import ugettext as _
 
 NO_CONSTRAINTS = True 
 
@@ -16,8 +17,11 @@ def dashboard(request, ssl=False):
   """
   d = { 'menu_item' : 'ui_admin.dashboard'}
   user = userauth.getUser(request)
-  d['owner_selected'] = user.username
-  d['display_adminlink'] = user.username == 'admin' 
+  d['display_adminlink'] = user.isRealmAdministrator or user.isSuperuser 
+  REQUEST = request.GET if request.method == "GET" else request.POST
+  d['owner_selected'] = REQUEST['owner_selected'] if \
+    'owner_selected' in REQUEST else user.username
+  d['owner_names'] = [(user.username, user.displayName + " (" + _("me") + ")")]
   # d = _getUsage(request, d)
 
   d['ajax'] = False
@@ -41,16 +45,15 @@ def dashboard(request, ssl=False):
 
 def ajax_dashboard_table(request):
   if request.is_ajax():
+    user = userauth.getUser(request)
+    G = request.GET
     d = {}
-    d['p'] = request.GET.get('p')
-    name = request.GET.get('name')
-    if name and d['p'] is not None and d['p'].isdigit():
+    d['owner_selected'] = G['owner_selected'] if 'owner_selected' in G else user.username
+    d['p'] = G.get('p')
+    if 'name' in G and d['p'] is not None and d['p'].isdigit():
       d['ajax'] = True
-      d = ui_search.search(d, request, NO_CONSTRAINTS, name)
-      if name == 'issues':
-        return uic.render(request, 'dashboard/_issues', d)
-      else:
-        return uic.render(request, 'dashboard/_crossref', d)
+      d = ui_search.search(d, request, NO_CONSTRAINTS, G['name'])
+      return uic.render(request, "dashboard/_" + G['name'], d)
 
 def _getUsage(request, d):
   # ToDo: Now that any user can access this pg, not just admin, make necessary changes.
@@ -137,3 +140,4 @@ def _computeTotals (table):
     totals[type] = { "total": _insertCommas(total),
       "hasMetadataPercentage": str(_percent(data[(type, "True")], total)) }
   return totals
+

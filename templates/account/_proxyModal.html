@@ -27,14 +27,19 @@
 $(document).ready(function() {
   var txt = $('#id_proxy_users_picked');
 
-  function setTextAreaHeight(x) {
+  function setTextAreaDimension(x) {
     var h, div = Math.ceil(x.val().length/39);
     h = div * 25;
     x.css('height', h);
+    if (x.val().length < 2) {
+      x.css('width', 10);
+    } else {
+      x.css('width', 250);
+    }
   }
 
   // Set height for textarea of already selected proxy users 
-  setTextAreaHeight(txt);
+  setTextAreaDimension(txt);
 
   // Already chosen proxies should show up as selected in the modal list
   $("select").val({{ proxy_users_picked_list|safe }});
@@ -58,6 +63,7 @@ $(document).ready(function() {
         }
     });
     txt.val(assigned.join(", "));
+    setTextAreaDimension(txt); 
     $('#proxyModal').modal('hide');
   });
 });

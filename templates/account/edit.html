@@ -40,7 +40,7 @@
   <div class="fcontrol__group-inline general__form-element-group">
     <label for="" class="fcontrol__textarea-label-inline general__form-label">{% trans "Your Proxy Account(s)" %}</label>
     <div class="fcontrol__text-nofield">
-      {{ proxy_for }} 
+      {{ proxy_for|safe }} 
       <div class="fcontrol__caption">{% trans "NOTE: These are identifier groups where you have been designated as proxy user." %}</div>
     </div>
   </div>

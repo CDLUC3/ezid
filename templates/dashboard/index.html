@@ -15,16 +15,10 @@
   <form id="usage_form" action="{% url "ui_admin.dashboard" %}" method="post">
     <div class="fieldset-stacked__inline-select dashboard__report-heading">
       <span id="fieldset__owner-filter" class="heading__icon-2">{% trans "View Report for" %}</span>
-      <label for="tbd" class="fcontrol__text-label-hidden">{% trans "Specific User or Group" %}</label>
-        <select id="choice" name="choice" class="fcontrol__select">
-      {% for c in choices %}
-          <option value="{{c.0}}"
-        {% if c.0 == choice %}
-            selected="selected"
-        {% endif %}
-          >{{c.1}}</option>
-      {% endfor %}
-        </select>
+      <label for="owner_selected" class="fcontrol__text-label-hidden">{% trans "Specific User or Group" %}</label>
+
+      {% include "includes/owner_select.html" %}
+
         <button class="dashboard__button-go" type="submit" value="submit">{% trans "Go" %}</button>
         <a href="" class="dashboard__csv-link">View CSV format of Identifier Creation and Use</a>
     </div>

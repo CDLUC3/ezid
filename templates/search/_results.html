@@ -25,20 +25,11 @@
 <div class="manage__identifiers-submit-controls">
   <div class="fcontrol__select-group-inline manage__identifiers-select">
     <form id="owner_filter_form" action="{% url primary_page %}" role="form">
-      <input name="ps" type="hidden" value="{{ ps }}"/>
-      <input name="order_by" type="hidden" value="{{ order_by }}"/>
-      <input name="sort" type="hidden" value="{{ sort }}"/>
       {% rewrite_hidden REQUEST %}
       <label for="owner_selected" class="fcontrol__select-label-inline">{% trans "View identifiers owned by" %}:</label>
-      <select name="owner_selected" id="owner_selected" class="fcontrol__select">
-      {% for owner in owner_names %}
-        <option value="{{owner.0}}"
-        {% if owner.0 == owner_selected %}
-          selected="selected"
-        {% endif %}
-        >{{owner.1}}</option>
-      {% endfor %}
-      </select>
+
+      {% include "includes/owner_select.html" %}
+
     </form>
   </div>
   {% if total_results > 0 %}
