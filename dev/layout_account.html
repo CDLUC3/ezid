@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" class="no-js">
-<head>
+<!DOCTYPE html> <html lang="en" class="no-js"> <head>
 	<meta charset="UTF-8">
 	<title>My Account</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -74,25 +72,16 @@
   </div>
 </div>
 
-    <!-- div class="fcontrol__group-inline general__form-element-group">
-      <label for="id_mail" class="fcontrol__text-label-inline general__form-label ">Proxy User(s)</label>
-      <input class="fcontrol__text-field-inline" id="id_mail" name="mail" type="email" value="purduelib, purdue_admin" />
-      <button class="home__button-primary">Select Proxy User(s)</button>
-      <a id="lookup_proxies" role="button" data-toggle="popover" data-trigger="click"><img src="images/iconHelp.svg" alt="Click for additional help" class="button__icon-help" title="Click for additional help"/></a>
-    </div -->
-
-
-
-    <div class="fcontrol__group-inline">
-      <label for="proxies" class="fcontrol__textarea-label-inline general__form-label">Proxy User(s)</label>
-      <div class="fcontrol__text-nofield">
-        <div class="account__proxy-text">
-          purduelib, purdue_admin, ucsd_signaling_gateway, aasdata, acsess, aep, artlas, ualberta, benchfly 
-        </div>
-        <button class="account__button-proxy-select">Select Proxy User(s)</button>
-        <img src="images/iconHelp.svg" alt="Click for additional help" class="account__button-icon-help" title="Click for additional help"/>
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="id_proxy_users_picked" class="fcontrol__text-label-inline general__form-label">Proxy User(s)</label>
+    <div class="fcontrol__text-nofield">
+      <div class="fcontrol__group">
+        <textarea class="fcontrol__textarea-inline-noborder" cols="40" id="id_proxy_users_picked" name="proxy_users_picked" readonly="readonly" rows="10">purduelib, purdue_admin, ucsd_signaling_gateway, aasdata, acsess, aep, artlas, ualberta, benchfly</textarea>
+        <button class="account__button-proxy-select" type="button">Select Proxy User(s)</button>
+        <div class="fcontrol__caption">NOTE: These are users that you have designated as proxy users for your identifiers. Currently users cannot be deleted from this list. Please <a class="link__primary" href="/contact">contact us</a> if you need to delete a proxy user.</div>
       </div>
     </div>
+  </div>
 
   <h2 class="heading__noicon">Change Password</h2>
 
@@ -137,6 +126,25 @@
   <script src="js/vendor/modernizr-custombuild.js"></script>
   <script src="js/main2.js"></script>
   <!-- endbuild -->
-	
+<script type="text/javascript">
+$(document).ready(function() {
+  var txt = $('#id_proxy_users_picked');
+
+  function setTextAreaDimension(x) {
+    var h, div = Math.ceil(x.val().length/34);
+    h = div * 30;
+    x.css('height', h);
+    if (x.val().length < 2) {
+      x.css('width', 10);
+    } else {
+      x.css('width', 250);
+    }
+  }
+
+  // Set height for textarea of already selected proxy users 
+  setTextAreaDimension(txt);
+
+});
+</script>
 </body>
 </html>

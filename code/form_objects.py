@@ -718,21 +718,17 @@ class UserForm(BasePasswordForm):
       error_messages={'required': _("Please fill in the name as it should be displayed for the account.")})
     self.fields["accountEmail"] = forms.EmailField(label=_("Account Email"),
       error_messages={'required': _("Please fill in the email for the account.")})
-
-    # This is not a form field per se, but representing here anyway since it needs validation
     self.fields["proxy_users_picked"] = forms.CharField(required=False, label=_("Proxy User(s)"),
       widget=forms.Textarea(attrs={'readonly':'readonly'}))
       # validators=[_validate_proxies(self.user)])
     self.fields["pwcurrent"] = forms.CharField(required=False, label=_("Current Password"),
       widget=forms.PasswordInput(), validators=[_validate_current_pw(self.username)])
-  def clean_proxy_users_picked(self):
-    data = self.cleaned_data['proxy_users_picked']
-    if data == '':
-      data = _("None Chosen") 
-    return data
+  # Not working, using template instead
+  # def clean(self):
   #  cleaned_data = super(UserForm, self).clean()
-  #  if cleaned_data["proxy_users_picked"] == '':
+  #  if cleaned_data.get("proxy_users_picked") == '':
   #    cleaned_data["proxy_users_picked"] = _("None Chosen") 
+  #  return cleaned_data
 
 ################# Search ID Form  #################
 

@@ -22,59 +22,7 @@ ACCOUNT_FIELDS_EDITABLE = ['primaryContactName', 'primaryContactEmail', 'primary
            'secondaryContactName', 'secondaryContactEmail', 'secondaryContactPhone', 
            'accountDisplayName', 'accountEmail']
 
-@uic.user_login_required
-def edit(request, ssl=False):
-  """Edit account information form"""
-  d = { 'menu_item' : 'ui_account.edit'}
-  user = userauth.getUser(request)
-  d["username"] = user.username
-
-  proxies_orig = [u.username for u in user.proxies.all().order_by("username")]
-  d['proxy_users_choose'] = {u.username: u.displayName for u in\
-    allUsersInRealm(user) if u.displayName != user.displayName}
-  if request.method == "GET":
-    d['primaryContactName'] = user.primaryContactName
-    d['primaryContactEmail'] = user.primaryContactEmail
-    d['primaryContactPhone'] = user.primaryContactPhone
-    d['secondaryContactName'] = user.secondaryContactName
-    d['secondaryContactEmail'] = user.secondaryContactEmail
-    d['secondaryContactPhone'] = user.secondaryContactPhone
-    d['accountDisplayName'] = user.displayName
-    d['accountEmail'] = user.accountEmail
-    if user.crossrefEnabled: d['crossrefEmail'] = user.crossrefEmail
-    proxy_for_list = user.proxy_for.all().order_by("username")
-    d['proxy_for'] = "<br/> ".join("[" + u.username + "]&nbsp;&nbsp;&nbsp;" + u.displayName \
-      for u in proxy_for_list) if proxy_for_list else "N/A"
-    d['proxy_users_picked_list'] = json.dumps(proxies_orig)
-    d['proxy_users_picked'] = ', '.join(proxies_orig)
-    d['form'] = form_objects.UserForm(d, user=user, username=d['username'], pw_reqd=False)
-  else:
-    # ToDo: Email new proxy users 
-    d['form'] = form_objects.UserForm(request.POST, initial=d, user=user, username=d['username'], pw_reqd=False)
-    basic_info_changed=False
-    if d['form'].is_valid():
-      if d['form'].has_changed():
-        basic_info_changed = any(ch in d['form'].changed_data for ch in ACCOUNT_FIELDS_EDITABLE)
-      # ToDo: Implement new proxies to be added
-      _update_edit_user(request, user, None, basic_info_changed)
-    else: # Form did not validate
-      if '__all__' in d['form'].errors:
-        # non_form_error, probably due to all fields being empty
-        all_errors = ''
-        errors = d['form'].errors['__all__']
-        for e in errors:
-          all_errors += e 
-        django.contrib.messages.error(request, _("Change(s) could not be made.   ") + all_errors)
-      else:
-        err = _("Change(s) could not be made.  Please check the highlighted field(s) below for details.")
-        django.contrib.messages.error(request, err)
-  return uic.render(request, "account/edit", d)
-
-def allUsersInRealm(user):
-  realmusers = []
-  for group in user.realm.groups.all():
-    realmusers.extend(group.users.all())
-  return sorted(realmusers, key=lambda k: k.username)
+proxies_default = _("None chosen")
 
 def login (request, ssl=False):
   """
@@ -127,6 +75,75 @@ def logout(request):
   django.contrib.messages.success(request, _("You have been logged out."))
   return redirect("ui_home.index")
 
+@uic.user_login_required
+def edit(request, ssl=False):
+  """Edit account information form"""
+  d = { 'menu_item' : 'ui_account.edit'}
+  user = userauth.getUser(request)
+  d["username"] = user.username
+
+  proxies_orig = [u.username for u in user.proxies.all().order_by("username")]
+  d['proxy_users_choose'] = {u.username: u.displayName for u in\
+    allUsersInRealm(user) if u.displayName != user.displayName}
+  if request.method == "GET":
+    d['primaryContactName'] = user.primaryContactName
+    d['primaryContactEmail'] = user.primaryContactEmail
+    d['primaryContactPhone'] = user.primaryContactPhone
+    d['secondaryContactName'] = user.secondaryContactName
+    d['secondaryContactEmail'] = user.secondaryContactEmail
+    d['secondaryContactPhone'] = user.secondaryContactPhone
+    d['accountDisplayName'] = user.displayName
+    d['accountEmail'] = user.accountEmail
+    if user.crossrefEnabled: d['crossrefEmail'] = user.crossrefEmail
+    proxy_for_list = user.proxy_for.all().order_by("username")
+    d['proxy_for'] = "<br/> ".join("[" + u.username + "]&nbsp;&nbsp;&nbsp;" + u.displayName \
+      for u in proxy_for_list) if proxy_for_list else "None"
+    d['proxies_default'] = proxies_default
+    d['proxy_users_picked_list'] = json.dumps(proxies_orig)
+    d['proxy_users_picked'] = ', '.join(proxies_orig if proxies_orig else [proxies_default])
+    d['form'] = form_objects.UserForm(d, user=user, username=d['username'], pw_reqd=False)
+  else:
+    d['form'] = form_objects.UserForm(request.POST, initial=d, user=user, username=d['username'], pw_reqd=False)
+    basic_info_changed=False
+    newProxies = None 
+    if d['form'].is_valid():
+      if d['form'].has_changed():
+        basic_info_changed = any(ch in d['form'].changed_data for ch in ACCOUNT_FIELDS_EDITABLE)
+        if request.POST['proxy_users_picked'] not in ["", proxies_default]:
+          newProxies = _getNewProxies(user, proxies_orig, [x.strip() for x in\
+            request.POST['proxy_users_picked'].split(",")])
+      _update_edit_user(request, user, newProxies, basic_info_changed)
+    else: # Form did not validate
+      if '__all__' in d['form'].errors:
+        # non_form_error, probably due to all fields being empty
+        all_errors = ''
+        errors = d['form'].errors['__all__']
+        for e in errors:
+          all_errors += e 
+        django.contrib.messages.error(request, _("Change(s) could not be made.   ") + all_errors)
+      else:
+        err = _("Change(s) could not be made.  Please check the highlighted field(s) below for details.")
+        django.contrib.messages.error(request, err)
+  return uic.render(request, "account/edit", d)
+
+def allUsersInRealm(user):
+  realmusers = []
+  for group in user.realm.groups.all():
+    realmusers.extend(group.users.all())
+  return sorted(realmusers, key=lambda k: k.username)
+
+def _getNewProxies(user, orig, picked):
+  """ 
+  Compares two lists of usernames. Returns list of newly picked users, as User objects.
+  Not removing any users at the moment.
+  """
+  r = []
+  p = list(set(picked) - set(orig))
+  if p:
+    for proxyname in p:
+      r.extend([ezidapp.models.getUserByUsername(proxyname)])
+  return r
+
 def _update_edit_user(request, user, new_proxies_selected, basic_info_changed):
   """method to update the user editing his/her information"""
   d = request.POST
@@ -140,9 +157,9 @@ def _update_edit_user(request, user, new_proxies_selected, basic_info_changed):
       user.secondaryContactPhone = d["secondaryContactPhone"]
       user.displayName = d["accountDisplayName"]
       user.accountEmail = d["accountEmail"]
-      user.proxies.clear()
+      # user.proxies.clear()
       for p_user in [p_user.strip() for p_user in d["proxy_users_picked"].split(",")]:
-        if p_user != "":
+        if p_user not in ["", proxies_default]:
           user.proxies.add(ezidapp.models.getUserByUsername(p_user))
       if d["pwcurrent"].strip() != "": user.setPassword(d["pwnew"].strip())
       user.full_clean(validate_unique=False)
@@ -152,16 +169,25 @@ def _update_edit_user(request, user, new_proxies_selected, basic_info_changed):
     django.contrib.messages.error(request, str(e))
   else:
     if new_proxies_selected:
-      for new_p in new_proxies_selected:
-        _sendEmail(new_p, user)
+      _sendUserEmail(request, user, new_proxies_selected)
+      for new_proxy in new_proxies_selected:
+        _sendProxyEmail(request, new_proxy, user)
     if basic_info_changed:
       django.contrib.messages.success(request,
         _("Your information has been updated."))
     if d['pwcurrent'].strip() != '' and d['pwnew'].strip() != '':
       django.contrib.messages.success(request, _("Your password has been updated."))
 
-def _sendEmail (p_user, user):
-  m = (_("Dear") + "%s,\n\n" +\
+def _sendEmail (request, user, subject, message):
+  try:
+    django.core.mail.send_mail(subject, message,
+      django.conf.settings.SERVER_EMAIL, [user.accountEmail], fail_silently=True)
+  except Exception, e:
+    u = user.primaryContactName + "<" + user.accountEmail + ">"
+    django.contrib.messages.error(request, "error sending email to " + u + ":" + str(e))
+
+def _sendProxyEmail (request, p_user, user):
+  m = (_("Dear") + " %s,\n\n" +\
     _("You have been added as a proxy user to the identifiers owned by the following ") +\
     _("primary user") + ":\n\n" +\
     "   " + _("User") + ": %s\n" +\
@@ -174,15 +200,25 @@ def _sendEmail (p_user, user):
     _("Best,\nEZID Team\n\n\nThis is an automated email. Please do not reply.\n")) %\
     (p_user.primaryContactName, 
      user.primaryContactName, user.username, user.displayName, user.accountEmail)
-  try:
-    django.core.mail.send_mail(_("You've Been Added to an EZID Account"), m,
-      django.conf.settings.SERVER_EMAIL, [p_user.accountEmail], fail_silently=True)
-  except Exception, e:
-    u = p_user.primaryContactName + "<" + p_user.accountEmail + ">"
-    django.contrib.messages.error(request, "error sending email to " + u + ":" + e)
+  _sendEmail(request, p_user, _("You've Been Added as an EZID Proxy User"), m)
+ 
+def _sendUserEmail (request, user, new_proxies):
+  plural = True if len(new_proxies) > 1 else False 
+  intro = _("These proxy user have been") if plural else _("This proxy user has been")
+  p_list = ""
+  for p in new_proxies:
+    p_list += "[" + p.username +  "]   " + p.primaryContactName +\
+      "<" + p.accountEmail + ">\n"
+  m = (_("Dear") + " %s,\n\n" +\
+    _("Thank you for using EZID to easily create and manage your identifiers.") +\
+    " %s " + _("successfully added to your account") + ":\n\n%s" +\
+    _("To manage your account's proxy users, please log into EZID and go to") +\
+    " ezid.cdlib.org/acccount/edit." +\
+    _("Best,\nEZID Team\n\n\nThis is an automated email. Please do not reply.\n")) %\
+    (user.primaryContactName, intro, p_list)
+  subj = (_("New EZID Proxy User%s Added")) % ("s" if plural else "")
+  _sendEmail(request, user, subj, m)
 
-
-      
 def pwreset(request, pwrr, ssl=False):
   """
   Handles all GET and POST interactions related to password resets.

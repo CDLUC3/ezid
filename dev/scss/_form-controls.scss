@@ -488,3 +488,19 @@
 	}
 
 }
+
+::-webkit-input-placeholder {
+   color: $input-color-placeholder;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+   color: $input-color-placeholder;
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+   color: $input-color-placeholder;
+}
+
+:-ms-input-placeholder {
+   color: $input-color-placeholder;
+}

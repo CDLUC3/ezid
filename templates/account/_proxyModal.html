@@ -28,8 +28,8 @@ $(document).ready(function() {
   var txt = $('#id_proxy_users_picked');
 
   function setTextAreaDimension(x) {
-    var h, div = Math.ceil(x.val().length/39);
-    h = div * 25;
+    var h, div = Math.ceil(x.val().length/34);
+    h = div * 30;
     x.css('height', h);
     if (x.val().length < 2) {
       x.css('width', 10);
@@ -63,6 +63,9 @@ $(document).ready(function() {
         }
     });
     txt.val(assigned.join(", "));
+    if (txt.val() == '') {
+      txt.val('{{proxies_default}}');
+    }
     setTextAreaDimension(txt); 
     $('#proxyModal').modal('hide');
   });
