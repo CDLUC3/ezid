@@ -87,8 +87,8 @@ def _getUsage(request, d):
     d["totals"] = _computeTotals(table)
     month_range = table[-12:]
     d["lastYear"] = _computeTotals(month_range)
-    d["lastYearFrom"] = lastYear[0][0]
-    d["lastYearTo"] = lastYear[-1][0]
+    d["lastYearFrom"] = month_range[0][0]
+    d["lastYearTo"] = month_range[-1][0]
 
   last_calc = datetime.datetime.fromtimestamp(s.getComputeTime())
   d['last_tally'] = last_calc.strftime('%B %d, %Y')
