@@ -193,7 +193,7 @@ def _sendProxyEmail (request, p_user, user):
     "   " + _("User") + ": %s\n" +\
     "   " + _("Username") + ": %s\n" +\
     "   " + _("Account") + ": %s\n" +\
-    "   " + _("Account Email") + ": %s\n" +\
+    "   " + _("Account Email") + ": %s\n\n" +\
     _("As a proxy user, you can create and modify identifiers owned by the primary user") + ". " +\
     _("If you need more information about proxy ownership of EZID identifiers, ") +\
     _("please don't hesitate to contact us: http://ezid.cdlib.org/contact\n\n") +\
@@ -204,14 +204,13 @@ def _sendProxyEmail (request, p_user, user):
  
 def _sendUserEmail (request, user, new_proxies):
   plural = True if len(new_proxies) > 1 else False 
-  intro = _("These proxy user have been") if plural else _("This proxy user has been")
+  intro = _("These proxy users have been") if plural else _("This proxy user has been")
   p_list = ""
   for p in new_proxies:
-    p_list += "[" + p.username +  "]   " + p.primaryContactName +\
-      "<" + p.accountEmail + ">\n"
+    p_list += p.username  + "\n"
   m = (_("Dear") + " %s,\n\n" +\
     _("Thank you for using EZID to easily create and manage your identifiers.") +\
-    " %s " + _("successfully added to your account") + ":\n\n%s" +\
+    " %s " + _("successfully added to your account") + ":\n\n%s\n\n" +\
     _("To manage your account's proxy users, please log into EZID and go to") +\
     " ezid.cdlib.org/acccount/edit." +\
     _("Best,\nEZID Team\n\n\nThis is an automated email. Please do not reply.\n")) %\

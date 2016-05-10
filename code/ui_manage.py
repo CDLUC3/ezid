@@ -43,11 +43,9 @@ def index(request):
     d['filtered'] = True 
     d['form'] = form_objects.ManageSearchIdForm(request.POST)
     noConstraintsReqd = False
-  d['owner_names'] = [(user.username, user.displayName + " (" + _("me") + ")")]
+  d['owner_names'] = uic.related_users(user)
   if user.isGroupAdministrator:
-    users_group = [(u.username, u.displayName, ) for u in user.group.users.all()\
-      if u.displayName != user.displayName]
-    d['owner_names'].extend(sorted(users_group, key=lambda x: x[1].lower()))
+    d['group_admin'] = user.displayName + _("  (me)") 
     if d['owner_selected'] == user.username:
       d['ownergroup_selected'] = user.group.groupname
   d = ui_search.search(d, request, noConstraintsReqd, "manage")

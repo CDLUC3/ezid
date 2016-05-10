@@ -6,7 +6,6 @@ import time
 from decorators import basictag
 import layout_extras
 
-
 register = template.Library()
 
 @register.simple_tag

@@ -196,3 +196,46 @@ def identifier_has_block_data (identifier):
   """
   return (identifier["_profile"] == "erc" and "erc" in identifier) or\
     (identifier["_profile"] == "datacite" and "datacite" in identifier)
+
+def related_users(user):
+  """
+  Generate a data structure to represent heirarchy of realm -> group -> user
+  username, displayName, and proxy_for
+  {'cdl':
+    {
+      'aasdata':   [('aasdata', 'American Astronomical Society', '')], ...
+      'biocaddie': [('biocaddie', 'bio CADDIE'), ('bcaddie-api', 'bcaddie api', '')],
+      'caltech':   [('caltech', 'The California Institute of Technology Library', ''),
+                    ('caltech_clement', 'Gail Clement', '(proxy)'),
+                    ('caltech_ruthlb', 'Ruth Sustaita', '')]
+    },
+   'purdue':
+    {
+       'acsess': [('acsess', 'Alliance CSESS', '')], ...
+    }
+  }
+  """
+  d = {}
+  me = _userList([user], "  (" + _("me") + ")")
+  my_proxies = _userList(user.proxy_for.all(), "  (" + _("by proxy") + ")")
+  if user.isSuperuser:
+    pass
+  # realmnames = [r.name for r in ezidapp.models.getAllRealms()]
+  # for kr in realmnames:
+  #   getGroups 
+  # elif user.isRealmAdministrator:
+  #   groupnames = [g.name for g in ezidapp.models.getAllGroups()]
+  else:
+    if user.isGroupAdministrator:
+      d[''] = {user.username: _getUsersByGroup(user, user.group.groupname)}
+    else:
+      d[''] = {'': me + my_proxies}
+  return d
+
+def _getUsersByGroup(me, groupname):
+  """ Display all users in group except group admin """
+  g = ezidapp.models.getGroupByGroupname(groupname)
+  return _userList([user for user in g.users.all() if user.username != me.username], "")
+
+def _userList(users, suffix):
+   return [(u.username, u.displayName + suffix) for u in users]

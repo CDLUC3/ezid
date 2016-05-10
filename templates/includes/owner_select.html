@@ -1,9 +1,36 @@
+{% with sp="&nbsp;&nbsp;&nbsp;" %}
       <select name="owner_selected" id="owner_selected" class="fcontrol__select">
-      {% for owner in owner_names %}
-        <option value="{{owner.0}}"
-        {% if owner.0 == owner_selected %}
+{% for realm,group in owner_names.items %}
+        {% if realm != '' %}
+	<option value="{{realm}}"
+        {% if realm == owner_selected %}
           selected="selected"
         {% endif %}
-        >{{owner.1}}</option>
-      {% endfor %}
+        >{{realm}}</option>
+        {% endif %}
+  {% for g,users in group.items %}
+    {% if g != '' %}
+	<option value="{{g}}"
+      {% if g == owner_selected %}
+          selected="selected"
+      {% endif %}
+      {% if group_admin %}
+        >{{sp}}{{group_admin}}</option>
+      {% else %}
+        >{{sp}}{{g}}</option>
+      {% endif %}
+    {% endif %}
+    {% for username, userdisplay in users %}
+	<option value="{{username}}"
+        {% if username == owner_selected %}
+          selected="selected"
+        {% endif %}
+        >{{sp}}{{sp}}{{userdisplay}}</option>
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+      {% if realm == 'realm_null' %}
+
+      {% endif %}
       </select>
+{% endwith %}

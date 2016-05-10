@@ -21,7 +21,11 @@ def dashboard(request, ssl=False):
   REQUEST = request.GET if request.method == "GET" else request.POST
   d['owner_selected'] = REQUEST['owner_selected'] if \
     'owner_selected' in REQUEST else user.username
-  d['owner_names'] = [(user.username, user.displayName + " (" + _("me") + ")")]
+  d['owner_names'] = uic.related_users(user)
+  if user.isGroupAdministrator:
+    d['group_admin'] = user.displayName + _("  (me)")
+    if d['owner_selected'] == user.username:
+      d['ownergroup_selected'] = user.group.groupname
   # d = _getUsage(request, d)
 
   d['ajax'] = False
