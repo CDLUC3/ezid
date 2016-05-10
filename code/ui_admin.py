@@ -26,7 +26,7 @@ def dashboard(request, ssl=False):
     d['group_admin'] = user.displayName + _("  (me)")
     if d['owner_selected'] == user.username:
       d['ownergroup_selected'] = user.group.groupname
-  # d = _getUsage(request, d)
+  d = _getUsage(request, d)
 
   d['ajax'] = False
   # Search:    ID Issues
@@ -60,8 +60,7 @@ def ajax_dashboard_table(request):
       return uic.render(request, "dashboard/_" + G['name'], d)
 
 def _getUsage(request, d):
-  # ToDo: Now that any user can access this pg, not just admin, make necessary changes.
-  #make select list choices
+  # ToDo: Merge into owner_selector
   users = ezidapp.models.StoreUser.objects.all().order_by("username")
   groups = ezidapp.models.StoreGroup.objects.all().order_by("groupname")
   user_choices = [("user_" + x.pid, x.username) for x in users]
@@ -81,18 +80,13 @@ def _getUsage(request, d):
   elif d['choice'].startswith('group_'):
     group_id = d['choice'][6:]
   
-  # d['report'] = _create_stats_report(user_id, group_id)[::-1]
-  # if len(d['report']) > 0:
-  #   d['totals'] = d['report'][0]
-  #   d['report'] = d['report'][1:]
-
   s = stats.getStats()
   table = s.getTable(owner=user_id, group=group_id, useLocalNames=False)
   d["months"] = _computeMonths(table)
   if len(d["months"]) > 0:
     d["totals"] = _computeTotals(table)
-    lastYear = table[-12:]
-    d["lastYear"] = _computeTotals(lastYear)
+    month_range = table[-12:]
+    d["lastYear"] = _computeTotals(month_range)
     d["lastYearFrom"] = lastYear[0][0]
     d["lastYearTo"] = lastYear[-1][0]
 

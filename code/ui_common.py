@@ -201,15 +201,16 @@ def related_users(user):
   """
   Generate a data structure to represent heirarchy of realm -> group -> user
   username, displayName, and proxy_for
-  {'cdl':
+  {'cdl':      # This will be empty for non superadmin and non realm admin
     {
-      'aasdata':   [('aasdata', 'American Astronomical Society', '')], ...
+      'aasdata':   # This will be empty for non group admin
+                   [('aasdata', 'American Astronomical Society', '')], ...
       'biocaddie': [('biocaddie', 'bio CADDIE'), ('bcaddie-api', 'bcaddie api', '')],
       'caltech':   [('caltech', 'The California Institute of Technology Library', ''),
                     ('caltech_clement', 'Gail Clement', '(proxy)'),
                     ('caltech_ruthlb', 'Ruth Sustaita', '')]
     },
-   'purdue':
+  'purdue':   # This will be empty for non realm admin
     {
        'acsess': [('acsess', 'Alliance CSESS', '')], ...
     }

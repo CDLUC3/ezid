@@ -4,16 +4,14 @@
   <h2 class="heading-sub__icon-4">{% trans "Total Identifiers Created By Month" %}</h2>
   <div class="dashboard__month-range">
     <div class="fcontrol__select-group-inline">
-      <label for="month_begin" class="fcontrol__select-label-hidden">Month Begin</label>
-      <select name="month-range" class="fcontrol__select">
-        <option value="">June 2011</option>
-        <option value="">June 2013</option>
+      <label for="month_from" class="fcontrol__select-label-hidden">{% trans "Month From" %]</label>
+      <select name="month_from" class="fcontrol__select">
+        <option value="">{{lastYearFrom}}</option>
       </select>
       &nbsp;&nbsp;to&nbsp;&nbsp;
-      <label for="month_begin" class="fcontrol__select-label-hidden">Month Begin</label>
-      <select name="month-range" class="fcontrol__select">
-        <option value="">June 2011</option>
-        <option value="">June 2013</option>
+      <label for="month_to" class="fcontrol__select-label-hidden">{% trans "Month To" %}</label>
+      <select name="month_to" class="fcontrol__select">
+        <option value="">{{lastYearTo}}</option>
       </select>
     </div>
   </div>
@@ -23,25 +21,20 @@
 <th>{% trans "Month" %}</th>
 <th>ARKs</th>
 <th>DOIs</th>
-<th>URNs</th>
 </tr>
 </thead>
 <tbody>
 
-{% for row in report %}
+{% for row in months %}
 <tr>
-<td>{{row.0}}</td>
+<td>{{row.month}}</td>
 <td>
-  {{row.1}}
-  <span class="pct">({{row.2}})</span>
+  {{row.ARK.total}}
+  <span class="pct">({{row.ARK.hasMetadataPercentage}}%)</span>
 </td>
 <td>
-  {{row.3}}
-  <span class="pct">({{row.4}})</span>
-</td>
-<td>
-  {{row.5}}
-  <span class="pct">({{row.6}})</span>
+  {{row.DOI.total}}
+  <span class="pct">({{row.DOI.hasMetadataPercentage}}%)</span>
 </td>
 </tr>
 {% endfor %}

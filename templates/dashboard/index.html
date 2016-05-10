@@ -24,12 +24,10 @@
     </div>
   </form>
   </div>
-{% if report|length > 0 %}
+{% if months|length > 0 %}
 
 {% include "dashboard/_totalIds.html" %}
 {% include "dashboard/_totalIdsByMonth.html" %}
-{% comment     include "dashboard/_totalIds.html" %}
-{% endcomment %}
 
 {% else %}
 <p>There is no usage data for the selected group or user.</p>
