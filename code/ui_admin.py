@@ -2,7 +2,7 @@ import ui_common as uic
 import userauth
 import ezidapp.models
 import stats
-import datetime
+from datetime import datetime
 import ui_search 
 from collections import *
 from django.utils.translation import ugettext as _
@@ -26,9 +26,9 @@ def dashboard(request, ssl=False):
     d['group_admin'] = user.displayName + _("  (me)")
     if d['owner_selected'] == user.username:
       d['ownergroup_selected'] = user.group.groupname
-  d = _getUsage(request, d)
-
+  d = _getUsage(request, user, d)
   d['ajax'] = False
+
   # Search:    ID Issues
   d = ui_search.search(d, request, NO_CONSTRAINTS, "issues")
   # Tables need data named uniquely to distinguish them apart
@@ -59,7 +59,7 @@ def ajax_dashboard_table(request):
       d = ui_search.search(d, request, NO_CONSTRAINTS, G['name'])
       return uic.render(request, "dashboard/_" + G['name'], d)
 
-def _getUsage(request, d):
+def _getUsage(request, user, d):
   # ToDo: Merge into owner_selector
   users = ezidapp.models.StoreUser.objects.all().order_by("username")
   groups = ezidapp.models.StoreGroup.objects.all().order_by("groupname")
@@ -73,30 +73,65 @@ def _getUsage(request, d):
   else:
     d['choice'] = request.POST['choice']
     
-  #query all
-  user_id, group_id = None, None
+  user_id, group_id = None, None      # This queries all
   if d['choice'].startswith('user_'):
     user_id = d['choice'][5:]
   elif d['choice'].startswith('group_'):
     group_id = d['choice'][6:]
-  
+  # Clean up code above
+ 
+  user_id = user.pid 
+  group_id = d['ownergroup_selected'] if 'ownergroup_selected' in d else None 
   s = stats.getStats()
   table = s.getTable(owner=user_id, group=group_id, useLocalNames=False)
-  d["months"] = _computeMonths(table)
-  if len(d["months"]) > 0:
+  all_months = _computeMonths(table)
+  if len(all_months) > 0:
     d["totals"] = _computeTotals(table)
-    month_range = table[-12:]
-    d["lastYear"] = _computeTotals(month_range)
-    d["lastYearFrom"] = month_range[0][0]
-    d["lastYearTo"] = month_range[-1][0]
+    month_earliest = table[0][0]
+    month_latest = "%s-%s" % (datetime.now().year, datetime.now().month)
+    d['months_all'] = _listMonths(month_earliest, month_latest)
+    default_table = table[-12:]
+    REQUEST = request.GET if request.method == "GET" else request.POST
+    d["month_from"] = REQUEST["month_from"] if \
+      "month_from" in REQUEST else default_table[0][0]
+    d["month_to"] = REQUEST["month_to"] if \
+      "month_to" in REQUEST else default_table[-1][0]
+    table_scoped = _getScopedRange(table, d['month_from'], d['month_to'])
+    d["totals_by_month"] = _computeMonths(table_scoped)
 
-  last_calc = datetime.datetime.fromtimestamp(s.getComputeTime())
+  last_calc = datetime.fromtimestamp(s.getComputeTime())
   d['last_tally'] = last_calc.strftime('%B %d, %Y')
-
-  # Used for totals of last 12 months. No longer used.
-  # d['yearly'] = _year_totals(user_id, group_id, last_calc)
-  
   return d
+
+def _listMonths(m1, m2):
+  r = []
+  def p(d):
+    return [int(c) for c in d.split("-")]
+  startyear = p(m1)[0]
+  endyear   = p(m2)[0]
+  endmonth  = p(m2)[1]
+  for y in range(startyear,p(m2)[0]+1): 
+    r2 = []
+    if y == startyear:
+      r2 = [("%4d-%02d")%(y,m) for m in range(p(m1)[1],13)]
+    elif y == endyear:
+      r2 = [("%4d-%02d")%(y,m) for m in range(1,endmonth+1)]
+    else:
+      r2 = [("%4d-%02d")%(y,m) for m in range(1,13)]
+    r += r2
+  return r
+
+def _getScopedRange(table, mfrom, mto):
+  r = []
+  def p(d):
+    return [int(c) for c in d.split("-")]
+  dfrom = datetime(p(mfrom)[0], p(mfrom)[1], 1)
+  dto = datetime(p(mto)[0], p(mto)[1], 28)      # arbitrary ceiling
+  for month, stats in table:
+    dthis = datetime(p(month)[0], p(month)[1], 12)  # arbitrary middle
+    if (dthis > dfrom) and (dthis < dto):
+      r.append((month, stats))
+  return r
 
 def _percent (m, n):
   if n == 0:
