@@ -282,6 +282,8 @@ def display_xml(request, identifier):
     content = id_metadata["datacite"]
   elif d['current_profile'].name == 'crossref' and 'crossref' in id_metadata:
     content = id_metadata["crossref"]
+  else:
+    return uic.staticTextResponse("No XML metadata.")
   
   # By setting the content type ourselves, we gain control over the
   # character encoding and can properly set the content length.
