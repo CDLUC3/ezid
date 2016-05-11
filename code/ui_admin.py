@@ -89,49 +89,21 @@ def _getUsage(request, user, d):
     d["totals"] = _computeTotals(table)
     month_earliest = table[0][0]
     month_latest = "%s-%s" % (datetime.now().year, datetime.now().month)
-    d['months_all'] = _listMonths(month_earliest, month_latest)
+    d['months_all'] = [m[0] for m in table]
     default_table = table[-12:]
     REQUEST = request.GET if request.method == "GET" else request.POST
-    d["month_from"] = REQUEST["month_from"] if \
-      "month_from" in REQUEST else default_table[0][0]
-    d["month_to"] = REQUEST["month_to"] if \
-      "month_to" in REQUEST else default_table[-1][0]
-    table_scoped = _getScopedRange(table, d['month_from'], d['month_to'])
-    d["totals_by_month"] = _computeMonths(table_scoped)
+    d["month_from"] = REQUEST["month_from"] if "month_from" in REQUEST else default_table[0][0]
+    d["month_to"] = REQUEST["month_to"] if "month_to" in REQUEST else default_table[-1][0]
+    d["totals_by_month"] = _computeMonths(_getScopedRange(table, d['month_from'], d['month_to']))
 
   last_calc = datetime.fromtimestamp(s.getComputeTime())
   d['last_tally'] = last_calc.strftime('%B %d, %Y')
   return d
 
-def _listMonths(m1, m2):
-  r = []
-  def p(d):
-    return [int(c) for c in d.split("-")]
-  startyear = p(m1)[0]
-  endyear   = p(m2)[0]
-  endmonth  = p(m2)[1]
-  for y in range(startyear,p(m2)[0]+1): 
-    r2 = []
-    if y == startyear:
-      r2 = [("%4d-%02d")%(y,m) for m in range(p(m1)[1],13)]
-    elif y == endyear:
-      r2 = [("%4d-%02d")%(y,m) for m in range(1,endmonth+1)]
-    else:
-      r2 = [("%4d-%02d")%(y,m) for m in range(1,13)]
-    r += r2
-  return r
-
 def _getScopedRange(table, mfrom, mto):
-  r = []
-  def p(d):
-    return [int(c) for c in d.split("-")]
-  dfrom = datetime(p(mfrom)[0], p(mfrom)[1], 1)
-  dto = datetime(p(mto)[0], p(mto)[1], 28)      # arbitrary ceiling
-  for month, stats in table:
-    dthis = datetime(p(month)[0], p(month)[1], 12)  # arbitrary middle
-    if (dthis > dfrom) and (dthis < dto):
-      r.append((month, stats))
-  return r
+  ifrom = [i for i,d in enumerate(table) if d[0] == mfrom]
+  ito = [i for i,d in enumerate(table) if d[0] == mto]
+  return table[ifrom[0]:ito[0]]
 
 def _percent (m, n):
   if n == 0:
