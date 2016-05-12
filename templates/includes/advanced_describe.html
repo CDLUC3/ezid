@@ -4,7 +4,7 @@
 
 <input name="original_profile" id="original_profile"  type="hidden" value="{{current_profile.name}}"/>
 <div class="fieldset-stacked__embedded-select">
-  <span id="create__fieldset7" class="fieldset-inline__legend-number-4">{% trans "Describe the identified object using the" %}</span>
+  <span id="create__fieldset7" class="fieldset-inline__legend-number-4"><h2 class="fieldset__heading-2">{% trans "Describe the identified object using the" %}</h2></span>
   <label for="current_profile" class="fcontrol__text-label-hidden">{% trans "Profile" %}</label>
   <select name="current_profile" id="current_profile" class="fcontrol__select">
     {% for prof in profile_names %}

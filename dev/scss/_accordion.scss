@@ -27,3 +27,8 @@ $accordion-padding: 15px;
 	background: url('../images/icon_plus-sign.svg') left $accordion-padding center / 12px no-repeat, $design-form-element-bg;
 	font-weight: bold;
 }
+
+.accordion__title-heading {
+  margin: 0;
+  font-size: inherit;
+}

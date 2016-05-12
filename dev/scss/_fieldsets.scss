@@ -4,6 +4,12 @@
 
 $fieldset-legend-spacing: 1em;
 
+// ***** H2 inside ***** //
+.fieldset__heading-2 {
+	margin: 0;
+	font-size: inherit;
+}
+
 // ***** Fieldset Containers ***** //
 
 %fieldset {
