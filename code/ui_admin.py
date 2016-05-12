@@ -31,7 +31,7 @@ def dashboard(request, ssl=False):
 
   # Search:    ID Issues
   d = ui_search.search(d, request, NO_CONSTRAINTS, "issues")
-  # Tables need data named uniquely to distinguish them apart
+  # UI Tables need data named uniquely to distinguish them apart
   d['results_issues'] = d['results']
   d['total_pages_issues'] = d['total_pages']
   d['field_display_types_issues'] = d['field_display_types']
@@ -103,7 +103,7 @@ def _getUsage(request, user, d):
 def _getScopedRange(table, mfrom, mto):
   ifrom = [i for i,d in enumerate(table) if d[0] == mfrom]
   ito = [i for i,d in enumerate(table) if d[0] == mto]
-  return table[ifrom[0]:ito[0]]
+  return table[ifrom[0]:ito[0]+1]
 
 def _percent (m, n):
   if n == 0:

@@ -12,6 +12,7 @@ import hashlib
 import re
 import time
 import urllib
+import operator
 from django.shortcuts import redirect
 import ezidapp.admin
 import ezidapp.models
@@ -83,8 +84,9 @@ def edit(request, ssl=False):
   d["username"] = user.username
 
   proxies_orig = [u.username for u in user.proxies.all().order_by("username")]
-  d['proxy_users_choose'] = {u.username: u.displayName for u in\
+  pusers = {u.username: u.displayName for u in\
     allUsersInRealm(user) if u.displayName != user.displayName}
+  d['proxy_users_choose'] = sorted(pusers.items(), key=operator.itemgetter(0))
   if request.method == "GET":
     d['primaryContactName'] = user.primaryContactName
     d['primaryContactEmail'] = user.primaryContactEmail
