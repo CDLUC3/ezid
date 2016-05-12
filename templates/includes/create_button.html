@@ -12,7 +12,7 @@
       <b>NOTE:</b> This is just a demo.
   {% endblocktrans %}
       &nbsp;&nbsp;
-  {% if not session.auth %}
+  {% if not authenticatedUser %}
     {% blocktrans trimmed %}
       To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
     {% endblocktrans %}
