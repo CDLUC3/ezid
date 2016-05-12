@@ -37,15 +37,6 @@ class DownloadQueue (django.db.models.Model):
   # The requesting user, referenced by the user's persistent
   # identifier, e.g., "ark:/99166/p92z12p14".
 
-  coOwners = django.db.models.TextField(blank=True)
-  # DEPRECATED; WILL BE REMOVED
-  # A comma-separated list of zero or more persistent identifiers of
-  # users for which the requestor is a co-owner, e.g.,
-  # "ark:/99166/p9jm23f63,ark:/99166/p99k45t25".  I.e., if the
-  # requestor is R and user U has named R as a co-owner, then U is in
-  # the list.  The list is computed at the time the request is made
-  # and not changed thereafter.
-
   ANVL = "A"
   CSV = "C"
   XML = "X"
@@ -91,12 +82,6 @@ class DownloadQueue (django.db.models.Model):
 
   filename = django.db.models.CharField(max_length=10, blank=True)
   # The filename root, e.g., "da543b91a0".
-
-  currentOwner = django.db.models.CharField(
-    max_length=util.maxIdentifierLength, blank=True)
-  # DEPRECATED; WILL BE REMOVED
-  # The owner currently being harvested (either 'requestor' above or
-  # one of the users in 'coOwners').  HARVEST stage only.
 
   toHarvest = django.db.models.TextField()
   # A comma-separated list of persistent identifiers of one or more
