@@ -49,10 +49,6 @@
 # add it.  The DJANGO_SETTINGS_MODULE environment variable must be
 # set.
 #
-# Additionally, if the -n option is NOT specified, this script assumes
-# that LDAP is enabled, and a connection to the LDAP server is
-# required.
-#
 # Interim modification: we account for the fact that identifiers are
 # prefixed with "ark:/" when stored in noid.
 #
@@ -69,7 +65,7 @@ import sys
 execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
   "offline.py"))
 
-import ezidadmin
+import ezidapp.models
 import noid_egg
 import util
 
@@ -103,19 +99,6 @@ if options.rawOutput:
   if options.includeShadowArks: p.error("options -r and -s are incompatible")
   options.convertAgents = False
 dbfile = args[0]
-
-if options.convertAgents:
-  agentMap = { "anonymous": "anonymous" }
-  groups = ezidadmin.getGroups()
-  if type(groups) is str:
-    sys.stderr.write("dump: error loading EZID groups: %s\n" % groups)
-    sys.exit(1)
-  for g in groups: agentMap[g["arkId"]] = g["gid"]
-  users = ezidadmin.getUsers()
-  if type(users) is str:
-    sys.stderr.write("dump: error loading EZID users: %s\n" % users)
-    sys.exit(1)
-  for u in users: agentMap[u["arkId"]] = u["uid"]
 
 if options.gzipOutput:
   outfile = gzip.GzipFile(fileobj=sys.stdout, mode="w")
@@ -192,11 +175,17 @@ while entry != None:
       if id != lastId:
         if lastId is not None: outputRecord(lastId, record)
         record = {}
-      if label in ["_o", "_g"] and options.convertAgents:
-        record[label] = agentMap[value]
-      elif label == "_co" and options.convertAgents:
-        record[label] = " ; ".join(agentMap[co.strip()]\
-          for co in value.split(";") if len(co.strip()) > 0)
+      if options.convertAgents:
+        if label == "_o":
+          record["_o"] = ezidapp.models.getUserByPid(value).username
+        elif label == "_g":
+          record["_g"] = ezidapp.models.getGroupByPid(value).groupname
+        elif label == "_co":
+          record["_co"] = " ; ".join(
+            ezidapp.models.getUserByPid(co.strip()).username\
+            for co in value.split(";") if len(co.strip()) > 0)
+        else:
+          record[label] = value
       else:
         record[label] = value
       lastId = id
