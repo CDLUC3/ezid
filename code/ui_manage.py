@@ -30,8 +30,10 @@ def index(request):
   d = { 'menu_item' : 'ui_manage.index' }
   user = userauth.getUser(request)
   if request.method == "GET":
-    d['owner_selected'] = request.GET['owner_selected'] \
-      if 'owner_selected' in request.GET else user.username
+    if not('owner_selected' in request.GET) or request.GET['owner_selected'] == '':
+      d['owner_selected'] =  _defaultUser(user)
+    else:
+      d['owner_selected'] =  request.GET['owner_selected']
     d['queries'] = ui_search.queryDict(request)
     # And preserve query in form object
     d['form'] = form_objects.ManageSearchIdForm(d['queries'])
@@ -39,19 +41,22 @@ def index(request):
     d['sort'] = 'asc'
     noConstraintsReqd =True 
   elif request.method == "POST":
-    d['owner_selected'] = request.POST['owner_selected']
+    d['owner_selected'] = request.POST['owner_selected'] if 'owner_selected' != '' \
+      else _defaultUser(user)
     d['filtered'] = True 
     d['form'] = form_objects.ManageSearchIdForm(request.POST)
     noConstraintsReqd = False
-  d['owner_names'] = uic.related_users(user)
-  if user.isGroupAdministrator:
-    d['group_admin'] = user.displayName + _("  (me)") 
-    if d['owner_selected'] == user.username:
-      d['ownergroup_selected'] = user.group.groupname
+  d['owner_names'] = uic.owner_names(user, "manage")
   d = ui_search.search(d, request, noConstraintsReqd, "manage")
   if not d['form'].has_changed():
     d['filtered'] = False
   return uic.render(request, 'manage/index', d)
+
+def _defaultUser(user):
+  """ Pick current user """
+  # ToDo: Make sure this works for Realm Admin and picking Groups
+  return 'all' if user.isSuperuser else "group_" + user.group.groupname \
+    if user.isGroupAdministrator else "user_" + user.username
 
 def _getLatestMetadata(identifier, request):
   """
@@ -322,10 +327,14 @@ def download_error(request):
   """
   #. Translators: Copy HTML tags over and only translate words outside of these tags
   #. i.e.: <a class="don't_translate_class_names" href="don't_translate_urls">Translate this text</a>
-  content = [_("If you have recently requested a batch download of your identifiers, the file may not\
-    be complete. Please close this window, then try the download link again in a few minutes."),
-    _("If you are trying to download a file of identifiers from a link that was generated over\
-    seven days ago, the download link has expired. Go to <a class='link__primary' \
-    href='/manage'>Manage IDs</a> and click &quot;Download All&quot; to generate a new download link."),
-    _("Please <a class='link__primary' href='/contact'>contact us</a> if you need assistance.")]
+  content = [_("If you have recently requested a batch download of your identifiers, ") +\
+    _("the file may not be complete. Please close this window, then try the download ") +\
+    _("link again in a few minutes."),
+    _("If you are trying to download a file of identifiers from a link that was ") +\
+    _("generated over seven days ago, the download link has expired. Go to ") +\
+    "<a class='link__primary' href='/manage'>" +\
+    _("Manage IDs") + "</a> " +\
+    _("and click &quot;Download All&quot; to generate a new download link."),
+    _("Please <a class='link__primary' href='/contact'>contact us</a> if you need ") +\
+    _("assistance.")]
   return uic.error(request, 404, content)

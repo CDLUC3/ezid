@@ -67,7 +67,7 @@ def render(request, template, context={}):
   global alertMessage, google_analytics_id, reload_templates
   c = { "session": request.session, "authenticatedUser": userauth.getUser(request),
     "alertMessage": alertMessage, "feed_cache": newsfeed.getLatestItem(), 
-    "google_analytics_id": google_analytics_id }
+    "google_analytics_id": google_analytics_id, "debug": django.conf.settings.DEBUG }
   c.update(context)
   #this is to keep from having to restart the server every 3 seconds
   #to see template changes in development, only reloads if set for optimal performance
@@ -197,28 +197,21 @@ def identifier_has_block_data (identifier):
   return (identifier["_profile"] == "erc" and "erc" in identifier) or\
     (identifier["_profile"] == "datacite" and "datacite" in identifier)
 
-def related_users(user):
+def owner_names(user, keytype):
   """
   Generate a data structure to represent heirarchy of realm -> group -> user
-  username, displayName, and proxy_for
-  {'cdl':      # This will be empty for non superadmin and non realm admin
-    {
-      'aasdata':   # This will be empty for non group admin
-                   [('aasdata', 'American Astronomical Society', '')], ...
-      'biocaddie': [('biocaddie', 'bio CADDIE'), ('bcaddie-api', 'bcaddie api', '')],
-      'caltech':   [('caltech', 'The California Institute of Technology Library', ''),
-                    ('caltech_clement', 'Gail Clement', '(proxy)'),
-                    ('caltech_ruthlb', 'Ruth Sustaita', '')]
-    },
-  'purdue':   # This will be empty for non realm admin
-    {
-       'acsess': [('acsess', 'Alliance CSESS', '')], ...
-    }
-  }
+  keytype, user-or-groupname displayName [(proxy_for)]
+  [('realm_cdl',        '[cdl]        California Digital Library'),
+   ('group_groupname',  ' [groupname]  American Astronomical Society'),
+   ('user_username',    '  [username]   American Astronomical Society'), ...
+  Keytype can differ based on keytype "dashboard" or "manage"
+   user_<pid> or group_<pid> for searching usage stats on Dashboard
+   user_<username> or group_<groupname> for searching on Manage IDs page
+
   """
-  d = {}
-  me = _userList([user], "  (" + _("me") + ")")
-  my_proxies = _userList(user.proxy_for.all(), "  (" + _("by proxy") + ")")
+  r = [] 
+  me = _userList(keytype, [user], 0, "  (" + _("me") + ")")
+  my_proxies = _userList(keytype, user.proxy_for.all(), 0, "  (" + _("by proxy") + ")")
   if user.isSuperuser:
     pass
   # realmnames = [r.name for r in ezidapp.models.getAllRealms()]
@@ -228,15 +221,38 @@ def related_users(user):
   #   groupnames = [g.name for g in ezidapp.models.getAllGroups()]
   else:
     if user.isGroupAdministrator:
-      d[''] = {user.username: _getUsersByGroup(user, user.group.groupname)}
+      r += [("group_" + user.group.pid if keytype == "dashboard" else "group_" +\
+        user.group.groupname, "[" + user.username + "]&nbsp;&nbsp;" + user.displayName)]
+      r += _getUsersByGroup(keytype, user, 1, user.group.groupname)
     else:
-      d[''] = {'': me + my_proxies}
-  return d
+      r += me + my_proxies
+  return r 
 
-def _getUsersByGroup(me, groupname):
+def _getUsersByGroup(keytype, me, indent, groupname):
   """ Display all users in group except group admin """
   g = ezidapp.models.getGroupByGroupname(groupname)
-  return _userList([user for user in g.users.all() if user.username != me.username], "")
+  return _userList(keytype, [user for user in g.users.all() if\
+    user.username != me.username], indent, "")
 
-def _userList(users, suffix):
-   return [(u.username, u.displayName + suffix) for u in users]
+def _userList(keytype, users, indent, suffix):
+  """ Display as follows:
+      ('user_ark:/99166/p9jq0st8j', '**INDENT**[apitest]  EZID API test account')
+  """
+  k = "user_"
+  i = ''.join(["&nbsp;&nbsp;&nbsp;"] * indent)
+  return [(k + u.pid if keytype == "dashboard" else k + u.username, i + "[" +\
+    u.username + "]&nbsp;&nbsp;" + u.displayName + suffix) for u in users]
+
+def getOwnerOrGroup(ownerkey):
+  """ 
+  Takes ownerkey like 'user_ark:/99166/p9jq0st8j' or 'group_merritt'
+  and returns as user_id or group_id
+  """
+  user_id, group_id = None, None
+  if ownerkey.startswith('user_'):
+    user_id = ownerkey[5:]
+  elif ownerkey.startswith('group_'):
+    group_id = ownerkey[6:]
+  else:
+    user_id = ownerkey
+  return (user_id, group_id)

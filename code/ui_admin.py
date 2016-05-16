@@ -19,13 +19,13 @@ def dashboard(request, ssl=False):
   user = userauth.getUser(request)
   d['display_adminlink'] = user.isRealmAdministrator or user.isSuperuser 
   REQUEST = request.GET if request.method == "GET" else request.POST
-  d['owner_selected'] = REQUEST['owner_selected'] if \
-    'owner_selected' in REQUEST else user.username
-  d['owner_names'] = uic.related_users(user)
-  if user.isGroupAdministrator:
-    d['group_admin'] = user.displayName + _("  (me)")
-    if d['owner_selected'] == user.username:
-      d['ownergroup_selected'] = user.group.groupname
+  if not('owner_selected' in REQUEST) or REQUEST['owner_selected'] == '':
+    d['owner_selected'] = 'all' if user.isSuperuser else "group_" +\
+      user.group.pid if user.isGroupAdministrator else "user_" + user.pid
+    # ToDo: Make sure this works for Realm Admin and picking Groups
+  else:
+   d['owner_selected'] = REQUEST['owner_selected'] 
+  d['owner_names'] = uic.owner_names(user, "dashboard")
   d = _getUsage(request, user, d)
   d['ajax'] = False
 
@@ -60,28 +60,7 @@ def ajax_dashboard_table(request):
       return uic.render(request, "dashboard/_" + G['name'], d)
 
 def _getUsage(request, user, d):
-  # ToDo: Merge into owner_selector
-  users = ezidapp.models.StoreUser.objects.all().order_by("username")
-  groups = ezidapp.models.StoreGroup.objects.all().order_by("groupname")
-  user_choices = [("user_" + x.pid, x.username) for x in users]
-  group_choices = [("group_" + x.pid, x.groupname) for x in groups]
-  d['choices'] = [("all", "All EZID")] + [('',''), ('', '-- Groups --')] + \
-      group_choices + [('',''), ('', '-- Users --')] + user_choices
-      
-  if request.method != "POST" or not('choice' in request.POST) or request.POST['choice'] == '':
-    d['choice'] = 'all'
-  else:
-    d['choice'] = request.POST['choice']
-    
-  user_id, group_id = None, None      # This queries all
-  if d['choice'].startswith('user_'):
-    user_id = d['choice'][5:]
-  elif d['choice'].startswith('group_'):
-    group_id = d['choice'][6:]
-  # Clean up code above
- 
-  user_id = user.pid 
-  group_id = d['ownergroup_selected'] if 'ownergroup_selected' in d else None 
+  user_id, group_id = uic.getOwnerOrGroup(d['owner_selected'])
   s = stats.getStats()
   table = s.getTable(owner=user_id, group=group_id, useLocalNames=False)
   all_months = _computeMonths(table)

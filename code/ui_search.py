@@ -141,12 +141,8 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
   d = _pageLayout(d, REQUEST, s_type)
   if noConstraintsReqd or 'form' in d and d['form'].is_valid():
     # Build dictionary of search constraints
-    owner = ownergroup = None
-    if 'ownergroup_selected' in d: 
-      ownergroup = d['ownergroup_selected']
-    else:
-      owner = d['owner_selected'] if 'owner_selected' in d else None
-    c = _buildAuthorityConstraints(request, s_type, owner, ownergroup)
+    user_id, group_id = uic.getOwnerOrGroup(d['owner_selected'])
+    c = _buildAuthorityConstraints(request, s_type, user_id, group_id)
     if s_type in ('public', 'manage'):
       q = d['queries'] if 'queries' in d and d['queries'] else REQUEST
       q2 = {}
