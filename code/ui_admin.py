@@ -31,14 +31,12 @@ def dashboard(request, ssl=False):
     # ToDo: Make sure this works for Realm Admin and picking Groups
   else:
    d['owner_selected'] = REQUEST['owner_selected'] 
-  print "Owner slected for usage:" + d['owner_selected']
   d['owner_names'] = uic.owner_names(user, "dashboard")
   d = _getUsage(request, user, d)
   d['ajax'] = False
 
   # Set owner/group selector to username
-  d['owner_selected'] = owner_selected[1]
-  print "Owner selected for issues and crossref:" + d['owner_selected']
+  d['owner_selected'] = owner_selected[1] if owner_selected else REQUEST['owner_selected'] 
   # Search:    ID Issues
   d = ui_search.search(d, request, NO_CONSTRAINTS, "issues")
   # UI Tables need data named uniquely to distinguish them apart
