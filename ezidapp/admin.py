@@ -544,6 +544,8 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
         obj.users.all().update(crossrefEnabled=False, crossrefEmail="")
         doUpdateUserPids = True
       if doUpdateUserPids:
+        django.db.connection.on_commit(models.store_user.clearCaches)
+        django.db.connection.on_commit(models.search_identifier.clearUserCache)
         users = list(obj.users.all())
         django.db.connection.on_commit(lambda: updateUserPids(request, users))
   def delete_model (self, request, obj):

@@ -31,7 +31,8 @@ fi
 $cat $infile |\
   fgrep _ezid_role |\
   $tooldir/select _fields contains _ezid_role |\
-  $tooldir/project -d -s \| _id ldap.gid ldap.uid _ezid_role |\
+  $tooldir/project -d -s \| _id ezid.group.groupname ezid.user.username\
+    _ezid_role |\
   awk -F \| '{ print $1, ($4 == "user"? $3 : $2), "(" $4 ")" }' |\
   awk '{ if (substr($0, 1, 5) != "ark:/") $0 = "ark:/" $0; print $0 }' |\
   sort -k 2,2 -k 3,3r

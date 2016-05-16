@@ -162,7 +162,10 @@ def verifyIdentifier (identifier, record):
       t = defaultTarget
     else:
       t = tombstoneTarget
-    assert record["_t"] == t("ark:/" + identifier),\
+    # TRANSITION: as shadow ARKs are being phased out, _t and _st are
+    # clamped.
+    assert record["_t"] == t("ark:/" + identifier) or\
+      ("_s" in record and record["_t"] == t(record["_s"])),\
       "invalid target URL for non-public status: " + record["_t"]
     if "_s" in record:
       assert record["_st"] == t(record["_s"]),\
