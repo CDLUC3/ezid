@@ -235,13 +235,16 @@ def _getUsersByGroup(keytype, me, indent, groupname):
     user.username != me.username], indent, "")
 
 def _userList(keytype, users, indent, suffix):
-  """ Display as follows:
-      ('user_ark:/99166/p9jq0st8j', '**INDENT**[apitest]  EZID API test account')
+  """ Display list of sorted tuples as follows:
+      [('user_ark:/99166/p9jq0st8j', '**INDENT**[apitest]  EZID API test account'), ...]
   """
   k = "user_"
   i = ''.join(["&nbsp;&nbsp;&nbsp;"] * indent)
-  return [(k + u.pid if keytype == "dashboard" else k + u.username, i + "[" +\
-    u.username + "]&nbsp;&nbsp;" + u.displayName + suffix) for u in users]
+  # Make list of three items first so they're sortable by DisplayName
+  r = [(k + u.pid if keytype == "dashboard" else k + u.username, i + "[" +\
+    u.username + "]&nbsp;&nbsp;", u.displayName + suffix) for u in users]
+  r2 = sorted(r, key=lambda p: p[2].lower())
+  return [(x[0], x[1] + x[2]) for x in r2]   # Concat 2nd and 3rd items
 
 def getOwnerOrGroup(ownerkey):
   """ 
@@ -249,7 +252,9 @@ def getOwnerOrGroup(ownerkey):
   and returns as user_id or group_id
   """
   user_id, group_id = None, None
-  if ownerkey.startswith('user_'):
+  if ownerkey is None:
+    pass
+  elif ownerkey.startswith('user_'):
     user_id = ownerkey[5:]
   elif ownerkey.startswith('group_'):
     group_id = ownerkey[6:]
