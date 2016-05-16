@@ -17,18 +17,28 @@ def dashboard(request, ssl=False):
   """
   d = { 'menu_item' : 'ui_admin.dashboard'}
   user = userauth.getUser(request)
+  owner_selected = ()
   d['display_adminlink'] = user.isRealmAdministrator or user.isSuperuser 
   REQUEST = request.GET if request.method == "GET" else request.POST
   if not('owner_selected' in REQUEST) or REQUEST['owner_selected'] == '':
-    d['owner_selected'] = 'all' if user.isSuperuser else "group_" +\
-      user.group.pid if user.isGroupAdministrator else "user_" + user.pid
+    g = "group_"
+    u = "user_"
+    owner_selected = ('all', 'all') if user.isSuperuser else (g + user.group.pid, \
+      g + user.group.groupname) if user.isGroupAdministrator else (u + user.pid, \
+      u + user.username)
+    # Set owner/group selector to pid 
+    d['owner_selected'] = owner_selected[0]
     # ToDo: Make sure this works for Realm Admin and picking Groups
   else:
    d['owner_selected'] = REQUEST['owner_selected'] 
+  print "Owner slected for usage:" + d['owner_selected']
   d['owner_names'] = uic.owner_names(user, "dashboard")
   d = _getUsage(request, user, d)
   d['ajax'] = False
 
+  # Set owner/group selector to username
+  d['owner_selected'] = owner_selected[1]
+  print "Owner selected for issues and crossref:" + d['owner_selected']
   # Search:    ID Issues
   d = ui_search.search(d, request, NO_CONSTRAINTS, "issues")
   # UI Tables need data named uniquely to distinguish them apart
