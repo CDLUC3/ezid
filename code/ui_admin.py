@@ -24,7 +24,7 @@ def dashboard(request, ssl=False):
   if not('owner_selected' in REQUEST) or REQUEST['owner_selected'] == '':
     g = "group_"
     u = "user_"
-    d['owner_selected'] = 'all' if user.isSuperuser else g + user.group.groupname \
+    d['owner_selected'] = None if user.isSuperuser else g + user.group.groupname \
       if user.isGroupAdministrator else u + user.username
     # ToDo: Make sure this works for Realm Admin and picking Groups
   else:
@@ -68,6 +68,7 @@ def ajax_dashboard_table(request):
 
 def _getUsage(request, user, d):
   user_id, group_id = uic.getOwnerOrGroup(d['owner_selected'])
+  if user_id == 'all': user_id = None
   s = stats.getStats()
   table = s.getTable(owner=user_id, group=group_id)
   all_months = _computeMonths(table)

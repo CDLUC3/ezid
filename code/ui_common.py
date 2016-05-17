@@ -199,33 +199,45 @@ def identifier_has_block_data (identifier):
 
 def owner_names(user):
   """
-  Generate a data structure to represent heirarchy of realm -> group -> user
-  username, user-or-groupname displayName [(proxy_for)]
-  [('realm_cdl',        '[cdl]        California Digital Library'),
+  Menu filter/selector used on Manage and Dashboard pages
+  Generates a data structure to represent heirarchy of realm -> group -> user, eg:
+  [('realm_cdl',        'realm: cdl'),
    ('group_groupname',  ' [groupname]  American Astronomical Society'),
-   ('user_username',    '  [username]   American Astronomical Society'), ...
+   ('user_username',    '  [username]   American Astronomical Society (by proxy)', ...
 
   """
   r = [] 
-  me = _userList([user], 0, "  (" + _("me") + ")")
-  my_proxies = _userList(user.proxy_for.all(), 0, "  (" + _("by proxy") + ")")
   if user.isSuperuser:
-    pass
-  # realmnames = [r.name for r in ezidapp.models.getAllRealms()]
-  # for kr in realmnames:
-  #   getGroups 
-  # elif user.isRealmAdministrator:
-  #   groupnames = [g.name for g in ezidapp.models.getAllGroups()]
+    for realm in ezidapp.models.StoreRealm.objects.all().order_by("name"):
+      n = realm.name
+      r += [('', "Realm: " + n)]
+      r += _getGroupsUsers(r, user, 1, realm.groups.all().order_by("groupname"))
+  elif user.isRealmAdministrator:
+    r += _getGroupsUsers(r, user, 0, user.realm.groups.all().order_by("groupname"))
   else:
+    me = _userList([user], 0, "  (" + _("me") + ")")
+    my_proxies = _userList(user.proxy_for.all(), 0, "  (" + _("by proxy") + ")")
     if user.isGroupAdministrator:
       r += [("group_" + user.group.groupname, "[" + user.username + "]&nbsp;&nbsp;" + \
         user.displayName)]
-      r += _getUsersByGroup(user, 1, user.group.groupname)
+      r += _getUsersInGroup(user, 1, user.group.groupname)
     else:
       r += me + my_proxies
-  return r 
+  return r
 
-def _getUsersByGroup(me, indent, groupname):
+def _indent_str(size):
+  return ''.join(["&nbsp;&nbsp;&nbsp;"] * size)
+
+def _getGroupsUsers(r, me, indent, groups):
+  """ Return heirarchical list of all groups and their constituent users """
+  for g in groups:
+    n = g.groupname
+    r += [("group_" + n, _indent_str(indent) + "[" + n + "]&nbsp;&nbsp;" +\
+      g.organizationName)]
+    r += _getUsersInGroup(me, indent + 1, n)
+  return r
+
+def _getUsersInGroup(me, indent, groupname):
   """ Display all users in group except group admin """
   g = ezidapp.models.getGroupByGroupname(groupname)
   return _userList([user for user in g.users.all() if\
@@ -236,9 +248,8 @@ def _userList(users, indent, suffix):
       [('user_uitesting', '**INDENT**[apitest]  EZID API test account'), ...]
   """
   k = "user_"
-  i = ''.join(["&nbsp;&nbsp;&nbsp;"] * indent)
   # Make list of three items first so they're sortable by DisplayName
-  r = [(k + u.username, i + "[" + u.username + "]&nbsp;&nbsp;", \
+  r = [(k + u.username, _indent_str(indent) + "[" + u.username + "]&nbsp;&nbsp;", \
     u.displayName + suffix) for u in users]
   r2 = sorted(r, key=lambda p: p[2].lower())
   return [(x[0], x[1] + x[2]) for x in r2]   # Concat 2nd and 3rd items
@@ -250,7 +261,8 @@ def getOwnerOrGroup(ownerkey):
   """
   user_id, group_id = None, None
   if ownerkey is None:
-    pass
+    # ToDo: Is this insecure?
+    user_id = 'all' 
   elif ownerkey.startswith('user_'):
     user_id = ownerkey[5:]
   elif ownerkey.startswith('group_'):
