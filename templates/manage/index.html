@@ -4,7 +4,8 @@
 {% load i18n %}
 
 {% block title %}{% trans "Your IDs" %}: {{ total_results_str }}{% endblock %}
-{% comment %} No Heading necessary for this template {% endcomment %}
+{% comment %}Heading hidden, only readable by screen readers{% endcomment %}
+{% block heading %}{% content_heading _("Manage Your IDs") %}{% endblock %}
 {% block javascript %}
 $(document).ready(function(){
   $("#manage__keywords").focus();
@@ -215,4 +216,10 @@ $(document).ready(function(){
 
 {% include "search/_results.html" with primary_page="ui_manage.index" %}
 
+<script type="text/javascript">
+$(document).ready(function() {
+  // Hide header always
+  $('.heading__primary-container').hide();
+});
+</script>
 {% endblock %}

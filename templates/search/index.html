@@ -22,7 +22,7 @@
   <button class="search__simple-button" type="submit">{% trans "Search" %}</button>
 </div>
 <details {{ show_advanced_search }} class="showhide">
-  <summary class="showhide__summary"><h2 class="showhide__title-heading">{% trans "Advanced Search" %}</h2></summary>
+  <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
   <div class="row">
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked{% if form.identifier.errors %}--invalid{% endif %}">

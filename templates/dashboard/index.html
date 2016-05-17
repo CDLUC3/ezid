@@ -3,6 +3,8 @@
 {% load i18n %}
 
 {% block title %}{%trans "Dashboard" %}{% endblock %}
+{% comment %}Heading hidden, only readable by screen readers{% endcomment %}
+{% block heading %}{% content_heading heading_user_display %}{% endblock %}
 {% block content %}
 <div class="container vertical-buffer-xs">
 {% if display_adminlink %}
@@ -53,9 +55,10 @@
 <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> 
 </div> 
 <script type="text/javascript">
-var li = $('#loading_issues').hide(),
-    lc = $('#loading_crossref').hide();
-$('#page-directselect-issues').change(function() {
+$(document).ready(function() {
+  var li = $('#loading_issues').hide(),
+      lc = $('#loading_crossref').hide();
+  $('#page-directselect-issues').change(function() {
     //Make a namespace for distinguishing ajax calls from issues table vs crossref table
     $(document).off(".crossRefCall");
     $(document).on("ajaxStart.issuesCall", function () {
@@ -63,14 +66,17 @@ $('#page-directselect-issues').change(function() {
     }).on("ajaxStop.issuesCall", function () {
         li.hide();
     });
-});
-$('#page-directselect-crossref').change(function() {
+  });
+  $('#page-directselect-crossref').change(function() {
     $(document).off(".issuesCall");
     $(document).on("ajaxStart.crossRefCall", function () {
         lc.show();
     }).on("ajaxStop.crossRefCall", function () {
         lc.hide();
     });
+  });
+  // Hide header always
+  $('.heading__primary-container').hide();
 });
 </script>
 {% endblock %}

@@ -197,21 +197,18 @@ def identifier_has_block_data (identifier):
   return (identifier["_profile"] == "erc" and "erc" in identifier) or\
     (identifier["_profile"] == "datacite" and "datacite" in identifier)
 
-def owner_names(user, keytype):
+def owner_names(user):
   """
   Generate a data structure to represent heirarchy of realm -> group -> user
-  keytype, user-or-groupname displayName [(proxy_for)]
+  username, user-or-groupname displayName [(proxy_for)]
   [('realm_cdl',        '[cdl]        California Digital Library'),
    ('group_groupname',  ' [groupname]  American Astronomical Society'),
    ('user_username',    '  [username]   American Astronomical Society'), ...
-  Keytype can differ based on keytype "dashboard" or "manage"
-   user_<pid> or group_<pid> for searching usage stats on Dashboard
-   user_<username> or group_<groupname> for searching on Manage IDs page
 
   """
   r = [] 
-  me = _userList(keytype, [user], 0, "  (" + _("me") + ")")
-  my_proxies = _userList(keytype, user.proxy_for.all(), 0, "  (" + _("by proxy") + ")")
+  me = _userList([user], 0, "  (" + _("me") + ")")
+  my_proxies = _userList(user.proxy_for.all(), 0, "  (" + _("by proxy") + ")")
   if user.isSuperuser:
     pass
   # realmnames = [r.name for r in ezidapp.models.getAllRealms()]
@@ -221,34 +218,34 @@ def owner_names(user, keytype):
   #   groupnames = [g.name for g in ezidapp.models.getAllGroups()]
   else:
     if user.isGroupAdministrator:
-      r += [("group_" + user.group.pid if keytype == "dashboard" else "group_" +\
-        user.group.groupname, "[" + user.username + "]&nbsp;&nbsp;" + user.displayName)]
-      r += _getUsersByGroup(keytype, user, 1, user.group.groupname)
+      r += [("group_" + user.group.groupname, "[" + user.username + "]&nbsp;&nbsp;" + \
+        user.displayName)]
+      r += _getUsersByGroup(user, 1, user.group.groupname)
     else:
       r += me + my_proxies
   return r 
 
-def _getUsersByGroup(keytype, me, indent, groupname):
+def _getUsersByGroup(me, indent, groupname):
   """ Display all users in group except group admin """
   g = ezidapp.models.getGroupByGroupname(groupname)
-  return _userList(keytype, [user for user in g.users.all() if\
+  return _userList([user for user in g.users.all() if\
     user.username != me.username], indent, "")
 
-def _userList(keytype, users, indent, suffix):
+def _userList(users, indent, suffix):
   """ Display list of sorted tuples as follows:
-      [('user_ark:/99166/p9jq0st8j', '**INDENT**[apitest]  EZID API test account'), ...]
+      [('user_uitesting', '**INDENT**[apitest]  EZID API test account'), ...]
   """
   k = "user_"
   i = ''.join(["&nbsp;&nbsp;&nbsp;"] * indent)
   # Make list of three items first so they're sortable by DisplayName
-  r = [(k + u.pid if keytype == "dashboard" else k + u.username, i + "[" +\
-    u.username + "]&nbsp;&nbsp;", u.displayName + suffix) for u in users]
+  r = [(k + u.username, i + "[" + u.username + "]&nbsp;&nbsp;", \
+    u.displayName + suffix) for u in users]
   r2 = sorted(r, key=lambda p: p[2].lower())
   return [(x[0], x[1] + x[2]) for x in r2]   # Concat 2nd and 3rd items
 
 def getOwnerOrGroup(ownerkey):
   """ 
-  Takes ownerkey like 'user_ark:/99166/p9jq0st8j' or 'group_merritt'
+  Takes ownerkey like 'user_uitesting' or 'group_merritt'
   and returns as user_id or group_id
   """
   user_id, group_id = None, None

@@ -72,18 +72,5 @@
 
       $(".alert-success").delay(4000).fadeOut(2000);
     </script>
-{% if debug %}
-  <script type="text/javascript">
-    (function() {
-      var s = document.createElement("script");
-      s.type = "text/javascript";
-      s.async = true;
-      s.src = '//api.usersnap.com/load/'+
-        '21ef1c3b-c04d-49d3-80b2-725c28bbff7d.js';
-      var x = document.getElementsByTagName('script')[0];
-      x.parentNode.insertBefore(s, x);
-    })();
-  </script>
-{% endif %}
   </body>
 </html>
