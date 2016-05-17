@@ -207,15 +207,16 @@ def owner_names(user):
 
   """
   r = [] 
+  me = _userList([user], 0, "  (" + _("me") + ")")
   if user.isSuperuser:
+    r += me
     for realm in ezidapp.models.StoreRealm.objects.all().order_by("name"):
       n = realm.name
       r += [('', "Realm: " + n)]
-      r += _getGroupsUsers(r, user, 1, realm.groups.all().order_by("groupname"))
+      r += _getGroupsUsers(user, 1, realm.groups.all().order_by("groupname"))
   elif user.isRealmAdministrator:
-    r += _getGroupsUsers(r, user, 0, user.realm.groups.all().order_by("groupname"))
+    r += me + _getGroupsUsers(user, 0, user.realm.groups.all().order_by("groupname"))
   else:
-    me = _userList([user], 0, "  (" + _("me") + ")")
     my_proxies = _userList(user.proxy_for.all(), 0, "  (" + _("by proxy") + ")")
     if user.isGroupAdministrator:
       r += [("group_" + user.group.groupname, "[" + user.username + "]&nbsp;&nbsp;" + \
@@ -228,12 +229,13 @@ def owner_names(user):
 def _indent_str(size):
   return ''.join(["&nbsp;&nbsp;&nbsp;"] * size)
 
-def _getGroupsUsers(r, me, indent, groups):
+def _getGroupsUsers(me, indent, groups):
   """ Return heirarchical list of all groups and their constituent users """
+  r = []
   for g in groups:
     n = g.groupname
     r += [("group_" + n, _indent_str(indent) + "[" + n + "]&nbsp;&nbsp;" +\
-      g.organizationName)]
+      "Group: " + g.organizationName)]
     r += _getUsersInGroup(me, indent + 1, n)
   return r
 

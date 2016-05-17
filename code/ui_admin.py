@@ -17,15 +17,12 @@ def dashboard(request, ssl=False):
   """
   d = { 'menu_item' : 'ui_admin.dashboard'}
   user = userauth.getUser(request)
-  owner_selected = ()
   d['heading_user_display'] = user.displayName + "'s EZID " + _("Dashboard")
   d['display_adminlink'] = user.isRealmAdministrator or user.isSuperuser 
   REQUEST = request.GET if request.method == "GET" else request.POST
   if not('owner_selected' in REQUEST) or REQUEST['owner_selected'] == '':
-    g = "group_"
-    u = "user_"
-    d['owner_selected'] = None if user.isSuperuser else g + user.group.groupname \
-      if user.isGroupAdministrator else u + user.username
+    d['owner_selected'] = None if user.isSuperuser else "group_" + user.group.groupname \
+      if user.isGroupAdministrator else "user_" + user.username
     # ToDo: Make sure this works for Realm Admin and picking Groups
   else:
    d['owner_selected'] = REQUEST['owner_selected'] 

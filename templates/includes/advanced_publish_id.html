@@ -19,7 +19,7 @@
       {% endif %} 
       ><span>{% trans "Reserved" %}</span>
     </label>
-    {% help_icon "decide_public" %}
+    {% help_icon "decide_public" _("on making an identifier public or reserved") %}
   </div>
   <div id="harv_index" class="fieldset-inline create__form-element-group" role="group" aria-labelledby="fieldset-harvesting">
     <span id="fieldset-harvesting" class="fieldset-inline__legend create__inline-nested-legend">{% trans "Allow harvesting/indexing?" %}</span>
@@ -37,6 +37,6 @@
       {% endif %}
       > <span>{% trans "No" %}</span>
     </label>
-    {% help_icon "decide_export" %}
+    {% help_icon "decide_export" _("on harvesting/indexing") %}
   </div>
 </div>

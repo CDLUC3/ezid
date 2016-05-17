@@ -80,11 +80,12 @@ def active_id_display(id_text, testPrefixes):
   return '<a href="' + _urlForm(id_text) + '">' + _urlForm(id_text) + '</a>'
 
 @register.simple_tag
-def help_icon(id_of_help, css_class="button__icon-help"):
-  title = _("Click for additional help")
-  return '<a id="' + id_of_help + '" role="button" data-toggle="popover" data-trigger="click">' + \
-    '<img src="/static/images/iconHelp.svg" alt="' + title + '"' + \
-    ' class="' + css_class + '" title="' + title + '"/></a>'
+def help_icon(id_of_help, specifics="", css_class="button__icon-help"):
+  title = _("Click for additional help") + " " + unicode(specifics)
+  return '<a id="' + str(id_of_help) + '" role="button" data-toggle="popover"' +\
+    'data-trigger="click">' + \
+    '<img src="/static/images/iconHelp.svg" alt="' + str(title) + '"' + \
+    ' class="' + str(css_class) + '" title="' + str(title) + '"/></a>'
 
 @register.tag
 @basictag(takes_context=True)

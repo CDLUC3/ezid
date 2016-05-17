@@ -4,9 +4,9 @@
   <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset1">
     <div id="create__fieldset1" class="fieldset-stacked__legend-number-1"><h2 class="fieldset__heading-2">{% trans "Choose an identifier type" %}</h2>
     {% if calling_page == 'demo' %}
-      {% help_icon "choose_id_demo" %}
+      {% help_icon "choose_id_demo" _("on choosing the type of identifier") %}
     {% else %}
-      {% help_icon "choose_id" %}
+      {% help_icon "choose_id" _("on choosing the type of identifier") %}
     {% endif %}
     </div>
   {% if prefixes|duplicate_id_types %}

@@ -45,7 +45,7 @@
           {% trans "Add more information to the record" %}</button>
         {% else %}
           {% trans "If you would like to add additional information for this record, consider using the DataCite citation profile." %}
-          {% help_icon "describe_profile" %}<br/>
+          {% help_icon "describe_profile" _("on which profile to use for describing the identifier") %}<br/>
           <button id="profile_simpleToAdvanced" type="button" name="simpleToAdvanced" onclick="profileSimpleToAdvanced(event);" class="button__multline id-details__button-convert">
           {% trans "Convert to the DataCite<br/> citation profile" %}</button>
         {% endif %}
@@ -123,9 +123,9 @@
     </label>
   {% endif %}
   {% if orig_status == 'reserved' %}
-    {% help_icon "decide_public" %}
+    {% help_icon "decide_public" _("on making an identifier public or reserved") %}
   {% else %}
-    {% help_icon "decide_public_unavail" %}
+    {% help_icon "decide_public_unavail" _("on making an identifier public or unavailable") %}
   {% endif %}
   </div>
   <div id="unavailable_reason_row" 
@@ -160,7 +160,7 @@
       {% endif %}
       > <span>{% trans "No" %}</span>
     </label>
-    {% help_icon "decide_export" %}
+    {% help_icon "decide_export" _("on harvesting/indexing") %}
   </div>
 </div>
 

@@ -64,7 +64,7 @@
             <input id="{{p.prefix}}" class="fcontrol__radio-button-stacked" type="radio" value="{{p.prefix}}" name="shoulder" {% selected_radio "shoulder" forloop.counter p.prefix %}> <span>{% shoulder_display p "True" %}</span>
           </label>
       {% endfor %}
-          {% help_icon "choose_id_demo" %}
+          {% help_icon "choose_id_demo" _("on choosing the type of identifier") %}
 
         </div>
 
@@ -125,6 +125,7 @@
     </script>
     
     <script type="text/javascript" src="/static/javascripts/simple_create.js"></script>
+    <script type="text/javascript" src="/static/javascripts/fix_target.js"></script>
     {% include "info/popup_help.html" %}
     <script type="text/javascript" src="/static/javascripts/help_box.js"></script>
 {% endblock %}
