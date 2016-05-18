@@ -50,3 +50,10 @@ $search-layout-element-spacing: 30px;
 	}
 
 }
+
+.search__simple-button2 {
+        @extend %button__primary;
+        margin: 20px 20px 0;
+        float: right;
+}
+

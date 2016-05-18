@@ -167,7 +167,6 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
     else:
       orderColumn = None
     d['results'] = []
-    # ToDo:  Add in ownership constraints (user, proxy, etc)
     rec_beg = (d['p']-1)*d['ps']
     rec_end = d['p']*d['ps']
     for id in search_util.formulateQuery(c, orderBy=orderColumn)[rec_beg:rec_end]:

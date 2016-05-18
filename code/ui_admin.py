@@ -65,7 +65,7 @@ def ajax_dashboard_table(request):
 
 def _getUsage(request, user, d):
   user_id, group_id = uic.getOwnerOrGroup(d['owner_selected'])
-  if user_id == 'all': user_id = None
+  if user_id == 'all' or user.isSuperuser: user_id = None
   s = stats.getStats()
   table = s.getTable(owner=user_id, group=group_id)
   all_months = _computeMonths(table)
