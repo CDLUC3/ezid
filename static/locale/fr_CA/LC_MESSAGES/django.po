@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-12 15:23-0700\n"
+"POT-Creation-Date: 2016-05-17 18:10-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -451,7 +451,7 @@ msgid "Valid"
 msgstr ""
 
 #: code/form_objects.py:407 code/form_objects.py:423 code/ui_search.py:36
-#: templates/dashboard/_crossref.html:21 templates/dashboard/_issues.html:21
+#: templates/dashboard/_crossref.html:18 templates/dashboard/_issues.html:18
 #: templates/manage/details.html:19 templates/manage/edit.html:19
 msgid "Identifier"
 msgstr ""
@@ -1080,8 +1080,8 @@ msgstr ""
 msgid "EZID password reset request"
 msgstr ""
 
-#: code/ui_admin.py:26 code/ui_manage.py:48
-msgid "  (me)"
+#: code/ui_admin.py:20 templates/dashboard/index.html:5
+msgid "Dashboard"
 msgstr ""
 
 #: code/ui_common.py:149
@@ -1100,11 +1100,11 @@ msgstr ""
 msgid "You must be logged in as an administrator to view this page."
 msgstr ""
 
-#: code/ui_common.py:220
+#: code/ui_common.py:210
 msgid "me"
 msgstr ""
 
-#: code/ui_common.py:221
+#: code/ui_common.py:220
 msgid "by proxy"
 msgstr ""
 
@@ -1152,39 +1152,58 @@ msgstr ""
 msgid "Please check the highlighted fields below for details."
 msgstr ""
 
-#: code/ui_manage.py:100
+#: code/ui_manage.py:105
 msgid "There was an error updating the metadata for your identifier"
 msgstr ""
 
-#: code/ui_manage.py:103
+#: code/ui_manage.py:108
 msgid "Identifier updated."
 msgstr ""
 
-#: code/ui_manage.py:135
+#: code/ui_manage.py:140
 msgid ""
 "You are not allowed to edit this identifier.  If this ID belongs to you and "
 "you'd like to edit, please log in."
 msgstr ""
 
-#: code/ui_manage.py:325
-msgid ""
-"If you have recently requested a batch download of your identifiers, the "
-"file may not    be complete. Please close this window, then try the download "
-"link again in a few minutes."
+#: code/ui_manage.py:330
+msgid "If you have recently requested a batch download of your identifiers, "
 msgstr ""
 
-#: code/ui_manage.py:327
+#: code/ui_manage.py:331
+msgid ""
+"the file may not be complete. Please close this window, then try the "
+"download "
+msgstr ""
+
+#: code/ui_manage.py:332
+msgid "link again in a few minutes."
+msgstr ""
+
+#: code/ui_manage.py:333
 msgid ""
 "If you are trying to download a file of identifiers from a link that was "
-"generated over    seven days ago, the download link has expired. Go to <a "
-"class='link__primary'     href='/manage'>Manage IDs</a> and click &quot;"
-"Download All&quot; to generate a new download link."
 msgstr ""
 
-#: code/ui_manage.py:330
+#: code/ui_manage.py:334
+msgid "generated over seven days ago, the download link has expired. Go to "
+msgstr ""
+
+#: code/ui_manage.py:336
+msgid "Manage IDs"
+msgstr ""
+
+#: code/ui_manage.py:337
+msgid "and click &quot;Download All&quot; to generate a new download link."
+msgstr ""
+
+#: code/ui_manage.py:338
 msgid ""
 "Please <a class='link__primary' href='/contact'>contact us</a> if you need "
-"assistance."
+msgstr ""
+
+#: code/ui_manage.py:339
+msgid "assistance."
 msgstr ""
 
 #: code/ui_search.py:29
@@ -1195,20 +1214,21 @@ msgstr ""
 msgid "Object Creator"
 msgstr ""
 
-#: code/ui_search.py:31 templates/dashboard/_crossref.html:22
+#: code/ui_search.py:31 templates/dashboard/_crossref.html:19
 msgid "Date Submitted"
 msgstr ""
 
 #: code/ui_search.py:32 templates/create/_datacite_description.html:15
-#: templates/dashboard/_crossref.html:23
+#: templates/dashboard/_crossref.html:20
 msgid "Description"
 msgstr ""
 
-#: code/ui_search.py:33 templates/dashboard/_crossref.html:24
+#: code/ui_search.py:33
 msgid "Required Action"
 msgstr ""
 
-#: code/ui_search.py:34 templates/dashboard/_issues.html:22
+#: code/ui_search.py:34 templates/dashboard/_crossref.html:21
+#: templates/dashboard/_issues.html:19
 msgid "Issue"
 msgstr ""
 
@@ -1220,48 +1240,48 @@ msgstr ""
 msgid "Object Publication Date"
 msgstr ""
 
-#: code/ui_search.py:41 templates/dashboard/_issues.html:23
+#: code/ui_search.py:41 templates/dashboard/_issues.html:20
 msgid "Object Title"
 msgstr ""
 
-#: code/ui_search.py:42 templates/dashboard/_issues.html:24
+#: code/ui_search.py:42 templates/dashboard/_issues.html:21
 msgid "ID Date Last Modified"
 msgstr ""
 
-#: code/ui_search.py:212
+#: code/ui_search.py:208
 msgid "No action necessary"
 msgstr ""
 
-#: code/ui_search.py:220
+#: code/ui_search.py:216
 msgid "to"
 msgstr ""
 
-#: code/ui_search.py:221 ui_tags/templatetags/manage_form_tags.py:144
+#: code/ui_search.py:217 ui_tags/templatetags/manage_form_tags.py:144
 msgid "of"
 msgstr ""
 
-#: code/ui_search.py:222
+#: code/ui_search.py:218
 msgid "Showing"
 msgstr ""
 
-#: code/ui_search.py:222 templates/search/results.html:7
+#: code/ui_search.py:218 templates/search/results.html:7
 #: templates/search/results.html.py:8
 msgid "Search Results"
 msgstr ""
 
-#: code/ui_search.py:226
+#: code/ui_search.py:222
 msgid "matches found"
 msgstr ""
 
-#: code/ui_search.py:228
+#: code/ui_search.py:224
 msgid "Your Identifiers"
 msgstr ""
 
-#: code/ui_search.py:238
+#: code/ui_search.py:234
 msgid "Could not complete search."
 msgstr ""
 
-#: code/ui_search.py:240
+#: code/ui_search.py:236
 msgid ""
 "Could not complete search.  Please check the highlighted fields below for "
 "details."
@@ -1358,6 +1378,10 @@ msgstr ""
 msgid ""
 "NOTE: These are identifier groups where you have been designated as proxy "
 "user."
+msgstr ""
+
+#: templates/account/edit.html:62
+msgid "on selecting proxy users"
 msgstr ""
 
 #: templates/account/edit.html:70
@@ -1604,11 +1628,11 @@ msgstr ""
 msgid "Simple ID Creation"
 msgstr ""
 
-#: templates/dashboard/_crossref.html:47
+#: templates/dashboard/_crossref.html:44
 msgid "Currently no Crossref submission information available"
 msgstr ""
 
-#: templates/dashboard/_issues.html:48
+#: templates/dashboard/_issues.html:45
 msgid "Currently no Identifier Issues found"
 msgstr ""
 
@@ -1648,31 +1672,27 @@ msgstr ""
 msgid "Statistics calculated on"
 msgstr ""
 
-#: templates/dashboard/index.html:5
-msgid "Dashboard"
-msgstr ""
-
-#: templates/dashboard/index.html:10
+#: templates/dashboard/index.html:13
 msgid "Administration"
 msgstr ""
 
-#: templates/dashboard/index.html:17
+#: templates/dashboard/index.html:20
 msgid "View Report for"
 msgstr ""
 
-#: templates/dashboard/index.html:18
+#: templates/dashboard/index.html:21
 msgid "Specific User or Group"
 msgstr ""
 
-#: templates/dashboard/index.html:22
+#: templates/dashboard/index.html:25
 msgid "Go"
 msgstr ""
 
-#: templates/dashboard/index.html:37
+#: templates/dashboard/index.html:40
 msgid "Identifier Issues"
 msgstr ""
 
-#: templates/dashboard/index.html:43
+#: templates/dashboard/index.html:46
 msgid "Crossref&reg; Submission Status"
 msgstr ""
 
@@ -1726,6 +1746,10 @@ msgstr ""
 msgid "profile"
 msgstr ""
 
+#: templates/includes/advanced_describe.html:19 templates/manage/edit.html:48
+msgid "on which profile to use for describing the identifier"
+msgstr ""
+
 #: templates/includes/advanced_publish_id.html:5
 msgid "Decide"
 msgstr ""
@@ -1734,13 +1758,27 @@ msgstr ""
 msgid "Make this identifier"
 msgstr ""
 
+#: templates/includes/advanced_publish_id.html:22
+#: templates/manage/edit.html:126
+msgid "on making an identifier public or reserved"
+msgstr ""
+
 #: templates/includes/advanced_publish_id.html:25
 #: templates/manage/edit.html:148
 msgid "Allow harvesting/indexing?"
 msgstr ""
 
+#: templates/includes/advanced_publish_id.html:40
+#: templates/manage/edit.html:163
+msgid "on harvesting/indexing"
+msgstr ""
+
 #: templates/includes/advanced_remainder.html:5
 msgid "Optional: Enter a custom remainder (suffix)"
+msgstr ""
+
+#: templates/includes/advanced_remainder.html:6
+msgid "on creating a custom remainder for the identifier"
 msgstr ""
 
 #: templates/includes/advanced_remainder.html:19
@@ -1815,6 +1853,11 @@ msgstr ""
 
 #: templates/includes/simple_id_type.html:5 templates/index.html:60
 msgid "Choose an identifier type"
+msgstr ""
+
+#: templates/includes/simple_id_type.html:7
+#: templates/includes/simple_id_type.html:9 templates/index.html:67
+msgid "on choosing the type of identifier"
 msgstr ""
 
 #: templates/index.html:7
@@ -2659,6 +2702,10 @@ msgstr ""
 msgid "unavailable"
 msgstr ""
 
+#: templates/manage/edit.html:128
+msgid "on making an identifier public or unavailable"
+msgstr ""
+
 #: templates/manage/edit.html:138
 msgid "Unavailable reason"
 msgstr ""
@@ -2671,27 +2718,32 @@ msgstr ""
 msgid "Your IDs"
 msgstr ""
 
-#: templates/manage/index.html:28 templates/manage/index.html.py:32
+#: templates/manage/index.html:9
+msgid "Manage Your IDs"
+msgstr ""
+
+#: templates/manage/index.html:29 templates/manage/index.html.py:33
+#: templates/manage/index.html:220
 msgid "Search Your Identifiers"
 msgstr ""
 
-#: templates/manage/index.html:30
+#: templates/manage/index.html:31
 msgid "Your search cannot not be empty"
 msgstr ""
 
-#: templates/manage/index.html:35 templates/search/index.html:25
+#: templates/manage/index.html:36 templates/search/index.html:25
 msgid "Advanced Search"
 msgstr ""
 
-#: templates/manage/index.html:75 templates/search/index.html:65
+#: templates/manage/index.html:76 templates/search/index.html:65
 msgid "Object Publication Year"
 msgstr ""
 
-#: templates/manage/index.html:129
+#: templates/manage/index.html:130
 msgid "ID Create Date"
 msgstr ""
 
-#: templates/manage/index.html:158
+#: templates/manage/index.html:159
 msgid "ID Update Date"
 msgstr ""
 
@@ -2759,6 +2811,7 @@ msgid ""
 msgstr ""
 
 #: templates/search/index.html:18 templates/search/index.html.py:22
+#: templates/search/index.html:109
 msgid "Search"
 msgstr ""
 
