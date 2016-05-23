@@ -101,6 +101,11 @@ def plainTextResponse (message):
   r["Content-Length"] = len(message)
   return r
 
+def csvResponse (message, filename):
+  r = django.http.HttpResponse(message, content_type="text/csv")
+  r["Content-Disposition"] = 'attachment; filename="' + filename + '.csv"'
+  return r
+
 # Our development version of Python (2.5) doesn't have the standard
 # JSON module (introduced in 2.6), so we provide our own encoder here.
 

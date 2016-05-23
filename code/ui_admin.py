@@ -5,6 +5,8 @@ import stats
 from datetime import datetime
 import ui_search 
 from collections import *
+import csv
+import StringIO
 from django.utils.translation import ugettext as _
 
 NO_CONSTRAINTS = True 
@@ -130,3 +132,59 @@ def _computeTotals (table):
       "hasMetadataPercentage": str(_percent(data[(type, "True")], total)) }
   return totals
 
+def csvStats (request):
+  """
+  Returns all statistics to which a user is entitled as a CSV file.
+  'requestor' is the user, and should be a StoreUser object.  The
+  statistics include those for the requestor; and all users (if the
+  requestor is a superuser) or all users in the requestor's realm (if
+  the requestor is a realm administrator) or all users in the
+  requestor's group (if the requestor is a group administrator); plus
+  any users the requestor is a proxy for.  The CSV file is returned as
+  a single string.  The columns are:
+
+  owner
+  ownergroup
+  month
+  ARKs with metadata
+  ARKs without metadata
+  total ARKs
+  DOIs with metadata
+  DOIs without metadata
+  total DOIs
+
+  Rows are grouped by user; the order of users in the CSV file is
+  undefined.  For a given user, rows are ordered by month, and the
+  rows are complete with respect to the range of months, as described
+  in stats.Stats.getTable().
+  """
+  requestor = userauth.getUser(request)
+  users = set([requestor])
+  if requestor.isSuperuser:
+    for u in ezidapp.models.StoreUser.objects.all(): users.add(u)
+  elif requestor.isRealmAdministrator:
+    for g in requestor.realm.groups.all():
+      for u in g.users.all(): users.add(u)
+  elif requestor.isGroupAdministrator:
+    for u in requestor.group.users.all(): users.add(u)
+  for u in requestor.proxy_for.all(): users.add(u)
+  s = stats.getStats()
+  f = StringIO.StringIO()
+  w = csv.writer(f)
+  w.writerow(["owner", "ownergroup", "month", "ARKs with metadata",
+    "ARKs without metadata", "ARKs total", "DOIs with metadata",
+    "DOIs without metadata", "DOIs total"])
+  for u in users:
+    for r in s.getTable(owner=u.pid, useLocalNames=False):
+      outputRow = [u.username, u.group.groupname, r[0]]
+      for type in ["ARK", "DOI"]:
+        t = 0
+        for hasMetadata in ["True", "False"]:
+          v = r[1].get((type, hasMetadata), 0)
+          outputRow.append(str(v))
+          t += v
+        outputRow.append(str(t))
+      w.writerow(outputRow)
+  fn = "EZID_" + requestor.username + datetime.now().strftime("%Y%m%d-%H%M%S")
+  r = uic.csvResponse(f.getvalue(), fn) 
+  return r

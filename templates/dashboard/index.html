@@ -22,7 +22,7 @@
       {% include "includes/owner_select.html" %}
 
         <button class="dashboard__button-go" type="submit" value="submit">{% trans "Go" %}</button>
-        <a href="" class="dashboard__csv-link">View CSV format of Identifier Creation</a>
+        <a id="csv_download" href="" class="dashboard__csv-link">View CSV format of Identifier Creation</a>
     </div>
   </form>
   </div>
@@ -56,6 +56,9 @@
 </div> 
 <script type="text/javascript">
 $(document).ready(function() {
+  $('#csv_download').click(function(){
+    location.replace('/dashboard/csv_stats');
+  });
   var li = $('#loading_issues').hide(),
       lc = $('#loading_crossref').hide();
   $('#page-directselect-issues').change(function() {

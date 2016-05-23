@@ -1,6 +1,3 @@
-from django.shortcuts import render_to_response
-from django.conf import settings
-from django.template import loader
 import ui_common as uic
 from django.shortcuts import redirect
 import ui_create
