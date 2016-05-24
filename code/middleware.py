@@ -19,6 +19,15 @@ import django.http
 import django.template
 import django.template.loader
 
+# Some things in life are just destined to remain a mystery.  If the
+# EZID administrator is logged in and viewing a Django admin page, and
+# if the server is restarted and the page refreshed, Django asks the
+# user to log in again.  This mildly annoying behavior only happens
+# with Django admin pages, no other EZID pages.  But,
+# incomprehensibly, it goes away if the 'config' module imported here.
+# Why?!
+
+import config
 import dispatch
 
 def _methodNotAllowed ():
