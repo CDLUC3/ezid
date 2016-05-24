@@ -186,5 +186,4 @@ def csvStats (request):
         outputRow.append(str(t))
       w.writerow(outputRow)
   fn = "EZID_" + requestor.username + datetime.now().strftime("%Y%m%d-%H%M%S")
-  r = uic.csvResponse(f.getvalue(), fn) 
-  return r
+  return uic.csvResponse(f.getvalue(), fn) 
