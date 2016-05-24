@@ -395,9 +395,9 @@ class Identifier (django.db.models.Model):
         # the parts that EZID cares about are present and sufficiently
         # correct to support our processing.
         self.cm["crossref"] = crossref.validateBody(self.cm["crossref"])
-        if not self.isReserved:
+        if self.isDoi and not self.isReserved:
           self.cm["crossref"] = crossref.replaceTbas(self.cm["crossref"],
-            self.identifier, self.resolverTarget)
+            self.identifier[4:], self.resolverTarget)
       except AssertionError, e:
         raise django.core.exceptions.ValidationError({ "crossref":
           "Metadata validation error: %s." % util.oneLine(str(e)) })
