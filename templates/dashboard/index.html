@@ -34,20 +34,23 @@
 {% else %}
 <p>There is no usage data for the selected group or user.</p>
 {% endif %}
+
   <div class="col-md-12">
     <hr/>
     <h2 class="heading__icon-6">{% trans "Identifier Issues" %}</h2>
-      <div id="error_issues"></div>
-      <div id="loading_issues" class="loading"></div>
-      <div id="ajax_issues">
-        {% include "dashboard/_issues.html" %}
-      </div>
+    <div id="error_issues"></div>
+    <div id="loading_issues" class="loading"></div>
+    <div id="ajax_issues">
+      {% include "dashboard/_issues.html" %}
+    </div>
+  {% if results_crossref|length > 0 %}
     <h2 class="heading__icon-10">{% trans "Crossref&reg; Submission Status" %}</h2>
-      <div id="error_crossref"></div>
-      <div id="loading_crossref" class="loading"></div>
-      <div id="ajax_crossref">
-        {% include "dashboard/_crossref.html" %}
-      </div>
+    <div id="error_crossref"></div>
+    <div id="loading_crossref" class="loading"></div>
+    <div id="ajax_crossref">
+      {% include "dashboard/_crossref.html" %}
+    </div>
+  {% endif %}
   </div>
 <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> 
 <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> 

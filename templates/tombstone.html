@@ -40,8 +40,9 @@
 
     <a class="header__main-logo-link" href="/">
       <picture>
-        <source srcset="/static/images/logo_small-screen.svg" media="(max-width: 767px)">
-        <img srcset="/static/images/logo.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAADs=" class="header__main-logo-image" alt="University of California, Easy ID, identifiers made easy">
+        <source srcset="/static/images/logo_small-screen.svg" type="image/svg+xml" media="(max-width: 767px)" />
+        <source srcset="/static/images/logo.svg" type="image/svg+xml" media="(min-width: 768px)" />
+        <img class="header__main-logo-image" src="/static/images/logo_472x65_.PNG" width="472" height="65" alt="University of California, Easy ID, identifiers made easy">
       </picture>
     </a>
     {% host_based_include "includes/localized/_/logo.html" %}

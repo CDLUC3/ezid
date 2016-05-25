@@ -74,3 +74,17 @@
 	font-size: 1.1em;
 	font-weight: bold;
 }
+
+.object__clickable {
+	display: inline-block;
+	position: relative;
+}
+
+.object__clickable:after {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	content: '';
+}
