@@ -1,3 +1,4 @@
+from django.template import loader
 import ui_common as uic
 from django.shortcuts import redirect
 import ui_create
