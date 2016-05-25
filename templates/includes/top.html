@@ -13,7 +13,7 @@ Welcome {{ authenticatedUser.username }}!
     <a class="header__main-logo-link" href="/">
       <picture>
         <source srcset="/static/images/logo_small-screen.svg" media="(max-width: 767px)">
-        <img srcset="/static/images/logo.svg" onerror="alert('(Top) logo.svg didn\'t load')" src="data:image/gif;base64,R0lGODlhAQABAAAAADs=" class="header__main-logo-image" alt="University of California, Easy ID, identifiers made easy">
+        <img srcset="/static/images/logo.svg" onerror="function() {alert('(Top) logo.svg didn\'t load');}" src="data:image/gif;base64,R0lGODlhAQABAAAAADs=" class="header__main-logo-image" alt="University of California, Easy ID, identifiers made easy">
       </picture>
     </a>
     {% host_based_include "includes/localized/_/logo.html" %}

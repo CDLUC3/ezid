@@ -7,7 +7,8 @@
 
 <footer class="footer">
 
-  <a class="footer__logo-link" href="http://www.cdlib.org/"><img class="footer__logo" src="/static/images/logoBottom.svg" onerror="alert('logoBottom.svg didn\'t load')" alt="California Digital Library"></a>
+  <a class="footer__logo-link" href="http://www.cdlib.org/"><object class="footer__logo" data="/static/images/logoBottom.svg" type="image/svg+xml" alt="California Digital Library"></object>
+  <!-- img class="footer__logo" src="/static/images/logoBottom.svg" alt="California Digital Library" --></a>
 
   <div class="footer__news">
 {% if feed_cache %}
