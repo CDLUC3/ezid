@@ -210,6 +210,10 @@ def owner_names(user, page):
    ('group_groupname',  ' [groupname]  American Astronomical Society'),
    ('user_username',    '  [username]   American Astronomical Society (by proxy)', ...
 
+  Note: At the time of writing, is it not possible to search for all identifiers
+    within a realm or entirety of EZID. But it is possible to aggregate stats for the
+    Dashboard at this level. Thus diff't choices available based on page "dashboard"
+    or "manage"
   """
   r = [] 
   me = _userList([user], 0, "  (" + _("me") + ")")
@@ -220,7 +224,8 @@ def owner_names(user, page):
       r += [('', "Realm: " + n)]
       r += _getGroupsUsers(user, 1, realm.groups.all().order_by("groupname"))
   elif user.isRealmAdministrator:
-    r += me + _getGroupsUsers(user, 0, user.realm.groups.all().order_by("groupname"))
+    r += me if page == 'manage' else [('realm_' + user.realm.name, 'All ' + user.realm.name)]
+    r += _getGroupsUsers(user, 0, user.realm.groups.all().order_by("groupname"))
   else:
     my_proxies = _userList(user.proxy_for.all(), 0, "  (" + _("by proxy") + ")")
     if user.isGroupAdministrator:
@@ -261,10 +266,26 @@ def _userList(users, indent, suffix):
   r2 = sorted(r, key=lambda p: p[2].lower())
   return [(x[0], x[1] + x[2]) for x in r2]   # Concat 2nd and 3rd items
 
+def getOwnerOrGroupOrRealm(ownerkey):
+  """ 
+  Takes ownerkey like 'user_uitesting' or 'group_merritt' or 'realm_purdue'
+  and returns as tuple of user_id, group_id, realm_id
+  """
+  if ownerkey is None:
+    # ToDo: Is this insecure?
+    return ('all', None, None)
+  elif ownerkey.startswith('realm_'):
+    return (None, None, ownerkey[6:])
+  else:
+    return getOwnerOrGroup(ownerkey) + (None,)
+
 def getOwnerOrGroup(ownerkey):
   """ 
   Takes ownerkey like 'user_uitesting' or 'group_merritt'
-  and returns as user_id or group_id
+  and returns as tuple of user_id, group_id
+  Note: At the time of writing, is it not possible to search for all identifiers
+    within a realm or entirety of EZID. But once it is, use of this function can be 
+    replaced by getOwnerOrGroupOrRealm
   """
   user_id, group_id = None, None
   if ownerkey is None:

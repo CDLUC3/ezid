@@ -23,8 +23,10 @@ def dashboard(request, ssl=False):
   d['display_adminlink'] = user.isRealmAdministrator or user.isSuperuser 
   REQUEST = request.GET if request.method == "GET" else request.POST
   if not('owner_selected' in REQUEST) or REQUEST['owner_selected'] == '':
-    d['owner_selected'] = None if user.isSuperuser else "group_" + user.group.groupname \
-      if user.isGroupAdministrator else "user_" + user.username
+    d['owner_selected'] = None if user.isSuperuser \
+      else "realm_" + user.realm.name if user.isRealmAdministrator \
+      else "group_" + user.group.groupname if user.isGroupAdministrator \
+      else "user_" + user.username
   else:
    d['owner_selected'] = REQUEST['owner_selected'] 
   d['owner_names'] = uic.owner_names(user, "dashboard")
@@ -62,10 +64,15 @@ def ajax_dashboard_table(request):
       return uic.render(request, "dashboard/_" + G['name'], d)
 
 def _getUsage(request, user, d):
-  table = None
+  table = [] 
   s = stats.getStats()
-  user_id, group_id = uic.getOwnerOrGroup(d['owner_selected'])
-  if group_id != None:
+  user_id, group_id, realm_id = uic.getOwnerOrGroupOrRealm(d['owner_selected'])
+  if realm_id != None:
+    realm = ezidapp.models.StoreRealm.objects.get(name=realm_id)
+    for g in realm.groups.all():
+      for u in g.users.all(): 
+        table += s.getTable(owner=u.username)
+  elif group_id != None:
     table = s.getTable(group=group_id)
   else:
     if user_id == 'all': user_id = None
