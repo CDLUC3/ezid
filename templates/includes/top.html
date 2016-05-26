@@ -14,14 +14,14 @@ Welcome {{ authenticatedUser.username }}!
       <picture>
         <source srcset="/static/images/logo_small-screen.svg" type="image/svg+xml" media="(max-width: 767px)" />
         <source srcset="/static/images/logo.svg" type="image/svg+xml" media="(min-width: 768px)" />
-        <img class="header__main-logo-image" src="/static/images/logo_472x65_.PNG" width="472" height="65" alt="University of California, Easy ID, identifiers made easy">
+        <img class="header__main-logo-image" src="/static/images/logo_472x65.PNG" width="472" height="65" alt="University of California, Easy ID, identifiers made easy">
       </picture>
     </a>
     {% host_based_include "includes/localized/_/logo.html" %}
   </div>
 
   <button type="button" id="js-header__nav-button" class="header__nav-button" aria-controls="js-header__nav">
-    <object data="/static/images/mobile-menu.svg" alt="Show or hide navigation" type="image/svg+xml" class="header__nav-button-icon"></object>
+    <img src="/static/images/mobile-menu.svg" alt="Show or hide navigation" class="header__nav-button-icon">
   </button>
 
   <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-hidden="false">

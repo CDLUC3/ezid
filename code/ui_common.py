@@ -202,7 +202,7 @@ def identifier_has_block_data (identifier):
   return (identifier["_profile"] == "erc" and "erc" in identifier) or\
     (identifier["_profile"] == "datacite" and "datacite" in identifier)
 
-def owner_names(user):
+def owner_names(user, page):
   """
   Menu filter/selector used on Manage and Dashboard pages
   Generates a data structure to represent heirarchy of realm -> group -> user, eg:
@@ -214,7 +214,7 @@ def owner_names(user):
   r = [] 
   me = _userList([user], 0, "  (" + _("me") + ")")
   if user.isSuperuser:
-    r += me
+    r += me if page == 'manage' else [('all', 'ALL EZID')]
     for realm in ezidapp.models.StoreRealm.objects.all().order_by("name"):
       n = realm.name
       r += [('', "Realm: " + n)]
@@ -240,7 +240,7 @@ def _getGroupsUsers(me, indent, groups):
   for g in groups:
     n = g.groupname
     r += [("group_" + n, _indent_str(indent) + "[" + n + "]&nbsp;&nbsp;" +\
-      "Group: " + g.organizationName)]
+      _("Group") + ": " + g.organizationName)]
     r += _getUsersInGroup(me, indent + 1, n)
   return r
 

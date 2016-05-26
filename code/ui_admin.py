@@ -25,16 +25,12 @@ def dashboard(request, ssl=False):
   if not('owner_selected' in REQUEST) or REQUEST['owner_selected'] == '':
     d['owner_selected'] = None if user.isSuperuser else "group_" + user.group.groupname \
       if user.isGroupAdministrator else "user_" + user.username
-    # ToDo: Make sure this works for Realm Admin and picking Groups
   else:
    d['owner_selected'] = REQUEST['owner_selected'] 
-  d['owner_names'] = uic.owner_names(user)
+  d['owner_names'] = uic.owner_names(user, "dashboard")
   d = _getUsage(request, user, d)
   d['ajax'] = False
 
-  # Set owner/group selector to username
-  d['owner_selected'] = d['owner_selected'] if 'owner_selected' in d \
-    else REQUEST['owner_selected'] 
   # Search:    ID Issues
   d = ui_search.search(d, request, NO_CONSTRAINTS, "issues")
   # UI Tables need data named uniquely to distinguish them apart
@@ -66,10 +62,14 @@ def ajax_dashboard_table(request):
       return uic.render(request, "dashboard/_" + G['name'], d)
 
 def _getUsage(request, user, d):
-  user_id, group_id = uic.getOwnerOrGroup(d['owner_selected'])
-  if user_id == 'all' or user.isSuperuser: user_id = None
+  table = None
   s = stats.getStats()
-  table = s.getTable(owner=user_id, group=group_id)
+  user_id, group_id = uic.getOwnerOrGroup(d['owner_selected'])
+  if group_id != None:
+    table = s.getTable(group=group_id)
+  else:
+    if user_id == 'all': user_id = None
+    table = s.getTable(owner=user_id)
   all_months = _computeMonths(table)
   if len(all_months) > 0:
     d["totals"] = _computeTotals(table)
