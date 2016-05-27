@@ -20,7 +20,7 @@ def dashboard(request, ssl=False):
   d = { 'menu_item' : 'ui_admin.dashboard'}
   user = userauth.getUser(request)
   d['heading_user_display'] = user.displayName + "'s EZID " + _("Dashboard")
-  d['display_adminlink'] = user.isRealmAdministrator or user.isSuperuser 
+  d['display_adminlink'] = user.isSuperuser 
   REQUEST = request.GET if request.method == "GET" else request.POST
   if not('owner_selected' in REQUEST) or REQUEST['owner_selected'] == '':
     d['owner_selected'] = None if user.isSuperuser \

@@ -712,7 +712,7 @@ class UserForm(BasePasswordForm):
       label=_("Secondary Contact Email"),
       error_messages={'invalid': _("Please fill in a valid email address.")})
     self.fields["secondaryContactPhone"] = forms.CharField(required=False, 
-      label=_("Primary Contact Phone"))
+      label=_("Secondary Contact Phone"))
 
     self.fields["accountDisplayName"] = forms.CharField(label=_("Account Display Name"),
       error_messages={'required': _("Please fill in the name as it should be displayed for the account.")})
