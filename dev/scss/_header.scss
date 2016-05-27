@@ -45,7 +45,7 @@
 
 .header__main-logo-image {
 	width: 40vw;
-	height: 100%;
+	height: auto;
 
 	@include bp(screen2) {
 		width: 320px;

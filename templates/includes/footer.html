@@ -7,7 +7,7 @@
 
 <footer class="footer">
 
-  <a class="object__clickable footer__logo-link" href="http://www.cdlib.org/"><object class="footer__logo" data="/static/images/logoBottom.svg" type="image/svg+xml" alt="California Digital Library"></object></a>
+  <a class="object__clickable footer__logo-link" href="http://www.cdlib.org/" title="{% trans "California Digital Library" %}"><object class="footer__logo" data="/static/images/logoBottom.svg" type="image/svg+xml" alt="{% trans "California Digital Library" %}"></object></a>
 
   <div class="footer__news">
 {% if feed_cache %}
@@ -39,8 +39,8 @@
   </div>
 
   <div class="footer__icons">
-    <a class="object__clickable footer__icon-link" href="http://twitter.com/ezidcdl" title="Twitter"><object class="footer__icon" data="/static/images/iconTwitter.svg" type="image/svg+xml" alt="California Digital Library"></object></a>
-    <a class="object__clickable footer__icon-link" href="http://www.cdlib.org/cdlinfo/category/infrastructure-services/feed/?s=ezid" title="RSS"><object class="footer__icon" data="/static/images/iconRSS.svg" type="image/svg+xml" alt="California Digital Library"></object></a>
+    <a class="object__clickable footer__icon-link" href="http://twitter.com/ezidcdl" title="Twitter"><object class="footer__icon" data="/static/images/iconTwitter.svg" type="image/svg+xml" alt="Twitter"></object></a>
+    <a class="object__clickable footer__icon-link" href="http://www.cdlib.org/cdlinfo/category/infrastructure-services/feed/?s=ezid" title="RSS"><object class="footer__icon" data="/static/images/iconRSS.svg" type="image/svg+xml" alt="RSS"></object></a>
   </div>
 
   {% host_based_include "includes/localized/_/footer_fineprint.html" %}

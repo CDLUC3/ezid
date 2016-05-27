@@ -2271,7 +2271,7 @@ h2.panel-title > a {
   margin: 20px auto; }
 
 .fakeid:before {
-  content: "*"; }
+  content: "* "; }
 
 .call-out h3 {
   font-size: 1.1em;
