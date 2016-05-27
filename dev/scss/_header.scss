@@ -59,7 +59,7 @@
 
 .header__affiliate-logo-image {
 	width: 15vw;
-	height: 100%;
+	height: auto;
 
 	@include bp(screen2) {
 		width: 130px;

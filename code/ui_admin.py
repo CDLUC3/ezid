@@ -68,10 +68,7 @@ def _getUsage(request, user, d):
   s = stats.getStats()
   user_id, group_id, realm_id = uic.getOwnerOrGroupOrRealm(d['owner_selected'])
   if realm_id != None:
-    realm = ezidapp.models.StoreRealm.objects.get(name=realm_id)
-    for g in realm.groups.all():
-      for u in g.users.all(): 
-        table += s.getTable(owner=u.username)
+    table = s.getTable(realm=realm_id)
   elif group_id != None:
     table = s.getTable(group=group_id)
   else:
