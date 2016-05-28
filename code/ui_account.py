@@ -48,7 +48,7 @@ def login (request, ssl=False):
   elif request.method == "POST":
     if "username" not in request.POST or "password" not in request.POST or\
       "next" not in request.POST:
-      return uic.badRequest()
+      return uic.badRequest(request)
     d.update(uic.extract(request.POST, ["username", "password", "next"]))
     user = userauth.authenticate(d["username"], d["password"], request)
     if type(user) is str:
@@ -241,7 +241,7 @@ def pwreset(request, pwrr, ssl=False):
       d['form'] = form_objects.BasePasswordForm(None, username=username, pw_reqd=True)
     elif request.method == "POST":
       if "password" not in request.POST or "confirm" not in request.POST:
-        return uic.badRequest()
+        return uic.badRequest(request)
       password = request.POST["password"]
       d['form'] = form_objects.BasePasswordForm(request.POST, username=username, pw_reqd=True)
       if not d['form'].is_valid():

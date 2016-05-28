@@ -315,9 +315,12 @@ def download(request):
 
   # In case you only want to download IDs based on owner selection:
   # username = uic.getOwnerOrGroup(request.GET['owner_selected'])
-  # user = ezidapp.models.StoreUser.objects.get(name=username)
+  # q['owner'] = ezidapp.models.StoreUser.objects.get(name=username)
   user = userauth.getUser(request)
   q['notify'] = d['mail'] = user.accountEmail
+  if user.isRealmAdministrator: q['ownergroup'] = user.realm.groups.all()
+  elif user.isGroupAdministrator: q['ownergroup'] = user.group 
+  else: q['owner'] = user 
   s = ezid_download.enqueueRequest(user, q)
   if not s.startswith("success:"):
     django.contrib.messages.error(request, s)

@@ -617,7 +617,7 @@ def _notifyRequestor (r):
       _("to easily create and manage your identifiers. ")
     message += (_("The batch download you requested is available at:\n\n") +\
       "%s/download/%s.%s\n\n" +\
-      _("The download will be deleted in 1 week.\n") +\
+      _("The download will be deleted in 1 week.\n\nBest,\nEZID Team\n\n") +\
       _("This is an automated email.  Please do not reply.\n")) %\
       (_ezidUrl, r.filename, _fileSuffix(r))
     try:

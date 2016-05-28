@@ -45,7 +45,7 @@ def simple(request):
   if result == 'edit_page':
     return uic.render(request, 'create/simple', d)  # ID Creation page 
   elif result == 'bad_request':
-    return uic.badRequest()
+    return uic.badRequest(request)
   elif result.startswith('created_identifier:'):
     return redirect("/id/" + urllib.quote(result.split()[1], ":/"))   # ID Details page
 
@@ -68,7 +68,7 @@ def advanced(request):
   if result == 'edit_page':
     return uic.render(request, 'create/advanced', d)  # ID Creation page 
   elif result == 'bad_request':
-    return uic.badRequest()
+    return uic.badRequest(request)
   elif result.startswith('created_identifier:'):
     return redirect("/id/" + urllib.quote(result.split()[1], ":/"))   # ID Details page
 
