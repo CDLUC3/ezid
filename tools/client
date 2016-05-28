@@ -69,12 +69,15 @@
 import codecs
 import optparse
 import re
+import signal
 import ssl
 import sys
 import time
 import types
 import urllib
 import urllib2
+
+signal.signal(signal.SIGINT, lambda signal, frame: sys.exit())
 
 KNOWN_SERVERS = {
   "l": "http://localhost:8000",

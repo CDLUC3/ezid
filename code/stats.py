@@ -164,7 +164,7 @@ class Stats (object):
           break
       if include: count += c
     return count
-  def getTable (self, owner=None, group=None, useLocalNames=True):
+  def getTable (self, owner=None, group=None, realm=None, useLocalNames=True):
     """
     Returns a table (a list) of histogram counts ordered by month.
     Each element of the list is a pair consisting of a month and a
@@ -183,9 +183,10 @@ class Stats (object):
 
       ("2016-02", {})
 
-    The table can optionally be limited by owner and/or group.  If
-    useLocalNames is True, 'owner' and 'group' are interpreted as
-    local names and are converted to agent identifiers.
+    The table can optionally be limited by owner and/or group and/or
+    realm.  If useLocalNames is True, 'owner' and 'group' are
+    interpreted as local names and are converted to agent identifiers.
+    'realm' should be given as a realm name, e.g., "CDL".
     """
     assert self._monthIndex >= 0, "no month dimension"
     excludeIndexes = [self._monthIndex]
@@ -195,6 +196,9 @@ class Stats (object):
     if group is not None:
       assert self._groupIndex >= 0, "no group dimension"
       if useLocalNames: group = ezidapp.models.getGroupByGroupname(group).pid
+    if realm is not None:
+      groups = set(g.pid for g in\
+        ezidapp.models.StoreRealm.objects.get(name=realm).groups.all())
     if self._ownerIndex >= 0: excludeIndexes.append(self._ownerIndex)
     if self._groupIndex >= 0: excludeIndexes.append(self._groupIndex)
     includeIndexes = [i for i in range(len(_defaultDimensions))\
@@ -202,7 +206,8 @@ class Stats (object):
     counts = {}
     for t, c in self._histogram.items():
       if (owner is None or t[self._ownerIndex] == owner) and\
-        (group is None or t[self._groupIndex] == group):
+        (group is None or t[self._groupIndex] == group) and\
+        (realm is None or t[self._groupIndex] in groups):
         tt = tuple(t[i] for i in includeIndexes)
         d = counts.get(t[self._monthIndex], {})
         dc = d.get(tt, 0)

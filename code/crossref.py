@@ -504,8 +504,8 @@ def _sendEmail (emailAddress, r):
 def _oneline (s):
   return re.sub("\s", " ", s)
 
-def _updateSearchDatabase (identifier, status):
-  updates = {}
+def _updateSearchDatabase (identifier, status, updateTime):
+  updates = { "updateTime": updateTime }
   if status == "successfully registered":
     updates["crossrefStatus"] = ezidapp.models.SearchIdentifier.CR_SUCCESS
     updates["crossrefMessage"] = ""
@@ -548,11 +548,13 @@ def _doPoll (r):
       # call to us again.  However, this approach means that we must
       # also manually update the identifier in the search database.
       # N.B.: there's a race condition here, but it's insignificant.
+      updateTime = int(time.time())
       s = ezid.asAdmin(ezid.setMetadata, r.identifier,
-        { "_cr": "yes | " + m }, False)
+        { "_cr": "yes | " + m, "_su": str(updateTime) }, False)
       assert s.startswith("success:"), "ezid.setMetadata failed: " + s
       search_util.withAutoReconnect("crossref._updateSearchDatabase",
-        lambda: _updateSearchDatabase(r.identifier, m), _checkAbort)
+        lambda: _updateSearchDatabase(r.identifier, m, updateTime),
+        _checkAbort)
     if t[0] == "completed successfully":
       _checkAbort()
       r.delete()
