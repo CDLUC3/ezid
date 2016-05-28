@@ -72,7 +72,7 @@ def get_dict_value(dt, key_name):
 def identifier_display(id_text, testPrefixes):
   for pre in testPrefixes:
     if id_text.startswith(pre['prefix']):
-      return "<span class='fakeid'>" + escape(id_text) + "</span>"
+      return "&#42;&nbsp;" + escape(id_text)
   return escape(id_text)
 
 @register.simple_tag

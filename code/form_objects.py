@@ -19,9 +19,10 @@ from django.utils.translation import ugettext as _
     Designating a field as required involves:
       * remove required=false from field definition
       * (optional) include custom error text in the field's error_messages['required'] variable
-      * properly label the field within the template by including reqd="true" here (for adv datacite):
+      * properly label the field within the template by including reqd="true"
+        i.e. Including a required select field for an advanced datacite ID:
         {% include "create/_datacite_inlineselect.html" with field=rt_field reqd="true" %}
-        (It's done in template includes/_inline.....html for all other form types)
+        It's done in template "includes/_inline.....html" for all other form types
 
     CSS styling (using "class=") is done using the add_attributes template tag
       in ui_tags/templatetags/layout_extras.py
@@ -126,8 +127,10 @@ class DataciteForm(BaseForm):
       error_messages={'required': ERR_TITLE})
     self.fields["datacite.publisher"] = forms.CharField(label=_("Publisher"),
       error_messages={'required': ERR_PUBLISHER})
-    self.fields["datacite.publicationyear"] = forms.CharField(label=_("Publication year"),
-      error_messages={'required': _("Please fill in a four digit value for publication year.")})
+    self.fields["datacite.publicationyear"] = forms.RegexField(label=_("Publication year"),
+      regex=REGEX_4DIGITYEAR,
+      error_messages={'required': _("Please fill in a four digit value for publication year."),
+                    'invalid': ERR_4DIGITYEAR })
     self.fields["datacite.resourcetype"] = \
       forms.ChoiceField(required=False, choices=RESOURCE_TYPES, label=_("Resource type"))
     if self.placeholder is not None and self.placeholder == True:

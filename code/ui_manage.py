@@ -153,6 +153,7 @@ def edit(request, identifier):
   d['profiles'] = metadata.getProfiles()[1:]
  
   if request.method == "GET": 
+    d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes']) 
     if '_profile' in id_metadata:
       d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
     else:
@@ -311,14 +312,18 @@ def download(request):
   d = { 'menu_item' : 'ui_manage.null'}
   q = django.http.QueryDict("format=csv&convertTimestamps=yes&compression=zip", mutable=True)
   q.setlist('column', ["_mappedTitle", "_mappedCreator", "_id", "_owner", "_created", "_updated", "_status"])
-  # q['notify'] = d['mail'] = useradmin.getContactInfo(request.session['auth'].user[0])['mail']
 
-  # s = ezid_download.enqueueRequest(request.session['auth'], q)
-  # if not s.startswith("success:"):
-  #   django.contrib.messages.error(request, s)
-  #   return redirect("ui_manage.index")
-  # else:
-  #   d['link'] = s.split()[1]
+  # In case you only want to download IDs based on owner selection:
+  # username = uic.getOwnerOrGroup(request.GET['owner_selected'])
+  # user = ezidapp.models.StoreUser.objects.get(name=username)
+  user = userauth.getUser(request)
+  q['notify'] = d['mail'] = user.accountEmail
+  s = ezid_download.enqueueRequest(user, q)
+  if not s.startswith("success:"):
+    django.contrib.messages.error(request, s)
+    return redirect("ui_manage.index")
+  else:
+    d['link'] = s.split()[1]
   return uic.render(request, "manage/download", d)
 
 def download_error(request):

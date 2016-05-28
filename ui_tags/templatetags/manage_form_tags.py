@@ -119,7 +119,7 @@ def string_value(x, href):
 def identifier_disp(x, testPrefixes):
   for pre in testPrefixes:
     if x.startswith(pre['prefix']):
-      return "<a href='/id/" + x + "' class='link__primary fakeid'>" + escape(x) + "</a>"
+      return "<a href='/id/" + x + "' class='link__primary'>&#42;" + escape(x) + "</a>"
   return "<a href='/id/" + x + "' class='link__primary'>" + escape(x) + "</a>"
   
 def datetime_disp(x, href):
