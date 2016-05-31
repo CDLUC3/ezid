@@ -42,10 +42,10 @@ Welcome {{ authenticatedUser.username }}!
     <div class="header__loginout">
       {% if authenticatedUser %}
         <form action="/logout" role="form">
-          <button class="header__loginout-link">Logout</button>
+          <button class="header__loginout-link" aria-label="Logout">Logout</button>
         </form>
       {% else %}
-      <button id="js-header__loginout-button" class="header__loginout-link">Login</button>
+      <button id="js-header__loginout-button" class="header__loginout-link" aria-label="Login">Login</button>
       {% endif %}
       {% include "includes/login-modal.html" %}
     </div>

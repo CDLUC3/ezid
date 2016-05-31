@@ -37,8 +37,8 @@ $(document).ready(function() {
 	// reset button checks and unchecks these
 	$('#restore_defaults').click(function(e) {
 		e.preventDefault();
-		$('{{jquery_checked}}').attr('checked', true);
-		$('{{jquery_unchecked}}').attr('checked', false);
+		$('{{jquery_checked}}').prop('checked', true);
+		$('{{jquery_unchecked}}').prop('checked', false);
 	});
         
 });
