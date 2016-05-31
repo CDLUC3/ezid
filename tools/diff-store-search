@@ -1,0 +1,126 @@
+#! /usr/bin/env python
+
+# Compares identifiers in the store and search databases.
+#
+# Identifiers in the search database are obtained by direct query.
+# But because identifiers are not stored in the same order (in the
+# store database identifiers are stored in lexicographic order of
+# shadow ARK, in the search database, in lexicographic order of
+# normalized qualified identifier), identifiers in the store database
+# are obtained from a dump file.  Furthermore, this dump file must be
+# a normal (not raw) dump, and then sorted.  Thus typical usage of
+# this script will resemble:
+#
+#    dump-store ... | sort > DUMP
+#    diff-store-search DUMP
+#
+# This script requires several EZID modules.  The PYTHONPATH
+# environment variable must include the .../SITE_ROOT/PROJECT_ROOT
+# directory; if it doesn't, we attempt to dynamically locate it and
+# add it.  The DJANGO_SETTINGS_MODULE environment variable must be
+# set.
+#
+# Greg Janee <gjanee@ucop.edu>
+# May 2016
+
+import os.path
+import sys
+import time
+
+# The following must precede any EZID module imports:
+execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
+  "offline.py"))
+
+import ezidapp.models
+import util
+
+if len(sys.argv) != 2:
+  sys.stderr.write("Usage: diff-store-search dumpfile\n")
+  sys.exit(1)
+
+def formatTimestamp (t):
+  return time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(t))
+
+def storeIdentifierGenerator ():
+  for line in open(sys.argv[1]):
+    yield util.fromExchange(line, identifierEmbedded=True)
+  while True: yield (None, None)
+storeIdentifiers = storeIdentifierGenerator()
+
+def searchIdentifierGenerator ():
+  lastId = ""
+  while True:
+    ids = ezidapp.models.SearchIdentifier.objects.filter(
+      identifier__gt=lastId).select_related("owner", "ownergroup",
+      "datacenter", "profile").order_by("identifier")[:1000]
+    if len(ids) == 0: break
+    for id in ids:
+      yield id
+      lastId = id.identifier
+  while True: yield None
+searchIdentifiers = searchIdentifierGenerator()
+
+stid, stm = storeIdentifiers.next()
+seid = searchIdentifiers.next()
+while stid != None or seid != None:
+  if stid != None and (seid == None or stid < seid.identifier):
+    if stm["_owner"] != "anonymous":
+      print "<", stid
+      print "\t< _created: %s" % formatTimestamp(int(stm["_created"]))
+    stid, stm = storeIdentifiers.next()
+  elif seid != None and (stid == None or seid.identifier < stid):
+    print ">", seid.identifier
+    print "\t> _created: %s" % formatTimestamp(seid.createTime)
+    seid = searchIdentifiers.next()
+  else:
+    firstDifference = [True]
+    def compare (label, a, b):
+      if a != b:
+        if firstDifference[0]:
+          print "!", stid
+          firstDifference[0] = False
+        if a != "": print "\t< %s: %s" % (util.encode4(label), util.encode3(a))
+        if b != "": print "\t> %s: %s" % (util.encode4(label), util.encode3(b))
+    compare("_owner", stm["_owner"], seid.owner.username)
+    compare("_ownergroup", stm["_ownergroup"], seid.ownergroup.groupname)
+    compare("_created", formatTimestamp(int(stm["_created"])),
+      formatTimestamp(seid.createTime))
+    compare("_updated", formatTimestamp(int(stm["_updated"])),
+      formatTimestamp(seid.updateTime))
+    searchStatus = seid.get_status_display()
+    if seid.isUnavailable and seid.unavailableReason != "":
+      searchStatus += " | " + seid.unavailableReason
+    compare("_status", stm.get("_status", "public"), searchStatus)
+    compare("_export", stm.get("_export", "yes"),
+      "yes" if seid.exported else "no")
+    if seid.isDoi:
+      compare("_datacenter", stm["_datacenter"], seid.datacenter.symbol)
+    if seid.isCrossref:
+      searchCrossref = "yes | " + seid.get_crossrefStatus_display()
+    else:
+      searchCrossref = "no"
+    if seid.isCrossrefBad and seid.crossrefMessage != "":
+      searchCrossref += " | " + seid.crossrefMessage
+    compare("_crossref", stm.get("_crossref", "no"), searchCrossref)
+    compare("_target", stm["_target"], seid.target)
+    compare("_profile", stm["_profile"], seid.profile.label)
+    compare("_ezid_role", stm.get("_ezid_role", ""),
+      seid.get_agentRole_display() if seid.isAgentPid else "")
+    stKeys = sorted(k for k in stm.keys() if not k.startswith("_"))
+    seKeys = sorted(seid.cm.keys())
+    sti = sei = 0
+    while sti < len(stKeys) or sei < len(seKeys):
+      if sti < len(stKeys) and\
+        (sei >= len(seKeys) or stKeys[sti] < seKeys[sei]):
+        compare(stKeys[sti], stm[stKeys[sti]], "")
+        sti += 1
+      elif sei < len(seKeys) and\
+        (sti >= len(stKeys) or seKeys[sei] < stKeys[sti]):
+        compare(seKeys[sei], "", seid.cm[seKeys[sei]])
+        sei += 1
+      else:
+        compare(stKeys[sti], stm[stKeys[sti]], seid.cm[seKeys[sei]])
+        sti += 1
+        sei += 1
+    stid, stm = storeIdentifiers.next()
+    seid = searchIdentifiers.next()
