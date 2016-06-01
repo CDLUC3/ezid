@@ -743,14 +743,14 @@ class BaseSearchIdForm(forms.Form):
   # ToDo: Determine proper regex for identifier for validation purposes
   identifier = forms.CharField(required=False, 
     label=_("Identifier/Identifier Prefix"), widget=forms.TextInput(
-      attrs={'placeholder': "doi:10.17614/Q44F1NB79"}))
+      attrs={'placeholder': ABBR_EX + "doi:10.17605/OSF.IO/QXUPF"}))
   title = forms.CharField(required=False, label=_("Object Title (What)"),
     widget=forms.TextInput(attrs={'placeholder': ABBR_EX + \
-      "2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone"}))
+      "Welfare: current vs. never"}))
   creator = forms.CharField(required=False, label=_("Object Creator (Who)"),
-    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + _("Pitt Quantum Repository")}))
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + _("Schofield, Timothy")}))
   publisher = forms.CharField(required=False, label=_("Object Publisher"),
-    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + _("University of Pittsburgh")}))
+    widget=forms.TextInput(attrs={'placeholder': ABBR_EX + _("Open Science Framework")}))
   pubyear_from = forms.RegexField(required=False, label=_("From"),
     regex='^\d{4}$',
     error_messages={'invalid': ERR_4DIGITYEAR },

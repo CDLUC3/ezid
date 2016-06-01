@@ -25,7 +25,6 @@ $(document).ready(function() {
     $pElem.popover(
         {
           html: true,
-          container: 'body',
           content: getPopContent($pElem.attr("id"))
         }
     );

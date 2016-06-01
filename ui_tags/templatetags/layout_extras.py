@@ -81,9 +81,11 @@ def active_id_display(id_text, testPrefixes):
 
 @register.simple_tag
 def help_icon(id_of_help, specifics="", css_class="button__icon-help"):
+  """ 'data-container="#' + str(id_of_help) + '" tabindex="0">' + \ """
   title = _("Click for additional help") + " " + unicode(specifics)
-  return '<a href="#" id="' + str(id_of_help) + '" role="button" data-toggle="popover"' +\
-    'data-placement="auto bottom" data-trigger="click" tabindex="0">' + \
+  return '<a href="#" class="button__icon-link" id="' + str(id_of_help) + '" ' +\
+    'role="button" data-toggle="popover" data-placement="auto bottom" ' +\
+    'data-trigger="click" tabindex="0">' + \
     '<img src="/static/images/iconHelp.svg" alt="' + str(title) + '"' + \
     ' class="' + str(css_class) + '" title="' + str(title) + '"/></a>'
 

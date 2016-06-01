@@ -35,6 +35,7 @@ $(document).ready(function() {
     }
   });
 /* ToDo: Bring in both simple and advanced content onto the same page
+   (and simultaneously define role=tab in HTML)
    Then this JavaScript will be unnecessary since tabs will swap quickly
    btwn simple/advanced content */
   $('#tab-2:not(:checked)').on('change', function() {

@@ -21,11 +21,20 @@
 
       {% include "includes/owner_select.html" %}
 
-        <button class="dashboard__button-go" type="submit" value="submit">{% trans "Go" %}</button>
-        <a href="{% url "ui_admin.csvStats" %}" class="dashboard__csv-link">View CSV format of Identifier Creation</a>
+        <a href="{% url "ui_admin.csvStats" %}" class="dashboard__csv-link">Download report in CSV format</a>
     </div>
   </form>
   </div>
+<script type="text/javascript">
+  // submit form when owner filter changes
+  $("#owner_selected").bind("change", function(event){
+      var frm = $('#usage_form');
+      frm.attr('action', location.pathname);
+      frm.unbind('submit');
+      frm.attr('method', 'get');
+      frm.submit();
+  });
+</script>
 {% if totals|length > 0 %}
 
 {% include "dashboard/_totalIds.html" %}
