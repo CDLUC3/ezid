@@ -1,6 +1,7 @@
 /* include file to attach javascript actions to simple creation form */
 
 $(document).ready(function() {
+  /* Determine value of 'current_profile' based on shoulder that is selected  */
   var orig_val = $('input[name=shoulder]:checked', '#create_form').val();
 	
   function do_get(){
@@ -66,4 +67,27 @@ $(document).ready(function() {
       }
       $('#create_form').submit();
   });
+
+  /* Redirect to Simple ID create: Handle tab clicking for keyboard users */
+  function actTab1() {
+    document.getElementById('tab-1').checked = false;
+    document.getElementById('tab-2').checked = true;
+    action = location.pathname.split("/")[1];  // Handle create or demo pages
+    window.location.href = "/" + action + "/simple";
+  }
+  // Act on keyboard enter or spacebar
+  $("#tab-1-label").keyup(function(e){
+    var code = e.which;
+    if(code==13)e.preventDefault();
+    if(code==32||code==13||code==188||code==186){
+      actTab1();
+    }
+  });
+/* ToDo: Bring in both simple and advanced content onto the same page
+   Then this JavaScript will be unnecessary since tabs will swap quickly
+   btwn simple/advanced content */
+  $('#tab-1:not(:checked)').on('change', function() {
+    actTab1();
+  });
+
 });
