@@ -41,13 +41,15 @@ import urllib2
 import config
 import util
 
-_enabled = None
+_readEnabled = None
+_writeEnabled = None
 _server = None
 _authorization = None
 
 def _loadConfig ():
-  global _enabled, _server, _authorization
-  _enabled = (config.get("binder.enabled").lower() == "true")
+  global _readEnabled, _writeEnabled, _server, _authorization
+  _readEnabled = (config.get("binder.read_enabled").lower() == "true")
+  _writeEnabled = (config.get("binder.write_enabled").lower() == "true")
   _server = config.get("binder.url")
   _authorization = "Basic " +\
     base64.b64encode(config.get("binder.username") + ":" +\
@@ -98,7 +100,7 @@ def identifierExists (identifier):
   # functions below work to maintain the invariant property that
   # either an identifier has EZID metadata (along with noid-internal
   # metadata) or it has no metadata at all.
-  assert _enabled, "function not enabled"
+  assert _readEnabled, "function not enabled"
   s = _issue("GET", [(identifier, "fetch")])
   assert len(s) >= 4 and s[0].startswith("# id:") and\
     s[-3].startswith("# elements bound under") and\
@@ -114,7 +116,7 @@ def setElements (identifier, d):
   The elements should be given in a dictionary that maps names to
   values.  Raises an exception on error.
   """
-  if not _enabled: return
+  if not _writeEnabled: return
   l = []
   for e, v in d.items():
     e = e.strip()
@@ -134,7 +136,7 @@ def getElements (identifier):
   if the identifier doesn't exist.  The identifier is assumed to be in
   canonical form.  Raises an exception on error.
   """
-  assert _enabled, "function not enabled"
+  assert _readEnabled, "function not enabled"
   # See the comment under 'identifierExists' above.
   s = _issue("GET", [(identifier, "fetch")])
   assert len(s) >= 4 and s[0].startswith("# id:") and\
@@ -169,7 +171,7 @@ def deleteIdentifier (identifier):
   elements can be re-bound to it in the future.  Raises an exception
   on error.
   """
-  if not _enabled: return
+  if not _writeEnabled: return
   s = _issue("POST", [(identifier, "purge")])
   assert len(s) >= 2 and s[-2] == "egg-status: 0\n", _error("purge", s)
   # See the comment under 'identifierExists' above.
@@ -180,7 +182,7 @@ def ping ():
   """
   Tests the server, returning "up" or "down".
   """
-  if not _enabled: return "up"
+  if not _readEnabled and not _writeEnabled: return "up"
   try:
     s = _issue("GET", [])
     assert len(s) >= 2 and s[-2] == "egg-status: 0\n"
