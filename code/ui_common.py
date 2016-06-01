@@ -299,3 +299,8 @@ def getOwnerOrGroup(ownerkey):
   else:
     user_id = ownerkey
   return (user_id, group_id)
+
+def isEmptyStr(v):
+  """ check for any empty string """
+  return False if v is not None and v != '' and not v.isspace() else True
+

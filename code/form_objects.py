@@ -1,3 +1,4 @@
+import ui_common as uic
 from django import forms
 from django.forms import BaseFormSet, formset_factory
 import django.core.validators
@@ -781,8 +782,7 @@ class BaseSearchIdForm(forms.Form):
       # Check for None or '', so IntegerFields with 0 or similar things don't seem empty.
       if not isinstance(v, bool):
         cleaned_data[k] = cleaned_data[k].strip()
-        if v is not None and v != '' and not v.isspace():
-          form_empty = False
+        if not uic.isEmptyStr(v): form_empty = False
     # In manage page case, just output all owners IDs - no need to throw validation error
     if form_empty and type(self).__name__ != 'ManageSearchIdForm':
       raise forms.ValidationError(_("Please enter information in at least one field."))

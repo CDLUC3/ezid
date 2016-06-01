@@ -149,6 +149,15 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
       q2 = {}
       for k,v in q.iteritems():
         q2[k] = q[k].strip() if isinstance(v, basestring) else q[k]
+      # Move searches for IDs in keyword field to identifier field.  I wanted to put this in
+      # form's clean() function but unable to modify field values that route. I think I need to
+      # explicitly override the form's __init__ method
+      if 'keywords' in q2:
+        kw = q2['keywords']
+        if kw.lower().startswith(("doi:", "ark:/", "urn:uuid:")) and \
+          (' ' not in kw) and uic.isEmptyStr(q2['identifier']):
+          q2['keywords'] = ''
+          q2['identifier'] = kw
       if d['filtered']:
         c = _buildConstraints(c, q2, s_type)
         c = _buildTimeConstraints(c, q2, s_type)
