@@ -240,9 +240,9 @@ def pwreset(request, pwrr, ssl=False):
       d['username'] = username 
       d['form'] = form_objects.BasePasswordForm(None, username=username, pw_reqd=True)
     elif request.method == "POST":
-      if "password" not in request.POST or "confirm" not in request.POST:
+      if "pwnew" not in request.POST or "pwconfirm" not in request.POST:
         return uic.badRequest(request)
-      password = request.POST["password"]
+      password = request.POST["pwnew"]
       d['form'] = form_objects.BasePasswordForm(request.POST, username=username, pw_reqd=True)
       if not d['form'].is_valid():
         err = _("Changes could not be made.  Please check the highlighted field(s) below for details.")
