@@ -318,9 +318,10 @@ def download(request):
   # q['owner'] = ezidapp.models.StoreUser.objects.get(name=username)
   user = userauth.getUser(request)
   q['notify'] = d['mail'] = user.accountEmail
-  if user.isRealmAdministrator: q['ownergroup'] = user.realm.groups.all()
-  elif user.isGroupAdministrator: q['ownergroup'] = user.group 
-  else: q['owner'] = user 
+  # ToDo make changes to download.enqueueRequest() to accept multiple groups
+  # if user.isRealmAdministrator: q['ownergroup'] = [g.groupname for g in user.realm.groups.all()]
+  if user.isGroupAdministrator: q['ownergroup'] = user.group.groupname 
+  else: q['owner'] = user.username
   s = ezid_download.enqueueRequest(user, q)
   if not s.startswith("success:"):
     django.contrib.messages.error(request, s)

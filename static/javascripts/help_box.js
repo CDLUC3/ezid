@@ -25,15 +25,28 @@ $(document).ready(function() {
     $pElem.popover(
         {
           html: true,
+          // Here data-container is set within html (as id of help_icon itself) to allow for 
+          //   keyboard accessibility (tabbing into focusable elements within popover). Otherwise:
+          // container: 'body',
           content: getPopContent($pElem.attr("id"))
         }
     );
+    // This prevents page from scrolling to top when you click
+    $pElem.on('click', function(e) {e.preventDefault(); return true;});
   });
   function getPopContent(target) {
     return $("#" + target + "_content").html();
   };
 
-  // User able to dismiss/close help window by clicking outside
+  // User able to dismiss/close help window by hitting escape key 
+  $(document).keyup(function (e) {
+    if (e.which === 27) {
+      $('[data-toggle="popover"]').each(function () {
+        $(this).popover('hide');
+      });
+    }
+  });
+  // ... and by clicking outside popover
   $('body').on('click', function (e) {
     $('[data-toggle="popover"]').each(function () {
       //the 'is' for buttons that trigger popups
@@ -41,6 +54,6 @@ $(document).ready(function() {
       if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
         $(this).popover('hide');
       }
+    });
   });
-});
 });
