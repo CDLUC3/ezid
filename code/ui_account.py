@@ -250,9 +250,8 @@ def pwreset(request, pwrr, ssl=False):
       else:
         user = ezidapp.models.getUserByUsername(username)
         if user == None or user.isAnonymous:
-          django.contrib.messages.error(request, "No such user.")
-          return uic.render(request, "account/pwreset2", { "pwrr": pwrr,
-            "username": username, 'menu_item' : 'ui_null.null' })
+          django.contrib.messages.error(request, _("No such user."))
+          return uic.render(request, "account/pwreset2", d)
         with django.db.transaction.atomic():
           user.setPassword(password)
           user.save()
@@ -279,10 +278,9 @@ def pwreset(request, pwrr, ssl=False):
         return uic.render(request, "account/pwreset1", d)
       else:
         r = sendPasswordResetEmail(username, email)
-        if type(r) is str:
+        if type(r) in (str, unicode):
           django.contrib.messages.error(request, r)
-          return uic.render(request, "account/pwreset1", { "username": username,
-            "email": email,  'menu_item' : 'ui_null.null' })
+          return uic.render(request, "account/pwreset1", d)
         else:
           django.contrib.messages.success(request, _("Email sent."))
           return uic.redirect("/")

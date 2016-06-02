@@ -22,7 +22,7 @@
           {% rewrite_hidden_nocols REQUEST field_order %}
       </div>
       <div class="modal-footer">
-        <a href="#restore_defaults" id="restore_defaults">{% trans "Restore Defaults" %}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <button type="button" class="btn btn-default" id="restore_defaults">{% trans "Restore Defaults" %}</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
         <button type="submit" class="btn btn-primary" name="submit_checks" value="Apply Changes">{% trans "Apply Changes" %}</button>
       </div>
