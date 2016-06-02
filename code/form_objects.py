@@ -694,7 +694,7 @@ class BasePasswordForm(forms.Form):
     pwnew_c = cleaned_data.get("pwnew")
     pwconfirm_c = cleaned_data.get("pwconfirm")
     if pwnew_c and pwnew_c != pwconfirm_c:
-      raise ValidationError(_("Password and confirmation do not match"))
+      raise ValidationError({'pwnew': _("Password and confirmation do not match")})
     return cleaned_data
 
 class UserForm(BasePasswordForm):
