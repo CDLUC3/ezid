@@ -49,6 +49,9 @@
 
 	@include bp(screen2) {
 		width: 320px;
+		// Not defining a height here seems to cause problems in IE,
+		// maybe due to the fact that this is being called from within a picture element?
+		height: 48px;
 	}
 
 }
