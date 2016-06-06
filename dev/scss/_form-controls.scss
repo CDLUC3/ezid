@@ -61,10 +61,6 @@
 	color: $design-primary-color;
 	font-size: 1em;
 
-	@include bp(screen1) {
-		align-self: center;
-	}
-
 	@include bp(screen2) {
 		font-size: 1.1em;
 	}
@@ -109,12 +105,6 @@
 
 // ***** Text Areas ***** //
 
-.fcontrol__textarea-group {
-	display: flex;
-	flex: 1 0 auto;
-	flex-flow: column nowrap;
-}
-
 .fcontrol__textarea-label-stacked {
 	margin: 0 0 2px;
 	color: $design-primary-color;
@@ -136,6 +126,7 @@
 }
 
 .fcontrol__textarea-label-inline {
+	flex: 1 0 auto;
 	margin: 0 5px 0 0;
 	color: $design-primary-color;
 	font-size: 1em;
@@ -161,7 +152,8 @@
 
 .fcontrol__textarea-inline-noborder {
 	@extend %fcontrol__textarea-inline-base;
-	width: 250px;
+	// flex: 1 0 auto;
+	// width: 250px;
 	height: 30px;
 	border: none;
 	resize: none;

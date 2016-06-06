@@ -85,11 +85,15 @@
 }
 
 .account__button-icon-help {
-        @extend %button__icon-help-base;
-        position: relative;
+	// flex: 1 0 auto;
+	width: 24px;
+	height: 24px;
+	margin: 0 0 0 8px;
+        // @extend %button__icon-help-base;
+        // position: relative;
 
-	@include bp(screen2) {
-		top: -15px;
-	}
+	// @include bp(screen2) {
+	// 	top: -15px;
+	// }
 }
 
