@@ -60,12 +60,26 @@
 	margin: 0 0 0 20px;
 }
 
-.header__affiliate-logo-image {
+%header__affiliate-logo-image-base {
 	width: 15vw;
 	height: auto;
 
+}
+
+.header__affiliate-logo-image {
+	@extend %header__affiliate-logo-image-base;
+
 	@include bp(screen2) {
 		width: 130px;
+	}
+
+}
+
+.header__affiliate-logo-image-jisc {
+	@extend %header__affiliate-logo-image-base;
+
+	@include bp(screen2) {
+		width: 200px;
 	}
 
 }
