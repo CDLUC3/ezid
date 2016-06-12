@@ -1,0 +1,113 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load manage_form_tags %}
+{% load i18n %}
+
+{% block title %}{% block title-twitter %}{%trans "Search across EZID identifiers" %}{% endblock %}{% endblock %}
+{% block description %}{%trans "Search across all EZID identifiers by keyword, title, creator, publisher, or identifier string." %}{% endblock %}
+{% block heading %}{% content_heading _("Search across EZID identifiers") %}{% endblock %}
+{% block content %}
+<form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" id="search-form" role="form">
+<input name="filtered" type="hidden" value="t"/>
+{% if REQUEST %}
+{% rewrite_hidden REQUEST %}
+{% endif %}
+{% comment "nonfield_errors" %}form.non_field_errors not used here, and will be displayed in django.contrib.messages.error{% endcomment %}
+<div class="search__simple">
+  <div class="fcontrol__group-stacked">
+    <label for="search__simple-label" class="fcontrol__text-label-hidden">{% trans "Search" %}</label>
+    {{ form.keywords|add_attributes:"id:search__simple-label,class:fcontrol__text-field-stacked,type:search" }}
+    <span class="fcontrol__invalid-flag"></span>
+  </div>
+  <button class="search__simple-button" type="submit">{% trans "Search" %}</button>
+</div>
+<details {{ show_advanced_search }} class="showhide">
+  <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
+  <div class="row">
+    <div class="col-md-6 search__form-element-container">
+      <div class="fcontrol__group-stacked{% if form.identifier.errors %}--invalid{% endif %}">
+        <label for="{{ form.identifier.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.identifier.label }}</label>
+        {{ form.identifier|add_attributes:"fcontrol__text-field-stacked" }}
+      {% if form.identifier.errors %}
+        {% for error in form.identifier.errors %}
+        <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+        {% endfor %}
+      {% endif %}
+      </div>
+    </div>
+    <div class="col-md-6 search__form-element-container">
+      <div class="fcontrol__group-stacked">
+        <label for="{{ form.title.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.title.label }}</label>
+        {{ form.title|add_attributes:"fcontrol__text-field-stacked" }}
+      </div>{% comment %}No validation necessary{% endcomment %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 search__form-element-container">
+      <div class="fcontrol__group-stacked">
+        <label for="{{ form.creator.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.creator.label }}</label>
+        {{ form.creator|add_attributes:"fcontrol__text-field-stacked" }}
+      </div>{% comment %}No validation necessary{% endcomment %}
+    </div>
+    <div class="col-md-6 search__form-element-container">
+      <div class="fcontrol__group-stacked">
+        <label for="{{ form.publisher.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.publisher.label }}</label>
+        {{ form.publisher|add_attributes:"fcontrol__text-field-stacked" }}
+      </div>{% comment %}No validation necessary{% endcomment %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="fieldset-stacked" role="group" aria-labelledby="object-publication-year">
+        <div id="object-publication-year" class="fieldset-stacked__legend search__publication-fieldset">{% trans "Object Publication Year" %}</div>
+        <div class="fcontrol__inline-groups search__inline-groups">
+          <div class="fcontrol__group-inline{% if form.pubyear_from.errors %}--invalid{% endif %}">
+            <label for="{{ form.pubyear_from.id_for_label }}" class="fcontrol__text-label-inline">{{ form.pubyear_from.label }}</label>
+            <div class="fcontrol__textarea-group">
+              {{ form.pubyear_from|add_attributes:"fcontrol__text-field-inline" }}
+            {% if form.pubyear_from.errors %}
+              {% for error in form.pubyear_from.errors %}
+              <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+              {% endfor %}
+            {% endif %}
+            </div>
+          </div>
+          <div class="fcontrol__group-inline{% if form.pubyear_to.errors %}--invalid{% endif %}">
+            <label for="{{ form.pubyear_to.id_for_label }}" class="fcontrol__text-label-inline">{{ form.pubyear_to.label }}</label>
+            <div class="fcontrol__textarea-group">
+              {{ form.pubyear_to|add_attributes:"fcontrol__text-field-inline" }}
+            {% if form.pubyear_to.errors %}
+              {% for error in form.pubyear_to.errors %}
+              <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+              {% endfor %}
+            {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 search__form-element-container">
+      <div class="fcontrol__select-group-stacked">
+	<label for="{{ form.object_type.id_for_label }}" class="fcontrol__select-label-stacked">{{ form.object_type.label }}</label>
+        {{ form.object_type|add_attributes:"fcontrol__select--fullwidth"}}
+      </div>
+    </div>{% comment %}No validation necessary{% endcomment %}
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="fcontrol__select-group-stacked">
+	<label for="{{ form.id_type.id_for_label }}" class="fcontrol__select-label-stacked">{{ form.id_type.label }}</label>
+        {{ form.id_type|add_attributes:"fcontrol__select--fullwidth"}}
+      </div>
+    </div>{% comment %}No validation necessary{% endcomment %}
+    <div class="col-md-6">
+      <button class="search__simple-button2" type="submit">{% trans "Search" %}</button>
+    </div>
+  </div>
+</details>
+</form>
+
+<script type="text/javascript">
+  $("#search__simple-label").focus();
+</script>
+{% endblock %}

@@ -1,40 +1,27 @@
 {% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load i18n %}
 
-{% block title %}EZID : Request password reset{% endblock %}
-
+{% block title %}{% trans "Request password reset" %}{% endblock %}
+{% block heading %}{% content_heading _("Request password reset") %}{% endblock %}
 {% block content %}
-
-<div id="pwreset" class="grid_9">
-
-<h1 id="title">Request password reset</h1>
-
-<form method="post" action="{% url "ui_account.pwreset" %}">
-	<label for="username" class="left">
-		Username
-	</label>
-	<div class="field_right">
-		<input type="text" id="username" name="username" size="20" value="{{ username }}"/>
-	</div>
-
-	<label for="email" class="left">
-		Email address
-	</label>
-	<div class="field_right">
-		<input type="text" id="email" name="email" size="20" value="{{ email }}"/>
-	</div>
-
-	<label class="left">&nbsp;</label>
-	<div class="field_right">
-		<input type="submit" value="Send email"/>
-	</div>
+<p><br/></p>
+<form method="post" action="{% url "ui_account.pwreset" %}" class="general__form" role="form">
+  {{ form.non_field_errors }}
+  {% for field in form %}
+  {% include "includes/_inlinetext.html" with field=field form_name="general__" %}
+  {% endfor %}
+  <button class="button__primary general__form-submit">{% trans "Send Email" %}</button>
 </form>
-<div style="clear:both;">&nbsp;</div>
 
-<p>You will be sent an email containing a link allowing your password
-to be reset.</p>
-<p>(<a href="{% url "ui.contact" %}">Contact
-us</a> if you don't remember your username.)</p>
+<p class="general__p">{% trans "You will be sent an email containing a link allowing your password to be reset." %}</p>
+<p class="general__p">(
+  {% url "ui.contact" as url_contact %}
+  {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+  i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
+  i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+  {% endcomment %}
 
-</div>
-
+  {% blocktrans trimmed %}<a href="{{ url_contact }}">Contact us</a> if you don't remember your username.{% endblocktrans %})
+  </p>
 {% endblock %}

@@ -1,0 +1,82 @@
+{% load manage_form_tags %}
+{% load i18n %}
+
+{% if primary_page == "ui_search.results" or primary_page == "ui_manage.index" and authenticatedUser %}
+  <div class="customize-table">
+    <form class="customize-table__heading-wrapper" action="{% url primary_page %}" role="form">
+      <h2 class="customize-table__heading">{{ heading_title }}</h2>
+    {% if primary_page == "ui_manage.index" and filtered %}
+      <input name="ps" type="hidden" value="{{ ps }}"/>
+      <input name="p" type="hidden" value="{{ p }}"/>
+      <input name="order_by" type="hidden" value="{{ order_by }}"/>
+      <input name="sort" type="hidden" value="{{ sort }}"/>
+      {% column_choices_hidden fields_selected %}
+      <button class="customize-table__button-all">{% trans "See All Identifiers" %}</button>
+    {% endif %}
+    </form>
+    {% if results|length > 0 %}
+    <button class="customize-table__button-customize" data-toggle="modal" data-target="#myModal" type="button">{% trans "Customize View" %}</button>
+    {% endif %}
+  </div>
+  {% include "search/_choose_cols.html" with primary_page=primary_page %}
+{% endif %}
+
+{% if primary_page == "ui_manage.index" and authenticatedUser %}
+<div class="manage__identifiers-submit-controls">
+  <div class="fcontrol__select-group-inline manage__identifiers-select">
+    <form id="owner_filter_form" action="{% url primary_page %}" role="form">
+      {% rewrite_hidden REQUEST %}
+      <label for="owner_selected" class="fcontrol__select-label-inline">{% trans "View identifiers owned by" %}:</label>
+
+      {% include "includes/owner_select.html" %}
+
+    </form>
+  </div>
+  {% if total_results > 0 %}
+  <form action="{% url "ui_manage.download" %}" method="get" role="form">
+    <input name="owner_selected" type="hidden" value="{{ owner_selected }}"/>
+    <button id="download" class="button__primary manage__download-button">{% trans "Download All" %}</button>
+  </form>
+  {% endif %}
+</div>
+<script type="text/javascript">
+  // submit form when owner filter changes
+  $("#owner_selected").bind("change", function(event){
+      var frm = $('#owner_filter_form');
+      frm.attr('action', location.pathname);
+      frm.unbind('submit');
+      frm.attr('method', 'get');
+      frm.submit();
+  });
+</script>
+{% endif %}
+
+{% if total_results < 1 %}
+  <p class="manage__note"><strong>{% trans "No identifiers found for the query you entered" %}.</strong></p>
+  <br/><br/><br/><br/><br/><br/><br/>
+{% else %}
+  
+  {% if total_results > 10 %}
+  {% include "search/_pagination.html" with primary_page=primary_page select_position="top" %}
+  {% endif %}
+
+<table class="table2">
+  {% header_row REQUEST fields_selected fields_mapped order_by sort primary_page %}
+<tbody>
+{% for item in results %}
+<tr>
+  {% data_row item fields_selected field_display_types testPrefixes %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+  {% if total_results > 10 %}
+  {% include "search/_pagination.html" with primary_page=primary_page select_position="bottom" %}
+  {% endif %}
+
+{% if primary_page == "ui_manage.index" %}
+<p class="manage__note">&#42; {% trans "Indicates demo identifier" %}</p>
+{% endif %}
+{% endif %}
+

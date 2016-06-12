@@ -1,171 +1,184 @@
 {% extends "layouts/base.html" %}
 {% load metadata_tags %}
 {% load layout_extras %}
+{% load i18n %}
 
-{% block title %}Identifier Details{% endblock %}
-
-{% block javascript %}
-
-{% endblock %}
-
+{% block title %}{% trans "Identifier Details" %}{% endblock %}
+{% block heading %}{% content_heading _("Identifier Details") %}{% endblock %}
 {% block content %}
-  <div class="grid_9">
-  	<table style="margin-bottom:0px;">
-  		<tr><td colspan="2"><h1>Identifier Details</h1></td></tr>
-	    
-	    <tr>
-		    <td class="label_col">Identifier:</td>
-		    <td>
-		      <div style="float:left;padding-right:20px;">
-		        {% identifier_display id_text testPrefixes %}
-		      </div>
-		      {% include "includes/get_link.html" %}  
-		    </td>
-	    </tr>
-	    
-	    {% if recent_creation %}
-	    	<tr>
-			    <td class="label_col">&nbsp;</td>
-			    <td style="color:red">
-			      (takes up to 30 minutes for link to work)
-			    </td>
-		    </tr>
-		  {% else %}
-		    {% if recent_update %}
-			    <tr>
-				    <td class="label_col">&nbsp;</td>
-				    <td style="color:red">
-				      (takes up to 30 minutes for link to be updated)
-				    </td>
-			    </tr>
-		    {% endif %}
-	    {% endif %}
-	    
-	    <tr><td colspan=2><h2>About the identified object</h2></td></tr>
-	    
-	    <tr>
-	    	<td class='{% tooltip_class "_target" %} label_col'>{{internal_profile.target.displayName}}:</td>
-	    	<td>{% display_value identifier internal_profile.target %}</td>
-	    </tr>
-	    
-	    {% if not has_block_data %}
-		    {% for e in current_profile.elements %}
-		    	<tr>
-		      	<td class="{% tooltip_class e.name %}">{{ e.displayName }}:</td>
-		      	<td>{% display_value identifier e %}</td>
-		     	</tr>
-		    {% endfor %}
-	    {% endif %}
-	    
-	    {% if erc_block_list %}
-	    	{% for e in erc_block_list %}
-	    		<tr>
-		      	<td class="element_erc{{ e.0 }}">{{ e.0|capfirst }}:</td>
-		      	<td>{{ e.1 }}</td>
-		     	</tr>
-	    	{% endfor %}
-	    {% endif %}
-	  </table>
+<div class="container vertical-buffer-20">
+  {% if allow_update %}
+  <p class="heading_2">{% trans "Edit and add descriptive information to your identifier." %}</p>
+  {% endif %}
+  <div class="row vertical-buffer-bot">
+    <div class="inline-header">
+      <h2 class="heading__icon-4">{% trans "About the Identifier" %}</h2>
+    </div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">{% trans "Identifier" %}:</label>
+    <div class="col-sm-8"><strong>{% identifier_display id_text testPrefixes %}</strong></div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2 vertical-buffer-xxs">{% trans "Identifier as URL" %}:</label>
+    <div class="col-sm-6">
+      <div id="id_as_url__box" class="vertical-buffer-xxs">
+        <span id="url_to_copy">{% full_url_to_id_details id_text %}</span>
+        <span id="copy_message">{% trans "Link copied to your clipboard" %}</span>
+      </div>
+      <div class="iddetails__delay-text">
+        {% if recent_creation %}
+        ({% trans "Be aware that it can take up to several hours until new DOIs become resolvable." %})
+        {% elif recent_update %}
+        ({% trans "Be aware that it can take up to 24 hours until a DOI update is globally known." %})
+        {% endif %}
+      </div>
+    </div>
+    <!-- div class="col-sm-4">
+      include "includes/get_link.html"
+    </div -->
+  </div>
 
-	{% if datacite_html %}
-		<style type="text/css">
+  {% if is_test_id %}
+  <p class="paragraph">&#42; {% trans "Indicates demo identifier" %}</p>
+  {% endif %}
+
+  {% if not has_block_data and current_profile.name == 'datacite' %}
+  <div class="row vertical-buffer-20">
+    <div class="call-out">
+      <h2 class="heading__iddetails-citation">{% trans "Citation Preview" %}</h2>
+      <p class="truncated">
+        {% get_dict_value identifier "datacite.creator" %}
+        ({% get_dict_value identifier "datacite.publicationyear" %}):
+        {% get_dict_value identifier "datacite.title" %}.
+        {% get_dict_value identifier "datacite.version" %}
+        {% get_dict_value identifier "datacite.publisher" %}.
+        {% if has_resource_type %}
+          {% get_dict_value identifier "datacite.resourcetype" %}.
+        {% endif %}
+        {% active_id_display id_text testPrefixes %}
+      </p>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="vertical-buffer-20"> </div>
+  <hr/>
+  <div class="row vertical-buffer-bot">
+    <div class="inline-header">
+      <h2 class="heading__icon-9">{% trans "About the Identified Object" %}</h2>
+    </div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">{{internal_profile.target.displayName}}: </label>
+    <div class="col-sm-7">{% display_value identifier internal_profile.target %}</div>
+  </div>
+	    
+  {% if not has_block_data %}
+    {% for e in current_profile.elements %}
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">{{e.displayName}}:</label>
+    <div class="col-sm-7">{% display_value identifier e %}</div>
+  </div>
+    {% endfor %}
+  {% endif %}
+	    
+  {% if datacite_html %}
+    <style type="text/css">
 			tr.dcms_identifier { display: none;}
-		</style>
-		{% autoescape off %}
-			{{datacite_html}}
-		{% endautoescape %}
-	    <p><a href="/manage/display_xml/{{ id_text }}" target="_blank">See the DataCite XML Metadata record in a new window</a></p>
-	{% endif %}
+    </style>
+    {% autoescape off %}
+      {{datacite_html}}
+    {% endautoescape %}
+    <p><a class="link__primary" href="/manage/display_xml/{{ id_text }}" target="_blank">{% trans "See the DataCite XML Metadata record in a new window" %}</a></p>
+  {% endif %}
 	 
-	{% if has_crossref_metadata %}
-	    <p><a href="/manage/display_xml/{{ id_text }}" target="_blank" style="position:relative;top:10px;">See the CrossRef XML Metadata record in a new window</a></p>
-	{% endif %}
+  {% if has_crossref_metadata %}
+    <p><a class="link__primary" href="/manage/display_xml/{{ id_text }}" target="_blank" style="position:relative;top:10px;">{% trans "See the Crossref XML Metadata record in a new window" %}</a></p>
+  {% endif %}
 
-	{% if allow_update %}
-  	<form action="{% url "ui_manage.edit" id_text %}" method="get">
-  		<table style="margin-top:7px;">
-  			<tr>
-	  			<td class="label_col">&nbsp;</td>
-	  			<td>
-		    		<input type="submit" value="Edit"
-		    	 	/>
-		    	</td>
-	    	</tr>
-    	</table>
-  	</form>
-	{% endif %}
+  <div class="vertical-buffer-20"> </div>
+  <hr/>
+  <div class="row vertical-buffer-bot">
+    <div class="inline-header">
+      <h2 class="heading__icon-4">{% trans "About the Identifier's Status" %}</h2>
+    </div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">{{internal_profile.owner.displayName}}:</label>
+    <div class="col-sm-7">{% display_value identifier internal_profile.owner %}</div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">{{internal_profile.ownergroup.displayName}}:</label>
+    <div class="col-sm-7">{% display_value identifier internal_profile.ownergroup %}</div>
+  </div>
+  <!-- div class="row vertical-buffer-bot">
+    <label class="col-sm-2">internal_profile.coowners.displayName:</label>
+    <div class="col-sm-7">display_value identifier internal_profile.coowners</div>
+  </div -->
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">{{internal_profile.created.displayName}}:</label>
+    <div class="col-sm-7">{% display_value identifier internal_profile.created %}</div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">{{internal_profile.updated.displayName}}:</label>
+    <div class="col-sm-7">{% display_value identifier internal_profile.updated %}</div>
+  </div>
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">{{internal_profile.status.displayName}}:</label>
+    <div class="col-sm-7">{{pub_status}}</div>
+  </div>
 	    
-	  <table>
-	    <tr><td colspan="2"><h2>About the identifier</h2></td></tr>
-	    
-	    <tr>
-	    	<td class="{% tooltip_class '_owner' %}">{{internal_profile.owner.displayName}}:</td>
-	    	<td>{% display_value identifier internal_profile.owner %}</td>
-	    </tr>
-	    
-	    
-	    <tr>
-		    <td class="{% tooltip_class '_ownergroup' %}">{{internal_profile.ownergroup.displayName}}:</td>
-		    <td>{% display_value identifier internal_profile.ownergroup %}</td>
-		  </tr>
-		  
-	    <tr>
-	    	<td class="{% tooltip_class '_coowners' %}">{{internal_profile.coowners.displayName}}:</td>
-	    	<td>{% display_value identifier internal_profile.coowners %}</td>
-	    </tr>
-	    
-	    
-	    <tr>
-	    	<td class="{% tooltip_class '_created' %}">{{internal_profile.created.displayName}}:</td>
-	    	<td>{% display_value identifier internal_profile.created %}</td>
-	    </tr>
-	    
-	    <tr>
-	    	<td class="{% tooltip_class '_updated' %}">{{internal_profile.updated.displayName}}:</td>
-	    	<td>{% display_value identifier internal_profile.updated %}</td>
-	    </tr>
-	    
-	    <tr>
-	    	<td class="{% tooltip_class '_status' %}">{{internal_profile.status.displayName}}:</td>
-	    	<td>
-	    		{{pub_status}}{% help_icon "public_id_help" %}
-	    	</td>
-			</tr>
+  {% if stat_reason %}
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">&nbsp;</label>
+    <div class="col-sm-7">{{ stat_reason }}</div>
+  </div>
+  {% endif %}
 			
-			{% if stat_reason %}
-				<tr>
-		    	<td>&nbsp;</td>
-		    	<td>
-		    		{{ stat_reason }}
-		    	</td>
-				</tr>
-			{% endif %}
-			
-			{% if pub_status == 'public' %}
-				<tr>
-		    	<td class="{% tooltip_class '_export' %}">{{ internal_profile.export.displayName }}</td>
-		    	<td>
-		    		{% display_value identifier internal_profile.export %}{% help_icon "export_help" %}
-		    	</td>
-				</tr>
-			{% endif %}
+  {% if pub_status == 'public' %}
+  <div class="row vertical-buffer-bot">
+    <label class="col-sm-2">{{internal_profile.export.displayName}}</label>
+    <div class="col-sm-7">{% display_value identifier internal_profile.export %}</div>
+  </div>
+  {% endif %}
+
+  {% if allow_update %}
+  <div class="vertical-buffer-20"></div>
+  <form action="{% url "ui_manage.edit" id_text %}" method="get">
+    <div class="row">
+      <div class="form-group form-group-sm">
+        <div class="col-sm-12">
+          <button type="submit" class="button__primary">
+            {% trans "Make Changes" %}</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  {% endif %}
 				  
-  	</table>
-  </div>
-  <div class="grid_3">
-	{% if not has_block_data and current_profile.name == 'datacite' %}
-			<h2 style="margin-top: 2em;">Citation Preview</h2>
-		  {% get_dict_value identifier "datacite.creator" %}
-		  ({% get_dict_value identifier "datacite.publicationyear" %}):
-		  {% get_dict_value identifier "datacite.title" %}.
-		  {% get_dict_value identifier "datacite.version" %}
-		  {% get_dict_value identifier "datacite.publisher" %}.
-		  {% if has_resource_type %}
-		  	{% get_dict_value identifier "datacite.resourcetype" %}.
-		  {% endif %}
-		  {% active_id_display id_text testPrefixes %}
-	{% endif %}
-  </div>
+</div>
   {% include "info/popup_help.html" %}
   <script type="text/javascript" src="/static/javascripts/help_box.js"></script>
+  <script type="text/javascript" src="/static/javascripts/trunk8.min.js"></script>
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+    // Citation Preview Truncation
+    $('.truncated').trunk8({
+      lines: 3,
+      fill: '&hellip; <a id="read-more" href="#">Read more &dArr;</a>'
+    });
+
+    $(document).on('click', '#read-more', function(event) {
+      $(this).parent().trunk8('revert').append('&nbsp;&nbsp;&nbsp;<a id="read-less" href="#">&uArr; Read less</a>');
+      return false;
+    }).
+    on('click', '#read-less', function(event) {
+      $(this).parent().trunk8();
+      return false;
+    });
+  });
+</script>
 {% endblock %}

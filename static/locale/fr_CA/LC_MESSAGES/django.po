@@ -1,0 +1,2876 @@
+# EZID Translation File
+# EZID is a service of the California Digital Library, a division of the University of California Office of the President
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-05-17 18:10-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: code/form_objects.py:34
+msgid "Recommended: Leave blank"
+msgstr ""
+
+#: code/form_objects.py:36
+msgid "Select a type of object"
+msgstr ""
+
+#: code/form_objects.py:36
+msgid "Audiovisual"
+msgstr ""
+
+#: code/form_objects.py:37
+msgid "Collection"
+msgstr ""
+
+#: code/form_objects.py:37
+msgid "Dataset"
+msgstr ""
+
+#: code/form_objects.py:38
+msgid "Event"
+msgstr ""
+
+#: code/form_objects.py:38
+msgid "Image"
+msgstr ""
+
+#: code/form_objects.py:39
+msgid "Interactive Resource"
+msgstr ""
+
+#: code/form_objects.py:39
+msgid "Model"
+msgstr ""
+
+#: code/form_objects.py:40
+msgid "Physical Object"
+msgstr ""
+
+#: code/form_objects.py:40
+msgid "Service"
+msgstr ""
+
+#: code/form_objects.py:41
+msgid "Software"
+msgstr ""
+
+#: code/form_objects.py:41
+msgid "Sound"
+msgstr ""
+
+#: code/form_objects.py:41
+msgid "Text"
+msgstr ""
+
+#: code/form_objects.py:42
+msgid "Workflow"
+msgstr ""
+
+#: code/form_objects.py:42 code/form_objects.py:313 code/form_objects.py:363
+#: code/form_objects.py:839 code/form_objects.py:848
+msgid "Other"
+msgstr ""
+
+#: code/form_objects.py:46
+msgid "Four digits required"
+msgstr ""
+
+#: code/form_objects.py:47
+msgid "Please use format YYYY-MM-DD."
+msgstr ""
+
+#: code/form_objects.py:48
+msgid "Please fill in a value for creator."
+msgstr ""
+
+#: code/form_objects.py:49
+msgid "Please fill in a value for title."
+msgstr ""
+
+#: code/form_objects.py:50
+msgid "Please fill in a value for publisher."
+msgstr ""
+
+#. Translators: "Ex. " is abbreviation for "example". Please include one space at end.
+#: code/form_objects.py:64
+msgid "Ex. "
+msgstr ""
+
+#: code/form_objects.py:81 code/form_objects.py:84 code/form_objects.py:227
+msgid "Location (URL)"
+msgstr ""
+
+#: code/form_objects.py:92
+msgid "Who"
+msgstr ""
+
+#: code/form_objects.py:93
+msgid "What"
+msgstr ""
+
+#: code/form_objects.py:94
+msgid "When"
+msgstr ""
+
+#: code/form_objects.py:96
+msgid "Who?"
+msgstr ""
+
+#: code/form_objects.py:97
+msgid "What?"
+msgstr ""
+
+#: code/form_objects.py:98
+msgid "When?"
+msgstr ""
+
+#: code/form_objects.py:107 code/form_objects.py:123
+#: templates/create/_datacite_creator.html:15
+msgid "Creator"
+msgstr ""
+
+#: code/form_objects.py:109 code/form_objects.py:125 code/form_objects.py:289
+#: templates/create/_datacite_title.html:15
+msgid "Title"
+msgstr ""
+
+#: code/form_objects.py:111 code/form_objects.py:127 code/form_objects.py:229
+msgid "Publisher"
+msgstr ""
+
+#: code/form_objects.py:113 code/form_objects.py:390
+#: templates/create/_datacite_date.html:16
+msgid "Date"
+msgstr ""
+
+#: code/form_objects.py:115 code/form_objects.py:297 code/form_objects.py:315
+#: code/form_objects.py:403
+msgid "Type"
+msgstr ""
+
+#: code/form_objects.py:129
+msgid "Publication year"
+msgstr ""
+
+#: code/form_objects.py:130 code/form_objects.py:233
+msgid "Please fill in a four digit value for publication year."
+msgstr ""
+
+#: code/form_objects.py:132
+msgid "Resource type"
+msgstr ""
+
+#: code/form_objects.py:134
+msgid "Creator (required)"
+msgstr ""
+
+#: code/form_objects.py:135
+msgid "Title (required)"
+msgstr ""
+
+#: code/form_objects.py:136
+msgid "Publisher (required)"
+msgstr ""
+
+#: code/form_objects.py:138
+msgid "Publication year (required)"
+msgstr ""
+
+#: code/form_objects.py:166
+msgid "Custom Remainder"
+msgstr ""
+
+#: code/form_objects.py:198
+msgid "Please enter a valid location (URL)"
+msgstr ""
+
+#: code/form_objects.py:206
+msgid "This combination of characters cannot be used as a remainder."
+msgstr ""
+
+#: code/form_objects.py:212
+msgid "An Identifier Scheme must be filled in if you specify an Identifier."
+msgstr ""
+
+#: code/form_objects.py:214
+msgid "An Identifier must be filled in if you specify an Identifier Scheme."
+msgstr ""
+
+#: code/form_objects.py:217
+msgid "An Identifier must be filled in if you specify a Scheme URI."
+msgstr ""
+
+#: code/form_objects.py:219
+msgid "An Identifier Scheme must be filled in."
+msgstr ""
+
+#: code/form_objects.py:231
+msgid "Publication Year"
+msgstr ""
+
+#: code/form_objects.py:235
+msgid "Language"
+msgstr ""
+
+#: code/form_objects.py:236 templates/create/_datacite_version.html:5
+msgid "Version"
+msgstr ""
+
+#: code/form_objects.py:247
+msgid "Resource Type General"
+msgstr ""
+
+#: code/form_objects.py:248
+msgid "Resource Type"
+msgstr ""
+
+#: code/form_objects.py:254
+msgid "Resource Type General is required if you fill in Resource Type."
+msgstr ""
+
+#: code/form_objects.py:270 code/form_objects.py:336
+msgid "Name"
+msgstr ""
+
+#: code/form_objects.py:271
+msgid "Please fill in a value for creator name."
+msgstr ""
+
+#: code/form_objects.py:272 code/form_objects.py:337
+msgid "Name Identifier"
+msgstr ""
+
+#: code/form_objects.py:273 code/form_objects.py:338
+msgid "Identifier Scheme"
+msgstr ""
+
+#: code/form_objects.py:274 code/form_objects.py:326 code/form_objects.py:339
+#: code/form_objects.py:476
+msgid "Scheme URI"
+msgstr ""
+
+#: code/form_objects.py:275 code/form_objects.py:367
+msgid "Affiliation"
+msgstr ""
+
+#: code/form_objects.py:292
+msgid "Main title"
+msgstr ""
+
+#: code/form_objects.py:293
+msgid "Alternative title"
+msgstr ""
+
+#: code/form_objects.py:294
+msgid "Subtitle"
+msgstr ""
+
+#: code/form_objects.py:295
+msgid "Translated title"
+msgstr ""
+
+#: code/form_objects.py:306 templates/tombstone.html:68
+msgid "Descriptive information"
+msgstr ""
+
+#: code/form_objects.py:308
+msgid "Select a type of description"
+msgstr ""
+
+#: code/form_objects.py:309
+msgid "Abstract"
+msgstr ""
+
+#: code/form_objects.py:310
+msgid "Series Information"
+msgstr ""
+
+#: code/form_objects.py:311
+msgid "Table of Contents"
+msgstr ""
+
+#: code/form_objects.py:312
+msgid "Methods"
+msgstr ""
+
+#: code/form_objects.py:324 templates/create/_datacite_subject.html:15
+msgid "Subject"
+msgstr ""
+
+#: code/form_objects.py:325
+msgid "Subject Scheme"
+msgstr ""
+
+#: code/form_objects.py:341
+msgid "Select a type of contributor"
+msgstr ""
+
+#: code/form_objects.py:342
+msgid "Contact Person"
+msgstr ""
+
+#: code/form_objects.py:343
+msgid "Data Collector"
+msgstr ""
+
+#: code/form_objects.py:344
+msgid "Data Curator"
+msgstr ""
+
+#: code/form_objects.py:345
+msgid "Data Manager"
+msgstr ""
+
+#: code/form_objects.py:346
+msgid "Distributor"
+msgstr ""
+
+#: code/form_objects.py:347
+msgid "Editor"
+msgstr ""
+
+#: code/form_objects.py:348
+msgid "Funder"
+msgstr ""
+
+#: code/form_objects.py:349
+msgid "Hosting Institution"
+msgstr ""
+
+#: code/form_objects.py:350
+msgid "Producer"
+msgstr ""
+
+#: code/form_objects.py:351
+msgid "Project Leader"
+msgstr ""
+
+#: code/form_objects.py:352
+msgid "Project Manager"
+msgstr ""
+
+#: code/form_objects.py:353
+msgid "Project Member"
+msgstr ""
+
+#: code/form_objects.py:354
+msgid "Registration Agency"
+msgstr ""
+
+#: code/form_objects.py:355
+msgid "Registration Authority"
+msgstr ""
+
+#: code/form_objects.py:356
+msgid "Related Person"
+msgstr ""
+
+#: code/form_objects.py:357
+msgid "Researcher"
+msgstr ""
+
+#: code/form_objects.py:358
+msgid "Research Group"
+msgstr ""
+
+#: code/form_objects.py:359
+msgid "Rights Holder"
+msgstr ""
+
+#: code/form_objects.py:360
+msgid "Sponsor"
+msgstr ""
+
+#: code/form_objects.py:361
+msgid "Supervisor"
+msgstr ""
+
+#: code/form_objects.py:362
+msgid "Work Package Leader"
+msgstr ""
+
+#: code/form_objects.py:366
+msgid "Contributor Type"
+msgstr ""
+
+#: code/form_objects.py:380
+msgid "Name is required if you fill in contributor information."
+msgstr ""
+
+#: code/form_objects.py:382
+msgid "Type is required if you fill in contributor information."
+msgstr ""
+
+#: code/form_objects.py:392
+msgid "Select a type of date"
+msgstr ""
+
+#: code/form_objects.py:393
+msgid "Accepted"
+msgstr ""
+
+#: code/form_objects.py:394
+msgid "Available"
+msgstr ""
+
+#: code/form_objects.py:395
+msgid "Collected"
+msgstr ""
+
+#: code/form_objects.py:396
+msgid "Copyrighted"
+msgstr ""
+
+#: code/form_objects.py:397
+msgid "Created"
+msgstr ""
+
+#: code/form_objects.py:398
+msgid "Issued"
+msgstr ""
+
+#: code/form_objects.py:399
+msgid "Submitted"
+msgstr ""
+
+#: code/form_objects.py:400
+msgid "Updated"
+msgstr ""
+
+#: code/form_objects.py:401
+msgid "Valid"
+msgstr ""
+
+#: code/form_objects.py:407 code/form_objects.py:423 code/ui_search.py:36
+#: templates/dashboard/_crossref.html:18 templates/dashboard/_issues.html:18
+#: templates/manage/details.html:19 templates/manage/edit.html:19
+msgid "Identifier"
+msgstr ""
+
+#: code/form_objects.py:408 code/form_objects.py:445
+msgid "Identifier Type"
+msgstr ""
+
+#: code/form_objects.py:414
+msgid "Identifier is required if you fill in identifier type information."
+msgstr ""
+
+#: code/form_objects.py:416
+msgid "Identifier Type is required if you fill in identifier information."
+msgstr ""
+
+#: code/form_objects.py:425
+msgid "Select the type of related identifier"
+msgstr ""
+
+#: code/form_objects.py:447
+msgid ""
+"Select relationship of A:resource being registered and B:related resource"
+msgstr ""
+
+#: code/form_objects.py:448
+msgid "Cites"
+msgstr ""
+
+#: code/form_objects.py:449
+msgid "Compiles"
+msgstr ""
+
+#: code/form_objects.py:450
+msgid "Continues"
+msgstr ""
+
+#: code/form_objects.py:451
+msgid "Documents"
+msgstr ""
+
+#: code/form_objects.py:452
+msgid "Has Metadata"
+msgstr ""
+
+#: code/form_objects.py:453
+msgid "Has Part"
+msgstr ""
+
+#: code/form_objects.py:454
+msgid "Is Cited By"
+msgstr ""
+
+#: code/form_objects.py:455
+msgid "Is Compiled By"
+msgstr ""
+
+#: code/form_objects.py:456
+msgid "Is Continued By"
+msgstr ""
+
+#: code/form_objects.py:457
+msgid "Is Documented By"
+msgstr ""
+
+#: code/form_objects.py:458
+msgid "Is Derived From"
+msgstr ""
+
+#: code/form_objects.py:459
+msgid "Is Identical To"
+msgstr ""
+
+#: code/form_objects.py:460
+msgid "Is Metadata For"
+msgstr ""
+
+#: code/form_objects.py:461
+msgid "Is Part Of"
+msgstr ""
+
+#: code/form_objects.py:462
+msgid "Is New Version Of"
+msgstr ""
+
+#: code/form_objects.py:463
+msgid "Is Original Form Of"
+msgstr ""
+
+#: code/form_objects.py:464
+msgid "Is Previous Version Of"
+msgstr ""
+
+#: code/form_objects.py:465
+msgid "Is Referenced By"
+msgstr ""
+
+#: code/form_objects.py:466
+msgid "Is Reviewed By"
+msgstr ""
+
+#: code/form_objects.py:467
+msgid "Is Source Of"
+msgstr ""
+
+#: code/form_objects.py:468
+msgid "Is Supplemented By"
+msgstr ""
+
+#: code/form_objects.py:469
+msgid "Is Supplement To"
+msgstr ""
+
+#: code/form_objects.py:470
+msgid "Is Variant Form Of"
+msgstr ""
+
+#: code/form_objects.py:471
+msgid "References"
+msgstr ""
+
+#: code/form_objects.py:472
+msgid "Reviews"
+msgstr ""
+
+#: code/form_objects.py:474
+msgid "Relation Type"
+msgstr ""
+
+#: code/form_objects.py:475
+msgid "Related Metadata Scheme"
+msgstr ""
+
+#: code/form_objects.py:477
+msgid "Scheme Type"
+msgstr ""
+
+#: code/form_objects.py:490
+msgid "Related Identifier Type is required if this property is used."
+msgstr ""
+
+#: code/form_objects.py:492
+msgid "Relation Type is required if this property is used."
+msgstr ""
+
+#: code/form_objects.py:498 templates/create/_datacite_size.html:16
+msgid "Size"
+msgstr ""
+
+#: code/form_objects.py:507 templates/create/_datacite_format.html:16
+msgid "Format"
+msgstr ""
+
+#: code/form_objects.py:511 templates/create/_datacite_rights.html:16
+msgid "Rights"
+msgstr ""
+
+#: code/form_objects.py:512
+msgid "Rights URI"
+msgstr ""
+
+#. Translators: A coordinate point
+#: code/form_objects.py:517
+msgid "Point"
+msgstr ""
+
+#: code/form_objects.py:519
+msgid ""
+"A Geolocation Point must be made up of two decimal numbers separated by a "
+"space."
+msgstr ""
+
+#. Translators: A bounding box (with coordinates)
+#: code/form_objects.py:521
+msgid "Box"
+msgstr ""
+
+#: code/form_objects.py:523
+msgid ""
+"A Geolocation Box must be made up of four decimal numbers separated by a "
+"space."
+msgstr ""
+
+#: code/form_objects.py:524
+msgid "Place"
+msgstr ""
+
+#: code/form_objects.py:667
+msgid "Cannot assign this username as proxy: \""
+msgstr ""
+
+#: code/form_objects.py:673
+msgid "Your current password is incorrect."
+msgstr ""
+
+#: code/form_objects.py:684
+msgid "New Password"
+msgstr ""
+
+#: code/form_objects.py:686
+msgid "Confirm New Password"
+msgstr ""
+
+#: code/form_objects.py:693
+msgid "Password and confirmation do not match"
+msgstr ""
+
+#: code/form_objects.py:701
+msgid "Primary Contact Name"
+msgstr ""
+
+#: code/form_objects.py:702
+msgid "Please fill in the full name for the primary contact."
+msgstr ""
+
+#: code/form_objects.py:703
+msgid "Primary Contact Email"
+msgstr ""
+
+#: code/form_objects.py:704 code/form_objects.py:857
+msgid "Please fill in your email."
+msgstr ""
+
+#: code/form_objects.py:705 code/form_objects.py:713 code/form_objects.py:858
+#: code/form_objects.py:876
+msgid "Please fill in a valid email address."
+msgstr ""
+
+#: code/form_objects.py:706 code/form_objects.py:715
+msgid "Primary Contact Phone"
+msgstr ""
+
+#: code/form_objects.py:707
+msgid "Please fill in the phone number for the primary contact."
+msgstr ""
+
+#: code/form_objects.py:710
+msgid "Secondary Contact Name"
+msgstr ""
+
+#: code/form_objects.py:712
+msgid "Secondary Contact Email"
+msgstr ""
+
+#: code/form_objects.py:717
+msgid "Account Display Name"
+msgstr ""
+
+#: code/form_objects.py:718
+msgid "Please fill in the name as it should be displayed for the account."
+msgstr ""
+
+#: code/form_objects.py:719 code/ui_account.py:198
+msgid "Account Email"
+msgstr ""
+
+#: code/form_objects.py:720
+msgid "Please fill in the email for the account."
+msgstr ""
+
+#: code/form_objects.py:721
+msgid "Proxy User(s)"
+msgstr ""
+
+#: code/form_objects.py:724
+msgid "Current Password"
+msgstr ""
+
+#: code/form_objects.py:738
+msgid "Search Terms"
+msgstr ""
+
+#: code/form_objects.py:739
+msgid "Full text search using words about or describing the identifier."
+msgstr ""
+
+#: code/form_objects.py:742
+msgid "Identifier/Identifier Prefix"
+msgstr ""
+
+#: code/form_objects.py:744
+msgid "Object Title (What)"
+msgstr ""
+
+#: code/form_objects.py:747
+msgid "Object Creator (Who)"
+msgstr ""
+
+#: code/form_objects.py:748
+msgid "Pitt Quantum Repository"
+msgstr ""
+
+#: code/form_objects.py:749 code/ui_search.py:39
+msgid "Object Publisher"
+msgstr ""
+
+#: code/form_objects.py:750
+msgid "University of Pittsburgh"
+msgstr ""
+
+#: code/form_objects.py:751 code/form_objects.py:792 code/form_objects.py:800
+msgid "From"
+msgstr ""
+
+#: code/form_objects.py:755 code/form_objects.py:796 code/form_objects.py:804
+msgid "To"
+msgstr ""
+
+#: code/form_objects.py:760 code/ui_search.py:37
+msgid "Object Type"
+msgstr ""
+
+#: code/form_objects.py:762
+msgid "Select a type of identifier (ARK or DOI)"
+msgstr ""
+
+#: code/form_objects.py:767 templates/dashboard/_totalIds.html:7
+msgid "ID Type"
+msgstr ""
+
+#: code/form_objects.py:785
+msgid "Please enter information in at least one field."
+msgstr ""
+
+#: code/form_objects.py:790
+msgid "Target URL"
+msgstr ""
+
+#: code/form_objects.py:809
+msgid "Select a status"
+msgstr ""
+
+#: code/form_objects.py:810 templates/includes/advanced_publish_id.html:13
+msgid "Public"
+msgstr ""
+
+#: code/form_objects.py:811 templates/includes/advanced_publish_id.html:20
+msgid "Reserved"
+msgstr ""
+
+#: code/form_objects.py:812
+msgid "Unavailable"
+msgstr ""
+
+#: code/form_objects.py:815 code/ui_search.py:35
+msgid "ID Status"
+msgstr ""
+
+#: code/form_objects.py:819
+msgid "Allows Harvesting/Indexing?"
+msgstr ""
+
+#: code/form_objects.py:821 code/form_objects.py:826
+#: templates/includes/advanced_publish_id.html:31
+#: templates/manage/edit.html:154
+msgid "Yes"
+msgstr ""
+
+#: code/form_objects.py:821 code/form_objects.py:826
+#: templates/includes/advanced_publish_id.html:38
+#: templates/manage/edit.html:161
+msgid "No"
+msgstr ""
+
+#: code/form_objects.py:824
+msgid "Has Metadata?"
+msgstr ""
+
+#: code/form_objects.py:836 code/form_objects.py:843
+msgid "Choose One"
+msgstr ""
+
+#: code/form_objects.py:837
+msgid "I would like to inquire about getting a new account"
+msgstr ""
+
+#: code/form_objects.py:838
+msgid "I have a problem or question about existing account"
+msgstr ""
+
+#: code/form_objects.py:844
+msgid "Website"
+msgstr ""
+
+#: code/form_objects.py:845
+msgid "Conference"
+msgstr ""
+
+#: code/form_objects.py:846
+msgid "Colleagues"
+msgstr ""
+
+#: code/form_objects.py:847
+msgid "Webinar"
+msgstr ""
+
+#: code/form_objects.py:853
+msgid "Reason for contacting EZID"
+msgstr ""
+
+#: code/form_objects.py:854
+msgid "Your Name"
+msgstr ""
+
+#: code/form_objects.py:855
+msgid "Please fill in your name"
+msgstr ""
+
+#: code/form_objects.py:856
+msgid "Your Email"
+msgstr ""
+
+#: code/form_objects.py:859
+msgid "Your Institution"
+msgstr ""
+
+#: code/form_objects.py:861
+msgid "Please indicate any question or comment you may have"
+msgstr ""
+
+#: code/form_objects.py:863
+msgid "Please fill in a question or comment."
+msgstr ""
+
+#: code/form_objects.py:865
+msgid "How did you hear about us?"
+msgstr ""
+
+#: code/form_objects.py:867
+msgid "Subscribe to the EZID newsletter"
+msgstr ""
+
+#: code/form_objects.py:872 code/ui_account.py:196
+#: templates/account/edit.html:16 templates/account/login.html:12
+#: templates/account/pwreset2.html:12
+msgid "Username"
+msgstr ""
+
+#: code/form_objects.py:873
+msgid "Please fill in your username."
+msgstr ""
+
+#: code/form_objects.py:874
+msgid "Email address"
+msgstr ""
+
+#: code/form_objects.py:875
+msgid "Please fill in your email address."
+msgstr ""
+
+#: code/ui.py:60
+msgid "Thank you for your message. We will respond as soon as possible."
+msgstr ""
+
+#: code/ui.py:63
+msgid "There was a problem sending your email"
+msgstr ""
+
+#: code/ui.py:65
+msgid ""
+"Form could not be sent.  Please check the highlighted field(s) below for "
+"details."
+msgstr ""
+
+#: code/ui.py:100
+msgid "The URL for this identifier cannot be resolved"
+msgstr ""
+
+#. Translators: Output for tombstone page (unavailable IDs)
+#: code/ui.py:123
+msgid "Reason:"
+msgstr ""
+
+#: code/ui_account.py:26
+msgid "None chosen"
+msgstr ""
+
+#: code/ui_account.py:58
+msgid "Login successful."
+msgstr ""
+
+#: code/ui_account.py:64
+msgid "Login failed."
+msgstr ""
+
+#: code/ui_account.py:76
+msgid "You have been logged out."
+msgstr ""
+
+#: code/ui_account.py:125
+msgid "Change(s) could not be made.   "
+msgstr ""
+
+#: code/ui_account.py:127
+msgid ""
+"Change(s) could not be made.  Please check the highlighted field(s) below "
+"for details."
+msgstr ""
+
+#: code/ui_account.py:179
+msgid "Your information has been updated."
+msgstr ""
+
+#: code/ui_account.py:181
+msgid "Your password has been updated."
+msgstr ""
+
+#: code/ui_account.py:192 code/ui_account.py:214
+msgid "Dear"
+msgstr ""
+
+#: code/ui_account.py:193
+msgid ""
+"You have been added as a proxy user to the identifiers owned by the "
+"following "
+msgstr ""
+
+#: code/ui_account.py:194
+msgid "primary user"
+msgstr ""
+
+#: code/ui_account.py:195
+msgid "User"
+msgstr ""
+
+#: code/ui_account.py:197
+msgid "Account"
+msgstr ""
+
+#: code/ui_account.py:199
+msgid ""
+"As a proxy user, you can create and modify identifiers owned by the primary "
+"user"
+msgstr ""
+
+#: code/ui_account.py:200
+msgid ""
+"If you need more information about proxy ownership of EZID identifiers, "
+msgstr ""
+
+#: code/ui_account.py:201
+msgid "please don't hesitate to contact us"
+msgstr ""
+
+#: code/ui_account.py:203 code/ui_account.py:219
+msgid ""
+"Best,\n"
+"EZID Team\n"
+"\n"
+"\n"
+"This is an automated email. Please do not reply.\n"
+msgstr ""
+
+#: code/ui_account.py:206
+msgid "You've Been Added as an EZID Proxy User"
+msgstr ""
+
+#: code/ui_account.py:210
+msgid "These proxy users have been"
+msgstr ""
+
+#: code/ui_account.py:210
+msgid "This proxy user has been"
+msgstr ""
+
+#: code/ui_account.py:215
+msgid "Thank you for using EZID to easily create and manage your identifiers."
+msgstr ""
+
+#: code/ui_account.py:216
+msgid "successfully added to your account"
+msgstr ""
+
+#: code/ui_account.py:217
+msgid "To manage your account's proxy users, please log into EZID and go to"
+msgstr ""
+
+#: code/ui_account.py:221
+#, python-format
+msgid "New EZID Proxy User%s Added"
+msgstr ""
+
+#: code/ui_account.py:232
+msgid "Invalid password reset request."
+msgstr ""
+
+#: code/ui_account.py:236
+msgid "Password reset request has expired."
+msgstr ""
+
+#: code/ui_account.py:248
+msgid ""
+"Changes could not be made.  Please check the highlighted field(s) below for "
+"details."
+msgstr ""
+
+#: code/ui_account.py:260
+msgid "Password changed."
+msgstr ""
+
+#: code/ui_account.py:287
+msgid "Email sent."
+msgstr ""
+
+#: code/ui_account.py:298
+msgid "No such user."
+msgstr ""
+
+#: code/ui_account.py:301
+msgid "Email address does not match any address registered for username."
+msgstr ""
+
+#: code/ui_account.py:307
+msgid "You have requested to reset your EZID password"
+msgstr ""
+
+#: code/ui_account.py:308
+msgid "Click the link below to complete the process"
+msgstr ""
+
+#: code/ui_account.py:310
+msgid "Please do not reply to this email"
+msgstr ""
+
+#: code/ui_account.py:311
+msgid "EZID password reset request"
+msgstr ""
+
+#: code/ui_admin.py:20 templates/dashboard/index.html:5
+msgid "Dashboard"
+msgstr ""
+
+#: code/ui_common.py:149
+msgid "error: bad request - "
+msgstr ""
+
+#: code/ui_common.py:149
+msgid "error: "
+msgstr ""
+
+#: code/ui_common.py:172
+msgid "You must be logged in to view this page."
+msgstr ""
+
+#: code/ui_common.py:184
+msgid "You must be logged in as an administrator to view this page."
+msgstr ""
+
+#: code/ui_common.py:210
+msgid "me"
+msgstr ""
+
+#: code/ui_common.py:220
+msgid "by proxy"
+msgstr ""
+
+#: code/ui_create.py:22
+msgid "Identifier could not be "
+msgstr ""
+
+#: code/ui_create.py:23
+msgid " as submitted.  Please check the highlighted fields below for details."
+msgstr ""
+
+#: code/ui_create.py:116 code/ui_create.py:187 code/ui_create.py:210
+msgid "created"
+msgstr ""
+
+#: code/ui_create.py:213
+msgid "modified"
+msgstr ""
+
+#: code/ui_create.py:215
+msgid "Unable to edit. Identifier not supplied."
+msgstr ""
+
+#: code/ui_create.py:238 code/ui_create.py:269
+msgid "Identifier Created."
+msgstr ""
+
+#: code/ui_create.py:241
+msgid "Identifier could not be created as submitted"
+msgstr ""
+
+#: code/ui_create.py:276
+msgid "There was an error creating your identifier"
+msgstr ""
+
+#: code/ui_create.py:285
+msgid "Unauthorized to create with this identifier prefix"
+msgstr ""
+
+#: code/ui_manage.py:24
+msgid "One or more fields do not validate.  "
+msgstr ""
+
+#: code/ui_manage.py:25
+msgid "Please check the highlighted fields below for details."
+msgstr ""
+
+#: code/ui_manage.py:105
+msgid "There was an error updating the metadata for your identifier"
+msgstr ""
+
+#: code/ui_manage.py:108
+msgid "Identifier updated."
+msgstr ""
+
+#: code/ui_manage.py:140
+msgid ""
+"You are not allowed to edit this identifier.  If this ID belongs to you and "
+"you'd like to edit, please log in."
+msgstr ""
+
+#: code/ui_manage.py:330
+msgid "If you have recently requested a batch download of your identifiers, "
+msgstr ""
+
+#: code/ui_manage.py:331
+msgid ""
+"the file may not be complete. Please close this window, then try the "
+"download "
+msgstr ""
+
+#: code/ui_manage.py:332
+msgid "link again in a few minutes."
+msgstr ""
+
+#: code/ui_manage.py:333
+msgid ""
+"If you are trying to download a file of identifiers from a link that was "
+msgstr ""
+
+#: code/ui_manage.py:334
+msgid "generated over seven days ago, the download link has expired. Go to "
+msgstr ""
+
+#: code/ui_manage.py:336
+msgid "Manage IDs"
+msgstr ""
+
+#: code/ui_manage.py:337
+msgid "and click &quot;Download All&quot; to generate a new download link."
+msgstr ""
+
+#: code/ui_manage.py:338
+msgid ""
+"Please <a class='link__primary' href='/contact'>contact us</a> if you need "
+msgstr ""
+
+#: code/ui_manage.py:339
+msgid "assistance."
+msgstr ""
+
+#: code/ui_search.py:29
+msgid "ID Date Created"
+msgstr ""
+
+#: code/ui_search.py:30
+msgid "Object Creator"
+msgstr ""
+
+#: code/ui_search.py:31 templates/dashboard/_crossref.html:19
+msgid "Date Submitted"
+msgstr ""
+
+#: code/ui_search.py:32 templates/create/_datacite_description.html:15
+#: templates/dashboard/_crossref.html:20
+msgid "Description"
+msgstr ""
+
+#: code/ui_search.py:33
+msgid "Required Action"
+msgstr ""
+
+#: code/ui_search.py:34 templates/dashboard/_crossref.html:21
+#: templates/dashboard/_issues.html:19
+msgid "Issue"
+msgstr ""
+
+#: code/ui_search.py:38
+msgid "ID Owner"
+msgstr ""
+
+#: code/ui_search.py:40
+msgid "Object Publication Date"
+msgstr ""
+
+#: code/ui_search.py:41 templates/dashboard/_issues.html:20
+msgid "Object Title"
+msgstr ""
+
+#: code/ui_search.py:42 templates/dashboard/_issues.html:21
+msgid "ID Date Last Modified"
+msgstr ""
+
+#: code/ui_search.py:208
+msgid "No action necessary"
+msgstr ""
+
+#: code/ui_search.py:216
+msgid "to"
+msgstr ""
+
+#: code/ui_search.py:217 ui_tags/templatetags/manage_form_tags.py:144
+msgid "of"
+msgstr ""
+
+#: code/ui_search.py:218
+msgid "Showing"
+msgstr ""
+
+#: code/ui_search.py:218 templates/search/results.html:7
+#: templates/search/results.html.py:8
+msgid "Search Results"
+msgstr ""
+
+#: code/ui_search.py:222
+msgid "matches found"
+msgstr ""
+
+#: code/ui_search.py:224
+msgid "Your Identifiers"
+msgstr ""
+
+#: code/ui_search.py:234
+msgid "Could not complete search."
+msgstr ""
+
+#: code/ui_search.py:236
+msgid ""
+"Could not complete search.  Please check the highlighted fields below for "
+"details."
+msgstr ""
+
+#: settings/common.py:25
+msgid "English"
+msgstr ""
+
+#: settings/common.py:26
+msgid "Canadian French"
+msgstr ""
+
+#: templates/400.html:5
+msgid "Error: 400 Bad Request"
+msgstr ""
+
+#: templates/400.html:6 templates/401.html:6 templates/404.html:6
+#: templates/405.html:6
+msgid "Error"
+msgstr ""
+
+#: templates/400.html:11
+msgid "Bad Request"
+msgstr ""
+
+#: templates/401.html:5
+msgid "Error: 401 Unauthorized"
+msgstr ""
+
+#: templates/401.html:11
+msgid "Unauthorized"
+msgstr ""
+
+#: templates/404.html:5
+msgid "Error: 404 Not Found"
+msgstr ""
+
+#: templates/404.html:11
+msgid "Not Found"
+msgstr ""
+
+#: templates/405.html:5
+msgid "Error: 405 Method not allowed"
+msgstr ""
+
+#: templates/405.html:11
+msgid "Method not allowed"
+msgstr ""
+
+#: templates/account/_proxyModal.html:7 templates/account/edit.html:61
+msgid "Select Proxy User(s)"
+msgstr ""
+
+#: templates/account/_proxyModal.html:20 templates/search/_choose_cols.html:26
+msgid "Cancel"
+msgstr ""
+
+#: templates/account/_proxyModal.html:21
+msgid "Add user(s)"
+msgstr ""
+
+#: templates/account/edit.html:5 templates/account/edit.html.py:6
+msgid "My Account"
+msgstr ""
+
+#: templates/account/edit.html:9
+msgid ""
+"To edit your account information, proxy users, or account password, make "
+"changes in the fields below, then click Save."
+msgstr ""
+
+#: templates/account/edit.html:13
+msgid "Account Information"
+msgstr ""
+
+#: templates/account/edit.html:31
+msgid "Crossref Email"
+msgstr ""
+
+#: templates/account/edit.html:34
+msgid "NOTE: If you want to change this email address"
+msgstr ""
+
+#: templates/account/edit.html:35 templates/create/no_shoulders.html:24
+msgid "contact us"
+msgstr ""
+
+#: templates/account/edit.html:41
+msgid "Your Proxy Account(s)"
+msgstr ""
+
+#: templates/account/edit.html:44
+msgid ""
+"NOTE: These are identifier groups where you have been designated as proxy "
+"user."
+msgstr ""
+
+#: templates/account/edit.html:62
+msgid "on selecting proxy users"
+msgstr ""
+
+#: templates/account/edit.html:70
+msgid "Change Password"
+msgstr ""
+
+#: templates/account/edit.html:76 templates/account/pwreset2.html:19
+#: templates/contact.html:54
+msgid "Submit"
+msgstr ""
+
+#: templates/account/login.html:5 templates/account/login.html.py:6
+#: templates/account/login.html:22
+msgid "Login"
+msgstr ""
+
+#: templates/account/login.html:17
+msgid "Password"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/account/login.html:31
+#, python-format
+msgid ""
+"<p class=\"general__p\">If you do not already have an account, please <a "
+"href=\"%(url_contact)s\">contact us</a></p> <p class=\"general__p\">If you "
+"have forgotten your password, request <a href=\"%(url_pwreset)s\">a password "
+"reset</a></p>"
+msgstr ""
+
+#: templates/account/pwreset1.html:5 templates/account/pwreset1.html.py:6
+msgid "Request password reset"
+msgstr ""
+
+#: templates/account/pwreset1.html:14
+msgid "Send Email"
+msgstr ""
+
+#: templates/account/pwreset1.html:17
+msgid ""
+"You will be sent an email containing a link allowing your password to be "
+"reset."
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#.
+#: templates/account/pwreset1.html:25
+#, python-format
+msgid ""
+"<a href=\"%(url_contact)s\">Contact us</a> if you don't remember your "
+"username."
+msgstr ""
+
+#: templates/account/pwreset2.html:5 templates/account/pwreset2.html.py:6
+msgid "Reset Password"
+msgstr ""
+
+#: templates/admin/base.html:32
+msgid "Welcome,"
+msgstr ""
+
+#: templates/admin/base.html:37
+msgid "Return to EZID public site"
+msgstr ""
+
+#: templates/admin/base.html:42 templates/info/suffix_passthrough.html:12
+msgid "Documentation"
+msgstr ""
+
+#: templates/admin/base.html:45
+msgid "Log out"
+msgstr ""
+
+#: templates/admin/base.html:55 templates/admin/change_form.html:18
+#: templates/index.html:6 ui_tags/templatetags/menus.py:54
+msgid "Home"
+msgstr ""
+
+#: templates/admin/change_form.html:21 templates/admin/index.html:32
+#: templates/admin/index.html.py:55 templates/create/_datacite_buttons.html:4
+msgid "Add"
+msgstr ""
+
+#: templates/admin/change_form.html:31
+#: templates/admin/edit_inline/tabular.html:33
+msgid "View on site"
+msgstr ""
+
+#: templates/admin/change_form.html:43
+msgid "Please correct the error below."
+msgstr ""
+
+#: templates/admin/change_form.html:43
+msgid "Please correct the errors below."
+msgstr ""
+
+#: templates/admin/edit_inline/tabular.html:17
+msgid "Delete?"
+msgstr ""
+
+#: templates/admin/edit_inline/tabular.html:31 templates/admin/index.html:38
+#: templates/admin/index.html.py:61
+msgid "Change"
+msgstr ""
+
+#: templates/admin/edit_inline/tabular.html:80
+#, python-format
+msgid "Add another %(verbose_name)s"
+msgstr ""
+
+#: templates/admin/edit_inline/tabular.html:81
+#: templates/create/_datacite_buttons.html:7
+msgid "Remove"
+msgstr ""
+
+#: templates/admin/index.html:20
+#, python-format
+msgid "Models in the %(name)s application"
+msgstr ""
+
+#: templates/admin/index.html:72
+msgid "You don't have permission to edit anything."
+msgstr ""
+
+#: templates/contact.html:4 templates/contact.html.py:6
+msgid "Contact Us"
+msgstr ""
+
+#: templates/contact.html:5
+msgid ""
+"Contact EZID for more information about our services or ask a specific "
+"question."
+msgstr ""
+
+#: templates/contact.html:31
+msgid ""
+"Have a question, comment, or want to request an EZID account? Fill out this "
+"form and EZID will get in touch with you."
+msgstr ""
+
+#: templates/create/_datacite_altId.html:16
+msgid "Alternate Identifier"
+msgstr ""
+
+#: templates/create/_datacite_contributor.html:17
+msgid "Contributor"
+msgstr ""
+
+#: templates/create/_datacite_contributor.html:28
+#: templates/create/_datacite_creator.html:26
+#: templates/create/_datacite_relId.html:27
+#: templates/create/_datacite_subject.html:24
+msgid "More Fields"
+msgstr ""
+
+#: templates/create/_datacite_geoLoc.html:15
+msgid "Geolocation"
+msgstr ""
+
+#: templates/create/_datacite_relId.html:16
+msgid "Related Identifier"
+msgstr ""
+
+#: templates/create/advanced.html:4 templates/create/advanced.html.py:5
+msgid "Create an Advanced Identifier"
+msgstr ""
+
+#: templates/create/advanced.html:9 templates/create/simple.html:10
+#: templates/demo/advanced.html:11 templates/demo/simple.html:10
+#: ui_tags/templatetags/menus.py:20 ui_tags/templatetags/menus.py:29
+msgid "Simple"
+msgstr ""
+
+#: templates/create/advanced.html:14 templates/demo/advanced.html:16
+#: ui_tags/templatetags/menus.py:21 ui_tags/templatetags/menus.py:30
+msgid "Advanced"
+msgstr ""
+
+#: templates/create/advanced.html:21 templates/demo/advanced.html:23
+msgid "Quick Start Guides"
+msgstr ""
+
+#: templates/create/advanced.html:23 templates/demo/advanced.html:25
+msgid "Custom Remainder Rules"
+msgstr ""
+
+#: templates/create/advanced.html:24 templates/demo/advanced.html:26
+msgid "Advanced Create for DOIs"
+msgstr ""
+
+#: templates/create/advanced.html:25 templates/demo/advanced.html:27
+msgid "Resource Types"
+msgstr ""
+
+#: templates/create/advanced.html:26 templates/demo/advanced.html:28
+msgid "Contributor Types"
+msgstr ""
+
+#: templates/create/advanced.html:27 templates/demo/advanced.html:29
+msgid "Relation Types"
+msgstr ""
+
+#: templates/create/advanced.html:28 templates/demo/advanced.html:30
+msgid "Don't have info for required fields? Use placeholder codes."
+msgstr ""
+
+#: templates/create/no_shoulders.html:5 templates/create/no_shoulders.html:6
+msgid "Permanent Identifier Creation Unavailable"
+msgstr ""
+
+#: templates/create/no_shoulders.html:11
+msgid ""
+"You may not create any permanent identifiers because your account doesn't "
+"have any identifier types (shoulders) assigned to it."
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/create/no_shoulders.html:20
+#, python-format
+msgid ""
+"You may still create temporary identifiers with the <a href="
+"\"%(url_demosimple)s\">demo identifier</a>functionality."
+msgstr ""
+
+#: templates/create/no_shoulders.html:23
+msgid "If you have questions, you may "
+msgstr ""
+
+#: templates/create/simple.html:4 templates/create/simple.html.py:6
+msgid "Create a Simple Identifier"
+msgstr ""
+
+#: templates/create/simple.html:18 templates/demo/simple.html:17
+msgid "Quick Start Guide"
+msgstr ""
+
+#: templates/create/simple.html:20 templates/demo/simple.html:19
+msgid "Simple ID Creation"
+msgstr ""
+
+#: templates/dashboard/_crossref.html:44
+msgid "Currently no Crossref submission information available"
+msgstr ""
+
+#: templates/dashboard/_issues.html:45
+msgid "Currently no Identifier Issues found"
+msgstr ""
+
+#: templates/dashboard/_totalIds.html:3
+msgid "Total Identifiers"
+msgstr ""
+
+#: templates/dashboard/_totalIds.html:8
+msgid "Number of IDs"
+msgstr ""
+
+#: templates/dashboard/_totalIds.html:9
+msgid "Percentage of Metadata Complete"
+msgstr ""
+
+#: templates/dashboard/_totalIds.html:12
+msgid "have metadata"
+msgstr ""
+
+#: templates/dashboard/_totalIdsByMonth.html:4
+msgid "Total Identifiers Created By Month"
+msgstr ""
+
+#: templates/dashboard/_totalIdsByMonth.html:9
+msgid "Month From"
+msgstr ""
+
+#: templates/dashboard/_totalIdsByMonth.html:23
+msgid "Month To"
+msgstr ""
+
+#: templates/dashboard/_totalIdsByMonth.html:39
+msgid "Month"
+msgstr ""
+
+#: templates/dashboard/_totalIdsByMonth.html:62
+msgid "Statistics calculated on"
+msgstr ""
+
+#: templates/dashboard/index.html:13
+msgid "Administration"
+msgstr ""
+
+#: templates/dashboard/index.html:20
+msgid "View Report for"
+msgstr ""
+
+#: templates/dashboard/index.html:21
+msgid "Specific User or Group"
+msgstr ""
+
+#: templates/dashboard/index.html:25
+msgid "Go"
+msgstr ""
+
+#: templates/dashboard/index.html:40
+msgid "Identifier Issues"
+msgstr ""
+
+#: templates/dashboard/index.html:46
+msgid "Crossref&reg; Submission Status"
+msgstr ""
+
+#: templates/demo/advanced.html:5
+msgid "Create Advanced Demo ID"
+msgstr ""
+
+#: templates/demo/advanced.html:6
+msgid "Use the EZID demo to create an advanced identifier."
+msgstr ""
+
+#: templates/demo/advanced.html:7
+msgid "Create an Advanced Demo Identifier"
+msgstr ""
+
+#: templates/demo/simple.html:4
+msgid "Create Simple Demo Identifier"
+msgstr ""
+
+#: templates/demo/simple.html:5
+msgid "Use the EZID demo to create a simple identifier."
+msgstr ""
+
+#: templates/demo/simple.html:6
+msgid "Create a Simple Demo Identifier"
+msgstr ""
+
+#: templates/doc/apidoc.1.html:5 templates/doc/apidoc.1.html.py:7
+msgid "The EZID API, Version 1"
+msgstr ""
+
+#: templates/doc/apidoc.1.html:10 templates/doc/apidoc.2.html:10
+#: templates/doc/apidoc.html:10
+msgid "API Guide"
+msgstr ""
+
+#: templates/doc/apidoc.2.html:5 templates/doc/apidoc.2.html.py:7
+#: templates/doc/apidoc.html:5 templates/doc/apidoc.html.py:7
+msgid "The EZID API, Version 2"
+msgstr ""
+
+#: templates/includes/advanced_describe.html:7
+msgid "Describe the identified object using the"
+msgstr ""
+
+#: templates/includes/advanced_describe.html:8
+msgid "Profile"
+msgstr ""
+
+#: templates/includes/advanced_describe.html:18 templates/manage/edit.html:40
+msgid "profile"
+msgstr ""
+
+#: templates/includes/advanced_describe.html:19 templates/manage/edit.html:48
+msgid "on which profile to use for describing the identifier"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:5
+msgid "Decide"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:7
+msgid "Make this identifier"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:22
+#: templates/manage/edit.html:126
+msgid "on making an identifier public or reserved"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:25
+#: templates/manage/edit.html:148
+msgid "Allow harvesting/indexing?"
+msgstr ""
+
+#: templates/includes/advanced_publish_id.html:40
+#: templates/manage/edit.html:163
+msgid "on harvesting/indexing"
+msgstr ""
+
+#: templates/includes/advanced_remainder.html:5
+msgid "Optional: Enter a custom remainder (suffix)"
+msgstr ""
+
+#: templates/includes/advanced_remainder.html:6
+msgid "on creating a custom remainder for the identifier"
+msgstr ""
+
+#: templates/includes/advanced_remainder.html:19
+msgid "Identifier Preview:"
+msgstr ""
+
+#: templates/includes/create_button.html:4 templates/index.html:95
+msgid "Create"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a class="don't_translate_classes" href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#.
+#: templates/includes/create_button.html:11 templates/index.html:42
+msgid "<b>NOTE:</b> This is just a demo."
+msgstr ""
+
+#: templates/includes/create_button.html:16 templates/index.html:47
+msgid ""
+"To create a real identifier, <a class=\"link__primary\" href=\"/contact"
+"\">request an account</a>."
+msgstr ""
+
+#. Translators: Please preserve &quot; tags.
+#: templates/includes/create_button.html:24
+msgid ""
+"Clicking &quot;Create&quot; will create the identifier and make it public. "
+"To defer making it public, use the Advanced form."
+msgstr ""
+
+#: templates/includes/create_button.html:27
+msgid "Once created, an identifier cannot be renamed or deleted."
+msgstr ""
+
+#: templates/includes/footer.html:14
+msgid "Latest News from EZID"
+msgstr ""
+
+#: templates/includes/get_link.html:3
+msgid "Copy Link"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#.
+#: templates/includes/localized/nrc/footer_fineprint.html:7
+msgid ""
+"<p class=\"footer__text\">EZID is a service of the <a href=\"http://www."
+"cdlib.org/\" class=\"footer__link\">California Digital Library</a>, a "
+"division of the <a href=\"http://www.universityofcalifornia.edu/\" class="
+"\"footer__link\">University of California Office of the President</a></p>"
+msgstr ""
+
+#: templates/includes/localized/nrc/footer_fineprint.html:10
+msgid "The Regents of the University of California"
+msgstr ""
+
+#: templates/includes/localized/nrc/footer_fineprint.html:11
+#: templates/info/about_us.html:5 templates/info/about_us.html.py:7
+msgid "About Us"
+msgstr ""
+
+#: templates/includes/localized/nrc/footer_fineprint.html:12
+msgid "Privacy Policy"
+msgstr ""
+
+#: templates/includes/simple_describe.html:5 templates/index.html:73
+msgid "Describe the identified object"
+msgstr ""
+
+#: templates/includes/simple_id_type.html:5 templates/index.html:60
+msgid "Choose an identifier type"
+msgstr ""
+
+#: templates/includes/simple_id_type.html:7
+#: templates/includes/simple_id_type.html:9 templates/index.html:67
+msgid "on choosing the type of identifier"
+msgstr ""
+
+#: templates/index.html:7
+msgid ""
+"EZID service creates long-term identifiers and is a key component for "
+"keeping data and digital objects safe while fulfilling grant requirements "
+"for data management plans."
+msgstr ""
+
+#: templates/index.html:22 templates/layouts/base.html:8
+#: templates/layouts/base.html.py:15
+msgid "Identifiers made easy"
+msgstr ""
+
+#: templates/index.html:27
+msgid ""
+"Create and manage long-term globally unique IDs for data and other sources "
+"using EZID"
+msgstr ""
+
+#: templates/index.html:28
+msgid "Learn More"
+msgstr ""
+
+#: templates/index.html:36
+msgid "See how easy it is"
+msgstr ""
+
+#: templates/info/about_us.html:6
+msgid "Learn about EZID's history and the team members who make EZID possible."
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/info/about_us.html:18
+msgid ""
+"<h2 class=\"heading_2\">About EZID</h2> <p> EZID is a service conceived, "
+"built, and maintained by the <a href=\"http://www.cdlib.org/\" class=\"ext-"
+"link\">California Digital Library</a> (CDL). CDL was founded by the "
+"University of California in 1997 to take advantage of emerging technologies "
+"that were transforming the way digital information was being published and "
+"accessed. CDL's diverse and talented staff has assembled one of the world's "
+"largest digital research libraries and has changed the ways that faculty, "
+"students, and researchers discover and access information. </p> <p> CDL has "
+"relationships with a wide range of researchers across the University, "
+"including natural history museums, research groups, individual scientists "
+"and faculty members on all 10 UC campuses. CDL staff members bring a unique "
+"blend of experience to this multi-disciplinary venture.  CDL staff members "
+"have formal training in science, mathematics, the humanities, and "
+"information science, as well as deep professional experience in the creation "
+"of software, services, and funded proposals. </p> <p> CDL has\textensive "
+"contacts with scientists, within the University of California and beyond via "
+"projects funded by the Library of Congress, National Science Foundation, "
+"National Institutes of Health (pending) and the Gordon and Betty Moore "
+"Foundation.  More information about CDL's <a href=\"http://www.cdlib.org/"
+"about/grants.html\" class=\"ext-link\">grants and partnerships</a> is "
+"available. Finally, CDL is a founding member of the international <a href="
+"\"http://www.datacite.org/\" class=\"ext-link\">DataCite</a> consortium, "
+"which is dedicated to providing the social and technical infrastructure that "
+"will enable data sharing and publication. </p>"
+msgstr ""
+
+#: templates/info/crossref_faq.html:6
+msgid "Crossref FAQ"
+msgstr ""
+
+#: templates/info/crossref_faq.html:7
+msgid "Crossref: Frequently Asked Questions"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/info/crossref_faq.html:18
+msgid ""
+"<p><strong>If CDL is a &quot;Sponsoring Member&quot; of Crossref, does that "
+"mean you aren't a member of DataCite anymore?</strong></p> <p>CDL is a "
+"member of both organizations. CDL is a founding member of <a href=\"http://"
+"www.datacite.org/\" class=\"ext-link\">DataCite</a> and one of the most "
+"active, with representation on the DataCite Board and the Metadata Working "
+"Group.</p> <p><strong>What is the EZID-to-Crossref service exactly?</"
+"strong></p> <p>For participating clients (see below), EZID registers DOIs "
+"for open access scholarly journal articles and other open access content, "
+"and then sends metadata about these items (provided by the clients) to "
+"Crossref. EZID manages the linkage to Crossref. Clients can submit records "
+"for this service using <a href=\"/doc/apidoc.html#crossref-registration\" "
+"class=\"link__primary\">EZID's API (application programming interface)</a>. "
+"Clients can monitor the progress of submissions via messages from Crossref "
+"(sent by EZID).</p> <p><strong>What are the benefits to this service?</"
+"strong></p> <p>Crossref says their value proposition for journal publishers "
+"is this: &quot;By joining this collaborative network, you will add reader "
+"utility to your digital content through outbound links to cited material, "
+"while augmenting access to your material through incoming links from other "
+"publishers.&quot;</p> <p>To be specific, for most open access journal "
+"publishers, the number one benefit is the inclusion of their journal's "
+"metadata in the <a href=\"http://www.crossref.org/cms/index.html\" class="
+"\"ext-link\">Crossref Metadata Services</a>. Many organizations (<a href="
+"\"http://www.crossref.org/01company/08affiliates.html#cms_affiliates\" class="
+"\"ext-link\">listed here</a>) subscribe to Crossref metadata, so your "
+"journal articles are instantly more discoverable.</p> <p><strong>Who is "
+"eligible to participate?</strong></p> <p>EZID clients with these "
+"characteristics:</p> <ul> <li>non-profit, educational or governmental "
+"organizations that publish open access content</li> <li><em>and</em> have "
+"&quot;Research Institution or Non-Profit Organization&quot; level EZID "
+"accounts (see <a href=\"/learn/#03\" class=\"link__primary\">the EZID "
+"pricing page</a> for details)</li> <li><em>and</em> subscribe for both DOIs "
+"&amp; ARKs</li> </ul> <p><strong>If we don't have this type of account, can "
+"we upgrade?</strong></p> <p>In many cases, the answer is yes. <a href=\"/"
+"contact\" class=\"link__primary\">Contact us</a> to discuss this option.</p> "
+"<p><strong>What is the status of the EZID-Crossref &quot;connection&quot;?</"
+"strong></p> <p>This service is in production. If you are interested in "
+"participating, please <a href=\"/contact\" class=\"link__primary\">contact "
+"us</a>.</p> <p><strong>How much will it cost EZID clients to participate?</"
+"strong></p> <p>Crossref charges <a href=\"http://www.crossref."
+"org/02publishers/20pub_fees.html#deposit\" class=\"ext-link\">DOI deposit "
+"fees</a>, and all such fees for the participating clients will be sent to "
+"California Digital Library (CDL) as the Sponsoring Member. CDL will cover "
+"these fees for time being, and then re-assess based on individual client "
+"volume. We reserve the right to pass through deposit fees for subsequent "
+"billing cycles, and we will share our decision process with you.</p> "
+"<p><strong>What do eligible clients have to do to participate?</strong></p> "
+"<p>Each client that wishes to participate in this service must agree to "
+"comply with Crossref requirements. These include:</p> <ul> <li>provision of "
+"<a href=\"http://help.crossref.org/#deposit_schema\" class=\"ext-link"
+"\">Crossref metadata</a> for each &quot;original work&quot;</li> <li><a href="
+"\"http://help.crossref.org/#outbound_linking\" class=\"ext-link\">outbound "
+"linking</a>, &quot;meaning members must add DOI links (when available) to "
+"the reference list for journal articles deposited with Crossref&quot; (Note: "
+"these links <em>need only to be present on the journal's site</em>, not in "
+"the metadata provided to Crossref and this requirement is prospective "
+"only.)</li> <li>provision of &quot;response&quot; pages (or &quot;"
+"landing&quot; pages in DataCite parlance) for each DOI, if the material is "
+"not open access</li> </ul> <p>In addition, there are a (very) few setup "
+"steps which we can discuss when you <a href=\"/contact\" class="
+"\"link__primary\">contact us</a> about participating.</p>"
+msgstr ""
+
+#: templates/info/id_basics.html:6 templates/info/id_basics.html.py:7
+#: templates/info/id_basics.html:12
+msgid "Identifier Basics"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/info/id_basics.html:18
+msgid ""
+"<h2 class=\"heading_2\">EZID Default Account Setup</h2> <p>To minimize "
+"conflict with other identifiers in the world, your identifiers all begin "
+"with a globally unique number identifying the organization associated with "
+"your account. For DOIs that is your <em>DOI prefix</em> and for ARKs it is "
+"your <em>ARK NAAN</em> (Name Assigning Authority Number).</p> <ul> "
+"<li>Example: in doi:10.5072/K298765 the DOI prefix is 10.5072</li> "
+"<li>Example: in ark:/12345/k498765 the ARK NAAN is 12345</li> </ul> <p>By "
+"default we add a few extra characters to that number to create a "
+"<em>shoulder</em> (<a href=\"#IdentifierBasics-shoulders\">what are "
+"shoulders for?</a>) and then create a randomized string generator for it.</"
+"p> <ul> <li>Example: in doi:10.5072/K298765 the shoulder is doi:10.5072/K2</"
+"li> <li>Example: in ark:/12345/k498765 the shoulder is ark:/12345/k4</li> </"
+"ul> <p>Names that you assign are created by appending a string, such as "
+"98765, to the shoulder. The generator is to help minimize conflict among the "
+"names you assign on that shoulder. In EZID you can bypass the generator to "
+"create any identifier you wish on your shoulder, provided it is unique.</p> "
+"<p><em>Clients may wish to depart from this default setup under these "
+"circumstances:</em></p> <table border=\"1\"> <tbody> <tr> <th>Use Case</th> "
+"<th>Recommendation</th> </tr> <tr> <td>Clients with established local or "
+"legacy naming practices.</td> <td>If sufficiently comfortable with the "
+"identifier generation process, inform us that you do not need the identifier "
+"generator.</td> </tr> <tr> <td>Clients that wish to impose local branding in "
+"place of the default shoulder(s).</td> <td>See <a href=\"#IdentifierBasics-"
+"opacity\">Opacity and Branding</a> below, then let us know how you wish to "
+"proceed.</td> </tr> <tr> <td>Clients may already have a DOI prefix or ARK "
+"NAAN.</td> <td>Inform us in advance.</td> </tr> </tbody> </table> <span id="
+"\"IdentifierBasics-shoulders\"></span> <h2 class=\"heading_2\">Namespaces "
+"and Shoulders</h2> <p>The DOI prefix and ARK NAAN each determine the "
+"beginnings of identifiers that you can assign, and they will be globally "
+"unique provided the rest of the identifier doesn't conflict with any other "
+"identifiers you have assigned. The pool of possible identifiers (names) that "
+"start with your prefix or your NAAN is called a <em>namespace</em>.</p> "
+"<p>What are shoulders for? A shoulder actually reserves another namespace "
+"inside (a subset of) the overall namespace for the prefix or NAAN. This is a "
+"recommended precaution because later on you can ask that new shoulders be "
+"created as your naming practices change or are delegated to sub-"
+"organizations. Some accounts will be assigning millions of identifiers and "
+"this helps avoid collisions among their own names. Other accounts may wish "
+"both to be able to use the default account set up (shoulder plus generator) "
+"and to assign names directly after the prefix or NAAN (as if there were no "
+"shoulder).</p> <p>EZID clients are using shoulders in interesting ways, to "
+"distinguish objects from different</p> <ul> <li>collections,</li> <li>data "
+"sources,</li> <li>projects,</li> <li>departments,</li> <li>and so on.</li> </"
+"ul> <p>In other words, shoulders are a great way to <em>manage an identifier "
+"namespace</em>. It's helpful, however, if shoulders are &quot;opaque&quot;.</"
+"p> <span id=\"IdentifierBasics-opacity\"></span> <h2 class="
+"\"heading_2\">Opacity and Branding</h2> <p>Opacity in this context means the "
+"absence of semantics (recognizable meaning) in the identifier string. The "
+"principle is that it is important for the longevity of an identifier to "
+"avoid semantics that are subject to change. There is a tradeoff too, in that "
+"opaque identifiers may be a little harder to curate.</p> <p>A major reason "
+"why many URLs created in the past now result in 404 (&quot;Not Found&quot;) "
+"errors is due to semantics about the object being embedded in identifiers. "
+"In general, the more transient and extrinsic the semantic &quot;"
+"assertion&quot; in the identifier the string, the more vulnerable it will be "
+"to semantic &quot;rot&quot;. For example, it is common practice to "
+"incorporate an organization name into an object identifier or shoulder, and "
+"this is a problematic precisely because the curating organization is "
+"typically very transient and <strong>not</strong> an integral attribute of "
+"an object. There is nothing within or about a spreadsheet that has been "
+"deposited in a particular custodial institution that is intrinsic to the "
+"spreadsheet and its data. Not only do institutions change names, but "
+"tomorrow there might be a different custodian.</p> <p>While leaving a &quot;"
+"brand&quot; name out of identifiers can seem like a hard choice, we remind "
+"users that your globally unique prefix or NAAN contains the same "
+"information; services that track identifier usage and impact factors (e.g., "
+"Thomson Reuters Data Citation Index) make it their business to take globally "
+"unique organization numbers and make organization names and their "
+"identifiers visible.</p> <p>Semantics are more acceptable if they are "
+"intrinsic to the object being registered. For example, if a data granule "
+"covers a particular date, it is standard practice to incorporate that date "
+"into the granule's filename and/or identifier. That works because the "
+"coverage date is never going to change. If a granule has data for "
+"2013-06-05, it will always have data for 2013-06-05.</p> <p>For these "
+"reasons, we recommend our clients avoid branding in identifiers and "
+"shoulders. However, you, of course, make this determination for yourselves. "
+"If you would like to implement or request branding in the shoulder, then we "
+"recommend that you choose a combination that follows these conventions:</p> "
+"<ul> <li>It starts with one or more letters (for DOIs they must be uppercase "
+"and for ARKs we strongly recommend lowercase).</li> <li>It ends with a digit."
+"</li> <li>It contains neither vowels nor the letter 'l' (ell).</li> </ul> "
+"<p>The above guidelines help us to maintain identifiers and to detect "
+"transcription errors in identifier strings that we generate for you. If "
+"these considerations are not so important to you, or if you are supplying "
+"the identifier strings yourself (i.e., you do not need the identifier "
+"generator), you may disregard these recommendations.</p> <p>The bottom line "
+"is that more opaque your identifiers are, the less prone they will be to a "
+"number of common age-related problems; if you want to introduce semantics "
+"for easier curation, it is best to avoid meaning that is either transient, "
+"extrinsic to the object, or widely recognizable.</p> <h2 class="
+"\"heading_2\">Looking for a deeper dive?</h2> For those of you who would "
+"like more technical information, you will find it here: <a class="
+"\"link__primary\" href=\"/learn/id_concepts\">Identifier Concepts</a> and "
+"Practices."
+msgstr ""
+
+#: templates/info/id_concepts.html:6 templates/info/id_concepts.html.py:7
+msgid "Identifier Concepts and Practices at the California Digital Library"
+msgstr ""
+
+#: templates/info/id_concepts.html:12
+msgid "Identifier Concepts"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/info/id_concepts.html:18
+msgid ""
+"<p>This document specifies identifier-related terms, conventions, and "
+"practices as observed at the California Digital Library (CDL) in support of "
+"the following roles.</p> <ol> <li>Providing the EZID (easy eye-dee) "
+"identifier management service, which lets users create and manage DOIs, "
+"ARKs, and (soon) identifiers of other types.</li> <li>Hosting the Name-to-"
+"Thing (N2T) resolver, which redirects all identifiers managed by EZID as "
+"well as a variety of identifier types, including LSID, LSRN, Handle, DOI, "
+"and some classes of URN.</li> <li>Maintaining the primary instance of the "
+"Name Assigning Authority Number (NAAN) registry, which is replicated at the "
+"US National Library of Medicine and at the National Library of France.</li> "
+"<li>Serving as maintenance agency for the Archival Resource Key (ARK) scheme."
+"</li> </ol> <p>Many of the conventions arose in the context of ARK "
+"identifiers, but they apply broadly across mainstream identifiers, including "
+"URLs, DOIs, URNs, and Handles.  Unless otherwise specified, the conventions "
+"here apply to all identifiers whose creation we support.</p> <h2 class="
+"\"heading_2\">Terminology</h2> <p>The main concepts covered include:</p> "
+"<ol> <li>Name Assigning Authority Numbers (NAANs) identifying large "
+"institutional namespaces.</li> <li>NAAN &quot;shoulder&quot; extensions "
+"identifying sub-namespaces.</li> <li>Name Mapping Authority (NMA) services "
+"that accept names and return information about them</li> <li>Name resolution "
+"(&quot;resolver&quot;) services, a special class of NMA services.</li> </ol> "
+"<p>The terminology that follows is based on the metaphor of a key (or name "
+"or identifier) in the context of locksmithing jargon.</p> <img src=\"/static/"
+"images/learn_id_concepts_example.png\" alt=\"Diagram describing Cover, Bow, "
+"Shoulder, Blade, and Tip of a key, and how this illusatrates Name Mapping "
+"Authority and the Base Identifier\" /> <h2 class=\"heading_2\">NAANs and "
+"shoulders</h2> <p>A core concept is that of the NAAN (Name Assigning "
+"Authority), which identifies an organization that creates or assigns "
+"identifiers.  The combination of scheme name and NAAN (together comprising "
+"the &quot;bow&quot; of a  physical  key) is immutable.  The NAAN is usually "
+"a number, but in the URN identifier scheme it is  often a string of "
+"letters.  Numeric NAANs are more opaque and may  therefore be less "
+"susceptible than non-opaque names to &quot;semantic rot&quot;  over the long "
+"term. The intention behind the NAAN is to assign it at the highest  level "
+"practical within one memory organization, such as a national library, a "
+"national archive, or a university campus. </p> <p>Beginning every identifier "
+"assigned by an organization, a NAAN defines its <em>namespace</em>, or the "
+"pool of identifiers (sharing that NAAN) that it has or may potentially "
+"assign.  It is common for a large organization with a NAAN to delegate name "
+"assignment to semi-autonomous organizational units, typically &quot;"
+"departments&quot;.</p> <p>To prevent accidental creation of non-unique names "
+"between them, each unit is often assigned its own <em>shoulder</em>, which "
+"is a NAAN extension corresponding to the &quot;shoulder&quot; of a physical "
+"key.  The shoulder then begins every identifier assigned by the given unit, "
+"defining its <em>sub-namespace</em>.  Unique shoulders guarantee that names "
+"unique within the sub-namespace will also be unique outside of it, and the "
+"unit need only focus on creating the rest of the key in a way that is "
+"unique.  While the NAAN and shoulder are fixed for a given unit, the rest of "
+"the key, known as the <em>blade</em>, is different for every identifier in "
+"the unit's sub-namespace.</p> <h2 class=\"heading_2\">The &quot;First "
+"Digit&quot; shoulder convention</h2> <p>An easy way to extend the NAAN with "
+"a shoulder so that one will always have an unlimited supply of non-"
+"conflicting shoulders is to adhere to the &quot;first digit&quot; "
+"convention.  In this case each shoulder is a string of one of more letters "
+"ending in a digit  (inclusive).  For example, &quot;ark:/13030/b3th89n&quot; "
+"would have fixed shoulder prefix &quot;b3&quot;, and the 13030 NAAN could "
+"then enjoy an infinite set of potential future shoulders, including,</p> "
+"<p>   b3, c3, d3, ...<br /> bb3, bc3, bd3, ..., cb3, cc3, cd3, ...<br /> "
+"bbb3, bbc3, bbd3, ..., bcb3, bcd3, ..., cbb3, cbc3, ...<br /> ...</p> <h2 "
+"class=\"heading_2\">EZID support for NAANs and shoulders</h2> <p>An "
+"organization is free to manage its shoulders and identifiers in any way that "
+"it wishes, and the EZID service can significantly reduce the infrastructural "
+"burden of that management for those who choose to use it.  This section "
+"pertains to EZID function and policy current at the time of writing.</p> "
+"<p>An EZID user account is first set up with one (or several) NAAN+shoulder "
+"combinations under which the user can create identifiers. While there is in "
+"principle an unlimited number of shoulders under the &quot;first digit&quot; "
+"convention, each additional shoulder is not without cost, especially if "
+"there is a &quot;minter&quot; (a small identifier generating database) "
+"associated with it.  Also, although it may be convenient for assigning "
+"organizations to use different shoulders for different object collections, "
+"this practice promotes attachments to thematic or administrative object "
+"groupings that are frequently very transient; over the long-term, a widening "
+"gap between what a shoulder used to &quot;mean&quot; and what it currently "
+"suggests (unintentionally) creates pressure to abandon older identifiers.  "
+"EZID discourages practices that destabilize identifiers by making them "
+"needlessly costly or hard to maintain.</p> <p>The EZID user interface also "
+"permits you to choose the form of  the identifier <em>after</em> the "
+"shoulder, which may be confusing.  In fact we  recommend that you let the "
+"system generate new identifiers for you, as  we can guarantee that the &quot;"
+"blade&quot; it generates will make for an identifier that is unique and "
+"opaque.  EZID strongly discourages placing brand strings in identifier "
+"blades because successor organizations, which tend to be former competitors, "
+"will often be motivated to extinguish your brand rather than honor previous "
+"name assignments.  Branding is most appropriately placed in the NMA, "
+"described next.</p> <h2 class=\"heading_2\">Name Mapping Authority (NMA) "
+"services</h2> <p>The protocol and hostname combination (e.g., <a href="
+"\"http://OwlBike.example.org/\" class=\"link__primary\">http://OwlBike."
+"example.org/</a>) may be thought of as a key cover (a plastic accessory, "
+"sometimes known as a &quot;key identifier&quot;, that slips over the key and "
+"makes it easy to find).  This metaphorical &quot;cover&quot;, which does not "
+"alter the key's core identity, and is usually disposable and replaceable, "
+"serves to make the key actionable when  embedded in a URL.  As such it "
+"identifies an <em>NMA</em> (Name Mapping Authority) because it is a service "
+"that accepts a name as input and returns (&quot;maps&quot; it to) such "
+"things as object content, object metadata, object policies, etc.  Any given "
+"identifier will have exactly one NAAN but may have more than one NMA (at a "
+"time or over time).</p> <p>Multiple serial and simultaneous &quot;name "
+"mapping&quot; (hosting) arrangements are common, but some NMAs are meant to "
+"be long-term stable, including <a href=\"http://n2t.net/\" class=\"ext-link"
+"\">http://n2t.net/</a>, <a href=\"http://handle.net/\" class=\"ext-link"
+"\">http://handle.net/</a>, and <a href=\"http://dx.doi.org/\" class=\"ext-"
+"link\">http://dx.doi.org/</a>.</p> <h2 class=\"heading_2\">Resolution<br "
+"class=\"atl-forced-newline\" /></h2> <p>In general, a Name Mapping Authority "
+"(NMA) can be a starting place  for internet resolution, an ending place for "
+"it, or both.  The main  requirement for being an NMA for an object is being "
+"able to take a  request associated with its identifier and do something "
+"useful with it  (to &quot;map&quot; it to a practical function), such as "
+"providing access to the  object or its metadata, or forwarding the request "
+"to another NMA.  Often  an NMA will provide object access for some requests "
+"and forwarding services for  others. <br class=\"atl-forced-newline\" /></p> "
+"<p>A broadly helpful practice is for NMAs to forward completely unknown  "
+"identifier requests to a root resolver such as n2t.net, which can work  with "
+"many identifier scheme (described below).  With very little burden  to the "
+"original NMA, this practice increases the chances that resolution  will be "
+"successful no matter where the user starts it. <br class=\"atl-forced-newline"
+"\" /></p> <p>ARKs, URLs, and PURLs use manifest, scheme-agnostic redirecting "
+"HTTP  servers as NMAs.  The DOI, Handle, and URN schemes are each designed "
+"to  use an implicit, scheme-specific root resolver (NMA) with its own  "
+"protocol.  Resolution in all these cases relies on a final HTTP access. <br "
+"class=\"atl-forced-newline\" /></p> <h2 class=\"heading_2\">N2T (Name-to-"
+"Thing) resolver<br class=\"atl-forced-newline\" /></h2> <p>The N2T (Name-to-"
+"Thing) resolver is rooted at <a href=\"http://n2t.net/\" class=\"ext-link"
+"\">http://n2t.net</a> and administered by the California Digital Library.  "
+"It resolves ARKs, DOIs, Handles, LSIDs, LSRNs, and some classes of   URNs, "
+"and we plan to expand its range of identifier types.  The EZID   service, "
+"which populates a portion of the N2T resolver database, can be used to "
+"create and manage ARKs and DOIs, and we plan to expand its range as well. "
+"<br class=\"atl-forced-newline\" /></p> <p>N2T was originally designed for "
+"global resolution of ARK identifiers,  but it is general enough to apply to "
+"identifiers from any scheme.  It's  NAAN mapping mechanism is functionally "
+"equivalent to and much simpler than the DOI, Handle, and  URN resolution "
+"mechanisms. <br class=\"atl-forced-newline\" /></p> <h2 class="
+"\"heading_2\">Opacity</h2> <p>Many of the terms in this document serve "
+"semantic opacity, which is useful in creating identifiers that age and "
+"travel well.  Opacity is often balanced by the insertion of hints in "
+"replaceable appendages to the base, such as NMA branding before it and "
+"extensions (after it) that suggest current service offerings.</p> <p>Perfect "
+"opacity in identifiers is not as important as identifiers' having semantics "
+"that are <em>not widely recognizable</em>, even if those semantics may "
+"support administrative activity by specialists (cf. ISBNs).  In fact a "
+"numeric NAAN does disclose the original naming authority, but only if you "
+"have the NAAN registry handy, and a shoulder discloses a naming sub-"
+"authority if you understand the &quot;first digit&quot; convention below and "
+"have a registry of shoulders handy.  For the purposes of longevity, however, "
+"it is critical that attachments to authority and sub-authority names (NAANs "
+"and shoulders) be avoided; it is common for political pressures to require "
+"sacrificing identifiers created out of short-sighted administrative or "
+"branding convenience.</p> <h2 class=\"heading_2\">Test identifier "
+"conventions</h2> <p>As an important exception to opacity, it is often "
+"necessary to use identifiers in testing workflows, and because it is easy "
+"for test identifiers to &quot;escape&quot; into the wild, we follow certain "
+"conventions to prevent them from being interpreted as real identifiers if "
+"users mistakenly try to use them.  Any identifier beginning with the NAAN, "
+"&quot;99999&quot; will be considered a test identifier.  Furthermore, any "
+"identifier beginning with the shoulder &quot;fk&quot; will also usually be "
+"considered a test identifier.</p> <h2 class=\"heading_2\">Base identifier "
+"extensions</h2> <p>An identifier frequently appears with an extension added "
+"to its base.  For every assigned base identifier, there is in principle an "
+"infinite number of extended forms.  In practice, the NAA may not officially "
+"list all its extended forms publically.  Moreover, many extended forms are "
+"created and publicized by NMAs independent of the NAA assignments.</p> "
+"<p>Still more extended forms are discovered by users exploring an NMA's "
+"services, for example, by noticing identifier patterns and changing some of "
+"the values.  Names designed so that logical changes have logical "
+"consequences have been called &quot;hackable identifiers&quot;.  Also, "
+"sometimes an NMA supports substitution of &quot;parameters&quot; (values) "
+"inside of query strings appended to its identifiers (after a &quot;?&quot;), "
+"in order to produce certain documented effects.</p> <p>Identifier schemes "
+"tend to specify little beyond the form of the NAAN (or other designation for "
+"the NAA, sometimes called a Name Authority).  The ARK scheme permits formal "
+"disclosure of hierarchy and equivalence in name extensions; if used in an "
+"ARK, '/' indicates containment and '.' indicates variation.  For example,</"
+"p> <p> ark:/13030/tqb3kh8z/                         # names an object "
+"containing...<br /> ark:/13030/tqb3kh8z/chap3                # that in turn "
+"contains...<br /> ark:/13030/tqb3kh8z/chap3/fig5.jpg    # that is a variant "
+"of...<br /> ark:/13030/tqb3kh8z/chap3/fig5.pdf    # and so forth</p> <h2 "
+"class=\"heading_2\">The &quot;Noid1&quot; Check Character Convention</h2> "
+"<p>Check characters, if included at all, often protect only formally "
+"published identifiers, such as the base identifier with no extensions.  "
+"Check characters lengthen whatever sub-string they protect by at least one "
+"character, so protecting all sub-string extensions could create fairly long "
+"identifiers.  Also, check character generation is a deliberate process that "
+"can conflict with the need for rapid and flexible creation of extensions.</"
+"p> <p>One useful check character convention, called &quot;Noid1&quot;, uses "
+"exactly one check character that appears at the tip of the blade, in other "
+"words, as the last character of the base identifier.  It also uses the Noid1 "
+"algorithm ( <a href=\"https://confluence.ucop.edu/display/Curation/NOID\" "
+"class=\"ext-link\">https://confluence.ucop.edu/display/Curation/NOID</a> ), "
+"which guarantees the base identifier against the most common transcription "
+"errors: transposition of two adjacent characters and single character "
+"errors.  Noid1 does not protect either the hostname or any extensions.  For "
+"example, in the identifier,</p> <div class=\"pre-block\"> "
+"<code>                                    ,------------,</code><br/> "
+"<code>     http://OwlBike.example.org/hdl:13030/tqb3kh8w/chap3/fig5.jpg</"
+"code><br/> </div> <p>the protected string, &quot;13030/tqb3kh8w&quot;, ends "
+"with a &quot;w&quot; that is (hypothetically) the computed Noid1 check "
+"character.  Also, all Noid1 examples use a restricted character repertoire "
+"consisting of digits and lowercase letters minus vowels and minus the letter "
+"'l' (ell).  The Noid software uses this repertoire to reduce the chance of "
+"&quot;accidental&quot; semantics in generated identifiers and to avoid some "
+"of the confusion that arises over mistaking digits for letters, such as '1' "
+"for 'l' and '0' for 'O'.</p>"
+msgstr ""
+
+#: templates/info/open_source.html:6 templates/info/open_source.html.py:7
+#: templates/info/open_source.html:12
+msgid "Open Source Software for EZID"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/info/open_source.html:18
+msgid ""
+"<strong>IMPORTANT:</strong> The software listed below is not endorsed or "
+"supported by the EZID Team. It is listed here solely as a courtesy. If you "
+"are the author of a resource listed here and you wish us to remove it, "
+"please <a class=\"link__primary\" href=\"/contact\"> contact us</a>. If you "
+"are the author of software that you wish to be listed, please <a class="
+"\"link__primary\" href=\"/contact\">contact us</a>. <ul> <li><a href="
+"\"https://github.com/mbjones/ezid\" class=\"ext-link\">Java code library</"
+"a></li> <li><a href=\"https://github.com/psu-stewardship/hydra-ezid\" class="
+"\"ext-link\"> EZID services for Hydra</a> applications</li> <li><a href="
+"\"https://github.com/wadechristie/WSULibs.EZID\" class=\"ext-link\"> C# "
+"Library for working with the EZID API</a></li> <li><a href=\"https://wiki."
+"duraspace.org/display/DSDOC4x/DOI+Digital+Object"
+"+Identifier#DOIDigitalObjectIdenti fier-"
+"ConfigureDSpacetouseEZIDserviceforregistrationofDOIs\" class=\"ext-link"
+"\">Using EZID with DSpace</a></li> <li><a href=\"https://rubygems.org/gems/"
+"ezid-client\" class=\"ext-link\">Ruby client for EZID</a></li> <li><a href="
+"\"https://github.com/duke-libraries/ezid-client/releases/tag/v0.12.0\" class="
+"\"ext-link\">Another Ruby client for EZID</a></li> <li><a href=\"https://"
+"github.com/olendorf/ezid-php\" class=\"ext-link\">PHP Library for "
+"interacting with the EZID API</a></li> <li>eScholarship Extensions to OJS "
+"Crossref Export Plugin</li> <ul> <li><a href=\"https://github.com/cdlib/"
+"eschol-ojs/tree/eschol_prod/plugins/importexport/crossref\" class=\"ext-link"
+"\">Crossref</a></li> <li><a href=\"https://github.com/cdlib/eschol-ojs/blob/"
+"eschol_prod/pages/editor/IssueManagementHandler.inc. php\" class=\"ext-link"
+"\">IssueManagementHandler</a></li> </ul> <li>Virginia Tech's <a href="
+"\"https://github.com/VTUL/EzidDOI\" class=\"ext-link\">plug-in for assigning "
+"and registering DOIs with EZID for OJS articles and issues</a></li> <li><a "
+"href=\"https://github.com/ksclarke/islandora_ark\" class=\"ext-link\">An "
+"Archival Resource Key (ARK) management interface (using EZID) for Islandora/"
+"Drupal</a></li>"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS. PLEASE PRESERVE HTML TAGS</p>
+#: templates/info/popup_help.html:48
+msgid ""
+"<div id=\"choose_id_demo_content\" class=\"help_window\"> <p> <strong>DOIs</"
+"strong> <br/>Recommended for final products, published materials, and "
+"citation. Use for objects under good long-term management. </p> <p> "
+"<strong>ARKs</strong> <br/>Recommended for projects requiring more "
+"flexibility, early or unpublished versions of material. </p> </div> <div id="
+"\"choose_id_content\" class=\"help_window\"> <p> <strong>DOIs</strong> <br/"
+">Recommended for final products, published materials, and citation. Use for "
+"objects under good long-term management. Cannot be deleted. </p> <p> "
+"<strong>ARKs</strong> <br/>Recommended for projects requiring more "
+"flexibility, early or unpublished versions of material. Can be deleted. </p> "
+"</div> <div id=\"custom_remainder_content\" class=\"help_window\"> <p> EZID "
+"will create a unique string for you. If you choose to create a custom "
+"remainder, best practice is to not include information that is subject to "
+"change, which impairs persistence. Please check <a class=\"link__primary\" "
+"target=\"_blank\" title=\"PDF Document\" href=\"http://ias-ezid-dev.cdlib."
+"org/static/locale/en/EZID_CustomRemainders.pdf\">Custom Remainder Rules</a> "
+"for permitted characters. </p> </div> <div id=\"describe_profile_content\" "
+"class=\"help_window\"> <p> <strong>DataCite</strong> <br/>Required for DOIs. "
+"More here: <a href=\"http://schema.datacite.org\" class=\"ext-link no-wrap"
+"\">http://schema.datacite.org</a> </p> <p> <strong>Dublin Core</strong> <br/"
+">More here: <a href=\"http://dublincore.org/documents/dces/\" class=\"ext-"
+"link no-wrap\">http://dublincore.org/documents/dces/</a> </p> <p> "
+"<strong>ERC</strong> <br/>Electronic Resource Citation, default for ARKs. "
+"More here: <a href=\"http://dublincore.org/groups/kernel/spec/\" class=\"ext-"
+"link no-wrap\">http://dublincore.org/groups/kernel/spec/</a> </p> </div> "
+"<div id=\"decide_public_content\" class=\"help_window\"> <p> A "
+"<strong>public</strong> status means the identifier is viewable by anyone. "
+"The <strong>reserved</strong> status means it is viewable only by owners, so "
+"“reserved” is a great way to save a DOI or ARK for use later. Reserved IDs "
+"can be deleted. </p> </div> <div id=\"decide_public_unavail_content\" class="
+"\"help_window\"> <p> A <strong>public</strong> status means the identifier "
+"is viewable by anyone. An identifier with <strong>unavailable</strong> "
+"status is also public, but only insofar as it redirects to an EZID-provided "
+"\"tombstone\" page, displaying the identifier's citation metadata and the "
+"reason for the object's unavailability. </p> </div> <div id="
+"\"decide_export_content\" class=\"help_window\"> <p> Your choice pertains to "
+"making the metadata available for harvesting and/or indexing. Choosing \"Yes"
+"\" does not guarantee that the metadata will be harvested or indexed, but "
+"choosing \"No\" removes the possibility. </p> </div> <div id="
+"\"lookup_proxies_content\" class=\"help_window\"> <p> <strong>About Proxy "
+"Users</strong> <br/>An EZID user account may designate another EZID user "
+"account as a proxy user of the first account's identifiers. This gives the "
+"second EZID user account the right to manage and edit detailed information "
+"about an identifier. </p> </div>"
+msgstr ""
+
+#: templates/info/suffix_passthrough.html:6
+#: templates/info/suffix_passthrough.html:7
+#: templates/info/suffix_passthrough.html:12
+msgid "Suffix Passthrough Explained"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/info/suffix_passthrough.html:18
+msgid ""
+"<h2 class=\"heading_2\">What is Suffix Passthrough?</h2> <p class="
+"\"diagram__img-wrapper\"><img class=\"diagram__img\" alt=\"Illustration of "
+"suffix passing from the end of a submitted ARK to the end of a registered "
+"target URL.\" src=\"/static/images/learn_spt_in_action.gif\"/></p> <p><span "
+"style=\"white-space:nowrap\">Suffix Passthrough (SPT)</span> is a feature "
+"that lets you add any suffix to an identifier, and when a user selects "
+"(&quot;clicks on&quot;) the identifier, the suffix is added to the end of "
+"the identifier's location (target) URL.  It dramatically reduces the "
+"maintenance burden by permitting one identifier to stand in for many "
+"identifiers.</p> <p>The transformation of an identifier into its final "
+"location URL is done by a web server called a <em>resolver</em>, and the "
+"transformation is called <em>resolution</em>. Typically a web browser uses "
+"the resolver to find the final location URL, which it then displays in its "
+"location bar. Currently SPT works only for ARK identifiers and only with the "
+"<a href=\"http://n2t.net/\" class=\"ext-link\" rel=\"nofollow\"><span style="
+"\"color: blue;\">Name-to-Thing (N2T)</span></a> resolver.</p> <p>Basically, "
+"Suffix Passthrough makes every ARK the root of its own &quot;"
+"namespace&quot;. Any user-added suffix, which is a common way to form sub-"
+"object identifiers, will be passed through to the registered target object.  "
+"For example, a dataset with 10,000 component parts and just this one &quot;"
+"ancestor&quot; ARK,</p> <div class=\"pre-block\"> <code>http://n2t.net/"
+"ark:/12345/x98765</code><br/> </div> <p>would effectively allow access to "
+"10,000 ARKs, but only require you to manage the ancestor ARK. Those sub-"
+"object ARKs might look like:</p> <div class=\"pre-block\"> <code>http://n2t."
+"net/ark:/12345/x98765/study1/location1/day1.cs</code><br/> <code>http://n2t."
+"net/ark:/12345/x98765/study1/location3/day19.cs</code><br/> <code> ...</"
+"code><br/> <code>http://n2t.net/ark:/12345/x98765/study92/location18/day96."
+"xlsx</code><br/> </div> <p>When a user clicks on one, it is submitted to "
+"N2T. Failing to find it registered, N2T scans backwards starting from the "
+"end of the user-supplied ARK string and stops at the first ancestor ARK that "
+"is registered.</p> <p>The part that was scanned over, stretching from the "
+"first registered ancestor ARK to the end of the original string, comprises "
+"the suffix.</p> <div class=\"pre-block\"> <code>http://n2t.net/ark:/12345/"
+"x98765<span style=\"color: red;\">/study92/location18/day96.xlsx</span></"
+"code><br/> <code>\\______________________________<em>/\\</"
+"em>____________________________/</code><br/> <code>          ancestor "
+"ARK                      <span style=\"color: red;\">suffix</span></code><br/"
+"> </div> <p>Then it redirects the user's browser to the ancestor's target "
+"URL, appending the suffix that it scanned. So if the ancestor ARK's target "
+"was,</p> <div class=\"pre-block\"> <code>http://n2t.net/ark:/12345/x98765  --"
+"&gt;  <span style=\"color: blue;\">http://datazoo.example.com/carbon288</"
+"span></code><br/> <code>\\______________________________<em>/     \\_</"
+"em>_________________________________/</code><br/> <code>       ancestor "
+"ARK                          <span style=\"color: blue;\">ancestor ARK's "
+"target URL</span></code><br/> </div> <p>the user would be (hypothetically) "
+"redirected to</p> <div class=\"pre-block\"> <code><span style=\"color: blue;"
+"\">http://datazoo.example.com/carbon288</span><span style=\"color: red;\">/"
+"study92/location18/day96.xlsx</span></code><br/> <code><span style=\"font-"
+"family: Arial , sans-serif;\">\\</"
+"span>__________________________________<em>/\\</"
+"em>____________________________/</code><br/> <code>       <span style="
+"\"color: blue;\">ancestor's target URL</span>                    <span style="
+"\"color: red;\">suffix</span></code><br/> </div> <p>Note that SPT is only "
+"useful when the target server can respond to the suffixes it receives. For "
+"example, you would not instruct users how to add suffixes to the above ARK "
+"unless the target server was prepared to provide access to its 10,000 sub-"
+"objects. Fortunately, SPT is easy to illustrate in some cases, such as when "
+"the target server extends resource names with query strings or ordinary URL "
+"paths.</p> <div class=\"pre-block\"> <code><strong><em>Rule: if identifier A "
+"has target <span style=\"color: blue;\">T</span>, suffix passthrough means "
+"the extended identifier A/<span style=\"color: red;\">X</span> has "
+"target<span style=\"color: blue;\">T</span>/<span style=\"color: red;\">X</"
+"span></em></strong>.</code><br/> </div> <p>Using more words, for an "
+"identifier A stored in N2T that has the target URL T, if you add a suffix X "
+"to A and resolve (eg, click on) the URL A/X, you will be redirected to the "
+"URL T/X.</p> <p>Some limitations and exceptions apply. For example, during "
+"the backwards scan, potential ancestor ARKs are tested (to see if they are "
+"registered) only at each &quot;word&quot; boundary, where a word here means "
+"a string of letters and digits. Also, scanning stops when the NAAN (the 5-"
+"digit number after the &quot;ark:/&quot;) is reached.</p> <h2 class="
+"\"heading_2\">Suffix Passthrough Examples</h2> <p>You can see SPT in action "
+"by clicking on the extended ARKs below. These are &quot;ARKs&quot; (for "
+"illustration purposes only, not long-term stable) that <em> are not</em> "
+"registered in the <a href=\"http://n2t.net\" class=\"ext-link\" rel="
+"\"nofollow\"><span style=\"color: blue;\">N2T</span></a> resolver, but are "
+"formed by adding a <span style=\"color: red;\">suffix</span> to an ARK that "
+"<em>is</em> registered.</p> <p>Example 1. One registration standing in for "
+"several CDL service page &quot;ARKs&quot;.</p> <ul> <li>Registered: "
+"ark:/12345/fk1234</li> <li>Its target URL: <a href=\"http://www.cdlib.org/"
+"services\" class=\"external-link\" rel=\"nofollow\"><span style=\"color: "
+"blue;\">http://www.cdlib.org/services</span></a></li> <li>An extended ARK: "
+"<a href=\"http://n2t.net/ark:/12345/fk1234/uc3/ezid/\" class=\"external-link"
+"\" rel=\"nofollow\"><span style=\"color: blue;\">http://n2t.net/ark:/12345/"
+"fk1234</span><span style=\"color: red;\">/uc3/ezid/</span></a></li> </ul> "
+"<p>Example 2. One registration standing in for any number of Wikipedia "
+"article &quot;ARKs&quot;.</p> <ul> <li>Registered: ark:/12345/fk1235</li> "
+"<li>Its target URL: <a href=\"http://en.wikipedia.org/wiki\" class="
+"\"external-link\" rel=\"nofollow\"><span style=\"color: blue;\">http://en."
+"wikipedia.org/wiki</span></a></li> <li>An extended ARK: <a href=\"http://n2t."
+"net/ark:/12345/fk1235/Persistent_identifier\" class=\"external-link\" rel="
+"\"nofollow\"><span style=\"color: blue;\">http://n2t.net/ark:/12345/fk1235</"
+"span><span style=\"color: red;\">/Persistent_identifier</span></a></li> </"
+"ul> <p>Example 3. One registration standing in for any number of internet "
+"search &quot;ARKs&quot;.</p> <ul> <li>Registered: ark:/12345/fk3</li> "
+"<li>Its target URL: <a href=\"http://www.google.com/#q=\" class=\"external-"
+"link\" rel=\"nofollow\"><span style=\"color: blue;\">http://www.google.com/"
+"#q=</span></a></li> <li>Extended ARK: <a href=\"http://n2t.net/ark:/12345/"
+"fk3pqrst\" class=\"external-link\" rel=\"nofollow\"><span style=\"color: "
+"blue;\">http://n2t.net/ark:/12345/fk3</span><span style=\"color: red;"
+"\">pqrst</span></a></li> </ul> <p>You can experiment easily by pasting this "
+"registered ARK,</p> <div class=\"pre-block\"> <code>http://n2t.net/"
+"ark:/12345/fk3</code><br/> </div> <p>into your browser's location field and "
+"appending (no spaces) a &quot;search term&quot; suffix of your choice.</p>"
+msgstr ""
+
+#: templates/layouts/apidoc.html:4
+msgid ""
+"Guidelines for accessing the EZID Application Programing Interface (API)."
+msgstr ""
+
+#: templates/layouts/base.html:47
+msgid "Skip navigation"
+msgstr ""
+
+#: templates/learn.html:5 templates/learn.html.py:16
+msgid "Learn About EZID"
+msgstr ""
+
+#: templates/learn.html:6
+msgid "Learn more about EZID pricing, documentation and current users."
+msgstr ""
+
+#: templates/manage/details.html:6 templates/manage/details.html.py:7
+#: templates/manage/edit.html:8
+msgid "Identifier Details"
+msgstr ""
+
+#: templates/manage/details.html:11
+msgid "Edit and add descriptive information to your identifier."
+msgstr ""
+
+#: templates/manage/details.html:15 templates/manage/edit.html:72
+msgid "About the Identifier"
+msgstr ""
+
+#: templates/manage/details.html:23 templates/manage/edit.html:24
+msgid "Identifier as URL"
+msgstr ""
+
+#: templates/manage/details.html:27 templates/manage/edit.html:27
+msgid "Link copied to your clipboard"
+msgstr ""
+
+#: templates/manage/details.html:31
+msgid ""
+"Be aware that it can take up to several hours until new DOIs become "
+"resolvable."
+msgstr ""
+
+#: templates/manage/details.html:33
+msgid ""
+"Be aware that it can take up to 24 hours until a DOI update is globally "
+"known."
+msgstr ""
+
+#: templates/manage/details.html:43 templates/search/_results.html:78
+msgid "Indicates demo identifier"
+msgstr ""
+
+#: templates/manage/details.html:49
+msgid "Citation Preview"
+msgstr ""
+
+#: templates/manage/details.html:69 templates/manage/edit.html:38
+msgid "About the Identified Object"
+msgstr ""
+
+#: templates/manage/details.html:93
+msgid "See the DataCite XML Metadata record in a new window"
+msgstr ""
+
+#: templates/manage/details.html:97
+msgid "See the Crossref XML Metadata record in a new window"
+msgstr ""
+
+#: templates/manage/details.html:104
+msgid "About the Identifier's Status"
+msgstr ""
+
+#: templates/manage/details.html:153
+msgid "Make Changes"
+msgstr ""
+
+#: templates/manage/download.html:5
+msgid "Download Request"
+msgstr ""
+
+#: templates/manage/download.html:6
+msgid "Download Request Received"
+msgstr ""
+
+#: templates/manage/download.html:9
+msgid ""
+"Your download request is being processed and will be available in a few "
+"minutes."
+msgstr ""
+
+#: templates/manage/download.html:11
+msgid ""
+"When it is ready to download, an email with the download link will been sent "
+"to the email address affiliated with your EZID account"
+msgstr ""
+
+#: templates/manage/download.html:13
+msgid ""
+"After you receive the email, you may also download a .csv file of the "
+"requested identifiers using the link below:"
+msgstr ""
+
+#: templates/manage/download.html:17
+msgid "The download link will expire in 1 week."
+msgstr ""
+
+#: templates/manage/download.html:21
+msgid "To have the download link sent to a different email address, go to"
+msgstr ""
+
+#: templates/manage/download.html:22
+msgid "Account Settings"
+msgstr ""
+
+#: templates/manage/download.html:23
+msgid "update your email address, and then resubmit your download request"
+msgstr ""
+
+#: templates/manage/download_error.html:5
+#: templates/manage/download_error.html:6
+msgid "Download Link Unavailable"
+msgstr ""
+
+#: templates/manage/download_error.html:9
+msgid ""
+"You tried to access something that doesn't exist. You may have requested a "
+"file currently in progress and not yet completed."
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#: templates/manage/download_error.html:16
+msgid ""
+"Please <a class=\"link__primary\" href=\"/contact\">contact us</a> if you "
+"need assistance."
+msgstr ""
+
+#: templates/manage/edit.html:6
+msgid "Edit Identifier Details"
+msgstr ""
+
+#: templates/manage/edit.html:40
+msgid "This identified object uses the"
+msgstr ""
+
+#: templates/manage/edit.html:44 templates/manage/edit.html.py:45
+msgid "Add more information to the record"
+msgstr ""
+
+#: templates/manage/edit.html:47
+msgid ""
+"If you would like to add additional information for this record, consider "
+"using the DataCite citation profile."
+msgstr ""
+
+#: templates/manage/edit.html:50
+msgid "Convert to the DataCite<br/> citation profile"
+msgstr ""
+
+#: templates/manage/edit.html:106
+msgid "reserved"
+msgstr ""
+
+#: templates/manage/edit.html:114
+msgid "public"
+msgstr ""
+
+#: templates/manage/edit.html:122 templates/tombstone.html:11
+msgid "unavailable"
+msgstr ""
+
+#: templates/manage/edit.html:128
+msgid "on making an identifier public or unavailable"
+msgstr ""
+
+#: templates/manage/edit.html:138
+msgid "Unavailable reason"
+msgstr ""
+
+#: templates/manage/edit.html:172
+msgid "Save Changes"
+msgstr ""
+
+#: templates/manage/index.html:6
+msgid "Your IDs"
+msgstr ""
+
+#: templates/manage/index.html:9
+msgid "Manage Your IDs"
+msgstr ""
+
+#: templates/manage/index.html:29 templates/manage/index.html.py:33
+#: templates/manage/index.html:220
+msgid "Search Your Identifiers"
+msgstr ""
+
+#: templates/manage/index.html:31
+msgid "Your search cannot not be empty"
+msgstr ""
+
+#: templates/manage/index.html:36 templates/search/index.html:25
+msgid "Advanced Search"
+msgstr ""
+
+#: templates/manage/index.html:76 templates/search/index.html:65
+msgid "Object Publication Year"
+msgstr ""
+
+#: templates/manage/index.html:130
+msgid "ID Create Date"
+msgstr ""
+
+#: templates/manage/index.html:159
+msgid "ID Update Date"
+msgstr ""
+
+#: templates/search/_choose_cols.html:12
+msgid "Choose Columns to Display"
+msgstr ""
+
+#: templates/search/_choose_cols.html:17
+#, python-format
+msgid ""
+"\n"
+"          You may choose up to %(field_count)s informational columns to "
+"customize the browsing view for your identifiers.\n"
+"          "
+msgstr ""
+
+#: templates/search/_choose_cols.html:25
+msgid "Restore Defaults"
+msgstr ""
+
+#: templates/search/_choose_cols.html:27
+msgid "Apply Changes"
+msgstr ""
+
+#: templates/search/_pagination.html:12
+msgid "Show"
+msgstr ""
+
+#: templates/search/_pagination.html:13
+msgid "Show number of entries"
+msgstr ""
+
+#: templates/search/_pagination.html:22
+msgid "entries"
+msgstr ""
+
+#: templates/search/_results.html:14
+msgid "See All Identifiers"
+msgstr ""
+
+#: templates/search/_results.html:18
+msgid "Customize View"
+msgstr ""
+
+#: templates/search/_results.html:29
+msgid "View identifiers owned by"
+msgstr ""
+
+#: templates/search/_results.html:37
+msgid "Download All"
+msgstr ""
+
+#: templates/search/_results.html:54
+msgid "No identifiers found for the query you entered"
+msgstr ""
+
+#: templates/search/index.html:6 templates/search/index.html.py:8
+msgid "Search across EZID identifiers"
+msgstr ""
+
+#: templates/search/index.html:7
+msgid ""
+"Search across all EZID identifiers by keyword, title, creator, publisher, or "
+"identifier string."
+msgstr ""
+
+#: templates/search/index.html:18 templates/search/index.html.py:22
+#: templates/search/index.html:109
+msgid "Search"
+msgstr ""
+
+#: templates/search/results.html:13
+msgid "Your query"
+msgstr ""
+
+#: templates/search/results.html:15
+msgid "Modify original search"
+msgstr ""
+
+#: templates/tombstone.html:69
+msgid "provided by"
+msgstr ""
+
+#: ui_tags/templatetags/layout_extras.py:84
+msgid "Click for additional help"
+msgstr ""
+
+#: ui_tags/templatetags/manage_form_tags.py:138
+msgid "First page of results"
+msgstr ""
+
+#: ui_tags/templatetags/manage_form_tags.py:139
+msgid "Previous"
+msgstr ""
+
+#: ui_tags/templatetags/manage_form_tags.py:140
+msgid "Previous page of results"
+msgstr ""
+
+#: ui_tags/templatetags/manage_form_tags.py:146
+msgid "Next"
+msgstr ""
+
+#: ui_tags/templatetags/manage_form_tags.py:147
+msgid "Next page of results"
+msgstr ""
+
+#: ui_tags/templatetags/manage_form_tags.py:149
+msgid "Last page of results"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:17
+msgid "DASHBOARD"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:18
+msgid "MANAGE IDS"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:19
+msgid "CREATE ID"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:24
+msgid "ACCOUNT SETTINGS"
+msgstr ""
+
+#: ui_tags/templatetags/menus.py:55
+msgid "Learn"
+msgstr ""

@@ -5,6 +5,8 @@ import django.core.mail
 import django.http
 import django.template
 import django.template.loader
+import userauth
+import form_objects
 import errno
 import os
 import re
@@ -14,65 +16,57 @@ import urllib
 import ezid
 import datacite
 import metadata
+from django.utils.translation import ugettext as _
 
 def ajax_hide_alert(request):
   request.session['hide_alert'] = True
   return uic.plainTextResponse('Ok')
 
 def contact(request):
-  d = { 'menu_item': 'ui_null.null'}
-  d['heard']      =   ( ("website", "University website"), \
-                        ("conference", "Conference"), \
-                        ("colleagues", "Colleagues"), \
-                        ("webinar", "Webinar"), \
-                        ("other", "Other") )
-  if request.method == "GET":
-    d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
-  elif request.method == "POST":
+  d = { 'menu_item': 'ui_null.contact'}
+  localized = False 
+  host = request.META.get("HTTP_HOST", "default")
+  if host not in django.conf.settings.LOCALIZATIONS: host = "default"
+  if host != "default":
+    localized = True
+  if request.method == "POST":
     P = request.POST
-    for i in ['your_name', 'email', 'comment', 'hear_about']:
-      if not i in P:
-        d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
-        return uic.render(request, 'contact', d)
-    d.update(uic.extract(request.POST, ['your_name', 'email', 'affiliation', 'comment', 'hear_about']))
-    errored = False
-    if P['your_name'] == '':
-      django.contrib.messages.error(request, "Please fill in your name.")
-      errored = True
-    if P['email'] == '' or not re.match('^.+\@.+\..+$', P['email']):
-      django.contrib.messages.error(request, "Please fill in a valid email address.")
-      errored = True
-    if P['comment'].strip() == '':
-      django.contrib.messages.error(request, "Please fill in a question or comment.")
-      errored = True
-    if errored:
-      return uic.render(request, 'contact', d)
-    if not 'url' in P or P['url'] != '':
+    d['form'] = form_objects.ContactForm(P, localized=localized)
+    if not 'url' in P or ('url' in P and P['url'] != ''):
       #url is hidden.  If it's filled in then probably a spam bot
-      return uic.render(request, 'contact', d)
-    emails = __emails(request)
-    title = "EZID contact form email"
-    if 'HTTP_REFERER' in request.META:
-      message = 'Sent FROM: ' + request.META['HTTP_REFERER'] +"\r\n\r\n"
-    else:
-      message = ''
-    message += "Name: " + P['your_name'] + "\r\n\r\n" + \
-              "Email: " + P['email'] + "\r\n\r\n"
-    if 'affiliation' in P:
-      message += "Institution: " +  P['affiliation'] + "\r\n\r\n"
-    message += "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
-              "Heard about from: " + P['hear_about']
-    try:
-      django.core.mail.send_mail(title, message,
-        P['email'], emails)
+      pass 
+    elif d['form'].is_valid():
+      emails = __emails(request)
+      title = "EZID contact form email"
+      if 'HTTP_REFERER' in request.META:
+        message = 'Sent FROM: ' + request.META['HTTP_REFERER'] +"\r\n\r\n"
+      else:
+        message = ''
+      message += "Name: " + P['your_name'] + "\r\n\r\n" + \
+        "Email: " + P['email'] + "\r\n\r\n"
+      if 'affiliation' in P:
+        message += "Institution: " +  P['affiliation'] + "\r\n\r\n"
+      message += "Reason for contact: " + P['contact_reason'] + "\r\n\r\n" + \
+        "Comment:\r\n" + P['comment'] + "\r\n\r\n" + \
+        "Heard about from: " + P['hear_about'] + "\r\n\r\n"
+      if 'newsletter' in P:
+        if P['newsletter'] == 'on':
+          message += "YES, I'd like to subscribe to the EZID newsletter."
+        else:
+          message += "Newsletter option NOT checked." 
+      try:
+        django.core.mail.send_mail(title, message, P['email'], emails)
 
-      django.contrib.messages.success(request, "Message sent")
-      d['your_name'], d['email'], d['affiliation'], d['comment'], d['hear_about'] = '', '', '', '', ''
-    except:
-      django.contrib.messages.error(request, "There was a problem sending your email")
-      return uic.render(request, 'contact', d)
-    #django.core.mail.send_mail("EZID password reset request", message,
-    #  django.conf.settings.SERVER_EMAIL, [emailAddress])
+        django.contrib.messages.success(request, _("Thank you for your message. We will respond as soon as possible."))
+        d['form'] = form_objects.ContactForm() # Build an empty form
+      except:
+        django.contrib.messages.error(request, _("There was a problem sending your email"))
+    elif not d['form'].is_valid():
+      err = _("Form could not be sent.  Please check the highlighted field(s) below for details.")
+      django.contrib.messages.error(request, err)
+      # fall through to re-render page; form already contains error info
+  else:  # GET Request
+    d['form'] = form_objects.ContactForm(None, localized=localized) # Build an empty form
   return uic.render(request, 'contact', d)
 
 def __emails(request):
@@ -83,48 +77,37 @@ def __emails(request):
 
 def doc (request):
   """
-  Renders UTF-8 encoded HTML documentation.
+  Renders UTF-8 encoded HTML documentation and plain text Python code
+  files.
   """
-  if request.method != "GET": return uic.methodNotAllowed()
+  if request.method != "GET": return uic.methodNotAllowed(request)
   assert request.path_info.startswith("/doc/")
-  file = os.path.join(django.conf.settings.PROJECT_ROOT, "doc",
-    request.path_info[5:])
-  if os.path.exists(file):
-    f = open(file)
-    content = f.read()
-    f.close()
-    # If the filename of the requested document has what looks to be a
-    # version indicator, attempt to load the unversioned (i.e.,
-    # latest) version of the document.  Then, if the requested
-    # document is not the latest version, add a warning.
-    m = re.match("(.*/\w+)\.\w+\.html$", file)
-    if m:
-      uvfile = m.group(1) + ".html"
-      if os.path.exists(uvfile):
-        f = open(uvfile)
-        uvcontent = f.read()
-        f.close()
-        if content != uvcontent:
-          content = re.sub("<!-- superseded warning placeholder -->",
-            "<p class='warning'>THIS VERSION IS SUPERSEDED BY A NEWER " +\
-            "VERSION</p>", content)
+  file = request.path_info[5:]
+  path = os.path.join(django.conf.settings.PROJECT_ROOT, "templates", "doc",
+    file)
+  if os.path.exists(path):
     if file.endswith(".html"):
-      return uic.staticHtmlResponse(content)
+      return uic.render(request, os.path.join("doc", file[:-5]),
+        { "menu_item": "ui_home.learn" })
     else:
+      f = open(path)
+      content = f.read()
+      f.close()
       return uic.staticTextResponse(content)
   else:
-    return uic.error(404)
+    return uic.error(request, 404)
+
+tombstone_text = _("The URL for this identifier cannot be resolved")
 
 def tombstone (request):
   """
   Renders a tombstone (i.e., unavailable identifier) page.
   """
-  if request.method != "GET": return uic.methodNotAllowed()
+  if request.method != "GET": return uic.methodNotAllowed(request)
   assert request.path_info.startswith("/tombstone/id/")
   id = request.path_info[14:]
   if "auth" in request.session:
-    r = ezid.getMetadata(id, request.session["auth"].user,
-      request.session["auth"].group)
+    r = ezid.getMetadata(id, userauth.getUser(request, returnAnonymous=True))
   else:
     r = ezid.getMetadata(id)
   if type(r) is str:
@@ -136,9 +119,10 @@ def tombstone (request):
   if not m["_status"].startswith("unavailable"):
     return uic.redirect("/id/%s" % urllib.quote(id, ":/"))
   if "|" in m["_status"]:
-    reason = "Not available: " + m["_status"].split("|", 1)[1].strip()
+    # Translators: Output for tombstone page (unavailable IDs)
+    reason = tombstone_text + ". " + _("Reason:") + " " + m["_status"].split("|", 1)[1].strip()
   else:
-    reason = "Not available"
+    reason = tombstone_text
   htmlMode = False
   if m["_profile"] == "datacite" and "datacite" in m:
     md = datacite.dcmsRecordToHtml(m["datacite"])

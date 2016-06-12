@@ -1,0 +1,23 @@
+// Home/Index Page
+
+.home-banner__lead-container {
+    flex-flow: row nowrap;
+    max-width: 1000px;
+    margin: 0px auto;
+}
+
+.frontpage_idcreate_arrow {
+    display: none;
+
+  @include bp(screen2) {
+    display: block;
+    position: relative;
+    background-image: url('/static/images/arrow.png');
+    background-repeat: no-repeat;
+    top: 56px;
+    left: 48px;
+    width: 50px;
+    height: 50px;
+  }
+}
+

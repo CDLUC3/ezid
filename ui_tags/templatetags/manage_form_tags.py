@@ -2,26 +2,23 @@ from django import template
 from django.conf import settings
 from django.utils.html import escape
 from decorators import basictag
-#from django.core.urlresolvers import reverse
-#import pdb
 import datetime
 import urllib
 from django.core.urlresolvers import reverse
 import itertools
+from django.utils.translation import ugettext as _
 
 register = template.Library()
 
 @register.simple_tag 
-def column_choices(field_order, fields_mapped, fields_selected, no_cols=3):
+def column_choices(field_order, fields_mapped, fields_selected):
   """this only works when the following context variables are set from the django view:
   field_order is the ordered list of the fields
-  fields_mapped is mapping of fields to texual names
+  fields_mapped is mapping of fields to texual names (second item in list of mapped objects)
   fields_selected is ordered list of selected fields"""
-  items_per_col = (len(field_order) - 1 + no_cols) / no_cols
-  col_arr = chunks(field_order, items_per_col) #divided into sub-lists for three columns
-  return "<div class='chk_col'>" + "</div><div class='chk_col'>".join(['<br/>'.join(\
-         [make_check_tag(y, fields_mapped, fields_selected) for y in x]) \
-         for x in col_arr]) + '</div>'
+  return "<div class='col-sm-4'>" + "</div><div class='col-sm-4'>".join(\
+         [make_check_tag(f, fields_mapped, fields_selected) for f in field_order])\
+         + '</div>'
 
 def make_check_tag(item, friendly_names, selected):
   if item in selected:
@@ -29,122 +26,130 @@ def make_check_tag(item, friendly_names, selected):
   else:
     checked_str = ""
   return "<input type='checkbox' id='" + escape(item) + "' name='" + escape(item) + "' value='t'" + checked_str + " \> " \
-       + "<label for='" + escape(item) + "'>" + escape(friendly_names[item]) + "</label>"
+       + "<label for='" + escape(item) + "'>" + escape(friendly_names[item][1]) + "</label>"
+
+@register.simple_tag 
+def column_choices_hidden(fields_selected):
+  """Include column choices in request query as hidden fields"""
+  hidden = ''
+  for f in fields_selected:
+    hidden += "<input type='hidden' name='" + f + "' value='t'/>"
+  return hidden
 
 @register.simple_tag   
-def rewrite_hidden_except(request, field_order):
-  exclude = field_order + ['submit_checks']
+def rewrite_hidden(request, exclude=None):
   hidden = ''
   for key, value in request.iteritems():
-    if not (key in exclude):
+    if exclude is None or not (key in exclude):
       hidden += "<input type='hidden' name='" + escape(key) + "' value='" + escape(value) + "'/>"
   return hidden
 
+@register.simple_tag   
+def rewrite_hidden_except(request, x):
+  if ',' not in x:
+    vals = [x]
+  else:
+    vals = x.split(",")
+  return rewrite_hidden(request, vals)
+
+@register.simple_tag   
+def rewrite_hidden_nocols(request, field_order):
+  exclude = field_order + ['submit_checks']
+  return rewrite_hidden(request, exclude)
+
 @register.simple_tag
-def header_row(request, fields_selected, fields_mapped, field_widths, order_by, sort):
-  total_width = 0
-  for item in fields_selected:
-    total_width += field_widths[item]
-  return "<tr class='headrow'>" + ''.join([("<th style='width:" + percent_width(field_widths[x], total_width) + \
-                            "'>" + column_head(request, x, fields_mapped, order_by, sort) + "</th>"  ) \
-          for x in fields_selected]) + '</tr>'
+def header_row(request, fields_selected, fields_mapped, order_by, sort, primary_page):
+  r = "<thead><tr>" + ''.join([column_head(request, x, fields_mapped, order_by, sort, \
+      primary_page) for x in fields_selected]) + '</tr></thead>'
+  return r
 
 #display column heading text, links, sort order that allow changing
-ORDER_BY_IMG = {'asc': '/static/images/tri_up.png', 'desc': '/static/images/tri_down.png'}
+ORDER_BY_CLASS = {'asc': 'sort__asc', 'desc': 'sort__desc'}
 SORT_OPPOSITE = {'asc': 'desc', 'desc': 'asc'}
 SORT_TIP = {'asc': 'Sorting in ascending order. Click to change to descending order.',
             'desc': 'Sorting in descending order. Click to change to ascending order.'}
-def column_head(request, field, fields_mapped, order_by, sort):
+def column_head(request, field, fields_mapped, order_by, sort, primary_page):
+  c = request.copy()
+  c['order_by'] = field
   #if current fields is being ordered by then should show icon, also clicking link or icon will switch order
   if field == order_by:
-    overriding_params = {'order_by': field, 'sort': SORT_OPPOSITE[sort] }
+    c['sort'] = SORT_OPPOSITE[sort]
   else:
-    overriding_params = {'order_by': field, 'sort': sort }
-  combined_params = dict(request.dict(), **overriding_params)
-  url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
+    c['sort'] = 'desc'
+  # If sorting, set result to first page
+  if 'p' in c: c['p'] = 1
+  form_and_hidden = "<form method='get' action='" + reverse(primary_page) +\
+    "' role='form'>" + rewrite_hidden(c)
+  r = "<th>" + escape(fields_mapped[field][1]) + form_and_hidden
   if field == order_by:
-    sort_icon = "<div class='order_by_col'><a href='" + url + "' title='" + SORT_TIP[sort] + "'>" + \
-        "<img src='" + ORDER_BY_IMG[sort] + "' alt='" + SORT_TIP[sort] + "'></a></div>"
+    r += "<button class='" + ORDER_BY_CLASS[sort] + "' aria-label='" + SORT_TIP[sort] + "'>"
   else:
-    sort_icon = ''
-  column_link = "<a href='" + url + "' title='Sort on this column'>" + escape(fields_mapped[field]) + "</a>"
-  return sort_icon + column_link
+    r += "<button class='sorting' aria-label='Sort on this column'>"
+  r += "</button></form></th>"
+  return r 
 
 #need to pass in account co owners because it's obnoxiously used in the co-owners field and is added
 #to database values instead of being a purer value 
 @register.simple_tag
-def data_row(record, fields_selected, field_display_types, account_co_owners, testPrefixes):
-  return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, account_co_owners, testPrefixes) \
-               for f in fields_selected]) + '</td>'
+def data_row(record, fields_selected, field_display_types, testPrefixes):
+  assert 'c_identifier' in record
+  id_href_tag_head = "<a href='/id/" + record['c_identifier'] + "' class='link__primary'>" 
+  return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, \
+    testPrefixes, id_href_tag_head) for f in fields_selected]) + '</td>'
 
-FUNCTIONS_FOR_FORMATTING = { \
-  'string'         : lambda x, coown, tp: string_value(x), \
-  'identifier'     : lambda x, coown, tp: identifier_disp(x, tp), \
-  'datetime'       : lambda x, coown, tp: escape(datetime.datetime.utcfromtimestamp(x).strftime(settings.TIME_FORMAT_UI_METADATA)) + " UTC", \
-  'coowners'       : lambda x, coown, tp: co_owner_disp(x, coown) }
+FUNCTIONS_FOR_FORMATTING = {
+  'datetime'       : lambda x, tp, href: datetime_disp(x, href), 
+  'identifier'     : lambda x, tp, href: identifier_disp(x, tp),
+  'string'         : lambda x, tp, href: string_value(x, href),
+}
 
-def formatted_field(record, field_name, field_display_types, account_co_owners, testPrefixes):
-  value = record[field_name]
-  formatting = field_display_types[field_name]
-  return FUNCTIONS_FOR_FORMATTING[formatting](value, account_co_owners, testPrefixes)
+def formatted_field(
+  record, field_name, field_display_types, testPrefixes, href):
+    value = record[field_name]
+    formatting = field_display_types[field_name]
+    return FUNCTIONS_FOR_FORMATTING[formatting](value, testPrefixes, href)
 
-def string_value(x):
-  if x is None:
-    return ''
+def string_value(x, href):
+  if x is None or x.strip() == '':
+    return '&nbsp;'
   else:
-    return escape(x)
+    return href + escape(x) + "</a>"
 
 @register.simple_tag  
 def identifier_disp(x, testPrefixes):
   for pre in testPrefixes:
     if x.startswith(pre['prefix']):
-      return "<a href='/id/" + x + "' class='fakeid'>" + escape(x) + "</a>"
-  return "<a href='/id/" + x + "'>" + escape(x) + "</a>"
+      return "<a href='/id/" + x + "' class='link__primary'>&#42;" + escape(x) + "</a>"
+  return "<a href='/id/" + x + "' class='link__primary'>" + escape(x) + "</a>"
   
-  
-def co_owner_disp(x, coown):
-  str_x = ''
-  if not x is None:
-    str_x = x
-  if str_x != '' and coown != '':
-    return escape(str_x) + "," + "<span class='account_co_owners'>" + escape(coown) + "</span>"
-  else:
-    return escape(str_x) + "<span class='small_co_owners'>" + escape(coown) + "</span>"
+def datetime_disp(x, href):
+  return href +\
+    escape(datetime.datetime.utcfromtimestamp(x).strftime(settings.TIME_FORMAT_UI_METADATA)) +\
+    " UTC</a>"
 
-def percent_width(item_weight, total):
-  return str(int(round(item_weight/total*1000))/10.0) + '%'
-
-def chunks(l, n):
-    return [l[i:i+n] for i in range(0, len(l), n)]
-  
 @register.simple_tag
-def pager_display(request, current_page, total_pages, page_size):
+def pager_display(request, current_page, total_pages, page_size, select_position):
   if total_pages < 2: return ''
-  #half_to_first = (current_page - 1) / 2
-  #half_to_last = (total_pages - current_page) / 2 + current_page
-  temp_p = list(set(itertools.chain([1, 2, 3], \
-                                   #[half_to_first - 1, half_to_first, half_to_first + 1], \
-                                   #[half_to_last - 1, half_to_last, half_to_last + 1], \
-                                   [current_page -1, current_page, current_page + 1], \
-                                   [total_pages - 2, total_pages - 1, total_pages])))
-  disp_pages = sorted([x for x in temp_p if x>0 and x <= total_pages])
   p_out = ''
-  last_p = 0
+  s_total = str(total_pages)
+  empty = ''
   if current_page > 1:
-    p_out += page_link(request, current_page, current_page - 1, "< prev", page_size) + ' '
-  for p in disp_pages:
-    if last_p < p - 1:
-      p_out += '... '
-    p_out += page_link(request, current_page, p, str(p), page_size) + ' '
-    last_p = p
+    p_out += page_link(request, 1, empty, page_size, 'pagination__first', \
+      _("First page of results")) + ' '
+    p_out += page_link(request, current_page - 1, _("Previous"), page_size,\
+      'pagination__prev', _("Previous page of results")) + ' '
+  p_out += "<input id='page-directselect-" + select_position + \
+           "' type='number' class='pagination__input' min='1' " + \
+           "max='"  + s_total  + "' name='p' value='" + str(current_page) + "'/> " + \
+           _("of") + " " + s_total + " "
   if current_page < total_pages:
-    p_out += page_link(request, current_page, current_page + 1, "next >", page_size) + ' '
+    p_out += page_link(request, current_page + 1, _("Next"), page_size, \
+      'pagination__next', _("Next page of results")) + ' '
+    p_out += page_link(request, total_pages, empty, page_size, \
+      'pagination__last', _("Last page of results")) + ' '
   return p_out
 
-def page_link(request, current_page, this_page, link_text, page_size):
-  combined_params = dict(request.dict(), **{'p': this_page, 'ps': page_size})
-  url = reverse('ui_manage.index') + "?" + urllib.urlencode(combined_params)
-  if current_page == this_page:
-    return "<span class='pagercurrent'>" + escape(link_text) + "</span>"
-  else:
-    return "<a href='" + url + "' class='pagerlink'>" + escape(link_text) + "</a>"
+def page_link(request, this_page, link_text, page_size, cname, title=None):
+  attr_aria = " aria-label='" + title + "'" if title else ""
+  return "<button data-page='" + str(this_page) + "' class='" + cname + "'" + \
+    attr_aria + " type='button'>" + escape(link_text) + "</button>"

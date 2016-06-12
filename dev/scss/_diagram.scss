@@ -1,0 +1,19 @@
+// ##### Diagram Element - Used only on learn page for now ##### //
+
+.diagram__img-wrapper {
+	padding: 0 0 10px 20px;
+	float: right;
+}
+
+.diagram__img {
+	width: 384px;
+	height: 151px;
+	border: 1px solid $design-black-color;
+
+	@include bp(screen2) {
+		width: 487px;
+		height: 189px;
+	}
+
+}
+

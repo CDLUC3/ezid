@@ -249,3 +249,38 @@ lxml is incompatible with mod_wsgi's use of Python sub-interpreters
     Allow from all
     Options -Indexes
     </Directory>
+
+UI Static Library Setup
+================================
+
+Install:
+NodeJS and npm   (On Linux it's recommended you use the NodeSource repository
+                  instead of a package manager to do this. And npm will be installed
+                  automatically with NodeJS)
+ruby             (for the scss-lint plugin)
+
+At the project_root level, run this to install all gulp plugins
+
+    npm update --save-dev 
+
+This relies on config files gulpfile.js and packages.json in PROJECT_ROOT. 
+Install the scss-lint plugin:
+
+    gem install scss_lint 
+
+And finally install gulp:
+
+    sudo npm install gulp
+
+Development commands:
+
+To make changes to static elements, components, and layouts, simply run $ gulp,
+which Start a local browser with the index page at http://localhost:3000/,
+and will reload HTML, CSS, and JavaScript in the browser immediately upon any changes 
+to these files during development.
+
+To create a build, run $ gulp build. This writes static webpages to 
+.../SITE_ROOT/PROJECT_ROOT/ui_library 
+
+To validate HTML of a build using the W3C validation service, run $ gulp validateHTML
+

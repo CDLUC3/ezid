@@ -1,26 +1,35 @@
-{% load layout_extras %}
-	<div class="optional">
-		<div name="/resource/subjects" class="element container">
-			<label for="/resource/subjects" class="element">Subject</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/subjects" nbelmtsadded="{{ num_subjects }}" class="addButton">
-			<input type="button" value="-" name="/resource/subjects" class="rmvButton">
-			<div class="helpico">{% help_icon "dcxml_subjects_help" %}</div>
-{% for subject in datacite_obj_subjects.subject %}
-                        <div class="multiple">
-                                <div name="/resource/subjects/subject[{{ forloop.counter }}]" class="element">
-                                        <label for="/resource/subjects/subject[{{ forloop.counter }}]" class="element sized">Subject:</label>
-                                        <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]" value="{{ subject.text|default_if_none:"" }}" class="data sized" />
-                                        <div class="attribute">
-                                                <label for="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" class="attribute sized">Scheme:</label>
-                                                <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@subjectScheme" value="{{ subject.attrib.subjectScheme }}" class="data sized" />
-                                        </div>
-                                        <div class="attribute">
-                                                <label for="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" class="attribute sized">Scheme URI:</label>
-                                                <input type="text" name="/resource/subjects/subject[{{ forloop.counter }}]/@schemeURI" value="{{ subject.attrib.schemeURI }}" class="data sized">
-                                        </div>
-                                        <div class="clearboth"></div>
-                                </div>
-                        </div>
+{% load i18n %}
+<script type="text/javascript">
+  $(function() {
+    $('#subject_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.subject_set.prefix }}',
+      deleteCssId: 'button__minus-subject',
+      addCssId: 'button__plus-subject'
+    });
+  })
+</script>
+
+<div id="subject_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="subject_form_set">
+  <div class="fieldset-controls__container">
+    <div id="subject_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Subject" %}</div>
+  {% include "create/_datacite_buttons.html" with element="subject" %}
+  </div>
+{% for form in form.subject_set %}
+  <div class="form-container">
+{{ form.non_field_errors }}
+
+    {% include "create/_datacite_inlinetext.html" with field=form.subject %}
+    <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
+      <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
+      {% include "create/_datacite_inlinetext.html" with field=form.subjectScheme %}
+      {% include "create/_datacite_inlinetext.html" with field=form.schemeURI %}
+      {% for hidden in form.hidden_fields %}
+       {{ hidden }}
+      {% endfor %}
+
+    </details>
+  </div>
 {% endfor %}
-		</div>
-	</div>
+</div>
+{{ form.subject_set.management_form }}

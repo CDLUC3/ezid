@@ -1,28 +1,27 @@
-{% load layout_extras %}
-	<div class="optional">
-		<div name="/resource/geoLocations" class="element container">
-			<label for="/resource/geoLocations" class="element">Geolocation</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/geoLocations" nbelmtsadded="{{ num_geoLocations }}" class="addButton">
-			<input type="button" value="-" name="/resource/geoLocations" class="rmvButton">
-			<div class="helpico">{% help_icon "dcxml_geolocations_help" %}</div>
-{% for geoLoc in datacite_obj_geoLocations.geoLocation %}
-			<div class="multiple">
-				<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]" class="element">
-					<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPoint" class="element">
-						<label for="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPoint" class="element sized">Point:</label>
-						<input type="text" name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPoint"{% if geoLoc.geoLocationPoint %} value="{{ geoLoc.geoLocationPoint.text|default_if_none:"" }}"{% endif %} class="data sized">
-					</div>
-					<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationBox" class="element">
-						<label for="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationBox" class="element sized">Box:</label>
-						<input type="text" name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationBox"{% if geoLoc.geoLocationBox %} value="{{ geoLoc.geoLocationBox.text|default_if_none:"" }}"{% endif %} class="data sized">
-					</div>
-					<div name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPlace" class="element">
-						<label for="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPlace" class="element sized">Place:</label>
-						<input type="text" name="/resource/geoLocations/geoLocation[{{ forloop.counter }}]/geoLocationPlace"{% if geoLoc.geoLocationPlace %} value="{{ geoLoc.geoLocationPlace.text|default_if_none:"" }}"{% endif %} class="data sized">
-					</div>
-					<div class="clearboth"></div>
-				</div>
-			</div>
+{% load i18n %}
+<script type="text/javascript">
+  $(function() {
+    $('#geoloc_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.geoloc_set.prefix }}',
+      deleteCssId: 'button__minus-geoloc',
+      addCssId: 'button__plus-geoloc'
+    });
+  })
+</script>
+
+<div id="geoloc_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="geoLocation_form_set">
+  <div class="fieldset-controls__container">
+    <div id="geoLocation_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Geolocation" %}</div>
+  {% include "create/_datacite_buttons.html" with element="geoloc" %}
+  </div>
+{% for form in form.geoloc_set %}
+  <div class="form-container">
+{{ form.non_field_errors }}
+{% include "create/_datacite_inlinetext.html" with field=form.geoLocationPoint %}
+{% include "create/_datacite_inlinetext.html" with field=form.geoLocationBox %}
+{% include "create/_datacite_inlinetext.html" with field=form.geoLocationPlace %}
+  </div>
 {% endfor %}
-		</div>
-	</div>
+</div>
+{{ form.geoloc_set.management_form }}

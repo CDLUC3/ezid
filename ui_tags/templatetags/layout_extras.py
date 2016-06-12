@@ -1,6 +1,7 @@
 from django import template
 from django.conf import settings
 from django.utils.html import escape
+from django.utils.translation import ugettext as _
 from decorators import basictag
 from django.core.urlresolvers import reverse
 from operator import itemgetter
@@ -8,8 +9,6 @@ import config
 import django.template
 import urllib
 import re
-from lxml import etree, objectify
-#import datetime
 
 register = template.Library()
 
@@ -22,6 +21,12 @@ def settings_value(name):
   except AttributeError:
     return ""
   
+@register.simple_tag
+def content_heading(heading):
+  """Outputs primary heading at top of page"""
+  return '<div class="heading__primary-container">' + \
+         '<h1 class="heading__primary-text">' + unicode(heading) + '</h1></div>'
+
 @register.simple_tag
 def choices(name, value, choice_string):
   """Creates radio buttons (for simple admin email form) based on string choices separated by a pipe"""
@@ -64,38 +69,54 @@ def get_dict_value(dt, key_name):
     return ''
   
 @register.simple_tag
-def tooltip_class(profile_element_string):
-  return escape('element_' + profile_element_string.replace('.',''))
-
-@register.simple_tag
 def identifier_display(id_text, testPrefixes):
   for pre in testPrefixes:
     if id_text.startswith(pre['prefix']):
-      return "<span class='fakeid'>" + escape(id_text) + "</span>"
+      return "&#42;&nbsp;" + escape(id_text)
   return escape(id_text)
 
 @register.simple_tag
 def active_id_display(id_text, testPrefixes):
-  #remove yellow highlighting for demo_id's URL
-  #for pre in testPrefixes:
-  #  if id_text.startswith(pre['prefix']):
-  #    return "<span class='fakeid'>" + '<a href="' + _urlForm(id_text) + '">' + _urlForm(id_text) + '</a></span>'
   return '<a href="' + _urlForm(id_text) + '">' + _urlForm(id_text) + '</a>'
-  
-@register.simple_tag
-def help_icon(id_of_help):
-  return '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#' + id_of_help + '" name="help_link">' + \
-    '<img src="/static/images/help_icon.gif" alt="Click for additional help"' + \
-    ' title="Click for additional help"/></a>'
-    
-@register.simple_tag
-def datacite_field_help_icon(id_of_help):
-  temp_id = id_of_help.replace(".", "_") + '_help'
-  return '<div class="datacite_help">' + \
-    '<a href="#' + temp_id + '" name="help_link">' + \
-    '<img src="/static/images/help_icon.gif" alt="Click for additional help" title="Click for additional help"/>' + \
-    '</a></div>'
 
+@register.simple_tag
+def help_icon(id_of_help, specifics="", css_class="button__icon-help"):
+  """ data-container="#' + str(id_of_help) """ 
+  title = _("Click for additional help") + " " + unicode(specifics)
+  return '<a href="#" class="button__icon-link" id="' + str(id_of_help) + '" ' +\
+    'role="button" data-toggle="popover" data-placement="auto bottom" ' +\
+    'data-trigger="click" tabindex="0">' +\
+    '<img src="/static/images/iconHelp.svg" alt="' + str(title) + '"' + \
+    ' class="' + str(css_class) + '" title="' + str(title) + '"/></a>'
+
+@register.tag
+@basictag(takes_context=True)
+def url_force_https(context, url_path):
+  """Force link to be prefixed wth https"""
+  request = context['request']
+  if django.conf.settings.USE_SSL and ('HTTP_HOST' in request.META):
+    url_path_no_lead_slash = url_path[1:] if re.match('^\/.*', url_path) else url_path
+    return "%s//%s/%s" % ('https:', request.META.get("HTTP_HOST"), url_path_no_lead_slash)
+  else:
+    return url_path
+
+@register.filter('fieldtype')
+def fieldtype(field):
+  """Get the type of a django form field (thus helps you know what class to apply to it)"""
+  return field.field.widget.__class__.__name__
+
+@register.filter(name='add_attributes')
+def add_attributes(field, css):
+  """Add attributes to a django form field"""
+  attrs = {}
+  definition = css.split(',')
+  for d in definition:
+    if ':' not in d:
+      attrs['class'] = d
+    else:
+      t, v = d.split(':')
+      attrs[t] = v
+  return field.as_widget(attrs=attrs)
 
 @register.tag
 @basictag(takes_context=True)
@@ -165,28 +186,30 @@ def selected_radio(context, request_item, loop_index, item_value):
     return ''
 
 @register.simple_tag
-def shoulder_display(prefix_dict, testPrefixes, simple_display):
-  display_prefix = ""
-  for pre in testPrefixes:
-    if prefix_dict['prefix'].startswith(pre['prefix']):
-      display_prefix = " (<span class='fakeid'>" + escape(prefix_dict['prefix']) + "</span>)"
-  if display_prefix == '':
-    display_prefix = " (" + prefix_dict['prefix'] + ")"
-  if simple_display == "True":
-    t = re.search('^[A-Za-z]+:', prefix_dict['prefix'])
-    t = t.group(0)[:-1].upper()
-    return escape(t) + display_prefix
+def shoulder_display(prefix_dict, id_type_only="False", testPrefixes=[], sans_namespace="False"):
+  """Three types of display:
+  FULL --------------->  Caltech Biology ARK (ark:/77912/w7))
+  SANS NAMESPACE ----->    ARK (ark:/99999/...))       <----------   used for demo page
+  ID TYPE ONLY ------->    ARK                         <----------   used for home page"""
+  if id_type_only == "False":
+    display_prefix = ""
+    for pre in testPrefixes:
+      if prefix_dict['prefix'].startswith(pre['prefix']):
+        display_prefix = " (" + escape(prefix_dict['prefix']) + "/... )"
+    if display_prefix == '':
+      display_prefix = " (" + prefix_dict['prefix'] + ")"
+    if sans_namespace == "True":
+      return escape(_get_id_type(prefix_dict['prefix'])) + display_prefix
+    else:
+      type = _get_id_type(prefix_dict['prefix'])
+      return escape(prefix_dict['namespace'] + ' ' + type) + display_prefix 
   else:
-    type = prefix_dict['prefix'].split(":")[0].upper()
-    return escape(prefix_dict['namespace'] + ' ' + type) + display_prefix 
+    return escape(_get_id_type(prefix_dict['prefix']))
 
-@register.simple_tag
-def search_display(dictionary, field):
-  if field in ['createTime', 'updateTime']:
-    return escape(datetime.datetime.fromtimestamp(dictionary[field]))
-  else:
-    return dictionary[field]
-  
+def _get_id_type (prefix):
+  t = prefix.split(":")[0].upper()
+  return t
+
 @register.simple_tag
 def unavailable_codes(for_field):
   items = ( ("unac", "temporarily inaccessible"),
@@ -257,168 +280,3 @@ def unique_id_types(prefixes):
     kinds[t] = prefix
   i = [(x[0].upper(), x[1],) for x in kinds.items()]
   return sorted(i, key = itemgetter(0))
-  
-#This captures the block around which rounded corners go
-@register.tag(name="rounded_borders")
-def do_rounded_borders(parser, token):
-  nodelist = parser.parse(('endrounded_borders'))
-  parser.delete_first_token()
-  return FormatRoundedBordersNode(nodelist)
-
-class FormatRoundedBordersNode(template.Node):
-  def __init__(self,nodelist):
-    self.nodelist = nodelist
-
-  def render(self, context):
-    content = self.nodelist.render(context)
-    return """<div class="roundbox">
-        <img src="/static/images/corners/tl.gif" width="6" height="6" class="roundtl" />
-        <img src="/static/images/corners/tr.gif" width="6" height="6" class="roundtr" />
-        <img src="/static/images/corners/bl.gif" width="6" height="6" class="roundbl" />
-        <img src="/static/images/corners/br.gif" width="6" height="6" class="roundbr" />
-        <div class="roundboxpad">
-    %(content)s
-    </div></div>""" % {'content':content,}
-
-
-''' -------------------------------------------------------------------
-For editing (and creating) DataCite advanced DOI elements: If object representing
-XML blob does not have element we're looking for, load an empty one
-    -------------------------------------------------------------------'''    
-@register.inclusion_tag('create/_datacite_altId.html')
-def datacite_get_altIds(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'alternateIdentifiers') and\
-      hasattr(datacite_obj.alternateIdentifiers, 'alternateIdentifier'):
-      datacite_obj_alternateIdentifiers = datacite_obj.alternateIdentifiers
-  else:
-      datacite_obj_alternateIdentifiers = datacite_obj_empty.alternateIdentifiers
-  num_altIds = len(datacite_obj_alternateIdentifiers.alternateIdentifier) 
-  num_altIds = num_altIds if num_altIds > 1 else 1
-  return {'datacite_obj_alternateIdentifiers': 
-          datacite_obj_alternateIdentifiers, 'num_altIds': num_altIds}
-
-@register.inclusion_tag('create/_datacite_contributor.html')
-def datacite_get_contributors(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'contributors') and\
-      hasattr(datacite_obj.contributors, 'contributor'):
-      datacite_obj_contributors = datacite_obj.contributors
-  else:
-      datacite_obj_contributors = datacite_obj_empty.contributors
-  num_contributors = len(datacite_obj_contributors.contributor) 
-  num_contributors = num_contributors if num_contributors > 1 else 1
-  return {'datacite_obj_contributors': datacite_obj_contributors, 
-          'num_contributors': num_contributors}
-
-@register.inclusion_tag('create/_datacite_creator.html')
-def datacite_get_creators(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'creators'):
-    datacite_obj_creators = datacite_obj.creators
-  else:
-    datacite_obj_creators = datacite_obj_empty.creators
-  num_creators = len(datacite_obj_creators.creator) 
-  num_creators = num_creators if num_creators > 1 else 1
-  return {'datacite_obj_creators': datacite_obj_creators, 
-          'num_creators': num_creators}
-
-@register.inclusion_tag('create/_datacite_date.html')
-def datacite_get_dates(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'dates') and hasattr(datacite_obj.dates, 'date'):
-      datacite_obj_dates = datacite_obj.dates
-  else:
-      datacite_obj_dates = datacite_obj_empty.dates
-  num_dates = len(datacite_obj_dates.date) 
-  num_dates = num_dates if num_dates > 1 else 1
-  return {'datacite_obj_dates': datacite_obj_dates, 'num_dates': num_dates}
-
-@register.inclusion_tag('create/_datacite_description.html')
-def datacite_get_descriptions(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'descriptions') and\
-    hasattr(datacite_obj.descriptions, 'description'):
-    datacite_obj_descriptions = datacite_obj.descriptions
-  else:
-    datacite_obj_descriptions = datacite_obj_empty.descriptions
-  num_descriptions = len(datacite_obj_descriptions.description) 
-  num_descriptions = num_descriptions if num_descriptions > 1 else 1
-  return {'datacite_obj_descriptions': datacite_obj_descriptions, 
-          'num_descriptions': num_descriptions}
-
-@register.inclusion_tag('create/_datacite_format.html')
-def datacite_get_formats(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'formats') and\
-    hasattr(datacite_obj.formats, 'format'):
-    datacite_obj_formats = datacite_obj.formats
-  else:
-    datacite_obj_formats = datacite_obj_empty.formats
-  num_formats = len(datacite_obj_formats.format)
-  num_formats = num_formats if num_formats > 1 else 1
-  return {'datacite_obj_formats': datacite_obj_formats, 
-          'num_formats': num_formats}
-
-@register.inclusion_tag('create/_datacite_geoLoc.html')
-def datacite_get_geoLoc(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'geoLocations') and\
-    hasattr(datacite_obj.geoLocations, 'geoLocation'):
-    datacite_obj_geoLocations = datacite_obj.geoLocations
-  else:
-    datacite_obj_geoLocations = datacite_obj_empty.geoLocations
-  num_geoLocations = len(datacite_obj_geoLocations.geoLocation)
-  num_geoLocations = num_geoLocations if num_geoLocations > 1 else 1
-  return {'datacite_obj_geoLocations': datacite_obj_geoLocations,
-          'num_geoLocations': num_geoLocations}
-
-@register.inclusion_tag('create/_datacite_relId.html')
-def datacite_get_relIds(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'relatedIdentifiers') and\
-    hasattr(datacite_obj.relatedIdentifiers, 'relatedIdentifier'):
-    datacite_obj_relatedIdentifiers = datacite_obj.relatedIdentifiers
-  else:
-    datacite_obj_relatedIdentifiers = datacite_obj_empty.relatedIdentifiers
-  num_relIds = len(datacite_obj_relatedIdentifiers.relatedIdentifier)
-  num_relIds = num_relIds if num_relIds > 1 else 1
-  return {'datacite_obj_relatedIdentifiers': datacite_obj_relatedIdentifiers,
-         'num_relIds': num_relIds}
-
-@register.inclusion_tag('create/_datacite_rights.html')
-def datacite_get_rights(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'rightsList') and\
-    hasattr(datacite_obj.rightsList, 'rights'):
-    datacite_obj_rightsList = datacite_obj.rightsList
-  else:
-    datacite_obj_rightsList = datacite_obj_empty.rightsList
-  num_rights = len(datacite_obj_rightsList.rights)
-  num_rights = num_rights if num_rights > 1 else 1
-  return {'datacite_obj_rightsList': datacite_obj_rightsList, 
-          'num_rights': num_rights}
-
-@register.inclusion_tag('create/_datacite_size.html')
-def datacite_get_sizes(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'sizes') and hasattr(datacite_obj.sizes, 'size'):
-    datacite_obj_sizes = datacite_obj.sizes
-  else:
-    datacite_obj_sizes = datacite_obj_empty.sizes
-  num_sizes = len(datacite_obj_sizes.size) 
-  num_sizes = num_sizes if num_sizes > 1 else 1
-  return {'datacite_obj_sizes': datacite_obj_sizes, 
-          'num_sizes': num_sizes}
-
-@register.inclusion_tag('create/_datacite_subject.html')
-def datacite_get_subjects(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'subjects') and\
-    hasattr(datacite_obj.subjects, 'subject'):
-    datacite_obj_subjects = datacite_obj.subjects
-  else:
-    datacite_obj_subjects = datacite_obj_empty.subjects
-  num_subjects = len(datacite_obj_subjects.subject) 
-  num_subjects = num_subjects if num_subjects > 1 else 1
-  return {'datacite_obj_subjects': datacite_obj_subjects, 
-          'num_subjects': num_subjects}
-
-@register.inclusion_tag('create/_datacite_title.html')
-def datacite_get_titles(datacite_obj, datacite_obj_empty):
-  if hasattr(datacite_obj, 'titles'):
-    datacite_obj_titles = datacite_obj.titles
-  else:
-    datacite_obj_titles = datacite_obj_empty.titles
-  num_titles = len(datacite_obj_titles.title) 
-  num_titles = num_titles if num_titles > 1 else 1
-  return {'datacite_obj_titles': datacite_obj_titles, 'num_titles': num_titles}

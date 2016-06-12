@@ -1,0 +1,46 @@
+{% load manage_form_tags %}
+{% load i18n %}
+
+{% if results_crossref|length > 0 or results|length > 0 %} 
+  <form method="get" id="p_crossref" role="form">
+    <div class="pagination__input-group">
+  {% if not ajax %}
+    {% pager_display REQUEST p total_pages_crossref ps "crossref" %}
+  {% else %}
+    {% pager_display REQUEST p total_pages ps "crossref" %}
+  {% endif %}
+    </div>
+  </form>
+
+  <table id="crossref_table" class="table2">
+    <thead>
+      <tr>
+      <th>{% trans "Identifier" %}</th>
+      <th>{% trans "Date Submitted" %}</th>
+      <th>{% trans "Description" %}</th>
+      <th>{% trans "Issue" %}</th>
+      </tr>
+    </thead>
+  <tbody>
+  {% if not ajax %}
+    {% for item in results_crossref %}
+  <tr>
+     {% data_row item fields_selected_crossref field_display_types_crossref testPrefixes %}
+  </tr>
+    {% endfor %}
+  {% else %}
+    {% for item in results %}
+  <tr>
+     {% data_row item fields_selected field_display_types testPrefixes %}
+  </tr>
+    {% endfor %}
+  {% endif %}
+
+  </tbody>
+  </table>
+  {% include "dashboard/_dashboard_js.html" with name="crossref" %}
+
+{% else %}
+  <p class="general__p"><strong>{% trans "Currently no Crossref submission information available" %}.</strong></p>
+  <br/><br/><br/>
+{% endif %}

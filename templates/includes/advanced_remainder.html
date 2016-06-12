@@ -1,24 +1,27 @@
 {% load layout_extras %}
+{% load i18n %}
 
-<div id="preview_div" style="width:180px;float:right;word-wrap:break-word;">
-  <h2>Identifier Preview:</h2>
-  <div id="preview_div_value"></div>
-</div>
-<div style="float:left;">
-  <div style="margin-top: 1em;">
-    <h2 style="display:inline;">Step 2: Optional: Enter a custom remainder (suffix)</h2>{% help_icon "remainder_guidelines" %}
+<div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset4">
+  <div id="create__fieldset4" class="fieldset-stacked__legend-number-2"><h2 class="fieldset__heading-2">{% trans "Optional: Enter a custom remainder (suffix)" %}</h2>
+  {% help_icon "custom_remainder" _("on creating a custom remainder for the identifier") %}
   </div>
-  <div style="padding:1em 0 0 1em;clear:both;">
-    <input type="text" name="remainder" id="remainder" size="35"
-        value="{% form_or_default "remainder" remainder_box_default %}" class="element_customRemainder"/>
+  {{ form.remainder_form.non_field_errors }}
+  {% for field in form.remainder_form %}
+  <div class="fcontrol__group-stacked{% if field.errors %}--invalid{% endif %} create__form-element-group">
+    <label for="{{ field.id_for_label }}" class="fcontrol__text-label-hidden">{{ field.label }}</label>
+    {{ field|add_attributes:"fcontrol__text-field-stacked" }}
+    {% if field.errors %}
+      <span class="fcontrol__invalid-flag">{% for error in field.errors %}{{ error|escape }}{% endfor %}</span>
+    {% endif %}
+  </div>
+  {% endfor %}
+  <div id="preview_div" class="fcontrol__group-inline">
+    <div class="fcontrol__text-label-inline">{% trans "Identifier Preview:" %}</div>
+    <div id="preview_div_value" class="fcontrol__text-field-inline"></div>
   </div>
 </div>
 
 <script type="text/javascript">
-	$(document).ready(function () {
-		$(".element_customRemainder").tooltip({ bodyHandler: function () { return "<b><u>Custom Remainder</u></b><br/>Normally EZID creates a unique string to place after the identifier string selected in step 1 above, but you can enter your own unique string here if you are comfortable vouching for its uniqueness yourself."; } });
-	});
-  // deal with custom remainder and previews
   $('#remainder').focus(function() {
     $(this).select();
 	}).mouseup(function() {
@@ -69,5 +72,3 @@
   });
   checkRemainderChanged();
 </script>
-
-<div style="clear:both">&nbsp;</div>

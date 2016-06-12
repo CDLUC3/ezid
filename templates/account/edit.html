@@ -1,102 +1,82 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
+{% load i18n %}
 
-{% block title %}My Account{% endblock %}
-
+{% block title %}{% block title-twitter %}{% trans "My Account" %}{% endblock %}{% endblock %}
+{% block heading %}{% content_heading _("My Account") %}{% endblock %}
 {% block content %}
-  <div class="grid_12">
-    <h1>My Account</h1>
-    <h2>Account Information</h2>
-    
-    <form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" >
-      <div class="left_desc">Username:</div>
-      <div class="right_val">{{ username }}</div>
-      
-      <div>
-        <div style="float:left; width:350px;">
-          <label for="givenName" class="left">
-            First name:
-          </label>
-          <div class="field_right" style="width: 230px;">
-            <input type="text" name="givenName" id="givenName" size="25"
-                value="{{ givenName }}" />
-          </div>
-        </div>
-        
-        <div style="float:left; width: 350px;">
-          <label for="sn" class="left" style="text-align:right;">
-            Last name:&nbsp;&nbsp;&nbsp;
-          </label>
-          <div class="field_right" style="width: 230px;">
-            <input type="text" name="sn" id="sn" size="25"
-                value="{{ sn }}" />
-          </div>
-        </div>
-      </div>
-      
-      <label for="mail" class="left">
-        Email address:
-      </label>
-      <div class="field_right">
-        <input type="text" name="mail" id="mail" size="25"
-            value="{% form_or_default "mail" mail %}" />
-      </div>
-      
-      <label for="telephoneNumber" class="left">
-        Phone number:
-      </label>
-      <div class="field_right">
-        <input type="text" name="telephoneNumber" id="telephoneNumber" size="25"
-            value="{{ telephoneNumber }}" />
-      </div>
-      
-      
-      <div style="clear:both">&nbsp;</div>
-      <label for="ezidCoOwners" class="left">
-        Co-owners:
-      </label>
-      <div class="field_right">
-        <input type="text" name="ezidCoOwners" id="ezidCoOwners" size="35"
-            value="{{ ezidCoOwners }}" />{% help_icon "coowners_help" %}
-      </div>
 
-      <label class="left" style="margin: 5px 0 0 0;">&nbsp;</label>
-      <div class="field_right" style="margin: 5px 0 0 0;font-size:85%;">
-        Use commas to separate multiple entries.
-      </div>
-      <div style="clear:both">&nbsp;</div>
-      <h2>Change Password</h2>
-      
-      <label for="pwcurrent" class="left">
-        Current password:
-      </label>
-      <div class="field_right">
-        <input type="password" name="pwcurrent" id="pwcurrent" size="25" value="" autocomplete="off" />
-      </div>
-      
-      <label for="pwnew" class="left">
-        New password:
-      </label>
-      <div class="field_right">
-        <input type="password" name="pwnew" id="pwnew" size="25" value="" autocomplete="off" />
-      </div>
-     
-      <label for="pwconfirm" class="left">
-        Confirm new password:
-      </label>
-      <div class="field_right">
-        <input type="password" name="pwconfirm" id="pwconfirm" size="25" value="" autocomplete="off" />
-      </div>
-      
-      <label class="left">&nbsp;</label>
-      <div class="field_right">
-        <input type="submit" value="Save" />
-      </div>
-      <div style="clear:both">&nbsp;</div>   
-    </form>
-    
+<p class="general__note">{% trans "To edit your account information, proxy users, or account password, make changes in the fields below, then click Save." %}</p>
+
+<form autocomplete="off" id="edit_form" action="{% url "ui_account.edit" %}" method="post" class="general__form" role="form">
+{% comment "nonfield_errors" %}form.non_field_errors not used here, and will be displayed in django.contrib.messages.error{% endcomment %}
+  <h2 class="heading_2_caps vertical-buffer-xs">{% trans "Account Information" %}</h2>
+ 
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{% trans "Username" %}</label>
+    <div class="fcontrol__text-nofield">{{ username }}</div>
   </div>
-  
-  {% include "info/popup_help.html" %}
-  <script type="text/javascript" src="/static/javascripts/help_box.js"></script>
+ 
+  {% include "includes/_inlinetext.html" with field=form.primaryContactName reqd=True form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.primaryContactEmail reqd=True form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.primaryContactPhone reqd=True form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.secondaryContactName form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.secondaryContactEmail form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.secondaryContactPhone form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.accountDisplayName reqd=True form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.accountEmail reqd=True form_name="general__" %}
+ 
+{% if crossrefEmail %} 
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="" class="fcontrol__textarea-label-inline general__form-label">{% trans "Crossref Email" %}</label>
+    <div class="fcontrol__text-nofield">
+      {{ crossrefEmail }} 
+      <div class="fcontrol__caption">{% trans "NOTE: If you want to change this email address" %}
+        , <a class="link__primary" href="/contact">{% trans "contact us" %}</a>.</div>
+    </div>
+  </div>
+{% endif %}
+
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="" class="fcontrol__textarea-label-inline general__form-label">{% trans "Your Proxy Account(s)" %}</label>
+    <div class="fcontrol__text-nofield">
+      {{ proxy_for|safe }} 
+      <div class="fcontrol__caption">{% trans "NOTE: These are identifier groups where you have been designated as proxy user." %}</div>
+    </div>
+  </div>
+
+{% if proxy_users_choose %}
+<div class="fcontrol__group-inline general__form-element-group">
+  <label for="{{ form.proxy_users_picked.id_for_label }}" class="fcontrol__textarea-label-inline general__form-label">{{ form.proxy_users_picked.label }}</label>
+  <div class="fcontrol__text-nofield">
+    <div class="fcontrol__group">
+      {{ form.proxy_users_picked|add_attributes:"fcontrol__textarea-inline-noborder"}}
+      {% if form.proxy_users_picked.errors %}
+      <span class="fcontrol__invalid-flag">
+      {% for error in form.proxy_users_picked.errors %}
+        {{ error|escape }}
+      {% endfor %}
+      </span>
+      {% endif %}
+      <button class="account__button-proxy-select"data-toggle="modal" data-target="#proxyModal" type="button">{% trans "Select Proxy User(s)" %}</button>
+      {% help_icon "lookup_proxies" _("on selecting proxy users") "account__button-icon-help" %}
+    </div>
+    <div class="fcontrol__caption-tight">NOTE: These are users that you have designated as proxy users for your identifiers. Currently users cannot be deleted from this list. Please <a class="link__primary" href="/contact">contact us</a> if you need to delete a proxy user.</div>
+  </div>
+  {% include "account/_proxyModal.html" %}
+</div>
+{% endif %}
+
+  <h2 class="heading_2_caps">{% trans "Change Password" %}</h2>
+
+  {% include "includes/_inlinetext.html" with field=form.pwcurrent form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.pwnew form_name="general__" %}
+  {% include "includes/_inlinetext.html" with field=form.pwconfirm form_name="general__" %}
+
+  <button class="button__primary account__form-submit">{% trans "Submit" %}</button>
+</form>
+
+{% include "info/popup_help.html" %}
+<script type="text/javascript" src="/static/javascripts/help_box.js"></script>
+
 {% endblock %}

@@ -1,0 +1,40 @@
+<div class="header__admin-text">Welcome Admin User!</div>
+<header role="banner" class="header">
+  <div class="header__logos">
+    <a class="header__main-logo-link" href="">
+      <picture>
+        <source srcset="images/logo_small-screen.svg" media="(max-width: 767px)">
+        <img srcset="images/logo.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAADs=" class="header__main-logo-image" alt="University of California, Easy ID, identifiers made easy">
+      </picture>
+    </a>
+    <a class="header__affiliate-logo-link" href="">
+      <img class="header__affiliate-logo-image-jisc" src="images/logo_jisc-edina.png" alt="University of California, Easy ID, identifiers made easy">
+    </a>
+  </div>
+
+  <button type="button" id="js-header__nav-button" class="header__nav-button" aria-controls="js-header__nav">
+    <img src="images/mobile-menu.svg" alt="Show or hide navigation" class="header__nav-button-icon">
+  </button>
+
+  <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-hidden="false">
+    <a class="header__search-link" href="">Search</a>
+    <div class="header__learn">
+      <a id="header__learn-link" class="header__learn-link" href="">Learn</a>
+      <ul class="header__learn-subnav" aria-hidden="true">
+        <li><a href="/learn#01">What Is EZID?</a></li>
+        <li><a href="/learn#02">Current Users</a></li>
+        <li><a href="/learn#03">Pricing</a></li>
+        <li><a href="/learn#04">Documentation</a></li>
+        <li><a href="/learn#05">FAQ</a></li>
+        <li><a href="/learn#06">Media</a></li>
+        <li><a href="/doc/apidoc.html">API Guide</a></li>
+        <li><a href="/demo">EZID Demo</a></li>
+      </ul>
+    </div>
+    <a class="header__contact-link" href="">Contact</a>
+    <div class="header__loginout">
+      <button id="js-header__loginout-button" class="header__loginout-link">Login</button>
+      <!--#include file="login-modal.html" -->
+    </div>
+  </nav>
+</header>

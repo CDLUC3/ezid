@@ -1,109 +1,77 @@
 {% load layout_extras %}
-
+{% load i18n %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+{% get_current_language as LANGUAGE_CODE %}
+<html class="no-js" lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    
-    <meta name="description" 
-    	content="EZID service creates long-term identifiers
-    	and is a key component for keeping data and digital objects safe
-    	while fulfilling grant requirements for data management plans." />
-    	
-    <meta name="keywords"
-    	content="identifier, metadata, ezid, metadata schemas, reporting,
-    	data management plan, managing data, datasets, data repository,
-    	curate, curator, curation, biology, engineering, biological science,
-    	science, scientific, hard science, social science, humanities,
-    	digital humanities, biomed, visual arts, government agency, DOI,
-    	publish, published object, citation, cite, id number, scientist,
-    	authors, research, researchers, data files, linking, grant proposals,
-    	digitization, planning, digital preservation, UC3, California Digital Library,
-    	CDL, UC Curation Center, University of California, storage, faculty, labs,
-    	organize, ARK, research, federal agencies, funding, funder, sharing data,
-    	Merritt, UC, tools, service, digital objects, datacite, scholars,
-    	persistent, dissertations, theses, budget, collection, public,
-    	standard, accessible, database, data warehouse, academic, open data,
-    	transactional data, central, unique, api, data managers, long-term,
-    	NSF requirements, NIH, IMLS, (other funding agency names that require data plans),
-    	PI, principal investigator, archives, archival, data collection,
-    	reporting, report, images, records, journals, articles, papers,
-    	crossref, generate, create, demo, id, pricing,
-    	how to create long-term identifiers, how do to get long-term identifiers,
-    	how to get unique identifiers, how to create long-term identifiers,
-    	how to create unique identifiers, how to manage data, what should be in my data plan,
-    	how to get identifiers for my repository, how to use the identifier API for my repository" />
-    	
-    <title>EZID: {% block title %}Identifiers made easy{% endblock %}</title>
-    
-    <link rel="stylesheet" type="text/css" media="all" href="/static/stylesheets/reset.css" />
-    
-    <noscript>
-			<link rel="stylesheet" href="/static/stylesheets/720.min.css" />
-		</noscript>
-    
-    <script type="text/javascript">
-    	// Edit to suit your needs.
-			var ADAPT_CONFIG = {
-		  // Where is your CSS?
-		  path: '/static/stylesheets/',
-		
-		  // false = Only run once, when page first loads.
-		  // true = Change on window resize and page tilt.
-		  dynamic: true,
-		
-		  // First range entry is the minimum.
-		  // Last range entry is the maximum.
-		  // Separate ranges by "to" keyword.
-		  range: [
-		    '0px    to 760px  = 720.min.css',
-		    '760px  to 980px  = 720.min.css',
-		    '980px            = 960.min.css'
-		  ]
-		};
-    	
-    </script>
-    <script type="text/javascript" src="/static/javascripts/adapt.min.js"></script>
-    <link rel="stylesheet" type="text/css" media="all" href="/static/stylesheets/text.css" />
-
+    <title>EZID: {% block title %}{% trans "Identifiers made easy" %}{% endblock %}</title>
+    <meta name="keywords" content="" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="EZID"/>
+    <meta name="og:image" content="http://{{ request.META.HTTP_HOST }}/static/images/social_card.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@ezidCDL" />
+    <meta name="twitter:title" property="og:title" content="{% block title-twitter %}{% trans "Identifiers made easy" %}{% endblock %}" />
+    <meta name="twitter:description" property="og:description" content="{% block description %}{% endblock %}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"> 
     <link rel="shortcut icon" type="image/png" href="/static/images/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="/static/stylesheets/styles.css"/>
+    <link rel="icon" sizes="16x16 32x32" href="/static/images/favicon.ico">
 
-    <script type="text/javascript" src="/static/javascripts/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="/static/javascripts/jquery-migrate-1.2.1.min.js"></script>
-    <!-- this migrate plugin is required to make the tooltip script work since it hasn't been upgraded in a while -->
-    <script type="text/javascript" src="/static/javascripts/jquery.tooltip.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/main.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/main2.min.css"/>
+
+    <script type="text/javascript" src="/static/javascripts/main2.min.js"></script>
+    <script type="text/javascript" src="/static/javascripts/message_box.js"></script>
 
     {% block header %}{% endblock %}
-    <script type="text/javascript">/*<![CDATA[*/
-      areMessages = {% if messages %}true{% else %}false{% endif %};
-      {% block javascript %}{% endblock %}
-    /*]]>*/</script>
-    {% if not google_analytics_id == 'none' %}
-      <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-        ga('create', '{{ google_analytics_id }}', 'auto');
-        ga('send', 'pageview');
-      </script>
-		{% endif %}
-		<script type="text/javascript" src="/static/javascripts/message_box.js"></script>
+    <script type="text/javascript">
+    {% block javascript %}{% endblock %}
+    </script>
+  {% if google_analytics_id %}
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', '{{ google_analytics_id }}', 'auto');
+      ga('send', 'pageview');
+    </script>
+  {% endif %}
   </head>
   <body>
-    <div class="container_12">
-    	{% host_based_include "includes/localized/_/logo.html" %}
-      {% host_based_include "includes/localized/_/user_menu.html" %}
+    <!--[if lt IE 10]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+  <a class="sr-only" href="#main-content">{% trans "Skip navigation" %}</a>
       {% include "includes/status.html" %}
-      {% include "includes/top_menu.html" %}    
-      {% block content %}{% endblock %}
+      {% include "includes/top.html" %}    
+  <a class="sr-only" name="main-content"></a>
+      {% block heading %}{% endblock %}
+      {% block alert %}
+        {% include "includes/messages.html" %}
+      {% endblock %}
+      {% block content %}
+      {% endblock %}
       
-      {% host_based_include "includes/localized/_/footer.html" %}
-    </div>
-    <script type="text/javascript" src="/static/javascripts/metadata_tooltips.js"></script>
+      {% include "includes/footer.html" %}
+
+  <script type="text/javascript" src="/static/javascripts/bootstrap/alert.js"></script>
+  <script type="text/javascript" src="/static/javascripts/bootstrap/button.js"></script>
+  <script type="text/javascript" src="/static/javascripts/bootstrap/carousel.js"></script>
+  <script type="text/javascript" src="/static/javascripts/bootstrap/collapse.js"></script>
+  <script type="text/javascript" src="/static/javascripts/bootstrap/modal.js"></script>
+  <!-- tooltip.js needs to come before popover.js -->
+  <script type="text/javascript" src="/static/javascripts/bootstrap/tooltip.js"></script> 
+  <script type="text/javascript" src="/static/javascripts/bootstrap/popover.js"></script>
+  <script type="text/javascript" src="/static/javascripts/bootstrap/transition.js"></script>
+
     <script type="text/javascript">
-    	$('input:visible:enabled').first().focus();
-    	window.scrollTo(0, 0);
+      $('input:visible:enabled').first().focus();
+      window.scrollTo(0, 0);
+
+      $(".alert-success").delay(4000).fadeOut(2000);
     </script>
+  </body>
 </html>

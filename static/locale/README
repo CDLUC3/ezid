@@ -1,0 +1,2 @@
+i18n file production command (run from home dir):
+django-admin.py makemessages --locale=fr_CA --ignore=node_modules/*

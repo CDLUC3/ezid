@@ -1,42 +1,21 @@
 {% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load i18n %}
 
-{% block title %}EZID : Reset password{% endblock %}
-
+{% block title %}EZID : {% trans "Reset Password" %}{% endblock %}
+{% block heading %}{% content_heading _("Reset Password") %}{% endblock %}
 {% block content %}
+<p><br/></p>
+<form method="post" action="{% url "ui_account.pwreset" pwrr %}" class="general__form" role="form">
+  {{ form.non_field_errors }}
+  <div class="fcontrol__group-inline general__form-element-group">
+    <label for="account_username" class="fcontrol__text-label-inline general__form-label">{% trans "Username" %}</label>
+    <div class="fcontrol__text-nofield">{{ username }}</div>
+  </div>
 
-<div id="pwreset" class="grid_9">
-
-	<h1>Reset password</h1>
-	
-	<form method="post" action="{% url "ui_account.pwreset" pwrr %}">
-		<label for="username" class="left">
-			Username
-		</label>
-		<div class="field_right">
-			<input type="text" name="username" size="20" value="{{ username }}" readonly="readonly"/>
-		</div>
-	
-		<label for="password" class="left">
-			New password
-		</label>
-		<div class="field_right">
-			<input type="password" id="password" name="password" size="20"/>
-		</div>
-	
-		<label for="confirm" class="left">
-			Confirm password
-		</label>
-		<div class="field_right">
-			<input type="password" id="confirm" name="confirm" size="20"/>
-		</div>
-		
-		<label class="left">&nbsp;</label>
-		<div class="field_right">
-			<input type="submit" value="Submit"/>
-		</div>
-	
-	</form>
-	<div style="clear:both;">&nbsp;</div>
-</div>
-
+  {% for field in form %}
+  {% include "includes/_inlinetext.html" with field=field form_name="general__" %}
+  {% endfor %}
+  <button class="button__primary general__form-submit">{% trans "Submit" %}</button>
+</form>
 {% endblock %}

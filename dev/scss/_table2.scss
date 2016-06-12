@@ -1,0 +1,126 @@
+// ##### Scrollable Table Component ##### //
+
+.table2 {
+	display: block;
+	width: 100%;
+	max-width: 1000px;
+	margin: 0 auto 10px;
+
+	thead {
+		display: block;
+		float: left;
+		border-top: 1px solid $design-secondary-color;
+		border-left: 1px solid $design-secondary-color;
+
+		tr {
+			display: block;
+		}
+
+	}
+
+	th {
+		display: block;
+		position: relative;
+		background: $design-secondary-lighter;
+		text-align: left;
+
+	}
+
+	%sorting-base {
+		position: absolute;
+		top: 0;
+		right: 2px;
+		padding: 12px;
+		border: none;
+
+	}
+
+	.sorting {
+		@extend %sorting-base;
+		background: no-repeat url('../images/sort_brown.png') 12px 8px;
+	}
+
+	.sort__desc {
+		@extend %sorting-base;
+		background: no-repeat url('../images/sort_desc_brown.png') 12px 8px;
+	}
+
+	.sort__asc {
+		@extend %sorting-base;
+		background: no-repeat url('../images/sort_asc_brown.png') 12px 8px;
+	}
+
+	tbody {
+		display: flex; // removes margin between <tr>s
+		white-space: nowrap;
+		overflow-x: auto;
+
+		tr {
+			display: inline-block;
+			flex: 1 0 auto;
+			border-top: 1px solid $design-secondary-color;
+		}
+
+	}
+
+	td {
+		display: block;
+	}
+
+	th,
+	td {
+		width: 10em;
+		margin: 0;
+		padding: 0.5em;
+		border-right: 1px solid $design-secondary-color;
+		border-bottom: 1px solid $design-secondary-color;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		vertical-align: top;
+	}
+
+}
+
+@include bp(screen2) {
+
+	.table2 {
+		display: table;
+
+		th {
+			display: table-cell;
+			width: auto;
+			overflow: visible;
+		}
+
+	}
+
+	.table2 thead {
+		display: table-header-group;
+		float: none;
+	}
+
+	.table2 thead tr {
+		display: table-row;
+	}
+
+	.table2 tbody {
+		display: table-row-group;
+		white-space: normal;
+	}
+
+	.table2 tbody tr {
+		display: table-row;
+	}
+
+	.table2 td {
+		display: table-cell;
+		width: auto;
+		overflow: visible;
+
+		&:first-child {
+			border-left: 1px solid $design-secondary-color;
+		}
+
+	}
+
+}

@@ -1,0 +1,131 @@
+{% extends "layouts/base.html" %}
+{% load metadata_tags %}
+{% load layout_extras %}
+{% load i18n %}
+
+{% block title %}{% block title-twitter %}EZID {% trans "Home" %}{% endblock %}{% endblock %}
+{% block description %}{%trans "EZID service creates long-term identifiers and is a key component for keeping data and digital objects safe while fulfilling grant requirements for data management plans." %}{% endblock %}
+{% block javascript %}
+  var imageURLs = [
+    'homeHero_01.jpg', 'homeHero_02.jpg', 'homeHero_03.jpg', 'homeHero_04.jpg',
+    'homeHero_05.jpg', 'homeHero_06.jpg', 'homeHero_07.jpg', 'homeHero_08.jpg',
+    'homeHero_09.jpg'
+  ];
+  function getImageTag() {
+    var img = '/static/images/';
+    var randomIndex = Math.floor(Math.random() * imageURLs.length);
+    img += imageURLs[randomIndex];
+    return img;
+  }
+{% endblock %}
+{% block content %}
+    <h1 style="display: none;">EZID: {% trans "Identifiers made easy" %}</h1>
+    <!-- Home Banner -->
+    <div class="home-banner">
+      <div class="home-banner__lead-container">
+      <div class="home-banner__lead">
+        <p class="home-banner__lead-text">{% trans "Create and manage long-term globally unique IDs for data and other sources using EZID" %}</p>
+        <a href="{% url "ui_home.learn" %}" class="home-banner__lead-button">{% trans "Learn More" %}</a>
+      </div>
+      </div>
+    </div>
+
+    <div class="home__identifier-container">
+
+      <div class="home__identifier-lead-box">
+        <p class="home__identifier-lead-heading">{% trans "See how easy it is" %}:</p>
+        <p class="home__identifier-lead-note">
+      {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+      i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
+      i.e.: <a class="don't_translate_classes" href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+      {% endcomment %}
+      {% blocktrans trimmed %}
+          <b>NOTE:</b> This is just a demo.
+      {% endblocktrans %}
+          &nbsp;&nbsp;
+      {% if not authenticatedUser %}
+        {% blocktrans trimmed %}
+          To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
+        {% endblocktrans %}
+      {% endif %}
+        </p>
+      </div>
+
+      <div class="home__identifier-form">
+        <form id="create_form" action="{% url "ui_home.index" %}" method="post" class="form-horizontal" role="form">
+        <input type="hidden" name="current_profile" id="current_profile" value="{{current_profile.name}}" />
+
+        <div class="fieldset-inline" role="group" aria-labelledby="fieldset__example2">
+
+          <span id="fieldset__example2" class="fieldset-inline__legend-number-1">{% trans "Choose an identifier type" %}</span>
+
+      {% for p in prefixes %}
+          <label for="{{p.prefix}}" class="fcontrol__radio-label-inline home__radio-labels">
+            <input id="{{p.prefix}}" class="fcontrol__radio-button-stacked" type="radio" value="{{p.prefix}}" name="shoulder" {% selected_radio "shoulder" forloop.counter p.prefix %}> <span>{% shoulder_display p "True" %}</span>
+          </label>
+      {% endfor %}
+          {% help_icon "choose_id_demo" _("on choosing the type of identifier") %}
+
+        </div>
+
+        <div class="fieldset-stacked fieldset__top-border home__fieldset" role="group" aria-labelledby="fieldset__example1">
+
+          <div id="fieldset__example1" class="fieldset-stacked__legend-number-2">{% trans "Describe the identified object" %}</div>
+
+          <div class="row">
+            {{ form.non_field_errors }}
+            {% for field in form %}
+            <div class="col-md-5 home__text-field">
+              <div class="fcontrol__group-stacked{% if field.errors %}--invalid{% endif %}">
+              {% if field|fieldtype == "TextInput" %}
+                <label for="{{ field.id_for_label }}" class="fcontrol__text-label-hidden">{{ field.label }}</label>
+                {{ field|add_attributes:"fcontrol__text-field-stacked" }}
+              {% else %}
+                <label for="{{ field.id_for_label }}" class="fcontrol__select-label-hidden">{{ field.label }}</label>
+                {{ field|add_attributes:"fcontrol__select" }}
+              {% endif %}
+              {% if field.errors %}
+                <span class="fcontrol__invalid-flag">{% for error in field.errors %}{{ error|escape }}{% endfor %}</span>
+              {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+
+            <div class="col-md-2 home__create-button">
+              <button class="home__button-primary">{% trans "Create" %}</button>
+            </div>
+
+          </div>
+        </div>
+        </form>
+      </div>
+    </div>
+    <script type="text/javascript">
+      // Load random hero image
+      var rImg = "url(" + getImageTag() + ")";
+      $(".home-banner").css({"backgroundImage": rImg});
+
+      // ToDo: Load different fields depending on ID type
+      $(document).ready(function () {
+        toggleIdFields();
+        //Whenever ID type changes
+        $(".id_type_button").change(function () {
+          toggleIdFields();
+        });
+      });
+      function toggleIdFields() {
+        if ($("#ark\\:\\/99999\\/fk4").is(':checked')) {
+          $("#home_demo_ark").show();
+          $("#home_demo_doi").hide();
+        } else {
+          $("#home_demo_ark").hide();
+          $("#home_demo_doi").show();
+        }
+      }
+    </script>
+    
+    <script type="text/javascript" src="/static/javascripts/simple_create.js"></script>
+    <script type="text/javascript" src="/static/javascripts/fix_target.js"></script>
+    {% include "info/popup_help.html" %}
+    <script type="text/javascript" src="/static/javascripts/help_box.js"></script>
+{% endblock %}

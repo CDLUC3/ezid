@@ -1,0 +1,132 @@
+// ##### Headers ##### //
+
+%heading__1 {
+  width: 79%;
+  margin-top: 18px;
+  margin-bottom: 15px;
+  font-size: 1.5em;
+  font-weight: bold;
+  letter-spacing: 0.026em;
+  line-height: 1.3em;
+
+}
+
+.apidoc h1 {
+  color: $design-primary-color;
+  font-weight: bold;
+  font-size: 1.4em;
+  border-bottom: 1px dotted black;
+}
+
+%h2-base {
+  font-family: KievitWebPro-Bold, Arial, sans-serif;
+  color: $design-primary-color;
+  font-weight: normal;
+}
+
+.heading_2 {
+  @extend %h2-base;
+  margin: 8px 0px 17px 0px;
+  font-size: 1.4em;
+}
+
+.heading_2_caps {
+  // This is basically heading_icon with no icon next to it
+  margin: 1em 0;
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 30px;
+  color: $design-primary-color;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.heading__icon-5 .capitalized {
+  text-transform: capitalize;
+}
+
+// ID Creation Header (Front Page Demo)
+h2.id-creation {
+  @extend %h2-base;
+  margin: 0px 0px 17px 10px;
+  font-size: 1.4em;
+}
+
+.heading_3 {
+  margin: 18px 0 4px;
+  color: $design-pop-dark;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+// ID Details
+.heading__iddetails-citation {
+  font-family: KievitWebPro-Bold, Arial, sans-serif;
+  color: $design-black-color;
+  margin: 18px 0px 0px 10px;
+  font-weight: normal;
+  font-size: 1.2em;
+}
+
+// Headers with other content next to them
+.inline-header h2, .inline-header h3 {
+  margin-top: 0px;
+  margin-right: $layout-container-margin-sm;
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+// Search Results Header
+.block-header {
+  margin-top: 0px;
+  margin-bottom: 20px;
+  padding: 10px;
+  height: 50px;
+}
+#search_table_id_info {
+  color: #000;
+  font-weight: bold;
+}
+
+//ALERTS
+.alert {
+  text-align: center;
+  line-height: 1.22em;
+  height:auto;
+  font-size: 1em;
+  padding: 7px;
+  margin-bottom: 0; 
+}
+.alert a:visited, 
+.alert a:hover, 
+.alert a:focus,
+.alert a {
+  color:#000;
+}
+
+.alert-warning {
+  line-height: 1.55em;
+}
+.alert-success {
+  line-height: 1.55em;
+  font-size: 1.1em;
+}
+.alert-warning-text {
+  font-size: 1.1em;
+  font-weight: 900;
+}
+.alert-error {
+  // For some reason I need to specify colors here, even though they're already defined in variables.scss
+  background-color: $design-red-color; 
+  border-color: $design-red-color;
+  font-weight: bold;
+}
+.close {
+  // TODO: Styling of X for mouse roll-over
+  // font-weight: bold;
+  font-size: 1.9em;
+  line-height: .6em;
+  text-shadow: none;
+  opacity: 0.95;
+}

@@ -180,7 +180,7 @@ import store
 import util
 
 _ezidUrl = None
-_noidEnabled = None
+_noidReadEnabled = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
 _defaultUrnUuidProfile = None
@@ -188,11 +188,11 @@ _perUserThreadLimit = None
 _perUserThrottle = None
 
 def _loadConfig ():
-  global _ezidUrl, _noidEnabled, _defaultDoiProfile, _defaultArkProfile
+  global _ezidUrl, _noidReadEnabled, _defaultDoiProfile, _defaultArkProfile
   global _defaultUrnUuidProfile
   global _perUserThreadLimit, _perUserThrottle
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
-  _noidEnabled = (config.get("binder.enabled").lower() == "true")
+  _noidReadEnabled = (config.get("binder.read_enabled").lower() == "true")
   _defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.get("DEFAULT.default_ark_profile")
   _defaultUrnUuidProfile = config.get("DEFAULT.default_urn_uuid_profile")
@@ -463,13 +463,13 @@ def _validateDatacite (identifier, metadata, completeCheck):
   return None
 
 def _identifierExists (identifier):
-  if _noidEnabled:
+  if _noidReadEnabled:
     return noid_egg.identifierExists(identifier)
   else:
     return store.exists(identifier)
 
 def _getElements (identifier):
-  if _noidEnabled:
+  if _noidReadEnabled:
     return noid_egg.getElements(identifier)
   else:
     r = store.get(identifier)

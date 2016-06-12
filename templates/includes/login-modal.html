@@ -1,0 +1,25 @@
+{% load layout_extras %}
+<div id="js-login-modal" class="login-modal" aria-hidden="true" role="dialog" aria-labelledby="login-modal__title">
+  <div class="login-modal__header">
+    <div id="login-modal__title" class="login-modal__title">Access your account</div>
+    <a href="" aria-label="close"><img id="js-login-modal__close" src="/static/images/icon_cross.svg" class="login-modal__close"></a>
+  </div>
+  <form id="js-login-modal__form" method="post" action="{% url_force_https "/login" %}" class="login-modal__form">
+    <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+    <div class="login-modal__form-element fcontrol__group-stacked">
+      <label for="username" class="fcontrol__text-label-hidden">Username</label>
+      <input id="username" class="fcontrol__text-field-stacked" type="text" name="username" value="{{ username }}" placeholder="Username">
+      <span class="fcontrol__invalid-flag">This field is required</span>
+    </div>
+    <div class="login-modal__form-element fcontrol__group-stacked">
+      <label for="password" class="fcontrol__text-label-hidden">Password</label>
+      <input id="password" class="fcontrol__text-field-stacked" type="password" name="password" value="{{ password }}" placeholder="Password">
+      <span class="fcontrol__invalid-flag">This field is required</span>
+    </div>
+    <div class="login-modal__footer">
+      <button type="submit" class="login-modal__submit" id="login" name="login">Login</button>
+      <a href="{% url "ui_account.pwreset" %}" class="login-modal__forgot">Forgot your password?</a>
+    </div>
+    <span class="login-modal__new">New to EZID? <strong><a href="{% url "ui.contact" %}" class="login-modal__sign-up-link">Contact Us.</a></strong></span>
+  </form>
+</div>

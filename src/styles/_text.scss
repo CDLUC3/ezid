@@ -1,0 +1,133 @@
+// ##### Text ##### //
+// All text based links
+a, a:visited, a:link {
+}
+
+a:hover {
+}
+// Basic paragraph, now that we're using flex-box and not bootstrap containers
+.paragraph {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+//Demo identifiers with asterisk
+.fakeid:before {
+  content:"* ";
+}
+
+//Used on Create ID pages
+.call-out h3 {
+  font-size: 1.1em;
+  margin-left: 20px;
+}
+
+.call-out li {
+  padding-top: 3px;
+}
+
+.call-out a, 
+.call-out a:visited, 
+.call-out a:link {
+//  @include text-link2($design-primary-color);
+}
+
+.call-out {
+  border:2px solid $design-light-gray-border-color;
+  background-color: $design-light-gray-bg-color;
+  padding-bottom: 15px;
+  // margin: 25px 20px 10px 0px;
+  // width: 80%;
+}
+.call-out p {
+  margin-left: $layout-container-margin-lg;
+}
+
+.alert {
+  margin: 0 -10px;
+}
+
+.alert-error .alert-text {
+  color: $design-white-color;
+}
+
+.alert-text {
+  color: $design-black-color;
+  text-align: left;
+  max-width: 1000px;
+  margin: 0px auto;
+}
+
+//Used in alert div
+.alert-info a, 
+.alert-info a:visited, 
+.alert-info a:link {
+  @include text-link2(#8F8F8F);
+}
+
+.alert-info a:hover {
+  @include text-link2(#000);
+}
+
+// All other links
+a.not-text, 
+a[data-toggle=popover] {
+  border-bottom: none !important;
+  padding-bottom: 0px;
+}
+.popover{
+  max-width: 400px; // Max Width of the popover (depending on the container!)
+}
+
+// Home Page & Demo Steps
+a.boxy-pop,
+a.boxy-pop:visited,
+a.boxy-pop:link,
+ {
+  @include boxy(6px, 17px, $design-pop-color, #FFF);
+}
+a.boxy-pop:hover {
+  @include boxy(6px, 17px, $design-pop-color, #FFF);
+  text-decoration: underline;
+}
+
+p.italic {
+  font-style: italic;
+}
+.font-xsmall {
+  font-size: 0.7em !important;
+}
+
+// apidoc font
+.apidoc {
+  font-size: $font-size-base;
+}
+.hl1 {
+  color: green;
+  font-style: oblique;
+}
+.hl2 {
+  color: green;
+  font-family: monospace;
+  font-style: oblique;
+}
+
+// Demo page
+.font-small {
+  font-size: 0.8em;
+  line-height: 1.1em;
+}
+.font-small-bold {
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+// Search page
+.form-horizontal label.text-right {
+  text-align: right;
+  padding-right: 10px;
+}

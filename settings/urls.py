@@ -1,5 +1,6 @@
 import django.conf
 import django.conf.urls
+from django.conf.urls import include
 
 import ezidapp.admin
 
@@ -9,33 +10,37 @@ urlpatterns = django.conf.urls.patterns("",
 
   # UI - RENDERED FROM TEMPLATES IN INFO REPOSITORY
   ("^/?$", "ui_home.index"),
-  ("^home/why$", "ui_home.why"),
-  ("^home/understanding$", "ui_home.understanding"),
-  ("^home/pricing$", "ui_home.pricing"),
-  ("^home/documentation$", "ui_home.documentation"),
-  ("^home/outreach$", "ui_home.outreach"),
-  ("^home/community$", "ui_home.community"),
+  ("^learn/$", "ui_home.learn"),
+  ("^learn/crossref_faq$", "ui_home.crossref_faq"),
+  ("^learn/id_basics$", "ui_home.id_basics"),
+  ("^learn/id_concepts$", "ui_home.id_concepts"),
+  ("^learn/open_source$", "ui_home.open_source"),
+  ("^learn/suffix_passthrough$", "ui_home.suffix_passthrough"),
   ("^home/(\w+)$", "ui_home.no_menu"),
 
   # UI - OTHER
-  ("^manage/?$", "ui_manage.index"),
-  ("^manage/edit/(.*)", "ui_manage.edit"),
-  ("^manage/display_xml/(.*)", "ui_manage.display_xml"),
-  ("^create/?$", "ui_create.index"),
-  ("^create/simple$", "ui_create.simple"),
-  ("^create/advanced$", "ui_create.advanced"),
-  ("^create/ajax_advanced", "ui_create.ajax_advanced"),
-  ("^lookup/?$", "ui_lookup.index"),
-  ("^demo/?$", "ui_demo.index"),
-  ("^demo/simple$", "ui_demo.simple"),
-  ("^demo/advanced$", "ui_demo.advanced"),
-  ("^admin-old/?$", "ui_admin.index", SSL),
-  ("^admin-old/usage$", "ui_admin.usage", SSL),
   ("^account/edit$", "ui_account.edit", SSL),
   ("^account/pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", SSL),
   ("^ajax_hide_alert$", "ui.ajax_hide_alert"),
   ("^contact$", "ui.contact"),
+  ("^create/?$", "ui_create.index"),
+  ("^create/simple$", "ui_create.simple"),
+  ("^create/advanced$", "ui_create.advanced"),
+  ("^dashboard/?$", "ui_admin.dashboard", SSL),
+  ("^dashboard/ajax_table", "ui_admin.ajax_dashboard_table", SSL),
+  ("^dashboard/csv_stats$", "ui_admin.csvStats", SSL),
+  ("^demo/?$", "ui_demo.index"),
+  ("^demo/simple$", "ui_demo.simple"),
+  ("^demo/advanced$", "ui_demo.advanced"),
   ("^doc/[-\w.]*\\.(?:html|py)$", "ui.doc"),
+  ("^download_confirm$", "ui_manage.download"),
+  ("^download_error$", "ui_manage.download_error"),
+  ("^i18n/", include('django.conf.urls.i18n')),
+  ("^manage/?$", "ui_manage.index"),
+  ("^manage/edit/(.*)", "ui_manage.edit"),
+  ("^manage/display_xml/(.*)", "ui_manage.display_xml"),
+  ("^search/?$", "ui_search.index"),
+  ("^search/results$", "ui_search.results"),
   ("^tombstone/id/", "ui.tombstone"),
 
   # SHARED BETWEEN UI AND API

@@ -1,0 +1,47 @@
+{% load manage_form_tags %}
+{% load i18n %}
+
+{% if results_issues|length > 0 or results|length > 0 %} 
+  <form method="get" id="p_issues" role="form">
+    <div class="pagination__input-group">
+  {% if not ajax %}
+    {% pager_display REQUEST p total_pages_issues ps "issues" %}
+  {% else %}
+    {% pager_display REQUEST p total_pages ps "issues" %}
+  {% endif %}
+    </div>
+  </form>
+
+  <table id="issues_table" class="table2">
+    <thead>
+      <tr>
+      <th>{% trans "Identifier" %}</th>
+      <th>{% trans "Issue" %}</th>
+      <th>{% trans "Object Title" %}</th>
+      <th>{% trans "ID Date Last Modified" %}</th>
+      </tr>
+    </thead>
+  <tbody>
+  {% if not ajax %}
+    {% for item in results_issues %}
+  <tr>
+     {% data_row item fields_selected_issues field_display_types_issues testPrefixes %}
+  </tr>
+    {% endfor %}
+  {% else %}
+    {% for item in results %}
+  <tr>
+     {% data_row item fields_selected field_display_types testPrefixes %}
+  </tr>
+    {% endfor %}
+  {% endif %}
+
+  </tbody>
+  </table>
+
+  {% include "dashboard/_dashboard_js.html" with name="issues" %}
+
+{% else %}
+  <p class="general__p"><strong>{% trans "Currently no Identifier Issues found" %}.</strong></p>
+  <br/><br/><br/>
+{% endif %}

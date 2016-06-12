@@ -1,0 +1,9 @@
+      <select name="owner_selected" id="owner_selected" class="fcontrol__select">
+      {% for k,user in owner_names %}
+	<option value="{{k}}"
+        {% if k == owner_selected %}
+          selected="selected"
+        {% endif %}
+        >{{user|safe}}</option>
+      {% endfor %}
+      </select>

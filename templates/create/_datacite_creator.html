@@ -1,41 +1,37 @@
-{% load layout_extras %}
-	<div name="/resource/creators" class="element container">
-		<label for="/resource/creators" class="element"><span title="Creator is a required section">Creator</span> <span class="required">*</span></label>
-		<input type="button" value="+" onclick="addOne(this)" name="/resource/creators" nbelmtsadded="{{ num_creators }}" class="addButton">
-		<input type="button" value="-" name="/resource/creators" class="rmvButton">
-		<div class="helpico">{% help_icon "dcxml_creators_help" %}</div>
-	{% for creator in datacite_obj_creators.creator %}
-		<div class="multiple">
-			<div name="/resource/creators/creator[{{ forloop.counter }}]" class="element">
-				<div name="/resource/creators/creator[{{ forloop.counter }}]/creatorName" class="element">
-					<label for="/resource/creators/creator[{{ forloop.counter }}]/creatorName" class="element sized"><span title="Name is a required element">Name:</span>
-					{% if forloop.first %}
-					 <span class="required">*</span>
-					{% endif %}
-					</label>
-					<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/creatorName" value="{{ creator.creatorName.text|default_if_none:"" }}" class="data sized">
-				</div>
-				<div class="optional">
-					<div name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" class="element">
-						<label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" class="element sized">Name Identifier:</label>
-						<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier" value="{{ creator.nameIdentifier.text|default_if_none:"" }}" class="data sized" />
-						<div class="attribute">
-							<label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" class="attribute sized">Identifier Scheme:</label>
-							<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@nameIdentifierScheme" value="{{ creator.nameIdentifier.attrib.nameIdentifierScheme }}" class="data sized">
-						</div>
-						<div class="attribute">
-							<label for="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@schemeURI" class="attribute sized">Scheme URI:</label>
-							<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/nameIdentifier/@schemeURI" value="{{ creator.nameIdentifier.attrib.schemeURI }}" class="data sized">
-						</div>
-					</div>
-					<div name="/resource/creators/creator[{{ forloop.counter }}]/affiliation" class="element">
-						<label for="/resource/creators/creator[{{ forloop.counter }}]/affiliation" class="element sized">Affiliation:</label>
-						<input type="text" name="/resource/creators/creator[{{ forloop.counter }}]/affiliation" value="{{ creator.affiliation.text|default_if_none:"" }}" class="data sized" />
-					</div>
-					<div class="clearboth"></div>
-				</div>
-			</div>
-		</div>
-	{% endfor %}
-	</div>
+{% load i18n %}
+<script type="text/javascript">
+  $(function() {
+    $('#creator_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.creator_set.prefix }}',
+      deleteCssId: 'button__minus-creator',
+      addCssId: 'button__plus-creator'
+    });
+  })
+</script>
 
+<div id="creator_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="creator_form_set">
+  <div class="fieldset-controls__container">
+    <div id="creator_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Creator" %}</div>
+  {% include "create/_datacite_buttons.html" with element="creator" %}
+  </div>
+{% for form in form.creator_set %}
+  <div class="form-container">
+{{ form.non_field_errors }}
+  {% for cr_field in form %}
+
+  {% if forloop.first %}
+    {% include "create/_datacite_inlinetext.html" with field=cr_field reqd="true" %}
+  <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
+    <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
+  {% else %}
+    {% include "create/_datacite_inlinetext.html" with field=cr_field %}
+  {% endif %}
+
+  {% endfor %}
+  </details>
+
+  </div>
+{% endfor %}
+</div>
+{{ form.creator_set.management_form }}
