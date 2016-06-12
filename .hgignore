@@ -6,3 +6,7 @@
 \.pydevproject$
 \.DS_Store$
 \.old[0-9]*$
+^node_modules$
+^dev/css/*$
+\.map$
+^ui_library$

@@ -1,0 +1,94 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load i18n %}
+
+{% block title %}{%trans "Dashboard" %}{% endblock %}
+{% comment %}Heading hidden, only readable by screen readers{% endcomment %}
+{% block heading %}{% content_heading heading_user_display %}{% endblock %}
+{% block content %}
+<div class="container vertical-buffer-xs">
+{% if display_adminlink %}
+  <form action="/admin" role="form">
+    <button class="button__primary">{% trans "Administration" %}&nbsp;<span title="External Link" class="ext-icon"></span></button>
+  </form>
+  <hr/>
+{% endif %}
+  <div role="group" aria-labelledby="fieldset__owner-filter">
+  <form id="usage_form" action="{% url "ui_admin.dashboard" %}" role="form">
+    <div class="fieldset-stacked__inline-select dashboard__report-heading">
+      <span id="fieldset__owner-filter" class="heading__icon-2">{% trans "View Report for" %}</span>
+      <label for="owner_selected" class="fcontrol__text-label-hidden">{% trans "Specific User or Group" %}</label>
+
+      {% include "includes/owner_select.html" %}
+
+        <a href="{% url "ui_admin.csvStats" %}" class="dashboard__csv-link">Download report in CSV format</a>
+    </div>
+  </form>
+  </div>
+<script type="text/javascript">
+  // submit form when owner filter changes
+  $("#owner_selected").bind("change", function(event){
+      var frm = $('#usage_form');
+      frm.attr('action', location.pathname);
+      frm.unbind('submit');
+      frm.attr('method', 'get');
+      frm.submit();
+  });
+</script>
+{% if totals|length > 0 %}
+
+{% include "dashboard/_totalIds.html" %}
+{% include "dashboard/_totalIdsByMonth.html" %}
+
+{% else %}
+<p>There is no usage data for the selected group or user.</p>
+{% endif %}
+
+  <div class="col-md-12">
+    <hr/>
+    <h2 class="heading__icon-6">{% trans "Identifier Issues" %}</h2>
+    <div id="error_issues"></div>
+    <div id="loading_issues" class="loading"></div>
+    <div id="ajax_issues">
+      {% include "dashboard/_issues.html" %}
+    </div>
+  {% if results_crossref|length > 0 %}
+    <h2 class="heading__icon-10">{% trans "Crossref&reg; Submission Status" %}</h2>
+    <div id="error_crossref"></div>
+    <div id="loading_crossref" class="loading"></div>
+    <div id="ajax_crossref">
+      {% include "dashboard/_crossref.html" %}
+    </div>
+<p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> 
+  {% endif %}
+  </div>
+<p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> 
+<p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> 
+<p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> <p><br/>&nbsp; </p> 
+</div> 
+<script type="text/javascript">
+$(document).ready(function() {
+  var li = $('#loading_issues').hide(),
+      lc = $('#loading_crossref').hide();
+  $('#page-directselect-issues').change(function() {
+    //Make a namespace for distinguishing ajax calls from issues table vs crossref table
+    $(document).off(".crossRefCall");
+    $(document).on("ajaxStart.issuesCall", function () {
+        li.show();
+    }).on("ajaxStop.issuesCall", function () {
+        li.hide();
+    });
+  });
+  $('#page-directselect-crossref').change(function() {
+    $(document).off(".issuesCall");
+    $(document).on("ajaxStart.crossRefCall", function () {
+        lc.show();
+    }).on("ajaxStop.crossRefCall", function () {
+        lc.hide();
+    });
+  });
+  // Hide header always
+  $('.heading__primary-container').hide();
+});
+</script>
+{% endblock %}

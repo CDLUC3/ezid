@@ -1,20 +1,26 @@
-{% load layout_extras %}
-{% if datacite_obj_formats.format %}
-	<div class="optional">
-		<div name="/resource/formats" class="element container">
-			<label for="/resource/formats" class="element">Format:</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/formats" nbelmtsadded="{{ num_formats }}" class="addButton">
-			<input type="button" value="-" name="/resource/formats" class="rmvButton">
-			<div class="helpico">{% help_icon "dcxml_formats_help" %}</div>
-{% for format in datacite_obj_formats.format %}
-			<div class="multiple">
-				<div name="/resource/formats/format[{{ forloop.counter }}]" class="element">
-					<label for="/resource/formats/format[{{ forloop.counter }}]" class="element sized">Format:</label>
-					<input type="text" name="/resource/formats/format[{{ forloop.counter }}]" value="{{ format.text|default_if_none:"" }}" class="data sized" />
-				</div>
-			</div>
-			<div class="clearboth"></div>
+{% load i18n %}
+
+<script type="text/javascript">
+  $(function() {
+    $('#format_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.format_set.prefix }}',
+      deleteCssId: 'button__minus-format',
+      addCssId: 'button__plus-format'
+    });
+  })
+</script>
+
+<div id="format_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="format_form_set">
+  <div class="fieldset-controls__container">
+    <div id="format_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Format" %}</div>
+  {% include "create/_datacite_buttons.html" with element="format" %}
+  </div>
+{% for form in form.format_set %}
+  <div class="form-container">
+  {{ form.non_field_errors }}
+  {% include "create/_datacite_inlinetext.html" with field=form.format %}
+  </div>
 {% endfor %}
-		</div>
-	</div>
-{% endif %}
+</div>
+{{ form.format_set.management_form }}

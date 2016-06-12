@@ -1,0 +1,100 @@
+// ##### New Styles for EZID ##### //
+
+// ***** Global Settings ***** //
+@import '../../src/styles/variables';
+
+// ***** Vendor Libraries ***** //
+@import '../../src/styles/bootstrap';
+
+@import 'mixins';
+@import 'fonts';
+@import 'testing'; // Comment out before production
+
+// ***** Elements ***** //
+
+@import 'buttons';
+@import 'fieldsets';
+@import 'form-controls';
+@import 'headings';
+@import 'links';
+@import 'pre';
+@import 'diagram';
+
+// ***** Components ***** //
+
+@import 'accordion';
+@import 'customize-table';
+@import 'footer';
+@import 'header';
+@import 'home-banner';
+@import 'login-menu';
+@import 'login-modal';
+@import 'proxy-modal';
+@import 'pagination';
+@import 'showhide';
+@import 'sidebox';
+@import 'tab';
+@import 'table';
+@import 'table2';
+@import 'table3';
+
+// ***** Layouts ***** //
+
+@import 'create';
+@import 'dashboard';
+@import 'general';  // used for all non-primary pages (e.g. contact)
+@import 'home';
+@import 'manage';
+// Pwreset page uses the 'general' css
+@import 'search';
+@import 'search-results';
+
+// Test with red borders
+// * {
+//   border: 1px solid red !important;
+// }
+
+// ***** Global Styles ***** //
+
+body {
+  margin: 0 10px;
+  font-family: 'KievitWeb';
+}
+
+abbr {
+  border: none; // for older browsers
+  text-decoration: none; // for newer browsers
+  cursor: inherit;
+
+  &[title] {
+    border: none; // override normalize.scss
+  }
+
+}
+
+// scss-lint:disable QualifyingElement
+input[type='search'] {
+  box-sizing: border-box; // override normalize.scss
+}
+
+summary {
+	cursor: pointer;
+
+	// Remove native arrow icon from Chrome & Safari
+	&::-webkit-details-marker {
+	  display: none;
+	}
+
+}
+
+// Remove spinner arrows from Chrome & Safari
+// scss-lint:disable QualifyingElement
+input[type='number'] {
+  -moz-appearance: textfield;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
+
+}

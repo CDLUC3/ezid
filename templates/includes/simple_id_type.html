@@ -1,16 +1,25 @@
 {% load layout_extras %}
+{% load i18n %}
 
-<h2>Step 1: Choose an identifier type</h2>
+  <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset1">
+    <div id="create__fieldset1" class="fieldset-stacked__legend-number-1"><h2 class="fieldset__heading-2">{% trans "Choose an identifier type" %}</h2>
+    {% if calling_page == 'demo' %}
+      {% help_icon "choose_id_demo" _("on choosing the type of identifier") %}
+    {% else %}
+      {% help_icon "choose_id" _("on choosing the type of identifier") %}
+    {% endif %}
+    </div>
   {% if prefixes|duplicate_id_types %}
-  	{% for p in prefixes %}
-    	<input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}"
-      	{% selected_radio "shoulder" forloop.counter p.prefix %} />
-   		<label for="{{p.prefix}}">{% shoulder_display p testPrefixes "False" %}</label><br/>
-  	{% endfor %}
+    {% for p in prefixes %}
+    <label for="{{p.prefix}}" class="fcontrol__radio-label-stacked create__radio-button">
+      <input id="{{p.prefix}}" class="fcontrol__radio-button-stacked" type="radio" value="{{p.prefix}}" name="shoulder" {% selected_radio "shoulder" forloop.counter p.prefix %} /> <span>{% shoulder_display p "False" testPrefixes "False" %}</span>
+    </label>
+    {% endfor %}
   {% else %}
-  	{% for p in prefixes %}
-    	<input type="radio" name="shoulder" value="{{p.prefix}}" id="{{p.prefix}}"
-      	{% selected_radio "shoulder" forloop.counter p.prefix %} />
-   		<label for="{{p.prefix}}">{% shoulder_display p testPrefixes "True" %}</label><br/>
-  	{% endfor %}
+    {% for p in prefixes %}
+    <label for="{{p.prefix}}" class="fcontrol__radio-label-stacked create__radio-button">
+      <input id="{{p.prefix}}" class="fcontrol__radio-button-stacked" type="radio" value="{{p.prefix}}" name="shoulder" {% selected_radio "shoulder" forloop.counter p.prefix %} /> <span>{% shoulder_display p "False" testPrefixes "True" %}</span>
+    </label>
+    {% endfor %}
   {% endif %}
+  </div>

@@ -1,0 +1,59 @@
+// ##### Simple and Advanced Search Layout ##### //
+
+$search-layout-element-spacing: 30px;
+
+.search {
+	// empty
+}
+
+.search__simple {
+	display: flex;
+	max-width: 1000px;
+	margin: 10px auto;
+
+	@include bp(screen1) {
+		margin: $search-layout-element-spacing auto;
+	}
+
+}
+
+.search__simple-button {
+	@extend %button__primary;
+	margin: 0 0 0 10px;
+}
+
+.search__form-element-container {
+	padding: 0 0 $search-layout-element-spacing;
+
+	@include bp(screen2) {
+
+		&:nth-child(even) {
+			padding: 0 0 $search-layout-element-spacing $search-layout-element-spacing;
+		}
+
+  }
+
+}
+
+.search__publication-fieldset {
+	margin: 0 0 2px;
+	font-size: 1.1em;
+	font-weight: normal;
+
+}
+
+.search__inline-groups {
+	padding: 0 0 15px;
+
+	.fcontrol__text-label-inline {
+		font-weight: normal;
+	}
+
+}
+
+.search__simple-button2 {
+        @extend %button__primary;
+        margin: 20px 20px 0;
+        float: right;
+}
+

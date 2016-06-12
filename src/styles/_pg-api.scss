@@ -1,0 +1,60 @@
+// API Doc page
+
+.api {
+  .reference {
+    @extend %link__primary;
+  }
+
+  h1 {
+    @extend %heading__1;
+    border-bottom: 1px dotted $design-black-color;
+    color: $design-primary-color;
+  }
+
+  blockquote {
+    display: block;
+    margin: 15 0 20 40;
+    padding: 0;
+
+    > * {
+      margin-left: 30px;
+      color: $design-black-color;
+      font-size: 0.9em;
+      font-style: normal;
+      font-weight: normal;
+    }
+
+    p {
+      color: $design-black-color;
+      font-size: 0.9em;
+      font-style: normal;
+      font-weight: normal;
+    }
+
+  }
+
+  table.dcms_table, tr.dcms_element, td.dcms_value {
+    border: 1px solid black;
+  }
+
+  table.leftheaders {
+    margin: 5 0 15 5;
+
+    tr > td:first-child {
+      background-color: $design-secondary-gradient-top;
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+
+  }
+
+  tr td,
+  th {
+    padding: 5px;
+  }
+
+  th {
+    text-align: left;
+    background-color: $gray-lighter;
+  }
+}

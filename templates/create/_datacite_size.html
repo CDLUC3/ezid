@@ -1,20 +1,26 @@
-{% load layout_extras %}
-{% if datacite_obj_sizes.size %}
-	<div class="optional">
-		<div name="/resource/sizes" class="element container">
-			<label for="/resource/sizes" class="element">Size:</label>
-			<input type="button" value="+" onclick="addOne(this)" name="/resource/sizes" nbelmtsadded="{{ num_sizes }}" class="addButton">
-			<input type="button" value="-" name="/resource/sizes" class="rmvButton">
-			<div class="helpico">{% help_icon "dcxml_sizes_help" %}</div>
-	{% for size in datacite_obj_sizes.size %}
-			<div class="multiple">
-				<div name="/resource/sizes/size[{{ forloop.counter }}]" class="element">
-					<label for="/resource/sizes/size[{{ forloop.counter }}]" class="element sized">Size:</label>
-					<input type="text" name="/resource/sizes/size[{{ forloop.counter }}]" value="{{ size.text|default_if_none:"" }}" class="data sized" />
-				</div>
-			</div>
-			<div class="clearboth"></div>
+{% load i18n %}
+
+<script type="text/javascript">
+  $(function() {
+    $('#size_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.size_set.prefix }}',
+      deleteCssId: 'button__minus-size',
+      addCssId: 'button__plus-size'
+    });
+  })
+</script>
+
+<div id="size_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="size_form_set">
+  <div class="fieldset-controls__container">
+    <div id="size_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Size" %}</div>
+  {% include "create/_datacite_buttons.html" with element="size" %}
+  </div>
+{% for form in form.size_set %}
+  <div class="form-container">
+  {{ form.non_field_errors }}
+  {% include "create/_datacite_inlinetext.html" with field=form.size %}
+  </div>
 {% endfor %}
-		</div>
-	</div>
-{% endif %}
+</div>
+{{ form.size_set.management_form }}

@@ -1,0 +1,148 @@
+{% extends "layouts/apidoc.html" %}
+{% load layout_extras %}
+{% load i18n %}
+{% load menus %}
+{% block title %}{% block title-twitter %}{% trans "The EZID API, Version 1" %}{% endblock %}{% endblock %}
+{% block heading %}
+{% content_heading _("The EZID API, Version 1") %}
+{% endblock %}
+{% block content %}
+{% learn_breadcrumb _('API Guide') %}
+<div class="container api vertical-buffer-20">
+<p class="superseded">THIS VERSION IS SUPERSEDED BY A NEWER VERSION</p>
+<div class="smallfont line-block">
+<div class="line"><strong>This version:</strong> <a class="reference external" href="http://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html">http://{{ request.META.HTTP_HOST }}/doc/apidoc.1.html</a></div>
+<div class="line"><strong>Latest version:</strong> <a class="reference external" href="http://{{ request.META.HTTP_HOST }}/doc/apidoc.html">http://{{ request.META.HTTP_HOST }}/doc/apidoc.html</a></div>
+</div>
+<p>Modified 2010.06.24.</p>
+<p>EZID is an interface that provides an easy way for digital object
+producers and others to obtain, register, and describe long-term
+identifiers for their objects.  It comes with a web user interface
+(UI) and a web Application Programming Interface (API).  This document
+describes Version 1 of the EZID API.</p>
+<p>Please use the following address to report any problems:</p>
+<blockquote>
+<a class="reference external" href="mailto:ezid-l&#64;listserv.ucop.edu">ezid-l&#64;listserv.ucop.edu</a></blockquote>
+<p>Failures outside of normal working hours (08:00 to 17:00 Pacific,
+Monday - Friday) will be addressed the next work day.</p>
+<div class="section" id="framework">
+<h1>Framework</h1>
+<p>The EZID API (and UI) is available from the base URL,</p>
+<blockquote>
+<a class="reference external" href="http://n2t.net/ezid">http://n2t.net/ezid</a></blockquote>
+<p>Interaction is done via RESTful HTTP.  Message bodies of both requests
+and responses are of content type &quot;text/plain&quot;, with all text in
+Unicode and encoded in UTF-8.</p>
+<p>A message body is a set of newline-terminated (LF) text lines.  Each
+line represents an element consisting of an element name, a colon, and
+the element value (this is a subset of the ANVL format).</p>
+<pre class="literal-block">
+Author: Proust, Marcel
+Title: Remembrance of Things Past
+_target: http://...
+</pre>
+<p>Some characters must be percent-encoded with three characters &quot;%XY&quot;,
+where XY is the character's hex code.  These include ':' and '.' in
+element names, and ';' and '|' in element values.</p>
+<p>Element names beginning with an underscore ('_') are reserved for
+internal use by EZID.  There is one reserved element name, _target, to
+hold the reidirection target URL.  In returned metadata, additional
+elements with leading underscores may be returned; this is metadata
+maintained by EZID.</p>
+</div>
+<div class="section" id="requests-and-responses">
+<h1>Requests and Responses</h1>
+<p>All requests require HTTP basic authentication except GETs on
+identifiers.</p>
+<p>Responses consist of a status line possibly followed by metadata,
+depending on the operation.  A status line may be &quot;success:&quot; followed
+by the normalized form of the identifier in question, e.g.,</p>
+<pre class="literal-block">
+success: doi:10.1234/FOO
+</pre>
+<p>or a status line may contain some kind of error:</p>
+<pre class="literal-block">
+error: bad request - &lt;reason...&gt;
+error: unauthorized
+error: internal server error
+error: method not allowed
+</pre>
+<p>The HTTP status code matches the status line.</p>
+</div>
+<div class="section" id="registering-a-doi">
+<h1>Registering a DOI</h1>
+<p>A DOI is registered with a request of the form</p>
+<blockquote>
+PUT http://n2t.net/ezid/id/{identifier}</blockquote>
+<p>This will create the supplied {identifier} in the sense that it will
+bind (record) assertions about the identifier string in a place where
+others can see them.  Until such assertions are shared, an identifier
+is not much harder to manage than a private thought, as the identifier
+string is unencumbered by others' expectations.</p>
+<p>The body, which may be empty, should contain metadata to associate
+(bind) with the identifier.  For example,</p>
+<pre class="literal-block">
+C: PUT http://n2t.net/ezid/id/doi%3A10.1234/foo
+C:
+C: _target: http://...
+S: HTTP/1.1 200 OK
+S: Content-Type: text/plain
+S:
+S: success: doi:10.1234/FOO
+</pre>
+<p>where lines marked with a C are issued by a web client and lines
+marked S are issued by the server.  The response is successful if and
+only if the HTTP response returns code 200 and the response body
+begins with &quot;success:&quot;.</p>
+</div>
+<div class="section" id="example-python-client">
+<h1>Example Python Client</h1>
+<pre class="literal-block">
+import urllib2
+
+baseurl = &quot;http://n2t.net/ezid&quot;
+
+h = urllib2.HTTPBasicAuthHandler()
+h.add_password(&quot;EZID&quot;, baseurl, &quot;username&quot;, &quot;password&quot;)
+opener = urllib2.build_opener(h)
+
+# Create a DOI with an initial target and other metadata.
+
+r = urllib2.Request(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
+r.get_method = lambda: &quot;PUT&quot;
+r.add_header(&quot;Content-Type&quot;, &quot;text/plain&quot;)
+r.add_data(&quot;_target: http://www.cnn.com/\nCreator: Francis Bacon&quot;)
+try:
+  c = opener.open(r)
+  print c.read()
+  c.close()
+except urllib2.HTTPError, e:
+  print e.code, e.msg
+  print e.fp.read()
+
+# Add/update some metadata to a DOI.
+
+r = urllib2.Request(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
+r.add_header(&quot;Content-Type&quot;, &quot;text/plain&quot;)
+r.add_data(&quot;Creator: J.K. Frimple&quot;)
+try:
+  c = opener.open(r)
+  print c.read()
+  c.close()
+except urllib2.HTTPError, e:
+  print e.code, e.msg
+  print e.fp.read()
+
+# Retrieve a DOI's metadata.
+
+try:
+  c = urllib2.urlopen(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
+  print c.read()
+  c.close()
+except urllib2.HTTPError, e:
+  print e.code, e.msg
+  print e.fp.read()
+</pre>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+// ##### Create ID Layout ##### //
+
+.create {
+	// empty
+}
+
+.create__tab {
+	max-width: 1000px;
+	margin: 10px auto 0;
+
+	@include bp(screen2) {
+		margin: 30px auto 20px;
+	}
+
+}
+
+.create__sidebox {
+	padding: 0 0 20px;
+
+	@include bp(screen2) {
+		padding: 0 0 20px 20px;
+	}
+
+}
+
+.create__radio-button {
+	margin: 0 0 $form-element-group-spacing 45px;
+}
+
+.create__inline-nested-legend {
+	width: $form-element-label-width;
+	font-size: 1em;
+	font-weight: normal;
+
+	@include bp(screen2) {
+		font-size: 1.1em;
+	}
+
+}
+
+.create__form-element-group {
+	margin: 0 0 $form-element-group-spacing;
+}
+
+.create__form-label {
+	width: $form-element-label-width;
+
+	@include bp(screen1) {
+		text-align: right;
+	}
+
+}
+
+.create__label-advanced {
+	width: $form-element-label-width;
+}
+
+.create__label-advanced--in-accordion {
+	width: ($form-element-label-width - 1.6rem);
+}
+
+.create__accordion-section {
+
+	&[open] {
+
+		.create__form-element-group {
+			display: flex; // override jquery.details script, which sets all children to display: block by default
+		}
+
+		.create__accordion-title {
+			margin: 0 (-$accordion-padding) $form-element-group-spacing;
+		}
+
+	}
+
+}
+
+.create__button {
+	margin: $form-element-group-spacing 0 0;
+
+	@include bp(screen2) {
+		margin: $form-element-group-spacing 0 0 ($form-element-label-width + 0.5rem);
+	}
+
+}
+
+.create__buttton-note {
+	margin: $form-element-group-spacing 0 0;
+}
+
+.create__nested-fieldset {
+	padding: 40px 0 30px;
+	border-top: 1px solid $design-dark-gray-color;
+}
+
+.create__nested-legend {
+	color: $design-black-color;
+	font-size: 1.2em;
+	text-transform: uppercase;
+}
+
+.create__fcontrol-group {
+	padding: 30px 0 0;
+}

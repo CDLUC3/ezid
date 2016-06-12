@@ -1,0 +1,15 @@
+// Customize View for Search and manage pages
+
+// Borrowed from /dev/scss/_login-modal.scss
+#customize-modal__header {
+  padding: 0px 5px 0px 15px;
+  .close {
+    margin: 8px 8px;
+  }
+}
+
+.customize-modal__title {
+  margin: 20px 0 10px;
+  color: $design-primary-color;
+  font-size: 1.3em;
+}

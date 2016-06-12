@@ -6,7 +6,6 @@ import time
 from decorators import basictag
 import layout_extras
 
-
 register = template.Library()
 
 @register.simple_tag
@@ -53,7 +52,7 @@ def display_form_element(context, element, id_object=None):
 
 def display_text_box(context, element, id_object):
   """displays a text box based on the element"""
-  return "<input type=\"text\" class=\"%s std_form_width\" name=\"%s\" id=\"%s\" size=\"35\" value=\"%s\" />" \
+  return "<input type=\"text\" class=\"%s form-control\" name=\"%s\" id=\"%s\" value=\"%s\" />" \
     % tuple([escape(x) for x in(layout_extras.tooltip_class(element.name),
        element.name,
        element.name,
@@ -62,7 +61,7 @@ def display_text_box(context, element, id_object):
 
 def display_select(context, element, options, id_object):
   """displays a select list based on the element"""
-  sel_part = "<select class=\"%s\" name=\"%s\" id=\"%s\">" % ( layout_extras.tooltip_class(element.name), element.name, element.name, )
+  sel_part = "<select class=\"%s form-control\" name=\"%s\" id=\"%s\">" % ( layout_extras.tooltip_class(element.name), element.name, element.name, )
   selected = _form_value(context, element.name, id_object)
   return sel_part + ''.join(
       [("<option value=\"" + escape(x[0]) + "\" " + ("selected=\"selected\"" if x[0] == selected  else '') +">" + \

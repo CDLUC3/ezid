@@ -1,54 +1,226 @@
 {% extends "layouts/base.html" %}
+{% load layout_extras %}
 {% load manage_form_tags %}
+{% load i18n %}
 
-{% block title %}Manage IDs{% endblock %}
-
-{% block content %}
-  
-	  <div class="grid_12">
-	  	<h1 style="display:inline-block">Identifiers</h1>&nbsp;
-  {% if results|length < 1 %}
-		<p>There are no recent results to display.<br/>
-		<br/><br/><br/><br/><br/><br/><br/><br/><br/></p>
-	  </div>
-  {% else %}
-	  	{% if includeCoowned %}
-	  		(includes co-owned identifiers)
-	  	{% else %}
-				(does not include co-owned identifiers)
-		{% endif %} 
-	  	
-	  	&nbsp;&nbsp;&nbsp;<a href="#dialog" name="modal">Customize view</a>
-	  	{% include "manage/_choose_cols.html" %}
-	  </div>
-	  
-	  <div style="clear:both"></div>
-	  
-	  <div class="grid_12">
-	    {% pager_display REQUEST p total_pages ps %}
-		  <table class="manage">
-		  	{% header_row REQUEST fields_selected fields_mapped field_widths order_by sort %}
-		  	{% for item in results %}
-		  	  <tr class="{% cycle 'row1' 'row2' %}">
-		  			{% data_row item fields_selected field_display_types account_co_owners testPrefixes %}
-		  		</tr>
-		  	{% endfor %}
-		  </table>
-		  {% pager_display REQUEST p total_pages ps %}
-		</div>
-  {% endif %}
-
-  {% if results|length > 0 %}
-	  <div class="grid_12">
-		<p>Identifiers shown with a <span class="fakeid">highlight</span> are demo/temporary identifiers.</p>
-	  </div>
-  {% endif %}
-	<script type="text/javascript">
-  	// Add class for current column heading
-	  $(document).ready(function() {
-	  	$("th:has(.order_by_col)").attr("id", "cur_sort");
-		});
-	</script>
+{% block title %}{% trans "Your IDs" %}: {{ total_results_str }}{% endblock %}
+{% comment %}Heading hidden, only readable by screen readers{% endcomment %}
+{% block heading %}{% content_heading _("Manage Your IDs") %}{% endblock %}
+{% block javascript %}
+$(document).ready(function(){
+  $("#manage__keywords").focus();
+  $("#reset_search").click(function(e){
+    $("#manage-form").find('input[type="text"], input[type="password"], input[type="file"], input[type="search"], select, textarea').val('');
+    $("#manage-form").find('input[type="radio"], input[type="checkbox"]').removeAttr('checked').removeAttr('selected');
+  });
+});
 {% endblock %}
+{% block content %}
+<form method="post" action="{% url "ui_manage.index" %}" id="manage-form" role="form">
+<input name="filtered" type="hidden" value="t"/> 
+<input name="ps" type="hidden" value="{{ ps }}"/> 
+<input name="order_by" type="hidden" value="{{ order_by }}"/>
+<input name="sort" type="hidden" value="{{ sort }}"/>
+<input name="owner_selected" type="hidden" value="{{ owner_selected }}"/>
+{% column_choices_hidden fields_selected %}
+<div class="manage__simple-search">
+  <div class="fcontrol__group-stacked">
+    <label for="manage__keywords" class="fcontrol__text-label-hidden">{% trans "Search Your Identifiers" %}</label>
+    {{ form.keywords|add_attributes:"id:manage__keywords,class:fcontrol__text-field-stacked,type:search" }}
+    <span class="fcontrol__invalid-flag">{% trans "Your search cannot not be empty" %}</span>
+  </div>
+  <button class="manage__simple-search-button" type="submit">{% trans "Search Your Identifiers" %}</button>
+</div>
+<details {{ show_advanced_search }} class="showhide">
+  <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
+  <div class="row">
+    <div class="col-md-6 manage__form-element-container">
+      <div class="fcontrol__group-stacked{% if form.identifier.errors %}--invalid{% endif %}">
+        <label for="{{ form.identifier.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.identifier.label }}</label>
+        {{ form.identifier|add_attributes:"fcontrol__text-field-stacked" }}
+      {% if form.identifier.errors %}
+        {% for error in form.identifier.errors %}
+        <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+        {% endfor %}
+      {% endif %}
+      </div>
+    </div>
+    <div class="col-md-6 manage__form-element-container">
+      <div class="fcontrol__group-stacked">
+        <label for="{{ form.title.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.title.label }}</label>
+        {{ form.title|add_attributes:"fcontrol__text-field-stacked" }}
+      </div>{% comment %}No validation necessary{% endcomment %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 manage__form-element-container">
+      <div class="fcontrol__group-stacked">
+        <label for="{{ form.creator.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.creator.label }}</label>
+        {{ form.creator|add_attributes:"fcontrol__text-field-stacked" }}
+      </div>{% comment %}No validation necessary{% endcomment %}
+    </div>
+    <div class="col-md-6 manage__form-element-container">
+      <div class="fcontrol__group-stacked">
+        <label for="{{ form.publisher.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.publisher.label }}</label>
+        {{ form.publisher|add_attributes:"fcontrol__text-field-stacked" }}
+      </div>{% comment %}No validation necessary{% endcomment %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 manage__form-element-container">
+      <div class="fieldset-stacked manage_fieldset" role="group" aria-labelledby="object-publication-year">
+        <div id="object-publication-year" class="fieldset-stacked__legend manage__fieldset-legend">{% trans "Object Publication Year" %}</div>
+        <div class="fcontrol__inline-groups">
+          <div class="fcontrol__group-inline{% if form.pubyear_from.errors %}--invalid{% endif %}">
+            <label for="{{ form.pubyear_from.id_for_label }}" class="fcontrol__text-label-inline manage__text-label-inline">{{ form.pubyear_from.label }}</label>
+            {{ form.pubyear_from|add_attributes:"fcontrol__text-field-inline" }}
+          {% if form.pubyear_from.errors %}
+            {% for error in form.pubyear_from.errors %}
+            <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+            {% endfor %}
+          {% endif %}
+          </div>
+          <div class="fcontrol__group-inline{% if form.pubyear_to.errors %}--invalid{% endif %}">
+            <label for="{{ form.pubyear_to.id_for_label }}" class="fcontrol__text-label-inline manage__text-label-inline">{{ form.pubyear_to.label }}</label>
+            {{ form.pubyear_to|add_attributes:"fcontrol__text-field-inline" }}
+          {% if form.pubyear_to.errors %}
+            {% for error in form.pubyear_to.errors %}
+            <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+            {% endfor %}
+          {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 manage__form-element-container">
+      <div class="fcontrol__select-group-stacked">
+	<label for="{{ form.object_type.id_for_label }}" class="fcontrol__select-label-stacked">{{ form.object_type.label }}</label>
+        {{ form.object_type|add_attributes:"fcontrol__select--fullwidth"}}
+      </div>
+    </div>{% comment %}No validation necessary{% endcomment %}
+  </div>
+  <div class="row">
+    <div class="col-md-6 manage__form-element-container">
+      <div class="fcontrol__group-stacked{% if form.target.errors %}--invalid{% endif %}">
+        <label for="{{ form.target.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.target.label }}</label>
+        {{ form.target|add_attributes:"fcontrol__text-field-stacked" }}
+      {% if form.target.errors %}
+        {% for error in form.target.errors %}
+        <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+        {% endfor %}
+      {% endif %}
+      </div>
+    </div>
+    <div class="col-md-6 manage__form-element-container">
+      <div class="fcontrol__select-group-stacked">
+	<label for="{{ form.id_type.id_for_label }}" class="fcontrol__select-label-stacked">{{ form.id_type.label }}</label>
+        {{ form.id_type|add_attributes:"fcontrol__select--fullwidth"}}
+      </div>
+    </div>{% comment %}No validation necessary{% endcomment %}
+  </div>
+  <div class="row">
+    <div class="col-md-6 manage__form-element-container">
+      <div class="fieldset-stacked manage__fieldset" role="group" aria-labelledby="id-created-date">
+        <div id="id-created-date" class="fieldset-stacked__legend manage__fieldset-legend">{% trans "ID Create Date" %}</div>
+        <div class="fcontrol__inline-groups">
+          <div class="fcontrol__group-inline{% if form.create_time_from.errors %}--invalid{% endif %}">
+            <label for="{{ form.create_time_from.id_for_label }}" class="fcontrol__text-label-inline manage__text-label-inline">{{ form.create_time_from.label }}</label>
+            <div class="fcontrol__textarea-group">
+              {{ form.create_time_from|add_attributes:"fcontrol__text-field-inline" }}
+            {% if form.create_time_from.errors %}
+              {% for error in form.create_time_from.errors %}
+              <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+              {% endfor %}
+            {% endif %}
+            </div>
+          </div>
+          <div class="fcontrol__group-inline{% if form.create_time_to.errors %}--invalid{% endif %}">
+            <label for="{{ form.create_time_to.id_for_label }}" class="fcontrol__text-label-inline manage__text-label-inline">{{ form.create_time_to.label }}</label>
+            <div class="fcontrol__textarea-group">
+              {{ form.create_time_to|add_attributes:"fcontrol__text-field-inline" }}
+            {% if form.create_time_to.errors %}
+              {% for error in form.create_time_to.errors %}
+              <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+              {% endfor %}
+            {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 manage__form-element-container">
+      <div class="fieldset-stacked manage__fieldset" role="group" aria-labelledby="id-updated-date">
+        <div id="id-updated-date" class="fieldset-stacked__legend manage__fieldset-legend">{% trans "ID Update Date" %}</div>
+        <div class="fcontrol__inline-groups">
+          <div class="fcontrol__group-inline{% if form.update_time_from.errors %}--invalid{% endif %}">
+            <label for="{{ form.update_time_from.id_for_label }}" class="fcontrol__text-label-inline manage__text-label-inline">{{ form.create_time_from.label }}</label>
+            <div class="fcontrol__textarea-group">
+              {{ form.update_time_from|add_attributes:"fcontrol__text-field-inline" }}
+            {% if form.update_time_from.errors %}
+              {% for error in form.update_time_from.errors %}
+              <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+              {% endfor %}
+            {% endif %}
+            </div>
+          </div>
+          <div class="fcontrol__group-inline{% if form.update_time_to.errors %}--invalid{% endif %}">
+            <label for="{{ form.update_time_to.id_for_label }}" class="fcontrol__text-label-inline manage__text-label-inline">{{ form.create_time_to.label }}</label>
+            <div class="fcontrol__textarea-group">
+              {{ form.update_time_to|add_attributes:"fcontrol__text-field-inline" }}
+            {% if form.update_time_to.errors %}
+              {% for error in form.update_time_to.errors %}
+              <span class="fcontrol__invalid-flag">{{ error|escape }}</span>
+              {% endfor %}
+            {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 manage__form-element-container">
+      <div class="fcontrol__select-group-stacked">
+	<label for="{{ form.id_status.id_for_label }}" class="fcontrol__select-label-stacked">{{ form.id_status.label }}</label>
+        {{ form.id_status|add_attributes:"fcontrol__select--fullwidth"}}
+      </div>
+    </div>{% comment %}No validation necessary{% endcomment %}
+    <div class="col-md-6 manage__form-element-container--harvesting">
+      <div class="fieldset-stacked" role="group" aria-labelledby="Allows-Harvesting-Indexing">
+        <div id="Allows-Harvesting-Indexing" class="fieldset-stacked__legend manage__fieldset-legend">{{ form.harvesting.label }}</div>
+      {% for radio in form.harvesting %}
+        <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
+          {{ radio.tag }} <span>{{ radio.choice_label }}</span>
+        </label>
+      {% endfor %}
+      </div>
+    </div>{% comment %}No validation necessary{% endcomment %}
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="fieldset-stacked" role="group" aria-labelledby="Has-Metadata">
+        <div id="Has-Metadata" class="fieldset-stacked__legend manage__fieldset-legend">{{ form.hasMetadata.label }}</div>
+      {% for radio in form.hasMetadata %}
+        <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
+          {{ radio.tag }} <span>{{ radio.choice_label }}</span>
+        </label>
+      {% endfor %}
+      </div>
+    </div>{% comment %}No validation necessary{% endcomment %}
+    <div class="col-md-6">
+      <button class="button__primary manage__reset-button" type="submit">{% trans "Search Your Identifiers" %}</button>
+      <button id="reset_search" type="button" class="button__primary manage__reset-button">Reset Search Fields</button>
+    </div>
+  </div>
+</details>
+</form>
 
+{% include "search/_results.html" with primary_page="ui_manage.index" %}
 
+<script type="text/javascript">
+$(document).ready(function() {
+  // Hide header always
+  $('.heading__primary-container').hide();
+});
+</script>
+{% endblock %}

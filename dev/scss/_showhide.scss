@@ -1,0 +1,55 @@
+// ##### Show / Hide Component ##### //
+
+.showhide {
+	max-width: 1000px;
+	margin: 0 auto 30px;
+
+	&[open] .showhide__summary {
+
+		&::after { // flip down arrow to up
+			transform: rotate(-180deg);
+		}
+
+	}
+
+}
+
+%showhide-icon-base {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 32px;
+	height: 32px;
+}
+
+.showhide__summary {
+	position: relative;
+	margin: 0 0 30px;
+	padding: 7px 0 7px 40px;
+	color: $design-primary-color;
+	font-size: 1.1em;
+	font-weight: bold;
+	text-transform: uppercase;
+
+	&::before { // icon background
+		@extend %showhide-icon-base;
+		border: 1px solid $design-light-gray-border-color;
+		border-radius: $form-element-border-radius;
+		background: $design-form-element-bg;
+		content: '';
+	}
+
+	&::after { // icon image
+		@extend %showhide-icon-base;
+		background: url('../images/icon_down-arrow2.svg') center / 12px no-repeat;
+		content: '';
+	}
+
+}
+
+.showhide__title-heading {
+	margin: 0;
+	font-size: inherit;
+}
+

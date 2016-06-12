@@ -1,0 +1,32 @@
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#p_{{name}}').on('submit', function(e){
+      e.preventDefault();
+      var newpage = $('#page-directselect-{{name}}').val()
+      $('#ajax_{{name}}').html('&nbsp;').load('dashboard/ajax_table?owner_selected={{owner_selected}}&name={{name}}&p=' + newpage, function( response, status, xhr ) {
+          if ( status == "error" ) {
+              $('#error_{{name}}').html("<div class='alert alert-error' role='alert'>" +
+                "<div class='alert-text'>Oops! We have encountered an error: " +
+                xhr.status + " " + xhr.statusText ); 
+          } 
+      });
+  });
+
+  // *******   PAGE   *******
+  // page selection input field: submit on enter key
+  $("#page-directselect-{{name}}").keyup(function(e){ 
+    // submit value in input on enter key
+    var code = e.which;
+    if(code==13)e.preventDefault();
+    if(code==32||code==13||code==188||code==186){
+      $("#p_{{name}}").submit();
+    }
+  });
+  // page selection buttons change value in input field and submit on click
+  $("#p_{{name}} button").click(function(e){
+    var p = $(e.currentTarget).data('page');
+    $('#page-directselect-{{name}}').val(p).change();
+    $("#p_{{name}}").submit();
+  });
+});
+</script>

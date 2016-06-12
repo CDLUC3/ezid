@@ -1,0 +1,54 @@
+// Learn Page
+
+.breadcrumb {
+  background-color: #FFF;
+  margin: 10px 0px 0px 0px;
+  padding-left: 0px;
+}
+
+.accordion-toggle {
+  @extend %link__primary;
+}
+
+.learn__title--ext-link {
+  margin-bottom: 20px;
+}
+
+// libsass patch: https://github.com/twbs/bootstrap/issues/16576 
+.breadcrumb > li + li:before {
+  content: $breadcrumb-separator + "\00a0";
+}
+
+@media (max-width:$container-sm){
+  .panel-body{
+    margin: 28px 4px 30px 6px;
+  }
+}
+
+@media (min-width:$container-sm){
+  .panel-body {
+    margin: 28px 40px 30px 20px;
+  }
+}
+
+.panel-body {
+  .heading_2 {
+    @extend %h2-base;
+    font-size: 1.4em;
+    margin: 10px 0px 17px 0px;
+  }
+  .heading_3 {
+    margin-top: 18px;
+    color: $design-pop-dark;
+    font-weight: bold;
+    font-size: 1.1em;
+  }
+
+  .heading_4 {
+    margin-top: 10px;
+    color: #000;
+    font-weight: bold;
+    font-size: 1em;
+    font-style: italic;
+  }
+}

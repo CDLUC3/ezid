@@ -1,24 +1,15 @@
-	.container {
-		/* border: solid;
-		border-width: 1px; */
+	.datacite-container {
 		padding: 5px;
-		background:#ffffff;
-		/* background:#cecece; */
 	}
-	.container>label, .element>label, .boldit{
+	.datacite-container>label, .boldit{
 		font-weight: bold;
 		font-size: larger;
 		margin-top:3px;
 	}
 	
 	.multiple {
-		/*
-		border: solid;
-		border-width: 1px;
-		*/
 		padding: 5px;
-		background:#ffffff;
-		clear:both;
+		// clear:both;
 		margin-top:5px;
 	}
 	
@@ -34,7 +25,7 @@
 		margin-right: 5px;
 	}
 	
-	.container .element>label{
+	.datacite-container .element>label{
 		font-weight: normal;
 		font-size:inherit;
 	}
@@ -83,11 +74,7 @@
 		margin: 4px 0px 4px 0px;
 	}
 	
-	div.container>div.helpico {
+	div.datacite-container>div.helpico {
 		float:right;
 		width:50px;
 	}
-	
-div.clearboth{
-	clear: both;
-}

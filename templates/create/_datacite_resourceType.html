@@ -1,0 +1,37 @@
+{{ form.resourcetype_form.non_field_errors }}
+{% for rt_field in form.resourcetype_form %}
+
+{% comment "particular configuration for ResourceType" %}
+* * * * * * * * * * * * * * * * * * * * * * * * * * 
+The resourceType form consists of two fields
+  1. resourceType-resourceTypeGeneral: The dashes need to be there so that this element
+     can be properly discovered within the XMl schema as rendered from these forms and formsets
+     as outlined in code/datacite_xml.formElementsToDataciteXml()
+     This field comes first in the loop, and requires HTML with a specific class for 
+     rendering options in a select (drop-down) list: 'inlineselect' template
+  2. resourceType - can be rendered using the standard 'inlinetext' template
+
+  If more fields are added to this form, they will rendered in the standard 'nonrepeating' template
+* * * * * * * * * * * * * * * * * * * * * * * * * * 
+{% endcomment %}
+
+  {% if forloop.first %}
+    {% include "create/_datacite_inlineselect.html" with field=rt_field %}
+  {% else %}
+    {% include "create/_datacite_inlinetext.html" with field=rt_field %}
+  {% endif %}
+{% endfor %}
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    //* set the resourceType to the same as resourceTypeGeneral
+    $(':submit').click(function(e)
+    {
+      var gen = $('#resourceType-resourceTypeGeneral').val();
+      var res_type = $('#resourceType').val();                 
+      if(gen != '' && res_type == ''){
+        $('#resourceType').val(gen);
+      }
+    });
+  });
+</script>

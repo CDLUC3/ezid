@@ -1,0 +1,32 @@
+{% load i18n %}
+  <div class="col-md-6">
+  <h2 class="heading-sub__icon-4">{% trans "Total Identifiers" %}</h2>
+<table class="table2 dashboard__table-identifiers">
+<thead>
+<tr>
+<th>{% trans "ID Type" %}</th>
+<th>{% trans "Number of IDs" %}</th>
+<th>{% trans "Percentage of Metadata Complete" %}</th>
+</tr>
+</thead>
+{% trans "have metadata" as have_metadata  %}
+<tbody>
+<tr>
+<td>ARKs</td>
+<td>{{totals.ARK.total}}</td>
+<td>{{totals.ARK.hasMetadataPercentage}}% {{have_metadata}}</td>
+</tr>
+<tr>
+<tr>
+<td>DOIs</td>
+<td>{{totals.DOI.total}}</td>
+<td>{{totals.DOI.hasMetadataPercentage}}% {{have_metadata}}</td>
+</tr>
+<tr>
+<td>Totals</td>
+<td>{{totals.grand.total}}</td>
+<td>{{totals.grand.hasMetadataPercentage}}% {{have_metadata}}</td>
+</tr>
+</tbody>
+</table>
+  </div>

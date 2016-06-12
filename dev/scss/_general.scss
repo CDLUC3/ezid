@@ -1,0 +1,63 @@
+// ##### Genral Page Layout ##### //
+// ##### Used for Account Settings, Contact, Download,  ##### //
+
+.general {
+	// empty
+}
+
+.general__note {
+	max-width: 1000px;
+	margin: 30px auto;
+	color: $design-primary-color;
+	font-size: 1.4em;
+	font-weight: bold;
+
+	@include bp(screen2) {
+		padding: 0 20% 0 0;
+	}
+
+}
+
+.general__p {
+	max-width: 1000px;
+	margin: 30px auto;
+
+	@include bp(screen2) {
+		padding: 0 20% 0 0;
+	}
+
+}
+
+.general__form {
+	max-width: 1000px;
+	margin: 0 auto;
+
+	@include bp(screen2) {
+		padding: 0 20% 0 0;
+	}
+
+}
+
+.general__form-label {
+
+	@include bp(screen1) {
+		width: $form-element-label-width;
+	}
+
+}
+
+.general__form-element-group {
+	margin: 0 0 30px;
+
+	@include bp(screen2) {
+		flex-flow: row nowrap;
+	}
+}
+
+.general__form-submit {
+
+	@include bp(screen1) {
+		margin: 0 0 25px $form-element-label-width + 0.5rem;
+	}
+
+}

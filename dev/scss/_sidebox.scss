@@ -1,0 +1,21 @@
+// ##### Side Box Component ##### //
+
+.sidebox {
+	padding: 15px 15px 0;
+	border: 2px solid $design-light-gray-border-color;
+}
+
+.sidebox__heading {
+	margin: 0 0 1em;
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+.sidebox__list {
+	padding: 0 1em;
+
+	li {
+		margin: 0 0 0.5em;
+	}
+
+}

@@ -1,66 +1,58 @@
 {% extends "layouts/base.html" %}
-
-{% block title %}Contact us{% endblock %}
-
+{% load layout_extras %}
+{% load i18n %}
+{% block title %}{% block title-twitter %}{% trans "Contact Us" %}{% endblock %}{% endblock %}
+{% block description %}{%trans "Contact EZID for more information about our services or ask a specific question." %}{% endblock %}
+{% block heading %}{% content_heading _("Contact Us") %}{% endblock %}
 {% block content %}
+{% comment %}
+{% get_current_language as LANGUAGE_CODE %}
+<!-- Current language: {{ LANGUAGE_CODE }} -->
+<p>{% trans "TESTING: Welcome to our page. Language: " %}{{ LAGUAGE_CODE }}</p>
+{% endcomment %}
 
-<div id="pwreset" class="grid_12">
+{% comment %}
+This tag forces language:
+{% language 'fr_CA' %}
+    {% get_current_language as LANGUAGE_CODE %}
+    <!-- Current language: {{ LANGUAGE_CODE }} -->
+    <p>{% trans "TESTING: Welcome to our page. Language: " %}{{ LANGUAGE_CODE }}</p>
+{% endlanguage %}
+{% endcomment %}
 
-	<h1 id="title">Contact Us</h1>
+<!-- 
+{% get_language_info for LANGUAGE_CODE as lang %}
+Language code: {{ lang.code }}<br />
+Name of language: {{ lang.name_local }}<br />
+Name in English: {{ lang.name }}<br />
+Bi-directional: {{ lang.bidi }}<br />
+request.LANGUAGE_CODE: {{ request.LANGUAGE_CODE }}
+-->
+    <p class="general__note">{% trans "Have a question, comment, or want to request an EZID account? Fill out this form and EZID will get in touch with you." %}</p>
 
-	<p style="width:500px">
-		Please fill out this form if you would like more information
-		about our services or have a specific question.
-		If you have a comment we are always happy to hear feedback.
-	</p>
+    <form name="contact" action="{% url "ui.contact" %}" method="post" class="general__form" role="form">
+    {{ form.non_field_errors }}
 
-	<form name="contact" action="{% url "ui.contact" %}" method="post">
-		<label for="your_name" class="left">Your name:</label>
-		<div class="field_right">
-			<input type="text" name="your_name" value="{{ your_name }}" maxlength="200" size="40" />
-		</div>
-		
-		<label for="url" class="trapper_keeper">Your url:</label>
-		<div class="trapper_keeper">
-			<input type="text" name="url" value="" maxlength="200" size="40" /> * Please leave blank
-		</div>
+{% for field in form %}
+  {% if field|fieldtype == "TextInput" or field|fieldtype == "EmailInput" %}
+    {% include "includes/_inlinetext.html" with field=field form_name="general__" %}
+  {% elif field|fieldtype == "Textarea" %}
+    {% include "includes/_inlinetextarea.html" with field=field form_name="general__" %}
+  {% elif field|fieldtype == "Select" %}
+    {% include "includes/_inlineselect.html" with field=field form_name="general__" %}
+  {% elif field|fieldtype == "CheckboxInput" %}
+    {% include "includes/_inlinecheckbox.html" with field=field form_name="general__" %}
+  {% endif %}
+{% endfor %}
 
-		<label for="email" class="left">Your email:</label>
-		<div class="field_right">
-			<input type="text" name="email" value="{{ email }}" maxlength="200" size="40" />
-		</div>
+    <div class="trapper_keeper">
+      <div class="fcontrol__group-inline general__form-element-group">
+        <label for="url" class="fcontrol__text-label-inline general__form-label">Your URL</label>
+        <input id="url" name="url" class="fcontrol__text-field-inline" type="text" placeholder="" maxlength="200" value="" />
+      </div>
+    </div>
+    <button class="button__primary general__form-submit">{% trans "Submit" %}</button>
 
-		<label for="affiliation" class="left">Your institution:</label>
-		<div class="field_right">
-			<input type="text" name="affiliation" value="{{ affiliation }}" maxlength="200" size="40" />
-		</div>
-		
-		<label class="left">&nbsp;</label>
-		<div class="field_right" style="width:400px;">
-			Please indicate your question or comment:<br/>
-			<textarea rows="10" cols="50" name="comment" style="margin-bottom:16px;">{{comment}}</textarea>
-		</div>
-		
-		<div style="clear:both"></div>
-
-		<label for="hear_about" class="left">How did you hear about us?</label>
-		<div class="field_right">
-			<select name="hear_about" id="hear_about">
-				{% for tup in heard %}
-					<option value="{{ tup.0 }}"
-						{% if tup.0 == hear_about %}
-							selected="selected"
-						{% endif %}
-						>{{ tup.1 }}</option>
-				{% endfor %}
-			</select>
-		</div>
-		<label class="left"></label>
-		<div class="field_right">
-			<input type="submit" value="Submit" />
-		</div>
-
-	</form>
-</div>
+    </form>
 
 {% endblock %}

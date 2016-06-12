@@ -1,27 +1,38 @@
-{% load layout_extras %}
-	<div name="/resource/titles" class="element container">
-		<label for="/resource/titles" class="element"><span title="Title is a required section">Title</span> <span class="required">*</span></label>
-		<input type="button" value="+" onclick="addOne(this)" name="/resource/titles" nbelmtsadded="{{ num_titles }}" class="addButton">
-		<input type="button" value="-" name="/resource/titles" class="rmvButton">
-		<div class="helpico">{% help_icon "dcxml_titles_help" %}</div>
-	{% for title in datacite_obj_titles.title %} 
-		<div class="multiple">
-			<div name="/resource/titles/title[{{ forloop.counter }}]" class="element">
-				<label for="/resource/titles/title[{{ forloop.counter }}]" class="element sized"><span title="Title is a required element">Title:</span>
-		{% if forloop.first %}<span class="required">*</span>{% endif %}
-				</label>
-				<input type="text" name="/resource/titles/title[{{ forloop.counter }}]" value="{{ title.text|default_if_none:"" }}" class="data sized" />
-				<div name="/resource/titles/title[{{ forloop.counter }}]/@titleType" class="attribute">
-					<label for="/resource/titles/title[{{ forloop.counter }}]/@titleType" class="attribute sized">Type:</label>
-					<div class="sized">
-						<input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="" class="data" {% if not title.attrib.titleType or title.attrib.titleType == "" %} checked="checked"{% endif %}/>Main title
-						<input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="AlternativeTitle" class="data" {% if title.attrib.titleType == "AlternativeTitle" %} checked="checked"{% endif %}/>Alternative title
-						<input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="Subtitle" class="data"{% if title.attrib.titleType == "Subtitle" %} checked="checked"{% endif %}/>Subtitle
-						<input type="radio" name="/resource/titles/title[{{ forloop.counter }}]/@titleType" value="TranslatedTitle" class="data" {% if title.attrib.titleType == "TranslatedTitle" %} checked="checked"{% endif %}/>Translated title
-					</div>
-					<div class="clearboth"></div>
-				</div>
-			</div>
-		</div>
-	{% endfor %}
-	</div>
+{% load i18n %}
+<script type="text/javascript">
+  $(function() {
+    $('#title_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.title_set.prefix }}',
+      deleteCssId: 'button__minus-title',
+      addCssId: 'button__plus-title'
+    });
+  })
+</script>
+
+<div id="title_set" class="fieldset-stacked create__nested-fieldset fieldset__bottom-border" role="group" aria-labelledby="title_form_set">
+  <div class="fieldset-controls__container">
+    <div id="title_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Title" %}</div>
+  {% include "create/_datacite_buttons.html" with element="title" %}
+  </div>
+{% for form in form.title_set %}
+  <div class="form-container">
+    {{ form.non_field_errors }}
+
+    {% include "create/_datacite_inlinetext.html" with field=form.title reqd="true" %}
+    <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="{{ form.titleType.id_for_label }}">
+      <span id="{{ form.titleType.id_for_label }}" class="fieldset-inline__legend create__inline-nested-legend">{{ form.titleType.label }}</span>
+      {% for radio in form.titleType %}
+      <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
+        {{ radio.tag }}
+        <span>{{ radio.choice_label }}</span>
+      </label>
+      {% endfor %}
+    </div>
+    {% for hidden in form.hidden_fields %}
+      {{ hidden }}
+    {% endfor %}
+  </div>
+{% endfor %}
+</div>
+{{ form.title_set.management_form }}

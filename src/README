@@ -1,0 +1,14 @@
+========= Front-End Stylesheets for WEB UI presentation layer ===========
+
+This directory contains the SASS[1] stylesheets developed in the 1st phase of the EZID
+UI Redesign. This design phase was more bootstrap dependent. A certain portion of 
+these stylesheets are still in play, notably:
+
+ _variables.scss
+ _bootstrap.scss
+ Files in the 'bootstrap' directory
+
+Much of the other files in this directory are slowly being replaced by code 
+developed under the 'SITE/PROJECT/dev' directory.
+
+For more detailed information, consult /dev/README.

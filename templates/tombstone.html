@@ -1,40 +1,74 @@
+{% load layout_extras %}
+{% load i18n %}
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta name="robots" content="noindex"/>
-<title>EZID : unavailable : {{ identifier }}</title>
+<title>EZID : {% trans "unavailable" %} : {{ identifier }}</title>
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="EZID"/>
+<meta name="og:image" content="/static/images/social_card.jpg" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@ezidCDL" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"> 
 <link rel="shortcut icon" type="image/png" href="/static/images/favicon.ico"/>
-<link rel="stylesheet" type="text/css" href="/static/stylesheets/style.css"/>
+<link rel="icon" sizes="16x16 32x32" href="/static/images/favicon.ico">
+
+<link rel="stylesheet" type="text/css" href="/static/stylesheets/main.css"/>
+<link rel="stylesheet" type="text/css" href="/static/stylesheets/main2.min.css"/>
+{% if google_analytics_id %}
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', '{{ google_analytics_id }}', 'auto');
+    ga('send', 'pageview');
+  </script>
+{% endif %}
 </head>
 
 <body>
-<div id="tombstone">
+<div class="container api">
+  <div id="tombstone">
+  <br/>
+  <div class="header__logos">
 
-<p id="title">{{ reason }}</p>
+    <a class="header__main-logo-link" href="/">
+      <picture>
+        <source srcset="/static/images/logo_small-screen.svg" type="image/svg+xml" media="(max-width: 767px)" />
+        <source srcset="/static/images/logo.svg" type="image/svg+xml" media="(min-width: 768px)" />
+        <img class="header__main-logo-image" src="/static/images/logo_472x65_.PNG" width="472" height="65" alt="University of California, Easy ID, identifiers made easy">
+      </picture>
+    </a>
+    {% host_based_include "includes/localized/_/logo.html" %}
+  </div>
 
-{% if htmlMode %}
-{{ metadata|safe }}
-{% else %}
-<table id="metadata">
-{% for m in metadata %}
-<tr>
-<th>{{ m.label }}</th>
-<td>{{ m.value|linebreaksbr }}</td>
-</tr>
-{% endfor %}
-</table>
-{% endif %}
+  <p class="general__note">{{ identifier }}</p>
+  <p id="title" class="general__note">{{ reason }}</p>
 
-<p><a href="{{ identifierLink }}">Descriptive information</a> provided
-by <a href="/">EZID</a>.</p>
+  {% if htmlMode %}
+  {{ metadata|safe }}
+  {% else %}
+  <table border="1" id="metadata" class="leftheaders docutils">
+    <tbody valign="top">
+    {% for m in metadata %}
+    <tr>
+    <td>{{ m.label }}</td>
+    <td>{{ m.value|linebreaksbr }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  </table>
+  {% endif %}
 
-<p><a href="/"><img src="/static/images/ezid.png"
-alt="EZID"/></a></p>
-
+  <p><a href="{{ identifierLink }}">{% trans "Descriptive information" %}</a> 
+  {% trans "provided by" %} <a href="/">EZID</a>.</p>
+  </div>
 </div>
 </body>
 

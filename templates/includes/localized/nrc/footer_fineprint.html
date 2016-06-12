@@ -1,0 +1,13 @@
+{% load i18n %}
+  <div class="footer__copyright">
+    {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags
+    i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+    i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+    {% endcomment %}
+    {% blocktrans trimmed %}
+    <p class="footer__text">EZID is a service of the <a href="http://www.cdlib.org/" class="footer__link">California Digital Library</a>, a division of the <a href="http://www.universityofcalifornia.edu/" class="footer__link">University of California Office of the President</a></p>
+    {% endblocktrans %}
+    <p class="footer__text">© {% now "Y" %} {% trans "The Regents of the University of California" %}</p>
+    <a href="/home/about_us" class="footer__copyright-link">{% trans "About Us" %}</a>
+    <a href="http://www.cdlib.org/about/privacy.html" class="footer__copyright-link">{% trans "Privacy Policy" %}</a>
+  </div>

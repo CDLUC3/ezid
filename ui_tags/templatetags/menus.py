@@ -1,88 +1,75 @@
 from django import template
 from django.core.urlresolvers import reverse
-from django.utils.html import escape
+from django.utils.translation import ugettext as _
 import string
 import config
 
 register = template.Library()
 
-#this sets the menu and submenu structure along with information about its link
-#and also allows matching with current items for different display
-# structure: name, function, menu role, submenus
+# This sets the menu and submenu structure for items that need to indicate they are active
+# in the top navigation area; And includes link information
+# and also allows matching with current items for different display
+#  structure: name, function, menu role, submenus
+# Demo page and api doc do not have anything active in top nav section (MENU_PUBLIC)
 
-MENUS = (
-          ("Home", "ui_home.index", 'public',
-            ( ('Why EZID?', 'ui_home.why', 'public', () ),
-              ('Understanding Identifiers', 'ui_home.understanding', 'public', () ),
-              ('Pricing', 'ui_home.pricing', 'public', () ),
-              ('Documentation', 'ui_home.documentation', 'public', () ),
-              ('Outreach', 'ui_home.outreach', 'public', () ),
-              ("Who's using EZID?", 'ui_home.community', 'public', () )
-            ) 
-          ),
-          ("Manage IDs", 'ui_manage.index', 'user', ()),
-          ("Create IDs", 'ui_create.index', 'user',
-            ( ("Simple", 'ui_create.simple', 'user', ()),
-              ("Advanced", "ui_create.advanced", 'user', ())
+# Nav that shows up for logged in users
+MENU_USER = (
+          (_("DASHBOARD"), 'ui_admin.dashboard', 'admin', ()),
+          (_("MANAGE IDS"), 'ui_manage.index', 'user', ()),
+          (_("CREATE ID"), 'ui_create.index', 'user',
+            ( (_("Simple"), 'ui_create.simple', 'user', ()),
+              (_("Advanced"), "ui_create.advanced", 'user', ())
             )
           ),
-          ("Lookup ID", 'ui_lookup.index', 'public', ()),
-          ("Demo", 'ui_demo.index', 'public',
-            ( ("Simple", 'ui_demo.simple', 'public', ()),
-              ("Advanced", "ui_demo.advanced", 'public', ())
-            )
-          ),
-          ("Admin", 'ui_admin.index', 'admin',
-            ( ("Usage", 'ui_admin.usage', 'admin', ()),
-              ("New admin site", "ui_admin.admin:index", "admin", ())
-            )
-          )
+          (_("ACCOUNT SETTINGS"), 'ui_account.edit', 'user', ())
         )
 
+# Tertiary nav
+MENU_DEMO = (
+             (_("Simple"), 'ui_demo.simple', 'public', ()),
+             (_("Advanced"), "ui_demo.advanced", 'public', ())
+            )
+
+#Dynamically created menu for subnav; Only displays for logged in users
 @register.simple_tag
-def top_menu(current_func, authenticatedUser):
+def menu_user(current_func, session):
   acc = ''
-  for menu in MENUS:
-    acc += top_menu_item(menu, authenticatedUser,
+  for i, menu in enumerate(MENU_USER):
+    acc += menu_user_item(menu, session,
       string.split(current_func, '.')[0] == string.split(menu[1], '.')[0])
   return acc
-  
-@register.simple_tag
-def secondary_menu(current_func, authenticatedUser):
-  matched = False
-  for menu in MENUS:
-    if string.split(current_func,'.')[0] == string.split(menu[1], '.')[0]:
-      matched = True
-      break
-  if not matched or not menu[3]: return ''
-  acc = []
-  for m in menu[3]:
-    acc.append(display_item(m, authenticatedUser,
-                string.split(current_func, '.')[1] == string.split(m[1], '.')[1]))
-  return '<span class="pad">|</span>'.join(acc)
-  
-  
 
-def top_menu_item(tup, authenticatedUser, is_current):
-  return "<div>" + display_item(tup, authenticatedUser, is_current) + "</div>"
-
-
-def display_item(tup, authenticatedUser, is_current):
-  if ":" in tup[1]:
-    u = reverse(tup[1].split(".")[1])
-  else:
-    u = reverse(tup[1])
+def menu_user_item(tup, session, is_current):
+  u = reverse(tup[1])
+  acc = '<a href=\"%s\" ' % u
   if is_current:
-    if tup[2] == 'public' or (tup[2] == 'user' and authenticatedUser):
-      return """<a href="%(path)s" class="menu_current">%(text)s</a>""" % {'path':u, 'text':tup[0] }
-    else:
-      return """<span class="menu_current">""" + tup[0] + """</span>"""
+    class_name = "login-menu__link--selected"
   else:
-    if tup[2] == 'public' or (tup[2] == 'user' and authenticatedUser):
-      return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
-    elif tup[2] == 'user':
-      return """<span class="menu_disabled">""" + tup[0] + """</span>"""
-    elif tup[2] == 'admin' and authenticatedUser and authenticatedUser.isSuperuser:
-      return """<a href="%(path)s">%(text)s</a>""" % {'path':u, 'text':tup[0] }
-    else:
-      return ''
+    class_name = "login-menu__link"
+  acc += 'class=\"' + class_name + '\">%s</a>' % tup[0]
+  return acc
+
+@register.simple_tag
+def learn_breadcrumb(view_title, parent_dir_title=None, parent_dir_link=None):
+  home = _("Home")
+  learn = _("Learn")
+  codeblock = '<div class="container"><ul class="breadcrumb">' + \
+    '<li><a href="/">' + unicode(home) + '</a></li>' + \
+    '<li><a href="/learn">' + unicode(learn) + '</a></li>'
+  if parent_dir_title is not None:
+    if parent_dir_link is None: 
+      parent_dir_link = ''
+    parent_dir_title_tr = _(parent_dir_title)
+    codeblock += '<li><a href="/learn/' + unicode(parent_dir_link) + '">' + \
+      unicode(parent_dir_title_tr) + '</a></li>' 
+  codeblock += '<li class="active">' + unicode(view_title) + '</li></ul></div>' 
+  return codeblock
+
+# Simply determines whether an element should be tagged as active; Only used for topmost nav
+@register.simple_tag
+def active(current_func, view_name):
+  if string.split(current_func, '.')[1] == view_name:
+    return 'active'
+  elif string.split(string.split(current_func, '.')[0], '_')[1] == view_name:
+    return 'active'
+  return ''

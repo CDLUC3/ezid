@@ -67,14 +67,6 @@ tooltip:
 <b><u>Group</u></b><br/>
 The identifier owner's group.
 
-element: _coowners
-displayname: Co-owners
-displaytype: text
-tooltip:
-<b><u>Co-owners</u></b><br/>
-The identifier's co-owners (additional users who may modify the
-identifier).
-
 element: _created
 displayname: Created
 displaytype: datetime

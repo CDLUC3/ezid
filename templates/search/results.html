@@ -1,0 +1,22 @@
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load manage_form_tags %}
+{% load i18n %}
+
+{% block title %}{{ heading_title }}{% endblock %}
+{% block title-twitter %}{% trans "Search Results" %}{% endblock %}
+{% block heading %}{% content_heading _("Search Results") %}{% endblock %}
+{% block content %}
+<form method="get" action="{% url "ui_search.index" %}" id="return-to-search" role="form">
+{% rewrite_hidden_except REQUEST 'p' %}
+<div class="search-results__simple">
+  <div class="search-results__simple-query"><strong>{% trans "Your query" %}:</strong>&nbsp;&nbsp;{{ search_query }}</div>
+  <div class="search-results__simple-button-group">
+    <button class="search-results__simple-button">{% trans "Modify original search" %}</button>
+  </div>
+</div>
+</form>
+
+{% include "search/_results.html" with primary_page="ui_search.results" %}
+
+{% endblock %}

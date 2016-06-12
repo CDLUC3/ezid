@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<title>Create ID Layout</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+	<!-- build:css css/main2.min.css -->
+	<link rel="stylesheet" href="css/main2.css">
+	<!-- endbuild -->
+
+</head>
+<body>
+
+	<div class="container-fluid">
+
+    <h1><a href="index.html">EZID UI Library</a></h1>
+
+    <h2>Create ID Layout</h2>
+
+    <!--#include file="includes/header.html" -->
+
+    <div class="login-menu__container">
+      <div class="login-menu">
+        <a href="" class="login-menu__link">Dashboard</a>
+        <a href="" class="login-menu__link">Manage IDs</a>
+        <a href="" class="login-menu__link--selected">Create IDs</a>
+        <a href="" class="login-menu__link">Account Settings</a>
+      </div>
+    </div>
+
+    <div class="heading__primary-container">
+      <h1 class="heading__primary-text">Create an identifier</h1>
+    </div>
+
+    <div class="tab create__tab">
+      <input class="tab__input" id="tab-1" type="radio" name="name" checked="checked"/>
+      <label class="tab__label" for="tab-1">Simple</label>
+
+      <div class="tab__content">
+
+        <div class="row">
+
+          <div class="col-md-8">
+            
+            <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset1">
+
+              <div id="create__fieldset1" class="fieldset-stacked__legend-number-1">Choose an identifier type</div>
+            
+              <label for="create__radio1" class="fcontrol__radio-label-stacked create__radio-button">
+                <input id="create__radio1" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group1" checked> <span>ARK (ark:/99999/fk4/... )</span>
+              </label>
+
+              <label for="create__radio2" class="fcontrol__radio-label-stacked create__radio-button">
+                <input id="create__radio2" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group1"> <span>DOI (doi:10.5072/FK2/... )</span>
+              </label>
+
+            </div>
+
+          </div>
+
+          <div class="col-md-4 create__sidebox">
+
+            <div class="sidebox">
+
+              <h2 class="sidebox__heading">Quick Start Guide</h2>
+              <ul class="sidebox__list">
+                <li><a class="link__primary" href="file.pdf">Simple ID Creation</a></li>
+              </ul>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset2">
+
+          <span id="create__fieldset2" class="fieldset-stacked__legend-number-2">Describe the identified object</span>
+
+          <div class="fcontrol__group-inline create__form-element-group">
+            <label for="create__field1" class="fcontrol__text-label-inline create__form-label">Location (URL)</label>
+            <div class="fcontrol__group">
+              <input id="create__field1" class="fcontrol__text-field-inline" type="text">
+              <span class="fcontrol__invalid-flag">Error message</span>
+            </div>
+          </div>
+
+          <div class="fcontrol__group-inline create__form-element-group">
+            <label for="create__field2" class="fcontrol__text-label-inline create__form-label">Who</label>
+            <div class="fcontrol__group">
+              <input id="create__field2" class="fcontrol__text-field-inline" type="text">
+              <span class="fcontrol__invalid-flag">Error message</span>
+            </div>
+          </div>
+
+          <div class="fcontrol__group-inline create__form-element-group">
+            <label for="create__field3" class="fcontrol__text-label-inline create__form-label">What</label>
+            <div class="fcontrol__group">
+              <input id="create__field3" class="fcontrol__text-field-inline" type="text">
+              <span class="fcontrol__invalid-flag">Error message</span>
+            </div>
+          </div>
+
+          <div class="fcontrol__group-inline create__form-element-group">
+            <label for="create__field4" class="fcontrol__text-label-inline create__form-label">When</label>
+            <div class="fcontrol__group">
+              <input id="create__field4" class="fcontrol__text-field-inline" type="text">
+              <span class="fcontrol__invalid-flag">Error message</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="create__button">
+
+          <button class="button__primary">Create</button>
+
+          <p class="create__buttton-note"><em>Clicking "Create" will create the identifier and make it public. To defer making it public, use the Advanced form. Once created, an identifier cannot be renamed or deleted.</em></p>
+
+        </div>
+
+      </div>
+
+      <input class="tab__input" id="tab-2" type="radio" name="name">
+      <label class="tab__label" for="tab-2">Advanced</label>
+      <div class="tab__content">
+        
+        <div class="row">
+
+          <div class="col-md-8">
+            
+            <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset3">
+
+              <div id="create__fieldset3" class="fieldset-stacked__legend-number-1">Choose an identifier type</div>
+            
+              <label for="create__radio3" class="fcontrol__radio-label-stacked create__radio-button">
+                <input id="create__radio3" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group2" checked> <span>ARK (ark:/99999/fk4/... )</span>
+              </label>
+
+              <label for="create__radio4" class="fcontrol__radio-label-stacked create__radio-button">
+                <input id="create__radio4" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group2"> <span>DOI (doi:10.5072/FK2/... )</span>
+              </label>
+
+            </div>
+
+            <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset4">
+
+              <div id="create__fieldset4" class="fieldset-stacked__legend-number-2">Optional: Enter a custom remainder (suffix)</div>
+
+              <div class="fcontrol__group-stacked create__form-element-group">
+                <label for="create__field5" class="fcontrol__text-label-hidden">Suffix</label>
+                <input id="create__field5" class="fcontrol__text-field-stacked" type="text" placeholder="Recommended: Leave blank" required>
+                <span class="fcontrol__invalid-flag">Error message</span>
+              </div>
+
+            </div>
+
+            <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset5">
+
+              <div id="create__fieldset5" class="fieldset-stacked__legend-number-3">Decide</div>
+
+                <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="create__fieldset5">
+
+                  <span id="create__fieldset5" class="fieldset-inline__legend create__inline-nested-legend">Make this identifier</span>
+                  
+                  <label for="create__radio5" class="fcontrol__radio-label-inline">
+                    <input id="create__radio5" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group3" checked> <span>Public</span>
+                  </label>
+
+                  <label for="create__radio6" class="fcontrol__radio-label-inline">
+                    <input id="create__radio6" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group3"> <span>Reserved</span>
+                  </label>
+
+                </div>
+
+                <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="create__fieldset6">
+
+                  <span id="create__fieldset6" class="fieldset-inline__legend create__inline-nested-legend">Allow harvesting/indexing?</span>
+                  
+                  <label for="create__radio7" class="fcontrol__radio-label-inline">
+                    <input id="create__radio7" class="fcontrol__radio-button-stacked" type="radio" value="" name="name2" checked> <span>Yes</span>
+                  </label>
+
+                  <label for="create__radio8" class="fcontrol__radio-label-inline">
+                    <input id="create__radio8" class="fcontrol__radio-button-stacked" type="radio" value="" name="name2"> <span>No</span>
+                  </label>
+
+                </div>
+
+            </div>
+
+          </div>
+
+          <div class="col-md-4 create__sidebox">
+
+            <div class="sidebox">
+              
+              <h2 class="sidebox__heading">Quick Start Guide</h2>
+              <ul class="sidebox__list">
+                <li><a class="link__primary" href="file.pdf">Custom Remainder Rules</a></li>
+                <li><a class="link__primary" href="file.pdf">Advanced Create for DOIs</a></li>
+                <li><a class="link__primary" href="file.pdf">Resource Types</a></li>
+                <li><a class="link__primary" href="file.pdf">Contributor Types</a></li>
+                <li><a class="link__primary" href="file.pdf">Relation Types</a></li>
+                <li><a class="link__primary" href="file.pdf">Don't have info for required fields? Use placeholder codes.</a></li>
+              </ul>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="fieldset-stacked" role="group" aria-labelledby="create__fieldset7">
+
+          <div class="fieldset-stacked__embedded-select">
+
+            <span id="create__fieldset7" class="fieldset-inline__legend-number-4">Describe the identified object using the</span>
+
+            <label for="create__select1" class="fcontrol__text-label-hidden">Profile</label>
+
+            <select name="url-here" id="create__select1" class="fcontrol__select">
+              <option value="">DataCite</option>
+              <option value="">Dublin Core</option>
+              <option value="">ERC</option>
+            </select>
+
+            <span class="fieldset-stacked__embedded-select-append-text">profile</span>
+
+          </div>
+
+          <!-- begin fieldset 4 elements -->
+
+          <div class="fcontrol__group-inline create__form-element-group">
+            <label for="create__field6" class="fcontrol__text-label-inline create__label-advanced">Location (URL)</label>
+            <div class="fcontrol__group">
+              <input id="create__field6" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+              <span class="fcontrol__invalid-flag">Error message</span>
+            </div>
+          </div>
+
+          <div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="create__fieldset8">
+
+            <div class="fieldset-controls__container">
+
+              <div id="create__fieldset8" class="fieldset-controls__legend create__nested-legend">Creator</div>
+
+              <div class="fieldset-controls__buttons">
+                <button class="button__plus">
+                  <span class="button__text">Add</span>
+                </button>
+                <button class="button__minus">
+                  <span class="button__text">Remove</span>
+                </button>
+              </div>
+
+            </div>
+
+            <div class="fcontrol__group-inline--invalid create__form-element-group">
+              <label for="create__field7" class="fcontrol__text-label-inline create__label-advanced">Name</label>
+              <div class="fcontrol__group">
+                <input id="create__field7" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+                <span class="fcontrol__invalid-flag">please fill in a value for creator name but an especially long error.</span>
+              </div>
+            </div>
+
+            <details id="accordion__section-1" class="accordion__section create__accordion-section">
+              
+              <summary class="accordion__title create__accordion-title">More Fields</summary>
+
+              <div class="fcontrol__group-inline--invalid create__form-element-group">
+                <label for="create__field9" class="fcontrol__text-label-inline create__label-advanced--in-accordion">Name Identifier</label>
+                <div class="fcontrol__group">
+                  <input id="create__field9" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+                  <span class="fcontrol__invalid-flag">Error message</span>
+                </div>
+              </div>
+
+              <div class="fcontrol__group-inline create__form-element-group">
+                <label for="create__field10" class="fcontrol__text-label-inline create__label-advanced--in-accordion">Identifier Scheme</label>
+                <div class="fcontrol__group">
+                  <input id="create__field10" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+                  <span class="fcontrol__invalid-flag">Error message</span>
+                </div>
+              </div>
+
+              <div class="fcontrol__group-inline create__form-element-group">
+                <label for="create__field11" class="fcontrol__text-label-inline create__label-advanced--in-accordion">Scheme URI</label>
+                <div class="fcontrol__group">
+                  <input id="create__field11" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+                  <span class="fcontrol__invalid-flag">Error message</span>
+                </div>
+              </div>
+
+              <div class="fcontrol__group-inline create__form-element-group">
+                <label for="create__field12" class="fcontrol__text-label-inline create__label-advanced--in-accordion">Affiliation</label>
+                <div class="fcontrol__group">
+                  <input id="create__field12" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+                  <span class="fcontrol__invalid-flag">Error message</span>
+                </div>
+              </div>
+
+            </details>
+
+          </div>
+
+          <div class="fieldset-stacked create__nested-fieldset fieldset__bottom-border" role="group" aria-labelledby="create__fieldset9">
+
+            <div class="fieldset-controls__container">
+
+              <div id="create__fieldset9" class="fieldset-controls__legend create__nested-legend">Title</div>
+
+              <div class="fieldset-controls__buttons">
+                <button class="button__plus">
+                  <span class="button__text">Add</span>
+                </button>
+                <button class="button__minus">
+                  <span class="button__text">Remove</span>
+                </button>
+              </div>
+
+            </div>
+            
+            <div class="fcontrol__group-inline create__form-element-group">
+              <label for="create__field13" class="fcontrol__text-label-inline create__label-advanced">Title</label>
+              <div class="fcontrol__group">
+                <input id="create__field13" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+                <span class="fcontrol__invalid-flag">Error message</span>
+              </div>
+            </div>
+
+            <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="create__fieldset10">
+
+              <span id="create__fieldset10" class="fieldset-inline__legend create__inline-nested-legend">Type</span>
+              
+              <label for="create__radio9" class="fcontrol__radio-label-inline">
+                <input id="create__radio9" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group4" checked> <span>Main Title</span>
+              </label>
+
+              <label for="create__radio10" class="fcontrol__radio-label-inline">
+                <input id="create__radio10" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group4"> <span>Alternative Title</span>
+              </label>
+
+              <label for="create__radio11" class="fcontrol__radio-label-inline">
+                <input id="create__radio11" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group4"> <span>Subtitle</span>
+              </label>
+
+              <label for="create__radio12" class="fcontrol__radio-label-inline">
+                <input id="create__radio12" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group4"> <span>Translated Title</span>
+              </label>
+
+            </div>
+
+            <div class="create__fcontrol-group">
+            
+              <div class="fcontrol__group-inline create__form-element-group">
+                <label for="create__field13" class="fcontrol__text-label-inline create__label-advanced">Title</label>
+                <div class="fcontrol__group">
+                  <input id="create__field13" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+                  <span class="fcontrol__invalid-flag">Error message</span>
+                </div>
+              </div>
+
+              <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="create__fieldset10">
+
+                <span id="create__fieldset10" class="fieldset-inline__legend create__inline-nested-legend">Type</span>
+                
+                <label for="create__radio13" class="fcontrol__radio-label-inline">
+                  <input id="create__radio13" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group5" checked> <span>Main Title</span>
+                </label>
+
+                <label for="create__radio14" class="fcontrol__radio-label-inline">
+                  <input id="create__radio14" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group5"> <span>Alternative Title</span>
+                </label>
+
+                <label for="create__radio15" class="fcontrol__radio-label-inline">
+                  <input id="create__radio15" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group5"> <span>Subtitle</span>
+                </label>
+
+                <label for="create__radio16" class="fcontrol__radio-label-inline">
+                  <input id="create__radio16" class="fcontrol__radio-button-stacked" type="radio" value="" name="radio-group5"> <span>Translated Title</span>
+                </label>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="fcontrol__group-inline create__form-element-group">
+            <label for="create__field14" class="fcontrol__text-label-inline create__label-advanced">Publisher</label>
+            <div class="fcontrol__group">
+              <input id="create__field14" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+              <span class="fcontrol__invalid-flag">Error message</span>
+            </div>
+          </div>
+
+          <div class="fcontrol__group-inline create__form-element-group">
+            <label for="create__field15" class="fcontrol__text-label-inline create__label-advanced">Publication Year</label>
+            <div class="fcontrol__group">
+              <input id="create__field15" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+              <span class="fcontrol__invalid-flag">Publication Year</span>
+            </div>
+          </div>
+
+          <div class="fcontrol__select-group-inline--invalid create__form-element-group">
+            <label for="create__select2" class="fcontrol__select-label-inline create__label-advanced">Resource Type General</label>
+            <div class="fcontrol__group">
+              <select name="url-here" id="create__select2" class="fcontrol__select--fullwidth" required>
+                <option value="">Select a type of object</option>
+                <option value="">Audiovisual</option>
+                <option value="">Collection</option>
+                <option value="">Dataset</option>
+                <option value="">(etc)</option>
+              </select>
+              <span class="fcontrol__invalid-flag">
+                Resource Type General is required if you fill in Resource Type.
+              </span>
+            </div>
+          </div>
+
+          <div class="fcontrol__group-inline create__form-element-group">
+            <label for="create__field16" class="fcontrol__text-label-inline create__label-advanced">Resource Type</label>
+            <div class="fcontrol__group">
+              <input id="create__field16" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+              <span class="fcontrol__invalid-flag">Error message</span>
+            </div>
+          </div>
+
+          <div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="create__fieldset11">
+
+            <div class="fieldset-controls__container">
+
+              <div id="create__fieldset11" class="fieldset-controls__legend create__nested-legend">Abstract</div>
+
+              <div class="fieldset-controls__buttons">
+                <button class="button__plus">
+                  <span class="button__text">Add</span>
+                </button>
+                <button class="button__minus">
+                  <span class="button__text">Remove</span>
+                </button>
+              </div>
+
+            </div>
+            
+            <div class="fcontrol__group-inline create__form-element-group">
+              <label for="create__field17" class="fcontrol__text-label-inline create__label-advanced">Descriptive Information</label>
+              <div class="fcontrol__group">
+                <input id="create__field17" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+                <span class="fcontrol__invalid-flag">Error message</span>
+              </div>
+            </div>
+
+            <div class="fcontrol__select-group-inline create__form-element-group">
+              <label for="create__select3" class="fcontrol__select-label-inline create__label-advanced">Type</label>
+              <div class="fcontrol__group">
+                <select name="url-here" id="create__select3" class="fcontrol__select--fullwidth">
+                  <option value="">Abstract</option>
+                  <option value="">(etc)</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="create__fieldset12">
+
+            <div class="fieldset-controls__container">
+
+              <div id="create__fieldset12" class="fieldset-controls__legend create__nested-legend">Version</div>
+
+            </div>
+            
+            <div class="fcontrol__group-inline create__form-element-group">
+              <label for="version" class="fcontrol__text-label-inline create__label-advanced ">Version</label>
+              <div class="fcontrol__group">
+                <input class="fcontrol__text-field-inline" id="version" name="version" type="text" />
+              </div>
+            </div>
+          </div>
+
+          <div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="create__fieldset13">
+
+            <div class="fieldset-controls__container">
+
+              <div id="create__fieldset13" class="fieldset-controls__legend create__nested-legend">Conributor</div>
+
+              <div class="fieldset-controls__buttons">
+                <button class="button__plus">
+                  <span class="button__text">Add</span>
+                </button>
+                <button class="button__minus">
+                  <span class="button__text">Remove</span>
+                </button>
+              </div>
+
+            </div>
+            
+            [form controls to go here]
+
+          </div>
+
+          <div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="create__fieldset14">
+
+            <div class="fieldset-controls__container">
+
+              <div id="create__fieldset14" class="fieldset-controls__legend create__nested-legend">Date</div>
+
+              <div class="fieldset-controls__buttons">
+                <button class="button__plus">
+                  <span class="button__text">Add</span>
+                </button>
+                <button class="button__minus">
+                  <span class="button__text">Remove</span>
+                </button>
+              </div>
+
+            </div>
+            
+            [form controls to go here]
+
+          </div>
+
+          <div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="create__fieldset15">
+
+            <div class="fieldset-controls__container">
+
+              <div id="create__fieldset15" class="fieldset-controls__legend create__nested-legend">Alternative Identifier</div>
+
+              <div class="fieldset-controls__buttons">
+                <button class="button__plus">
+                  <span class="button__text">Add</span>
+                </button>
+                <button class="button__minus">
+                  <span class="button__text">Remove</span>
+                </button>
+              </div>
+
+            </div>
+            
+            [form controls to go here]
+
+          </div>
+
+          <div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="create__fieldset16">
+
+            <div class="fieldset-controls__container">
+
+              <div id="create__fieldset16" class="fieldset-controls__legend create__nested-legend">Related Identifier</div>
+
+              <div class="fieldset-controls__buttons">
+                <button class="button__plus">
+                  <span class="button__text">Add</span>
+                </button>
+                <button class="button__minus">
+                  <span class="button__text">Remove</span>
+                </button>
+              </div>
+
+            </div>
+            
+            [form controls to go here]
+
+          </div>
+
+          <div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="create__fieldset17">
+
+            <div class="fieldset-controls__container">
+
+              <div id="create__fieldset17" class="fieldset-controls__legend create__nested-legend">Rights</div>
+
+              <div class="fieldset-controls__buttons">
+                <button class="button__plus">
+                  <span class="button__text">Add</span>
+                </button>
+                <button class="button__minus">
+                  <span class="button__text">Remove</span>
+                </button>
+              </div>
+
+            </div>
+            
+            [form controls to go here]
+
+          </div>
+
+          <div class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="create__fieldset18">
+
+            <div class="fieldset-controls__container">
+
+              <div id="create__fieldset18" class="fieldset-controls__legend create__nested-legend">Geolocation</div>
+
+              <div class="fieldset-controls__buttons">
+                <button class="button__plus">
+                  <span class="button__text">Add</span>
+                </button>
+                <button class="button__minus">
+                  <span class="button__text">Remove</span>
+                </button>
+              </div>
+
+            </div>
+            
+            [form controls to go here]
+
+          </div>
+
+          <!-- end fieldset 4 elements -->
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!--#include file="includes/footer_geo-off.html" -->
+
+  </div>
+	
+  <!-- build:js js/main2.min.js -->
+  <script src="js/vendor/jquery.min.js"></script>
+  <script src="js/vendor/jquery-ui.min.js"></script>
+  <script src="js/vendor/better-dom.min.js"></script>
+  <script src="js/vendor/better-details-polyfill.js"></script>
+  <script src="js/vendor/picturefill.min.js"></script>
+  <script src="js/vendor/modernizr-custombuild.js"></script>
+  <script src="js/main2.js"></script>
+  <!-- endbuild -->
+	
+</body>
+</html>

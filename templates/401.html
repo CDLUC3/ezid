@@ -1,8 +1,14 @@
-<html>
-<head>
-<title>Unauthorized</title>
-</head>
-<body>
-<h1>401 Unauthorized</h1>
-</body>
-</html>
+{% extends "layouts/base.html" %}
+{% load layout_extras %}
+{% load i18n %}
+
+{% block title %}{%trans "Error: 401 Unauthorized" %}{% endblock %}
+{% block heading %}{% content_heading _("Error") %}{% endblock %}
+{% block content %}
+
+<div class="vertical-buffer"></div>
+<div class="container">
+<h2>401 {% trans "Unauthorized" %}</h2>
+<p class="general__note">The feature you tried to access is not currently available. If this problem persists please <a class="link__primary" href="/contact">notify us</a>.</p>
+</div>
+{% endblock %}
