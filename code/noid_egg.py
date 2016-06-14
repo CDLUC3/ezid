@@ -84,7 +84,7 @@ def _error (operation, s):
   return ("unexpected return from noid egg '%s' operation, " +\
     "output follows\n%s") % (operation, "".join(s))
 
-def identifierExists (identifier):
+def identifierExists (identifier, internalCall=False):
   """
   Returns true if a scheme-less ARK identifier (e.g., "13030/foo")
   exists.  The identifier is assumed to be in canonical form.  Raises
@@ -100,7 +100,7 @@ def identifierExists (identifier):
   # functions below work to maintain the invariant property that
   # either an identifier has EZID metadata (along with noid-internal
   # metadata) or it has no metadata at all.
-  assert _readEnabled, "function not enabled"
+  assert internalCall or _readEnabled, "function not enabled"
   s = _issue("GET", [(identifier, "fetch")])
   assert len(s) >= 4 and s[0].startswith("# id:") and\
     s[-3].startswith("# elements bound under") and\
@@ -175,7 +175,7 @@ def deleteIdentifier (identifier):
   s = _issue("POST", [(identifier, "purge")])
   assert len(s) >= 2 and s[-2] == "egg-status: 0\n", _error("purge", s)
   # See the comment under 'identifierExists' above.
-  assert not identifierExists(identifier),\
+  assert not identifierExists(identifier, internalCall=True),\
     "noid egg 'purge' operation on %s left remaining bindings" % identifier
 
 def ping ():
