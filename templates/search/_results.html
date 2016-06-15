@@ -47,6 +47,7 @@
       frm.unbind('submit');
       frm.attr('method', 'get');
       frm.submit();
+      setTimeout(function() { loadingIndicator(); }, 4000);
   });
 </script>
 {% endif %}

@@ -104,7 +104,7 @@ def edit(request, ssl=False):
     d['proxy_users_picked_list'] = json.dumps(proxies_orig)
     d['proxy_users_picked'] = ', '.join(proxies_orig if proxies_orig else [proxies_default])
     d['form'] = form_objects.UserForm(d, user=user, username=d['username'], pw_reqd=False)
-  else:
+  elif request.method == "POST":
     d['form'] = form_objects.UserForm(request.POST, initial=d, user=user, username=d['username'], pw_reqd=False)
     basic_info_changed=False
     newProxies = None 
@@ -126,6 +126,8 @@ def edit(request, ssl=False):
       else:
         err = _("Change(s) could not be made.  Please check the highlighted field(s) below for details.")
         django.contrib.messages.error(request, err)
+  else:
+    uic.methodNotAllowed(request)
   return uic.render(request, "account/edit", d)
 
 def allUsersInRealm(user):

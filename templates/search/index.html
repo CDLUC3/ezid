@@ -19,7 +19,7 @@
     {{ form.keywords|add_attributes:"id:search__simple-label,class:fcontrol__text-field-stacked,type:search" }}
     <span class="fcontrol__invalid-flag"></span>
   </div>
-  <button class="search__simple-button" type="submit">{% trans "Search" %}</button>
+  <button class="search__simple-button search__action" type="submit">{% trans "Search" %}</button>
 </div>
 <details {{ show_advanced_search }} class="showhide">
   <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
@@ -101,7 +101,7 @@
       </div>
     </div>{% comment %}No validation necessary{% endcomment %}
     <div class="col-md-6">
-      <button class="search__simple-button2" type="submit">{% trans "Search" %}</button>
+      <button class="search__simple-button2 search__action" type="submit">{% trans "Search" %}</button>
     </div>
   </div>
 </details>

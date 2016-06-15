@@ -6,6 +6,10 @@ $search-layout-element-spacing: 30px;
 	// empty
 }
 
+.search__choose {
+	// empty. This is used as a go-to class for activating loadingIndicator() JS
+}
+
 .search__simple {
 	display: flex;
 	max-width: 1000px;

@@ -1,0 +1,34 @@
+// ##### Loading Indicator ##### //
+// Courtesy Parkheesung (parkheesung@outlook.com)    Parkheesung.com
+
+.loading__container {
+	display: flex;
+	position: fixed;
+	top: 40%;
+	left: 50%;
+	flex-flow: column nowrap;
+	justify-content: center;
+	width: 330px;
+	height: 170px;
+	margin: -85px 0 0 -165px;
+	background-color: $design-white-color;
+	box-shadow: 0 5px 15px rgba($design-black-color, 0.5);
+	z-index: 2000;
+}
+
+.loading__image {
+	width: 100px;
+	height: 100px;
+	margin: 18px auto;
+	padding: 0;
+	border: none;
+	outline: none;
+}
+
+.loading__text {
+	position: relative;
+	color: $design-primary-color;
+	font-size: 1.2em;
+	font-weight: bold;
+	text-align: center;
+}
