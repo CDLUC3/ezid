@@ -21,7 +21,12 @@ def dashboard(request, ssl=False):
   user = userauth.getUser(request)
   d['heading_user_display'] = user.displayName + "'s EZID " + _("Dashboard")
   d['display_adminlink'] = user.isSuperuser 
-  REQUEST = request.GET if request.method == "GET" else request.POST
+  if request.method == "GET":
+    REQUEST = request.GET
+  elif request.method == "POST":
+    REQUEST = request.POST
+  else:
+    return uic.methodNotAllowed(request)
   if not('owner_selected' in REQUEST) or REQUEST['owner_selected'] == '':
     d['owner_selected'] = None if user.isSuperuser \
       else "realm_" + user.realm.name if user.isRealmAdministrator \
@@ -30,7 +35,7 @@ def dashboard(request, ssl=False):
   else:
    d['owner_selected'] = REQUEST['owner_selected'] 
   d['owner_names'] = uic.owner_names(user, "dashboard")
-  d = _getUsage(request, user, d)
+  d = _getUsage(REQUEST, user, d)
   d['ajax'] = False
 
   # Search:    ID Issues
@@ -63,7 +68,7 @@ def ajax_dashboard_table(request):
       d = ui_search.search(d, request, NO_CONSTRAINTS, G['name'])
       return uic.render(request, "dashboard/_" + G['name'], d)
 
-def _getUsage(request, user, d):
+def _getUsage(REQUEST, user, d):
   table = [] 
   s = stats.getStats()
   user_id, group_id, realm_id = uic.getOwnerOrGroupOrRealm(d['owner_selected'])
@@ -81,7 +86,6 @@ def _getUsage(request, user, d):
     month_latest = "%s-%s" % (datetime.now().year, datetime.now().month)
     d['months_all'] = [m[0] for m in table]
     default_table = table[-12:]
-    REQUEST = request.GET if request.method == "GET" else request.POST
     d["month_from"] = REQUEST["month_from"] if "month_from" in REQUEST else default_table[0][0]
     d["month_to"] = REQUEST["month_to"] if "month_to" in REQUEST else default_table[-1][0]
     d["totals_by_month"] = _computeMonths(_getScopedRange(table, d['month_from'], d['month_to']))

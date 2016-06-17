@@ -46,6 +46,8 @@ def index(request):
     d['filtered'] = True 
     d['form'] = form_objects.ManageSearchIdForm(request.POST)
     noConstraintsReqd = False
+  else:
+    return uic.methodNotAllowed(request)
   d['owner_names'] = uic.owner_names(user, "manage")
   d = ui_search.search(d, request, noConstraintsReqd, "manage")
   if not d['form'].has_changed():
@@ -168,7 +170,7 @@ def edit(request, identifier):
       d['form'] = form_objects.getIdForm(d['current_profile'], d['form_placeholder'], id_metadata)
       if not d['form'].is_valid():
         django.contrib.messages.error(request, FORM_VALIDATION_ERROR_ON_LOAD)
-  else:    # request.method == "POST":
+  elif request.method == "POST":
     P = request.POST
     d['pub_status'] = (P['_status'] if '_status' in P else d['pub_status'])
     d['stat_reason'] = (P['stat_reason'] if 'stat_reason' in P else d['stat_reason'])
@@ -227,6 +229,8 @@ def edit(request, identifier):
           else:
             _alertMessageUpdateSuccess(request)
             return redirect("/id/" + urllib.quote(identifier, ":/"))
+  else:
+    return uic.methodNotAllowed(request)
   return uic.render(request, "manage/edit", d)
 
 def details(request):

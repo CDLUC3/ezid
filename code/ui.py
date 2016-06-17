@@ -65,8 +65,10 @@ def contact(request):
       err = _("Form could not be sent.  Please check the highlighted field(s) below for details.")
       django.contrib.messages.error(request, err)
       # fall through to re-render page; form already contains error info
-  else:  # GET Request
+  elif request.method == "GET":
     d['form'] = form_objects.ContactForm(None, localized=localized) # Build an empty form
+  else:
+    return uic.methodNotAllowed(request)
   return uic.render(request, 'contact', d)
 
 def __emails(request):
