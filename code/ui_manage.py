@@ -29,6 +29,7 @@ def index(request):
   """ Manage Page, listing all Ids owned by user, or if groupadmin, all group users """
   d = { 'menu_item' : 'ui_manage.index' }
   user = userauth.getUser(request)
+  noConstraintsReqd =True 
   if request.method == "GET":
     if not('owner_selected' in request.GET) or request.GET['owner_selected'] == '':
       d['owner_selected'] =  _defaultUser(user)
@@ -39,7 +40,6 @@ def index(request):
     d['form'] = form_objects.ManageSearchIdForm(d['queries'])
     d['order_by'] = 'c_update_time'
     d['sort'] = 'asc'
-    noConstraintsReqd =True 
   elif request.method == "POST":
     d['owner_selected'] = request.POST['owner_selected'] if 'owner_selected' != '' \
       else _defaultUser(user)
