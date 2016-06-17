@@ -26,7 +26,7 @@ def dashboard(request, ssl=False):
   elif request.method == "POST":
     REQUEST = request.POST
   else:
-    uic.methodNotAllowed(request)
+    return uic.methodNotAllowed(request)
   if not('owner_selected' in REQUEST) or REQUEST['owner_selected'] == '':
     d['owner_selected'] = None if user.isSuperuser \
       else "realm_" + user.realm.name if user.isRealmAdministrator \

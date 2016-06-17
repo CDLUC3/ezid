@@ -127,7 +127,7 @@ def edit(request, ssl=False):
         err = _("Change(s) could not be made.  Please check the highlighted field(s) below for details.")
         django.contrib.messages.error(request, err)
   else:
-    uic.methodNotAllowed(request)
+    return uic.methodNotAllowed(request)
   return uic.render(request, "account/edit", d)
 
 def allUsersInRealm(user):

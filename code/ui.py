@@ -68,7 +68,7 @@ def contact(request):
   elif request.method == "GET":
     d['form'] = form_objects.ContactForm(None, localized=localized) # Build an empty form
   else:
-    uic.methodNotAllowed(request)
+    return uic.methodNotAllowed(request)
   return uic.render(request, 'contact', d)
 
 def __emails(request):

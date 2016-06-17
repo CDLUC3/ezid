@@ -113,7 +113,7 @@ def index(request):
     if d['search_success'] == True:
       return uic.render(request, 'search/results', d)
   else:
-    uic.methodNotAllowed(request)
+    return uic.methodNotAllowed(request)
   return uic.render(request, 'search/index', d)
 
 def results(request):
@@ -140,7 +140,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
   elif request.method == "POST":
     REQUEST = request.POST
   else:
-    uic.methodNotAllowed(request)
+    return uic.methodNotAllowed(request)
   d['REQUEST'] = REQUEST 
   d = _pageLayout(d, REQUEST, s_type)
   if noConstraintsReqd or 'form' in d and d['form'].is_valid():

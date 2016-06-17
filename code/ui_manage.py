@@ -230,7 +230,7 @@ def edit(request, identifier):
             _alertMessageUpdateSuccess(request)
             return redirect("/id/" + urllib.quote(identifier, ":/"))
   else:
-    uic.methodNotAllowed(request)
+    return uic.methodNotAllowed(request)
   return uic.render(request, "manage/edit", d)
 
 def details(request):

@@ -1,8 +1,8 @@
+from django.utils.translation import ugettext_lazy as _
 import os
 import os.path
 import socket
 import sys
-from django.utils.translation import ugettext_lazy as _
 
 # EZID-specific paths...
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
@@ -13,18 +13,11 @@ SETTINGS_DIR = os.path.join(PROJECT_ROOT, "settings")
 EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "ezid.conf")
 EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
 LOGGING_CONFIG_FILE = "logging.server.conf"
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, "static")
-LOCALE_PATHS = (os.path.join(MEDIA_ROOT, "locale"),)
 
 sys.path.append(os.path.join(PROJECT_ROOT, "code"))
 
 DEBUG = True
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
-
-LANGUAGES = (
-    ('en', _('English')),
-    ('fr-CA', _('Canadian French')),
-)
 
 MANAGERS = ADMINS = [("Greg Janee", "gjanee@ucop.edu")]
 
@@ -67,6 +60,12 @@ TIME_FORMAT_UI_METADATA = "%Y-%m-%d %H:%M:%S"
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
 STATIC_URL = "/static/"
 
+LANGUAGES = [
+  ("en", _("English")),
+  ("fr-CA", _("Canadian French"))
+]
+LOCALE_PATHS = [os.path.join(STATIC_ROOT, "locale")]
+
 # The secret key is loaded from the store database by config._load.
 SECRET_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
@@ -76,9 +75,9 @@ PASSWORD_HASHERS = [
 ]
 
 MIDDLEWARE_CLASSES = (
+  "django.middleware.common.CommonMiddleware",
   "django.contrib.sessions.middleware.SessionMiddleware",
   "django.middleware.locale.LocaleMiddleware",
-  "django.middleware.common.CommonMiddleware",
   "django.contrib.messages.middleware.MessageMiddleware",
   "django.contrib.auth.middleware.AuthenticationMiddleware",
   "middleware.SslMiddleware",
@@ -106,7 +105,7 @@ TEMPLATES = [
   }
 ]
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
   "django.contrib.sessions",
   "django.contrib.messages",
   "django.contrib.admin",
@@ -114,7 +113,7 @@ INSTALLED_APPS = (
   "django.contrib.contenttypes",
   "ezidapp",
   "ui_tags"
-)
+]
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 

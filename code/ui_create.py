@@ -84,7 +84,7 @@ def simple_form(request, d):
   elif request.method == "POST":
     REQUEST = request.POST
   else:
-    uic.methodNotAllowed(request)
+    return uic.methodNotAllowed(request)
   #selects current_profile based on parameters or profile preferred for prefix type
   d['internal_profile'] = metadata.getProfile('internal')
   if 'current_profile' in REQUEST:
@@ -136,7 +136,7 @@ def adv_form(request, d):
   elif request.method == "POST":
     REQUEST = request.POST
   else:
-    uic.methodNotAllowed(request)
+    return uic.methodNotAllowed(request)
   if (('shoulder' in REQUEST and REQUEST['shoulder'].startswith("doi:")) \
     or (len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'))):
       choice_is_doi = True 
