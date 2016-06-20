@@ -5,6 +5,7 @@ import ui_create
 import urllib
 
 def index(request):
+  if request.method != "GET": return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_home.index'}
   d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['namespace'].lower())
   d['form_placeholder']= True
@@ -18,30 +19,37 @@ def index(request):
     return redirect("/id/" + urllib.quote(result.split()[1], ":/"))   # ID Details page
 
 def learn(request):
+  if request.method != "GET": return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_home.learn' }
   return uic.render(request, 'learn', d)
 
 def crossref_faq(request):
+  if request.method != "GET": return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_home.learn' }
   return uic.render(request, 'info/crossref_faq', d)
 
 def id_basics(request):
+  if request.method != "GET": return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_home.learn' }
   return uic.render(request, 'info/id_basics', d)
 
 def id_concepts(request):
+  if request.method != "GET": return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_home.learn' }
   return uic.render(request, 'info/id_concepts', d)
 
 def open_source(request):
+  if request.method != "GET": return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_home.learn' }
   return uic.render(request, 'info/open_source', d)
 
 def suffix_passthrough(request):
+  if request.method != "GET": return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_home.learn' }
   return uic.render(request, 'info/suffix_passthrough', d)
 
 def no_menu(request, template_name):
+  if request.method != "GET": return uic.methodNotAllowed(request)
   d = {'menu_item' : 'ui_home.null'}
   try:
     loader.get_template('info/' + template_name + ".html")
