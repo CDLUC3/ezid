@@ -85,4 +85,26 @@ $(document).ready(function(){
     $('#js-login-modal').fadeToggle(200);
   });
 
+  // ***** Loading Indicator ***** //
+
+  $('.search__action').click(function(){
+    setTimeout(function() { loadingIndicator(); }, 4000);
+  });
+
 }); // Close $(document).ready(function()
+
+// ***** Loading Indicator ***** //
+
+var LoadingImage = "/static/images/loading_100x100.gif", loadingTag = "<div id=\"LoadingDivLayer\">";
+loadingTag += "<div class=\"loading__container\" role=\"document\">";
+loadingTag += "<img class=\"loading__image\" src=\"" + LoadingImage + "\" alt=\"Loading...\" />";
+loadingTag += "<div class=\"loading__text\">Loading Results ...</div>";
+loadingTag += "</div></div>";
+
+function loadingIndicator(){
+  if (document.getElementById("LoadingDivLayer") === null) {
+    $("body").prepend(loadingTag);
+    $("#LoadingDivLayer").fadeIn(350);
+  }
+}
+

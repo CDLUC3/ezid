@@ -37,6 +37,7 @@
   // submit on change
   $("#page-size-{{ select_position }}").bind("change", function(event){
     $("#ps-{{ select_position }}").submit();
+    setTimeout(function() { loadingIndicator(); }, 4000);
   });
 
   // *******   PAGE   *******
@@ -47,6 +48,7 @@
     if(code==13)e.preventDefault();
     if(code==32||code==13||code==188||code==186){
       $("#p-{{ select_position }}").submit();
+      setTimeout(function() { loadingIndicator(); }, 4000);
     }
   });
   // page selection buttons change value in input field and submit on click
@@ -54,5 +56,6 @@
     var p = $(e.currentTarget).data('page');
     $('#page-directselect-{{ select_position }}').val(p);
     $("#p-{{ select_position }}").submit();
+    setTimeout(function() { loadingIndicator(); }, 4000);
   });
 </script>

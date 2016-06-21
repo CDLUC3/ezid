@@ -82,9 +82,9 @@ def column_head(request, field, fields_mapped, order_by, sort, primary_page):
     "' role='form'>" + rewrite_hidden(c)
   r = "<th>" + escape(fields_mapped[field][1]) + form_and_hidden
   if field == order_by:
-    r += "<button class='" + ORDER_BY_CLASS[sort] + "' aria-label='" + SORT_TIP[sort] + "'>"
+    r += "<button class='search__action " + ORDER_BY_CLASS[sort] + "' aria-label='" + SORT_TIP[sort] + "'>"
   else:
-    r += "<button class='sorting' aria-label='Sort on this column'>"
+    r += "<button class='search__action sorting' aria-label='Sort on this column'>"
   r += "</button></form></th>"
   return r 
 

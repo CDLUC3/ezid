@@ -29,7 +29,7 @@ $(document).ready(function(){
     {{ form.keywords|add_attributes:"id:manage__keywords,class:fcontrol__text-field-stacked,type:search" }}
     <span class="fcontrol__invalid-flag">{% trans "Your search cannot not be empty" %}</span>
   </div>
-  <button class="manage__simple-search-button" type="submit">{% trans "Search Your Identifiers" %}</button>
+  <button class="manage__simple-search-button search__action" type="submit">{% trans "Search Your Identifiers" %}</button>
 </div>
 <details {{ show_advanced_search }} class="showhide">
   <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
@@ -208,7 +208,7 @@ $(document).ready(function(){
       </div>
     </div>{% comment %}No validation necessary{% endcomment %}
     <div class="col-md-6">
-      <button class="button__primary manage__reset-button" type="submit">{% trans "Search Your Identifiers" %}</button>
+      <button class="button__primary manage__reset-button search__action" type="submit">{% trans "Search Your Identifiers" %}</button>
       <button id="reset_search" type="button" class="button__primary manage__reset-button">Reset Search Fields</button>
     </div>
   </div>

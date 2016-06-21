@@ -241,8 +241,12 @@ def details(request):
   identifier = request.path_info[len(my_path):]
   r = _getLatestMetadata(identifier, request)
   if type(r) is str:
-    django.contrib.messages.error(request, uic.formatError(r))
-    return redirect("ui_manage.index")
+    django.contrib.messages.error(request, uic.formatError(r + ":&nbsp;&nbsp;" + identifier))
+    # ToDo: Pass details in from previous screen so we know where to send redirect back to
+    if userauth.getUser(request) == None:
+      return redirect("ui_search.index")
+    else:
+      return redirect("ui_home.index")
   s, id_metadata = r
   assert s.startswith("success:")
   d['allow_update'] = policy.authorizeUpdate(userauth.getUser(request, returnAnonymous=True),

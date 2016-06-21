@@ -41,7 +41,7 @@ def simple(request):
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   d = simple_form(request, d)
-  result = d['id_gen_result']
+  result = 'edit_page' if 'id_gen_result' not in d else d['id_gen_result']
   if result == 'edit_page':
     return uic.render(request, 'create/simple', d)  # ID Creation page 
   elif result == 'bad_request':
@@ -64,7 +64,7 @@ def advanced(request):
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   d = adv_form(request, d)
-  result = d['id_gen_result']
+  result = 'edit_page' if 'id_gen_result' not in d else d['id_gen_result']
   if result == 'edit_page':
     return uic.render(request, 'create/advanced', d)  # ID Creation page 
   elif result == 'bad_request':
@@ -210,9 +210,9 @@ def validate_adv_form_datacite_xml(request, d):
   """
   P = request.POST
   assert P is not None
+  identifier = None
   if (P['action'] == 'create'):
     action_result = _("created")
-    identifier = None
   else:   # action='edit'
     action_result = _("modified")
     if not P['identifier']:
