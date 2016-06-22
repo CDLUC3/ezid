@@ -7,6 +7,7 @@ import django.utils.http
 import os
 import re
 import string
+import urllib
 from random import choice
 
 import config
@@ -83,6 +84,23 @@ def render(request, template, context={}):
   r = django.http.HttpResponse(ec, content_type="text/html; charset=UTF-8")
   r["Content-Length"] = len(ec)
   return r
+
+def renderIdPage(request, path, d):
+  """ 
+  Used by Create and Demo ID pages.
+  path is string of one of the following '[create|demo]/[simple|advanced]'.
+  d['id_gen_result'] will be either 'method_not_allowed', 'bad_request', 'edit_page' or 
+  'created_identifier: <new_id>'
+  """
+  result = 'edit_page' if 'id_gen_result' not in d else d['id_gen_result']
+  if result == 'edit_page':
+    return render(request, path, d)  # ID Create or Demo page (Simple or Advanced)
+  elif d['id_gen_result'] == 'bad_request':
+    return badRequest(request)
+  elif d['id_gen_result'] == 'method_not_allowed':
+    return methodNotAllowed(request)
+  elif d['id_gen_result'].startswith('created_identifier:'):
+    return redirect("/id/" + urllib.quote(result.split()[1], ":/"))   # ID Details page
 
 def staticHtmlResponse (content):
   r = django.http.HttpResponse(content,

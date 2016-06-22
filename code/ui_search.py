@@ -139,8 +139,6 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
     REQUEST = request.GET
   elif request.method == "POST":
     REQUEST = request.POST
-  else:
-    return uic.methodNotAllowed(request)
   d['REQUEST'] = REQUEST 
   d = _pageLayout(d, REQUEST, s_type)
   if noConstraintsReqd or 'form' in d and d['form'].is_valid():

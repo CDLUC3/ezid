@@ -5,7 +5,6 @@ import metadata
 import ezid
 import form_objects
 import ezidapp.models
-import urllib
 import re
 import datacite_xml
 import os.path
@@ -41,13 +40,7 @@ def simple(request):
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   d = simple_form(request, d)
-  result = 'edit_page' if 'id_gen_result' not in d else d['id_gen_result']
-  if result == 'edit_page':
-    return uic.render(request, 'create/simple', d)  # ID Creation page 
-  elif result == 'bad_request':
-    return uic.badRequest(request)
-  elif result.startswith('created_identifier:'):
-    return redirect("/id/" + urllib.quote(result.split()[1], ":/"))   # ID Details page
+  return uic.renderIdPage(request, 'create/simple', d) 
 
 @uic.user_login_required
 def advanced(request):
@@ -64,27 +57,22 @@ def advanced(request):
   if len(d['prefixes']) < 1:
     return uic.render(request, 'create/no_shoulders', d)
   d = adv_form(request, d)
-  result = 'edit_page' if 'id_gen_result' not in d else d['id_gen_result']
-  if result == 'edit_page':
-    return uic.render(request, 'create/advanced', d)  # ID Creation page 
-  elif result == 'bad_request':
-    return uic.badRequest(request)
-  elif result.startswith('created_identifier:'):
-    return redirect("/id/" + urllib.quote(result.split()[1], ":/"))   # ID Details page
+  return uic.renderIdPage(request, 'create/advanced', d) 
 
 def simple_form(request, d):
   """ Create simple identifier code shared by 'Create ID' and 'Demo' pages.
   Takes request and context object, d['prefixes'] should be set before calling.
-  Returns dictionary with d['id_gen_result'] of either 'bad_request', 'edit_page' or 
-  'created_identifier: <new_id>'. If process is as expected, also includes a form object 
-  containing posted data and any related errors. """
+  Returns dictionary with d['id_gen_result'] of either 'method_not_allowed', 'bad_request', 
+  'edit_page' or 'created_identifier: <new_id>'. If process is as expected, also includes 
+  a form object containing posted data and any related errors. """
 
   if request.method == "GET":
     REQUEST = request.GET
   elif request.method == "POST":
     REQUEST = request.POST
   else:
-    return uic.methodNotAllowed(request)
+    d['id_gen_result'] = 'method_not_allowed' 
+    return d 
   #selects current_profile based on parameters or profile preferred for prefix type
   d['internal_profile'] = metadata.getProfile('internal')
   if 'current_profile' in REQUEST:
@@ -136,7 +124,8 @@ def adv_form(request, d):
   elif request.method == "POST":
     REQUEST = request.POST
   else:
-    return uic.methodNotAllowed(request)
+    d['id_gen_result'] = 'method_not_allowed' 
+    return d 
   if (('shoulder' in REQUEST and REQUEST['shoulder'].startswith("doi:")) \
     or (len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'))):
       choice_is_doi = True 
