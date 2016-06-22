@@ -212,12 +212,13 @@ def _sendUserEmail (request, user, new_proxies):
   intro = _("These proxy users have been") if plural else _("This proxy user has been")
   p_list = ""
   for p in new_proxies:
-    p_list += p.username  + "\n"
+    p_list += "*** EZID " + _("User") + ": " + p.username + "   |   " +\
+      _("Name") + ": " + p.displayName + "  ***\n"
   m = (_("Dear") + " %s,\n\n" +\
     _("Thank you for using EZID to easily create and manage your identifiers.") +\
     " %s " + _("successfully added to your account") + ":\n\n%s\n\n" +\
     _("To manage your account's proxy users, please log into EZID and go to") +\
-    " ezid.cdlib.org/acccount/edit." +\
+    " ezid.cdlib.org/account/edit.\n\n" +\
     _("Best,\nEZID Team\n\n\nThis is an automated email. Please do not reply.\n")) %\
     (user.primaryContactName, intro, p_list)
   subj = (_("New EZID Proxy User%s Added")) % ("s" if plural else "")
