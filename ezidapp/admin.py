@@ -115,6 +115,19 @@ class ShoulderHasMinterFilter (django.contrib.admin.SimpleListFilter):
         queryset = queryset.filter(minter="")
     return queryset
 
+class ShoulderUnusedFilter (django.contrib.admin.SimpleListFilter):
+  title = "is unused"
+  parameter_name = "isUnused"
+  def lookups (self, request, model_admin):
+    return [("Yes", "Yes"), ("No", "No")]
+  def queryset (self, request, queryset):
+    if self.value() != None:
+      if self.value() == "Yes":
+        queryset = queryset.filter(storegroup__isnull=True)
+      else:
+        queryset = queryset.filter(storegroup__isnull=False).distinct()
+    return queryset
+
 class StoreGroupInline (django.contrib.admin.TabularInline):
   model = models.StoreGroup.shoulders.through
   verbose_name_plural = "Groups using this shoulder"
@@ -171,7 +184,7 @@ class ShoulderAdmin (django.contrib.admin.ModelAdmin):
   search_fields = ["prefix", "name"]
   actions = None
   list_filter = [ShoulderTypeFilter, ShoulderHasMinterFilter,
-    "crossrefEnabled"]
+    "crossrefEnabled", ShoulderUnusedFilter]
   ordering = ["name"]
   list_display = ["prefix", "name"]
   fields = ["prefix", "name", "minter", "datacenterLink", "crossrefEnabled"]
@@ -222,10 +235,23 @@ class StoreDatacenterAllocatorFilter (django.contrib.admin.SimpleListFilter):
       queryset = queryset.filter(symbol__startswith=self.value()+".")
     return queryset
 
+class DatacenterUnusedFilter (django.contrib.admin.SimpleListFilter):
+  title = "is unused"
+  parameter_name = "isUnused"
+  def lookups (self, request, model_admin):
+    return [("Yes", "Yes"), ("No", "No")]
+  def queryset (self, request, queryset):
+    if self.value() != None:
+      if self.value() == "Yes":
+        queryset = queryset.filter(shoulder__isnull=True)
+      else:
+        queryset = queryset.filter(shoulder__isnull=False).distinct()
+    return queryset
+
 class StoreDatacenterAdmin (django.contrib.admin.ModelAdmin):
   search_fields = ["symbol", "name"]
   actions = None
-  list_filter = [StoreDatacenterAllocatorFilter]
+  list_filter = [StoreDatacenterAllocatorFilter, DatacenterUnusedFilter]
   ordering = ["symbol"]
   list_display = ["symbol", "name"]
   readonly_fields = ["symbol", "name"]
