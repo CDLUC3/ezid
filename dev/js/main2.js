@@ -87,9 +87,14 @@ $(document).ready(function(){
 
   // ***** Loading Indicator ***** //
 
-  $('.search__action').click(function(){
-    setTimeout(function() { loadingIndicator(); }, 4000);
+  $('.search__action').bind('submit', function() {
+    setTimeout(function() { loadingIndicator(); }, 1);
+    $('.search__action').bind('submit', function() { return false; });
+    return true;
   });
+  // $('.search__action').click(function(){
+  //   setTimeout(function() { loadingIndicator(); }, 4000);
+  // });
 
 }); // Close $(document).ready(function()
 

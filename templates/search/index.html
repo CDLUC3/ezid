@@ -7,7 +7,7 @@
 {% block description %}{%trans "Search across all EZID identifiers by keyword, title, creator, publisher, or identifier string." %}{% endblock %}
 {% block heading %}{% content_heading _("Search across EZID identifiers") %}{% endblock %}
 {% block content %}
-<form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" id="search-form" role="form">
+<form method="post" action="{% url "ui_search.index" %}" class="form-horizontal search__action" id="search-form" role="form">
 <input name="filtered" type="hidden" value="t"/>
 {% if REQUEST %}
 {% rewrite_hidden REQUEST %}
