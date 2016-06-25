@@ -5,7 +5,8 @@ import ui_create
 import urllib
 
 def index(request):
-  if request.method != "GET": return uic.methodNotAllowed(request)
+  if request.method not in ["GET", "POST"]:
+    return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_home.index'}
   d['prefixes'] = sorted(uic.testPrefixes, key=lambda p: p['namespace'].lower())
   d['form_placeholder']= True
