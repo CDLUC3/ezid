@@ -99,7 +99,9 @@ http://creativecommons.org/licenses/BSD/
           </creatorName>
         </creator>
       </xsl:when>
-      <xsl:when test="../*[local-name()='contributors']">
+      <xsl:when test="../*[local-name()='contributors']/
+        *[local-name()='person_name'] or ../*[local-name()='contributors']/
+        *[local-name()='organization']">
         <xsl:apply-templates select="../*[local-name()='contributors']/
           *[@sequence='first']"/>
         <xsl:apply-templates select="../*[local-name()='contributors']/
