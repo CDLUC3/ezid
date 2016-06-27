@@ -178,7 +178,7 @@ def edit(request, identifier):
     ''' Profiles could previously be switched in edit template, thus generating
         posibly two differing profiles (current vs original). So we previously did a 
         check here to confirm current_profile equals original profile before saving.''' 
-    d['current_profile'] = metadata.getProfile(P['original_profile'])
+    d['current_profile'] = metadata.getProfile(P.get('original_profile', d['identifier']['_profile']))
     if P['_status'] == 'unavailable':
       stts = P['_status'] + " | " + P['stat_reason']
     else:
