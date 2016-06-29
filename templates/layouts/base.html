@@ -88,11 +88,26 @@
   <script type="text/javascript" src="/static/javascripts/bootstrap/popover.js"></script>
   <script type="text/javascript" src="/static/javascripts/bootstrap/transition.js"></script>
 
-    <script type="text/javascript">
-      $('input:visible:enabled').first().focus();
-      window.scrollTo(0, 0);
+  <script type="text/javascript">
+    $('input:visible:enabled').first().focus();
+    window.scrollTo(0, 0);
 
-      $(".alert-success").delay(4000).fadeOut(2000);
-    </script>
+    $(".alert-success").delay(4000).fadeOut(2000);
+
+  $(document).ready(function(){
+    // Record a Google Analytics event when user downloads a file
+    var filetypes = /\.(pdf|docx|xlsx|pptx)$/i;
+    $('a').each(function() {
+      var href = $(this).attr('href');
+      if (href && href.match(filetypes)) {
+        $(this).click(function() {
+          var filename = href.split("/").pop();
+          GA_EVENT_LIB.init("Documentation Download " + filename);
+          GA_EVENT_LIB.record_ga_event();
+        });
+      }
+    });
+  });
+  </script>
   </body>
 </html>

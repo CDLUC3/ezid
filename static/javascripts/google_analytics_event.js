@@ -12,7 +12,6 @@ var GA_EVENT_LIB = GA_EVENT_LIB || (function(){
     },
     record_ga_event : function() { 
       var m = _args.split(" ");
-      // alert(_args);
       if (m.length >= 3) {
         ga('send', {
           hitType: 'event',
