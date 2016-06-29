@@ -607,6 +607,19 @@ class StoreUserHasProxiesFilter (django.contrib.admin.SimpleListFilter):
         queryset = queryset.filter(proxies=None)
     return queryset
 
+class StoreUserIsProxyFilter (django.contrib.admin.SimpleListFilter):
+  title = "is proxy"
+  parameter_name = "isProxy"
+  def lookups (self, request, model_admin):
+    return [("Yes", "Yes"), ("No", "No")]
+  def queryset (self, request, queryset):
+    if self.value() != None:
+      if self.value() == "Yes":
+        queryset = queryset.filter(storeuser__isnull=False).distinct()
+      else:
+        queryset = queryset.filter(storeuser__isnull=True)
+    return queryset
+
 class StoreUserAdministratorFilter (django.contrib.admin.SimpleListFilter):
   title = "is administrator"
   parameter_name = "administrator"
@@ -747,8 +760,8 @@ class StoreUserAdmin (django.contrib.admin.ModelAdmin):
     "secondaryContactName", "notes"]
   actions = None
   list_filter = [("realm__name", StoreUserRealmFilter),
-    "crossrefEnabled", StoreUserHasProxiesFilter, "loginEnabled",
-    StoreUserAdministratorFilter]
+    "crossrefEnabled", StoreUserHasProxiesFilter, StoreUserIsProxyFilter,
+    "loginEnabled", StoreUserAdministratorFilter]
   ordering = ["username"]
   list_display = ["username", "displayName", "groupGroupname", "realm"]
   _fieldsets = [
