@@ -58,11 +58,10 @@ def login (request, ssl=False):
       # 'extra_tags' used for recording a Google Analytics event
       messages.add_message(request, messages.SUCCESS,
         _("Login successful."), extra_tags='Accounts Submit Login')
-      return uic.render(request, "index", d)
       if django.utils.http.is_safe_url(url=d["next"], host=request.get_host()):
-        return uic.render(request, d["next"], d)
+        return redirect(d["next"])
       else:
-        return uic.render(request, "ui_home.index", d)
+        return redirect("ui_home.index")
     else:
       messages.error(request, _("Login failed."))
       return uic.render(request, "account/login", d)
