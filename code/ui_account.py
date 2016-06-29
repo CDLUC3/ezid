@@ -1,7 +1,7 @@
 import ui_common as uic
 import userauth
 import django.conf
-import django.contrib.messages
+from django.contrib import messages
 import django.core.mail
 import django.core.urlresolvers
 import django.core.validators
@@ -37,8 +37,8 @@ def login (request, ssl=False):
       try:
         m = django.core.urlresolvers.resolve(request.GET["next"])
         if m.app_name == "admin":
-          django.contrib.messages.error(request,
-            "You must be logged in as an administrator to view this page.")
+          messages.error(request,
+            _("You must be logged in as an administrator to view this page."))
       except django.core.urlresolvers.Resolver404:
         pass
       d["next"] = request.GET["next"]
@@ -52,16 +52,19 @@ def login (request, ssl=False):
     d.update(uic.extract(request.POST, ["username", "password", "next"]))
     user = userauth.authenticate(d["username"], d["password"], request)
     if type(user) is str:
-      django.contrib.messages.error(request, uic.formatError(user))
+      messages.error(request, uic.formatError(user))
       return uic.render(request, "account/login", d)
     if user != None:
-      django.contrib.messages.success(request, _("Login successful."))
+      # 'extra_tags' used for recording a Google Analytics event
+      messages.add_message(request, messages.SUCCESS,
+        _("Login successful."), extra_tags='Accounts Submit Login')
+      return uic.render(request, "index", d)
       if django.utils.http.is_safe_url(url=d["next"], host=request.get_host()):
-        return redirect(d["next"])
+        return uic.render(request, d["next"], d)
       else:
-        return redirect("ui_home.index")
+        return uic.render(request, "ui_home.index", d)
     else:
-      django.contrib.messages.error(request, _("Login failed."))
+      messages.error(request, _("Login failed."))
       return uic.render(request, "account/login", d)
   else:
     return uic.methodNotAllowed(request)
@@ -73,7 +76,7 @@ def logout(request):
   d = { 'menu_item' : 'ui_null.null'}
   if request.method != "GET": return uic.methodNotAllowed(request)
   request.session.flush()
-  django.contrib.messages.success(request, _("You have been logged out."))
+  messages.success(request, _("You have been logged out."))
   return redirect("ui_home.index")
 
 @uic.user_login_required
@@ -122,10 +125,10 @@ def edit(request, ssl=False):
         errors = d['form'].errors['__all__']
         for e in errors:
           all_errors += e 
-        django.contrib.messages.error(request, _("Change(s) could not be made.   ") + all_errors)
+        messages.error(request, _("Change(s) could not be made.   ") + all_errors)
       else:
         err = _("Change(s) could not be made.  Please check the highlighted field(s) below for details.")
-        django.contrib.messages.error(request, err)
+        messages.error(request, err)
   else:
     return uic.methodNotAllowed(request)
   return uic.render(request, "account/edit", d)
@@ -170,17 +173,16 @@ def _update_edit_user(request, user, new_proxies_selected, basic_info_changed):
       user.save()
       ezidapp.admin.scheduleUserChangePostCommitActions(user)
   except django.core.validators.ValidationError, e:
-    django.contrib.messages.error(request, str(e))
+    messages.error(request, str(e))
   else:
     if new_proxies_selected:
       _sendUserEmail(request, user, new_proxies_selected)
       for new_proxy in new_proxies_selected:
         _sendProxyEmail(request, new_proxy, user)
     if basic_info_changed:
-      django.contrib.messages.success(request,
-        _("Your information has been updated."))
+      messages.success(request, _("Your information has been updated."))
     if d['pwcurrent'].strip() != '' and d['pwnew'].strip() != '':
-      django.contrib.messages.success(request, _("Your password has been updated."))
+      messages.success(request, _("Your password has been updated."))
 
 def _sendEmail (request, user, subject, message):
   try:
@@ -188,7 +190,8 @@ def _sendEmail (request, user, subject, message):
       django.conf.settings.SERVER_EMAIL, [user.accountEmail], fail_silently=True)
   except Exception, e:
     u = user.primaryContactName + "<" + user.accountEmail + ">"
-    django.contrib.messages.error(request, "error sending email to " + u + ":" + str(e))
+    messages.error(request, _("Error sending email to %(username)s: %(errormessage)s") %\
+      {'username': u, 'errormessage': str(e)} )
 
 def _sendProxyEmail (request, p_user, user):
   m = (_("Dear") + " %s,\n\n" +\
@@ -232,11 +235,11 @@ def pwreset(request, pwrr, ssl=False):
     d = { 'menu_item' : 'ui_null.null'}
     r = decodePasswordResetRequest(pwrr)
     if not r:
-      django.contrib.messages.error(request, _("Invalid password reset request."))
+      messages.error(request, _("Invalid password reset request."))
       return uic.redirect("/")
     username, t = r
     if int(time.time())-t >= 24*60*60:
-      django.contrib.messages.error(request, _("Password reset request has expired."))
+      messages.error(request, _("Password reset request has expired."))
       return uic.redirect("/")
     d['pwrr'] = pwrr
     if request.method == "GET":
@@ -249,17 +252,17 @@ def pwreset(request, pwrr, ssl=False):
       d['form'] = form_objects.BasePasswordForm(request.POST, username=username, pw_reqd=True)
       if not d['form'].is_valid():
         err = _("Changes could not be made.  Please check the highlighted field(s) below for details.")
-        django.contrib.messages.error(request, err)
+        messages.error(request, err)
       else:
         user = ezidapp.models.getUserByUsername(username)
         if user == None or user.isAnonymous:
-          django.contrib.messages.error(request, _("No such user."))
+          messages.error(request, _("No such user."))
           return uic.render(request, "account/pwreset2", d)
         with django.db.transaction.atomic():
           user.setPassword(password)
           user.save()
           ezidapp.admin.scheduleUserChangePostCommitActions(user)
-        django.contrib.messages.success(request, _("Password changed."))
+        messages.success(request, _("Password changed."))
         return uic.redirect("/")
     else:
       return uic.methodNotAllowed(request)
@@ -282,10 +285,10 @@ def pwreset(request, pwrr, ssl=False):
       else:
         r = sendPasswordResetEmail(username, email)
         if type(r) in (str, unicode):
-          django.contrib.messages.error(request, r)
+          messages.error(request, r)
           return uic.render(request, "account/pwreset1", d)
         else:
-          django.contrib.messages.success(request, _("Email sent."))
+          messages.success(request, _("Email sent."))
           return uic.redirect("/")
     else:
       return uic.methodNotAllowed(request)

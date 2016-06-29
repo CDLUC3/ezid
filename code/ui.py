@@ -1,6 +1,6 @@
 import ui_common as uic
 import django.conf
-import django.contrib.messages
+from django.contrib import messages
 import django.core.mail
 import django.http
 import django.template
@@ -56,14 +56,14 @@ def contact(request):
           message += "Newsletter option NOT checked." 
       try:
         django.core.mail.send_mail(title, message, P['email'], emails)
-
-        django.contrib.messages.success(request, _("Thank you for your message. We will respond as soon as possible."))
+        # 'extra_tags' used for recording a Google Analytics event
+        messages.success(request, messages.SUCCESS, _("Thank you for your message. We will respond as soon as possible."), extra_tags='Forms Submit Contact')
         d['form'] = form_objects.ContactForm() # Build an empty form
       except:
-        django.contrib.messages.error(request, _("There was a problem sending your email"))
+        messages.error(request, _("There was a problem sending your email"))
     elif not d['form'].is_valid():
       err = _("Form could not be sent.  Please check the highlighted field(s) below for details.")
-      django.contrib.messages.error(request, err)
+      messages.error(request, err)
       # fall through to re-render page; form already contains error info
   elif request.method == "GET":
     d['form'] = form_objects.ContactForm(None, localized=localized) # Build an empty form
@@ -113,7 +113,7 @@ def tombstone (request):
   else:
     r = ezid.getMetadata(id)
   if type(r) is str:
-    django.contrib.messages.error(request, uic.formatError(r))
+    messages.error(request, uic.formatError(r))
     return uic.redirect("/")
   s, m = r
   assert s.startswith("success:")

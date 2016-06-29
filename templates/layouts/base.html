@@ -23,6 +23,7 @@
 
     <script type="text/javascript" src="/static/javascripts/main2.min.js"></script>
     <script type="text/javascript" src="/static/javascripts/message_box.js"></script>
+    <script type="text/javascript" src="/static/javascripts/google_analytics_event.js"></script>
 
     {% block header %}{% endblock %}
     <script type="text/javascript">
@@ -37,6 +38,26 @@
       ga('create', '{{ google_analytics_id }}', 'auto');
       ga('send', 'pageview');
     </script>
+
+    {% comment %}
+      Record any file download as a Google Analytics Events (PDFs, PPTs, etc )
+
+      ToDo
+    {% endcomment %}
+    {% comment %}
+      We're exclusively using the 'extra_tags' attribute of django messages to record certain 
+      Google Analytics Events (i.e. successful login, contact form submission)
+    {% endcomment %}
+    {% if messages %}
+      {% for m in messages %}
+        {% if m.extra_tags %}
+      <script type="text/javascript">
+        GA_EVENT_LIB.init("{{m.extra_tags}}");
+        GA_EVENT_LIB.record_ga_event();
+      </script>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
   {% endif %}
   </head>
   <body>

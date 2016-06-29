@@ -56,4 +56,11 @@ $(document).ready(function() {
       }
     });
   });
+
+  // Record a Google Analytics event when user clicks "Tooltip" Bootstrap Popover 
+  // $('.help_window').on('show.bs.popover', function () {
+  $('.button__icon-help').on('click', function () {
+    GA_EVENT_LIB.init("Documentation Open Tooltip");
+    GA_EVENT_LIB.record_ga_event();
+  });
 });

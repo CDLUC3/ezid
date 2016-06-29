@@ -40,6 +40,7 @@
   {% endif %}
 </div>
 <script type="text/javascript">
+$(document).ready(function(){
   // submit form when owner filter changes
   $("#owner_selected").bind("change", function(event){
       var frm = $('#owner_filter_form');
@@ -49,6 +50,12 @@
       frm.submit();
       setTimeout(function() { loadingIndicator(); }, 4000);
   });
+  // Record a Google Analytics event when user clicks "Download All"
+  $('#download').on('keypress click', function(){
+    GA_EVENT_LIB.init("Manage Download Id_csv");
+    GA_EVENT_LIB.record_ga_event();
+  });
+});
 </script>
 {% endif %}
 
