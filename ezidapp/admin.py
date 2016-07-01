@@ -667,8 +667,10 @@ class StoreUserForm (django.forms.ModelForm):
         not cd["group"].crossrefEnabled):
         raise django.core.validators.ValidationError({ "crossrefEnabled":
           "Group is not CrossRef enabled." })
-    if (cd["isGroupAdministrator"] or cd["isRealmAdministrator"] or\
-      cd["isSuperuser"]) and len(cd["proxies"]) > 0:
+    # Group administrators may have proxies, but not more privileged
+    # users.
+    if (cd["isRealmAdministrator"] or cd["isSuperuser"])\
+      and len(cd["proxies"]) > 0:
       raise django.core.validators.ValidationError({ "proxies":
         "Privileged users may not have proxies." })
     if self.instance in cd["proxies"]:
