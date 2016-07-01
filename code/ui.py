@@ -57,7 +57,7 @@ def contact(request):
       try:
         django.core.mail.send_mail(title, message, P['email'], emails)
         # 'extra_tags' used for recording a Google Analytics event
-        messages.success(request, messages.SUCCESS, _("Thank you for your message. We will respond as soon as possible."), extra_tags='Forms Submit Contact')
+        messages.add_message(request, messages.SUCCESS, _("Thank you for your message. We will respond as soon as possible."), extra_tags='Forms Submit Contact')
         d['form'] = form_objects.ContactForm() # Build an empty form
       except:
         messages.error(request, _("There was a problem sending your email"))
