@@ -313,8 +313,8 @@ def _softUpdate (td, sd):
   for k, v in sd.items():
     if k not in td: td[k] = v
 
-_userSettableReservedElements = ["_coowners", "_export", "_profile", "_status",
-  "_target", "_crossref"]
+_userSettableReservedElements = ["_owner", "_export", "_profile", "_status",
+  "_target", "_crossref", "_coowners"]
 
 _crossrefDoiRE = re.compile("doi:10\.[1-9]\d{3,4}/[-\w.;()/]+$")
 
@@ -416,6 +416,13 @@ def _validateMetadata2 (owner, metadata):
   identifier's owner as an ARK persistent identifier, e.g.,
   "ark:/13030/foo".
   """
+  if "_owner" in metadata:
+    o = ezidapp.models.getUserByUsername(metadata["_owner"])
+    if o == None or o == ezidapp.models.AnonymousUser:
+      return "_owner: no such user"
+    metadata["_o"] = o.pid
+    metadata["_g"] = o.group.pid
+    del metadata["_owner"]
   if "_coowners" in metadata:
     coOwners = []
     for co in metadata["_coowners"].split(";"):
@@ -585,6 +592,10 @@ def createDoi (doi, user, metadata={}):
       else:
         log.badRequest(tid)
         return "error: bad request - no matching shoulder found"
+    if "_o" in m:
+      if not policy.authorizeOwnershipChange(user, qdoi, user.pid, m["_o"]):
+        log.badRequest(tid)
+        return "error: bad request - ownership change prohibited"
     if "_cr" in m:
       if not policy.authorizeCrossref(user, qdoi):
         # Technically it's an authorization error, but it makes more
@@ -728,6 +739,10 @@ def createArk (ark, user, metadata={}):
       else:
         log.badRequest(tid)
         return "error: bad request - no matching shoulder found"
+    if "_o" in m:
+      if not policy.authorizeOwnershipChange(user, qark, user.pid, m["_o"]):
+        log.badRequest(tid)
+        return "error: bad request - ownership change prohibited"
     if _identifierExists(ark):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
@@ -819,6 +834,10 @@ def createUrnUuid (urn, user, metadata={}):
     if not policy.authorizeCreate(user, qurn):
       log.forbidden(tid)
       return "error: forbidden"
+    if "_o" in m:
+      if not policy.authorizeOwnershipChange(user, qurn, user.pid, m["_o"]):
+        log.badRequest(tid)
+        return "error: bad request - ownership change prohibited"
     if _identifierExists(shadowArk):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
@@ -1113,6 +1132,11 @@ def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
     if not policy.authorizeUpdate(user, nqidentifier, iUser, iGroup):
       log.forbidden(tid)
       return "error: forbidden"
+    if "_o" in d:
+      if not policy.authorizeOwnershipChange(user, nqidentifier, iUser,
+        d["_o"]):
+        log.badRequest(tid)
+        return "error: bad request - ownership change prohibited"
     # Deal with any status change first; subsequent processing will
     # then be performed according to the updated status.
     iStatus = m.get("_is", "public")

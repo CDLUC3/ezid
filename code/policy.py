@@ -107,14 +107,12 @@ def authorizeOwnershipChange (user, identifier, currentOwner, newOwner,
     newOwner = ezidapp.models.getUserByPid(newOwner)
   # Interesting property here: by the rule below, a common proxy can
   # act as a bridge between users in different groups.
-  if (user == currentOwner or user in currentOwner.proxies.all()) and\
-    (user == newOwner or user in newOwner.proxies.all()):
-    return True
-  if user.isGroupAdministrator and currentOwner.group == user.group and\
-    newOwner.group == user.group:
-    return True
-  if user.isRealmAdministrator and currentOwner.realm == user.realm and\
-    newOwner.realm == user.realm:
+  def canUpdateWhenOwnedBy (owner):
+    if user == owner or user in owner.proxies.all(): return True
+    if user.isGroupAdministrator and owner.group == user.group: return True
+    if user.isRealmAdministrator and owner.realm == user.realm: return True
+    return False
+  if canUpdateWhenOwnedBy(currentOwner) and canUpdateWhenOwnedBy(newOwner):
     return True
   if user.isSuperuser: return True
   return False
@@ -145,7 +143,8 @@ def authorizeCrossref (user, identifier):
   """
   s = ezidapp.models.getLongestShoulderMatch(identifier)
   if s == None:
-    # Should never happen (since this function gets called only at
-    # identifier creation time).
+    # It's unlikely that the shoulder will have disappeared.  But if
+    # it has, we take it as a sign that CrossRef is no longer
+    # supported.
     return False
   return (user.crossrefEnabled or user.isSuperuser) and s.crossrefEnabled
