@@ -1,6 +1,5 @@
 import django.conf
 import django.conf.urls
-from django.conf.urls import include
 
 import ezidapp.admin
 
@@ -35,7 +34,7 @@ urlpatterns = django.conf.urls.patterns("",
   ("^doc/[-\w.]*\\.(?:html|py)$", "ui.doc"),
   ("^download_confirm$", "ui_manage.download"),
   ("^download_error$", "ui_manage.download_error"),
-  ("^i18n/", include('django.conf.urls.i18n')),
+  ("^i18n/", django.conf.urls.include("django.conf.urls.i18n")),
   ("^manage/?$", "ui_manage.index"),
   ("^manage/edit/(.*)", "ui_manage.edit"),
   ("^manage/display_xml/(.*)", "ui_manage.display_xml"),
