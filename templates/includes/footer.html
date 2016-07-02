@@ -24,10 +24,10 @@
       {% else %}
         <p class="item">
       {% endif %}
-      {% if link == "None" %}
-          {{ title }} 
-      {% else %}
+      {% if link %}
           <a class="footer__news-feed-link" href="{{ link }}">{{ title }}</a>
+      {% else %}
+          {{ title }} 
       {% endif %}
         </p>
     {% endfor %}

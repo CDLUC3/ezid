@@ -23,7 +23,6 @@ alertMessage = None
 testPrefixes = None
 google_analytics_id = None
 reload_templates = None
-newsfeed_url = None
 
 manual_profiles = {'datacite_xml': 'DataCite'}
 
@@ -32,7 +31,7 @@ def _loadConfig():
   #outside of this module, use ui_common.varname
   global ezidUrl, templates, alertMessage, testPrefixes
   global google_analytics_id
-  global reload_templates, newsfeed_url
+  global reload_templates
   ezidUrl = config.get("DEFAULT.ezid_base_url")
   templates = {}
   _load_templates([d for t in django.conf.settings.TEMPLATES\
@@ -47,7 +46,6 @@ def _loadConfig():
   p = ezidapp.models.getDoiTestShoulder()
   testPrefixes.append({ "namespace": p.name, "prefix": p.prefix })
   google_analytics_id = config.get("DEFAULT.google_analytics_id")
-  newsfeed_url = config.get("newsfeed.url")
   
 #loads the templates directory recursively (dir_list is a list)
 def _load_templates(dir_list):
@@ -67,7 +65,7 @@ config.registerReloadListener(_loadConfig)
 def render(request, template, context={}):
   global alertMessage, google_analytics_id, reload_templates
   c = { "session": request.session, "authenticatedUser": userauth.getUser(request),
-    "alertMessage": alertMessage, "feed_cache": newsfeed.getLatestItem(), 
+    "alertMessage": alertMessage, "feed_cache": newsfeed.getLatestItems(), 
     "google_analytics_id": google_analytics_id, "debug": django.conf.settings.DEBUG }
   c.update(context)
   #this is to keep from having to restart the server every 3 seconds
@@ -154,7 +152,7 @@ redirect = django.http.HttpResponseRedirect
 def error (request, code, content_custom=None):
   global alertMessage, google_analytics_id
   t = django.template.RequestContext(request, {'menu_item' : 'ui_home.null', 
-    'session': request.session, 'alertMessage': alertMessage, 'feed_cache': newsfeed.getLatestItem(), 
+    'session': request.session, 'alertMessage': alertMessage, 'feed_cache': newsfeed.getLatestItems(), 
     'google_analytics_id': google_analytics_id, 'content_custom' : content_custom})
   content = templates[str(code)][0].render(t)
   return django.http.HttpResponse(content, status=code)

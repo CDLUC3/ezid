@@ -27,35 +27,35 @@ import log
 
 _enabled = None
 _lock = threading.Lock()
-_noItem = [ ("No news available", None) ]
+_noItems = [("No news available", None)]
 _url = None
 _pollingInterval = None
 _threadName = None
-_news_items = None
+_items = None
 
 def _newsDaemon ():
-  global _news_items
+  global _items
   while _enabled and threading.currentThread().getName() == _threadName:
     try:
       feed = feedparser.parse(_url)
       if len(feed.entries) > 0:
-        news_items = [ (feed.entries[0].title, feed.entries[0].link),
-                       (feed.entries[1].title, feed.entries[1].link),
-                       (feed.entries[2].title, feed.entries[2].link) ]
+        items = []
+        for i in range(min(len(feed.entries), 3)):
+          items.append((feed.entries[i].title, feed.entries[i].link))
       else:
-        news_items = _noItem
+        items = _noItems
     except Exception, e:
       log.otherError("newsfeed._newsDaemon", e)
-      news_items = _noItem
+      items = _noItems
     _lock.acquire()
     try:
-      if threading.currentThread().getName() == _threadName: _news_items = news_items
+      if threading.currentThread().getName() == _threadName: _items = items
     finally:
       _lock.release()
     time.sleep(_pollingInterval)
 
 def _loadConfig ():
-  global _enabled, _url, _pollingInterval, _threadName, _news_items
+  global _enabled, _url, _pollingInterval, _threadName, _items
   _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
     config.get("daemons.newsfeed_enabled").lower() == "true"
   if _enabled:
@@ -63,7 +63,7 @@ def _loadConfig ():
     _pollingInterval = int(config.get("newsfeed.polling_interval"))
     _lock.acquire()
     try:
-      _news_items = _noItem
+      _items = _noItems
       _threadName = uuid.uuid1().hex
       t = threading.Thread(target=_newsDaemon, name=_threadName)
       t.setDaemon(True)
@@ -71,14 +71,15 @@ def _loadConfig ():
     finally:
       _lock.release()
   else:
-    _news_items = _noItem
+    _items = _noItems
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
 
-def getLatestItem ():
+def getLatestItems ():
   """
-  Returns the latest news item as a tuple (title, URL).  The URL may
-  be None.
+  Returns the latest news items (up to 3 items) as a list of tuples
+  [(title, URL), ...].  At least one item is always returned.  The URL
+  may be None in a tuple.
   """
-  return _news_items
+  return _items
