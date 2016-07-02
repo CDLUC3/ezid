@@ -44,7 +44,6 @@ import mapping
 import policy
 import store
 import util2
-from django.utils.translation import ugettext as _
 
 _ezidUrl = None
 _usedFilenames = None
@@ -609,22 +608,24 @@ def _notifyRequestor (r):
   for emailAddress in _decode(r.notify):
     m = re.match("(.*)<([^>]*)>$", emailAddress)
     if m and m.group(1).strip() != "" and m.group(2).strip() != "":
-      salutation = _("Dear %(recipient)s,\n\n") % {'recipient': m.group(1).strip()}
+      salutation = "Dear %s,\n\n" % m.group(1).strip()
       emailAddress = m.group(2).strip()
     else:
       salutation = ""
-    message = salutation + _("Thank you for using EZID ") +\
-      _("to easily create and manage your identifiers. ")
-    message += (_("The batch download you requested is available at:\n\n") +\
+    message = ("%sThank you for using EZID to easily create and manage " +\
+      "your identifiers.  The batch download you requested is available " +\
+      "at:\n\n" +\
       "%s/download/%s.%s\n\n" +\
-      _("The download will be deleted in 1 week.\n\nBest,\nEZID Team\n\n") +\
-      _("This is an automated email.  Please do not reply.\n")) %\
-      (_ezidUrl, r.filename, _fileSuffix(r))
+      "The download will be deleted in 1 week.\n\n" +\
+      "Best,\n" +\
+      "EZID Team\n\n" +\
+      "This is an automated email.  Please do not reply.\n") %\
+      (salutation, _ezidUrl, r.filename, _fileSuffix(r))
     try:
-      django.core.mail.send_mail(_("Your EZID Batch Download Link"), message,
+      django.core.mail.send_mail("Your EZID batch download link", message,
         django.conf.settings.SERVER_EMAIL, [emailAddress], fail_silently=True)
     except Exception, e:
-      raise _wrapException(_("error sending email"), e)
+      raise _wrapException("error sending email", e)
   r.delete()
 
 def _daemonThread ():
