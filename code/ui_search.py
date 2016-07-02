@@ -101,7 +101,7 @@ def index(request):
   if request.method == "GET":
     d['queries'] = queryDict(request)
     # if users are coming back to an advanced search, auto-open adv. search block
-    if d['queries'] and d['queries']['keywords'].strip() == '':
+    if d['queries'] and 'keywords' in d['queries'] and d['queries']['keywords'].strip() == '':
       d['show_advanced_search'] = "open"
     d['form'] = form_objects.BaseSearchIdForm(d['queries'])
     d['REQUEST'] = request.GET 

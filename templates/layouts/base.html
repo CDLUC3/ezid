@@ -14,6 +14,7 @@
     <meta name="twitter:site" content="@ezidCDL" />
     <meta name="twitter:title" property="og:title" content="{% block title-twitter %}{% trans "Identifiers made easy" %}{% endblock %}" />
     <meta name="twitter:description" property="og:description" content="{% block description %}{% endblock %}" />
+    <meta name="msvalidate.01" content="28CC1515B2E7730CACA8BE45B96C5460" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"> 
     <link rel="shortcut icon" type="image/png" href="/static/images/favicon.ico"/>
     <link rel="icon" sizes="16x16 32x32" href="/static/images/favicon.ico">
@@ -23,6 +24,7 @@
 
     <script type="text/javascript" src="/static/javascripts/main2.min.js"></script>
     <script type="text/javascript" src="/static/javascripts/message_box.js"></script>
+    <script type="text/javascript" src="/static/javascripts/google_analytics_event.js"></script>
 
     {% block header %}{% endblock %}
     <script type="text/javascript">
@@ -37,6 +39,26 @@
       ga('create', '{{ google_analytics_id }}', 'auto');
       ga('send', 'pageview');
     </script>
+
+    {% comment %}
+      Record any file download as a Google Analytics Events (PDFs, PPTs, etc )
+
+      ToDo
+    {% endcomment %}
+    {% comment %}
+      We're exclusively using the 'extra_tags' attribute of django messages to record certain 
+      Google Analytics Events (i.e. successful login, contact form submission)
+    {% endcomment %}
+    {% if messages %}
+      {% for m in messages %}
+        {% if m.extra_tags %}
+      <script type="text/javascript">
+        GA_EVENT_LIB.init("{{m.extra_tags}}");
+        GA_EVENT_LIB.record_ga_event();
+      </script>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
   {% endif %}
   </head>
   <body>
@@ -67,11 +89,26 @@
   <script type="text/javascript" src="/static/javascripts/bootstrap/popover.js"></script>
   <script type="text/javascript" src="/static/javascripts/bootstrap/transition.js"></script>
 
-    <script type="text/javascript">
-      $('input:visible:enabled').first().focus();
-      window.scrollTo(0, 0);
+  <script type="text/javascript">
+    $('input:visible:enabled').first().focus();
+    window.scrollTo(0, 0);
 
-      $(".alert-success").delay(4000).fadeOut(2000);
-    </script>
+    $(".alert-success").delay(4000).fadeOut(2000);
+
+  $(document).ready(function(){
+    // Record a Google Analytics event when user downloads a file
+    var filetypes = /\.(pdf|docx|xlsx|pptx)$/i;
+    $('a').each(function() {
+      var href = $(this).attr('href');
+      if (href && href.match(filetypes)) {
+        $(this).click(function() {
+          var filename = href.split("/").pop();
+          GA_EVENT_LIB.init("Documentation Download " + filename);
+          GA_EVENT_LIB.record_ga_event();
+        });
+      }
+    });
+  });
+  </script>
   </body>
 </html>
