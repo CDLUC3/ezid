@@ -152,9 +152,6 @@ class StoreUser (user.User):
     self.secondaryContactName = self.secondaryContactName.strip()
     self.secondaryContactPhone = self.secondaryContactPhone.strip()
     self.notes = self.notes.strip()
-    if self.crossrefEmail != "" and not self.crossrefEnabled:
-      raise django.core.validators.ValidationError({ "crossrefEmail":
-        "CrossRef enabled is not checked." })
     if self.password == "": self.setPassword(None)
     # Because the Django admin app performs many-to-many operations
     # only after creating or updating objects, sadly, we can't perform
