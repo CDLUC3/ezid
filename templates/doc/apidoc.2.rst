@@ -104,14 +104,14 @@ The EZID API is available from the base URL
 
   http://ezid.cdlib.org
 
-Interaction is via REST-style_ `\ `:ext-icon: HTTP web services.  
-The API's central design principle is to treat an identifier as a 
-kind of web resource.  Specifically, identifier `foo`:hl1: is 
-represented as a resource at URL \http://ezid.cdlib.org/id/`foo`:hl1:.  
-In this document we will refer to this URL as the identifier's "EZID URL."  
-A client manipulates an identifier by performing HTTP operations on its EZID
-URL: PUT to create the identifier, GET to view it, and POST to modify
-it.
+Interaction is via REST-style_ `\ `:ext-icon: HTTP web services.  The
+API's central design principle is to treat an identifier as a kind of
+web resource.  Specifically, identifier `foo`:hl1: is represented as a
+resource at URL \http://ezid.cdlib.org/id/`foo`:hl1:.  In this
+document we will refer to this URL as the identifier's "EZID URL."  A
+client manipulates an identifier by performing HTTP operations on its
+EZID URL: PUT to create the identifier, GET to view it, and POST to
+modify it.
 
 An identifier's EZID URL should not be confused with the identifier's
 "URL form."  The former is used to manipulate the identifier, whereas
@@ -123,7 +123,7 @@ identifiers:
 
 ========== ===================================================
 Identifier `doi:10.nnnn/suffix`:hl1:
-URL form   \http://dx.doi.org/`10.nnnn/suffix`:hl1:
+URL form   \http://doi.org/`10.nnnn/suffix`:hl1:
 EZID URL   \http://ezid.cdlib.org/id/`doi:10.nnnn/suffix`:hl1:
 ========== ===================================================
 
@@ -157,13 +157,13 @@ operation on an EZID URL returns client-parseable metadata (see
 an HTML page.
 
 To distinguish between the two interfaces EZID employs HTTP `content
-negotiation`_ `\ `:ext-icon:.  If a request comes in with an HTTP Accept 
-header that expresses a preference for any form of HTML or XML, the UI 
-is invoked; otherwise, the API is invoked.  A preference for the API can 
-be made explicit by omitting any Accept header, or setting the Accept header
-to something like "text/plain".  If using Java, it will probably be
-necessary to override the default Accept header Java sends as
-follows::
+negotiation`_ `\ `:ext-icon:.  If a request comes in with an HTTP
+Accept header that expresses a preference for any form of HTML or XML,
+the UI is invoked; otherwise, the API is invoked.  A preference for
+the API can be made explicit by omitting any Accept header, or setting
+the Accept header to something like "text/plain".  If using Java, it
+will probably be necessary to override the default Accept header Java
+sends as follows::
 
   import java.net.*;
 
@@ -260,8 +260,8 @@ methods of authentication:
      |lArr|
      |lArr| success: session cookie returned
 
-   In Python, cookies can be managed using cookielib_ `\ `:ext-icon:, or 
-   manually captured and set using code similar to the following:
+   In Python, cookies can be managed using cookielib_ `\ `:ext-icon:,
+   or manually captured and set using code similar to the following:
 
    .. parsed-literal::
 
@@ -281,9 +281,10 @@ methods of authentication:
 
 If authentication is required and credentials are either missing or
 invalid, EZID returns a 401 HTTP status code and the status line
-"error: unauthorized - authentication failure" (see `Error handling`_
-below).  If authentication is successful but the request is still not
-authorized, the returned status line is simply "error: unauthorized".
+"error: unauthorized" (see `Error handling`_ below).  If
+authentication is successful but the request is still not authorized,
+EZID returns a 403 HTTP status code and the status line "error:
+forbidden".
 
 Request & response bodies
 -------------------------
@@ -340,9 +341,9 @@ Care must be taken to escape structural characters that appear in
 element names and values, specifically, line terminators (both
 newlines ("\\n", U+000A) and carriage returns ("\\r", U+000D)) and, in
 element names, colons (":", U+003A).  EZID employs `percent-encoding`_
-`\ `:ext-icon: as the escaping mechanism, and thus percent signs ("%", 
-U+0025) must be escaped as well.  In Python, a dictionary of Unicode 
-metadata element names and values, `metadata`:hl1:, is serialized into 
+`\ `:ext-icon: as the escaping mechanism, and thus percent signs ("%",
+U+0025) must be escaped as well.  In Python, a dictionary of Unicode
+metadata element names and values, `metadata`:hl1:, is serialized into
 a UTF-8 encoded string, `anvl`:hl1:, with the following code:
 
 .. parsed-literal::
@@ -502,9 +503,9 @@ already exist).  Authentication is required, and the user's group must
 have permission to create identifiers in the namespace (or "shoulder")
 named by the identifier's prefix.  Users can view the namespaces
 available to their group by visiting the EZID UI and navigating to the
-Create tab.  For example, if the user's group has permission to create
-identifiers in the general EZID ARK (ark:/13030/c7) namespace, then
-the user may create identifiers beginning with "ark:/13030/c7".
+Create ID tab.  For example, if the user's group has permission to
+create identifiers in the general EZID ARK (ark:/13030/c7) namespace,
+then the user may create identifiers beginning with "ark:/13030/c7".
 
 A request body is optional; if present, it defines the identifier's
 starting metadata.  There are no restrictions on what metadata
@@ -582,7 +583,7 @@ Aside from specifying a complete identifier versus specifying a
 shoulder only, the create and mint operations operate identically.
 Authentication is required to mint an identifier; namespace permission
 is required; and permissions can be viewed in the EZID UI under the
-Create tab.  The request and response bodies are identical.
+Create ID tab.  The request and response bodies are identical.
 
 EZID automatically embeds the newly-minted identifier in certain types
 of uploaded metadata.  See `Metadata profiles`_ below for when this is
@@ -593,7 +594,7 @@ Operation: modify identifier
 
 An identifier's metadata can be modified by sending a POST request to
 the identifier's EZID URL.  Authentication is required; only the
-identifier's owner and any listed co-owners may modify the identifier
+identifier's owner and certain other users may modify the identifier
 (see `Ownership model`_ below).
 
 Metadata elements are operated on individually.  If the identifier
@@ -630,8 +631,8 @@ Operation: delete identifier
 An identifier that has only been reserved can be deleted by sending a
 DELETE request to the identifier's EZID URL.  We emphasize that only
 *reserved* identifiers may be deleted; see `Identifier status`_ below.
-Authentication is required; only an identifier's owner and any listed
-co-owners may delete the identifier (see `Ownership model`_).
+Authentication is required; only the identifier's owner and certain
+other users may delete the identifier (see `Ownership model`_).
 
 Here's a sample interaction:
 
@@ -702,15 +703,15 @@ When EZID creates a non-ARK identifier (e.g., a DOI identifier), it
 also creates a related ARK identifier.  These special ARK identifiers
 are termed "shadow ARKs."
 
-A non-ARK identifier and its shadow ARK have the same owner and
-co-owners (and hence the same access characteristics) and the same
-creation time and citation metadata, but they have separate target
-URLs and update times.  By sharing citation metadata, a non-ARK
-identifier and its shadow ARK are intended to identify the same
-digital object or conceptual entity, but having separate target URLs
-allows the identifiers to address different representations of the
-object.  Clients can also use shadow ARKs to exploit the different
-technical characteristics between ARK and non-ARK identifiers.
+A non-ARK identifier and its shadow ARK have the same owner (and hence
+the same access characteristics) and the same creation time and
+citation metadata, but they have separate target URLs and update
+times.  By sharing citation metadata, a non-ARK identifier and its
+shadow ARK are intended to identify the same digital object or
+conceptual entity, but having separate target URLs allows the
+identifiers to address different representations of the object.
+Clients can also use shadow ARKs to exploit the different technical
+characteristics between ARK and non-ARK identifiers.
 
 Shadow ARKs are returned on the status line when creating or minting
 non-ARK identifiers (see `Operation: create identifier`_ and
@@ -785,13 +786,12 @@ first column indicates the element is modifiable by clients.
   === =========== ============================================ ================
   |X| Element     Definition                                   Example
   === =========== ============================================ ================
-  \   _owner      The identifier's owner.                      jsmith
+  |X| _owner      The identifier's owner.  Only certain        jsmith
+                  ownership changes are permitted; see
+                  `Ownership model`_ above.
   \   _ownergroup The identifier's owning group, which is      ucla
-                  often but not necessarily the identifier's
-                  owner's current group.
-  |X| _coowners   The identifier's co-owners separated by      manny ; moe ;
-                  semicolons (";", U+003B).  Modifiable only   jack
-                  by the identifier's owner.
+                  currently restricted to be the identifier's
+                  owner's group.
   \   _created    The time the identifier was created          1300812337
                   expressed as a Unix timestamp.
   \   _updated    The time the identifier was last modified    1300913550
@@ -864,13 +864,13 @@ those profiles that it explicitly supports.
 .. _Profile "erc":
 
 1. **Profile "erc"**.  These elements are drawn from `Kernel Metadata
-   and Electronic Resource Citations (ERCs)`__ `\ `:ext-icon:.  This 
-   profile aims at universal citations: any kind of object (digital, 
-   physical, abstract) or agent (person, group, software, satellite) 
-   for any purpose (research, education, entertainment, administration), 
-   any subject focus (oceanography, sales, religion, archiving), and any
-   medium (television, newspaper, database, book).  This is the
-   default profile for ARK and URN identifiers.
+   and Electronic Resource Citations (ERCs)`__ `\ `:ext-icon:.  This
+   profile aims at universal citations: any kind of object (digital,
+   physical, abstract) or agent (person, group, software, satellite)
+   for any purpose (research, education, entertainment,
+   administration), any subject focus (oceanography, sales, religion,
+   archiving), and any medium (television, newspaper, database, book).
+   This is the default profile for ARK and URN identifiers.
 
 __ ERC_
 
@@ -915,11 +915,11 @@ __ ERC_
             approximation.
    ======== ===========================================================
 
-   As a special case, an entire ANVL_ `\ `:ext-icon: document containing 
-   ERC metadata may be bound to the metadata element "erc".  Care should 
-   be taken to escape line terminators in the document (as is true for all
-   metadata element values; see `Request & response bodies`_ above).
-   For example, the ANVL document::
+   As a special case, an entire ANVL_ `\ `:ext-icon: document
+   containing ERC metadata may be bound to the metadata element "erc".
+   Care should be taken to escape line terminators in the document (as
+   is true for all metadata element values; see `Request & response
+   bodies`_ above).  For example, the ANVL document::
 
      who: Proust, Marcel
      what: Remembrance of Things Past
@@ -932,8 +932,8 @@ __ ERC_
 
 2. **Profile "datacite"**.  These elements are drawn from the
    `DataCite Metadata Scheme for the Publication and Citation of
-   Research Data`__ `\ `:ext-icon:.  This is the default profile for DOI 
-   identifiers.
+   Research Data`__ `\ `:ext-icon:.  This is the default profile for
+   DOI identifiers.
 
 __ `DataCite Metadata Scheme`_
 
@@ -1102,8 +1102,8 @@ order for:
 
 If no meaningful value is available for a required element, clients
 are encouraged to supply a standard machine-readable code drawn from
-the `Kernel Metadata and Electronic Resource Citations (ERCs)`__ 
-`\ `:ext-icon: specification.  These codes have the common syntactic 
+the `Kernel Metadata and Electronic Resource Citations (ERCs)`__
+`\ `:ext-icon: specification.  These codes have the common syntactic
 form "(:`code`:hl1:)" and include:
 
 __ ERC_
@@ -1134,13 +1134,13 @@ equivalent or a more specific description, as in:
 Crossref registration
 ---------------------
 
-A DOI identifier may be registered with `Crossref`_ `\ `:ext-icon: 
-in addition to being registered with `DataCite`_ `\ `:ext-icon:, thereby 
-making it available to Crossref's indexing and linking services.  
-**Note:** to take advantage of this, both the identifier shoulder and 
-the user making the request must be enabled for Crossref registration by 
-an EZID administrator.  In addition, the user must have an account with 
-Crossref.
+A DOI identifier may be registered with `Crossref`_ `\ `:ext-icon: in
+addition to being registered with `DataCite`_ `\ `:ext-icon:, thereby
+making it available to Crossref's indexing and linking services.
+**Note:** to take advantage of this, both the identifier shoulder and
+the user making the request must be enabled for Crossref registration
+by an EZID administrator.  In addition, the user must have an account
+with Crossref.
 
 Once registered, an identifier cannot be removed from Crossref.  If
 the identifier's status is set to unavailable (recall `Identifier
@@ -1176,9 +1176,9 @@ emailed to a specified mailbox.  Warnings and errors can be removed
 only by submitting new metadata and re-registering identifiers.
 
 Crossref deposit metadata should adhere to the `Crossref Deposit
-Schema`_ `\ `:ext-icon:, version 4.3.0 or later.  The metadata should 
-consist of the immediate child element of a <body> element, i.e., one of 
-the following elements:
+Schema`_ `\ `:ext-icon:, version 4.3.0 or later.  The metadata should
+consist of the immediate child element of a <body> element, i.e., one
+of the following elements:
 
 - <journal>
 - <book>
@@ -1265,7 +1265,7 @@ respects, including resolvability, except that EZID deletes them after
 2 weeks.
 
 Test DOI identifiers resolve through the universal DOI resolver
-(\http://dx.doi.org/), but do not appear in any of DataCite's other
+(\http://doi.org/), but do not appear in any of DataCite's other
 systems.  Test DOI identifiers registered with Crossref appear only in
 Crossref's test server (\http://test.crossref.org/), and are prefixed
 there with 10.15697.  For example, test identifier doi:10.5072/FK2TEST
@@ -1311,7 +1311,7 @@ of the "subsystems" query parameter.  For example:
 
   |lArr| HTTP/1.1 200 OK
   |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length:40 
+  |lArr| Content-Length: 40
   |lArr|
   |lArr| success: EZID is up
   |lArr| noid: up
@@ -1493,8 +1493,8 @@ Modify identifier:
 Perl examples
 -------------
 
-The following Perl examples use the `libwww-perl (LWP)`__ `\ `:ext-icon: 
-library.
+The following Perl examples use the `libwww-perl (LWP)`__
+`\ `:ext-icon: library.
 
 __ libwww-perl_
 
@@ -1750,8 +1750,8 @@ identifier's metadata.
 curl examples
 -------------
 
-The EZID API can be exercised using the curl_ `\ `:ext-icon: command 
-line tool.  The following examples assume metadata is UTF-8 encoded 
+The EZID API can be exercised using the curl_ `\ `:ext-icon: command
+line tool.  The following examples assume metadata is UTF-8 encoded
 throughout.
 
 To get identifier metadata, obtaining text formatted as described in
@@ -1909,8 +1909,8 @@ week.
 
 Identifier metadata is returned in one of three formats; which format
 is determined by the "format" parameter.  In all cases, the text
-encoding is UTF-8 and the metadata is compressed with either gzip_ 
-`\ `:ext-icon: or ZIP_ `\ `:ext-icon: as determined by the 
+encoding is UTF-8 and the metadata is compressed with either gzip_
+`\ `:ext-icon: or ZIP_ `\ `:ext-icon: as determined by the
 "compression" parameter.
 
 1. **Format "anvl"**.  This format is effectively the concatenation of
@@ -1951,10 +1951,10 @@ encoding is UTF-8 and the metadata is compressed with either gzip_
      datacite: <?xml version="1.0"?>%0A<resource xmlns="http://...
 
 2. **Format "csv"**.  Metadata is returned as an Excel-compatible
-   `Comma-separated values (CSV)`_ `\ `:ext-icon: table, one row per selected
-   identifier.  A header row lists column names.  The columns to
-   return must be specified using one or more "column" parameters; the
-   order of columns in the table matches the parameter order.  The
+   `Comma-separated values (CSV)`_ `\ `:ext-icon: table, one row per
+   selected identifier.  A header row lists column names.  The columns
+   to return must be specified using one or more "column" parameters;
+   the order of columns in the table matches the parameter order.  The
    columns that can be returned include all internal EZID metadata
    elements (refer to `Internal metadata`_) and all citation metadata
    elements (refer to `Metadata profiles`_).  Additionally, the
@@ -1964,10 +1964,11 @@ encoding is UTF-8 and the metadata is compressed with either gzip_
 
      The identifier.
 
-   - _mappedCreator, _mappedTitle, _mappedPublisher, _mappedDate
+   - _mappedCreator, _mappedTitle, _mappedPublisher, _mappedDate,
+     _mappedType
 
-     Creator, title, publisher, and date citation metadata as mapped
-     from the identifier's preferred metadata profile.
+     Creator, title, publisher, date, and type citation metadata as
+     mapped from the identifier's preferred metadata profile.
 
    Continuing with the previous example, if the parameters are
 
@@ -2072,10 +2073,10 @@ Unless otherwise noted, parameters are optional and *not* repeatable.
 
 - compression={gzip|zip}
 
-  The compression to use, gzip_ `\ `:ext-icon: or ZIP_ `\ `:ext-icon:
-  .  gzip is the default.
+  The compression to use, gzip_ `\ `:ext-icon: or ZIP_ `\ `:ext-icon:.
+  gzip is the default.
 
-  column=\ `c`:hl1: *(repeatable)*
+- column=\ `c`:hl1: *(repeatable)*
 
   Return column `c`:hl1:.  Applies to the "csv" format only, in which
   case at least one column is required.
@@ -2126,14 +2127,14 @@ identifiers).
 - owner=\ `u`:hl1: (*repeatable*)
 
   Return identifiers owned by user `u`:hl1:, where `u`:hl1: is an EZID
-  username, e.g., "apitest". All "owner" and "ownergroup" parameters
+  username, e.g., "apitest".  All "owner" and "ownergroup" parameters
   are ORed together; if none are specified, the identifiers directly
   owned by the requestor are returned.
 
 - ownergroup=\ `g`:hl1: *(repeatable)*
 
   Return identifiers owned by group `g`:hl1:, where `g`:hl1: is an
-  EZID group name, e.g., "cdl". All "owner" and "ownergroup"
+  EZID group name, e.g., "cdl".  All "owner" and "ownergroup"
   parameters are ORed together; if none are specified, the identifiers
   directly owned by the requestor are returned.
 
@@ -2162,9 +2163,9 @@ identifiers).
 
 **Using curl to request a download**
 
-A batch download can easily be requested with the curl_ `\ `:ext-icon: 
-command line tool.  Use curl's "-d" option to specify parameters, and 
-use the https form of the request URL to securely send authentication 
+A batch download can easily be requested with the curl_ `\ `:ext-icon:
+command line tool.  Use curl's "-d" option to specify parameters, and
+use the https form of the request URL to securely send authentication
 credentials.  For example:
 
 .. parsed-literal::
@@ -2177,9 +2178,8 @@ OAI-PMH harvesting
 ------------------
 
 EZID supports harvesting of identifiers and citation metadata via `The
-Open Archives Initiative Protocol for Metadata Harvesting
-(OAI-PMH)`__ `\ `:ext-icon:, version 2.0.  The base URL for OAI-PMH 
-access is
+Open Archives Initiative Protocol for Metadata Harvesting (OAI-PMH)`__
+`\ `:ext-icon:, version 2.0.  The base URL for OAI-PMH access is
 
 __ OAI-PMH_
 
@@ -2197,12 +2197,13 @@ __ `Profile "erc"`_
 
 In returning an identifier's metadata, EZID maps citation metadata
 from the identifier's preferred metadata profile (see `Metadata
-profiles`_ above) to one of two delivery formats: `Dublin Core`__ 
-`\ `:ext-icon: (as required by the protocol) or DataCite__ `\ `:ext-icon:.  
-In the latter case, older DataCite XML metadata records stored in EZID 
-are converted to version 3 of the DataCite schema for uniformity.  Note 
-that, in an extension to the DataCite schema, the identifier type for 
-non-DOI identifiers is set to "ARK" or "\URN:UUID" as appropriate.
+profiles`_ above) to one of two delivery formats: `Dublin Core`__
+`\ `:ext-icon: (as required by the protocol) or DataCite__
+`\ `:ext-icon:.  In the latter case, older DataCite XML metadata
+records stored in EZID are converted to version 3 of the DataCite
+schema for uniformity.  Note that, in an extension to the DataCite
+schema, the identifier type for non-DOI identifiers is set to "ARK" or
+"\URN:UUID" as appropriate.
 
 __ `Dublin Core Metadata Element Set`_
 __ `DataCite Metadata Scheme`_
