@@ -450,13 +450,13 @@ from citation metadata standards; see <a class="reference internal" href="#metad
 <p>An identifier can be &quot;created&quot; by sending a PUT request to the
 identifier's EZID URL.  Here, identifier creation means establishing a
 record of the identifier in EZID (to be successful, no such record can
-already exist).  Authentication is required, and the user's group must
-have permission to create identifiers in the namespace (or &quot;shoulder&quot;)
+already exist).  Authentication is required, and the user must have
+permission to create identifiers in the namespace (or &quot;shoulder&quot;)
 named by the identifier's prefix.  Users can view the namespaces
-available to their group by visiting the EZID UI and navigating to the
-Create ID tab.  For example, if the user's group has permission to
-create identifiers in the general EZID ARK (ark:/13030/c7) namespace,
-then the user may create identifiers beginning with &quot;ark:/13030/c7&quot;.</p>
+available to them by visiting the EZID UI and navigating to the Create
+ID tab.  For example, if the user has permission to create identifiers
+in the general EZID ARK (ark:/13030/c7) namespace, then the user may
+create identifiers beginning with &quot;ark:/13030/c7&quot;.</p>
 <p>A request body is optional; if present, it defines the identifier's
 starting metadata.  There are no restrictions on what metadata
 elements can be submitted, but a convention has been established for
@@ -568,7 +568,7 @@ the identifier in question.</p>
 DELETE request to the identifier's EZID URL.  We emphasize that only
 <em>reserved</em> identifiers may be deleted; see <a class="reference internal" href="#identifier-status">Identifier status</a> below.
 Authentication is required; only the identifier's owner and certain
-other users may delete the identifier (see <a class="reference internal" href="#ownership-model">Ownership model</a>).</p>
+other users may delete the identifier (see <a class="reference internal" href="#ownership-model">Ownership model</a> below).</p>
 <p>Here's a sample interaction:</p>
 <pre class="literal-block">
 ⇒ DELETE /id/ark:/99999/fk4cz3dh0 HTTP/1.1
@@ -588,42 +588,58 @@ the identifier just deleted.</p>
 <h1>Ownership model</h1>
 <p>EZID maintains ownership information about identifiers and uses that
 information to enforce access control.</p>
-<p>An identifier has an owner, which is an EZID user, and an owning
-group, which is an EZID group.  Each EZID user is a member of exactly
-one EZID group, and initially an identifier is owned by the user and
-user's group that created it.  However, the identifier's owner and
-owning group may change over time, and furthermore these ownership
-attributes may change independently so that the identifier's owning
-group may not necessarily be the owner's current group.</p>
-<p>For read access, identifiers are considered public resources, and
-their EZID metadata may be retrieved by anybody, just as anybody may
-submit the URL form of an identifier to a resolving service and be
-redirected to the identifier's target URL.  But an identifier may be
-modified only by its owner.</p>
-<p>Additionally, an identifier may have one or more &quot;co-owners,&quot; which
-are users other than the owner who are allowed to modify the
-identifier.  Co-ownership can be specified in two ways:</p>
-<ol class="arabic simple">
-<li><strong>Account-level</strong>.  It can be specified globally as part of a
-user's account profile.  For example, assuming a repository
-<span class="hl1">R</span> has an EZID account (i.e., EZID user <span class="hl1">R</span> represents a
-repository system), an EZID user <span class="hl1">U</span> depositing digital
-objects in <span class="hl1">R</span> and using EZID to create identifiers for those
-objects can name <span class="hl1">R</span> as a co-owner of all its identifiers,
-past and future, thereby allowing the repository to manage the
-objects' target URLs and other metadata.  Visit the EZID UI and
-navigate to &quot;My account&quot; to specify account-level co-ownership.</li>
-<li><strong>Identifier-level</strong>.  It can be specified on a per-identifier
-basis by listing one or more users in the identifier's &quot;_coowners&quot;
-reserved metadata element; see <a class="reference internal" href="#internal-metadata">Internal metadata</a> below.  For
-example, repository <span class="hl1">R</span>, creating identifiers in EZID on
-behalf of EZID user <span class="hl1">U</span>, can name <span class="hl1">U</span> as a co-owner of
-those identifiers, thereby giving <span class="hl1">U</span> the right to modify
-identifiers created by the repository on the user's behalf.  Note
-that any time a user modifies an identifier that it doesn't
-directly own, EZID adds the user to the identifier's &quot;_coowners&quot;
-element.</li>
-</ol>
+<p>The ownership model employed by EZID is hierarchical: each identifier
+has one owner, which is an EZID user; each EZID user belongs to one
+group; and each group belongs to one realm.  Permission to create
+identifiers is governed by the namespaces (or &quot;shoulders&quot;) that have
+been assigned to a user by an EZID administrator.  But once created,
+permission to subsequently modify an identifier is governed solely by
+the identifier's ownership.  An identifier may be modified only by its
+owner, with two exceptions:</p>
+<ul class="simple">
+<li><strong>Proxies</strong>.  A user (the &quot;proxied user&quot;) may name another EZID user
+as its &quot;proxy&quot;.  A user may have multiple proxies, and a user may be
+a proxy for multiple other users.  Generally speaking, a proxy may
+operate on behalf of the proxied user.  Specifically, a proxy may:<ul>
+<li>create identifiers owned by the proxied user, by setting the
+&quot;_owner&quot; reserved metadata element (see <a class="reference internal" href="#internal-metadata">Internal metadata</a>
+below);</li>
+<li>modify existing identifiers owned by the proxied user;</li>
+<li>change the ownership of identifiers owned by the proxied user to
+itself or to any other user on whose behalf the proxy may operate,
+and vice versa;</li>
+<li>search over the proxied user's identifiers;</li>
+<li>view statistics regarding the proxied user's identifiers; and</li>
+<li>download the proxied user's identifiers (see <a class="reference internal" href="#batch-download">Batch download</a>
+below).</li>
+</ul>
+</li>
+<li><strong>Group administrators</strong>.  An EZID user may be appointed an
+&quot;administrator&quot; of its group.  A group may have zero, one, or more
+than one administrator.  Generally speaking, a group administrator
+may operate on behalf of any other member of the group;
+equivalently, a group administrator is a proxy for the group's
+members, and as such its specific abilities include the list given
+above.  In addition, a group administrator may:<ul>
+<li>search over all the group's identifiers;</li>
+<li>view group-level identifier statistics; and</li>
+<li>download all the group's identifiers.</li>
+</ul>
+</li>
+</ul>
+<p>In operating on behalf of other users, proxies and group
+administrators temporarily inherit the identity of those other users.
+However, that inheritance does not extend to shoulders or Crossref
+enablement.  For any EZID user, proxy user or group administrator or
+not, the shoulders under which identifiers may be created, and the
+ability to register identifiers with Crossref (see <a class="reference internal" href="#crossref-registration">Crossref
+registration</a> below), are determined by the user's own account
+record.</p>
+<p>Proxies can be set up and managed in the EZID UI, Account Settings
+tab.  Group administrators can be appointed only by an EZID
+administrator.</p>
+<p>Proxies and group administrators are independent concepts.  A group
+administrator may also be a proxy, and may also have proxies.</p>
 </div>
 <div class="section" id="shadow-arks">
 <h1>Shadow ARKs</h1>
