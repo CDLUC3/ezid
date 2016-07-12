@@ -75,6 +75,8 @@ for r in records:
   if e[0] != "SUCCESS": continue
   # Strip simple get requests.
   if b[0] == "getMetadata": continue
+  # Strip searches.
+  if b[0].startswith("search/"): continue
   # Strip everything related to test identifiers.
   if ((b[0] == "mintDoi" or b[0] == "createDoi") and\
        b[1].startswith(testDoiPrefix)) or\

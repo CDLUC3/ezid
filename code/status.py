@@ -30,6 +30,7 @@ import datacite_async
 import download
 import ezid
 import log
+import search_util
 import store
 
 _enabled = None
@@ -63,7 +64,8 @@ def _statusDaemon ():
         "dataciteQueueLength=%d" % datacite_async.getQueueLength(),
         "crossrefQueue:archived/unsubmitted/submitted=%d/%d/%d" %\
         (cqs[2]+cqs[3], cqs[0], cqs[1]),
-        "downloadQueueLength=%d" % download.getQueueLength())
+        "downloadQueueLength=%d" % download.getQueueLength(),
+        "activeSearches=%d" % search_util.numActiveSearches())
     except Exception, e:
       log.otherError("status._statusDaemon", e)
     django.db.connections["default"].close()

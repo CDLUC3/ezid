@@ -167,7 +167,8 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
       c['hasIssues'] = True
     elif s_type == 'crossref':
       c['crossref'] = True
-    d['total_results'] = search_util.formulateQuery(c).count()
+    d['total_results'] = search_util.executeSearchCountOnly(
+      userauth.getUser(request, returnAnonymous=True), c)
     d['total_results_str'] = format(d['total_results'], "n") 
     d['total_pages'] = int(math.ceil(float(d['total_results'])/float(d['ps'])))
     if d['p'] > d['total_pages']: d['p'] = d['total_pages']
@@ -180,7 +181,8 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
     d['results'] = []
     rec_beg = (d['p']-1)*d['ps']
     rec_end = d['p']*d['ps']
-    for id in search_util.formulateQuery(c, orderBy=orderColumn)[rec_beg:rec_end]:
+    for id in search_util.executeSearch(userauth.getUser(request,
+      returnAnonymous=True), c, rec_beg, rec_end, orderColumn):
       if s_type in ('public', 'manage'):
         result = {
           "c_create_time": id.createTime,

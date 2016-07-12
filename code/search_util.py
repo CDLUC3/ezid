@@ -18,17 +18,21 @@ import django.db
 import django.db.models
 import operator
 import re
+import threading
 import time
 import urlparse
+import uuid
 
 import config
 import ezidapp.models
 import log
 import util
 
+_lock = threading.Lock()
 _reconnectDelay = None
 _fulltextSupported = None
 _maxTargetLength = None
+_numActiveSearches = 0
 
 def _loadConfig ():
   global _reconnectDelay, _fulltextSupported, _maxTargetLength
@@ -316,3 +320,75 @@ def formulateQuery (constraints, orderBy=None,
       assert False, "column does not support ordering"
     qs = qs.order_by(prefix + orderBy)
   return qs
+
+def _modifyActiveCount (delta):
+  global _numActiveSearches
+  _lock.acquire()
+  try:
+    _numActiveSearches += delta
+  finally:
+    _lock.release()
+
+def numActiveSearches ():
+  """
+  Returns the number of active searches.
+  """
+  _lock.acquire()
+  try:
+    return _numActiveSearches
+  finally:
+    _lock.release()
+
+def executeSearchCountOnly (user, constraints,
+  selectRelated=defaultSelectRelated, defer=defaultDefer):
+  """
+  Executes a search database query, returning just the number of
+  results.  'user' is the requestor, and should be an authenticated
+  StoreUser object or AnonymousUser.  'constraints', 'selectRelated',
+  and 'defer' are as in formulateQuery above.
+  """
+  tid = uuid.uuid1()
+  try:
+    _modifyActiveCount(1)
+    qs = formulateQuery(constraints, selectRelated=selectRelated, defer=defer)
+    log.begin(tid, "search/count", "-", user.username, user.pid,
+      user.group.groupname, user.group.pid, *reduce(operator.__concat__,
+      [[k, str(v)] for k, v in constraints.items()]))
+    c = qs.count()
+  except Exception, e:
+    log.error(tid, e)
+    raise
+  else:
+    log.success(tid, str(c))
+    return c
+  finally:
+    _modifyActiveCount(-1)
+
+def executeSearch (user, constraints, from_, to, orderBy=None,
+  selectRelated=defaultSelectRelated, defer=defaultDefer):
+  """
+  Executes a search database query, returning an evaluated QuerySet.
+  'user' is the requestor, and should be an authenticated StoreUser
+  object or AnonymousUser.  'from_' and 'to' are range bounds, and
+  must be supplied.  'constraints', 'orderBy', 'selectRelated', and
+  'defer' are as in formulateQuery above.
+  """
+  tid = uuid.uuid1()
+  try:
+    _modifyActiveCount(1)
+    qs = formulateQuery(constraints, orderBy=orderBy,
+      selectRelated=selectRelated, defer=defer)
+    log.begin(tid, "search/results", "-", user.username, user.pid,
+      user.group.groupname, user.group.pid, str(orderBy), str(from_), str(to),
+      *reduce(operator.__concat__,
+      [[k, str(v)] for k, v in constraints.items()]))
+    qs = qs[from_:to]
+    c = len(qs)
+  except Exception, e:
+    log.error(tid, e)
+    raise
+  else:
+    log.success(tid, str(c))
+    return qs
+  finally:
+    _modifyActiveCount(-1)

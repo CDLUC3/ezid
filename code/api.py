@@ -323,12 +323,13 @@ def _statusLineGenerator (includeSuccessLine):
     ql = store.getUpdateQueueLength()
     ndo = datacite.numActiveOperations()
     dql = datacite_async.getQueueLength()
+    nas = search_util.numActiveSearches()
     s = ("STATUS %s activeOperations=%d%s waitingRequests=%d%s " +\
       "activeDataciteOperations=%d updateQueueLength=%d " +\
-      "dataciteQueueLength=%d\n") %\
+      "dataciteQueueLength=%d activeSearches=%d\n") %\
       ("paused" if isPaused else "running",
       na, _formatUserCountList(activeUsers),
-      nw, _formatUserCountList(waitingUsers), ndo, ql, dql)
+      nw, _formatUserCountList(waitingUsers), ndo, ql, dql, nas)
     yield s.encode("UTF-8")
     time.sleep(3)
 

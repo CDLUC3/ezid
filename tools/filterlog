@@ -25,6 +25,7 @@
 #     -G        get metadata
 #     -S        set metadata
 #     -D        delete identifier
+#     -F        find (search)
 #
 #   Filter by operation status:
 #     -s        success
@@ -71,6 +72,8 @@ g.add_option("-S", action="store_true", dest="operationSet", default=False,
   help="set metadata")
 g.add_option("-D", action="store_true", dest="operationDelete", default=False,
   help="delete identifier")
+g.add_option("-F", action="store_true", dest="operationSearch", default=False,
+  help="find (search)")
 p.add_option_group(g)
 g = optparse.OptionGroup(p, "Filter by operation status")
 g.add_option("-s", action="store_true", dest="statusSuccess", default=False,
@@ -113,7 +116,8 @@ def userFilter (beginRecord):
 
 def typeFilter (beginRecord):
   if not options.typeReal and not options.typeTest: return True
-  if beginRecord[0] == "otherError": return True
+  if beginRecord[0] == "otherError" or beginRecord[0].startswith("search/"):
+    return True
   isTestIdentifier = ((beginRecord[0] == "mintDoi" or\
     beginRecord[0] == "createDoi") and\
     beginRecord[1].startswith(testDoiPrefix)) or\
@@ -130,7 +134,8 @@ def typeFilter (beginRecord):
 
 def operationFilter (beginRecord):
   if not options.operationCreate and not options.operationGet and\
-    not options.operationSet and not options.operationDelete:
+    not options.operationSet and not options.operationDelete and\
+    not options.operationSearch:
     return True
   if (beginRecord[0].startswith("mint") or\
     beginRecord[0].startswith("create")) and options.operationCreate:
@@ -138,6 +143,8 @@ def operationFilter (beginRecord):
   if beginRecord[0] == "getMetadata" and options.operationGet: return True
   if beginRecord[0] == "setMetadata" and options.operationSet: return True
   if beginRecord[0] == "deleteIdentifier" and options.operationDelete:
+    return True
+  if beginRecord[0].startswith("search/") and options.operationSearch:
     return True
   return False
 
