@@ -11,6 +11,7 @@
 #
 #     -v        print transaction IDs
 #     -w        print progress records for selected transactions
+#     -x        print transaction elapsed times
 #
 #   Filter by user:
 #     -u USER   user ("none" for no user)
@@ -39,9 +40,11 @@
 # Greg Janee <gjanee@ucop.edu>
 # January 2012
 
+import calendar
 import optparse
 import re
 import sys
+import time
 
 testDoiPrefix = "10.5072/FK2"
 testDoiShadowPrefix = "b5072/fk2"
@@ -52,6 +55,8 @@ p.add_option("-v", action="store_true", dest="printTids", default=False,
   help="print transaction IDs")
 p.add_option("-w", action="store_true", dest="printProgressRecords",
   default=False, help="print progress records for selected transactions")
+p.add_option("-x", action="store_true", dest="printElapsedTimes",
+  default=False, help="print transaction elapsed times")
 g = optparse.OptionGroup(p, "Filter by user")
 g.add_option("-u", action="append", type="string", dest="users",
   help="user (\"none\" for no user)")
@@ -102,6 +107,7 @@ class Record:
     self.progressRecords = []
     self.endRecord = None
     self.tid = tid
+    self.elapsed = 0.
 
 def recordHasUser (beginRecord):
   return beginRecord[0] != "otherError"
@@ -160,6 +166,10 @@ def statusFilter (endRecord):
   if endRecord[0] == "(incomplete)" and options.statusPartial: return True
   return False
 
+def parseTimestamp (timestamp):
+  t = calendar.timegm(time.strptime(timestamp[:19], "%Y-%m-%d %H:%M:%S"))
+  return t + int(timestamp[20:])/1000.
+
 pattern = re.compile("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) " +\
   "(([\da-fA-F]{32}) (BEGIN|PROGRESS|END) |- (STATUS|ERROR) )(.*)")
 
@@ -207,7 +217,13 @@ for file in files:
         if tidMap[tid].endRecord != None:
           error(file, n, "duplicate END record")
           continue
+        startTime = parseTimestamp(r.timestamp)
+        endTime = parseTimestamp(m.group(1))
+        if startTime > endTime:
+          error(file, n, "END record predates BEGIN record")
+          continue
         tidMap[tid].endRecord = m.group(6).split(" ")
+        tidMap[tid].elapsed = endTime-startTime
   f.close()
 
 records.sort(key=lambda r: r.timestamp)
@@ -238,7 +254,11 @@ for r in records:
       tid = " -"
   else:
     tid = ""
-  print "%s%s %s -> %s" % (r.timestamp, tid, " ".join(r.beginRecord),
-    " ".join(r.endRecord))
+  if options.printElapsedTimes:
+    elapsed = " %.3f" % r.elapsed
+  else:
+    elapsed = ""
+  print "%s%s%s %s -> %s" % (r.timestamp, tid, elapsed,
+    " ".join(r.beginRecord), " ".join(r.endRecord))
   if options.printProgressRecords:
     for pr in r.progressRecords: print "\t" + pr
