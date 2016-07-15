@@ -191,6 +191,11 @@ def getAdvancedIdForm (profile, request=None):
 
 ################# Form Validation functions  #################
 
+def _validate_phone(p):
+  r = re.sub(r'[^\d]','',p) 
+  if len(r) < 8:
+    raise ValidationError(_("Please enter a valid phone number, minimum 8 digits."))
+
 def _validate_url(url):
   """ Borrowed from code/ezid.py """
   t = url.strip()
@@ -708,15 +713,15 @@ class UserForm(BasePasswordForm):
       error_messages={'required': _("Please fill in your email."),
                       'invalid': _("Please fill in a valid email address.")})
     self.fields["primaryContactPhone"] = forms.CharField(label=_("Primary Contact Phone"),
+      validators=[_validate_phone],
       error_messages={'required': _("Please fill in the phone number for the primary contact.")})
-
     self.fields["secondaryContactName"] = forms.CharField(required=False, 
       label=_("Secondary Contact Name"))
     self.fields["secondaryContactEmail"] = forms.EmailField(required=False, 
       label=_("Secondary Contact Email"),
       error_messages={'invalid': _("Please fill in a valid email address.")})
     self.fields["secondaryContactPhone"] = forms.CharField(required=False, 
-      label=_("Secondary Contact Phone"))
+      label=_("Secondary Contact Phone"), validators=[_validate_phone])
 
     self.fields["accountDisplayName"] = forms.CharField(label=_("Account Display Name"),
       error_messages={'required': _("Please fill in the name as it should be displayed for the account.")})
