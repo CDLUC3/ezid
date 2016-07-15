@@ -133,6 +133,7 @@ def formulateQuery (constraints, orderBy=None,
   exported            |   | Y | bool       |
   crossref            |   |   | bool       | True if the identifier is
                       |   |   |            | registered with CrossRef
+  crossrefStatus      | Y |   | str        | CrossRef status code
   target              |   |   | str        | URL
   profile             | Y | Y | str        | profile label, e.g., "erc"
   isTest              |   | Y | bool       |
@@ -214,6 +215,10 @@ def formulateQuery (constraints, orderBy=None,
         filters.append(~django.db.models.Q(crossrefStatus=""))
       else:
         filters.append(django.db.models.Q(crossrefStatus=""))
+    elif column == "crossrefStatus":
+      if isinstance(value, basestring): value = [value]
+      filters.append(reduce(operator.or_,
+        [django.db.models.Q(crossrefStatus=v) for v in value]))
     elif column == "target":
       # Unfortunately we don't store URLs in any kind of normalized
       # form, so we have no real means to take URL equivalence into
