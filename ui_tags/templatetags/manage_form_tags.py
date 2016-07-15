@@ -88,8 +88,6 @@ def column_head(request, field, fields_mapped, order_by, sort, primary_page):
   r += "</button></form></th>"
   return r 
 
-#need to pass in account co owners because it's obnoxiously used in the co-owners field and is added
-#to database values instead of being a purer value 
 @register.simple_tag
 def data_row(record, fields_selected, field_display_types, testPrefixes):
   assert 'c_identifier' in record
