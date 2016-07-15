@@ -56,14 +56,6 @@
 #        |             | name (e.g., "dryad").  The group may also be
 #        |             | "anonymous".  For a shadow ARK, applies to
 #        |             | both the shadow ARK and shadowed identifier.
-# _co    | _coowners   | The identifier's co-owners expressed as a
-#        |             | list of persistent identifiers separated by
-#        |             | semicolons (e.g., "ark:/13030/foo ;
-#        |             | ark:/13030/bar") but returned as a list of
-#        |             | local names (e.g., "peter ; paul").  For a
-#        |             | shadow ARK, applies to both the shadow ARK
-#        |             | and shadowed identifier.  If the identifier
-#        |             | has no co-owners, not present.
 # _c     | _created    | The time the identifier was created expressed
 #        |             | as a Unix timestamp, e.g., "1280889190".  For
 #        |             | a shadow ARK, applies to both the shadow ARK
@@ -1069,12 +1061,12 @@ def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
   of element (name, value) pairs.  If an element being set already
   exists, it is overwritten, if not, it is created; existing elements
   not set are left unchanged.  Of the reserved metadata elements, only
-  "_coowners", "_target", "_profile", "_status", and "_export" may be
-  set (unless the user is the EZID administrator, in which case the
-  other reserved metadata elements may be set using their stored
-  forms).  The "_crossref" element may be set only in certain
-  situations.  The successful return is a string that includes the
-  canonical, qualified form of the identifier, as in:
+  "_target", "_profile", "_status", and "_export" may be set (unless
+  the user is the EZID administrator, in which case the other reserved
+  metadata elements may be set using their stored forms).  The
+  "_crossref" element may be set only in certain situations.  The
+  successful return is a string that includes the canonical, qualified
+  form of the identifier, as in:
 
     success: doi:10.5060/FOO
 
