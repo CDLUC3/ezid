@@ -69,11 +69,6 @@
 #
 #    _fields contains erc.what
 #
-# The _coowners field is similarly treated as an array, so that one
-# can say
-#
-#    _coowners contains gjanee
-#
 # The timestamp fields _created and _updated can be compared against
 # dates or times specified in ISO YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS
 # syntaxes.  Times are interpreted relative to the local timezone.  If
@@ -167,7 +162,7 @@ class FieldConstraint (Constraint):
       if field in ["_created", "_updated"]:
         assert isRelationalOperator(operator) and type(value) is tuple and\
           len(value) == 2 and type(value[0]) is int and type(value[1]) is str
-      elif field in ["_fields", "_coowners"]:
+      elif field == "_fields":
         assert operator == "contains" and type(value) is str
       else:
         assert (isRelationalOperator(operator) and type(value) is str) or\
@@ -195,13 +190,6 @@ class FieldConstraint (Constraint):
       v = idmap.get(record[self.field], record[self.field])
     elif self.field == "_fields":
       v = record
-    elif self.field == "_coowners":
-      if "_coowners" in record:
-        v = [co.strip() for co in record["_coowners"].split(";")\
-          if len(co.strip()) > 0]
-      else:
-        v = []
-      if options.idmap: v = [idmap.get(co, co) for co in v]
     else:
       if self.field not in record: return False
       v = record[self.field]
@@ -353,7 +341,7 @@ def consumeConstraint (consumed, query):
         o = consumeOperator(consumed, query, isRelationalOperator,
           "relational")
         r = consumeTimestamp(consumed, query)
-      elif l in ["_fields", "_coowners"]:
+      elif l == "_fields":
         o = consumeOperator(consumed, query, lambda o: o == "contains",
           "contains")
         r = consumeTerm(consumed, query)
