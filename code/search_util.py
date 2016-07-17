@@ -358,7 +358,7 @@ def executeSearchCountOnly (user, constraints,
     qs = formulateQuery(constraints, selectRelated=selectRelated, defer=defer)
     log.begin(tid, "search/count", "-", user.username, user.pid,
       user.group.groupname, user.group.pid, *reduce(operator.__concat__,
-      [[k, str(v)] for k, v in constraints.items()]))
+      [[k, unicode(v)] for k, v in constraints.items()]))
     c = qs.count()
   except Exception, e:
     log.error(tid, e)
@@ -386,7 +386,7 @@ def executeSearch (user, constraints, from_, to, orderBy=None,
     log.begin(tid, "search/results", "-", user.username, user.pid,
       user.group.groupname, user.group.pid, str(orderBy), str(from_), str(to),
       *reduce(operator.__concat__,
-      [[k, str(v)] for k, v in constraints.items()]))
+      [[k, unicode(v)] for k, v in constraints.items()]))
     qs = qs[from_:to]
     c = len(qs)
   except Exception, e:
