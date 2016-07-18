@@ -72,7 +72,6 @@ import util
 labelMapping = {
   "_o": "_owner",
   "_g": "_ownergroup",
-  "_co": "_coowners",
   "_c": "_created",
   "_u": "_updated",
   "_t": "_target",
@@ -180,10 +179,6 @@ while entry != None:
           record["_o"] = ezidapp.models.getUserByPid(value).username
         elif label == "_g":
           record["_g"] = ezidapp.models.getGroupByPid(value).groupname
-        elif label == "_co":
-          record["_co"] = " ; ".join(
-            ezidapp.models.getUserByPid(co.strip()).username\
-            for co in value.split(";") if len(co.strip()) > 0)
         else:
           record[label] = value
       else:

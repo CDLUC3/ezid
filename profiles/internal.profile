@@ -57,8 +57,7 @@ displayname: Owner
 displaytype: text
 tooltip:
 <b><u>Owner</u></b><br/>
-The identifier's owner.  Only the owner and any account-wide or
-per-identifier co-owners may modify the identifier.
+The identifier's owner.
 
 element: _ownergroup
 displayname: Group

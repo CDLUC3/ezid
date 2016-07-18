@@ -35,7 +35,6 @@ import util
 labelMapping = {
   "_o": "_owner",
   "_g": "_ownergroup",
-  "_co": "_coowners",
   "_c": "_created",
   "_u": "_updated",
   "_t": "_target",
@@ -113,16 +112,9 @@ for l in infile:
     if options.idmap:
       record["_o"] = agentMap[record["_o"]]
       record["_g"] = agentmap[record["_g"]]
-      if "_co" in record:
-        record["_co"] = " ; ".join(agentMap[co.strip()]\
-          for co in record["_co"].split(";") if len(co.strip()) > 0)
     else:
       record["_o"] = ezidapp.models.getUserByPid(record["_o"]).username
       record["_g"] = ezidapp.models.getGroupByPid(record["_g"]).groupname
-      if "_co" in record:
-        record["_co"] = " ; ".join(
-          ezidapp.models.getUserByPid(co.strip()).username\
-          for co in record["_co"].split(";") if len(co.strip()) > 0)
   outputRecord(id, record)
 
 outfile.close()

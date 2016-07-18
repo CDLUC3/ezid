@@ -42,7 +42,6 @@ FIELDS = {
   # name: presence (True=required, False=disallowed, None=optional)
   "_o": True,
   "_g": True,
-  "_co": None,
   "_c": True,
   "_u": True,
   "_t": True,
@@ -137,12 +136,6 @@ def verifyIdentifier (identifier, record):
   assert (record["_o"] == "anonymous" and record["_g"] == "anonymous") or\
     (record["_o"] != "anonymous" and record["_g"] != "anonymous"),\
     "invalid anonymous ownership"
-  if "_co" in record:
-    for co in [i.strip() for i in record["_co"].split(";")\
-      if len(i.strip()) > 0]:
-      verifyAgentReference(co, "user")
-      assert co not in ["anonymous", record["_o"], ADMIN_USER_ID],\
-        "invalid co-owner: " + co
   # timestamps
   verifyTimestamp(record["_c"])
   verifyTimestamp(record["_u"])
@@ -194,7 +187,6 @@ def verifyIdentifier (identifier, record):
     assert record["_o"] == ADMIN_USER_ID and record["_g"] == ADMIN_GROUP_ID,\
       "agent identifier is not owned by admin: user=%s group=%s" %\
       (record["_o"], record["_g"])
-    assert "_co" not in record, "agent identifier has co-owners"
     assert record["_t"] == defaultTarget("ark:/" + identifier),\
       "agent identifier has non-default target URL: " + record["_t"]
     assert "_is" not in record, "agent identifier is not public"

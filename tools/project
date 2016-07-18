@@ -101,13 +101,9 @@ for l in infile:
     if f in r:
       if f in ["_created", "_updated"] and options.formatTimestamps:
         v = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(int(r[f])))
-      elif f in ["_owner", "_ownergroup", "_coowners"] and options.idmap:
-        if f in ["_owner", "_ownergroup"]:
-          id = util.decode(r[f])
-          v = idmap.get(id, id)
-        else:
-          v = " ; ".join(idmap.get(co.strip(), co.strip())\
-            for co in util.decode(r[f]).split(";") if len(co.strip()) > 0)
+      elif f in ["_owner", "_ownergroup"] and options.idmap:
+        id = util.decode(r[f])
+        v = idmap.get(id, id)
         if not options.decode: v = util.encode3(v)
       elif f != "_id" and options.decode:
         v = util.decode(r[f])
