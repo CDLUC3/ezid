@@ -18,8 +18,6 @@ urlpatterns = django.conf.urls.patterns("",
   ("^home/(\w+)$", "ui_home.no_menu"),
 
   # UI - OTHER
-  ("^sitemap.xml$", "django.views.static.serve",
-    { "document_root": django.conf.settings.STATIC_ROOT, "path": "sitemap.xml" }),
   ("^account/edit$", "ui_account.edit", SSL),
   ("^account/pwreset(?P<pwrr>/.*)?$", "ui_account.pwreset", SSL),
   ("^ajax_hide_alert$", "ui.ajax_hide_alert"),
