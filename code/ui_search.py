@@ -30,7 +30,7 @@ locale.setlocale(locale.LC_ALL, '')
 FIELDS_MAPPED = {
   'c_create_time':        ['createTime',          _("ID Date Created")], 
   'c_creator':            ['resourceCreator',     _("Object Creator")],
-  'c_crossref_date':      ['',                    _("Date Submitted")], # i.e. createTime 
+  'c_crossref_date':      ['createTime',          _("Date Submitted")],
   'c_crossref_descr':     ['',                    _("Description")],
   'c_crossref_msg':       ['',                    _("Required Action")],
   'c_id_issue':           ['hasIssues',           _("Issue")],
@@ -77,7 +77,7 @@ _fieldDefaultSortPriority = {
   'public': [],
   'manage': DEFAULT_SORT_PRIORITY,
   'issues': DEFAULT_SORT_PRIORITY,
-  'crossref': DEFAULT_SORT_PRIORITY }
+  'crossref': ['c_crossref_date'] }
 
 IS_ASCENDING = {'asc': True, 'desc': False }
 DATE_FLOOR = False 
@@ -170,9 +170,11 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         c = _buildConstraints(c, q2, s_type)
         c = _buildTimeConstraints(c, q2, s_type)
     elif s_type == 'issues':
+      d['sort'] = 'asc' # Default sort is on update_time descending
       c['hasIssues'] = True
       c['crossref'] = False 
     elif s_type == 'crossref':
+      d['sort'] = 'asc'
       c['crossref'] = True
       c['crossrefStatus'] = [ezidapp.models.Identifier.CR_RESERVED, 
         ezidapp.models.Identifier.CR_WORKING,
