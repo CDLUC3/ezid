@@ -229,12 +229,8 @@ $(document).ready(function() {
 // Submit site search parameters for posted queries into Google Analytics 
 // This path isn't rendered in URL by django when page is rendered after search is executed. 
 // e.g. /manage?creator=&c_owner=t&object_type=&owner_selected=user_al-jdoe&keywords=test....
-//  $(document).ready(function() {
-//    $( "#manage-form" ).submit(function( event ) {
-    var data = "{{queries_urlencoded}}";
-    ga('send', 'pageview', '/manage?' + data);
-//    });
-//  });
+  var data = "{{queries_urlencoded|safe}}";
+  ga('send', 'pageview', '/manage?' + data);
 </script>
 {% endif %}
 {% endblock %}
