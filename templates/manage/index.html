@@ -223,14 +223,5 @@ $(document).ready(function() {
   $('.heading__primary-container').hide();
 });
 </script>
-
-{% if google_analytics_id and queries_urlencoded %}
-<script type="text/javascript">
-// Submit site search parameters for posted queries into Google Analytics 
-// This path isn't rendered in URL by django when page is rendered after search is executed. 
-// e.g. /manage?creator=&c_owner=t&object_type=&owner_selected=user_al-jdoe&keywords=test....
-  var data = "{{queries_urlencoded|safe}}";
-  ga('send', 'pageview', '/manage?' + data);
-</script>
 {% endif %}
 {% endblock %}
