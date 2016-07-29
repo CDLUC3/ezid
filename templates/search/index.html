@@ -110,4 +110,19 @@
 <script type="text/javascript">
   $("#search__simple-label").focus();
 </script>
+
+{% if google_analytics_id %}
+<script type="text/javascript">
+// Submit site search parameters for posted queries into Google Analytics 
+// This path isn't rendered in URL by django when page is rendered after search is executed.
+// e.g. /search?filtered=t&publisher=&object_type=&creator=&title=&pubyear_from=&keywords=test
+  $(document).ready(function() {
+    $( "#search-form" ).submit(function( event ) {
+      var data = $("#search-form").serialize();
+      ga('send', 'pageview', '/search?' + data);
+    });
+  });
+</script>
+{% endif %}
+
 {% endblock %}

@@ -44,6 +44,7 @@ def index(request):
     d['owner_selected'] = request.POST['owner_selected'] if 'owner_selected' != '' \
       else _defaultUser(user)
     d['filtered'] = True 
+    d['queries_urlencoded'] = ui_search.queryUrlEncoded(request)
     d['form'] = form_objects.ManageSearchIdForm(request.POST)
     noConstraintsReqd = False
   else:
