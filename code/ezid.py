@@ -278,7 +278,6 @@ def pause (newValue):
 _labelMapping = {
   "_o": "_owner",
   "_g": "_ownergroup",
-  "_co": "_coowners",
   "_c": "_created",
   "_u": "_updated",
   "_t": "_target",
@@ -306,26 +305,32 @@ def _softUpdate (td, sd):
     if k not in td: td[k] = v
 
 _userSettableReservedElements = ["_owner", "_export", "_profile", "_status",
-  "_target", "_crossref", "_coowners"]
+  "_target", "_crossref"]
 
 _crossrefDoiRE = re.compile("doi:10\.[1-9]\d{3,4}/[-\w.;()/]+$")
 
-def _validateMetadata1 (identifier, user, metadata):
+def _validateMetadata (identifier, user, metadata):
   """
   Validates and normalizes 'metadata', a dictionary of (name, value)
   pairs; 'metadata' is modified in place.  In the process, any
   reserved element names are converted to their internal forms.
-  Returns None on success or a string error message.  The validations
-  performed by this function are those that can't possibly cause an
-  internal server error, and hence can be performed outside a
-  transaction.  'identifier' is the identifier in question, and should
-  be qualified and normalized, e.g., "doi:10.5060/FOO".  'user' is the
-  requestor and should be an authenticated StoreUser object.
+  Returns None on success or a string error message.  'identifier' is
+  the identifier in question, and should be qualified and normalized,
+  e.g., "doi:10.5060/FOO".  'user' is the requestor and should be an
+  authenticated StoreUser object.
   """
   if any(map(lambda k: len(k) == 0, metadata)): return "empty element name"
+  if "_coowners" in metadata: return "element '_coowners' is deprecated"
   if not user.isSuperuser and any(map(lambda k: k.startswith("_") and\
     k not in _userSettableReservedElements, metadata)):
     return "use of reserved element name"
+  if "_owner" in metadata:
+    o = ezidapp.models.getUserByUsername(metadata["_owner"])
+    if o == None or o == ezidapp.models.AnonymousUser:
+      return "element '_owner': no such user"
+    metadata["_o"] = o.pid
+    metadata["_g"] = o.group.pid
+    del metadata["_owner"]
   if "_export" in metadata:
     metadata["_x"] = metadata["_export"].strip().lower()
     if metadata["_x"] not in ["yes", "no"]: return "invalid export flag value"
@@ -400,40 +405,13 @@ def _validateMetadata1 (identifier, user, metadata):
     del metadata["_crossref"]
   return None
 
-def _validateMetadata2 (owner, metadata):
-  """
-  Similar to _validateMetadata1, but performs validations and
-  normalizations that might raise an internal server error, and hence
-  must be performed inside a transaction.  'owner' should be the
-  identifier's owner as an ARK persistent identifier, e.g.,
-  "ark:/13030/foo".
-  """
-  if "_owner" in metadata:
-    o = ezidapp.models.getUserByUsername(metadata["_owner"])
-    if o == None or o == ezidapp.models.AnonymousUser:
-      return "_owner: no such user"
-    metadata["_o"] = o.pid
-    metadata["_g"] = o.group.pid
-    del metadata["_owner"]
-  if "_coowners" in metadata:
-    coOwners = []
-    for co in metadata["_coowners"].split(";"):
-      co = co.strip()
-      if co in ["", "anonymous"]: continue
-      co = ezidapp.models.getUserByUsername(co)
-      if co == None: return "no such user in co-owner list"
-      if co.pid != owner and co.pid not in coOwners: coOwners.append(co.pid)
-    metadata["_co"] = " ; ".join(coOwners)
-    del metadata["_coowners"]
-  return None
-
 def _validateDatacite (identifier, metadata, completeCheck):
   """
-  Similar to _validateMetadata1, but performs DataCite-related
+  Similar to _validateMetadata, but performs DataCite-related
   validations.  If 'completeCheck' is true, the DataCite XML record
   (if any) is fully schema validated, and we check that DataCite
   metadata requirements are satisfied (XML record or not).  (These
-  checks have been split out from _validateMetadata1 because of the
+  checks have been split out from _validateMetadata because of the
   'completeCheck' flag, which varies depending on the identifier
   state.)
   """
@@ -548,7 +526,7 @@ def createDoi (doi, user, metadata={}):
   shadowArk = util.doi2shadow(doi)
   m = { "_profile": "", "_target": "" }
   m.update(metadata)
-  r = _validateMetadata1(qdoi, user, m)
+  r = _validateMetadata(qdoi, user, m)
   if type(r) is str: return "error: bad request - " + r
   if "_is" in m:
     if m["_is"] == "public":
@@ -573,10 +551,6 @@ def createDoi (doi, user, metadata={}):
     log.begin(tid, "createDoi", doi, user.username, user.pid,
       user.group.groupname, user.group.pid,
       *[a for p in metadata.items() for a in p])
-    r = _validateMetadata2(user.pid, m)
-    if type(r) is str:
-      log.badRequest(tid)
-      return "error: bad request - " + r
     if not policy.authorizeCreate(user, qdoi):
       if ezidapp.models.getLongestShoulderMatch(qdoi) != None:
         log.forbidden(tid)
@@ -703,7 +677,7 @@ def createArk (ark, user, metadata={}):
   qark = "ark:/" + ark
   m = { "_profile": "", "_target": "" }
   m.update(metadata)
-  r = _validateMetadata1(qark, user, m)
+  r = _validateMetadata(qark, user, m)
   if type(r) is str: return "error: bad request - " + r
   if "_is" in m:
     if m["_is"] == "public":
@@ -720,10 +694,6 @@ def createArk (ark, user, metadata={}):
     log.begin(tid, "createArk", ark, user.username, user.pid,
       user.group.groupname, user.group.pid,
       *[a for p in metadata.items() for a in p])
-    r = _validateMetadata2(user.pid, m)
-    if type(r) is str:
-      log.badRequest(tid)
-      return "error: bad request - " + r
     if not policy.authorizeCreate(user, qark):
       if ezidapp.models.getLongestShoulderMatch(qark) != None:
         log.forbidden(tid)
@@ -802,7 +772,7 @@ def createUrnUuid (urn, user, metadata={}):
   shadowArk = util.urnUuid2shadow(urn)
   m = { "_profile": "", "_target": "" }
   m.update(metadata)
-  r = _validateMetadata1(qurn, user, m)
+  r = _validateMetadata(qurn, user, m)
   if type(r) is str: return "error: bad request - " + r
   if "_is" in m:
     if m["_is"] == "public":
@@ -819,10 +789,6 @@ def createUrnUuid (urn, user, metadata={}):
     log.begin(tid, "createUrnUuid", urn, user.username, user.pid,
       user.group.groupname, user.group.pid,
       *[a for p in metadata.items() for a in p])
-    r = _validateMetadata2(user.pid, m)
-    if type(r) is str:
-      log.badRequest(tid)
-      return "error: bad request - " + r
     if not policy.authorizeCreate(user, qurn):
       log.forbidden(tid)
       return "error: forbidden"
@@ -975,11 +941,6 @@ def convertMetadataDictionary (d, ark, shadowArkView=False):
       del d[k]
   d["_owner"] = ezidapp.models.getUserByPid(d["_owner"]).username
   d["_ownergroup"] = ezidapp.models.getGroupByPid(d["_ownergroup"]).groupname
-  if "_coowners" in d:
-    # Semicolons are not valid characters in ARK identifiers.
-    d["_coowners"] =\
-      " ; ".join(ezidapp.models.getUserByPid(id.strip()).username\
-      for id in d["_coowners"].split(";") if len(id.strip()) > 0)
   if "_status" not in d: d["_status"] = "public"
   if "_export" not in d: d["_export"] = "yes"
 
@@ -1096,7 +1057,7 @@ def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
   # 'd' will be our delta dictionary, i.e., it will hold the updates
   # to be applied to 'm', the identifier's current metadata.
   d = metadata.copy()
-  r = _validateMetadata1(nqidentifier, user, d)
+  r = _validateMetadata(nqidentifier, user, d)
   if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
   if not _acquireIdentifierLock(ark, user.username):
@@ -1109,10 +1070,6 @@ def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
     if m is None:
       log.badRequest(tid)
       return "error: bad request - no such identifier"
-    r = _validateMetadata2(m["_o"], d)
-    if type(r) is str:
-      log.badRequest(tid)
-      return "error: bad request - " + r
     iUser = m["_o"]
     iGroup = m["_g"]
     if "_co" in m:
