@@ -246,7 +246,13 @@
 	@extend %fcontrol__select;
 }
 
+.select__autowidth {
+	width: 100%;
+	max-width: 99%;
+}
+
 .select__heirarchical {
+	// Not implemented. Testing with fixed font.
 	@include bp(screen2) {
 		font-family: "Courier New", Courier, monospace;
 		font-size: 0.8em;
