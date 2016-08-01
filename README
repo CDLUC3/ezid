@@ -250,37 +250,41 @@ lxml is incompatible with mod_wsgi's use of Python sub-interpreters
     Options -Indexes
     </Directory>
 
-UI Static Library Setup
-================================
+UI development setup
+====================
 
-Install:
-NodeJS and npm   (On Linux it's recommended you use the NodeSource repository
-                  instead of a package manager to do this. And npm will be installed
-                  automatically with NodeJS)
-ruby             (for the scss-lint plugin)
+For UI development purposes only, install:
 
-At the project_root level, run this to install all gulp plugins
+- NodeJS (recommended to install from NodeSource repository)
+- npm (installed automatically with NodeJS)
+- Ruby (for the scss-lint plugin)
 
-    npm update --save-dev 
+To install all gulp plugins (this relies on files gulpfile.js and
+packages.json in .../SITE_ROOT/PROJECT_ROOT):
 
-This relies on config files gulpfile.js and packages.json in PROJECT_ROOT. 
-Install the scss-lint plugin:
+    cd .../SITE_ROOT/PROJECT_ROOT
+    npm update --save-dev
 
-    gem install scss_lint 
+Then:
 
-And finally install gulp:
+    gem install scss_lint
+    npm install gulp
 
-    sudo npm install gulp
+For development, to make changes to static elements, components, and
+layouts:
 
-Development commands:
+    gulp
 
-To make changes to static elements, components, and layouts, simply run $ gulp,
-which Start a local browser with the index page at http://localhost:3000/,
-and will reload HTML, CSS, and JavaScript in the browser immediately upon any changes 
-to these files during development.
+This starts a local browser with the index page at
+http://localhost:3000/, and will reload HTML, CSS, and JavaScript in
+the browser immediately upon any changes to these files.
 
-To create a build, run $ gulp build. This writes static webpages to 
-.../SITE_ROOT/PROJECT_ROOT/ui_library 
+To create a build:
 
-To validate HTML of a build using the W3C validation service, run $ gulp validateHTML
+    gulp build
 
+This writes static webpages to .../SITE_ROOT/PROJECT_ROOT/ui_library.
+
+To validate the HTML of a build using the W3C validation service:
+
+    gulp validateHTML

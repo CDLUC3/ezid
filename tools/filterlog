@@ -9,30 +9,34 @@
 #
 # Options:
 #
-#     -v        print transaction IDs
-#     -w        print progress records for selected transactions
-#     -x        print transaction elapsed times
+#     -v            print transaction IDs
+#     -w            print progress records for selected transactions
+#     -x            print transaction elapsed times
+#
+#   Restrict time range:
+#     -f TIMESTAMP  from (inclusive; any timestamp prefix)
+#     -t TIMESTAMP  to (exclusive)
 #
 #   Filter by user:
-#     -u USER   user ("none" for no user)
-#     -g GROUP  group
+#     -u USER       user
+#     -g GROUP      group
 #
 #   Filter by identifier type:
-#     -r        real identifier
-#     -t        test identifier
+#     -R            real identifier
+#     -T            test identifier
 #
 #   Filter by operation:
-#     -C        create or mint identifier
-#     -G        get metadata
-#     -S        set metadata
-#     -D        delete identifier
-#     -F        find (search)
+#     -C            create or mint identifier
+#     -G            get metadata
+#     -S            set metadata
+#     -D            delete identifier
+#     -X            search
 #
 #   Filter by operation status:
-#     -s        success
-#     -b        bad request or forbidden
-#     -e        internal server error (transactional or other)
-#     -p        partial transaction
+#     -s            success
+#     -b            bad request or forbidden
+#     -e            internal server error (transactional or other)
+#     -p            partial transaction
 #
 # By default, all records are output.  Filter options are AND'd
 # together, but multiple options within an option group are OR'd.
@@ -57,15 +61,22 @@ p.add_option("-w", action="store_true", dest="printProgressRecords",
   default=False, help="print progress records for selected transactions")
 p.add_option("-x", action="store_true", dest="printElapsedTimes",
   default=False, help="print transaction elapsed times")
+g = optparse.OptionGroup(p, "Restrict time range")
+g.add_option("-f", action="store", type="string", dest="from_",
+  help="from (inclusive; any timestamp prefix)", metavar="TIMESTAMP")
+g.add_option("-t", action="store", type="string", dest="to",
+  help="to (exclusive)", metavar="TIMESTAMP")
+p.add_option_group(g)
 g = optparse.OptionGroup(p, "Filter by user")
 g.add_option("-u", action="append", type="string", dest="users",
-  help="user (\"none\" for no user)")
-g.add_option("-g", action="append", type="string", dest="groups", help="group")
+  help="user", metavar="USER")
+g.add_option("-g", action="append", type="string", dest="groups", help="group",
+  metavar="GROUP")
 p.add_option_group(g)
 g = optparse.OptionGroup(p, "Filter by identifier type")
-g.add_option("-r", action="store_true", dest="typeReal", default=False,
+g.add_option("-R", action="store_true", dest="typeReal", default=False,
   help="real identifier")
-g.add_option("-t", action="store_true", dest="typeTest", default=False,
+g.add_option("-T", action="store_true", dest="typeTest", default=False,
   help="test identifier")
 p.add_option_group(g)
 g = optparse.OptionGroup(p, "Filter by operation")
@@ -77,8 +88,8 @@ g.add_option("-S", action="store_true", dest="operationSet", default=False,
   help="set metadata")
 g.add_option("-D", action="store_true", dest="operationDelete", default=False,
   help="delete identifier")
-g.add_option("-F", action="store_true", dest="operationSearch", default=False,
-  help="find (search)")
+g.add_option("-X", action="store_true", dest="operationSearch", default=False,
+  help="search")
 p.add_option_group(g)
 g = optparse.OptionGroup(p, "Filter by operation status")
 g.add_option("-s", action="store_true", dest="statusSuccess", default=False,
@@ -114,7 +125,6 @@ def recordHasUser (beginRecord):
 
 def userFilter (beginRecord):
   if len(options.users) == 0 and len(options.groups) == 0: return True
-  if not recordHasUser(beginRecord) and "none" in options.users: return True
   if recordHasUser(beginRecord) and (beginRecord[2] in options.users or\
     beginRecord[4] in options.groups):
     return True
@@ -123,7 +133,7 @@ def userFilter (beginRecord):
 def typeFilter (beginRecord):
   if not options.typeReal and not options.typeTest: return True
   if beginRecord[0] == "otherError" or beginRecord[0].startswith("search/"):
-    return True
+    return False
   isTestIdentifier = ((beginRecord[0] == "mintDoi" or\
     beginRecord[0] == "createDoi") and\
     beginRecord[1].startswith(testDoiPrefix)) or\
@@ -235,6 +245,8 @@ for r in records:
     else:
       error(r.file, r.lineNo, "no corresponding END record")
       continue
+  if options.from_ != None and r.timestamp < options.from_: continue
+  if options.to != None and r.timestamp >= options.to: continue
   if not userFilter(r.beginRecord): continue
   if not typeFilter(r.beginRecord): continue
   if not operationFilter(r.beginRecord): continue
