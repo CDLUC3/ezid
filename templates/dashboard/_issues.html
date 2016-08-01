@@ -1,7 +1,7 @@
 {% load manage_form_tags %}
 {% load i18n %}
 
-{% if results_issues|length > 0 or results|length > 0 %} 
+{% if results_issues|length > 0 or results|length > 0 and s_type == 'issues' %} 
   <form method="get" id="p_issues" role="form">
     <div class="pagination__input-group">
   {% if not ajax %}

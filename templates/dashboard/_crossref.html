@@ -1,7 +1,7 @@
 {% load manage_form_tags %}
 {% load i18n %}
 
-{% if results_crossref|length > 0 or results|length > 0 %} 
+{% if results_crossref|length > 0 or results|length > 0 and s_type == 'crossref' %} 
   <form method="get" id="p_crossref" role="form">
     <div class="pagination__input-group">
   {% if not ajax %}
