@@ -245,12 +245,13 @@ def owner_names(user, page):
     r += _getGroupsUsers(user, 0, user.realm.groups.all().order_by("groupname"))
   else:
     my_proxies = _userList(user.proxy_for.all(), 0, "  (" + _("by proxy") + ")")
+    r += me
     if user.isGroupAdministrator:
-      r += [("group_" + user.group.groupname, "[" + user.username + "]&nbsp;&nbsp;" + \
-        user.displayName)]
+      r += [("group_" + user.group.groupname, "[" + user.group.groupname + "]&nbsp;&nbsp;" + \
+        _("Group") + ": " + user.group.organizationName)]
       r += _getUsersInGroup(user, 1, user.group.groupname)
     else:
-      r += me + my_proxies
+      r += my_proxies
   return r
 
 def _indent_str(size):
