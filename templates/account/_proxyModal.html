@@ -9,7 +9,7 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <select multiple size="10">
+          <select multiple size="10" class="select__autowidth">
           {% for k,v in proxy_users_choose %}
             <option value="{{k}}">[{{k}}]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{v}}</option>
           {% endfor %}

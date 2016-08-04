@@ -65,6 +65,7 @@ def ajax_dashboard_table(request):
     d['p'] = G.get('p')
     if 'name' in G and d['p'] is not None and d['p'].isdigit():
       d['ajax'] = True
+      d['s_type'] = G['name']
       d = ui_search.search(d, request, NO_CONSTRAINTS, G['name'])
       return uic.render(request, "dashboard/_" + G['name'], d)
 
