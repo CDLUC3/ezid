@@ -28,31 +28,26 @@ FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") +\
 def index(request):
   """ Manage Page, listing all Ids owned by user, or if groupadmin, all group users """
   d = { 'menu_item' : 'ui_manage.index' }
-  user = userauth.getUser(request)
-  noConstraintsReqd =True 
-  if request.method == "GET":
-    if not('owner_selected' in request.GET) or request.GET['owner_selected'] == '':
-      d['owner_selected'] =  _defaultUser(user)
-    else:
-      d['owner_selected'] =  request.GET['owner_selected']
-    d['queries'] = ui_search.queryDict(request)
-    # And preserve query in form object
-    d['form'] = form_objects.ManageSearchIdForm(d['queries'])
-    d['order_by'] = 'c_update_time'
-    d['sort'] = 'asc'
-  elif request.method == "POST":
-    d['owner_selected'] = request.POST['owner_selected'] if 'owner_selected' != '' \
-      else _defaultUser(user)
-    d['filtered'] = True 
-    d['queries_manage'] = ui_search.queryUrlEncoded(request)
-    d['form'] = form_objects.ManageSearchIdForm(request.POST)
-    noConstraintsReqd = False
-  else:
+  if request.method != "GET":
     return uic.methodNotAllowed(request)
+  noConstraintsReqd = True  # Empty 'manage' form means search everything
+  d['q'] = ui_search.queryDict(request)
+  user = userauth.getUser(request)
+  d['owner_selected'] = _defaultUser(user) if not('owner_selected' in request.GET)\
+    or request.GET['owner_selected'] == '' else request.GET['owner_selected']
+  d['form'] = form_objects.ManageSearchIdForm(d['q'])
+  # order_by and sort are initial sorting defaults. The request trumps these.
+  d['order_by'] = 'c_update_time'
+  d['sort'] = 'asc'
   d['owner_names'] = uic.owner_names(user, "manage")
+  # Check if anything has actually been entered into search fields
+  searchfields = {k:v for k,v in d['q'].items() if k not in\
+    [u'sort', u'ps', u'order_by', u'owner_selected']}
+  searchfields = filter(None, searchfields.values())
+  if searchfields:
+    noConstraintsReqd = False
+    d['filtered'] = True  # Flag for template to provide option of searching on all IDs
   d = ui_search.search(d, request, noConstraintsReqd, "manage")
-  if not d['form'].has_changed():
-    d['filtered'] = False
   return uic.render(request, 'manage/index', d)
 
 def _defaultUser(user):

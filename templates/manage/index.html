@@ -16,8 +16,7 @@ $(document).ready(function(){
 });
 {% endblock %}
 {% block content %}
-<form method="post" action="{% url "ui_manage.index" %}" id="manage-form" role="form">
-<input name="filtered" type="hidden" value="t"/> 
+<form method="get" action="{% url "ui_manage.index" %}" id="manage-form" role="form">
 <input name="ps" type="hidden" value="{{ ps }}"/> 
 <input name="order_by" type="hidden" value="{{ order_by }}"/>
 <input name="sort" type="hidden" value="{{ sort }}"/>

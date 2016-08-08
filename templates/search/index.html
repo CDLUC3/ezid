@@ -7,7 +7,7 @@
 {% block description %}{%trans "Search across all EZID identifiers by keyword, title, creator, publisher, or identifier string." %}{% endblock %}
 {% block heading %}{% content_heading _("Search across EZID identifiers") %}{% endblock %}
 {% block content %}
-<form method="post" action="{% url "ui_search.index" %}" class="form-horizontal" id="search-form" role="form">
+<form method="get" action="{% url "ui_search.index" %}" class="form-horizontal" id="search-form" role="form">
 <input name="filtered" type="hidden" value="t"/>
 {% if REQUEST %}
 {% rewrite_hidden REQUEST %}
@@ -110,19 +110,4 @@
 <script type="text/javascript">
   $("#search__simple-label").focus();
 </script>
-
-{% if google_analytics_id %}
-<script type="text/javascript">
-// Submit site search parameters for posted queries into Google Analytics 
-// This path isn't rendered in URL by django when page is rendered after search is executed.
-// e.g. /search?filtered=t&publisher=&object_type=&creator=&title=&pubyear_from=&keywords=test
-  $(document).ready(function() {
-    $( "#search-form" ).submit(function( event ) {
-      var data = $("#search-form").serialize();
-      ga('send', 'pageview', '/search?' + data);
-    });
-  });
-</script>
-{% endif %}
-
 {% endblock %}

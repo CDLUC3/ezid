@@ -92,9 +92,9 @@ def queryDict(request):
   Preserve search query across requests 
   This dictionary will be injected back into form fields
   """
-  assert request.method in ["GET", "POST"]
+  assert request.method == "GET"
   queries = {}
-  c = request.GET.copy() if request.method == "GET" else request.POST.copy()
+  c = request.GET.copy()
   for key in c:
     if not key.startswith('c_') and not key == 'p':
       queries[key] = c[key]
@@ -102,32 +102,30 @@ def queryDict(request):
 
 def index(request):
   """ (Public) Search Page """
+  if request.method != "GET":
+    return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_search.index' }
   d['show_advanced_search'] = "closed"
-  if request.method == "GET":
-    d['queries'] = queryDict(request)
-    # if users are coming back to an advanced search, auto-open adv. search block
-    if d['queries'] and 'keywords' in d['queries'] and d['queries']['keywords'].strip() == '':
+  d['q'] = queryDict(request)
+  d['form'] = form_objects.BaseSearchIdForm(d['q'])
+  # if users are coming back to an advanced search, auto-open adv. search block
+  if 'modify_search' in d['q'] and d['q']['modify_search'] == 't':
+    if 'keywords' in d['q'] and d['q']['keywords'].strip() == '':
       d['show_advanced_search'] = "open"
-    d['form'] = form_objects.BaseSearchIdForm(d['queries'])
-    d['REQUEST'] = request.GET 
-    d = _pageLayout(d, request.GET)
-  elif request.method == "POST":
-    d['p'] = 1
-    d['form'] = form_objects.BaseSearchIdForm(request.POST)
-    d = search(d, request)
-    if d['search_success'] == True:
-      return uic.render(request, 'search/results', d)
   else:
-    return uic.methodNotAllowed(request)
+    if d['q']:
+      d['p'] = 1
+      d = search(d, request)
+      if d['search_success'] == True:
+        d['REQUEST'] = request.GET 
+        return uic.render(request, 'search/results', d)
   return uic.render(request, 'search/index', d)
 
 def results(request):
   """ Display different page or columns from search results page """
   d = { 'menu_item' : 'ui_search.results' } 
-  if request.method == "GET":
-    d['queries'] = queryDict(request)
-    d['form'] = form_objects.BaseSearchIdForm(d['queries'])
+  d['q'] = queryDict(request)
+  d['form'] = form_objects.BaseSearchIdForm(d['q'])
   d = search(d, request)
   return uic.render(request, 'search/results', d)
 
@@ -141,19 +139,15 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
     (useful to know this for the manage page)
   * use owner or ownergroup, not both, otherwise ownergroup takes precedence
   """
-  if request.method == "GET":
-    REQUEST = request.GET
-  elif request.method == "POST":
-    REQUEST = request.POST
-  d['REQUEST'] = REQUEST 
-  d = _pageLayout(d, REQUEST, s_type)
+  d['REQUEST'] = request.GET
+  d = _pageLayout(d, request.GET, s_type)
   if noConstraintsReqd or 'form' in d and d['form'].is_valid():
     # Build dictionary of search constraints
     user_id, group_id = uic.getOwnerOrGroup(d['owner_selected'] if 'owner_selected'\
       in d else None)
     c = _buildAuthorityConstraints(request, s_type, user_id, group_id)
     if s_type in ('public', 'manage'):
-      q = d['queries'] if 'queries' in d and d['queries'] else REQUEST
+      q = d['q'] if 'q' in d and d['q'] else request.GET 
       q2 = {}
       for k,v in q.iteritems():
         q2[k] = q[k].strip() if isinstance(v, basestring) else q[k]
@@ -265,7 +259,7 @@ def _pageLayout(d, REQUEST, s_type="public"):
   """
   Track user preferences for selected fields, field order, page, and page size
   """
-  d['filtered'] = True if 'filtered' in REQUEST else False
+  d['filtered'] = False if 'filtered' not in d and 'filtered' not in REQUEST else True
   d['testPrefixes'] = uic.testPrefixes
   d['fields_mapped'] = FIELDS_MAPPED
   d['field_display_types'] = FIELD_DISPLAY_TYPES
@@ -421,4 +415,4 @@ def _buildQuerySyntax(c):
       r += value + ")"
     dlength -= 1
     if dlength >= 1: r += " AND "
-  return r 
+  return r
