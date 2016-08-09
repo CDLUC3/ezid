@@ -17,21 +17,21 @@
   </button>
 
   <nav role="navigation" id="js-header__nav" class="header__nav--selected" aria-hidden="false">
-    <a class="header__search-link" href="">Search</a>
-    <div class="header__learn">
-      <a id="header__learn-link" class="header__learn-link" href="">Learn</a>
-      <ul class="header__learn-subnav" aria-hidden="true">
-        <li><a href="/learn#01">What Is EZID?</a></li>
-        <li><a href="/learn#02">Current Users</a></li>
-        <li><a href="/learn#03">Pricing</a></li>
-        <li><a href="/learn#04">Documentation</a></li>
-        <li><a href="/learn#05">FAQ</a></li>
-        <li><a href="/learn#06">Media</a></li>
-        <li><a href="/doc/apidoc.html">API Guide</a></li>
-        <li><a href="/demo">EZID Demo</a></li>
-      </ul>
-    </div>
-    <a class="header__contact-link" href="">Contact</a>
+    <a class="header__nav-item-search" href="">Search</a>
+    <details aria-expanded="false">
+      <summary class="header__nav-item-learn" role="button">Learn</summary>
+      <div class="header__subnav-panel">
+        <a class="header__nav-subitem" href="/learn#01">What Is EZID?</a>
+        <a class="header__nav-subitem" href="/learn#02">Current Users</a>
+        <a class="header__nav-subitem" href="/learn#03">Pricing</a>
+        <a class="header__nav-subitem" href="/learn#04">Documentation</a>
+        <a class="header__nav-subitem" href="/learn#05">FAQ</a>
+        <a class="header__nav-subitem" href="/learn#06">Media</a>
+        <a class="header__nav-subitem" href="/doc/apidoc.html">API Guide</a>
+        <a class="header__nav-subitem" href="/demo">EZID Demo</a>
+      </div>
+    </details>
+    <a class="header__nav-item-contact" href="">Contact</a>
     <div class="header__loginout">
       <button id="js-header__loginout-button" class="header__loginout-link">Login</button>
       <!--#include file="login-modal.html" -->

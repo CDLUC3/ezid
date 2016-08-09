@@ -5,8 +5,9 @@
 {% block title %}{% block title-twitter %}{% trans "Learn About EZID" %}{% endblock %}{% endblock %}
 {% block description %}{%trans "Learn more about EZID pricing, documentation and current users." %}{% endblock %}
 {% block javascript %}
+// Open accordion anchors from Learn Menu (single URL) without reloading page
 $(document).ready(function(){
-  $(".accordion__section-link").click(function() {
+  $(".header__nav-subitem").click(function() {
     window.location.href = $(this).attr("href");
     window.location.reload(false);
   });
