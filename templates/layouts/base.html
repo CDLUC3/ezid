@@ -25,6 +25,9 @@
     <script type="text/javascript" src="/static/javascripts/main2.min.js"></script>
     <script type="text/javascript" src="/static/javascripts/message_box.js"></script>
     <script type="text/javascript" src="/static/javascripts/google_analytics_event.js"></script>
+  {% if queries_urlencoded %}
+    <script type="text/javascript" src="/static/javascripts/google_analytics_searchconcat.js"></script>
+  {% endif %}
 
     {% block header %}{% endblock %}
     <script type="text/javascript">
@@ -37,7 +40,13 @@
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
       ga('create', '{{ google_analytics_id }}', 'auto');
-      ga('send', 'pageview');
+      {% if queries_urlencoded %}
+        GA_SEARCHPARMS_LIB.init('{{queries_urlencoded|safe}}');
+        var page = window.location.pathname.split("/").pop();
+        ga('send', 'pageview', '/' + page + '?' + GA_SEARCHPARMS_LIB.concat_parms());
+      {% else %}
+        ga('send', 'pageview');
+      {% endif %}
     </script>
 
     {% comment %}

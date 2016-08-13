@@ -147,6 +147,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
       in d else None)
     c = _buildAuthorityConstraints(request, s_type, user_id, group_id)
     if s_type in ('public', 'manage'):
+      d['queries_urlencoded'] = queryUrlEncoded(request)
       q = d['q'] if 'q' in d and d['q'] else request.GET 
       q2 = {}
       for k,v in q.iteritems():
