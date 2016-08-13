@@ -1,4 +1,3 @@
-// Meld multiple search terms into one that Google Analytics 
 // Google Analytics does NOT capture all search parameters in URL
 // https://www.en.advertisercommunity.com/t5/Reports/Multiple-search-category-parameters-on-the-same-URL/m-p/567891/highlight/true#M5801
 // This script concatenates all values that have been assigned to an expected set of possibleKeys. 
@@ -20,7 +19,7 @@ var GA_SEARCHPARMS_LIB = GA_SEARCHPARMS_LIB || (function(){
       var keywordsFieldUsed = false,
         possibleKeys = ['keywords', 'title', 'creator', 'publisher'],
         params = [],
-        keywordValue = '\" \"',
+        keywordValue = '',
         out = 'keywords=';
       if(typeof _args !== "undefined" && _args.includes("=")){
         var p = _args.split('&');
