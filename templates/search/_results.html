@@ -10,6 +10,7 @@
       <input name="p" type="hidden" value="{{ p }}"/>
       <input name="order_by" type="hidden" value="{{ order_by }}"/>
       <input name="sort" type="hidden" value="{{ sort }}"/>
+      <input name="owner_selected" type="hidden" value="{{ owner_selected }}"/>
       {% column_choices_hidden fields_selected %}
       <button class="customize-table__button-all">{% trans "See All Identifiers" %}</button>
     {% endif %}
@@ -24,7 +25,7 @@
 {% if primary_page == "ui_manage.index" and authenticatedUser %}
 <div class="manage__identifiers-submit-controls">
   <div class="fcontrol__select-group-inline manage__identifiers-select">
-    <form id="owner_filter_form" action="{% url primary_page %}" role="form">
+    <form id="owner_filter_form" action="{% url primary_page %}" method="get" role="form">
       {% rewrite_hidden REQUEST %}
       <label for="owner_selected" class="fcontrol__select-label-inline">{% trans "View identifiers owned by" %}:</label>
 

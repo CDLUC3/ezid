@@ -205,7 +205,7 @@ optgroup {
   font-weight: bold; }
 
 table {
-  border-collapse: collapse;
+  border-collapse: separate;
   border-spacing: 0; }
 
 td,
@@ -2417,9 +2417,6 @@ p.italic {
     top: 0;
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0); } }
-
-.header__learn-subnav {
-  z-index: 99; }
 
 .api h1 {
   width: 79%;

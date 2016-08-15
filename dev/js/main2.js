@@ -108,3 +108,13 @@ function loadingIndicator(){
   }
 }
 
+
+// ***** Close Learn menu when user clicks somewhere else ***** //
+
+$(document).click(function(event) { 
+  if(!$(event.target).closest('#header__nav-details-learn').length) {
+    if($('#header__nav-details-learn').attr("open")) {
+      $("#header__nav-details-learn").attr("open", false);
+    }
+  }        
+});
