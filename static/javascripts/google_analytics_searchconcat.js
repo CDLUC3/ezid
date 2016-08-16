@@ -13,7 +13,7 @@ var GA_SEARCHPARMS_LIB = GA_SEARCHPARMS_LIB || (function(){
     init : function(Args) {
       // expecting url parameters 
       // eg: "keywords=&creator=Dejaco&title=NewHybrids"
-      _args = Args;
+      _args = Args
     },
     concat_parms : function() { 
       var keywordsFieldUsed = false,
@@ -39,12 +39,15 @@ var GA_SEARCHPARMS_LIB = GA_SEARCHPARMS_LIB || (function(){
             }
           }
         }
-        out += keywordValue + "," + params.join(',');
+        out += keywordValue
+        if (params.length > 0) {
+          out += "," + params.join(',')
+        }
       } else {
-        console.log("Undefined argument passed to google_analytics_searchconcat.js:concat_parms()");
-        out = '';
+        console.log("Undefined argument passed to google_analytics_searchconcat.js:concat_parms()")
+        out = ''
       }
-      return out;
+      return out
     }  
   };
 }());

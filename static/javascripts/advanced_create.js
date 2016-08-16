@@ -98,7 +98,7 @@ $(document).ready(function() {
 // ***** Submit form when profile or shoulder changes ******* //
 
   // If triggered by profile, then, after submission, scroll page down to specified anchor 
-  function do_get(includeAnchor=false){
+  function do_get(includeAnchor){
       var frm = $('#create_form');
       frm.attr('action', location.pathname + '?publish=' +
         $("[name='publish']").val() + '&remainder=' + $("#remainder").val());
