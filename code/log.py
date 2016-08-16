@@ -48,16 +48,18 @@ import traceback
 import config
 import util
 
-_lock = threading.Lock()
+_errorLock = threading.Lock()
+_countLock = threading.Lock()
+_operationCount = 0
 _suppressionWindow = None
 _errorLifetime = None
 _errorSimilarityThreshold = None
 _sentErrors = None
 
 def _loadConfig ():
-  global _suppressionWindow, _errorLifetime, _errorSimilarityThreshold
-  global _sentErrors
-  _lock.acquire()
+  global _operationCount, _suppressionWindow, _errorLifetime
+  global _errorSimilarityThreshold, _sentErrors
+  _errorLock.acquire()
   try:
     _suppressionWindow = int(config.get("email.error_suppression_window"))
     _errorLifetime = int(config.get("email.error_lifetime"))
@@ -65,10 +67,33 @@ def _loadConfig ():
       float(config.get("email.error_similarity_threshold"))
     _sentErrors = {}
   finally:
-    _lock.release()
+    _errorLock.release()
+  _countLock.acquire()
+  try:
+    _operationCount = 0
+  finally:
+    _countLock.release()
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
+
+def getOperationCount ():
+  """
+  Returns the number of operations (transactions) begun since the last
+  reset.
+  """
+  return _operationCount
+
+def resetOperationCount ():
+  """
+  Resets the operation (transaction) counter.
+  """
+  global _operationCount
+  _countLock.acquire()
+  try:
+    _operationCount = 0
+  finally:
+    _countLock.release()
 
 # In the following, it is important that we only augment the existing
 # logging, not overwrite it, for Django also uses Python's logging
@@ -85,8 +110,14 @@ def begin (transactionId, *args):
   """
   Logs the start of a transaction.
   """
+  global _operationCount
   _log.info("%s BEGIN %s" % (transactionId.hex,
     " ".join(util.encode2(a) for a in args)))
+  _countLock.acquire()
+  try:
+    _operationCount += 1
+  finally:
+    _countLock.release()
 
 def progress (transactionId, function):
   """
@@ -151,7 +182,7 @@ def _notifyAdmins (error):
   t = int(time.time())
   suppress = False
   n = 1
-  _lock.acquire()
+  _errorLock.acquire()
   try:
     # Check if the error is sufficiently similar to a previously-sent
     # error.
@@ -176,7 +207,7 @@ def _notifyAdmins (error):
     else:
       _sentErrors[error] = [t, 0]
   finally:
-    _lock.release()
+    _errorLock.release()
   if not suppress:
     if n > 1:
       m = ("The following error (or errors similar to it) have occurred " +\

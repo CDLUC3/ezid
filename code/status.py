@@ -33,7 +33,6 @@ import ezid
 import log
 import search_util
 import store
-import util
 
 # Deferred imports...
 """
@@ -69,6 +68,8 @@ def _statusDaemon ():
       cqs = crossref.getQueueStatistics()
       doql = download.getQueueLength()
       as_ = search_util.numActiveSearches()
+      no = log.getOperationCount()
+      log.resetOperationCount()
       log.status("pid=%d" % os.getpid(),
         "threads=%d" % threading.activeCount(),
         "paused" if isPaused else "running",
@@ -81,7 +82,8 @@ def _statusDaemon ():
         "crossrefQueue:archived/unsubmitted/submitted=%d/%d/%d" %\
         (cqs[2]+cqs[3], cqs[0], cqs[1]),
         "downloadQueueLength=%d" % doql,
-        "activeSearches=%d" % as_)
+        "activeSearches=%d" % as_,
+        "operationCount=%d" % no)
       if _cloudwatchEnabled:
         import boto3
         # Disable annoying boto3 logging.
@@ -92,17 +94,16 @@ def _statusDaemon ():
           data = { "ActiveOperations": na, "WaitingRequests": nw,
             "ActiveDataciteOperations": ndo, "UpdateQueueLength": uql,
             "DataciteQueueLength": daql, "CrossrefQueueLength": cqs[0]+cqs[1],
-            "DownloadQueueLength": doql, "ActiveSearches": as_ }
+            "DownloadQueueLength": doql, "ActiveSearches": as_,
+            "OperationRate": float(no)/_reportingInterval }
           r = c.put_metric_data(Namespace=_cloudwatchNamespace,
             MetricData=[{ "MetricName": k, "Dimensions": d, "Value": float(v),
-            "Unit": "Count" } for k, v in data.items()])
-          assert type(r) is dict and\
-            type(r.get("ResponseMetadata", None)) is dict and\
-            r["ResponseMetadata"].get("HTTPStatusCode", None) == 200,\
-            "unexpected response: " + util.oneLine(str(r))
-        except Exception, e:
-          raise Exception("AWS CloudWatch exception: " +\
-            util.formatException(e))
+            "Unit": "Count/Second" if k == "OperationRate" else "Count" }\
+            for k, v in data.items()])
+          assert r["ResponseMetadata"]["HTTPStatusCode"] == 200
+        except:
+          # Ignore CloudWatch exceptions, as it's not essential.
+          pass
     except Exception, e:
       log.otherError("status._statusDaemon", e)
     django.db.connections["default"].close()
