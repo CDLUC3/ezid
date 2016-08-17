@@ -41,7 +41,8 @@
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
       ga('create', '{{ google_analytics_id }}', 'auto');
       {% if queries_urlencoded %}
-        GA_SEARCHPARMS_LIB.init('{{queries_urlencoded|safe}}');
+        GA_SEARCHPARMS_LIB.init('{{queries_urlencoded|safe}}', 
+          'keywords', ['keywords', 'title', 'creator', 'publisher', 'object_type']);
         var page = window.location.pathname.split("/").pop();
         ga('send', 'pageview', '/' + page + '?' + GA_SEARCHPARMS_LIB.concat_parms());
       {% else %}
