@@ -42,7 +42,7 @@
       ga('create', '{{ google_analytics_id }}', 'auto');
       {% if queries_urlencoded %}
         GA_SEARCHPARMS_LIB.init('{{queries_urlencoded|safe}}', 
-          'keywords', ['keywords', 'title', 'creator', 'publisher', 'object_type']);
+          'keywords', 'object_type', ['keywords', 'title', 'creator', 'publisher']);
         var page = window.location.pathname.split("/").pop();
         ga('send', 'pageview', '/' + page + '?' + GA_SEARCHPARMS_LIB.concat_parms());
       {% else %}
