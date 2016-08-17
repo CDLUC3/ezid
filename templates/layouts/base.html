@@ -41,7 +41,8 @@
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
       ga('create', '{{ google_analytics_id }}', 'auto');
       {% if queries_urlencoded %}
-        GA_SEARCHPARMS_LIB.init('{{queries_urlencoded|safe}}');
+        GA_SEARCHPARMS_LIB.init('{{queries_urlencoded|safe}}', 
+          'keywords', 'object_type', ['keywords', 'title', 'creator', 'publisher']);
         var page = window.location.pathname.split("/").pop();
         ga('send', 'pageview', '/' + page + '?' + GA_SEARCHPARMS_LIB.concat_parms());
       {% else %}
@@ -94,7 +95,6 @@
   <script type="text/javascript" src="/static/javascripts/bootstrap/transition.js"></script>
 
   <script type="text/javascript">
-    $('input:visible:enabled').first().focus();
     window.scrollTo(0, 0);
 
     $(".alert-success").delay(4000).fadeOut(2000);

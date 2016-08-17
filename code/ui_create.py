@@ -115,10 +115,10 @@ def adv_form(request, d):
         profile_names  - User can choose from different profiles
   """
 
-  d['remainder_box_default'] = form_objects.REMAINDER_BOX_DEFAULT
   #selects current_profile based on parameters or profile preferred for prefix type
   d['manual_profile'] = False
   choice_is_doi = False 
+  # Form will be GET request when flipping between shoulders and profiles. Otherwise it's a POST.
   if request.method == "GET":
     REQUEST = request.GET
   elif request.method == "POST":
@@ -153,6 +153,10 @@ def adv_form(request, d):
   #    ERC + dc.publisher.] For now, just hide this profile. 
   if choice_is_doi: 
     d['profile_names'].remove(('erc','ERC'))
+  # Preserve remainder from GET request
+  if 'remainder' in REQUEST:
+    d['remainder'] = REQUEST['remainder'] 
+  d['remainder_box_default'] = form_objects.REMAINDER_BOX_DEFAULT
 
   if request.method == "GET":
     # Begin ID Creation (empty form)
@@ -161,6 +165,7 @@ def adv_form(request, d):
     else:
       d['form'] = form_objects.getAdvancedIdForm(d['current_profile'], request) 
     d['id_gen_result'] = 'edit_page' 
+    if 'anchor' in REQUEST: d['anchor'] = REQUEST['anchor'] 
   else:     # request.method == "POST"
     P = REQUEST
     pre_list = [p['prefix'] for p in d['prefixes'] + d['testPrefixes']]
