@@ -24,7 +24,8 @@
 #
 #   credentials:
 #     username:password
-#     sessionid (as returned by previous login)
+#     username (password will be prompted for)
+#     sessionid=... (as returned by previous login)
 #     - (none)
 #
 #   operation:
@@ -67,6 +68,7 @@
 # May 2013
 
 import codecs
+import getpass
 import optparse
 import re
 import signal
@@ -121,7 +123,8 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
 
   credentials:
     username:password
-    sessionid (as returned by previous login)
+    username (password will be prompted for)
+    sessionid=... (as returned by previous login)
     - (none)
 
   operation:
@@ -255,15 +258,20 @@ if _options.disableCertificateChecking:
 _server = KNOWN_SERVERS.get(args[0], args[0])
 
 _opener = urllib2.build_opener(MyHTTPErrorProcessor())
-if ":" in args[1]:
+if args[1].startswith("sessionid="):
+  _cookie = args[1]
+elif args[1] != "-":
+  if ":" in args[1]:
+    username, password = args[1].split(":", 1)
+  else:
+    username = args[1]
+    password = getpass.getpass()
   # Credentials must be sent over SSL, unless running locally.
   if _server.startswith("http:") and args[0] != "l":
     _server = "https" + _server[4:]
   h = urllib2.HTTPBasicAuthHandler()
-  h.add_password("EZID", _server, *args[1].split(":", 1))
+  h.add_password("EZID", _server, username, password)
   _opener.add_handler(h)
-elif args[1] != "-":
-  _cookie = "sessionid=" + args[1]
 
 operation = filter(lambda o: o.startswith(args[2]), OPERATIONS)
 if len(operation) != 1: parser.error("unrecognized or ambiguous operation")
@@ -313,7 +321,7 @@ elif operation == "delete":
   printAnvlResponse(response)
 elif operation == "login":
   response, headers = issueRequest("login", "GET", returnHeaders=True)
-  response += "\nsessionid: %s\n" %\
+  response += "\nsessionid=%s\n" %\
     headers["set-cookie"].split(";")[0].split("=")[1]
   printAnvlResponse(response)
 elif operation == "logout":
