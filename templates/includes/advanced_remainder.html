@@ -22,6 +22,10 @@
 </div>
 
 <script type="text/javascript">
+{%if remainder %}
+  // Coming from the request, before it's being instantiated by the form object
+  $('#remainder').val('{{ remainder }}');
+{% endif %}
   $('#remainder').focus(function() {
     $(this).select();
 	}).mouseup(function() {
@@ -37,7 +41,7 @@
 
   var remainderValue = '';
   $(function () {
-    setInterval(checkRemainderChanged,0.25);
+    setInterval(checkRemainderChanged,1);
   });
   
   function checkRemainderChanged() {

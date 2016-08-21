@@ -54,5 +54,11 @@
   <script type="text/javascript" src="/static/javascripts/fix_target.js"></script>
   {% include "info/popup_help.html" %}
   <script type="text/javascript" src="/static/javascripts/help_box_.js"></script>
-
+  {% if anchor %}
+  <script type='text/javascript'>
+  $(document).ready(function(){
+    window.location = '#{{ anchor }}'
+  });
+  </script>
+  {% endif %}
 {% endblock %}
