@@ -412,7 +412,7 @@ def _buildQuerySyntax(c):
       value = "".join(v)
       # Being simplistic about how to treat quoted queries
       if not quoteOccurred:
-        value = re.sub(r'\s+', ' OR ', value)
+        value = re.sub(r'\s+', ' AND ', value)
       r += value + ")"
     dlength -= 1
     if dlength >= 1: r += " AND "
