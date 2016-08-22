@@ -64,8 +64,8 @@ class NewAccountWorksheet (django.db.models.Model):
   # REQUEST
   reqArks = django.db.models.BooleanField("ARKs", default=False)
   reqDois = django.db.models.BooleanField("DOIs", default=False)
-  reqCrossref = django.db.models.BooleanField("CrossRef", default=False)
-  reqCrossrefEmail = django.db.models.EmailField("CrossRef email",
+  reqCrossref = django.db.models.BooleanField("Crossref", default=False)
+  reqCrossrefEmail = django.db.models.EmailField("Crossref email",
     max_length=255, blank=True)
   reqComments = django.db.models.TextField("requestor comments", blank=True)
 
@@ -112,7 +112,7 @@ class NewAccountWorksheet (django.db.models.Model):
     errors = {}
     if self.staReady:
       if not self.reqCrossref and self.reqCrossrefEmail != "":
-        errors["reqCrossrefEmail"] = "CrossRef is not checked."
+        errors["reqCrossrefEmail"] = "Crossref is not checked."
     else:
       if self.staShouldersCreated:
         errors["staShouldersCreated"] = "Request ready is not checked."

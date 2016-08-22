@@ -45,7 +45,7 @@ class StoreUser (user.User):
 
   accountEmail = django.db.models.EmailField("account email", max_length=255,
     help_text="The email address to which account-related notifications " +\
-    "are sent other than CrossRef notifications.")
+    "are sent other than Crossref notifications.")
   # Editable by the user.
 
   primaryContactName = django.db.models.CharField("name", max_length=255,
@@ -79,17 +79,17 @@ class StoreUser (user.User):
   # subset of the group's set.  Test shoulders are not included in
   # this relation.
 
-  crossrefEnabled = django.db.models.BooleanField("CrossRef enabled",
+  crossrefEnabled = django.db.models.BooleanField("Crossref enabled",
     default=False)
-  # If the user's group is CrossRef-enabled, determines if the user
-  # may register identifiers with CrossRef; otherwise, False.  Note
-  # that CrossRef registration requires the enablement of both the
+  # If the user's group is Crossref-enabled, determines if the user
+  # may register identifiers with Crossref; otherwise, False.  Note
+  # that Crossref registration requires the enablement of both the
   # user and the shoulder.
 
-  crossrefEmail = django.db.models.EmailField("CrossRef email", max_length=255,
+  crossrefEmail = django.db.models.EmailField("Crossref email", max_length=255,
     blank=True)
   # If the user is Crossref-enabled, the optional email address to
-  # which CrossRef notifications are sent; otherwise, empty.  If there
+  # which Crossref notifications are sent; otherwise, empty.  If there
   # is no email address, notifications are simply not sent.
 
   proxies = django.db.models.ManyToManyField("self", blank=True,
@@ -159,7 +159,7 @@ class StoreUser (user.User):
     # Addendum: moreover, because users are displayed inline in group
     # change pages, they get validated along with groups, before
     # StoreGroupAdmin.save_model is called.  Therefore we can't check
-    # group-user CrossRef-enabled consistency here.
+    # group-user Crossref-enabled consistency here.
 
   def setPassword (self, password):
     # Sets the user's password; 'password' should be a bare password.

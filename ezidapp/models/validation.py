@@ -55,10 +55,10 @@ _crossrefDoiRE = re.compile("doi:10\.[1-9]\d{3,4}/[-\w.;()/]+$")
 def crossrefDoi (identifier):
   # Validates that a DOI identifier (which is assumed to have already
   # been validated and normalized as an ordinary identifier) meets the
-  # additional syntactic restrictions imposed by CrossRef.
+  # additional syntactic restrictions imposed by Crossref.
   if not _crossrefDoiRE.match(identifier):
     raise django.core.exceptions.ValidationError(
-      "Identifier does not satisfy CrossRef syntax requirements.")
+      "Identifier does not satisfy Crossref syntax requirements.")
 
 def shoulder (shoulder):
   # Validates a shoulder.

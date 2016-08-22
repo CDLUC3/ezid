@@ -88,9 +88,9 @@ class Shoulder (django.db.models.Model):
   # For DOI shoulders only, the shoulder's default datacenter;
   # otherwise, None.
 
-  crossrefEnabled = django.db.models.BooleanField("CrossRef enabled",
+  crossrefEnabled = django.db.models.BooleanField("Crossref enabled",
     default=False)
-  # For DOI shoulders only, True if the shoulder supports CrossRef
+  # For DOI shoulders only, True if the shoulder supports Crossref
   # registration; otherwise, False.
 
   isTest = django.db.models.BooleanField(editable=False)
@@ -114,7 +114,7 @@ class Shoulder (django.db.models.Model):
       if self.crossrefEnabled:
         raise django.core.exceptions.ValidationError(
           { "crossrefEnabled":
-          "Only DOI shoulders may be CrossRef enabled." })
+          "Only DOI shoulders may be Crossref enabled." })
     self.isTest = util2.isTestIdentifier(self.prefix)
 
   def __unicode__ (self):

@@ -17,7 +17,7 @@ locale.setlocale(locale.LC_ALL, '')
 # Public Search:               ui_search   "public"
 # Manage:                      ui_manage   "manage"
 # Dashboard - ID Issues:       ui_admin    "issues"
-# Dashboard - CrossRef Status: ui_admin    "crossref"
+# Dashboard - Crossref Status: ui_admin    "crossref"
 
 # Form fields from search are defined in code/form_objects.py.
 # Corresponding fields used for column display include a 'c_' prefix.

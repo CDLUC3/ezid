@@ -123,7 +123,7 @@
 #        |             | "CDL.DRYAD" (or will be registered, in the
 #        |             | case of a reserved identifier).
 # _cr    | _crossref   | DOIs only.  If present, indicates that the
-#        |             | identifier is registered with CrossRef (or,
+#        |             | identifier is registered with Crossref (or,
 #        |             | in the case of a reserved identifier, will be
 #        |             | registered), and also indicates the status of
 #        |             | the registration process.  Syntactically, has
@@ -395,10 +395,10 @@ def _validateMetadata (identifier, user, metadata):
     # acts as the EZID administrator), thereby bypassing this
     # validation entirely.
     if not identifier.startswith("doi:"):
-      return "only DOI identifiers can be registered with CrossRef"
-    # CrossRef imposes additional restrictions on DOI syntax.
+      return "only DOI identifiers can be registered with Crossref"
+    # Crossref imposes additional restrictions on DOI syntax.
     if not _crossrefDoiRE.match(identifier):
-      return "identifier does not meet CrossRef syntax requirements"
+      return "identifier does not meet Crossref syntax requirements"
     metadata["_cr"] = metadata["_crossref"].strip().lower()
     if metadata["_cr"] not in ["yes", "no"]:
       return "element '_crossref': invalid input value"
@@ -537,10 +537,10 @@ def createDoi (doi, user, metadata={}):
   if m.get("_cr", "") == "no": del m["_cr"]
   if "_cr" in m:
     if "_x" in m:
-      return "error: bad request - identifier registered with CrossRef " +\
+      return "error: bad request - identifier registered with Crossref " +\
         "must be exported"
     if "_is" not in m and m.get("crossref", "").strip() == "":
-      return "error: bad request - CrossRef registration requires " +\
+      return "error: bad request - Crossref registration requires " +\
         "'crossref' deposit metadata"
   r = _validateDatacite(qdoi, m, "_is" not in m)
   if type(r) is str: return "error: bad request - " + r
@@ -567,7 +567,7 @@ def createDoi (doi, user, metadata={}):
         # Technically it's an authorization error, but it makes more
         # sense to clients to receive a bad request.
         log.badRequest(tid)
-        return "error: bad request - CrossRef registration is not enabled " +\
+        return "error: bad request - Crossref registration is not enabled " +\
           "for user and shoulder"
       if "_is" in m: # reserved
         m["_cr"] = "yes | awaiting status change to public"
@@ -589,7 +589,7 @@ def createDoi (doi, user, metadata={}):
       m["_st"] = _defaultTarget(qdoi)
     if m.get("_is", "public") == "public" and\
       m.get("crossref", "").strip() != "":
-      # Before storing CrossRef metadata, fill in the (:tba) sections
+      # Before storing Crossref metadata, fill in the (:tba) sections
       # that were introduced in the validation/normalization process,
       # but only if the identifier is public.  Unfortunately, doing
       # this with the current code architecture requires that the
@@ -1135,12 +1135,12 @@ def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
     iExport = m.get("_x", "yes")
     newExport = d.get("_x", iExport)
     if newExport == "": newExport = "yes"
-    # CrossRef flag.
+    # Crossref flag.
     if "_cr" in d:
       if d["_cr"] == "no":
         if newStatus != "reserved":
           log.badRequest(tid)
-          return "error: bad request - CrossRef registration can be " +\
+          return "error: bad request - Crossref registration can be " +\
             "removed only from reserved identifiers"
         d["_cr"] = ""
       else:
@@ -1152,7 +1152,7 @@ def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
             # Technically it's an authorization error, but it makes more
             # sense to clients to receive a bad request.
             log.badRequest(tid)
-            return "error: bad request - CrossRef registration is not " +\
+            return "error: bad request - Crossref registration is not " +\
               "enabled for user and shoulder"
           if newStatus == "reserved":
             d["_cr"] = "yes | awaiting status change to public"
@@ -1160,7 +1160,7 @@ def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
             d["_cr"] = "yes | registration in progress"
     else:
       if "_cr" in m and newStatus != "reserved":
-        # The update will trigger a CrossRef update.
+        # The update will trigger a Crossref update.
         d["_cr"] = "yes | registration in progress"
     # Easter egg: a careful reading of the above shows that it is
     # impossible for the administrator to set certain internal
@@ -1172,20 +1172,20 @@ def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
         if k.startswith("_") and k.endswith("!"):
           d[k[:-1]] = d[k]
           del d[k]
-    # CrossRef-related requirements.
+    # Crossref-related requirements.
     if (("_cr" in d and d["_cr"].startswith("yes")) or\
       ("_cr" not in d and "_cr" in m)):
       if newExport != "yes":
         log.badRequest(tid)
-        return "error: bad request - identifier registered with CrossRef " +\
+        return "error: bad request - identifier registered with Crossref " +\
           "must be exported"
       if newStatus != "reserved" and not (("crossref" in d and\
         d["crossref"].strip() != "") or ("crossref" not in d and\
         "crossref" in m)):
-        return "error: bad request - CrossRef registration requires " +\
+        return "error: bad request - Crossref registration requires " +\
           "'crossref' deposit metadata"
     if "_s" in m and m["_s"].startswith("doi:"):
-      # If the identifier is a DOI with CrossRef metadata, make sure
+      # If the identifier is a DOI with Crossref metadata, make sure
       # the embedded identifier and target URL sections are
       # up-to-date, but only if the identifier is not reserved.
       # Unfortunately, doing this with the current code architecture

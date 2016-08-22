@@ -144,7 +144,7 @@ class SearchIdentifier (identifier.Identifier):
     reasons = []
     if not self.hasMetadata: reasons.append("missing metadata")
     if self.isCrossrefBad:
-      reasons.append("CrossRef registration " +\
+      reasons.append("Crossref registration " +\
         ("warning" if self.crossrefStatus == self.CR_WARNING else "failure"))
     return reasons
 

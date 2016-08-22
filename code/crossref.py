@@ -2,7 +2,7 @@
 #
 # EZID :: crossref.py
 #
-# Interface to CrossRef <http://www.crossref.org/>.
+# Interface to Crossref <http://www.crossref.org/>.
 #
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
@@ -98,7 +98,7 @@ def _addDeclaration (document):
 def validateBody (body):
   """
   Validates and normalizes an immediate child element of a <body>
-  element of a CrossRef metadata submission document.  'body' should
+  element of a Crossref metadata submission document.  'body' should
   be a Unicode string.  Either a normalized XML document is returned
   or an assertion error is raised.  Validation is limited to checking
   that 'body' is well-formed XML, that it appears to be a <body> child
@@ -122,22 +122,22 @@ def validateBody (body):
   except Exception, e:
     assert False, "XML parse error: " + str(e)
   m = _tagRE.match(root.tag)
-  assert m is not None, "not CrossRef submission metadata"
+  assert m is not None, "not Crossref submission metadata"
   namespace = m.group(1)
   version = m.group(2)
   ns = { "N": namespace }
   # Locate the <body> child element.
   if m.group(3) == "doi_batch":
     root = root.find("N:body", namespaces=ns)
-    assert root is not None, "malformed CrossRef submission metadata"
+    assert root is not None, "malformed Crossref submission metadata"
     m = _tagRE.match(root.tag)
   if m.group(3) == "body":
-    assert len(list(root)) == 1, "malformed CrossRef submission metadata"
+    assert len(list(root)) == 1, "malformed Crossref submission metadata"
     root = root[0]
     m = _tagRE.match(root.tag)
-    assert m is not None, "malformed CrossRef submission metadata"
+    assert m is not None, "malformed Crossref submission metadata"
   assert m.group(3) in _rootTags,\
-    "XML document root is not a CrossRef <body> child element"
+    "XML document root is not a Crossref <body> child element"
   # Locate and normalize the one and only <doi_data> element.
   doiData = root.xpath("//N:doi_data", namespaces=ns)
   assert len(doiData) == 1, "XML document contains %s <doi_data> element" %\
@@ -171,7 +171,7 @@ def validateBody (body):
   except Exception, e:
     assert False, "XML serialization error: " + str(e)
 
-# In the CrossRef deposit schema, version 4.3.4, the <doi_data>
+# In the Crossref deposit schema, version 4.3.4, the <doi_data>
 # element can occur in 20 different places.  An analysis shows that
 # the resource title corresponding to the DOI being defined can be
 # found by one or more of the following XPaths relative to the
@@ -187,8 +187,8 @@ _titlePaths = [
 def _buildDeposit (body, registrant, doi, targetUrl, withdrawTitles=False,
   bodyOnly=False):
   """
-  Builds a CrossRef metadata submission document.  'body' should be a
-  CrossRef <body> child element as a Unicode string, and is assumed to
+  Builds a Crossref metadata submission document.  'body' should be a
+  Crossref <body> child element as a Unicode string, and is assumed to
   have been validated and normalized per validateBody above.
   'registrant' is inserted in the header.  'doi' should be a
   scheme-less DOI identifier (e.g., "10.5060/FOO").  The return is a
@@ -240,8 +240,8 @@ def _buildDeposit (body, registrant, doi, targetUrl, withdrawTitles=False,
 
 def replaceTbas (body, doi, targetUrl):
   """
-  Fills in the (:tba) portions of CrossRef deposit metadata with the
-  given arguments.  'body' should be a CrossRef <body> child element
+  Fills in the (:tba) portions of Crossref deposit metadata with the
+  given arguments.  'body' should be a Crossref <body> child element
   as a Unicode string, and is assumed to have been validated and
   normalized per validateBody above.  'doi' should be a scheme-less
   DOI identifier (e.g., "10.5060/FOO").  The return is a Unicode
@@ -282,12 +282,12 @@ def _multipartBody (*parts):
 def _wrapException (context, exception):
   m = str(exception)
   if len(m) > 0: m = ": " + m
-  return Exception("CrossRef error: %s: %s%s" % (context,
+  return Exception("Crossref error: %s: %s%s" % (context,
     type(exception).__name__, m))
 
 def _submitDeposit (deposit, batchId, doi):
   """
-  Submits a CrossRef metadata submission document as built by
+  Submits a Crossref metadata submission document as built by
   _buildDeposit above.  Returns True on success, False on (internal)
   error.  'doi' is the identifier in question.
   """
@@ -332,7 +332,7 @@ def _pollDepositStatus (batchId, doi):
   tuples:
 
     ("submitted", message)
-      'message' further indicates the status within CrossRef, e.g.,
+      'message' further indicates the status within Crossref, e.g.,
       "in_process".  The status may also be, somewhat confusingly,
       "unknown_submission", even though the submission has taken
       place.
@@ -345,7 +345,7 @@ def _pollDepositStatus (batchId, doi):
   In each case, 'message' may be a multi-line string.  In the case of
   a conflict warning, 'message' has the form:
 
-    CrossRef message
+    Crossref message
     conflict_id=1423608
     in conflict with: 10.5072/FK2TEST1
     in conflict with: 10.5072/FK2TEST2
@@ -412,7 +412,7 @@ def _pollDepositStatus (batchId, doi):
 
 def enqueueIdentifier (identifier, operation, metadata, blob):
   """
-  Adds an identifier to the CrossRef queue.  'identifier' should be
+  Adds an identifier to the Crossref queue.  'identifier' should be
   the normalized, qualified identifier, e.g., "doi:10.5060/FOO".
   'operation' is the identifier operation as reported by the store
   module.  'metadata' is the identifier's metadata dictionary; 'blob'
@@ -426,7 +426,7 @@ def enqueueIdentifier (identifier, operation, metadata, blob):
 def getQueueStatistics ():
   """
   Returns a 4-tuple containing the numbers of identifiers in the
-  CrossRef queue by status: (awaiting submission, submitted,
+  Crossref queue by status: (awaiting submission, submitted,
   registered with warning, registration failed).
   """
   q = ezidapp.models.CrossrefQueue.objects.values("status").\
@@ -484,19 +484,19 @@ def _sendEmail (emailAddress, r):
     s = "error"
   l = "%s/id/%s" % (_ezidUrl, urllib.quote(r.identifier, ":/"))
   m = ("EZID received a%s %s in registering an identifier of yours with " +\
-    "CrossRef.\n\n" +\
+    "Crossref.\n\n" +\
     "Identifier: %s\n\n" +\
     "Status: %s\n\n" +\
-    "CrossRef message: %s\n\n" +\
+    "Crossref message: %s\n\n" +\
     "The identifier can be viewed in EZID at:\n" +
     "%s\n\n" +\
     "You are receiving this message because your account is configured to " +\
-    "receive CrossRef errors and warnings.  This is an automated email.  " +\
+    "receive Crossref errors and warnings.  This is an automated email.  " +\
     "Please do not reply.\n") %\
     ("n" if s == "error" else "", s, r.identifier, r.get_status_display(),
     r.message if r.message != "" else "(unknown reason)", l)
   try:
-    django.core.mail.send_mail("CrossRef registration " + s, m,
+    django.core.mail.send_mail("Crossref registration " + s, m,
       django.conf.settings.SERVER_EMAIL, [emailAddress], fail_silently=True)
   except Exception, e:
     raise _wrapException("error sending email", e)
@@ -542,7 +542,7 @@ def _doPoll (r):
         else:
           m = "registration failure | " + m
       _checkAbort()
-      # We update the identifier's CrossRef status in the store
+      # We update the identifier's Crossref status in the store
       # database, and do so in such a way as to avoid entering the
       # identifier back in the update queue, which would trigger a
       # call to us again.  However, this approach means that we must

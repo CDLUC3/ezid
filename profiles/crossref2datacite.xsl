@@ -2,7 +2,7 @@
 
 <!-- ==========================================================================
 
-Converts a CrossRef Deposit Schema document
+Converts a Crossref Deposit Schema document
 <http://help.crossref.org/deposit_schema> to a DataCite Metadata
 Schema record <http://schema.datacite.org/>.
 
@@ -21,7 +21,7 @@ inherit the book's publisher or publication date, though it probably
 should.  In defense of this limitation, the higher-level inherited
 values need not always be specified, and may be completely absent such
 as in the case of a <sa_component>.  In short, this transform simply
-does not have the benefit of the backing of CrossRef's database.
+does not have the benefit of the backing of Crossref's database.
 
 This transform accepts the following optional external parameters:
 
@@ -39,7 +39,7 @@ that they are valid XPath string literals, e.g., a value "foo" must be
 supplied as "'foo'".  Sadly, there is no mechanism for escaping
 internal quotes.
 
-The conversion is based on CrossRef version 4.3.4 and DataCite version
+The conversion is based on Crossref version 4.3.4 and DataCite version
 3.1.
 
 The XPath expressions are written the convoluted way they are to allow

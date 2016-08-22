@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('organizationUrl', models.URLField(max_length=255, verbose_name=b'URL')),
                 ('organizationStreetAddress', models.CharField(max_length=255, verbose_name=b'street address', validators=[ezidapp.models.validation.nonEmpty])),
                 ('agreementOnFile', models.BooleanField(default=False, verbose_name=b'agreement on file')),
-                ('crossrefEnabled', models.BooleanField(default=False, verbose_name=b'CrossRef enabled')),
+                ('crossrefEnabled', models.BooleanField(default=False, verbose_name=b'Crossref enabled')),
                 ('notes', models.TextField(blank=True)),
                 ('realm', models.ForeignKey(to='ezidapp.StoreRealm', on_delete=django.db.models.deletion.PROTECT)),
             ],
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='newaccountworksheet',
             name='reqCrossrefEmail',
-            field=models.EmailField(max_length=255, verbose_name=b'CrossRef email', blank=True),
+            field=models.EmailField(max_length=255, verbose_name=b'Crossref email', blank=True),
         ),
         migrations.AlterField(
             model_name='newaccountworksheet',

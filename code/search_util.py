@@ -212,8 +212,8 @@ def formulateQuery (constraints, orderBy=None,
                       |   |   |            | "public"
   exported            |   | Y | bool       |
   crossref            |   |   | bool       | True if the identifier is
-                      |   |   |            | registered with CrossRef
-  crossrefStatus      | Y |   | str        | CrossRef status code
+                      |   |   |            | registered with Crossref
+  crossrefStatus      | Y |   | str        | Crossref status code
   target              |   |   | str        | URL
   profile             | Y | Y | str        | profile label, e.g., "erc"
   isTest              |   | Y | bool       |
