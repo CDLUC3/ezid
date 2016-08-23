@@ -102,7 +102,7 @@ metadata to it.
 A deactivated identifier continues to exist in DataCite, but it is in
 many ways deleted: an attempt to view the identifier returns 410 Gone,
 and the identifier is removed from every DataCite service, including
-the CrossRef/DataCite content resolver.  It is not entirely deleted,
+the Crossref/DataCite content resolver.  It is not entirely deleted,
 however, as the identifier continues to exist in the Handle System and
 therefore continues to resolve.
 
@@ -232,10 +232,10 @@ names (by omitting the '-n' option in the above commands), as in:
 The select and project tools are intended to work on normal dumps,
 though certain operations work on raw dumps as well.
 
-9. CrossRef
+9. Crossref
 -----------
 
-CrossRef does not provide an 'active' flag like DataCite does, and
+Crossref does not provide an 'active' flag like DataCite does, and
 this limits our ability to implement identifier status changes.  Our
 next-best-thing approach is as follows:
 
@@ -245,11 +245,11 @@ next-best-thing approach is as follows:
   - If the _crossref element is set, the identifier must be exported.
 
   - When the identifier is made public, it is registered with
-    CrossRef.  And once the identifier is public, the _crossref
+    Crossref.  And once the identifier is public, the _crossref
     element may not be unset.
 
   - If the identifier's status is set to unavailable, the identifier
-    remains registered with CrossRef, but its target URL is set to the
+    remains registered with Crossref, but its target URL is set to the
     tombstone URL and the resource title is set to "WITHDRAWN".  If
     the identifier is deleted (by the EZID administrator), same thing,
     but the target URL is set to http://datacite.org/invalidDOI.

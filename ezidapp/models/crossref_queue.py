@@ -2,7 +2,7 @@
 #
 # EZID :: ezidapp/models/crossref_queue.py
 #
-# Database model for the CrossRef queue.
+# Database model for the Crossref queue.
 #
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
@@ -19,7 +19,7 @@ import util
 
 class CrossrefQueue (django.db.models.Model):
   # Describes identifiers that are either awaiting submission to
-  # CrossRef or in the process of being (re-)submitted to CrossRef.
+  # Crossref or in the process of being (re-)submitted to Crossref.
   # (So, reserved identifiers are not included, but test identifiers
   # are.)  Also, identifiers whose submission resulted in a warning or
   # error are retained indefinitely in this table.
@@ -70,7 +70,7 @@ class CrossrefQueue (django.db.models.Model):
 
   message = django.db.models.TextField(blank=True)
   # Once submitted and polled at least once, any additional status
-  # information as received from CrossRef.  See
+  # information as received from Crossref.  See
   # crossref._pollDepositStatus.
 
   batchId = django.db.models.CharField(max_length=36, blank=True)

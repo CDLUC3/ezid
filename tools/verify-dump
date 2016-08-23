@@ -170,14 +170,14 @@ def verifyIdentifier (identifier, record):
   if isDoi(identifier):
     assert re.match("[-A-Z0-9]+\.[-A-Z0-9]+$", record["_d"]),\
       "invalid datacenter: " + record["_d"]
-  # CrossRef flag
+  # Crossref flag
   if "_cr" in record:
     assert CROSSREF_VALUES.match(record["_cr"]),\
       "invalid _crossref value: " + record["_cr"]
-    assert "_x" not in record, "identifier registered with CrossRef " +\
+    assert "_x" not in record, "identifier registered with Crossref " +\
       "is not exported"
     assert record.get("_is", "public") == "reserved" or\
-      "crossref" in record, "identifier registered with CrossRef " +\
+      "crossref" in record, "identifier registered with Crossref " +\
       "has no 'crossref' metadata"
   # agent identifiers
   if "_ezid_role" in record:

@@ -118,10 +118,10 @@ The DataCite datacenter at which the identifier is registered (or will
 be registered, in the case of a reserved identifier).
 
 element: _crossref
-displayname: CrossRef registration
+displayname: Crossref registration
 displaytype: text
 tooltip:
-<b><u>CrossRef registration</u></b><br/>
-If present, indicates that the identifier is registered with CrossRef
+<b><u>Crossref registration</u></b><br/>
+If present, indicates that the identifier is registered with Crossref
 (or, in the case of a reserved identifier, will be registered), and
 also indicates the status of the registration process.

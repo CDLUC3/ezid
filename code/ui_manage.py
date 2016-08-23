@@ -277,7 +277,7 @@ def details(request):
 
 def display_xml(request, identifier):
   """
-  Used for displaying DataCite or CrossRef XML
+  Used for displaying DataCite or Crossref XML
   """
   d = { 'menu_item' : 'ui_manage.null'}
   r = _getLatestMetadata(identifier, request)

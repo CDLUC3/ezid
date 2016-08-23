@@ -142,7 +142,7 @@ class Identifier (django.db.models.Model):
     (CR_WARNING, "registered with warning"),
     (CR_FAILURE, "registration failure")], default="")
   # For DOI identifiers only, determines (when nonempty) if the
-  # identifier is registered with CrossRef (or will be registered when
+  # identifier is registered with Crossref (or will be registered when
   # the identifier becomes public, in the case of a reserved
   # identifier), and also indicates the status of the registration
   # process; otherwise, empty.
@@ -161,8 +161,8 @@ class Identifier (django.db.models.Model):
     return self.crossrefStatus in [self.CR_WARNING, self.CR_FAILURE]
 
   crossrefMessage = django.db.models.TextField(blank=True, default="")
-  # For the CR_WARNING and CR_FAILURE CrossRef statuses only, any
-  # message received from CrossRef; otherwise, empty.
+  # For the CR_WARNING and CR_FAILURE Crossref statuses only, any
+  # message received from Crossref; otherwise, empty.
 
   target = django.db.models.URLField(max_length=2000, blank=True, default="",
     validators=[validation.unicodeBmpOnly])
@@ -293,20 +293,20 @@ class Identifier (django.db.models.Model):
           raise django.core.exceptions.ValidationError({ "identifier": e })
         if not self.exported:
           raise django.core.exceptions.ValidationError(
-            { "exported": "CrossRef-registered identifier must be exported." })
+            { "exported": "Crossref-registered identifier must be exported." })
         if self.isReserved ^ (self.crossrefStatus == self.CR_RESERVED):
-          e = "Identifier status/CrossRef status inconsistency."
+          e = "Identifier status/Crossref status inconsistency."
           raise django.core.exceptions.ValidationError(
             { "status": e, "crossrefStatus": e })
         if self.isCrossrefGood and self.crossrefMessage != "":
           raise django.core.exceptions.ValidationError(
-            { "crossrefMessage": "Non-problematic CrossRef-registered " +\
-            "DOI has nonempty CrossRef message." })
+            { "crossrefMessage": "Non-problematic Crossref-registered " +\
+            "DOI has nonempty Crossref message." })
       else:
         if self.crossrefMessage != "":
           raise django.core.exceptions.ValidationError(
-            { "crossrefMessage": "Non-CrossRef-registered DOI has " +\
-            "nonempty CrossRef message." })
+            { "crossrefMessage": "Non-Crossref-registered DOI has " +\
+            "nonempty Crossref message." })
     else:
       if self.datacenter != None:
         raise django.core.exceptions.ValidationError(
@@ -314,11 +314,11 @@ class Identifier (django.db.models.Model):
       if self.isCrossref:
         raise django.core.exceptions.ValidationError(
           { "crossrefStatus":
-          "Only DOI identifiers may be registered with CrossRef." })
+          "Only DOI identifiers may be registered with Crossref." })
       if self.crossrefMessage != "":
         raise django.core.exceptions.ValidationError(
           { "crossrefMessage": "Non-DOI identifier has nonempty " +\
-          "CrossRef message." })
+          "Crossref message." })
     if self.target == "": self.target = self.defaultTarget
     # Per RFC 3986, URI schemes are case-insensitive, but some systems
     # we interact with require the scheme to be lowercase.
@@ -389,7 +389,7 @@ class Identifier (django.db.models.Model):
           "Metadata validation error: %s." % util.oneLine(str(e)) })
     if "crossref" in self.cm:
       try:
-        # Our validation of CrossRef XML records is incomplete (the
+        # Our validation of Crossref XML records is incomplete (the
         # schema is way too complicated).  As with DataCite XML
         # records, we simply require that they be well-formed and that
         # the parts that EZID cares about are present and sufficiently
@@ -405,10 +405,10 @@ class Identifier (django.db.models.Model):
   def checkMetadataRequirements (self):
     import datacite
     if self.isDoi and not self.isReserved:
-      # If the identifier has DataCite or CrossRef XML metadata, we
+      # If the identifier has DataCite or Crossref XML metadata, we
       # know automatically that metadata requirements are satisfied
-      # (in the CrossRef case, by virtue of the design of the
-      # CrossRef-to-DataCite transform, which always generates a
+      # (in the Crossref case, by virtue of the design of the
+      # Crossref-to-DataCite transform, which always generates a
       # complete DataCite record).
       if "datacite" not in self.cm and\
         (not self.usesCrossrefProfile or "crossref" not in self.cm):
@@ -422,7 +422,7 @@ class Identifier (django.db.models.Model):
           del self.cm["_p"]
     if self.isCrossref and "crossref" not in self.cm:
       raise django.core.exceptions.ValidationError(
-        "Registration with CrossRef requires CrossRef metadata supplied " +\
+        "Registration with Crossref requires Crossref metadata supplied " +\
         "as value of element 'crossref'.")
 
   def computeComputedValues (self):
@@ -506,13 +506,13 @@ class Identifier (django.db.models.Model):
     if "_cr" in d:
       statuses = dict((v, k) for k, v in\
         self._meta.get_field("crossrefStatus").get_choices())
-      assert d["_cr"].startswith("yes | "), "malformed legacy CrossRef status"
+      assert d["_cr"].startswith("yes | "), "malformed legacy Crossref status"
       l = [s for s in statuses.keys() if d["_cr"][6:].startswith(s)]
-      assert len(l) == 1, "unrecognized legacy CrossRef status"
+      assert len(l) == 1, "unrecognized legacy Crossref status"
       self.crossrefStatus = statuses[l[0]]
       if len(d["_cr"]) > 6+len(l[0]):
         m = d["_cr"][6+len(l[0]):]
-        assert m.startswith(" | "), "malformed legacy CrossRef status"
+        assert m.startswith(" | "), "malformed legacy Crossref status"
         self.crossrefMessage = m[3:]
     if "_ezid_role" in d:
       self.agentRole = self.USER if d["_ezid_role"] == "user" else self.GROUP

@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 
-# EZID command line client.  The output is Unicode, with the character
-# encoding being determined by the platform unless the -e option is
-# used.  By default, ANVL responses (currently, that's all responses)
-# are left in %-encoded form.
+# EZID command line client.  The output is Unicode using UTF-8
+# encoding unless overriden by the -e option.  By default, ANVL
+# responses (currently, that's all responses) are left in %-encoded
+# form.
 #
 # Usage: ezid.py [options] credentials operation...
 #
@@ -15,7 +15,8 @@
 #
 #   credentials:
 #     username:password
-#     sessionid (as returned by previous login)
+#     username (password will be prompted for)
+#     sessionid=... (as returned by previous login)
 #     - (none)
 #
 #   operation:
@@ -55,6 +56,7 @@
 # May 2013
 
 import codecs
+import getpass
 import optparse
 import re
 import sys
@@ -89,7 +91,8 @@ USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
 
   credentials:
     username:password
-    sessionid (as returned by previous login)
+    username (password will be prompted for)
+    sessionid=... (as returned by previous login)
     - (none)
 
   operation:
@@ -195,16 +198,13 @@ def printAnvlResponse (response, sortLines=False):
       line = re.sub("%([0-9a-fA-F][0-9a-fA-F])",
         lambda m: chr(int(m.group(1), 16)), line)
     if _options.oneLine: line = line.replace("\n", " ").replace("\r", " ")
-    if _options.outputEncoding != None:
-      print line.encode(_options.outputEncoding)
-    else:
-      print line
+    print line.encode(_options.outputEncoding)
 
 # Process command line arguments.
 
 parser = optparse.OptionParser(formatter=MyHelpFormatter())
 parser.add_option("-d", action="store_true", dest="decode", default=False)
-parser.add_option("-e", action="store", dest="outputEncoding", default=None)
+parser.add_option("-e", action="store", dest="outputEncoding", default="UTF-8")
 parser.add_option("-o", action="store_true", dest="oneLine", default=False)
 parser.add_option("-t", action="store_true", dest="formatTimestamps",
   default=False)
@@ -218,15 +218,20 @@ if len(args) < 3: parser.error("insufficient arguments")
 _server = KNOWN_SERVERS.get(args[0], args[0])
 
 _opener = urllib2.build_opener(MyHTTPErrorProcessor())
-if ":" in args[1]:
+if args[1].startswith("sessionid="):
+  _cookie = args[1]
+elif args[1] != "-":
+  if ":" in args[1]:
+    username, password = args[1].split(":", 1)
+  else:
+    username = args[1]
+    password = getpass.getpass()
   # Credentials must be sent over SSL, unless running locally.
   if _server.startswith("http:") and args[0] != "l":
     _server = "https" + _server[4:]
   h = urllib2.HTTPBasicAuthHandler()
-  h.add_password("EZID", _server, *args[1].split(":", 1))
+  h.add_password("EZID", _server, username, password)
   _opener.add_handler(h)
-elif args[1] != "-":
-  _cookie = "sessionid=" + args[1]
 
 operation = filter(lambda o: o.startswith(args[2]), OPERATIONS)
 if len(operation) != 1: parser.error("unrecognized or ambiguous operation")
@@ -276,7 +281,7 @@ elif operation == "delete":
   printAnvlResponse(response)
 elif operation == "login":
   response, headers = issueRequest("login", "GET", returnHeaders=True)
-  response += "\nsessionid: %s\n" %\
+  response += "\nsessionid=%s\n" %\
     headers["set-cookie"].split(";")[0].split("=")[1]
   printAnvlResponse(response)
 elif operation == "logout":

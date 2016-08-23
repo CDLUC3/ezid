@@ -54,10 +54,10 @@ class StoreGroup (group.Group):
     default=False)
   # Fields for business purposes only; not used by EZID.
 
-  crossrefEnabled = django.db.models.BooleanField("CrossRef enabled",
+  crossrefEnabled = django.db.models.BooleanField("Crossref enabled",
     default=False)
   # Determines if users in the group may register identifiers with
-  # CrossRef.  Note that CrossRef registration requires the enablement
+  # Crossref.  Note that Crossref registration requires the enablement
   # of both the user and the shoulder.
 
   shoulders = django.db.models.ManyToManyField(shoulder.Shoulder, blank=True)

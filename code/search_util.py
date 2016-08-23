@@ -31,14 +31,21 @@ import util
 _lock = threading.Lock()
 _reconnectDelay = None
 _fulltextSupported = None
+_minimumWordLength = None
+_stopwords = None
 _maxTargetLength = None
 _numActiveSearches = 0
 
 def _loadConfig ():
-  global _reconnectDelay, _fulltextSupported, _maxTargetLength
+  global _reconnectDelay, _fulltextSupported, _minimumWordLength
+  global _stopwords, _maxTargetLength
   _reconnectDelay = int(config.get("databases.reconnect_delay"))
   _fulltextSupported =\
     django.conf.settings.DATABASES["search"]["fulltextSearchSupported"]
+  if _fulltextSupported:
+    _minimumWordLength = int(config.get("search.minimum_word_length"))
+    _stopwords = (config.get("search.stopwords") + " " +\
+      config.get("search.extra_stopwords")).split()
   _maxTargetLength = ezidapp.models.SearchIdentifier._meta.\
     get_field("searchableTarget").max_length
 
@@ -90,6 +97,79 @@ def ping ():
   else:
     return "up"
 
+def _processFulltextConstraint (constraint):
+  # The primary purposes of this function are 1) to remove characters
+  # that might be interpreted by MySQL as operators and 2) to change
+  # the default semantics of MySQL's freetext search from OR to AND.
+  # The latter is accomplished by making every search term required,
+  # so that a constraint "foo bar" is transformed into "+foo +bar".
+  # Quoted phrases are treated like atomic terms and are left as is.
+  # Additionally, this function implements an explicit OR operator.
+  # An "OR" placed between two terms has the effect of making those
+  # terms optional.  Thus, "foo bar OR baz" becomes "+foo bar baz".
+  # Finally, stopwords are removed.
+  #
+  # Step 1: Parse the constraint into words and quoted phrases.  MySQL
+  # interprets some characters as operators, and will return an error
+  # if a query is malformed according to its less-than-well-defined
+  # rules.  For safety we remove all operators that are outside double
+  # quotes (i.e., quotes are the only MySQL operator we retain).
+  inQuote = False
+  inWord = False
+  words = []
+  for c in constraint:
+    if c == '"':
+      if inQuote:
+        words[-1].append(c)
+        inQuote = False
+      else:
+        words.append([])
+        words[-1].append(c)
+        inQuote = True
+        inWord = False
+    elif c.isalnum():
+      if inQuote or inWord:
+        words[-1].append(c)
+      else:
+        words.append([])
+        words[-1].append(c)
+        inWord = True
+    else:
+      if inQuote:
+        words[-1].append(c)
+      else:
+        inWord = False
+  if inQuote: words[-1].append('"')
+  # Step 2.  OR processing.  All OR terms are ultimately discarded.
+  words = [[True, "".join(w)] for w in words]
+  i = 0
+  while i < len(words):
+    if words[i][1].upper() == "OR":
+      if i > 0 and i < len(words)-1:
+        words[i-1][0] = False
+        words[i+1][0] = False
+      del words[i]
+    else:
+      i += 1
+  # Step 3.  Remove all stopwords.  We can't leave MySQL's default
+  # stopwords in because a plus sign in front of a stopword will cause
+  # zero results to be returned.  Also, we need to remove our own
+  # stopwords anyway.
+  i = 0
+  while i < len(words):
+    if not words[i][1].startswith('"') and\
+      (len(words[i][1]) < _minimumWordLength or words[i][1] in _stopwords):
+      del words[i]
+    else:
+      i += 1
+  if len(words) > 0:
+    return " ".join("%s%s" % ("+" if w[0] else "", w[1]) for w in words)
+  else:
+    # If a constraint has no search terms (e.g., consists of all
+    # stopwords), MySQL returns zero results.  To mimic this behavior
+    # we return an arbitrary constraint having the same behavior.
+    return "+x"
+
 defaultSelectRelated = ["owner", "ownergroup"]
 defaultDefer = ["cm", "keywords", "target", "searchableTarget",
   "resourceCreatorPrefix", "resourceTitlePrefix", "resourcePublisherPrefix"]
@@ -132,14 +212,14 @@ def formulateQuery (constraints, orderBy=None,
                       |   |   |            | "public"
   exported            |   | Y | bool       |
   crossref            |   |   | bool       | True if the identifier is
-                      |   |   |            | registered with CrossRef
-  crossrefStatus      | Y |   | str        | CrossRef status code
+                      |   |   |            | registered with Crossref
+  crossrefStatus      | Y |   | str        | Crossref status code
   target              |   |   | str        | URL
   profile             | Y | Y | str        | profile label, e.g., "erc"
   isTest              |   | Y | bool       |
   resourceCreator     |   | Y | str        | limited fulltext-style boolean
                       |   |   |            | expression, e.g.,
-                      |   |   |            | '"green eggs" ham'
+                      |   |   |            | '"green eggs" OR ham'
   resourceTitle       |   | Y | str        | ditto
   resourcePublisher   |   | Y | str        | ditto
   keywords            |   |   | str        | ditto
@@ -247,25 +327,12 @@ def formulateQuery (constraints, orderBy=None,
     elif column in ["resourceCreator", "resourceTitle", "resourcePublisher",
       "keywords"]:
       if _fulltextSupported:
-        # MySQL interprets some characters as operators, and will
-        # return an error if a query is malformed according to its
-        # less-than-well-defined rules.  For safety we remove all
-        # operators that are outside double quotes (i.e., quotes are
-        # the only operator we retain).
-        v = ""
-        inQuote = False
-        for c in value:
-          if c == '"':
-            inQuote = not inQuote
-          else:
-            if not inQuote and not c.isalnum(): c = " "
-          v += c
-        if inQuote: v += '"'
-        filters.append(django.db.models.Q(**{ (column + "__search"): v }))
+        filters.append(django.db.models.Q(**{ (column + "__search"):\
+          _processFulltextConstraint(value) }))
       else:
         value = value.split()
         if len(value) > 0:
-          filters.append(reduce(operator.or_,
+          filters.append(reduce(operator.and_,
             [django.db.models.Q(**{ (column + "__icontains"): v })\
             for v in value]))
     elif column == "resourcePublicationYear":

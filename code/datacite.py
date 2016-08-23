@@ -355,7 +355,7 @@ def formRecord (identifier, metadata, supplyMissing=False):
     return util.insertXmlEncodingDeclaration(metadata["datacite"])
   elif metadata.get("_p", metadata.get("_profile", "")) == "crossref" and\
     metadata.get("crossref", "").strip() != "":
-    # We could run CrossRef metadata through the metadata mapper using
+    # We could run Crossref metadata through the metadata mapper using
     # the case below, but doing it this way creates a richer XML
     # record.
     overrides = { "_idType": idType, "_id": idBody }
@@ -374,7 +374,7 @@ def formRecord (identifier, metadata, supplyMissing=False):
       return util.insertXmlEncodingDeclaration(crossrefToDatacite(
         metadata["crossref"].strip(), overrides))
     except Exception, e:
-      assert False, "CrossRef to DataCite metadata conversion error: " + str(e)
+      assert False, "Crossref to DataCite metadata conversion error: " + str(e)
   else:
     km = mapping.map(metadata, datacitePriority=True)
     for a in ["creator", "title", "publisher", "date"]:
@@ -569,7 +569,7 @@ def dcmsRecordToHtml (record):
 
 def crossrefToDatacite (record, overrides={}):
   """
-  Converts a CrossRef Deposit Schema
+  Converts a Crossref Deposit Schema
   <http://help.crossref.org/deposit_schema> document to a DataCite
   Metadata Scheme <http://schema.datacite.org/> record.  'overrides'
   is a dictionary of individual metadata element names (e.g.,

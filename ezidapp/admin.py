@@ -547,7 +547,7 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
     # relies on the django-transaction-hooks 3rd party package.
     django.db.connection.on_commit(
       lambda: createOrUpdateGroupPid(request, obj, change))
-    # Changes to shoulders and CrossRef enablement may trigger
+    # Changes to shoulders and Crossref enablement may trigger
     # adjustments to users in the group.
     if change:
       doUpdateUserPids = False
@@ -666,7 +666,7 @@ class StoreUserForm (django.forms.ModelForm):
         (self.instance.pk == None and "group" in cd and\
         not cd["group"].crossrefEnabled):
         raise django.core.validators.ValidationError({ "crossrefEnabled":
-          "Group is not CrossRef enabled." })
+          "Group is not Crossref enabled." })
     # Group administrators may have proxies, but not more privileged
     # users.
     if (cd["isRealmAdministrator"] or cd["isSuperuser"])\

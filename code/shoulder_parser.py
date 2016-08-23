@@ -58,7 +58,7 @@
 #
 #    crossref
 #       Must be "true" or "false"; if "true", indicates the shoulder
-#       supports CrossRef registration.  May be used with DOI
+#       supports Crossref registration.  May be used with DOI
 #       shoulders only.
 #
 #    prefix_shares_datacenter
