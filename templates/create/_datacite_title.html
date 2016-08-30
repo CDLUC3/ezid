@@ -20,8 +20,8 @@
     {{ form.non_field_errors }}
 
     {% include "create/_datacite_inlinetext.html" with field=form.title reqd="true" %}
-    <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="{{ form.titleType.id_for_label }}">
-      <span id="{{ form.titleType.id_for_label }}" class="fieldset-inline__legend create__inline-nested-legend">{{ form.titleType.label }}</span>
+    <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="title-type-{{forloop.counter}}">
+      <span id="title-type-{{forloop.counter}}" class="fieldset-inline__legend create__inline-nested-legend">{{ form.titleType.label }}</span>
       {% for radio in form.titleType %}
       <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
         {{ radio.tag }}
