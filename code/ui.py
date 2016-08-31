@@ -5,6 +5,7 @@ import django.core.mail
 import django.http
 import django.template
 import django.template.loader
+import lxml.etree
 import userauth
 import form_objects
 import errno
@@ -99,7 +100,7 @@ def doc (request):
   else:
     return uic.error(request, 404)
 
-tombstone_text = _("The URL for this identifier cannot be resolved")
+tombstone_text = _("The URL for this identifier cannot be resolved.")
 
 def tombstone (request):
   """
@@ -120,15 +121,26 @@ def tombstone (request):
   id = s[8:].strip()
   if not m["_status"].startswith("unavailable"):
     return uic.redirect("/id/%s" % urllib.quote(id, ":/"))
+  status = m["_status"] 
+  reason = tombstone_text
   if "|" in m["_status"]:
+    status = m["_status"].split("|", 1)[0].strip()
     # Translators: Output for tombstone page (unavailable IDs)
-    reason = tombstone_text + ". " + _("Reason:") + " " + m["_status"].split("|", 1)[1].strip()
-  else:
-    reason = tombstone_text
+    reason += " " + _("Reason:") + " " + m["_status"].split("|", 1)[1].strip()
   htmlMode = False
   if m["_profile"] == "datacite" and "datacite" in m:
     md = datacite.dcmsRecordToHtml(m["datacite"])
-    if md: htmlMode = True
+    if md: 
+      htmlMode = True
+      root = lxml.etree.fromstring(md)
+      # Tack on an additional row displaying status
+      row = lxml.etree.Element("tr", attrib={"class": "dcms_element"})
+      c1 = lxml.etree.SubElement(row, "th", attrib={"class": "dcms_label"})
+      c1.text = _("Status:")
+      c2 = lxml.etree.SubElement(row, "td", attrib={"class": "dcms_value"})
+      c2.text = status
+      root.append(row)
+      md = lxml.etree.tostring(root)
   if not htmlMode:
     # This echoes the Merritt hack above.
     if m["_profile"] == "erc" and m.get("erc", "").strip() != "":
@@ -142,6 +154,8 @@ def tombstone (request):
         v = m.get(e.name, "").strip()
         md.append({ "label": e.displayName,
           "value": v if v != "" else "(no value)" })
+    # Tack on an additional row displaying status
+    md.append({ "label": _("Status"), "value": status})
   return uic.render(request, "tombstone", { "identifier": id,
     "identifierLink": "/id/%s" % urllib.quote(id, ":/"),
     "reason": reason, "htmlMode": htmlMode, "metadata": md })
