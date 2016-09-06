@@ -294,10 +294,6 @@ class Identifier (django.db.models.Model):
         if not self.exported:
           raise django.core.exceptions.ValidationError(
             { "exported": "Crossref-registered identifier must be exported." })
-        if self.isReserved ^ (self.crossrefStatus == self.CR_RESERVED):
-          e = "Identifier status/Crossref status inconsistency."
-          raise django.core.exceptions.ValidationError(
-            { "status": e, "crossrefStatus": e })
         if self.isCrossrefGood and self.crossrefMessage != "":
           raise django.core.exceptions.ValidationError(
             { "crossrefMessage": "Non-problematic Crossref-registered " +\
