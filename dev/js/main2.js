@@ -118,3 +118,11 @@ $(document).click(function(event) {
     }
   }        
 });
+
+// ***** Somehow the Learn menu is cached in an open state when user clicks back button
+//      from the Learn page (BFCache aka back-forward cache) so close it on pageshow as well   ****** //
+
+window.onpageshow = function(event) {
+  $("#header__nav-details-learn").attr("open", false);
+};
+

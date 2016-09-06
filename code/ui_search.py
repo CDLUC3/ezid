@@ -366,7 +366,7 @@ def _buildQuerySyntax(c):
   """ Takes dictionary like this:
        {'keywords': u'marine fish', 'resourceTitle': u'"Aral Sea"'}
       and returns string like this:
-       keywords:(marine OR fish) AND resourceTitle:("Aral Sea") 
+       keywords:(marine AND fish) AND resourceTitle:("Aral Sea") 
 
       Borrowing same logic from search_util.formulateQuery
        * Handling 2-tuple publication year

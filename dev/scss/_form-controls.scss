@@ -85,13 +85,23 @@
 	border: 1px solid $design-light-gray-border-color;
 }
 
-.fcontrol__text-field-inline-noborder {
-	@extend %fcontrol__text-field-inline-base;
-	border: none;
+.fcontrol__text-field-group {
+	display: flex;
+	flex: 1 0 auto;
 }
 
-.fcontrol__text-field-group {
-	// empty
+.fcontrol__text-field-inline-squish {
+	@extend %fcontrol__text-field-inline-base;
+	border: 1px solid $design-light-gray-border-color;
+
+	@include bp(screen2) {
+		max-width: 154px;
+	}
+
+	@include bp(screen3) {
+		max-width: 100%;
+		max-width: none;
+	}
 }
 
 .fcontrol__caption {
@@ -372,6 +382,10 @@
 
 }
 
+.fcontrol__textarea-group {
+	// Implementation occurs in group-.*.--invalid section below
+}
+
 .fcontrol__group-stacked--invalid {
 	@extend %fcontrol__group-stacked;
 
@@ -408,6 +422,10 @@
 	.fcontrol__text-field-inline {
 		border: 1px solid $design-red-color;
 		border-radius: $form-element-border-radius $form-element-border-radius 0 0;
+	}
+
+	.fcontrol__text-field-group {
+		flex-flow: column wrap;
 	}
 
 	.fcontrol__textarea-group {

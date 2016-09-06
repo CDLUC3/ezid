@@ -16,7 +16,7 @@
 
     <h1><a href="index.html">EZID UI Library</a></h1>
 
-    <h2>Simple and Advanced Search Layout</h2>
+    <h2>Simple and Advanced Search Layout. Click "Search" to activate loading indicator</h2>
 
     <!--#include file="includes/header.html" -->
 
@@ -32,7 +32,7 @@
         <input id="search__simple-label" class="fcontrol__text-field-stacked" type="search" placeholder="Full text search using words about or describing the identifier.">
         <span class="fcontrol__invalid-flag">Your search must not be empty</span>
       </div>
-      <button class="search__simple-button">Search</button>
+      <button class="search__simple-button search__action">Search</button>
     </div>
 
     <details class="showhide">
@@ -76,14 +76,17 @@
             <div class="fcontrol__inline-groups search__inline-groups">
               <div class="fcontrol__group-inline--invalid">
                 <label for="fcontrol__example-label2" class="fcontrol__text-label-inline">From</label>
-                <div class="fcontrol__textarea-group">
-                  <input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Ex. 2015">
+                <div class="fcontrol__text-field-group">
+                  <input id="fcontrol__example-label2" class="fcontrol__text-field-inline-squish" type="text" placeholder="Ex. 2015">
                   <span class="fcontrol__invalid-flag">Please use format YYYY-MM-DD.</span>
                 </div>
               </div>
               <div class="fcontrol__group-inline">
                 <label for="fcontrol__example-label2" class="fcontrol__text-label-inline">To</label>
-                <input id="fcontrol__example-label2" class="fcontrol__text-field-inline" type="text" placeholder="Ex. 2016">
+                <div class="fcontrol__text-field-group">
+                  <input id="fcontrol__example-label2" class="fcontrol__text-field-inline-squish" type="text" placeholder="Ex. 2016">
+                  <span class="fcontrol__invalid-flag">Please use format YYYY-MM-DD.</span>
+                </div>
               </div>
             </div>
           </div>
@@ -112,7 +115,7 @@
           </div>
         </div>
         <div class="col-md-6">
-	  <button class="search__simple-button2">Search</button>
+	  <button class="search__simple-button2 search__action">Search</button>
         </div>
       </div>
     </details>
