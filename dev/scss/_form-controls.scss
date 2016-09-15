@@ -11,7 +11,7 @@
 
 %fcontrol__group-stacked {
 	display: flex;
-	flex: 1 0 auto; // for when parent containers of this component use flex
+	flex: 1 1 auto; // for when parent containers of this component use flex
 	flex-flow: column nowrap;
 }
 
@@ -363,6 +363,16 @@
 		font-weight: normal;
 		content: ' (Required)';
 	}
+
+}
+
+// ***** Help Text ***** //
+
+.fcontrol__help {
+	flex: 1 0 auto;
+	padding: 0.3em 0.5em;
+	color: $input-color-placeholder;
+	font-weight: normal;
 
 }
 

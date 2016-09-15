@@ -17,7 +17,10 @@
   <div class="fcontrol__group-stacked">
     <label for="search__simple-label" class="fcontrol__text-label-hidden">{% trans "Search" %}</label>
     {{ form.keywords|add_attributes:"id:search__simple-label,class:fcontrol__text-field-stacked,type:search" }}
-    <span class="fcontrol__invalid-flag"></span>
+    <div class="fcontrol__help">EZID search uses AND logic which means ALL terms entered into a search box must be present in order to show up in the results.<br/>
+&#8226; Example AND search: "trees fruit" will return any search results with both keywords trees and fruit.<br/>
+If you would like to use OR logic which means ANY terms entered in the search box can be present in the results, please add an "OR" to the search query.<br/>
+&#8226; Example OR search: "trees OR fruit" will return any search results with the keywords trees or fruit.</div>
   </div>
   <button class="search__simple-button search__action" type="submit">{% trans "Search" %}</button>
 </div>
