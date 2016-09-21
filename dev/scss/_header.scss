@@ -239,6 +239,18 @@
 			border-bottom: 1px dotted $design-black-color;
 		}
 
+		&:nth-of-type(8) {
+			background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+		        color: $design-white-color;
+		        font-weight: bold;
+		}
+
+	        &:hover:nth-of-type(8),
+	        &:focus:nth-of-type(8) {
+			background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+        	        text-decoration: underline;
+	        }
+
 		&:hover {
 			background: linear-gradient(to bottom, $design-secondary-gradient-top, $design-secondary-color);
 			color: $design-white-color;

@@ -11,11 +11,11 @@ $search-layout-element-spacing: 30px;
 }
 
 .search__simple {
-	display: flex;
 	max-width: 1000px;
-	margin: 10px auto;
+	margin: 10px auto 30px;
 
 	@include bp(screen1) {
+		display: flex;
 		margin: $search-layout-element-spacing auto;
 	}
 
@@ -23,7 +23,12 @@ $search-layout-element-spacing: 30px;
 
 .search__simple-button {
 	@extend %button__primary;
-	margin: 0 0 0 10px;
+	margin: 20px 0 0;
+
+        @include bp(screen1) {
+                margin: 0 0 0 10px;
+        }
+
 }
 
 .search__form-element-container {

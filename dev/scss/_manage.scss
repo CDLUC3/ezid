@@ -53,9 +53,10 @@
 
 .manage__simple-search-button {
 	@extend %button__primary;
-	margin: 10px 0 0;
+	margin: 20px 0 0;
 
 	@include bp(screen1) {
+		min-width: 220px;
 		margin: 0 0 0 10px;
 	}
 
