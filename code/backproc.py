@@ -93,7 +93,8 @@ def _backprocDaemon ():
     try:
       l = store.getUpdateQueue(maximum=1000)
       if len(l) > 0:
-        for seq, identifier, metadata, blob, operation in l:
+        for seq, identifier, metadata, blob, operation,\
+          updateExternalServices in l:
           if not _checkContinue(): break
           # The following four statements form a kind of atomic
           # transaction.  Hence, if the first statement succeeds, we
@@ -105,8 +106,9 @@ def _backprocDaemon ():
               metadata, blob), _checkContinue)
           except search_util.AbortException:
             break
-          _updateDataciteQueue(identifier, operation, metadata, blob)
-          _updateCrossrefQueue(identifier, operation, metadata, blob)
+          if updateExternalServices:
+            _updateDataciteQueue(identifier, operation, metadata, blob)
+            _updateCrossrefQueue(identifier, operation, metadata, blob)
           store.deleteFromUpdateQueue(seq)
       else:
         django.db.connections["default"].close()

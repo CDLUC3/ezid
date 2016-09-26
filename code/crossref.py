@@ -29,7 +29,6 @@ import ezid
 import ezidapp.models
 import config
 import log
-import search_util
 import util
 import util2
 
@@ -504,24 +503,6 @@ def _sendEmail (emailAddress, r):
 def _oneline (s):
   return re.sub("\s", " ", s)
 
-def _updateSearchDatabase (identifier, status, updateTime):
-  updates = { "updateTime": updateTime }
-  if status == "successfully registered":
-    updates["crossrefStatus"] = ezidapp.models.SearchIdentifier.CR_SUCCESS
-    updates["crossrefMessage"] = ""
-  elif status.startswith("registered with warning | "):
-    updates["crossrefMessage"] = status[26:]
-    updates["crossrefStatus"] = ezidapp.models.SearchIdentifier.CR_WARNING
-    updates["hasIssues"] = True
-  elif status.startswith("registration failure | "):
-    updates["crossrefMessage"] = status[23:]
-    updates["crossrefStatus"] = ezidapp.models.SearchIdentifier.CR_FAILURE
-    updates["hasIssues"] = True
-  else:
-    assert False, "unhandled case"
-  ezidapp.models.SearchIdentifier.objects.filter(identifier=identifier).\
-    update(**updates)
-
 def _doPoll (r):
   t = _pollDepositStatus(r.batchId, r.identifier[4:])
   if t[0] == "submitted":
@@ -542,19 +523,13 @@ def _doPoll (r):
         else:
           m = "registration failure | " + m
       _checkAbort()
-      # We update the identifier's Crossref status in the store
-      # database, and do so in such a way as to avoid entering the
-      # identifier back in the update queue, which would trigger a
-      # call to us again.  However, this approach means that we must
-      # also manually update the identifier in the search database.
-      # N.B.: there's a race condition here, but it's insignificant.
-      updateTime = int(time.time())
+      # We update the identifier's Crossref status in the store and
+      # search databases, but do so in such a way as to avoid
+      # infinite loops and triggering further updates to DataCite or
+      # Crossref.
       s = ezid.asAdmin(ezid.setMetadata, r.identifier,
-        { "_cr": "yes | " + m, "_su": str(updateTime) }, False)
+        { "_cr": "yes | " + m }, False)
       assert s.startswith("success:"), "ezid.setMetadata failed: " + s
-      search_util.withAutoReconnect("crossref._updateSearchDatabase",
-        lambda: _updateSearchDatabase(r.identifier, m, updateTime),
-        _checkAbort)
     if t[0] == "completed successfully":
       _checkAbort()
       r.delete()
