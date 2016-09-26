@@ -63,7 +63,7 @@ PREFIX_FORMAT_SET='formats-format'
 PREFIX_RIGHTS_SET='rightsList-rights'
 PREFIX_GEOLOC_SET='geoLocations-geoLocation'
 # Translators: "Ex. " is abbreviation for "example". Please include one space at end.
-ABBR_EX = _("Ex. ")
+ABBR_EX = _("e.g. ")
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #                                                                   #

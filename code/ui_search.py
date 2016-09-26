@@ -84,7 +84,11 @@ DATE_FLOOR = False
 DATE_CEILING = True 
 
 def queryUrlEncoded(request):
-  r = queryDict(request)
+  r = {}
+  for k,v in queryDict(request).iteritems():
+    if isinstance(v, unicode):
+      v = v.encode('utf8')
+    r[k] = v
   return urllib.urlencode(r) if r else {}
 
 def queryDict(request):
@@ -410,8 +414,9 @@ def _buildQuerySyntax(c):
         v += c
       if inQuote: v += '"'
       value = "".join(v)
-      # Being simplistic about how to treat quoted queries
-      if not quoteOccurred:
+      vu = value.upper()
+      # Just simply include 'AND' only when user hasn't used quotes or AND/OR
+      if not quoteOccurred and " AND " not in vu and " OR " not in vu:
         value = re.sub(r'\s+', ' AND ', value)
       r += value + ")"
     dlength -= 1
