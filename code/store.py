@@ -225,7 +225,7 @@ def _getOwnerKey (owner, connection):
   finally:
     _ownerMappingLock.release()
 
-def insert (identifier, metadata, updateUpdateQueue=True):
+def insert (identifier, metadata):
   """
   Inserts an identifier in the store database.  'identifier' should be
   an unqualified ARK identifier, e.g., "13030/foo".  (To insert a
@@ -248,9 +248,8 @@ def insert (identifier, metadata, updateUpdateQueue=True):
     _execute(c, "INSERT INTO identifier (identifier, ownerKey, updateTime, " +\
       "metadata, oaiVisible) VALUES (?, ?, ?, ?, ?)",
       (identifier, key, updateTime, buffer(blob), int(visible)))
-    if updateUpdateQueue:
-      _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
-        "operation) VALUES (NULL, ?, ?, 0)", (identifier, buffer(blob)))
+    _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
+      "operation) VALUES (NULL, ?, ?, 0)", (identifier, buffer(blob)))
     _commit(c)
   except Exception, e:
     log.otherError("store.insert", e)
@@ -262,7 +261,7 @@ def insert (identifier, metadata, updateUpdateQueue=True):
     if connection: _returnConnection(connection, poolId, tainted)
 
 def update (identifier, metadata, insertIfNecessary=False,
-  updateUpdateQueue=True):
+  updateExternalServices=True):
   """
   Updates an identifier in the store database.  If 'insertIfNecessary'
   is true, the identifier is inserted if not already in the database.
@@ -300,10 +299,10 @@ def update (identifier, metadata, insertIfNecessary=False,
       _execute(c, "UPDATE identifier SET ownerKey = ?, updateTime = ?, " +\
         "metadata = ?, oaiVisible = ? WHERE identifier = ?",
         (key, updateTime, buffer(blob), int(visible), identifier))
-    if updateUpdateQueue:
-      _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
-        "operation) VALUES (NULL, ?, ?, ?)",
-        (identifier, buffer(blob), 0 if doInsert else 1))
+    _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
+      "operation, updateExternalServices) VALUES (NULL, ?, ?, ?, ?)",
+      (identifier, buffer(blob), 0 if doInsert else 1,
+      int(updateExternalServices)))
     _commit(c)
   except Exception, e:
     log.otherError("store.update", e)
@@ -524,7 +523,7 @@ def oaiHarvest (from_, until, maximum):
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def delete (identifier, updateUpdateQueue=True):
+def delete (identifier):
   """
   Deletes an identifier from the store database.  'identifier' should
   be an unqualified ARK identifier, e.g., "13030/foo".  (To delete a
@@ -544,10 +543,9 @@ def delete (identifier, updateUpdateQueue=True):
     if len(r) > 0:
       blob = r[0][0]
       _execute(c, "DELETE FROM identifier WHERE identifier = ?", (identifier,))
-      if updateUpdateQueue:
-        _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
-          "operation) VALUES (NULL, ?, ?, 2)",
-          (identifier, buffer(blob)))
+      _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
+        "operation) VALUES (NULL, ?, ?, 2)",
+        (identifier, buffer(blob)))
     _commit(c)
   except Exception, e:
     log.otherError("store.delete", e)
@@ -571,12 +569,12 @@ def _operationCodeToString (code):
 def getUpdateQueue (maximum=None):
   """
   Returns the update queue as a list of (sequence number, identifier,
-  metadata/dictionary, metadata/blob, operation) tuples.  The list is
-  in sequence order.  In all cases 'identifier' is an unqualified ARK
-  identifier, e.g., "13030/foo".  'metadata' is a dictionary of
-  element (name, value) pairs.  'operation' is one of the strings
-  "create", "modify", or "delete".  'maximum' can be used to limit the
-  number of tuples returned.
+  metadata/dictionary, metadata/blob, operation, update flag) tuples.
+  The list is in sequence order.  In all cases 'identifier' is an
+  unqualified ARK identifier, e.g., "13030/foo".  'metadata' is a
+  dictionary of element (name, value) pairs.  'operation' is one of
+  the strings "create", "modify", or "delete".  'maximum' can be used
+  to limit the number of tuples returned.
   """
   connection = None
   tainted = False
@@ -588,10 +586,10 @@ def getUpdateQueue (maximum=None):
       limit = " LIMIT %d" % maximum
     else:
       limit = ""
-    _execute(c, "SELECT seq, identifier, metadata, operation FROM " +\
-      "updateQueue ORDER BY seq" + limit)
+    _execute(c, "SELECT seq, identifier, metadata, operation, " +\
+      "updateExternalServices FROM updateQueue ORDER BY seq" + limit)
     return [(r[0], r[1], util.deblobify(r[2]), r[2],
-      _operationCodeToString(r[3])) for r in c.fetchall()]
+      _operationCodeToString(r[3]), bool(r[4])) for r in c.fetchall()]
   except Exception, e:
     log.otherError("store.getUpdateQueue", e)
     tainted = True

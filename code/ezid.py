@@ -143,6 +143,11 @@
 # owned by the EZID administrator, and to protect user privacy, they
 # may be viewed by the EZID administrator only.
 #
+# As a kind of Easter egg, the _external_updates metadata element,
+# which takes the value "yes" or "no", may be specified on
+# setMetadata calls (only) to control the updateExternalServices
+# argument.  The element is not stored.
+#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
@@ -1014,7 +1019,7 @@ def _fixupNonPublicTargets (d):
     d["_st1"] = d["_st"]
     del d["_st"]
 
-def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
+def setMetadata (identifier, user, metadata, updateExternalServices=True):
   """
   Sets metadata elements of a given qualified identifier, e.g.,
   "doi:10.5060/FOO".  'user' is the requestor and should be an
@@ -1057,6 +1062,10 @@ def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
   # 'd' will be our delta dictionary, i.e., it will hold the updates
   # to be applied to 'm', the identifier's current metadata.
   d = metadata.copy()
+  if "_external_updates" in d and user.isSuperuser:
+    # Easter egg.
+    updateExternalServices = (d["_external_updates"].lower() == "yes")
+    del d["_external_updates"]
   r = _validateMetadata(nqidentifier, user, d)
   if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
@@ -1231,7 +1240,7 @@ def setMetadata (identifier, user, metadata, updateUpdateQueue=True):
     # Finally, and most importantly, update our own databases.
     noid_egg.setElements(ark, d)
     log.progress(tid, "noid_egg.setElements")
-    store.update(ark, m, updateUpdateQueue=updateUpdateQueue)
+    store.update(ark, m, updateExternalServices=updateExternalServices)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
