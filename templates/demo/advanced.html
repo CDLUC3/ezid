@@ -1,11 +1,13 @@
 {% extends "layouts/base.html" %}
 {% load layout_extras %}
+{% load menus %}
 {% load i18n %}
 
 {% block title %}{% block title-twitter %}{% trans "Create Advanced Demo ID" %}{% endblock %}{% endblock %}
 {% block description %}{%trans "Use the EZID demo to create an advanced identifier." %}{% endblock %}
 {% block heading %}{% content_heading _("Create an Advanced Demo Identifier") %}{% endblock %}
 {% block content %}
+{% learn_breadcrumb _('EZID Demo') %}
 <div class="tab create__tab">
   <!-- This radio button is hidden by CSS -->
   <input class="tab__input" id="tab-1" type="radio" name="name" aria-checked="false"/>
@@ -21,7 +23,7 @@
     <div class="row">
       <div class="col-md-4 col-md-push-8 create__sidebox">
         <div class="sidebox">
-          <h2 class="sidebox__heading">{% trans "Quick Start Guides" %}</h2>
+          <h2 class="sidebox__heading">{% trans "Quick Start Guides for Demo IDs" %}</h2>
           <ul class="sidebox__list">
             <li><a href="/static/locale/en/EZID_CustomRemainders.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Custom Remainder Rules" %}</a></li>
             <li><a href="/static/locale/en/EZID_AdvancedCreate.pdf" class="link__primary" title="PDF Document" target="_blank">{% trans "Advanced Create for DOIs" %}</a></li>

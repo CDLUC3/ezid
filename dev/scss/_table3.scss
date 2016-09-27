@@ -4,6 +4,7 @@
 
 @include bp(screen2) {
 	.table3 {
+		width: 100%;
 		max-width: 1000px;
 		margin: 10px auto;
 		border-collapse: collapse;
@@ -92,26 +93,24 @@
 			font-weight: bold;
 			white-space: nowrap;
 		}
-
-
 	}
 
-	.table3 .td-title3 {
+	// .table3 .c_identifier {
 		// truncate identifier table cell:
-		max-width: 50vw;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-	}
+	//	max-width: 50vw;
+	//	text-overflow: ellipsis;
+	//	white-space: nowrap;
+	//	overflow: hidden;
+	// }
 
-	.table3 .td-title1::before { content: 'Object Title'; }
-	.table3 .td-title2::before { content: 'Object Creator'; }
-	.table3 .td-title3::before { content: 'Identifier'; }
-	.table3 .td-title4::before { content: 'ID Owner'; }
-	.table3 .td-title5::before { content: 'ID Date Created'; }
-	.table3 .td-title6::before { content: 'ID Date Last Mod'; }
-	.table3 .td-title7::before { content: 'Object Publisher'; }
-	.table3 .td-title8::before { content: 'Object Pub Date'; }
-	.table3 .td-title9::before { content: 'Object Type'; }
-	.table3 .td-title10::before { content: 'ID Status'; }
+	.table3 .c_title::before { content: 'Object Title'; }
+	.table3 .c_creator::before { content: 'Object Creator'; }
+	.table3 .c_identifier::before { content: 'Identifier'; }
+	.table3 .c_owner::before { content: 'ID Owner'; }
+	.table3 .c_create_time::before { content: 'ID Date Created'; }
+	.table3 .c_update_time::before { content: 'ID Date Last Mod'; }
+	.table3 .c_publisher::before { content: 'Object Publisher'; }
+	.table3 .c_pubyear::before { content: 'Object Pub Date'; }
+	.table3 .c_object_type::before { content: 'Object Type'; }
+	.table3 .c_id_status::before { content: 'ID Status'; }
 }

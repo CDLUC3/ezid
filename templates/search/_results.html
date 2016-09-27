@@ -69,12 +69,12 @@ $(document).ready(function(){
   {% include "search/_pagination.html" with primary_page=primary_page select_position="top" %}
   {% endif %}
 
-<table class="table2">
+<table class="table3">
   {% header_row REQUEST fields_selected fields_mapped order_by sort primary_page %}
 <tbody>
 {% for item in results %}
 <tr>
-  {% data_row item fields_selected field_display_types testPrefixes %}
+  {% data_row item fields_selected field_display_types testPrefixes "table3" %}
 </tr>
 {% endfor %}
 </tbody>
