@@ -26,10 +26,10 @@ $(document).ready(function(){
   <div class="fcontrol__group-stacked">
     <label for="manage__keywords" class="fcontrol__text-label-hidden">{% trans "Search Your Identifiers" %}</label>
     {{ form.keywords|add_attributes:"id:manage__keywords,class:fcontrol__text-field-stacked,type:search" }}
-    {% include "includes/search_help.html" %}
   </div>
   <button class="manage__simple-search-button search__action" type="submit">{% trans "Search Your Identifiers" %}</button>
 </div>
+{% include "includes/search_help.html" %}
 <details {{ show_advanced_search }} class="showhide">
   <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
   <div class="row">

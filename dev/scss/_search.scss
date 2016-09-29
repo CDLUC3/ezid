@@ -12,11 +12,11 @@ $search-layout-element-spacing: 30px;
 
 .search__simple {
 	max-width: 1000px;
-	margin: 10px auto 30px;
+	margin: 20px auto 10px;
 
 	@include bp(screen1) {
 		display: flex;
-		margin: $search-layout-element-spacing auto;
+		margin: $search-layout-element-spacing auto 5px;
 	}
 
 }
