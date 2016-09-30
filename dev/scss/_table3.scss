@@ -4,8 +4,10 @@
 
 @include bp(screen2) {
 	.table3 {
+		width: 100%;
 		max-width: 1000px;
 		margin: 10px auto;
+		border-collapse: collapse;
 	}
 
 	.table3 thead tr {
@@ -23,15 +25,31 @@
 		position: relative;
 		padding: 0.5em 30px 0.5em 0.5em;
 		text-align: left;
-		cursor: pointer;
+	}
 
-		&::before {
-			position: absolute;
-			right: 10px;
-			content: url('../images/sort.png');
-		}
+	%sorting-base {
+		position: absolute;
+		top: 0;
+		right: 2px;
+		padding: 12px;
+		border: none;
 
 	}
+
+	.sorting {
+		@extend %sorting-base;
+		background: no-repeat url('../images/sort_brown.png') 12px 8px;
+	}
+
+	.sort__desc {
+		@extend %sorting-base;
+		background: no-repeat url('../images/sort_desc_brown.png') 12px 8px;
+	}
+
+	.sort__asc {
+		@extend %sorting-base;
+		background: no-repeat url('../images/sort_asc_brown.png') 12px 8px;
+ 	}
 
 }
 
@@ -52,11 +70,12 @@
 	}
 
 	.table3 tbody {
+		margin: 0 0 15px;
 		border: 1px solid $design-secondary-color;
 
 		tr:nth-child(even) {
-		  border-top: 2px solid $design-secondary-color;
-		  border-bottom: 2px solid $design-secondary-color;
+		  border-top: 1px solid $design-secondary-color;
+		  border-bottom: 1px solid $design-secondary-color;
 		  background: $design-secondary-lighter;
 		}
 
@@ -75,21 +94,24 @@
 			font-weight: bold;
 			white-space: nowrap;
 		}
-
-		// truncate identifier table cell:
-		&:nth-of-type(3) {
-			max-width: 50vw;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-			overflow: hidden;
-		}
-
 	}
 
-	.table3 td:nth-of-type(1)::before { content: 'Object Title'; }
-	.table3 td:nth-of-type(2)::before { content: 'Object Creator'; }
-	.table3 td:nth-of-type(3)::before { content: 'Identifier'; }
-	.table3 td:nth-of-type(4)::before { content: 'Object Publisher'; }
-	.table3 td:nth-of-type(5)::before { content: 'Object Pub Date'; }
-	.table3 td:nth-of-type(6)::before { content: 'Object Type'; }
+	// .table3 .c_identifier {
+		// truncate identifier table cell:
+	//	max-width: 50vw;
+	//	text-overflow: ellipsis;
+	//	white-space: nowrap;
+	//	overflow: hidden;
+	// }
+
+	.table3 .c_title::before { content: 'Object Title'; }
+	.table3 .c_creator::before { content: 'Object Creator'; }
+	.table3 .c_identifier::before { content: 'Identifier'; }
+	.table3 .c_owner::before { content: 'ID Owner'; }
+	.table3 .c_create_time::before { content: 'ID Date Created'; }
+	.table3 .c_update_time::before { content: 'ID Date Last Mod'; }
+	.table3 .c_publisher::before { content: 'Object Publisher'; }
+	.table3 .c_pubyear::before { content: 'Object Pub Date'; }
+	.table3 .c_object_type::before { content: 'Object Type'; }
+	.table3 .c_id_status::before { content: 'ID Status'; }
 }

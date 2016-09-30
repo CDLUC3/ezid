@@ -17,10 +17,10 @@
   <div class="fcontrol__group-stacked">
     <label for="search__simple-label" class="fcontrol__text-label-hidden">{% trans "Search" %}</label>
     {{ form.keywords|add_attributes:"id:search__simple-label,class:fcontrol__text-field-stacked,type:search" }}
-    <span class="fcontrol__invalid-flag"></span>
   </div>
   <button class="search__simple-button search__action" type="submit">{% trans "Search" %}</button>
 </div>
+{% include "includes/search_help.html" %}
 <details {{ show_advanced_search }} class="showhide">
   <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
   <div class="row">
@@ -107,7 +107,9 @@
 </details>
 </form>
 
+<script type="text/javascript" src="/static/javascripts/readmoreless.js"></script>
 <script type="text/javascript">
+  // focus on page load
   $("#search__simple-label").focus();
 </script>
 {% endblock %}

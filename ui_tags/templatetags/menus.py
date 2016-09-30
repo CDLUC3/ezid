@@ -53,7 +53,7 @@ def menu_user_item(tup, session, is_current):
 def learn_breadcrumb(view_title, parent_dir_title=None, parent_dir_link=None):
   home = _("Home")
   learn = _("Learn")
-  codeblock = '<div class="container"><ul class="breadcrumb">' + \
+  codeblock = '<div class="general__form"><ul class="breadcrumb">' + \
     '<li><a href="/">' + unicode(home) + '</a></li>' + \
     '<li><a href="/learn">' + unicode(learn) + '</a></li>'
   if parent_dir_title is not None:

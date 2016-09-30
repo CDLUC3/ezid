@@ -26,10 +26,10 @@ $(document).ready(function(){
   <div class="fcontrol__group-stacked">
     <label for="manage__keywords" class="fcontrol__text-label-hidden">{% trans "Search Your Identifiers" %}</label>
     {{ form.keywords|add_attributes:"id:manage__keywords,class:fcontrol__text-field-stacked,type:search" }}
-    <span class="fcontrol__invalid-flag">{% trans "Your search cannot not be empty" %}</span>
   </div>
   <button class="manage__simple-search-button search__action" type="submit">{% trans "Search Your Identifiers" %}</button>
 </div>
+{% include "includes/search_help.html" %}
 <details {{ show_advanced_search }} class="showhide">
   <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
   <div class="row">
@@ -220,6 +220,7 @@ $(document).ready(function(){
 
 {% include "search/_results.html" with primary_page="ui_manage.index" %}
 
+<script type="text/javascript" src="/static/javascripts/readmoreless.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
   // Hide header on Manage page always. It just adds too much information on an already full page.

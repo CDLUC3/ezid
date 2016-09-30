@@ -89,11 +89,18 @@ def column_head(request, field, fields_mapped, order_by, sort, primary_page):
   return r 
 
 @register.simple_tag
-def data_row(record, fields_selected, field_display_types, testPrefixes):
+def data_row(record, fields_selected, field_display_types, testPrefixes, table_type="table2"):
   assert 'c_identifier' in record
   id_href_tag_head = "<a href='/id/" + record['c_identifier'] + "' class='link__primary'>" 
-  return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, \
-    testPrefixes, id_href_tag_head) for f in fields_selected]) + '</td>'
+  if table_type == "table2":
+    return '<td>' + '</td><td>'.join([ formatted_field(record, f, field_display_types, \
+      testPrefixes, id_href_tag_head) for f in fields_selected]) + '</td>'
+  if table_type == "table3":
+    r = '' 
+    for f in fields_selected:
+      r += '<td class="' + f + '">' + \
+            formatted_field(record, f, field_display_types, testPrefixes, id_href_tag_head) + '</td>'
+    return r 
 
 FUNCTIONS_FOR_FORMATTING = {
   'datetime'       : lambda x, tp, href: datetime_disp(x, href), 
