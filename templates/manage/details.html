@@ -56,8 +56,8 @@
   {% if not has_block_data and current_profile.name == 'datacite' %}
   <div class="row vertical-buffer-20">
     <div class="call-out">
-      <h2 class="heading__iddetails-citation">{% trans "Citation Preview" %}</h2>
-      <p class="truncated">
+      <h2 class="call-out__heading">{% trans "Citation Preview" %}</h2>
+      <p class="truncated call-out__citation-indent">
         {% get_dict_value identifier "datacite.creator" %}
         ({% get_dict_value identifier "datacite.publicationyear" %}):
         {% get_dict_value identifier "datacite.title" %}.
