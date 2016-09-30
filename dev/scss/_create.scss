@@ -75,6 +75,11 @@
 
 }
 
+.create__button-wrapper {
+	display: flex;
+
+}
+
 .create__button {
 	margin: $form-element-group-spacing 0 0;
 
@@ -84,8 +89,9 @@
 
 }
 
-.create__buttton-note {
-	margin: $form-element-group-spacing 0 0;
+.create__button-note {
+	margin: $form-element-group-spacing;
+	padding-bottom: 15px;
 }
 
 .create__nested-fieldset {

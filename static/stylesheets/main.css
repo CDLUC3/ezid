@@ -2273,21 +2273,6 @@ h2.panel-title > a {
 .fakeid:before {
   content: "* "; }
 
-.call-out h3 {
-  font-size: 1.1em;
-  margin-left: 20px; }
-
-.call-out li {
-  padding-top: 3px; }
-
-.call-out {
-  border: 2px solid #beb6af;
-  background-color: #f9f8f7;
-  padding-bottom: 15px; }
-
-.call-out p {
-  margin-left: 30px; }
-
 .alert {
   margin: 0 -10px; }
 
@@ -2464,13 +2449,6 @@ h2.id-creation {
   color: #d8402f;
   font-weight: bold;
   font-size: 1.1em; }
-
-.heading__iddetails-citation {
-  font-family: KievitWebPro-Bold, Arial, sans-serif;
-  color: black;
-  margin: 18px 0px 0px 10px;
-  font-weight: normal;
-  font-size: 1.2em; }
 
 .inline-header h2, .inline-header h3 {
   margin-top: 0px;
@@ -2789,6 +2767,9 @@ padding-left-base, .padding-left {
   margin-bottom: 4px; }
 
 .vertical-buffer-bot-md {
+  margin-bottom: 15px; }
+
+.vertical-buffer-bot-lg {
   margin-bottom: 25px; }
 
 .vertical-buffer {
