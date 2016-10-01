@@ -71,6 +71,7 @@
 
 .download__link {
 	@extend %link__primary;
+	margin-left: 5px;
 	font-size: 1.1em;
 	font-weight: bold;
 }
