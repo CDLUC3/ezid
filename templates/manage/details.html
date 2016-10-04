@@ -16,38 +16,48 @@
     </div>
   </div>
   <div class="row vertical-buffer-bot">
-    <label class="col-sm-2">{% trans "Identifier" %}:</label>
-    <div class="col-sm-8"><strong>{% identifier_display id_text testPrefixes %}</strong></div>
-  </div>
-  <div class="row vertical-buffer-bot">
-    <label class="col-sm-2 vertical-buffer-xxs">{% trans "Identifier as URL" %}:</label>
-    <div class="col-sm-6">
-      <div id="id_as_url__box" class="vertical-buffer-xxs">
-        <span id="url_to_copy">{% full_url_to_id_details id_text %}</span>
-        <span id="copy_message">{% trans "Link copied to your clipboard" %}</span>
-      </div>
-      <div class="iddetails__delay-text">
-        {% if recent_creation %}
-        ({% trans "Be aware that it can take up to several hours until new DOIs become resolvable." %})
-        {% elif recent_update %}
-        ({% trans "Be aware that it can take up to 24 hours until a DOI update is globally known." %})
-        {% endif %}
+    <div class="col-md-8">
+      <div class="row">
+        <label class="col-md-4 vertical-buffer-xxs">{% trans "Identifier" %}:</label>
+        <div class="col-md-8 vertical-buffer-bot-md"><strong>{% identifier_display id_text testPrefixes %}</strong></div>
+        <label class="col-md-4 vertical-buffer-xxs">{% trans "Identifier as URL" %}:</label>
+        <div class="col-md-7">
+          <div id="id_as_url__box" class="vertical-buffer-xxs">
+            <span id="url_to_copy">{% full_url_to_id_details id_text %}</span>
+            <span id="copy_message">{% trans "Link copied to your clipboard" %}</span>
+          </div>
+          <div class="iddetails__delay-text">
+            {% if recent_creation %}
+            ({% trans "Be aware that it can take up to several hours until new DOIs become resolvable." %})
+            {% elif recent_update %}
+            ({% trans "Be aware that it can take up to 24 hours until a DOI update is globally known." %})
+            {% endif %}
+          </div>
+        </div>
       </div>
     </div>
+    {% if is_test_id %}
+    <div class="col-md-4 call-out__small">
+      <div class="call-out__small-text">&#42; {% trans "Indicates demo identifier. Demo IDs are subject to deletion two weeks after creation and are only meant for testing purposes." %}
+      {% if not authenticatedUser %}
+        <br/><br/>
+        {% blocktrans trimmed %}
+        To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
+        {% endblocktrans %}
+      {% endif %}
+      </div>
+    </div>
+    {% endif %}
     <!-- div class="col-sm-4">
       include "includes/get_link.html"
     </div -->
   </div>
 
-  {% if is_test_id %}
-  <p class="paragraph">&#42; {% trans "Indicates demo identifier" %}</p>
-  {% endif %}
-
   {% if not has_block_data and current_profile.name == 'datacite' %}
   <div class="row vertical-buffer-20">
     <div class="call-out">
-      <h2 class="heading__iddetails-citation">{% trans "Citation Preview" %}</h2>
-      <p class="truncated">
+      <h2 class="call-out__heading">{% trans "Citation Preview" %}</h2>
+      <p class="truncated call-out__citation-indent">
         {% get_dict_value identifier "datacite.creator" %}
         ({% get_dict_value identifier "datacite.publicationyear" %}):
         {% get_dict_value identifier "datacite.title" %}.

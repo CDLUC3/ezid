@@ -1,30 +1,31 @@
 {% load i18n %}
 
-<div class="create__button">
-  <button id="create__button" class="button__primary">{% trans "Create" %}</button>
-{% if calling_page == 'demo' %}
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<div class="create__button-wrapper">
+  <button id="create__button" class="button__primary create__button">{% trans "Create" %}</button>
   {% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
   i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
   i.e.: <a class="don't_translate_classes" href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
   {% endcomment %}
+{% if calling_page == 'demo' %}
+  <div class="sidebox create__button-note"><em>
+  {# Translators: Please preserve &quot; tags. #}
   {% blocktrans trimmed %}
-      <b>NOTE:</b> This is just a demo.
+    By clicking &quot;Create&quot; you will create a demo ID. Demo IDs are subject to deletion two weeks after creation and are only meant for testing purposes.
   {% endblocktrans %}
-      &nbsp;&nbsp;
   {% if not authenticatedUser %}
+    <br/><br/>
     {% blocktrans trimmed %}
       To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
     {% endblocktrans %}
   {% endif %}
+  </em></div>
+{% else %}
+  {% if id_type == 'simple' and calling_page != 'demo' %} 
+    <div class="create__button-note"><em>
+    {# Translators: Please preserve &quot; tags. #}
+    {% trans "Clicking &quot;Create&quot; will create the identifier and make it public. To defer making it public, use the Advanced form." %}
+    </em></div>
+  {% endif %}
 {% endif %}
-  <p class="create__buttton-note"><em>
-{% if id_type == 'simple' %}
-  {# Translators: Please preserve &quot; tags. #}
-  {% trans "Clicking &quot;Create&quot; will create the identifier and make it public. To defer making it public, use the Advanced form." %}
-    &nbsp;&nbsp;
-{% endif %}
-  {% trans "Once created, an identifier cannot be renamed or deleted." %}
-  </em></p>
 </div>
 

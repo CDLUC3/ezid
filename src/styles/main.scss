@@ -51,7 +51,8 @@ padding-left-base {
 }
 
 .vertical-buffer-bot { margin-bottom: $layout-container-margin-xs;}
-.vertical-buffer-bot-md { margin-bottom: 25px;}
+.vertical-buffer-bot-md { margin-bottom: 15px;}
+.vertical-buffer-bot-lg { margin-bottom: 25px;}
 .vertical-buffer { margin-top:50px; }
 .vertical-buffer-sm { margin-top:30px; }
 @media (min-width:$container-md){
