@@ -77,6 +77,11 @@
 
 .create__button-wrapper {
 	display: flex;
+	flex-flow: row wrap;
+
+	@include bp(screen1) {
+		flex-flow: row nowrap;
+	}
 
 }
 

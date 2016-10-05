@@ -19,8 +19,16 @@
 	@extend %fcontrol__group-stacked;
 }
 
+.fcontrol__label-wrapper-stacked {
+	display: flex;
+	flex-flow: row wrap;
+	margin: 0;
+	padding: 0;
+	line-height: 30px;
+}
+
 .fcontrol__text-label-stacked {
-	margin: 0 0 2px;
+	margin: 0 2px;
 	color: $design-primary-color;
 	font-size: 1em;
 

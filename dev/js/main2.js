@@ -51,6 +51,8 @@ $(document).ready(function(){
 
   $('.fcontrol__text-field-stacked[required]').map(function() {
     $(this).siblings('.fcontrol__text-label-stacked').addClass('fcontrol__label-required');
+    // Also handle labels with different DOM to accomodate help icon
+    $(this).siblings('.fcontrol__label-wrapper-stacked').children('.fcontrol__text-label-stacked').addClass('fcontrol__label-required');
   });
 
   $('.fcontrol__text-field-inline[required]').map(function() {
