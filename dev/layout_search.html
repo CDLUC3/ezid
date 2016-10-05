@@ -35,12 +35,12 @@
     </div>
     <div class="fcontrol__help-wrapper">
       <div class="fcontrol__help">EZID search uses AND logic which means ALL terms entered into a search box must be present in order to show up in the results.
-        <br/><a class="hide" href="#">Read more &dArr;</a></div>
-      <div class="read-more-content">
+        <br/><a class="" href="#">Read more &dArr;</a></div>
+      <div class="read-more-content hide">
         <div class="fcontrol__help">&nbsp;&nbsp;&nbsp;&nbsp;&#8226; Example AND search: "trees fruit" will return any search results with both keywords trees and fruit.</div>
         <div class="fcontrol__help">If you would like to use OR logic which means ANY terms entered in the search box can be present in the results, please add an "OR" to the search query.</div>
         <div class="fcontrol__help">&nbsp;&nbsp;&nbsp;&nbsp;&#8226; Example OR search: "trees OR fruit" will return any search results with the keywords trees or fruit.
-          <br/><a class="read-more-hide" href="#">&uArr; Read less</a></div>
+          <br/><a class="read-more-hide hide" href="#">&uArr; Read less</a></div>
       </div>
     </div>
 
@@ -48,15 +48,21 @@
       <summary class="showhide__summary"><h2 class="showhide__title-heading">Advanced Search</h2></summary>
       <div class="row">
         <div class="col-md-6 search__form-element-container">
-          <div class="fcontrol__group-stacked">
-            <label for="search__simple-label" class="fcontrol__text-label-stacked">Identifier/Identifier Prefix</label>
-            <input id="search__simple-label" class="fcontrol__text-field-stacked" type="text" placeholder="doi:10.17614/Q44F1NB79" >
+          <div class="fcontrol__group-stacked--invalid">
+            <div class="fcontrol__label-wrapper-stacked">
+              <label for="search__simple-label" class="fcontrol__text-label-stacked">Identifier/Identifier Prefix</label>
+              <a class="button__icon-link" href=""><img src="images/iconHelp.svg" alt="Click for additional help on ..." class="button__icon-help" title="Click for additional help on ..."/></a>
+            </div>
+            <input id="search__simple-label" class="fcontrol__text-field-stacked" type="text" placeholder="doi:10.17614/Q44F1NB79">
             <span class="fcontrol__invalid-flag">Your search must not be empty</span>
           </div>
         </div>
         <div class="col-md-6 search__form-element-container">
           <div class="fcontrol__group-stacked">
-            <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Title (What)</label>
+            <div class="fcontrol__label-wrapper-stacked">
+              <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Title (What)</label>
+              <a class="button__icon-link" href=""><img src="images/iconHelp.svg" alt="Click for additional help on ..." class="button__icon-help" title="Click for additional help on ..."/></a>
+            </div>
             <input id="search__simple-label" class="fcontrol__text-field-stacked" type="text" placeholder="Ex. 2,2,2-trichloro-1-[(4R)-3,3,4-trimethyl-1,1-dioxo-thiazetidin-2-yl]ethanone" >
             <span class="fcontrol__invalid-flag">Your search must not be empty</span>
           </div>
@@ -65,14 +71,20 @@
       <div class="row">
         <div class="col-md-6 search__form-element-container">
           <div class="fcontrol__group-stacked">
-            <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Creator (Who)</label>
+            <div class="fcontrol__label-wrapper-stacked">
+              <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Creator (Who)</label>
+              <a class="button__icon-link" href=""><img src="images/iconHelp.svg" alt="Click for additional help on ..." class="button__icon-help" title="Click for additional help on ..."/></a>
+            </div>
             <input id="search__simple-label" class="fcontrol__text-field-stacked" type="text" placeholder="Ex. Pitt Quantum Repository" >
             <span class="fcontrol__invalid-flag">Your search must not be empty</span>
           </div>
         </div>
         <div class="col-md-6 search__form-element-container">
           <div class="fcontrol__group-stacked">
-            <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Publisher</label>
+            <div class="fcontrol__label-wrapper-stacked">
+              <label for="search__simple-label" class="fcontrol__text-label-stacked">Object Publisher</label>
+              <a class="button__icon-link" href=""><img src="images/iconHelp.svg" alt="Click for additional help on ..." class="button__icon-help" title="Click for additional help on ..."/></a>
+            </div>
             <input id="search__simple-label" class="fcontrol__text-field-stacked" type="text" placeholder="Ex. University of Pittsburgh" >
             <span class="fcontrol__invalid-flag">Your search must not be empty</span>
           </div>
@@ -81,7 +93,10 @@
       <div class="row">
         <div class="col-md-6">
           <div class="fieldset-stacked" role="group" aria-labelledby="fieldset__example4">
-            <div id="fieldset__example4" class="fieldset-stacked__legend search__publication-fieldset">Object Publication Date (When)</div>
+            <div id="fieldset__example4" class="fieldset-stacked__legend search__publication-fieldset">
+              Object Publication Year
+              <a class="button__icon-link" href=""><img src="images/iconHelp.svg" alt="Click for additional help on selecting proxy users" class="button__icon-help" title="Click for additional help on making scrambled eggs"/></a>
+            </div>
             <div class="fcontrol__inline-groups search__inline-groups">
               <div class="fcontrol__group-inline--invalid">
                 <label for="fcontrol__example-label2" class="fcontrol__text-label-inline">From</label>
@@ -102,7 +117,10 @@
         </div>
         <div class="col-md-6 search__form-element-container">
           <div class="fcontrol__select-group-stacked">
-            <label for="fcontrol__example-label12" class="fcontrol__select-label-stacked">Object Type</label>
+            <label for="fcontrol__example-label12" class="fcontrol__select-label-stacked">
+              Object Type
+              <a class="button__icon-link" href=""><img src="images/iconHelp.svg" alt="Click for additional help on selecting proxy users" class="button__icon-help" title="Click for additional help on making scrambled eggs"/></a>
+            </label>
             <select name="url-here" id="fcontrol__example-label12" class="fcontrol__select--fullwidth">
               <option value="">Select a type of object</option>
               <option value="">Autovisual</option>
@@ -115,7 +133,10 @@
       <div class="row">
         <div class="col-md-6">
           <div class="fcontrol__select-group-stacked">
-            <label for="fcontrol__example-label12" class="fcontrol__select-label-stacked">ID Type</label>
+            <label for="fcontrol__example-label12" class="fcontrol__select-label-stacked">
+              ID Type
+              <a class="button__icon-link" href=""><img src="images/iconHelp.svg" alt="Click for additional help on selecting proxy users" class="button__icon-help" title="Click for additional help on making scrambled eggs"/></a>
+            </label>
             <select name="url-here" id="fcontrol__example-label12" class="fcontrol__select--fullwidth">
               <option value="">Select a type of identifier (ARK or DOI)</option>
               <option value="">ARK</option>
