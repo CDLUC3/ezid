@@ -47,22 +47,24 @@ $(document).ready(function(){
 {% include "info/learnsub_media.html" %}
   </details>
   </div>
+
+  <a href="/doc/apidoc.html">
+    <div class="learn-button__section">
+      <div class="learn-button__title">
+        <h2 class="learn-button__title-heading">API Guide</h2>
+      </div>
+    </div>
+  </a>
+
+  <a href="{% url "ui_demo.index" %}">
+    <div class="learn-button__section">
+      <div class="learn-button__title">
+        <h2 class="learn-button__title-heading">EZID Demo</h2>
+      </div>
+    </div>
+  </a>
+
 </div>
 
-<a href="/doc/apidoc.html">
-  <div class="learn-button__section">
-    <div class="learn-button__title">
-      <h2 class="learn-button__title-heading">API Guide</h2>
-    </div>
-  </div>
-</a>
-
-<a href="{% url "ui_demo.index" %}">
-  <div class="learn-button__section">
-    <div class="learn-button__title">
-      <h2 class="learn-button__title-heading">EZID Demo</h2>
-    </div>
-  </div>
-</a>
 
 {% endblock %}
