@@ -26,10 +26,7 @@
   <div class="row">
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked{% if form.identifier.errors %}--invalid{% endif %}">
-        <div class="fcontrol__label-wrapper-stacked">
-          <label for="{{ form.identifier.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.identifier.label }}</label>
-          {% help_icon "search_identifier" _("searching by identifier") %}
-        </div>
+        <label for="{{ form.identifier.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.identifier.label }}</label>
         {{ form.identifier|add_attributes:"fcontrol__text-field-stacked" }}
       {% if form.identifier.errors %}
         {% for error in form.identifier.errors %}
@@ -40,10 +37,7 @@
     </div>
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked">
-        <div class="fcontrol__label-wrapper-stacked">
-          <label for="{{ form.title.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.title.label }}</label>
-          {% help_icon "search_title" _("searching by title") %}
-        </div>
+        <label for="{{ form.title.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.title.label }}</label>
         {{ form.title|add_attributes:"fcontrol__text-field-stacked" }}
       </div>{% comment %}No validation necessary{% endcomment %}
     </div>
@@ -51,19 +45,13 @@
   <div class="row">
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked">
-        <div class="fcontrol__label-wrapper-stacked">
-          <label for="{{ form.creator.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.creator.label }}</label>
-          {% help_icon "search_creator" _("searching by creator") %}
-        </div>
+        <label for="{{ form.creator.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.creator.label }}</label>
         {{ form.creator|add_attributes:"fcontrol__text-field-stacked" }}
       </div>{% comment %}No validation necessary{% endcomment %}
     </div>
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked">
-        <div class="fcontrol__label-wrapper-stacked">
-          <label for="{{ form.publisher.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.publisher.label }}</label>
-          {% help_icon "search_publisher" _("searching by publisher") %}
-        </div>
+        <label for="{{ form.publisher.id_for_label }}" class="fcontrol__text-label-stacked">{{ form.publisher.label }}</label>
         {{ form.publisher|add_attributes:"fcontrol__text-field-stacked" }}
       </div>{% comment %}No validation necessary{% endcomment %}
     </div>
@@ -73,7 +61,6 @@
       <div class="fieldset-stacked" role="group" aria-labelledby="object-publication-year">
         <div id="object-publication-year" class="fieldset-stacked__legend search__publication-fieldset">
           {% trans "Object Publication Year" %}
-          {% help_icon "search_pubyear" _("searching by publication year") %}
         </div>
         <div class="fcontrol__inline-groups search__inline-groups">
           <div class="fcontrol__group-inline{% if form.pubyear_from.errors %}--invalid{% endif %}">
@@ -107,7 +94,6 @@
       <div class="fcontrol__select-group-stacked">
 	<label for="{{ form.object_type.id_for_label }}" class="fcontrol__select-label-stacked">
           {{ form.object_type.label }}
-          {% help_icon "search_type" _("searching by object type") %}
         </label>
         {{ form.object_type|add_attributes:"fcontrol__select--fullwidth"}}
       </div>
@@ -118,7 +104,6 @@
       <div class="fcontrol__select-group-stacked">
 	<label for="{{ form.id_type.id_for_label }}" class="fcontrol__select-label-stacked">
           {{ form.id_type.label }}
-          {% help_icon "search_id_type" _("searching by identifier type") %}
         </label>
         {{ form.id_type|add_attributes:"fcontrol__select--fullwidth"}}
       </div>
