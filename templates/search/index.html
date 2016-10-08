@@ -21,8 +21,15 @@
   <button class="search__simple-button search__action" type="submit">{% trans "Search" %}</button>
 </div>
 {% include "includes/search_help.html" %}
-<details {{ show_advanced_search }} class="showhide">
-  <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
+
+<!-- ToDo {{ show_advanced_search }} -->
+<div class="showhide2">
+  <a id="showhide2__title-heading" class="showhide2__title-heading" data-toggle="collapse" href="#showhide2__accordion-body">
+    <div class="showhide__summary">{% trans "Advanced Search" %}</div>
+  </a>
+  {% help_icon "search_advanced" _("on using advanced fields") "button__icon-help" "right" %}
+</div>
+<div id="showhide2__accordion-body" class="showhide2__accordion-body collapse">
   <div class="row">
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked{% if form.identifier.errors %}--invalid{% endif %}">
@@ -112,7 +119,7 @@
       <button class="search__simple-button2 search__action" type="submit">{% trans "Search" %}</button>
     </div>
   </div>
-</details>
+</div>
 </form>
 
 <script type="text/javascript" src="/static/javascripts/readmoreless.js"></script>

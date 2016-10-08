@@ -14,6 +14,16 @@
 
 }
 
+// Different kind of show/hide which uses bootstrap collapse.js instead of html5 details
+// all because we need to put the help icon right beside the heading and I couldn't
+// figure out how to do that inside summary element
+.showhide2 {
+	display: flex;
+	max-width: 1000px;
+	height: 32px;
+	margin: 0 auto 30px;
+}
+
 %showhide-icon-base {
 	position: absolute;
 	top: 0;
@@ -51,6 +61,20 @@
 .showhide__title-heading {
 	margin: 0;
 	font-size: inherit;
+}
+
+.showhide2__title-heading {
+	margin: 0 10px 0 0;
+
+}
+
+.showhide2__icon-help {
+	margin: 4px 0 6px 18px;
+}
+
+.showhide2__accordion-body {
+	max-width: 1000px;
+	margin: 0 auto 30px;
 }
 
 // Used by "Read more" toggle used for help text under search box on search and manage pages
