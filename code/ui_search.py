@@ -109,13 +109,13 @@ def index(request):
   if request.method != "GET":
     return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_search.index' }
-  d['show_advanced_search'] = "closed"
+  d['collapse_advanced_search'] = "collapsed"
   d['q'] = queryDict(request)
   d['form'] = form_objects.BaseSearchIdForm(d['q'])
   # if users are coming back to an advanced search, auto-open adv. search block
   if 'modify_search' in d['q'] and d['q']['modify_search'] == 't':
     if 'keywords' in d['q'] and d['q']['keywords'].strip() == '':
-      d['show_advanced_search'] = "open"
+      d['collapse_advanced_search'] = ""  # Leaving this empty actually opens advanced search block
   else:
     if d['q']:
       d['p'] = 1
@@ -246,7 +246,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         d['heading_title'] = _("Your Identifiers") + " (" + d['total_results_str'] + ")"
     d['search_success'] = True
   else:  # Form did not validate
-    d['show_advanced_search'] = "open" # Open up adv. search html block
+    d['collapse_advanced_search'] = ""    # Open up adv. search html block
     if '__all__' in d['form'].errors:
       # non_form_error, probably due to all fields being empty
       all_errors = ''

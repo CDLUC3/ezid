@@ -30,8 +30,17 @@ $(document).ready(function(){
   <button class="manage__simple-search-button search__action" type="submit">{% trans "Search Your Identifiers" %}</button>
 </div>
 {% include "includes/search_help.html" %}
-<details {{ show_advanced_search }} class="showhide">
-  <summary class="showhide__summary">{% trans "Advanced Search" %}</summary>
+<div class="showhide2">
+  <a id="showhide2__title-heading" class="showhide2__title-heading {{ collapse_advanced_search }}" data-toggle="collapse" href="#showhide2__accordion-body">
+    <div class="showhide2__summary">{% trans "Advanced Search" %}</div>
+  </a>
+  {% help_icon "search_advanced" _("on using advanced fields") "button__icon-help" %}
+</div>
+{% if collapse_advanced_search == 'collapsed' %}
+<div id="showhide2__accordion-body" class="showhide2__accordion-body collapse" aria-expanded="false">
+{% else %}
+<div id="showhide2__accordion-body" class="showhide2__accordion-body collapse in" aria-expanded="true"/>
+{% endif %}
   <div class="row">
     <div class="col-md-6 manage__form-element-container">
       <div class="fcontrol__group-stacked{% if form.identifier.errors %}--invalid{% endif %}">
@@ -215,12 +224,14 @@ $(document).ready(function(){
       <button id="reset_search" type="button" class="button__primary manage__reset-button">Reset Search Fields</button>
     </div>
   </div>
-</details>
+</div>
 </form>
 
 {% include "search/_results.html" with primary_page="ui_manage.index" %}
 
 <script type="text/javascript" src="/static/javascripts/readmoreless.js"></script>
+{% include "info/popup_help.html" %}
+<script type="text/javascript" src="/static/javascripts/help_box_.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
   // Hide header on Manage page always. It just adds too much information on an already full page.
