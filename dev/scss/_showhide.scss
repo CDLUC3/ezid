@@ -33,7 +33,7 @@
 	height: 32px;
 }
 
-.showhide__summary {
+%showhide__summary-base {
 	position: relative;
 	margin: 0 0 30px;
 	padding: 7px 0 7px 40px;
@@ -49,10 +49,25 @@
 		background: $design-form-element-bg;
 		content: '';
 	}
+}
+
+.showhide__summary {
+	@extend %showhide__summary-base;
 
 	&::after { // icon image
 		@extend %showhide-icon-base;
 		background: url('../images/icon_down-arrow2.svg') center / 12px no-repeat;
+		content: '';
+	}
+
+}
+
+.showhide2__summary {
+	@extend %showhide__summary-base;
+
+	&::after { // icon image
+		@extend %showhide-icon-base;
+		background: url('../images/icon_up-arrow2.svg') center / 12px no-repeat;
 		content: '';
 	}
 
@@ -65,6 +80,19 @@
 
 .showhide2__title-heading {
 	margin: 0 10px 0 0;
+
+	&:hover {
+		text-decoration: none; // bootstrap override
+	}
+
+        &[class~="collapsed"] .showhide2__summary {
+
+                &::after { // flip down arrow to up
+                        transform: rotate(-180deg);
+                }
+
+        }
+
 
 }
 

@@ -22,14 +22,17 @@
 </div>
 {% include "includes/search_help.html" %}
 
-<!-- ToDo {{ show_advanced_search }} -->
 <div class="showhide2">
-  <a id="showhide2__title-heading" class="showhide2__title-heading" data-toggle="collapse" href="#showhide2__accordion-body">
-    <div class="showhide__summary">{% trans "Advanced Search" %}</div>
+  <a id="showhide2__title-heading" class="showhide2__title-heading {{ collapse_advanced_search }}" data-toggle="collapse" href="#showhide2__accordion-body">
+    <div class="showhide2__summary">{% trans "Advanced Search" %}</div>
   </a>
-  {% help_icon "search_advanced" _("on using advanced fields") "button__icon-help" "right" %}
+  {% help_icon "search_advanced" _("on using advanced fields") "button__icon-help" %}
 </div>
-<div id="showhide2__accordion-body" class="showhide2__accordion-body collapse">
+{% if collapse_advanced_search == 'collapsed' %}
+<div id="showhide2__accordion-body" class="showhide2__accordion-body collapse" aria-expanded="false">
+{% else %}
+<div id="showhide2__accordion-body" class="showhide2__accordion-body collapse in" aria-expanded="true"/>
+{% endif %}
   <div class="row">
     <div class="col-md-6 search__form-element-container">
       <div class="fcontrol__group-stacked{% if form.identifier.errors %}--invalid{% endif %}">
@@ -129,5 +132,4 @@
   // focus on page load
   $("#search__simple-label").focus();
 </script>
-
 {% endblock %}
