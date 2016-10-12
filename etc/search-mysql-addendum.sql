@@ -11,6 +11,8 @@ ALTER TABLE ezidapp_searchuser MODIFY pid VARCHAR(255) NOT NULL
   COLLATE 'ascii_bin';
 ALTER TABLE ezidapp_searchidentifier MODIFY identifier VARCHAR(255)
   NOT NULL COLLATE 'ascii_bin';
+ALTER TABLE ezidapp_linkchecker MODIFY identifier VARCHAR(255)
+  NOT NULL COLLATE 'ascii_bin';
 
 -- A gotcha: MySQL's UTF-8 character set is capable of storing the
 -- Basic Multilingual Plane only (surprise!), so for those fields that
@@ -72,4 +74,4 @@ CREATE FULLTEXT INDEX ezidapp_searchidentifier_keywords
 
 -- The following greatly improves index statistics.
 
-ALTER TABLE ezidapp_searchidentifier STATS_SAMPLE_PAGES = 200;
+ALTER TABLE ezidapp_searchidentifier STATS_SAMPLE_PAGES = 2000;
