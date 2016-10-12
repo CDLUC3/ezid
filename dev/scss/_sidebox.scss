@@ -19,3 +19,47 @@
 	}
 
 }
+
+// ##### Call-Out Component ##### //
+//Used on Create ID pages
+%call-out-base {
+	border: 2px solid $design-light-gray-border-color;
+	background-color: $design-light-gray-bg-color;
+}
+
+.call-out {
+	@extend %call-out-base;
+	padding: 10px 15px;
+
+	h3 {
+		margin-left: 20px;
+		font-size: 1.1em;
+	}
+
+	li {
+		padding-top: 3px;
+
+	}
+
+}
+
+.call-out__small {
+	@extend %call-out-base;
+	padding: 6px 10px;
+}
+
+.call-out__heading {
+	color: $design-black-color;
+	font-family: KievitWebPro-Bold, Arial, sans-serif;
+	font-size: 1.2em;
+	font-weight: normal;
+
+}
+
+.call-out__citation-indent {
+	margin-left: 20px;
+}
+
+.call-out__small-text {
+	font-size: 0.9em;
+}

@@ -20,33 +20,6 @@ a:hover {
   content:"* ";
 }
 
-//Used on Create ID pages
-.call-out h3 {
-  font-size: 1.1em;
-  margin-left: 20px;
-}
-
-.call-out li {
-  padding-top: 3px;
-}
-
-.call-out a, 
-.call-out a:visited, 
-.call-out a:link {
-//  @include text-link2($design-primary-color);
-}
-
-.call-out {
-  border:2px solid $design-light-gray-border-color;
-  background-color: $design-light-gray-bg-color;
-  padding-bottom: 15px;
-  // margin: 25px 20px 10px 0px;
-  // width: 80%;
-}
-.call-out p {
-  margin-left: $layout-container-margin-lg;
-}
-
 .alert {
   margin: 0 -10px;
 }

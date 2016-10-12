@@ -2,15 +2,20 @@
 
 %button__base {
 	display: inline-block; // if class applied to <a>instead of <button>
+	font-size: 0.9em;
+	font-weight: bold;
+	text-decoration: none;
+	cursor: pointer; // reset default style
+
+}
+
+%button__square-base {
+	@extend %button__base;
 	height: $form-element-height;
 	padding: 0 1.3em;
 	border: none; // reset default style
 	color: $design-white-color;
-	font-size: 0.9em;
-	font-weight: bold;
-	text-decoration: none;
 	text-transform: uppercase;
-	cursor: pointer; // reset default style
 
 	&:hover { // OK to remove if links disabled in bootstrap
 		color: $design-white-color;
@@ -18,8 +23,14 @@
 
 }
 
-%button__primary {
+%button__rounded {
 	@extend %button__base;
+	border: 1px solid $design-light-gray-border-color;
+	border-radius: $form-element-border-radius;
+}
+
+%button__primary {
+	@extend %button__square-base;
 	background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
 }
 
@@ -37,7 +48,7 @@
 }
 
 %button__pop {
-	@extend %button__base;
+	@extend %button__square-base;
 	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
 }
 
@@ -45,12 +56,12 @@
 	@extend %button__pop;
 }
 
+
 %button__plus-minus {
+	@extend %button__rounded;
 	position: relative;
 	width: 32px;
 	height: 32px;
-	border: 1px solid $design-light-gray-border-color;
-	border-radius: $form-element-border-radius;
 }
 
 .button__plus {
@@ -70,7 +81,7 @@
 
 %button__icon-help-base {
 	display: inline-block;
-	margin: 0 0 0 8px;
+	margin: 0 0 6px 8px;
 }
 
 .button__icon-help {
@@ -97,3 +108,11 @@
 	// }
 }
 
+.button__cancel {
+	@extend %button__rounded;
+	height: 32px;
+	padding: 0 1.3em;
+	background: $design-form-element-bg;
+	text-transform: uppercase;
+
+}

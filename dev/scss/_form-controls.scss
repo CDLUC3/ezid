@@ -11,7 +11,7 @@
 
 %fcontrol__group-stacked {
 	display: flex;
-	flex: 1 0 auto; // for when parent containers of this component use flex
+	flex: 1 1 auto; // for when parent containers of this component use flex
 	flex-flow: column nowrap;
 }
 
@@ -19,8 +19,16 @@
 	@extend %fcontrol__group-stacked;
 }
 
+.fcontrol__label-wrapper-stacked {
+	display: flex;
+	flex-flow: row wrap;
+	margin: 0;
+	padding: 0;
+	line-height: 30px;
+}
+
 .fcontrol__text-label-stacked {
-	margin: 0 0 2px;
+	margin: 0 2px;
 	color: $design-primary-color;
 	font-size: 1em;
 
@@ -363,6 +371,22 @@
 		font-weight: normal;
 		content: ' (Required)';
 	}
+
+}
+
+// ***** Help Text ***** //
+
+.fcontrol__help {
+	width: 90%;
+	padding: 0.9em 1.2em 0;
+	color: $input-color-placeholder;
+	font-weight: normal;
+
+}
+
+.fcontrol__help-wrapper {
+	max-width: 1000px;
+	margin: 0 auto 15px;
 
 }
 

@@ -28,6 +28,7 @@ FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") +\
 def index(request):
   """ Manage Page, listing all Ids owned by user, or if groupadmin, all group users """
   d = { 'menu_item' : 'ui_manage.index' }
+  d['collapse_advanced_search'] = "collapsed"
   if request.method != "GET":
     return uic.methodNotAllowed(request)
   noConstraintsReqd = True  # Empty 'manage' form means search everything
