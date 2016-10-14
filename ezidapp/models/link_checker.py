@@ -28,7 +28,7 @@ class LinkChecker (django.db.models.Model):
   # Stores all public, real (non-test) identifiers that have
   # non-default target URLs; their target URLs; and link checker
   # results.  This table is updated from the primary EZID tables, but
-  # will always lag behind; it is not synchronized.
+  # always lags behind; it is not synchronized.
 
   identifier = django.db.models.CharField(
     max_length=util.maxIdentifierLength, unique=True)
@@ -54,13 +54,13 @@ class LinkChecker (django.db.models.Model):
     validators=[django.core.validators.MinValueValidator(0)], db_index=True)
   # The number of successive check failures.
 
-  @property
-  def isGood (self):
-    return self.numFailures == 0
+  isBad = django.db.models.BooleanField(default=False, editable=False)
+  # Computed value for indexing purposes.  True if the number of
+  # failures is positive.
 
   @property
-  def isBad (self):
-    return self.numFailures > 0
+  def isGood (self):
+    return not self.isBad
 
   returnCode = django.db.models.IntegerField(blank=True, null=True)
   # The HTTP return code from the last check; or a negative value if
@@ -80,6 +80,12 @@ class LinkChecker (django.db.models.Model):
   hash = django.db.models.CharField(max_length=32, blank=True)
   # If the last check was successful, the MD5 hash of the returned
   # resource; otherwise empty.
+
+  class Meta:
+    index_together = [("owner_id", "isBad", "lastCheckTime")]
+
+  def clean (self):
+    self.isBad = (self.numFailures > 0)
 
   def checkSucceeded (self, mimeType, content):
     self.lastCheckTime = int(time.time())
