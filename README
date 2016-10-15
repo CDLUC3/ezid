@@ -5,6 +5,13 @@ EZID is a Django web application that can be run under Django's
 built-in development server or under Apache with the mod_wsgi
 extension.
 
+Also included in this source distribution is a target URL link
+checker, which runs as a separate process (and can run on a separate
+machine from the main server) and is only loosely coupled to EZID
+through EZID's database.  See
+.../SITE_ROOT/PROJECT_ROOT/tools/link-checker for more information.
+The remainder of this README discusses only the main server.
+
 Prerequisites
 =============
 
