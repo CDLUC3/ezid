@@ -4,6 +4,7 @@ from datacite_queue import DataciteQueue
 from download_queue import DownloadQueue
 from group import Group
 from identifier import Identifier
+from link_checker import LinkChecker
 from new_account_worksheet import NewAccountWorksheet
 from profile import Profile
 from realm import Realm

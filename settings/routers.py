@@ -1,8 +1,13 @@
 import django.conf
 
+# The link checker's table is temporarily in the search database.
+# When the store database is converted to MySQL, it should be moved
+# there.
+
 class Router (object):
   def db_for_read (self, model, **hints):
-    if model._meta.db_table.startswith("ezidapp_search"):
+    t = model._meta.db_table
+    if t.startswith("ezidapp_search") or t == "ezidapp_linkchecker":
       return "search"
     else:
       return "default"
@@ -12,4 +17,5 @@ class Router (object):
       return True
     else:
       return not ((db == "search") ^\
-        (app_label == "ezidapp" and model_name.startswith("search")))
+        (app_label == "ezidapp" and (model_name.startswith("search") or\
+        model_name == "linkchecker")))
