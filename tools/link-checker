@@ -252,7 +252,7 @@ def main ():
         for i in range(NUM_WORKERS): threads[i].join()
         _log.info(("end processing, net effective average pass time %ss, " +\
           "total sleep time %s") % (str(round(float(_stats[1])/\
-          (_stats[2] if _stats[2] > 0 else 1)/NUM_WORKERS)),
+          (_stats[2] if _stats[2] > 0 else 1)/NUM_WORKERS, 1)),
           toHms(_stats[0])))
       else:
         # The sleep below is just to prevent a compute-intensive loop.
