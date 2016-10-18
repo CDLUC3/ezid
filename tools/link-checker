@@ -42,7 +42,7 @@
 # re-checked more frequently.
 #
 # Failures are not reported immediately because transient outages are
-# frequently encountered.  Only after a target URL successively fails
+# frequently encountered.  Only after a target URL consecutively fails
 # some number of checks (say, a dozen over a span of two weeks) is it
 # considered notification-worthy.
 #
@@ -75,10 +75,10 @@ CHECK_TIMEOUT = int(config.get("linkchecker.check_timeout"))
 USER_AGENT = config.get("linkchecker.user_agent")
 
 _log = logging.getLogger()
-_workset = None
+_workset = None # { owner_id: [LinkChecker, ...] }
 _stopNow = None
-_totalSleepTime = None
-_sleepTimeLock = threading.Lock()
+_stats = None # [total sleep time, total pass time, number of passes]
+_statsLock = threading.Lock()
 
 def s (n):
   if n != 1:
@@ -155,7 +155,7 @@ def updateDatabaseTable ():
 
 def loadWorkset ():
   global _workset
-  _workset = {} # { owner_id: [LinkChecker, ...] }
+  _workset = {}
   _log.info("begin load workset")
   for user in ezidapp.models.SearchUser.objects.all().only("id"):
     def query (isBad, timeBound, limit):
@@ -173,11 +173,12 @@ def loadWorkset ():
     s(numOwners), numLinks, s(numLinks)))
 
 def worker (workerIndex):
-  global _totalSleepTime
+  global _stats
   try:
     indexes = dict((o, [workerIndex, 0]) for o in _workset.keys())
     # indexes = { owner_id: [current index, last check time] }
     while len(indexes) > 0:
+      start = now()
       for owner_id, info in indexes.items():
         if _stopNow: return
         if info[0] >= len(_workset[owner_id]):
@@ -186,11 +187,11 @@ def worker (workerIndex):
         t = now()-info[1]
         if t < SAME_OWNER_MINIMUM:
           time.sleep(SAME_OWNER_MINIMUM-t)
-          _sleepTimeLock.acquire()
+          _statsLock.acquire()
           try:
-            _totalSleepTime += SAME_OWNER_MINIMUM-t
+            _stats[0] += SAME_OWNER_MINIMUM-t
           finally:
-            _sleepTimeLock.release()
+            _statsLock.release()
         lc = _workset[owner_id][info[0]]
         # Some websites fall into infinite redirect loops if cookies
         # are not utilized.
@@ -211,12 +212,18 @@ def worker (workerIndex):
         lc.save()
         info[0] += NUM_WORKERS
         info[1] = now()
+      _statsLock.acquire()
+      try:
+        _stats[1] += now()-start
+        _stats[2] += 1
+      finally:
+        _statsLock.release()
   except:
     _log.error("unhandled exception in worker thread %d" % workerIndex)
     raise
 
 def main ():
-  global _totalSleepTime
+  global _stats
   while True:
     start = now()
     updateDatabaseTable()
@@ -225,9 +232,10 @@ def main ():
     firstRound = True
     while True:
       loadWorkset()
+      _log.info("begin processing")
       if len(_workset) > 0:
         threads = []
-        _totalSleepTime = 0
+        _stats = [0, 0, 0]
         for i in range(NUM_WORKERS):
           def wrapper (index):
             return lambda: worker(index)
@@ -242,8 +250,10 @@ def main ():
           threads[i].join(timeout)
         _stopNow = True
         for i in range(NUM_WORKERS): threads[i].join()
-        _log.info("end processing, total sleep time %s" %\
-          toHms(_totalSleepTime))
+        _log.info(("end processing, net effective average pass time %ss, " +\
+          "total sleep time %s") % (str(round(float(_stats[1])/\
+          (_stats[2] if _stats[2] > 0 else 1)/NUM_WORKERS)),
+          toHms(_stats[0])))
       else:
         # The sleep below is just to prevent a compute-intensive loop.
         _log.info("end processing (nothing to check)")
