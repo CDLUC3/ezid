@@ -1,4 +1,5 @@
 from common import *
+import ssl
 
 DEPLOYMENT_LEVEL = "localdev"
 
@@ -21,6 +22,15 @@ LOCALIZATIONS["localhost:8001"] = ("purdue", ["gjanee@ucop.edu"])
 LOCALIZATIONS["localhost:8002"] = ("jisc-edina", ["gjanee@ucop.edu"])
 
 injectSecrets(DEPLOYMENT_LEVEL)
+
+try:
+  _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+  # Legacy Python that doesn't verify HTTPS certificates by default
+  pass
+else:
+  # Handle target environment that doesn't support HTTPS verification
+  ssl._create_default_https_context = _create_unverified_https_context
 
 # Andy's MySQL driver won't allow utf8mb4 for some reason.
 DATABASES["search"]["OPTIONS"]["charset"] = "utf8"
