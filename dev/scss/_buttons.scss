@@ -64,6 +64,13 @@
 	height: 32px;
 }
 
+%button__smallplus-minus {
+	@extend %button__rounded;
+	position: relative;
+	width: 18px;
+	height: 18px;
+}
+
 .button__plus {
 	@extend %button__plus-minus;
 	background: url('../images/icon_plus-sign.svg') center / 12px no-repeat, $design-form-element-bg;
@@ -72,6 +79,16 @@
 .button__minus {
 	@extend %button__plus-minus;
 	background: url('../images/icon_minus-sign.svg') center / 12px no-repeat, $design-form-element-bg;
+}
+
+.button__plus-small {
+	@extend %button__smallplus-minus;
+	background: url('../images/icon_plus-sign.svg') center / 7px no-repeat, $design-form-element-bg;
+}
+
+.button__minus-small {
+	@extend %button__smallplus-minus;
+	background: url('../images/icon_minus-sign.svg') center / 7px no-repeat, $design-form-element-bg;
 }
 
 .button__text {

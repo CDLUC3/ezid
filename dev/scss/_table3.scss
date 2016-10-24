@@ -16,9 +16,21 @@
 
 	.table3 th,
 	.table3 td {
+		min-width: 80px;
 		padding: 0.5em;
 		border: 1px solid $design-secondary-color;
 		vertical-align: top;
+                /* https://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
+                /* Warning: Needed for oldIE support, but words are broken up letter-by-letter */
+                /* -ms-word-break: break-all;
+
+                /* Non standard for webkit */
+                /* word-break: break-all; */
+
+                /* -moz-hyphens: auto; */
+                /* -ms-hyphens: auto; */
+                /* -webkit-hyphens: auto; */
+                /* hyphens: auto; */
 	}
 
 	.table3 th {
