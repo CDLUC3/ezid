@@ -199,12 +199,12 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         result = {
           "c_create_time": id.createTime,
           "c_identifier": id.identifier,
-          "c_title": id.resourceTitle,
-          "c_creator": id.resourceCreator,
+          "c_title": _truncateStr(id.resourceTitle),
+          "c_creator": _truncateStr(id.resourceCreator),
           "c_owner": id.owner.username,
           "c_object_type": id.resourceType,
-          "c_publisher": id.resourcePublisher,
-          "c_pubyear": id.resourcePublicationDate,
+          "c_publisher": _truncateStr(id.resourcePublisher),
+          "c_pubyear": _truncateStr(id.resourcePublicationDate),
           "c_id_status": id.get_status_display(),
           "c_update_time": id.updateTime,
         }
@@ -214,7 +214,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         result = {
           "c_identifier": id.identifier,
           "c_id_issue": "",
-          "c_title": id.resourceTitle,
+          "c_title": _truncateStr(id.resourceTitle),
           "c_update_time": id.updateTime,
         }
         ir = id.issueReasons()
@@ -422,3 +422,7 @@ def _buildQuerySyntax(c):
     dlength -= 1
     if dlength >= 1: r += " AND "
   return r
+
+def _truncateStr(s):
+  return (s[:97] + '...') if len(s) > 97 else s 
+
