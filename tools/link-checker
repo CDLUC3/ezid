@@ -350,9 +350,13 @@ def main ():
             # threads.
             _stopNow = True
             threads[i].join()
-        _log.info(("end processing, checked %s links/s, slept %s") %\
-          (str(round(sum(ow.nextIndex for ow in _workset)/(now()-start), 1)),
-          toHms(_totalSleepTime)))
+        rate = sum(ow.nextIndex for ow in _workset)/(now()-start)
+        if rate >= 1:
+           rate = str(round(rate, 1)) + " links/s"
+        else:
+           rate = "1/%s link/s" % str(round(1/rate, 1))
+        _log.info("end processing, checked %s, slept %s" %\
+          (rate, toHms(_totalSleepTime)))
       else:
         # The sleep below is just to prevent a compute-intensive loop.
         _log.info("end processing (nothing to check)")
