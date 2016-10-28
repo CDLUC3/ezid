@@ -50,6 +50,14 @@ class LinkChecker (django.db.models.Model):
     validators=[django.core.validators.MinValueValidator(0)])
   # The time the target URL was last checked as a Unix timestamp.
 
+  @property
+  def isVisited (self):
+    return self.lastCheckTime > 0
+
+  @property
+  def isUnvisited (self):
+    return self.lastCheckTime == 0
+
   numFailures = django.db.models.IntegerField(default=0,
     validators=[django.core.validators.MinValueValidator(0)], db_index=True)
   # The number of successive check failures.
@@ -60,6 +68,7 @@ class LinkChecker (django.db.models.Model):
 
   @property
   def isGood (self):
+    # N.B.: this returns True if the target URL is unvisited.
     return not self.isBad
 
   returnCode = django.db.models.IntegerField(blank=True, null=True)
