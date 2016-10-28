@@ -155,3 +155,21 @@ $fieldset-legend-spacing: 1em;
 	justify-content: space-between;
 	width: 80px;
 }
+
+// ***** Inline Text Input with Embedded Buttons ***** // 
+.fieldset-controls__container-small {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	margin: 0;
+}
+
+.fieldset-controls__buttons-small {
+	display: flex;
+	justify-content: space-between;
+	width: 46px;
+
+	@include bp(screen2) {
+		margin-bottom: 4px;
+	}
+}
