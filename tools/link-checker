@@ -354,6 +354,7 @@ def main ():
       loadWorkset()
       _log.info("begin processing")
       if len(_workset) > 0:
+        roundStart = now()
         _stopNow = False
         _index = 0
         _totalSleepTime = 0
@@ -374,7 +375,7 @@ def main ():
             # threads.
             _stopNow = True
             threads[i].join()
-        rate = sum(ow.nextIndex for ow in _workset)/(now()-start)
+        rate = sum(ow.nextIndex for ow in _workset)/(now()-roundStart)
         if rate >= 1:
            rate = str(round(rate, 1)) + " links/s"
         else:
