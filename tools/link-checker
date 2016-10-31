@@ -207,6 +207,7 @@ def loadWorkset ():
   global _workset
   _log.info("begin load workset")
   _workset = []
+  numOwnersCapped = 0
   numUnvisited = 0
   good = [0, nowi()] # [total, oldest timestamp]
   bad = [0, nowi()]
@@ -229,14 +230,16 @@ def loadWorkset ():
         if len(qgood) > 0:
           good[0] += len(qgood)
           good[1] = min(good[1], qgood[0].lastCheckTime)
-    if len(qs) > 0: _workset.append(OwnerWorkset(user.id, qs))
+    if len(qs) > 0:
+      _workset.append(OwnerWorkset(user.id, qs))
+      if len(qs) == WORKSET_OWNER_MAX_LINKS: numOwnersCapped += 1
   numOwners = len(_workset)
   numLinks = numUnvisited+good[0]+bad[0]
-  _log.info(("end load workset, %d owner%s, %d link%s, " +\
+  _log.info(("end load workset, %d owner%s (%d capped), %d link%s, " +\
     "%d unvisited link%s, %d good link%s (oldest=%dd), " +\
     "%d bad link%s (oldest=%dd)") %\
-    (numOwners, s(numOwners), numLinks, s(numLinks), numUnvisited,
-    s(numUnvisited), good[0], s(good[0]), daysSince(good[1]),
+    (numOwners, s(numOwners), numOwnersCapped, numLinks, s(numLinks),
+    numUnvisited, s(numUnvisited), good[0], s(good[0]), daysSince(good[1]),
     bad[0], s(bad[0]), daysSince(bad[1])))
 
 def getNextLink ():
@@ -376,7 +379,7 @@ def main ():
             _stopNow = True
             threads[i].join()
         rate = sum(ow.nextIndex for ow in _workset)/(now()-roundStart)
-        if rate >= 1:
+        if rate >= 1/1.05:
            rate = str(round(rate, 1)) + " links/s"
         else:
            rate = "1/%s link/s" % str(round(1/rate, 1))
