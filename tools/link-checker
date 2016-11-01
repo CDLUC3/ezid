@@ -308,8 +308,10 @@ def worker ():
       c = None
       mimeType = "unknown"
       try:
-        c = o.open(urllib2.Request(lc.target,
-          headers={ "User-Agent": USER_AGENT }), timeout=CHECK_TIMEOUT)
+        # Another gotcha: some websites require an Accept header.
+        r = urllib2.Request(lc.target, headers={ "User-Agent": USER_AGENT,
+          "Accept": "*/*" })
+        c = o.open(r, timeout=CHECK_TIMEOUT)
         mimeType = c.info().get("Content-Type", "unknown")
         content = c.read()
       except httplib.IncompleteRead, e:
