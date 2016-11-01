@@ -174,8 +174,11 @@ def main ():
       ezidapp.models.StoreUser.objects.all() }
     options.owners = [(su.username, su.id, emailAddresses[su.username])\
       for su in ezidapp.models.SearchUser.objects.all()]
-  bcc = config.get("email.linkchecker_report_bcc")
-  if bcc == "": bcc = None
+  if options.emailAddress != None:
+    bcc = None
+  else:
+    bcc = config.get("email.linkchecker_report_bcc")
+    if bcc == "": bcc = None
   for username, owner_id, accountEmail in options.owners:
     process1(username, owner_id,
       options.emailAddress if options.emailAddress != None else accountEmail,
