@@ -284,6 +284,24 @@ def markLinkChecked (index):
   finally:
     _lock.release()
 
+# We're a little conflicted as to how to deal with 401 (unauthorized)
+# and 403 (forbidden) errors.  On the one hand, an error was returned
+# instead of the identified object, so the check was a failure; on the
+# other, *something* was at the URL, and presumably with appropriate
+# credentials the identified object would have been returned.  Since
+# this script is doing simple link checking, and not landing page
+# analysis, we don't have a way of verifying that an option to
+# authenticate is being provided.  So for now we consider 401 and 403
+# errors to be successes.
+
+class MyHTTPErrorProcessor (urllib2.HTTPErrorProcessor):
+  def http_response (self, request, response):
+    if response.code in [401, 403]:
+      return response
+    else:
+      return urllib2.HTTPErrorProcessor.http_response(self, request, response)
+  https_response = http_response
+
 def worker ():
   global _totalSleepTime
   try:
@@ -304,7 +322,8 @@ def worker ():
       # Some websites fall into infinite redirect loops if cookies
       # are not utilized.
       o = urllib2.build_opener(
-        urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
+        urllib2.HTTPCookieProcessor(cookielib.CookieJar()),
+        MyHTTPErrorProcessor())
       c = None
       mimeType = "unknown"
       try:
