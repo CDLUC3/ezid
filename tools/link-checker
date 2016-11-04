@@ -77,7 +77,6 @@ WORKSET_OWNER_MAX_LINKS = int(config.get(
   "linkchecker.workset_owner_max_links"))
 CHECK_TIMEOUT = int(config.get("linkchecker.check_timeout"))
 USER_AGENT = config.get("linkchecker.user_agent")
-MAX_IO_FAILURES = 10
 
 class OwnerWorkset (object):
   # Stores primarily a list of links to check that belong to a single
@@ -91,9 +90,8 @@ class OwnerWorkset (object):
     self.nextIndex = 0
     self.isLocked = False
     self.lastCheckTime = 0.0
-    self.skip = False
   def isFinished (self):
-    return self.skip or self.nextIndex >= len(self.list)
+    return self.nextIndex >= len(self.list)
 
 _log = logging.getLogger()
 _lock = threading.Lock()
@@ -253,19 +251,8 @@ def getNextLink ():
       ow = _workset[_index]
       if not ow.isFinished():
         if not ow.isLocked and ow.lastCheckTime < t-OWNER_REVISIT_MIN_INTERVAL:
-          # If an owner's links are consistently returning I/O or
-          # other connection-related failures we mark the owner as
-          # finished for now.  The remaining links will be picked up
-          # in the next round, so all links will eventually get
-          # checked, but this approach allows us to continue checking
-          # other owners' links without wasting a lot of time waiting
-          # on connection timeouts.
-          if ow.nextIndex >= MAX_IO_FAILURES and\
-            all(lc.returnCode == -1 for lc in ow.list[-MAX_IO_FAILURES:]):
-            ow.skip = True
-          else:
-            ow.isLocked = True
-            return (_index, ow.list[ow.nextIndex])
+          ow.isLocked = True
+          return (_index, ow.list[ow.nextIndex])
         else:
           allFinished = False
       _index = (_index+1)%len(_workset)
@@ -382,30 +369,45 @@ def main ():
         _stopNow = False
         _index = 0
         _totalSleepTime = 0
+        if firstRound:
+          timeout = None
+        else:
+          # The first component in the computation of the timeout
+          # below causes table updates to occur at regular, specific
+          # times (admittedly, there's no real reason for that goal,
+          # but that's its purpose anyway).  The second component
+          # addresses the situation that some owners may push every
+          # check to the timeout limit, which causes the link checker
+          # to be idle for all other owners for long periods of time.
+          # By shortening the timeout we force worksets to be loaded
+          # more frequently.  We allot enough time for a nominal
+          # workset to be processed, i.e., an owner's maximum number
+          # of links, each of which is assumed to be checkable in
+          # 1 second.
+          timeout = min(remaining(start, TABLE_UPDATE_CYCLE),
+            WORKSET_OWNER_MAX_LINKS*(1+OWNER_REVISIT_MIN_INTERVAL))
         threads = []
         for i in range(NUM_WORKERS):
           t = threading.Thread(target=worker)
           t.start()
           threads.append(t)
         for i in range(NUM_WORKERS):
-          if firstRound:
-            timeout = None
-          else:
-            timeout = remaining(start, TABLE_UPDATE_CYCLE)
           threads[i].join(timeout)
           if threads[i].is_alive():
             # If the thread is still alive it must have timed out,
             # meaning it's time to terminate it and all remaining
             # threads.
             _stopNow = True
+            timeout = None
             threads[i].join()
-        rate = sum(ow.nextIndex for ow in _workset)/(now()-roundStart)
-        if rate >= 1/1.05:
+        numChecked = sum(ow.nextIndex for ow in _workset)
+        rate = numChecked/(now()-roundStart)
+        if rate >= 1/1.05: # using this bound avoids printing 1/1.0
            rate = str(round(rate, 1)) + " links/s"
         else:
            rate = "1/%s link/s" % str(round(1/rate, 1))
-        _log.info("end processing, checked %s, slept %s" %\
-          (rate, toHms(_totalSleepTime)))
+        _log.info("end processing, checked %d link%s at %s, slept %s" %\
+          (numChecked, s(numChecked), rate, toHms(_totalSleepTime)))
       else:
         # The sleep below is just to prevent a compute-intensive loop.
         _log.info("end processing (nothing to check)")
