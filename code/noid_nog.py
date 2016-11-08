@@ -16,14 +16,17 @@
 # -----------------------------------------------------------------------------
 
 import base64
+import time
 import urllib2
 
 import config
 
 _minterServers = None
+_numAttempts = None
+_reattemptDelay = None
 
 def _loadConfig ():
-  global _minterServers
+  global _minterServers, _numAttempts, _reattemptDelay
   d = {}
   for ms in config.get("shoulders.minter_servers").split(","):
     p = "minter_server_" + ms
@@ -31,6 +34,8 @@ def _loadConfig ():
       base64.b64encode(config.get(p + ".username") + ":" +\
       config.get(p + ".password"))
   _minterServers = d
+  _numAttempts = int(config.get("shoulders.minter_num_attempts"))
+  _reattemptDelay = int(config.get("shoulders.minter_reattempt_delay"))
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
@@ -60,12 +65,18 @@ class Minter (object):
     """
     r = urllib2.Request(self.url + "?mint%201")
     _addAuthorization(r)
-    c = None
-    try:
-      c = urllib2.urlopen(r)
-      s = c.readlines()
-    finally:
-      if c: c.close()
+    for i in range(_numAttempts):
+      c = None
+      try:
+        c = urllib2.urlopen(r)
+        s = c.readlines()
+      except:
+        if i == _numAttempts-1: raise
+      else:
+        break
+      finally:
+        if c: c.close()
+      time.sleep(_reattemptDelay)
     assert len(s) >= 2 and (s[0].startswith("id:") or\
       s[0].startswith("s:")) and s[-2] == "nog-status: 0\n",\
       "unexpected return from minter, output follows\n" + "".join(s)
