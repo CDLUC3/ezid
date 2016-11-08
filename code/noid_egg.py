@@ -36,6 +36,7 @@
 
 import base64
 import re
+import time
 import urllib2
 
 import config
@@ -45,15 +46,20 @@ _readEnabled = None
 _writeEnabled = None
 _server = None
 _authorization = None
+_numAttempts = None
+_reattemptDelay = None
 
 def _loadConfig ():
-  global _readEnabled, _writeEnabled, _server, _authorization
+  global _readEnabled, _writeEnabled, _server, _authorization, _numAttempts
+  global _reattemptDelay
   _readEnabled = (config.get("binder.read_enabled").lower() == "true")
   _writeEnabled = (config.get("binder.write_enabled").lower() == "true")
   _server = config.get("binder.url")
   _authorization = "Basic " +\
     base64.b64encode(config.get("binder.username") + ":" +\
     config.get("binder.password"))
+  _numAttempts = int(config.get("binder.num_attempts"))
+  _reattemptDelay = int(config.get("binder.reattempt_delay"))
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
@@ -72,12 +78,18 @@ def _issue (method, operations):
       if len(o) > 3: s += " " + util.encode3(o[3])
       l.append(s)
     r.add_data("\n".join(l))
-  c = None
-  try:
-    c = urllib2.urlopen(r)
-    s = c.readlines()
-  finally:
-    if c: c.close()
+  for i in range(_numAttempts):
+    c = None
+    try:
+      c = urllib2.urlopen(r)
+      s = c.readlines()
+    except:
+      if i == _numAttempts-1: raise
+    else:
+      break
+    finally:
+      if c: c.close()
+    time.sleep(_reattemptDelay)
   return s
 
 def _error (operation, s):
