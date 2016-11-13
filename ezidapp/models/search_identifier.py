@@ -135,6 +135,11 @@ class SearchIdentifier (identifier.Identifier):
   # hasMetadata is True and if the target URL is not the default
   # target URL.
 
+  linkIsBroken = django.db.models.BooleanField(editable=False,
+    default=False)
+  # Computed value: True if the target URL is broken.  This field is
+  # set only by the link checker update daemon.
+
   hasIssues = django.db.models.BooleanField(editable=False)
   # Computed value: True if the identifier "has issues," i.e., has
   # problems of some kind.
@@ -143,10 +148,15 @@ class SearchIdentifier (identifier.Identifier):
     # Returns a list of the identifier's issues.
     reasons = []
     if not self.hasMetadata: reasons.append("missing metadata")
+    if self.linkIsBroken: reasons.append("broken link")
     if self.isCrossrefBad:
       reasons.append("Crossref registration " +\
         ("warning" if self.crossrefStatus == self.CR_WARNING else "failure"))
     return reasons
+
+  def computeHasIssues (self):
+    self.hasIssues = not self.hasMetadata or self.linkIsBroken or\
+      self.isCrossrefBad
 
   def computeComputedValues (self):
     super(SearchIdentifier, self).computeComputedValues()
@@ -198,9 +208,7 @@ class SearchIdentifier (identifier.Identifier):
       not self.isTest
     self.oaiVisible = self.publicSearchVisible and self.hasMetadata and\
       self.target != self.defaultTarget
-    # Caution: crossref._updateSearchDatabase independently modifies
-    # hasIssues.
-    self.hasIssues = not self.hasMetadata or self.isCrossrefBad
+    self.computeHasIssues()
 
   # Note that MySQL FULLTEXT indexes must be created outside Django;
   # see .../etc/search-mysql-addendum.sql.
