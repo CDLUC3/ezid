@@ -139,6 +139,7 @@ class SearchIdentifier (identifier.Identifier):
     default=False)
   # Computed value: True if the target URL is broken.  This field is
   # set only by the link checker update daemon.
+  # N.B.: see note under updateFromLegacy below regarding this field.
 
   hasIssues = django.db.models.BooleanField(editable=False)
   # Computed value: True if the identifier "has issues," i.e., has
@@ -354,4 +355,10 @@ def updateFromLegacy (identifier, metadata, forceInsert=False,
   if not forceInsert:
     j = SearchIdentifier.objects.filter(identifier=identifier).only("id")
     if len(j) > 0: i.id = j[0].id
+  # Ideally we would like to specify that all fields be updated
+  # *except* linkIsBroken, but Django does not provide a way to do
+  # this.  As a consequence, linkIsBroken's default value will
+  # override the previous value in the table.  The next time the link
+  # checker update daemon runs it will correct the value, which is
+  # some consolation.
   i.save(force_insert=forceInsert, force_update=forceUpdate)
