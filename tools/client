@@ -11,6 +11,7 @@
 #     -d          decode ANVL responses
 #     -e ENCODING output character encoding
 #     -k          disable SSL certificate checking
+#     -l          disable external service updates
 #     -o          one line per ANVL value: convert newlines to spaces
 #     -t          format timestamps
 #
@@ -110,6 +111,7 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
     -d          decode ANVL responses
     -e ENCODING output character encoding
     -k          disable SSL certificate checking
+    -l          disable external service updates
     -o          one line per ANVL value: convert newlines to spaces
     -t          format timestamps
 
@@ -242,6 +244,8 @@ parser.add_option("-d", action="store_true", dest="decode", default=False)
 parser.add_option("-e", action="store", dest="outputEncoding", default="UTF-8")
 parser.add_option("-k", action="store_true", dest="disableCertificateChecking",
   default=False)
+parser.add_option("-l", action="store_true", dest="disableExternalUpdates",
+  default=False)
 parser.add_option("-o", action="store_true", dest="oneLine", default=False)
 parser.add_option("-t", action="store_true", dest="formatTimestamps",
   default=False)
@@ -313,11 +317,15 @@ elif operation == "update":
     data = formatAnvlRequest(args[1:])
   else:
     data = None
-  response = issueRequest("id/"+encode(id), "POST", data)
+  path = "id/"+encode(id)
+  if _options.disableExternalUpdates: path += "?update_external_services=no"
+  response = issueRequest(path, "POST", data)
   printAnvlResponse(response)
 elif operation == "delete":
   id = args[0]
-  response = issueRequest("id/"+encode(id), "DELETE")
+  path = "id/"+encode(id)
+  if _options.disableExternalUpdates: path += "?update_external_services=no"
+  response = issueRequest(path, "DELETE")
   printAnvlResponse(response)
 elif operation == "login":
   response, headers = issueRequest("login", "GET", returnHeaders=True)

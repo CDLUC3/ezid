@@ -28,11 +28,13 @@
 #
 # Update an identifier:
 #   POST /id/{identifier}   [authentication required]
+#     ?update_external_services={yes|no}
 #   request body: optional metadata
 #   response body: status line
 #
 # Delete an identifier:
 #   DELETE /id/{identifier}   [authentication required]
+#     ?update_external_services={yes|no}
 #   response body: status line
 #
 # Login to obtain session cookie, nothing else:
@@ -222,7 +224,13 @@ def _setMetadata (request):
   if type(metadata) is str: return _response(metadata)
   assert request.path_info.startswith("/id/")
   identifier = request.path_info[4:]
-  return _response(ezid.setMetadata(identifier, user, metadata))
+  # Easter egg.
+  updateExternalServices = True
+  if user.isSuperuser and\
+    request.GET.get("update_external_services", "yes").lower() == "no":
+    updateExternalServices = False
+  return _response(ezid.setMetadata(identifier, user, metadata,
+    updateExternalServices))
 
 def _createIdentifier (request):
   user = userauth.authenticateRequest(request)
@@ -245,7 +253,13 @@ def _deleteIdentifier (request):
     return _unauthorized()
   assert request.path_info.startswith("/id/")
   identifier = request.path_info[4:]
-  return _response(ezid.deleteIdentifier(identifier, user))
+  # Easter egg.
+  updateExternalServices = True
+  if user.isSuperuser and\
+    request.GET.get("update_external_services", "yes").lower() == "no":
+    updateExternalServices = False
+  return _response(ezid.deleteIdentifier(identifier, user,
+    updateExternalServices))
 
 def login (request):
   """

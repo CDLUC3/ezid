@@ -143,11 +143,6 @@
 # owned by the EZID administrator, and to protect user privacy, they
 # may be viewed by the EZID administrator only.
 #
-# As a kind of Easter egg, the _external_updates metadata element,
-# which takes the value "yes" or "no", may be specified on
-# setMetadata calls (only) to control the updateExternalServices
-# argument.  The element is not stored.
-#
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
@@ -1062,10 +1057,6 @@ def setMetadata (identifier, user, metadata, updateExternalServices=True):
   # 'd' will be our delta dictionary, i.e., it will hold the updates
   # to be applied to 'm', the identifier's current metadata.
   d = metadata.copy()
-  if "_external_updates" in d and user.isSuperuser:
-    # Easter egg.
-    updateExternalServices = (d["_external_updates"].lower() == "yes")
-    del d["_external_updates"]
   r = _validateMetadata(nqidentifier, user, d)
   if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
@@ -1250,7 +1241,7 @@ def setMetadata (identifier, user, metadata, updateExternalServices=True):
   finally:
     _releaseIdentifierLock(ark, user.username)
 
-def deleteIdentifier (identifier, user):
+def deleteIdentifier (identifier, user, updateExternalServices=True):
   """
   Deletes an identifier having the given qualified name, e.g.,
   "doi:10.5060/FOO".  'user' is the requestor and should be an
@@ -1305,7 +1296,7 @@ def deleteIdentifier (identifier, user):
           "deletion"
     noid_egg.deleteIdentifier(ark)
     log.progress(tid, "noid_egg.deleteIdentifier")
-    store.delete(ark)
+    store.delete(ark, updateExternalServices=updateExternalServices)
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
