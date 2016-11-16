@@ -47,7 +47,7 @@ def dashboard(request, ssl=False):
   d['fields_selected_issues'] = d['fields_selected']
 
   d['has_broken_links'] = ui_search.hasBrokenLinks(d, request)
-  if d['has_broken_links']: d['accountEmail'] = user.user.accountEmail
+  if d['has_broken_links']: d['accountEmail'] = user.accountEmail
 
   # Search:    Crossref Submission Status 
   d = ui_search.search(d, request, NO_CONSTRAINTS, "crossref")

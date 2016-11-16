@@ -236,7 +236,6 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
           "c_title": _truncateStr(id.resourceTitle),
           "c_update_time": id.updateTime,
         }
-        import pdb; pdb.set_trace()
         ir = id.issueReasons()
         if ir:
           result["c_id_issue"] += "; ".join(ir)
