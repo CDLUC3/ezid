@@ -53,6 +53,10 @@
     <div id="ajax_issues">
       {% include "dashboard/_issues.html" %}
     </div>
+    {% if has_broken_links %}
+    <p class="dashboard__note">Note: A monthly summary report of all broken links is being sent to {{accountEmail}}.</p>
+    {% endif %}
+
   {% if results_crossref|length > 0 %}
     <h2 class="heading__icon-10">{% trans "Crossref&reg; Submission Status" %}</h2>
     <div id="error_crossref"></div>

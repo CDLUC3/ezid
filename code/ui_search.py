@@ -13,12 +13,6 @@ import operator
 import re
 locale.setlocale(locale.LC_ALL, '')
 
-# Search is executed from the following areas, and these names determine search parameters:
-# Public Search:               ui_search   "public"
-# Manage:                      ui_manage   "manage"
-# Dashboard - ID Issues:       ui_admin    "issues"
-# Dashboard - Crossref Status: ui_admin    "crossref"
-
 # Form fields from search are defined in code/form_objects.py.
 # Corresponding fields used for column display include a 'c_' prefix.
 
@@ -133,6 +127,31 @@ def results(request):
   d = search(d, request)
   return uic.render(request, 'search/results', d)
 
+def hasBrokenLinks(d, request):
+  """
+  Flag if ID hasIssues and any one of these results contains "broken link" in issueReasons
+  """
+  user_id, group_id = uic.getOwnerOrGroup(d['owner_selected'] if 'owner_selected'\
+    in d else None)
+  c = _buildAuthorityConstraints(request, "issues", user_id, group_id)
+  c['hasIssues'] = True
+  count = search_util.executeSearchCountOnly(
+    userauth.getUser(request, returnAnonymous=True), c)
+  if count == 0:
+    return False
+  else:
+    for id in search_util.executeSearch(userauth.getUser(request,
+      returnAnonymous=True), c, 1, count, None):
+      ir = id.issueReasons()
+      if ir and "broken link" in ir:
+        return True
+
+# search function is executed from the following areas, s_type determines search parameters:
+# Public Search (default):     ui_search   "public"
+# Manage:                      ui_manage   "manage"
+# Dashboard - ID Issues:       ui_admin    "issues"
+# Dashboard - Crossref Status: ui_admin    "crossref"
+
 def search(d, request, noConstraintsReqd=False, s_type="public"):
   """ 
   Run query and organize result set for UI, used for Search, Manage, and Dashboard pages.
@@ -217,6 +236,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
           "c_title": _truncateStr(id.resourceTitle),
           "c_update_time": id.updateTime,
         }
+        import pdb; pdb.set_trace()
         ir = id.issueReasons()
         if ir:
           result["c_id_issue"] += ";".join(ir)
@@ -425,4 +445,3 @@ def _buildQuerySyntax(c):
 
 def _truncateStr(s):
   return (s[:97] + '...') if len(s) > 97 else s 
-
