@@ -523,7 +523,7 @@ def oaiHarvest (from_, until, maximum):
       if not _closeCursor(c): tainted = True
     if connection: _returnConnection(connection, poolId, tainted)
 
-def delete (identifier):
+def delete (identifier, updateExternalServices=True):
   """
   Deletes an identifier from the store database.  'identifier' should
   be an unqualified ARK identifier, e.g., "13030/foo".  (To delete a
@@ -544,8 +544,8 @@ def delete (identifier):
       blob = r[0][0]
       _execute(c, "DELETE FROM identifier WHERE identifier = ?", (identifier,))
       _execute(c, "INSERT INTO updateQueue (seq, identifier, metadata, " +\
-        "operation) VALUES (NULL, ?, ?, 2)",
-        (identifier, buffer(blob)))
+        "operation, updateExternalServices) VALUES (NULL, ?, ?, 2, ?)",
+        (identifier, buffer(blob), int(updateExternalServices)))
     _commit(c)
   except Exception, e:
     log.otherError("store.delete", e)

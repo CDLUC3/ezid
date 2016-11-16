@@ -305,15 +305,21 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='person_name']">
   <creator>
     <creatorName>
-      <xsl:value-of select="*[local-name()='surname']"/>
-      <xsl:if test="*[local-name()='given_name']">
-        <xsl:text>, </xsl:text>
-        <xsl:value-of select="*[local-name()='given_name']"/>
-      </xsl:if>
-      <xsl:if test="*[local-name()='suffix']">
-        <xsl:text>, </xsl:text>
-        <xsl:value-of select="*[local-name()='suffix']"/>
-      </xsl:if>
+      <xsl:choose>
+        <!-- Surname is required, but just in case it's blank... -->
+        <xsl:when test="normalize-space(*[local-name()='surname']) != ''">
+          <xsl:value-of select="*[local-name()='surname']"/>
+          <xsl:if test="*[local-name()='given_name']">
+            <xsl:text>, </xsl:text>
+            <xsl:value-of select="*[local-name()='given_name']"/>
+          </xsl:if>
+          <xsl:if test="*[local-name()='suffix']">
+            <xsl:text>, </xsl:text>
+            <xsl:value-of select="*[local-name()='suffix']"/>
+          </xsl:if>
+        </xsl:when>
+        <xsl:otherwise>(:unav)</xsl:otherwise>
+      </xsl:choose>
     </creatorName>
     <xsl:if test="*[local-name()='ORCID']">
       <nameIdentifier nameIdentifierScheme="ORCID"

@@ -135,6 +135,12 @@ class SearchIdentifier (identifier.Identifier):
   # hasMetadata is True and if the target URL is not the default
   # target URL.
 
+  linkIsBroken = django.db.models.BooleanField(editable=False,
+    default=False)
+  # Computed value: True if the target URL is broken.  This field is
+  # set only by the link checker update daemon.
+  # N.B.: see note under updateFromLegacy below regarding this field.
+
   hasIssues = django.db.models.BooleanField(editable=False)
   # Computed value: True if the identifier "has issues," i.e., has
   # problems of some kind.
@@ -143,10 +149,15 @@ class SearchIdentifier (identifier.Identifier):
     # Returns a list of the identifier's issues.
     reasons = []
     if not self.hasMetadata: reasons.append("missing metadata")
+    if self.linkIsBroken: reasons.append("broken link")
     if self.isCrossrefBad:
       reasons.append("Crossref registration " +\
         ("warning" if self.crossrefStatus == self.CR_WARNING else "failure"))
     return reasons
+
+  def computeHasIssues (self):
+    self.hasIssues = not self.hasMetadata or self.linkIsBroken or\
+      self.isCrossrefBad
 
   def computeComputedValues (self):
     super(SearchIdentifier, self).computeComputedValues()
@@ -198,9 +209,7 @@ class SearchIdentifier (identifier.Identifier):
       not self.isTest
     self.oaiVisible = self.publicSearchVisible and self.hasMetadata and\
       self.target != self.defaultTarget
-    # Caution: crossref._updateSearchDatabase independently modifies
-    # hasIssues.
-    self.hasIssues = not self.hasMetadata or self.isCrossrefBad
+    self.computeHasIssues()
 
   # Note that MySQL FULLTEXT indexes must be created outside Django;
   # see .../etc/search-mysql-addendum.sql.
@@ -346,4 +355,10 @@ def updateFromLegacy (identifier, metadata, forceInsert=False,
   if not forceInsert:
     j = SearchIdentifier.objects.filter(identifier=identifier).only("id")
     if len(j) > 0: i.id = j[0].id
+  # Ideally we would like to specify that all fields be updated
+  # *except* linkIsBroken, but Django does not provide a way to do
+  # this.  As a consequence, linkIsBroken's default value will
+  # override the previous value in the table.  The next time the link
+  # checker update daemon runs it will correct the value, which is
+  # some consolation.
   i.save(force_insert=forceInsert, force_update=forceUpdate)

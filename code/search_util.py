@@ -230,6 +230,7 @@ def formulateQuery (constraints, orderBy=None,
                       |   |   |            | "Image"
   hasMetadata         |   | Y | bool       |
   publicSearchVisible |   | Y | bool       |
+  linkIsBroken        |   | Y | bool       |
   hasIssues           |   | Y | bool       |
   -------------------------------------------------------------------------
 
@@ -243,7 +244,7 @@ def formulateQuery (constraints, orderBy=None,
   scopeRequirementMet = False
   for column, value in constraints.items():
     if column in ["exported", "isTest", "hasMetadata", "publicSearchVisible",
-      "hasIssues"]:
+      "linkIsBroken", "hasIssues"]:
       filters.append(django.db.models.Q(**{ column: value }))
       if column == "publicSearchVisible" and value == True:
         scopeRequirementMet = True
@@ -368,7 +369,8 @@ def formulateQuery (constraints, orderBy=None,
       prefix = "-"
       orderBy = orderBy[1:]
     if orderBy in ["identifier", "createTime", "updateTime", "status",
-      "exported", "isTest", "hasMetadata", "publicSearchVisible"]:
+      "exported", "isTest", "hasMetadata", "publicSearchVisible",
+      "linkIsBroken", "hasIssues"]:
       pass
     elif orderBy == "identifierType":
       orderBy = "identifier"

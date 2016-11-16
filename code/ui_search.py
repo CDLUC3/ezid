@@ -239,7 +239,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         import pdb; pdb.set_trace()
         ir = id.issueReasons()
         if ir:
-          result["c_id_issue"] += ";".join(ir)
+          result["c_id_issue"] += "; ".join(ir)
       elif s_type == 'crossref':
         result = {
           "c_identifier": id.identifier,

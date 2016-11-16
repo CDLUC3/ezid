@@ -123,5 +123,6 @@ if django.conf.settings.DAEMON_THREADS_ENABLED:
   import crossref
   import datacite_async
   import download
+  import linkcheck_update
   import newsfeed
   import status
