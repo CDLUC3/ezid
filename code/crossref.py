@@ -153,8 +153,8 @@ def validateBody (body):
     _notOne(len(resource))
   resource = resource[0]
   resource.text = "(:tba)"
-  assert doiData.find("N:collection", namespaces=ns) == None,\
-    "<doi_data> element contains disallowed <collection> subelement"
+  assert doiData.find("N:collection/N:item/N:doi", namespaces=ns) == None,\
+    "<doi_data> element contains more than one <doi> subelement"
   e = doiData.find("N:timestamp", namespaces=ns)
   if e != None: doiData.remove(e)
   assert doiData.find("N:timestamp", namespaces=ns) == None,\
