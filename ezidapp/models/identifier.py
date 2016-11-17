@@ -417,7 +417,7 @@ class Identifier (django.db.models.Model):
             "Public DOI metadata requirements not satisfied: %s." % str(e))
         finally:
           del self.cm["_p"]
-    if self.isCrossref and "crossref" not in self.cm:
+    if self.isCrossref and not self.isReserved and "crossref" not in self.cm:
       raise django.core.exceptions.ValidationError(
         "Registration with Crossref requires Crossref metadata supplied " +\
         "as value of element 'crossref'.")

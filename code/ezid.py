@@ -1144,9 +1144,11 @@ def setMetadata (identifier, user, metadata, updateExternalServices=True):
             "removed only from reserved identifiers"
         d["_cr"] = ""
       else:
-        # The new value might be "yes", or it might be a computed value.
         if "_cr" in m:
-          if d["_cr"] == "yes": del d["_cr"]
+          # The new value might be "yes", or it might be a computed
+          # value.  In the latter case, we don't override it.
+          if d["_cr"] == "yes" and newStatus != "reserved":
+            d["_cr"] = "yes | registration in progress"
         else:
           if not policy.authorizeCrossref(user, nqidentifier):
             # Technically it's an authorization error, but it makes more
