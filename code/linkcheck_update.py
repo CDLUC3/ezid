@@ -86,7 +86,7 @@ def _linkcheckUpdateDaemon ():
           # Before updating the SearchIdentifier, we carefully lock
           # the table and ensure that the object still exists.
           try:
-            with django.db.transaction.atomic():
+            with django.db.transaction.atomic(using="search"):
               si2 = ezidapp.models.SearchIdentifier.objects.get(
                 identifier=si.identifier)
               si2.linkIsBroken = newValue
