@@ -129,22 +129,14 @@ def results(request):
 
 def hasBrokenLinks(d, request):
   """
-  Flag if ID hasIssues and any one of these results contains "broken link" in issueReasons
+  Flag if any IDs are found satisfying hasIssues=true and linkIsBroken=true
   """
   user_id, group_id = uic.getOwnerOrGroup(d['owner_selected'] if 'owner_selected'\
     in d else None)
   c = _buildAuthorityConstraints(request, "issues", user_id, group_id)
   c['hasIssues'] = True
-  count = search_util.executeSearchCountOnly(
-    userauth.getUser(request, returnAnonymous=True), c)
-  if count == 0:
-    return False
-  else:
-    for id in search_util.executeSearch(userauth.getUser(request,
-      returnAnonymous=True), c, 1, count, None):
-      ir = id.issueReasons()
-      if ir and "broken link" in ir:
-        return True
+  c['linkIsBroken'] = True
+  return search_util.executeSearch(userauth.getUser(request, returnAnonymous=True), c, 0, 1)
 
 # search function is executed from the following areas, s_type determines search parameters:
 # Public Search (default):     ui_search   "public"
