@@ -97,6 +97,9 @@ def _linkcheckUpdateDaemon ():
         si = siGenerator.next()
     except Exception, e:
       log.otherError("linkcheck_update._linkcheckUpdateDaemon", e)
+    # Since we're going to be sleeping for potentially a long time,
+    # release any memory held.
+    siGenerator = lcGenerator = si = lc = si2 = None
     django.db.connections["search"].close()
     if _resultsUploadSameTimeOfDay:
       time.sleep(_sameTimeOfDayDelta())
