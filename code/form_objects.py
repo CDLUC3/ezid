@@ -312,7 +312,8 @@ class DescrForm(forms.Form):
   """ Form object for Description Element in DataCite Advanced (XML) profile """
   def __init__(self, *args, **kwargs):
     super(DescrForm,self).__init__(*args,**kwargs)
-    self.fields["description"] = forms.CharField(required=False, label=_("Descriptive information"))
+    self.fields["description"] = forms.CharField(required=False,
+      label=_("Descriptive information"), widget=forms.Textarea(attrs={'rows': '2'}))
     DESCR_TYPES = (
       ("", _("Select a type of description")),
       ("Abstract", _("Abstract")),
@@ -325,6 +326,13 @@ class DescrForm(forms.Form):
       choices=DESCR_TYPES)
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
       label="Language(Hidden)", widget= forms.HiddenInput())
+  def clean(self):
+    cleaned_data = super(DescrForm, self).clean()
+    d = cleaned_data.get("description")
+    dt = cleaned_data.get("descriptionType")
+    if dt == '' and d != '':
+      raise ValidationError({'descriptionType': _("Descriptive info is required if you fill in Description type.")})
+    return cleaned_data
 
 class SubjectForm(forms.Form):
   """ Form object for Subject Element in DataCite Advanced (XML) profile """

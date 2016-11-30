@@ -127,6 +127,16 @@
 
 // ***** Text Areas ***** //
 
+%textarea-base {
+	@extend %fcontrol-focus;
+	width: 300px;
+
+	@include bp(screen2) {
+		width: 400px;
+	}
+
+}
+
 .fcontrol__textarea-label-stacked {
 	margin: 0 0 2px;
 	color: $design-primary-color;
@@ -139,7 +149,7 @@
 }
 
 .fcontrol__textarea-stacked {
-	@extend %fcontrol-focus;
+	@extend %textarea-base;
 	height: 5em;
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
@@ -159,7 +169,7 @@
 }
 
 %fcontrol__textarea-inline-base {
-	@extend %fcontrol-focus;
+	@extend %textarea-base;
 	height: 5em;
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;

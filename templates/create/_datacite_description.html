@@ -19,7 +19,7 @@
   <div class="form-container">
   {{ form.non_field_errors }}
 
-  {% include "create/_datacite_inlinetext.html" with field=form.description %}
+  {% include "create/_datacite_inlinetextarea.html" with field=form.description %}
   {% include "create/_datacite_inlineselect.html" with field=form.descriptionType %}
   {% for hidden in form.hidden_fields %}
     {{ hidden }}
