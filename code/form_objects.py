@@ -50,6 +50,7 @@ ERR_DATE = _("Please use format YYYY-MM-DD.")
 ERR_CREATOR=_("Please fill in a value for creator.")
 ERR_TITLE=_("Please fill in a value for title.")
 ERR_PUBLISHER=_("Please fill in a value for publisher.")
+ERR_RESOURCE=_("Please choose a resource type.")
 PREFIX_CREATOR_SET='creators-creator'
 PREFIX_TITLE_SET='titles-title'
 PREFIX_DESCR_SET='descriptions-description'
@@ -134,7 +135,8 @@ class DataciteForm(BaseForm):
       error_messages={'required': _("Please fill in a four digit value for publication year."),
                     'invalid': ERR_4DIGITYEAR })
     self.fields["datacite.resourcetype"] = \
-      forms.ChoiceField(required=False, choices=RESOURCE_TYPES, label=_("Resource type"))
+      forms.ChoiceField(choices=RESOURCE_TYPES, label=_("Resource type"),
+      error_messages={'required': ERR_RESOURCE}) 
     if self.placeholder is not None and self.placeholder == True:
       self.fields['datacite.creator'].widget.attrs['placeholder'] = _("Creator (required)")
       self.fields['datacite.title'].widget.attrs['placeholder'] = _("Title (required)")
@@ -253,16 +255,10 @@ class ResourceTypeForm(forms.Form):
   """
   def __init__(self, *args, **kwargs):
     super(ResourceTypeForm,self).__init__(*args,**kwargs)
-    self.fields['resourceType-resourceTypeGeneral'] = forms.ChoiceField(required=False,
-      choices=RESOURCE_TYPES, initial='Dataset', label = _("Resource Type General"))
+    self.fields['resourceType-resourceTypeGeneral'] = forms.ChoiceField(
+      choices=RESOURCE_TYPES, initial='Dataset', label = _("Resource Type General"),
+      error_messages={'required': ERR_RESOURCE}) 
     self.fields['resourceType'] = forms.CharField(required=False, label=_("Resource Type"))
-  def clean(self):
-    cleaned_data = super(ResourceTypeForm, self).clean()
-    rtg = cleaned_data.get("resourceType-resourceTypeGeneral")
-    rt = cleaned_data.get("resourceType")
-    if rtg == '' and rt != '':
-      raise ValidationError({'resourceType-resourceTypeGeneral': _("Resource Type General is required if you fill in Resource Type.")})
-    return cleaned_data
 
 # Django faulty design: First formset allows blank form fields.
 # http://stackoverflow.com/questions/2406537/django-formsets-make-first-required
