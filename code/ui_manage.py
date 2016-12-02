@@ -118,7 +118,7 @@ def _assignManualTemplate(d):
 def _dataciteXmlToForm(request, d, id_metadata):
   form_coll = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
   # Testing
-  # xml = datacite_xml.temp_mock()
+  # xml = datacite_xml.temp_mockxml()
   # form_coll = datacite_xml.dataciteXmlToFormElements(xml) 
   # This is the only item from internal profile that needs inclusion in django form framework
   form_coll.nonRepeating['target'] = id_metadata['_target']

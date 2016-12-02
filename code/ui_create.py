@@ -221,9 +221,12 @@ def validate_adv_form_datacite_xml(request, d):
     d['id_gen_result'] = 'edit_page'
   else:
     # Testing:
+    # temp_formElements = datacite_xml.temp_mockFormElements()
     # d['generated_xml'] = datacite_xml.temp_mock()
     d['generated_xml'] = datacite_xml.formElementsToDataciteXml(
-      P.dict(), (P['shoulder'] if 'shoulder' in P else None), identifier)
+      P.dict(),
+      # temp_formElements,
+      (P['shoulder'] if 'shoulder' in P else None), identifier)
   return d
  
 def _createSimpleId (d, request, P):

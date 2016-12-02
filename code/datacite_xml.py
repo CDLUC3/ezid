@@ -20,8 +20,8 @@ import copy
 import collections
 
 _repeatableElementContainers = ["creators", "titles", "subjects",
-  "contributors", "dates", "alternateIdentifiers", "relatedIdentifiers",
-  "sizes", "formats", "rightsList", "descriptions", "geoLocations"]
+  "contributors", "dates", "alternateIdentifiers", "relatedIdentifiers", "sizes",
+  "formats", "rightsList", "descriptions", "geoLocations", "fundingReferences"]
 
 def dataciteXmlToFormElements (document):
   """
@@ -107,9 +107,6 @@ def dataciteXmlToFormElements (document):
   fc = _separateByFormType(d)
   return fc 
 
-""" Representation of django forms and formsets used for DataCite XML """
-FormColl = collections.namedtuple('FormColl', 'nonRepeating resourceType creators titles descrs subjects contribs dates altids relids sizes formats rights geoLocations')
-
 def _separateByFormType(d):
   """ Organize form elements into a manageable collection 
       Turn empty dicts into None so that forms render properly
@@ -123,6 +120,9 @@ def _separateByFormType(d):
   def dict_generate(d, s):
     dr = {k:v for (k,v) in d.iteritems() if k.startswith(s)}
     return dr if dr else None
+
+  """ Representation of django forms and formsets used for DataCite XML """
+  FormColl = collections.namedtuple('FormColl', 'nonRepeating resourceType creators titles descrs subjects contribs dates altids relids sizes formats rights geoLocations fundingReferences')
 
   return FormColl(
     nonRepeating=_nonRepeating if _nonRepeating else None, 
@@ -138,11 +138,12 @@ def _separateByFormType(d):
     sizes = dict_generate(d, 'sizes'),
     formats = dict_generate(d, 'formats'),
     rights = dict_generate(d, 'rightsList'),
-    geoLocations = dict_generate(d, 'geoLocations')
+    geoLocations = dict_generate(d, 'geoLocations'),
+    fundingReferences = dict_generate(d, 'fundingReferences')
   )
 
-def temp_mock():
-  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName></creator></creators><titles><title xml:lang="en-us">test</title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><subjects><subject xml:lang="ar-afb" schemeURI="testURI" subjectScheme="testScheme">TESTTESTTESTTEST</subject><subject xml:lang="en" subjectScheme="testScheme2" schemeURI="testURI2">test2</subject></subjects><resourceType resourceTypeGeneral="Dataset">Dataset</resourceType><descriptions><description xml:lang="es-419" descriptionType="Abstract">testDescr</description><description xml:lang="zh-Hans" descriptionType="Other">testDescr2</description><description xml:lang="ast" descriptionType="SeriesInformation">testDescr3</description></descriptions></resource>')
+def temp_mockxml():
+  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><givenName>Elizabeth</givenName><familyName>Miller</familyName><affiliation>DataCite</affiliation><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0001</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0007</nameIdentifier></creator></creators><titles><title xml:lang="en-us">test</title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><subjects><subject xml:lang="ar-afb" schemeURI="testURI" subjectScheme="testScheme">TESTTESTTESTTEST</subject><subject xml:lang="en" subjectScheme="testScheme2" schemeURI="testURI2">test2</subject></subjects><resourceType resourceTypeGeneral="Dataset">Dataset</resourceType><descriptions><description xml:lang="es-419" descriptionType="Abstract">testDescr</description><description xml:lang="zh-Hans" descriptionType="Other">testDescr2</description><description xml:lang="ast" descriptionType="SeriesInformation">testDescr3</description></descriptions></resource>')
 
 def _id_type(str):
   m = re.compile("^[a-z]+")
@@ -157,13 +158,15 @@ def _id_type(str):
 # must appear in an XML document.
 
 _elementList = ["identifier", "creators", "creator", "creatorName",
-  "titles", "title", "publisher", "publicationYear", "subjects", "subject",
-  "contributors", "contributor", "contributorName", "nameIdentifier",
-  "affiliation", "dates", "date", "language", "resourceType",
+  "familyName", "givenName", "titles", "title", "publisher", "publicationYear",
+  "subjects", "subject", "contributors", "contributor", "contributorName", 
+  "nameIdentifier", "affiliation", "dates", "date", "language", "resourceType",
   "alternateIdentifiers", "alternateIdentifier", "relatedIdentifiers",
   "relatedIdentifier", "sizes", "size", "formats", "format", "version",
   "rightsList", "rights", "descriptions", "description", "geoLocations",
-  "geoLocation", "geoLocationPoint", "geoLocationBox", "geoLocationPlace"]
+  "geoLocation", "geoLocationPoint", "geoLocationBox", "geoLocationPlace",
+  "fundingReferences", "fundingReference", "funderName", "funderIdentifier",
+  "awardNumber", "awardTitle"]
 
 _elements = dict((e, i) for i, e in enumerate(_elementList))
 
@@ -178,8 +181,8 @@ def formElementsToDataciteXml (d, shoulder=None, identifier=None):
   d = {k:v for (k,v) in d.iteritems() if '_FORMS' not in k}
   d = {k:v for (k,v) in d.iteritems() if any(e in k for e in _elementList)}
   d = _addIdentifierInfo(d, shoulder, identifier)
-  namespace = "http://datacite.org/schema/kernel-3"
-  schemaLocation = "http://schema.datacite.org/meta/kernel-3/metadata.xsd"
+  namespace = "http://datacite.org/schema/kernel-4"
+  schemaLocation = "http://schema.datacite.org/meta/kernel-4/metadata.xsd"
   def q (elementName):
     return "{%s}%s" % (namespace, elementName)
   def tagName (tag):
@@ -227,3 +230,6 @@ def _addIdentifierInfo(d, shoulder=None, identifier=None):
   d['identifier-identifierType'] = _id_type(id_str)        # Required
   if identifier is not None: d['identifier'] = identifier  # Only for already created IDs
   return d
+
+def temp_mockFormElements():
+  return {u'subjects-subject-0-subject': u'', u'creators-creator-0-affiliation-3-affiliation': u'', u'subjects-subject-0-schemeURI': u'', u'descriptions-description-0-descriptionType': u'', u'subjects-subject-0-subjectScheme': u'', u'fundingReferences-fundingReference-0-funderName': u'', u'creators-creator-0-creatorName-0-creatorName': u'test', u'creators-creator-0-nameIdentifier-4-nameIdentifier': u'', u'fundingReferences-fundingReference-0-awardURI': u'', u'contributors-contributor-0-givenName-1-givenName': u'', u'contributors-contributor-0-contributorName': u'', u'contributors-contributor-0-nameIdentifier-schemeURI': u'', u'formats-format-0-format': u'', u'geoLocations-geoLocation-0-geoLocationBox': u'', u'sizes-size-0-size': u'', u'fundingReferences-fundingReference-0-funderIdentifierType': u'', u'contributors-contributor-0-nameIdentifier-nameIdentifierScheme': u'', u'descriptions-description-0-description': u'', u'relatedIdentifiers-relatedIdentifier-0-relatedIdentifier': u'', u'resourceType-resourceTypeGeneral': u'Dataset', u'titles-title-0-titleType': u'', u'version': u'', u'titles-title-0-title': u'test', u'titles-title-0-{http://www.w3.org/XML/1998/namespace}lang': u'', u'alternateIdentifiers-alternateIdentifier-0-alternateIdentifierType': u'', u'fundingReferences-fundingReference-0-awardTitle': u'', u'contributors-contributor-0-contributorType': u'', u'relatedIdentifiers-relatedIdentifier-0-relatedIdentifierType': u'', u'contributors-contributor-0-affiliation': u'', u'subjects-subject-0-valueURI': u'', u'creators-creator-0-nameIdentifier-4-nameIdentifierScheme': u'', u'publisher': u'tets', u'dates-date-0-date': u'', u'contributors-contributor-0-familyName-2-familyName': u'Rorschenbach', u'geoLocations-geoLocation-0-geoLocationPoint': u'', u'subjects-subject-0-{http://www.w3.org/XML/1998/namespace}lang': u'', u'alternateIdentifiers-alternateIdentifier-0-alternateIdentifier': u'', u'dates-date-0-dateType': u'', u'relatedIdentifiers-relatedIdentifier-0-schemeType': u'', u'fundingReferences-fundingReference-0-awardNumber': u'', u'descriptions-description-0-{http://www.w3.org/XML/1998/namespace}lang': u'', u'contributors-contributor-0-nameIdentifier': u'', u'geoLocations-geoLocation-0-geoLocationPlace': u'', u'fundingReferences-fundingReference-0-funderIdentifier': u'', u'publicationYear': u'1999', u'language': u'', u'resourceType': u'Dataset', u'creators-creator-0-nameIdentifier-4-schemeURI': u'', u'relatedIdentifiers-relatedIdentifier-0-relatedMetadataScheme': u'', u'relatedIdentifiers-relatedIdentifier-0-schemeURI': u'', u'relatedIdentifiers-relatedIdentifier-0-relationType': u'', u'rightsList-rights-0-rights': u'', u'rightsList-rights-0-rightsURI': u'', u'creators-creator-0-familyName-2-familyName': u'', u'creators-creator-0-givenName-1-givenName': u'SmartyPants'}

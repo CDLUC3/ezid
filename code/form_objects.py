@@ -62,6 +62,7 @@ PREFIX_SIZE_SET='sizes-size'
 PREFIX_FORMAT_SET='formats-format'
 PREFIX_RIGHTS_SET='rightsList-rights'
 PREFIX_GEOLOC_SET='geoLocations-geoLocation'
+PREFIX_FUNDINGREF_SET='fundingReferences-fundingReference'
 # Translators: "Ex. " is abbreviation for "example". Please include one space at end.
 ABBR_EX = _("e.g. ")
 
@@ -278,10 +279,12 @@ class CreatorForm(forms.Form):
     super(CreatorForm,self).__init__(*args,**kwargs)
     self.fields["creatorName"] = forms.CharField(label=_("Name"),
       error_messages={'required': _("Please fill in a value for creator name.")})
+    self.fields["familyName"] = forms.CharField(required=False, label=_("Family Name"))
+    self.fields["givenName"] = forms.CharField(required=False, label=_("Given Name"))
+    self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
     self.fields["nameIdentifier"] = forms.CharField(required=False, label=_("Name Identifier"))
     self.fields["nameIdentifier-nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
     self.fields["nameIdentifier-schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
-    self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
   def clean(self):
     cleaned_data = super(CreatorForm, self).clean()
     ni = cleaned_data.get("nameIdentifier")
@@ -301,7 +304,8 @@ class TitleForm(forms.Form):
       ("", _("Main title")),
       ("AlternativeTitle", _("Alternative title")),
       ("Subtitle", _("Subtitle")),
-      ("TranslatedTitle", _("Translated title"))
+      ("TranslatedTitle", _("Translated title")),
+      ("Other", _("Other"))
     ) 
     self.fields["titleType"] = forms.ChoiceField(required=False, label = _("Type"),
       widget= forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}), choices=TITLE_TYPES)
@@ -319,6 +323,7 @@ class DescrForm(forms.Form):
       ("Abstract", _("Abstract")),
       ("SeriesInformation", _("Series Information")),
       ("TableOfContents", _("Table of Contents")),
+      ("TechnicalInfo", _("Technical Info")),
       ("Methods", _("Methods")),
       ("Other", _("Other")) 
     ) 
@@ -341,6 +346,7 @@ class SubjectForm(forms.Form):
     self.fields["subject"] = forms.CharField(required=False, label=_("Subject"))
     self.fields["subjectScheme"] = forms.CharField(required=False, label=_("Subject Scheme"))
     self.fields["schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
+    self.fields["valueURI"] = forms.CharField(required=False, label=_("Value URI"))
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
       label="Language(Hidden)", widget= forms.HiddenInput())
 
@@ -350,10 +356,6 @@ class ContribForm(forms.Form):
   """
   def __init__(self, *args, **kwargs):
     super(ContribForm,self).__init__(*args,**kwargs)
-    self.fields["contributorName"] = forms.CharField(required=False, label=_("Name"))
-    self.fields["nameIdentifier"] = forms.CharField(required=False, label=_("Name Identifier"))
-    self.fields["nameIdentifier-nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
-    self.fields["nameIdentifier-schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
     CONTRIB_TYPES = (
       ("", _("Select a type of contributor")),
       ("ContactPerson", _("Contact Person")),
@@ -362,7 +364,6 @@ class ContribForm(forms.Form):
       ("DataManager", _("Data Manager" )),
       ("Distributor", _("Distributor")),
       ("Editor", _("Editor")),
-      ("Funder", _("Funder")),
       ("HostingInstitution", _("Hosting Institution")),
       ("Producer", _("Producer")),
       ("ProjectLeader", _("Project Leader")),
@@ -381,22 +382,30 @@ class ContribForm(forms.Form):
     ) 
     self.fields["contributorType"] = forms.ChoiceField(required=False, 
       label = _("Contributor Type"), choices=CONTRIB_TYPES)
+    self.fields["contributorName"] = forms.CharField(required=False, label=_("Name"))
+    self.fields["familyName"] = forms.CharField(required=False, label=_("Family Name"))
+    self.fields["givenName"] = forms.CharField(required=False, label=_("Given Name"))
     self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
+    self.fields["nameIdentifier"] = forms.CharField(required=False, label=_("Name Identifier"))
+    self.fields["nameIdentifier-nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
+    self.fields["nameIdentifier-schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
   def clean(self):
     cleaned_data = super(ContribForm, self).clean()
-    cname = cleaned_data.get("contributorName")
     ctype = cleaned_data.get("contributorType")
+    cname = cleaned_data.get("contributorName")
+    cfname = cleaned_data.get("familyName")
+    cgname = cleaned_data.get("givenName")
     caff = cleaned_data.get("affiliation")
     ni = cleaned_data.get("nameIdentifier")
     ni_s = cleaned_data.get("nameIdentifier-nameIdentifierScheme")
     ni_s_uri = cleaned_data.get("nameIdentifier-schemeURI")
     err1 = {}
     """ Use of contributor element requires name and type be populated """
-    if (cname or ctype or caff or ni or ni_s or ni_s_uri):
-      if not cname:
-        err1['contributorName'] = _("Name is required if you fill in contributor information.")
+    if (ctype or cname or cfname or cgname or caff or ni or ni_s or ni_s_uri):
       if not ctype:
         err1['contributorType'] = _("Type is required if you fill in contributor information.")
+      if not cname:
+        err1['contributorName'] = _("Name is required if you fill in contributor information.")
     err2 = nameIdValidation(ni, ni_s, ni_s_uri)
     err = dict(err1.items() + err2.items())
     if err: raise ValidationError(err) 
@@ -447,6 +456,7 @@ class RelIdForm(forms.Form):
     ("EAN13", "EAN13"),
     ("EISSN", "EISSN"),
     ("Handle", "Handle"),
+    ("IGSN", "IGSN"),
     ("ISBN", "ISBN"),
     ("ISSN", "ISSN"),
     ("ISTC", "ISTC"),
@@ -540,6 +550,24 @@ class GeoLocForm(forms.Form):
     error_messages={'invalid': _("A Geolocation Box must be made up of four decimal numbers separated by a space.")})
   geoLocationPlace = forms.CharField(required=False, label=_("Place"))
 
+class FundingRefForm(forms.Form):
+  """ Form object for Funding Reference Element in DataCite Advanced (XML) profile """
+  funderName = forms.CharField(required=False, label=_("Funder Name"))
+  funderIdentifier = forms.CharField(required=False, label=_("Funder Identifier"))
+  ID_TYPES = (
+    ("", _("Select the type of funder identifier")),
+    ("ISNI", "ISNI"),
+    ("GRID", "GRID"),
+    ("Crossref Funder", _("Crossref Funder")),
+    ("Other", "Other")
+  ) 
+  funderIdentifierType = forms.ChoiceField(required=False, 
+    label = _("Identifier Type"), choices=ID_TYPES)
+  awardNumber = forms.CharField(required=False, label=_("Award Number"))
+  awardURI = forms.CharField(required=False, label=_("Award URI"))
+  awardTitle = forms.CharField(required=False, label=_("Award Title"))
+
+
 def getIdForm_datacite_xml (form_coll=None, request=None):
   """ For Advanced Datacite elements 
       On GET, displays 'form_coll' (named tuple) data translated from XML doc
@@ -553,7 +581,8 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
   # Initialize forms and FormSets
   remainder_form = nonrepeating_form = resourcetype_form = creator_set = \
     title_set = descr_set = subject_set = contrib_set = date_set = altid_set = \
-    relid_set = size_set = format_set = rights_set = geoloc_set = None 
+    relid_set = size_set = format_set = rights_set = geoloc_set = \
+    fundingref_set = None 
   CreatorSet = formset_factory(CreatorForm, formset=RequiredFormSet)
   TitleSet = formset_factory(TitleForm, formset=RequiredFormSet)
   DescrSet = formset_factory(DescrForm)
@@ -566,6 +595,7 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
   FormatSet = formset_factory(FormatForm)
   RightsSet = formset_factory(RightsForm)
   GeoLocSet = formset_factory(GeoLocForm)
+  FundingRefSet = formset_factory(FundingRefForm)
   if not form_coll: 
 # On Create:GET
     if not request:  # Get an empty form
@@ -590,6 +620,7 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     format_set = FormatSet(P, prefix=PREFIX_FORMAT_SET, auto_id='%s')
     rights_set = RightsSet(P, prefix=PREFIX_RIGHTS_SET, auto_id='%s')
     geoloc_set = GeoLocSet(P, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
+    fundingref_set = FundingRefSet(P, prefix=PREFIX_FUNDINGREF_SET, auto_id='%s')
 # On Edit:GET (Convert DataCite XML dict to form)
   else:
     # Note: Remainder form only needed upon ID creation
@@ -625,12 +656,15 @@ def getIdForm_datacite_xml (form_coll=None, request=None):
     geoloc_set = GeoLocSet(_inclMgmtData(form_coll.geoLocations if\
       hasattr(form_coll, 'geoLocations') else None, PREFIX_GEOLOC_SET), 
       prefix=PREFIX_GEOLOC_SET, auto_id='%s')
+    fundingref_set = FundingRefSet(_inclMgmtData(form_coll.fundingReferences if\
+      hasattr(form_coll, 'fundingReferences') else None, PREFIX_FUNDINGREF_SET),
+      prefix=PREFIX_FUNDINGREF_SET, auto_id='%s')
   return {'remainder_form': remainder_form, 'nonrepeating_form': nonrepeating_form,
     'resourcetype_form': resourcetype_form, 'creator_set': creator_set, 
     'title_set': title_set, 'descr_set':descr_set, 'subject_set':subject_set, 
     'contrib_set':contrib_set, 'date_set':date_set, 'altid_set':altid_set, 
     'relid_set':relid_set, 'size_set':size_set, 'format_set':format_set, 
-    'rights_set':rights_set, 'geoloc_set': geoloc_set}
+    'rights_set':rights_set, 'geoloc_set': geoloc_set, 'fundingref_set': fundingref_set}
 
 def _inclMgmtData(fields, prefix):
   """ Only to be used for formsets with syntax <prefix>-#-<field>

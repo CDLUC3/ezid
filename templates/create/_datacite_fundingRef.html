@@ -1,0 +1,36 @@
+{% load i18n %}	
+
+<script type="text/javascript">
+  $(function() {
+    $('#fundingref_set .form-container').formset({
+      auto_id: '',
+      prefix: '{{ form.fundingref_set.prefix }}',
+      deleteCssId: 'button__minus-fundingref',
+      addCssId: 'button__plus-fundingref'
+    });
+  })
+</script>
+
+<div id="fundingref_set" class="fieldset-stacked create__nested-fieldset" role="group" aria-labelledby="funding_ref_form_set">
+  <div class="fieldset-controls__container">
+    <div id="funding_ref_form_set" class="fieldset-controls__legend create__nested-legend">{% trans "Funding Reference" %}</div>
+  {% include "create/_datacite_buttons.html" with element="fundingref" %}
+  </div>
+{% for form in form.fundingref_set %}
+  <div class="form-container">
+  {{ form.non_field_errors }}
+
+  {% include "create/_datacite_inlinetext.html" with field=form.funderName %}
+  {% include "create/_datacite_inlinetext.html" with field=form.funderIdentifier %}
+  {% include "create/_datacite_inlineselect.html" with field=form.funderIdentifierType %}
+  <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
+    <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
+    {% include "create/_datacite_inlinetext.html" with field=form.awardNumber %}
+    {% include "create/_datacite_inlinetext.html" with field=form.awardURI %}
+    {% include "create/_datacite_inlinetext.html" with field=form.awardTitle %}
+  </details>
+
+  </div>
+{% endfor %}
+</div>
+{{ form.fundingref_set.management_form }}

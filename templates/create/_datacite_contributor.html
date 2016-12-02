@@ -23,15 +23,11 @@
   {% for c_field in form %}
 
   {% if forloop.first %}
-    {% include "create/_datacite_inlinetext.html" with field=c_field %}
+    {% include "create/_datacite_inlineselect.html" with field=c_field %}
   <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
     <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
   {% else %}
-    {% if c_field|fieldtype == "TextInput" %}
-      {% include "create/_datacite_inlinetext.html" with field=c_field %}
-    {% elif c_field|fieldtype == "Select" %}
-      {% include "create/_datacite_inlineselect.html" with field=c_field %}
-    {% endif %}
+    {% include "create/_datacite_inlinetext.html" with field=c_field %}
   {% endif %}
 
   {% endfor %}

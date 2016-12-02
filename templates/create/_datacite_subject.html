@@ -24,6 +24,7 @@
       <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
       {% include "create/_datacite_inlinetext.html" with field=form.subjectScheme %}
       {% include "create/_datacite_inlinetext.html" with field=form.schemeURI %}
+      {% include "create/_datacite_inlinetext.html" with field=form.valueURI %}
       {% for hidden in form.hidden_fields %}
        {{ hidden }}
       {% endfor %}
