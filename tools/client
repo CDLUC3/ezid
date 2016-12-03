@@ -19,7 +19,6 @@
 #     l (local server, no https)
 #     d (development)
 #     s (staging)
-#     w (workflow)
 #     p (production)
 #     http://...
 #
@@ -86,7 +85,6 @@ KNOWN_SERVERS = {
   "l": "http://localhost:8000",
   "d": "http://ias-ezid-dev.cdlib.org",
   "s": "http://ias-ezid-stg.cdlib.org",
-  "w": "http://ias-ezid-wf-stg.cdlib.org",
   "p": "http://ezid.cdlib.org"
 }
 
@@ -119,7 +117,6 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
     l (local server, no https)
     d (development)
     s (staging)
-    w (workflow)
     p (production)
     http://...
 

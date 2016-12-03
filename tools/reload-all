@@ -12,7 +12,7 @@ CLIENT=`dirname $0`/client
 METADATA="datacite.title test datacite.creator test datacite.publisher\
  test datacite.publicationyear test"
 
-for server in development staging workflow production
+for server in development staging production
 do
   echo
   echo -n "Reload $server server? [y/n] "
