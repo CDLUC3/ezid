@@ -158,15 +158,16 @@ def _id_type(str):
 # must appear in an XML document.
 
 _elementList = ["identifier", "creators", "creator", "creatorName",
-  "familyName", "givenName", "titles", "title", "publisher", "publicationYear",
-  "subjects", "subject", "contributors", "contributor", "contributorName", 
-  "nameIdentifier", "affiliation", "dates", "date", "language", "resourceType",
-  "alternateIdentifiers", "alternateIdentifier", "relatedIdentifiers",
-  "relatedIdentifier", "sizes", "size", "formats", "format", "version",
-  "rightsList", "rights", "descriptions", "description", "geoLocations",
-  "geoLocation", "geoLocationPoint", "geoLocationBox", "geoLocationPlace",
-  "fundingReferences", "fundingReference", "funderName", "funderIdentifier",
-  "awardNumber", "awardTitle"]
+  "titles", "title", "publisher", "publicationYear", "subjects", "subject",
+  "contributors", "contributor", "contributorName", "givenName", "familyName",
+  "nameIdentifier", "affiliation", "dates",
+  "date", "language", "resourceType", "alternateIdentifiers", "alternateIdentifier",
+  "relatedIdentifiers", "relatedIdentifier", "sizes", "size", "formats", "format",
+  "version", "rightsList", "rights", "descriptions", "description", "geoLocations",
+  "geoLocation", "geoLocationPoint", "geoLocationBox", "westBoundLongitude",
+  "eastBoundLongitude", "southBoundLatitude", "northBoundLatitude", "geoLocationPlace",
+  "geoLocationPolygon", "pointLongitude", "pointLatitude", "fundingReferences",
+  "fundingReference", "funderName", "funderIdentifier", "awardNumber", "awardTitle"]
 
 _elements = dict((e, i) for i, e in enumerate(_elementList))
 
@@ -196,6 +197,7 @@ def formElementsToDataciteXml (d, shoulder=None, identifier=None):
     node = root
     while len(key) > 0:
       k, remainder = key.split("-", 1) if "-" in key else (key, "")
+      # k = re.sub(r'_\d', '', k)
       if k in _elements:
         if tagName(node.tag) in _repeatableElementContainers:
           i, remainder = remainder.split("-", 1)

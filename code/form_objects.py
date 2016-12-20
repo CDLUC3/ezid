@@ -67,6 +67,11 @@ PREFIX_FUNDINGREF_SET='fundingReferences-fundingReference'
 # Translators: "Ex. " is abbreviation for "example". Please include one space at end.
 ABBR_EX = _("e.g. ")
 
+# Key/Label for nameidentifier grouping used in Creator and Contributor
+NAME_ID = ["nameIdentifier_", _("Name Identifier")]
+NAME_ID_SCHEME = ["nameIdentifier-nameIdentifierScheme_", _("Identifier Scheme")]
+NAME_ID_SCHEME_URI = ["nameIdentifier-schemeURI_", _("Scheme URI")]
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #                                                                   #
 #               Forms for ID creation/editing                       #
@@ -218,17 +223,17 @@ def _validate_custom_remainder(shoulder):
         _("This combination of characters cannot be used as a remainder."))
   return innerfn
 
-def nameIdValidation(ni, ni_s, ni_s_uri):
+def nameIdValidation(suffix, ni, ni_s, ni_s_uri):
   err = {}
   if ni and not ni_s:
-    err['nameIdentifier-nameIdentifierScheme'] = _("An Identifier Scheme must be filled in if you specify an Identifier.")
+    err['nameIdentifier-nameIdentifierScheme'+suffix] = _("An Identifier Scheme must be filled in if you specify an Identifier.")
   if ni_s and not ni:
-    err['nameIdentifier'] = _("An Identifier must be filled in if you specify an Identifier Scheme.")
+    err['nameIdentifier'+suffix] = _("An Identifier must be filled in if you specify an Identifier Scheme.")
   if ni_s_uri:
     if not ni:
-      err['nameIdentifier'] = _("An Identifier must be filled in if you specify a Scheme URI.")
+      err['nameIdentifier'+suffix] = _("An Identifier must be filled in if you specify a Scheme URI.")
     if not ni_s:
-      err['nameIdentifier-nameIdentifierScheme'] = _("An Identifier Scheme must be filled in.")
+      err['nameIdentifier-nameIdentifierScheme'+suffix] = _("An Identifier Scheme must be filled in.")
   return err
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -277,17 +282,24 @@ class CreatorForm(forms.Form):
       error_messages={'required': _("Please fill in a value for creator name.")})
     self.fields["familyName"] = forms.CharField(required=False, label=_("Family Name"))
     self.fields["givenName"] = forms.CharField(required=False, label=_("Given Name"))
-    self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
-    self.fields["nameIdentifier"] = forms.CharField(required=False, label=_("Name Identifier"))
-    self.fields["nameIdentifier-nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
-    self.fields["nameIdentifier-schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
+    self.fields[NAME_ID[0]+"0"] = forms.CharField(required=False, label=NAME_ID[1])
+    self.fields[NAME_ID_SCHEME[0]+"0"] = forms.CharField(required=False, label=NAME_ID_SCHEME[1])
+    self.fields[NAME_ID_SCHEME_URI[0]+"0"] = forms.CharField(required=False, label=NAME_ID_SCHEME_URI[1])
+    self.fields[NAME_ID[0]+"1"] = forms.CharField(required=False, label=NAME_ID[1])
+    self.fields[NAME_ID_SCHEME[0]+"1"] = forms.CharField(required=False, label=NAME_ID_SCHEME[1])
+    self.fields[NAME_ID_SCHEME_URI[0]+"1"] = forms.CharField(required=False, label=NAME_ID_SCHEME_URI[1])
+    self.fields["affiliation_0"] = forms.CharField(required=False, label=_("Affiliation"))
+    self.fields["affiliation_1"] = forms.CharField(required=False, label=_("Affiliation"))
   def clean(self):
     cleaned_data = super(CreatorForm, self).clean()
-    ni = cleaned_data.get("nameIdentifier")
-    ni_s = cleaned_data.get("nameIdentifier-nameIdentifierScheme")
-    ni_s_uri = cleaned_data.get("nameIdentifier-schemeURI")
-    err = nameIdValidation(ni, ni_s, ni_s_uri)
-    if err: raise ValidationError(err) 
+    errs = {}
+    for i in ["0","1"]:
+      ni = cleaned_data.get(NAME_ID[0]+i)
+      ni_s = cleaned_data.get(NAME_ID_SCHEME[0]+i)
+      ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0]+i)
+      err = nameIdValidation("_"+i, ni, ni_s, ni_s_uri)
+      if err: errs.update(err.items()) 
+    if errs: raise ValidationError(errs) 
     return cleaned_data
 
 class TitleForm(forms.Form):
@@ -402,7 +414,7 @@ class ContribForm(forms.Form):
         err1['contributorType'] = _("Type is required if you fill in contributor information.")
       if not cname:
         err1['contributorName'] = _("Name is required if you fill in contributor information.")
-    err2 = nameIdValidation(ni, ni_s, ni_s_uri)
+    err2 = nameIdValidation("", ni, ni_s, ni_s_uri)
     err = dict(err1.items() + err2.items())
     if err: raise ValidationError(err) 
     return cleaned_data

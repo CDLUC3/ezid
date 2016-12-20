@@ -194,7 +194,7 @@
         prefix: 'form',                  // The form prefix for your django formset
         formTemplate: null,              // The jQuery selection cloned to generate new form instances
         formCssClass: 'dynamic-form',    // CSS class applied to each form in a formset
-        extraClasses: [],                // Additional CSS classes, which will be applied to each form in turn
+        extraClasses: ['vertical-buffer-sm'],  // Additional CSS classes, which will be applied to each form in turn
         keepFieldValues: ''             // jQuery selector for fields whose values should be kept when the form is cloned
     };
 })(jQuery);
