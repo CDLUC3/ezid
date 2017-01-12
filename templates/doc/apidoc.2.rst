@@ -123,7 +123,7 @@ identifiers:
 
 ========== ===================================================
 Identifier `doi:10.nnnn/suffix`:hl1:
-URL form   \http://doi.org/`10.nnnn/suffix`:hl1:
+URL form   \https://doi.org/`10.nnnn/suffix`:hl1:
 EZID URL   \http://ezid.cdlib.org/id/`doi:10.nnnn/suffix`:hl1:
 ========== ===================================================
 
@@ -1287,7 +1287,7 @@ respects, including resolvability, except that EZID deletes them after
 2 weeks.
 
 Test DOI identifiers resolve through the universal DOI resolver
-(\http://doi.org/), but do not appear in any of DataCite's other
+(\https://doi.org/), but do not appear in any of DataCite's other
 systems.  Test DOI identifiers registered with Crossref appear only in
 Crossref's test server (\http://test.crossref.org/), and are prefixed
 there with 10.15697.  For example, test identifier doi:10.5072/FK2TEST
