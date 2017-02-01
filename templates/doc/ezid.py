@@ -27,7 +27,7 @@
 #     d[elete] identifier
 #     login
 #     logout
-#     s[tatus] [*|subsystemlist]
+#     s[tatus]
 #
 # In the above, if an element is "@", the subsequent value is treated
 # as a filename and metadata elements are read from the named
@@ -78,7 +78,7 @@ OPERATIONS = {
   "delete": 1,
   "login": 0,
   "logout": 0,
-  "status": lambda l: l in [0, 1]
+  "status": 0
 }
 
 USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
@@ -103,7 +103,7 @@ USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
     d[elete] identifier
     login
     logout
-    s[tatus] [*|subsystemlist]
+    s[tatus]
 """
 
 # Global variables that are initialized farther down.
@@ -288,9 +288,5 @@ elif operation == "logout":
   response = issueRequest("logout", "GET")
   printAnvlResponse(response)
 elif operation == "status":
-  if len(args) > 0:
-    subsystems = "?subsystems=" + args[0]
-  else:
-    subsystems = ""
-  response = issueRequest("status"+subsystems, "GET")
+  response = issueRequest("status", "GET")
   printAnvlResponse(response)

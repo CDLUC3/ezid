@@ -123,7 +123,7 @@ identifiers:
 
 ========== ===================================================
 Identifier `doi:10.nnnn/suffix`:hl1:
-URL form   \http://doi.org/`10.nnnn/suffix`:hl1:
+URL form   \https://doi.org/`10.nnnn/suffix`:hl1:
 EZID URL   \http://ezid.cdlib.org/id/`doi:10.nnnn/suffix`:hl1:
 ========== ===================================================
 
@@ -1287,7 +1287,7 @@ respects, including resolvability, except that EZID deletes them after
 2 weeks.
 
 Test DOI identifiers resolve through the universal DOI resolver
-(\http://doi.org/), but do not appear in any of DataCite's other
+(\https://doi.org/), but do not appear in any of DataCite's other
 systems.  Test DOI identifiers registered with Crossref appear only in
 Crossref's test server (\http://test.crossref.org/), and are prefixed
 there with 10.15697.  For example, test identifier doi:10.5072/FK2TEST
@@ -1321,26 +1321,6 @@ response will resemble the following:
   |lArr| Content-Length: 19
   |lArr|
   |lArr| success: EZID is up
-
-The status of EZID's subsystems can be probed at the same time by
-listing one or more subsystem names, separated by commas, as the value
-of the "subsystems" query parameter.  For example:
-
-.. parsed-literal::
-
-  |rArr| GET /status?subsystems=noid,search HTTP/1.1
-  |rArr| Host: ezid.cdlib.org
-
-  |lArr| HTTP/1.1 200 OK
-  |lArr| Content-Type: text/plain; charset=UTF-8
-  |lArr| Content-Length: 40
-  |lArr|
-  |lArr| success: EZID is up
-  |lArr| noid: up
-  |lArr| search: up
-
-Use the URL \http://ezid.cdlib.org/status?subsystems=* to discover
-subsystem names and probe all subsystems.
 
 Python example
 --------------

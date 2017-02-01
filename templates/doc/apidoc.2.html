@@ -98,7 +98,7 @@ identifiers:</p>
 <td><span class="hl1">doi:10.nnnn/suffix</span></td>
 </tr>
 <tr><td>URL form</td>
-<td>http://doi.org/<span class="hl1">10.nnnn/suffix</span></td>
+<td>https://doi.org/<span class="hl1">10.nnnn/suffix</span></td>
 </tr>
 <tr><td>EZID URL</td>
 <td>http://ezid.cdlib.org/id/<span class="hl1">doi:10.nnnn/suffix</span></td>
@@ -1320,7 +1320,7 @@ identifiers.&quot;  They are ordinary long-term identifiers in almost all
 respects, including resolvability, except that EZID deletes them after
 2 weeks.</p>
 <p>Test DOI identifiers resolve through the universal DOI resolver
-(http://doi.org/), but do not appear in any of DataCite's other
+(https://doi.org/), but do not appear in any of DataCite's other
 systems.  Test DOI identifiers registered with Crossref appear only in
 Crossref's test server (http://test.crossref.org/), and are prefixed
 there with 10.15697.  For example, test identifier doi:10.5072/FK2TEST
@@ -1350,23 +1350,6 @@ response will resemble the following:</p>
 ⇐
 ⇐ success: EZID is up
 </pre>
-<p>The status of EZID's subsystems can be probed at the same time by
-listing one or more subsystem names, separated by commas, as the value
-of the &quot;subsystems&quot; query parameter.  For example:</p>
-<pre class="literal-block">
-⇒ GET /status?subsystems=noid,search HTTP/1.1
-⇒ Host: ezid.cdlib.org
-
-⇐ HTTP/1.1 200 OK
-⇐ Content-Type: text/plain; charset=UTF-8
-⇐ Content-Length: 40
-⇐
-⇐ success: EZID is up
-⇐ noid: up
-⇐ search: up
-</pre>
-<p>Use the URL http://ezid.cdlib.org/status?subsystems=* to discover
-subsystem names and probe all subsystems.</p>
 </div>
 <div class="section" id="python-example">
 <h1>Python example</h1>

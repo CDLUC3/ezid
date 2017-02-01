@@ -28,6 +28,7 @@ import uuid
 import ezid
 import ezidapp.models
 import config
+import handle_system
 import log
 import util
 import util2
@@ -45,11 +46,12 @@ _daemonEnabled = None
 _threadName = None
 _idleSleep = None
 _ezidUrl = None
+_dataciteEnabled = None
 
 def _loadConfig ():
   global _enabled, _depositorName, _depositorEmail, _realServer, _testServer
   global _depositUrl, _resultsUrl, _username, _password
-  global _daemonEnabled, _threadName, _idleSleep, _ezidUrl
+  global _daemonEnabled, _threadName, _idleSleep, _ezidUrl, _dataciteEnabled
   _enabled = (config.get("crossref.enabled").lower() == "true")
   _depositorName = config.get("crossref.depositor_name")
   _depositorEmail = config.get("crossref.depositor_email")
@@ -63,6 +65,7 @@ def _loadConfig ():
   _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
     config.get("daemons.crossref_enabled").lower() == "true")
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
+  _dataciteEnabled = (config.get("datacite.enabled").lower() == "true")
   if _daemonEnabled:
     _threadName = uuid.uuid1().hex
     t = threading.Thread(target=_daemonThread, name=_threadName)
@@ -452,6 +455,15 @@ def _queue ():
   return ezidapp.models.CrossrefQueue
 
 def _doDeposit (r):
+  # Crossref requires that DOIs be registered in the Handle System
+  # before it will process them.
+  if _dataciteEnabled:
+    try:
+      if handle_system.getRedirect(r.identifier[4:]) == None: return
+    except Exception, e:
+      log.otherError("crossref._doDeposit",
+        _wrapException("error querying Handle System", e))
+      return
   m = util.deblobify(r.metadata)
   if r.operation == ezidapp.models.CrossrefQueue.DELETE:
     url = "http://datacite.org/invalidDOI"
