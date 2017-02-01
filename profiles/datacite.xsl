@@ -3,7 +3,7 @@
 <!-- ==========================================================================
 
 Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
-record to an XHTML table.
+record, version 2, 3, or 4, to an XHTML table.
 
 In a slight extension, this transform allows the record identifier to
 be other than a DOI.
@@ -25,6 +25,7 @@ http://creativecommons.org/licenses/BSD/
 
 <xsl:variable name="altId" select="'alternateIdentifier'"/>
 <xsl:variable name="relId" select="'relatedIdentifier'"/>
+<xsl:variable name="fref" select="'fundingReference'"/>
 
 <xsl:template match="*[local-name()='resource']">
   <table class="dcms_table">
@@ -185,6 +186,15 @@ http://creativecommons.org/licenses/BSD/
         <td class="dcms_value dcms_geolocations">
           <xsl:apply-templates select=
             "*[local-name()='geoLocations']/*[local-name()='geoLocation']"/>
+        </td>
+      </tr>
+    </xsl:if>
+    <xsl:if test="*[local-name()=concat($fref, 's')]/*[local-name()=$fref]">
+      <tr class="dcms_element dcms_fundingreferences">
+        <th class="dcms_label dcms_fundingreferences">Funding references:</th>
+        <td class="dcms_value dcms_fundingreferences">
+          <xsl:apply-templates select=
+            "*[local-name()=concat($fref, 's')]/*[local-name()=$fref]"/>
         </td>
       </tr>
     </xsl:if>
@@ -435,6 +445,24 @@ http://creativecommons.org/licenses/BSD/
       <xsl:text>]</xsl:text>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+<xsl:template match="*[local-name()='fundingReference']">
+  <xsl:if test="position() != 1">
+    <xsl:text>;</xsl:text>
+    <br/>
+  </xsl:if>
+  <xsl:value-of select="*[local-name()='funderName']"/>
+  <xsl:text> award</xsl:text>
+  <xsl:if test="normalize-space(*[local-name()='awardNumber']) != ''">
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="*[local-name()='awardNumber']"/>
+  </xsl:if>
+  <xsl:if test="*[local-name()='awardTitle']">
+    <xsl:text> "</xsl:text>
+    <xsl:value-of select="*[local-name()='awardTitle']"/>
+    <xsl:text>"</xsl:text>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="*[local-name()='br']">
