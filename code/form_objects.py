@@ -3,9 +3,11 @@ from django import forms
 from django.forms import BaseFormSet, formset_factory
 import django.core.validators
 import ezidapp.models
+import json
+import lxml.etree
+import re
 import util
 import userauth 
-import re
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
@@ -45,12 +47,15 @@ RESOURCE_TYPES = (
 )
 REGEX_4DIGITYEAR='^(\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
    \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\))$'
+REGEX_GEOPOINT='^(\-?\d+(\.\d+)?)$'
 ERR_4DIGITYEAR = _("Four digits required")
 ERR_DATE = _("Please use format YYYY-MM-DD.")
 ERR_CREATOR=_("Please fill in a value for creator.")
 ERR_TITLE=_("Please fill in a value for title.")
 ERR_PUBLISHER=_("Please fill in a value for publisher.")
 ERR_RESOURCE=_("Please choose a resource type.")
+ERR_GEOPOINT = _("Please use a number in decimal format.")
+ERR_GEOPOLYGON = _("Please enter valid GeoJSON or KML formatted text.")
 PREFIX_CREATOR_SET='creators-creator'
 PREFIX_TITLE_SET='titles-title'
 PREFIX_DESCR_SET='descriptions-description'
@@ -64,7 +69,7 @@ PREFIX_FORMAT_SET='formats-format'
 PREFIX_RIGHTS_SET='rightsList-rights'
 PREFIX_GEOLOC_SET='geoLocations-geoLocation'
 PREFIX_FUNDINGREF_SET='fundingReferences-fundingReference'
-# Translators: "Ex. " is abbreviation for "example". Please include one space at end.
+# Translators: "e.g. " is abbreviation for "example". Please include one space at end.
 ABBR_EX = _("e.g. ")
 
 # Key/Label for nameidentifier grouping used in Creator and Contributor
@@ -223,7 +228,7 @@ def _validate_custom_remainder(shoulder):
         _("This combination of characters cannot be used as a remainder."))
   return innerfn
 
-def nameIdValidation(suffix, ni, ni_s, ni_s_uri):
+def _validateNameIdGrouping(suffix, ni, ni_s, ni_s_uri):
   err = {}
   if ni and not ni_s:
     err['nameIdentifier-nameIdentifierScheme'+suffix] = _("An Identifier Scheme must be filled in if you specify an Identifier.")
@@ -235,6 +240,28 @@ def nameIdValidation(suffix, ni, ni_s, ni_s_uri):
     if not ni_s:
       err['nameIdentifier-nameIdentifierScheme'+suffix] = _("An Identifier Scheme must be filled in.")
   return err
+
+def _validate_geoLocPolygon(text):
+  text = text.strip()
+  first_char = text[:1]
+  if first_char == '<':
+    _validateKml(text)
+  elif first_char == '{':
+    _validateJson(text)
+  else:
+    raise ValidationError(ERR_GEOPOLYGON)
+
+def _validateKml(text):
+  # ToDo: Confirm Polygon data is present
+  pass
+
+def _validateJson(text):
+  try:
+    j = json.loads(text)
+    # ToDo: Confirm Polygon data is present
+  except ValueError, e:
+    raise ValidationError(ERR_GEOPOLYGON)
+
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ################# Advanced Datacite ID Form/Elements #################
@@ -297,7 +324,7 @@ class CreatorForm(forms.Form):
       ni = cleaned_data.get(NAME_ID[0]+i)
       ni_s = cleaned_data.get(NAME_ID_SCHEME[0]+i)
       ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0]+i)
-      err = nameIdValidation("_"+i, ni, ni_s, ni_s_uri)
+      err = _validateNameIdGrouping("_"+i, ni, ni_s, ni_s_uri)
       if err: errs.update(err.items()) 
     if errs: raise ValidationError(errs) 
     return cleaned_data
@@ -414,7 +441,7 @@ class ContribForm(forms.Form):
         err1['contributorType'] = _("Type is required if you fill in contributor information.")
       if not cname:
         err1['contributorName'] = _("Name is required if you fill in contributor information.")
-    err2 = nameIdValidation("", ni, ni_s, ni_s_uri)
+    err2 = _validateNameIdGrouping("", ni, ni_s, ni_s_uri)
     err = dict(err1.items() + err2.items())
     if err: raise ValidationError(err) 
     return cleaned_data
@@ -548,15 +575,30 @@ class RightsForm(forms.Form):
 
 class GeoLocForm(forms.Form):
   """ Form object for GeoLocation Element in DataCite Advanced (XML) profile """
-  # Translators: A coordinate point  
-  geoLocationPoint = forms.RegexField(required=False, label=_("Point"),
-    regex='^(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)$',
-    error_messages={'invalid': _("A Geolocation Point must be made up of two decimal numbers separated by a space.")})
-  # Translators: A bounding box (with coordinates)
-  geoLocationBox = forms.RegexField(required=False, label=_("Box"),
-    regex='^(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)\s+(\-?\d+(\.\d+)?)$',
-    error_messages={'invalid': _("A Geolocation Box must be made up of four decimal numbers separated by a space.")})
-  geoLocationPlace = forms.CharField(required=False, label=_("Place"))
+  def __init__(self, *args, **kwargs):
+    super(GeoLocForm,self).__init__(*args,**kwargs)
+    self.fields["geoLocationPoint-pointLongitude"] = forms.RegexField(required=False, 
+      label=_("Point Longitude"), regex=REGEX_GEOPOINT,
+      error_messages={'invalid': ERR_GEOPOINT})
+    self.fields["geoLocationPoint-pointLatitude"] = forms.RegexField(required=False, 
+      label=_("Point Latitude"), regex=REGEX_GEOPOINT,
+      error_messages={'invalid': ERR_GEOPOINT})
+    self.fields["geoLocationBox-westBoundLongitude"] = forms.RegexField(required=False, 
+      label=_("WestBounding Longitude"), regex=REGEX_GEOPOINT,
+      error_messages={'invalid': ERR_GEOPOINT})
+    self.fields["geoLocationBox-eastBoundLongitude"] = forms.RegexField(required=False, 
+      label=_("EastBounding Longitude"), regex=REGEX_GEOPOINT,
+      error_messages={'invalid': ERR_GEOPOINT})
+    self.fields["geoLocationBox-southBoundLatitude"] = forms.RegexField(required=False, 
+      label=_("SouthBounding Latitude"), regex=REGEX_GEOPOINT,
+      error_messages={'invalid': ERR_GEOPOINT})
+    self.fields["geoLocationBox-northBoundLatitude"] = forms.RegexField(required=False, 
+      label=_("NorthBounding Latitude"), regex=REGEX_GEOPOINT,
+      error_messages={'invalid': ERR_GEOPOINT})
+    self.fields["geoLocationPlace"] = forms.CharField(required=False, label=_("Place"))
+    self.fields["geoLocationPolygon"] = forms.CharField(required=False,
+      label=_("Polygon"), validators=[_validate_geoLocPolygon],
+      widget=forms.Textarea(attrs={'rows': '4'}))
 
 class FundingRefForm(forms.Form):
   """ Form object for Funding Reference Element in DataCite Advanced (XML) profile """
