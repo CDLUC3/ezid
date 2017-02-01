@@ -144,6 +144,8 @@
                 updateElementIndex($(this), options.prefix, formCount);
                 clearInvalidReqd($(this));
             });
+            // Generate any links to help content from newly created elements
+            $.getScript("/static/javascripts/help_box_.js"); 
             totalForms.val(formCount + 1);
             console.log("id=%s, totalForms = %s", myid, totalForms.val());
             // Check if we've exceeded the maximum allowed number of forms:
