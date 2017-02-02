@@ -40,7 +40,7 @@ supplied as "'foo'".  Sadly, there is no mechanism for escaping
 internal quotes.
 
 The conversion is based on Crossref version 4.3.4 and DataCite version
-3.1.
+4.0.
 
 The XPath expressions are written the convoluted way they are to allow
 this transform to operate independently of the XML namespace (which
@@ -54,7 +54,7 @@ http://creativecommons.org/licenses/BSD/
 =========================================================================== -->
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns="http://datacite.org/schema/kernel-3"
+  xmlns="http://datacite.org/schema/kernel-4"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 <xsl:param name="_idType" select="'DOI'"/>
@@ -68,8 +68,8 @@ http://creativecommons.org/licenses/BSD/
 <xsl:output method="xml" omit-xml-declaration="yes"/>
 
 <xsl:template match="/">
-  <resource xsi:schemaLocation="http://datacite.org/schema/kernel-3
-    http://schema.datacite.org/meta/kernel-3/metadata.xsd">
+  <resource xsi:schemaLocation="http://datacite.org/schema/kernel-4
+    http://schema.datacite.org/meta/kernel-4/metadata.xsd">
     <xsl:apply-templates select="//*[local-name()='doi_data']"/>
   </resource>
 </xsl:template>
@@ -291,6 +291,9 @@ http://creativecommons.org/licenses/BSD/
     <xsl:when test="local-name(..) = 'standard_metadata'">
       <resourceType resourceTypeGeneral="Text">standard</resourceType>
     </xsl:when>
+    <xsl:otherwise>
+      <resourceType resourceTypeGeneral="Other"/>
+    </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
 
