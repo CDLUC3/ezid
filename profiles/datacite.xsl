@@ -400,51 +400,83 @@ http://creativecommons.org/licenses/BSD/
 </xsl:template>
 
 <xsl:template match="*[local-name()='geoLocation']">
-  <!-- We assume the location has at least one of point/box/place,
-       though the schema requires nothing. -->
+  <!-- This conversion is written under the assumption that a
+       placename will always be present and represents the primary
+       value; coordinate locations, if any, are secondary.  The
+       conversion still works if there's no placename, but that's the
+       assumption. -->
   <xsl:if test="position() != 1">
     <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
-  <xsl:choose>
-    <xsl:when test="*[local-name()='geoLocationPlace']">
-      <xsl:value-of select="*[local-name()='geoLocationPlace']"/>
-      <xsl:if test="*[local-name()='geoLocationPoint'] or
-        *[local-name()='geoLocationBox']">
-        <xsl:text> </xsl:text>
-        <span class="dcms_subvalue dcms_geolocations">
-          <xsl:text>[</xsl:text>
-          <xsl:if test="*[local-name()='geoLocationPoint']">
-            <xsl:text>point </xsl:text>
-            <xsl:value-of select="*[local-name()='geoLocationPoint']"/>
-          </xsl:if>
-          <xsl:if test="*[local-name()='geoLocationBox']">
-            <xsl:if test="*[local-name()='geoLocationPoint']">
-              <xsl:text>; </xsl:text>
-            </xsl:if>
-            <xsl:text>box </xsl:text>
-            <xsl:value-of select="*[local-name()='geoLocationBox']"/>
-          </xsl:if>
-          <xsl:text>]</xsl:text>
-        </span>
-      </xsl:if>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:text>[</xsl:text>
-      <xsl:if test="*[local-name()='geoLocationPoint']">
-        <xsl:text>point </xsl:text>
-        <xsl:value-of select="*[local-name()='geoLocationPoint']"/>
-      </xsl:if>
-      <xsl:if test="*[local-name()='geoLocationBox']">
-        <xsl:if test="*[local-name()='geoLocationPoint']">
-          <xsl:text>; </xsl:text>
-        </xsl:if>
-        <xsl:text>box </xsl:text>
-        <xsl:value-of select="*[local-name()='geoLocationBox']"/>
-      </xsl:if>
-      <xsl:text>]</xsl:text>
-    </xsl:otherwise>
-  </xsl:choose>
+  <xsl:if test="*[local-name()='geoLocationPlace']">
+    <xsl:value-of select="*[local-name()='geoLocationPlace']"/>
+  </xsl:if>
+  <xsl:apply-templates select="*"/>
+</xsl:template>
+
+<xsl:template match="*[local-name()='geoLocationPoint']">
+  <xsl:text> </xsl:text>
+  <span class="dcms_subvalue dcms_geolocations">
+    <xsl:text>[point </xsl:text>
+    <xsl:choose>
+      <xsl:when test="*[local-name()='pointLongitude']">
+        <xsl:text>(</xsl:text>
+        <xsl:value-of select="*[local-name()='pointLongitude']"/>
+        <xsl:text>,</xsl:text>
+        <xsl:value-of select="*[local-name()='pointLatitude']"/>
+        <xsl:text>)</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="normalize-space(.)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>]</xsl:text>
+  </span>
+</xsl:template>
+
+<xsl:template match="*[local-name()='geoLocationBox']">
+  <xsl:text> </xsl:text>
+  <span class="dcms_subvalue dcms_geolocations">
+    <xsl:text>[box </xsl:text>
+    <xsl:choose>
+      <xsl:when test="*[local-name()='westBoundLongitude']">
+        <xsl:text>(W=</xsl:text>
+        <xsl:value-of select="*[local-name()='westBoundLongitude']"/>
+        <xsl:text>, E=</xsl:text>
+        <xsl:value-of select="*[local-name()='eastBoundLongitude']"/>
+        <xsl:text>, S=</xsl:text>
+        <xsl:value-of select="*[local-name()='southBoundLatitude']"/>
+        <xsl:text>, N=</xsl:text>
+        <xsl:value-of select="*[local-name()='northBoundLatitude']"/>
+        <xsl:text>)</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="normalize-space(.)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>]</xsl:text>
+  </span>
+</xsl:template>
+
+<xsl:template match="*[local-name()='geoLocationPolygon']">
+  <xsl:text> </xsl:text>
+  <span class="dcms_subvalue dcms_geolocations">
+    <xsl:text>[polygon (</xsl:text>
+    <xsl:apply-templates select="*[local-name()='polygonPoint']"/>
+    <xsl:text>)]</xsl:text>
+  </span>
+</xsl:template>
+
+<xsl:template match="*[local-name()='polygonPoint']">
+  <xsl:if test="position() != 1">
+    <xsl:text>, </xsl:text>
+  </xsl:if>
+  <xsl:text>(</xsl:text>
+  <xsl:value-of select="*[local-name()='pointLongitude']"/>
+  <xsl:text>,</xsl:text>
+  <xsl:value-of select="*[local-name()='pointLatitude']"/>
+  <xsl:text>)</xsl:text>
 </xsl:template>
 
 <xsl:template match="*[local-name()='fundingReference']">
