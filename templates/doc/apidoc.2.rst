@@ -1023,7 +1023,7 @@ __ `DataCite Metadata Scheme`_
    .. parsed-literal::
 
      <?xml version="1.0"?>
-     <resource xmlns="\http://datacite.org/schema/kernel-3"
+     <resource xmlns="\http://datacite.org/schema/kernel-4"
        xmlns:xsi="\http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="...">
        <identifier identifierType="DOI">(:tba)</identifier>
@@ -2045,7 +2045,7 @@ encoding is UTF-8 and the metadata is compressed with either gzip_
      </element>
          <element name="_updated">1421276359</element>
          <element name="datacite">
-           <resource xmlns="http://datacite.org/schema/kernel-3">
+           <resource xmlns="http://datacite.org/schema/kernel-4">
              <identifier identifierType="DOI">10.5072/FK2S75905Q</identifier>
              <creators>
                <creator>
@@ -2202,7 +2202,7 @@ from the identifier's preferred metadata profile (see `Metadata
 profiles`_ above) to one of two delivery formats: `Dublin Core`__
 `\ `:ext-icon: (as required by the protocol) or DataCite__
 `\ `:ext-icon:.  In the latter case, older DataCite XML metadata
-records stored in EZID are converted to version 3 of the DataCite
+records stored in EZID are converted to version 4 of the DataCite
 schema for uniformity.  Note that, in an extension to the DataCite
 schema, the identifier type for non-DOI identifiers is set to "ARK" or
 "\URN:UUID" as appropriate.
