@@ -304,10 +304,10 @@ def _interpolate (template, *args):
     for a in args)
 
 _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
-<resource xmlns="http://datacite.org/schema/kernel-3"
+<resource xmlns="http://datacite.org/schema/kernel-4"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://datacite.org/schema/kernel-3
-    http://schema.datacite.org/meta/kernel-3/metadata.xsd">
+  xsi:schemaLocation="http://datacite.org/schema/kernel-4
+    http://schema.datacite.org/meta/kernel-4/metadata.xsd">
   <identifier identifierType="%s">%s</identifier>
   <creators>
     <creator>
@@ -386,14 +386,12 @@ def formRecord (identifier, metadata, supplyMissing=False):
     d = km.validatedDate
     r = _interpolate(_metadataTemplate, idType, idBody, km.creator, km.title,
       km.publisher, d[:4] if d else "0000")
-    t = km.validatedType
-    if t == None and km.type != None: t = "Other"
-    if t != None:
-      if "/" in t:
-        gt, st = t.split("/", 1)
-        r += _interpolate(_resourceTypeTemplate2, gt, st)
-      else:
-        r += _interpolate(_resourceTypeTemplate1, t)
+    t = km.validatedType or "Other"
+    if "/" in t:
+      gt, st = t.split("/", 1)
+      r += _interpolate(_resourceTypeTemplate2, gt, st)
+    else:
+      r += _interpolate(_resourceTypeTemplate1, t)
     r += u"</resource>\n"
     return r
 

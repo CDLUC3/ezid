@@ -116,8 +116,8 @@ def publicationDate (date):
 # that vocabulary by allowing a "specific type" (in DataCite parlance)
 # to follow a "general type" (or type proper) separated by a slash, as
 # in "Image/Photograph".  The following dictionary lists the allowable
-# resource types (these are from version 3.1 of the DataCite Metadata
-# Schema <http://schema.datacite.org/meta/kernel-3/>) and maps them to
+# resource types (these are from version 4 of the DataCite Metadata
+# Schema <http://schema.datacite.org/meta/kernel-4/>) and maps them to
 # mnemonic codes for database storage purposes.  (N.B.: the codes are
 # used for ordering, so their order should match the order of the full
 # terms.)
