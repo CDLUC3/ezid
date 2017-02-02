@@ -386,7 +386,12 @@ def formRecord (identifier, metadata, supplyMissing=False):
     d = km.validatedDate
     r = _interpolate(_metadataTemplate, idType, idBody, km.creator, km.title,
       km.publisher, d[:4] if d else "0000")
-    t = km.validatedType or "Other"
+    t = km.validatedType
+    if t == None:
+      if km.type != None:
+        t = "Other"
+      else:
+        t = "Other/(:unav)"
     if "/" in t:
       gt, st = t.split("/", 1)
       r += _interpolate(_resourceTypeTemplate2, gt, st)
