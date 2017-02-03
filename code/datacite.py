@@ -243,6 +243,11 @@ def validateDcmsRecord (identifier, record, schemaValidate=True):
   m = _rootTagRE.match(root.tag)
   assert m, "not a DataCite record"
   version = m.group(2)
+  # ///////////////////////////////////////////////////////////////////////////
+  # TEMPORARY: REMOVE WHEN FULLY SUPPORTING VERSION 4
+  if version == "4":
+    assert False, "DataCite metadata schema version 4 not supported yet"
+  # ///////////////////////////////////////////////////////////////////////////
   # As a special case, upgrade schema version 2.1 to 2.2.
   if version == "2.1":
     def changeNamespace (node):
