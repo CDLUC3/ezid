@@ -1158,11 +1158,12 @@ Crossref registration
 
 A DOI identifier may be registered with `Crossref`_ `\ `:ext-icon: in
 addition to being registered with `DataCite`_ `\ `:ext-icon:, thereby
-making it available to Crossref's indexing and linking services.
-**Note:** to take advantage of this, both the identifier shoulder and
-the user making the request must be enabled for Crossref registration
-by an EZID administrator.  In addition, the user must have an account
-with Crossref.
+making it available to Crossref's indexing and linking services
+(DataCite remains the primary registrar with regard to the DOI
+system).  **Note:** to take advantage of this, both the identifier
+shoulder and the user making the request must be enabled for Crossref
+registration by an EZID administrator.  In addition, the user must
+have an account with Crossref.
 
 Once registered, an identifier cannot be removed from Crossref.  If
 the identifier's status is set to unavailable (recall `Identifier
