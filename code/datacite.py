@@ -309,10 +309,10 @@ def _interpolate (template, *args):
     for a in args)
 
 _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
-<resource xmlns="http://datacite.org/schema/kernel-4"
+<resource xmlns="http://datacite.org/schema/kernel-3"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://datacite.org/schema/kernel-4
-    http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+  xsi:schemaLocation="http://datacite.org/schema/kernel-3
+    http://schema.datacite.org/meta/kernel-3/metadata.xsd">
   <identifier identifierType="%s">%s</identifier>
   <creators>
     <creator>
