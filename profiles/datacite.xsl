@@ -3,7 +3,7 @@
 <!-- ==========================================================================
 
 Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
-record to an XHTML table.
+record, version 2, 3, or 4, to an XHTML table.
 
 In a slight extension, this transform allows the record identifier to
 be other than a DOI.
@@ -25,6 +25,7 @@ http://creativecommons.org/licenses/BSD/
 
 <xsl:variable name="altId" select="'alternateIdentifier'"/>
 <xsl:variable name="relId" select="'relatedIdentifier'"/>
+<xsl:variable name="fref" select="'fundingReference'"/>
 
 <xsl:template match="*[local-name()='resource']">
   <table class="dcms_table">
@@ -185,6 +186,15 @@ http://creativecommons.org/licenses/BSD/
         <td class="dcms_value dcms_geolocations">
           <xsl:apply-templates select=
             "*[local-name()='geoLocations']/*[local-name()='geoLocation']"/>
+        </td>
+      </tr>
+    </xsl:if>
+    <xsl:if test="*[local-name()=concat($fref, 's')]/*[local-name()=$fref]">
+      <tr class="dcms_element dcms_fundingreferences">
+        <th class="dcms_label dcms_fundingreferences">Funding references:</th>
+        <td class="dcms_value dcms_fundingreferences">
+          <xsl:apply-templates select=
+            "*[local-name()=concat($fref, 's')]/*[local-name()=$fref]"/>
         </td>
       </tr>
     </xsl:if>
@@ -390,51 +400,101 @@ http://creativecommons.org/licenses/BSD/
 </xsl:template>
 
 <xsl:template match="*[local-name()='geoLocation']">
-  <!-- We assume the location has at least one of point/box/place,
-       though the schema requires nothing. -->
+  <!-- This conversion is written under the assumption that a
+       placename will always be present and represents the primary
+       value; coordinate locations, if any, are secondary.  The
+       conversion still works if there's no placename, but that's the
+       assumption. -->
   <xsl:if test="position() != 1">
     <xsl:text>;</xsl:text>
     <br/>
   </xsl:if>
-  <xsl:choose>
-    <xsl:when test="*[local-name()='geoLocationPlace']">
-      <xsl:value-of select="*[local-name()='geoLocationPlace']"/>
-      <xsl:if test="*[local-name()='geoLocationPoint'] or
-        *[local-name()='geoLocationBox']">
-        <xsl:text> </xsl:text>
-        <span class="dcms_subvalue dcms_geolocations">
-          <xsl:text>[</xsl:text>
-          <xsl:if test="*[local-name()='geoLocationPoint']">
-            <xsl:text>point </xsl:text>
-            <xsl:value-of select="*[local-name()='geoLocationPoint']"/>
-          </xsl:if>
-          <xsl:if test="*[local-name()='geoLocationBox']">
-            <xsl:if test="*[local-name()='geoLocationPoint']">
-              <xsl:text>; </xsl:text>
-            </xsl:if>
-            <xsl:text>box </xsl:text>
-            <xsl:value-of select="*[local-name()='geoLocationBox']"/>
-          </xsl:if>
-          <xsl:text>]</xsl:text>
-        </span>
-      </xsl:if>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:text>[</xsl:text>
-      <xsl:if test="*[local-name()='geoLocationPoint']">
-        <xsl:text>point </xsl:text>
-        <xsl:value-of select="*[local-name()='geoLocationPoint']"/>
-      </xsl:if>
-      <xsl:if test="*[local-name()='geoLocationBox']">
-        <xsl:if test="*[local-name()='geoLocationPoint']">
-          <xsl:text>; </xsl:text>
-        </xsl:if>
-        <xsl:text>box </xsl:text>
-        <xsl:value-of select="*[local-name()='geoLocationBox']"/>
-      </xsl:if>
-      <xsl:text>]</xsl:text>
-    </xsl:otherwise>
-  </xsl:choose>
+  <xsl:if test="*[local-name()='geoLocationPlace']">
+    <xsl:value-of select="*[local-name()='geoLocationPlace']"/>
+  </xsl:if>
+  <xsl:apply-templates select="*"/>
+</xsl:template>
+
+<xsl:template match="*[local-name()='geoLocationPoint']">
+  <xsl:text> </xsl:text>
+  <span class="dcms_subvalue dcms_geolocations">
+    <xsl:text>[point </xsl:text>
+    <xsl:choose>
+      <xsl:when test="*[local-name()='pointLongitude']">
+        <xsl:text>(</xsl:text>
+        <xsl:value-of select="*[local-name()='pointLongitude']"/>
+        <xsl:text>,</xsl:text>
+        <xsl:value-of select="*[local-name()='pointLatitude']"/>
+        <xsl:text>)</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="normalize-space(.)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>]</xsl:text>
+  </span>
+</xsl:template>
+
+<xsl:template match="*[local-name()='geoLocationBox']">
+  <xsl:text> </xsl:text>
+  <span class="dcms_subvalue dcms_geolocations">
+    <xsl:text>[box </xsl:text>
+    <xsl:choose>
+      <xsl:when test="*[local-name()='westBoundLongitude']">
+        <xsl:text>(W=</xsl:text>
+        <xsl:value-of select="*[local-name()='westBoundLongitude']"/>
+        <xsl:text>, E=</xsl:text>
+        <xsl:value-of select="*[local-name()='eastBoundLongitude']"/>
+        <xsl:text>, S=</xsl:text>
+        <xsl:value-of select="*[local-name()='southBoundLatitude']"/>
+        <xsl:text>, N=</xsl:text>
+        <xsl:value-of select="*[local-name()='northBoundLatitude']"/>
+        <xsl:text>)</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="normalize-space(.)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>]</xsl:text>
+  </span>
+</xsl:template>
+
+<xsl:template match="*[local-name()='geoLocationPolygon']">
+  <xsl:text> </xsl:text>
+  <span class="dcms_subvalue dcms_geolocations">
+    <xsl:text>[polygon (</xsl:text>
+    <xsl:apply-templates select="*[local-name()='polygonPoint']"/>
+    <xsl:text>)]</xsl:text>
+  </span>
+</xsl:template>
+
+<xsl:template match="*[local-name()='polygonPoint']">
+  <xsl:if test="position() != 1">
+    <xsl:text>, </xsl:text>
+  </xsl:if>
+  <xsl:text>(</xsl:text>
+  <xsl:value-of select="*[local-name()='pointLongitude']"/>
+  <xsl:text>,</xsl:text>
+  <xsl:value-of select="*[local-name()='pointLatitude']"/>
+  <xsl:text>)</xsl:text>
+</xsl:template>
+
+<xsl:template match="*[local-name()='fundingReference']">
+  <xsl:if test="position() != 1">
+    <xsl:text>;</xsl:text>
+    <br/>
+  </xsl:if>
+  <xsl:value-of select="*[local-name()='funderName']"/>
+  <xsl:text> award</xsl:text>
+  <xsl:if test="normalize-space(*[local-name()='awardNumber']) != ''">
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="*[local-name()='awardNumber']"/>
+  </xsl:if>
+  <xsl:if test="*[local-name()='awardTitle']">
+    <xsl:text> "</xsl:text>
+    <xsl:value-of select="*[local-name()='awardTitle']"/>
+    <xsl:text>"</xsl:text>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="*[local-name()='br']">

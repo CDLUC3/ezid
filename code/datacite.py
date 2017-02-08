@@ -387,13 +387,16 @@ def formRecord (identifier, metadata, supplyMissing=False):
     r = _interpolate(_metadataTemplate, idType, idBody, km.creator, km.title,
       km.publisher, d[:4] if d else "0000")
     t = km.validatedType
-    if t == None and km.type != None: t = "Other"
-    if t != None:
-      if "/" in t:
-        gt, st = t.split("/", 1)
-        r += _interpolate(_resourceTypeTemplate2, gt, st)
+    if t == None:
+      if km.type != None:
+        t = "Other"
       else:
-        r += _interpolate(_resourceTypeTemplate1, t)
+        t = "Other/(:unav)"
+    if "/" in t:
+      gt, st = t.split("/", 1)
+      r += _interpolate(_resourceTypeTemplate2, gt, st)
+    else:
+      r += _interpolate(_resourceTypeTemplate1, t)
     r += u"</resource>\n"
     return r
 
@@ -590,7 +593,7 @@ def upgradeDcmsRecord (record, returnString=True):
   """
   Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
   record (supplied as an unencoded Unicode string) to the latest
-  version of the schema (currently, version 3).  If 'returnString' is
+  version of the schema (currently, version 4).  If 'returnString' is
   true, the record is returned as an unencoded Unicode string, in
   which case the record has no XML declaration.  Otherwise, an
   lxml.etree.Element object is returned.  In both cases, the root
@@ -598,24 +601,34 @@ def upgradeDcmsRecord (record, returnString=True):
   """
   root = util.parseXmlString(record)
   root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
-    "http://datacite.org/schema/kernel-3 " +\
-    "http://schema.datacite.org/meta/kernel-3/metadata.xsd"
+    "http://datacite.org/schema/kernel-4 " +\
+    "http://schema.datacite.org/meta/kernel-4/metadata.xsd"
   m = _schemaVersionRE.match(root.tag)
-  if m.group(1) == "3":
+  if m.group(1) == "4":
     # Nothing to do.
     if returnString:
       return lxml.etree.tostring(root, encoding=unicode)
     else:
       return root
+  def q (elementName):
+    return "{http://datacite.org/schema/kernel-4}" + elementName
   def changeNamespace (node):
-    # The order is important here: parent before children.
-    node.tag = "{http://datacite.org/schema/kernel-3}" + node.tag.split("}")[1]
-    for child in node: changeNamespace(child)
+    if node.tag is not lxml.etree.Comment:
+      # The order is important here: parent before children.
+      node.tag = q(node.tag.split("}")[1])
+      for child in node: changeNamespace(child)
   changeNamespace(root)
-  ns = { "N": "http://datacite.org/schema/kernel-3" }
-  for e in root.xpath("//N:resourceType", namespaces=ns):
-    if e.attrib["resourceTypeGeneral"] == "Film":
-      e.attrib["resourceTypeGeneral"] = "Audiovisual"
+  ns = { "N": "http://datacite.org/schema/kernel-4" }
+  # Resource type is required as of version 4.
+  e = root.xpath("//N:resourceType", namespaces=ns)
+  assert len(e) <= 1
+  if len(e) == 1:
+    if e[0].attrib["resourceTypeGeneral"] == "Film":
+      e[0].attrib["resourceTypeGeneral"] = "Audiovisual"
+  else:
+    e = lxml.etree.SubElement(root, q("resourceType"))
+    e.attrib["resourceTypeGeneral"] = "Other"
+    e.text = "(:unav)"
   # There's no way to assign new types to start and end dates, so just
   # delete them.
   for e in root.xpath("//N:date", namespaces=ns):
@@ -623,6 +636,43 @@ def upgradeDcmsRecord (record, returnString=True):
       e.getparent().remove(e)
   for e in root.xpath("//N:dates", namespaces=ns):
     if len(e) == 0: e.getparent().remove(e)
+  # The contributor type "Funder" went away in version 4.
+  for e in root.xpath("//N:contributor[@contributorType='Funder']",
+    namespaces=ns):
+    fr = root.xpath("//N:fundingReferences", namespaces=ns)
+    if len(fr) > 0:
+      fr = fr[0]
+    else:
+      fr = lxml.etree.SubElement(root, q("fundingReferences"))
+    for n in e.xpath("N:contributorName", namespaces=ns):
+      lxml.etree.SubElement(lxml.etree.SubElement(fr, q("fundingReference")),
+        q("funderName")).text = n.text
+    e.getparent().remove(e)
+  for e in root.xpath("//N:contributors", namespaces=ns):
+    if len(e) == 0: e.getparent().remove(e)
+  # Geometry changes in version 4.
+  for e in root.xpath("//N:geoLocationPoint", namespaces=ns):
+    if len(e) == 0:
+      coords = e.text.split()
+      if len(coords) == 2:
+        lxml.etree.SubElement(e, q("pointLongitude")).text = coords[1]
+        lxml.etree.SubElement(e, q("pointLatitude")).text = coords[0]
+        e.text = None
+      else:
+        # Should never happen.
+        e.getparent().remove(e)
+  for e in root.xpath("//N:geoLocationBox", namespaces=ns):
+    if len(e) == 0:
+      coords = e.text.split()
+      if len(coords) == 4:
+        lxml.etree.SubElement(e, q("westBoundLongitude")).text = coords[1]
+        lxml.etree.SubElement(e, q("eastBoundLongitude")).text = coords[3]
+        lxml.etree.SubElement(e, q("southBoundLatitude")).text = coords[0]
+        lxml.etree.SubElement(e, q("northBoundLatitude")).text = coords[2]
+        e.text = None
+      else:
+        # Should never happen.
+        e.getparent().remove(e)
   lxml.etree.cleanup_namespaces(root)
   if returnString:
     return lxml.etree.tostring(root, encoding=unicode)
