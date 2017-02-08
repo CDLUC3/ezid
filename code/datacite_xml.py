@@ -23,6 +23,9 @@ _repeatableElementContainers = ["creators", "titles", "subjects",
   "contributors", "dates", "alternateIdentifiers", "relatedIdentifiers", "sizes",
   "formats", "rightsList", "descriptions", "geoLocations", "fundingReferences"]
 
+_numberedElements = ["nameIdentifier", "affiliation"]
+_numberedAttrs = ["nameIdentifierScheme", "schemeURI"]
+
 def dataciteXmlToFormElements (document):
   """
   Converts a DataCite XML record to a dictionary of form elements.
@@ -39,7 +42,12 @@ def dataciteXmlToFormElements (document):
 
   is identified by key:
 
-    creators-creator-1-nameIdentifier-schemeURI
+    creators-creator-1-nameIdentifier_0-schemeURI_0
+
+  e.g., the schemeURI attribute in a second nameIdentifier element 
+  that follows within this creator parent is identified by:
+
+    creators-creator-1-nameIdentifier_1-schemeURI_1
 
   Repeatable elements are indexed at the top level only; lower-level
   repeatable elements (e.g., contributor affiliations) are
@@ -61,20 +69,31 @@ def dataciteXmlToFormElements (document):
     t = node.text or ""
     for c in node.iterchildren(): t += c.tail or ""
     return t
+  def fullPath (path, tag, nnIndex=None):
+    return "%s-%s%s" % (path, tag, nnIndex) if nnIndex else "%s-%s" % (path, tag)
   def processNode (path, node, index=None):
+    nnIndex = None 
     tag = tagName(node.tag)
     if path == "":
       mypath = tag
     else:
-      mypath = "%s-%s" % (path, tag)
+      if tag in _numberedElements:
+        nnIndex = '_0' 
+        firstE = fullPath(path,tag,nnIndex)
+        for x in d:
+          if firstE in x:
+            nnIndex = '_1'
+            break
+        tag = tag+nnIndex
+      mypath = fullPath(path, tag)
     if index != None:
       mypath += "-%d" % index
-      mypathx = "%s-%s" % (mypath, tag)
+      mypathx = fullPath(mypath, tag)
     else:
       mypathx = mypath
     for a in node.attrib:
       v = node.attrib[a].strip()
-      if v != "": d["%s-%s" % (mypath, a)] = v
+      if v != "": d[fullPath(mypath, a, nnIndex)] = v
     if tag in _repeatableElementContainers:
       for i, c in enumerate(getElementChildren(node)):
         processNode(mypath, c, i)

@@ -27,7 +27,7 @@
   <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
     <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
   {% else %}
-    {% include "create/_datacite_inlinetext.html" with field=c_field %}
+    {% include "create/_datacite_inlinetext.html" with field=c_field class=forloop.revcounter0|add_nameIdGroupStyle %}
   {% endif %}
 
   {% endfor %}

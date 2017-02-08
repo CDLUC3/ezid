@@ -368,6 +368,13 @@ class SubjectForm(forms.Form):
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
       label="Language(Hidden)", widget= forms.HiddenInput())
 
+def _gatherContribErr1(err1, ctype, cname):
+  if not ctype:
+    err1['contributorType'] = _("Type is required if you fill in contributor information.")
+  if not cname:
+    err1['contributorName'] = _("Name is required if you fill in contributor information.")
+  return err1
+
 class ContribForm(forms.Form):
   """ Form object for Contributor Element in DataCite Advanced (XML) profile 
       With specific validation rules
@@ -403,31 +410,33 @@ class ContribForm(forms.Form):
     self.fields["contributorName"] = forms.CharField(required=False, label=_("Name"))
     self.fields["familyName"] = forms.CharField(required=False, label=_("Family Name"))
     self.fields["givenName"] = forms.CharField(required=False, label=_("Given Name"))
-    self.fields["affiliation"] = forms.CharField(required=False, label=_("Affiliation"))
-    self.fields["nameIdentifier"] = forms.CharField(required=False, label=_("Name Identifier"))
-    self.fields["nameIdentifier-nameIdentifierScheme"] = forms.CharField(required=False, label=_("Identifier Scheme"))
-    self.fields["nameIdentifier-schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
+    self.fields[NAME_ID[0].format("0")] = forms.CharField(required=False, label=NAME_ID[1])
+    self.fields[NAME_ID_SCHEME[0].format("0")] = forms.CharField(required=False, label=NAME_ID_SCHEME[1])
+    self.fields[NAME_ID_SCHEME_URI[0].format("0")] = forms.CharField(required=False, label=NAME_ID_SCHEME_URI[1])
+    self.fields[NAME_ID[0].format("1")] = forms.CharField(required=False, label=NAME_ID[1])
+    self.fields[NAME_ID_SCHEME[0].format("1")] = forms.CharField(required=False, label=NAME_ID_SCHEME[1])
+    self.fields[NAME_ID_SCHEME_URI[0].format("1")] = forms.CharField(required=False, label=NAME_ID_SCHEME_URI[1])
+    self.fields["affiliation_0"] = forms.CharField(required=False, label=_("Affiliation"))
+    self.fields["affiliation_1"] = forms.CharField(required=False, label=_("Affiliation"))
   def clean(self):
     cleaned_data = super(ContribForm, self).clean()
     ctype = cleaned_data.get("contributorType")
     cname = cleaned_data.get("contributorName")
     cfname = cleaned_data.get("familyName")
     cgname = cleaned_data.get("givenName")
-    caff = cleaned_data.get("affiliation")
-    ni = cleaned_data.get("nameIdentifier")
-    ni_s = cleaned_data.get("nameIdentifier-nameIdentifierScheme")
-    ni_s_uri = cleaned_data.get("nameIdentifier-schemeURI")
-    err1 = {}
-    """ Use of contributor element requires name and type be populated """
-    if (ctype or cname or cfname or cgname or caff or ni or ni_s or ni_s_uri):
-      if not ctype:
-        err1['contributorType'] = _("Type is required if you fill in contributor information.")
-      if not cname:
-        err1['contributorName'] = _("Name is required if you fill in contributor information.")
-    # ToDo: Fix
-    err2 = _validateNameIdGrouping("", ni, ni_s, ni_s_uri)
-    err = dict(err1.items() + err2.items())
-    if err: raise ValidationError(err) 
+    err1, err2 = {}, {}
+    for i in ["0","1"]:
+      ni = cleaned_data.get(NAME_ID[0].format(i))
+      ni_s = cleaned_data.get(NAME_ID_SCHEME[0].format(i))
+      ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0].format(i))
+      caff = cleaned_data.get("affiliation_{0}".format(i))
+      """ Use of contributor element requires name and type be populated """
+      if (ctype or cname or cfname or cgname or caff or ni or ni_s or ni_s_uri):
+        err1 = _gatherContribErr1(err1, ctype, cname)
+      err = _validateNameIdGrouping(i, ni, ni_s, ni_s_uri)
+      if err: err2.update(err.items()) 
+    errs = dict(err1.items() + err2.items())
+    if errs: raise ValidationError(errs) 
     return cleaned_data
 
 class DateForm(forms.Form):
