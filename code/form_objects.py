@@ -3,6 +3,7 @@ from django import forms
 from django.forms import BaseFormSet, formset_factory
 import django.core.validators
 import ezidapp.models
+import geometry_util
 import json
 import lxml.etree
 import re
@@ -73,9 +74,9 @@ PREFIX_FUNDINGREF_SET='fundingReferences-fundingReference'
 ABBR_EX = _("e.g. ")
 
 # Key/Label for nameidentifier grouping used in Creator and Contributor
-NAME_ID = ["nameIdentifier_", _("Name Identifier")]
-NAME_ID_SCHEME = ["nameIdentifier-nameIdentifierScheme_", _("Identifier Scheme")]
-NAME_ID_SCHEME_URI = ["nameIdentifier-schemeURI_", _("Scheme URI")]
+NAME_ID = ["nameIdentifier_{0}", _("Name Identifier")]
+NAME_ID_SCHEME = ["nameIdentifier_{0}-nameIdentifierScheme_{0}", _("Identifier Scheme")]
+NAME_ID_SCHEME_URI = ["nameIdentifier_{0}-schemeURI_{0}", _("Scheme URI")]
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #                                                                   #
@@ -231,37 +232,19 @@ def _validate_custom_remainder(shoulder):
 def _validateNameIdGrouping(suffix, ni, ni_s, ni_s_uri):
   err = {}
   if ni and not ni_s:
-    err['nameIdentifier-nameIdentifierScheme'+suffix] = _("An Identifier Scheme must be filled in if you specify an Identifier.")
+    err['nameIdentifier_{0}-nameIdentifierScheme_{0}'.format(suffix)] =\
+      _("An Identifier Scheme must be filled in if you specify an Identifier.")
   if ni_s and not ni:
-    err['nameIdentifier'+suffix] = _("An Identifier must be filled in if you specify an Identifier Scheme.")
+    err['nameIdentifier_{0}'.format(suffix)] =\
+       _("An Identifier must be filled in if you specify an Identifier Scheme.")
   if ni_s_uri:
     if not ni:
-      err['nameIdentifier'+suffix] = _("An Identifier must be filled in if you specify a Scheme URI.")
+      err['nameIdentifier_{0}'.format(suffix)] =\
+        _("An Identifier must be filled in if you specify a Scheme URI.")
     if not ni_s:
-      err['nameIdentifier-nameIdentifierScheme'+suffix] = _("An Identifier Scheme must be filled in.")
+      err['nameIdentifier_{0}-nameIdentifierScheme_{0}'.format(suffix)] =\
+        _("An Identifier Scheme must be filled in.")
   return err
-
-def _validate_geoLocPolygon(text):
-  text = text.strip()
-  first_char = text[:1]
-  if first_char == '<':
-    _validateKml(text)
-  elif first_char == '{':
-    _validateJson(text)
-  else:
-    raise ValidationError(ERR_GEOPOLYGON)
-
-def _validateKml(text):
-  # ToDo: Confirm Polygon data is present
-  pass
-
-def _validateJson(text):
-  try:
-    j = json.loads(text)
-    # ToDo: Confirm Polygon data is present
-  except ValueError, e:
-    raise ValidationError(ERR_GEOPOLYGON)
-
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ################# Advanced Datacite ID Form/Elements #################
@@ -309,22 +292,22 @@ class CreatorForm(forms.Form):
       error_messages={'required': _("Please fill in a value for creator name.")})
     self.fields["familyName"] = forms.CharField(required=False, label=_("Family Name"))
     self.fields["givenName"] = forms.CharField(required=False, label=_("Given Name"))
-    self.fields[NAME_ID[0]+"0"] = forms.CharField(required=False, label=NAME_ID[1])
-    self.fields[NAME_ID_SCHEME[0]+"0"] = forms.CharField(required=False, label=NAME_ID_SCHEME[1])
-    self.fields[NAME_ID_SCHEME_URI[0]+"0"] = forms.CharField(required=False, label=NAME_ID_SCHEME_URI[1])
-    self.fields[NAME_ID[0]+"1"] = forms.CharField(required=False, label=NAME_ID[1])
-    self.fields[NAME_ID_SCHEME[0]+"1"] = forms.CharField(required=False, label=NAME_ID_SCHEME[1])
-    self.fields[NAME_ID_SCHEME_URI[0]+"1"] = forms.CharField(required=False, label=NAME_ID_SCHEME_URI[1])
+    self.fields[NAME_ID[0].format("0")] = forms.CharField(required=False, label=NAME_ID[1])
+    self.fields[NAME_ID_SCHEME[0].format("0")] = forms.CharField(required=False, label=NAME_ID_SCHEME[1])
+    self.fields[NAME_ID_SCHEME_URI[0].format("0")] = forms.CharField(required=False, label=NAME_ID_SCHEME_URI[1])
+    self.fields[NAME_ID[0].format("1")] = forms.CharField(required=False, label=NAME_ID[1])
+    self.fields[NAME_ID_SCHEME[0].format("1")] = forms.CharField(required=False, label=NAME_ID_SCHEME[1])
+    self.fields[NAME_ID_SCHEME_URI[0].format("1")] = forms.CharField(required=False, label=NAME_ID_SCHEME_URI[1])
     self.fields["affiliation_0"] = forms.CharField(required=False, label=_("Affiliation"))
     self.fields["affiliation_1"] = forms.CharField(required=False, label=_("Affiliation"))
   def clean(self):
     cleaned_data = super(CreatorForm, self).clean()
     errs = {}
     for i in ["0","1"]:
-      ni = cleaned_data.get(NAME_ID[0]+i)
-      ni_s = cleaned_data.get(NAME_ID_SCHEME[0]+i)
-      ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0]+i)
-      err = _validateNameIdGrouping("_"+i, ni, ni_s, ni_s_uri)
+      ni = cleaned_data.get(NAME_ID[0].format(i))
+      ni_s = cleaned_data.get(NAME_ID_SCHEME[0].format(i))
+      ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0].format(i))
+      err = _validateNameIdGrouping(i, ni, ni_s, ni_s_uri)
       if err: errs.update(err.items()) 
     if errs: raise ValidationError(errs) 
     return cleaned_data
@@ -441,6 +424,7 @@ class ContribForm(forms.Form):
         err1['contributorType'] = _("Type is required if you fill in contributor information.")
       if not cname:
         err1['contributorName'] = _("Name is required if you fill in contributor information.")
+    # ToDo: Fix
     err2 = _validateNameIdGrouping("", ni, ni_s, ni_s_uri)
     err = dict(err1.items() + err2.items())
     if err: raise ValidationError(err) 
@@ -597,8 +581,23 @@ class GeoLocForm(forms.Form):
       error_messages={'invalid': ERR_GEOPOINT})
     self.fields["geoLocationPlace"] = forms.CharField(required=False, label=_("Place"))
     self.fields["geoLocationPolygon"] = forms.CharField(required=False,
-      label=_("Polygon"), validators=[_validate_geoLocPolygon],
-      widget=forms.Textarea(attrs={'rows': '4'}))
+      label=_("Polygon"), widget=forms.Textarea(attrs={'rows': '4'}))
+  def clean_geoLocationPolygon(self):
+    text = self.cleaned_data['geoLocationPolygon'].strip()
+    first_char = text[:1]
+    r = ''
+    if first_char == '<':
+      r = geometry_util.kmlPolygonToDatacite(text)
+    elif first_char == '{':
+      r = geometry_util.geojsonPolygonToDatacite(text)
+    else:
+      raise ValidationError(ERR_GEOPOLYGON)
+    if isinstance(r, basestring):
+      raise ValidationError(r)
+    if len(r[1]) > 0:
+      # ToDoL Handle warning
+      pass
+    return r[0]
 
 class FundingRefForm(forms.Form):
   """ Form object for Funding Reference Element in DataCite Advanced (XML) profile """

@@ -160,7 +160,7 @@ def _id_type(str):
 _elementList = ["identifier", "creators", "creator", "creatorName",
   "titles", "title", "publisher", "publicationYear", "subjects", "subject",
   "contributors", "contributor", "contributorName", "givenName", "familyName",
-  "nameIdentifier", "affiliation", "dates",
+  "nameIdentifier_0", "nameIdentifier_1", "affiliation_0", "affiliation_1", "dates",
   "date", "language", "resourceType", "alternateIdentifiers", "alternateIdentifier",
   "relatedIdentifiers", "relatedIdentifier", "sizes", "size", "formats", "format",
   "version", "rightsList", "rights", "descriptions", "description", "geoLocations",
@@ -197,7 +197,6 @@ def formElementsToDataciteXml (d, shoulder=None, identifier=None):
     node = root
     while len(key) > 0:
       k, remainder = key.split("-", 1) if "-" in key else (key, "")
-      # k = re.sub(r'_\d', '', k)
       if k in _elements:
         if tagName(node.tag) in _repeatableElementContainers:
           i, remainder = remainder.split("-", 1)
@@ -222,7 +221,21 @@ def formElementsToDataciteXml (d, shoulder=None, identifier=None):
       for i, c in enumerate(children): node.insert(i, c)
     for c in node.iterchildren(): sortChildren(c)
   sortChildren(root)
+  def stripNumberedElements (node):
+    nn = {'nameIdentifier_0': ['nameIdentifierScheme_0', 'schemeURI_0'],
+         'nameIdentifier_1': ['nameIdentifierScheme_1', 'schemeURI_1'],
+         'affiliation_0': [], 'affiliation_1': []}
+    for k in nn:
+      e = node.find('.//'+q(k)) 
+      e.tag = q(k)[:-2]     # strip underscore and number off element tag 
+      # Rename attributes as well (create a clone with new name)
+      for x in range(len(nn[k])):
+        value = e.get(nn[k][x])
+        e.set(nn[k][x][:-2], value)
+        e.attrib.pop(nn[k][x])
+  stripNumberedElements(root)
   return lxml.etree.tostring(root, encoding=unicode)
+
 
 def _addIdentifierInfo(d, shoulder=None, identifier=None):
   if shoulder is None:
