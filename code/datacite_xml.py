@@ -24,7 +24,6 @@ _repeatableElementContainers = ["creators", "titles", "subjects",
   "formats", "rightsList", "descriptions", "geoLocations", "fundingReferences"]
 
 _numberedElements = ["nameIdentifier", "affiliation"]
-_numberedAttrs = ["nameIdentifierScheme", "schemeURI"]
 
 def dataciteXmlToFormElements (document):
   """
