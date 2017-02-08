@@ -24,11 +24,5 @@ LOCALIZATIONS["localhost:8002"] = ("jisc-edina", ["gjanee@ucop.edu"])
 
 injectSecrets(DEPLOYMENT_LEVEL)
 
-# Disable SSL certificate checking.
-try:
-  ssl._create_default_https_context = ssl._create_unverified_context
-except AttributeError:
-  pass
-
 # Andy's MySQL driver won't allow utf8mb4 for some reason.
 DATABASES["search"]["OPTIONS"]["charset"] = "utf8"
