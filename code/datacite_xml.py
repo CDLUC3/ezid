@@ -226,13 +226,14 @@ def formElementsToDataciteXml (d, shoulder=None, identifier=None):
          'nameIdentifier_1': ['nameIdentifierScheme_1', 'schemeURI_1'],
          'affiliation_0': [], 'affiliation_1': []}
     for k in nn:
-      e = node.find('.//'+q(k)) 
-      e.tag = q(k)[:-2]     # strip underscore and number off element tag 
-      # Rename attributes as well (create a clone with new name)
-      for x in range(len(nn[k])):
-        value = e.get(nn[k][x])
-        e.set(nn[k][x][:-2], value)
-        e.attrib.pop(nn[k][x])
+      es = node.findall('.//'+q(k)) 
+      for e in es:
+        e.tag = q(k)[:-2]     # strip underscore and number off element tag 
+        # Rename attributes as well (create a clone with new name)
+        for x in range(len(nn[k])):
+          value = e.get(nn[k][x])
+          e.set(nn[k][x][:-2], value)
+          e.attrib.pop(nn[k][x])
   stripNumberedElements(root)
   return lxml.etree.tostring(root, encoding=unicode)
 
