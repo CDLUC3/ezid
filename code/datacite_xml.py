@@ -23,8 +23,6 @@ _repeatableElementContainers = ["creators", "titles", "subjects",
   "contributors", "dates", "alternateIdentifiers", "relatedIdentifiers", "sizes",
   "formats", "rightsList", "descriptions", "geoLocations", "fundingReferences"]
 
-_numberedElements = ["nameIdentifier", "affiliation"]
-
 def dataciteXmlToFormElements (document):
   """
   Converts a DataCite XML record to a dictionary of form elements.
@@ -48,6 +46,8 @@ def dataciteXmlToFormElements (document):
 
     creators-creator-1-nameIdentifier_1-schemeURI_1
 
+  Currently only allowing two nameIdentifier/affiliation elements in UI.
+
   Repeatable elements are indexed at the top level only; lower-level
   repeatable elements (e.g., contributor affiliations) are
   concatenated.  One exception to the above rule is that the key for
@@ -60,6 +60,9 @@ def dataciteXmlToFormElements (document):
   <br> elements in descriptions are replaced with newlines.
   """
   d = {}
+  d_attr = {}  # Separate attribute collection in order to get tally of numbered elements from d
+  eNum = ["nameIdentifier", "affiliation"]    # numbered elements   e.g. nameIdentifier_1
+  
   def tagName (tag):
     return tag.split("}")[1]
   def getElementChildren (node):
@@ -76,13 +79,11 @@ def dataciteXmlToFormElements (document):
     if path == "":
       mypath = tag
     else:
-      if tag in _numberedElements:
-        nnIndex = '_0' 
-        firstE = fullPath(path,tag,nnIndex)
-        for x in d:
-          if firstE in x:
-            nnIndex = '_1'
-            break
+      if tag in eNum:
+        similarNodeCount = len([i for i, x in enumerate(d) if re.match(fullPath(path, tag), x)])
+        if similarNodeCount > 1:
+          raise ValueError("Found more than two elements of type &lt;%s&gt;" % tag)
+        nnIndex = "_"+str(similarNodeCount)
         tag = tag+nnIndex
       mypath = fullPath(path, tag)
     if index != None:
@@ -92,7 +93,7 @@ def dataciteXmlToFormElements (document):
       mypathx = mypath
     for a in node.attrib:
       v = node.attrib[a].strip()
-      if v != "": d[fullPath(mypath, a, nnIndex)] = v
+      if v != "": d_attr[fullPath(mypath, a, nnIndex)] = v
     if tag in _repeatableElementContainers:
       for i, c in enumerate(getElementChildren(node)):
         processNode(mypath, c, i)
@@ -122,7 +123,7 @@ def dataciteXmlToFormElements (document):
               d[mypathx] = v
   root = util.parseXmlString(document)
   for c in getElementChildren(root): processNode("", c)
-  fc = _separateByFormType(d)
+  fc = _separateByFormType(dict(d.items() + d_attr.items()))
   return fc 
 
 def _separateByFormType(d):
@@ -161,7 +162,10 @@ def _separateByFormType(d):
   )
 
 def temp_mockxml():
-  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><givenName>Elizabeth</givenName><familyName>Miller</familyName><affiliation>DataCite</affiliation><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0001</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0007</nameIdentifier></creator></creators><titles><title xml:lang="en-us">test</title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><subjects><subject xml:lang="ar-afb" schemeURI="testURI" subjectScheme="testScheme">TESTTESTTESTTEST</subject><subject xml:lang="en" subjectScheme="testScheme2" schemeURI="testURI2">test2</subject></subjects><resourceType resourceTypeGeneral="Dataset">Dataset</resourceType><descriptions><description xml:lang="es-419" descriptionType="Abstract">testDescr</description><description xml:lang="zh-Hans" descriptionType="Other">testDescr2</description><description xml:lang="ast" descriptionType="SeriesInformation">testDescr3</description></descriptions></resource>')
+  #An item whose Creator has two nameIDs and two affiliations
+  # return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><givenName>Elizabeth</givenName><familyName>Miller</familyName><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0001</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/2" nameIdentifierScheme="ORCID2">0000-0001-5000-0002</nameIdentifier><affiliation>DataCite1</affiliation><affiliation>DataCite2</affiliation></creator></creators><titles><title xml:lang="en-us">test</title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><subjects><subject xml:lang="ar-afb" schemeURI="testURI" subjectScheme="testScheme">TESTTESTTESTTEST</subject><subject xml:lang="en" subjectScheme="testScheme2" schemeURI="testURI2">test2</subject></subjects><resourceType resourceTypeGeneral="Dataset">Dataset</resourceType><descriptions><description xml:lang="es-419" descriptionType="Abstract">testDescr</description><description xml:lang="zh-Hans" descriptionType="Other">testDescr2</description><description xml:lang="ast" descriptionType="SeriesInformation">testDescr3</description></descriptions></resource>')
+  #An item whose Creator has three nameIDs 
+  return unicode('<resource xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd"><identifier identifierType="ARK"/><creators><creator><creatorName>test</creatorName><givenName>Elizabeth</givenName><familyName>Miller</familyName><nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">0000-0001-5000-0001</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/2" nameIdentifierScheme="ORCID2">0000-0001-5000-0002</nameIdentifier><nameIdentifier schemeURI="http://orcid.org/3" nameIdentifierScheme="ORCID3">0000-0001-5000-0003</nameIdentifier><affiliation>DataCite1</affiliation><affiliation>DataCite2</affiliation></creator></creators><titles><title xml:lang="en-us">test</title></titles><publisher>test</publisher><publicationYear>1990</publicationYear><subjects><subject xml:lang="ar-afb" schemeURI="testURI" subjectScheme="testScheme">TESTTESTTESTTEST</subject><subject xml:lang="en" subjectScheme="testScheme2" schemeURI="testURI2">test2</subject></subjects><resourceType resourceTypeGeneral="Dataset">Dataset</resourceType><descriptions><description xml:lang="es-419" descriptionType="Abstract">testDescr</description><description xml:lang="zh-Hans" descriptionType="Other">testDescr2</description><description xml:lang="ast" descriptionType="SeriesInformation">testDescr3</description></descriptions></resource>')
 
 def _id_type(str):
   m = re.compile("^[a-z]+")
