@@ -75,7 +75,7 @@ class User (django.db.models.Model):
       try:
         s = shoulder.getAgentShoulder()
         assert s.isArk, "agent shoulder type must be ARK"
-        self.pid = "ark:/" + noid_nog.Minter(s.minter).mintIdentifier()
+        self.pid = "ark:/" + noid_nog.getMinter(s.minter).mintIdentifier()
       except Exception, e:
         log.otherError("user.User.clean", e)
         raise
