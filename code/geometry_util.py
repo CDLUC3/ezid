@@ -160,3 +160,100 @@ def geojsonPolygonToDatacite (geojson):
   if innerBoundaryWarning: warnings.append("polygon inner boundaries ignored")
   if altitudeWarning: warnings.append("altitude coordinates ignored")
   return (output, warnings)
+
+def internalPolygonToDatacite (s):
+  """
+  Converts an internal polygon description to a DataCite 4.0
+  <geoLocationPolygon> element.  An internal description is a string
+  of the form
+
+     polygon ((lon, lat), (lon, lat), ...)
+
+  For conformity with other conversion functions in this module, the
+  return is a pair (lxml.etree.Element, []) if successful or a string
+  error message if not.
+  """
+  m = re.match("\s*polygon\s*\((.*)\)\s*$", s)
+  if not m: return "not an EZID polygon description"
+  coords = re.split("\s*\)\s*,\s*\(\s*", "),%s,(" % m.group(1))
+  if len(coords) < 2 or coords[0] != "" or coords[-1] != "" or\
+    any(ct == "" for ct in coords[1:-1]):
+    return "malformed polygon description"
+  if len(coords) < 1+4+1:
+    return "polygon has insufficient coordinate tuples (4 required)"
+  output = lxml.etree.Element(_q("geoLocationPolygon"),
+    nsmap={ None: _dataciteNamespace })
+  for ct in coords[1:-1]:
+    ct = [c.strip() for c in ct.split(",")]
+    if len(ct) != 2 or not _isDecimalFloat(ct[0]) or\
+      not _isDecimalFloat(ct[1]):
+      return "malformed polygon description"
+    if float(ct[0]) < -180 or float(ct[0]) > 180 or\
+      float(ct[1]) < -90 or float(ct[1]) > 90:
+      return "coordinates out of range"
+    p = lxml.etree.SubElement(output, _q("polygonPoint"))
+    lxml.etree.SubElement(p, _q("pointLongitude")).text = ct[0]
+    lxml.etree.SubElement(p, _q("pointLatitude")).text = ct[1]
+  if float(output[0][0].text) != float(output[-1][0].text) or\
+    float(output[0][1].text) != float(output[-1][1].text):
+    return "polygon first coordinate does not match last"
+  return (output, [])
+
+def polygonToDatacite (s):
+  """
+  Converts a polygon defined in any supported format to a DataCite 4.0
+  <geoLocationPolygon> element.  The return is a pair
+  (lxml.etree.Element, [warning, ...]) if successful or a string error
+  message if not.
+  """
+  if "kml" in s:
+    r = kmlPolygonToDatacite(s)
+    if type(r) is str:
+      return "KML conversion failed: " + r
+    else:
+      return r
+  elif s.strip().startswith("{") and "type" in s:
+    r = geojsonPolygonToDatacite(s)
+    if type(r) is str:
+      return "GeoJSON conversion failed: " + r
+    else:
+      return r
+  elif "polygon" in s:
+    r = internalPolygonToDatacite(s)
+    if type(r) is str:
+      return "polygon conversion failed: " + r
+    else:
+      return r
+  else:
+    return "unrecognized polygon format"
+
+_transform = None
+_transformSource = """<?xml version="1.0"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:output method="text"/>
+<xsl:template match="*[local-name()='geoLocationPolygon']">
+  <xsl:text>polygon (</xsl:text>
+  <xsl:apply-templates select="*[local-name()='polygonPoint']"/>
+  <xsl:text>)</xsl:text>
+</xsl:template>
+<xsl:template match="*[local-name()='polygonPoint']">
+  <xsl:if test="position() != 1">
+    <xsl:text>, </xsl:text>
+  </xsl:if>
+  <xsl:text>(</xsl:text>
+  <xsl:value-of select="*[local-name()='pointLongitude']"/>
+  <xsl:text>,</xsl:text>
+  <xsl:value-of select="*[local-name()='pointLatitude']"/>
+  <xsl:text>)</xsl:text>
+</xsl:template>
+</xsl:stylesheet>"""
+
+def datacitePolygonToInternal (element):
+  """
+  Converts a DataCite polygon, passed in as a <geoLocationPolygon>
+  element node, to a string internal representation.
+  """
+  global _transform
+  if _transform == None:
+    _transform = lxml.etree.XSLT(lxml.etree.XML(_transformSource))
+  return str(_transform(element))

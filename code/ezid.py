@@ -487,7 +487,7 @@ def mintDoi (prefix, user, metadata={}):
     if s.minter == "":
       log.badRequest(tid)
       return "error: bad request - no minter for shoulder"
-    shadowArk = noid_nog.Minter(s.minter).mintIdentifier()
+    shadowArk = noid_nog.getMinter(s.minter).mintIdentifier()
     doi = util.shadow2doi(shadowArk)
     assert doi.startswith(prefix),\
       "minted DOI does not match requested shoulder"
@@ -642,7 +642,7 @@ def mintArk (prefix, user, metadata={}):
     if s.minter == "":
       log.badRequest(tid)
       return "error: bad request - no minter for shoulder"
-    ark = noid_nog.Minter(s.minter).mintIdentifier()
+    ark = noid_nog.getMinter(s.minter).mintIdentifier()
     assert ark.startswith(prefix),\
       "minted ARK does not match requested shoulder"
   except Exception, e:

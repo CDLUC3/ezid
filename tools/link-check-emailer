@@ -7,6 +7,7 @@
 #
 # Options:
 #   -a EMAIL  override the account email address (one owner only)
+#   -b        bcc realm administrators
 #   -f FILE   don't email, just write CSV file (one owner only)
 #   -o OWNER  process the specified owner only; may be repeated
 #   -t N      override the configured notification threshold
@@ -104,15 +105,16 @@ This is an automated email.  Please do not reply.
 
 """
 
-def emailReport (username, numFailures, accountEmail, bccEmail, zipFilename):
+def emailReport (username, numFailures, accountEmail, bccEmails, zipFilename):
   m = django.core.mail.EmailMessage(subject="monthly EZID link checker report",
     body=template % (username, numFailures),
-    from_email=django.conf.settings.SERVER_EMAIL, to=[accountEmail])
-  if bccEmail != None: m.bcc = [bccEmail]
+    from_email=django.conf.settings.SERVER_EMAIL, to=[accountEmail],
+    bcc=bccEmails)
   m.attach_file(zipFilename)
   m.send()
 
-def process1 (username, owner_id, accountEmail, bccEmail, threshold, filename):
+def process1 (username, owner_id, accountEmail, bccEmails, threshold,
+  filename):
   # If a filename is supplied, no email is sent and that file is
   # written, even if there are no failures to report.  Otherwise, an
   # email is sent only if there are failures to report.
@@ -127,7 +129,8 @@ def process1 (username, owner_id, accountEmail, bccEmail, threshold, filename):
         zipFilename = os.path.join(d, "bad_links.zip")
         writeCsv(lcList, csvFilename)
         compressCsv(csvFilename, zipFilename)
-        emailReport(username, len(lcList), accountEmail, bccEmail, zipFilename)
+        emailReport(username, len(lcList), accountEmail, bccEmails,
+          zipFilename)
       finally:
         try:
           os.unlink(csvFilename)
@@ -146,6 +149,8 @@ def main ():
   p = optparse.OptionParser(usage="%prog [options]")
   p.add_option("-a", metavar="EMAIL", action="store", dest="emailAddress",
     help="override the account email address (one owner only)")
+  p.add_option("-b", action="store_true", dest="bccRealmAdmins",
+    help="bcc realm administrators", default=False)
   p.add_option("-f", metavar="FILE", action="store", dest="outputFile",
     help="don't email, just write CSV file (one owner only)")
   p.add_option("-o", metavar="OWNER", action="append", dest="owners",
@@ -164,24 +169,27 @@ def main ():
     for i in range(len(options.owners)):
       username = options.owners[i]
       try:
-        options.owners[i] = (username,
-          ezidapp.models.SearchUser.objects.get(username=username).id,
+        su = ezidapp.models.SearchUser.objects.get(username=username)
+        options.owners[i] = (username, su.id, su.realm.name,
           ezidapp.models.StoreUser.objects.get(username=username).accountEmail)
       except django.core.exceptions.ObjectDoesNotExist:
         p.error("no such user: " + username)
   else:
     emailAddresses = { su.username: su.accountEmail for su in\
       ezidapp.models.StoreUser.objects.all() }
-    options.owners = [(su.username, su.id, emailAddresses[su.username])\
+    options.owners = [(su.username, su.id, su.realm.name,
+      emailAddresses[su.username])\
       for su in ezidapp.models.SearchUser.objects.all()]
-  if options.emailAddress != None:
-    bcc = None
-  else:
-    bcc = config.get("email.linkchecker_report_bcc")
-    if bcc == "": bcc = None
-  for username, owner_id, accountEmail in options.owners:
+  realmAdmins = {}
+  if options.bccRealmAdmins:
+    for su in ezidapp.models.StoreUser.objects.filter(
+      isRealmAdministrator=True):
+      l = realmAdmins.get(su.realm.name, [])
+      l.append(su.accountEmail)
+      realmAdmins[su.realm.name] = l
+  for username, owner_id, realm, accountEmail in options.owners:
     process1(username, owner_id,
       options.emailAddress if options.emailAddress != None else accountEmail,
-      bcc, options.threshold, options.outputFile)
+      realmAdmins.get(realm, []), options.threshold, options.outputFile)
 
 if __name__ == "__main__": main()
