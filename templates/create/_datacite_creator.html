@@ -21,12 +21,22 @@
 {{ form.non_field_errors }}
   {% for cr_field in form %}
 
-  {% if forloop.first %}
-    {% include "create/_datacite_inlinetext.html" with field=cr_field reqd="true" %}
-  <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
-    <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
-  {% else %}
-    {% include "create/_datacite_inlinetext.html" with field=cr_field class=forloop.revcounter0|add_nameIdGroupStyle %}
+  {% if forloop.counter < 3 %}
+    {% if forloop.first %}
+      {% include "create/_datacite_inlinetext.html" with field=cr_field reqd="true" %}
+      <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
+        <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
+    {% else %}
+      {% include "create/_datacite_inlinetext.html" with field=cr_field %}
+    {% endif %}
+  {% elif forloop.counter > 2 %}
+    {% if forloop.last %}
+      {% include "create/_datacite_inlinetext.html" with field=cr_field %}
+    {% elif forloop.counter|divisibleby:3 %}
+      {% include "create/_datacite_inlinetext.html" with field=cr_field class="end" %}
+    {% else %}
+      {% include "create/_datacite_inlinetext.html" with field=cr_field class="tight" %}
+    {% endif %}
   {% endif %}
 
   {% endfor %}
