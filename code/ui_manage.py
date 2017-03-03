@@ -151,14 +151,8 @@ def edit(request, identifier):
       d = _assignManualTemplate(d)
       # Testing
       # xml = datacite_xml.temp_mockxml()
-      try:
-        form_coll = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
-        # form_coll = datacite_xml.dataciteXmlToFormElements(xml) 
-      except ValueError as err:
-        # Currently only allowing two nameIdentifier/affiliation elements in UI.
-        django.contrib.messages.error(request, _("Unable to edit this identifier. " +\
-          "Please contact EZID regarding help with this issue: " + err.args[0]))
-        return redirect("/id/" + urllib.quote(identifier, ":/"))
+      # form_coll = datacite_xml.dataciteXmlToFormElements(xml) 
+      form_coll = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
       # This is the only item from internal profile that needs inclusion in django form framework
       form_coll.nonRepeating['target'] = id_metadata['_target']
       d['form']=form_objects.getIdForm_datacite_xml(form_coll, request) 
