@@ -19,9 +19,19 @@ import re
 import copy
 import collections
 
+import geometry_util
+
 _repeatableElementContainers = ["creators", "titles", "subjects",
-  "contributors", "dates", "alternateIdentifiers", "relatedIdentifiers", "sizes",
-  "formats", "rightsList", "descriptions", "geoLocations", "fundingReferences"]
+  "contributors", "dates", "alternateIdentifiers", "relatedIdentifiers",
+  "sizes", "formats", "rightsList", "descriptions", "geoLocations",
+  "fundingReferences"]
+
+_numberedElementContainers = {
+  "creator": ["nameIdentifier"],
+  "contributor": ["nameIdentifier"]
+}
+
+_maxNumberedElements = 2
 
 def dataciteXmlToFormElements (document):
   """
@@ -39,30 +49,26 @@ def dataciteXmlToFormElements (document):
 
   is identified by key:
 
-    creators-creator-1-nameIdentifier_0-schemeURI_0
-
-  e.g., the schemeURI attribute in a second nameIdentifier element 
-  that follows within this creator parent is identified by:
-
-    creators-creator-1-nameIdentifier_1-schemeURI_1
-
-  Currently only allowing two nameIdentifier/affiliation elements in UI.
+    creators-creator-1-nameIdentifier_0-schemeURI
 
   Repeatable elements are indexed at the top level only; lower-level
   repeatable elements (e.g., contributor affiliations) are
-  concatenated.  One exception to the above rule is that the key for
-  the content of a top-level repeatable element carries an extra
-  component that echoes the element name, as in:
+  concatenated.  However, certain repeatable elements (see
+  _numberedElementContainers), such as nameIdentifier in the example
+  above, are indexed, but with underscores.  An additional tweak to
+  the naming pattern is that the key for the content of a top-level
+  repeatable element carries an extra component that echoes the
+  element name, as in:
 
-    creators-creator-0-creator
-    creators-creator-1-creator
+    alternateIdentifiers-alternateIdentifier-0-alternateIdentifier
+    alternateIdentifiers-alternateIdentifier-1-alternateIdentifier
 
   <br> elements in descriptions are replaced with newlines.
+
+  This function raises ValueError if the maximum number of numbered
+  elements is exceeded.
   """
   d = {}
-  d_attr = {}  # Separate attribute collection in order to get tally of numbered elements from d
-  eNum = ["nameIdentifier", "affiliation"]    # numbered elements   e.g. nameIdentifier_1
-  
   def tagName (tag):
     return tag.split("}")[1]
   def getElementChildren (node):
@@ -71,30 +77,34 @@ def dataciteXmlToFormElements (document):
     t = node.text or ""
     for c in node.iterchildren(): t += c.tail or ""
     return t
-  def fullPath (path, tag, nnIndex=None):
-    return "%s-%s%s" % (path, tag, nnIndex) if nnIndex else "%s-%s" % (path, tag)
-  def processNode (path, node, index=None):
-    nnIndex = None 
+  def processNode (path, node, index=None, separator="-"):
     tag = tagName(node.tag)
     if path == "":
       mypath = tag
     else:
-      if tag in eNum:
-        similarNodeCount = len([i for i, x in enumerate(d) if re.match(fullPath(path, tag), x)])
-        nnIndex = "_"+str(similarNodeCount)
-        tag = tag+nnIndex
-      mypath = fullPath(path, tag)
+      mypath = "%s-%s" % (path, tag)
     if index != None:
-      mypath += "-%d" % index
-      mypathx = fullPath(mypath, tag)
+      mypath += "%s%d" % (separator, index)
+      mypathx = "%s-%s" % (mypath, tag)
     else:
       mypathx = mypath
     for a in node.attrib:
       v = node.attrib[a].strip()
-      if v != "": d_attr[fullPath(mypath, a, nnIndex)] = v
+      if v != "": d["%s-%s" % (mypath, a)] = v
     if tag in _repeatableElementContainers:
       for i, c in enumerate(getElementChildren(node)):
         processNode(mypath, c, i)
+    elif tag in _numberedElementContainers:
+      indexes = { t: -1 for t in _numberedElementContainers[tag] }
+      for c in getElementChildren(node):
+        if tagName(c.tag) in indexes:
+          indexes[tagName(c.tag)] += 1
+          if indexes[tagName(c.tag)] >= _maxNumberedElements:
+            raise ValueError("Maximum number of <%s> elements exceeded" %\
+              tagName(c.tag))
+          processNode(mypath, c, indexes[tagName(c.tag)], separator="_")
+        else:
+          processNode(mypath, c)
     else:
       if tag == "description":
         # The only mixed-content element type in the schema; <br>'s
@@ -106,6 +116,8 @@ def dataciteXmlToFormElements (document):
           v += c.tail or ""
         v = v.strip()
         if v != "": d[mypathx] = v
+      elif tag == "geoLocationPolygon":
+        d[mypathx] = geometry_util.datacitePolygonToInternal(node)
       else:
         children = getElementChildren(node)
         if len(children) > 0:
@@ -121,7 +133,7 @@ def dataciteXmlToFormElements (document):
               d[mypathx] = v
   root = util.parseXmlString(document)
   for c in getElementChildren(root): processNode("", c)
-  fc = _separateByFormType(dict(d.items() + d_attr.items()))
+  fc = _separateByFormType(d)
   return fc 
 
 def _separateByFormType(d):
@@ -178,29 +190,28 @@ def _id_type(str):
 # must appear in an XML document.
 
 _elementList = ["identifier", "creators", "creator", "creatorName",
-  "titles", "title", "publisher", "publicationYear", "subjects", "subject",
-  "contributors", "contributor", "contributorName", "givenName", "familyName",
-  "nameIdentifier_0", "nameIdentifier_1", "affiliation_0", "affiliation_1", "dates",
-  "date", "language", "resourceType", "alternateIdentifiers", "alternateIdentifier",
-  "relatedIdentifiers", "relatedIdentifier", "sizes", "size", "formats", "format",
-  "version", "rightsList", "rights", "descriptions", "description", "geoLocations",
-  "geoLocation", "geoLocationPoint", "geoLocationBox", "westBoundLongitude",
-  "eastBoundLongitude", "southBoundLatitude", "northBoundLatitude", "geoLocationPlace",
-  "geoLocationPolygon", "pointLongitude", "pointLatitude", "fundingReferences",
-  "fundingReference", "funderName", "funderIdentifier", "awardNumber", "awardTitle"]
+  "titles", "title", "publisher", "publicationYear", "resourceType",
+  "subjects", "subject", "contributors", "contributor", "contributorName",
+  "givenName", "familyName", "nameIdentifier", "affiliation", "dates", "date",
+  "language", "alternateIdentifiers", "alternateIdentifier",
+  "relatedIdentifiers", "relatedIdentifier", "sizes", "size", "formats",
+  "format", "version", "rightsList", "rights", "descriptions", "description",
+  "geoLocations", "geoLocation", "geoLocationPlace", "geoLocationPoint",
+  "geoLocationBox", "geoLocationPolygon", "polygonPoint", "fundingReferences",
+  "fundingReference", "funderName", "funderIdentifier", "awardNumber",
+  "awardTitle", "pointLongitude", "pointLatitude", "westBoundLongitude",
+  "eastBoundLongitude", "southBoundLatitude", "northBoundLatitude"]
 
 _elements = dict((e, i) for i, e in enumerate(_elementList))
 
 def formElementsToDataciteXml (d, shoulder=None, identifier=None):
   """
-  The inverse of dataciteXmlToFormElements.
-  First, filter for only DataCite XML items. Remove unnecessary Django form variables
-      i.e.  (u'titles-title-MAX_NUM_FORMS', u'1000')
-      Also remove other fields from query object not related to datacite_xml fields
-      i.e.  (u'action', u'create') 
+  The inverse of dataciteXmlToFormElements.  Dictionary entries not
+  related to the DataCite metadata schema (Django formset *_FORMS
+  entries, etc.) are removed.
   """
-  d = {k:v for (k,v) in d.iteritems() if '_FORMS' not in k}
-  d = {k:v for (k,v) in d.iteritems() if any(e in k for e in _elementList)}
+  d = { k: v for (k, v) in d.iteritems() if "_FORMS" not in k and\
+    any(e in k for e in _elementList) }
   d = _addIdentifierInfo(d, shoulder, identifier)
   namespace = "http://datacite.org/schema/kernel-4"
   schemaLocation = "http://schema.datacite.org/meta/kernel-4/metadata.xsd"
@@ -217,7 +228,7 @@ def formElementsToDataciteXml (d, shoulder=None, identifier=None):
     node = root
     while len(key) > 0:
       k, remainder = key.split("-", 1) if "-" in key else (key, "")
-      if k in _elements:
+      if k in _elements or ("_" in k and k.split("_", 1)[0] in _elements):
         if tagName(node.tag) in _repeatableElementContainers:
           i, remainder = remainder.split("-", 1)
           i = int(i)
@@ -230,31 +241,39 @@ def formElementsToDataciteXml (d, shoulder=None, identifier=None):
             node = n
           else:
             node = lxml.etree.SubElement(node, q(k))
-        if remainder == "": node.text = value
+          if "_" in k and remainder == k.split("_", 1)[0]: remainder = ""
+        if remainder == "":
+          if k == "geoLocationPolygon":
+            parent = node.getparent()
+            parent.insert(parent.index(node)+1,
+              geometry_util.polygonToDatacite(value)[0])
+            parent.remove(node)
+          else:
+            node.text = value
       else:
         node.attrib[k] = value
       key = remainder
+  def sortValue (node):
+    v = tagName(node.tag)
+    m = re.match(".*_(\d+)$", v)
+    if m:
+      return (_elements[v.split("_", 1)[0]], int(m.group(1)))
+    else:
+      return (_elements[v], 0)
   def sortChildren (node):
-    if tagName(node.tag) not in _repeatableElementContainers:
+    if tagName(node.tag) not in _repeatableElementContainers and\
+      tagName(node.tag) != "geoLocationPolygon":
       children = node.getchildren()
-      children.sort(key=lambda c: _elements[tagName(c.tag)])
+      children.sort(key=lambda c: sortValue(c))
       for i, c in enumerate(children): node.insert(i, c)
     for c in node.iterchildren(): sortChildren(c)
   sortChildren(root)
-  def stripNumberedElements (node):
-    nn = {'nameIdentifier_0': ['nameIdentifierScheme_0', 'schemeURI_0'],
-         'nameIdentifier_1': ['nameIdentifierScheme_1', 'schemeURI_1'],
-         'affiliation_0': [], 'affiliation_1': []}
-    for k in nn:
-      es = node.findall('.//'+q(k)) 
-      for e in es:
-        e.tag = q(k)[:-2]     # strip underscore and number off element tag 
-        # Rename attributes as well (create a clone with new name)
-        for x in range(len(nn[k])):
-          value = e.get(nn[k][x])
-          e.set(nn[k][x][:-2], value)
-          e.attrib.pop(nn[k][x])
-  stripNumberedElements(root)
+  for tag in _numberedElementContainers:
+    for node in root.xpath("//N:"+tag, namespaces={ "N": namespace }):
+      for t in _numberedElementContainers[tag]:
+        for n in node.xpath("*[substring(local-name(), 1, %d) = '%s']" %\
+          (len(t)+1, t+"_")):
+          n.tag = n.tag.rsplit("_", 1)[0]
   return lxml.etree.tostring(root, encoding=unicode)
 
 
