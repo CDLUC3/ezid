@@ -19,16 +19,18 @@
 {% for form in form.fundingref_set %}
   <div class="form-container">
   {{ form.non_field_errors }}
+  {% for f_field in form %}
 
-  {% include "create/_datacite_inlinetext.html" with field=form.funderName %}
-  {% include "create/_datacite_inlinetext.html" with field=form.funderIdentifier %}
-  {% include "create/_datacite_inlineselect.html" with field=form.funderIdentifierType %}
-  <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
-    <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
-    {% include "create/_datacite_inlinetext.html" with field=form.awardNumber %}
-    {% include "create/_datacite_inlinetext.html" with field=form.awardURI %}
-    {% include "create/_datacite_inlinetext.html" with field=form.awardTitle %}
-  </details>
+  {% if forloop.counter < 3 or forloop.counter > 3 %}
+    {% include "create/_datacite_inlinetext.html" with field=f_field %}
+  {% elif forloop.counter == 3 %}
+    {% include "create/_datacite_inlineselect.html" with field=f_field %}
+    <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
+      <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
+  {% endif %}
+
+  {% endfor %}
+    </details>
 
   </div>
 {% endfor %}

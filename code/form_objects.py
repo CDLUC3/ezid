@@ -248,6 +248,18 @@ def _validateNameIdGrouping(suffix, ni, ni_s, ni_s_uri):
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ################# Advanced Datacite ID Form/Elements #################
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# Element attributes must be named as elementName-attributeName
+# i.e. <awardNumber awardURI="http://cordis.europa.eu/">284382</awardNumber>
+#  should be declared as indiv. form fields named 'awardNumber' and 'awardNumber-awardURI'
+# See datacite_xml.formElementsToDataciteXml
+#
+# Note that fields with hyphens cannot be called directly from the template, and so have
+#   been relegated to their own form object (defined in __init__)
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 class NonRepeatingForm(forms.Form):
   """ Form object for single field elements in DataCite Advanced (XML) profile """
   target=forms.CharField(required=False, label=_("Location (URL)"),
@@ -262,11 +274,7 @@ class NonRepeatingForm(forms.Form):
   version = forms.CharField(required=False, label=_("Version"))
 
 class ResourceTypeForm(forms.Form):
-  """ This is also composed of single field elements like NonRepeatingForm,
-      but I wasn't sure how to call fields with hyphens (from NonRepeatingForm)
-      directly from the template.  By relegating them to their own form object, 
-      this bypasses that problem. 
-  """
+  """ Form object for Resource Type Element in DataCite Advanced (XML) profile """
   def __init__(self, *args, **kwargs):
     super(ResourceTypeForm,self).__init__(*args,**kwargs)
     self.fields['resourceType-resourceTypeGeneral'] = forms.ChoiceField(
@@ -283,6 +291,7 @@ class RequiredFormSet(BaseFormSet):
     self.forms[0].empty_permitted = False
 
 class NameIdMultBaseFormSet(BaseFormSet):
+  """ Generates aribitrary number of NameID fields. Used by Creator and Contributor formsets. """
   def __init__(self, *args, **kwargs):
     # self.xFields = kwargs.pop("extraFields")
     # Populate nameIdLastIndex+1 fields into this form. Expecting a list of integers here
@@ -624,20 +633,22 @@ class GeoLocForm(forms.Form):
 
 class FundingRefForm(forms.Form):
   """ Form object for Funding Reference Element in DataCite Advanced (XML) profile """
-  funderName = forms.CharField(required=False, label=_("Funder Name"))
-  funderIdentifier = forms.CharField(required=False, label=_("Funder Identifier"))
-  ID_TYPES = (
-    ("", _("Select the type of funder identifier")),
-    ("ISNI", "ISNI"),
-    ("GRID", "GRID"),
-    ("Crossref Funder", _("Crossref Funder")),
-    ("Other", "Other")
-  ) 
-  funderIdentifierType = forms.ChoiceField(required=False, 
-    label = _("Identifier Type"), choices=ID_TYPES)
-  awardNumber = forms.CharField(required=False, label=_("Award Number"))
-  awardURI = forms.CharField(required=False, label=_("Award URI"))
-  awardTitle = forms.CharField(required=False, label=_("Award Title"))
+  def __init__(self, *args, **kwargs):
+    super(FundingRefForm,self).__init__(*args,**kwargs)
+    self.fields["funderName"] = forms.CharField(required=False, label=_("Funder Name"))
+    self.fields["funderIdentifier"] = forms.CharField(required=False, label=_("Funder Identifier"))
+    ID_TYPES = (
+      ("", _("Select the type of funder identifier")),
+      ("ISNI", "ISNI"),
+      ("GRID", "GRID"),
+      ("Crossref Funder", _("Crossref Funder")),
+      ("Other", "Other")
+    ) 
+    self.fields["funderIdentifier-funderIdentifierType"] = forms.ChoiceField(required=False, 
+      label = _("Identifier Type"), choices=ID_TYPES)
+    self.fields["awardNumber"] = forms.CharField(required=False, label=_("Award Number"))
+    self.fields["awardNumber-awardURI"] = forms.CharField(required=False, label=_("Award URI"))
+    self.fields["awardTitle"] = forms.CharField(required=False, label=_("Award Title"))
 
 def getIdForm_datacite_xml (form_coll=None, request=None):
   """ For Advanced Datacite elements 
