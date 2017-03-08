@@ -55,7 +55,7 @@
     {% endif %}
     {% if forloop.counter == 8 %}
       <div class="subfieldset-inline__container">
-        {% include "create/_datacite_inlinetextarea.html" with field=g_field caption="1" %}
+        {% include "create/_datacite_inlinetextarea.html" with field=g_field caption=polygon_view %}
       </div>
     {% endif %}
   {% endfor %}

@@ -194,6 +194,7 @@ def _engage_datacite_xml_profile(request, d, profile_name):
   d['manual_profile'] = True
   d['current_profile_name'] = profile_name
   d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
+  d['polygon_view'] = _("Paste in GeoJSON or KML formatted text.")
   return d
 
 def validate_adv_form_datacite_xml(request, d):
