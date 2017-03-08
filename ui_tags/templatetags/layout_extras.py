@@ -118,27 +118,6 @@ def add_attributes(field, css):
       attrs[t] = v
   return field.as_widget(attrs=attrs)
 
-@register.filter(name='add_nameIdGroupStyle')
-def add_nameIdGroupStyle(index):
-  """
-  Add custom spacing attributes to form fields (for name identifier, affiliation, etc).
-  Used by Datacite Creator and Contributor
-  Index called by running through forloop (reverse counter) from template.
-  Alternatively, I could have created custom form fields to store this information.
-  """
-  mapping = {10: "",
-    9: "",
-    8: "",
-    7: "end",         # givenName
-    6: "tight",       # nameIdentifier_0 
-    5: "tight",       # nameIdentifierScheme_0 
-    4: "end",         # nameIdentifierSchemeURI_0 
-    3: "tight",       # nameIdentifier_1 
-    2: "tight",       # nameIdentifierScheme_1 
-    1: "end",         # nameIdentifierSchemeURI_1
-    0: ""}            # affiliation
-  return mapping[index]
-
 @register.tag
 @basictag(takes_context=True)
 def host_based_include(context, template_path):
