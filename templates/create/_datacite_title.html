@@ -17,21 +17,27 @@
   </div>
 {% for form in form.title_set %}
   <div class="form-container">
-    {{ form.non_field_errors }}
+{{ form.non_field_errors }}
+  {% for t_field in form %}
 
-    {% include "create/_datacite_inlinetext.html" with field=form.title reqd="true" %}
+  {% if forloop.counter == 1 %}
+    {% include "create/_datacite_inlinetext.html" with field=t_field reqd="true" %}
+  {% elif forloop.counter == 2 %}
     <div class="fieldset-inline create__form-element-group" role="group" aria-labelledby="title-type-{{forloop.counter}}">
-      <span id="title-type-{{forloop.counter}}" class="fieldset-inline__legend create__inline-nested-legend">{{ form.titleType.label }}</span>
-      {% for radio in form.titleType %}
+      <span id="title-type-{{forloop.counter}}" class="fieldset-inline__legend create__inline-nested-legend">{{ t_field.label }}</span>
+      {% for radio in t_field %}
       <label for="{{ radio.id_for_label }}" class="fcontrol__radio-label-inline">
         {{ radio.tag }}
         <span>{{ radio.choice_label }}</span>
       </label>
       {% endfor %}
     </div>
-    {% for hidden in form.hidden_fields %}
-      {{ hidden }}
-    {% endfor %}
+  {% else %}
+    {% include "create/_datacite_inlinetext.html" with field=t_field %}
+  {% endif %}
+
+  {% endfor %}
+
   </div>
 {% endfor %}
 </div>

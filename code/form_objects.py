@@ -372,7 +372,7 @@ class TitleForm(forms.Form):
     self.fields["titleType"] = forms.ChoiceField(required=False, label = _("Type"),
       widget= forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}), choices=TITLE_TYPES)
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label="Language(Hidden)", widget= forms.HiddenInput())
+      label="Language Code (IETF BCP 47 or ISO 639-1)")
 
 class DescrForm(forms.Form):
   """ Form object for Description Element in DataCite Advanced (XML) profile """
@@ -392,7 +392,7 @@ class DescrForm(forms.Form):
     self.fields["descriptionType"] = forms.ChoiceField(required=False, label = _("Type"),
       choices=DESCR_TYPES)
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label="Language(Hidden)", widget= forms.HiddenInput())
+      label="Language Code (IETF BCP 47 or ISO 639-1)")
   def clean(self):
     cleaned_data = super(DescrForm, self).clean()
     d = cleaned_data.get("description")
@@ -410,7 +410,7 @@ class SubjectForm(forms.Form):
     self.fields["schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
     self.fields["valueURI"] = forms.CharField(required=False, label=_("Value URI"))
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label="Language(Hidden)", widget= forms.HiddenInput())
+      label="Language Code (IETF BCP 47 or ISO 639-1)")
 
 def _gatherContribErr1(err1, ctype, cname):
   if not ctype:

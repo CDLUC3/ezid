@@ -18,17 +18,16 @@
 {% for form in form.subject_set %}
   <div class="form-container">
 {{ form.non_field_errors }}
+  {% for subj_field in form %}
 
-    {% include "create/_datacite_inlinetext.html" with field=form.subject %}
+  {% if forloop.first %}
+    {% include "create/_datacite_inlinetext.html" with field=subj_field %}
     <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
       <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
-      {% include "create/_datacite_inlinetext.html" with field=form.subjectScheme %}
-      {% include "create/_datacite_inlinetext.html" with field=form.schemeURI %}
-      {% include "create/_datacite_inlinetext.html" with field=form.valueURI %}
-      {% for hidden in form.hidden_fields %}
-       {{ hidden }}
-      {% endfor %}
-
+  {% else %}
+      {% include "create/_datacite_inlinetext.html" with field=subj_field %}
+  {% endif %}
+  {% endfor %}
     </details>
   </div>
 {% endfor %}
