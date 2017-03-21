@@ -232,17 +232,17 @@ def _validate_custom_remainder(shoulder):
 def _validateNameIdGrouping(suffix, ni, ni_s, ni_s_uri):
   err = {}
   if ni and not ni_s:
-    err['nameIdentifier_{0}-nameIdentifierScheme_{0}'.format(suffix)] =\
+    err['nameIdentifier_{0}-nameIdentifierScheme'.format(suffix)] =\
       _("An Identifier Scheme must be filled in if you specify an Identifier.")
   if ni_s and not ni:
-    err['nameIdentifier_{0}'.format(suffix)] =\
+    err['nameIdentifier_{0}-nameIdentifier'.format(suffix)] =\
        _("An Identifier must be filled in if you specify an Identifier Scheme.")
   if ni_s_uri:
     if not ni:
-      err['nameIdentifier_{0}'.format(suffix)] =\
+      err['nameIdentifier_{0}-nameIdentifier'.format(suffix)] =\
         _("An Identifier must be filled in if you specify a Scheme URI.")
     if not ni_s:
-      err['nameIdentifier_{0}-nameIdentifierScheme_{0}'.format(suffix)] =\
+      err['nameIdentifier_{0}-nameIdentifierScheme'.format(suffix)] =\
         _("An Identifier Scheme must be filled in.")
   return err
 
@@ -798,17 +798,18 @@ def _getNameIdCt(fields, prefix):
   r = [(0,1)]  # Default one form with two nameIds (when first creating an ID)
   d = {} 
   if fields:
-    regex = re.escape(prefix) + "-(\d+)-nameIdentifier_(\d+)"
-    for f in fields:
-      m = re.match(regex, f)
+    r1 = re.escape(prefix) + "-(\d+)"
+    r2 = r1 + "-nameIdentifier_(\d+)"
+    for f in sorted(fields.iterkeys()):
+      nameIdCt = 1   # Each form should by default have 2 nameIds
+      m = re.match(r1, f)
       if m:
         form = int(m.group(1))
-        nameIdCt = int(m.group(2))
+        m = re.match(r2, f)
+        if m:
+          nameIdCt = int(m.group(2))
         d[form] = nameIdCt if (form not in d) or (form in d and d[form] < nameIdCt) else d[form]
-    if d:
-      r = d.items()
-      r.sort()
-  y = map(lambda x: x[1], r) 
+  y = map(lambda x: x[1], d.items() if d else r) 
   return y 
 
 def isValidDataciteXmlForm(form):
