@@ -73,9 +73,9 @@ $form-element-end-group-spacing: 32px;
 
 	&[open] {
 
-		.create__form-element-group, 
-		.create__form-element-tight-group, 
-		.create__form-element-end-group, 
+		.create__form-element-group,
+		.create__form-element-tight-group,
+		.create__form-element-end-group,
                 .fieldset-controls__container-small {
 			display: flex; // override jquery.details script, which sets all children to display: block by default
 		}

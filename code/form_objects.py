@@ -372,7 +372,7 @@ class TitleForm(forms.Form):
     self.fields["titleType"] = forms.ChoiceField(required=False, label = _("Type"),
       widget= forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}), choices=TITLE_TYPES)
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label="Language Code (IETF BCP 47 or ISO 639-1)")
+      label="Language")
 
 class DescrForm(forms.Form):
   """ Form object for Description Element in DataCite Advanced (XML) profile """
@@ -392,13 +392,14 @@ class DescrForm(forms.Form):
     self.fields["descriptionType"] = forms.ChoiceField(required=False, label = _("Type"),
       choices=DESCR_TYPES)
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label="Language Code (IETF BCP 47 or ISO 639-1)")
+      label="Language")
   def clean(self):
     cleaned_data = super(DescrForm, self).clean()
     d = cleaned_data.get("description")
     dt = cleaned_data.get("descriptionType")
-    if dt == '' and d != '':
-      raise ValidationError({'descriptionType': _("Descriptive info is required if you fill in Description type.")})
+    dl = cleaned_data.get("{http://www.w3.org/XML/1998/namespace}lang")
+    if (d != '' or dl != '') and dt == '':
+      raise ValidationError({'descriptionType': _("Description type is required if you fill in Descriptive info.")})
     return cleaned_data
 
 class SubjectForm(forms.Form):
@@ -410,7 +411,7 @@ class SubjectForm(forms.Form):
     self.fields["schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
     self.fields["valueURI"] = forms.CharField(required=False, label=_("Value URI"))
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label="Language Code (IETF BCP 47 or ISO 639-1)")
+      label="Language")
 
 def _gatherContribErr1(err1, ctype, cname):
   if not ctype:
