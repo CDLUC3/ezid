@@ -304,7 +304,8 @@ class RequiredFormSet(BaseFormSet):
 class NameIdMultBaseFormSet(BaseFormSet):
   """
   Generates aribitrary number of NameID fields. Used by Creator and Contributor formsets.
-  UI only offers 2 nameIds for ID creation, whereas unlimited # can be generated through API.
+  UI only offers 2 nameIds during initial ID creation, whereas unlimited # can be generated through API.
+  (Unlimited number of nameId fields *can* be displayed in UI)
   """
   def __init__(self, *args, **kwargs):
     self.nameIdLastIndex = kwargs.pop("nameIdLastIndex")
@@ -333,7 +334,7 @@ class NameIdMultBaseFormSet(BaseFormSet):
 # Remaining Datacite Forms listed below are intended to be wrapped into FormSets (repeatable)
 class CreatorForm(forms.Form):
   """ Form object for Creator Element in DataCite Advanced (XML) profile.
-      This gets wrapped into a NameIdMultBaseFormSet.
+      This gets wrapped into a NameIdMultBaseFormSet (when passed into formset_factory).
   """
   def __init__(self, *args, **kwargs):
     super(CreatorForm,self).__init__(*args,**kwargs)
@@ -372,14 +373,14 @@ class TitleForm(forms.Form):
     self.fields["titleType"] = forms.ChoiceField(required=False, label = _("Type"),
       widget= forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}), choices=TITLE_TYPES)
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label="Language")
+      label=_("Title Language"))
 
 class DescrForm(forms.Form):
   """ Form object for Description Element in DataCite Advanced (XML) profile """
   def __init__(self, *args, **kwargs):
     super(DescrForm,self).__init__(*args,**kwargs)
     self.fields["description"] = forms.CharField(required=False,
-      label=_("Descriptive information"), widget=forms.Textarea(attrs={'rows': '2'}))
+      label=_("Descriptive information"), widget=forms.Textarea(attrs={'rows': '3'}))
     DESCR_TYPES = (
       ("", _("Select a type of description")),
       ("Abstract", _("Abstract")),
@@ -392,7 +393,7 @@ class DescrForm(forms.Form):
     self.fields["descriptionType"] = forms.ChoiceField(required=False, label = _("Type"),
       choices=DESCR_TYPES)
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label="Language")
+      label=_("Description Language"))
   def clean(self):
     cleaned_data = super(DescrForm, self).clean()
     d = cleaned_data.get("description")
@@ -411,7 +412,7 @@ class SubjectForm(forms.Form):
     self.fields["schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
     self.fields["valueURI"] = forms.CharField(required=False, label=_("Value URI"))
     self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label="Language")
+      label=_("Subject Language"))
 
 def _gatherContribErr1(err1, ctype, cname):
   if not ctype:
@@ -422,7 +423,8 @@ def _gatherContribErr1(err1, ctype, cname):
 
 class ContribForm(forms.Form):
   """ Form object for Contributor Element in DataCite Advanced (XML) profile 
-      With specific validation rules. This gets wrapped into a NameIdMultBaseFormSet.
+      With specific validation rules. This gets wrapped into a NameIdMultBaseFormSet
+      (when passed into formset_factory).
   """
   def __init__(self, *args, **kwargs):
     super(ContribForm,self).__init__(*args,**kwargs)
@@ -649,7 +651,7 @@ class FundingRefForm(forms.Form):
       ("", _("Select the type of funder identifier")),
       ("ISNI", "ISNI"),
       ("GRID", "GRID"),
-      ("Crossref Funder", _("Crossref Funder")),
+      ("Crossref Funder ID", _("Crossref Funder")),
       ("Other", "Other")
     ) 
     self.fields["funderIdentifier-funderIdentifierType"] = forms.ChoiceField(required=False, 

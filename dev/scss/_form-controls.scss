@@ -177,7 +177,6 @@
 
 %fcontrol__textarea-inline-base {
 	@extend %textarea-base;
-	height: 5em;
 	margin: 0; // normalize across browsers
 	padding: 0.3em 0.5em;
 	border-radius: $form-element-border-radius;
@@ -186,6 +185,16 @@
 .fcontrol__textarea-inline {
 	@extend %fcontrol__textarea-inline-base;
 	border: 1px solid $design-light-gray-border-color;
+}
+
+.fcontrol__textarea-inline-wide {
+	@extend %fcontrol__textarea-inline-base;
+	border: 1px solid $design-light-gray-border-color;
+
+	@include bp(screen2) {
+		width: 550px;
+	}
+
 }
 
 .fcontrol__textarea-inline-noborder {
@@ -473,7 +482,7 @@
 		border: 1px solid $design-red-color;
 		border-radius: $form-element-border-radius;
 
-		.fcontrol__textarea-inline {
+		.fcontrol__textarea-inline, .fcontrol__textarea-inline-wide {
 			border: none;
 		}
 

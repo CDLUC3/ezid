@@ -113,7 +113,7 @@ def _assignManualTemplate(d):
   #  d['profiles'][:] = [p for p in d['profiles'] if not p.name == 'erc']
   d['manual_profile'] = True
   d['manual_template'] = 'create/_datacite_xml.html'
-  d['polygon_view'] = _("Edit polygon representation as is, or replace with GeoJSON or KML formatted text.")
+  d['polygon_view'] = 'edit' 
   return d
 
 def edit(request, identifier):
