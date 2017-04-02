@@ -162,7 +162,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
       in d else None)
     c = _buildAuthorityConstraints(request, s_type, user_id, group_id)
     if s_type in ('public', 'manage'):
-      d['queries_urlencoded'] = queryUrlEncoded(request)
+      d['queries_urlencoded'] = queryUrlEncoded(request)   # Used for Google Analytics
       q = d['q'] if 'q' in d and d['q'] else request.GET 
       q2 = {}
       for k,v in q.iteritems():
@@ -171,7 +171,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
       # form's clean() function but unable to modify field values that route. I think I need to
       # explicitly override the form's __init__ method
       if 'keywords' in q2:
-        kw = q2['keywords']
+        kw = re.sub('[\"\']', '', q2['keywords'])
         if kw.lower().startswith(("doi:", "ark:/", "urn:uuid:")) and \
           (' ' not in kw) and uic.isEmptyStr(q2['identifier']):
           q2['keywords'] = ''

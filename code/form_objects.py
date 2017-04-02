@@ -787,7 +787,7 @@ class BaseSearchIdForm(forms.Form):
     field_count = len(self.fields)
     cleaned_data = super(BaseSearchIdForm, self).clean()
     """ cleaned_data contains all valid fields. So if one or more fields
-        are invalid, we need to simply bypass this check for non-empty fields"""
+        are invalid, simply bypass this check for non-empty fields"""
     if len(cleaned_data) < field_count:
       return cleaned_data
     form_empty = True
