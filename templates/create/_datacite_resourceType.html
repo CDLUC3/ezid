@@ -16,7 +16,7 @@ The resourceType form consists of two fields
 {% endcomment %}
 
   {% if forloop.first %}
-    {% include "create/_datacite_inlineselect.html" with field=rt_field %}
+    {% include "create/_datacite_inlineselect.html" with field=rt_field reqd="true" %}
   {% else %}
     {% include "create/_datacite_inlinetext.html" with field=rt_field %}
   {% endif %}

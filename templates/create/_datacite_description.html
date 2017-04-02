@@ -18,11 +18,15 @@
 {% for form in form.descr_set %}
   <div class="form-container">
   {{ form.non_field_errors }}
+  {% for d_field in form %}
 
-  {% include "create/_datacite_inlinetextarea.html" with field=form.description %}
-  {% include "create/_datacite_inlineselect.html" with field=form.descriptionType %}
-  {% for hidden in form.hidden_fields %}
-    {{ hidden }}
+  {% if forloop.counter == 1 %}
+    {% include "create/_datacite_inlinetextarea.html" with field=d_field %}
+  {% elif forloop.counter == 2 %}
+    {% include "create/_datacite_inlineselect.html" with field=d_field %}
+  {% else %}
+    {% include "create/_datacite_inlinetext.html" with field=d_field %}
+  {% endif %}
   {% endfor %}
   </div>
 {% endfor %}

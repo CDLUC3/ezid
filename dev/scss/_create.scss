@@ -1,4 +1,6 @@
 // ##### Create ID Layout ##### //
+$form-element-tight-group-spacing: 8px;
+$form-element-end-group-spacing: 32px;
 
 .create {
 	// empty
@@ -42,6 +44,14 @@
 	margin: 0 0 $form-element-group-spacing;
 }
 
+.create__form-element-tight-group {
+	margin: 0 0 $form-element-tight-group-spacing;
+}
+
+.create__form-element-end-group {
+	margin: 0 0 $form-element-end-group-spacing;
+}
+
 .create__form-label {
 	width: $form-element-label-width;
 
@@ -63,7 +73,10 @@
 
 	&[open] {
 
-		.create__form-element-group {
+		.create__form-element-group,
+		.create__form-element-tight-group,
+		.create__form-element-end-group,
+                .fieldset-controls__container-small {
 			display: flex; // override jquery.details script, which sets all children to display: block by default
 		}
 

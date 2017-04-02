@@ -1,4 +1,6 @@
+{% load layout_extras %}
 {% load i18n %}
+
 <script type="text/javascript">
   $(function() {
     $('#geoloc_set .form-container').formset({
@@ -18,9 +20,45 @@
 {% for form in form.geoloc_set %}
   <div class="form-container">
 {{ form.non_field_errors }}
-{% include "create/_datacite_inlinetext.html" with field=form.geoLocationPoint %}
-{% include "create/_datacite_inlinetext.html" with field=form.geoLocationBox %}
-{% include "create/_datacite_inlinetext.html" with field=form.geoLocationPlace %}
+  {% for g_field in form %}
+    {% comment %}
+      Field labels with hyphens in them aren't handled well by Django templates, so need to loop through.
+    {% endcomment %}
+    {% if forloop.counter == 1 %}
+      <div class="subfieldset__container">
+        <div id="subfieldset__example1" class="subfieldset__legend">{% trans "Point" %}</div>
+        {% include "create/_datacite_inlinetext.html" with field=g_field %}
+    {% endif %}
+    {% if forloop.counter == 2 %}
+        {% include "create/_datacite_inlinetext.html" with field=g_field %}
+      </div>
+    {% endif %}
+    {% if forloop.counter == 3 %}
+      <div class="subfieldset__container">
+        <div id="subfieldset__example1" class="subfieldset__legend">{% trans "Box" %}</div>
+        {% include "create/_datacite_inlinetext.html" with field=g_field %}
+    {% endif %}
+    {% if forloop.counter == 4 %}
+        {% include "create/_datacite_inlinetext.html" with field=g_field %}
+    {% endif %}
+    {% if forloop.counter == 5 %}
+        {% include "create/_datacite_inlinetext.html" with field=g_field %}
+    {% endif %}
+    {% if forloop.counter == 6 %}
+        {% include "create/_datacite_inlinetext.html" with field=g_field %}
+      </div>
+    {% endif %}
+    {% if forloop.counter == 7 %}
+      <div class="subfieldset-inline__container">
+        {% include "create/_datacite_inlinetext.html" with field=g_field %}
+      </div>
+    {% endif %}
+    {% if forloop.counter == 8 %}
+      <div class="subfieldset-inline__container">
+        {% include "create/_datacite_inlinetextarea.html" with field=g_field polygon="true" polygon_view=polygon_view %}
+      </div>
+    {% endif %}
+  {% endfor %}
   </div>
 {% endfor %}
 </div>
