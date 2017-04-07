@@ -19,6 +19,7 @@ import re
 import copy
 import collections
 
+import datacite
 import geometry_util
 
 _repeatableElementContainers = ["creators", "titles", "subjects",
@@ -65,6 +66,7 @@ def dataciteXmlToFormElements (document):
 
   <br> elements in descriptions are replaced with newlines.
   """
+  document = datacite.upgradeDcmsRecord(document)
   d = {}
   def tagName (tag):
     return tag.split("}")[1]
