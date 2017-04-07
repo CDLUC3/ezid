@@ -16,6 +16,7 @@
 import django.conf
 import django.db
 import django.db.models
+import django.db.utils
 import operator
 import re
 import threading
@@ -96,6 +97,9 @@ def ping ():
     return "down"
   else:
     return "up"
+
+_fulltextFields = ["resourceCreator", "resourceTitle", "resourcePublisher",
+  "keywords"]
 
 def _processFulltextConstraint (constraint):
   # The primary purposes of this function are 1) to remove characters
@@ -325,8 +329,7 @@ def formulateQuery (constraints, orderBy=None,
       if isinstance(value, basestring): value = [value]
       filters.append(reduce(operator.or_,
         [django.db.models.Q(profile__label=v) for v in value]))
-    elif column in ["resourceCreator", "resourceTitle", "resourcePublisher",
-      "keywords"]:
+    elif column in _fulltextFields:
       if _fulltextSupported:
         filters.append(django.db.models.Q(**{ (column + "__search"):\
           _processFulltextConstraint(value) }))
@@ -413,6 +416,10 @@ def numActiveSearches ():
   finally:
     _lock.release()
 
+def _isMysqlFulltextError (exception):
+  return isinstance(exception, django.db.utils.InternalError) and\
+    exception.args == (188, "FTS query exceeds result cache limit")
+
 def executeSearchCountOnly (user, constraints,
   selectRelated=defaultSelectRelated, defer=defaultDefer):
   """
@@ -430,8 +437,25 @@ def executeSearchCountOnly (user, constraints,
       [[k, unicode(v)] for k, v in constraints.items()]))
     c = qs.count()
   except Exception, e:
-    log.error(tid, e)
-    raise
+    # MySQL's FULLTEXT engine chokes on a too-frequently-occurring
+    # word (call it a "bad" word) that is not on its own stopword
+    # list.  We weed out bad words using our own stopword list, but
+    # not if they're quoted, and unfortunately MySQL chokes on bad
+    # words quoted or not.  Furthermore, we are unable to add to
+    # MySQL's stopword list.  If MySQL chokes, we retry the query
+    # without any quotes in the hopes that any quoted bad words will
+    # be removed by our own processing.
+    if _isMysqlFulltextError(e) and\
+      any('"' in constraints.get(f, "") for f in _fulltextFields):
+      constraints2 = constraints.copy()
+      for f in _fulltextFields:
+        if f in constraints2:
+          constraints2[f] = constraints2[f].replace('"', " ")
+      log.success(tid, "-1")
+      return executeSearchCountOnly(user, constraints2, selectRelated, defer)
+    else:
+      log.error(tid, e)
+      raise
   else:
     log.success(tid, str(c))
     return c
@@ -459,8 +483,26 @@ def executeSearch (user, constraints, from_, to, orderBy=None,
     qs = qs[from_:to]
     c = len(qs)
   except Exception, e:
-    log.error(tid, e)
-    raise
+    # MySQL's FULLTEXT engine chokes on a too-frequently-occurring
+    # word (call it a "bad" word) that is not on its own stopword
+    # list.  We weed out bad words using our own stopword list, but
+    # not if they're quoted, and unfortunately MySQL chokes on bad
+    # words quoted or not.  Furthermore, we are unable to add to
+    # MySQL's stopword list.  If MySQL chokes, we retry the query
+    # without any quotes in the hopes that any quoted bad words will
+    # be removed by our own processing.
+    if _isMysqlFulltextError(e) and\
+      any('"' in constraints.get(f, "") for f in _fulltextFields):
+      constraints2 = constraints.copy()
+      for f in _fulltextFields:
+        if f in constraints2:
+          constraints2[f] = constraints2[f].replace('"', " ")
+      log.success(tid, "-1")
+      return executeSearch(user, constraints2, from_, to, orderBy,
+        selectRelated, defer)
+    else:
+      log.error(tid, e)
+      raise
   else:
     log.success(tid, str(c))
     return qs
