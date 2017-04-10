@@ -971,6 +971,7 @@ __ `DataCite Metadata Scheme`_
 
                             - Shakespeare, William
 
+                            Separate multiple names with ";".
                             Non-roman names should be transliterated
                             according to the ALA-LC schemes.
    datacite.title           A name or title by which the data or
