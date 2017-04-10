@@ -350,12 +350,22 @@ http://creativecommons.org/licenses/BSD/
     <xsl:if test="$olt">
       <xsl:attribute name="titleType">TranslatedTitle</xsl:attribute>
     </xsl:if>
-    <xsl:value-of select="$t"/>
+    <xsl:choose>
+      <xsl:when test="normalize-space($t) != ''">
+        <xsl:value-of select="$t"/>
+      </xsl:when>
+      <xsl:otherwise>(:unav)</xsl:otherwise>
+    </xsl:choose>
   </xsl:element>
   <xsl:variable name="st" select="$t/following-sibling::*[position()=1]"/>
   <xsl:if test="local-name($st) = 'subtitle'">
     <title titleType="Subtitle">
-      <xsl:value-of select="$st"/>
+      <xsl:choose>
+        <xsl:when test="normalize-space($st) != ''">
+          <xsl:value-of select="$st"/>
+        </xsl:when>
+        <xsl:otherwise>(:unav)</xsl:otherwise>
+      </xsl:choose>
     </title>
   </xsl:if>
   <xsl:if test="$olt">
@@ -365,12 +375,22 @@ http://creativecommons.org/licenses/BSD/
           <xsl:value-of select="$olt/@language"/>
         </xsl:attribute>
       </xsl:if>
-      <xsl:value-of select="$olt"/>
+      <xsl:choose>
+        <xsl:when test="normalize-space($olt) != ''">
+          <xsl:value-of select="$olt"/>
+        </xsl:when>
+        <xsl:otherwise>(:unav)</xsl:otherwise>
+      </xsl:choose>
     </xsl:element>
     <xsl:variable name="olst" select="$olt/following-sibling::*"/>
     <xsl:if test="$olst">
       <title titleType="Subtitle">
-        <xsl:value-of select="$olst"/>
+        <xsl:choose>
+          <xsl:when test="normalize-space($olst) != ''">
+            <xsl:value-of select="$olst"/>
+          </xsl:when>
+          <xsl:otherwise>(:unav)</xsl:otherwise>
+        </xsl:choose>
       </title>
     </xsl:if>
   </xsl:if>
@@ -379,7 +399,12 @@ http://creativecommons.org/licenses/BSD/
 <xsl:template match="*[local-name()='proceedings_title' or
   local-name()='full_title' or local-name()='abbrev_title']">
   <title>
-    <xsl:value-of select="."/>
+    <xsl:choose>
+      <xsl:when test="normalize-space(.) != ''">
+        <xsl:value-of select="."/>
+      </xsl:when>
+      <xsl:otherwise>(:unav)</xsl:otherwise>
+    </xsl:choose>
   </title>
 </xsl:template>
 
