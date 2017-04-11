@@ -113,16 +113,7 @@ def _assignManualTemplate(d):
   #  d['profiles'][:] = [p for p in d['profiles'] if not p.name == 'erc']
   d['manual_profile'] = True
   d['manual_template'] = 'create/_datacite_xml.html'
-  return d
-
-def _dataciteXmlToForm(request, d, id_metadata):
-  form_coll = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
-  # Testing
-  # xml = datacite_xml.temp_mock()
-  # form_coll = datacite_xml.dataciteXmlToFormElements(xml) 
-  # This is the only item from internal profile that needs inclusion in django form framework
-  form_coll.nonRepeating['target'] = id_metadata['_target']
-  d['form']=form_objects.getIdForm_datacite_xml(form_coll, request) 
+  d['polygon_view'] = 'edit' 
   return d
 
 def edit(request, identifier):
@@ -159,7 +150,13 @@ def edit(request, identifier):
       d['current_profile'] = metadata.getProfile('dc')
     if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
       d = _assignManualTemplate(d)
-      d = _dataciteXmlToForm(request, d, id_metadata)
+      # Testing
+      # xml = datacite_xml.temp_mockxml()
+      # form_coll = datacite_xml.dataciteXmlToFormElements(xml) 
+      form_coll = datacite_xml.dataciteXmlToFormElements(d['identifier']['datacite']) 
+      # This is the only item from internal profile that needs inclusion in django form framework
+      form_coll.nonRepeating['target'] = id_metadata['_target']
+      d['form']=form_objects.getIdForm_datacite_xml(form_coll, request) 
       if not form_objects.isValidDataciteXmlForm(d['form']):
         django.contrib.messages.error(request, FORM_VALIDATION_ERROR_ON_LOAD)
     else:

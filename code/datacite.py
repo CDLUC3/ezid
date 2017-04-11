@@ -243,11 +243,6 @@ def validateDcmsRecord (identifier, record, schemaValidate=True):
   m = _rootTagRE.match(root.tag)
   assert m, "not a DataCite record"
   version = m.group(2)
-  # ///////////////////////////////////////////////////////////////////////////
-  # TEMPORARY: REMOVE WHEN FULLY SUPPORTING VERSION 4
-  if version == "4":
-    assert False, "DataCite metadata schema version 4 not supported yet"
-  # ///////////////////////////////////////////////////////////////////////////
   # As a special case, upgrade schema version 2.1 to 2.2.
   if version == "2.1":
     def changeNamespace (node):
@@ -315,10 +310,10 @@ def _interpolate (template, *args):
     for a in args)
 
 _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
-<resource xmlns="http://datacite.org/schema/kernel-3"
+<resource xmlns="http://datacite.org/schema/kernel-4"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://datacite.org/schema/kernel-3
-    http://schema.datacite.org/meta/kernel-3/metadata.xsd">
+  xsi:schemaLocation="http://datacite.org/schema/kernel-4
+    http://schema.datacite.org/meta/kernel-4/metadata.xsd">
   <identifier identifierType="%s">%s</identifier>
   <creators>
     <creator>

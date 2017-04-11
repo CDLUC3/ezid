@@ -125,6 +125,7 @@
       <input class="tab__input" id="tab-2" type="radio" name="name">
       <label class="tab__label" for="tab-2">Advanced</label>
       <div class="tab__content">
+      <form id="form_advanced" method="post">
         
         <div class="row">
 
@@ -150,7 +151,7 @@
 
               <div class="fcontrol__group-stacked create__form-element-group">
                 <label for="create__field5" class="fcontrol__text-label-hidden">Suffix</label>
-                <input id="create__field5" class="fcontrol__text-field-stacked" type="text" placeholder="Recommended: Leave blank" required>
+                <input id="create__field5" name="create__field5" class="fcontrol__text-field-stacked" type="text" placeholder="Recommended: Leave blank" required>
                 <span class="fcontrol__invalid-flag">Error message</span>
               </div>
 
@@ -235,7 +236,7 @@
           <div class="fcontrol__group-inline create__form-element-group">
             <label for="create__field6" class="fcontrol__text-label-inline create__label-advanced">Location (URL)</label>
             <div class="fcontrol__group">
-              <input id="create__field6" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+              <input id="create__field6" name="create__field6" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
               <span class="fcontrol__invalid-flag">Error message</span>
             </div>
           </div>
@@ -260,7 +261,7 @@
             <div class="fcontrol__group-inline--invalid create__form-element-group">
               <label for="create__field7" class="fcontrol__text-label-inline create__label-advanced">Name</label>
               <div class="fcontrol__group">
-                <input id="create__field7" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+                <input id="create__field7" name="create__field7" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
                 <span class="fcontrol__invalid-flag">please fill in a value for creator name but an especially long error.</span>
               </div>
             </div>
@@ -269,10 +270,21 @@
               
               <summary class="accordion__title create__accordion-title">More Fields</summary>
 
+              <div class="fieldset-controls__container-small">
+                <div class="fieldset-controls__buttons-small">
+                  <button class="button__plus-small" type="button" title="Add A Name Identifier">
+                    <span class="button__text">Add A Name Identifier</span>
+                  </button>
+                  <button class="button__minus-small" type="button" title="Remove Last Name Identifier">
+                    <span class="button__text">Remove Last Name Identifier</span>
+                  </button>
+                </div>
+              </div>
+
               <div class="fcontrol__group-inline--invalid create__form-element-group">
                 <label for="create__field9" class="fcontrol__text-label-inline create__label-advanced--in-accordion">Name Identifier</label>
                 <div class="fcontrol__group">
-                  <input id="create__field9" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+                  <input id="create__field9" name="create__field9" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
                   <span class="fcontrol__invalid-flag">Error message</span>
                 </div>
               </div>
@@ -280,7 +292,7 @@
               <div class="fcontrol__group-inline create__form-element-group">
                 <label for="create__field10" class="fcontrol__text-label-inline create__label-advanced--in-accordion">Identifier Scheme</label>
                 <div class="fcontrol__group">
-                  <input id="create__field10" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+                  <input id="create__field10" name="create__field10" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
                   <span class="fcontrol__invalid-flag">Error message</span>
                 </div>
               </div>
@@ -288,7 +300,7 @@
               <div class="fcontrol__group-inline create__form-element-group">
                 <label for="create__field11" class="fcontrol__text-label-inline create__label-advanced--in-accordion">Scheme URI</label>
                 <div class="fcontrol__group">
-                  <input id="create__field11" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+                  <input id="create__field11" name="create__field11" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
                   <span class="fcontrol__invalid-flag">Error message</span>
                 </div>
               </div>
@@ -296,7 +308,7 @@
               <div class="fcontrol__group-inline create__form-element-group">
                 <label for="create__field12" class="fcontrol__text-label-inline create__label-advanced--in-accordion">Affiliation</label>
                 <div class="fcontrol__group">
-                  <input id="create__field12" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+                  <input id="create__field12" name="create__field12" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
                   <span class="fcontrol__invalid-flag">Error message</span>
                 </div>
               </div>
@@ -325,7 +337,7 @@
             <div class="fcontrol__group-inline create__form-element-group">
               <label for="create__field13" class="fcontrol__text-label-inline create__label-advanced">Title</label>
               <div class="fcontrol__group">
-                <input id="create__field13" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+                <input id="create__field13" name="create__field13" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
                 <span class="fcontrol__invalid-flag">Error message</span>
               </div>
             </div>
@@ -357,7 +369,7 @@
               <div class="fcontrol__group-inline create__form-element-group">
                 <label for="create__field13" class="fcontrol__text-label-inline create__label-advanced">Title</label>
                 <div class="fcontrol__group">
-                  <input id="create__field13" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+                  <input id="create__field13" name="create__field13b" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
                   <span class="fcontrol__invalid-flag">Error message</span>
                 </div>
               </div>
@@ -391,7 +403,7 @@
           <div class="fcontrol__group-inline create__form-element-group">
             <label for="create__field14" class="fcontrol__text-label-inline create__label-advanced">Publisher</label>
             <div class="fcontrol__group">
-              <input id="create__field14" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+              <input id="create__field14" name="create__field14" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
               <span class="fcontrol__invalid-flag">Error message</span>
             </div>
           </div>
@@ -399,7 +411,7 @@
           <div class="fcontrol__group-inline create__form-element-group">
             <label for="create__field15" class="fcontrol__text-label-inline create__label-advanced">Publication Year</label>
             <div class="fcontrol__group">
-              <input id="create__field15" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
+              <input id="create__field15" name="create__field15" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here" required>
               <span class="fcontrol__invalid-flag">Publication Year</span>
             </div>
           </div>
@@ -423,7 +435,7 @@
           <div class="fcontrol__group-inline create__form-element-group">
             <label for="create__field16" class="fcontrol__text-label-inline create__label-advanced">Resource Type</label>
             <div class="fcontrol__group">
-              <input id="create__field16" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+              <input id="create__field16" name="create__field16" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
               <span class="fcontrol__invalid-flag">Error message</span>
             </div>
           </div>
@@ -448,7 +460,7 @@
             <div class="fcontrol__group-inline create__form-element-group">
               <label for="create__field17" class="fcontrol__text-label-inline create__label-advanced">Descriptive Information</label>
               <div class="fcontrol__group">
-                <input id="create__field17" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
+                <input id="create__field17" name="create__field17" class="fcontrol__text-field-inline" type="text" placeholder="Text to enter here">
                 <span class="fcontrol__invalid-flag">Error message</span>
               </div>
             </div>
@@ -476,7 +488,7 @@
             <div class="fcontrol__group-inline create__form-element-group">
               <label for="version" class="fcontrol__text-label-inline create__label-advanced ">Version</label>
               <div class="fcontrol__group">
-                <input class="fcontrol__text-field-inline" id="version" name="version" type="text" />
+                <input class="fcontrol__text-field-inline" name="version" id="version" name="version" type="text" />
               </div>
             </div>
           </div>
@@ -602,15 +614,90 @@
               </div>
 
             </div>
+	<div class="subfieldset__container">
+	  <div id="subfieldset__example1" class="subfieldset__legend">Point</div>
+
+	  <div class="fcontrol__group-inline create__form-element-group">
+            <label for="geoLocationPoint-pointLongitude" class="fcontrol__text-label-inline create__label-advanced">Point Longitude
+</label>
+            <input id="geoLocationPoint-pointLongitude" name="geoLocationPoint-pointLongitude" class="fcontrol__text-field-inline" type="text" plac
+eholder="Text to enter here">
+            <span class="fcontrol__invalid-flag">Error message</span>
+	  </div>
+
+	  <div class="fcontrol__group-inline create__form-element-group">
+            <label for="geoLocationPoint-pointLatitude" class="fcontrol__text-label-inline create__label-advanced">Point Latitude</label>
+            <input id="geoLocationPoint-pointLatitude" name="geoLocationPoint-pointLatitude" class="fcontrol__text-field-inline" type="text" place
+holder="Text to enter here">
+            <span class="fcontrol__invalid-flag">Error message</span>
+	  </div>
+	</div>
+
+	<div class="subfieldset__container">
+	  <div id="subfieldset__example1" class="subfieldset__legend">Box</div>
+
+	  <div class="fcontrol__group-inline create__form-element-group">
+            <label for="geoLocationPoint-westboundLongitude" class="fcontrol__text-label-inline create__label-advanced">Westbounding Longitude</label>
+            <input id="geoLocationPoint-westboundLongitude" name="geoLocationPoint-westboundLongitude" class="fcontrol__text-field-inline" type="text" placeholder="">
+            <span class="fcontrol__invalid-flag">Error message</span>
+	  </div>
+
+	  <div class="fcontrol__group-inline create__form-element-group">
+            <label for="geoLocationPoint-eastboundLongitude" class="fcontrol__text-label-inline create__label-advanced">Eastbounding Longitude</label>
+            <input id="geoLocationPoint-eastboundLongitude" name="geoLocationPoint-eastboundLongitude" class="fcontrol__text-field-inline" type="text" placeholder="">
+            <span class="fcontrol__invalid-flag">Error message</span>
+	  </div>
+
+	  <div class="fcontrol__group-inline create__form-element-group">
+            <label for="geoLocationPoint-southboundLatitude" class="fcontrol__text-label-inline create__label-advanced">Southbounding Latitude</label>
+            <input id="geoLocationPoint-southboundLatitude" name="geoLocationPoint-southboundLatitude" class="fcontrol__text-field-inline" type="text" placeholder="">
+            <span class="fcontrol__invalid-flag">Error message</span>
+	  </div>
+
+	  <div class="fcontrol__group-inline create__form-element-group">
+            <label for="geoLocationPoint-northboundLatitude" class="fcontrol__text-label-inline create__label-advanced">Northbounding Latitude</label>
+            <input id="geoLocationPoint-northboundLatitude" name="geoLocationPoint-northboundLatitude" class="fcontrol__text-field-inline" type="text" placeholder="">
+            <span class="fcontrol__invalid-flag">Error message</span>
+	  </div>
+	</div>
+	<div class="subfieldset-inline__container">
+	  <div class="fcontrol__group-inline create__form-element-group">
+            <label for="geoLocationPlace" class="fcontrol__text-label-inline create__label-advanced">Place</label>
+            <input id="geoLocationPlace" name="geoLocationPlace" class="fcontrol__text-field-inline" type="text" placeholder="">
+            <span class="fcontrol__invalid-flag">Error message</span>
+	  </div>
+	</div>
+
+	<div class="subfieldset-inline__container">
+	  <div class="fcontrol__group-inline create__form-element-group">
+	  <label for="fcontrol__example-label3" class="fcontrol__textarea-label-inline create__label-advanced">Polygon</label>
+	  <div class="fcontrol__textarea-group">
+		<textarea id="fcontrol__example-label4" name="geoLocationPolygon" class="fcontrol__textarea-inline" placeholder=""></textarea>
+		<span class="fcontrol__invalid-flag">Error message</span>
+		<div class="fcontrol__textarea-caption">Edit polygon representation as is, or replace with GeoJSON or KML formatted text.<a class="button__icon-link" href=""><img src="images/iconHelp.svg" alt="Click for additional help on loading Polygon data" class="button-icon-help" title="Click for additional help on loading Polygon data"/></a>
+</div>
+	</div>
             
-            [form controls to go here]
 
           </div>
 
           <!-- end fieldset 4 elements -->
 
         </div>
+        <div class="create__button-wrapper">
+          <button id="create__button" class="button__primary create__button">Create</button>
 
+          <div class="sidebox create__button-note"><em>
+  
+           By clicking &quot;Create&quot; you will create a demo ID. Demo IDs are subject to deletion two weeks after creation and are only meant for testing purposes.  
+          <br/><br/>
+          To create a real identifier, <a class="link__primary" href="/contact">request an account</a>.
+  
+          </em></div>
+
+        </div>
+
+      </form>
       </div>
 
     </div>
@@ -622,12 +709,16 @@
   <!-- build:js js/main2.min.js -->
   <script src="js/vendor/jquery.min.js"></script>
   <script src="js/vendor/jquery-ui.min.js"></script>
+  <script src="js/vendor/jquery.are-you-sure.js"></script>
   <script src="js/vendor/better-dom.min.js"></script>
   <script src="js/vendor/better-details-polyfill.js"></script>
   <script src="js/vendor/picturefill.min.js"></script>
   <script src="js/vendor/modernizr-custombuild.js"></script>
   <script src="js/main2.js"></script>
   <!-- endbuild -->
-	
+<script type="text/javascript">
+    $('#form_advanced').areYouSure();
+</script>
+
 </body>
 </html>

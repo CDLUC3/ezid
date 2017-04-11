@@ -1,6 +1,5 @@
-{% load layout_extras %}
 {% load i18n %}
-
+{% comment %} This template is very similar to the CreatorForm {% endcomment %}
 <script type="text/javascript">
   $(function() {
     $('#contrib_set .form-container').formset({
@@ -22,15 +21,22 @@
   {{ form.non_field_errors }}
   {% for c_field in form %}
 
-  {% if forloop.first %}
-    {% include "create/_datacite_inlinetext.html" with field=c_field %}
-  <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
-    <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
-  {% else %}
-    {% if c_field|fieldtype == "TextInput" %}
-      {% include "create/_datacite_inlinetext.html" with field=c_field %}
-    {% elif c_field|fieldtype == "Select" %}
+  {% if forloop.counter0 < 3 %}
+
+    {% if forloop.first %}
       {% include "create/_datacite_inlineselect.html" with field=c_field %}
+      <details id="accordion__section-1" class="accordion__section create__accordion-section" {{accordions_open}}>
+        <summary class="accordion__title create__accordion-title">{% trans "More Fields" %}</summary>
+    {% else %}
+      {% include "create/_datacite_inlinetext.html" with field=c_field %}
+    {% endif %}
+  {% elif forloop.counter0 > 2 %}
+    {% if forloop.last %}
+      {% include "create/_datacite_inlinetext.html" with field=c_field %}
+    {% elif forloop.counter0|divisibleby:3 %}
+      {% include "create/_datacite_inlinetext.html" with field=c_field class="end" %}
+    {% else %}
+      {% include "create/_datacite_inlinetext.html" with field=c_field class="tight" %}
     {% endif %}
   {% endif %}
 

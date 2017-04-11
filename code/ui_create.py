@@ -194,6 +194,7 @@ def _engage_datacite_xml_profile(request, d, profile_name):
   d['manual_profile'] = True
   d['current_profile_name'] = profile_name
   d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
+  d['polygon_view'] = 'view'
   return d
 
 def validate_adv_form_datacite_xml(request, d):
@@ -221,9 +222,12 @@ def validate_adv_form_datacite_xml(request, d):
     d['id_gen_result'] = 'edit_page'
   else:
     # Testing:
+    # temp_formElements = datacite_xml.temp_mockFormElements()
     # d['generated_xml'] = datacite_xml.temp_mock()
     d['generated_xml'] = datacite_xml.formElementsToDataciteXml(
-      P.dict(), (P['shoulder'] if 'shoulder' in P else None), identifier)
+      P.dict(),
+      # temp_formElements,
+      (P['shoulder'] if 'shoulder' in P else None), identifier)
   return d
  
 def _createSimpleId (d, request, P):
