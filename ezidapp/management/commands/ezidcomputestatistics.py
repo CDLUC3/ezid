@@ -5,9 +5,9 @@ import os.path
 execfile(os.path.join(os.path.dirname(os.path.dirname(
   os.path.dirname(os.path.dirname(__file__)))), "tools", "offline.py"))
 
-import stats2
+import stats
 
 class Command (django.core.management.base.BaseCommand):
   help = "Compute identifier statistics"
   def handle (self, *args, **options):
-    stats2.recomputeStatistics()
+    stats.recomputeStatistics()

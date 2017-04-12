@@ -74,15 +74,16 @@ def ajax_dashboard_table(request):
 
 def _getUsage(REQUEST, user, d):
   table = [] 
-  s = stats.getStats()
   user_id, group_id, realm_id = uic.getOwnerOrGroupOrRealm(d['owner_selected'])
   if realm_id != None:
-    table = s.getTable(realm=realm_id)
+    table = stats.getTable(realm=realm_id)
   elif group_id != None:
-    table = s.getTable(group=group_id)
+    table = stats.getTable(ownergroup=ezidapp.models.getGroupByGroupname(group_id).pid)
   else:
-    if user_id == 'all': user_id = None
-    table = s.getTable(owner=user_id)
+    if user_id == 'all':
+      table = stats.getTable()
+    else:
+      table = stats.getTable(owner=ezidapp.models.getUserByUsername(user_id).pid)
   all_months = _computeMonths(table)
   if len(all_months) > 0:
     d["totals"] = _computeTotals(table)
@@ -94,8 +95,6 @@ def _getUsage(REQUEST, user, d):
     d["month_to"] = REQUEST["month_to"] if "month_to" in REQUEST else default_table[-1][0]
     d["totals_by_month"] = _computeMonths(_getScopedRange(table, d['month_from'], d['month_to']))
 
-  last_calc = datetime.fromtimestamp(s.getComputeTime())
-  d['last_tally'] = last_calc.strftime('%B %d, %Y')
   return d
 
 def _getScopedRange(table, mfrom, mto):
@@ -121,10 +120,10 @@ def _computeMonths (table):
   for month, d in table:
     months.append({ "month": month })
     for type in ["ARK", "DOI"]:
-      total = d.get((type, "True"), 0) + d.get((type, "False"), 0)
+      total = d.get((type, True), 0) + d.get((type, False), 0)
       months[-1][type] = { "total": _insertCommas(total),
         "hasMetadataPercentage":\
-        str(_percent(d.get((type, "True"), 0), total)) }
+        str(_percent(d.get((type, True), 0), total)) }
   return months[::-1]
 
 def _computeTotals (table):
@@ -132,16 +131,16 @@ def _computeTotals (table):
   data = {}
   for row in table:
     for type in ["ARK", "DOI"]:
-      for hasMetadata in ["True", "False"]:
+      for hasMetadata in [True, False]:
         t = (type, hasMetadata)
         data[t] = data.get(t, 0) + row[1].get(t, 0)
         data[("grand", hasMetadata)] =\
           data.get(("grand", hasMetadata), 0) + row[1].get(t, 0)
   totals = {}
   for type in ["ARK", "DOI", "grand"]:
-    total = data[(type, "True")] + data[(type, "False")]
+    total = data[(type, True)] + data[(type, False)]
     totals[type] = { "total": _insertCommas(total),
-      "hasMetadataPercentage": str(_percent(data[(type, "True")], total)) }
+      "hasMetadataPercentage": str(_percent(data[(type, True)], total)) }
   return totals
 
 def csvStats (request):
@@ -180,18 +179,17 @@ def csvStats (request):
   elif requestor.isGroupAdministrator:
     for u in requestor.group.users.all(): users.add(u)
   for u in requestor.proxy_for.all(): users.add(u)
-  s = stats.getStats()
   f = StringIO.StringIO()
   w = csv.writer(f)
   w.writerow(["owner", "ownergroup", "month", "ARKs with metadata",
     "ARKs without metadata", "ARKs total", "DOIs with metadata",
     "DOIs without metadata", "DOIs total"])
   for u in users:
-    for r in s.getTable(owner=u.pid, useLocalNames=False):
+    for r in stats.getTable(owner=u.pid):
       outputRow = [u.username, u.group.groupname, r[0]]
       for type in ["ARK", "DOI"]:
         t = 0
-        for hasMetadata in ["True", "False"]:
+        for hasMetadata in [True, False]:
           v = r[1].get((type, hasMetadata), 0)
           outputRow.append(str(v))
           t += v

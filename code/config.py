@@ -125,5 +125,5 @@ if django.conf.settings.DAEMON_THREADS_ENABLED:
   import download
   import linkcheck_update
   import newsfeed
-  import stats2
+  import stats
   import status
