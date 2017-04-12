@@ -235,10 +235,9 @@ def owner_names(user, page):
   me = _userList([user], 0, "  (" + _("me") + ")")
   if user.isSuperuser:
     r += me if page == 'manage' else [('all', 'ALL EZID')]
-    # ToDo: For dashboard stats, add selector for realm
     for realm in ezidapp.models.StoreRealm.objects.all().order_by("name"):
       n = realm.name
-      r += [('', "Realm: " + n)]
+      r += [('realm_' + n, "Realm: " + n)]
       r += _getGroupsUsers(user, 1, realm.groups.all().order_by("groupname"))
   elif user.isRealmAdministrator:
     r += me if page == 'manage' else [('realm_' + user.realm.name, 'All ' + user.realm.name)]
