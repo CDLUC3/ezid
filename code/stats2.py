@@ -51,6 +51,40 @@ def _timestampToMonth (t):
 def _identifierType (id):
   return id.split(":")[0].upper()
 
+def recomputeStatistics ():
+  """
+  Recomputes and stores identifier statistics.  The old statistics are
+  completely replaced.
+  """
+  try:
+    users = { u.id: (u.pid, u.group.pid, u.realm.name) for u in\
+      ezidapp.models.SearchUser.objects.all().select_related("group",
+      "realm") }
+    counts = {}
+    lastIdentifier = ""
+    while True:
+      qs = ezidapp.models.SearchIdentifier.objects.filter(
+        identifier__gt=lastIdentifier).only("identifier", "owner_id",
+        "createTime", "isTest", "hasMetadata").order_by("identifier")
+      qs = list(qs[:1000])
+      if len(qs) == 0: break
+      for id in qs:
+        if not id.isTest and id.owner_id in users:
+          t = (_timestampToMonth(id.createTime), id.owner_id,
+            _identifierType(id.identifier), id.hasMetadata)
+          counts[t] = counts.get(t, 0) + 1
+      lastIdentifier = qs[-1].identifier
+    with django.db.transaction.atomic():
+      ezidapp.models.Statistics.objects.all().delete()
+      for t, v in counts.items():
+        c = ezidapp.models.Statistics(month=t[0], owner=users[t[1]][0],
+          ownergroup=users[t[1]][1], realm=users[t[1]][2], type=t[2],
+          hasMetadata=t[3], count=v)
+        c.full_clean(validate_unique=False)
+        c.save(force_insert=True)
+  except Exception, e:
+    log.otherError("stats.recomputeStatistics", e)
+
 def _statisticsDaemon ():
   if _computeSameTimeOfDay:
     django.db.connections["default"].close()
@@ -62,37 +96,7 @@ def _statisticsDaemon ():
     time.sleep(600)
   while _enabled and threading.currentThread().getName() == _threadName:
     start = time.time()
-    try:
-      users = { u.id: (u.pid, u.group.pid, u.realm.name) for u in\
-        ezidapp.models.SearchUser.objects.all().select_related("group",
-        "realm") }
-      counts = {}
-      lastIdentifier = ""
-      while True:
-        qs = ezidapp.models.SearchIdentifier.objects.filter(
-          identifier__gt=lastIdentifier).only("identifier", "owner_id",
-          "createTime", "isTest", "hasMetadata").order_by("identifier")
-        qs = list(qs[:1000])
-        if len(qs) == 0: break
-        for id in qs:
-          if not id.isTest and id.owner_id in users:
-            t = (_timestampToMonth(id.createTime), id.owner_id,
-              _identifierType(id.identifier), id.hasMetadata)
-            counts[t] = counts.get(t, 0) + 1
-        lastIdentifier = qs[-1].identifier
-      with django.db.transaction.atomic():
-        ezidapp.models.Statistics.objects.all().delete()
-        for t, v in counts.items():
-          c = ezidapp.models.Statistics(month=t[0], owner=users[t[1]][0],
-            ownergroup=users[t[1]][1], realm=users[t[1]][2], type=t[2],
-            hasMetadata=t[3], count=v)
-          c.full_clean(validate_unique=False)
-          c.save(force_insert=True)
-    except Exception, e:
-      log.otherError("stats._statisticsDaemon", e)
-    # Since we're going to be sleeping for potentially a long time,
-    # release any memory held.
-    users = u = counts = lastIdentifier = qs = id = t = v = c = None
+    recomputeStatistics()
     django.db.connections["default"].close()
     django.db.connections["search"].close()
     if _computeSameTimeOfDay:
