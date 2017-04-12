@@ -16,6 +16,7 @@ from search_realm import SearchRealm
 from search_user import SearchUser
 from server_variables import ServerVariables
 from shoulder import Shoulder
+from statistics import Statistics
 from store_datacenter import StoreDatacenter
 from store_group import StoreGroup, AnonymousGroup
 from store_realm import StoreRealm, AnonymousRealm

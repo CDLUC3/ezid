@@ -76,7 +76,6 @@ layout:
             xsd/
         db/
             search.sqlite3 (if using SQLite)
-            stats
             store.sqlite3
         download/
             public/

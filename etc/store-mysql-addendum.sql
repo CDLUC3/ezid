@@ -19,6 +19,10 @@ ALTER TABLE ezidapp_downloadqueue MODIFY lastId VARCHAR(255) NOT NULL
   COLLATE 'ascii_bin';
 ALTER TABLE ezidapp_shoulder MODIFY prefix VARCHAR(255) NOT NULL
   COLLATE 'ascii_bin';
+ALTER TABLE ezidapp_statistics MODIFY owner VARCHAR(255) NOT NULL
+  COLLATE 'ascii_bin';
+ALTER TABLE ezidapp_statistics MODIFY ownergroup VARCHAR(255) NOT NULL
+  COLLATE 'ascii_bin';
 ALTER TABLE ezidapp_storegroup MODIFY pid VARCHAR(255) NOT NULL
   COLLATE 'ascii_bin';
 ALTER TABLE ezidapp_storeuser MODIFY pid VARCHAR(255) NOT NULL
