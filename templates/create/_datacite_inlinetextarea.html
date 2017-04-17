@@ -24,11 +24,14 @@ Formatting used for typical inline field for a form that is not repeating
     </span>
   {% endif %}
   {% if polygon %}
+    <div class="fcontrol__textarea-caption">
     {% if polygon_view == "edit" %}
-      <div class="fcontrol__textarea-caption">{%trans "Edit polygon representation as is, or replace with GeoJSON or KML formatted text." %} {% help_icon "polygonhelp" _("on entering formatted text for a Geolocation Polygon") %}</div>
+      {%trans "Edit polygon representation as is, or replace with GeoJSON or KML formatted text." %}
     {% else %}
-      <div class="fcontrol__textarea-caption">{%trans "Paste in GeoJSON or KML formatted text." %} {% help_icon "polygonhelp" _("on entering formatted text for a Geolocation Polygon") %}</div>
+      {%trans "Paste in GeoJSON or KML formatted text." %}
     {% endif %}
+    {% help_icon "polygonhelp" _("on entering formatted text for a Geolocation Polygon") %}
+    </div>
   {% endif %}
   </div>
 </div>
