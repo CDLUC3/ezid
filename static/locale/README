@@ -5,9 +5,25 @@ i18n file production command (run from home dir):
 
     django-admin.py makemessages --locale=fr_CA --ignore=node_modules/*
 
-This generates a Portable Objectfile (PO) named 'django.po' in the locale directory
-as defined by LOCALE_PATHS in common.py. To fully offer the site in another language,
-this file must first be appended with the translated snippets.
+This generates a Portable Objectfile (PO) named 'django.po' in the locale
+directory as defined by LOCALE_PATHS in common.py. To fully offer the site in
+another language, this file must first be appended with the translated snippets.
 
-As of April 2017, i18n (translated text and activation of a language chooser for user)
-has not been implemented for EZID UI.
+As of April 2017, i18n (translated text and activation of a language chooser for
+user) has not been implemented for EZID UI.
+
+Until EZID requires i18n, makemessages doesn't need to be run.
+
+To make EZID fully i18n-ized for a given language, translation must first be
+applied to this django.po file.
+
+Also, whenever any wording changes on the site:
+  1) Run makemessages - this updates the master django.po file.
+  2) Have a translation service add translation to all of the changes and have
+     this translation applied to the file.
+
+For the record, we couldn't easily apply i18n tags to the restructured text
+of the API documentation, so that translation process would have to go a bit
+differently. Process would also be different for anything not presented as HTML
+(PDFs used for "quickstart" help documentation located on the ID creation pages).
+
