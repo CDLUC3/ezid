@@ -1,2 +1,13 @@
+Internationalization (i18n)
+===========================
+
 i18n file production command (run from home dir):
-django-admin.py makemessages --locale=fr_CA --ignore=node_modules/*
+
+    django-admin.py makemessages --locale=fr_CA --ignore=node_modules/*
+
+This generates a Portable Objectfile (PO) named 'django.po' in the locale directory
+as defined by LOCALE_PATHS in common.py. To fully offer the site in another language,
+this file must first be appended with the translated snippets.
+
+As of April 2017, i18n (translated text and activation of a language chooser for user)
+has not been implemented for EZID UI.

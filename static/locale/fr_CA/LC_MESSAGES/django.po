@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-30 16:22-0700\n"
+"POT-Creation-Date: 2017-04-19 10:29-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,922 +15,999 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: code/form_objects.py:36
+#: code/form_objects.py:39
 msgid "Recommended: Leave blank"
 msgstr ""
 
-#: code/form_objects.py:38
+#: code/form_objects.py:41
 msgid "Select a type of object"
 msgstr ""
 
-#: code/form_objects.py:38
+#: code/form_objects.py:41
 msgid "Audiovisual"
 msgstr ""
 
-#: code/form_objects.py:39
+#: code/form_objects.py:42
 msgid "Collection"
 msgstr ""
 
-#: code/form_objects.py:39
+#: code/form_objects.py:42
 msgid "Dataset"
 msgstr ""
 
-#: code/form_objects.py:40
+#: code/form_objects.py:43
 msgid "Event"
 msgstr ""
 
-#: code/form_objects.py:40
+#: code/form_objects.py:43
 msgid "Image"
 msgstr ""
 
-#: code/form_objects.py:41
+#: code/form_objects.py:44
 msgid "Interactive Resource"
 msgstr ""
 
-#: code/form_objects.py:41
+#: code/form_objects.py:44
 msgid "Model"
 msgstr ""
 
-#: code/form_objects.py:42
+#: code/form_objects.py:45
 msgid "Physical Object"
 msgstr ""
 
-#: code/form_objects.py:42
+#: code/form_objects.py:45
 msgid "Service"
 msgstr ""
 
-#: code/form_objects.py:43
+#: code/form_objects.py:46
 msgid "Software"
 msgstr ""
 
-#: code/form_objects.py:43
+#: code/form_objects.py:46
 msgid "Sound"
 msgstr ""
 
-#: code/form_objects.py:43
+#: code/form_objects.py:46
 msgid "Text"
 msgstr ""
 
-#: code/form_objects.py:44
+#: code/form_objects.py:47
 msgid "Workflow"
 msgstr ""
 
-#: code/form_objects.py:44 code/form_objects.py:322 code/form_objects.py:372
-#: code/form_objects.py:847 code/form_objects.py:856
+#: code/form_objects.py:47 code/form_objects.py:371 code/form_objects.py:391
+#: code/form_objects.py:453 code/form_objects.py:1016 code/form_objects.py:1025
 msgid "Other"
 msgstr ""
 
-#: code/form_objects.py:48
+#: code/form_objects.py:52
 msgid "Four digits required"
 msgstr ""
 
-#: code/form_objects.py:49
+#: code/form_objects.py:53
 msgid "Please use format YYYY-MM-DD."
 msgstr ""
 
-#: code/form_objects.py:50
+#: code/form_objects.py:54
 msgid "Please fill in a value for creator."
 msgstr ""
 
-#: code/form_objects.py:51
+#: code/form_objects.py:55
 msgid "Please fill in a value for title."
 msgstr ""
 
-#: code/form_objects.py:52
+#: code/form_objects.py:56
 msgid "Please fill in a value for publisher."
 msgstr ""
 
-#. Translators: "Ex. " is abbreviation for "example". Please include one space at end.
-#: code/form_objects.py:66
+#: code/form_objects.py:57
+msgid "Please choose a resource type."
+msgstr ""
+
+#: code/form_objects.py:58
+msgid "Needs to be decimal between -180 and 180."
+msgstr ""
+
+#: code/form_objects.py:59
+msgid "Needs to be decimal between -90 and 90."
+msgstr ""
+
+#. Translators: "e.g. " is abbreviation for "example". Please include one space at end.
+#: code/form_objects.py:74
 msgid "e.g. "
 msgstr ""
 
-#: code/form_objects.py:83 code/form_objects.py:86 code/form_objects.py:236
+#: code/form_objects.py:77
+msgid "Name Identifier"
+msgstr ""
+
+#: code/form_objects.py:78
+msgid "Identifier Scheme"
+msgstr ""
+
+#: code/form_objects.py:79 code/form_objects.py:412 code/form_objects.py:573
+msgid "Scheme URI"
+msgstr ""
+
+#: code/form_objects.py:96 code/form_objects.py:99 code/form_objects.py:276
 msgid "Location (URL)"
 msgstr ""
 
-#: code/form_objects.py:94
+#: code/form_objects.py:107
 msgid "Who"
 msgstr ""
 
-#: code/form_objects.py:95
+#: code/form_objects.py:108
 msgid "What"
 msgstr ""
 
-#: code/form_objects.py:96
+#: code/form_objects.py:109
 msgid "When"
 msgstr ""
 
-#: code/form_objects.py:98
+#: code/form_objects.py:111
 msgid "Who?"
 msgstr ""
 
-#: code/form_objects.py:99
+#: code/form_objects.py:112
 msgid "What?"
 msgstr ""
 
-#: code/form_objects.py:100
+#: code/form_objects.py:113
 msgid "When?"
 msgstr ""
 
-#: code/form_objects.py:109 code/form_objects.py:125
-#: templates/create/_datacite_creator.html:15
+#: code/form_objects.py:122 code/form_objects.py:138
+#: templates/create/_datacite_creator.html:17
 msgid "Creator"
 msgstr ""
 
-#: code/form_objects.py:111 code/form_objects.py:127 code/form_objects.py:298
+#: code/form_objects.py:124 code/form_objects.py:140 code/form_objects.py:364
 #: templates/create/_datacite_title.html:15
 msgid "Title"
 msgstr ""
 
-#: code/form_objects.py:113 code/form_objects.py:129 code/form_objects.py:238
+#: code/form_objects.py:126 code/form_objects.py:142 code/form_objects.py:278
 msgid "Publisher"
 msgstr ""
 
-#: code/form_objects.py:115 code/form_objects.py:399
+#: code/form_objects.py:128 code/form_objects.py:486
 #: templates/create/_datacite_date.html:16
 msgid "Date"
 msgstr ""
 
-#: code/form_objects.py:117 code/form_objects.py:306 code/form_objects.py:324
-#: code/form_objects.py:412
+#: code/form_objects.py:130 code/form_objects.py:373 code/form_objects.py:393
+#: code/form_objects.py:499
 msgid "Type"
 msgstr ""
 
-#: code/form_objects.py:131
+#: code/form_objects.py:144
 msgid "Publication year"
 msgstr ""
 
-#: code/form_objects.py:133 code/form_objects.py:242
+#: code/form_objects.py:146 code/form_objects.py:282
 msgid "Please fill in a four digit value for publication year."
 msgstr ""
 
-#: code/form_objects.py:136
+#: code/form_objects.py:149
 msgid "Resource type"
 msgstr ""
 
-#: code/form_objects.py:138
+#: code/form_objects.py:152
 msgid "Creator (required)"
 msgstr ""
 
-#: code/form_objects.py:139
+#: code/form_objects.py:153
 msgid "Title (required)"
 msgstr ""
 
-#: code/form_objects.py:140
+#: code/form_objects.py:154
 msgid "Publisher (required)"
 msgstr ""
 
-#: code/form_objects.py:142
+#: code/form_objects.py:156
 msgid "Publication year (required)"
 msgstr ""
 
-#: code/form_objects.py:170
+#: code/form_objects.py:184
 msgid "Custom Remainder"
 msgstr ""
 
-#: code/form_objects.py:197
+#: code/form_objects.py:211
 msgid "Please enter a valid phone number, minimum 8 digits."
 msgstr ""
 
-#: code/form_objects.py:207
+#: code/form_objects.py:221
 msgid "Please enter a valid location (URL)"
 msgstr ""
 
-#: code/form_objects.py:215
+#: code/form_objects.py:229
 msgid "This combination of characters cannot be used as a remainder."
 msgstr ""
 
-#: code/form_objects.py:221
+#: code/form_objects.py:236
 msgid "An Identifier Scheme must be filled in if you specify an Identifier."
 msgstr ""
 
-#: code/form_objects.py:223
+#: code/form_objects.py:239
 msgid "An Identifier must be filled in if you specify an Identifier Scheme."
 msgstr ""
 
-#: code/form_objects.py:226
+#: code/form_objects.py:243
 msgid "An Identifier must be filled in if you specify a Scheme URI."
 msgstr ""
 
-#: code/form_objects.py:228
+#: code/form_objects.py:246
 msgid "An Identifier Scheme must be filled in."
 msgstr ""
 
-#: code/form_objects.py:240
+#: code/form_objects.py:280
 msgid "Publication Year"
 msgstr ""
 
-#: code/form_objects.py:244
+#: code/form_objects.py:284
 msgid "Language"
 msgstr ""
 
-#: code/form_objects.py:245 templates/create/_datacite_version.html:5
+#: code/form_objects.py:285 templates/create/_datacite_version.html:5
 msgid "Version"
 msgstr ""
 
-#: code/form_objects.py:256
+#: code/form_objects.py:292
 msgid "Resource Type General"
 msgstr ""
 
-#: code/form_objects.py:257
+#: code/form_objects.py:294
 msgid "Resource Type"
 msgstr ""
 
-#: code/form_objects.py:263
-msgid "Resource Type General is required if you fill in Resource Type."
-msgstr ""
-
-#: code/form_objects.py:279 code/form_objects.py:345 code/ui_account.py:218
-msgid "Name"
-msgstr ""
-
-#: code/form_objects.py:280
-msgid "Please fill in a value for creator name."
-msgstr ""
-
-#: code/form_objects.py:281 code/form_objects.py:346
-msgid "Name Identifier"
-msgstr ""
-
-#: code/form_objects.py:282 code/form_objects.py:347
-msgid "Identifier Scheme"
-msgstr ""
-
-#: code/form_objects.py:283 code/form_objects.py:335 code/form_objects.py:348
-#: code/form_objects.py:485
-msgid "Scheme URI"
-msgstr ""
-
-#: code/form_objects.py:284 code/form_objects.py:376
+#: code/form_objects.py:323
 msgid "Affiliation"
 msgstr ""
 
-#: code/form_objects.py:301
-msgid "Main title"
+#: code/form_objects.py:341 code/form_objects.py:457 code/ui_account.py:218
+msgid "Name"
 msgstr ""
 
-#: code/form_objects.py:302
-msgid "Alternative title"
+#: code/form_objects.py:342
+msgid "Please fill in a value for creator name."
 msgstr ""
 
-#: code/form_objects.py:303
-msgid "Subtitle"
+#: code/form_objects.py:343 code/form_objects.py:458
+msgid "Family Name"
 msgstr ""
 
-#: code/form_objects.py:304
-msgid "Translated title"
-msgstr ""
-
-#: code/form_objects.py:315 templates/tombstone.html:69
-msgid "Descriptive information"
-msgstr ""
-
-#: code/form_objects.py:317
-msgid "Select a type of description"
-msgstr ""
-
-#: code/form_objects.py:318
-msgid "Abstract"
-msgstr ""
-
-#: code/form_objects.py:319
-msgid "Series Information"
-msgstr ""
-
-#: code/form_objects.py:320
-msgid "Table of Contents"
-msgstr ""
-
-#: code/form_objects.py:321
-msgid "Methods"
-msgstr ""
-
-#: code/form_objects.py:333 templates/create/_datacite_subject.html:15
-msgid "Subject"
-msgstr ""
-
-#: code/form_objects.py:334
-msgid "Subject Scheme"
-msgstr ""
-
-#: code/form_objects.py:350
-msgid "Select a type of contributor"
-msgstr ""
-
-#: code/form_objects.py:351
-msgid "Contact Person"
-msgstr ""
-
-#: code/form_objects.py:352
-msgid "Data Collector"
-msgstr ""
-
-#: code/form_objects.py:353
-msgid "Data Curator"
-msgstr ""
-
-#: code/form_objects.py:354
-msgid "Data Manager"
-msgstr ""
-
-#: code/form_objects.py:355
-msgid "Distributor"
-msgstr ""
-
-#: code/form_objects.py:356
-msgid "Editor"
-msgstr ""
-
-#: code/form_objects.py:357
-msgid "Funder"
-msgstr ""
-
-#: code/form_objects.py:358
-msgid "Hosting Institution"
-msgstr ""
-
-#: code/form_objects.py:359
-msgid "Producer"
-msgstr ""
-
-#: code/form_objects.py:360
-msgid "Project Leader"
-msgstr ""
-
-#: code/form_objects.py:361
-msgid "Project Manager"
-msgstr ""
-
-#: code/form_objects.py:362
-msgid "Project Member"
-msgstr ""
-
-#: code/form_objects.py:363
-msgid "Registration Agency"
-msgstr ""
-
-#: code/form_objects.py:364
-msgid "Registration Authority"
-msgstr ""
-
-#: code/form_objects.py:365
-msgid "Related Person"
-msgstr ""
-
-#: code/form_objects.py:366
-msgid "Researcher"
+#: code/form_objects.py:344 code/form_objects.py:459
+msgid "Given Name"
 msgstr ""
 
 #: code/form_objects.py:367
-msgid "Research Group"
+msgid "Main title"
 msgstr ""
 
 #: code/form_objects.py:368
-msgid "Rights Holder"
+msgid "Alternative title"
 msgstr ""
 
 #: code/form_objects.py:369
-msgid "Sponsor"
+msgid "Subtitle"
 msgstr ""
 
 #: code/form_objects.py:370
-msgid "Supervisor"
+msgid "Translated title"
 msgstr ""
 
-#: code/form_objects.py:371
-msgid "Work Package Leader"
+#: code/form_objects.py:376
+msgid "Title Language"
 msgstr ""
 
-#: code/form_objects.py:375
-msgid "Contributor Type"
+#: code/form_objects.py:383 templates/tombstone.html:69
+msgid "Descriptive information"
+msgstr ""
+
+#: code/form_objects.py:385
+msgid "Select a type of description"
+msgstr ""
+
+#: code/form_objects.py:386
+msgid "Abstract"
+msgstr ""
+
+#: code/form_objects.py:387
+msgid "Series Information"
+msgstr ""
+
+#: code/form_objects.py:388
+msgid "Table of Contents"
 msgstr ""
 
 #: code/form_objects.py:389
-msgid "Name is required if you fill in contributor information."
+msgid "Technical Info"
 msgstr ""
 
-#: code/form_objects.py:391
-msgid "Type is required if you fill in contributor information."
+#: code/form_objects.py:390
+msgid "Methods"
 msgstr ""
 
-#: code/form_objects.py:401
-msgid "Select a type of date"
-msgstr ""
-
-#: code/form_objects.py:402
-msgid "Accepted"
+#: code/form_objects.py:396
+msgid "Description Language"
 msgstr ""
 
 #: code/form_objects.py:403
-msgid "Available"
+msgid "Description type is required if you fill in Descriptive info."
 msgstr ""
 
-#: code/form_objects.py:404
-msgid "Collected"
+#: code/form_objects.py:410 templates/create/_datacite_subject.html:15
+msgid "Subject"
 msgstr ""
 
-#: code/form_objects.py:405
-msgid "Copyrighted"
+#: code/form_objects.py:411
+msgid "Subject Scheme"
 msgstr ""
 
-#: code/form_objects.py:406
-msgid "Created"
+#: code/form_objects.py:413
+msgid "Value URI"
 msgstr ""
 
-#: code/form_objects.py:407
-msgid "Issued"
+#: code/form_objects.py:415
+msgid "Subject Language"
 msgstr ""
 
-#: code/form_objects.py:408
-msgid "Submitted"
+#: code/form_objects.py:419
+msgid "Type is required if you fill in contributor information."
 msgstr ""
 
-#: code/form_objects.py:409
-msgid "Updated"
+#: code/form_objects.py:421
+msgid "Name is required if you fill in contributor information."
 msgstr ""
 
-#: code/form_objects.py:410
-msgid "Valid"
+#: code/form_objects.py:432
+msgid "Select a type of contributor"
 msgstr ""
 
-#: code/form_objects.py:416 code/form_objects.py:432 code/ui_search.py:38
-#: templates/dashboard/_crossref.html:18 templates/dashboard/_issues.html:18
-#: templates/manage/details.html:19 templates/manage/edit.html:19
-msgid "Identifier"
-msgstr ""
-
-#: code/form_objects.py:417 code/form_objects.py:454
-msgid "Identifier Type"
-msgstr ""
-
-#: code/form_objects.py:423
-msgid "Identifier is required if you fill in identifier type information."
-msgstr ""
-
-#: code/form_objects.py:425
-msgid "Identifier Type is required if you fill in identifier information."
+#: code/form_objects.py:433
+msgid "Contact Person"
 msgstr ""
 
 #: code/form_objects.py:434
-msgid "Select the type of related identifier"
+msgid "Data Collector"
+msgstr ""
+
+#: code/form_objects.py:435
+msgid "Data Curator"
+msgstr ""
+
+#: code/form_objects.py:436
+msgid "Data Manager"
+msgstr ""
+
+#: code/form_objects.py:437
+msgid "Distributor"
+msgstr ""
+
+#: code/form_objects.py:438
+msgid "Editor"
+msgstr ""
+
+#: code/form_objects.py:439
+msgid "Hosting Institution"
+msgstr ""
+
+#: code/form_objects.py:440
+msgid "Producer"
+msgstr ""
+
+#: code/form_objects.py:441
+msgid "Project Leader"
+msgstr ""
+
+#: code/form_objects.py:442
+msgid "Project Manager"
+msgstr ""
+
+#: code/form_objects.py:443
+msgid "Project Member"
+msgstr ""
+
+#: code/form_objects.py:444
+msgid "Registration Agency"
+msgstr ""
+
+#: code/form_objects.py:445
+msgid "Registration Authority"
+msgstr ""
+
+#: code/form_objects.py:446
+msgid "Related Person"
+msgstr ""
+
+#: code/form_objects.py:447
+msgid "Researcher"
+msgstr ""
+
+#: code/form_objects.py:448
+msgid "Research Group"
+msgstr ""
+
+#: code/form_objects.py:449
+msgid "Rights Holder"
+msgstr ""
+
+#: code/form_objects.py:450
+msgid "Sponsor"
+msgstr ""
+
+#: code/form_objects.py:451
+msgid "Supervisor"
+msgstr ""
+
+#: code/form_objects.py:452
+msgid "Work Package Leader"
 msgstr ""
 
 #: code/form_objects.py:456
+msgid "Contributor Type"
+msgstr ""
+
+#: code/form_objects.py:488
+msgid "Select a type of date"
+msgstr ""
+
+#: code/form_objects.py:489
+msgid "Accepted"
+msgstr ""
+
+#: code/form_objects.py:490
+msgid "Available"
+msgstr ""
+
+#: code/form_objects.py:491
+msgid "Collected"
+msgstr ""
+
+#: code/form_objects.py:492
+msgid "Copyrighted"
+msgstr ""
+
+#: code/form_objects.py:493
+msgid "Created"
+msgstr ""
+
+#: code/form_objects.py:494
+msgid "Issued"
+msgstr ""
+
+#: code/form_objects.py:495
+msgid "Submitted"
+msgstr ""
+
+#: code/form_objects.py:496
+msgid "Updated"
+msgstr ""
+
+#: code/form_objects.py:497
+msgid "Valid"
+msgstr ""
+
+#: code/form_objects.py:503 code/form_objects.py:519 code/ui_search.py:32
+#: templates/dashboard/_crossref.html:18 templates/dashboard/_issues.html:18
+#: templates/manage/details.html:21 templates/manage/edit.html:19
+msgid "Identifier"
+msgstr ""
+
+#: code/form_objects.py:504 code/form_objects.py:542 code/form_objects.py:658
+msgid "Identifier Type"
+msgstr ""
+
+#: code/form_objects.py:510
+msgid "Identifier is required if you fill in identifier type information."
+msgstr ""
+
+#: code/form_objects.py:512
+msgid "Identifier Type is required if you fill in identifier information."
+msgstr ""
+
+#: code/form_objects.py:521
+msgid "Select the type of related identifier"
+msgstr ""
+
+#: code/form_objects.py:544
 msgid ""
 "Select relationship of A:resource being registered and B:related resource"
 msgstr ""
 
-#: code/form_objects.py:457
+#: code/form_objects.py:545
 msgid "Cites"
 msgstr ""
 
-#: code/form_objects.py:458
+#: code/form_objects.py:546
 msgid "Compiles"
 msgstr ""
 
-#: code/form_objects.py:459
+#: code/form_objects.py:547
 msgid "Continues"
 msgstr ""
 
-#: code/form_objects.py:460
+#: code/form_objects.py:548
 msgid "Documents"
 msgstr ""
 
-#: code/form_objects.py:461
+#: code/form_objects.py:549
 msgid "Has Metadata"
 msgstr ""
 
-#: code/form_objects.py:462
+#: code/form_objects.py:550
 msgid "Has Part"
 msgstr ""
 
-#: code/form_objects.py:463
+#: code/form_objects.py:551
 msgid "Is Cited By"
 msgstr ""
 
-#: code/form_objects.py:464
+#: code/form_objects.py:552
 msgid "Is Compiled By"
 msgstr ""
 
-#: code/form_objects.py:465
+#: code/form_objects.py:553
 msgid "Is Continued By"
 msgstr ""
 
-#: code/form_objects.py:466
+#: code/form_objects.py:554
 msgid "Is Documented By"
 msgstr ""
 
-#: code/form_objects.py:467
+#: code/form_objects.py:555
 msgid "Is Derived From"
 msgstr ""
 
-#: code/form_objects.py:468
+#: code/form_objects.py:556
 msgid "Is Identical To"
 msgstr ""
 
-#: code/form_objects.py:469
+#: code/form_objects.py:557
 msgid "Is Metadata For"
 msgstr ""
 
-#: code/form_objects.py:470
+#: code/form_objects.py:558
 msgid "Is Part Of"
 msgstr ""
 
-#: code/form_objects.py:471
+#: code/form_objects.py:559
 msgid "Is New Version Of"
 msgstr ""
 
-#: code/form_objects.py:472
+#: code/form_objects.py:560
 msgid "Is Original Form Of"
 msgstr ""
 
-#: code/form_objects.py:473
+#: code/form_objects.py:561
 msgid "Is Previous Version Of"
 msgstr ""
 
-#: code/form_objects.py:474
+#: code/form_objects.py:562
 msgid "Is Referenced By"
 msgstr ""
 
-#: code/form_objects.py:475
+#: code/form_objects.py:563
 msgid "Is Reviewed By"
 msgstr ""
 
-#: code/form_objects.py:476
+#: code/form_objects.py:564
 msgid "Is Source Of"
 msgstr ""
 
-#: code/form_objects.py:477
+#: code/form_objects.py:565
 msgid "Is Supplemented By"
 msgstr ""
 
-#: code/form_objects.py:478
+#: code/form_objects.py:566
 msgid "Is Supplement To"
 msgstr ""
 
-#: code/form_objects.py:479
+#: code/form_objects.py:567
 msgid "Is Variant Form Of"
 msgstr ""
 
-#: code/form_objects.py:480
+#: code/form_objects.py:568
 msgid "References"
 msgstr ""
 
-#: code/form_objects.py:481
+#: code/form_objects.py:569
 msgid "Reviews"
 msgstr ""
 
-#: code/form_objects.py:483
+#: code/form_objects.py:571
 msgid "Relation Type"
 msgstr ""
 
-#: code/form_objects.py:484
+#: code/form_objects.py:572
 msgid "Related Metadata Scheme"
 msgstr ""
 
-#: code/form_objects.py:486
+#: code/form_objects.py:574
 msgid "Scheme Type"
 msgstr ""
 
-#: code/form_objects.py:499
+#: code/form_objects.py:587
 msgid "Related Identifier Type is required if this property is used."
 msgstr ""
 
-#: code/form_objects.py:501
+#: code/form_objects.py:589
 msgid "Relation Type is required if this property is used."
 msgstr ""
 
-#: code/form_objects.py:507 templates/create/_datacite_size.html:16
+#: code/form_objects.py:595 templates/create/_datacite_size.html:16
 msgid "Size"
 msgstr ""
 
-#: code/form_objects.py:516 templates/create/_datacite_format.html:16
+#: code/form_objects.py:604 templates/create/_datacite_format.html:16
 msgid "Format"
 msgstr ""
 
-#: code/form_objects.py:520 templates/create/_datacite_rights.html:16
+#: code/form_objects.py:608 templates/create/_datacite_rights.html:16
 msgid "Rights"
 msgstr ""
 
-#: code/form_objects.py:521
+#: code/form_objects.py:609
 msgid "Rights URI"
 msgstr ""
 
-#. Translators: A coordinate point
-#: code/form_objects.py:526
-msgid "Point"
+#: code/form_objects.py:616
+msgid "Point Longitude"
 msgstr ""
 
-#: code/form_objects.py:528
-msgid ""
-"A Geolocation Point must be made up of two decimal numbers separated by a "
-"space."
+#: code/form_objects.py:618
+msgid "Point Latitude"
 msgstr ""
 
-#. Translators: A bounding box (with coordinates)
-#: code/form_objects.py:530
-msgid "Box"
+#: code/form_objects.py:620
+msgid "WestBounding Longitude"
 msgstr ""
 
-#: code/form_objects.py:532
-msgid ""
-"A Geolocation Box must be made up of four decimal numbers separated by a "
-"space."
+#: code/form_objects.py:622
+msgid "EastBounding Longitude"
 msgstr ""
 
-#: code/form_objects.py:533
+#: code/form_objects.py:624
+msgid "SouthBounding Latitude"
+msgstr ""
+
+#: code/form_objects.py:626
+msgid "NorthBounding Latitude"
+msgstr ""
+
+#: code/form_objects.py:627
 msgid "Place"
 msgstr ""
 
-#: code/form_objects.py:676
+#: code/form_objects.py:629
+msgid "Polygon"
+msgstr ""
+
+#: code/form_objects.py:648
+msgid "Funder Name"
+msgstr ""
+
+#: code/form_objects.py:649
+msgid "Funder Identifier"
+msgstr ""
+
+#: code/form_objects.py:651
+msgid "Select the type of funder identifier"
+msgstr ""
+
+#: code/form_objects.py:654
+msgid "Crossref Funder"
+msgstr ""
+
+#: code/form_objects.py:659
+msgid "Award Number"
+msgstr ""
+
+#: code/form_objects.py:660
+msgid "Award URI"
+msgstr ""
+
+#: code/form_objects.py:661
+msgid "Award Title"
+msgstr ""
+
+#: code/form_objects.py:845
 msgid "Cannot assign this username as proxy: \""
 msgstr ""
 
-#: code/form_objects.py:682
+#: code/form_objects.py:851
 msgid "Your current password is incorrect."
 msgstr ""
 
-#: code/form_objects.py:693
+#: code/form_objects.py:862
 msgid "New Password"
 msgstr ""
 
-#: code/form_objects.py:695
+#: code/form_objects.py:864
 msgid "Confirm New Password"
 msgstr ""
 
-#: code/form_objects.py:702
+#: code/form_objects.py:871
 msgid "Password and confirmation do not match"
 msgstr ""
 
-#: code/form_objects.py:710
+#: code/form_objects.py:879
 msgid "Primary Contact Name"
 msgstr ""
 
-#: code/form_objects.py:711
+#: code/form_objects.py:880
 msgid "Please fill in the full name for the primary contact."
 msgstr ""
 
-#: code/form_objects.py:712
+#: code/form_objects.py:881
 msgid "Primary Contact Email"
 msgstr ""
 
-#: code/form_objects.py:713 code/form_objects.py:865
+#: code/form_objects.py:882 code/form_objects.py:1034
 msgid "Please fill in your email."
 msgstr ""
 
-#: code/form_objects.py:714 code/form_objects.py:722 code/form_objects.py:866
-#: code/form_objects.py:884
+#: code/form_objects.py:883 code/form_objects.py:891 code/form_objects.py:1035
+#: code/form_objects.py:1053
 msgid "Please fill in a valid email address."
 msgstr ""
 
-#: code/form_objects.py:715
+#: code/form_objects.py:884
 msgid "Primary Contact Phone"
 msgstr ""
 
-#: code/form_objects.py:717
+#: code/form_objects.py:886
 msgid "Please fill in the phone number for the primary contact."
 msgstr ""
 
-#: code/form_objects.py:719
+#: code/form_objects.py:888
 msgid "Secondary Contact Name"
 msgstr ""
 
-#: code/form_objects.py:721
+#: code/form_objects.py:890
 msgid "Secondary Contact Email"
 msgstr ""
 
-#: code/form_objects.py:724
+#: code/form_objects.py:893
 msgid "Secondary Contact Phone"
 msgstr ""
 
-#: code/form_objects.py:726
+#: code/form_objects.py:895
 msgid "Account Display Name"
 msgstr ""
 
-#: code/form_objects.py:727
+#: code/form_objects.py:896
 msgid "Please fill in the name as it should be displayed for the account."
 msgstr ""
 
-#: code/form_objects.py:728 code/ui_account.py:202
+#: code/form_objects.py:897 code/ui_account.py:202
 msgid "Account Email"
 msgstr ""
 
-#: code/form_objects.py:729
+#: code/form_objects.py:898
 msgid "Please fill in the email for the account."
 msgstr ""
 
-#: code/form_objects.py:730
+#: code/form_objects.py:899
 msgid "Proxy User(s)"
 msgstr ""
 
-#: code/form_objects.py:733
+#: code/form_objects.py:902
 msgid "Current Password"
 msgstr ""
 
-#: code/form_objects.py:747
+#: code/form_objects.py:916
 msgid "Search Terms"
 msgstr ""
 
-#: code/form_objects.py:748
+#: code/form_objects.py:917
 msgid "Full text search using words about or describing the identifier."
 msgstr ""
 
-#: code/form_objects.py:751
+#: code/form_objects.py:920
 msgid "Identifier/Identifier Prefix"
 msgstr ""
 
-#: code/form_objects.py:753
+#: code/form_objects.py:922
 msgid "Object Title (What)"
 msgstr ""
 
-#: code/form_objects.py:756
+#: code/form_objects.py:925
 msgid "Object Creator (Who)"
 msgstr ""
 
-#: code/form_objects.py:757
+#: code/form_objects.py:926
 msgid "Schofield, Timothy"
 msgstr ""
 
-#: code/form_objects.py:758 code/ui_search.py:41
+#: code/form_objects.py:927 code/ui_search.py:35
 msgid "Object Publisher"
 msgstr ""
 
-#: code/form_objects.py:759
+#: code/form_objects.py:928
 msgid "Open Science Framework"
 msgstr ""
 
-#: code/form_objects.py:760 code/form_objects.py:800 code/form_objects.py:808
+#: code/form_objects.py:929 code/form_objects.py:969 code/form_objects.py:977
 msgid "From"
 msgstr ""
 
-#: code/form_objects.py:764 code/form_objects.py:804 code/form_objects.py:812
+#: code/form_objects.py:933 code/form_objects.py:973 code/form_objects.py:981
 msgid "To"
 msgstr ""
 
-#: code/form_objects.py:769 code/ui_search.py:39
+#: code/form_objects.py:938 code/ui_search.py:33
 msgid "Object Type"
 msgstr ""
 
-#: code/form_objects.py:771
+#: code/form_objects.py:940
 msgid "Select a type of identifier (ARK or DOI)"
 msgstr ""
 
-#: code/form_objects.py:776 templates/dashboard/_totalIds.html:7
+#: code/form_objects.py:945 templates/dashboard/_totalIds.html:7
 msgid "ID Type"
 msgstr ""
 
-#: code/form_objects.py:793
+#: code/form_objects.py:962
 msgid "Please enter information in at least one field."
 msgstr ""
 
-#: code/form_objects.py:798
+#: code/form_objects.py:967
 msgid "Target URL"
 msgstr ""
 
-#: code/form_objects.py:817
+#: code/form_objects.py:986
 msgid "Select a status"
 msgstr ""
 
-#: code/form_objects.py:818 templates/includes/advanced_publish_id.html:13
+#: code/form_objects.py:987 templates/includes/advanced_publish_id.html:13
 msgid "Public"
 msgstr ""
 
-#: code/form_objects.py:819 templates/includes/advanced_publish_id.html:20
+#: code/form_objects.py:988 templates/includes/advanced_publish_id.html:20
 msgid "Reserved"
 msgstr ""
 
-#: code/form_objects.py:820
+#: code/form_objects.py:989
 msgid "Unavailable"
 msgstr ""
 
-#: code/form_objects.py:823 code/ui_search.py:37
+#: code/form_objects.py:992 code/ui_search.py:31
 msgid "ID Status"
 msgstr ""
 
-#: code/form_objects.py:827
+#: code/form_objects.py:996
 msgid "Allows Harvesting/Indexing?"
 msgstr ""
 
-#: code/form_objects.py:829 code/form_objects.py:834
+#: code/form_objects.py:998 code/form_objects.py:1003
 #: templates/includes/advanced_publish_id.html:31
 #: templates/manage/edit.html:155
 msgid "Yes"
 msgstr ""
 
-#: code/form_objects.py:829 code/form_objects.py:834
+#: code/form_objects.py:998 code/form_objects.py:1003
 #: templates/includes/advanced_publish_id.html:38
 #: templates/manage/edit.html:162
 msgid "No"
 msgstr ""
 
-#: code/form_objects.py:832
+#: code/form_objects.py:1001
 msgid "Has Metadata?"
 msgstr ""
 
-#: code/form_objects.py:844 code/form_objects.py:851
+#: code/form_objects.py:1013 code/form_objects.py:1020
 msgid "Choose One"
 msgstr ""
 
-#: code/form_objects.py:845
+#: code/form_objects.py:1014
 msgid "I would like to inquire about getting a new account"
 msgstr ""
 
-#: code/form_objects.py:846
+#: code/form_objects.py:1015
 msgid "I have a problem or question about existing account"
 msgstr ""
 
-#: code/form_objects.py:852
+#: code/form_objects.py:1021
 msgid "Website"
 msgstr ""
 
-#: code/form_objects.py:853
+#: code/form_objects.py:1022
 msgid "Conference"
 msgstr ""
 
-#: code/form_objects.py:854
+#: code/form_objects.py:1023
 msgid "Colleagues"
 msgstr ""
 
-#: code/form_objects.py:855
+#: code/form_objects.py:1024
 msgid "Webinar"
 msgstr ""
 
-#: code/form_objects.py:861
+#: code/form_objects.py:1030
 msgid "Reason for contacting EZID"
 msgstr ""
 
-#: code/form_objects.py:862
+#: code/form_objects.py:1031
 msgid "Your Name"
 msgstr ""
 
-#: code/form_objects.py:863
+#: code/form_objects.py:1032
 msgid "Please fill in your name"
 msgstr ""
 
-#: code/form_objects.py:864
+#: code/form_objects.py:1033
 msgid "Your Email"
 msgstr ""
 
-#: code/form_objects.py:867
+#: code/form_objects.py:1036
 msgid "Your Institution"
 msgstr ""
 
-#: code/form_objects.py:869
+#: code/form_objects.py:1038
 msgid "Please indicate any question or comment you may have"
 msgstr ""
 
-#: code/form_objects.py:871
+#: code/form_objects.py:1040
 msgid "Please fill in a question or comment."
 msgstr ""
 
-#: code/form_objects.py:873
+#: code/form_objects.py:1042
 msgid "How did you hear about us?"
 msgstr ""
 
-#: code/form_objects.py:875
+#: code/form_objects.py:1044
 msgid "Subscribe to the EZID newsletter"
 msgstr ""
 
-#: code/form_objects.py:880 code/ui_account.py:200
+#: code/form_objects.py:1049 code/ui_account.py:200
 #: templates/account/edit.html:16 templates/account/login.html:12
 #: templates/account/pwreset2.html:12
 msgid "Username"
 msgstr ""
 
-#: code/form_objects.py:881
+#: code/form_objects.py:1050
 msgid "Please fill in your username."
 msgstr ""
 
-#: code/form_objects.py:882
+#: code/form_objects.py:1051
 msgid "Email address"
 msgstr ""
 
-#: code/form_objects.py:883
+#: code/form_objects.py:1052
 msgid "Please fill in your email address."
 msgstr ""
 
-#: code/ui.py:60
+#: code/ui.py:61
 msgid "Thank you for your message. We will respond as soon as possible."
 msgstr ""
 
-#: code/ui.py:63
+#: code/ui.py:64
 msgid "There was a problem sending your email"
 msgstr ""
 
-#: code/ui.py:65
+#: code/ui.py:66
 msgid ""
 "Form could not be sent.  Please check the highlighted field(s) below for "
 "details."
 msgstr ""
 
-#: code/ui.py:102
-msgid "The URL for this identifier cannot be resolved"
+#: code/ui.py:103
+msgid "The URL for this identifier cannot be resolved."
 msgstr ""
 
 #. Translators: Output for tombstone page (unavailable IDs)
-#: code/ui.py:125
+#: code/ui.py:129
 msgid "Reason:"
+msgstr ""
+
+#: code/ui.py:139
+msgid "Status:"
+msgstr ""
+
+#: code/ui.py:158
+msgid "Status"
 msgstr ""
 
 #: code/ui_account.py:26
@@ -1117,11 +1194,11 @@ msgstr ""
 msgid "me"
 msgstr ""
 
-#: code/ui_common.py:247
+#: code/ui_common.py:246
 msgid "by proxy"
 msgstr ""
 
-#: code/ui_common.py:251 code/ui_common.py:266
+#: code/ui_common.py:250 code/ui_common.py:265
 msgid "Group"
 msgstr ""
 
@@ -1133,31 +1210,31 @@ msgstr ""
 msgid " as submitted.  Please check the highlighted fields below for details."
 msgstr ""
 
-#: code/ui_create.py:106 code/ui_create.py:185 code/ui_create.py:209
+#: code/ui_create.py:106 code/ui_create.py:185 code/ui_create.py:210
 msgid "created"
 msgstr ""
 
-#: code/ui_create.py:211
+#: code/ui_create.py:212
 msgid "modified"
 msgstr ""
 
-#: code/ui_create.py:213
+#: code/ui_create.py:214
 msgid "Unable to edit. Identifier not supplied."
 msgstr ""
 
-#: code/ui_create.py:236 code/ui_create.py:267
+#: code/ui_create.py:240 code/ui_create.py:271
 msgid "Identifier Created."
 msgstr ""
 
-#: code/ui_create.py:239
+#: code/ui_create.py:243
 msgid "Identifier could not be created as submitted"
 msgstr ""
 
-#: code/ui_create.py:274
+#: code/ui_create.py:278
 msgid "There was an error creating your identifier"
 msgstr ""
 
-#: code/ui_create.py:283
+#: code/ui_create.py:287
 msgid "Unauthorized to create with this identifier prefix"
 msgstr ""
 
@@ -1169,136 +1246,138 @@ msgstr ""
 msgid "Please check the highlighted fields below for details."
 msgstr ""
 
-#: code/ui_manage.py:103
+#: code/ui_manage.py:104
 msgid "There was an error updating the metadata for your identifier"
 msgstr ""
 
-#: code/ui_manage.py:106
+#: code/ui_manage.py:107
 msgid "Identifier updated."
 msgstr ""
 
-#: code/ui_manage.py:138
+#: code/ui_manage.py:130
 msgid ""
 "You are not allowed to edit this identifier.  If this ID belongs to you and "
 "you'd like to edit, please log in."
 msgstr ""
 
-#: code/ui_manage.py:343
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <a class="don't_translate_class_names" href="don't_translate_urls">Translate this text</a>
+#: code/ui_manage.py:341
 msgid "If you have recently requested a batch download of your identifiers, "
 msgstr ""
 
-#: code/ui_manage.py:344
+#: code/ui_manage.py:342
 msgid ""
 "the file may not be complete. Please close this window, then try the "
 "download "
 msgstr ""
 
-#: code/ui_manage.py:345
+#: code/ui_manage.py:343
 msgid "link again in a few minutes."
 msgstr ""
 
-#: code/ui_manage.py:346
+#: code/ui_manage.py:344
 msgid ""
 "If you are trying to download a file of identifiers from a link that was "
 msgstr ""
 
-#: code/ui_manage.py:347
+#: code/ui_manage.py:345
 msgid "generated over seven days ago, the download link has expired. Go to "
 msgstr ""
 
-#: code/ui_manage.py:349
+#: code/ui_manage.py:347
 msgid "Manage IDs"
 msgstr ""
 
-#: code/ui_manage.py:350
+#: code/ui_manage.py:348
 msgid "and click &quot;Download All&quot; to generate a new download link."
 msgstr ""
 
-#: code/ui_manage.py:351
+#: code/ui_manage.py:349
 msgid ""
 "Please <a class='link__primary' href='/contact'>contact us</a> if you need "
 msgstr ""
 
-#: code/ui_manage.py:352
+#: code/ui_manage.py:350
 msgid "assistance."
 msgstr ""
 
-#: code/ui_search.py:31
+#: code/ui_search.py:25
 msgid "ID Date Created"
 msgstr ""
 
-#: code/ui_search.py:32
+#: code/ui_search.py:26
 msgid "Object Creator"
 msgstr ""
 
-#: code/ui_search.py:33 templates/dashboard/_crossref.html:19
+#: code/ui_search.py:27 templates/dashboard/_crossref.html:19
 msgid "Date Submitted"
 msgstr ""
 
-#: code/ui_search.py:34 templates/create/_datacite_description.html:15
+#: code/ui_search.py:28 templates/create/_datacite_description.html:15
 #: templates/dashboard/_crossref.html:20
 msgid "Description"
 msgstr ""
 
-#: code/ui_search.py:35
+#: code/ui_search.py:29
 msgid "Required Action"
 msgstr ""
 
-#: code/ui_search.py:36 templates/dashboard/_crossref.html:21
+#: code/ui_search.py:30 templates/dashboard/_crossref.html:21
 #: templates/dashboard/_issues.html:19
 msgid "Issue"
 msgstr ""
 
-#: code/ui_search.py:40
+#: code/ui_search.py:34
 msgid "ID Owner"
 msgstr ""
 
-#: code/ui_search.py:42
+#: code/ui_search.py:36
 msgid "Object Publication Date"
 msgstr ""
 
-#: code/ui_search.py:43 templates/dashboard/_issues.html:20
+#: code/ui_search.py:37 templates/dashboard/_issues.html:20
 msgid "Object Title"
 msgstr ""
 
-#: code/ui_search.py:44 templates/dashboard/_issues.html:21
+#: code/ui_search.py:38 templates/dashboard/_issues.html:21
 msgid "ID Date Last Modified"
 msgstr ""
 
-#: code/ui_search.py:226
+#: code/ui_search.py:241
 msgid "No action necessary"
 msgstr ""
 
-#: code/ui_search.py:234
+#: code/ui_search.py:249
 msgid "to"
 msgstr ""
 
-#: code/ui_search.py:235 ui_tags/templatetags/manage_form_tags.py:142
+#: code/ui_search.py:250 ui_tags/templatetags/manage_form_tags.py:149
 msgid "of"
 msgstr ""
 
-#: code/ui_search.py:236
+#: code/ui_search.py:251
 msgid "Showing"
 msgstr ""
 
-#: code/ui_search.py:236 templates/search/results.html:7
+#: code/ui_search.py:251 templates/search/results.html:7
 #: templates/search/results.html.py:8
 msgid "Search Results"
 msgstr ""
 
-#: code/ui_search.py:240
+#: code/ui_search.py:255
 msgid "matches found"
 msgstr ""
 
-#: code/ui_search.py:242
+#: code/ui_search.py:257
 msgid "Your Identifiers"
 msgstr ""
 
-#: code/ui_search.py:252
+#: code/ui_search.py:267
 msgid "Could not complete search."
 msgstr ""
 
-#: code/ui_search.py:254
+#: code/ui_search.py:269
 msgid ""
 "Could not complete search.  Please check the highlighted fields below for "
 "details."
@@ -1551,15 +1630,42 @@ msgstr ""
 msgid "Contributor"
 msgstr ""
 
-#: templates/create/_datacite_contributor.html:28
-#: templates/create/_datacite_creator.html:26
+#: templates/create/_datacite_contributor.html:30
+#: templates/create/_datacite_creator.html:29
+#: templates/create/_datacite_fundingRef.html:29
 #: templates/create/_datacite_relId.html:27
-#: templates/create/_datacite_subject.html:24
+#: templates/create/_datacite_subject.html:26
 msgid "More Fields"
 msgstr ""
 
-#: templates/create/_datacite_geoLoc.html:15
+#: templates/create/_datacite_fundingRef.html:16
+msgid "Funding Reference"
+msgstr ""
+
+#: templates/create/_datacite_geoLoc.html:17
 msgid "Geolocation"
+msgstr ""
+
+#: templates/create/_datacite_geoLoc.html:30
+msgid "Point"
+msgstr ""
+
+#: templates/create/_datacite_geoLoc.html:39
+msgid "Box"
+msgstr ""
+
+#: templates/create/_datacite_inlinetextarea.html:29
+msgid ""
+"Edit polygon representation as is, or replace with GeoJSON or KML formatted "
+"text."
+msgstr ""
+
+#: templates/create/_datacite_inlinetextarea.html:31
+msgid "Paste in GeoJSON or KML formatted text."
+msgstr ""
+
+#: templates/create/_datacite_inlinetextarea.html:33
+msgid "on entering formatted text for a Geolocation Polygon"
 msgstr ""
 
 #: templates/create/_datacite_relId.html:16
@@ -1571,42 +1677,42 @@ msgid "Create an Advanced Identifier"
 msgstr ""
 
 #: templates/create/advanced.html:9 templates/create/simple.html:10
-#: templates/demo/advanced.html:12 templates/demo/simple.html:10
+#: templates/demo/advanced.html:14 templates/demo/simple.html:12
 #: ui_tags/templatetags/menus.py:20 ui_tags/templatetags/menus.py:29
 msgid "Simple"
 msgstr ""
 
 #: templates/create/advanced.html:14 templates/create/simple.html:39
-#: templates/demo/advanced.html:17 templates/demo/simple.html:38
+#: templates/demo/advanced.html:19 templates/demo/simple.html:40
 #: ui_tags/templatetags/menus.py:21 ui_tags/templatetags/menus.py:30
 msgid "Advanced"
 msgstr ""
 
-#: templates/create/advanced.html:21 templates/demo/advanced.html:24
+#: templates/create/advanced.html:21
 msgid "Quick Start Guides"
 msgstr ""
 
-#: templates/create/advanced.html:23 templates/demo/advanced.html:26
+#: templates/create/advanced.html:23 templates/demo/advanced.html:28
 msgid "Custom Remainder Rules"
 msgstr ""
 
-#: templates/create/advanced.html:24 templates/demo/advanced.html:27
+#: templates/create/advanced.html:24 templates/demo/advanced.html:29
 msgid "Advanced Create for DOIs"
 msgstr ""
 
-#: templates/create/advanced.html:25 templates/demo/advanced.html:28
+#: templates/create/advanced.html:25 templates/demo/advanced.html:30
 msgid "Resource Types"
 msgstr ""
 
-#: templates/create/advanced.html:26 templates/demo/advanced.html:29
+#: templates/create/advanced.html:26 templates/demo/advanced.html:31
 msgid "Contributor Types"
 msgstr ""
 
-#: templates/create/advanced.html:27 templates/demo/advanced.html:30
+#: templates/create/advanced.html:27 templates/demo/advanced.html:32
 msgid "Relation Types"
 msgstr ""
 
-#: templates/create/advanced.html:28 templates/demo/advanced.html:31
+#: templates/create/advanced.html:28 templates/demo/advanced.html:33
 msgid "Don't have info for required fields? Use placeholder codes."
 msgstr ""
 
@@ -1638,11 +1744,11 @@ msgstr ""
 msgid "Create a Simple Identifier"
 msgstr ""
 
-#: templates/create/simple.html:18 templates/demo/simple.html:17
+#: templates/create/simple.html:18
 msgid "Quick Start Guide"
 msgstr ""
 
-#: templates/create/simple.html:20 templates/demo/simple.html:19
+#: templates/create/simple.html:20 templates/demo/simple.html:21
 msgid "Simple ID Creation"
 msgstr ""
 
@@ -1687,7 +1793,7 @@ msgid "Month"
 msgstr ""
 
 #: templates/dashboard/_totalIdsByMonth.html:62
-msgid "Statistics calculated on"
+msgid "Statistics calculated nightly"
 msgstr ""
 
 #: templates/dashboard/index.html:13
@@ -1706,32 +1812,44 @@ msgstr ""
 msgid "Identifier Issues"
 msgstr ""
 
-#: templates/dashboard/index.html:58
+#: templates/dashboard/index.html:62
 msgid "Crossref&reg; Submission Status"
 msgstr ""
 
-#: templates/demo/advanced.html:5
+#: templates/demo/advanced.html:6
 msgid "Create Advanced Demo ID"
 msgstr ""
 
-#: templates/demo/advanced.html:6
+#: templates/demo/advanced.html:7
 msgid "Use the EZID demo to create an advanced identifier."
 msgstr ""
 
-#: templates/demo/advanced.html:7
+#: templates/demo/advanced.html:8
 msgid "Create an Advanced Demo Identifier"
 msgstr ""
 
-#: templates/demo/simple.html:4
-msgid "Create Simple Demo Identifier"
+#: templates/demo/advanced.html:10 templates/demo/simple.html:9
+msgid "EZID Demo"
+msgstr ""
+
+#: templates/demo/advanced.html:26
+msgid "Quick Start Guides for Demo IDs"
 msgstr ""
 
 #: templates/demo/simple.html:5
-msgid "Use the EZID demo to create a simple identifier."
+msgid "Create Simple Demo Identifier"
 msgstr ""
 
 #: templates/demo/simple.html:6
+msgid "Use the EZID demo to create a simple identifier."
+msgstr ""
+
+#: templates/demo/simple.html:7
 msgid "Create a Simple Demo Identifier"
+msgstr ""
+
+#: templates/demo/simple.html:19
+msgid "Quick Start Guide for Demo IDs"
 msgstr ""
 
 #: templates/doc/apidoc.1.html:5 templates/doc/apidoc.1.html.py:7
@@ -1756,15 +1874,15 @@ msgstr ""
 msgid "Describe the identified object using the"
 msgstr ""
 
-#: templates/includes/advanced_describe.html:8
+#: templates/includes/advanced_describe.html:14
 msgid "Profile"
 msgstr ""
 
-#: templates/includes/advanced_describe.html:18 templates/manage/edit.html:45
+#: templates/includes/advanced_describe.html:24 templates/manage/edit.html:45
 msgid "profile"
 msgstr ""
 
-#: templates/includes/advanced_describe.html:19 templates/manage/edit.html:53
+#: templates/includes/advanced_describe.html:25 templates/manage/edit.html:53
 msgid "on which profile to use for describing the identifier"
 msgstr ""
 
@@ -1815,29 +1933,26 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
-#. Translators: Copy HTML tags over and only translate words outside of these tags
-#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
-#. i.e.: <a class="don't_translate_classes" href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
-#.
-#: templates/includes/create_button.html:11 templates/index.html:42
-msgid "<b>NOTE:</b> This is just a demo."
+#. Translators: Please preserve &quot; tags.
+#: templates/includes/create_button.html:12
+msgid ""
+"By clicking &quot;Create&quot; you will create a demo ID. Demo IDs are "
+"subject to deletion two weeks after creation and are only meant for testing "
+"purposes."
 msgstr ""
 
-#: templates/includes/create_button.html:16 templates/index.html:47
+#: templates/includes/create_button.html:17 templates/index.html:47
+#: templates/manage/details.html:44
 msgid ""
 "To create a real identifier, <a class=\"link__primary\" href=\"/contact"
 "\">request an account</a>."
 msgstr ""
 
 #. Translators: Please preserve &quot; tags.
-#: templates/includes/create_button.html:24
+#: templates/includes/create_button.html:26
 msgid ""
 "Clicking &quot;Create&quot; will create the identifier and make it public. "
 "To defer making it public, use the Advanced form."
-msgstr ""
-
-#: templates/includes/create_button.html:27
-msgid "Once created, an identifier cannot be renamed or deleted."
 msgstr ""
 
 #: templates/includes/footer.html:10
@@ -1922,6 +2037,14 @@ msgstr ""
 
 #: templates/index.html:36
 msgid "See how easy it is"
+msgstr ""
+
+#. Translators: Copy HTML tags over and only translate words outside of these tags
+#. i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p>
+#. i.e.: <a class="don't_translate_classes" href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a>
+#.
+#: templates/index.html:42
+msgid "<b>NOTE:</b> This is just a demo."
 msgstr ""
 
 #: templates/info/about_us.html:6
@@ -2021,17 +2144,20 @@ msgid ""
 "<p>Each client that wishes to participate in this service must agree to "
 "comply with Crossref requirements. These include:</p> <ul> <li>provision of "
 "<a href=\"http://help.crossref.org/#deposit_schema\" class=\"ext-link"
-"\">Crossref metadata</a> for each &quot;original work&quot;</li> <li><a href="
-"\"http://help.crossref.org/#outbound_linking\" class=\"ext-link\">outbound "
-"linking</a>, &quot;meaning members must add DOI links (when available) to "
-"the reference list for journal articles deposited with Crossref&quot; (Note: "
-"these links <em>need only to be present on the journal's site</em>, not in "
-"the metadata provided to Crossref and this requirement is prospective "
-"only.)</li> <li>provision of &quot;response&quot; pages (or &quot;"
-"landing&quot; pages in DataCite parlance) for each DOI, if the material is "
-"not open access</li> </ul> <p>In addition, there are a (very) few setup "
-"steps which we can discuss when you <a href=\"/contact\" class="
-"\"link__primary\">contact us</a> about participating.</p>"
+"\">Crossref metadata</a> for each &quot;original work,&quot; which, in turn, "
+"requires an ISSN (International Standard Serial Number) for each "
+"participating journal; for more information about ISSNs, see <a href="
+"\"http://www.issn.org/\">www.issn.org</a></li> <li><a href=\"http://help."
+"crossref.org/#outbound_linking\" class=\"ext-link\">outbound linking</a>, "
+"&quot;meaning members must add DOI links (when available) to the reference "
+"list for journal articles deposited with Crossref&quot; (Note: these links "
+"<em>need only to be present on the journal's site</em>, not in the metadata "
+"provided to Crossref and this requirement is prospective only.)</li> "
+"<li>provision of &quot;response&quot; pages (or &quot;landing&quot; pages in "
+"DataCite parlance) for each DOI, if the material is not open access</li> </"
+"ul> <p>In addition, there are a (very) few setup steps which we can discuss "
+"when you <a href=\"/contact\" class=\"link__primary\">contact us</a> about "
+"participating.</p>"
 msgstr ""
 
 #: templates/info/id_basics.html:6 templates/info/id_basics.html.py:7
@@ -2176,7 +2302,7 @@ msgid ""
 "(&quot;resolver&quot;) services, a special class of NMA services.</li> </ol> "
 "<p>The terminology that follows is based on the metaphor of a key (or name "
 "or identifier) in the context of locksmithing jargon.</p> <img src=\"/static/"
-"images/learn_id_concepts_example.png\" alt=\"Diagram describing Cover, Bow, "
+"info/learn_id_concepts_example.png\" alt=\"Diagram describing Cover, Bow, "
 "Shoulder, Blade, and Tip of a key, and how this illusatrates Name Mapping "
 "Authority and the Base Identifier\" /> <h2 class=\"heading_2\">NAANs and "
 "shoulders</h2> <p>A core concept is that of the NAAN (Name Assigning "
@@ -2326,10 +2452,11 @@ msgid ""
 "the NAA, sometimes called a Name Authority).  The ARK scheme permits formal "
 "disclosure of hierarchy and equivalence in name extensions; if used in an "
 "ARK, '/' indicates containment and '.' indicates variation.  For example,</"
-"p> <p> ark:/13030/tqb3kh8z/                         # names an object "
-"containing...<br /> ark:/13030/tqb3kh8z/chap3                # that in turn "
-"contains...<br /> ark:/13030/tqb3kh8z/chap3/fig5.jpg    # that is a variant "
-"of...<br /> ark:/13030/tqb3kh8z/chap3/fig5.pdf    # and so forth</p> <h2 "
+"p> <div class=\"pre-block\"> <code>ark:/13030/tqb3kh8z/                  # "
+"names an object containing...</code><br /> <code>ark:/13030/tqb3kh8z/"
+"chap3             # that in turn contains...</code><br /> <code>ark:/13030/"
+"tqb3kh8z/chap3/fig5.jpg    # that is a variant of...</code><br /> "
+"<code>ark:/13030/tqb3kh8z/chap3/fig5.pdf    # and so forth</code> </div> <h2 "
 "class=\"heading_2\">The &quot;Noid1&quot; Check Character Convention</h2> "
 "<p>Check characters, if included at all, often protect only formally "
 "published identifiers, such as the base identifier with no extensions.  "
@@ -2384,14 +2511,12 @@ msgid ""
 "ConfigureDSpacetouseEZIDserviceforregistrationofDOIs\" class=\"ext-link"
 "\">Using EZID with DSpace</a></li> <li><a href=\"https://rubygems.org/gems/"
 "ezid-client\" class=\"ext-link\">Ruby client for EZID</a></li> <li><a href="
-"\"https://github.com/duke-libraries/ezid-client/releases/tag/v0.12.0\" class="
-"\"ext-link\">Another Ruby client for EZID</a></li> <li><a href=\"https://"
-"github.com/olendorf/ezid-php\" class=\"ext-link\">PHP Library for "
+"\"https://github.com/olendorf/ezid-php\" class=\"ext-link\">PHP Library for "
 "interacting with the EZID API</a></li> <li>eScholarship Extensions to OJS "
 "Crossref Export Plugin</li> <ul> <li><a href=\"https://github.com/cdlib/"
 "eschol-ojs/tree/eschol_prod/plugins/importexport/crossref\" class=\"ext-link"
 "\">Crossref</a></li> <li><a href=\"https://github.com/cdlib/eschol-ojs/blob/"
-"eschol_prod/pages/editor/IssueManagementHandler.inc. php\" class=\"ext-link"
+"eschol_prod/pages/editor/IssueManagementHandler.inc.php\" class=\"ext-link"
 "\">IssueManagementHandler</a></li> </ul> <li>Virginia Tech's <a href="
 "\"https://github.com/VTUL/EzidDOI\" class=\"ext-link\">plug-in for assigning "
 "and registering DOIs with EZID for OJS articles and issues</a></li> <li><a "
@@ -2449,7 +2574,31 @@ msgid ""
 "strong> <br/>An EZID user account may designate another EZID user account as "
 "a proxy user of the first account's identifiers. This gives the second EZID "
 "user account the right to manage and edit detailed information about an "
-"identifier. </p> </div>"
+"identifier. </p> </div> <div id=\"search_advanced_content\" class="
+"\"help_window\" role=\"tooltip\"> <p>No wildcards allowed (i.e. asterisks, "
+"question marks)</p> </div> <div id=\"search_target_content\" class="
+"\"help_window\" role=\"tooltip\"> <p> <strong>Target URL</strong> <br/>The "
+"current location (URL) of the identified object </p> </div> <div id="
+"\"search_id_create_date_content\" class=\"help_window\" role=\"tooltip\"> "
+"<p> <strong>ID Create Date</strong> <br/>Date when identifier was created. "
+"Format: YYYYY-MM-DD </p> </div> <div id=\"search_id_update_date_content\" "
+"class=\"help_window\" role=\"tooltip\"> <p> <strong>ID Update Date</strong> "
+"<br/>Date when identifier was last updated. Format: YYYYY-MM-DD </p> </div> "
+"<div id=\"search_id_status_content\" class=\"help_window\" role=\"tooltip\"> "
+"<p> <strong>ID Status</strong> <br/>A value indicating the visibility of the "
+"identifier and its referenced object </p> </div> <div id="
+"\"search_harvesting_content\" class=\"help_window\" role=\"tooltip\"> <p> "
+"<strong>Allows harvesting?</strong> <br/>A value indicating that the "
+"metadata is or is not available for harvesting and/or indexing </p> </div> "
+"<div id=\"search_has_metadata_content\" class=\"help_window\" role=\"tooltip"
+"\"> <p> <strong>Has metadata?</strong> <br/>A value indicating the presence "
+"of metadata </p> </div> <div id=\"polygonhelp_content\" class=\"help_window"
+"\" role=\"tooltip\"> <p> Enter coordinates of the polygon using either <a "
+"class=\"ext-link\" href=\"https://tools.ietf.org/html/rfc7946\">GeoJSON</a> "
+"or <a class=\"ext-link\" href=\"https://developers.google.com/kml/\">Keyhole "
+"Markup Language (KML)</a> formatted text. Each point is defined by a "
+"longitude‐latitude pair. The last point should be the same as the first "
+"point. </p> </div>"
 msgstr ""
 
 #: templates/info/suffix_passthrough.html:6
@@ -2466,7 +2615,7 @@ msgid ""
 "<h2 class=\"heading_2\">What is Suffix Passthrough?</h2> <p class="
 "\"diagram__img-wrapper\"><img class=\"diagram__img\" alt=\"Illustration of "
 "suffix passing from the end of a submitted ARK to the end of a registered "
-"target URL.\" src=\"/static/images/learn_spt_in_action.gif\"/></p> <p><span "
+"target URL.\" src=\"/static/info/learn_spt_in_action.gif\"/></p> <p><span "
 "style=\"white-space:nowrap\">Suffix Passthrough (SPT)</span> is a feature "
 "that lets you add any suffix to an identifier, and when a user selects "
 "(&quot;clicks on&quot;) the identifier, the suffix is added to the end of "
@@ -2478,7 +2627,7 @@ msgid ""
 "the resolver to find the final location URL, which it then displays in its "
 "location bar. Currently SPT works only for ARK identifiers and only with the "
 "<a href=\"http://n2t.net/\" class=\"ext-link\" rel=\"nofollow\"><span style="
-"\"color: blue;\">Name-to-Thing (N2T)</span></a> resolver.</p> <p>Basically, "
+"\"color: blue;\">Name-to-Thing (N2T)</span></a> resolver. </p> <p>Basically, "
 "Suffix Passthrough makes every ARK the root of its own &quot;"
 "namespace&quot;. Any user-added suffix, which is a common way to form sub-"
 "object identifiers, will be passed through to the registered target object.  "
@@ -2618,32 +2767,33 @@ msgid ""
 "known."
 msgstr ""
 
-#: templates/manage/details.html:43 templates/manage/edit.html:36
-#: templates/search/_results.html:88
-msgid "Indicates demo identifier"
+#: templates/manage/details.html:41
+msgid ""
+"Indicates demo identifier. Demo IDs are subject to deletion two weeks after "
+"creation and are only meant for testing purposes."
 msgstr ""
 
-#: templates/manage/details.html:49
+#: templates/manage/details.html:59
 msgid "Citation Preview"
 msgstr ""
 
-#: templates/manage/details.html:69 templates/manage/edit.html:43
+#: templates/manage/details.html:79 templates/manage/edit.html:43
 msgid "About the Identified Object"
 msgstr ""
 
-#: templates/manage/details.html:93
+#: templates/manage/details.html:103
 msgid "See the DataCite XML Metadata record in a new window"
 msgstr ""
 
-#: templates/manage/details.html:97
+#: templates/manage/details.html:107
 msgid "See the Crossref XML Metadata record in a new window"
 msgstr ""
 
-#: templates/manage/details.html:104
+#: templates/manage/details.html:114
 msgid "About the Identifier's Status"
 msgstr ""
 
-#: templates/manage/details.html:149
+#: templates/manage/details.html:159
 msgid "Make Changes"
 msgstr ""
 
@@ -2713,6 +2863,10 @@ msgstr ""
 msgid "Edit Identifier Details"
 msgstr ""
 
+#: templates/manage/edit.html:36 templates/search/_results.html:88
+msgid "Indicates demo identifier"
+msgstr ""
+
 #: templates/manage/edit.html:45
 msgid "This identified object uses the"
 msgstr ""
@@ -2763,28 +2917,28 @@ msgstr ""
 msgid "Manage Your IDs"
 msgstr ""
 
-#: templates/manage/index.html:28 templates/manage/index.html.py:32
-#: templates/manage/index.html:223
+#: templates/manage/index.html:28 templates/manage/index.html.py:31
+#: templates/manage/index.html:232
 msgid "Search Your Identifiers"
 msgstr ""
 
-#: templates/manage/index.html:30
-msgid "Your search cannot not be empty"
-msgstr ""
-
-#: templates/manage/index.html:35 templates/search/index.html:25
+#: templates/manage/index.html:36 templates/search/index.html:27
 msgid "Advanced Search"
 msgstr ""
 
-#: templates/manage/index.html:75 templates/search/index.html:65
+#: templates/manage/index.html:38 templates/search/index.html:29
+msgid "on using advanced fields"
+msgstr ""
+
+#: templates/manage/index.html:84 templates/search/index.html:76
 msgid "Object Publication Year"
 msgstr ""
 
-#: templates/manage/index.html:133
+#: templates/manage/index.html:142
 msgid "ID Create Date"
 msgstr ""
 
-#: templates/manage/index.html:162
+#: templates/manage/index.html:171
 msgid "ID Update Date"
 msgstr ""
 
@@ -2851,8 +3005,8 @@ msgid ""
 "identifier string."
 msgstr ""
 
-#: templates/search/index.html:18 templates/search/index.html.py:22
-#: templates/search/index.html:109
+#: templates/search/index.html:18 templates/search/index.html.py:21
+#: templates/search/index.html:127
 msgid "Search"
 msgstr ""
 
@@ -2872,27 +3026,27 @@ msgstr ""
 msgid "Click for additional help"
 msgstr ""
 
-#: ui_tags/templatetags/manage_form_tags.py:136
+#: ui_tags/templatetags/manage_form_tags.py:143
 msgid "First page of results"
 msgstr ""
 
-#: ui_tags/templatetags/manage_form_tags.py:137
+#: ui_tags/templatetags/manage_form_tags.py:144
 msgid "Previous"
 msgstr ""
 
-#: ui_tags/templatetags/manage_form_tags.py:138
+#: ui_tags/templatetags/manage_form_tags.py:145
 msgid "Previous page of results"
 msgstr ""
 
-#: ui_tags/templatetags/manage_form_tags.py:144
+#: ui_tags/templatetags/manage_form_tags.py:151
 msgid "Next"
 msgstr ""
 
-#: ui_tags/templatetags/manage_form_tags.py:145
+#: ui_tags/templatetags/manage_form_tags.py:152
 msgid "Next page of results"
 msgstr ""
 
-#: ui_tags/templatetags/manage_form_tags.py:147
+#: ui_tags/templatetags/manage_form_tags.py:154
 msgid "Last page of results"
 msgstr ""
 
