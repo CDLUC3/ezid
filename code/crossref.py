@@ -235,7 +235,8 @@ def _buildDeposit (body, registrant, doi, targetUrl, withdrawTitles=False,
   if util2.isTestDoi(doi): doiElement.text = _crossrefTestPrefix + doi
   if withdrawTitles:
     for p in _titlePaths:
-      for t in doiData.xpath(p, namespaces=ns): t.text = "WITHDRAWN: " + t.text
+      for t in doiData.xpath(p, namespaces=ns):
+        if t.text != None: t.text = "WITHDRAWN: " + t.text
   e.append(body)
   d2 = _addDeclaration(lxml.etree.tostring(root, encoding="unicode"))
   return (d2, d1, batchId)
