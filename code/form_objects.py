@@ -49,7 +49,8 @@ RESOURCE_TYPES = (
 REGEX_4DIGITYEAR='^(\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
    \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\))$'
 REGEX_GEOPOINT='-?(\d+(\.\d*)?|\.\d+)$'
-REGEX_LANGUAGE='^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$'
+# http://stackoverflow.com/questions/3962543/how-can-i-validate-a-culture-code-with-a-regular-expression
+REGEX_LANGUAGE='^[a-z]{2,3}(?:-[A-Z]{2,3}(?:-[a-zA-Z]{4})?)?$'
 ERR_4DIGITYEAR = _("Four digits required")
 ERR_DATE = _("Please use format YYYY-MM-DD.")
 ERR_CREATOR=_("Please fill in a value for creator.")
