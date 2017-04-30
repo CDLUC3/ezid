@@ -49,10 +49,13 @@ RESOURCE_TYPES = (
 REGEX_4DIGITYEAR='^(\d{4}|\(:unac\)|\(:unal\)|\(:unap\)|\(:unas\)|\(:unav\)|\
    \(:unkn\)|\(:none\)|\(:null\)|\(:tba\)|\(:etal\)|\(:at\))$'
 REGEX_GEOPOINT='-?(\d+(\.\d*)?|\.\d+)$'
+# http://stackoverflow.com/questions/3962543/how-can-i-validate-a-culture-code-with-a-regular-expression
+REGEX_LANGUAGE='^[a-z]{2,3}(?:-[A-Z]{2,3}(?:-[a-zA-Z]{4})?)?$'
 ERR_4DIGITYEAR = _("Four digits required")
 ERR_DATE = _("Please use format YYYY-MM-DD.")
 ERR_CREATOR=_("Please fill in a value for creator.")
 ERR_TITLE=_("Please fill in a value for title.")
+ERR_LANGUAGE=_("Must be a valid language code (IETF BCP 47 or ISO 639-1)")
 ERR_PUBLISHER=_("Please fill in a value for publisher.")
 ERR_RESOURCE=_("Please choose a resource type.")
 ERR_GEOPOINT_LONG = _("Needs to be decimal between -180 and 180.")
@@ -372,8 +375,8 @@ class TitleForm(forms.Form):
     ) 
     self.fields["titleType"] = forms.ChoiceField(required=False, label = _("Type"),
       widget= forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}), choices=TITLE_TYPES)
-    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label=_("Title Language"))
+    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.RegexField(required=False,
+      label=_("Title Language"), regex=REGEX_LANGUAGE, error_messages={'invalid': ERR_LANGUAGE})
 
 class DescrForm(forms.Form):
   """ Form object for Description Element in DataCite Advanced (XML) profile """
@@ -392,8 +395,8 @@ class DescrForm(forms.Form):
     ) 
     self.fields["descriptionType"] = forms.ChoiceField(required=False, label = _("Type"),
       choices=DESCR_TYPES)
-    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label=_("Description Language"))
+    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.RegexField(required=False,
+      label=_("Description Language"), regex=REGEX_LANGUAGE, error_messages={'invalid': ERR_LANGUAGE})
   def clean(self):
     cleaned_data = super(DescrForm, self).clean()
     d = cleaned_data.get("description")
@@ -411,8 +414,8 @@ class SubjectForm(forms.Form):
     self.fields["subjectScheme"] = forms.CharField(required=False, label=_("Subject Scheme"))
     self.fields["schemeURI"] = forms.CharField(required=False, label=_("Scheme URI"))
     self.fields["valueURI"] = forms.CharField(required=False, label=_("Value URI"))
-    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.CharField(required=False,
-      label=_("Subject Language"))
+    self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.RegexField(required=False,
+      label=_("Subject Language"), regex=REGEX_LANGUAGE, error_messages={'invalid': ERR_LANGUAGE})
 
 def _gatherContribErr1(err1, ctype, cname):
   if not ctype:
