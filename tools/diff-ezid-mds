@@ -109,7 +109,7 @@ def decodeEzidRecord (record):
   return d
 
 def tombstoneUrl (doi):
-  return "http://ezid.cdlib.org/tombstone/id/doi:" + urllib.quote(doi, ":/")
+  return "https://ezid.cdlib.org/tombstone/id/doi:" + urllib.quote(doi, ":/")
 
 class RedirectCatcher (urllib2.HTTPRedirectHandler):
   def redirect_request (self, req, fp, code, msg, headers, newurl):

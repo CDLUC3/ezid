@@ -203,7 +203,7 @@ def _sendProxyEmail (request, p_user, user):
     _("As a proxy user, you can create and modify identifiers owned by the primary user") + ". " +\
     _("If you need more information about proxy ownership of EZID identifiers, ") +\
     _("please don't hesitate to contact us") +\
-    ": http://ezid.cdlib.org/contact\n\n" +\
+    ": https://ezid.cdlib.org/contact\n\n" +\
     _("Best,\nEZID Team\n\n\nThis is an automated email. Please do not reply.\n")) %\
     (p_user.primaryContactName, 
      user.primaryContactName, user.username, user.displayName, user.accountEmail)

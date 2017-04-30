@@ -232,7 +232,7 @@ def enqueueRequest (user, request):
   The successful return is a string that includes the download URL, as
   in:
 
-    success: http://ezid.cdlib.org/download/da543b91a0.xml.gz
+    success: https://ezid.cdlib.org/download/da543b91a0.xml.gz
 
   Unsuccessful returns include the strings:
 

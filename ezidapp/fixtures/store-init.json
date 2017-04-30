@@ -20,7 +20,7 @@
     "groupname": "admin",
     "realm": 1,
     "organizationName": "EZID superuser",
-    "organizationUrl": "http://ezid.cdlib.org/",
+    "organizationUrl": "https://ezid.cdlib.org/",
     "organizationStreetAddress": "(:unap)"
   }
 },
@@ -48,7 +48,7 @@
     "groupname": "apitest",
     "realm": 1,
     "organizationName": "EZID API test account",
-    "organizationUrl": "http://ezid.cdlib.org/",
+    "organizationUrl": "https://ezid.cdlib.org/",
     "organizationStreetAddress": "(:unap)",
     "crossrefEnabled": 1
   }

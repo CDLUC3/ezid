@@ -8,7 +8,7 @@
 # If the filename ends with ".gz", the dump is assumed to be
 # gzip-compressed.  'baseurl' should be the EZID base URL associated
 # with the dump (i.e., the value of configuration parameter
-# DEFAULT.base_url), e.g., "http://ezid.cdlib.org".
+# DEFAULT.base_url), e.g., "https://ezid.cdlib.org".
 #
 # Limitations: this script doesn't check the values of _t (_target)
 # and _p (_profile) fields.  Also, it doesn't check any citation
