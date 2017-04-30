@@ -4,7 +4,7 @@
     <div id="login-modal__title" class="login-modal__title">Access your account</div>
     <a href="" aria-label="close"><img id="js-login-modal__close" src="/static/images/icon_cross.svg" class="login-modal__close"></a>
   </div>
-  <form id="js-login-modal__form" method="post" action="{% url_force_https "/login" %}" class="login-modal__form">
+  <form id="js-login-modal__form" method="post" action="/login" class="login-modal__form">
     <input type="hidden" name="next" value="{{ request.get_full_path }}" />
     <div class="login-modal__form-element fcontrol__group-stacked">
       <label for="username" class="fcontrol__text-label-hidden">Username</label>

@@ -20,7 +20,7 @@
 #     d (development)
 #     s (staging)
 #     p (production)
-#     http://...
+#     http[s]://...
 #
 #   credentials:
 #     username:password
@@ -83,9 +83,9 @@ signal.signal(signal.SIGINT, lambda signal, frame: sys.exit())
 
 KNOWN_SERVERS = {
   "l": "http://localhost:8000",
-  "d": "http://ids-ezid-dev.cdlib.org",
-  "s": "http://ids-ezid-stg.cdlib.org",
-  "p": "http://ezid.cdlib.org"
+  "d": "https://ids-ezid-dev.cdlib.org",
+  "s": "https://ids-ezid-stg.cdlib.org",
+  "p": "https://ezid.cdlib.org"
 }
 
 OPERATIONS = {
@@ -118,7 +118,7 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
     d (development)
     s (staging)
     p (production)
-    http://...
+    http[s]://...
 
   credentials:
     username:password
@@ -267,9 +267,6 @@ elif args[1] != "-":
   else:
     username = args[1]
     password = getpass.getpass()
-  # Credentials must be sent over SSL, unless running locally.
-  if _server.startswith("http:") and args[0] != "l":
-    _server = "https" + _server[4:]
   h = urllib2.HTTPBasicAuthHandler()
   h.add_password("EZID", _server, username, password)
   _opener.add_handler(h)

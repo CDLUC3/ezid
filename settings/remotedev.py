@@ -5,7 +5,6 @@ from common import *
 DEPLOYMENT_LEVEL = "remotedev"
 
 STANDALONE = True
-USE_SSL = False
 
 STORE_MYSQL = False
 if STORE_MYSQL:

@@ -34,7 +34,7 @@ def isUiRequest (request):
     ("HTTP_ACCEPT" in request.META and\
     _htmlWanted(request.META["HTTP_ACCEPT"]))
 
-def d (request, apiFunction, uiFunction, ssl=False):
+def d (request, apiFunction, uiFunction):
   """
   Dispatches a request to the API or UI depending on the client's
   desired content type.  Each function name must be qualified with a
@@ -45,6 +45,4 @@ def d (request, apiFunction, uiFunction, ssl=False):
   else:
     f = apiFunction
   module, function = f.rsplit(".", 1)
-  # The 'ssl' argument need not be passed on, as it is only used by
-  # middleware code.
   return getattr(__import__(module, fromlist=module), function)(request)

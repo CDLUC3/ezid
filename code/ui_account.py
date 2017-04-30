@@ -25,7 +25,7 @@ ACCOUNT_FIELDS_EDITABLE = ['primaryContactName', 'primaryContactEmail', 'primary
 
 proxies_default = _("None chosen")
 
-def login (request, ssl=False):
+def login (request):
   """
   Renders the login page (GET) or processes a login form submission
   (POST).  A successful login redirects to the URL specified by
@@ -79,7 +79,7 @@ def logout(request):
   return redirect("ui_home.index")
 
 @uic.user_login_required
-def edit(request, ssl=False):
+def edit(request):
   """Edit account information form"""
   d = { 'menu_item' : 'ui_account.edit'}
   user = userauth.getUser(request)
@@ -226,7 +226,7 @@ def _sendUserEmail (request, user, new_proxies):
   subj = (_("New EZID Proxy User%s Added")) % ("s" if plural else "")
   _sendEmail(request, user, subj, m)
 
-def pwreset(request, pwrr, ssl=False):
+def pwreset(request, pwrr):
   """
   Handles all GET and POST interactions related to password resets.
   """

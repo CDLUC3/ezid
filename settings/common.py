@@ -80,7 +80,6 @@ MIDDLEWARE_CLASSES = (
   "django.middleware.locale.LocaleMiddleware",
   "django.contrib.messages.middleware.MessageMiddleware",
   "django.contrib.auth.middleware.AuthenticationMiddleware",
-  "middleware.SslMiddleware",
   "middleware.ExceptionScrubberMiddleware"
 )
 
@@ -119,7 +118,6 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
 # EZID-specific settings...
 STANDALONE = False
-USE_SSL = True
 DAEMON_THREADS_ENABLED = True
 LOCALIZATIONS = { "default": ("cdl", ["ezid@ucop.edu"]) }
 

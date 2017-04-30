@@ -66,7 +66,7 @@ import urllib
 import urllib2
 
 KNOWN_SERVERS = {
-  "p": "http://ezid.cdlib.org"
+  "p": "https://ezid.cdlib.org"
 }
 
 OPERATIONS = {
@@ -226,9 +226,6 @@ elif args[1] != "-":
   else:
     username = args[1]
     password = getpass.getpass()
-  # Credentials must be sent over SSL, unless running locally.
-  if _server.startswith("http:") and args[0] != "l":
-    _server = "https" + _server[4:]
   h = urllib2.HTTPBasicAuthHandler()
   h.add_password("EZID", _server, username, password)
   _opener.add_handler(h)

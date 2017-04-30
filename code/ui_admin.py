@@ -12,7 +12,7 @@ from django.utils.translation import ugettext as _
 NO_CONSTRAINTS = True 
 
 @uic.user_login_required
-def dashboard(request, ssl=False):
+def dashboard(request):
   """ 
   ID Issues and Crossref tables load for the first time w/o ajax
   All subsequent searches are done via ajax (ajax_dashboard_table method below)
