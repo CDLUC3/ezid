@@ -37,9 +37,12 @@ The EZID API, Version 2
 
 .. class:: smallfont
 
-| **This version:** http://HOSTNAME/doc/apidoc.2.html
-| **Latest version:** http://HOSTNAME/doc/apidoc.html
-| **Previous version:** http://HOSTNAME/doc/apidoc.1.html
+| **This version:** `SCHEME://HOSTNAME/doc/apidoc.2.html
+  <SCHEME://HOSTNAME/doc/apidoc.2.html>`_
+| **Latest version:** `SCHEME://HOSTNAME/doc/apidoc.html
+  <SCHEME://HOSTNAME/doc/apidoc.html>`_
+| **Previous version:** `SCHEME://HOSTNAME/doc/apidoc.1.html
+  <SCHEME://HOSTNAME/doc/apidoc.1.html>`_
 
 EZID (easy-eye-dee) provides an easy way to obtain, describe, and
 manage long-term identifiers for digital objects.  It can be accessed
@@ -82,7 +85,7 @@ Contents
 - `Crossref registration`_
 - `Testing the API`_
 - `Server status`_
-- `Python example`_
+- `Python command line tool`_
 - `PHP examples`_
 - `Perl examples`_
 - `Java example`_
@@ -102,12 +105,12 @@ Framework
 
 The EZID API is available from the base URL
 
-  http://ezid.cdlib.org
+  https://ezid.cdlib.org
 
 Interaction is via REST-style_ `\ `:ext-icon: HTTP web services.  The
 API's central design principle is to treat an identifier as a kind of
 web resource.  Specifically, identifier `foo`:hl1: is represented as a
-resource at URL \http://ezid.cdlib.org/id/`foo`:hl1:.  In this
+resource at URL \https://ezid.cdlib.org/id/`foo`:hl1:.  In this
 document we will refer to this URL as the identifier's "EZID URL."  A
 client manipulates an identifier by performing HTTP operations on its
 EZID URL: PUT to create the identifier, GET to view it, and POST to
@@ -121,31 +124,31 @@ identifiers:
 
 .. class:: leftheaders
 
-========== ===================================================
+========== ====================================================
 Identifier `doi:10.nnnn/suffix`:hl1:
 URL form   \https://doi.org/`10.nnnn/suffix`:hl1:
-EZID URL   \http://ezid.cdlib.org/id/`doi:10.nnnn/suffix`:hl1:
-========== ===================================================
+EZID URL   \https://ezid.cdlib.org/id/`doi:10.nnnn/suffix`:hl1:
+========== ====================================================
 
 For ARK identifiers:
 
 .. class:: leftheaders
 
-========== ===================================================
+========== ====================================================
 Identifier `ark:/nnnnn/suffix`:hl1:
 URL form   \http://n2t.net/`ark:/nnnnn/suffix`:hl1:
-EZID URL   \http://ezid.cdlib.org/id/`ark:/nnnnn/suffix`:hl1:
-========== ===================================================
+EZID URL   \https://ezid.cdlib.org/id/`ark:/nnnnn/suffix`:hl1:
+========== ====================================================
 
 For URN identifiers:
 
 .. class:: leftheaders
 
-========== ===================================================
+========== ====================================================
 Identifier `urn:nid:suffix`:hl1:
 URL form   \http://n2t.net/`urn:nid:suffix`:hl1:
-EZID URL   \http://ezid.cdlib.org/id/`urn:nid:suffix`:hl1:
-========== ===================================================
+EZID URL   \https://ezid.cdlib.org/id/`urn:nid:suffix`:hl1:
+========== ====================================================
 
 API vs. UI
 ----------
@@ -167,7 +170,7 @@ sends as follows::
 
   import java.net.*;
 
-  URL u = new URL("http://ezid.cdlib.org/...");
+  URL u = new URL("https://ezid.cdlib.org/...");
   URLConnection c = u.openConnection();
   c.setRequestProperty("Accept", "text/plain");
   c.connect();
@@ -178,12 +181,10 @@ Authentication
 Most requests require authentication.  The EZID API supports two
 methods of authentication:
 
-1. **HTTP Basic authentication over SSL**.  With this method, the
-   client connects to EZID using HTTPS URLs (i.e.,
-   \https://ezid.cdlib.org/...) and supplies HTTP Basic
-   authentication credentials on every request.  HTTPS URLs *must* be
-   used.  The authentication realm is "EZID".  For example,
-   credentials can be added manually in Python as follows:
+1. **HTTP Basic authentication**.  With this method, the client
+   supplies HTTP Basic authentication credentials on every request.
+   The authentication realm is "EZID".  For example, credentials can
+   be added manually in Python as follows:
 
    .. parsed-literal::
 
@@ -240,11 +241,11 @@ methods of authentication:
 
      Authenticator.setDefault(new MyAuthenticator());
 
-2. **One-time login over SSL**.  Perform a GET operation on
+2. **One-time login**.  Perform a GET operation on
    \https://ezid.cdlib.org/login and supply HTTP Basic credentials as
-   above.  In response, EZID returns a session cookie.  Remaining
-   requests can be made over plain HTTP as long as the session cookie
-   is supplied in an HTTP Cookie header.  Here's an example
+   above.  In response, EZID returns a session cookie.  Subsequent
+   requests can be made without authentication by supplying the
+   session cookie in HTTP Cookie headers.  Here's an example
    interaction:
 
    .. parsed-literal::
@@ -269,14 +270,14 @@ methods of authentication:
      c = urllib2.urlopen("\https://ezid.cdlib.org/login")
      `cookie`:hl2: = c.headers["Set-Cookie"].split(";")[0]
      ...
-     r = urllib2.Request("\http://ezid.cdlib.org/...")
+     r = urllib2.Request("\https://ezid.cdlib.org/...")
      r.add_header("Cookie", `cookie`:hl2:)
 
    In Java, cookies can be manually captured and set using code
    analogous to the Python code above or, in Java 1.6 and newer,
    CookieManager_ `\ `:ext-icon: can be used to manage cookies.
 
-   Perform a GET operation on \http://ezid.cdlib.org/logout to
+   Perform a GET operation on \https://ezid.cdlib.org/logout to
    invalidate a session.
 
 If authentication is required and credentials are either missing or
@@ -561,7 +562,7 @@ instead of supplying a complete identifier, the client specifies only
 a namespace (or "shoulder") that forms the identifier's prefix, and
 EZID generates an opaque, random string for the identifier's suffix.
 An identifier can be minted by sending a POST request to the URL
-\http://ezid.cdlib.org/shoulder/`shoulder`:hl1: where `shoulder`:hl1:
+\https://ezid.cdlib.org/shoulder/`shoulder`:hl1: where `shoulder`:hl1:
 is the desired namespace.  For example:
 
 .. parsed-literal::
@@ -821,7 +822,7 @@ first column indicates the element is modifiable by clients.
   |X| _target     The identifier's target URL.  Defaults to the identifier's
                   EZID URL.  That is, the default target URL for identifier
                   `foo`:hl1: is the self-referential URL
-                  \http://ezid.cdlib.org/id/`foo`:hl1:.  Note that creating or
+                  \https://ezid.cdlib.org/id/`foo`:hl1:.  Note that creating or
                   updating the target URL of a DOI identifier may take up to
                   30 minutes to take effect in the Handle System.
   --- ----------- -------------------------------------------------------------
@@ -1310,7 +1311,7 @@ Server status
 -------------
 
 The status of the EZID server can be probed by issuing a GET request
-to the URL \http://ezid.cdlib.org/status.  If the server is up the
+to the URL \https://ezid.cdlib.org/status.  If the server is up the
 response will resemble the following:
 
 .. parsed-literal::
@@ -1324,8 +1325,8 @@ response will resemble the following:
   |lArr|
   |lArr| success: EZID is up
 
-Python example
---------------
+Python command line tool
+------------------------
 
 ezid.py_ is a command line tool, written in Python, that is capable of
 exercising all API functions.  It serves as an example of how to use
@@ -1363,7 +1364,7 @@ To get identifier metadata:
   _ownergroup: `group`:hl2:
   _profile: erc
   _status: public
-  _target: \http://ezid.cdlib.org/id/ark:/99999/fk4gt78tq
+  _target: \https://ezid.cdlib.org/id/ark:/99999/fk4gt78tq
   _updated: 2013-05-17T18:17:14
   erc.what: Remembrance of Things Past
   erc.when: 1922
@@ -1413,7 +1414,7 @@ Get identifier metadata:
   <?php
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, \
-  '\http://ezid.cdlib.org/id/`identifier`:hl2:');
+  '\https://ezid.cdlib.org/id/`identifier`:hl2:');
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   $output = curl_exec($ch);
   print curl_getinfo($ch, CURLINFO_HTTP_CODE) . "\\n";
@@ -1510,7 +1511,7 @@ hash, `%metadata`:hl1:\ :
   use LWP::UserAgent;
 
   $ua = LWP::UserAgent->new;
-  $r = $ua->get("http://ezid.cdlib.org/id/`identifier`:hl2:");
+  $r = $ua->get("https://ezid.cdlib.org/id/`identifier`:hl2:");
   if ($r->is_success) {
     ($statusline, $m) = split(/\\n/, $r->decoded_content, 2);
     %metadata = map { map { s/%([0-9A-F]{2})/pack("C", hex($1))/egi; $_ }
@@ -1763,7 +1764,7 @@ To get identifier metadata, obtaining text formatted as described in
 
 .. parsed-literal::
 
-  curl \http://ezid.cdlib.org/id/`identifier`:hl2:
+  curl \https://ezid.cdlib.org/id/`identifier`:hl2:
 
 To mint an identifier:
 
@@ -1829,9 +1830,9 @@ Batch processing
 The EZID API does not support batch operations on identifiers (other
 than batch downloading and harvesting of metadata, described in the
 next two sections), but it is possible to achieve much the same result
-using the Python command line tool (see `Python example`_ above)
-combined with some shell scripting.  For example, to mint 100 test ARK
-identifiers and print the identifiers:
+using the Python command line tool (see `Python command line tool`_
+above) combined with some shell scripting.  For example, to mint 100
+test ARK identifiers and print the identifiers:
 
 .. parsed-literal::
 
@@ -1874,7 +1875,7 @@ satisfy several other quality criteria are returned.
 The batch download process is asynchronous.  A download is requested
 by issuing a POST request to
 
-  http://ezid.cdlib.org/download_request
+  https://ezid.cdlib.org/download_request
 
 The content type of the request body must be
 "application/x-www-form-urlencoded" and the body must include one POST
@@ -1898,7 +1899,7 @@ download can be retrieved.  Here's a sample interaction:
   |lArr| Content-Type: text/plain; charset=UTF-8
   |lArr| Content-Length: 57
   |lArr|
-  |lArr| success: \http://ezid.cdlib.org/download/da543b91a0.xml.gz
+  |lArr| success: \https://ezid.cdlib.org/download/da543b91a0.xml.gz
 
 The download will not be available immediately, but clients can poll
 the returned URL; the server returns HTTP status code 404 (Not Found)
@@ -2187,7 +2188,7 @@ Open Archives Initiative Protocol for Metadata Harvesting (OAI-PMH)`__
 
 __ OAI-PMH_
 
-  http://ezid.cdlib.org/oai
+  https://ezid.cdlib.org/oai
 
 Only public, exported, non-test identifiers that have non-default
 target URLs and at least creator, title, and date citation metadata

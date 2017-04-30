@@ -39,6 +39,7 @@ if not m: error("error parsing rst2html.py output")
 body = m.group(1)
 t.close()
 
+body = re.sub("SCHEME", "{{ request.scheme }}", body)
 body = re.sub("HOSTNAME", "{{ request.META.HTTP_HOST }}", body)
 
 # Note the hack below: the extra </div> is needed to close the
