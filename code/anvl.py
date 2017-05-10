@@ -62,7 +62,9 @@ def parse (s):
   """
   d = {}
   k = None
-  for l in s.splitlines():
+  # We avoid splitlines here to avoid splitting on other weirdo
+  # Unicode characters that count as line breaks.
+  for l in re.split("\r\n?|\n", s):
     if len(l) == 0:
       k = None
     elif l[0] == "#":
@@ -98,7 +100,9 @@ def parseConcatenate (s):
   """
   d = {}
   k = None
-  for l in s.splitlines():
+  # We avoid splitlines here to avoid splitting on other weirdo
+  # Unicode characters that count as line breaks.
+  for l in re.split("\r\n?|\n", s):
     if len(l) == 0:
       k = None
     elif l[0] == "#":
