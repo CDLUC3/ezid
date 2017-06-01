@@ -219,7 +219,7 @@ def formElementsToDataciteXml (d, shoulder=None, identifier=None):
   root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
     namespace + " " + schemaLocation
   for key, value in d.items():
-    value = value.strip()
+    value = util.sanitizeXmlSafeCharset(value).strip()
     if value == "": continue
     node = root
     while len(key) > 0:
