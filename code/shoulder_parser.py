@@ -67,6 +67,9 @@
 #       different DOI prefix.  Useful for silencing warnings.  May be
 #       used with DOI shoulders only.
 #
+#    redirect
+#       Resolver information.
+#
 # For a datacenter, the entry key is the datacenter symbol, prefixed
 # with "datacite:" and uppercased, as in "datacite:CDL.BUL".  The
 # required fields for a datacenter are:
@@ -110,6 +113,7 @@ _fields = {
     "manager": True,
     "name": True,
     "minter": True,
+    "redirect": False,
     "datacenter": False,
     "active": False,
     "date": False,
