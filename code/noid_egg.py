@@ -164,7 +164,8 @@ def getElements (identifier):
     d = {}
     for l in s[1:len(s)-3]:
       assert ":" in l, _error("fetch", s)
-      if l.startswith("__") or l.startswith("_.e"): continue
+      if l.startswith("__") or l.startswith("_.e") or l.startswith("_,e"):
+        continue
       e, v = l.split(":", 1)
       d[util.decode(e)] = util.decode(v.strip())
     # There had better be at least one non-noid-internal binding.
