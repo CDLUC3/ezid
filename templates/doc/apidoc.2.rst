@@ -8,6 +8,7 @@
 
 .. _ANVL: https://wiki.ucop.edu/display/Curation/Anvl
 .. _Apache Commons Codec: http://commons.apache.org/codec/
+.. _batch-download.sh: batch-download.sh
 .. _Comma-separated values (CSV):
    http://en.wikipedia.org/wiki/Comma-separated_values
 .. _Contact UC3: http://www.cdlib.org/services/uc3/contact.html
@@ -2168,16 +2169,30 @@ identifiers).
 
 **Using curl to request a download**
 
-A batch download can easily be requested with the curl_ `\ `:ext-icon:
-command line tool.  Use curl's "-d" option to specify parameters, and
-use the https form of the request URL to securely send authentication
-credentials.  For example:
+A batch download can easily be requested using the
+curl_ `\ `:ext-icon: command line tool.  Use curl's "-d" option to
+specify parameters, and use the "-u" option to supply credentials.
+For example:
 
 .. parsed-literal::
 
   curl -u `username`:hl2::`password`:hl2: -d format=anvl -d type=ark \
   -d type=doi
     -d permanence=real \https://ezid.cdlib.org/download_request
+
+For even more convenience, a simple Bash script, batch-download.sh_,
+turns a batch download into a one-step operation.  The script issues a
+download request using curl, waits for the request to be processed,
+and when ready downloads to a file in the current directory.  Its
+usage equivalent to the above example would be:
+
+.. parsed-literal::
+
+  % batch-download.sh `username`:hl2: `password`:hl2: format=anvl type=ark \
+  type=doi permanence=real
+  submitting download request...
+  waiting......
+  9c02f494ab.txt.gz
 
 OAI-PMH harvesting
 ------------------

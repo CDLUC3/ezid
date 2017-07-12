@@ -2082,13 +2082,24 @@ and &quot;createdBefore&quot; parameters above.</p>
 </li>
 </ul>
 <p id="using-curl-to-request-a-download"><strong>Using curl to request a download</strong></p>
-<p>A batch download can easily be requested with the <a class="reference external" href="http://curl.haxx.se/">curl</a> <span class="ext-icon"></span>
-command line tool.  Use curl's &quot;-d&quot; option to specify parameters, and
-use the https form of the request URL to securely send authentication
-credentials.  For example:</p>
+<p>A batch download can easily be requested using the
+<a class="reference external" href="http://curl.haxx.se/">curl</a> <span class="ext-icon"></span> command line tool.  Use curl's &quot;-d&quot; option to
+specify parameters, and use the &quot;-u&quot; option to supply credentials.
+For example:</p>
 <pre class="literal-block">
 curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -d format=anvl -d type=ark -d type=doi
   -d permanence=real https://ezid.cdlib.org/download_request
+</pre>
+<p>For even more convenience, a simple Bash script, <a class="reference external" href="batch-download.sh">batch-download.sh</a>,
+turns a batch download into a one-step operation.  The script issues a
+download request using curl, waits for the request to be processed,
+and when ready downloads to a file in the current directory.  Its
+usage equivalent to the above example would be:</p>
+<pre class="literal-block">
+% batch-download.sh <span class="hl2">username</span> <span class="hl2">password</span> format=anvl type=ark type=doi permanence=real
+submitting download request...
+waiting......
+9c02f494ab.txt.gz
 </pre>
 </div>
 <div class="section" id="oai-pmh-harvesting">
