@@ -431,7 +431,10 @@ def _validateDatacite (identifier, metadata, completeCheck):
       metadata["datacite"] = datacite.validateDcmsRecord(identifier,
         metadata["datacite"], schemaValidate=completeCheck)
     except AssertionError, e:
-      return "element 'datacite': " + _oneline(str(e))
+      # Note the encoding below instead of simply saying str(e): error
+      # messages can contain Unicode characters.
+      return "element 'datacite': " +\
+        _oneline(e.message.encode("ASCII", "xmlcharrefreplace"))
   if completeCheck and identifier.startswith("doi:"):
     try:
       datacite.formRecord(identifier, metadata)
