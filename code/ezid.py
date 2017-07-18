@@ -580,12 +580,13 @@ def createDoi (doi, user, metadata={}):
       log.badRequest(tid)
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
-    s = ezidapp.models.getLongestShoulderMatch(qdoi)
-    # Should never happen.
-    assert s is not None, "shoulder not found"
     _softUpdate(m, { "_o": user.pid, "_g": user.group.pid, "_c": t, "_u": t,
-      "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qdoi,
-      "_d": s.datacenter.symbol })
+      "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qdoi })
+    if "_d" not in m:
+      s = ezidapp.models.getLongestShoulderMatch(qdoi)
+      # Should never happen.
+      assert s is not None, "shoulder not found"
+      m["_d"] = s.datacenter.symbol
     if m.get("_is", "public") == "reserved":
       m["_t1"] = m["_t"]
       m["_st1"] = m["_st"]
