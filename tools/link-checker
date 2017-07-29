@@ -6,9 +6,8 @@
 # This script runs continuously and indefinitely.  It runs
 # independently of the main EZID server, and may even run on a
 # different machine, but is nevertheless loosely coupled to EZID in
-# two ways.  1) It communicates with EZID through EZID's database
-# (search database currently; store database in the future).
-# Specifically, the link checker maintains its own table of
+# two ways.  1) It communicates with EZID through EZID's search
+# database.  Specifically, the link checker maintains its own table of
 # identifiers and target URLs which it periodically updates from the
 # main EZID tables, and conversely, the EZID server periodically
 # uploads link checker results back into its tables.  These update

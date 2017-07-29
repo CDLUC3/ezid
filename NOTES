@@ -138,18 +138,18 @@ DataCite.
 6. Offline scripts
 ------------------
 
-Offline scripts (dump-store, stats, dashboard, populate-store-2, etc.)
-import EZID modules and directly call EZID functions.  This generally
-doesn't cause problems with two exceptions.  The first is logging: to
-avoid appending to and possibly corrupting the running server's
-transaction log file, offline scripts use the
-settings/logging.offline.conf settings to log to standard error
-instead.  Second, script update actions may conflict with those of the
-running server, even though SQLite locking works across processes,
-because offline scripts don't participate in the server's locking
-mechanism and won't necessarily interact properly with server
-background processing daemons.  This explains why, for example, the
-expunge script performs its update actions through the EZID API.
+Offline scripts (dump-store, dashboard, expunge, etc.) import EZID
+modules and directly call EZID functions.  This generally doesn't
+cause problems with two exceptions.  The first is logging: to avoid
+appending to and possibly corrupting the running server's transaction
+log file, offline scripts use the settings/logging.offline.conf
+settings to log to standard error instead.  Second, script update
+actions may conflict with those of the running server, even though
+database locking works across processes, because offline scripts don't
+participate in the server's locking mechanism and won't necessarily
+interact properly with server background processing daemons.  This
+explains why, for example, the expunge script performs its update
+actions through the EZID API.
 
 See .../SITE_ROOT/PROJECT_ROOT/tools/offline.py for more information.
 
@@ -253,3 +253,45 @@ next-best-thing approach is as follows:
     tombstone URL and the resource title is set to "WITHDRAWN".  If
     the identifier is deleted (by the EZID administrator), same thing,
     but the target URL is set to http://datacite.org/invalidDOI.
+
+10. Store vs. search database
+-----------------------------
+
+EZID continues to use two databases, though admittedly the rationales
+for having two databases (initially concurrency, then implementation
+freedom, then performance) have changed over time and the need has
+largely abated.  The databases may reside in the same physical
+database or in separate databases; see the SEARCH_STORE_SAME_DATABASE
+Django setting.  If separate physical databases, the architectures may
+be the same or different.  Both databases store identifiers
+(implication: storage requirements are roughly doubled), but there are
+differences in exactly what is stored and in design goals.
+
+The store database is the main database, which Django insists must be
+referenced as the "default" database.  It stores Django's internal
+tables; the principal ezidapp_storeidentifier table; user, group, and
+realm information; caches of shoulders and datacenters; processing
+queues; identifier statistics; and basically anything and everything
+needed for mainline processing.  The design goal of the store database
+is high-throughput transaction speed.
+
+The search database stores, in the ezidapp_searchidentifier table, a
+copy of most identifiers (only anonymously-owned test identifiers are
+excluded), albeit with many more columns and indexes to support
+searching over identifiers.  The table is updated asynchronously by a
+daemon thread.  The design goal of the search database is to support
+searching as well as the various bulk and asynchronous operations:
+batch downloads, batch processing, statistics computation, the OAI-PMH
+feed, and so forth.  The link checker's table is also stored in the
+search database.
+
+The two identifier tables have foreign key dependencies on dependent
+tables for users, groups, realms, profiles, and datacenters.  As the
+dependent tables can't be shared across potentially physically
+separate databases, they are replicated and synchronized.  Generally
+the search database copies are stubs of the fuller information stored
+in the store database.
+
+With Django, databases are not explictly selected; instead, the
+mapping between models (i.e., tables) and databases is defined in
+settings/routers.py.

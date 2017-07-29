@@ -1,9 +1,5 @@
 import django.conf
 
-# The link checker's table is temporarily in the search database.
-# When the store database is converted to MySQL, it should be moved
-# there.
-
 class Router (object):
   def db_for_read (self, model, **hints):
     t = model._meta.db_table
