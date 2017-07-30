@@ -545,7 +545,7 @@ p.intro {
 
 <!-- datacite record -->
 
-<xsl:template match="datacite:resource"  xmlns:datacite="http://datacite.org/schema/kernel-3" >
+<xsl:template match="datacite:resource"  xmlns:datacite="http://datacite.org/schema/kernel-4" >
   <h3>DataCite Metadata Scheme (datacite)</h3>
   <div class="xmlSource">
     <xsl:apply-templates select="." mode='xmlMarkup' />

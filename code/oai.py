@@ -367,9 +367,9 @@ def _doListMetadataFormats (oaiRequest):
   mf = lxml.etree.SubElement(e, _q("metadataFormat"))
   lxml.etree.SubElement(mf, _q("metadataPrefix")).text = "datacite"
   lxml.etree.SubElement(mf, _q("schema")).text =\
-    "http://schema.datacite.org/meta/kernel-3/metadata.xsd"
+    "http://schema.datacite.org/meta/kernel-4/metadata.xsd"
   lxml.etree.SubElement(mf, _q("metadataNamespace")).text =\
-    "http://datacite.org/schema/kernel-3"
+    "http://datacite.org/schema/kernel-4"
   return _buildResponse(oaiRequest, e)
 
 def _doListSets (oaiRequest):
