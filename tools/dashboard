@@ -59,7 +59,7 @@ import util
 
 testDoiPrefix = "b5072/fk2"
 testArkPrefix = "99999/fk4"
-urnPrefix = "97720/"
+uuidPrefix = "97720/"
 
 usageText = """Usage:
 
@@ -113,14 +113,14 @@ class Counter (object):
   def __init__ (self):
     self.numArks = 0
     self.numDois = 0
-    self.numUrns = 0
+    self.numUuids = 0
   def __str__ (self):
-    # URN counts are not included yet.
+    # UUID counts are not included yet.
     return "%d,%d" % (self.numDois, self.numArks)
   def __iadd__ (self, other):
     self.numArks += other.numArks
     self.numDois += other.numDois
-    self.numUrns += other.numUrns
+    self.numUuids += other.numUuids
     return self
 
 def incrementMonth (month):
@@ -154,8 +154,8 @@ if doCompute:
               counters[month] = c
             if re.match("[b-k]\d{4}/", id):
               c.numDois += 1
-            elif id.startswith(urnPrefix):
-              c.numUrns += 1
+            elif id.startswith(uuidPrefix):
+              c.numUuids += 1
             else:
               c.numArks += 1
       entry = cursor.next()
@@ -176,8 +176,8 @@ if doCompute:
             counters[month] = c
           if re.match("[b-k]\d{4}/", id):
             c.numDois += 1
-          elif id.startswith(urnPrefix):
-            c.numUrns += 1
+          elif id.startswith(uuidPrefix):
+            c.numUuids += 1
           else:
             c.numArks += 1
       lastId = ids[-1][0]
