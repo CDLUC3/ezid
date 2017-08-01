@@ -22,17 +22,17 @@ _arkTestPrefix = None
 _doiTestPrefix = None
 _defaultArkProfile = None
 _defaultDoiProfile = None
-_defaultUrnUuidProfile = None
+_defaultUuidProfile = None
 
 def _loadConfig ():
   global _ezidUrl, _arkTestPrefix, _doiTestPrefix, _defaultArkProfile
-  global _defaultDoiProfile, _defaultUrnUuidProfile
+  global _defaultDoiProfile, _defaultUuidProfile
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
   _arkTestPrefix = config.get("shoulders.ark_test")
   _doiTestPrefix = config.get("shoulders.doi_test")
   _defaultArkProfile = config.get("DEFAULT.default_ark_profile")
   _defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
-  _defaultUrnUuidProfile = config.get("DEFAULT.default_urn_uuid_profile")
+  _defaultUuidProfile = config.get("DEFAULT.default_uuid_profile")
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
@@ -82,7 +82,7 @@ def defaultProfile (identifier):
     return _defaultArkProfile
   elif identifier.startswith("doi:"):
     return _defaultDoiProfile
-  elif identifier.startswith("urn:uuid:"):
-    return _defaultUrnUuidProfile
+  elif identifier.startswith("uuid:"):
+    return _defaultUuidProfile
   else:
     assert False, "unhandled case"

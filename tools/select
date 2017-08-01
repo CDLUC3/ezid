@@ -87,7 +87,7 @@
 #
 #    _ark                  Is an ARK identifier.
 #    _doi                  Is a DOI identifier.
-#    _urn                  Is a URN identifier.
+#    _uuid                 Is a UUID identifier.
 #
 #    _real                 Is a real (i.e., non-test) identifier.
 #    _test                 Is a test identifier.
@@ -281,8 +281,8 @@ def replaceMacro (query):
       "_id =~ /ark:\\/b5072\\/fk2/ )"
   elif query[0] == "_unavailable":
     e = "_status =~ /unavailable/"
-  elif query[0] == "_urn":
-    e = "_id =~ /urn:/"
+  elif query[0] == "_uuid":
+    e = "_id =~ /uuid:/"
   else:
     e = None
   if e:

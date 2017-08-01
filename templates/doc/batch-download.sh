@@ -28,7 +28,7 @@ if [ $# -lt 3 ]; then
   echo "   permanence={test|real}"
   echo "   profile=p                                repeatable"
   echo "   status={reserved|public|unavailable}     repeatable"
-  echo "   type={ark|doi|urn}                       repeatable"
+  echo "   type={ark|doi|uuid}                      repeatable"
   echo "   updatedAfter={t|YYYY-MM-DDTHH:MM:SSZ}    inclusive"
   echo "   updatedBefore={t|YYYY-MM-DDTHH:MM:SSZ}   exclusive"
   exit

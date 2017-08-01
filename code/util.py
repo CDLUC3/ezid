@@ -117,19 +117,18 @@ def validateArk (ark):
   if len(p)+len(s) > maxIdentifierLength-5: return None
   return p+s
 
-_urnUuidPattern = re.compile("[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
-  re.I)
+_uuidPattern = re.compile("[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$", re.I)
 
-def validateUrnUuid (urn):
+def validateUuid (id):
   """
   If the supplied string (e.g.,
   "f81d4fae-7dec-11d0-a765-00a0c91e6bf6") is a syntactically valid
-  scheme-less UUID URN identifier as defined by RFC 4122
+  scheme-less UUID identifier as defined by RFC 4122
   <http://www.ietf.org/rfc/rfc4122.txt>, returns the canonical form of
   the identifier (namely, lowercased).  Otherwise, returns None.
   """
-  if _urnUuidPattern.match(urn) and urn[-1] != "\n":
-    return urn.lower()
+  if _uuidPattern.match(id) and id[-1] != "\n":
+    return id.lower()
   else:
     return None
 
@@ -151,10 +150,10 @@ def validateIdentifier (identifier):
       return "doi:" + s
     else:
       return None
-  elif identifier.startswith("urn:uuid:"):
-    s = validateUrnUuid(identifier[9:])
+  elif identifier.startswith("uuid:"):
+    s = validateUuid(identifier[5:])
     if s != None:
-      return "urn:uuid:" + s
+      return "uuid:" + s
     else:
       return None
   else:
@@ -174,7 +173,7 @@ def validateShoulder (shoulder):
   elif shoulder.startswith("doi:"):
     id = shoulder[4:] + "X"
     return validateDoi(id) == id
-  elif shoulder == "urn:uuid:":
+  elif shoulder == "uuid:":
     return True
   else:
     return False
@@ -250,17 +249,17 @@ def shadow2doi (ark):
     doi = "10." + chr(ord("1")+ord(ark[0])-ord("c")) + ark[1:]
   return doi.upper()
 
-_urnUuidShadowArkPrefix = "97720/"
+_uuidShadowArkPrefix = "97720/"
 
-def urnUuid2shadow (urn):
+def uuid2shadow (id):
   """
-  Given a scheme-less UUID URN identifier (e.g.,
+  Given a scheme-less UUID identifier (e.g.,
   "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"), returns the corresponding
   scheme-less shadow ARK identifier (e.g.,
-  "97720/f81d4fae7dec11d0a76500a0c91e6bf6").  The URN is assumed to be
-  in canonical form; the returned identifier is in canonical form.
+  "97720/f81d4fae7dec11d0a76500a0c91e6bf6").  The UUID is assumed to
+  be in canonical form; the returned identifier is in canonical form.
   """
-  return _urnUuidShadowArkPrefix + urn.replace("-", "")
+  return _uuidShadowArkPrefix + id.replace("-", "")
 
 def _encode (pattern, s):
   return pattern.sub(lambda c: "%%%02X" % ord(c.group(0)), s.encode("UTF-8"))

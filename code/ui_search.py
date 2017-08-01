@@ -172,7 +172,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
       # explicitly override the form's __init__ method
       if 'keywords' in q2:
         kw = re.sub('[\"\']', '', q2['keywords'])
-        if kw.lower().startswith(("doi:", "ark:/", "urn:uuid:")) and \
+        if kw.lower().startswith(("doi:", "ark:/", "uuid:")) and \
           (' ' not in kw) and uic.isEmptyStr(q2['identifier']):
           q2['keywords'] = ''
           q2['identifier'] = kw

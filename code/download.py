@@ -199,7 +199,7 @@ _parameters = {
   "profile": (True, _validateString),
   "status": (True, lambda v: _validateEnumerated(v, ["reserved", "public",
     "unavailable"])),
-  "type": (True, lambda v: _validateEnumerated(v, ["ark", "doi", "urn"])),
+  "type": (True, lambda v: _validateEnumerated(v, ["ark", "doi", "uuid"])),
   "updatedAfter": (False, _validateTimestamp),
   "updatedBefore": (False, _validateTimestamp)
 }

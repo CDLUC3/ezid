@@ -57,12 +57,8 @@ class Identifier (django.db.models.Model):
     return self.identifier.startswith("doi:")
 
   @property
-  def isUrn (self):
-    return self.identifier.startswith("urn:")
-
-  @property
-  def isUrnUuid (self):
-    return self.identifier.startswith("urn:uuid:")
+  def isUuid (self):
+    return self.identifier.startswith("uuid:")
 
   # A note on foreign keys: since the store and search databases are
   # completely separate, foreign keys must reference different target

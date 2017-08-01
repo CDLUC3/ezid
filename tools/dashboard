@@ -4,7 +4,7 @@
 # dashboard service.
 #
 # The statistics consist of cumulative identifier counts aggregated by
-# month and broken down by identifier type (URNs are not currently
+# month and broken down by identifier type (UUIDs are not currently
 # included).  The counts do not include test identifiers, but do
 # include reserved identifiers.  Example data:
 #

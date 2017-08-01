@@ -41,8 +41,8 @@ http://creativecommons.org/licenses/BSD/
           <xsl:when test="$idType = 'ARK'">
             <xsl:text>ark:/</xsl:text>
           </xsl:when>
-          <xsl:when test="$idType = 'URN:UUID'">
-            <xsl:text>urn:uuid:</xsl:text>
+          <xsl:when test="$idType = 'UUID'">
+            <xsl:text>uuid:</xsl:text>
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of select="$idType"/>

@@ -223,7 +223,7 @@ def unavailable_codes(for_field):
 def _urlForm (id):
   if id.startswith("doi:"):
     return "%s/%s" % (config.get("resolver.doi"), urllib.quote(id[4:], ":/"))
-  elif id.startswith("ark:/") or id.startswith("urn:uuid:"):
+  elif id.startswith("ark:/") or id.startswith("uuid:"):
     return "%s/%s" % (config.get("resolver.ark"), urllib.quote(id, ":/"))
   else:
     return "[None]"
@@ -257,7 +257,7 @@ def duplicate_id_types(prefixes):
       return True
   return False
 
-#returns list of unique ID types such as ARK/DOI/URN with the
+#returns list of unique ID types such as ARK/DOI/UUID with the
 #prefix information, ((prefix, prefix_obj), etc)
 #should only be called where only one prefix per type
 @register.filter(name='unique_id_types')

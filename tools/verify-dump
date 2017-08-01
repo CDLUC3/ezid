@@ -58,7 +58,7 @@ FIELDS = {
   "_ezid_role": None
 }
 
-URN_PREFIX = util.urnUuid2shadow("")
+UUID_PREFIX = util.uuid2shadow("")
 
 # The following constants could and should be obtained from the user
 # system, but we hardcode them here so that this script can be run
@@ -81,11 +81,11 @@ _agents = {}
 def isDoi (identifier):
   return re.match("[a-z]", identifier) != None
 
-def isUrn (identifier):
-  return identifier.startswith(URN_PREFIX)
+def isUuid (identifier):
+  return identifier.startswith(UUID_PREFIX)
 
 def isArk (identifier):
-  return not isDoi(identifier) and not isUrn(identifier)
+  return not isDoi(identifier) and not isUuid(identifier)
 
 def defaultTarget (identifier):
   return "%s/id/%s" % (_baseurl, urllib.quote(identifier, ":/"))

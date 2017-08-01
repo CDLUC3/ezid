@@ -266,9 +266,9 @@ def validateDcmsRecord (identifier, record, schemaValidate=True):
   elif identifier.startswith("ark:/"):
     type = "ARK"
     identifier = identifier[5:]
-  elif identifier.startswith("urn:uuid:"):
-    type = "URN:UUID"
-    identifier = identifier[9:]
+  elif identifier.startswith("uuid:"):
+    type = "UUID"
+    identifier = identifier[5:]
   else:
     assert False, "unrecognized identifier scheme"
   assert i.attrib["identifierType"] == type,\
@@ -352,9 +352,9 @@ def formRecord (identifier, metadata, supplyMissing=False):
   elif identifier.startswith("ark:/"):
     idType = "ARK"
     idBody = identifier[5:]
-  elif identifier.startswith("urn:uuid:"):
-    idType = "URN:UUID"
-    idBody = identifier[9:]
+  elif identifier.startswith("uuid:"):
+    idType = "UUID"
+    idBody = identifier[5:]
   else:
     assert False, "unhandled case"
   if metadata.get("datacite", "").strip() != "":

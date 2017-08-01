@@ -141,14 +141,14 @@ URL form   \http://n2t.net/`ark:/nnnnn/suffix`:hl1:
 EZID URL   \https://ezid.cdlib.org/id/`ark:/nnnnn/suffix`:hl1:
 ========== ====================================================
 
-For URN identifiers:
+For UUID identifiers:
 
 .. class:: leftheaders
 
 ========== ====================================================
-Identifier `urn:nid:suffix`:hl1:
-URL form   \http://n2t.net/`urn:nid:suffix`:hl1:
-EZID URL   \https://ezid.cdlib.org/id/`urn:nid:suffix`:hl1:
+Identifier `uuid:suffix`:hl1:
+URL form   \http://n2t.net/`uuid:suffix`:hl1:
+EZID URL   \https://ezid.cdlib.org/id/`uuid:suffix`:hl1:
 ========== ====================================================
 
 API vs. UI
@@ -536,7 +536,7 @@ Here's a sample interaction creating an ARK identifier:
 
 The return is a status line.  If an ARK identifier was created, the
 normalized form of the identifier is returned as shown above.  If an
-identifier other than an ARK was created (e.g., a DOI or URN), the
+identifier other than an ARK was created (e.g., a DOI or UUID), the
 status line includes the normalized form of the identifier and,
 separated by a pipe character ("|", U+007C), the identifier's shadow
 ARK (see `Shadow ARKs`_ for more information).  Note that different
@@ -894,7 +894,7 @@ those profiles that it explicitly supports.
    for any purpose (research, education, entertainment,
    administration), any subject focus (oceanography, sales, religion,
    archiving), and any medium (television, newspaper, database, book).
-   This is the default profile for ARK and URN identifiers.
+   This is the default profile for ARK and UUID identifiers.
 
 __ ERC_
 
@@ -1035,7 +1035,7 @@ __ `DataCite Metadata Scheme`_
 
    If an XML document is bound to a non-DOI identifier then, in an
    extension to the DataCite schema, the identifier type in the
-   document must be set to "ARK" or "\URN:UUID" as appropriate.
+   document must be set to "ARK" or "UUID" as appropriate.
 
    Care should be taken to escape line terminators and percent signs
    in the document (as is true for all metadata element values; see
@@ -2156,7 +2156,7 @@ identifiers).
 
   Return identifiers having the specified status.
 
-- type={ark|doi|urn} *(repeatable)*
+- type={ark|doi|uuid} *(repeatable)*
 
   Return identifiers of the specified type.
 
@@ -2223,7 +2223,7 @@ profiles`_ above) to one of two delivery formats: `Dublin Core`__
 records stored in EZID are converted to version 4 of the DataCite
 schema for uniformity.  Note that, in an extension to the DataCite
 schema, the identifier type for non-DOI identifiers is set to "ARK" or
-"\URN:UUID" as appropriate.
+"UUID" as appropriate.
 
 __ `Dublin Core Metadata Element Set`_
 __ `DataCite Metadata Scheme`_

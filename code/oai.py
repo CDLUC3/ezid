@@ -221,10 +221,10 @@ def _doGetRecord (oaiRequest):
     id = util.validateDoi(id[4:])
     if id == None: return _error(oaiRequest, "idDoesNotExist")
     id = util.doi2shadow(id)
-  elif id.startswith("urn:uuid:"):
-    id = util.validateUrnUuid(id[9:])
+  elif id.startswith("uuid:"):
+    id = util.validateUuid(id[5:])
     if id == None: return _error(oaiRequest, "idDoesNotExist")
-    id = util.urnUuid2shadow(id)
+    id = util.uuid2shadow(id)
   else:
     return _error(oaiRequest, "idDoesNotExist")
   m = store.get(id)

@@ -123,7 +123,7 @@ identifiers:</p>
 </tr>
 </tbody>
 </table>
-<p>For URN identifiers:</p>
+<p>For UUID identifiers:</p>
 <table border="1" class="leftheaders docutils">
 <colgroup>
 <col width="16%" />
@@ -131,13 +131,13 @@ identifiers:</p>
 </colgroup>
 <tbody valign="top">
 <tr><td>Identifier</td>
-<td><span class="hl1">urn:nid:suffix</span></td>
+<td><span class="hl1">uuid:suffix</span></td>
 </tr>
 <tr><td>URL form</td>
-<td>http://n2t.net/<span class="hl1">urn:nid:suffix</span></td>
+<td>http://n2t.net/<span class="hl1">uuid:suffix</span></td>
 </tr>
 <tr><td>EZID URL</td>
-<td>https://ezid.cdlib.org/id/<span class="hl1">urn:nid:suffix</span></td>
+<td>https://ezid.cdlib.org/id/<span class="hl1">uuid:suffix</span></td>
 </tr>
 </tbody>
 </table>
@@ -479,7 +479,7 @@ metadata</a> below.</p>
 </pre>
 <p>The return is a status line.  If an ARK identifier was created, the
 normalized form of the identifier is returned as shown above.  If an
-identifier other than an ARK was created (e.g., a DOI or URN), the
+identifier other than an ARK was created (e.g., a DOI or UUID), the
 status line includes the normalized form of the identifier and,
 separated by a pipe character (&quot;|&quot;, U+007C), the identifier's shadow
 ARK (see <a class="reference internal" href="#shadow-arks">Shadow ARKs</a> for more information).  Note that different
@@ -860,7 +860,7 @@ physical, abstract) or agent (person, group, software, satellite)
 for any purpose (research, education, entertainment,
 administration), any subject focus (oceanography, sales, religion,
 archiving), and any medium (television, newspaper, database, book).
-This is the default profile for ARK and URN identifiers.</li>
+This is the default profile for ARK and UUID identifiers.</li>
 </ol>
 <blockquote>
 <table border="1" class="docutils">
@@ -1035,7 +1035,7 @@ included in the document, though, so the XML document may resemble:</p>
 </pre>
 <p>If an XML document is bound to a non-DOI identifier then, in an
 extension to the DataCite schema, the identifier type in the
-document must be set to &quot;ARK&quot; or &quot;URN:UUID&quot; as appropriate.</p>
+document must be set to &quot;ARK&quot; or &quot;UUID&quot; as appropriate.</p>
 <p>Care should be taken to escape line terminators and percent signs
 in the document (as is true for all metadata element values; see
 <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above).  Once properly escaped, the
@@ -2073,7 +2073,7 @@ directly owned by the requestor are returned.</p>
 <li><p class="first">status={reserved|public|unavailable} <em>(repeatable)</em></p>
 <p>Return identifiers having the specified status.</p>
 </li>
-<li><p class="first">type={ark|doi|urn} <em>(repeatable)</em></p>
+<li><p class="first">type={ark|doi|uuid} <em>(repeatable)</em></p>
 <p>Return identifiers of the specified type.</p>
 </li>
 <li><p class="first">updatedAfter=<span class="hl1">t</span>, updatedBefore=<span class="hl1">t</span></p>
@@ -2123,7 +2123,7 @@ profiles</a> above) to one of two delivery formats: <a class="reference external
 records stored in EZID are converted to version 4 of the DataCite
 schema for uniformity.  Note that, in an extension to the DataCite
 schema, the identifier type for non-DOI identifiers is set to &quot;ARK&quot; or
-&quot;URN:UUID&quot; as appropriate.</p>
+&quot;UUID&quot; as appropriate.</p>
 </div>
 </div>
 {% endblock %}

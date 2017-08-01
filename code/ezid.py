@@ -9,11 +9,11 @@
 # the canonical form of that identifier (see util.validateArk);
 # metadata for a non-ARK identifier (e.g., doi:10.5060/FOO) is keyed
 # by the identifier's shadow ARK (e.g., ark:/b5060/foo).  The
-# supported non-ARK identifiers include DOIs and URNs.
+# supported non-ARK identifiers include DOIs and UUIDs.
 #
 # The shadow ARK for a non-ARK identifier is computable by a simple
-# mapping (see util.doi2shadow, util.urnUuid2shadow, etc.); the
-# reverse mapping is not simple and requires a lookup.
+# mapping (see util.doi2shadow, util.uuid2shadow, etc.); the reverse
+# mapping is not simple and requires a lookup.
 #
 # Shadow ARKs provide a technical means of storing metadata for
 # non-ARK identifiers, but they're also identifiers in their own
@@ -175,19 +175,19 @@ _ezidUrl = None
 _noidReadEnabled = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
-_defaultUrnUuidProfile = None
+_defaultUuidProfile = None
 _perUserThreadLimit = None
 _perUserThrottle = None
 
 def _loadConfig ():
   global _ezidUrl, _noidReadEnabled, _defaultDoiProfile, _defaultArkProfile
-  global _defaultUrnUuidProfile
+  global _defaultUuidProfile
   global _perUserThreadLimit, _perUserThrottle
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
   _noidReadEnabled = (config.get("binder.read_enabled").lower() == "true")
   _defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.get("DEFAULT.default_ark_profile")
-  _defaultUrnUuidProfile = config.get("DEFAULT.default_urn_uuid_profile")
+  _defaultUuidProfile = config.get("DEFAULT.default_uuid_profile")
   _perUserThreadLimit = int(config.get("DEFAULT.max_threads_per_user"))
   _perUserThrottle =\
     int(config.get("DEFAULT.max_concurrent_operations_per_user"))
@@ -348,8 +348,8 @@ def _validateMetadata (identifier, user, metadata):
         metadata["_p"] = _defaultDoiProfile
       elif identifier.startswith("ark:/"):
         metadata["_p"] = _defaultArkProfile
-      elif identifier.startswith("urn:uuid:"):
-        metadata["_p"] = _defaultUrnUuidProfile
+      elif identifier.startswith("uuid:"):
+        metadata["_p"] = _defaultUuidProfile
       else:
         assert False, "unhandled case"
     del metadata["_profile"]
@@ -729,9 +729,9 @@ def createArk (ark, user, metadata={}):
   finally:
     _releaseIdentifierLock(ark, user.username)
 
-def mintUrnUuid (user, metadata={}):
+def mintUuid (user, metadata={}):
   """
-  Mints a UUID URN.  'user' is the requestor and should be an
+  Mints a UUID.  'user' is the requestor and should be an
   authenticated StoreUser object.  'metadata' should be a dictionary
   of element (name, value) pairs.  If an initial target URL is not
   supplied, the identifier is given a self-referential target URL.
@@ -747,13 +747,13 @@ def mintUrnUuid (user, metadata={}):
     error: bad request - subreason...
     error: internal server error
   """
-  return createUrnUuid(uuid.uuid1().urn[9:], user, metadata)
+  return createUuid(str(uuid.uuid1()), user, metadata)
 
-def createUrnUuid (urn, user, metadata={}):
+def createUuid (id, user, metadata={}):
   """
-  Creates a UUID URN identifier having the given scheme-less name,
-  e.g., "f81d4fae-7dec-11d0-a765-00a0c91e6bf6".  The identifier must
-  not already exist.  'user' is the requestor and should be an
+  Creates a UUID identifier having the given scheme-less name, e.g.,
+  "f81d4fae-7dec-11d0-a765-00a0c91e6bf6".  The identifier must not
+  already exist.  'user' is the requestor and should be an
   authenticated StoreUser object.  'metadata' should be a dictionary
   of element (name, value) pairs.  If an initial target URL is not
   supplied, the identifier is given a self-referential target URL.
@@ -770,13 +770,13 @@ def createUrnUuid (urn, user, metadata={}):
     error: internal server error
     error: concurrency limit exceeded
   """
-  urn = util.validateUrnUuid(urn)
-  if not urn: return "error: bad request - invalid UUID URN identifier"
-  qurn = "urn:uuid:" + urn
-  shadowArk = util.urnUuid2shadow(urn)
+  id = util.validateUuid(id)
+  if not id: return "error: bad request - invalid UUID identifier"
+  qid = "uuid:" + id
+  shadowArk = util.uuid2shadow(id)
   m = { "_profile": "", "_target": "" }
   m.update(metadata)
-  r = _validateMetadata(qurn, user, m)
+  r = _validateMetadata(qid, user, m)
   if type(r) is str: return "error: bad request - " + r
   if "_is" in m:
     if m["_is"] == "public":
@@ -784,20 +784,20 @@ def createUrnUuid (urn, user, metadata={}):
     elif m["_is"] != "reserved":
       return "error: bad request - invalid identifier status at creation time"
   if m.get("_x", "") == "yes": del m["_x"]
-  r = _validateDatacite(qurn, m, "_is" not in m)
+  r = _validateDatacite(qid, m, "_is" not in m)
   if type(r) is str: return "error: bad request - " + r
   tid = uuid.uuid1()
   if not _acquireIdentifierLock(shadowArk, user.username):
     return "error: concurrency limit exceeded"
   try:
-    log.begin(tid, "createUrnUuid", urn, user.username, user.pid,
+    log.begin(tid, "createUuid", id, user.username, user.pid,
       user.group.groupname, user.group.pid,
       *[a for p in metadata.items() for a in p])
-    if not policy.authorizeCreate(user, qurn):
+    if not policy.authorizeCreate(user, qid):
       log.forbidden(tid)
       return "error: forbidden"
     if "_o" in m:
-      if not policy.authorizeOwnershipChange(user, qurn, user.pid, m["_o"]):
+      if not policy.authorizeOwnershipChange(user, qid, user.pid, m["_o"]):
         log.badRequest(tid)
         return "error: bad request - ownership change prohibited"
     if _identifierExists(shadowArk):
@@ -805,11 +805,11 @@ def createUrnUuid (urn, user, metadata={}):
       return "error: bad request - identifier already exists"
     t = str(int(time.time()))
     _softUpdate(m, { "_o": user.pid, "_g": user.group.pid, "_c": t, "_u": t,
-      "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qurn })
+      "_su": t, "_t": _defaultTarget("ark:/" + shadowArk), "_s": qid })
     if m.get("_is", "public") == "reserved":
       m["_t1"] = m["_t"]
       m["_st1"] = m["_st"]
-      m["_st"] = _defaultTarget(qurn)
+      m["_st"] = _defaultTarget(qid)
     # TRANSITION BEGIN
     m["_t"] = m["_st"]
     if "_t1" in m: m["_t1"] = m["_st1"]
@@ -822,7 +822,7 @@ def createUrnUuid (urn, user, metadata={}):
     return "error: internal server error"
   else:
     log.success(tid)
-    return "success: " + urn + " | ark:/" + shadowArk
+    return "success: " + id + " | ark:/" + shadowArk
   finally:
     _releaseIdentifierLock(shadowArk, user.username)
 
@@ -861,10 +861,10 @@ def mintIdentifier (prefix, user, metadata={}):
       return "success: ark:/" + s[9:]
     else:
       return s
-  elif prefix == "urn:uuid:":
-    s = mintUrnUuid(user, metadata)
+  elif prefix == "uuid:":
+    s = mintUuid(user, metadata)
     if s.startswith("success: "):
-      return "success: urn:uuid:" + s[9:]
+      return "success: uuid:" + s[9:]
     else:
       return s
   else:
@@ -905,10 +905,10 @@ def createIdentifier (identifier, user, metadata={}):
       return "success: ark:/" + s[9:]
     else:
       return s
-  elif identifier.startswith("urn:uuid:"):
-    s = createUrnUuid(identifier[9:], user, metadata)
+  elif identifier.startswith("uuid:"):
+    s = createUuid(identifier[5:], user, metadata)
     if s.startswith("success: "):
-      return "success: urn:uuid:" + s[9:]
+      return "success: uuid:" + s[9:]
     else:
       return s
   else:
@@ -975,11 +975,11 @@ def getMetadata (identifier, user=ezidapp.models.AnonymousUser):
     ark = util.validateArk(identifier[5:])
     if not ark: return "error: bad request - invalid ARK identifier"
     nqidentifier = "ark:/" + ark
-  elif identifier.startswith("urn:uuid:"):
-    urn = util.validateUrnUuid(identifier[9:])
-    if not urn: return "error: bad request - invalid UUID URN identifier"
-    ark = util.urnUuid2shadow(urn)
-    nqidentifier = "urn:uuid:" + urn
+  elif identifier.startswith("uuid:"):
+    id = util.validateUuid(identifier[5:])
+    if not id: return "error: bad request - invalid UUID identifier"
+    ark = util.uuid2shadow(id)
+    nqidentifier = "uuid:" + id
   else:
     return "error: bad request - unrecognized identifier scheme"
   tid = uuid.uuid1()
@@ -1051,11 +1051,11 @@ def setMetadata (identifier, user, metadata, updateExternalServices=True):
     ark = util.validateArk(identifier[5:])
     if not ark: return "error: bad request - invalid ARK identifier"
     nqidentifier = "ark:/" + ark
-  elif identifier.startswith("urn:uuid:"):
-    urn = util.validateUrnUuid(identifier[9:])
-    if not urn: return "error: bad request - invalid UUID URN identifier"
-    ark = util.urnUuid2shadow(urn)
-    nqidentifier = "urn:uuid:" + urn
+  elif identifier.startswith("uuid:"):
+    id = util.validateUuid(identifier[5:])
+    if not id: return "error: bad request - invalid UUID identifier"
+    ark = util.uuid2shadow(id)
+    nqidentifier = "uuid:" + id
   else:
     return "error: bad request - unrecognized identifier scheme"
   # 'd' will be our delta dictionary, i.e., it will hold the updates
@@ -1273,11 +1273,11 @@ def deleteIdentifier (identifier, user, updateExternalServices=True):
     ark = util.validateArk(identifier[5:])
     if not ark: return "error: bad request - invalid ARK identifier"
     nqidentifier = "ark:/" + ark
-  elif identifier.startswith("urn:uuid:"):
-    urn = util.validateUrnUuid(identifier[9:])
-    if not urn: return "error: bad request - invalid UUID URN identifier"
-    ark = util.urnUuid2shadow(urn)
-    nqidentifier = "urn:uuid:" + urn
+  elif identifier.startswith("uuid:"):
+    id = util.validateUuid(identifier[5:])
+    if not id: return "error: bad request - invalid UUID identifier"
+    ark = util.uuid2shadow(id)
+    nqidentifier = "uuid:" + id
   else:
     return "error: bad request - unrecognized identifier scheme"
   tid = uuid.uuid1()
@@ -1327,10 +1327,10 @@ def asAdmin (function, *args):
     return mintArk(args[0], ezidapp.models.getAdminUser(), *args[1:])
   elif function == createArk:
     return createArk(args[0], ezidapp.models.getAdminUser(), *args[1:])
-  elif function == mintUrnUuid:
-    return mintUrnUuid(ezidapp.models.getAdminUser(), *args)
-  elif function == createUrnUuid:
-    return createUrnUuid(args[0], ezidapp.models.getAdminUser(), *args[1:])
+  elif function == mintUuid:
+    return mintUuid(ezidapp.models.getAdminUser(), *args)
+  elif function == createUuid:
+    return createUuid(args[0], ezidapp.models.getAdminUser(), *args[1:])
   elif function == mintIdentifier:
     return mintIdentifier(args[0], ezidapp.models.getAdminUser(), *args[1:])
   elif function == createIdentifier:
