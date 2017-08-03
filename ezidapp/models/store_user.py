@@ -17,6 +17,7 @@ import django.contrib.auth.hashers
 import django.contrib.auth.models
 import django.core.validators
 import django.db.models
+import django.db.transaction
 
 import shoulder
 import store_group
@@ -27,6 +28,7 @@ import validation
 # Deferred imports...
 """
 import config
+import ezidapp.admin
 """
 
 class StoreUser (user.User):
@@ -178,8 +180,21 @@ class StoreUser (user.User):
 
   def authenticate (self, password):
     # Returns True if the supplied password matches the user's.
-    return self.loginEnabled and\
-      django.contrib.auth.hashers.check_password(password, self.password)
+    if self.loginEnabled and\
+      django.contrib.auth.hashers.check_password(password, self.password):
+      # Upgrade older LDAP password hashes.
+      if self.password.split("$")[0] == "ldap_sha1":
+        import ezidapp.admin
+        try:
+          with django.db.transaction.atomic():
+            self.setPassword(password)
+            self.save()
+            ezidapp.admin.scheduleUserChangePostCommitActions(self)
+        except:
+          pass
+      return True
+    else:
+      return False
 
   class Meta:
     verbose_name = "user"
