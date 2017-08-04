@@ -29,6 +29,11 @@ def crossref_faq(request):
   d = { 'menu_item' : 'ui_home.learn' }
   return uic.render(request, 'info/crossref_faq', d)
 
+def doi_services_faq(request):
+  if request.method != "GET": return uic.methodNotAllowed(request)
+  d = { 'menu_item' : 'ui_home.learn' }
+  return uic.render(request, 'info/doi_services_faq', d)
+
 def id_basics(request):
   if request.method != "GET": return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_home.learn' }
