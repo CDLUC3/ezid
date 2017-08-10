@@ -18,6 +18,7 @@ import datetime
 import lxml.etree
 import re
 import sys
+import time
 import zlib
 
 maxIdentifierLength = 255
@@ -624,3 +625,24 @@ def dateToUpperTimestamp (date):
     return calendar.timegm(date.timetuple()) - 1
   except ValueError:
     return None
+
+def formatTimestampZulu (t):
+  """
+  Returns a Unix timestamp in ISO 8601 UTC format.
+  """
+  return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
+
+def parseTimestampZulu (s, allowDateOnly=False):
+  """
+  Parses a time (or just a date, if 'allowDateOnly' is true) in ISO
+  8601 UTC format and returns a Unix timestamp.  Raises an exception
+  on parse error.
+  """
+  t = None
+  if allowDateOnly:
+    try:
+      t = time.strptime(s, "%Y-%m-%d")
+    except:
+      pass
+  if t == None: t = time.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
+  return calendar.timegm(t)

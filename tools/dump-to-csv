@@ -37,7 +37,6 @@ import csv
 import os.path
 import re
 import sys
-import time
 
 # The following must precede any EZID module imports:
 execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
@@ -52,9 +51,6 @@ def encode (s):
     return re.sub("\s", " ", s).encode("UTF-8")
   else:
     return ""
-
-def formatTime (t):
-  return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
 
 def formatStatus (s):
   if s.startswith("unavailable"):
@@ -79,5 +75,6 @@ for l in sys.stdin:
   f.writerow([encode(e) for e in [id, r["_ownergroup"], r["_owner"],
     formatStatus(r.get("_status", "public")),
     formatExport(r.get("_export", "yes")),
-    formatTime(int(r["_created"])), formatTime(int(r["_updated"])),
+    util.formatTimestampZulu(int(r["_created"])),
+    util.formatTimestampZulu(int(r["_updated"])),
     km.creator, km.title, km.publisher, km.date, km.type, r["_target"]]])

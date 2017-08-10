@@ -14,7 +14,6 @@
 #
 # -----------------------------------------------------------------------------
 
-import calendar
 import django.conf
 import django.http
 import hashlib
@@ -78,16 +77,9 @@ def isVisible (identifier, metadata):
 def _q (elementName):
   return "{http://www.openarchives.org/OAI/2.0/}" + elementName
 
-def _formatTime (t):
-  return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
-
 def _parseTime (s):
   try:
-    try:
-      t = time.strptime(s, "%Y-%m-%d")
-    except:
-      t = time.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
-    return calendar.timegm(t)
+    return util.parseTimestampZulu(s, True)
   except:
     return None
 
@@ -100,7 +92,7 @@ def _buildResponse (oaiRequest, body):
   root.addprevious(lxml.etree.ProcessingInstruction("xml-stylesheet",
     "type='text/xsl' href='/static/stylesheets/oai2.xsl'"))
   lxml.etree.SubElement(root, _q("responseDate")).text =\
-    _formatTime(int(time.time()))
+    util.formatTimestampZulu(int(time.time()))
   e = lxml.etree.SubElement(root, _q("request"))
   e.text = _baseUrl + "/oai"
   if not body.tag.endswith("}error") or\
@@ -243,7 +235,8 @@ def _doGetRecord (oaiRequest):
   r = lxml.etree.SubElement(root, _q("record"))
   h = lxml.etree.SubElement(r, _q("header"))
   lxml.etree.SubElement(h, _q("identifier")).text = oaiRequest[1]["identifier"]
-  lxml.etree.SubElement(h, _q("datestamp")).text = _formatTime(updateTime)
+  lxml.etree.SubElement(h, _q("datestamp")).text =\
+    util.formatTimestampZulu(updateTime)
   lxml.etree.SubElement(r, _q("metadata")).append(me)
   return _buildResponse(oaiRequest, root)
 
@@ -254,7 +247,7 @@ def _doIdentify (oaiRequest):
   lxml.etree.SubElement(e, _q("protocolVersion")).text = "2.0"
   lxml.etree.SubElement(e, _q("adminEmail")).text = _adminEmail
   lxml.etree.SubElement(e, _q("earliestDatestamp")).text =\
-    _formatTime(store.oaiGetEarliestUpdateTime())
+    util.formatTimestampZulu(store.oaiGetEarliestUpdateTime())
   lxml.etree.SubElement(e, _q("deletedRecord")).text = "no"
   lxml.etree.SubElement(e, _q("granularity")).text = "YYYY-MM-DDThh:mm:ssZ"
   return _buildResponse(oaiRequest, e)
@@ -336,7 +329,8 @@ def _doHarvest (oaiRequest, batchSize, includeMetadata):
       h = lxml.etree.SubElement(e, _q("header"))
     id = ids[i][2].get("_s", "ark:/" + ids[i][0])
     lxml.etree.SubElement(h, _q("identifier")).text = id
-    lxml.etree.SubElement(h, _q("datestamp")).text = _formatTime(ids[i][1])
+    lxml.etree.SubElement(h, _q("datestamp")).text =\
+      util.formatTimestampZulu(ids[i][1])
     if includeMetadata:
       if prefix == "oai_dc":
         me = _buildDublinCoreRecord(id, ids[i][2])
