@@ -49,6 +49,10 @@ class Identifier (django.db.models.Model):
   # "ark:/12345/abc" or "doi:10.1234/ABC".
 
   @property
+  def type (self):
+    return self.identifier.split(":", 1)[0]
+
+  @property
   def isArk (self):
     return self.identifier.startswith("ark:/")
 
