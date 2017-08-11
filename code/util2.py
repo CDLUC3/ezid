@@ -16,6 +16,7 @@
 import urllib
 
 import config
+import ezidapp.models
 
 _ezidUrl = None
 _arkTestPrefix = None
@@ -86,3 +87,53 @@ def defaultProfile (identifier):
     return _defaultUuidProfile
   else:
     assert False, "unhandled case"
+
+_labelMapping = {
+  "_o": "_owner",
+  "_g": "_ownergroup",
+  "_c": "_created",
+  "_u": "_updated",
+  "_t": "_target",
+  "_s": "_shadows",
+  "_su": "_updated",
+  "_st": "_target",
+  "_p": "_profile",
+  "_is": "_status",
+  "_x": "_export",
+  "_d": "_datacenter",
+  "_cr": "_crossref"
+}
+
+def convertLegacyToExternal (d, shadowArkView=False):
+  """
+  Converts a legacy metadata dictionary from internal form (i.e., as
+  stored in the Noid "egg" binder) to external form (i.e., as returned
+  to clients).  The dictionary is modified in place.  N.B.: if the
+  dictionary is for a non-ARK identifier, this function does *not* add
+  the _shadowedby element.  If the dictionary is for a non-ARK
+  identifier and 'shadowArkView' is true, the dictionary is converted
+  to reflect the shadow ARK; otherwise, it reflects the shadowed
+  identifier.
+  """
+  if "_is" not in d: d["_is"] = "public"
+  if "_x" not in d: d["_x"] = "yes"
+  d["_o"] = ezidapp.models.getUserByPid(d["_o"]).username
+  d["_g"] = ezidapp.models.getGroupByPid(d["_g"]).groupname
+  if d["_is"] != "public":
+    d["_t"] = d["_t1"]
+    del d["_t1"]
+    if "_st1" in d:
+      d["_st"] = d["_st1"]
+      del d["_st1"]
+  if "_s" in d:
+    if shadowArkView:
+      del d["_su"]
+      del d["_st"]
+    else:
+      del d["_u"]
+      del d["_t"]
+      del d["_s"]
+  for k in d.keys():
+    if k in _labelMapping:
+      d[_labelMapping[k]] = d[k]
+      del d[k]

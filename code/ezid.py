@@ -170,6 +170,7 @@ import noid_nog
 import policy
 import store
 import util
+import util2
 
 _ezidUrl = None
 _noidReadEnabled = None
@@ -914,40 +915,6 @@ def createIdentifier (identifier, user, metadata={}):
   else:
     return "error: bad request - unrecognized identifier scheme"
 
-def convertMetadataDictionary (d, ark, shadowArkView=False):
-  """
-  Converts a metadata dictionary from internal form (i.e., as stored)
-  to external form (i.e., as returned to clients).  The dictionary is
-  modified in place.  'ark' is the unqualified ARK identifier (e.g.,
-  "13030/foo") to which the metadata belongs.  If the dictionary is
-  for a non-ARK identifier and 'shadowArkView' is true, the dictionary
-  is converted to reflect the shadow ARK; otherwise, it reflects the
-  shadowed identifier.
-  """
-  if d.get("_is", "public") != "public":
-    d["_t"] = d["_t1"]
-    del d["_t1"]
-    if "_st1" in d:
-      d["_st"] = d["_st1"]
-      del d["_st1"]
-  if "_s" in d:
-    if shadowArkView:
-      del d["_su"]
-      del d["_st"]
-    else:
-      del d["_u"]
-      del d["_t"]
-      del d["_s"]
-      d["_shadowedby"] = "ark:/" + ark
-  for k in filter(lambda k: k.startswith("_"), d):
-    if k in _labelMapping:
-      d[_labelMapping[k]] = d[k]
-      del d[k]
-  d["_owner"] = ezidapp.models.getUserByPid(d["_owner"]).username
-  d["_ownergroup"] = ezidapp.models.getGroupByPid(d["_ownergroup"]).groupname
-  if "_status" not in d: d["_status"] = "public"
-  if "_export" not in d: d["_export"] = "yes"
-
 def getMetadata (identifier, user=ezidapp.models.AnonymousUser):
   """
   Returns all metadata for a given qualified identifier, e.g.,
@@ -1001,7 +968,9 @@ def getMetadata (identifier, user=ezidapp.models.AnonymousUser):
       if "_st1" in d: d["_t1"] = d["_st1"]
       d["_u"] = d["_su"]
     # TRANSITION END
-    convertMetadataDictionary(d, ark, nqidentifier.startswith("ark:/"))
+    util2.convertLegacyToExternal(d,
+      nqidentifier.startswith("ark:/") and "_s" in d)
+    if not nqidentifier.startswith("ark:/"): d["_shadowedby"] = "ark:/" + ark
     log.success(tid)
     return ("success: " + nqidentifier, d)
   except Exception, e:
