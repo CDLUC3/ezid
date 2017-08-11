@@ -64,6 +64,18 @@ class Identifier (django.db.models.Model):
   def isUuid (self):
     return self.identifier.startswith("uuid:")
 
+  @property
+  def arkAlias (self):
+    # The identifier expressed in ARK syntax, regardless of type.
+    if self.isArk:
+      return self.identifier
+    elif self.isDoi:
+      return "ark:/" + util.doi2shadow(self.identifier[4:])
+    elif self.isUuid:
+      return "ark:/" + util.uuid2shadow(self.identifier[5:])
+    else:
+      assert False, "unhandled case"
+
   # A note on foreign keys: since the store and search databases are
   # completely separate, foreign keys must reference different target
   # models, and so the declaration of all foreign keys is deferred to
