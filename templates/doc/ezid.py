@@ -1,15 +1,16 @@
 #! /usr/bin/env python
 
-# EZID command line client.  The output is Unicode using UTF-8
-# encoding unless overriden by the -e option.  By default, ANVL
-# responses (currently, that's all responses) are left in %-encoded
-# form.
+# EZID command line client.  Input metadata (from command line
+# parameters and files) is assumed to be UTF-8 encoded, and output
+# metadata is UTF-8 encoded, unless overriden by the -e option.  By
+# default, ANVL responses (currently, that's all responses) are left
+# in %-encoded form.
 #
 # Usage: ezid.py [options] credentials operation...
 #
 #   options:
 #     -d          decode ANVL responses
-#     -e ENCODING output character encoding
+#     -e ENCODING character encoding; defaults to UTF-8
 #     -o          one line per ANVL value: convert newlines to spaces
 #     -t          format timestamps
 #
@@ -48,9 +49,8 @@
 #
 #   ezid.py username:password mint doi:10.5072/FK2 datacite @metadata.xml
 #
-# In both of the above cases, the contents of the named file are
-# assumed to be UTF-8 encoded.  And in both cases, the interpretation
-# of @ can be defeated by doubling it.
+# In both of the above cases, the interpretation of @ can be defeated
+# by doubling it.
 #
 # Greg Janee <gjanee@ucop.edu>
 # May 2013
@@ -85,7 +85,7 @@ USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
 
   options:
     -d          decode ANVL responses
-    -e ENCODING output character encoding
+    -e ENCODING character encoding; defaults to UTF-8
     -o          one line per ANVL value: convert newlines to spaces
     -t          format timestamps
 
@@ -129,9 +129,9 @@ class MyHTTPErrorProcessor (urllib2.HTTPErrorProcessor):
 def formatAnvlRequest (args):
   request = []
   for i in range(0, len(args), 2):
-    k = args[i]
+    k = args[i].decode(_options.encoding)
     if k == "@":
-      f = codecs.open(args[i+1], encoding="UTF-8")
+      f = codecs.open(args[i+1], encoding=_options.encoding)
       request += [l.strip("\r\n") for l in f.readlines()]
       f.close()
     else:
@@ -139,11 +139,11 @@ def formatAnvlRequest (args):
         k = "@"
       else:
         k = re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), k)
-      v = args[i+1]
+      v = args[i+1].decode(_options.encoding)
       if v.startswith("@@"):
         v = v[1:]
       elif v.startswith("@") and len(v) > 1:
-        f = codecs.open(v[1:], encoding="UTF-8")
+        f = codecs.open(v[1:], encoding=_options.encoding)
         v = f.read()
         f.close()
       v = re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), v)
@@ -198,13 +198,13 @@ def printAnvlResponse (response, sortLines=False):
       line = re.sub("%([0-9a-fA-F][0-9a-fA-F])",
         lambda m: chr(int(m.group(1), 16)), line)
     if _options.oneLine: line = line.replace("\n", " ").replace("\r", " ")
-    print line.encode(_options.outputEncoding)
+    print line.encode(_options.encoding)
 
 # Process command line arguments.
 
 parser = optparse.OptionParser(formatter=MyHelpFormatter())
 parser.add_option("-d", action="store_true", dest="decode", default=False)
-parser.add_option("-e", action="store", dest="outputEncoding", default="UTF-8")
+parser.add_option("-e", action="store", dest="encoding", default="UTF-8")
 parser.add_option("-o", action="store_true", dest="oneLine", default=False)
 parser.add_option("-t", action="store_true", dest="formatTimestamps",
   default=False)
