@@ -21,7 +21,6 @@
 #
 # -----------------------------------------------------------------------------
 
-import calendar
 import csv
 import django.conf
 import django.core.mail
@@ -33,16 +32,13 @@ import subprocess
 import threading
 import time
 import uuid
-import xml.sax.saxutils
 
 import anvl
 import config
-import ezid
 import ezidapp.models
 import log
-import mapping
 import policy
-import store
+import util
 import util2
 
 _ezidUrl = None
@@ -95,9 +91,6 @@ _compressionCode = {
   "zip": ezidapp.models.DownloadQueue.ZIP
 }
 
-def _oneline (s):
-  return re.sub("\s", " ", s)
-
 class _ValidationException (Exception):
   pass
 
@@ -116,7 +109,7 @@ def _validateBoolean (v):
 def _validateTimestamp (v):
   try:
     try:
-      return calendar.timegm(time.strptime(v, "%Y-%m-%dT%H:%M:%SZ"))
+      return util.parseTimestampZulu(v)
     except:
       return int(v)
   except:
@@ -246,7 +239,7 @@ def enqueueRequest (user, request):
     d = {}
     for k in request:
       if k not in _parameters:
-        return error("invalid parameter: " + _oneline(k))
+        return error("invalid parameter: " + util.oneLine(k))
       try:
         if _parameters[k][0]:
           d[k] = map(_parameters[k][1], request.getlist(k))
@@ -363,7 +356,7 @@ def _path (r, i):
   return os.path.join(d, "%s.%s" % (r.filename, s))
 
 def _csvEncode (s):
-  return _oneline(s).encode("UTF-8")
+  return util.oneLine(s).encode("UTF-8")
 
 def _flushFile (f):
   f.flush()
@@ -392,82 +385,75 @@ def _createFile (r):
   finally:
     if f: f.close()
 
-def _satisfiesConstraints (id, record, constraints):
+def _satisfiesConstraints (id, constraints):
   for k, v in constraints.items():
     if k == "createdAfter":
-      if int(record["_created"]) < v: return False
+      if id.createTime < v: return False
     elif k == "createdBefore":
-      if int(record["_created"]) >= v: return False
+      if id.createTime >= v: return False
     elif k == "crossref":
-      c = record.get("_crossref", "no").startswith("yes")
-      if v^c: return False
+      if id.isCrossref^v: return False
     elif k == "exported":
-      e = (record["_export"] == "yes")
-      if v^e: return False
+      if id.exported^v: return False
     elif k == "permanence":
-      if (v == "test") ^ util2.isTestIdentifier(id): return False
+      if id.isTest^(v == "test"): return False
     elif k == "profile":
-      if record["_profile"] not in v: return False
+      if id.profile.label not in v: return False
     elif k == "status":
-      s = record["_status"]
-      if s.startswith("unavailable"): s = "unavailable"
-      if s not in v: return False
+      if id.get_status_display() not in v: return False
     elif k == "type":
-      if id.split(":", 1)[0] not in v: return False
+      if id.type not in v: return False
     elif k == "updatedAfter":
-      if int(record["_updated"]) < v: return False
+      if id.updateTime < v: return False
     elif k == "updatedBefore":
-      if int(record["_updated"]) >= v: return False
+      if id.updateTime >= v: return False
     else:
       assert False, "unhandled case"
   return True
 
-def _writeAnvl (f, id, record):
+def _prepareMetadata (id, convertTimestamps):
+  d = id.toLegacy()
+  util2.convertLegacyToExternal(d)
+  if not id.isArk: d["_shadowedby"] = id.arkAlias
+  if convertTimestamps:
+    d["_created"] = util.formatTimestampZulu(int(d["_created"]))
+    d["_updated"] = util.formatTimestampZulu(int(d["_updated"]))
+  return d
+
+def _writeAnvl (f, id, metadata):
   if f.tell() > 0: f.write("\n")
-  f.write(":: %s\n" % id)
-  f.write(anvl.format(record).encode("UTF-8"))
+  f.write(":: %s\n" % id.identifier)
+  f.write(anvl.format(metadata).encode("UTF-8"))
 
-_mappedFields = set(["_mappedCreator", "_mappedTitle", "_mappedPublisher",
-  "_mappedDate", "_mappedType"])
-
-def _writeCsv (f, id, record, columns):
+def _writeCsv (f, columns, id, metadata):
   w = csv.writer(f)
   l = []
-  km = None
   for c in columns:
     if c == "_id":
-      l.append(id)
-    elif c in _mappedFields:
-      if km == None: km = mapping.map(record)
-      v = getattr(km, c[7:].lower())
-      l.append(v if v != None else "")
+      l.append(id.identifier)
+    elif c == "_mappedCreator":
+      l.append(id.resourceCreator)
+    elif c == "_mappedTitle":
+      l.append(id.resourceTitle)
+    elif c == "_mappedPublisher":
+      l.append(id.resourcePublisher)
+    elif c == "_mappedDate":
+      l.append(id.resourcePublicationDate)
+    elif c == "_mappedType":
+      l.append(id.resourceType)
     else:
-      l.append(record.get(c, ""))
+      l.append(metadata.get(c, ""))
   w.writerow([_csvEncode(c) for c in l])
 
-def _xmlEscape (s):
-  return xml.sax.saxutils.escape(s, { "\"": "&quot;" })
-
-_prologRE = re.compile("<\?xml\s+version\s*=\s*['\"][-\w.:]+[\"']" +\
-  "(\s+encoding\s*=\s*['\"][-\w.]+[\"'])?" +\
-  "(\s+standalone\s*=\s*['\"](yes|no)[\"'])?\s*\?>\s*")
-
-def _removeProlog (document):
-  m = _prologRE.match(document)
-  if m:
-    return document[len(m.group(0)):]
-  else:
-    return document
-
-def _writeXml (f, id, record):
-  f.write("<record identifier=\"%s\">" % _xmlEscape(id))
-  for k, v in record.items():
+def _writeXml (f, id, metadata):
+  f.write("<record identifier=\"%s\">" % util.xmlEscape(id.identifier))
+  for k, v in metadata.items():
     if k in ["datacite", "crossref"]:
-      v = _removeProlog(v)
+      v = util.removeXmlDeclaration(v)
     else:
-      v = _xmlEscape(v)
+      v = util.xmlEscape(v)
     f.write(("<element name=\"%s\">%s</element>" %\
-      (_xmlEscape(k), v)).encode("UTF-8"))
+      (util.xmlEscape(k), v)).encode("UTF-8"))
   f.write("</record>")
 
 def _harvest1 (r, f):
@@ -476,26 +462,24 @@ def _harvest1 (r, f):
   options = _decode(r.options)
   while True:
     _checkAbort()
-    ids = store.harvest(owner=r.toHarvest.split(",")[r.currentIndex],
-      start=r.lastId, maximum=1000)
+    qs = ezidapp.models.SearchIdentifier.objects.filter(
+      identifier__gt=r.lastId)\
+      .filter(owner__pid=r.toHarvest.split(",")[r.currentIndex])\
+      .select_related("owner", "ownergroup", "datacenter", "profile")\
+      .order_by("identifier")
+    ids = list(qs[:1000])
     if len(ids) == 0: break
     try:
-      for id, record in ids:
-        nqidentifier = record.get("_s", "ark:/" + id)
-        ezid.convertMetadataDictionary(record, id)
-        if _satisfiesConstraints(nqidentifier, record, constraints):
-          if options["convertTimestamps"]:
-            record["_created"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
-              time.gmtime(int(record["_created"])))
-            record["_updated"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
-              time.gmtime(int(record["_updated"])))
-          _checkAbort()
+      for id in ids:
+        _checkAbort()
+        if _satisfiesConstraints(id, constraints):
+          m = _prepareMetadata(id, options["convertTimestamps"])
           if r.format == ezidapp.models.DownloadQueue.ANVL:
-            _writeAnvl(f, nqidentifier, record)
+            _writeAnvl(f, id, m)
           elif r.format == ezidapp.models.DownloadQueue.CSV:
-            _writeCsv(f, nqidentifier, record, columns)
+            _writeCsv(f, columns, id, m)
           elif r.format == ezidapp.models.DownloadQueue.XML:
-            _writeXml(f, nqidentifier, record)
+            _writeXml(f, id, m)
           else:
             assert False, "unhandled case"
       _checkAbort()
@@ -504,7 +488,7 @@ def _harvest1 (r, f):
       raise
     except Exception, e:
       raise _wrapException("error writing file", e)
-    r.lastId = ids[-1][0]
+    r.lastId = ids[-1].identifier
     r.fileSize = f.tell()
     r.save()
 
@@ -633,6 +617,7 @@ def _daemonThread ():
   while True:
     if doSleep:
       django.db.connections["default"].close()
+      django.db.connections["search"].close()
       time.sleep(_idleSleep)
     try:
       _checkAbort()
