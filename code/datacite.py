@@ -26,7 +26,6 @@ import threading
 import time
 import urllib
 import urllib2
-import xml.sax.saxutils
 
 import config
 import ezidapp.models
@@ -306,8 +305,7 @@ def validateDcmsRecord (identifier, record, schemaValidate=True):
     assert False, "XML serialization error: " + str(e)
 
 def _interpolate (template, *args):
-  return template % tuple(xml.sax.saxutils.escape(a, { "\"": "&quot;" })\
-    for a in args)
+  return template % tuple(util.xmlEscape(a) for a in args)
 
 _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
 <resource xmlns="http://datacite.org/schema/kernel-4"

@@ -19,6 +19,7 @@ import lxml.etree
 import re
 import sys
 import time
+import xml.sax.saxutils
 import zlib
 
 maxIdentifierLength = 255
@@ -575,6 +576,13 @@ def extractXmlContent (document):
   return unicode(_extractTransform(document)).strip()[:-2]
 
 _datespecRE = re.compile("(\d{4})(?:-(\d\d)(?:-(\d\d))?)?$")
+
+def xmlEscape (s):
+  """
+  Suitably escapes a string for inclusion in an XML element or
+  attribute (assuming attributes are delimited by double quotes).
+  """
+  return xml.sax.saxutils.escape(s, { "\"": "&quot;" })
 
 def dateToLowerTimestamp (date):
   """
