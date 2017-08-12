@@ -1014,7 +1014,7 @@ class ContactForm(forms.Form):
   def __init__(self, *args, **kwargs):
     CONTACT_REASONS = (
       ("None Entered", _("Choose One")),
-      ("I would like to inquire about getting a new account", _("I would like to inquire about getting a new account")),
+      ("I would like to inquire about getting a new account for ARKs", _("I would like to inquire about getting a new account for ARKs *")),
       ("I have a problem or question about existing account", _("I have a problem or question about existing account")),
       ("Other", _("Other")),
     )
