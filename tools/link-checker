@@ -63,6 +63,7 @@ execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
 
 import config
 import ezidapp.models
+import util
 
 TABLE_UPDATE_CYCLE = int(config.get("linkchecker.table_update_cycle"))
 GOOD_RECHECK_MIN_INTERVAL = int(config.get(
@@ -334,7 +335,7 @@ def worker ():
       except urllib2.HTTPError, e:
         success = False
         returnCode = e.code
-      except Exception:
+      except Exception, e:
         success = False
         returnCode = -1
       else:
@@ -344,7 +345,10 @@ def worker ():
       if success:
         lc.checkSucceeded(mimeType, content)
       else:
-        lc.checkFailed(returnCode)
+        if returnCode >= 0:
+          lc.checkFailed(returnCode)
+        else:
+          lc.checkFailed(returnCode, util.formatException(e))
       lc.full_clean(validate_unique=False)
       lc.save()
       markLinkChecked(index)

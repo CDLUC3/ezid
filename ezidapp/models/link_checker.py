@@ -77,6 +77,10 @@ class LinkChecker (django.db.models.Model):
   # checked yet.  For link checker purposes, a return code of 200 is
   # synonymous with success.
 
+  error = django.db.models.TextField(blank=True)
+  # If returnCode is negative (i.e., if an I/O error occurred), the
+  # exception that was encountered; otherwise, empty.
+
   mimeType = django.db.models.CharField(max_length=255, blank=True)
   # If the last check was successful, the MIME type of the returned
   # resource, e.g., "text/html"; otherwise empty.
@@ -100,6 +104,7 @@ class LinkChecker (django.db.models.Model):
     self.lastCheckTime = int(time.time())
     self.numFailures = 0
     self.returnCode = 200
+    self.error = ""
     # Ensure the MIME type is small enough, both with respect to
     # character set and length.
     self.mimeType = re.sub("[^ -~]", "?", mimeType)\
@@ -107,10 +112,11 @@ class LinkChecker (django.db.models.Model):
     self.size = len(content)
     self.hash = hashlib.md5(content).hexdigest()
 
-  def checkFailed (self, code):
+  def checkFailed (self, code, error=None):
     self.lastCheckTime = int(time.time())
     self.numFailures += 1
     self.returnCode = code
+    if self.returnCode < 0: self.error = error
     self.mimeType = ""
     self.size = None
     self.hash = ""
@@ -119,6 +125,7 @@ class LinkChecker (django.db.models.Model):
     self.lastCheckTime = 0
     self.numFailures = 0
     self.returnCode = None
+    self.error = ""
     self.mimeType = ""
     self.size = None
     self.hash = ""

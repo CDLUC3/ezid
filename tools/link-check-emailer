@@ -19,6 +19,7 @@ import csv
 import django.conf
 import django.core.exceptions
 import django.core.mail
+import httplib
 import optparse
 import os
 import re
@@ -58,15 +59,25 @@ def gatherFailures (owner_id, threshold):
       del lcList[i]
   return lcList
 
+def formatError (returnCode, error):
+  if returnCode >= 0:
+    if returnCode in httplib.responses:
+      return "%d %s" % (returnCode, httplib.responses[returnCode])
+    else:
+      return "HTTP status code %d" % returnCode
+  else:
+    return error
+
 def writeCsv (lcList, filename):
   f = open(filename, "w")
   w = csv.writer(f)
-  w.writerow(["identifier", "target URL", "failures", "last check",
-    "HTTP return code", "resource creator", "resource title",
+  w.writerow(["identifier", "target URL", "failure count", "last check time",
+    "error", "resource creator", "resource title",
     "resource publisher", "resource date", "resource type"])
   for lc in lcList:
     w.writerow([lc.identifier, encode(lc.target), str(lc.numFailures),
-      util.formatTimestampZulu(lc.lastCheckTime), str(lc.returnCode),
+      util.formatTimestampZulu(lc.lastCheckTime),
+      encode(formatError(lc.returnCode, lc.error)),
       encode(lc.aux.resourceCreator), encode(lc.aux.resourceTitle),
       encode(lc.aux.resourcePublisher), encode(lc.aux.resourcePublicationDate),
       encode(lc.aux.resourceType)])
