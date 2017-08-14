@@ -40,7 +40,7 @@ only) to ask questions or report problems:</p>
 <li><a class="reference internal" href="#operation-modify-identifier">Operation: modify identifier</a></li>
 <li><a class="reference internal" href="#operation-delete-identifier">Operation: delete identifier</a></li>
 <li><a class="reference internal" href="#ownership-model">Ownership model</a></li>
-<li><a class="reference internal" href="#shadow-arks">Shadow ARKs</a></li>
+<li><a class="reference internal" href="#shadow-arks-deprecated">Shadow ARKs (deprecated)</a></li>
 <li><a class="reference internal" href="#identifier-status">Identifier status</a></li>
 <li><a class="reference internal" href="#internal-metadata">Internal metadata</a></li>
 <li><a class="reference internal" href="#metadata-profiles">Metadata profiles</a><ul>
@@ -482,10 +482,10 @@ normalized form of the identifier is returned as shown above.  If an
 identifier other than an ARK was created (e.g., a DOI or UUID), the
 status line includes the normalized form of the identifier and,
 separated by a pipe character (&quot;|&quot;, U+007C), the identifier's shadow
-ARK (see <a class="reference internal" href="#shadow-arks">Shadow ARKs</a> for more information).  Note that different
-identifier schemes have different normalization rules (e.g., DOIs are
-normalized to all uppercase letters).  Here's a sample interaction
-creating a DOI identifier:</p>
+ARK (see <a class="reference internal" href="#shadow-arks-deprecated">Shadow ARKs (deprecated)</a> for more information).  Note that
+different identifier schemes have different normalization rules (e.g.,
+DOIs are normalized to all uppercase letters).  Here's a sample
+interaction creating a DOI identifier:</p>
 <pre class="literal-block">
 ⇒ PUT /id/doi:10.9999/test HTTP/1.1
 ⇒ Host: ezid.cdlib.org
@@ -639,20 +639,17 @@ administrator.</p>
 <p>Proxies and group administrators are independent concepts.  A group
 administrator may also be a proxy, and may also have proxies.</p>
 </div>
-<div class="section" id="shadow-arks">
-<h1>Shadow ARKs</h1>
-<p>When EZID creates a non-ARK identifier (e.g., a DOI identifier), it
-also creates a related ARK identifier.  These special ARK identifiers
-are termed &quot;shadow ARKs.&quot;</p>
-<p>A non-ARK identifier and its shadow ARK have the same owner (and hence
-the same access characteristics) and the same creation time and
-citation metadata, but they have separate target URLs and update
-times.  By sharing citation metadata, a non-ARK identifier and its
-shadow ARK are intended to identify the same digital object or
-conceptual entity, but having separate target URLs allows the
-identifiers to address different representations of the object.
-Clients can also use shadow ARKs to exploit the different technical
-characteristics between ARK and non-ARK identifiers.</p>
+<div class="section" id="shadow-arks-deprecated">
+<h1>Shadow ARKs (deprecated)</h1>
+<p>A shadow ARK is an ARK identifier that functions as an alias for a
+non-ARK identifier (e.g., a DOI identifier).  EZID assigns shadow ARKs
+to all non-ARK identifiers.</p>
+<p>All EZID operations on a non-ARK identifier can be performed via the
+identifier's shadow ARK; and while a shadow ARK is an ARK identifier
+in its own right, it always resolves to the same location as the
+non-ARK identifier it shadows.  Shadow ARKs thus provide a uniform
+identifier syntax for clients working with multiple types of
+identifiers.</p>
 <p>Shadow ARKs are returned on the status line when creating or minting
 non-ARK identifiers (see <a class="reference internal" href="#operation-create-identifier">Operation: create identifier</a> and
 <a class="reference internal" href="#operation-mint-identifier">Operation: mint identifier</a> above).  Also, a non-ARK identifier's
@@ -670,11 +667,9 @@ between non-ARK identifiers and shadow ARKs.</p>
 </div>
 <div class="section" id="identifier-status">
 <h1>Identifier status</h1>
-<p>Each identifier in EZID has a status.  In the case of a non-ARK
-identifier (e.g., a DOI identifier), the identifier and its shadow ARK
-share the same status.  The status is recorded as the value of the
-&quot;_status&quot; reserved metadata element (see <a class="reference internal" href="#internal-metadata">Internal metadata</a> below)
-and may be one of:</p>
+<p>Each identifier in EZID has a status.  The status is recorded as the
+value of the &quot;_status&quot; reserved metadata element (see <a class="reference internal" href="#internal-metadata">Internal
+metadata</a> below) and may be one of:</p>
 <dl class="docutils">
 <dt><strong>public</strong></dt>
 <dd>The default value.</dd>

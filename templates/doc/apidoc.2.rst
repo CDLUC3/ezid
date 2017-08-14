@@ -72,7 +72,7 @@ Contents
 - `Operation: modify identifier`_
 - `Operation: delete identifier`_
 - `Ownership model`_
-- `Shadow ARKs`_
+- `Shadow ARKs (deprecated)`_
 - `Identifier status`_
 - `Internal metadata`_
 - `Metadata profiles`_
@@ -539,10 +539,10 @@ normalized form of the identifier is returned as shown above.  If an
 identifier other than an ARK was created (e.g., a DOI or UUID), the
 status line includes the normalized form of the identifier and,
 separated by a pipe character ("|", U+007C), the identifier's shadow
-ARK (see `Shadow ARKs`_ for more information).  Note that different
-identifier schemes have different normalization rules (e.g., DOIs are
-normalized to all uppercase letters).  Here's a sample interaction
-creating a DOI identifier:
+ARK (see `Shadow ARKs (deprecated)`_ for more information).  Note that
+different identifier schemes have different normalization rules (e.g.,
+DOIs are normalized to all uppercase letters).  Here's a sample
+interaction creating a DOI identifier:
 
 .. parsed-literal::
 
@@ -720,22 +720,19 @@ administrator.
 Proxies and group administrators are independent concepts.  A group
 administrator may also be a proxy, and may also have proxies.
 
-Shadow ARKs
------------
+Shadow ARKs (deprecated)
+------------------------
 
-When EZID creates a non-ARK identifier (e.g., a DOI identifier), it
-also creates a related ARK identifier.  These special ARK identifiers
-are termed "shadow ARKs."
+A shadow ARK is an ARK identifier that functions as an alias for a
+non-ARK identifier (e.g., a DOI identifier).  EZID assigns shadow ARKs
+to all non-ARK identifiers.
 
-A non-ARK identifier and its shadow ARK have the same owner (and hence
-the same access characteristics) and the same creation time and
-citation metadata, but they have separate target URLs and update
-times.  By sharing citation metadata, a non-ARK identifier and its
-shadow ARK are intended to identify the same digital object or
-conceptual entity, but having separate target URLs allows the
-identifiers to address different representations of the object.
-Clients can also use shadow ARKs to exploit the different technical
-characteristics between ARK and non-ARK identifiers.
+All EZID operations on a non-ARK identifier can be performed via the
+identifier's shadow ARK; and while a shadow ARK is an ARK identifier
+in its own right, it always resolves to the same location as the
+non-ARK identifier it shadows.  Shadow ARKs thus provide a uniform
+identifier syntax for clients working with multiple types of
+identifiers.
 
 Shadow ARKs are returned on the status line when creating or minting
 non-ARK identifiers (see `Operation: create identifier`_ and
@@ -756,11 +753,9 @@ between non-ARK identifiers and shadow ARKs.
 Identifier status
 -----------------
 
-Each identifier in EZID has a status.  In the case of a non-ARK
-identifier (e.g., a DOI identifier), the identifier and its shadow ARK
-share the same status.  The status is recorded as the value of the
-"_status" reserved metadata element (see `Internal metadata`_ below)
-and may be one of:
+Each identifier in EZID has a status.  The status is recorded as the
+value of the "_status" reserved metadata element (see `Internal
+metadata`_ below) and may be one of:
 
 **public**
   The default value.
