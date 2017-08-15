@@ -77,6 +77,7 @@ WORKSET_OWNER_MAX_LINKS = int(config.get(
   "linkchecker.workset_owner_max_links"))
 CHECK_TIMEOUT = int(config.get("linkchecker.check_timeout"))
 USER_AGENT = config.get("linkchecker.user_agent")
+MAX_READ = int(config.get("linkchecker.max_read"))
 
 class OwnerWorkset (object):
   # Stores primarily a list of links to check that belong to a single
@@ -319,7 +320,7 @@ def worker ():
           "Accept": "*/*" })
         c = o.open(r, timeout=CHECK_TIMEOUT)
         mimeType = c.info().get("Content-Type", "unknown")
-        content = c.read()
+        content = c.read(MAX_READ)
       except httplib.IncompleteRead, e:
         # Some servers deliver a complete HTML document, but,
         # apparently expecting further requests from a web browser
