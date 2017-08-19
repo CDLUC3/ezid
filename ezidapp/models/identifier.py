@@ -28,6 +28,7 @@ import validation
 import config
 import crossref
 import datacite
+import mapping
 import util2
 """
 
@@ -237,6 +238,24 @@ class Identifier (django.db.models.Model):
   # All of the identifier's citation metadata as a dictionary of
   # name/value pairs, e.g., { "erc.who": "Proust, Marcel", ... }.
 
+  def kernelMetadata (self):
+    # Returns citation metadata as a mapping.KernelMetadata object.
+    # The mapping is based on the identifier's preferred metadata
+    # profile.  Missing attributes will be None.
+    import mapping
+    return mapping.map(self.cm, profile=self.profile.label)
+
+  def dataciteMetadata (self):
+    # Returns citation metadata as a DataCite XML record.  (The record
+    # includes an encoding declaration, but is not actually encoded.)
+    # This method does not check metadata requirements, and always
+    # returns a record; missing attributes will be "(:unav)".  The
+    # mapping is based on the identifier's preferred metadata profile
+    # but with priority given to the DataCite fields.
+    import datacite
+    return datacite.formRecord(self.identifier, self.cm, supplyMissing=True,
+      profile=self.profile.label)
+
   USER = "U"
   GROUP = "G"
   agentRole = django.db.models.CharField(max_length=1, blank=True,
@@ -422,13 +441,11 @@ class Identifier (django.db.models.Model):
       if "datacite" not in self.cm and\
         (not self.usesCrossrefProfile or "crossref" not in self.cm):
         try:
-          self.cm["_p"] = self.profile.label
-          datacite.formRecord(self.identifier, self.cm)
+          datacite.formRecord(self.identifier, self.cm,
+            profile=self.profile.label)
         except AssertionError, e:
           raise django.core.exceptions.ValidationError(
             "Public DOI metadata requirements not satisfied: %s." % str(e))
-        finally:
-          del self.cm["_p"]
     if self.isCrossref and not self.isReserved and "crossref" not in self.cm:
       raise django.core.exceptions.ValidationError(
         "Registration with Crossref requires Crossref metadata supplied " +\

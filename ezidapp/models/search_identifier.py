@@ -27,7 +27,6 @@ import validation
 
 # Deferred imports...
 """
-import mapping
 import util2
 """
 
@@ -161,7 +160,6 @@ class SearchIdentifier (identifier.Identifier):
 
   def computeComputedValues (self):
     super(SearchIdentifier, self).computeComputedValues()
-    import mapping
     self.searchableTarget = self.target[::-1]\
       [:self._meta.get_field("searchableTarget").max_length]
     self.resourceCreator = ""
@@ -169,7 +167,7 @@ class SearchIdentifier (identifier.Identifier):
     self.resourcePublisher = ""
     self.resourcePublicationDate = ""
     self.resourceType = ""
-    km = mapping.map(self.cm, profile=self.profile.label)
+    km = self.kernelMetadata()
     if km.creator != None: self.resourceCreator = km.creator
     if km.title != None: self.resourceTitle = km.title
     if km.publisher != None: self.resourcePublisher = km.publisher

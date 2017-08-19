@@ -332,7 +332,7 @@ _resourceTypeTemplate2 =\
   u"""  <resourceType resourceTypeGeneral="%s">%s</resourceType>
 """
 
-def formRecord (identifier, metadata, supplyMissing=False):
+def formRecord (identifier, metadata, supplyMissing=False, profile=None):
   """
   Forms an XML record for upload to DataCite, employing metadata
   mapping if necessary.  'identifier' should be a qualified identifier
@@ -342,7 +342,10 @@ def formRecord (identifier, metadata, supplyMissing=False):
   encoding declaration, but is not in fact encoded.  If
   'supplyMissing' is true, the "(:unav)" code is supplied for missing
   required metadata fields; otherwise, missing metadata results in an
-  assertion error being raised.
+  assertion error being raised.  'profile' is the metadata profile to
+  use for the mapping; if None, the profile is determined from any
+  _profile or _p field in the metadata dictionary and otherwise
+  defaults to "erc".
   """
   if identifier.startswith("doi:"):
     idType = "DOI"
@@ -355,10 +358,11 @@ def formRecord (identifier, metadata, supplyMissing=False):
     idBody = identifier[5:]
   else:
     assert False, "unhandled case"
+  if profile == None:
+    profile = metadata.get("_p", metadata.get("_profile", "erc"))
   if metadata.get("datacite", "").strip() != "":
     return util.insertXmlEncodingDeclaration(metadata["datacite"])
-  elif metadata.get("_p", metadata.get("_profile", "")) == "crossref" and\
-    metadata.get("crossref", "").strip() != "":
+  elif profile == "crossref" and metadata.get("crossref", "").strip() != "":
     # We could run Crossref metadata through the metadata mapper using
     # the case below, but doing it this way creates a richer XML
     # record.
@@ -380,7 +384,7 @@ def formRecord (identifier, metadata, supplyMissing=False):
     except Exception, e:
       assert False, "Crossref to DataCite metadata conversion error: " + str(e)
   else:
-    km = mapping.map(metadata, datacitePriority=True)
+    km = mapping.map(metadata, datacitePriority=True, profile=profile)
     for a in ["creator", "title", "publisher", "date"]:
       if getattr(km, a) == None:
         if supplyMissing:
