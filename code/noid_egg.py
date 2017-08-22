@@ -42,18 +42,13 @@ import urllib2
 import config
 import util
 
-_readEnabled = None
-_writeEnabled = None
 _server = None
 _authorization = None
 _numAttempts = None
 _reattemptDelay = None
 
 def _loadConfig ():
-  global _readEnabled, _writeEnabled, _server, _authorization, _numAttempts
-  global _reattemptDelay
-  _readEnabled = (config.get("binder.read_enabled").lower() == "true")
-  _writeEnabled = (config.get("binder.write_enabled").lower() == "true")
+  global _server, _authorization, _numAttempts, _reattemptDelay
   _server = config.get("binder.url")
   _authorization = "Basic " +\
     base64.b64encode(config.get("binder.username") + ":" +\
@@ -96,7 +91,7 @@ def _error (operation, s):
   return ("unexpected return from noid egg '%s' operation, " +\
     "output follows\n%s") % (operation, "".join(s))
 
-def identifierExists (identifier, internalCall=False):
+def identifierExists (identifier):
   """
   Returns true if a scheme-less ARK identifier (e.g., "13030/foo")
   exists.  The identifier is assumed to be in canonical form.  Raises
@@ -112,7 +107,6 @@ def identifierExists (identifier, internalCall=False):
   # functions below work to maintain the invariant property that
   # either an identifier has EZID metadata (along with noid-internal
   # metadata) or it has no metadata at all.
-  assert internalCall or _readEnabled, "function not enabled"
   s = _issue("GET", [(identifier, "fetch")])
   assert len(s) >= 4 and s[0].startswith("# id:") and\
     s[-3].startswith("# elements bound under") and\
@@ -128,7 +122,6 @@ def setElements (identifier, d):
   The elements should be given in a dictionary that maps names to
   values.  Raises an exception on error.
   """
-  if not _writeEnabled: return
   l = []
   for e, v in d.items():
     e = e.strip()
@@ -148,7 +141,6 @@ def getElements (identifier):
   if the identifier doesn't exist.  The identifier is assumed to be in
   canonical form.  Raises an exception on error.
   """
-  assert _readEnabled, "function not enabled"
   # See the comment under 'identifierExists' above.
   s = _issue("GET", [(identifier, "fetch")])
   assert len(s) >= 4 and s[0].startswith("# id:") and\
@@ -184,18 +176,16 @@ def deleteIdentifier (identifier):
   elements can be re-bound to it in the future.  Raises an exception
   on error.
   """
-  if not _writeEnabled: return
   s = _issue("POST", [(identifier, "purge")])
   assert len(s) >= 2 and s[-2] == "egg-status: 0\n", _error("purge", s)
   # See the comment under 'identifierExists' above.
-  assert not identifierExists(identifier, internalCall=True),\
+  assert not identifierExists(identifier),\
     "noid egg 'purge' operation on %s left remaining bindings" % identifier
 
 def ping ():
   """
   Tests the server, returning "up" or "down".
   """
-  if not _readEnabled and not _writeEnabled: return "up"
   try:
     s = _issue("GET", [])
     assert len(s) >= 2 and s[-2] == "egg-status: 0\n"

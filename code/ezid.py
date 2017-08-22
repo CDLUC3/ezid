@@ -173,7 +173,6 @@ import util
 import util2
 
 _ezidUrl = None
-_noidReadEnabled = None
 _defaultDoiProfile = None
 _defaultArkProfile = None
 _defaultUuidProfile = None
@@ -181,11 +180,10 @@ _perUserThreadLimit = None
 _perUserThrottle = None
 
 def _loadConfig ():
-  global _ezidUrl, _noidReadEnabled, _defaultDoiProfile, _defaultArkProfile
+  global _ezidUrl, _defaultDoiProfile, _defaultArkProfile
   global _defaultUuidProfile
   global _perUserThreadLimit, _perUserThrottle
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
-  _noidReadEnabled = (config.get("binder.read_enabled").lower() == "true")
   _defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
   _defaultArkProfile = config.get("DEFAULT.default_ark_profile")
   _defaultUuidProfile = config.get("DEFAULT.default_uuid_profile")
@@ -444,20 +442,14 @@ def _validateDatacite (identifier, metadata, completeCheck):
   return None
 
 def _identifierExists (identifier):
-  if _noidReadEnabled:
-    return noid_egg.identifierExists(identifier)
-  else:
-    return store.exists(identifier)
+  return store.exists(identifier)
 
 def _getElements (identifier):
-  if _noidReadEnabled:
-    return noid_egg.getElements(identifier)
+  r = store.get(identifier)
+  if r != None:
+    return r[0]
   else:
-    r = store.get(identifier)
-    if r != None:
-      return r[0]
-    else:
-      return None
+    return None
 
 def mintDoi (prefix, user, metadata={}):
   """
