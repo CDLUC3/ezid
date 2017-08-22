@@ -5,6 +5,8 @@
 -- restricted character set of identifiers allows us to use ASCII
 -- instead of UTF-8.
 
+ALTER TABLE ezidapp_binderqueue MODIFY identifier VARCHAR(255) NOT NULL
+  COLLATE 'ascii_bin';
 ALTER TABLE ezidapp_crossrefqueue MODIFY identifier VARCHAR(255) NOT NULL
   COLLATE 'ascii_bin';
 ALTER TABLE ezidapp_crossrefqueue MODIFY owner VARCHAR(255) NOT NULL
@@ -33,6 +35,8 @@ ALTER TABLE ezidapp_storeuser MODIFY pid VARCHAR(255) NOT NULL
 -- hold externally-supplied, uncontrolled Unicode input, the character
 -- set and collation must be changed.
 
+ALTER TABLE ezidapp_binderqueue MODIFY error LONGTEXT NOT NULL
+  COLLATE 'utf8mb4_general_ci';
 ALTER TABLE ezidapp_crossrefqueue MODIFY message LONGTEXT NOT NULL
   COLLATE 'utf8mb4_general_ci';
 ALTER TABLE ezidapp_datacitequeue MODIFY error LONGTEXT NOT NULL

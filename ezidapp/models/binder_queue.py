@@ -1,19 +1,19 @@
 # =============================================================================
 #
-# EZID :: ezidapp/models/datacite_queue.py
+# EZID :: ezidapp/models/binder_queue.py
 #
-# Database model for the DataCite queue.
+# Database model for the N2T binder queue.
 #
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
 #
 # License:
-#   Copyright (c) 2015, Regents of the University of California
+#   Copyright (c) 2017, Regents of the University of California
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
 
 import registration_queue
 
-class DataciteQueue (registration_queue.RegistrationQueue):
+class BinderQueue (registration_queue.RegistrationQueue):
   pass

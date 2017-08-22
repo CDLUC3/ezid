@@ -1,3 +1,4 @@
+from binder_queue import BinderQueue
 from crossref_queue import CrossrefQueue
 from datacenter import Datacenter
 from datacite_queue import DataciteQueue
@@ -8,6 +9,7 @@ from link_checker import LinkChecker
 from new_account_worksheet import NewAccountWorksheet
 from profile import Profile
 from realm import Realm
+from registration_queue import RegistrationQueue
 from search_datacenter import SearchDatacenter
 from search_group import SearchGroup
 from search_identifier import SearchIdentifier
