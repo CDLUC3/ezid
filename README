@@ -37,7 +37,8 @@ running: a Noid <http://wiki.ucop.edu/display/Curation/NOID> "egg"
 server for storing metadata (strictly speaking, optional, but an
 essential component in the grand scheme of things); additional Noid
 "nog" servers for minting identifiers; a shoulder server (optional);
-and DataCite services for creating DOI identifiers.
+DataCite services for creating DOI identifiers; and Crossref services
+for registering with Crossref.
 
 Caution: there may be dependencies on the specific version of Django:
 certain files have been copied and in some cases modified from the
@@ -46,6 +47,10 @@ under a Django version different from that used during development may
 cause problems.  See the READMEs in directories
 .../SITE_ROOT/PROJECT_ROOT/static/admin and
 .../SITE_ROOT/PROJECT_ROOT/templates/admin.
+
+An additional prerequisite is Docutils
+<http://docutils.sourceforge.net> for building the HTML version of the
+API documentation.
 
 General layout and configuration
 ================================
