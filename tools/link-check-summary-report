@@ -11,6 +11,7 @@
 # Options:
 #   -a EMAIL  email report to address (may be repeated)
 #   -o FILE   output to file
+#   -r REALM  restrict to realm
 #
 # Greg Janee <gjanee@ucop.edu>
 # May 2017
@@ -54,6 +55,8 @@ def main ():
     default=[], help="email report to address (may be repeated)")
   p.add_option("-o", metavar="FILE", action="store", dest="outputFile",
     help="output to file")
+  p.add_option("-r", metavar="REALM", action="store", dest="realm",
+    help="restrict to realm")
   options, args = p.parse_args()
   if len(args) > 0: p.error("unexpected argument")
   if len(options.emailAddresses) > 0:
@@ -64,6 +67,10 @@ def main ():
     options.email = True
   else:
     options.email = False
+  if options.realm:
+    if not ezidapp.models.SearchRealm.objects.filter(
+      name=options.realm).exists():
+      p.error("no such realm")
   # We use the total number of failures as a proxy for age of
   # broken-ness by computing the maximum number of consecutive
   # check failures that can occur in a month.
@@ -71,8 +78,12 @@ def main ():
   # We can't use a join in the query below because the tables aren't
   # related (at least as far as Django is concerned), so we manually
   # create a lookup table.
-  users = { su.id: su.username for su in\
-    ezidapp.models.SearchUser.objects.all().only("id", "username") }
+  users = ezidapp.models.SearchUser.objects
+  if options.realm:
+    users = users.filter(realm__name=options.realm)
+  else:
+    users = users.all()
+  users = { su.id: su.username for su in users.only("id", "username") }
   def countExpression (from_, to):
     d = { "then": 1 }
     if from_ != None: d["numFailures__gt"] = from_
@@ -100,8 +111,9 @@ def main ():
   w.writerow(["owner", "total broken target URLs", "1 month old",
     "2 months old", "3 months old", "older"])
   for r in data:
-    w.writerow([users[r["owner_id"]], r["total"], r["age1Month"],
-      r["age2Months"], r["age3Months"], r["older"]])
+    if r["owner_id"] in users:
+      w.writerow([users[r["owner_id"]], r["total"], r["age1Month"],
+        r["age2Months"], r["age3Months"], r["older"]])
   f.close()
   if options.email:
     m = django.core.mail.EmailMessage(
