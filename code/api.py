@@ -111,8 +111,17 @@ def _readInput (request):
       ct[1][8:].upper() != "UTF-8":
       return "error: bad request - unsupported character encoding"
     try:
-      return anvl.parse(
-        util.sanitizeXmlSafeCharset(request.body.decode("UTF-8")))
+      # We'd like to call sanitizeXmlSafeCharset just once, before the
+      # ANVL parsing, but the problem is that hex-percent-encoded
+      # characters, when decoded, can result in additional disallowed
+      # characters appearing.  So we sanitize after ANVL parsing.
+      # Note that it is possible here that two different labels, that
+      # differ in only disallowed characters, will be silently
+      # collapsed into one instead of resulting in an error.  But
+      # that's a real edge case, so we don't worry about it.
+      return { util.sanitizeXmlSafeCharset(k):\
+        util.sanitizeXmlSafeCharset(v)\
+        for k, v in anvl.parse(request.body.decode("UTF-8")).items() }
     except UnicodeDecodeError:
       return "error: bad request - character decoding error"
     except anvl.AnvlParseException, e:
