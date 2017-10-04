@@ -315,9 +315,12 @@ def worker ():
       c = None
       mimeType = "unknown"
       try:
+        # This should probably be considered a Python bug, but urllib2
+        # fails if the URL contains Unicode characters.  Encoding the
+        # URL as UTF-8 is sufficient.
         # Another gotcha: some websites require an Accept header.
-        r = urllib2.Request(lc.target, headers={ "User-Agent": USER_AGENT,
-          "Accept": "*/*" })
+        r = urllib2.Request(lc.target.encode("UTF-8"),
+          headers={ "User-Agent": USER_AGENT, "Accept": "*/*" })
         c = o.open(r, timeout=CHECK_TIMEOUT)
         mimeType = c.info().get("Content-Type", "unknown")
         content = c.read(MAX_READ)
