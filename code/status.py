@@ -62,7 +62,6 @@ def _statusDaemon ():
       na = sum(activeUsers.values())
       nw = sum(waitingUsers.values())
       ndo = datacite.numActiveOperations()
-      nstc, nstca = store.numConnections()
       uql = store.getUpdateQueueLength()
       daql = datacite_async.getQueueLength()
       cqs = crossref.getQueueStatistics()
@@ -76,7 +75,6 @@ def _statusDaemon ():
         "activeOperations=%d%s" % (na, _formatUserCountList(activeUsers)),
         "waitingRequests=%d%s" % (nw, _formatUserCountList(waitingUsers)),
         "activeDataciteOperations=%d" % ndo,
-        "storeDbConnections:active/total=%d/%d" % (nstca, nstc),
         "updateQueueLength=%d" % uql,
         "dataciteQueueLength=%d" % daql,
         "crossrefQueue:archived/unsubmitted/submitted=%d/%d/%d" %\
