@@ -54,7 +54,7 @@ def _updateSearchDatabase (identifier, operation, metadata, blob):
 def _updateDataciteQueue (identifier, operation, metadata, blob):
   if "_s" in metadata and metadata["_s"].startswith("doi:") and\
     metadata.get("_is", "public") != "reserved":
-    datacite_async.enqueueIdentifier(metadata["_s"], operation, metadata, blob)
+    datacite_async.enqueueIdentifier(metadata["_s"], operation, blob)
 
 def _updateCrossrefQueue (identifier, operation, metadata, blob):
   if "_cr" not in metadata: return
