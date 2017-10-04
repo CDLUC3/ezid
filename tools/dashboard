@@ -23,7 +23,7 @@
 #   dashboard --compute-only > data
 #   dashboard --upload-only dashurl < data
 #
-#     dashurl: dashboard base URL (http://host:port)
+#     dashurl: dashboard base URL (http[s]://host:port)
 #
 # This script requires several EZID modules.  The PYTHONPATH
 # environment variable must include the .../SITE_ROOT/PROJECT_ROOT
@@ -53,17 +53,17 @@ usageText = """Usage:
   dashboard --compute-only > data
   dashboard --upload-only dashurl < data
 
-    dashurl: dashboard base URL (http://host:port)
+    dashurl: dashboard base URL (http[s]://host:port)
 """
 
-if len(sys.argv) == 2 and sys.argv[1].startswith("http://"):
+if len(sys.argv) == 2 and re.match("https?://", sys.argv[1]):
   doCompute = doUpload = True
   dashUrl = sys.argv[1]
 elif len(sys.argv) == 2 and sys.argv[1] == "--compute-only":
   doCompute = True
   doUpload = False
 elif len(sys.argv) == 3 and sys.argv[1] == "--upload-only" and\
-  sys.argv[2].startswith("http://"):
+  re.match("https?://", sys.argv[2]):
   doCompute = False
   doUpload = True
   dashUrl = sys.argv[2]
@@ -137,16 +137,23 @@ if doCompute:
   months = counters.keys()
   months.sort()
   lastMonth = Counter()
+  lastDataMonth = None
   for month in months:
     counters[month] += lastMonth
     if month < thisMonth:
       data += "%s,%s\n" % (month.isoformat()[:7], counters[month])
       lastDataMonth = month
     lastMonth = counters[month]
+  if lastDataMonth == None and doUpload:
+    sys.stderr.write("dashboard: insufficient data to upload\n")
+    sys.exit(1)
 else:
   # Load previously-generated data.
   data = sys.stdin.read()
   m = data.splitlines()[-1].split(",")[0]
+  if m == "YYYY-MM":
+    sys.stderr.write("dashboard: insufficient data to upload\n")
+    sys.exit(1)
   lastDataMonth = datetime.date(int(m[:4]), int(m[5:]), 1)
 
 boundary = "BOUNDARY_" + uuid.uuid1().hex
