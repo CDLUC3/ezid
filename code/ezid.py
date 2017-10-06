@@ -4,12 +4,12 @@
 #
 # Main functionality.
 #
-# All identifier metadata is stored in a single "bind" noid instance.
-# Metadata for an ARK identifier (e.g., ark:/13030/foo) is keyed by
-# the canonical form of that identifier (see util.validateArk);
-# metadata for a non-ARK identifier (e.g., doi:10.5060/FOO) is keyed
-# by the identifier's shadow ARK (e.g., ark:/b5060/foo).  The
-# supported non-ARK identifiers include DOIs and UUIDs.
+# In the N2T binder, metadata for an ARK identifier (e.g.,
+# ark:/13030/foo) is keyed by the canonical form of that identifier
+# (see util.validateArk); metadata for a non-ARK identifier (e.g.,
+# doi:10.5060/FOO) is keyed by the identifier's shadow ARK (e.g.,
+# ark:/b5060/foo).  The supported non-ARK identifiers include DOIs and
+# UUIDs.
 #
 # The shadow ARK for a non-ARK identifier is computable by a simple
 # mapping (see util.doi2shadow, util.uuid2shadow, etc.); the reverse
@@ -165,7 +165,6 @@ import datacite
 import ezidapp.models
 import ezidapp.models.validation
 import log
-import noid_egg
 import noid_nog
 import policy
 import store
@@ -596,8 +595,6 @@ def createDoi (doi, user, metadata={}):
     m["_t"] = m["_st"]
     if "_t1" in m: m["_t1"] = m["_st1"]
     # TRANSITION END
-    noid_egg.setElements(shadowArk, m)
-    log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
   except Exception, e:
     log.error(tid, e)
@@ -710,8 +707,6 @@ def createArk (ark, user, metadata={}):
     if m.get("_is", "public") == "reserved":
       m["_t1"] = m["_t"]
       m["_t"] = _defaultTarget(qark)
-    noid_egg.setElements(ark, m)
-    log.progress(tid, "noid_egg.setElements")
     store.insert(ark, m)
   except Exception, e:
     log.error(tid, e)
@@ -807,8 +802,6 @@ def createUuid (id, user, metadata={}):
     m["_t"] = m["_st"]
     if "_t1" in m: m["_t1"] = m["_st1"]
     # TRANSITION END
-    noid_egg.setElements(shadowArk, m)
-    log.progress(tid, "noid_egg.setElements")
     store.insert(shadowArk, m)
   except Exception, e:
     log.error(tid, e)
@@ -1195,9 +1188,7 @@ def setMetadata (identifier, user, metadata, updateExternalServices=True):
     if "datacite.resourcetype" in d:
       d["datacite.resourcetype"] = m["datacite.resourcetype"]
     if "datacite" in d: d["datacite"] = m["datacite"]
-    # Finally, and most importantly, update our own databases.
-    noid_egg.setElements(ark, d)
-    log.progress(tid, "noid_egg.setElements")
+    # Finally, and most importantly, update our own database.
     store.update(ark, m, updateExternalServices=updateExternalServices)
   except Exception, e:
     log.error(tid, e)
@@ -1261,8 +1252,6 @@ def deleteIdentifier (identifier, user, updateExternalServices=True):
         log.badRequest(tid)
         return "error: bad request - identifier status does not support " +\
           "deletion"
-    noid_egg.deleteIdentifier(ark)
-    log.progress(tid, "noid_egg.deleteIdentifier")
     store.delete(ark, updateExternalServices=updateExternalServices)
   except Exception, e:
     log.error(tid, e)

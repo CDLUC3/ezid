@@ -120,6 +120,7 @@ def getVersionInfo ():
 # Start daemon threads by importing their modules.
 if django.conf.settings.DAEMON_THREADS_ENABLED:
   import backproc
+  import binder_async
   import crossref
   import datacite_async
   import download

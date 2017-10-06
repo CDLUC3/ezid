@@ -22,6 +22,7 @@ import threading
 import time
 import uuid
 
+import binder_async
 import config
 import crossref
 import datacite_async
@@ -50,6 +51,13 @@ def _updateSearchDatabase (identifier, operation, metadata, blob):
       delete()
   else:
     assert False, "unrecognized operation"
+
+def _updateBinderQueue (identifier, operation, metadata, blob):
+  if "_s" in metadata:
+    identifier = metadata["_s"]
+  else:
+    identifier = "ark:/" + identifier
+  binder_async.enqueueIdentifier(identifier, operation, blob)
 
 def _updateDataciteQueue (identifier, operation, metadata, blob):
   if "_s" in metadata and metadata["_s"].startswith("doi:") and\
@@ -96,7 +104,7 @@ def _backprocDaemon ():
         for seq, identifier, metadata, blob, operation,\
           updateExternalServices in l:
           if not _checkContinue(): break
-          # The following four statements form a kind of atomic
+          # The following five statements form a kind of atomic
           # transaction.  Hence, if the first statement succeeds, we
           # proceed straight through with no intervening continuation
           # checks.
@@ -106,6 +114,7 @@ def _backprocDaemon ():
               metadata, blob), _checkContinue)
           except search_util.AbortException:
             break
+          _updateBinderQueue(identifier, operation, metadata, blob)
           if updateExternalServices:
             _updateDataciteQueue(identifier, operation, metadata, blob)
             _updateCrossrefQueue(identifier, operation, metadata, blob)

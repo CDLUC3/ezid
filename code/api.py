@@ -82,6 +82,7 @@ import django.http
 import time
 
 import anvl
+import binder_async
 import config
 import datacite
 import datacite_async
@@ -343,16 +344,18 @@ def _statusLineGenerator (includeSuccessLine):
     activeUsers, waitingUsers, isPaused = ezid.getStatus()
     na = sum(activeUsers.values())
     nw = sum(waitingUsers.values())
-    ql = store.getUpdateQueueLength()
     ndo = datacite.numActiveOperations()
+    ql = store.getUpdateQueueLength()
+    bql = binder_async.getQueueLength()
     dql = datacite_async.getQueueLength()
     nas = search_util.numActiveSearches()
     s = ("STATUS %s activeOperations=%d%s waitingRequests=%d%s " +\
       "activeDataciteOperations=%d updateQueueLength=%d " +\
+      "binderQueueLength=%d " +\
       "dataciteQueueLength=%d activeSearches=%d\n") %\
       ("paused" if isPaused else "running",
       na, _formatUserCountList(activeUsers),
-      nw, _formatUserCountList(waitingUsers), ndo, ql, dql, nas)
+      nw, _formatUserCountList(waitingUsers), ndo, ql, bql, dql, nas)
     yield s.encode("UTF-8")
     time.sleep(3)
 

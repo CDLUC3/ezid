@@ -24,6 +24,7 @@ import threading
 import time
 import uuid
 
+import binder_async
 import config
 import crossref
 import datacite
@@ -63,6 +64,7 @@ def _statusDaemon ():
       nw = sum(waitingUsers.values())
       ndo = datacite.numActiveOperations()
       uql = store.getUpdateQueueLength()
+      bql = binder_async.getQueueLength()
       daql = datacite_async.getQueueLength()
       cqs = crossref.getQueueStatistics()
       doql = download.getQueueLength()
@@ -76,6 +78,7 @@ def _statusDaemon ():
         "waitingRequests=%d%s" % (nw, _formatUserCountList(waitingUsers)),
         "activeDataciteOperations=%d" % ndo,
         "updateQueueLength=%d" % uql,
+        "binderQueueLength=%d" % bql,
         "dataciteQueueLength=%d" % daql,
         "crossrefQueue:archived/unsubmitted/submitted=%d/%d/%d" %\
         (cqs[2]+cqs[3], cqs[0], cqs[1]),
@@ -91,6 +94,7 @@ def _statusDaemon ():
           d = [{ "Name": "InstanceName", "Value": _cloudwatchInstanceName }]
           data = { "ActiveOperations": na, "WaitingRequests": nw,
             "ActiveDataciteOperations": ndo, "UpdateQueueLength": uql,
+            "BinderQueueLength": bql,
             "DataciteQueueLength": daql, "CrossrefQueueLength": cqs[0]+cqs[1],
             "DownloadQueueLength": doql, "ActiveSearches": as_,
             "OperationRate": float(no)/_reportingInterval }
