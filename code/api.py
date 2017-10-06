@@ -300,12 +300,12 @@ def getStatus (request):
   body = ""
   if "subsystems" in request.GET:
     l = request.GET["subsystems"]
-    if l == "*": l = "datacite,noid,search"
+    if l == "*": l = "binder,datacite,search"
     for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
-      if ss == "datacite":
+      if ss == "binder":
+        body += "binder: %s\n" % noid_egg.ping()
+      elif ss == "datacite":
         body += "datacite: %s\n" % datacite.ping()
-      elif ss == "noid":
-        body += "noid: %s\n" % noid_egg.ping()
       elif ss == "search":
         body += "search: %s\n" % search_util.ping()
       else:
