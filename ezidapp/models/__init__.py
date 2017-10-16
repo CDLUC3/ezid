@@ -21,6 +21,7 @@ from shoulder import Shoulder
 from statistics import Statistics
 from store_datacenter import StoreDatacenter
 from store_group import StoreGroup, AnonymousGroup
+from store_identifier import StoreIdentifier
 from store_profile import StoreProfile
 from store_realm import StoreRealm, AnonymousRealm
 from store_user import StoreUser, AnonymousUser
