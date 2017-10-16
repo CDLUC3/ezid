@@ -7,7 +7,7 @@
 # Upon first request this module syncs shoulders and datacenters in
 # the store database against counterparts defined in an external
 # shoulder file, adding, modifying, and deleting as necessary.
-# Shoulders and datacenters are also loaded into an in-memory cache.
+# Shoulders and datacenters are also loaded into in-memory caches.
 #
 # Author:
 #   Greg Janee <gjanee@ucop.edu>
@@ -46,6 +46,7 @@ _arkTestPrefix = None
 _doiTestPrefix = None
 _agentPrefix = None
 _shoulders = None
+_datacenters = None # (symbolLookup, idLookup)
 
 class Shoulder (django.db.models.Model):
   # Describes a "shoulder," or identifier namespace.  As a namespace,
@@ -122,7 +123,7 @@ class Shoulder (django.db.models.Model):
 
 def _loadConfig (acquireLock=True):
   global _url, _username, _password, _arkTestPrefix, _doiTestPrefix
-  global _agentPrefix, _shoulders
+  global _agentPrefix, _shoulders, _datacenters
   import config
   if acquireLock: _lock.acquire()
   try:
@@ -137,6 +138,7 @@ def _loadConfig (acquireLock=True):
     _doiTestPrefix = config.get("shoulders.doi_test")
     _agentPrefix = config.get("shoulders.agent")
     _shoulders = None
+    _datacenters = None
   finally:
     if acquireLock: _lock.release()
 
@@ -147,7 +149,7 @@ def _ensureConfigLoaded ():
     config.registerReloadListener(_loadConfig)
 
 def _reconcileShoulders ():
-  global _shoulders
+  global _shoulders, _datacenters
   import log
   try:
     stage = "loading"
@@ -262,10 +264,14 @@ def _reconcileShoulders ():
     log.otherError("shoulder._reconcileShoulders",
       Exception("error %s external shoulder file: %s" % (stage,
       util.formatException(e))))
-  # In all cases, to fill the in-memory cache do a fresh query to get
-  # proper dependent datacenter objects.
-  _shoulders = dict((s.prefix, s) for s in Shoulder.objects.\
-    select_related("datacenter").all())
+  with django.db.transaction.atomic():
+    # In all cases, to fill the in-memory caches do fresh queries to
+    # get proper dependent datacenter objects.
+    _shoulders = dict((s.prefix, s) for s in Shoulder.objects.\
+      select_related("datacenter").all())
+    dc = dict((d.symbol, d) for d in\
+      store_datacenter.StoreDatacenter.objects.all())
+    _datacenters = (dc, dict((d.id, d) for d in dc.values()))
 
 def _lockAndLoad (f):
   # Decorator.
@@ -314,3 +320,23 @@ def getDoiTestShoulder ():
 def getAgentShoulder ():
   # Returns the shoulder used to mint agent persistent identifiers.
   return _shoulders[_agentPrefix]
+
+@_lockAndLoad
+def getDatacenterBySymbol (symbol):
+  # Returns the datacenter having the given symbol.
+  try:
+    return _datacenters[0][symbol]
+  except:
+    # Should never happen.
+    raise store_datacenter.StoreDatacenter.DoesNotExist(
+      "No StoreDatacenter for symbol='%s'." % symbol)
+
+@_lockAndLoad
+def getDatacenterById (id):
+  # Returns the datacenter identified by internal identifier 'id'.
+  try:
+    return _datacenters[1][id]
+  except:
+    # Should never happen.
+    raise store_datacenter.StoreDatacenter.DoesNotExist(
+      "No StoreDatacenter for id=%d." % id)
