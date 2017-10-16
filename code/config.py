@@ -42,6 +42,7 @@ import config_loader
 import ezidapp.models
 import ezidapp.models.search_identifier
 import ezidapp.models.store_group
+import ezidapp.models.store_profile
 import ezidapp.models.store_user
 
 _reloadFunctions = []
@@ -92,6 +93,7 @@ def reload ():
   # the registerReloadListener mechanism, to avoid circular import
   # problems.
   ezidapp.models.store_group.clearCaches()
+  ezidapp.models.store_profile.clearCaches()
   ezidapp.models.store_user.clearCaches()
   ezidapp.models.search_identifier.clearCaches()
 

@@ -21,6 +21,7 @@ from shoulder import Shoulder
 from statistics import Statistics
 from store_datacenter import StoreDatacenter
 from store_group import StoreGroup, AnonymousGroup
+from store_profile import StoreProfile
 from store_realm import StoreRealm, AnonymousRealm
 from store_user import StoreUser, AnonymousUser
 from user import User
@@ -42,3 +43,5 @@ getUserByPid = store_user.getByPid
 getUserByUsername = store_user.getByUsername
 getUserById = store_user.getById
 getAdminUser = store_user.getAdminUser
+getProfileByLabel = store_profile.getByLabel
+getProfileById = store_profile.getById
