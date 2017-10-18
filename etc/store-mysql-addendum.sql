@@ -78,8 +78,8 @@ ALTER TABLE ezidapp_storeuser MODIFY secondaryContactPhone VARCHAR(255)
 -- Django-generated index names.
 
 ALTER TABLE ezidapp_storeidentifier DROP FOREIGN KEY
-  ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_storeprofile_id;
+  ezidapp_s_profile_id_4105f1929b18ac77_fk_ezidapp_storeprofile_id;
 ALTER TABLE ezidapp_storeidentifier MODIFY profile_id INT NOT NULL;
 ALTER TABLE ezidapp_storeidentifier ADD CONSTRAINT
-  ezidapp__profile_id_112e6b8634f63b63_fk_ezidapp_storeprofile_id
+  ezidapp_s_profile_id_4105f1929b18ac77_fk_ezidapp_storeprofile_id
   FOREIGN KEY (profile_id) REFERENCES ezidapp_storeprofile (id);
