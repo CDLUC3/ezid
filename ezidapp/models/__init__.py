@@ -25,6 +25,7 @@ from store_identifier import StoreIdentifier
 from store_profile import StoreProfile
 from store_realm import StoreRealm, AnonymousRealm
 from store_user import StoreUser, AnonymousUser
+from update_queue import UpdateQueue
 from user import User
 
 getAlertMessage = server_variables.getAlertMessage
@@ -40,6 +41,7 @@ getDatacenterBySymbol = shoulder.getDatacenterBySymbol
 getDatacenterById = shoulder.getDatacenterById
 getGroupByPid = store_group.getByPid
 getGroupByGroupname = store_group.getByGroupname
+getGroupById = store_group.getById
 getUserByPid = store_user.getByPid
 getUserByUsername = store_user.getByUsername
 getUserById = store_user.getById

@@ -97,7 +97,7 @@ class StoreGroup (group.Group):
 # existing entries are never modified.  Thus, with appropriate coding
 # below, they are threadsafe without needing locking.
 
-_caches = None # (pidCache, groupnameCache)
+_caches = None # (pidCache, groupnameCache, idCache)
 
 def clearCaches ():
   global _caches
@@ -113,7 +113,8 @@ def _getCaches ():
   if caches == None:
     pidCache = dict((g.pid, g) for g in _databaseQuery().all())
     groupnameCache = dict((g.groupname, g) for g in pidCache.values())
-    caches = (pidCache, groupnameCache)
+    idCache = dict((g.id, g) for g in pidCache.values())
+    caches = (pidCache, groupnameCache, idCache)
     _caches = caches
   return caches
 
@@ -122,7 +123,7 @@ def getByPid (pid):
   # None if there is no such group.  AnonymousGroup is returned in
   # response to "anonymous".
   if pid == "anonymous": return AnonymousGroup
-  pidCache, groupnameCache = _getCaches()
+  pidCache, groupnameCache, idCache = _getCaches()
   if pid not in pidCache:
     try:
       g = _databaseQuery().get(pid=pid)
@@ -130,6 +131,7 @@ def getByPid (pid):
       return None
     pidCache[pid] = g
     groupnameCache[g.groupname] = g
+    idCache[g.id] = g
   return pidCache[pid]
 
 def getByGroupname (groupname):
@@ -137,7 +139,7 @@ def getByGroupname (groupname):
   # there is no such group.  AnonymousGroup is returned in response to
   # "anonymous".
   if groupname == "anonymous": return AnonymousGroup
-  pidCache, groupnameCache = _getCaches()
+  pidCache, groupnameCache, idCache = _getCaches()
   if groupname not in groupnameCache:
     try:
       g = _databaseQuery().get(groupname=groupname)
@@ -145,7 +147,22 @@ def getByGroupname (groupname):
       return None
     pidCache[g.pid] = g
     groupnameCache[groupname] = g
+    idCache[g.id] = g
   return groupnameCache[groupname]
+
+def getById (id):
+  # Returns the group identified by internal identifier 'id', or None
+  # if there is no such group.
+  pidCache, groupnameCache, idCache = _getCaches()
+  if id not in idCache:
+    try:
+      g = _databaseQuery().get(id=id)
+    except StoreGroup.DoesNotExist:
+      return None
+    pidCache[g.pid] = g
+    groupnameCache[g.groupname] = g
+    idCache[id] = g
+  return idCache[id]
 
 class AnonymousGroup (object):
   # A class to represent the group in which the anonymous user
