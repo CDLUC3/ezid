@@ -79,7 +79,118 @@ emptied when EZID is reloaded.
 3. Identifier metadata
 ----------------------
 
-See ezid.py.
+Identifiers are stored internally and in the database as
+StoreIdentifier objects, but an older "legacy" representation of
+identifiers is still in use in several places, particularly where
+serialization is required.
+
+The legacy representation is a dictionary { name: value, ... } of
+metadata elements.  Names are arbitrary and uncontrolled, but those
+beginning with an underscore are reserved for internal use by EZID and
+other services.  Reserved element names have two forms: a short form
+and a longer, more readable form used in communicating with clients.
+
+There are two serialization formats: ANVL, used for communicating with
+clients; and a one-line "exchange" format (see functions fromExchange
+and toExchange in util.py) used in database dumps.
+
+In the following table, it may appear that different elements have the
+same long form name, but the context always makes it clear which is
+being returned.
+
++--------+-------------+-----------------------------------------------+
+| stored | transmitted |                                               |
+| name   | name        | meaning                                       |
++--------+-------------+-----------------------------------------------+
+| _o     | _owner      | The identifier's owner.  The owner is stored  |
+|        |             | as a persistent identifier (e.g.,             |
+|        |             | "ark:/13030/foo") but returned as a local     |
+|        |             | name (e.g., "ryan").  The owner may also be   |
+|        |             | "anonymous".  For a shadow ARK, applies to    |
+|        |             | both the shadow ARK and shadowed identifier.  |
+| _g     | _ownergroup | The identifier's owning group, which is often |
+|        |             | but not necessarily the identifier's owner's  |
+|        |             | current group.  The group is stored as a      |
+|        |             | persistent identifier (e.g.,                  |
+|        |             | "ark:/13030/bar") but returned as a local     |
+|        |             | name (e.g., "dryad").  The group may also be  |
+|        |             | "anonymous".  For a shadow ARK, applies to    |
+|        |             | both the shadow ARK and shadowed identifier.  |
+| _c     | _created    | The time the identifier was created expressed |
+|        |             | as a Unix timestamp, e.g., "1280889190".  For |
+|        |             | a shadow ARK, applies to both the shadow ARK  |
+|        |             | and shadowed identifier.                      |
+| _u     | _updated    | The time the identifier was last modified     |
+|        |             | expressed as a Unix timestamp, e.g.,          |
+|        |             | "1280889190".  For a shadow ARK, applies to   |
+|        |             | the ARK only, not the shadowed identifier.    |
+| _t     | _target     | The identifier's target URL, e.g.,            |
+|        |             | "http://foo.com/bar".  For a shadow ARK,      |
+|        |             | applies to the ARK only, not the shadowed     |
+|        |             | identifier.  (See _t1 below for               |
+|        |             | qualifications.)                              |
+| _s     | _shadows    | Shadow ARKs only.  The shadowed identifier,   |
+|        |             | e.g., "doi:10.5060/FOO".                      |
+| _su    | _updated    | Shadow ARKs only.  The time the shadowed      |
+|        |             | identifier was last modified expressed as a   |
+|        |             | Unix timestamp, e.g., "1280889190".           |
+| _st    | _target     | Shadow ARKs only.  The shadowed identifier's  |
+|        |             | target URL, e.g., "http://foo.com/bar".  (See |
+|        |             | _st1 below for qualifications.)               |
+|        | _shadowedby | Shadowed identifiers only.  The identifier's  |
+|        |             | shadow ARK, e.g., "ark:/b5060/foo".  This is  |
+|        |             | computed, not stored.                         |
+| _p     | _profile    | The identifier's preferred metadata profile,  |
+|        |             | e.g., "erc".  See module 'metadata' for more  |
+|        |             | information on profiles.  A profile does not  |
+|        |             | place any requirements on what metadata       |
+|        |             | elements must be present or restrict what     |
+|        |             | metadata elements can be present.  By         |
+|        |             | convention, the element names of a profile    |
+|        |             | are prefixed with the profile name, e.g.,     |
+|        |             | "erc.who".  For a shadow ARK, applies to both |
+|        |             | the shadow ARK and shadowed identifier.       |
+| _is    | _status     | Identifier status.  If present, either        |
+|        |             | "reserved" or "unavailable"; if not present,  |
+|        |             | effectively has the value "public".  If       |
+|        |             | "unavailable", a reason may follow separated  |
+|        |             | by a pipe character, e.g., "unavailable |     |
+|        |             | withdrawn by author".  Always returned.  For  |
+|        |             | a shadow ARK, applies to both the shadow ARK  |
+|        |             | and shadowed identifier.                      |
+| _t1    |             | If the identifier status is "public", not     |
+|        |             | present; otherwise, if the identifier status  |
+|        |             | is "reserved" or "unavailable", the target    |
+|        |             | URL as set by the client.  (In these latter   |
+|        |             | cases _t is set to an EZID-defined URL.)  Not |
+|        |             | returned.                                     |
+| _st1   |             | Shadow ARKs only.  If the identifier status   |
+|        |             | is "public", not present; otherwise, if the   |
+|        |             | identifier status is "reserved" or            |
+|        |             | "unavailable", the shadowed identifier's      |
+|        |             | target URL as set by the client.  (In these   |
+|        |             | latter cases _st is set to an EZID-defined    |
+|        |             | URL.)  Not returned.                          |
+| _x     | _export     | Export control.  If present, has the value    |
+|        |             | "no"; if not present, effectively has the     |
+|        |             | value "yes".  Determines if the identifier is |
+|        |             | publicized by exporting it to external        |
+|        |             | indexing and harvesting services.  Always     |
+|        |             | returned.  For a shadow ARK, applies to both  |
+|        |             | the shadow ARK and shadowed identifier.       |
+| _d     | _datacenter | DOIs only.  The DataCite datacenter at which  |
+|        |             | the identifier is registered, e.g.,           |
+|        |             | "CDL.DRYAD" (or will be registered, in the    |
+|        |             | case of a reserved identifier).               |
+| _cr    | _crossref   | DOIs only.  If present, indicates that the    |
+|        |             | identifier is registered with Crossref (or,   |
+|        |             | in the case of a reserved identifier, will be |
+|        |             | registered), and also indicates the status of |
+|        |             | the registration process.  Syntactically, has |
+|        |             | the value "yes" followed by a pipe character  |
+|        |             | followed by a status message, e.g., "yes |    |
+|        |             | successfully registered".                     |
++--------+-------------+---------------------------------------------- +
 
 4. Agent identifiers
 --------------------
@@ -87,11 +198,10 @@ See ezid.py.
 "Agents" (users and groups) are internally referred to and stored as
 ARK identifiers (e.g., "ark:/99166/foo"), but are externally referred
 to by local names (e.g., "dryad").  Identifiers that identify agents
-are termed "agent identifiers;" see ezid.py for more information.
-Because potentially sensitive account information is cached in agent
-identifiers (see above), not only are agent identifiers not revealed
-to clients, they are owned by the EZID administrator and can only be
-viewed by the EZID administrator.
+are termed "agent identifiers."  Because potentially sensitive account
+information is cached in agent identifiers (see above), not only are
+agent identifiers not revealed to clients, they are owned by the EZID
+administrator and can only be viewed by the EZID administrator.
 
 5. Use of DataCite's active flag
 --------------------------------
