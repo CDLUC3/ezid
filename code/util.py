@@ -454,6 +454,55 @@ def formatException (exception):
   if len(s) > 0: s = ": " + s
   return type(exception).__name__ + s
 
+def desentencify (s):
+  """
+  Turns a string that looks like a sentence (initial capital letter,
+  period at the end) into a phrase.  Fallible, but tries to be
+  careful.
+  """
+  if len(s) >= 2 and s[0].isupper() and not s[1].isupper():
+    s = s[0].lower() + s[1:]
+  if s.endswith("."):
+    return s[:-1]
+  else:
+    return s
+
+# The following dictionary maps Identifier model fields to ANVL
+# labels, to the extent possible.
+
+_modelAnvlLabelMapping = {
+  "owner": "_owner",
+  "ownergroup": "_ownergroup",
+  "createTime": "_created",
+  "updateTime": "_updated",
+  "status": "_status",
+  "unavailableReason": "_status",
+  "exported": "_export",
+  "datacenter": "_datacenter",
+  "crossrefStatus": "_crossref",
+  "crossrefMessage": "_crossref",
+  "target": "_target",
+  "label": "_profile",
+  "agentRole": "_ezid_role"
+}
+
+def formatValidationError (exception, convertToAnvlLabels=True):
+  """
+  Formats a Django validation error into a single-line string.  If
+  'convertToAnvlLabels' is true, an attempt is made to convert any
+  model field names referenced in the error to their ANVL
+  counterparts.
+  """
+  l = []
+  for entry in exception:
+    if type(entry) is tuple:
+      l.append("%s: %s" % (_modelAnvlLabelMapping.get(entry[0], entry[0])\
+        if convertToAnvlLabels else entry[0],
+        ", ".join(desentencify(s) for s in entry[1])))
+    else:
+      l.append(desentencify(entry))
+  return oneLine("; ".join(l))
+
 _illegalAsciiCharsRE = re.compile("[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\xFF]")
 
 def validateAsciiSafeCharset (s):
