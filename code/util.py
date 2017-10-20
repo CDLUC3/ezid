@@ -203,8 +203,7 @@ def doi2shadow (doi):
   """
   Given a scheme-less DOI identifier (e.g., "10.5060/FOO"), returns
   the corresponding scheme-less shadow ARK identifier (e.g.,
-  "b5060/foo").  The returned identifier is in canonical form.  Note
-  that the conversion is *not* in general reversible by shadow2doi.
+  "b5060/foo").  The returned identifier is in canonical form.
   """
   # The conversion of DOIs to ARKs is a little tricky because ARKs
   # place semantics on certain characters in suffixes while DOIs do
@@ -237,19 +236,20 @@ def doi2shadow (doi):
   assert a != None, "shadow ARK failed validation"
   return a
 
+_hexDecodePattern = re.compile("%([0-9a-fA-F][0-9a-fA-F])")
+
 def shadow2doi (ark):
   """
-  Given a scheme-less shadow ARK identifier (e.g., "b5060/foo"),
-  returns the corresponding scheme-less DOI identifier
-  (e.g. "10.5060/FOO").  The returned identifier is in canonical form.
-  This function is intended to be used for noid-minted ARK identifiers
-  only; it is not in general the inverse of doi2shadow.
+  Given a scheme-less shadow ARK identifier for a DOI (e.g.,
+  "b5060/foo"), returns the corresponding scheme-less DOI identifier
+  (e.g., "10.5060/FOO").  The returned identifier is in canonical
+  form.
   """
   if ark[0] == "b":
     doi = "10." + ark[1:]
   else:
     doi = "10." + chr(ord("1")+ord(ark[0])-ord("c")) + ark[1:]
-  return doi.upper()
+  return _hexDecodePattern.sub(lambda c: chr(int(c.group(1), 16)), doi).upper()
 
 _uuidShadowArkPrefix = "97720/"
 
@@ -262,6 +262,50 @@ def uuid2shadow (id):
   be in canonical form; the returned identifier is in canonical form.
   """
   return _uuidShadowArkPrefix + id.replace("-", "")
+
+def shadow2uuid (ark):
+  """
+  Given a scheme-less shadow ARK identifier for a UUID (e.g.,
+  "97720/f81d4fae7dec11d0a76500a0c91e6bf6"), returns the corresponding
+  scheme-less UUID identifier
+  (e.g., "f81d4fae-7dec-11d0-a765-00a0c91e6bf6").  The returned
+  identifier is in canonical form.
+  """
+  return "%s-%s-%s-%s-%s" % (ark[6:14], ark[14:18], ark[18:22], ark[22:26],
+    ark[26:])
+
+_shadowedDoiPattern = re.compile("ark:/[b-k]") # see _arkPattern1 above
+
+def normalizeIdentifier (identifier):
+  """
+  Similar to 'validateIdentifier': if the supplied string is any type
+  of qualified, syntactically valid identifier, returns the canonical
+  form of the identifier.  However, if the identifier is a shadow ARK,
+  this function instead returns (the canonical form of) the shadowed
+  identifier.  On any kind of error, returns None.
+  """
+  id = validateIdentifier(identifier)
+  if id == None: return None
+  if id.startswith("ark:/"):
+    # The reverse shadow functions don't check that the supplied
+    # identifier is indeed a valid shadow ARK, so we check that the
+    # returned identifier is valid and produces the same shadow ARK.
+    if _shadowedDoiPattern.match(id):
+      doi = shadow2doi(id[5:])
+      if validateDoi(doi) != None and doi2shadow(doi) == id[5:]:
+        return "doi:" + doi
+      else:
+        return None
+    elif id.startswith("ark:/" + _uuidShadowArkPrefix):
+      uuid = shadow2uuid(id[5:])
+      if validateUuid(uuid) != None and uuid2shadow(uuid) == id[5:]:
+        return "uuid:" + uuid
+      else:
+        return None
+    else:
+      return id
+  else:
+    return id
 
 def _encode (pattern, s):
   return pattern.sub(lambda c: "%%%02X" % ord(c.group(0)), s.encode("UTF-8"))
