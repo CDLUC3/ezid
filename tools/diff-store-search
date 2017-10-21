@@ -2,18 +2,6 @@
 
 # Compares identifiers in the store and search databases.
 #
-# Identifiers in the search database are obtained by direct query.
-# But because identifiers are not stored in the same order (in the
-# store database identifiers are stored in lexicographic order of
-# shadow ARK, in the search database, in lexicographic order of
-# normalized qualified identifier), identifiers in the store database
-# are obtained from a dump file.  Furthermore, this dump file must be
-# a normal (not raw) dump, and then sorted.  Thus typical usage of
-# this script will resemble:
-#
-#    dump-store ... | sort > DUMP
-#    diff-store-search DUMP
-#
 # This script requires several EZID modules.  The PYTHONPATH
 # environment variable must include the .../SITE_ROOT/PROJECT_ROOT
 # directory; if it doesn't, we attempt to dynamically locate it and
@@ -34,23 +22,20 @@ execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
 import ezidapp.models
 import util
 
-if len(sys.argv) != 2:
-  sys.stderr.write("Usage: diff-store-search dumpfile\n")
+if len(sys.argv) != 1:
+  sys.stderr.write("Usage: diff-store-search\n")
   sys.exit(1)
+
+def formatBoolean (b):
+  return "yes" if b else "no"
 
 def formatTimestamp (t):
   return time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(t))
 
-def storeIdentifierGenerator ():
-  for line in open(sys.argv[1]):
-    yield util.fromExchange(line, identifierEmbedded=True)
-  while True: yield (None, None)
-storeIdentifiers = storeIdentifierGenerator()
-
-def searchIdentifierGenerator ():
+def harvest (model):
   lastId = ""
   while True:
-    ids = ezidapp.models.SearchIdentifier.objects.filter(
+    ids = model.objects.filter(
       identifier__gt=lastId).select_related("owner", "ownergroup",
       "datacenter", "profile").order_by("identifier")[:1000]
     if len(ids) == 0: break
@@ -58,69 +43,67 @@ def searchIdentifierGenerator ():
       yield id
       lastId = id.identifier
   while True: yield None
-searchIdentifiers = searchIdentifierGenerator()
 
-stid, stm = storeIdentifiers.next()
+storeIdentifiers = harvest(ezidapp.models.StoreIdentifier)
+searchIdentifiers = harvest(ezidapp.models.SearchIdentifier)
+
+stid = storeIdentifiers.next()
 seid = searchIdentifiers.next()
 while stid != None or seid != None:
-  if stid != None and (seid == None or stid < seid.identifier):
-    if stm["_owner"] != "anonymous":
-      print "<", stid
-      print "\t< _created: %s" % formatTimestamp(int(stm["_created"]))
-    stid, stm = storeIdentifiers.next()
-  elif seid != None and (stid == None or seid.identifier < stid):
+  if stid != None and (seid == None or stid.identifier < seid.identifier):
+    if stid.owner != None:
+      print "<", stid.identifier
+      print "\t< createTime: %s" % formatTimestamp(stid.createTime)
+    stid = storeIdentifiers.next()
+  elif seid != None and (stid == None or seid.identifier < stid.identifier):
     print ">", seid.identifier
-    print "\t> _created: %s" % formatTimestamp(seid.createTime)
+    print "\t> createTime: %s" % formatTimestamp(seid.createTime)
     seid = searchIdentifiers.next()
   else:
     firstDifference = [True]
     def compare (label, a, b):
       if a != b:
         if firstDifference[0]:
-          print "!", stid
+          print "!", stid.identifier
           firstDifference[0] = False
         if a != "": print "\t< %s: %s" % (util.encode4(label), util.encode3(a))
         if b != "": print "\t> %s: %s" % (util.encode4(label), util.encode3(b))
-    compare("_owner", stm["_owner"], seid.owner.username)
-    compare("_ownergroup", stm["_ownergroup"], seid.ownergroup.groupname)
-    compare("_created", formatTimestamp(int(stm["_created"])),
+    compare("owner", stid.owner.username, seid.owner.username)
+    compare("ownergroup", stid.ownergroup.groupname, seid.ownergroup.groupname)
+    compare("createTime", formatTimestamp(stid.createTime),
       formatTimestamp(seid.createTime))
-    compare("_updated", formatTimestamp(int(stm["_updated"])),
+    compare("updateTime", formatTimestamp(stid.updateTime),
       formatTimestamp(seid.updateTime))
-    searchStatus = seid.get_status_display()
-    if seid.isUnavailable and seid.unavailableReason != "":
-      searchStatus += " | " + seid.unavailableReason
-    compare("_status", stm.get("_status", "public"), searchStatus)
-    compare("_export", stm.get("_export", "yes"),
-      "yes" if seid.exported else "no")
-    if seid.isDoi:
-      compare("_datacenter", stm["_datacenter"], seid.datacenter.symbol)
-    if seid.isCrossref:
-      searchCrossref = "yes | " + seid.get_crossrefStatus_display()
-    else:
-      searchCrossref = "no"
-    if seid.isCrossrefBad and seid.crossrefMessage != "":
-      searchCrossref += " | " + seid.crossrefMessage
-    compare("_crossref", stm.get("_crossref", "no"), searchCrossref)
-    compare("_target", stm["_target"], seid.target)
-    compare("_profile", stm["_profile"], seid.profile.label)
-    compare("_ezid_role", stm.get("_ezid_role", ""),
-      seid.get_agentRole_display() if seid.isAgentPid else "")
-    stKeys = sorted(k for k in stm.keys() if not k.startswith("_"))
+    compare("status", stid.get_status_display(), seid.get_status_display())
+    compare("unavailableReason", stid.unavailableReason,
+      seid.unavailableReason)
+    compare("exported", formatBoolean(stid.exported),
+      formatBoolean(seid.exported))
+    if stid.isDoi:
+      compare("datacenter", stid.datacenter.symbol, seid.datacenter.symbol)
+    compare("crossrefStatus", stid.get_crossrefStatus_display(),
+      seid.get_crossrefStatus_display())
+    compare("crossrefMessage", stid.crossrefMessage, seid.crossrefMessage)
+    compare("target", stid.target, seid.target)
+    compare("profile", stid.profile.label, seid.profile.label)
+    compare("agentRole", stid.get_agentRole_display(),
+      seid.get_agentRole_display())
+    stKeys = sorted(stid.cm.keys())
     seKeys = sorted(seid.cm.keys())
     sti = sei = 0
     while sti < len(stKeys) or sei < len(seKeys):
       if sti < len(stKeys) and\
         (sei >= len(seKeys) or stKeys[sti] < seKeys[sei]):
-        compare(stKeys[sti], stm[stKeys[sti]], "")
+        compare("cm/" + stKeys[sti], stid.cm[stKeys[sti]], "")
         sti += 1
       elif sei < len(seKeys) and\
         (sti >= len(stKeys) or seKeys[sei] < stKeys[sti]):
-        compare(seKeys[sei], "", seid.cm[seKeys[sei]])
+        compare("cm/" + seKeys[sei], "", seid.cm[seKeys[sei]])
         sei += 1
       else:
-        compare(stKeys[sti], stm[stKeys[sti]], seid.cm[seKeys[sei]])
+        compare("cm/" + stKeys[sti], stid.cm[stKeys[sti]],
+          seid.cm[seKeys[sei]])
         sti += 1
         sei += 1
-    stid, stm = storeIdentifiers.next()
+    stid = storeIdentifiers.next()
     seid = searchIdentifiers.next()
