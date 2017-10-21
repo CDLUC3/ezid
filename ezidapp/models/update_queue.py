@@ -75,6 +75,9 @@ class UpdateQueue (django.db.models.Model):
   # If true, external services (DataCite, Crossref) are to be updated.
   # (The N2T binder is also external to EZID, but is always updated.)
 
+  def __unicode__ (self):
+    return "%s %s" % (self.get_operation_display(), self.identifier)
+
   def clean (self):
     if self.enqueueTime == "": self.enqueueTime = int(time.time())
 
