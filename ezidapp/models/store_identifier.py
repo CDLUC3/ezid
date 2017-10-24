@@ -17,6 +17,7 @@ import django.db.models
 
 import custom_fields
 import identifier
+import shoulder
 import store_datacenter
 import store_group
 import store_profile
@@ -48,3 +49,13 @@ class StoreIdentifier (identifier.Identifier):
   def defaultProfile (self):
     import util2
     return store_profile.getByLabel(util2.defaultProfile(self.identifier))
+
+  def fromLegacy (self, d):
+    # See Identifier.fromLegacy.  N.B.: computeComputedValues should
+    # be called after this method to fill out the rest of the object.
+    super(StoreIdentifier, self).fromLegacy(d)
+    if d["_o"] != "anonymous": self.owner = store_user.getByPid(d["_o"])
+    if d["_g"] != "anonymous": self.ownergroup = store_group.getByPid(d["_g"])
+    self.profile = store_profile.getByLabel(d["_p"])
+    if self.isDoi:
+      self.datacenter = shoulder.getDatacenterBySymbol(d["_d"])

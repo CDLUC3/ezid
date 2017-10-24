@@ -209,6 +209,15 @@ class SearchIdentifier (identifier.Identifier):
       self.target != self.defaultTarget
     self.computeHasIssues()
 
+  def fromLegacy (self, d):
+    # See Identifier.fromLegacy.  N.B.: computeComputedValues should
+    # be called after this method to fill out the rest of the object.
+    super(SearchIdentifier, self).fromLegacy(d)
+    self.owner = _getUser(d["_o"])
+    self.ownergroup = _getGroup(d["_g"])
+    self.profile = _getProfile(d["_p"])
+    if self.isDoi: self.datacenter = _getDatacenter(d["_d"])
+
   # Note that MySQL FULLTEXT indexes must be created outside Django;
   # see .../etc/search-mysql-addendum.sql.
 
@@ -342,10 +351,6 @@ def updateFromLegacy (identifier, metadata, forceInsert=False,
   # identifier is constructed from a legacy representation.
   i = SearchIdentifier(identifier=identifier)
   i.fromLegacy(metadata)
-  i.owner = _getUser(metadata["_o"])
-  i.ownergroup = _getGroup(metadata["_g"])
-  i.profile = _getProfile(metadata["_p"])
-  if i.isDoi: i.datacenter = _getDatacenter(metadata["_d"])
   i.my_full_clean()
   # Because backproc.py's call to this function is really the only
   # place identifiers get inserted and updated in the search database,
