@@ -277,19 +277,20 @@ progress, and end records for every transaction, for both read and
 write operations, both successful and not, as well as server error and
 server status records.  But for space efficiency, historical
 transaction logs are converted to a more compact form.  The striplog
-tool strips out all records, retaining only records for transactions
-that successfully minted, created, or modified non-test identifiers.
-Furthermore, the multiple records comprising a transaction are
-collapsed into a single record.  For example, the following two
-transactions (records have been wrapped here for clarity):
+tool retains only records for transactions that successfully created,
+updated, or deleted a non-test identifier.  Furthermore, the multiple
+records comprising a transaction are collapsed into a single record.
+For example, the following two transactions (records have been wrapped
+here for clarity):
 
-  2014-01-06 20:58:11,383 4ec86f4a775811e3bdd610ddb1cf39e7 BEGIN mintArk
-    13030/c7 gjanee ark:/99166/p92z12p14 cdl ark:/99166/p9z60c16v
+  2014-01-06 20:58:11,383 4ec86f4a775811e3bdd610ddb1cf39e7 BEGIN
+    mintIdentifier ark:/13030/c7 gjanee ark:/99166/p92z12p14 cdl
+    ark:/99166/p9z60c16v
   2014-01-06 20:58:11,715 4ec86f4a775811e3bdd610ddb1cf39e7 END SUCCESS
-    13030/c7b56d41k
-  2014-01-06 20:58:11,715 4efb1a59775811e3a95e10ddb1cf39e7 BEGIN createArk
-    13030/c7b56d41k gjanee ark:/99166/p92z12p14 cdl ark:/99166/p9z60c16v
-    erc.what An%20example
+    ark:/13030/c7b56d41k
+  2014-01-06 20:58:11,715 4efb1a59775811e3a95e10ddb1cf39e7 BEGIN
+    createIdentifier ark:/13030/c7b56d41k gjanee ark:/99166/p92z12p14
+    cdl ark:/99166/p9z60c16v erc.what An%20example
   2014-01-06 20:58:12,338 4efb1a59775811e3a95e10ddb1cf39e7 PROGRESS
     noid_egg.setElements
   2014-01-06 20:58:12,342 4efb1a59775811e3a95e10ddb1cf39e7 PROGRESS
@@ -298,9 +299,7 @@ transactions (records have been wrapped here for clarity):
 
 get compacted into:
 
-  2014-01-06 20:58:11,383 mintArk 13030/c7 gjanee ark:/99166/p92z12p14 cdl
-    ark:/99166/p9z60c16v -> 13030/c7b56d41k
-  2014-01-06 20:58:11,715 createArk 13030/c7b56d41k gjanee
+  2014-01-06 20:58:12,345 createIdentifier ark:/13030/c7b56d41k gjanee
     ark:/99166/p92z12p14 cdl ark:/99166/p9z60c16v erc.what An%20example
 
 Note that record arguments in both types of log files are separated by
