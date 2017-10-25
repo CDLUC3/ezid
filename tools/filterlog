@@ -10,10 +10,17 @@
 # Options:
 #
 #     -v            print transaction IDs
-#     -w            print progress records for selected transactions
+#     -w            print transaction progress records
 #     -x            print transaction elapsed times
 #
-#   Restrict time range:
+#   User print options:
+#     -0            print no user information (default: print all)
+#     -1            print username
+#     -2            print user agent PID
+#     -3            print groupname
+#     -4            print group agent PID
+#
+#   Restrict range of transaction end times:
 #     -f TIMESTAMP  from (inclusive; any timestamp prefix)
 #     -t TIMESTAMP  to (exclusive)
 #
@@ -26,7 +33,8 @@
 #     -T            test identifier
 #
 #   Filter by operation:
-#     -C            create or mint identifier
+#     -M            mint identifier
+#     -C            create identifier
 #     -G            get metadata
 #     -S            set metadata
 #     -D            delete identifier
@@ -41,27 +49,53 @@
 # By default, all records are output.  Filter options are AND'd
 # together, but multiple options within an option group are OR'd.
 #
+# This script requires an EZID module.  The PYTHONPATH environment
+# variable must include the .../SITE_ROOT/PROJECT_ROOT directory; if
+# it doesn't, we attempt to dynamically locate it and add it.  The
+# DJANGO_SETTINGS_MODULE environment variable must be set.
+#
+# Implementation note: beyond the documentation in log.py, this
+# program relies on the fact that BEGIN records currently have the
+# following common structure (after the BEGIN keyword):
+#
+# function identifier username userPid groupname groupPid ...
+#
 # Greg Janee <gjanee@ucop.edu>
 # January 2012
 
 import calendar
 import optparse
+import os.path
 import re
 import sys
 import time
 
-testDoiPrefix = "10.5072/FK2"
-testDoiShadowPrefix = "b5072/fk2"
-testArkPrefix = "99999/fk4"
+# The following must precede any EZID module imports:
+execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
+  "offline.py"))
+
+import util2
 
 p = optparse.OptionParser(usage="%prog [options] files...")
 p.add_option("-v", action="store_true", dest="printTids", default=False,
   help="print transaction IDs")
 p.add_option("-w", action="store_true", dest="printProgressRecords",
-  default=False, help="print progress records for selected transactions")
+  default=False, help="print transaction progress records")
 p.add_option("-x", action="store_true", dest="printElapsedTimes",
   default=False, help="print transaction elapsed times")
-g = optparse.OptionGroup(p, "Restrict time range")
+g = optparse.OptionGroup(p, "User print options")
+g.add_option("-0", action="append_const", dest="userAttrs", const=0,
+  help="print no user information (default: print all)")
+g.add_option("-1", action="append_const", dest="userAttrs", const=1,
+  help="print username")
+g.add_option("-2", action="append_const", dest="userAttrs", const=2,
+  help="print user agent PID")
+g.add_option("-3", action="append_const", dest="userAttrs", const=3,
+  help="print groupname")
+g.add_option("-4", action="append_const", dest="userAttrs", const=4,
+  help="print group agent PID")
+p.add_option_group(g)
+g = optparse.OptionGroup(p, "Restrict range of transaction end times")
 g.add_option("-f", action="store", type="string", dest="from_",
   help="from (inclusive; any timestamp prefix)", metavar="TIMESTAMP")
 g.add_option("-t", action="store", type="string", dest="to",
@@ -80,8 +114,10 @@ g.add_option("-T", action="store_true", dest="typeTest", default=False,
   help="test identifier")
 p.add_option_group(g)
 g = optparse.OptionGroup(p, "Filter by operation")
+g.add_option("-M", action="store_true", dest="operationMint", default=False,
+  help="mint identifier")
 g.add_option("-C", action="store_true", dest="operationCreate", default=False,
-  help="create or mint identifier")
+  help="create identifier")
 g.add_option("-G", action="store_true", dest="operationGet", default=False,
   help="get metadata")
 g.add_option("-S", action="store_true", dest="operationSet", default=False,
@@ -102,6 +138,13 @@ g.add_option("-p", action="store_true", dest="statusPartial", default=False,
   help="partial transaction")
 p.add_option_group(g)
 options, files = p.parse_args()
+if options.userAttrs is None:
+  options.userAttrs = [1, 2, 3, 4]
+else:
+  if 0 in options.userAttrs:
+    if any(a != 0 for a in options.userAttrs):
+      p.error("incompatible user print options")
+    options.userAttrs = []
 if options.users is None: options.users = []
 if options.groups is None: options.groups = []
 if len(files) == 0: files = [None]
@@ -134,27 +177,18 @@ def typeFilter (beginRecord):
   if not options.typeReal and not options.typeTest: return True
   if beginRecord[0] == "otherError" or beginRecord[0].startswith("search/"):
     return False
-  isTestIdentifier = ((beginRecord[0] == "mintDoi" or\
-    beginRecord[0] == "createDoi") and\
-    beginRecord[1].startswith(testDoiPrefix)) or\
-    ((beginRecord[0] == "mintArk" or beginRecord[0] == "createArk") and\
-    beginRecord[1].startswith(testArkPrefix)) or\
-    ((beginRecord[0] == "getMetadata" or beginRecord[0] == "setMetadata" or\
-    beginRecord[0] == "deleteIdentifier") and\
-    (beginRecord[1].startswith("doi:" + testDoiPrefix) or\
-    beginRecord[1].startswith("ark:/" + testDoiShadowPrefix) or\
-    beginRecord[1].startswith("ark:/" + testArkPrefix)))
-  if isTestIdentifier and options.typeTest: return True
-  if not isTestIdentifier and options.typeReal: return True
+  if util2.isTestIdentifier(beginRecord[1]) and options.typeTest: return True
+  if not util2.isTestIdentifier(beginRecord[1]) and options.typeReal:
+    return True
   return False
 
 def operationFilter (beginRecord):
-  if not options.operationCreate and not options.operationGet and\
-    not options.operationSet and not options.operationDelete and\
-    not options.operationSearch:
+  if not options.operationMint and not options.operationCreate and\
+    not options.operationGet and not options.operationSet and\
+    not options.operationDelete and not options.operationSearch:
     return True
-  if (beginRecord[0].startswith("mint") or\
-    beginRecord[0].startswith("create")) and options.operationCreate:
+  if beginRecord[0] == "mintIdentifier" and options.operationMint: return True
+  if beginRecord[0] == "createIdentifier" and options.operationCreate:
     return True
   if beginRecord[0] == "getMetadata" and options.operationGet: return True
   if beginRecord[0] == "setMetadata" and options.operationSet: return True
@@ -224,7 +258,8 @@ for file in files:
         if tid not in tidMap:
           error(file, n, "no corresponding BEGIN record")
           continue
-        if tidMap[tid].endRecord != None:
+        r = tidMap[tid]
+        if r.endRecord != None:
           error(file, n, "duplicate END record")
           continue
         startTime = parseTimestamp(r.timestamp)
@@ -232,8 +267,12 @@ for file in files:
         if startTime > endTime:
           error(file, n, "END record predates BEGIN record")
           continue
-        tidMap[tid].endRecord = m.group(6).split(" ")
-        tidMap[tid].elapsed = endTime-startTime
+        r.elapsed = endTime-startTime
+        r.endRecord = m.group(6).split(" ")
+        # Overwrite the timestamp with the transaction's ending
+        # timestamp, so that transactions are ordered by completion
+        # time, not start time.
+        r.timestamp = m.group(1)
   f.close()
 
 records.sort(key=lambda r: r.timestamp)
@@ -252,13 +291,10 @@ for r in records:
   if not operationFilter(r.beginRecord): continue
   if not statusFilter(r.endRecord): continue
   if recordHasUser(r.beginRecord):
-    del r.beginRecord[3]
-    del r.beginRecord[4]
-    if len(options.users) == 1 and len(options.groups) == 0:
-      del r.beginRecord[2]
-      del r.beginRecord[2]
-    elif len(options.users) == 0 and len(options.groups) == 1:
-      del r.beginRecord[3]
+    br = r.beginRecord[:2]
+    for i in range(1, 5):
+      if i in options.userAttrs: br.append(r.beginRecord[i+1])
+    r.beginRecord = br + r.beginRecord[6:]
   if options.printTids:
     if r.tid != None:
       tid = " " + r.tid
