@@ -50,7 +50,7 @@ class RegistrationQueue (django.db.models.Model):
 
   _operationMapping = {
     "create": OVERWRITE,
-    "modify": OVERWRITE,
+    "update": OVERWRITE,
     "delete": DELETE }
 
   @staticmethod

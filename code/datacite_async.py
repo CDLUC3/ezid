@@ -55,7 +55,7 @@ def enqueueIdentifier (identifier, operation, blob):
   Adds an identifier to the DataCite asynchronous processing queue.
   'identifier' should be the normalized, qualified identifier, e.g.,
   "doi:10.5060/FOO".  'operation' is the identifier operation and
-  should be one of the strings "create", "modify", or "delete".
+  should be one of the strings "create", "update", or "delete".
   'blob' is the identifier's metadata dictionary in blob form.
   """
   register_async.enqueueIdentifier(ezidapp.models.DataciteQueue,

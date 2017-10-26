@@ -202,7 +202,7 @@ def enqueueIdentifier (model, identifier, operation, blob):
   Adds an identifier to the asynchronous registration queue named by
   'model'.  'identifier' should be the normalized, qualified
   identifier, e.g., "doi:10.5060/FOO".  'operation' is the identifier
-  operation and should be one of the strings "create", "modify", or
+  operation and should be one of the strings "create", "update", or
   "delete".  'blob' is the identifier's metadata dictionary in blob
   form.
   """
