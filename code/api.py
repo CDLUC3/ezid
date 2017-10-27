@@ -88,9 +88,9 @@ import datacite
 import datacite_async
 import download
 import ezid
+import ezidapp.models
 import noid_egg
 import search_util
-import store
 import userauth
 import util
 
@@ -345,7 +345,7 @@ def _statusLineGenerator (includeSuccessLine):
     na = sum(activeUsers.values())
     nw = sum(waitingUsers.values())
     ndo = datacite.numActiveOperations()
-    ql = store.getUpdateQueueLength()
+    ql = ezidapp.models.UpdateQueue.objects.count()
     bql = binder_async.getQueueLength()
     dql = datacite_async.getQueueLength()
     nas = search_util.numActiveSearches()
