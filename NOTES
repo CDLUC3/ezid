@@ -310,41 +310,25 @@ spaces.
 ------------------------
 
 There are two slightly different database dump formats.  A "raw" dump
-(produced by 'dump -r' and 'dump-store -r') lists identifiers as
-stored in the bind or store database: in unqualified form, with shadow
-ARKs representing non-ARK identifiers, using internal labels, with all
-internal labels included.  Here's an example identifier record
-(wrapped here for clarity):
+lists identifiers as stored in the bind database: using internal
+labels, with all internal labels included.  Here's an example
+identifier record (wrapped here for clarity):
 
-  99999/fk4030wkq _is reserved _p erc
+  ark:/99999/fk4030wkq _is reserved _p erc
     _o ark:/99166/p92z12p14 _g ark:/99166/p9z60c16v
     _c 1389071897 _u 1389071897
     _t1 http://a.target/
     _t https://ezid.cdlib.org/id/ark:/99999/fk4030wkq
 
-A "normal" dump (produced by 'dump -n' and 'dump-store -n', or
-converted from a raw dump by 'convert-dump -n') uses a record
-representation that is more human-readable and more easily processed.
-It lists identifiers in qualified form, with non-ARK identifiers
-representing themselves, using external labels, with internal labels
-related to identifier status omitted.  The same example in normal
-form:
-
-  ark:/99999/fk4030wkq _status reserved _profile erc
-    _owner ark:/99166/p92z12p14 _ownergroup ark:/99166/p9z60c16v
-    _created 1389071897 _updated 1389071897
-    _target http://a.target/
-
-A normal dump may optionally have agent identifiers converted to local
-names (by omitting the '-n' option in the above commands), as in:
+A "normal" dump uses a record representation that is more
+human-readable and more easily processed: using external labels, with
+internal labels related to identifier status omitted.  The same
+example in normal form:
 
   ark:/99999/fk4030wkq _status reserved _profile erc
     _owner gjanee _ownergroup cdl
     _created 1389071897 _updated 1389071897
     _target http://a.target/
-
-The select and project tools are intended to work on normal dumps,
-though certain operations work on raw dumps as well.
 
 9. Crossref
 -----------
