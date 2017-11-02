@@ -311,24 +311,31 @@ spaces.
 
 There are two slightly different database dump formats.  A "raw" dump
 lists identifiers as stored in the bind database: using internal
-labels, with all internal labels included.  Here's an example
-identifier record (wrapped here for clarity):
+labels, with all status-related elements included, but with default
+values omitted.  Here are two example identifier records (wrapped here
+for clarity):
 
   ark:/99999/fk4030wkq _is reserved _p erc
     _o ark:/99166/p92z12p14 _g ark:/99166/p9z60c16v
     _c 1389071897 _u 1389071897
     _t1 http://a.target/
     _t https://ezid.cdlib.org/id/ark:/99999/fk4030wkq
+  ark:/99999/fk40v8s28x _u 1509662539 _t http://b.target/
+    _p erc _o anonymous _g anonymous _c 1509662539
 
 A "normal" dump uses a record representation that is more
 human-readable and more easily processed: using external labels, with
-internal labels related to identifier status omitted.  The same
-example in normal form:
+internal status-related elements omitted but with default values
+explicitly listed, and with agent PIDs converted to names.  The same
+examples in normal form:
 
   ark:/99999/fk4030wkq _status reserved _profile erc
     _owner gjanee _ownergroup cdl
     _created 1389071897 _updated 1389071897
     _target http://a.target/
+  ark:/99999/fk40v8s28x _updated 1509662539 _target http://b.target/
+    _profile erc _export yes _owner anonymous _ownergroup anonymous
+    _created 1509662539 _status public
 
 9. Crossref
 -----------
