@@ -462,8 +462,8 @@ class Identifier (django.db.models.Model):
     # Returns a legacy representation of the identifier.  See the
     # inverse of this method, 'fromLegacy' below.
     d = self.cm.copy()
-    d["_o"] = self.owner.pid
-    d["_g"] = self.ownergroup.pid
+    d["_o"] = self.owner.pid if self.owner != None else "anonymous"
+    d["_g"] = self.ownergroup.pid if self.ownergroup != None else "anonymous"
     d["_c"] = str(self.createTime)
     d["_u"] = str(self.updateTime)
     d["_p"] = self.profile.label
