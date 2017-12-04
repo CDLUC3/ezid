@@ -224,7 +224,8 @@ for file in files:
         if tid not in tidMap:
           error(file, n, "no corresponding BEGIN record")
           continue
-        if tidMap[tid].endRecord != None:
+        r = tidMap[tid]
+        if r.endRecord != None:
           error(file, n, "duplicate END record")
           continue
         startTime = parseTimestamp(r.timestamp)
@@ -232,8 +233,8 @@ for file in files:
         if startTime > endTime:
           error(file, n, "END record predates BEGIN record")
           continue
-        tidMap[tid].endRecord = m.group(6).split(" ")
-        tidMap[tid].elapsed = endTime-startTime
+        r.endRecord = m.group(6).split(" ")
+        r.elapsed = endTime-startTime
   f.close()
 
 records.sort(key=lambda r: r.timestamp)
