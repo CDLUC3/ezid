@@ -43,15 +43,15 @@ class CrossrefQueue (django.db.models.Model):
   # in the store database.
 
   CREATE = "C"
-  MODIFY = "M"
+  UPDATE = "U"
   DELETE = "D"
   operation = django.db.models.CharField(max_length=1,
-    choices=[(CREATE, "create"), (MODIFY, "modify"), (DELETE, "delete")])
+    choices=[(CREATE, "create"), (UPDATE, "update"), (DELETE, "delete")])
   # The operation that caused the identifier to be placed in this table.
 
   _operationMapping = {
     "create": CREATE,
-    "modify": MODIFY,
+    "update": UPDATE,
     "delete": DELETE }
 
   @staticmethod

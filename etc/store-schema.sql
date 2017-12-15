@@ -56,7 +56,7 @@ CREATE INDEX identifierOaiIndex ON identifier (oaiVisible, updateTime ASC);
 -- and subsequently removed by the 'backproc' module as they are
 -- processed.  'seq' defines the queue order.  'identifier' and
 -- 'metadata' are as above.  'operation' is 0 (identifier created), 1
--- (modified), or 2 (deleted).  If 'updateExternalServices' is
+-- (updated), or 2 (deleted).  If 'updateExternalServices' is
 -- true, the external services (DataCite, Crossref) are updated.
 
 CREATE TABLE updateQueue (

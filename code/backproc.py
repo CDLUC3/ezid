@@ -44,7 +44,7 @@ def _updateSearchDatabase (identifier, operation, metadata, blob):
     identifier = metadata["_s"]
   else:
     identifier = "ark:/" + identifier
-  if operation in ["create", "modify"]:
+  if operation in ["create", "update"]:
     ezidapp.models.search_identifier.updateFromLegacy(identifier, metadata)
   elif operation == "delete":
     ezidapp.models.SearchIdentifier.objects.filter(identifier=identifier).\

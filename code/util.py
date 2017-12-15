@@ -482,7 +482,7 @@ _modelAnvlLabelMapping = {
   "crossrefStatus": "_crossref",
   "crossrefMessage": "_crossref",
   "target": "_target",
-  "label": "_profile",
+  "profile": "_profile",
   "agentRole": "_ezid_role"
 }
 

@@ -560,7 +560,7 @@ def _operationCodeToString (code):
   if code == 0:
     return "create"
   elif code == 1:
-    return "modify"
+    return "update"
   elif code == 2:
     return "delete"
   else:
@@ -573,7 +573,7 @@ def getUpdateQueue (maximum=None):
   The list is in sequence order.  In all cases 'identifier' is an
   unqualified ARK identifier, e.g., "13030/foo".  'metadata' is a
   dictionary of element (name, value) pairs.  'operation' is one of
-  the strings "create", "modify", or "delete".  'maximum' can be used
+  the strings "create", "update", or "delete".  'maximum' can be used
   to limit the number of tuples returned.
   """
   connection = None

@@ -72,7 +72,6 @@ Contents
 - `Operation: modify identifier`_
 - `Operation: delete identifier`_
 - `Ownership model`_
-- `Shadow ARKs (deprecated)`_
 - `Identifier status`_
 - `Internal metadata`_
 - `Metadata profiles`_
@@ -537,12 +536,12 @@ Here's a sample interaction creating an ARK identifier:
 The return is a status line.  If an ARK identifier was created, the
 normalized form of the identifier is returned as shown above.  If an
 identifier other than an ARK was created (e.g., a DOI or UUID), the
-status line includes the normalized form of the identifier and,
-separated by a pipe character ("|", U+007C), the identifier's shadow
-ARK (see `Shadow ARKs (deprecated)`_ for more information).  Note that
-different identifier schemes have different normalization rules (e.g.,
-DOIs are normalized to all uppercase letters).  Here's a sample
-interaction creating a DOI identifier:
+status line also includes, separated by a pipe character ("|",
+U+007C), the identifier's "shadow ARK" (an ARK identifier that is an
+alias for the created identifier; deprecated).  Note that different
+identifier schemes have different normalization rules (e.g., DOIs are
+normalized to all uppercase letters).  Here's a sample interaction
+creating a DOI identifier:
 
 .. parsed-literal::
 
@@ -720,36 +719,6 @@ administrator.
 Proxies and group administrators are independent concepts.  A group
 administrator may also be a proxy, and may also have proxies.
 
-Shadow ARKs (deprecated)
-------------------------
-
-A shadow ARK is an ARK identifier that functions as an alias for a
-non-ARK identifier (e.g., a DOI identifier).  EZID assigns shadow ARKs
-to all non-ARK identifiers.
-
-All EZID operations on a non-ARK identifier can be performed via the
-identifier's shadow ARK; and while a shadow ARK is an ARK identifier
-in its own right, it always resolves to the same location as the
-non-ARK identifier it shadows.  Shadow ARKs thus provide a uniform
-identifier syntax for clients working with multiple types of
-identifiers.
-
-Shadow ARKs are returned on the status line when creating or minting
-non-ARK identifiers (see `Operation: create identifier`_ and
-`Operation: mint identifier`_ above).  Also, a non-ARK identifier's
-shadow ARK is returned as the value of the "_shadowedby" reserved
-metadata element (see `Internal metadata`_ below).  Conversely, the
-identifier shadowed by a shadow ARK is returned as the value of its
-"_shadows" metadata element.
-
-Shadow ARKs have similar names to their non-ARK counterparts (for
-example, the shadow ARK for identifier doi:10.1234/FOO is
-ark:/b1234/foo), but due to subtleties in identifier syntax rules,
-clients should not rely on this pattern, nor should they attempt to
-map between identifiers themselves.  Instead, the aforementioned
-"_shadows" and "_shadowedby" metadata elements should be used to map
-between non-ARK identifiers and shadow ARKs.
-
 Identifier status
 -----------------
 
@@ -822,9 +791,6 @@ first column indicates the element is modifiable by clients.
                   updating the target URL of a DOI identifier may take up to
                   30 minutes to take effect in the Handle System.
   --- ----------- -------------------------------------------------------------
-  \   _shadows    Shadow ARKs only.  The shadowed identifier.  doi:10.9999/TEST
-  \   _shadowedby Shadowed identifiers only.  The identifier's ark:/b9999/test
-                  shadow ARK.
   |X| _profile    The identifier's preferred metadata profile  erc
                   (see `Metadata profiles`_ next).
   |X| _status     The identifier's status (see                 unavailable |
@@ -1945,7 +1911,6 @@ encoding is UTF-8 and the metadata is compressed with either gzip_
      _owner: apitest
      _ownergroup: apitest
      _profile: datacite
-     _shadowedby: ark:/b5072/fk2s75905q
      _status: public
      _target: http://www.gutenberg.org/ebooks/26014
      _updated: 1421276359
@@ -2038,7 +2003,6 @@ encoding is UTF-8 and the metadata is compressed with either gzip_
          <element name="_owner">apitest</element>
          <element name="_ownergroup">apitest</element>
          <element name="_profile">datacite</element>
-         <element name="_shadowedby">ark:/b5072/fk2s75905q</element>
          <element name="_status">public</element>
          <element name="_target">http://www.gutenberg.org/ebooks/26014\
      </element>

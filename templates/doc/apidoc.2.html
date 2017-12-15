@@ -40,7 +40,6 @@ only) to ask questions or report problems:</p>
 <li><a class="reference internal" href="#operation-modify-identifier">Operation: modify identifier</a></li>
 <li><a class="reference internal" href="#operation-delete-identifier">Operation: delete identifier</a></li>
 <li><a class="reference internal" href="#ownership-model">Ownership model</a></li>
-<li><a class="reference internal" href="#shadow-arks-deprecated">Shadow ARKs (deprecated)</a></li>
 <li><a class="reference internal" href="#identifier-status">Identifier status</a></li>
 <li><a class="reference internal" href="#internal-metadata">Internal metadata</a></li>
 <li><a class="reference internal" href="#metadata-profiles">Metadata profiles</a><ul>
@@ -480,12 +479,12 @@ metadata</a> below.</p>
 <p>The return is a status line.  If an ARK identifier was created, the
 normalized form of the identifier is returned as shown above.  If an
 identifier other than an ARK was created (e.g., a DOI or UUID), the
-status line includes the normalized form of the identifier and,
-separated by a pipe character (&quot;|&quot;, U+007C), the identifier's shadow
-ARK (see <a class="reference internal" href="#shadow-arks-deprecated">Shadow ARKs (deprecated)</a> for more information).  Note that
-different identifier schemes have different normalization rules (e.g.,
-DOIs are normalized to all uppercase letters).  Here's a sample
-interaction creating a DOI identifier:</p>
+status line also includes, separated by a pipe character (&quot;|&quot;,
+U+007C), the identifier's &quot;shadow ARK&quot; (an ARK identifier that is an
+alias for the created identifier; deprecated).  Note that different
+identifier schemes have different normalization rules (e.g., DOIs are
+normalized to all uppercase letters).  Here's a sample interaction
+creating a DOI identifier:</p>
 <pre class="literal-block">
 ⇒ PUT /id/doi:10.9999/test HTTP/1.1
 ⇒ Host: ezid.cdlib.org
@@ -639,32 +638,6 @@ administrator.</p>
 <p>Proxies and group administrators are independent concepts.  A group
 administrator may also be a proxy, and may also have proxies.</p>
 </div>
-<div class="section" id="shadow-arks-deprecated">
-<h1>Shadow ARKs (deprecated)</h1>
-<p>A shadow ARK is an ARK identifier that functions as an alias for a
-non-ARK identifier (e.g., a DOI identifier).  EZID assigns shadow ARKs
-to all non-ARK identifiers.</p>
-<p>All EZID operations on a non-ARK identifier can be performed via the
-identifier's shadow ARK; and while a shadow ARK is an ARK identifier
-in its own right, it always resolves to the same location as the
-non-ARK identifier it shadows.  Shadow ARKs thus provide a uniform
-identifier syntax for clients working with multiple types of
-identifiers.</p>
-<p>Shadow ARKs are returned on the status line when creating or minting
-non-ARK identifiers (see <a class="reference internal" href="#operation-create-identifier">Operation: create identifier</a> and
-<a class="reference internal" href="#operation-mint-identifier">Operation: mint identifier</a> above).  Also, a non-ARK identifier's
-shadow ARK is returned as the value of the &quot;_shadowedby&quot; reserved
-metadata element (see <a class="reference internal" href="#internal-metadata">Internal metadata</a> below).  Conversely, the
-identifier shadowed by a shadow ARK is returned as the value of its
-&quot;_shadows&quot; metadata element.</p>
-<p>Shadow ARKs have similar names to their non-ARK counterparts (for
-example, the shadow ARK for identifier doi:10.1234/FOO is
-ark:/b1234/foo), but due to subtleties in identifier syntax rules,
-clients should not rely on this pattern, nor should they attempt to
-map between identifiers themselves.  Instead, the aforementioned
-&quot;_shadows&quot; and &quot;_shadowedby&quot; metadata elements should be used to map
-between non-ARK identifiers and shadow ARKs.</p>
-</div>
 <div class="section" id="identifier-status">
 <h1>Identifier status</h1>
 <p>Each identifier in EZID has a status.  The status is recorded as the
@@ -760,17 +733,6 @@ EZID URL.  That is, the default target URL for identifier
 https://ezid.cdlib.org/id/<span class="hl1">foo</span>.  Note that creating or
 updating the target URL of a DOI identifier may take up to
 30 minutes to take effect in the Handle System.</td>
-</tr>
-<tr><td></td>
-<td>_shadows</td>
-<td>Shadow ARKs only.  The shadowed identifier.</td>
-<td>doi:10.9999/TEST</td>
-</tr>
-<tr><td></td>
-<td>_shadowedby</td>
-<td>Shadowed identifiers only.  The identifier's
-shadow ARK.</td>
-<td>ark:/b9999/test</td>
 </tr>
 <tr><td>✓</td>
 <td>_profile</td>
@@ -1886,7 +1848,6 @@ _export: yes
 _owner: apitest
 _ownergroup: apitest
 _profile: datacite
-_shadowedby: ark:/b5072/fk2s75905q
 _status: public
 _target: http://www.gutenberg.org/ebooks/26014
 _updated: 1421276359
@@ -1970,7 +1931,6 @@ would be:</p>
     &lt;element name=&quot;_owner&quot;&gt;apitest&lt;/element&gt;
     &lt;element name=&quot;_ownergroup&quot;&gt;apitest&lt;/element&gt;
     &lt;element name=&quot;_profile&quot;&gt;datacite&lt;/element&gt;
-    &lt;element name=&quot;_shadowedby&quot;&gt;ark:/b5072/fk2s75905q&lt;/element&gt;
     &lt;element name=&quot;_status&quot;&gt;public&lt;/element&gt;
     &lt;element name=&quot;_target&quot;&gt;http://www.gutenberg.org/ebooks/26014&lt;/element&gt;
     &lt;element name=&quot;_updated&quot;&gt;1421276359&lt;/element&gt;

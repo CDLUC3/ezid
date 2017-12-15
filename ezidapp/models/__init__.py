@@ -48,3 +48,6 @@ getUserById = store_user.getById
 getAdminUser = store_user.getAdminUser
 getProfileByLabel = store_profile.getByLabel
 getProfileById = store_profile.getById
+
+def getIdentifier (identifier):
+  return StoreIdentifier.objects.get(identifier=identifier)
