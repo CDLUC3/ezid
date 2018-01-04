@@ -15,6 +15,7 @@
 # -----------------------------------------------------------------------------
 
 import django.db
+import httplib
 import random
 import threading
 import time
@@ -150,7 +151,9 @@ def callWrapper (sh, row, methodName, function, *args):
     try:
       return function(*args)
     except Exception, e:
-      if isinstance(e, urllib2.HTTPError) and e.code >= 500:
+      if (isinstance(e, urllib2.HTTPError) and e.code >= 500) or\
+        (isinstance(e, IOError) and not isinstance(e, urllib2.HTTPError)) or\
+        isinstance(e, httplib.HTTPException):
         row.error = util.formatException(e)
         _checkAbort(sh)
         row.save()
