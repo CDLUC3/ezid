@@ -165,8 +165,7 @@ class StoreIdentifier (identifier.Identifier):
               "removed from reserved identifiers only." })
         elif allowRestrictedSettings:
           # OK, this is a hack used by the Crossref queue.
-          self.crossrefStatus = d[k][0]
-          self.crossrefMessage = d[k][1:]
+          self.crossrefStatus, self.crossrefMessage = d[k].split("/", 1)
         else:
           raise django.core.exceptions.ValidationError(
             { "crossrefStatus": "Value must be 'yes' or 'no'." })

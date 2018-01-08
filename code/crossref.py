@@ -527,21 +527,21 @@ def _doPoll (r):
     # make it clear...
     if r.operation != ezidapp.models.CrossrefQueue.DELETE:
       if t[0] == "completed successfully":
-        m = "successfully registered"
+        crs = ezidapp.models.StoreIdentifier.CR_SUCCESS
+        crm = ""
       else:
-        m = _oneline(t[1]).strip()
-        if len(m) == 0: m = "(unknown reason)"
         if t[0] == "completed with warning":
-          m = "registered with warning | " + m
+          crs = ezidapp.models.StoreIdentifier.CR_WARNING
         else:
-          m = "registration failure | " + m
+          crs = ezidapp.models.StoreIdentifier.CR_FAILURE
+        crm = _oneline(t[1]).strip()
       _checkAbort()
       # We update the identifier's Crossref status in the store and
       # search databases, but do so in such a way as to avoid
       # infinite loops and triggering further updates to DataCite or
       # Crossref.
-      s = ezid.asAdmin(ezid.setMetadata, r.identifier,
-        { "_cr": "yes | " + m }, False)
+      s = ezid.setMetadata(r.identifier, ezidapp.models.getAdminUser(),
+        { "_crossref": "%s/%s" % (crs, crm) }, updateExternalServices=False)
       assert s.startswith("success:"), "ezid.setMetadata failed: " + s
     if t[0] == "completed successfully":
       _checkAbort()
