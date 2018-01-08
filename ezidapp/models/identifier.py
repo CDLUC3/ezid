@@ -263,6 +263,10 @@ class Identifier (django.db.models.Model):
   # If the identifier is the persistent identifier of an agent, the
   # agent's role; otherwise, empty.
 
+  agentRoleDisplayToCode = {
+    "user": USER,
+    "group": GROUP }
+
   @property
   def isAgentPid (self):
     return self.agentRole != ""
