@@ -484,6 +484,28 @@ def updateUserPids (request, users):
   else:
     django.contrib.messages.success(request, "User PIDs updated.")
 
+def onCommitWithSqliteHack (onCommitFunction):
+  # Oy vay, this has been so difficult to make work.  Our recursive
+  # calls to EZID to create and update agent PIDs must occur in
+  # on_commit hooks because the Django admin, in its infinite wisdom,
+  # delays updating many-to-many relationships.  This is not a problem
+  # for MySQL, but SQLite doesn't support starting a new transaction
+  # in an on_commit hook... something about the autocommit setting.
+  # As a hack, we force the operation to go through by setting an
+  # internal Django flag.  The flag is reset afterwards for good
+  # measure, though it's not clear this is necessary.  The effect of
+  # this hack is probably to break transaction rollback.
+  if "sqlite3" in django.conf.settings.DATABASES["default"]["ENGINE"]:
+    c = django.db.connection
+    v = c.features.autocommits_when_autocommit_is_off
+    def setFlag (value):
+      c.features.autocommits_when_autocommit_is_off = value
+    django.db.connection.on_commit(lambda: setFlag(False))
+    django.db.connection.on_commit(onCommitFunction)
+    django.db.connection.on_commit(lambda: setFlag(v))
+  else:
+    django.db.connection.on_commit(onCommitFunction)
+
 class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
   def organizationNameSpelledOut (self, obj):
     return obj.organizationName
@@ -533,13 +555,13 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
     # Our actions won't take effect until the Django admin's
     # transaction commits sometime in the future, so we defer clearing
     # the relevant caches.  While not obvious, the following calls
-    # rely on the django-transaction-hooks 3rd party package.
+    # rely on the django-transaction-hooks 3rd party package.  (Django
+    # 1.9 incorporates this functionality directly.)
     if clearCaches:
       django.db.connection.on_commit(models.store_group.clearCaches)
       django.db.connection.on_commit(models.search_identifier.clearGroupCache)
-    # Note that EZID's mainline store database transaction will be
-    # nested inside the Django admin's transaction.
-    createOrUpdateGroupPid(request, obj, change)
+    onCommitWithSqliteHack(
+      lambda: createOrUpdateGroupPid(request, obj, change))
     # Changes to shoulders and Crossref enablement may trigger
     # adjustments to users in the group.
     if change:
@@ -565,7 +587,8 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
       if doUpdateUserPids:
         django.db.connection.on_commit(models.store_user.clearCaches)
         django.db.connection.on_commit(models.search_identifier.clearUserCache)
-        updateUserPids(request, list(obj.users.all()))
+        users = list(obj.users.all())
+        onCommitWithSqliteHack(lambda: updateUserPids(request, users))
   def delete_model (self, request, obj):
     obj.delete()
     models.SearchGroup.objects.filter(pid=obj.pid).delete()
@@ -825,7 +848,8 @@ class StoreUserAdmin (django.contrib.admin.ModelAdmin):
     if clearCaches:
       django.db.connection.on_commit(models.store_user.clearCaches)
       django.db.connection.on_commit(models.search_identifier.clearUserCache)
-    createOrUpdateUserPid(request, obj, change)
+    onCommitWithSqliteHack(
+      lambda: createOrUpdateUserPid(request, obj, change))
   def delete_model (self, request, obj):
     obj.delete()
     models.SearchUser.objects.filter(pid=obj.pid).delete()
@@ -845,5 +869,4 @@ def scheduleUserChangePostCommitActions (user):
   # transaction making the updates.
   django.db.connection.on_commit(models.store_user.clearCaches)
   django.db.connection.on_commit(models.search_identifier.clearUserCache)
-  django.db.connection.on_commit(
-    lambda: createOrUpdateUserPid(None, user, True))
+  onCommitWithSqliteHack(lambda: createOrUpdateUserPid(None, user, True))
