@@ -417,9 +417,9 @@ def enqueueIdentifier (identifier, operation, metadata, blob):
   """
   Adds an identifier to the Crossref queue.  'identifier' should be
   the normalized, qualified identifier, e.g., "doi:10.5060/FOO".
-  'operation' is the identifier operation as reported by the store
-  module.  'metadata' is the identifier's metadata dictionary; 'blob'
-  is the same in blob form.
+  'operation' is the identifier operation and should be one of the
+  strings "create", "update", or "delete".  'metadata' is the
+  identifier's metadata dictionary; 'blob' is the same in blob form.
   """
   e = ezidapp.models.CrossrefQueue(identifier=identifier, owner=metadata["_o"],
     metadata=blob,
