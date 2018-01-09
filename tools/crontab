@@ -8,7 +8,7 @@ DJANGO_SETTINGS_MODULE=settings.production
 
 # Sunday morning maintenance
 0 0 * * 0 django-admin clearsessions
-10 0 * * 0 /path/to/SITE_ROOT/PROJECT_ROOT/tools/expunge -
+10 0 * * 0 /path/to/SITE_ROOT/PROJECT_ROOT/tools/expunge
 
 # Monthly statistics
 0 3 2 * * /path/to/SITE_ROOT/PROJECT_ROOT/tools/dashboard http://...
