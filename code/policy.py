@@ -63,6 +63,22 @@ def authorizeUpdate (user, identifier):
   if user.isSuperuser: return True
   return False
 
+def authorizeUpdateLegacy (user, owner, ownergroup):
+  """
+  Legacy version of the above function needed by the UI, which
+  currently does not utilize StoreIdentifier objects.  'user' is as
+  above.  'owner' and 'ownergroup' describe the ownership of the
+  identifier in question; each should be a local name, e.g., "dryad".
+  """
+  # We create a fictitious identifier filled out just enough for the
+  # above policy check to work.
+  u = ezidapp.models.getUserByUsername(owner)
+  g = ezidapp.models.getGroupByGroupname(ownergroup)
+  i = ezidapp.models.StoreIdentifier(
+    owner=(None if u is None or u.isAnonymous else u),
+    ownergroup=(None if g is None or g.isAnonymous else g))
+  return authorizeUpdate(user, i)
+
 # Policy-wise, deleting an identifier is the same as updating it.
 # Note that we're not checking delete restrictions related to
 # identifier status here; that's done in the mainline code.
