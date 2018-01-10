@@ -79,8 +79,8 @@ layout:
             tools/
             ui_tags/
             xsd/
-        db/
-            search.sqlite3 (if using SQLite)
+        db/ (if using SQLite)
+            search.sqlite3
             store.sqlite3
         download/
             public/
@@ -151,15 +151,10 @@ different architectures or simply different instances):
 (Confusingly, for technical reasons the store database is to Django
 the default database.)
 
-And if using MySQL:
+If using MySQL:
 
     mysql < .../SITE_ROOT/PROJECT_ROOT/etc/store-mysql-addendum.sql
     mysql < .../SITE_ROOT/PROJECT_ROOT/etc/search-mysql-addendum.sql
-
-Also, to create the legacy store database:
-
-    sqlite3 .../SITE_ROOT/db/store.sqlite3 \
-      < .../SITE_ROOT/PROJECT_ROOT/etc/store-schema.sql
 
 To load initial data into the databases, run the following commands.
 (The *.json files are stored in
