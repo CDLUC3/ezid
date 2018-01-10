@@ -15,18 +15,16 @@
 # -----------------------------------------------------------------------------
 
 import django.conf
+import django.db.models
 import django.http
 import hashlib
 import lxml.etree
 import time
-import urllib
 
 import config
 import datacite
-import mapping
-import store
+import ezidapp.models
 import util
-import util2
 
 _enabled = None
 _baseUrl = None
@@ -44,35 +42,6 @@ def _loadConfig ():
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
-
-def _defaultTarget (identifier):
-  return "%s/id/%s" % (_baseUrl, urllib.quote(identifier, ":/"))
-
-def isVisible (identifier, metadata):
-  """
-  Returns true if 'identifier' is (should be) visible in the OAI-PMH
-  feed.  'identifier' should be a qualified, normalized identifier,
-  e.g., "doi:10.5060/FOO".  'metadata' should be the identifier's
-  metadata as a dictionary.
-  """
-  if util2.isTestIdentifier(identifier): return False
-  # Well, isn't this subtle and ugly: this function gets called by the
-  # 'store' module, in which case the metadata dictionary contains
-  # noid commands to *change* metadata values, not the final stored
-  # values.  Ergo, we have to check for empty values.
-  status = metadata.get("_is", "public")
-  if status == "": status = "public"
-  if status != "public": return False
-  export = metadata.get("_x", "yes")
-  if export == "": export = "yes"
-  if export != "yes": return False
-  if metadata.get("_st", metadata["_t"]) == _defaultTarget(identifier):
-    return False
-  km = mapping.map(metadata)
-  if km.title is None or km.date is None or (km.creator is None and\
-    km.publisher is None):
-    return False
-  return True
 
 def _q (elementName):
   return "{http://www.openarchives.org/OAI/2.0/}" + elementName
@@ -187,7 +156,7 @@ def _unpackResumptionToken (token):
   except:
     return None
 
-def _buildDublinCoreRecord (identifier, metadata):
+def _buildDublinCoreRecord (identifier):
   root = lxml.etree.Element(
     "{http://www.openarchives.org/OAI/2.0/oai_dc/}dc",
     nsmap={ "oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/",
@@ -197,37 +166,25 @@ def _buildDublinCoreRecord (identifier, metadata):
     "http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
   def q (elementName):
     return "{http://purl.org/dc/elements/1.1/}" + elementName
-  lxml.etree.SubElement(root, q("identifier")).text = identifier
-  km = mapping.map(metadata)
+  lxml.etree.SubElement(root, q("identifier")).text = identifier.identifier
+  km = identifier.kernelMetadata()
   for e in ["creator", "title", "publisher", "date", "type"]:
     if getattr(km, e) != None:
       lxml.etree.SubElement(root, q(e)).text = getattr(km, e)
   return root
 
 def _doGetRecord (oaiRequest):
-  id = oaiRequest[1]["identifier"]
-  if id.startswith("ark:/"):
-    id = util.validateArk(id[5:])
-    if id == None: return _error(oaiRequest, "idDoesNotExist")
-  elif id.startswith("doi:"):
-    id = util.validateDoi(id[4:])
-    if id == None: return _error(oaiRequest, "idDoesNotExist")
-    id = util.doi2shadow(id)
-  elif id.startswith("uuid:"):
-    id = util.validateUuid(id[5:])
-    if id == None: return _error(oaiRequest, "idDoesNotExist")
-    id = util.uuid2shadow(id)
-  else:
+  id = util.normalizeIdentifier(oaiRequest[1]["identifier"])
+  if id == None: return _error(oaiRequest, "idDoesNotExist")
+  try:
+    identifier = ezidapp.models.SearchIdentifier.objects.get(identifier=id)
+  except ezidapp.models.SearchIdentifier.DoesNotExist:
     return _error(oaiRequest, "idDoesNotExist")
-  m = store.get(id)
-  if m == None: return _error(oaiRequest, "idDoesNotExist")
-  metadata, updateTime, oaiVisible = m
-  if not oaiVisible: return _error(oaiRequest, "idDoesNotExist")
+  if not identifier.oaiVisible: return _error(oaiRequest, "idDoesNotExist")
   if oaiRequest[1]["metadataPrefix"] == "oai_dc":
-    me = _buildDublinCoreRecord(oaiRequest[1]["identifier"], metadata)
+    me = _buildDublinCoreRecord(identifier)
   elif oaiRequest[1]["metadataPrefix"] == "datacite":
-    me = datacite.upgradeDcmsRecord(datacite.formRecord(
-      oaiRequest[1]["identifier"], metadata, supplyMissing=True),
+    me = datacite.upgradeDcmsRecord(identifier.dataciteMetadata(),
       returnString=False)
   else:
     return _error(oaiRequest, "cannotDisseminateFormat")
@@ -236,7 +193,7 @@ def _doGetRecord (oaiRequest):
   h = lxml.etree.SubElement(r, _q("header"))
   lxml.etree.SubElement(h, _q("identifier")).text = oaiRequest[1]["identifier"]
   lxml.etree.SubElement(h, _q("datestamp")).text =\
-    util.formatTimestampZulu(updateTime)
+    util.formatTimestampZulu(identifier.updateTime)
   lxml.etree.SubElement(r, _q("metadata")).append(me)
   return _buildResponse(oaiRequest, root)
 
@@ -246,8 +203,11 @@ def _doIdentify (oaiRequest):
   lxml.etree.SubElement(e, _q("baseURL")).text = _baseUrl + "/oai"
   lxml.etree.SubElement(e, _q("protocolVersion")).text = "2.0"
   lxml.etree.SubElement(e, _q("adminEmail")).text = _adminEmail
+  t = ezidapp.models.SearchIdentifier.objects.filter(oaiVisible=True)\
+    .aggregate(django.db.models.Min("updateTime"))["updateTime__min"]
+  if t == None: t = 0
   lxml.etree.SubElement(e, _q("earliestDatestamp")).text =\
-    util.formatTimestampZulu(store.oaiGetEarliestUpdateTime())
+    util.formatTimestampZulu(t)
   lxml.etree.SubElement(e, _q("deletedRecord")).text = "no"
   lxml.etree.SubElement(e, _q("granularity")).text = "YYYY-MM-DDThh:mm:ssZ"
   return _buildResponse(oaiRequest, e)
@@ -284,7 +244,11 @@ def _doHarvest (oaiRequest, batchSize, includeMetadata):
       until = None
     cursor = 0
     total = None
-  ids = store.oaiHarvest(from_, until, batchSize)
+  q = ezidapp.models.SearchIdentifier.objects.filter(oaiVisible=True)\
+    .filter(updateTime__gt=from_)
+  if until != None: q = q.filter(updateTime__lte=until)
+  q = q.select_related("profile").order_by("updateTime")
+  ids = list(q[:batchSize])
   # Note a bug in the protocol itself: if a resumption token was
   # supplied, we are required to return a (possibly empty) token, but
   # the only way to return a resumption token is to return at least
@@ -312,7 +276,7 @@ def _doHarvest (oaiRequest, batchSize, includeMetadata):
   if len(ids) == batchSize:
     last = None
     for i in range(len(ids)-2, -1, -1):
-      if ids[i][1] < ids[-1][1]:
+      if ids[i].updateTime < ids[-1].updateTime:
         last = i
         break
     if last == None:
@@ -327,26 +291,25 @@ def _doHarvest (oaiRequest, batchSize, includeMetadata):
       h = lxml.etree.SubElement(r, _q("header"))
     else:
       h = lxml.etree.SubElement(e, _q("header"))
-    id = ids[i][2].get("_s", "ark:/" + ids[i][0])
-    lxml.etree.SubElement(h, _q("identifier")).text = id
+    lxml.etree.SubElement(h, _q("identifier")).text = ids[i].identifier
     lxml.etree.SubElement(h, _q("datestamp")).text =\
-      util.formatTimestampZulu(ids[i][1])
+      util.formatTimestampZulu(ids[i].updateTime)
     if includeMetadata:
       if prefix == "oai_dc":
-        me = _buildDublinCoreRecord(id, ids[i][2])
+        me = _buildDublinCoreRecord(ids[i])
       elif prefix == "datacite":
-        me = datacite.upgradeDcmsRecord(datacite.formRecord(id, ids[i][2],
-          supplyMissing=True), returnString=False)
+        me = datacite.upgradeDcmsRecord(ids[i].dataciteMetadata(),
+          returnString=False)
       else:
         assert False, "unhandled case"
       lxml.etree.SubElement(r, _q("metadata")).append(me)
   if "resumptionToken" in oaiRequest[1] or len(ids) == batchSize:
-    if total == None: total = store.oaiGetCount(from_, until)
+    if total == None: total = q.count()
     rt = lxml.etree.SubElement(e, _q("resumptionToken"))
     rt.attrib["cursor"] = str(cursor)
     rt.attrib["completeListSize"] = str(total)
     if len(ids) == batchSize:
-      rt.text = _buildResumptionToken(ids[last][1], until, prefix,
+      rt.text = _buildResumptionToken(ids[last].updateTime, until, prefix,
         cursor+last+1, total)
   return _buildResponse(oaiRequest, e)
 
