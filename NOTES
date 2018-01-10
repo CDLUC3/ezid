@@ -94,10 +94,6 @@ There are two serialization formats: ANVL, used for communicating with
 clients; and a one-line "exchange" format (see functions fromExchange
 and toExchange in util.py) used in database dumps.
 
-In the following table, it may appear that different elements have the
-same long form name, but the context always makes it clear which is
-being returned.
-
 +--------+-------------+-----------------------------------------------+
 | stored | transmitted |                                               |
 | name   | name        | meaning                                       |
@@ -106,40 +102,24 @@ being returned.
 |        |             | as a persistent identifier (e.g.,             |
 |        |             | "ark:/13030/foo") but returned as a local     |
 |        |             | name (e.g., "ryan").  The owner may also be   |
-|        |             | "anonymous".  For a shadow ARK, applies to    |
-|        |             | both the shadow ARK and shadowed identifier.  |
-| _g     | _ownergroup | The identifier's owning group, which is often |
-|        |             | but not necessarily the identifier's owner's  |
+|        |             | "anonymous".                                  |
+| _g     | _ownergroup | The identifier's owning group, which is by    |
+|        |             | policy always the identifier's owner's        |
 |        |             | current group.  The group is stored as a      |
 |        |             | persistent identifier (e.g.,                  |
 |        |             | "ark:/13030/bar") but returned as a local     |
 |        |             | name (e.g., "dryad").  The group may also be  |
-|        |             | "anonymous".  For a shadow ARK, applies to    |
-|        |             | both the shadow ARK and shadowed identifier.  |
+|        |             | "anonymous".                                  |
 | _c     | _created    | The time the identifier was created expressed |
-|        |             | as a Unix timestamp, e.g., "1280889190".  For |
-|        |             | a shadow ARK, applies to both the shadow ARK  |
-|        |             | and shadowed identifier.                      |
+|        |             | as a Unix timestamp, e.g., "1280889190".      |
 | _u     | _updated    | The time the identifier was last modified     |
 |        |             | expressed as a Unix timestamp, e.g.,          |
-|        |             | "1280889190".  For a shadow ARK, applies to   |
-|        |             | the ARK only, not the shadowed identifier.    |
+|        |             | "1280889190".                                 |
 | _t     | _target     | The identifier's target URL, e.g.,            |
-|        |             | "http://foo.com/bar".  For a shadow ARK,      |
-|        |             | applies to the ARK only, not the shadowed     |
-|        |             | identifier.  (See _t1 below for               |
+|        |             | "http://foo.com/bar".  (See _t1 below for     |
 |        |             | qualifications.)                              |
-| _s     | _shadows    | Shadow ARKs only.  The shadowed identifier,   |
-|        |             | e.g., "doi:10.5060/FOO".                      |
-| _su    | _updated    | Shadow ARKs only.  The time the shadowed      |
-|        |             | identifier was last modified expressed as a   |
-|        |             | Unix timestamp, e.g., "1280889190".           |
-| _st    | _target     | Shadow ARKs only.  The shadowed identifier's  |
-|        |             | target URL, e.g., "http://foo.com/bar".  (See |
-|        |             | _st1 below for qualifications.)               |
-|        | _shadowedby | Shadowed identifiers only.  The identifier's  |
-|        |             | shadow ARK, e.g., "ark:/b5060/foo".  This is  |
-|        |             | computed, not stored.                         |
+|        | _shadowedby | The identifier's shadow ARK, e.g.,            |
+|        |             | "ark:/b5060/foo".  Deprecated.                |
 | _p     | _profile    | The identifier's preferred metadata profile,  |
 |        |             | e.g., "erc".  See module 'metadata' for more  |
 |        |             | information on profiles.  A profile does not  |
@@ -148,36 +128,25 @@ being returned.
 |        |             | metadata elements can be present.  By         |
 |        |             | convention, the element names of a profile    |
 |        |             | are prefixed with the profile name, e.g.,     |
-|        |             | "erc.who".  For a shadow ARK, applies to both |
-|        |             | the shadow ARK and shadowed identifier.       |
+|        |             | "erc.who".                                    |
 | _is    | _status     | Identifier status.  If present, either        |
 |        |             | "reserved" or "unavailable"; if not present,  |
 |        |             | effectively has the value "public".  If       |
 |        |             | "unavailable", a reason may follow separated  |
 |        |             | by a pipe character, e.g., "unavailable |     |
-|        |             | withdrawn by author".  Always returned.  For  |
-|        |             | a shadow ARK, applies to both the shadow ARK  |
-|        |             | and shadowed identifier.                      |
+|        |             | withdrawn by author".  Always returned.       |
 | _t1    |             | If the identifier status is "public", not     |
 |        |             | present; otherwise, if the identifier status  |
 |        |             | is "reserved" or "unavailable", the target    |
 |        |             | URL as set by the client.  (In these latter   |
 |        |             | cases _t is set to an EZID-defined URL.)  Not |
 |        |             | returned.                                     |
-| _st1   |             | Shadow ARKs only.  If the identifier status   |
-|        |             | is "public", not present; otherwise, if the   |
-|        |             | identifier status is "reserved" or            |
-|        |             | "unavailable", the shadowed identifier's      |
-|        |             | target URL as set by the client.  (In these   |
-|        |             | latter cases _st is set to an EZID-defined    |
-|        |             | URL.)  Not returned.                          |
 | _x     | _export     | Export control.  If present, has the value    |
 |        |             | "no"; if not present, effectively has the     |
 |        |             | value "yes".  Determines if the identifier is |
 |        |             | publicized by exporting it to external        |
 |        |             | indexing and harvesting services.  Always     |
-|        |             | returned.  For a shadow ARK, applies to both  |
-|        |             | the shadow ARK and shadowed identifier.       |
+|        |             | returned.                                     |
 | _d     | _datacenter | DOIs only.  The DataCite datacenter at which  |
 |        |             | the identifier is registered, e.g.,           |
 |        |             | "CDL.DRYAD" (or will be registered, in the    |
