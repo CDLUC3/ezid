@@ -118,8 +118,9 @@ and toExchange in util.py) used in database dumps.
 | _t     | _target     | The identifier's target URL, e.g.,            |
 |        |             | "http://foo.com/bar".  (See _t1 below for     |
 |        |             | qualifications.)                              |
-|        | _shadowedby | The identifier's shadow ARK, e.g.,            |
-|        |             | "ark:/b5060/foo".  Deprecated.                |
+|        | _shadowedby | Non-ARKs only.  The identifier's shadow ARK,  |
+|        |             | e.g., "ark:/b5060/foo".  Returned only.       |
+|        |             | Deprecated.                                   |
 | _p     | _profile    | The identifier's preferred metadata profile,  |
 |        |             | e.g., "erc".  See module 'metadata' for more  |
 |        |             | information on profiles.  A profile does not  |
