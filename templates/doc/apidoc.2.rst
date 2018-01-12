@@ -757,7 +757,8 @@ status transitions:
   services.
 
 * A public identifier may be marked as unavailable.  At this time the
-  identifier will be removed from any external services.
+  identifier will be removed from resolvers and external services to
+  the extent possible.
 
 * An unavailable identifier may be returned to public status.  At this
   time the identifier will be re-registered with resolvers and other
