@@ -80,27 +80,6 @@ tooltip:
 <b><u>Last modified</u></b><br/>
 The date and time the identifier was last modified.
 
-element: _shadowedby
-displayname: Shadow ARK
-displaytype: text
-tooltip:
-<b><u>Shadow ARK</u></b><br/>
-An independent but related ARK identifier.  The shadow ARK has the
-same owner and citation metadata as this identifier, but may have a
-different object location.  It may be used to provide, for example,
-resolution to subcomponents of the identified object.
-
-element: _shadows
-displayname: Shadowed identifier
-displaytype: text
-tooltip:
-<b><u>Shadowed identifier</u></b><br/>
-This identifier is a "shadow ARK" that shadows another identifier.  A
-shadow ARK has the same owner and citation metadata as the shadowed
-identifier, but may have a different object location.  It may be used
-to provide, for example, resolution to subcomponents of the identified
-object.
-
 element: _export
 displayname: Allow harvesting/indexing?
 displaytype: boolean

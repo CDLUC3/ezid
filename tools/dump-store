@@ -1,11 +1,12 @@
 #! /usr/bin/env python
 
-# Dumps a store database to standard output.  Usage:
+# Dumps the store database to standard output.
 #
-#    dump-store [-nrsz] dbfile
+# Usage: dump-store [-rz]
 #
-# The output format and the command line options are exactly as for
-# the 'dump' script.
+# Options:
+#   -r raw dump
+#   -z gzip the output
 #
 # This script requires several EZID modules.  The PYTHONPATH
 # environment variable must include the .../SITE_ROOT/PROJECT_ROOT
@@ -26,93 +27,34 @@ execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
   "offline.py"))
 
 import ezidapp.models
-import store
 import util
+import util2
 
-labelMapping = {
-  "_o": "_owner",
-  "_g": "_ownergroup",
-  "_c": "_created",
-  "_u": "_updated",
-  "_t": "_target",
-  "_s": "_shadows",
-  "_p": "_profile",
-  "_is": "_status",
-  "_x": "_export",
-  "_d": "_datacenter",
-  "_cr": "_crossref"
-}
-
-p = optparse.OptionParser(usage="%prog [-nrsz] dbfile")
-p.add_option("-n", action="store_false",
-  dest="convertAgents", default=True, help="do NOT convert agent identifiers")
+p = optparse.OptionParser(usage="%prog [-rz]")
 p.add_option("-r", action="store_true", dest="rawOutput",
-  help="raw dump")
-p.add_option("-s", action="store_true",
-  dest="includeShadowArks", default=False, help="include shadow ARKs")
+  default=False, help="raw dump")
 p.add_option("-z", action="store_true",
   dest="gzipOutput", default=False, help="gzip output")
 options, args = p.parse_args()
-if options.rawOutput:
-  if options.includeShadowArks: p.error("options -r and -s are incompatible")
-  options.convertAgents = False
-if len(args) != 1: p.error("wrong number of arguments")
-
-if not os.path.isfile(args[0]):
-  sys.stderr.write("dump-store: %s: %s\n" % (args[0],
-    "No such file or directory" if not os.path.exists(args[0]) else
-    "Not a regular file"))
-  sys.exit(1)
-
-store.setDatabase(args[0])
+if len(args) != 0: p.error("wrong number of arguments")
 
 if options.gzipOutput:
   outfile = gzip.GzipFile(fileobj=sys.stdout, mode="w")
 else:
   outfile = sys.stdout
 
-def outputRecord1 (id, record):
-  outfile.write(id)
-  for k in record:
-    outfile.write(" %s %s" % (util.encode4(labelMapping.get(k, k)),
-      util.encode3(record[k])))
-  outfile.write("\n")
-
-def outputRecord (id, record):
-  if options.rawOutput:
-    outfile.write("%s %s\n" % (id, record))
-  else:
-    if record.get("_is", "public") != "public":
-      record["_t"] = record["_t1"]
-      del record["_t1"]
-      if "_st1" in record:
-        record["_st"] = record["_st1"]
-        del record["_st1"]
-    if "_s" in record:
-      su = record["_su"]
-      del record["_su"]
-      st = record["_st"]
-      del record["_st"]
-      if options.includeShadowArks: outputRecord1("ark:/" + id, record)
-      record["_u"] = su
-      record["_t"] = st
-      s = record["_s"]
-      del record["_s"]
-      record["_shadowedby"] = "ark:/" + id
-      outputRecord1(s, record)
-    else:
-      outputRecord1("ark:/" + id, record)
-
-lastId = ""
+lastIdentifier = ""
 while True:
-  ids = store.harvest(start=lastId, maximum=1000,
-    decompressOnly=options.rawOutput)
-  if len(ids) == 0: break
-  for id, record in ids:
-    if options.convertAgents:
-      record["_o"] = ezidapp.models.getUserByPid(record["_o"]).username
-      record["_g"] = ezidapp.models.getGroupByPid(record["_g"]).groupname
-    outputRecord(id, record)
-  lastId = ids[-1][0]
+  qs = ezidapp.models.StoreIdentifier.objects.filter(
+    identifier__gt=lastIdentifier).order_by("identifier")\
+    .select_related("owner", "ownergroup", "datacenter", "profile")
+  qs = list(qs[:1000])
+  if len(qs) == 0: break
+  for si in qs:
+    d = si.toLegacy()
+    if not options.rawOutput: util2.convertLegacyToExternal(d)
+    outfile.write(util.toExchange(d, si.identifier))
+    outfile.write("\n")
+  lastIdentifier = qs[-1].identifier
 
 outfile.close()

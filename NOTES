@@ -94,10 +94,6 @@ There are two serialization formats: ANVL, used for communicating with
 clients; and a one-line "exchange" format (see functions fromExchange
 and toExchange in util.py) used in database dumps.
 
-In the following table, it may appear that different elements have the
-same long form name, but the context always makes it clear which is
-being returned.
-
 +--------+-------------+-----------------------------------------------+
 | stored | transmitted |                                               |
 | name   | name        | meaning                                       |
@@ -106,40 +102,25 @@ being returned.
 |        |             | as a persistent identifier (e.g.,             |
 |        |             | "ark:/13030/foo") but returned as a local     |
 |        |             | name (e.g., "ryan").  The owner may also be   |
-|        |             | "anonymous".  For a shadow ARK, applies to    |
-|        |             | both the shadow ARK and shadowed identifier.  |
-| _g     | _ownergroup | The identifier's owning group, which is often |
-|        |             | but not necessarily the identifier's owner's  |
+|        |             | "anonymous".                                  |
+| _g     | _ownergroup | The identifier's owning group, which is by    |
+|        |             | policy always the identifier's owner's        |
 |        |             | current group.  The group is stored as a      |
 |        |             | persistent identifier (e.g.,                  |
 |        |             | "ark:/13030/bar") but returned as a local     |
 |        |             | name (e.g., "dryad").  The group may also be  |
-|        |             | "anonymous".  For a shadow ARK, applies to    |
-|        |             | both the shadow ARK and shadowed identifier.  |
+|        |             | "anonymous".                                  |
 | _c     | _created    | The time the identifier was created expressed |
-|        |             | as a Unix timestamp, e.g., "1280889190".  For |
-|        |             | a shadow ARK, applies to both the shadow ARK  |
-|        |             | and shadowed identifier.                      |
+|        |             | as a Unix timestamp, e.g., "1280889190".      |
 | _u     | _updated    | The time the identifier was last modified     |
 |        |             | expressed as a Unix timestamp, e.g.,          |
-|        |             | "1280889190".  For a shadow ARK, applies to   |
-|        |             | the ARK only, not the shadowed identifier.    |
+|        |             | "1280889190".                                 |
 | _t     | _target     | The identifier's target URL, e.g.,            |
-|        |             | "http://foo.com/bar".  For a shadow ARK,      |
-|        |             | applies to the ARK only, not the shadowed     |
-|        |             | identifier.  (See _t1 below for               |
+|        |             | "http://foo.com/bar".  (See _t1 below for     |
 |        |             | qualifications.)                              |
-| _s     | _shadows    | Shadow ARKs only.  The shadowed identifier,   |
-|        |             | e.g., "doi:10.5060/FOO".                      |
-| _su    | _updated    | Shadow ARKs only.  The time the shadowed      |
-|        |             | identifier was last modified expressed as a   |
-|        |             | Unix timestamp, e.g., "1280889190".           |
-| _st    | _target     | Shadow ARKs only.  The shadowed identifier's  |
-|        |             | target URL, e.g., "http://foo.com/bar".  (See |
-|        |             | _st1 below for qualifications.)               |
-|        | _shadowedby | Shadowed identifiers only.  The identifier's  |
-|        |             | shadow ARK, e.g., "ark:/b5060/foo".  This is  |
-|        |             | computed, not stored.                         |
+|        | _shadowedby | Non-ARKs only.  The identifier's shadow ARK,  |
+|        |             | e.g., "ark:/b5060/foo".  Returned only.       |
+|        |             | Deprecated.                                   |
 | _p     | _profile    | The identifier's preferred metadata profile,  |
 |        |             | e.g., "erc".  See module 'metadata' for more  |
 |        |             | information on profiles.  A profile does not  |
@@ -148,36 +129,25 @@ being returned.
 |        |             | metadata elements can be present.  By         |
 |        |             | convention, the element names of a profile    |
 |        |             | are prefixed with the profile name, e.g.,     |
-|        |             | "erc.who".  For a shadow ARK, applies to both |
-|        |             | the shadow ARK and shadowed identifier.       |
+|        |             | "erc.who".                                    |
 | _is    | _status     | Identifier status.  If present, either        |
 |        |             | "reserved" or "unavailable"; if not present,  |
 |        |             | effectively has the value "public".  If       |
 |        |             | "unavailable", a reason may follow separated  |
 |        |             | by a pipe character, e.g., "unavailable |     |
-|        |             | withdrawn by author".  Always returned.  For  |
-|        |             | a shadow ARK, applies to both the shadow ARK  |
-|        |             | and shadowed identifier.                      |
+|        |             | withdrawn by author".  Always returned.       |
 | _t1    |             | If the identifier status is "public", not     |
 |        |             | present; otherwise, if the identifier status  |
 |        |             | is "reserved" or "unavailable", the target    |
 |        |             | URL as set by the client.  (In these latter   |
 |        |             | cases _t is set to an EZID-defined URL.)  Not |
 |        |             | returned.                                     |
-| _st1   |             | Shadow ARKs only.  If the identifier status   |
-|        |             | is "public", not present; otherwise, if the   |
-|        |             | identifier status is "reserved" or            |
-|        |             | "unavailable", the shadowed identifier's      |
-|        |             | target URL as set by the client.  (In these   |
-|        |             | latter cases _st is set to an EZID-defined    |
-|        |             | URL.)  Not returned.                          |
 | _x     | _export     | Export control.  If present, has the value    |
 |        |             | "no"; if not present, effectively has the     |
 |        |             | value "yes".  Determines if the identifier is |
 |        |             | publicized by exporting it to external        |
 |        |             | indexing and harvesting services.  Always     |
-|        |             | returned.  For a shadow ARK, applies to both  |
-|        |             | the shadow ARK and shadowed identifier.       |
+|        |             | returned.                                     |
 | _d     | _datacenter | DOIs only.  The DataCite datacenter at which  |
 |        |             | the identifier is registered, e.g.,           |
 |        |             | "CDL.DRYAD" (or will be registered, in the    |
@@ -277,19 +247,20 @@ progress, and end records for every transaction, for both read and
 write operations, both successful and not, as well as server error and
 server status records.  But for space efficiency, historical
 transaction logs are converted to a more compact form.  The striplog
-tool strips out all records, retaining only records for transactions
-that successfully minted, created, or modified non-test identifiers.
-Furthermore, the multiple records comprising a transaction are
-collapsed into a single record.  For example, the following two
-transactions (records have been wrapped here for clarity):
+tool retains only records for transactions that successfully created,
+updated, or deleted a non-test identifier.  Furthermore, the multiple
+records comprising a transaction are collapsed into a single record.
+For example, the following two transactions (records have been wrapped
+here for clarity):
 
-  2014-01-06 20:58:11,383 4ec86f4a775811e3bdd610ddb1cf39e7 BEGIN mintArk
-    13030/c7 gjanee ark:/99166/p92z12p14 cdl ark:/99166/p9z60c16v
+  2014-01-06 20:58:11,383 4ec86f4a775811e3bdd610ddb1cf39e7 BEGIN
+    mintIdentifier ark:/13030/c7 gjanee ark:/99166/p92z12p14 cdl
+    ark:/99166/p9z60c16v
   2014-01-06 20:58:11,715 4ec86f4a775811e3bdd610ddb1cf39e7 END SUCCESS
-    13030/c7b56d41k
-  2014-01-06 20:58:11,715 4efb1a59775811e3a95e10ddb1cf39e7 BEGIN createArk
-    13030/c7b56d41k gjanee ark:/99166/p92z12p14 cdl ark:/99166/p9z60c16v
-    erc.what An%20example
+    ark:/13030/c7b56d41k
+  2014-01-06 20:58:11,715 4efb1a59775811e3a95e10ddb1cf39e7 BEGIN
+    createIdentifier ark:/13030/c7b56d41k gjanee ark:/99166/p92z12p14
+    cdl ark:/99166/p9z60c16v erc.what An%20example
   2014-01-06 20:58:12,338 4efb1a59775811e3a95e10ddb1cf39e7 PROGRESS
     noid_egg.setElements
   2014-01-06 20:58:12,342 4efb1a59775811e3a95e10ddb1cf39e7 PROGRESS
@@ -298,9 +269,7 @@ transactions (records have been wrapped here for clarity):
 
 get compacted into:
 
-  2014-01-06 20:58:11,383 mintArk 13030/c7 gjanee ark:/99166/p92z12p14 cdl
-    ark:/99166/p9z60c16v -> 13030/c7b56d41k
-  2014-01-06 20:58:11,715 createArk 13030/c7b56d41k gjanee
+  2014-01-06 20:58:12,345 createIdentifier ark:/13030/c7b56d41k gjanee
     ark:/99166/p92z12p14 cdl ark:/99166/p9z60c16v erc.what An%20example
 
 Note that record arguments in both types of log files are separated by
@@ -311,41 +280,32 @@ spaces.
 ------------------------
 
 There are two slightly different database dump formats.  A "raw" dump
-(produced by 'dump -r' and 'dump-store -r') lists identifiers as
-stored in the bind or store database: in unqualified form, with shadow
-ARKs representing non-ARK identifiers, using internal labels, with all
-internal labels included.  Here's an example identifier record
-(wrapped here for clarity):
+lists identifiers as stored in the bind database: using internal
+labels, with all status-related elements included, but with default
+values omitted.  Here are two example identifier records (wrapped here
+for clarity):
 
-  99999/fk4030wkq _is reserved _p erc
+  ark:/99999/fk4030wkq _is reserved _p erc
     _o ark:/99166/p92z12p14 _g ark:/99166/p9z60c16v
     _c 1389071897 _u 1389071897
     _t1 http://a.target/
     _t https://ezid.cdlib.org/id/ark:/99999/fk4030wkq
+  ark:/99999/fk40v8s28x _u 1509662539 _t http://b.target/
+    _p erc _o anonymous _g anonymous _c 1509662539
 
-A "normal" dump (produced by 'dump -n' and 'dump-store -n', or
-converted from a raw dump by 'convert-dump -n') uses a record
-representation that is more human-readable and more easily processed.
-It lists identifiers in qualified form, with non-ARK identifiers
-representing themselves, using external labels, with internal labels
-related to identifier status omitted.  The same example in normal
-form:
-
-  ark:/99999/fk4030wkq _status reserved _profile erc
-    _owner ark:/99166/p92z12p14 _ownergroup ark:/99166/p9z60c16v
-    _created 1389071897 _updated 1389071897
-    _target http://a.target/
-
-A normal dump may optionally have agent identifiers converted to local
-names (by omitting the '-n' option in the above commands), as in:
+A "normal" dump uses a record representation that is more
+human-readable and more easily processed: using external labels, with
+internal status-related elements omitted but with default values
+explicitly listed, and with agent PIDs converted to names.  The same
+examples in normal form:
 
   ark:/99999/fk4030wkq _status reserved _profile erc
     _owner gjanee _ownergroup cdl
     _created 1389071897 _updated 1389071897
     _target http://a.target/
-
-The select and project tools are intended to work on normal dumps,
-though certain operations work on raw dumps as well.
+  ark:/99999/fk40v8s28x _updated 1509662539 _target http://b.target/
+    _profile erc _export yes _owner anonymous _ownergroup anonymous
+    _created 1509662539 _status public
 
 9. Crossref
 -----------

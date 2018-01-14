@@ -125,8 +125,8 @@ def edit(request, identifier):
     django.contrib.messages.error(request, uic.formatError(r))
     return redirect("ui_manage.index")
   s, id_metadata = r 
-  if not policy.authorizeUpdate(userauth.getUser(request, returnAnonymous=True), identifier,
-    id_metadata["_owner"], id_metadata["_ownergroup"], localNames=True):
+  if not policy.authorizeUpdateLegacy(userauth.getUser(request, returnAnonymous=True),
+    id_metadata["_owner"], id_metadata["_ownergroup"]):
     django.contrib.messages.error(request, _("You are not allowed to edit this identifier.  " +\
       "If this ID belongs to you and you'd like to edit, please log in."))
     return redirect("/id/" + urllib.quote(identifier, ":/"))
@@ -243,8 +243,8 @@ def details(request):
       return redirect("ui_home.index")
   s, id_metadata = r
   assert s.startswith("success:")
-  d['allow_update'] = policy.authorizeUpdate(userauth.getUser(request, returnAnonymous=True),
-    identifier, id_metadata["_owner"], id_metadata["_ownergroup"], localNames=True)
+  d['allow_update'] = policy.authorizeUpdateLegacy(userauth.getUser(request, returnAnonymous=True),
+    id_metadata["_owner"], id_metadata["_ownergroup"])
   d['identifier'] = id_metadata 
   d['id_text'] = s.split()[1]
   d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes']) 

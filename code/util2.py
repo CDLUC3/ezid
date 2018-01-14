@@ -94,7 +94,6 @@ _labelMapping = {
   "_c": "_created",
   "_u": "_updated",
   "_t": "_target",
-  "_s": "_shadows",
   "_su": "_updated",
   "_st": "_target",
   "_p": "_profile",
@@ -104,16 +103,13 @@ _labelMapping = {
   "_cr": "_crossref"
 }
 
-def convertLegacyToExternal (d, shadowArkView=False):
+def convertLegacyToExternal (d):
   """
   Converts a legacy metadata dictionary from internal form (i.e., as
   stored in the Noid "egg" binder) to external form (i.e., as returned
   to clients).  The dictionary is modified in place.  N.B.: if the
   dictionary is for a non-ARK identifier, this function does *not* add
-  the _shadowedby element.  If the dictionary is for a non-ARK
-  identifier and 'shadowArkView' is true, the dictionary is converted
-  to reflect the shadow ARK; otherwise, it reflects the shadowed
-  identifier.
+  the _shadowedby element.
   """
   if "_is" not in d: d["_is"] = "public"
   if "_x" not in d: d["_x"] = "yes"
@@ -126,13 +122,9 @@ def convertLegacyToExternal (d, shadowArkView=False):
       d["_st"] = d["_st1"]
       del d["_st1"]
   if "_s" in d:
-    if shadowArkView:
-      del d["_su"]
-      del d["_st"]
-    else:
-      del d["_u"]
-      del d["_t"]
-      del d["_s"]
+    del d["_u"]
+    del d["_t"]
+    del d["_s"]
   for k in d.keys():
     if k in _labelMapping:
       d[_labelMapping[k]] = d[k]

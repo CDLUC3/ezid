@@ -18,6 +18,7 @@
 
 import django.conf
 import django.db
+import django.db.transaction
 import threading
 import time
 import uuid
@@ -30,7 +31,7 @@ import ezidapp.models
 import ezidapp.models.search_identifier
 import log
 import search_util
-import store
+import util
 
 _enabled = None
 _lock = threading.Lock()
@@ -39,11 +40,6 @@ _threadName = None
 _idleSleep = None
 
 def _updateSearchDatabase (identifier, operation, metadata, blob):
-  if metadata["_o"] == "anonymous": return
-  if "_s" in metadata:
-    identifier = metadata["_s"]
-  else:
-    identifier = "ark:/" + identifier
   if operation in ["create", "update"]:
     ezidapp.models.search_identifier.updateFromLegacy(identifier, metadata)
   elif operation == "delete":
@@ -51,24 +47,6 @@ def _updateSearchDatabase (identifier, operation, metadata, blob):
       delete()
   else:
     assert False, "unrecognized operation"
-
-def _updateBinderQueue (identifier, operation, metadata, blob):
-  if "_s" in metadata:
-    identifier = metadata["_s"]
-  else:
-    identifier = "ark:/" + identifier
-  binder_async.enqueueIdentifier(identifier, operation, blob)
-
-def _updateDataciteQueue (identifier, operation, metadata, blob):
-  if "_s" in metadata and metadata["_s"].startswith("doi:") and\
-    metadata.get("_is", "public") != "reserved":
-    datacite_async.enqueueIdentifier(metadata["_s"], operation, blob)
-
-def _updateCrossrefQueue (identifier, operation, metadata, blob):
-  if "_cr" not in metadata: return
-  if metadata.get("_is", "public") == "reserved": return
-  assert "_s" in metadata and metadata["_s"].startswith("doi:")
-  crossref.enqueueIdentifier(metadata["_s"], operation, metadata, blob)
 
 def _checkContinue ():
   return _enabled and threading.currentThread().getName() == _threadName
@@ -99,26 +77,32 @@ def _backprocDaemon ():
   # Regular processing.
   while _checkContinue():
     try:
-      l = store.getUpdateQueue(maximum=1000)
+      l = list(ezidapp.models.UpdateQueue.objects.all().order_by("seq")[:1000])
       if len(l) > 0:
-        for seq, identifier, metadata, blob, operation,\
-          updateExternalServices in l:
+        for uq in l:
           if not _checkContinue(): break
-          # The following five statements form a kind of atomic
-          # transaction.  Hence, if the first statement succeeds, we
-          # proceed straight through with no intervening continuation
-          # checks.
-          try:
-            search_util.withAutoReconnect("backproc._updateSearchDatabase",
-              lambda: _updateSearchDatabase(identifier, operation,
-              metadata, blob), _checkContinue)
-          except search_util.AbortException:
-            break
-          _updateBinderQueue(identifier, operation, metadata, blob)
-          if updateExternalServices:
-            _updateDataciteQueue(identifier, operation, metadata, blob)
-            _updateCrossrefQueue(identifier, operation, metadata, blob)
-          store.deleteFromUpdateQueue(seq)
+          # The use of legacy representations and blobs will go away soon.
+          metadata = uq.actualObject.toLegacy()
+          blob = util.blobify(metadata)
+          if uq.actualObject.owner != None:
+            try:
+              search_util.withAutoReconnect("backproc._updateSearchDatabase",
+                lambda: _updateSearchDatabase(uq.identifier,
+                uq.get_operation_display(), metadata, blob), _checkContinue)
+            except search_util.AbortException:
+              break
+          with django.db.transaction.atomic():
+            if not uq.actualObject.isReserved:
+              binder_async.enqueueIdentifier(uq.identifier,
+                uq.get_operation_display(), blob)
+              if uq.updateExternalServices:
+                if uq.actualObject.isDoi:
+                  datacite_async.enqueueIdentifier(uq.identifier,
+                    uq.get_operation_display(), blob)
+                  if uq.actualObject.isCrossref:
+                    crossref.enqueueIdentifier(uq.identifier,
+                      uq.get_operation_display(), metadata, blob)
+            uq.delete()
       else:
         django.db.connections["default"].close()
         django.db.connections["search"].close()

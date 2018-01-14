@@ -77,6 +77,10 @@ class Shoulder (django.db.models.Model):
   def isDoi (self):
     return self.type == "DOI"
 
+  @property
+  def isUuid (self):
+    return self.type == "UUID"
+
   name = django.db.models.CharField(max_length=255,
     validators=[validation.nonEmpty])
   # The shoulder's name, e.g., "Brown University Library".

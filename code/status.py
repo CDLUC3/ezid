@@ -31,9 +31,9 @@ import datacite
 import datacite_async
 import download
 import ezid
+import ezidapp.models
 import log
 import search_util
-import store
 
 # Deferred imports...
 """
@@ -63,7 +63,7 @@ def _statusDaemon ():
       na = sum(activeUsers.values())
       nw = sum(waitingUsers.values())
       ndo = datacite.numActiveOperations()
-      uql = store.getUpdateQueueLength()
+      uql = ezidapp.models.UpdateQueue.objects.count()
       bql = binder_async.getQueueLength()
       daql = datacite_async.getQueueLength()
       cqs = crossref.getQueueStatistics()

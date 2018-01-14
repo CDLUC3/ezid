@@ -263,6 +263,10 @@ class Identifier (django.db.models.Model):
   # If the identifier is the persistent identifier of an agent, the
   # agent's role; otherwise, empty.
 
+  agentRoleDisplayToCode = {
+    "user": USER,
+    "group": GROUP }
+
   @property
   def isAgentPid (self):
     return self.agentRole != ""
@@ -326,6 +330,10 @@ class Identifier (django.db.models.Model):
         if not self.exported:
           raise django.core.exceptions.ValidationError(
             { "exported": "Crossref-registered identifier must be exported." })
+        if self.isReserved ^ (self.crossrefStatus == self.CR_RESERVED):
+          e = "Identifier status/Crossref status inconsistency."
+          raise django.core.exceptions.ValidationError(
+            { "status": e, "crossrefStatus": e })
         if self.isCrossrefGood and self.crossrefMessage != "":
           raise django.core.exceptions.ValidationError(
             { "crossrefMessage": "Non-problematic Crossref-registered " +\
@@ -462,8 +470,8 @@ class Identifier (django.db.models.Model):
     # Returns a legacy representation of the identifier.  See the
     # inverse of this method, 'fromLegacy' below.
     d = self.cm.copy()
-    d["_o"] = self.owner.pid
-    d["_g"] = self.ownergroup.pid
+    d["_o"] = self.owner.pid if self.owner != None else "anonymous"
+    d["_g"] = self.ownergroup.pid if self.ownergroup != None else "anonymous"
     d["_c"] = str(self.createTime)
     d["_u"] = str(self.updateTime)
     d["_p"] = self.profile.label

@@ -1,93 +1,43 @@
-#! /usr/bin/env python
+#! /bin/bash
 
-# Strips EZID transaction log files, retaining just BEGIN records for
-# those transactions that successfully created or updated an
-# identifier.  Usage:
-#
-#    striplog files... > output
+# Strips dated (i.e., already rolled over) EZID transaction log files,
+# retaining just BEGIN records for those transactions that
+# successfully created, updated, or deleted a non-test identifier.
+# Appends the resulting records to the master historical transaction
+# log, and deletes the dated transaction logs.  The latter steps are
+# performed only after a sanity check is performed and user
+# confirmation.
 #
 # Greg Janee <gjanee@ucop.edu>
-# September 2010
+# January 2012
 
-import re
-import sys
+shopt -s nullglob
 
-testDoiPrefix = "10.5072/FK2"
-testDoiShadowPrefix = "b5072/fk2"
-testArkPrefix = "99999/fk4"
+FILTERLOG=`dirname $0`/filterlog
+LOGDIR=`dirname $0`/../../logs
+HISTDIR=$LOGDIR/historical
+HISTLOG=$HISTDIR/master_transaction_log.gz
 
-def error (file, lineNo, message):
-  sys.stderr.write("%s, line %d: %s\n" % (file, lineNo, message))
+files=(${LOGDIR}/transaction_log.*)
+if [ ${#files[@]} -eq 0 ]; then
+  echo striplog: no transaction logs to process
+  exit
+fi
 
-class Record:
-  def __init__ (self, file, lineNo, timestamp, beginRecord):
-    self.file = file
-    self.lineNo = lineNo
-    self.timestamp = timestamp
-    self.beginRecord = beginRecord
-    self.endRecord = None
+$FILTERLOG -CSD -s -R ${files[@]} | gzip > $HISTDIR/new.gz
+gunzip -c $HISTLOG $HISTDIR/new.gz | gzip > $HISTDIR/combined.gz
 
-records = []
-tidMap = {}
+mrc=`gunzip -c $HISTLOG | wc -l`
+nrc=`gunzip -c $HISTDIR/new.gz | wc -l`
+crc=`gunzip -c $HISTDIR/combined.gz | wc -l`
+if [ $((mrc+nrc)) -ne $crc ]; then
+  echo striplog: record count sanity check failed
+  exit 1
+fi
 
-pattern = re.compile("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) " +\
-  "(([\da-fA-F]{32}) (BEGIN|PROGRESS|END) |- (STATUS|ERROR) )(.*)")
-
-for file in sys.argv[1:]:
-  f = open(file)
-  n = 0
-  for l in f:
-    n += 1
-    m = pattern.match(l)
-    if not m:
-      error(file, n, "unrecognized record")
-      continue
-    # Strip non-transaction errors and status records.
-    if m.group(2).startswith("-"): continue
-    tid = m.group(3)
-    if m.group(4) == "BEGIN":
-      if tid in tidMap:
-        error(file, n, "duplicate transaction ID")
-        continue
-      r = Record(file, n, m.group(1), m.group(6))
-      records.append(r)
-      tidMap[tid] = r
-    elif m.group(4) == "END":
-      if tid not in tidMap:
-        error(file, n, "no corresponding BEGIN record")
-        continue
-      if tidMap[tid].endRecord != None:
-        error(file, n, "duplicate END record")
-        continue
-      tidMap[tid].endRecord = m.group(6)
-    else:
-      # Ignore progress records.
-      pass
-  f.close()
-
-for r in records:
-  if r.endRecord == None:
-    error(r.file, r.lineNo, "no corresponding END record")
-    continue
-  b = r.beginRecord.split()
-  e = r.endRecord.split()
-  # Strip errors.
-  if e[0] != "SUCCESS": continue
-  # Strip simple get requests.
-  if b[0] == "getMetadata": continue
-  # Strip searches.
-  if b[0].startswith("search/"): continue
-  # Strip everything related to test identifiers.
-  if ((b[0] == "mintDoi" or b[0] == "createDoi") and\
-       b[1].startswith(testDoiPrefix)) or\
-     ((b[0] == "mintArk" or b[0] == "createArk") and\
-       b[1].startswith(testArkPrefix)) or\
-     ((b[0] == "setMetadata" or b[0] == "deleteIdentifier") and\
-       (b[1].startswith("doi:" + testDoiPrefix) or\
-       b[1].startswith("ark:/" + testDoiShadowPrefix) or\
-       b[1].startswith("ark:/" + testArkPrefix))):
-    continue
-  # Special case: on a mint transaction, tack the new identifier onto
-  # the end of the BEGIN record.
-  if b[0].startswith("mint"): r.beginRecord += " -> " + e[1]
-  print "%s %s" % (r.timestamp, r.beginRecord)
+echo -n "Replace master log and delete dated transaction logs? [y/n] "
+read yesno
+if [ "$yesno" == "y" ]; then
+  mv $HISTDIR/combined.gz $HISTLOG
+  rm ${files[@]} $HISTDIR/new.gz
+fi
