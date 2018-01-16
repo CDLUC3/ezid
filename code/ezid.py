@@ -176,7 +176,7 @@ def mintIdentifier (shoulder, user, metadata={}):
     log.success(tid, identifier)
   return createIdentifier(identifier, user, metadata)
 
-def createIdentifier (identifier, user, metadata={}, modifyIfExists=False):
+def createIdentifier (identifier, user, metadata={}, updateIfExists=False):
   """
   Creates an identifier having the given qualified name, e.g.,
   "doi:10.5060/FOO".  'user' is the requestor and should be an
@@ -200,7 +200,7 @@ def createIdentifier (identifier, user, metadata={}, modifyIfExists=False):
     error: internal server error
     error: concurrency limit exceeded
 
-  If 'modifyIfExists' is true, an "identifier already exists" error
+  If 'updateIfExists' is true, an "identifier already exists" error
   falls through to a 'setMetadata' call.
   """
   nqidentifier = util.normalizeIdentifier(identifier)
@@ -244,7 +244,7 @@ def createIdentifier (identifier, user, metadata={}, modifyIfExists=False):
     return "error: bad request - " + util.formatValidationError(e)
   except django.db.utils.IntegrityError:
     log.badRequest(tid)
-    if modifyIfExists:
+    if updateIfExists:
       return setMetadata(identifier, user, metadata, internalCall=True)
     else:
       return "error: bad request - identifier already exists"

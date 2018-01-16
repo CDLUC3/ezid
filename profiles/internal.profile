@@ -77,8 +77,8 @@ element: _updated
 displayname: Last modified
 displaytype: datetime
 tooltip:
-<b><u>Last modified</u></b><br/>
-The date and time the identifier was last modified.
+<b><u>Last updated</u></b><br/>
+The date and time the identifier was last updated.
 
 element: _export
 displayname: Allow harvesting/indexing?

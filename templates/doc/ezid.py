@@ -23,6 +23,7 @@
 #   operation:
 #     m[int] shoulder [element value ...]
 #     c[reate][!] identifier [element value ...]
+#       create! = create or update
 #     v[iew] identifier
 #     u[pdate] identifier [element value ...]
 #     d[elete] identifier
@@ -98,6 +99,7 @@ USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
   operation:
     m[int] shoulder [element value ...]
     c[reate][!] identifier [element value ...]
+      create! = create or update
     v[iew] identifier
     u[pdate] identifier [element value ...]
     d[elete] identifier
@@ -266,7 +268,7 @@ elif operation == "create":
   else:
     data = None
   path = "id/"+encode(id)
-  if bang: path += "?modify_if_exists=yes"
+  if bang: path += "?update_if_exists=yes"
   response = issueRequest(path, "PUT", data)
   printAnvlResponse(response)
 elif operation == "view":

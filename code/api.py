@@ -19,7 +19,7 @@
 #
 # Create an identifier:
 #   PUT /id/{identifier}   [authentication required]
-#     ?modify_if_exists={yes|no}
+#     ?update_if_exists={yes|no}
 #   request body: optional metadata
 #   response body: status line
 #
@@ -27,7 +27,7 @@
 #   GET /id/{identifier}   [authentication optional]
 #   response body: status line, metadata
 #
-# Modify an identifier:
+# Update an identifier:
 #   POST /id/{identifier}   [authentication required]
 #     ?update_external_services={yes|no}
 #   request body: optional metadata
@@ -280,12 +280,12 @@ def _createIdentifier (request):
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
   options = _validateOptions(request,
-    { "modify_if_exists": [("yes", True), ("no", False)] })
+    { "update_if_exists": [("yes", True), ("no", False)] })
   if type(options) is str: return _response(options)
   assert request.path_info.startswith("/id/")
   identifier = request.path_info[4:]
   return _response(ezid.createIdentifier(identifier, user, metadata,
-    modifyIfExists=options.get("modify_if_exists", False)), createRequest=True)
+    updateIfExists=options.get("update_if_exists", False)), createRequest=True)
 
 def _deleteIdentifier (request):
   user = userauth.authenticateRequest(request)

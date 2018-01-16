@@ -69,8 +69,8 @@ Contents
 - `Operation: get identifier metadata`_
 - `Operation: create identifier`_
 - `Operation: mint identifier`_
-- `Operation: modify identifier`_
-- `Operation: create or modify identifier`_
+- `Operation: update identifier`_
+- `Operation: create or update identifier`_
 - `Operation: delete identifier`_
 - `Ownership model`_
 - `Identifier status`_
@@ -115,7 +115,7 @@ resource at URL \https://ezid.cdlib.org/id/`foo`:hl1:.  In this
 document we will refer to this URL as the identifier's "EZID URL."  A
 client manipulates an identifier by performing HTTP operations on its
 EZID URL: PUT to create the identifier, GET to view it, and POST to
-modify it.
+update it.
 
 An identifier's EZID URL should not be confused with the identifier's
 "URL form."  The former is used to manipulate the identifier, whereas
@@ -300,7 +300,7 @@ EZID's data model for metadata is a dictionary of element name/value
 pairs.  The dictionary is single-valued: an element name may not be
 repeated.  Names and values are strings.  Leading and trailing
 whitespace in names and values is not significant.  Neither element
-names nor element values may be empty.  (When modifying an identifier,
+names nor element values may be empty.  (When updating an identifier,
 an uploaded empty value is treated as a command to delete the element
 entirely.)
 
@@ -591,20 +591,19 @@ EZID automatically embeds the newly-minted identifier in certain types
 of uploaded metadata.  See `Metadata profiles`_ below for when this is
 performed.
 
-Operation: modify identifier
+Operation: update identifier
 ----------------------------
 
-An identifier's metadata can be modified by sending a POST request to
+An identifier's metadata can be updated by sending a POST request to
 the identifier's EZID URL.  Authentication is required; only the
-identifier's owner and certain other users may modify the identifier
+identifier's owner and certain other users may update the identifier
 (see `Ownership model`_ below).
 
 Metadata elements are operated on individually.  If the identifier
 already has a value for a metadata element included in the request
 body, the value is overwritten, otherwise the element and its value
 are added.  Only a few of the reserved EZID metadata elements may be
-modified; see `Internal metadata`_ below.  Here's a sample
-interaction:
+updated; see `Internal metadata`_ below.  Here's a sample interaction:
 
 .. parsed-literal::
 
@@ -627,22 +626,22 @@ the identifier in question.
 
 To delete a metadata element, set its value to the empty string.
 
-Operation: create or modify identifier
+Operation: create or update identifier
 --------------------------------------
 
-An identifier can be created or modified in one interaction; the
+An identifier can be created or updated in one interaction; the
 specific operation performed will depend on whether the identifier
 already exists or not.  To do so, issue a create operation as
-described under `Operation: create identifier`_ above, but add a
-modify_if_exists=yes URL query parameter to the PUT request.  EZID
+described under `Operation: create identifier`_ above, but add an
+update_if_exists=yes URL query parameter to the PUT request.  EZID
 returns a 201 HTTP status code if the identifier was created or a 200
 HTTP status code if the identifier already existed and was
-successfully modified.  The response body is a status line as
-described previously.  Here's a sample request:
+successfully updated.  The response body is a status line as described
+previously.  Here's a sample request:
 
 .. parsed-literal::
 
-  |rArr| PUT /id/ark:/99999/fk4test?modify_if_exists=yes HTTP/1.1
+  |rArr| PUT /id/ark:/99999/fk4test?update_if_exists=yes HTTP/1.1
   |rArr| Host: ezid.cdlib.org
   |rArr| Content-Type: text/plain; charset=UTF-8
   |rArr| Content-Length: 30
@@ -686,8 +685,8 @@ has one owner, which is an EZID user; each EZID user belongs to one
 group; and each group belongs to one realm.  Permission to create
 identifiers is governed by the namespaces (or "shoulders") that have
 been assigned to a user by an EZID administrator.  But once created,
-permission to subsequently modify an identifier is governed solely by
-the identifier's ownership.  An identifier may be modified only by its
+permission to subsequently update an identifier is governed solely by
+the identifier's ownership.  An identifier may be updated only by its
 owner, with two exceptions:
 
 - **Proxies**.  A user (the "proxied user") may name another EZID user
@@ -699,7 +698,7 @@ owner, with two exceptions:
     "_owner" reserved metadata element (see `Internal metadata`_
     below);
 
-  - modify existing identifiers owned by the proxied user;
+  - update existing identifiers owned by the proxied user;
 
   - change the ownership of identifiers owned by the proxied user to
     itself or to any other user on whose behalf the proxy may operate,
@@ -793,7 +792,7 @@ Internal metadata
 Metadata element names beginning with an underscore ("_", U+005F) are
 reserved for use by EZID.  The reserved elements below are returned by
 the EZID API, and have the following meanings.  A check mark in the
-first column indicates the element is modifiable by clients.
+first column indicates the element is updatable by clients.
 
   === =========== ============================================ ================
   |X| Element     Definition                                   Example
@@ -806,7 +805,7 @@ first column indicates the element is modifiable by clients.
                   owner's group.
   \   _created    The time the identifier was created          1300812337
                   expressed as a Unix timestamp.
-  \   _updated    The time the identifier was last modified    1300913550
+  \   _updated    The time the identifier was last updated     1300913550
                   expressed as a Unix timestamp.
   |X| _target     The identifier's target URL.  Defaults to the identifier's
                   EZID URL.  That is, the default target URL for identifier
@@ -1171,7 +1170,7 @@ Registering an identifier with Crossref requires three steps:
 These steps are discussed in more detail next.
 
 Crossref registration is asynchronous.  Registration is requested by,
-in a create, mint, or modify identifier request, setting the
+in a create, mint, or update identifier request, setting the
 "_crossref" reserved metadata element to "yes".  (Registration may be
 removed from reserved identifiers, and reserved identifiers only, by
 setting "_crossref" to "no".)  In responses, the "_crossref" element
@@ -1458,7 +1457,7 @@ Mint identifier:
   curl_close($ch);
   ?>
 
-Modify identifier:
+Update identifier:
 
 .. parsed-literal::
 
@@ -1557,7 +1556,7 @@ obtaining a new identifier, `$identifier`:hl1:\ :
     print $r->code, $r->decoded_content;
   }
 
-To modify an identifier using values from a hash, `%metadata`:hl1:\ :
+To update an identifier using values from a hash, `%metadata`:hl1:\ :
 
 .. parsed-literal::
 
@@ -1798,7 +1797,7 @@ but now creating an identifier:
     --data-binary @\ `metadata.txt`:hl2: \https://ezid.cdlib.org/id/\
   `identifier`:hl2:
 
-To modify identifier metadata:
+To update identifier metadata:
 
 .. parsed-literal::
 
@@ -1835,11 +1834,11 @@ The metadata for all identifiers matching a set of constraints can be
 downloaded in one batch operation.  Authentication is required, and
 the scope of the identifiers that can be downloaded in this way is
 implicitly restricted to those that are directly owned by or otherwise
-modifiable by the requestor.
+updatable by the requestor.
 
 Batch download and harvesting (see `OAI-PMH harvesting`_ below) are
 similar but different operations.  With batch download, the
-identifiers returned are restricted to those modifiable by the
+identifiers returned are restricted to those updatable by the
 requestor as noted above, but within that scope it is possible to
 download *all* identifiers, including reserved, unavailable, and test
 identifiers.  By contrast, with harvesting, no authentication is

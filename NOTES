@@ -112,7 +112,7 @@ and toExchange in util.py) used in database dumps.
 |        |             | "anonymous".                                  |
 | _c     | _created    | The time the identifier was created expressed |
 |        |             | as a Unix timestamp, e.g., "1280889190".      |
-| _u     | _updated    | The time the identifier was last modified     |
+| _u     | _updated    | The time the identifier was last updated      |
 |        |             | expressed as a Unix timestamp, e.g.,          |
 |        |             | "1280889190".                                 |
 | _t     | _target     | The identifier's target URL, e.g.,            |

@@ -99,7 +99,7 @@ class Identifier (django.db.models.Model):
 
   updateTime = django.db.models.IntegerField(blank=True, default="",
     validators=[django.core.validators.MinValueValidator(0)])
-  # The time the identifier was last modified as a Unix timestamp.  If
+  # The time the identifier was last updated as a Unix timestamp.  If
   # not specified, the current time is used.
 
   RESERVED = "R"
