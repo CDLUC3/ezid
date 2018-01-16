@@ -19,6 +19,7 @@
 #
 # Create an identifier:
 #   PUT /id/{identifier}   [authentication required]
+#     ?modify_if_exists={yes|no}
 #   request body: optional metadata
 #   response body: status line
 #
@@ -26,7 +27,7 @@
 #   GET /id/{identifier}   [authentication optional]
 #   response body: status line, metadata
 #
-# Update an identifier:
+# Modify an identifier:
 #   POST /id/{identifier}   [authentication required]
 #     ?update_external_services={yes|no}
 #   request body: optional metadata
@@ -46,7 +47,8 @@
 #   response body: status line
 #
 # Get EZID's status:
-#   GET /status?subsystems={*|subsystemlist}
+#   GET /status
+#     ?subsystems={*|subsystemlist}
 #   response body: status line, optional additional status information
 #
 # Get EZID's version:
@@ -132,6 +134,29 @@ def _readInput (request):
   else:
     return {}
 
+def _validateOptions (request, options):
+  d = {}
+  for k, v in request.GET.items():
+    if k in options:
+      if options[k] == None:
+        d[k] = v
+      else:
+        found = False
+        for ov in options[k]:
+          if (type(ov) is tuple and v.lower() == ov[0]) or\
+            (type(ov) is str and v.lower() == ov):
+            d[k] = ov[1] if type(ov) is tuple else ov
+            found = True
+            break
+        if not found:
+          return ("error: bad request - " +\
+            "invalid value for URL query parameter '%s'") %\
+            k.encode("ASCII", "xmlcharrefreplace")
+    else:
+      return "error: bad request - unrecognized URL query parameter '%s'" %\
+        util.oneLine(k.encode("ASCII", "xmlcharrefreplace"))
+  return d
+
 def _statusMapping (content, createRequest):
   if content.startswith("success:"):
     return 201 if createRequest else 200
@@ -183,6 +208,8 @@ def mintIdentifier (request):
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
+  options = _validateOptions(request, {})
+  if type(options) is str: return _response(options)
   assert request.path_info.startswith("/shoulder/")
   shoulder = request.path_info[10:]
   return _response(ezid.mintIdentifier(shoulder, user, metadata),
@@ -209,6 +236,8 @@ def _getMetadata (request):
   assert request.path_info.startswith("/id/")
   user = userauth.authenticateRequest(request)
   if type(user) is str: return _response(user)
+  options = _validateOptions(request, {})
+  if type(options) is str: return _response(options)
   if user != None:
     r = ezid.getMetadata(request.path_info[4:], user)
   else:
@@ -232,15 +261,15 @@ def _setMetadata (request):
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
+  # Easter egg.
+  options = _validateOptions(request,
+    { "update_external_services": [("yes", True), ("no", False)] }\
+    if user.isSuperuser else {})
+  if type(options) is str: return _response(options)
   assert request.path_info.startswith("/id/")
   identifier = request.path_info[4:]
-  # Easter egg.
-  updateExternalServices = True
-  if user.isSuperuser and\
-    request.GET.get("update_external_services", "yes").lower() == "no":
-    updateExternalServices = False
   return _response(ezid.setMetadata(identifier, user, metadata,
-    updateExternalServices))
+    updateExternalServices=options.get("update_external_services", True)))
 
 def _createIdentifier (request):
   user = userauth.authenticateRequest(request)
@@ -250,10 +279,13 @@ def _createIdentifier (request):
     return _unauthorized()
   metadata = _readInput(request)
   if type(metadata) is str: return _response(metadata)
+  options = _validateOptions(request,
+    { "modify_if_exists": [("yes", True), ("no", False)] })
+  if type(options) is str: return _response(options)
   assert request.path_info.startswith("/id/")
   identifier = request.path_info[4:]
-  return _response(ezid.createIdentifier(identifier, user, metadata),
-    createRequest=True)
+  return _response(ezid.createIdentifier(identifier, user, metadata,
+    modifyIfExists=options.get("modify_if_exists", False)), createRequest=True)
 
 def _deleteIdentifier (request):
   user = userauth.authenticateRequest(request)
@@ -261,21 +293,23 @@ def _deleteIdentifier (request):
     return _response(user)
   elif not user:
     return _unauthorized()
+  # Easter egg.
+  options = _validateOptions(request,
+    { "update_external_services": [("yes", True), ("no", False)] }\
+    if user.isSuperuser else {})
+  if type(options) is str: return _response(options)
   assert request.path_info.startswith("/id/")
   identifier = request.path_info[4:]
-  # Easter egg.
-  updateExternalServices = True
-  if user.isSuperuser and\
-    request.GET.get("update_external_services", "yes").lower() == "no":
-    updateExternalServices = False
   return _response(ezid.deleteIdentifier(identifier, user,
-    updateExternalServices))
+    updateExternalServices=options.get("update_external_services", True)))
 
 def login (request):
   """
   Logs in a user.
   """
   if request.method != "GET": return _methodNotAllowed()
+  options = _validateOptions(request, {})
+  if type(options) is str: return _response(options)
   user = userauth.authenticateRequest(request, storeSessionCookie=True)
   if type(user) is str:
     return _response(user)
@@ -289,6 +323,8 @@ def logout (request):
   Logs a user out.
   """
   if request.method != "GET": return _methodNotAllowed()
+  options = _validateOptions(request, {})
+  if type(options) is str: return _response(options)
   request.session.flush()
   return _response("success: authentication credentials flushed")
 
@@ -297,9 +333,11 @@ def getStatus (request):
   Returns EZID's status.
   """
   if request.method != "GET": return _methodNotAllowed()
+  options = _validateOptions(request, { "subsystems": None })
+  if type(options) is str: return _response(options)
   body = ""
-  if "subsystems" in request.GET:
-    l = request.GET["subsystems"]
+  if "subsystems" in options:
+    l = options["subsystems"]
     if l == "*": l = "binder,datacite,search"
     for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
       if ss == "binder":
@@ -317,6 +355,8 @@ def getVersion (request):
   Returns EZID's version.
   """
   if request.method != "GET": return _methodNotAllowed()
+  options = _validateOptions(request, {})
+  if type(options) is str: return _response(options)
   sv, v = config.getVersionInfo()
   # In theory the following body should be encoded, but no percent
   # signs should appear anywhere.
@@ -372,33 +412,38 @@ def pause (request):
     return _unauthorized()
   elif not user.isSuperuser:
     return _forbidden()
-  if "op" not in request.GET:
+  options = _validateOptions(request,
+    { "op": ["on", "idlewait", "off", "monitor"] })
+  if type(options) is str: return _response(options)
+  if "op" not in options:
     return _response("error: bad request - no 'op' parameter")
-  if request.GET["op"].lower() == "on":
+  if options["op"] == "on":
     ezid.pause(True)
     return django.http.StreamingHttpResponse(_statusLineGenerator(True),
       content_type="text/plain; charset=UTF-8")
-  elif request.GET["op"].lower() == "idlewait":
+  elif options["op"] == "idlewait":
     ezid.pause(True)
     while True:
       activeUsers, waitingUsers, isPaused = ezid.getStatus()
       if len(activeUsers) == 0: break
       time.sleep(_idlewaitSleep)
     return _response("success: server paused and idle")
-  elif request.GET["op"].lower() == "off":
+  elif options["op"] == "off":
     ezid.pause(False)
     return _response("success: server unpaused")
-  elif request.GET["op"].lower() == "monitor":
+  elif options["op"] == "monitor":
     return django.http.StreamingHttpResponse(_statusLineGenerator(False),
       content_type="text/plain; charset=UTF-8")
   else:
-    return _response("error: bad request - invalid 'op' parameter")
+    assert False, "unhandled case"
 
 def reload (request):
   """
   Reloads the configuration file; interface to config.reload.
   """
   if request.method != "POST": return _methodNotAllowed()
+  options = _validateOptions(request, {})
+  if type(options) is str: return _response(options)
   user = userauth.authenticateRequest(request)
   if type(user) is str:
     return _response(user)
@@ -422,6 +467,8 @@ def batchDownloadRequest (request):
   Enqueues a batch download request.
   """
   if request.method != "POST": return _methodNotAllowed()
+  options = _validateOptions(request, {})
+  if type(options) is str: return _response(options)
   user = userauth.authenticateRequest(request)
   if type(user) is str:
     return _response(user)

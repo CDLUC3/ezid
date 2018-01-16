@@ -176,7 +176,7 @@ def mintIdentifier (shoulder, user, metadata={}):
     log.success(tid, identifier)
   return createIdentifier(identifier, user, metadata)
 
-def createIdentifier (identifier, user, metadata={}):
+def createIdentifier (identifier, user, metadata={}, modifyIfExists=False):
   """
   Creates an identifier having the given qualified name, e.g.,
   "doi:10.5060/FOO".  'user' is the requestor and should be an
@@ -199,6 +199,9 @@ def createIdentifier (identifier, user, metadata={}):
     error: bad request - subreason...
     error: internal server error
     error: concurrency limit exceeded
+
+  If 'modifyIfExists' is true, an "identifier already exists" error
+  falls through to a 'setMetadata' call.
   """
   nqidentifier = util.normalizeIdentifier(identifier)
   if nqidentifier == None: return "error: bad request - invalid identifier"
@@ -241,7 +244,10 @@ def createIdentifier (identifier, user, metadata={}):
     return "error: bad request - " + util.formatValidationError(e)
   except django.db.utils.IntegrityError:
     log.badRequest(tid)
-    return "error: bad request - identifier already exists"
+    if modifyIfExists:
+      return setMetadata(identifier, user, metadata, internalCall=True)
+    else:
+      return "error: bad request - identifier already exists"
   except Exception, e:
     log.error(tid, e)
     return "error: internal server error"
@@ -298,7 +304,8 @@ def getMetadata (identifier, user=ezidapp.models.AnonymousUser):
   finally:
     _releaseIdentifierLock(nqidentifier, user.username)
 
-def setMetadata (identifier, user, metadata, updateExternalServices=True):
+def setMetadata (identifier, user, metadata, updateExternalServices=True,
+  internalCall=False):
   """
   Sets metadata elements of a given qualified identifier, e.g.,
   "doi:10.5060/FOO".  'user' is the requestor and should be an
@@ -324,8 +331,9 @@ def setMetadata (identifier, user, metadata, updateExternalServices=True):
   nqidentifier = util.normalizeIdentifier(identifier)
   if nqidentifier == None: return "error: bad request - invalid identifier"
   tid = uuid.uuid1()
-  if not _acquireIdentifierLock(nqidentifier, user.username):
-    return "error: concurrency limit exceeded"
+  if not internalCall:
+    if not _acquireIdentifierLock(nqidentifier, user.username):
+      return "error: concurrency limit exceeded"
   try:
     log.begin(tid, "setMetadata", nqidentifier, user.username, user.pid,
       user.group.groupname, user.group.pid,
@@ -370,7 +378,7 @@ def setMetadata (identifier, user, metadata, updateExternalServices=True):
     log.success(tid)
     return "success: " + nqidentifier
   finally:
-    _releaseIdentifierLock(nqidentifier, user.username)
+    if not internalCall: _releaseIdentifierLock(nqidentifier, user.username)
 
 def deleteIdentifier (identifier, user, updateExternalServices=True):
   """

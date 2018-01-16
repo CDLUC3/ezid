@@ -33,11 +33,12 @@ only) to ask questions or report problems:</p>
 <li><a class="reference internal" href="#api-vs-ui">API vs. UI</a></li>
 <li><a class="reference internal" href="#authentication">Authentication</a></li>
 <li><a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a></li>
-<li><a class="reference internal" href="#error-handling">Error handling</a></li>
+<li><a class="reference internal" href="#error-reporting">Error reporting</a></li>
 <li><a class="reference internal" href="#operation-get-identifier-metadata">Operation: get identifier metadata</a></li>
 <li><a class="reference internal" href="#operation-create-identifier">Operation: create identifier</a></li>
 <li><a class="reference internal" href="#operation-mint-identifier">Operation: mint identifier</a></li>
 <li><a class="reference internal" href="#operation-modify-identifier">Operation: modify identifier</a></li>
+<li><a class="reference internal" href="#operation-create-or-modify-identifier">Operation: create or modify identifier</a></li>
 <li><a class="reference internal" href="#operation-delete-identifier">Operation: delete identifier</a></li>
 <li><a class="reference internal" href="#ownership-model">Ownership model</a></li>
 <li><a class="reference internal" href="#identifier-status">Identifier status</a></li>
@@ -255,7 +256,7 @@ invalidate a session.</p>
 </ol>
 <p>If authentication is required and credentials are either missing or
 invalid, EZID returns a 401 HTTP status code and the status line
-&quot;error: unauthorized&quot; (see <a class="reference internal" href="#error-handling">Error handling</a> below).  If
+&quot;error: unauthorized&quot; (see <a class="reference internal" href="#error-reporting">Error reporting</a> below).  If
 authentication is successful but the request is still not authorized,
 EZID returns a 403 HTTP status code and the status line &quot;error:
 forbidden&quot;.</p>
@@ -380,8 +381,8 @@ success: ark:/99999/fk4test
 error: bad request - no such identifier
 </pre>
 </div>
-<div class="section" id="error-handling">
-<h1>Error handling</h1>
+<div class="section" id="error-reporting">
+<h1>Error reporting</h1>
 <p>An error is indicated by both an HTTP status code and an error status
 line of the form &quot;error: <span class="hl1">reason</span>&quot;.  For example:</p>
 <pre class="literal-block">
@@ -433,7 +434,7 @@ identifier's EZID URL.  Here is a sample interaction:</p>
 ⇐ erc.when: 1922
 </pre>
 <p>The first line of the response body is a status line.  Assuming
-success (see <a class="reference internal" href="#error-handling">Error handling</a> above), the remainder of the status
+success (see <a class="reference internal" href="#error-reporting">Error reporting</a> above), the remainder of the status
 line echoes the canonical form of the requested identifier.</p>
 <p>The remaining lines are metadata element name/value pairs serialized
 per ANVL rules; see <a class="reference internal" href="#request-response-bodies">Request &amp; response bodies</a> above.  The order of
@@ -554,10 +555,30 @@ interaction:</p>
 ⇐
 ⇐ success: ark:/99999/fk4cz3dh0
 </pre>
-<p>The return is a status line.  Assuming success (see <a class="reference internal" href="#error-handling">Error handling</a>
+<p>The return is a status line.  Assuming success (see <a class="reference internal" href="#error-reporting">Error reporting</a>
 above), the remainder of the status line echoes the canonical form of
 the identifier in question.</p>
 <p>To delete a metadata element, set its value to the empty string.</p>
+</div>
+<div class="section" id="operation-create-or-modify-identifier">
+<h1>Operation: create or modify identifier</h1>
+<p>An identifier can be created or modified in one interaction, the
+specific operation performed depending on whether the identifier
+already existed or not, by issuing a create operation as described
+under <a class="reference internal" href="#operation-create-identifier">Operation: create identifier</a> above, but adding a
+modify_if_exists=yes URL query parameter to the PUT request.  EZID
+returns a 201 HTTP status code if the identifier was created or a 200
+HTTP status code if the identifier already existed and was
+successfully modified.  The response body is a status line as
+described previously.  Here's a sample request:</p>
+<pre class="literal-block">
+⇒ PUT /id/ark:/99999/fk4test?modify_if_exists=yes HTTP/1.1
+⇒ Host: ezid.cdlib.org
+⇒ Content-Type: text/plain; charset=UTF-8
+⇒ Content-Length: 30
+⇒
+⇒ _target: http://www.cdlib.org/
+</pre>
 </div>
 <div class="section" id="operation-delete-identifier">
 <h1>Operation: delete identifier</h1>
@@ -577,7 +598,7 @@ other users may delete the identifier (see <a class="reference internal" href="#
 ⇐
 ⇐ success: ark:/99999/fk4cz3dh0
 </pre>
-<p>The return is a status line.  Assuming success (see <a class="reference internal" href="#error-handling">Error handling</a>
+<p>The return is a status line.  Assuming success (see <a class="reference internal" href="#error-reporting">Error reporting</a>
 above), the remainder of the status line echoes the canonical form of
 the identifier just deleted.</p>
 </div>
@@ -1790,9 +1811,9 @@ by issuing a POST request to</p>
 parameter, &quot;format&quot;, specifying the download format, and may include
 additional parameters (see <a class="reference internal" href="#parameters">Parameters</a> below) specifying search
 criteria and download format and notification options.  The return is
-a status line indicating either error (see <a class="reference internal" href="#error-handling">Error handling</a> above) or
-success.  If successful, the status line includes a URL from which the
-download can be retrieved.  Here's a sample interaction:</p>
+a status line indicating either error (see <a class="reference internal" href="#error-reporting">Error reporting</a> above)
+or success.  If successful, the status line includes a URL from which
+the download can be retrieved.  Here's a sample interaction:</p>
 <pre class="literal-block">
 ⇒ POST /download_request HTTP/1.1
 ⇒ Host: ezid.cdlib.org

@@ -22,7 +22,7 @@
 #
 #   operation:
 #     m[int] shoulder [element value ...]
-#     c[reate] identifier [element value ...]
+#     c[reate][!] identifier [element value ...]
 #     v[iew] identifier
 #     u[pdate] identifier [element value ...]
 #     d[elete] identifier
@@ -70,15 +70,15 @@ KNOWN_SERVERS = {
 }
 
 OPERATIONS = {
-  # operation: number of arguments (possibly variable)
-  "mint": lambda l: l%2 == 1,
-  "create": lambda l: l%2 == 1,
-  "view": 1,
-  "update": lambda l: l%2 == 1,
-  "delete": 1,
-  "login": 0,
-  "logout": 0,
-  "status": 0
+  # operation: (number of arguments, accepts bang)
+  "mint": (lambda l: l%2 == 1, False),
+  "create": (lambda l: l%2 == 1, True),
+  "view": (1, False),
+  "update": (lambda l: l%2 == 1, False),
+  "delete": (1, False),
+  "login": (0, False),
+  "logout": (0, False),
+  "status": (0, False)
 }
 
 USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
@@ -97,7 +97,7 @@ USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
 
   operation:
     m[int] shoulder [element value ...]
-    c[reate] identifier [element value ...]
+    c[reate][!] identifier [element value ...]
     v[iew] identifier
     u[pdate] identifier [element value ...]
     d[elete] identifier
@@ -230,16 +230,23 @@ elif args[1] != "-":
   h.add_password("EZID", _server, username, password)
   _opener.add_handler(h)
 
+if args[2].endswith("!"):
+  bang = True
+  args[2] = args[2][:-1]
+else:
+  bang = False
 operation = filter(lambda o: o.startswith(args[2]), OPERATIONS)
 if len(operation) != 1: parser.error("unrecognized or ambiguous operation")
 operation = operation[0]
+if bang and not OPERATIONS[operation][1]:
+  parser.error("unrecognized operation")
 
 args = args[3:]
 
-if (type(OPERATIONS[operation]) is int and\
-  len(args) != OPERATIONS[operation]) or\
-  (type(OPERATIONS[operation]) is types.LambdaType and\
-  not OPERATIONS[operation](len(args))):
+if (type(OPERATIONS[operation][0]) is int and\
+  len(args) != OPERATIONS[operation][0]) or\
+  (type(OPERATIONS[operation][0]) is types.LambdaType and\
+  not OPERATIONS[operation][0](len(args))):
   parser.error("incorrect number of arguments for operation")
 
 # Perform the operation.
@@ -258,7 +265,9 @@ elif operation == "create":
     data = formatAnvlRequest(args[1:])
   else:
     data = None
-  response = issueRequest("id/"+encode(id), "PUT", data)
+  path = "id/"+encode(id)
+  if bang: path += "?modify_if_exists=yes"
+  response = issueRequest(path, "PUT", data)
   printAnvlResponse(response)
 elif operation == "view":
   id = args[0]

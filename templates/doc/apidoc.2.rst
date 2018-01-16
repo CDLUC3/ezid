@@ -65,11 +65,12 @@ Contents
 - `API vs. UI`_
 - Authentication_
 - `Request & response bodies`_
-- `Error handling`_
+- `Error reporting`_
 - `Operation: get identifier metadata`_
 - `Operation: create identifier`_
 - `Operation: mint identifier`_
 - `Operation: modify identifier`_
+- `Operation: create or modify identifier`_
 - `Operation: delete identifier`_
 - `Ownership model`_
 - `Identifier status`_
@@ -282,7 +283,7 @@ methods of authentication:
 
 If authentication is required and credentials are either missing or
 invalid, EZID returns a 401 HTTP status code and the status line
-"error: unauthorized" (see `Error handling`_ below).  If
+"error: unauthorized" (see `Error reporting`_ below).  If
 authentication is successful but the request is still not authorized,
 EZID returns a 403 HTTP status code and the status line "error:
 forbidden".
@@ -424,8 +425,8 @@ additional information.  Two examples::
   success: ark:/99999/fk4test
   error: bad request - no such identifier
 
-Error handling
---------------
+Error reporting
+---------------
 
 An error is indicated by both an HTTP status code and an error status
 line of the form "error: `reason`:hl1:".  For example:
@@ -484,7 +485,7 @@ identifier's EZID URL.  Here is a sample interaction:
   |lArr| erc.when: 1922
 
 The first line of the response body is a status line.  Assuming
-success (see `Error handling`_ above), the remainder of the status
+success (see `Error reporting`_ above), the remainder of the status
 line echoes the canonical form of the requested identifier.
 
 The remaining lines are metadata element name/value pairs serialized
@@ -620,11 +621,33 @@ interaction:
   |lArr|
   |lArr| success: ark:/99999/fk4cz3dh0
 
-The return is a status line.  Assuming success (see `Error handling`_
+The return is a status line.  Assuming success (see `Error reporting`_
 above), the remainder of the status line echoes the canonical form of
 the identifier in question.
 
 To delete a metadata element, set its value to the empty string.
+
+Operation: create or modify identifier
+--------------------------------------
+
+An identifier can be created or modified in one interaction, the
+specific operation performed depending on whether the identifier
+already existed or not, by issuing a create operation as described
+under `Operation: create identifier`_ above, but adding a
+modify_if_exists=yes URL query parameter to the PUT request.  EZID
+returns a 201 HTTP status code if the identifier was created or a 200
+HTTP status code if the identifier already existed and was
+successfully modified.  The response body is a status line as
+described previously.  Here's a sample request:
+
+.. parsed-literal::
+
+  |rArr| PUT /id/ark:/99999/fk4test?modify_if_exists=yes HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
+  |rArr| Content-Type: text/plain; charset=UTF-8
+  |rArr| Content-Length: 30
+  |rArr|
+  |rArr| _target: \http://www.cdlib.org/
 
 Operation: delete identifier
 ----------------------------
@@ -648,7 +671,7 @@ Here's a sample interaction:
   |lArr|
   |lArr| success: ark:/99999/fk4cz3dh0
 
-The return is a status line.  Assuming success (see `Error handling`_
+The return is a status line.  Assuming success (see `Error reporting`_
 above), the remainder of the status line echoes the canonical form of
 the identifier just deleted.
 
@@ -1845,9 +1868,9 @@ The content type of the request body must be
 parameter, "format", specifying the download format, and may include
 additional parameters (see Parameters_ below) specifying search
 criteria and download format and notification options.  The return is
-a status line indicating either error (see `Error handling`_ above) or
-success.  If successful, the status line includes a URL from which the
-download can be retrieved.  Here's a sample interaction:
+a status line indicating either error (see `Error reporting`_ above)
+or success.  If successful, the status line includes a URL from which
+the download can be retrieved.  Here's a sample interaction:
 
 .. parsed-literal::
 
