@@ -630,10 +630,10 @@ To delete a metadata element, set its value to the empty string.
 Operation: create or modify identifier
 --------------------------------------
 
-An identifier can be created or modified in one interaction, the
-specific operation performed depending on whether the identifier
-already existed or not, by issuing a create operation as described
-under `Operation: create identifier`_ above, but adding a
+An identifier can be created or modified in one interaction; the
+specific operation performed will depend on whether the identifier
+already exists or not.  To do so, issue a create operation as
+described under `Operation: create identifier`_ above, but add a
 modify_if_exists=yes URL query parameter to the PUT request.  EZID
 returns a 201 HTTP status code if the identifier was created or a 200
 HTTP status code if the identifier already existed and was
