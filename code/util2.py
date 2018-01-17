@@ -113,8 +113,10 @@ def convertLegacyToExternal (d):
   """
   if "_is" not in d: d["_is"] = "public"
   if "_x" not in d: d["_x"] = "yes"
-  d["_o"] = ezidapp.models.getUserByPid(d["_o"]).username
-  d["_g"] = ezidapp.models.getGroupByPid(d["_g"]).groupname
+  u = ezidapp.models.getUserByPid(d["_o"])
+  if u != None: d["_o"] = u.username
+  g = ezidapp.models.getGroupByPid(d["_g"])
+  if g != None: d["_g"] = g.groupname
   if d["_is"] != "public":
     d["_t"] = d["_t1"]
     del d["_t1"]
