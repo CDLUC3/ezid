@@ -48,6 +48,8 @@ else:
 
 def outputRecord (identifier, record):
   try:
+    for k in ["_o", "_g", "_c", "_u", "_t", "_p"]:
+      assert k in record, "missing field: " + k
     if "_s" in record: identifier = record["_s"]
     if not options.rawOutput: util2.convertLegacyToExternal(record)
     outfile.write(util.toExchange(record, identifier))
