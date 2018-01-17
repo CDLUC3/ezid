@@ -2,9 +2,10 @@
 
 # Dumps the store database to standard output.
 #
-# Usage: dump-store [-rz]
+# Usage: dump-store [-erz]
 #
 # Options:
+#   -e exclude reserved identifiers
 #   -r raw dump
 #   -z gzip the output
 #
@@ -31,6 +32,8 @@ import util
 import util2
 
 p = optparse.OptionParser(usage="%prog [-rz]")
+p.add_option("-e", action="store_true", dest="excludeReserved",
+  default=False, help="exclude reserved identifiers")
 p.add_option("-r", action="store_true", dest="rawOutput",
   default=False, help="raw dump")
 p.add_option("-z", action="store_true",
@@ -51,6 +54,7 @@ while True:
   qs = list(qs[:1000])
   if len(qs) == 0: break
   for si in qs:
+    if options.excludeReserved and si.isReserved: continue
     d = si.toLegacy()
     if not options.rawOutput: util2.convertLegacyToExternal(d)
     outfile.write(util.toExchange(d, si.identifier))
