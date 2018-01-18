@@ -103,7 +103,7 @@ _labelMapping = {
   "_cr": "_crossref"
 }
 
-def convertLegacyToExternal (d):
+def convertLegacyToExternal (d, convertAgents=True):
   """
   Converts a legacy metadata dictionary from internal form (i.e., as
   stored in the Noid "egg" binder) to external form (i.e., as returned
@@ -113,10 +113,11 @@ def convertLegacyToExternal (d):
   """
   if "_is" not in d: d["_is"] = "public"
   if "_x" not in d: d["_x"] = "yes"
-  u = ezidapp.models.getUserByPid(d["_o"])
-  if u != None: d["_o"] = u.username
-  g = ezidapp.models.getGroupByPid(d["_g"])
-  if g != None: d["_g"] = g.groupname
+  if convertAgents:
+    u = ezidapp.models.getUserByPid(d["_o"])
+    if u != None: d["_o"] = u.username
+    g = ezidapp.models.getGroupByPid(d["_g"])
+    if g != None: d["_g"] = g.groupname
   if d["_is"] != "public":
     d["_t"] = d["_t1"]
     del d["_t1"]

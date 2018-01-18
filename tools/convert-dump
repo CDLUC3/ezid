@@ -3,12 +3,11 @@
 # Reads from standard input and writes to standard output, converting
 # a raw dump to a normal dump.  Usage:
 #
-#    convert-dump [-m IDMAP] [-nsz]
+#    convert-dump [-m IDMAP] [-z]
 #
-# The command line options are as for the 'dump' script.  If the -z
-# option is specified, both the input and output are gzip-compressed.
-# The -m option (applicable only if the -n option is NOT specified)
-# uses IDMAP for the agent identifier conversion; the specified IDMAP
+# If the -z option is specified, both the input and output are
+# gzip-compressed.  The -m option uses IDMAP instead of the instance
+# database for conversion of agent identifiers; the specified IDMAP
 # mapping file must be one produced by the 'idmap' script.
 #
 # This script requires several EZID modules.  The PYTHONPATH
@@ -29,42 +28,26 @@ import sys
 execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
   "offline.py"))
 
-import ezidapp.models
 import util
+import util2
 
-labelMapping = {
-  "_o": "_owner",
-  "_g": "_ownergroup",
-  "_c": "_created",
-  "_u": "_updated",
-  "_t": "_target",
-  "_s": "_shadows",
-  "_p": "_profile",
-  "_is": "_status",
-  "_x": "_export",
-  "_d": "_datacenter",
-  "_cr": "_crossref"
-}
-
-p = optparse.OptionParser(usage="%prog [-m IDMAP] [-nsz]")
+p = optparse.OptionParser(usage="%prog [-m IDMAP] [-z]")
 p.add_option("-m", action="store", type="string", dest="idmap", default=None,
   help="map agent identifiers to local names using IDMAP")
-p.add_option("-n", action="store_false",
-  dest="convertAgents", default=True, help="do NOT convert agent identifiers")
-p.add_option("-s", action="store_true",
-  dest="includeShadowArks", default=False, help="include shadow ARKs")
 p.add_option("-z", action="store_true",
   dest="gzip", default=False, help="gzip input/output")
 options, args = p.parse_args()
 if len(args) != 0: p.error("wrong number of arguments")
 
-if options.convertAgents and options.idmap:
+if options.idmap:
   agentMap = { "anonymous": "anonymous" }
   f = open(options.idmap)
   for l in f:
     id, name, agentType = l.split()
     agentMap[id] = name
   f.close()
+else:
+  agentMap = None
 
 if options.gzip:
   infile = gzip.GzipFile(fileobj=sys.stdin, mode="r")
@@ -73,48 +56,13 @@ else:
   infile = sys.stdin
   outfile = sys.stdout
 
-def outputRecord1 (id, record):
-  outfile.write(id)
-  for k in record:
-    outfile.write(" %s %s" % (util.encode4(labelMapping.get(k, k)),
-      util.encode3(record[k])))
-  outfile.write("\n")
-
-def outputRecord (id, record):
-  if record.get("_is", "public") != "public":
-    record["_t"] = record["_t1"]
-    del record["_t1"]
-    if "_st1" in record:
-      record["_st"] = record["_st1"]
-      del record["_st1"]
-  if "_s" in record:
-    su = record["_su"]
-    del record["_su"]
-    st = record["_st"]
-    del record["_st"]
-    if options.includeShadowArks: outputRecord1("ark:/" + id, record)
-    record["_u"] = su
-    record["_t"] = st
-    s = record["_s"]
-    del record["_s"]
-    record["_shadowedby"] = "ark:/" + id
-    outputRecord1(s, record)
-  else:
-    outputRecord1("ark:/" + id, record)
-
 for l in infile:
-  lv = l[:-1].split(" ")
-  id = lv[0]
-  record = {}
-  for i in range(1, len(lv), 2):
-    record[util.decode(lv[i])] = util.decode(lv[i+1])
-  if options.convertAgents:
-    if options.idmap:
-      record["_o"] = agentMap[record["_o"]]
-      record["_g"] = agentmap[record["_g"]]
-    else:
-      record["_o"] = ezidapp.models.getUserByPid(record["_o"]).username
-      record["_g"] = ezidapp.models.getGroupByPid(record["_g"]).groupname
-  outputRecord(id, record)
+  id, record = util.fromExchange(l, identifierEmbedded=True)
+  if agentMap != None:
+    record["_o"] = agentMap.get(record["_o"], record["_o"])
+    record["_g"] = agentMap.get(record["_g"], record["_g"])
+  util2.convertLegacyToExternal(record, convertAgents=(agentMap == None))
+  outfile.write(util.toExchange(record, id))
+  outfile.write("\n")
 
 outfile.close()
