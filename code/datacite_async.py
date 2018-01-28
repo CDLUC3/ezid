@@ -36,7 +36,7 @@ def _overwrite (sh, row, doi, metadata):
   register_async.callWrapper(sh, row, "datacite.uploadMetadata",
     _uploadMetadata, doi, metadata, metadata["_d"])
   register_async.callWrapper(sh, row, "datacite.setTargetUrl",
-    _setTargetUrl, doi, metadata["_st"], metadata["_d"])
+    _setTargetUrl, doi, metadata["_t"], metadata["_d"])
   if metadata.get("_is", "public") != "public" or\
     metadata.get("_x", "yes") != "yes":
     register_async.callWrapper(sh, row, "datacite.deactivate",

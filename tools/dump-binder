@@ -50,7 +50,6 @@ def outputRecord (identifier, record):
   try:
     for k in ["_o", "_g", "_c", "_u", "_t", "_p"]:
       assert k in record, "missing field: " + k
-    if "_s" in record: identifier = record["_s"]
     if not options.rawOutput: util2.convertLegacyToExternal(record)
     outfile.write(util.toExchange(record, identifier))
     outfile.write("\n")
@@ -70,7 +69,7 @@ while entry != None:
     id = noid_egg.decodeRaw(id)
     label = noid_egg.decodeRaw(label)
     value = value.decode("UTF-8")
-    if id.startswith("ark:/") and util.validateArk(id[5:]) == id[5:] and\
+    if util.validateIdentifier(id) == id and\
       not label.startswith("__") and not label.startswith("_.e") and\
       not label.startswith("_,e"):
       # The fundamental assumption of this loop is that bindings

@@ -94,8 +94,6 @@ _labelMapping = {
   "_c": "_created",
   "_u": "_updated",
   "_t": "_target",
-  "_su": "_updated",
-  "_st": "_target",
   "_p": "_profile",
   "_is": "_status",
   "_x": "_export",
@@ -121,13 +119,6 @@ def convertLegacyToExternal (d, convertAgents=True):
   if d["_is"] != "public":
     d["_t"] = d["_t1"]
     del d["_t1"]
-    if "_st1" in d:
-      d["_st"] = d["_st1"]
-      del d["_st1"]
-  if "_s" in d:
-    del d["_u"]
-    del d["_t"]
-    del d["_s"]
   for k in d.keys():
     if k in _labelMapping:
       d[_labelMapping[k]] = d[k]

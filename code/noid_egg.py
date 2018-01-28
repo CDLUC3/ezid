@@ -14,12 +14,6 @@
 # "Greg%25Jan%C3%A9e" but received back as "Greg%25Jan\xc3\xa9e",
 # which, when percent- and UTF-8-decoded, yields the original value.)
 #
-# Interim modification: identifiers are prefixed with "ark:/" when
-# stored in noid.
-#
-# This module assumes that identifiers have already been normalized
-# per util.validateArk.
-#
 # This module performs whitespace processing.  Leading and trailing
 # whitespace is stripped from both element names and values.  Empty
 # names are not allowed.  Setting an empty value causes the element to
@@ -68,7 +62,7 @@ def _issue (method, operations):
     l = []
     for o in operations:
       # o = (identifier, operation [,element [, value]])
-      s = ":hx%% ark:/%s.%s" % (util.encode4(o[0]), o[1])
+      s = ":hx%% %s.%s" % (util.encode4(o[0]), o[1])
       if len(o) > 2: s += " " + util.encode4(o[2])
       if len(o) > 3: s += " " + util.encode3(o[3])
       l.append(s)
@@ -93,9 +87,8 @@ def _error (operation, s):
 
 def identifierExists (identifier):
   """
-  Returns true if a scheme-less ARK identifier (e.g., "13030/foo")
-  exists.  The identifier is assumed to be in canonical form.  Raises
-  an exception on error.
+  Returns true if an identifier (given in normalized, qualified form,
+  e.g., "doi:10.1234/FOO") exists.  Raises an exception on error.
   """
   # The question of whether an identifier exists or not is
   # surprisingly elusive.  Noid will return information for any
@@ -117,10 +110,10 @@ def identifierExists (identifier):
 
 def setElements (identifier, d):
   """
-  Binds metadata elements to a scheme-less ARK identifier, e.g.,
-  "13030/foo".  The identifier is assumed to be in canonical form.
-  The elements should be given in a dictionary that maps names to
-  values.  Raises an exception on error.
+  Binds metadata elements to an identifier (given in normalized,
+  qualified form, e.g., "doi:10.1234/FOO").  The elements should be
+  given in a dictionary that maps names to values.  Raises an
+  exception on error.
   """
   l = []
   for e, v in d.items():
@@ -137,9 +130,9 @@ def setElements (identifier, d):
 def getElements (identifier):
   """
   Returns all metadata elements (in the form of a dictionary) that are
-  bound to a scheme-less ARK identifier (e.g., "13030/foo"), or None
-  if the identifier doesn't exist.  The identifier is assumed to be in
-  canonical form.  Raises an exception on error.
+  bound to an identifier (given in normalized, qualified form, e.g.,
+  "doi:10.1234/FOO"), or None if the identifier doesn't exist.  Raises
+  an exception on error.
   """
   # See the comment under 'identifierExists' above.
   s = _issue("GET", [(identifier, "fetch")])
@@ -167,12 +160,11 @@ def getElements (identifier):
 def deleteIdentifier (identifier):
   """
   Deletes all metadata elements (including noid-internal elements)
-  bound to a scheme-less ARK identifier (e.g., "13030/foo").  The
-  identifier is assumed to be in canonical form.  After calling this
-  function, the identifier is deleted in the sense that
-  identifierExists(identifier) will return False and
-  getElements(identifier) will return None.  As far as noid is
-  concerned, however, the identifier still exists and metadata
+  bound to an identifier (given in normalized, qualified form, e.g.,
+  "doi:10.1234/FOO").  After calling this function, the identifier is
+  deleted in the sense that identifierExists(identifier) will return
+  False and getElements(identifier) will return None.  As far as noid
+  is concerned, however, the identifier still exists and metadata
   elements can be re-bound to it in the future.  Raises an exception
   on error.
   """

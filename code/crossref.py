@@ -469,7 +469,7 @@ def _doDeposit (r):
   if r.operation == ezidapp.models.CrossrefQueue.DELETE:
     url = "http://datacite.org/invalidDOI"
   else:
-    url = m["_st"]
+    url = m["_t"]
   submission, body, batchId = _buildDeposit(m["crossref"],
     ezidapp.models.getUserByPid(r.owner).username, r.identifier[4:], url,
     withdrawTitles=(r.operation == ezidapp.models.CrossrefQueue.DELETE or\

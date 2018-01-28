@@ -487,12 +487,7 @@ class Identifier (django.db.models.Model):
       d["_t"] = self.resolverTarget
       d["_t1"] = self.target
     if not self.exported: d["_x"] = "no"
-    if not self.isArk:
-      d["_s"] = self.identifier
-      d["_su"] = d["_u"]
-      d["_st"] = d["_t"]
-      if not self.isPublic: d["_st1"] = d["_t1"]
-      if self.isDoi: d["_d"] = self.datacenter.symbol
+    if self.isDoi: d["_d"] = self.datacenter.symbol
     if self.isCrossref:
       d["_cr"] = "yes | " + self.get_crossrefStatus_display()
       if self.crossrefMessage != "": d["_cr"] += " | " + self.crossrefMessage
@@ -513,10 +508,7 @@ class Identifier (django.db.models.Model):
     # computeComputedValues should be called after this method to fill
     # out the rest of the object.
     self.createTime = int(d["_c"])
-    if self.isArk:
-      self.updateTime = int(d["_u"])
-    else:
-      self.updateTime = int(d["_su"])
+    self.updateTime = int(d["_u"])
     if "_is" in d:
       if d["_is"] == "reserved":
         self.status = self.RESERVED
@@ -524,16 +516,10 @@ class Identifier (django.db.models.Model):
         self.status = self.UNAVAILABLE
         m = self._legacyUnavailableStatusRE.match(d["_is"])
         if m: self.unavailableReason = m.group(1)
-      if self.isArk:
-        self.target = d["_t1"]
-      else:
-        self.target = d["_st1"]
+      self.target = d["_t1"]
     else:
       self.status = self.PUBLIC
-      if self.isArk:
-        self.target = d["_t"]
-      else:
-        self.target = d["_st"]
+      self.target = d["_t"]
     self.exported = "_x" not in d
     for k, v in d.items():
       if not k.startswith("_"): self.cm[k] = v

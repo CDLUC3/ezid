@@ -20,24 +20,13 @@ import config
 import ezidapp.models
 import noid_egg
 import register_async
-import util
 
 _daemonEnabled = [None]
 _threadName = [None]
 
-def _shadowArk (id):
-  if id.startswith("ark:/"):
-    return id[5:]
-  elif id.startswith("doi:"):
-    return util.doi2shadow(id[4:])
-  elif id.startswith("uuid:"):
-    return util.uuid2shadow(id[5:])
-  else:
-    assert False, "unhandled case"
-
 def _overwrite (sh, row, id, metadata):
   m = register_async.callWrapper(sh, row, "noid_egg.getElements",
-    noid_egg.getElements, _shadowArk(id))
+    noid_egg.getElements, id)
   if m == None: m = {}
   for k, v in metadata.items():
     if m.get(k) == v:
@@ -48,11 +37,11 @@ def _overwrite (sh, row, id, metadata):
     if k not in metadata: m[k] = ""
   if len(m) > 0:
     register_async.callWrapper(sh, row, "noid_egg.setElements",
-      noid_egg.setElements, _shadowArk(id), m)
+      noid_egg.setElements, id, m)
 
 def _delete (sh, row, id, metadata):
   register_async.callWrapper(sh, row, "noid_egg.deleteIdentifier",
-    noid_egg.deleteIdentifier, _shadowArk(id))
+    noid_egg.deleteIdentifier, id)
 
 def enqueueIdentifier (identifier, operation, blob):
   """
