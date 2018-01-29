@@ -96,15 +96,6 @@ import search_util
 import userauth
 import util
 
-_idlewaitSleep = None
-
-def _loadConfig ():
-  global _idlewaitSleep
-  _idlewaitSleep = float(config.get("DEFAULT.idlewait_sleep"))
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
-
 def _readInput (request):
   if "CONTENT_TYPE" in request.META:
     ct = [w.strip() for w in request.META["CONTENT_TYPE"].split(";")]
@@ -426,7 +417,7 @@ def pause (request):
     while True:
       activeUsers, waitingUsers, isPaused = ezid.getStatus()
       if len(activeUsers) == 0: break
-      time.sleep(_idlewaitSleep)
+      time.sleep(1)
     return _response("success: server paused and idle")
   elif options["op"] == "off":
     ezid.pause(False)
@@ -456,7 +447,7 @@ def reload (request):
     # Wait for the system to become quiescent.
     while True:
       if len(ezid.getStatus()[0]) == 0: break
-      time.sleep(_idlewaitSleep)
+      time.sleep(1)
     config.reload()
   finally:
     ezid.pause(oldValue)
