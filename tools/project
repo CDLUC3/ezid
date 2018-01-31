@@ -1,13 +1,12 @@
 #! /usr/bin/env python
 
-# The 'dump', 'select', and 'project' scripts form a bind database
-# query system.  The general usage is:
+# The 'dump-store', 'dump-binder', 'select', and 'project' scripts
+# form a dump file query system.  The general usage is:
 #
-#    dump noid.bdb | select constraint... | project fields...
+#    dump-* | select constraint... | project fields...
 #
-# This script reads identifier records from standard input as written
-# by the 'dump' and 'select' scripts and writes selected fields from
-# those records to standard output.
+# This script reads a dump file (normal or raw) from standard input
+# and writes selected fields from those records to standard output.
 #
 # Usage: project [options] fields...
 #
@@ -21,6 +20,8 @@
 #   -S SEPARATOR  label/value separator (defaults to =)
 #   -t            format timestamps
 #   -z            gunzip the input
+#
+# The '_id' pseudo-field can be used to output the identifier itself.
 #
 # If the -a option is given, any fields specified on the command line
 # are ignored and neither the order nor the presence of fields will be
@@ -56,7 +57,7 @@ except ImportError:
 p = optparse.OptionParser(usage="%prog [options] fields...")
 p.add_option("-a", action="store_true", dest="allFields", default=False,
   help="output all fields")
-p.add_option("-d", action="store_true", dest="decode", default=False,
+p.add_option("-d", action="store_false", dest="hexEncode", default=True,
   help="decode labels and values")
 p.add_option("-l", action="store_true", dest="outputLabels", default=False,
   help="output labels")
@@ -89,42 +90,36 @@ else:
   infile = sys.stdin
 
 for l in infile:
-  lv = l[:-1].split(" ")
-  r = { "_id": lv[0] }
-  for i in range(1, len(lv), 2): r[util.decode(lv[i])] = lv[i+1]
+  id, r = util.fromExchange(l, True)
   s = ""
   if options.allFields:
     fields = r.keys()
-    fields.remove("_id")
     fields.insert(0, "_id")
   for f in fields:
-    if f in r:
-      if f in ["_created", "_updated"] and options.formatTimestamps:
+    sys.stdout.write(s)
+    if options.outputLabels:
+      if options.hexEncode:
+        sys.stdout.write(util.encode4(f))
+      else:
+        sys.stdout.write(f.encode("UTF-8"))
+      sys.stdout.write(options.labelValueSeparator)
+    if f == "_id":
+      v = id
+    elif f in r:
+      if f in ["_c", "_created", "_u", "_updated"] and\
+        options.formatTimestamps:
         v = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(int(r[f])))
-      elif f in ["_owner", "_ownergroup"] and options.idmap:
-        id = util.decode(r[f])
-        v = idmap.get(id, id)
-        if not options.decode: v = util.encode3(v)
-      elif f != "_id" and options.decode:
-        v = util.decode(r[f])
+      elif f in ["_o", "_owner", "_g", "_ownergroup"] and options.idmap:
+        v = idmap.get(r[f], r[f])
       else:
         v = r[f]
     else:
       v = ""
-    if options.oneLine: v = v.replace("\n", " ").replace("\r", " ")
-    sys.stdout.write(s)
-    if options.outputLabels:
-      if options.decode:
-        if type(f) is unicode:
-          sys.stdout.write(f.encode("UTF-8"))
-        else:
-          sys.stdout.write(f)
-      else:
-        sys.stdout.write(util.encode4(f))
-      sys.stdout.write(options.labelValueSeparator)
-    if type(v) is unicode:
-      sys.stdout.write(v.encode("UTF-8"))
-    else:
+    if options.hexEncode:
+      if f != "_id": v = util.encode3(v)
       sys.stdout.write(v)
+    else:
+      if options.oneLine: v = v.replace("\n", " ").replace("\r", " ")
+      sys.stdout.write(v.encode("UTF-8"))
     s = options.separator
   sys.stdout.write("\n")
