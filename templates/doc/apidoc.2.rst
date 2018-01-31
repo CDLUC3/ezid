@@ -534,15 +534,14 @@ Here's a sample interaction creating an ARK identifier:
   |lArr|
   |lArr| success: ark:/99999/fk4test
 
-The return is a status line.  If an ARK identifier was created, the
-normalized form of the identifier is returned as shown above.  If an
-identifier other than an ARK was created (e.g., a DOI or UUID), the
-status line also includes, separated by a pipe character ("|",
-U+007C), the identifier's "shadow ARK" (an ARK identifier that is an
-alias for the created identifier; deprecated).  Note that different
-identifier schemes have different normalization rules (e.g., DOIs are
-normalized to all uppercase letters).  Here's a sample interaction
-creating a DOI identifier:
+The return is a status line.  The normalized form of the identifier is
+returned as shown above, but if a DOI was created, the status line
+also includes, separated by a pipe character ("|", U+007C), the
+identifier's "shadow ARK" (an ARK identifier that is an alias for the
+created identifier; deprecated).  Note that different identifier
+schemes have different normalization rules (e.g., DOIs are normalized
+to all uppercase letters).  Here's a sample interaction creating a DOI
+identifier:
 
 .. parsed-literal::
 

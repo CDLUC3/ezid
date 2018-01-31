@@ -251,29 +251,6 @@ def shadow2doi (ark):
     doi = "10." + chr(ord("1")+ord(ark[0])-ord("c")) + ark[1:]
   return _hexDecodePattern.sub(lambda c: chr(int(c.group(1), 16)), doi).upper()
 
-_uuidShadowArkPrefix = "97720/"
-
-def uuid2shadow (id):
-  """
-  Given a scheme-less UUID identifier (e.g.,
-  "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"), returns the corresponding
-  scheme-less shadow ARK identifier (e.g.,
-  "97720/f81d4fae7dec11d0a76500a0c91e6bf6").  The UUID is assumed to
-  be in canonical form; the returned identifier is in canonical form.
-  """
-  return _uuidShadowArkPrefix + id.replace("-", "")
-
-def shadow2uuid (ark):
-  """
-  Given a scheme-less shadow ARK identifier for a UUID (e.g.,
-  "97720/f81d4fae7dec11d0a76500a0c91e6bf6"), returns the corresponding
-  scheme-less UUID identifier
-  (e.g., "f81d4fae-7dec-11d0-a765-00a0c91e6bf6").  The returned
-  identifier is in canonical form.
-  """
-  return "%s-%s-%s-%s-%s" % (ark[6:14], ark[14:18], ark[18:22], ark[22:26],
-    ark[26:])
-
 _shadowedDoiPattern = re.compile("ark:/[b-k]") # see _arkPattern1 above
 
 def normalizeIdentifier (identifier):
@@ -287,19 +264,13 @@ def normalizeIdentifier (identifier):
   id = validateIdentifier(identifier)
   if id == None: return None
   if id.startswith("ark:/"):
-    # The reverse shadow functions don't check that the supplied
+    # The reverse shadow function doesn't check that the supplied
     # identifier is indeed a valid shadow ARK, so we check that the
     # returned identifier is valid and produces the same shadow ARK.
     if _shadowedDoiPattern.match(id):
       doi = shadow2doi(id[5:])
       if validateDoi(doi) != None and doi2shadow(doi) == id[5:]:
         return "doi:" + doi
-      else:
-        return None
-    elif id.startswith("ark:/" + _uuidShadowArkPrefix):
-      uuid = shadow2uuid(id[5:])
-      if validateUuid(uuid) != None and uuid2shadow(uuid) == id[5:]:
-        return "uuid:" + uuid
       else:
         return None
     else:

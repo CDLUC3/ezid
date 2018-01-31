@@ -414,7 +414,7 @@ def _satisfiesConstraints (id, constraints):
 def _prepareMetadata (id, convertTimestamps):
   d = id.toLegacy()
   util2.convertLegacyToExternal(d)
-  if not id.isArk: d["_shadowedby"] = id.arkAlias
+  if id.isDoi: d["_shadowedby"] = id.arkAlias
   if convertTimestamps:
     d["_created"] = util.formatTimestampZulu(int(d["_created"]))
     d["_updated"] = util.formatTimestampZulu(int(d["_updated"]))

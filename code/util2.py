@@ -106,8 +106,8 @@ def convertLegacyToExternal (d, convertAgents=True):
   Converts a legacy metadata dictionary from internal form (i.e., as
   stored in the Noid "egg" binder) to external form (i.e., as returned
   to clients).  The dictionary is modified in place.  N.B.: if the
-  dictionary is for a non-ARK identifier, this function does *not* add
-  the _shadowedby element.
+  dictionary is for a DOI identifier, this function does *not* add the
+  _shadowedby element.
   """
   if "_is" not in d: d["_is"] = "public"
   if "_x" not in d: d["_x"] = "yes"

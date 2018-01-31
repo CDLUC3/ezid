@@ -131,8 +131,8 @@ def mintIdentifier (shoulder, user, metadata={}):
 
     success: ark:/95060/fk35717n0h
 
-  For non-ARK identifiers, the string also includes the qualified
-  shadow ARK, as in:
+  For DOI identifiers, the string also includes the qualified shadow
+  ARK, as in:
 
     success: doi:10.5060/FK35717N0H | ark:/b5060/fk35717n0h
 
@@ -188,8 +188,8 @@ def createIdentifier (identifier, user, metadata={}, updateIfExists=False):
 
     success: ark:/95060/foo
 
-  For non-ARK identifiers, the string also includes the qualified
-  shadow ARK, as in:
+  For DOI identifiers, the string also includes the qualified shadow
+  ARK, as in:
 
     success: doi:10.5060/FOO | ark:/b5060/foo
 
@@ -253,10 +253,10 @@ def createIdentifier (identifier, user, metadata={}, updateIfExists=False):
     return "error: internal server error"
   else:
     log.success(tid)
-    if si.isArk:
-      return "success: " + nqidentifier
-    else:
+    if si.isDoi:
       return "success: %s | %s" % (nqidentifier, si.arkAlias)
+    else:
+      return "success: " + nqidentifier
   finally:
     _releaseIdentifierLock(nqidentifier, user.username)
 
@@ -292,7 +292,7 @@ def getMetadata (identifier, user=ezidapp.models.AnonymousUser):
       return "error: forbidden"
     d = si.toLegacy()
     util2.convertLegacyToExternal(d)
-    if not si.isArk: d["_shadowedby"] = si.arkAlias
+    if si.isDoi: d["_shadowedby"] = si.arkAlias
     log.success(tid)
     return ("success: " + nqidentifier, d)
   except ezidapp.models.StoreIdentifier.DoesNotExist:
