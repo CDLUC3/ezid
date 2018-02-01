@@ -1,14 +1,14 @@
 #! /usr/bin/env python
 
-# The 'dump', 'select', and 'project' scripts form a bind database
-# query system.  The general usage is:
+# The 'dump-store', 'dump-binder', 'select', and 'project' scripts
+# form a dump file query system.  The general usage is:
 #
-#    dump noid.bdb | select constraint... | project fields...
+#    dump-* | select constraint... | project fields...
 #
-# This script reads identifier records as output by the 'dump' script,
-# applies a constraint expression to each, and writes the successful
-# records to standard output.  The input may be gzip-compressed, but
-# the output is never compressed.
+# This script reads a dump file (normal or raw) from standard input,
+# applies a constraint expression to each record, and writes the
+# successful records to standard output.  The input may be
+# gzip-compressed, but the output is never compressed.
 #
 # Usage: select [options] constraint...
 #
@@ -72,8 +72,8 @@
 # The timestamp fields _created and _updated can be compared against
 # dates or times specified in ISO YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS
 # syntaxes.  Times are interpreted relative to the local timezone.  If
-# only a date is specified in the constraint, comparisons are done on
-# dates only.
+# only a date is specified in the constraint, comparisons are
+# performed on dates only.
 #
 # The _numFields field is a slight syntactic exception in that it must
 # be followed by a regular expression; it is the number of
@@ -98,8 +98,6 @@
 #
 #    _exported             Is exported.
 #
-#    _shadowArk            Is a shadow ARK.
-#
 #    _anyMetadata          Has any citation (non-internal) metadata.
 #    _anyDatacite          Has any Datacite metadata.
 #    _anyDublinCore        Has any Dublin Core metadata.
@@ -114,7 +112,7 @@
 #
 # Example of macro use:
 #
-#    _owner = gjanee and _ark and _real and not _shadowArk
+#    _owner = gjanee and _ark and _real and not _exported
 #
 # This script requires an EZID module.  The PYTHONPATH environment
 # variable must include the .../SITE_ROOT/PROJECT_ROOT/code directory;
@@ -137,7 +135,7 @@ except ImportError:
     os.path.abspath(__file__))[0])[0], "code"))
   import util
 
-# Globals defined below...
+# Globals set below...
 options = None
 idmap = None
 
@@ -159,7 +157,7 @@ class FieldConstraint (Constraint):
         isRelationalOperator(operator) and type(value) is int
     else:
       assert type(field) is str
-      if field in ["_created", "_updated"]:
+      if field in ["_c", "_created", "_u", "_updated"]:
         assert isRelationalOperator(operator) and type(value) is tuple and\
           len(value) == 2 and type(value[0]) is int and type(value[1]) is str
       elif field == "_fields":
@@ -169,7 +167,7 @@ class FieldConstraint (Constraint):
           (operator == "=~" and type(value).__name__ == "SRE_Pattern")
     self.field = field
     self.operator = operator
-    if field in ["_created", "_updated"]:
+    if field in ["_c", "_created", "_u", "_updated"]:
       self.value = value[0]
       self.precision = value[1]
     else:
@@ -179,14 +177,16 @@ class FieldConstraint (Constraint):
       v = 0
       for k in record:
         if not k.startswith("_") and self.field[1].match(k): v += 1
-    elif self.field in ["_created", "_updated"]:
+    elif self.field in ["_c", "_created", "_u", "_updated"]:
+      if self.field not in record: return False
       if self.precision == "YMDHMS":
         v = int(record[self.field])
       else:
         t = time.localtime(int(record[self.field]))
         v = int(time.mktime((t.tm_year, t.tm_mon, t.tm_mday, 0, 0, 0, 0,
           1, -1)))
-    elif self.field in ["_owner", "_ownergroup"] and options.idmap:
+    elif self.field in ["_o", "_owner", "_g", "_ownergroup"] and options.idmap:
+      if self.field not in record: return False
       v = idmap.get(record[self.field], record[self.field])
     elif self.field == "_fields":
       v = record
@@ -248,20 +248,23 @@ def replaceMacro (query):
   elif query[0] == "_doi":
     e = "_id =~ /doi:/"
   elif query[0] == "_exported":
-    e = "( _export = yes or not _fields contains _export )"
+    e = "( _export = yes or ( not _fields contains _export and not _fields " +\
+      "contains _x ) )"
   elif query[0] == "_minimumDatacite":
     e = "( _fields contains datacite or ( ( _fields contains " +\
-      "datacite.creator or ( _profile = erc and ( _fields contains erc.who " +\
-      "or ( _fields contains erc and erc =~ /.*^who:/ms ) ) ) or ( " +\
-      "_profile = dc and _fields contains dc.creator ) ) and ( _fields " +\
-      "contains datacite.title or ( _profile = erc and ( _fields contains " +\
-      "erc.what or ( _fields contains erc and erc =~ /.*^what:/ms ) ) ) or " +\
-      "( _profile = dc and _fields contains dc.title ) ) and ( _fields " +\
-      "contains datacite.publisher or ( _profile = dc and _fields contains " +\
-      "dc.publisher ) ) and ( _fields contains datacite.publicationyear " +\
-      "or ( _profile = erc and ( _fields contains erc.when or ( _fields " +\
-      "contains erc and erc =~ /.*^when:/ms ) ) ) or ( _profile = dc and " +\
-      "_fields contains dc.date ) ) ) )"
+      "datacite.creator or ( ( _p = erc or _profile = erc ) and ( _fields " +\
+      "contains erc.who or ( _fields contains erc and erc =~ /.*^who:/ms " +\
+      ") ) ) or ( ( _p = dc or _profile = dc ) and _fields contains " +\
+      "dc.creator ) ) and ( _fields contains datacite.title or ( ( _p = " +\
+      "erc or _profile = erc ) and ( _fields contains erc.what or ( " +\
+      "_fields contains erc and erc =~ /.*^what:/ms ) ) ) or ( ( _p = dc " +\
+      "or _profile = dc ) and _fields contains dc.title ) ) and ( _fields " +\
+      "contains datacite.publisher or ( ( _p = dc or _profile = dc ) and " +\
+      "_fields contains dc.publisher ) ) and ( _fields contains " +\
+      "datacite.publicationyear or ( ( _p = erc or _profile = erc ) and " +\
+      "( _fields contains erc.when or ( _fields contains erc and erc =~ " +\
+      "/.*^when:/ms ) ) ) or ( ( _p = dc or _profile = dc ) and _fields " +\
+      "contains dc.date ) ) ) )"
   elif query[0] == "_numDataciteFields":
     e = "_numFields /datacite($|\\.)/"
   elif query[0] == "_numDublinCoreFields":
@@ -269,18 +272,16 @@ def replaceMacro (query):
   elif query[0] == "_numErcFields":
     e = "_numFields /erc($|\\.)/"
   elif query[0] == "_public":
-    e = "( _status = public or not _fields contains _status )"
+    e = "( _status = public or ( not _fields contains _status and not " +\
+      "_fields contains _is ) )"
   elif query[0] == "_real":
     e = "not _test"
   elif query[0] == "_reserved":
-    e = "_status = reserved"
-  elif query[0] == "_shadowArk":
-    e = "_fields contains _shadows"
+    e = "( _status = reserved or _is = reserved )"
   elif query[0] == "_test":
-    e = "( _id =~ /ark:\\/99999\\/fk4/ or _id =~ /doi:10\\.5072\\/FK2/ or " +\
-      "_id =~ /ark:\\/b5072\\/fk2/ )"
+    e = "( _id =~ /ark:\\/99999\\/fk4/ or _id =~ /doi:10\\.5072\\/FK2/ )"
   elif query[0] == "_unavailable":
-    e = "_status =~ /unavailable/"
+    e = "( _status =~ /unavailable/ or _is =~ /unavailable/ )"
   elif query[0] == "_uuid":
     e = "_id =~ /uuid:/"
   else:
@@ -337,7 +338,7 @@ def consumeConstraint (consumed, query):
       o = consumeOperator(consumed, query, isRelationalOperator, "relational")
       r = consumeInteger(consumed, query)
     else:
-      if l in ["_created", "_updated"]:
+      if l in ["_c", "_created", "_u", "_updated"]:
         o = consumeOperator(consumed, query, isRelationalOperator,
           "relational")
         r = consumeTimestamp(consumed, query)
@@ -448,9 +449,6 @@ else:
   infile = sys.stdin
 
 for l in infile:
-  lv = l[:-1].split(" ")
-  record = { "_id": lv[0] }
-  for i in range(1, len(lv), 2):
-    v = util.decode(lv[i+1]).strip()
-    if v != "": record[util.decode(lv[i])] = v
+  id, record = util.fromExchange(l, True)
+  record["_id"] = id
   if constraint.evaluate(record): print l,
