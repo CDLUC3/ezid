@@ -1,0 +1,50 @@
+#! /usr/bin/env python
+
+# Dumps DOIs belonging to one or more DataCite datacenters to standard
+# output.
+#
+# Usage: dump-datacite datacenter...
+#
+# The output format is CSV with three columns: identifier (in
+# qualified, normalized form), datacenter symbol (e.g., "CDL.CDL"),
+# and Base64-encoded DataCite XML metadata.
+#
+# Note that DataCite currently returns public DOIs only.  Unavailable
+# identifiers are marked as inactive in DataCite, and as a result are
+# not returned (and reserved identifiers are not registered with
+# DataCite at all).
+#
+# This script requires an EZID module.  The PYTHONPATH environment
+# variable must include the .../SITE_ROOT/PROJECT_ROOT/code directory;
+# if it doesn't, we attempt to dynamically locate it and add it.
+#
+# Greg Janee <gjanee@ucop.edu>
+# February 2018
+
+import csv
+import json
+import os.path
+import urllib2
+import sys
+
+try:
+  import util
+except ImportError:
+  sys.path.append(os.path.join(os.path.split(os.path.split(
+    os.path.abspath(__file__))[0])[0], "code"))
+  import util
+
+template = "https://api.datacite.org/works?data-center-id=%s" +\
+  "&page[size]=500&page[number]=%d"
+
+w = csv.writer(sys.stdout)
+
+for dc in sys.argv[1:]:
+  p = 1
+  while True:
+    j = json.loads(urllib2.urlopen(template % (dc, p)).read())
+    if len(j["data"]) == 0: break
+    for r in j["data"]:
+      id = "doi:" + util.validateDoi(r["attributes"]["doi"])
+      w.writerow([id, dc, r["attributes"]["xml"]])
+    p += 1
