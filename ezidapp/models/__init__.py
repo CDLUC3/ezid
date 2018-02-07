@@ -50,4 +50,5 @@ getProfileByLabel = store_profile.getByLabel
 getProfileById = store_profile.getById
 
 def getIdentifier (identifier):
-  return StoreIdentifier.objects.get(identifier=identifier)
+  return StoreIdentifier.objects.select_related("owner", "owner__group",
+    "ownergroup", "datacenter", "profile").get(identifier=identifier)
