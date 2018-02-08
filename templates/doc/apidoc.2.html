@@ -40,6 +40,7 @@ only) to ask questions or report problems:</p>
 <li><a class="reference internal" href="#operation-update-identifier">Operation: update identifier</a></li>
 <li><a class="reference internal" href="#operation-create-or-update-identifier">Operation: create or update identifier</a></li>
 <li><a class="reference internal" href="#operation-delete-identifier">Operation: delete identifier</a></li>
+<li><a class="reference internal" href="#suffix-passthrough-prefix-matching">Suffix passthrough / prefix matching</a></li>
 <li><a class="reference internal" href="#ownership-model">Ownership model</a></li>
 <li><a class="reference internal" href="#identifier-status">Identifier status</a></li>
 <li><a class="reference internal" href="#internal-metadata">Internal metadata</a></li>
@@ -442,6 +443,8 @@ elements is undefined.  Element names beginning with an underscore
 (&quot;_&quot;, U+005F) are reserved for use by EZID; their meanings are
 described in <a class="reference internal" href="#internal-metadata">Internal metadata</a> below.  Some elements may be drawn
 from citation metadata standards; see <a class="reference internal" href="#metadata-profiles">Metadata profiles</a> below.</p>
+<p>EZID also supports a more flexible identifier lookup operation; see
+<a class="reference internal" href="#suffix-passthrough-prefix-matching">Suffix passthrough / prefix matching</a> below.</p>
 </div>
 <div class="section" id="operation-create-identifier">
 <h1>Operation: create identifier</h1>
@@ -599,6 +602,41 @@ other users may delete the identifier (see <a class="reference internal" href="#
 <p>The return is a status line.  Assuming success (see <a class="reference internal" href="#error-reporting">Error reporting</a>
 above), the remainder of the status line echoes the canonical form of
 the identifier just deleted.</p>
+</div>
+<div class="section" id="suffix-passthrough-prefix-matching">
+<h1>Suffix passthrough / prefix matching</h1>
+<p>The <a class="reference external" href="https://n2t.net/">N2T</a> <span class="ext-icon"></span> resolver—the principal resolver for
+ARK identifiers—supports &quot;suffix passthrough,&quot; a capability
+that allows an identifier to be resolved even if it has not been
+explicitly registered, so long as some prefix of the identifier has.
+In such a case, N2T locates the longest matching prefix (the &quot;root&quot;
+identifier) and appends the extra characters in the supplied
+identifier (the &quot;suffix&quot;) to the root identifier's target URL before
+redirecting.  For example, if identifier ark:/99999/fk4/root has been
+registered with EZID and has target URL http://www.cdlib.org, then N2T
+resolves ark:/99999/fk4/root<span class="hl1">/andmore</span> to
+http://www.cdlib.org<span class="hl1">/andmore</span>.  The capability is so-named
+because the suffix is effectively &quot;passed through&quot; to the receiving
+server.</p>
+<p>EZID supports a similar capability.  If a request to view identifier
+metadata (see <a class="reference internal" href="#operation-get-identifier-metadata">Operation: get identifier metadata</a> above) is
+accompanied by a prefix_match=yes URL query parameter, then EZID
+returns metadata for the longest matching identifier (if there is
+one).  If an identifier other than the one requested is returned, the
+status line includes a note to that effect.  Here is a sample
+interaction that continues the previous example:</p>
+<pre class="literal-block">
+⇒ GET /id/ark:/99999/fk4/root/andmore?prefix_match=yes HTTP/1.1
+⇒ Host: ezid.cdlib.org
+
+⇐ HTTP/1.1 200 OK
+⇐ Content-Type: text/plain; charset=UTF-8
+⇐ Content-Length: 244
+⇐
+⇐ success: ark:/99999/fk4/root in_lieu_of ark:/99999/fk4/root/andmore
+⇐ _target: http://www.cdlib.org
+⇐ ...
+</pre>
 </div>
 <div class="section" id="ownership-model">
 <h1>Ownership model</h1>

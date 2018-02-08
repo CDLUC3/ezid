@@ -5,6 +5,7 @@
 .. |lArr| unicode:: U+021D0 .. leftwards double arrow
 .. |rArr| unicode:: U+021D2 .. rightwards double arrow
 .. |X| unicode:: U+02713 .. check mark
+.. |emdash| unicode:: U+2014 .. em dash
 
 .. _ANVL: https://wiki.ucop.edu/display/Curation/Anvl
 .. _Apache Commons Codec: http://commons.apache.org/codec/
@@ -26,6 +27,7 @@
 .. _ezid.py: ezid.py
 .. _gzip: http://www.gzip.org/
 .. _libwww-perl: http://search.cpan.org/dist/libwww-perl/
+.. _N2T: https://n2t.net/
 .. _OAI-PMH: http://www.openarchives.org/OAI/openarchivesprotocol.html
 .. _percent-encoding: http://en.wikipedia.org/wiki/Percent-encoding
 .. _REST-style: http://oreilly.com/catalog/9780596529260
@@ -72,6 +74,7 @@ Contents
 - `Operation: update identifier`_
 - `Operation: create or update identifier`_
 - `Operation: delete identifier`_
+- `Suffix passthrough / prefix matching`_
 - `Ownership model`_
 - `Identifier status`_
 - `Internal metadata`_
@@ -495,6 +498,9 @@ elements is undefined.  Element names beginning with an underscore
 described in `Internal metadata`_ below.  Some elements may be drawn
 from citation metadata standards; see `Metadata profiles`_ below.
 
+EZID also supports a more flexible identifier lookup operation; see
+`Suffix passthrough / prefix matching`_ below.
+
 Operation: create identifier
 ----------------------------
 
@@ -672,6 +678,44 @@ Here's a sample interaction:
 The return is a status line.  Assuming success (see `Error reporting`_
 above), the remainder of the status line echoes the canonical form of
 the identifier just deleted.
+
+Suffix passthrough / prefix matching
+------------------------------------
+
+The N2T_ `\ `:ext-icon: resolver\ |emdash|\ the principal resolver for
+ARK identifiers\ |emdash|\ supports "suffix passthrough," a capability
+that allows an identifier to be resolved even if it has not been
+explicitly registered, so long as some prefix of the identifier has.
+In such a case, N2T locates the longest matching prefix (the "root"
+identifier) and appends the extra characters in the supplied
+identifier (the "suffix") to the root identifier's target URL before
+redirecting.  For example, if identifier ark:/99999/fk4/root has been
+registered with EZID and has target URL http://www.cdlib.org, then N2T
+resolves ark:/99999/fk4/root\ `/andmore`:hl1: to
+\http://www.cdlib.org\ `/andmore`:hl1:.  The capability is so-named
+because the suffix is effectively "passed through" to the receiving
+server.
+
+EZID supports a similar capability.  If a request to view identifier
+metadata (see `Operation: get identifier metadata`_ above) is
+accompanied by a prefix_match=yes URL query parameter, then EZID
+returns metadata for the longest matching identifier (if there is
+one).  If an identifier other than the one requested is returned, the
+status line includes a note to that effect.  Here is a sample
+interaction that continues the previous example:
+
+.. parsed-literal::
+
+  |rArr| GET /id/ark:/99999/fk4/root/andmore?prefix_match=yes HTTP/1.1
+  |rArr| Host: ezid.cdlib.org
+
+  |lArr| HTTP/1.1 200 OK
+  |lArr| Content-Type: text/plain; charset=UTF-8
+  |lArr| Content-Length: 244
+  |lArr|
+  |lArr| success: ark:/99999/fk4/root in_lieu_of ark:/99999/fk4/root/andmore
+  |lArr| _target: \http://www.cdlib.org
+  |lArr| ...
 
 Ownership model
 ---------------
