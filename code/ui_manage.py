@@ -57,7 +57,7 @@ def _defaultUser(user):
   return 'all' if user.isSuperuser else "group_" + user.group.groupname \
     if user.isGroupAdministrator else "user_" + user.username
 
-def _getLatestMetadata(identifier, request):
+def _getLatestMetadata(identifier, request, prefixMatch=False):
   """
   The successful return is a pair (status, dictionary) where 'status' is a 
   string that includes the canonical, qualified form of the identifier, as in:
@@ -65,7 +65,7 @@ def _getLatestMetadata(identifier, request):
   and 'dictionary' contains element (name, value) pairs.
   """
   return ezid.getMetadata(identifier,
-    userauth.getUser(request, returnAnonymous=True))
+    userauth.getUser(request, returnAnonymous=True), prefixMatch)
 
 def _updateEzid(request, d, stts, m_to_upgrade=None):
   """
@@ -233,7 +233,8 @@ def details(request):
   d["testPrefixes"] = uic.testPrefixes
   my_path = "/id/"
   identifier = request.path_info[len(my_path):]
-  r = _getLatestMetadata(identifier, request)
+  r = _getLatestMetadata(identifier, request,
+    prefixMatch=(request.GET.get("prefix_match", "no").lower() == "yes"))
   if type(r) is str:
     django.contrib.messages.error(request, uic.formatError(r + ":&nbsp;&nbsp;" + identifier))
     # ToDo: Pass details in from previous screen so we know where to send redirect back to
@@ -243,6 +244,11 @@ def details(request):
       return redirect("ui_home.index")
   s, id_metadata = r
   assert s.startswith("success:")
+  if " in_lieu_of " in s:
+    newid = s.split()[1]
+    django.contrib.messages.info(request,
+      "Identifier %s returned in lieu of %s." % (newid, identifier))
+    return redirect("/id/" + urllib.quote(newid, ":/"))
   d['allow_update'] = policy.authorizeUpdateLegacy(userauth.getUser(request, returnAnonymous=True),
     id_metadata["_owner"], id_metadata["_ownergroup"])
   d['identifier'] = id_metadata 

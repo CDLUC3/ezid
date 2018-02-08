@@ -24,7 +24,8 @@
 #     m[int] shoulder [element value ...]
 #     c[reate][!] identifier [element value ...]
 #       create! = create or update
-#     v[iew] identifier
+#     v[iew][!] identifier
+#       view! = match longest identifier prefix
 #     u[pdate] identifier [element value ...]
 #     d[elete] identifier
 #     login
@@ -74,7 +75,7 @@ OPERATIONS = {
   # operation: (number of arguments, accepts bang)
   "mint": (lambda l: l%2 == 1, False),
   "create": (lambda l: l%2 == 1, True),
-  "view": (1, False),
+  "view": (1, True),
   "update": (lambda l: l%2 == 1, False),
   "delete": (1, False),
   "login": (0, False),
@@ -100,7 +101,8 @@ USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
     m[int] shoulder [element value ...]
     c[reate][!] identifier [element value ...]
       create! = create or update
-    v[iew] identifier
+    v[iew][!] identifier
+      view! = match longest identifier prefix
     u[pdate] identifier [element value ...]
     d[elete] identifier
     login
@@ -273,7 +275,9 @@ elif operation == "create":
   printAnvlResponse(response)
 elif operation == "view":
   id = args[0]
-  response = issueRequest("id/"+encode(id), "GET")
+  path = "id/"+encode(id)
+  if bang: path += "?prefix_match=yes"
+  response = issueRequest(path, "GET")
   printAnvlResponse(response, sortLines=True)
 elif operation == "update":
   id = args[0]

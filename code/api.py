@@ -25,6 +25,7 @@
 #
 # View an identifier:
 #   GET /id/{identifier}   [authentication optional]
+#     ?prefix_match={yes|no}
 #   response body: status line, metadata
 #
 # Update an identifier:
@@ -227,12 +228,15 @@ def _getMetadata (request):
   assert request.path_info.startswith("/id/")
   user = userauth.authenticateRequest(request)
   if type(user) is str: return _response(user)
-  options = _validateOptions(request, {})
+  options = _validateOptions(request,
+    { "prefix_match": [("yes", True), ("no", False)] })
   if type(options) is str: return _response(options)
   if user != None:
-    r = ezid.getMetadata(request.path_info[4:], user)
+    r = ezid.getMetadata(request.path_info[4:], user,
+      prefixMatch=options.get("prefix_match", False))
   else:
-    r = ezid.getMetadata(request.path_info[4:])
+    r = ezid.getMetadata(request.path_info[4:],
+      prefixMatch=options.get("prefix_match", False))
   if type(r) is str:
     if r.startswith("error: forbidden"):
       if user != None:

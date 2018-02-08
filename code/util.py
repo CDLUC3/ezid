@@ -278,6 +278,32 @@ def normalizeIdentifier (identifier):
   else:
     return id
 
+def explodePrefixes (identifier):
+  """
+  Given a normalized, qualified identifier (e.g., "ark:/12345/x/yz"),
+  returns a list of all prefixes of the identifier that are
+  syntactically valid identifiers (e.g., ["ark:/12345/x",
+  "ark:/12345/x/y", "ark:/12345/x/yz"]).
+  """
+  if identifier.startswith("ark:/"):
+    id = identifier[5:]
+    predicate = validateArk
+    prefix = "ark:/"
+  elif identifier.startswith("doi:"):
+    id = identifier[4:]
+    predicate = validateDoi
+    prefix = "doi:"
+  elif identifier.startswith("uuid:"):
+    id = identifier[5:]
+    predicate = validateUuid
+    prefix = "uuid:"
+  else:
+    assert False, "unhandled case"
+  l = []
+  for i in range(1, len(id)+1):
+     if predicate(id[:i]) == id[:i]: l.append(prefix + id[:i])
+  return l
+
 def _encode (pattern, s):
   return pattern.sub(lambda c: "%%%02X" % ord(c.group(0)), s.encode("UTF-8"))
 

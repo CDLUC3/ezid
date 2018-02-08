@@ -260,7 +260,8 @@ def createIdentifier (identifier, user, metadata={}, updateIfExists=False):
   finally:
     _releaseIdentifierLock(nqidentifier, user.username)
 
-def getMetadata (identifier, user=ezidapp.models.AnonymousUser):
+def getMetadata (identifier, user=ezidapp.models.AnonymousUser,
+  prefixMatch=False):
   """
   Returns all metadata for a given qualified identifier, e.g.,
   "doi:10.5060/FOO".  'user' is the requestor and should be an
@@ -277,6 +278,13 @@ def getMetadata (identifier, user=ezidapp.models.AnonymousUser):
     error: bad request - subreason...
     error: internal server error
     error: concurrency limit exceeded
+
+  If 'prefixMatch' is true, prefix matching is enabled and the
+  returned identifier is the longest identifier that matches a
+  (possibly proper) prefix of the requested identifier.  In such a
+  case, the status string resembles:
+
+    success: doi:10.5060/FOO in_lieu_of doi:10.5060/FOOBAR
   """
   nqidentifier = util.normalizeIdentifier(identifier)
   if nqidentifier == None: return "error: bad request - invalid identifier"
@@ -285,8 +293,8 @@ def getMetadata (identifier, user=ezidapp.models.AnonymousUser):
     return "error: concurrency limit exceeded"
   try:
     log.begin(tid, "getMetadata", nqidentifier, user.username, user.pid,
-      user.group.groupname, user.group.pid)
-    si = ezidapp.models.getIdentifier(nqidentifier)
+      user.group.groupname, user.group.pid, str(prefixMatch))
+    si = ezidapp.models.getIdentifier(nqidentifier, prefixMatch)
     if not policy.authorizeView(user, si):
       log.forbidden(tid)
       return "error: forbidden"
@@ -294,7 +302,10 @@ def getMetadata (identifier, user=ezidapp.models.AnonymousUser):
     util2.convertLegacyToExternal(d)
     if si.isDoi: d["_shadowedby"] = si.arkAlias
     log.success(tid)
-    return ("success: " + nqidentifier, d)
+    if prefixMatch and si.identifier != nqidentifier:
+      return ("success: %s in_lieu_of %s" % (si.identifier, nqidentifier), d)
+    else:
+      return ("success: " + nqidentifier, d)
   except ezidapp.models.StoreIdentifier.DoesNotExist:
     log.badRequest(tid)
     return "error: bad request - no such identifier"
