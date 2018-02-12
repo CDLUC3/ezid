@@ -151,15 +151,12 @@ def doComparison (doi, metadata):
   if not options.skipTargetUrls:
     url = handle_system.getRedirect(doi[4:])
     if url != None:
-      # We have to take into account that some older EZID target URLs
-      # specify http, not https.
       if metadata["_status"] == "public":
-        if metadata["_export"] == "yes" and url != metadata["_target"]:
+        if url != metadata["_target"]:
           error += ", target URL mismatch in Handle System"
-        elif metadata["_export"] == "no" and\
-          toHttps(url) != util2.defaultTargetUrl(doi):
-          error += ", has non-default target URL in Handle System"
       else:
+        # We have to take into account that some older EZID target
+        # URLs specify http, not https.
         if toHttps(url) != util2.tombstoneTargetUrl(doi):
           error += ", has non-tombstone target URL in Handle System"
     else:
