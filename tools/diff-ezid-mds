@@ -1,13 +1,11 @@
 #! /usr/bin/env python
 
-# Compares EZID and the DataCite Metadata Store (MDS)
-# <https://mds.datacite.org/> and reports missing identifiers and
-# mismatched identifier metadata.  Specifically, compares the
-# non-reserved, non-test DOI identifiers in EZID (as obtained from an
-# EZID raw dump) with the non-test identifiers in MDS (as obtained
-# from a DataCite search system query).  Additionally, target URLs in
-# EZID are compared with URLs in the Handle System
-# <http://dx.doi.org/>.
+# Compares EZID DOI metadata (as obtained from an EZID raw dump) with
+# DataCite <https://datacite.org/> DOI metadata (as obtained from a
+# DataCite search system query) and Handle System
+# <https://dx.doi.org/> target URLs.  Only target URLs for
+# non-reserved, non-test identifiers are compared; and only metadata
+# for public, exported, non-test identifiers is compared.
 #
 # Usage: diff-ezid-mds [options] dumpfile queryfile
 #
@@ -19,23 +17,8 @@
 # 'dumpfile' should be a raw EZID dump.  If the filename ends with
 # ".gz", the dump is assumed to be gzip-compressed.
 #
-# 'queryfile' should be the output from running a DataCite search
-# system query such as:
-#
-# http://search.datacite.org/api?q=*:*&fq=datacentre_symbol:CDL.CDL
-#   &wt=csv&fl=doi,datacentre_symbol,xml&csv.header=false&rows=1000000
-#
-# In terms of format, 'queryfile' should be an uncompressed,
-# headerless, comma-separated CSV file with three columns: identifier
-# (schemeless and normalized, e.g., "10.5060/FOO"), datacenter (e.g.,
-# "CDL.CDL"), and DataCite XML record (base64 encoded).
-#
-# This script assumes that a query such as the above returns both
-# active and inactive identifiers, and that an identifier is inactive
-# iff its metadata record is empty (in 'queryfile' at least).  This
-# script also assumes that the metadata in 'queryfile' is exactly as
-# EZID uploaded it, which is to say, once base64 decoded, UTF-8
-# encoded.
+# 'queryfile' should be a CSV file obtained from running
+# 'dump-datacite'.
 #
 # The EZID dump and DataCite query must match in terms of scope.  If
 # the dump represents all identifiers in EZID, then the query should
@@ -53,21 +36,19 @@
 
 import base64
 import gzip
+import lxml.etree
 import optparse
 import os.path
 import sys
-import urllib
-import urllib2
 
 # The following must precede any EZID module imports:
 execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
   "offline.py"))
 
-import config
 import datacite
+import handle_system
 import util
-
-testShoulder = config.get("shoulders.doi_test")[4:]
+import util2
 
 parser = optparse.OptionParser(usage="%prog [options] dumpfile queryfile")
 parser.add_option("-p", action="store_true", dest="printProgress",
@@ -91,51 +72,15 @@ def unpackMdsRow (row):
   # We don't use Python's 'csv' module since we're going to want to
   # track file seek positions below.  There can't be a comma in base64
   # encoding or in a datacenter name, ergo...
-  doi, datacenter, metadata = row[:-1].rsplit(",", 2)
+  doi, datacenter, metadata = row.strip().rsplit(",", 2)
   if doi.startswith('"'):
     assert doi.endswith('"'), "queryfile error: quoting anomaly"
     doi = doi[1:-1].replace('""', '"')
   assert len(doi) > 0, "queryfile error: no identifier"
   assert len(datacenter) > 0, "queryfile error: no datacenter"
-  if len(metadata) > 0: metadata = base64.b64decode(metadata).decode("UTF-8")
+  assert len(metadata) > 0, "queryfile error: no metadata"
+  metadata = base64.b64decode(metadata).decode("UTF-8")
   return (doi, datacenter, metadata)
-
-def decodeEzidRecord (record):
-  v = record[:-1].split(" ")
-  d = { "_id": v[0] }
-  for i in range(1, len(v), 2): d[util.decode(v[i])] = util.decode(v[i+1])
-  if "_is" not in d: d["_is"] = "public"
-  if "_x" not in d: d["_x"] = "yes"
-  return d
-
-def tombstoneUrl (doi):
-  return "https://ezid.cdlib.org/tombstone/id/doi:" + urllib.quote(doi, ":/")
-
-class RedirectCatcher (urllib2.HTTPRedirectHandler):
-  def redirect_request (self, req, fp, code, msg, headers, newurl):
-    raise urllib2.HTTPError(req.get_full_url(), code, "redirect", headers, fp)
-
-def getTargetUrl (doi):
-  # Returns the target URL for an identifier as recorded with the
-  # global DOI resolver (dx.doi.org), or None if the identifier isn't
-  # found.
-  o = urllib2.build_opener(RedirectCatcher())
-  r = urllib2.Request("http://dx.doi.org/" + urllib.quote(doi, ":/"))
-  c = None
-  try:
-    c = o.open(r)
-    c.read()
-  except urllib2.HTTPError, e:
-    if e.code in [301, 302, 303, 307]:
-      return e.headers["location"]
-    elif e.code == 404:
-      return None
-    else:
-      raise
-  else:
-    assert False, "expecting a redirect from dx.doi.org"
-  finally:
-    if c: c.close()
 
 def progress (s):
   if options.printProgress:
@@ -152,94 +97,99 @@ mdsDois = {}
 seekPosition = 0
 for row in mdsFile:
   doi, datacenter, metadata = unpackMdsRow(row)
-  if not doi.startswith(testShoulder):
+  if not util2.isTestIdentifier(doi):
     assert doi not in mdsDois, "duplicate identifier in queryfile"
     mdsDois[doi] = seekPosition
   seekPosition += len(row)
 
-# Pass 2.  Check that each non-reserved, non-test DOI identifier in
-# EZID matches its counterpart in MDS.  After the check, the
-# identifier is removed from 'mdsDois'.
+# Pass 2.  Compare.  After identifiers are processed they are removed
+# from 'mdsDois'.
 
 progress("pass 2")
 
+def compareXml (node1, node2):
+  # Returns True if two XML element trees have the same structure and
+  # same element order; the same attributes and attribute values; and
+  # the same textual content.  Attribute order and surrounding and
+  # interstitial whitespace are allowed to differ.
+  if node1.tag != node2.tag: return False
+  if node1.attrib != node2.attrib: return False
+  if (node1.text or "").strip() != (node2.text or "").strip(): return False
+  if (node1.tail or "").strip() != (node2.tail or "").strip(): return False
+  if len(node1) != len(node2): return False
+  for c1, c2 in zip(node1.iterchildren(), node2.iterchildren()):
+    if not compareXml(c1, c2): return False
+  return True
+
 def doComparison (doi, metadata):
   error = ""
-  if doi not in mdsDois:
-    error += ", not in MDS"
-  else:
-    mdsFile.seek(mdsDois[doi])
-    mdsDatacenter, mdsMetadata = unpackMdsRow(mdsFile.readline())[1:3]
-    if mdsDatacenter != metadata["_d"]: error += ", datacenter mismatch"
-    if metadata["_is"] == "public" and metadata["_x"] == "yes":
-      if len(mdsMetadata) == 0:
-        error += ", has no metadata in MDS"
-      else:
-        # Re-create what we uploaded.  This is slightly complicated by
-        # the fact that the schema version of our internal template
-        # was incremented from 2.2 to 3 at some point.
-        ezidMetadata = datacite.formRecord("doi:" + doi, metadata)
-        if ezidMetadata != mdsMetadata:
-          mdsMetadata = mdsMetadata.replace(
-            "http://datacite.org/schema/kernel-2.2",
-            "http://datacite.org/schema/kernel-3").replace(
-            "http://schema.datacite.org/meta/kernel-2.2/metadata.xsd",
-            "http://schema.datacite.org/meta/kernel-3/metadata.xsd")
-          if ezidMetadata != mdsMetadata: error += ", metadata mismatch"
+  if metadata["_status"] == "public" and metadata["_export"] == "yes":
+    if doi not in mdsDois:
+      error += ", not in DataCite"
     else:
-      if len(mdsMetadata) > 0: error += ", has metadata in MDS"
+      mdsFile.seek(mdsDois[doi])
+      mdsDatacenter, mdsMetadata = unpackMdsRow(mdsFile.readline())[1:3]
+      if mdsDatacenter != metadata["_datacenter"]:
+        error += ", datacenter mismatch"
+      # The metadata comparison is complicated by the fact that
+      # different versions of the DataCite XML schema have been used
+      # over time.  And even converting to the latest version, a
+      # straight text comparison gets fooled by insignificant
+      # differences in namespace prefixes and whitespace.  So, we do a
+      # structural comparison.
+      ezidMetadata = datacite.upgradeDcmsRecord(
+        datacite.formRecord(doi, metadata), returnString=False)
+      mdsMetadata = datacite.upgradeDcmsRecord(mdsMetadata, returnString=False)
+      if not compareXml(ezidMetadata, mdsMetadata):
+        error += ", metadata mismatch"
   if not options.skipTargetUrls:
-    url = getTargetUrl(doi)
+    url = handle_system.getRedirect(doi)
     if url != None:
-      if metadata["_is"] == "public" and url != metadata["_st"]:
-        error += ", target URL mismatch in Handle System"
-      elif metadata["_is"].startswith("unavailable") and\
-        url != tombstoneUrl(doi):
-        error += ", has non-tombstone target URL in Handle System"
+      if metadata["_status"] == "public":
+        if metadata["_export"] == "yes" and url != metadata["_target"]:
+          error += ", target URL mismatch in Handle System"
+        elif metadata["_export"] == "no" and\
+          url != util2.defaultTargetUrl(doi):
+          error += ", has non-default target URL in Handle System"
+      else:
+        if url != util2.tombstoneTargetUrl(doi):
+          error += ", has non-tombstone target URL in Handle System"
     else:
       error += ", not in Handle System"
   if len(error) > 0:
-    if metadata["_is"] == "public":
+    if metadata["_status"] == "public":
       status = "public,%s exported" %\
-        ("" if metadata["_x"] == "yes" else " not")
+        ("" if metadata["_export"] == "yes" else " not")
     else:
       status = "unavailable"
     print "%s: in EZID (%s)%s" % (doi, status, error)
+    if ", metadata mismatch" in error:
+      print "\tEZID:    ",\
+        util.encode1(lxml.etree.tostring(ezidMetadata, encoding="UTF-8"))
+      print "\tDataCite:",\
+        util.encode1(lxml.etree.tostring(mdsMetadata, encoding="UTF-8"))
 
-numDois = len(mdsDois)
+numDois = max(len(mdsDois), 1)
 n = 0
 for record in ezidFile:
-  doi = None
+  id = None
   try:
-    metadata = decodeEzidRecord(record)
-    if "_s" not in metadata or not metadata["_s"].startswith("doi:") or\
-      metadata["_is"] == "reserved":
-      continue
-    doi = metadata["_s"][4:]
-    if doi.startswith(testShoulder): continue
+    id, metadata = util.fromExchange(record, True)
+    if not id.startswith("doi:"): continue
+    if util2.isTestIdentifier(id): continue
+    util2.convertLegacyToExternal(metadata, False)
+    if metadata["_status"] == "reserved": continue
     n += 1
     if n >= options.restartFrom:
       if n%1000 == 0: progress("%d (%d%%)" % (n, int(float(n*100)/numDois)))
-      doComparison(doi, metadata)
-    if doi in mdsDois: del mdsDois[doi]
+      doComparison(id, metadata)
+    if id in mdsDois: del mdsDois[id]
   except Exception, e:
-    print "exception caught during processing of %s: %s" % (doi, str(e))
+    print "exception while processing %s: %s" % (id, util.formatException(e))
 
-# Pass 3.  Any identifiers remaining in 'mdsDois' must not be in EZID.
-# That's okay, as long as they're inactive and have the "invalid DOI"
-# target URL.
+# Pass 3.  There shouldn't be any identifiers remaining in 'mdsDois'.
 
 progress("pass 3")
 
-for doi, seekPosition in mdsDois.iteritems():
-  mdsFile.seek(seekPosition)
-  metadata = unpackMdsRow(mdsFile.readline())[2]
-  error = ""
-  if len(metadata) > 0: error += ", has metadata in MDS"
-  if not options.skipTargetUrls:
-    url = getTargetUrl(doi)
-    if url == None:
-      error += ", not in Handle System"
-    elif url != "http://datacite.org/invalidDOI":
-      error += ", has non-invalid target URL in Handle System"
-  if len(error) > 0: print doi + ": not in EZID" + error
+for doi in mdsDois:
+  print doi + ": in DataCite, not in EZID"
