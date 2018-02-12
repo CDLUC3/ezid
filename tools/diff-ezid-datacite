@@ -7,7 +7,7 @@
 # non-reserved, non-test identifiers are compared; and only metadata
 # for public, exported, non-test identifiers is compared.
 #
-# Usage: diff-ezid-mds [options] dumpfile queryfile
+# Usage: diff-ezid-datacite [options] dumpfile queryfile
 #
 # Options:
 #   -p   write progress records to stderr
