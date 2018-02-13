@@ -40,6 +40,7 @@ import lxml.etree
 import optparse
 import os.path
 import sys
+import time
 
 # The following must precede any EZID module imports:
 execfile(os.path.join(os.path.split(os.path.abspath(__file__))[0],
@@ -66,6 +67,9 @@ if args[0].endswith(".gz"):
 else:
   ezidFile = open(args[0])
 mdsFile = open(args[1])
+
+def formatTimestamp (t):
+  return time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(t))
 
 def unpackMdsRow (row):
   assert row[-1] == "\n", "queryfile error: no newline"
@@ -129,6 +133,7 @@ def toHttps (url):
 
 def doComparison (doi, metadata):
   error = ""
+  diffs = []
   if metadata["_status"] == "public" and metadata["_export"] == "yes":
     if doi not in mdsDois:
       error += ", not in DataCite"
@@ -137,6 +142,8 @@ def doComparison (doi, metadata):
       mdsDatacenter, mdsMetadata = unpackMdsRow(mdsFile.readline())[1:3]
       if mdsDatacenter != metadata["_datacenter"]:
         error += ", datacenter mismatch"
+        diffs.append("< _datacenter: " + metadata["_datacenter"])
+        diffs.append("> _datacenter: " + mdsDatacenter)
       # The metadata comparison is complicated by the fact that
       # different versions of the DataCite XML schema have been used
       # over time.  And even converting to the latest version, a
@@ -148,17 +155,26 @@ def doComparison (doi, metadata):
       mdsMetadata = datacite.upgradeDcmsRecord(mdsMetadata, returnString=False)
       if not compareXml(ezidMetadata, mdsMetadata):
         error += ", metadata mismatch"
+        diffs.append("< _datacite: " +\
+          util.encode1(lxml.etree.tostring(ezidMetadata, encoding="unicode")))
+        diffs.append("> _datacite: " +\
+          util.encode1(lxml.etree.tostring(mdsMetadata, encoding="unicode")))
   if not options.skipTargetUrls:
     url = handle_system.getRedirect(doi[4:])
     if url != None:
       if metadata["_status"] == "public":
         if url != metadata["_target"]:
           error += ", target URL mismatch in Handle System"
+          diffs.append("< _target: " + util.encode1(metadata["_target"]))
+          diffs.append("> _target: " + util.encode1(url))
       else:
         # We have to take into account that some older EZID target
         # URLs specify http, not https.
         if toHttps(url) != util2.tombstoneTargetUrl(doi):
           error += ", has non-tombstone target URL in Handle System"
+          diffs.append("< _target: " +\
+            util.encode1(util2.tombstoneTargetUrl(doi)))
+          diffs.append("> _target: " + util.encode1(url))
     else:
       error += ", not in Handle System"
   if len(error) > 0:
@@ -168,11 +184,9 @@ def doComparison (doi, metadata):
     else:
       status = "unavailable"
     print "%s: in EZID (%s)%s" % (doi, status, error)
-    if ", metadata mismatch" in error:
-      print "\tEZID:    ",\
-        util.encode1(lxml.etree.tostring(ezidMetadata, encoding="UTF-8"))
-      print "\tDataCite:",\
-        util.encode1(lxml.etree.tostring(mdsMetadata, encoding="UTF-8"))
+    print "\t< _created: " + formatTimestamp(int(metadata["_created"]))
+    print "\t< _updated: " + formatTimestamp(int(metadata["_updated"]))
+    for d in diffs: print "\t" + d
 
 numDois = max(len(mdsDois), 1)
 n = 0
