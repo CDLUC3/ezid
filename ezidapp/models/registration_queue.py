@@ -42,15 +42,16 @@ class RegistrationQueue (django.db.models.Model):
   metadata = django.db.models.BinaryField()
   # The identifier's metadata dictionary, stored as a gzipped blob.
 
-  OVERWRITE = "O"
+  CREATE = "C"
+  UPDATE = "U"
   DELETE = "D"
   operation = django.db.models.CharField(max_length=1,
-    choices=[(OVERWRITE, "overwrite"), (DELETE, "delete")])
+    choices=[(CREATE, "create"), (UPDATE, "update"), (DELETE, "delete")])
   # The operation to perform.
 
   _operationMapping = {
-    "create": OVERWRITE,
-    "update": OVERWRITE,
+    "create": CREATE,
+    "update": UPDATE,
     "delete": DELETE }
 
   @staticmethod

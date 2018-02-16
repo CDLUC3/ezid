@@ -24,7 +24,11 @@ import register_async
 _daemonEnabled = [None]
 _threadName = [None]
 
-def _overwrite (sh, row, id, metadata):
+def _create (sh, row, id, metadata):
+  register_async.callWrapper(sh, row, "noid_egg.setElements",
+    noid_egg.setElements, id, metadata)
+
+def _update (sh, row, id, metadata):
   m = register_async.callWrapper(sh, row, "noid_egg.getElements",
     noid_egg.getElements, id)
   if m == None: m = {}
@@ -66,7 +70,7 @@ def _loadConfig ():
   if _daemonEnabled[0]:
     _threadName[0] = uuid.uuid1().hex
     register_async.launch("binder", ezidapp.models.BinderQueue,
-      _overwrite, _delete,
+      _create, _update, _delete,
       int(config.get("daemons.binder_num_worker_threads")),
       int(config.get("daemons.binder_processing_idle_sleep")),
       int(config.get("daemons.binder_processing_error_sleep")),

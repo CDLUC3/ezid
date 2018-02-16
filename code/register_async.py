@@ -26,12 +26,14 @@ import log
 import util
 
 class _StateHolder (object):
-  def __init__ (self, registrar, queueModel, overwriteFunction, deleteFunction,
-    idleSleep, reattemptDelay, enabledFlagHolder, threadNameHolder):
+  def __init__ (self, registrar, queueModel, createFunction, updateFunction,
+    deleteFunction, idleSleep, reattemptDelay, enabledFlagHolder,
+    threadNameHolder):
     # Configuration variables.
     self.registrar = registrar
     self.queueModel = queueModel
-    self.overwriteFunction = overwriteFunction
+    self.createFunction = createFunction
+    self.updateFunction = updateFunction
     self.deleteFunction = deleteFunction
     self.idleSleep = idleSleep
     self.reattemptDelay = reattemptDelay
@@ -139,12 +141,12 @@ def _daemonThread (sh):
 def callWrapper (sh, row, methodName, function, *args):
   """
   This function should be used by registrars to wrap calls to
-  registrar-specific overwrite and delete functions.  It hides all
+  registrar-specific create/update/delete functions.  It hides all
   transient errors (by retrying indefinitely) and raises all others.
   'sh' and 'row' are supplied by this module and should simply be
-  passed through.  'function' is the overwrite or delete function to
-  call; 'methodName' is its name for error reporting purposes.  Any
-  additional arguments are passed through to 'function'.
+  passed through.  'function' is the function to call; 'methodName' is
+  its name for error reporting purposes.  Any additional arguments are
+  passed through to 'function'.
   """
   while True:
     _checkAbort(sh)
@@ -173,10 +175,14 @@ def _workerThread (sh):
         if row != None: break
         _sleep(sh)
       try:
-        if row.operation == ezidapp.models.RegistrationQueue.OVERWRITE:
-          f = sh.overwriteFunction
-        else:
+        if row.operation == ezidapp.models.RegistrationQueue.CREATE:
+          f = sh.createFunction
+        elif row.operation == ezidapp.models.RegistrationQueue.UPDATE:
+          f = sh.updateFunction
+        elif row.operation == ezidapp.models.RegistrationQueue.DELETE:
           f = sh.deleteFunction
+        else:
+          assert False, "unhandled case"
         f(sh, row, row.identifier, util.deblobify(row.metadata))
       except _AbortException:
         raise
@@ -213,26 +219,27 @@ def enqueueIdentifier (model, identifier, operation, blob):
     operation=ezidapp.models.RegistrationQueue.operationLabelToCode(operation))
   e.save()
 
-def launch (registrar, queueModel, overwriteFunction, deleteFunction,
-  numWorkerThreads, idleSleep, reattemptDelay, enabledFlagHolder,
-  threadNameHolder):
+def launch (registrar, queueModel, createFunction, updateFunction,
+  deleteFunction, numWorkerThreads, idleSleep, reattemptDelay,
+  enabledFlagHolder, threadNameHolder):
   """
   Launches a registration thread (and subservient worker threads).
   'registrar' is the registrar the thread is for, e.g., "datacite".
   'queueModel' is the registrar's queue database model, e.g.,
-  ezidapp.models.DataciteQueue.  'overwriteFunction' and
-  'deleteFunction' are the registrar-specific functions to be called.
-  Each should accept arguments (sh, row, identifier, metadata) where
-  'identifier' is a normalized, qualified identifier, e.g.,
-  "doi:10.5060/FOO", and 'metadata' is the identifier's metadata
+  ezidapp.models.DataciteQueue.  'createFunction', 'updateFunction',
+  and 'deleteFunction' are the registrar-specific functions to be
+  called.  Each should accept arguments (sh, row, identifier,
+  metadata) where 'identifier' is a normalized, qualified identifier,
+  e.g., "doi:10.5060/FOO", and 'metadata' is the identifier's metadata
   dictionary.  Each function should wrap external HTTP calls using
   'callWrapper' above, passing through the 'sh' and 'row' arguments.
   'enabledFlagHolder' is a singleton list containing a boolean flag
   that indicates if the thread is enabled.  'threadNameHolder' is a
   singleton list containing the string name of the current thread.
   """
-  sh = _StateHolder(registrar, queueModel, overwriteFunction, deleteFunction,
-    idleSleep, reattemptDelay, enabledFlagHolder, threadNameHolder)
+  sh = _StateHolder(registrar, queueModel, createFunction, updateFunction,
+    deleteFunction, idleSleep, reattemptDelay, enabledFlagHolder,
+    threadNameHolder)
   name = threadNameHolder[0]
   t = threading.Thread(target=lambda: _daemonThread(sh), name=name)
   t.setDaemon(True)

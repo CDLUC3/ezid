@@ -73,7 +73,7 @@ def _loadConfig ():
   if _daemonEnabled[0]:
     _threadName[0] = uuid.uuid1().hex
     register_async.launch("datacite", ezidapp.models.DataciteQueue,
-      _overwrite, _delete,
+      _overwrite, _overwrite, _delete,
       int(config.get("daemons.datacite_num_worker_threads")),
       int(config.get("daemons.datacite_processing_idle_sleep")),
       int(config.get("daemons.datacite_processing_error_sleep")),
