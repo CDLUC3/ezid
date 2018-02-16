@@ -115,15 +115,24 @@ def setElements (identifier, d):
   given in a dictionary that maps names to values.  Raises an
   exception on error.
   """
+  batchSetElements({ identifier: d })
+
+def batchSetElements (batch):
+  """
+  Similar to 'setElements' above, but operates on multiple identifiers
+  in one request.  'batch' should be a dictionary that maps
+  identifiers to name/value dictionaries.
+  """
   l = []
-  for e, v in d.items():
-    e = e.strip()
-    assert len(e) > 0, "empty label"
-    v = v.strip()
-    if v == "":
-      l.append((identifier, "rm", e))
-    else:
-      l.append((identifier, "set", e, v))
+  for identifier, d in batch.items():
+    for e, v in d.items():
+      e = e.strip()
+      assert len(e) > 0, "empty label"
+      v = v.strip()
+      if v == "":
+        l.append((identifier, "rm", e))
+      else:
+        l.append((identifier, "set", e, v))
   s = _issue("POST", l)
   assert len(s) >= 2 and s[-2] == "egg-status: 0\n", _error("set/rm", s)
 
