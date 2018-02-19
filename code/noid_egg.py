@@ -115,16 +115,16 @@ def setElements (identifier, d):
   given in a dictionary that maps names to values.  Raises an
   exception on error.
   """
-  batchSetElements({ identifier: d })
+  batchSetElements([(identifier, d)])
 
 def batchSetElements (batch):
   """
   Similar to 'setElements' above, but operates on multiple identifiers
-  in one request.  'batch' should be a dictionary that maps
-  identifiers to name/value dictionaries.
+  in one request.  'batch' should be a list of (identifier, name/value
+  dictionary) tuples.
   """
   l = []
-  for identifier, d in batch.items():
+  for identifier, d in batch:
     for e, v in d.items():
       e = e.strip()
       assert len(e) > 0, "empty label"
@@ -182,6 +182,18 @@ def deleteIdentifier (identifier):
   # See the comment under 'identifierExists' above.
   assert not identifierExists(identifier),\
     "noid egg 'purge' operation on %s left remaining bindings" % identifier
+
+def batchDeleteIdentifier (batch):
+  """
+  Similar to 'deleteIdentifier' above, but deletes a list of
+  identifiers in one request.
+  """
+  # The following code does not verify that all bindings have been
+  # removed as 'deleteIdentifier' does above.  But that code is just a
+  # guard against noid API changes, and having it in one place is
+  # sufficient.
+  s = _issue("POST", [(identifier, "purge") for identifier in batch])
+  assert len(s) >= 2 and s[-2] == "egg-status: 0\n", _error("purge", s)
 
 def ping ():
   """
