@@ -1327,6 +1327,9 @@ will appear as doi:10.15697/10.5072/FK2TEST in Crossref.
 All user accounts are permitted to create test identifiers.  EZID also
 provides an "apitest" account that is permitted to create only test
 identifiers.  `Contact UC3`_ for the password for this account.
+Additionally, please `Contact UC3`_ before embarking on any
+large-scale testing, specifically, before creating more than 10,000
+test identifiers.
 
 Test identifiers and reserved identifiers are orthogonal concepts.  A
 test identifier has a limited lifetime and is deleted by EZID when it
