@@ -594,7 +594,8 @@ Create ID tab.  The request and response bodies are identical.
 
 EZID automatically embeds the newly-minted identifier in certain types
 of uploaded metadata.  See `Metadata profiles`_ below for when this is
-performed.
+performed.  Additionally, EZID replaces all occurrences of the string
+"${identifier}" in the target URL with the newly-minted identifier.
 
 Operation: update identifier
 ----------------------------

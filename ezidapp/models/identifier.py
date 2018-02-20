@@ -18,6 +18,7 @@ import django.core.validators
 import django.db.models
 import re
 import time
+import urllib
 
 import custom_fields
 import util
@@ -352,6 +353,12 @@ class Identifier (django.db.models.Model):
           { "crossrefMessage": "Non-DOI identifier has nonempty " +\
           "Crossref message." })
     if self.target == "": self.target = self.defaultTarget
+    if "${identifier}" in self.target:
+      # Insert the identifier in the target URL... but for safety,
+      # ensure that the resulting URL is still valid.
+      self.target = self.target.replace("${identifier}",
+        urllib.quote(self.identifier, ":/"))
+      self._meta.get_field("target").run_validators(self.target)
     # Per RFC 3986, URI schemes are case-insensitive, but some systems
     # we interact with require the scheme to be lowercase.
     scheme, rest = self.target.split(":", 1)

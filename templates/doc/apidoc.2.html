@@ -529,7 +529,8 @@ is required; and permissions can be viewed in the EZID UI under the
 Create ID tab.  The request and response bodies are identical.</p>
 <p>EZID automatically embeds the newly-minted identifier in certain types
 of uploaded metadata.  See <a class="reference internal" href="#metadata-profiles">Metadata profiles</a> below for when this is
-performed.</p>
+performed.  Additionally, EZID replaces all occurrences of the string
+&quot;${identifier}&quot; in the target URL with the newly-minted identifier.</p>
 </div>
 <div class="section" id="operation-update-identifier">
 <h1>Operation: update identifier</h1>
