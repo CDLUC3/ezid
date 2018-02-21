@@ -32,22 +32,22 @@ def _setTargetUrl (doi, targetUrl, datacenter):
   r = datacite.setTargetUrl(doi[4:], targetUrl, datacenter)
   assert type(r) is not str, "unexpected return: " + r
 
-def _overwrite (sh, row, doi, metadata):
-  register_async.callWrapper(sh, row, "datacite.uploadMetadata",
+def _overwrite (sh, rows, doi, metadata):
+  register_async.callWrapper(sh, rows, "datacite.uploadMetadata",
     _uploadMetadata, doi, metadata, metadata["_d"])
-  register_async.callWrapper(sh, row, "datacite.setTargetUrl",
+  register_async.callWrapper(sh, rows, "datacite.setTargetUrl",
     _setTargetUrl, doi, metadata["_t"], metadata["_d"])
   if metadata.get("_is", "public") != "public" or\
     metadata.get("_x", "yes") != "yes":
-    register_async.callWrapper(sh, row, "datacite.deactivate",
+    register_async.callWrapper(sh, rows, "datacite.deactivate",
       datacite.deactivate, doi[4:], metadata["_d"])
 
-def _delete (sh, row, doi, metadata):
+def _delete (sh, rows, doi, metadata):
   # We can't actually delete a DOI, so we do the next best thing...
-  register_async.callWrapper(sh, row, "datacite.setTargetUrl",
+  register_async.callWrapper(sh, rows, "datacite.setTargetUrl",
     _setTargetUrl, doi, "http://datacite.org/invalidDOI",
     metadata["_d"])
-  register_async.callWrapper(sh, row, "datacite.deactivate",
+  register_async.callWrapper(sh, rows, "datacite.deactivate",
     datacite.deactivate, doi[4:], metadata["_d"])
 
 def enqueueIdentifier (identifier, operation, blob):
@@ -73,7 +73,7 @@ def _loadConfig ():
   if _daemonEnabled[0]:
     _threadName[0] = uuid.uuid1().hex
     register_async.launch("datacite", ezidapp.models.DataciteQueue,
-      _overwrite, _overwrite, _delete,
+      _overwrite, _overwrite, _delete, None, None, None,
       int(config.get("daemons.datacite_num_worker_threads")),
       int(config.get("daemons.datacite_processing_idle_sleep")),
       int(config.get("daemons.datacite_processing_error_sleep")),

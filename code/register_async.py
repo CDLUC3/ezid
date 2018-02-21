@@ -15,6 +15,7 @@
 # -----------------------------------------------------------------------------
 
 import django.db
+import django.db.transaction
 import httplib
 import random
 import threading
@@ -27,14 +28,22 @@ import util
 
 class _StateHolder (object):
   def __init__ (self, registrar, queueModel, createFunction, updateFunction,
-    deleteFunction, idleSleep, reattemptDelay, enabledFlagHolder,
+    deleteFunction, batchCreateFunction, batchUpdateFunction,
+    batchDeleteFunction, idleSleep, reattemptDelay, enabledFlagHolder,
     threadNameHolder):
     # Configuration variables.
     self.registrar = registrar
     self.queueModel = queueModel
-    self.createFunction = createFunction
-    self.updateFunction = updateFunction
-    self.deleteFunction = deleteFunction
+    # N.B.: The batch functions below may be None.
+    self.functions = {
+      "single":
+        { ezidapp.models.RegistrationQueue.CREATE: createFunction,
+          ezidapp.models.RegistrationQueue.UPDATE: updateFunction,
+          ezidapp.models.RegistrationQueue.DELETE: deleteFunction },
+      "batch":
+        { ezidapp.models.RegistrationQueue.CREATE: batchCreateFunction,
+          ezidapp.models.RegistrationQueue.UPDATE: batchUpdateFunction,
+          ezidapp.models.RegistrationQueue.DELETE: batchDeleteFunction } }
     self.idleSleep = idleSleep
     self.reattemptDelay = reattemptDelay
     self.enabledFlagHolder = enabledFlagHolder
@@ -86,20 +95,28 @@ def _setLoadedRows (sh, rows):
   sh.loadedRows = rows
 
 @_lockLoadedRows
-def _deleteLoadedRow (sh, row):
-  for i in range(len(sh.loadedRows)):
-    if sh.loadedRows[i].seq == row.seq:
-      del sh.loadedRows[i]
-      return
-  assert False, "row to be deleted not found"
+def _deleteLoadedRows (sh, rows):
+  seqs = set(r.seq for r in rows)
+  for i in range(len(sh.loadedRows)-1, -1, -1):
+    if sh.loadedRows[i].seq in seqs: del sh.loadedRows[i]
 
 @_lockLoadedRows
-def _nextUnprocessedLoadedRow (sh):
+def _nextUnprocessedLoadedRows (sh):
+  rows = []
   for r in sh.loadedRows:
     if not hasattr(r, "beingProcessed"):
-      r.beingProcessed = True
-      return r
-  return None
+      # We'll always return one row, if one can be found.  Multiple
+      # rows will be returned only if they share the same operation
+      # and the registrar supports the corresponding batch function.
+      if len(rows) == 0:
+        r.beingProcessed = True
+        rows.append(r)
+        if sh.functions["batch"][r.operation] == None: break
+      else:
+        if r.operation == rows[0].operation:
+          r.beingProcessed = True
+          rows.append(r)
+  return rows
 
 def _loadRows (sh, limit=1000):
   qs = _queue(sh).objects.all().order_by("seq")[:limit]
@@ -138,12 +155,12 @@ def _daemonThread (sh):
       log.otherError("register_async._daemonThread/" + sh.registrar, e)
       _sleep(sh)
 
-def callWrapper (sh, row, methodName, function, *args):
+def callWrapper (sh, rows, methodName, function, *args):
   """
   This function should be used by registrars to wrap calls to
   registrar-specific create/update/delete functions.  It hides all
   transient errors (by retrying indefinitely) and raises all others.
-  'sh' and 'row' are supplied by this module and should simply be
+  'sh' and 'rows' are supplied by this module and should simply be
   passed through.  'function' is the function to call; 'methodName' is
   its name for error reporting purposes.  Any additional arguments are
   passed through to 'function'.
@@ -156,9 +173,10 @@ def callWrapper (sh, row, methodName, function, *args):
       if (isinstance(e, urllib2.HTTPError) and e.code >= 500) or\
         (isinstance(e, IOError) and not isinstance(e, urllib2.HTTPError)) or\
         isinstance(e, httplib.HTTPException):
-        row.error = util.formatException(e)
+        for r in rows: r.error = util.formatException(e)
         _checkAbort(sh)
-        row.save()
+        with django.db.transaction.atomic():
+          for r in rows: r.save()
         _sleep(sh, sh.reattemptDelay)
       else:
         raise Exception("%s error: %s" % (methodName, util.formatException(e)))
@@ -171,35 +189,42 @@ def _workerThread (sh):
   while True:
     try:
       while True:
-        row = _nextUnprocessedLoadedRow(sh)
-        if row != None: break
+        rows = _nextUnprocessedLoadedRows(sh)
+        if len(rows) > 0: break
         _sleep(sh)
       try:
-        if row.operation == ezidapp.models.RegistrationQueue.CREATE:
-          f = sh.createFunction
-        elif row.operation == ezidapp.models.RegistrationQueue.UPDATE:
-          f = sh.updateFunction
-        elif row.operation == ezidapp.models.RegistrationQueue.DELETE:
-          f = sh.deleteFunction
+        if len(rows) == 1:
+          f = sh.functions["single"][rows[0].operation]
+          f(sh, rows, rows[0].identifier, util.deblobify(rows[0].metadata))
         else:
-          assert False, "unhandled case"
-        f(sh, row, row.identifier, util.deblobify(row.metadata))
+          f = sh.functions["batch"][rows[0].operation]
+          f(sh, rows,
+            [(r.identifier, util.deblobify(r.metadata)) for r in rows])
       except _AbortException:
         raise
       except Exception, e:
         # N.B.: on the assumption that the registrar-specific function
         # used callWrapper defined above, the error can only be
         # permanent.
-        row.error = util.formatException(e)
-        row.errorIsPermanent = True
+        for r in rows:
+          r.error = util.formatException(e)
+          r.errorIsPermanent = True
         _checkAbort(sh)
-        row.save()
+        with django.db.transaction.atomic():
+          for r in rows: r.save()
         log.otherError("register_async._workerThread/" + sh.registrar, e)
       else:
         _checkAbort(sh)
-        row.delete()
+        with django.db.transaction.atomic():
+          for r in rows:
+            # Django "helpfully" sets seq, the primary key, to None
+            # after deleting a row.  But we need the seq value to
+            # delete the row out of sh.loadedRows, ergo...
+            t = r.seq
+            r.delete()
+            r.seq = t
       finally:
-        _deleteLoadedRow(sh, row)
+        _deleteLoadedRows(sh, rows)
     except _AbortException:
       break
     except Exception, e:
@@ -220,7 +245,8 @@ def enqueueIdentifier (model, identifier, operation, blob):
   e.save()
 
 def launch (registrar, queueModel, createFunction, updateFunction,
-  deleteFunction, numWorkerThreads, idleSleep, reattemptDelay,
+  deleteFunction, batchCreateFunction, batchUpdateFunction,
+  batchDeleteFunction, numWorkerThreads, idleSleep, reattemptDelay,
   enabledFlagHolder, threadNameHolder):
   """
   Launches a registration thread (and subservient worker threads).
@@ -228,17 +254,21 @@ def launch (registrar, queueModel, createFunction, updateFunction,
   'queueModel' is the registrar's queue database model, e.g.,
   ezidapp.models.DataciteQueue.  'createFunction', 'updateFunction',
   and 'deleteFunction' are the registrar-specific functions to be
-  called.  Each should accept arguments (sh, row, identifier,
+  called.  Each should accept arguments (sh, rows, identifier,
   metadata) where 'identifier' is a normalized, qualified identifier,
   e.g., "doi:10.5060/FOO", and 'metadata' is the identifier's metadata
   dictionary.  Each function should wrap external HTTP calls using
-  'callWrapper' above, passing through the 'sh' and 'row' arguments.
+  'callWrapper' above, passing through the 'sh' and 'rows' arguments.
+  The 'batch*' functions are similar.  If not None, each should
+  process multiple identifiers and accept arguments (sh, row, batch)
+  where 'batch' is a list of (identifier, metadata dictionary) tuples.
   'enabledFlagHolder' is a singleton list containing a boolean flag
   that indicates if the thread is enabled.  'threadNameHolder' is a
   singleton list containing the string name of the current thread.
   """
   sh = _StateHolder(registrar, queueModel, createFunction, updateFunction,
-    deleteFunction, idleSleep, reattemptDelay, enabledFlagHolder,
+    deleteFunction, batchCreateFunction, batchUpdateFunction,
+    batchDeleteFunction, idleSleep, reattemptDelay, enabledFlagHolder,
     threadNameHolder)
   name = threadNameHolder[0]
   t = threading.Thread(target=lambda: _daemonThread(sh), name=name)

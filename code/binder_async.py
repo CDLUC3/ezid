@@ -24,12 +24,12 @@ import register_async
 _daemonEnabled = [None]
 _threadName = [None]
 
-def _create (sh, row, id, metadata):
-  register_async.callWrapper(sh, row, "noid_egg.setElements",
+def _create (sh, rows, id, metadata):
+  register_async.callWrapper(sh, rows, "noid_egg.setElements",
     noid_egg.setElements, id, metadata)
 
-def _update (sh, row, id, metadata):
-  m = register_async.callWrapper(sh, row, "noid_egg.getElements",
+def _update (sh, rows, id, metadata):
+  m = register_async.callWrapper(sh, rows, "noid_egg.getElements",
     noid_egg.getElements, id)
   if m == None: m = {}
   for k, v in metadata.items():
@@ -40,12 +40,21 @@ def _update (sh, row, id, metadata):
   for k in m.keys():
     if k not in metadata: m[k] = ""
   if len(m) > 0:
-    register_async.callWrapper(sh, row, "noid_egg.setElements",
+    register_async.callWrapper(sh, rows, "noid_egg.setElements",
       noid_egg.setElements, id, m)
 
-def _delete (sh, row, id, metadata):
-  register_async.callWrapper(sh, row, "noid_egg.deleteIdentifier",
+def _delete (sh, rows, id, metadata):
+  register_async.callWrapper(sh, rows, "noid_egg.deleteIdentifier",
     noid_egg.deleteIdentifier, id)
+
+def _batchCreate (sh, rows, batch):
+  register_async.callWrapper(sh, rows, "noid_egg.batchSetElements",
+    noid_egg.batchSetElements, batch)
+
+def _batchDelete (sh, rows, batch):
+  register_async.callWrapper(sh, rows, "noid_egg.batchDeleteIdentifier",
+    noid_egg.batchDeleteIdentifier,
+    [identifier for identifier, metadata in batch])
 
 def enqueueIdentifier (identifier, operation, blob):
   """
@@ -70,7 +79,7 @@ def _loadConfig ():
   if _daemonEnabled[0]:
     _threadName[0] = uuid.uuid1().hex
     register_async.launch("binder", ezidapp.models.BinderQueue,
-      _create, _update, _delete,
+      _create, _update, _delete, _batchCreate, None, _batchDelete,
       int(config.get("daemons.binder_num_worker_threads")),
       int(config.get("daemons.binder_processing_idle_sleep")),
       int(config.get("daemons.binder_processing_error_sleep")),
