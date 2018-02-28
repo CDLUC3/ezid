@@ -173,7 +173,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
       if 'keywords' in q2:
         kw = re.sub('[\"\']', '', q2['keywords'])
         if kw.lower().startswith(("doi:", "ark:/", "uuid:")) and \
-          (' ' not in kw) and uic.isEmptyStr(q2['identifier']):
+          (' ' not in kw) and uic.isEmptyStr(q2.get('identifier','')):
           q2['keywords'] = ''
           q2['identifier'] = kw
       if d['filtered']:
