@@ -97,6 +97,6 @@ class DownloadQueue (django.db.models.Model):
     blank=True)
   # The last identifier processed.  HARVEST stage only.
 
-  fileSize = django.db.models.IntegerField(blank=True, null=True)
+  fileSize = django.db.models.BigIntegerField(blank=True, null=True)
   # The size of the file in bytes after the last flush.  HARVEST stage
   # only.
