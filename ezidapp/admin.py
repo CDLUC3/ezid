@@ -96,7 +96,7 @@ class ShoulderTypeFilter (django.contrib.admin.SimpleListFilter):
   title = "type"
   parameter_name = "type"
   def lookups (self, request, model_admin):
-    return [(t, t) for t in ["ARK", "DOI", "URN"]]
+    return [(t, t) for t in ["ARK", "DOI", "UUID"]]
   def queryset (self, request, queryset):
     if self.value() != None:
       queryset = queryset.filter(prefix__startswith=self.value().lower()+":")
