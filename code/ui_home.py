@@ -24,6 +24,11 @@ def learn(request):
   d = { 'menu_item' : 'ui_home.learn' }
   return uic.render(request, 'learn', d)
 
+def ark_open_faq(request):
+  if request.method != "GET": return uic.methodNotAllowed(request)
+  d = { 'menu_item' : 'ui_home.learn' }
+  return uic.render(request, 'info/ark_open_faq', d)
+
 def crossref_faq(request):
   if request.method != "GET": return uic.methodNotAllowed(request)
   d = { 'menu_item' : 'ui_home.learn' }
