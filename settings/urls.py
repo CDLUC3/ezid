@@ -8,6 +8,7 @@ urlpatterns = django.conf.urls.patterns("",
   # UI - RENDERED FROM TEMPLATES IN INFO REPOSITORY
   ("^/?$", "ui_home.index"),
   ("^learn/$", "ui_home.learn"),
+  ("^learn/ark_open_faq$", "ui_home.ark_open_faq"),
   ("^learn/crossref_faq$", "ui_home.crossref_faq"),
   ("^learn/doi_services_faq$", "ui_home.doi_services_faq"),
   ("^learn/id_basics$", "ui_home.id_basics"),
