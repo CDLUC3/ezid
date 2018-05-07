@@ -152,7 +152,7 @@ if len(files) == 0: files = [None]
 def error (file, lineNo, message):
   sys.stderr.write("%s, line %d: %s\n" % (file, lineNo, message))
 
-class Record:
+class Record (object):
   def __init__ (self, file, lineNo, timestamp, beginRecord, tid=None):
     self.file = file
     self.lineNo = lineNo
@@ -210,12 +210,31 @@ def statusFilter (endRecord):
   if endRecord[0] == "(incomplete)" and options.statusPartial: return True
   return False
 
+def passesFilters (record):
+  if options.from_ != None and record.timestamp < options.from_: return False
+  if options.to != None and record.timestamp >= options.to: return False
+  if not userFilter(record.beginRecord): return False
+  if not typeFilter(record.beginRecord): return False
+  if not operationFilter(record.beginRecord): return False
+  if not statusFilter(record.endRecord): return False
+  return True
+
 def parseTimestamp (timestamp):
   t = calendar.timegm(time.strptime(timestamp[:19], "%Y-%m-%d %H:%M:%S"))
   return t + int(timestamp[20:])/1000.
 
 pattern = re.compile("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) " +\
   "(([\da-fA-F]{32}) (BEGIN|PROGRESS|END) |- (STATUS|ERROR) )(.*)")
+
+# Below, 'records' holds Record objects which are complete (i.e.,
+# their END records have been encountered) and which pass the display
+# filters.  'tidMap' maps transaction IDs to Record objects, both
+# those in 'records' and those for which END records have not yet been
+# encountered.  When an END record is encountered and the Record
+# object is completed, if the transaction is not selected for display,
+# the transaction's ID is retained in 'tidMap' but the Record object
+# is discarded to save memory.  (Memory consumption has been a problem
+# running this script on large log files.)
 
 records = []
 tidMap = {}
@@ -239,7 +258,7 @@ for file in files:
       else:
         r = Record(file, n, m.group(1), ["otherError"])
         r.endRecord = ["ERROR"] + m.group(6).split(" ")
-        records.append(r)
+        if passesFilters(r): records.append(r)
     else:
       tid = m.group(3)
       if m.group(4) == "BEGIN":
@@ -247,7 +266,6 @@ for file in files:
           error(file, n, "duplicate transaction ID")
           continue
         r = Record(file, n, m.group(1), m.group(6).split(" "), tid)
-        records.append(r)
         tidMap[tid] = r
       elif m.group(4) == "PROGRESS":
         if tid not in tidMap:
@@ -273,23 +291,24 @@ for file in files:
         # timestamp, so that transactions are ordered by completion
         # time, not start time.
         r.timestamp = m.group(1)
+        if passesFilters(r):
+          records.append(r)
+        else:
+          tidMap[tid] = None
   f.close()
+
+for r in tidMap.itervalues():
+  if type(r) is Record:
+    if r.endRecord == None:
+      if options.statusPartial:
+        r.endRecord = ["(incomplete)", "tid=" + r.tid]
+        if passesFilters(r): records.append(r)
+      else:
+        error(r.file, r.lineNo, "no corresponding END record")
 
 records.sort(key=lambda r: r.timestamp)
 
 for r in records:
-  if r.endRecord == None:
-    if options.statusPartial:
-      r.endRecord = ["(incomplete)", "tid=" + r.tid]
-    else:
-      error(r.file, r.lineNo, "no corresponding END record")
-      continue
-  if options.from_ != None and r.timestamp < options.from_: continue
-  if options.to != None and r.timestamp >= options.to: continue
-  if not userFilter(r.beginRecord): continue
-  if not typeFilter(r.beginRecord): continue
-  if not operationFilter(r.beginRecord): continue
-  if not statusFilter(r.endRecord): continue
   if recordHasUser(r.beginRecord):
     br = r.beginRecord[:2]
     for i in range(1, 5):
