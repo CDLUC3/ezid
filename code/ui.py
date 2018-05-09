@@ -33,7 +33,8 @@ def contact(request):
   if request.method == "POST":
     P = request.POST
     d['form'] = form_objects.ContactForm(P, localized=localized)
-    if not 'url' in P or ('url' in P and P['url'] != ''):
+    import pdb; pdb.set_trace()
+    if (not 'url' in P or ('url' in P and P['url'] != '')) or (P['question'] and not re.match("(2|two)", P['question'])):
       #url is hidden.  If it's filled in then probably a spam bot
       pass 
     elif d['form'].is_valid():
