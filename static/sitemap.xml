@@ -7,46 +7,47 @@
 <!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
 
 <url>
-  <loc>http://ezid.cdlib.org/</loc>
+  <loc>https://ezid.cdlib.org/</loc>
+</url>
+<!-- Blocked by robots.txt due to bogus searches affecting performance
+<url>
+  <loc>https://ezid.cdlib.org/search</loc>
+</url -->
+<url>
+  <loc>https://ezid.cdlib.org/learn/</loc>
 </url>
 <url>
-  <loc>http://ezid.cdlib.org/search</loc>
+  <loc>https://ezid.cdlib.org/doc/apidoc.html</loc>
 </url>
 <url>
-  <loc>http://ezid.cdlib.org/learn/</loc>
+  <loc>https://ezid.cdlib.org/demo/simple</loc>
 </url>
 <url>
-  <loc>http://ezid.cdlib.org/doc/apidoc.html</loc>
+  <loc>https://ezid.cdlib.org/contact</loc>
 </url>
 <url>
-  <loc>http://ezid.cdlib.org/demo/simple</loc>
+  <loc>https://ezid.cdlib.org/home/about_us</loc>
 </url>
 <url>
-  <loc>http://ezid.cdlib.org/contact</loc>
+  <loc>https://ezid.cdlib.org/learn/open_source</loc>
 </url>
 <url>
-  <loc>http://ezid.cdlib.org/home/about_us</loc>
+  <loc>https://ezid.cdlib.org/learn/crossref_faq</loc>
 </url>
 <url>
-  <loc>http://ezid.cdlib.org/learn/open_source</loc>
+  <loc>https://ezid.cdlib.org/learn/id_basics</loc>
 </url>
 <url>
-  <loc>http://ezid.cdlib.org/learn/crossref_faq</loc>
+  <loc>https://ezid.cdlib.org/learn/suffix_passthrough</loc>
 </url>
 <url>
-  <loc>http://ezid.cdlib.org/learn/id_basics</loc>
+  <loc>https://ezid.cdlib.org/oai</loc>
 </url>
 <url>
-  <loc>http://ezid.cdlib.org/learn/suffix_passthrough</loc>
-</url>
-<url>
-  <loc>http://ezid.cdlib.org/oai</loc>
-</url>
-<url>
-  <loc>http://ezid.cdlib.org/static/locale/en/EZID_SimpleCreate.pdf</loc>
+  <loc>https://ezid.cdlib.org/static/locale/en/EZID_SimpleCreate.pdf</loc>
   <lastmod>2016-06-12T15:49:28+00:00</lastmod>
 </url>
 <url>
-  <loc>http://ezid.cdlib.org/learn/id_concepts</loc>
+  <loc>https://ezid.cdlib.org/learn/id_concepts</loc>
 </url>
 </urlset>
