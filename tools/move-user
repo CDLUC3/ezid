@@ -103,9 +103,10 @@ if args.step == 4:
       .order_by("identifier")[:1000])
     if len(ids) == 0: break
     for id in ids:
-      ezid.setMetadata(id.identifier, ezidapp.models.getAdminUser(),
+      s = ezid.setMetadata(id.identifier, ezidapp.models.getAdminUser(),
         { "_ownergroup": newGroup.groupname },
         updateExternalServices=False)
+      if not s.startswith("success"): error("identifier move failed")
     lastId = ids[-1].identifier
   print "move-user: step 4 complete\n\nRemaining steps required:\n\n%s\n" %\
     "\n".join(STEPS[4:])
