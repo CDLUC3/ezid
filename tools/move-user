@@ -106,7 +106,7 @@ if args.step == 4:
       s = ezid.setMetadata(id.identifier, ezidapp.models.getAdminUser(),
         { "_ownergroup": newGroup.groupname },
         updateExternalServices=False)
-      if not s.startswith("success"): error("identifier move failed")
+      if not s.startswith("success"): error("identifier move failed: " + s)
     lastId = ids[-1].identifier
   print "move-user: step 4 complete\n\nRemaining steps required:\n\n%s\n" %\
     "\n".join(STEPS[4:])

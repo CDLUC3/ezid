@@ -87,7 +87,7 @@ if args.deleteIdentifiers:
     for id in ids:
       s = ezid.deleteIdentifier(id.identifier, ezidapp.models.getAdminUser(),
         args.updateExternalServices)
-      if not s.startswith("success"): error("identifier deletion failed")
+      if not s.startswith("success"): error("identifier deletion failed: " + s)
     lastId = ids[-1].identifier
   while hasIdentifiersInUpdateQueue():
     print "delete-user: waiting for update queue to drain..."
@@ -104,7 +104,7 @@ searchUser.delete()
 
 s = ezid.deleteIdentifier(user.pid, ezidapp.models.getAdminUser())
 if not s.startswith("success"):
-  print "delete-user: agent PID deletion failed"
+  print "delete-user: agent PID deletion failed: " + s
 
 print "delete-user: step 2 complete\n\nRemaining steps required:\n\n%s\n" %\
   "\n".join(STEPS[2:])

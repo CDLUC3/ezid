@@ -69,7 +69,7 @@ searchGroup.delete()
 
 s = ezid.deleteIdentifier(group.pid, ezidapp.models.getAdminUser())
 if not s.startswith("success"):
-  print "delete-group: agent PID deletion failed"
+  print "delete-group: agent PID deletion failed: " + s
 
 print "delete-group: step 2 complete\n\nRemaining steps required:\n\n%s\n" %\
   "\n".join(STEPS[2:])
