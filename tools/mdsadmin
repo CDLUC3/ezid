@@ -19,8 +19,8 @@ import urllib2
 import xml.sax.saxutils
 
 URL = "https://mds.datacite.org/datacentre"
-CONTACT_NAME = "Greg Janee"
-CONTACT_EMAIL = "gjanee@ucop.edu"
+CONTACT_NAME = "EZID Support Desk"
+CONTACT_EMAIL = "ezid@ucop.edu"
 
 class MyHTTPErrorProcessor (urllib2.HTTPErrorProcessor):
   def http_response (self, request, response):
