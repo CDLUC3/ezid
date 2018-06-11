@@ -4,7 +4,8 @@ DEPLOYMENT_LEVEL = "production"
 
 DEBUG = False
 
-ADMINS.append(("John Kunze", "john.kunze@ucop.edu"))
+ADMINS.append(("Marisa Strong", "marisa.strong@ucop.edu"))
+ADMINS.append(("Perry Willett", "perry.willett@ucop.edu"))
 
 ALLOWED_HOSTS = ["ezid.cdlib.org", "ezid.lib.purdue.edu",
   "ezid-edina.cdlib.org"]
