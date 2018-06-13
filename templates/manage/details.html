@@ -23,7 +23,7 @@
         <label class="col-md-4 vertical-buffer-xxs">{% trans "Identifier as URL" %}:</label>
         <div class="col-md-7">
           <div id="id_as_url__box" class="vertical-buffer-xxs">
-            <span id="url_to_copy">{% full_url_to_id_details id_text %}</span>
+            <span id="url_to_copy">{{ id_as_url }}</span>
             <span id="copy_message">{% trans "Link copied to your clipboard" %}</span>
           </div>
           <div class="iddetails__delay-text">

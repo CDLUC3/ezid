@@ -1,24 +1,26 @@
-import ui_common as uic
 import django.contrib.messages
-import ui_search
-import ui_create
-import download as ezid_download
-from django.shortcuts import redirect
-from django.core.urlresolvers import reverse
 import django.db.models
-import ezid
-import metadata
-import math
-import policy
-import userauth
-import erc
 import datacite
 import datacite_xml
-import form_objects
-import urllib
-import time
-import os.path
+import erc
+import ezid
+import download as ezid_download
 import ezidapp.models
+import form_objects
+import metadata
+import mapping
+import math
+import os.path
+import policy
+from django.shortcuts import redirect
+from django.core.urlresolvers import reverse
+import time
+import ui_common as uic
+import ui_search
+import ui_create
+import urllib
+import userauth
+import util2
 from django.utils.translation import ugettext as _
 
 FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") +\
@@ -139,6 +141,7 @@ def edit(request, identifier):
     d['stat_reason'] = t_stat[1]
   d['export'] = id_metadata['_export'] if '_export' in id_metadata else 'yes'
   d['id_text'] = s.split()[1]
+  d['id_as_url'] = util2.urlForm(d['id_text'])
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
  
@@ -227,6 +230,12 @@ def edit(request, identifier):
     return uic.methodNotAllowed(request)
   return uic.render(request, "manage/edit", d)
 
+def _schemaDotOrgMetadata(km, id_as_url):
+  d = {'@context': 'http://schema.org', '@type': km.type, '@id': id_as_url, \
+       'creator': km.creator, 'title': km.title, 'publisher': km.publisher, \
+       'date': km.date}
+  return d
+
 def details(request):
   """ ID Details page for a given ID """
   d = { 'menu_item' : 'ui_manage.null'}
@@ -253,6 +262,8 @@ def details(request):
     id_metadata["_owner"], id_metadata["_ownergroup"])
   d['identifier'] = id_metadata 
   d['id_text'] = s.split()[1]
+  d['id_as_url'] = util2.urlForm(d['id_text'])
+  d['schemaDotOrgMetadata'] = _schemaDotOrgMetadata(mapping.map(id_metadata), d['id_as_url'])  
   d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes']) 
   d['internal_profile'] = metadata.getProfile('internal')
   d['target'] = id_metadata['_target']
