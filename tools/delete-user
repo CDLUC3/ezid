@@ -91,6 +91,7 @@ if args.deleteIdentifiers:
     lastId = ids[-1].identifier
   while hasIdentifiersInUpdateQueue():
     print "delete-user: waiting for update queue to drain..."
+    sys.stdout.flush()
     time.sleep(5)
 else:
   if ezidapp.models.StoreIdentifier.objects.filter(owner=user).count() > 0:
