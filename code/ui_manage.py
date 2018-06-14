@@ -7,6 +7,7 @@ import ezid
 import download as ezid_download
 import ezidapp.models
 import form_objects
+import json
 import metadata
 import mapping
 import math
@@ -230,18 +231,56 @@ def edit(request, identifier):
     return uic.methodNotAllowed(request)
   return uic.render(request, "manage/edit", d)
 
+_simpleSchemaDotOrgResourceMap = {
+  "Audiovisual":          "MediaObject",
+  "Collection":           "Creative Work",
+  "Dataset":              "Dataset",
+  "Event":                "Creative Work",
+  "Image":                "ImageObject",
+  "InteractiveResource":  "Creative Work",
+  "Model":                "Creative Work",
+  "PhysicalObject":       "Creative Work",
+  "Service":              "Service",
+  "Software":             "SoftwareSourceCode",
+  "Sound":                "AudioObject",
+  "Text":                 "ScholarlyArticle",
+  "Workflow":             "Creative Work",
+  "Other":                "Creative Work"
+}
+
+def _getSchemaDotOrgType (km_type):
+  try:
+    return _simpleSchemaDotOrgResourceMap[km_type]
+  except:
+    return "CreativeWork"
+
 def _schemaDotOrgMetadata(km, id_as_url):
-  d = {'@context': 'http://schema.org', '@type': km.type, '@id': id_as_url, \
-       'creator': km.creator, 'title': km.title, 'publisher': km.publisher, \
-       'date': km.date}
-  return d
+  km_type = km.type.split("/") if km.type else None
+  authors = [a.strip() for a in km.creator.split(";")]
+  d = {'@context': 'http://schema.org', 
+    '@id': id_as_url,
+    'author': authors[0] if len(authors) == 1 else authors,
+    'datePublished': km.date,
+    'identifier': id_as_url,
+    'publisher': km.publisher,
+    'name': km.title
+  }
+  if km_type:
+    d['@type'] = _getSchemaDotOrgType(km_type[0])
+    if km_type[0] == "Service":  # No real match in schema.org for this type
+      d['datePublished'] = d['publisher'] = d['creator'] = None
+    elif len(km_type) > 1: 
+      d['learningResourceType'] = km_type[1]
+  else:
+    d['@type'] = "CreativeWork"
+  x = json.dumps(d, indent=2, sort_keys=True)
+  return x
 
 def details(request):
   """ ID Details page for a given ID """
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
-  my_path = "/id/"
-  identifier = request.path_info[len(my_path):]
+  identifier = request.path_info[len("/id/"):]
   r = _getLatestMetadata(identifier, request,
     prefixMatch=(request.GET.get("prefix_match", "no").lower() == "yes"))
   if type(r) is str:
