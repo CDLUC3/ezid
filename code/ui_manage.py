@@ -299,11 +299,10 @@ def details(request):
     return redirect("/id/" + urllib.quote(newid, ":/"))
   d['allow_update'] = policy.authorizeUpdateLegacy(userauth.getUser(request, returnAnonymous=True),
     id_metadata["_owner"], id_metadata["_ownergroup"])
-  d['identifier'] = id_metadata 
+  d['identifier'] = id_metadata
   d['id_text'] = s.split()[1]
   d['id_as_url'] = util2.urlForm(d['id_text'])
-  d['schemaDotOrgMetadata'] = _schemaDotOrgMetadata(mapping.map(id_metadata), d['id_as_url'])  
-  d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes']) 
+  d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes'])
   d['internal_profile'] = metadata.getProfile('internal')
   d['target'] = id_metadata['_target']
   d['current_profile'] = metadata.getProfile(id_metadata['_profile']) or\
@@ -323,6 +322,8 @@ def details(request):
   d['pub_status'] = t_stat[0]
   if t_stat[0] == 'unavailable' and len(t_stat) > 1:
     d['stat_reason'] = t_stat[1] 
+  if t_stat[0] == 'public' and identifier.startswith("ark:/"):
+    d['schemaDotOrgMetadata'] = _schemaDotOrgMetadata(mapping.map(id_metadata), d['id_as_url'])  
   d['has_block_data'] = uic.identifier_has_block_data(id_metadata)
   d['has_resource_type'] = True if (d['current_profile'].name == 'datacite' \
     and 'datacite.resourcetype' in id_metadata \
