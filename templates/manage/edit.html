@@ -25,7 +25,7 @@
   <div class="fcontrol__group-inline general__form-element-group">
     <label for="account_username" class="fcontrol__text-label-inline general__form-label">{% trans "Identifier as URL" %}</label>
     <div id="id_as_url__box" class="fcontrol__text-nofield">
-      <span id="url_to_copy">{% full_url_to_id_details id_text %}</span>
+      <span id="url_to_copy">{{ id_as_url }}</span>
       <span id="copy_message">{% trans "Link copied to your clipboard" %}</span>
     </div>
     <!-- div class="col-xs-2">

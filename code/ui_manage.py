@@ -1,24 +1,27 @@
-import ui_common as uic
 import django.contrib.messages
-import ui_search
-import ui_create
-import download as ezid_download
-from django.shortcuts import redirect
-from django.core.urlresolvers import reverse
 import django.db.models
-import ezid
-import metadata
-import math
-import policy
-import userauth
-import erc
 import datacite
 import datacite_xml
-import form_objects
-import urllib
-import time
-import os.path
+import erc
+import ezid
+import download as ezid_download
 import ezidapp.models
+import form_objects
+import json
+import metadata
+import mapping
+import math
+import os.path
+import policy
+from django.shortcuts import redirect
+from django.core.urlresolvers import reverse
+import time
+import ui_common as uic
+import ui_search
+import ui_create
+import urllib
+import userauth
+import util2
 from django.utils.translation import ugettext as _
 
 FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") +\
@@ -139,6 +142,7 @@ def edit(request, identifier):
     d['stat_reason'] = t_stat[1]
   d['export'] = id_metadata['_export'] if '_export' in id_metadata else 'yes'
   d['id_text'] = s.split()[1]
+  d['id_as_url'] = util2.urlForm(d['id_text'])
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
  
@@ -227,12 +231,55 @@ def edit(request, identifier):
     return uic.methodNotAllowed(request)
   return uic.render(request, "manage/edit", d)
 
+_simpleSchemaDotOrgResourceMap = {
+  "Audiovisual":          "MediaObject",
+  "Collection":           "Creative Work",
+  "Dataset":              "Dataset",
+  "Event":                "Creative Work",
+  "Image":                "ImageObject",
+  "InteractiveResource":  "Creative Work",
+  "Model":                "Creative Work",
+  "PhysicalObject":       "Creative Work",
+  "Service":              "Service",
+  "Software":             "SoftwareSourceCode",
+  "Sound":                "AudioObject",
+  "Text":                 "ScholarlyArticle",
+  "Workflow":             "Creative Work",
+  "Other":                "Creative Work"
+}
+
+def _getSchemaDotOrgType (km_type):
+  try:
+    return _simpleSchemaDotOrgResourceMap[km_type]
+  except:
+    return "CreativeWork"
+
+def _schemaDotOrgMetadata(km, id_as_url):
+  km_type = km.type.split("/") if km.type else None
+  authors = [a.strip() for a in km.creator.split(";")]
+  d = {'@context': 'http://schema.org', 
+    '@id': id_as_url,
+    'author': authors[0] if len(authors) == 1 else authors,
+    'datePublished': km.date,
+    'identifier': id_as_url,
+    'publisher': km.publisher,
+    'name': km.title
+  }
+  if km_type:
+    d['@type'] = _getSchemaDotOrgType(km_type[0])
+    if km_type[0] == "Service":  # No real match in schema.org for this type
+      d['datePublished'] = d['publisher'] = d['creator'] = None
+    elif len(km_type) > 1: 
+      d['learningResourceType'] = km_type[1]
+  else:
+    d['@type'] = "CreativeWork"
+  return json.dumps(d, indent=2, sort_keys=True)
+
 def details(request):
   """ ID Details page for a given ID """
   d = { 'menu_item' : 'ui_manage.null'}
   d["testPrefixes"] = uic.testPrefixes
-  my_path = "/id/"
-  identifier = request.path_info[len(my_path):]
+  identifier = request.path_info[len("/id/"):]
   r = _getLatestMetadata(identifier, request,
     prefixMatch=(request.GET.get("prefix_match", "no").lower() == "yes"))
   if type(r) is str:
@@ -251,9 +298,10 @@ def details(request):
     return redirect("/id/" + urllib.quote(newid, ":/"))
   d['allow_update'] = policy.authorizeUpdateLegacy(userauth.getUser(request, returnAnonymous=True),
     id_metadata["_owner"], id_metadata["_ownergroup"])
-  d['identifier'] = id_metadata 
+  d['identifier'] = id_metadata
   d['id_text'] = s.split()[1]
-  d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes']) 
+  d['id_as_url'] = util2.urlForm(d['id_text'])
+  d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes'])
   d['internal_profile'] = metadata.getProfile('internal')
   d['target'] = id_metadata['_target']
   d['current_profile'] = metadata.getProfile(id_metadata['_profile']) or\
@@ -273,6 +321,8 @@ def details(request):
   d['pub_status'] = t_stat[0]
   if t_stat[0] == 'unavailable' and len(t_stat) > 1:
     d['stat_reason'] = t_stat[1] 
+  if t_stat[0] == 'public' and identifier.startswith("ark:/"):
+    d['schemaDotOrgMetadata'] = _schemaDotOrgMetadata(mapping.map(id_metadata), d['id_as_url'])  
   d['has_block_data'] = uic.identifier_has_block_data(id_metadata)
   d['has_resource_type'] = True if (d['current_profile'].name == 'datacite' \
     and 'datacite.resourcetype' in id_metadata \

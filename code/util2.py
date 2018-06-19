@@ -38,6 +38,14 @@ def _loadConfig ():
 _loadConfig()
 config.registerReloadListener(_loadConfig)
 
+def urlForm (id):
+  if id.startswith("doi:"):
+    return "%s/%s" % (config.get("resolver.doi"), urllib.quote(id[4:], ":/"))
+  elif id.startswith("ark:/") or id.startswith("uuid:"):
+    return "%s/%s" % (config.get("resolver.ark"), urllib.quote(id, ":/"))
+  else:
+    return "[None]"
+
 def defaultTargetUrl (identifier):
   """
   Returns the default target URL for an identifier.  The identifier

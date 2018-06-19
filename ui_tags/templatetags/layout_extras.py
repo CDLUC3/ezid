@@ -5,9 +5,9 @@ from django.utils.translation import ugettext as _
 from decorators import basictag
 from django.core.urlresolvers import reverse
 from operator import itemgetter
-import config 
 import django.template
 import urllib
+import util2
 import re
 
 register = template.Library()
@@ -77,7 +77,7 @@ def identifier_display(id_text, testPrefixes):
 
 @register.simple_tag
 def active_id_display(id_text, testPrefixes):
-  return '<a href="' + _urlForm(id_text) + '">' + _urlForm(id_text) + '</a>'
+  return '<a href="' + util2.urlForm(id_text) + '">' + util2.urlForm(id_text) + '</a>'
 
 @register.simple_tag
 def help_icon(id_of_help, specifics="", css_class="button__icon-help", placement="auto bottom"):
@@ -219,26 +219,17 @@ def unavailable_codes(for_field):
           ) + "</ul>"
     #<li><a href="#unas_datacite.creator" name="code_insert_link">(:unac)</a> temporarily inacessible</li>
 
-# This function should and will be moved to a better location.  -GJ
-def _urlForm (id):
-  if id.startswith("doi:"):
-    return "%s/%s" % (config.get("resolver.doi"), urllib.quote(id[4:], ":/"))
-  elif id.startswith("ark:/") or id.startswith("uuid:"):
-    return "%s/%s" % (config.get("resolver.ark"), urllib.quote(id, ":/"))
-  else:
-    return "[None]"
-
 @register.tag
 @basictag(takes_context=True)
 def full_url_to_id_details(context, id_text):
   """return URL form of identifier"""
-  return _urlForm(id_text)
+  return util2.urlForm(id_text)
   
 @register.tag
 @basictag(takes_context=True)
 def full_url_to_id_details_urlencoded(context, id_text):
   """return URL form of identifier, URL-encoded"""
-  return urllib.quote(_urlForm(id_text))
+  return urllib.quote(util2.urlForm(id_text))
 
 #check for more than one of the same identifer type
 #NOT checking for duplicate shoulders, returns t/f

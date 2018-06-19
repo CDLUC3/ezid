@@ -6,6 +6,12 @@
 {% block title %}{% trans "Identifier Details" %}{% endblock %}
 {% block heading %}{% content_heading _("Identifier Details") %}{% endblock %}
 {% block content %}
+{% if schemaDotOrgMetadata %}
+<script type="application/ld+json">
+{% autoescape off %}{{ schemaDotOrgMetadata }}{% endautoescape %}
+</script>
+{% endif %}
+
 <div class="container vertical-buffer-20">
   {% if allow_update %}
   <p class="heading_2">{% trans "Edit and add descriptive information to your identifier." %}</p>
@@ -23,7 +29,7 @@
         <label class="col-md-4 vertical-buffer-xxs">{% trans "Identifier as URL" %}:</label>
         <div class="col-md-7">
           <div id="id_as_url__box" class="vertical-buffer-xxs">
-            <span id="url_to_copy">{% full_url_to_id_details id_text %}</span>
+            <span id="url_to_copy">{{ id_as_url }}</span>
             <span id="copy_message">{% trans "Link copied to your clipboard" %}</span>
           </div>
           <div class="iddetails__delay-text">
