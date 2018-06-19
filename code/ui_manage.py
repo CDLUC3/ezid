@@ -233,19 +233,19 @@ def edit(request, identifier):
 
 _simpleSchemaDotOrgResourceMap = {
   "Audiovisual":          "MediaObject",
-  "Collection":           "Creative Work",
+  "Collection":           "CreativeWork",
   "Dataset":              "Dataset",
-  "Event":                "Creative Work",
+  "Event":                "CreativeWork",
   "Image":                "ImageObject",
-  "InteractiveResource":  "Creative Work",
-  "Model":                "Creative Work",
-  "PhysicalObject":       "Creative Work",
+  "InteractiveResource":  "CreativeWork",
+  "Model":                "CreativeWork",
+  "PhysicalObject":       "CreativeWork",
   "Service":              "Service",
   "Software":             "SoftwareSourceCode",
   "Sound":                "AudioObject",
   "Text":                 "ScholarlyArticle",
-  "Workflow":             "Creative Work",
-  "Other":                "Creative Work"
+  "Workflow":             "CreativeWork",
+  "Other":                "CreativeWork"
 }
 
 def _getSchemaDotOrgType (km_type):
