@@ -273,8 +273,7 @@ def _schemaDotOrgMetadata(km, id_as_url):
       d['learningResourceType'] = km_type[1]
   else:
     d['@type'] = "CreativeWork"
-  x = json.dumps(d, indent=2, sort_keys=True)
-  return x
+  return json.dumps(d, indent=2, sort_keys=True)
 
 def details(request):
   """ ID Details page for a given ID """
