@@ -255,20 +255,23 @@ def _getSchemaDotOrgType (km_type):
     return "CreativeWork"
 
 def _schemaDotOrgMetadata(km, id_as_url):
-  km_type = km.type.split("/") if km.type else None
-  authors = [a.strip() for a in km.creator.split(";")]
   d = {'@context': 'http://schema.org', 
     '@id': id_as_url,
-    'author': authors[0] if len(authors) == 1 else authors,
-    'datePublished': km.date,
-    'identifier': id_as_url,
-    'publisher': km.publisher,
-    'name': km.title
+    'identifier': id_as_url
   }
+  if km.creator:
+    authors = [a.strip() for a in km.creator.split(";")]
+    d['author'] = authors[0] if len(authors) == 1 else authors
+  if km.validatedDate: d['datePublished'] = km.validatedDate
+  if km.publisher: d['publisher'] = km.publisher
+  if km.title: d['name'] = km.title
+  km_type = km.validatedType.split("/") if km.validatedType else None
   if km_type:
     d['@type'] = _getSchemaDotOrgType(km_type[0])
     if km_type[0] == "Service":  # No real match in schema.org for this type
-      d['datePublished'] = d['publisher'] = d['creator'] = None
+      if 'datePublished' in d: del d['datePublished']
+      if 'publisher' in d: del d['publisher']
+      if 'author' in d: del d['author']
     elif len(km_type) > 1: 
       d['learningResourceType'] = km_type[1]
   else:
