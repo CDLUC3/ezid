@@ -45,6 +45,26 @@
 # some number of checks (say, a dozen over a span of two weeks) is it
 # considered notification-worthy.
 #
+# Target URLs can be excluded from checking on a per-owner basis.  An
+# exclusion file can be specified on the command line; the file should
+# contain lines of the form:
+#
+#    username {permanent|temporary}
+#
+# For example:
+#
+#    # this is a comment line
+#    merritt temporary
+#    data-planet permanent
+#
+# Permanent exclusion differs from temporary in that if an owner is
+# permanently excluded, its identifiers and target URLs are not
+# entered into the link checker's table at all.
+#
+# The link checker notices within a few seconds when the exclusion
+# file has been modified.  Examine the link checker's log file to
+# confirm that it has been reloaded successfuly.
+#
 # Greg Janee <gjanee@ucop.edu>
 # September 2016
 
@@ -53,6 +73,7 @@ import httplib
 import logging
 import os
 import re
+import sys
 import threading
 import time
 import urllib2
@@ -92,6 +113,14 @@ class OwnerWorkset (object):
     self.isLocked = False
     self.lastCheckTime = 0.0
   def isFinished (self):
+    # An excluded owner is detected when the link checker's table is
+    # updated (in the case of permanent exclusions) and when a workset
+    # is loaded (in the case of temporary exclusions).  But so that
+    # exclusions take more immediate effect when added, we add the
+    # check below.
+    if not self.isLocked and (self.owner_id in _permanentExcludes or\
+      self.owner_id in _temporaryExcludes):
+      self.nextIndex = len(self.list)
     return self.nextIndex >= len(self.list)
 
 _log = logging.getLogger()
@@ -100,6 +129,11 @@ _workset = None # [OwnerWorkset, ...]
 _index = None # index into _workset
 _stopNow = None
 _totalSleepTime = None
+_exclusionFile = None
+_exclusionFileModifyTime = -1
+_lastExclusionFileCheckTime = -1
+_permanentExcludes = []
+_temporaryExcludes = []
 
 def s (n):
   if n != 1:
@@ -126,6 +160,44 @@ def remaining (start, cycle):
 def daysSince (when):
   return int((now()-when)/86400)
 
+def loadExclusionFile ():
+  global _exclusionFileModifyTime, _lastExclusionFileCheckTime
+  global _permanentExcludes, _temporaryExcludes
+  if _exclusionFile == None: return
+  if nowi()-_lastExclusionFileCheckTime < 10: return
+  _lastExclusionFileCheckTime = nowi()
+  f = None
+  s = None
+  try:
+    s = os.stat(_exclusionFile)
+    if s.st_mtime == _exclusionFileModifyTime: return
+    f = open(_exclusionFile)
+    pe = []
+    te = []
+    n = 0
+    for l in f:
+      n += 1
+      if l.strip() == "" or l.startswith("#"): continue
+      try:
+        user, flag = l.split()
+      except ValueError:
+        assert False, "syntax error on line %d" % n
+      assert flag in ["permanent", "temporary"], "syntax error on line %d" % n
+      try:
+        (pe if flag == "permanent" else te).append(
+          ezidapp.models.SearchUser.objects.get(username=user).id)
+      except ezidapp.models.SearchUser.DoesNotExist:
+        assert False, "no such user: " + user
+    _permanentExcludes = pe
+    _temporaryExcludes = te
+    _exclusionFileModifyTime = s.st_mtime
+    _log.info("exclusion file successfully loaded")
+  except Exception, e:
+    if s != None: _exclusionFileModifyTime = s.st_mtime
+    _log.error("error loading exclusion file: " + str(e))
+  finally:
+    if f != None: f.close()
+
 def harvest (model, only=None, filter=None):
   lastIdentifier = ""
   while True:
@@ -140,6 +212,7 @@ def harvest (model, only=None, filter=None):
   yield None
 
 def updateDatabaseTable ():
+  loadExclusionFile()
   _log.info("begin update table")
   numIdentifiers = 0
   numAdditions = 0
@@ -151,7 +224,8 @@ def updateDatabaseTable ():
   lcGenerator = harvest(ezidapp.models.LinkChecker)
   siGenerator = harvest(ezidapp.models.SearchIdentifier, ["identifier",
     "owner", "status", "target", "isTest"],
-    lambda si: si.isPublic and not si.isTest and si.target != si.defaultTarget)
+    lambda si: si.isPublic and not si.isTest and\
+    si.target != si.defaultTarget and si.owner_id not in _permanentExcludes)
   lc = lcGenerator.next()
   si = siGenerator.next()
   while lc != None or si != None:
@@ -204,6 +278,7 @@ def updateDatabaseTable ():
 
 def loadWorkset ():
   global _workset
+  loadExclusionFile()
   _log.info("begin load workset")
   _workset = []
   numOwnersCapped = 0
@@ -211,6 +286,7 @@ def loadWorkset ():
   good = [0, nowi()] # [total, oldest timestamp]
   bad = [0, nowi()]
   for user in ezidapp.models.SearchUser.objects.all().only("id"):
+    if user.id in _permanentExcludes or user.id in _temporaryExcludes: continue
     def query (isBad, timeBound, limit):
       return list(ezidapp.models.LinkChecker.objects.filter(owner_id=user.id)\
         .filter(isBad=isBad).filter(lastCheckTime__lt=timeBound)\
@@ -245,6 +321,7 @@ def getNextLink ():
   global _index
   _lock.acquire()
   try:
+    loadExclusionFile()
     startingIndex = _index
     allFinished = True
     t = now()
@@ -361,7 +438,11 @@ def worker ():
     raise
 
 def main ():
-  global _stopNow, _index, _totalSleepTime
+  global _stopNow, _index, _totalSleepTime, _exclusionFile
+  if len(sys.argv) > 2:
+    sys.stderr.write("usage: link-checker [exclusion-file]\n")
+    sys.exit(1)
+  if len(sys.argv) == 2: _exclusionFile = sys.argv[1]
   while True:
     start = now()
     updateDatabaseTable()
