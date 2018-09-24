@@ -24,25 +24,33 @@ _doiTestPrefix = None
 _defaultArkProfile = None
 _defaultDoiProfile = None
 _defaultUuidProfile = None
+_doiResolver = None
+_arkResolver = None
 
 def _loadConfig ():
   global _ezidUrl, _arkTestPrefix, _doiTestPrefix, _defaultArkProfile
-  global _defaultDoiProfile, _defaultUuidProfile
+  global _defaultDoiProfile, _defaultUuidProfile, _doiResolver, _arkResolver
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
   _arkTestPrefix = config.get("shoulders.ark_test")
   _doiTestPrefix = config.get("shoulders.doi_test")
   _defaultArkProfile = config.get("DEFAULT.default_ark_profile")
   _defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
   _defaultUuidProfile = config.get("DEFAULT.default_uuid_profile")
+  _doiResolver = config.get("resolver.doi")
+  _arkResolver = config.get("resolver.ark")
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
 
-def urlForm (id):
-  if id.startswith("doi:"):
-    return "%s/%s" % (config.get("resolver.doi"), urllib.quote(id[4:], ":/"))
-  elif id.startswith("ark:/") or id.startswith("uuid:"):
-    return "%s/%s" % (config.get("resolver.ark"), urllib.quote(id, ":/"))
+def urlForm (identifier):
+  """
+  Returns the URL form of a qualified identifier, or "[None]" if there
+  is no resolver defined for the identifier type.
+  """
+  if identifier.startswith("doi:"):
+    return "%s/%s" % (_doiResolver, urllib.quote(identifier[4:], ":/"))
+  elif identifier.startswith("ark:/"):
+    return "%s/%s" % (_arkResolver, urllib.quote(identifier, ":/"))
   else:
     return "[None]"
 
