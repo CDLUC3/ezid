@@ -19,7 +19,9 @@ sys.path.append(os.path.join(PROJECT_ROOT, "code"))
 DEBUG = True
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
-MANAGERS = ADMINS = [("Greg Janee", "gjanee@ucop.edu")]
+MANAGERS = ADMINS = [
+  ("Greg Janee", "gjanee@ucop.edu"),
+  ("John Kunze", "jak@ucop.edu")]
 
 if "HOSTNAME" in os.environ:
   SERVER_EMAIL = "ezid@" + os.environ["HOSTNAME"]
