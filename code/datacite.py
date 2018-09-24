@@ -282,12 +282,18 @@ def validateDcmsRecord (identifier, record, schemaValidate=True):
     schema[1].acquire()
     try:
       schema[0].assert_(root)
-    except Exception:
+    except Exception, e:
       # Ouch.  On some LXML installations, but not all, an error is
       # "sticky" and, unless it is cleared out, will be returned
       # repeatedly regardless of what new error is encountered.
       schema[0]._clear_error_log()
-      raise
+      # LXML error messages may contain snippets from the source
+      # document, and hence may contain Unicode characters.  We're
+      # really not set up to propagate such characters through
+      # exceptions and so replace them.  Too, the presence of such
+      # characters can be the source of the problem, so explicitly
+      # exposing them can be a help.
+      assert False, e.message.encode("ASCII", "xmlcharrefreplace")
     finally:
       schema[1].release()
     i.attrib["identifierType"] = type
