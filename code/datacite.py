@@ -456,13 +456,12 @@ def uploadMetadata (doi, current, delta, forceUpload=False, datacenter=None):
     try:
       _modifyActiveCount(1)
       c = o.open(r, timeout=_timeout)
-      assert c.read().startswith("OK"),\
-        "unexpected return from DataCite store metadata operation"
+      s = c.read()
+      assert s.startswith("OK"),\
+        "unexpected return from DataCite store metadata operation: " + s
     except urllib2.HTTPError, e:
       message = e.fp.read()
-      if e.code == 400 and (message.startswith("[xml]") or\
-        message.startswith("ParseError")):
-        return "element 'datacite': " + message
+      if e.code in [400, 422]: return "element 'datacite': " + message
       if e.code != 500 or i == _numAttempts-1: raise e
     except:
       if i == _numAttempts-1: raise
