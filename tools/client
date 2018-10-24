@@ -39,7 +39,7 @@
 #     d[elete] identifier
 #     login
 #     logout
-#     s[tatus] [*|subsystemlist]
+#     s[tatus] [detailed] [*|subsystemlist]
 #     V[ersion]
 #     p[ause] {on|off|idlewait|monitor}
 #     r[eload]
@@ -99,7 +99,7 @@ OPERATIONS = {
   "delete": (1, False),
   "login": (0, False),
   "logout": (0, False),
-  "status": (lambda l: l in [0, 1], False),
+  "status": (lambda l: l in [0, 1, 2], False),
   "Version": (0, False),
   "pause": (1, False),
   "reload": (0, False)
@@ -138,7 +138,7 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
     d[elete] identifier
     login
     logout
-    s[tatus] [*|subsystemlist]
+    s[tatus] [detailed] [*|subsystemlist]
     V[ersion]
     p[ause] {on|off|idlewait|monitor}
     r[eload]
@@ -345,11 +345,13 @@ elif operation == "logout":
   response = issueRequest("logout", "GET")
   printAnvlResponse(response)
 elif operation == "status":
-  if len(args) > 0:
-    subsystems = "?subsystems=" + args[0]
-  else:
-    subsystems = ""
-  response = issueRequest("status"+subsystems, "GET")
+  d = {}
+  if "detailed" in args:
+    d["detailed"] = "yes"
+    args.remove("detailed")
+  if len(args) > 1: parser.error("incorrect number of arguments for operation")
+  if len(args) > 0: d["subsystems"] = args[0]
+  response = issueRequest("status?"+urllib.urlencode(d), "GET")
   printAnvlResponse(response)
 elif operation == "Version":
   response = issueRequest("version", "GET")

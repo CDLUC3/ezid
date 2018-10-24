@@ -49,6 +49,7 @@
 #
 # Get EZID's status:
 #   GET /status
+#     ?detailed={yes|no}
 #     ?subsystems={*|subsystemlist}
 #   response body: status line, optional additional status information
 #
@@ -328,8 +329,13 @@ def getStatus (request):
   Returns EZID's status.
   """
   if request.method != "GET": return _methodNotAllowed()
-  options = _validateOptions(request, { "subsystems": None })
+  options = _validateOptions(request, { "subsystems": None,
+    "detailed": [("yes", True), ("no", False)] })
   if type(options) is str: return _response(options)
+  if options.get("detailed", False):
+    statusLine = _statusLineGenerator(False).next()[7:]
+  else:
+    statusLine = "EZID is up"
   body = ""
   if "subsystems" in options:
     l = options["subsystems"]
@@ -343,7 +349,7 @@ def getStatus (request):
         body += "search: %s\n" % search_util.ping()
       else:
         return _response("error: bad request - no such subsystem")
-  return _response("success: EZID is up", anvlBody=body)
+  return _response("success: " + statusLine, anvlBody=body)
 
 def getVersion (request):
   """
