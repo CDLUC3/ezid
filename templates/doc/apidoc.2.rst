@@ -10,6 +10,7 @@
 .. _ANVL: https://wiki.ucop.edu/display/Curation/Anvl
 .. _Apache Commons Codec: http://commons.apache.org/codec/
 .. _batch-download.sh: batch-download.sh
+.. _batch-register.py: batch-register.py
 .. _Comma-separated values (CSV):
    http://en.wikipedia.org/wiki/Comma-separated_values
 .. _Contact us: /contact
@@ -1859,12 +1860,12 @@ To update identifier metadata:
 Batch processing
 ----------------
 
-The EZID API does not support batch operations on identifiers (other
-than batch downloading and harvesting of metadata, described in the
-next two sections), but it is possible to achieve much the same result
-using the Python command line tool (see `Python command line tool`_
-above) combined with some shell scripting.  For example, to mint 100
-test ARK identifiers and print the identifiers:
+The EZID API does not directly support batch processing, but we do
+provide two client tools, linked from this documentation, that can
+simplify the work of scripting a batch job.  First and most generally,
+the `Python command line tool`_ can exercise all API functions and is
+straightforward to script.  For example, to mint and print 100 test
+ARK identifiers:
 
 .. parsed-literal::
 
@@ -1873,6 +1874,36 @@ test ARK identifiers and print the identifiers:
     ezid.py `username`:hl2::`password`:hl2: mint ark:/99999/fk4 | \
   awk '{ print $2 }'
   done
+
+Second, the batch-register.py_ script mints identifiers in bulk.  It
+reads an input CSV file containing identifier metadata, one row per
+identifier; transforms the metadata into EZID metadata as directed by
+a configuration file of mappings; mints identifiers using that
+metadata; and outputs a CSV file containing the newly-minted
+identifiers and other information.  Detailed usage information is
+contained in the script itself, but to give a taste of what it can do,
+given an input CSV file with columns,
+
+.. parsed-literal::
+
+  title,author,orcid,publisher_name,publisher_place,url
+
+a possible complete mapping file to mint DOI identifiers is shown
+below.  The mappings reference both EZID metadata elements and, using
+XPath expressions, `DataCite Metadata Scheme`_ `\ `:ext-icon: elements
+and attributes.
+
+.. parsed-literal::
+
+  _profile = datacite
+  /resource/titles/title = $1
+  /resource/creators/creator/creatorName = $2
+  /resource/creators/creator/nameIdentifier = $3
+  /resource/creators/creator/nameIdentifier\@nameIdentifierScheme = ORCID
+  /resource/publisher = $4 ($5)
+  /resource/publicationYear = 2018
+  /resource/resourceType\@resourceTypeGeneral = Dataset
+  _target = $6
 
 Batch download
 --------------

@@ -340,5 +340,5 @@ def main ():
 try:
   main()
 except Exception, e:
-  sys.stderr.write("batch-register: error: %s\n" % str(e))
+  sys.stderr.write("%s: error: %s\n" % (sys.argv[0].split("/")[-1], str(e)))
   sys.exit(1)
