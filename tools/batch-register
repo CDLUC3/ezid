@@ -3,43 +3,51 @@
 # Batch registers identifiers.  Reads an input CSV file containing
 # identifier metadata, one row per identifier; transforms the metadata
 # into EZID metadata as directed by a configuration file of mappings;
-# mints identifiers; and outputs a CSV file containing the
-# newly-minted identifiers and other information.
+# creates or mints identifiers, or updates existing identifiers; and
+# outputs a CSV file containing the created, minted, or updated
+# identifiers and other information.
 #
 # All input files are assumed to be UTF-8 encoded, and the output is
 # UTF-8 encoded.
 #
-# Usage: batch-register [options] credentials shoulder mappings input.csv
+# Usage: batch-register [options] operation mappings input.csv
 #
-#   credentials:
-#     username:password
-#     username           (password will be prompted for)
-#     sessionid=...      (as obtained by using the EZID client tool)
-#
-#   shoulder: the shoulder to mint under, e.g., ark:/99999/fk4
+#   operation: create, mint, or update
 #
 #   mappings: configuration file, described below
 #
 #   input.csv: input metadata in CSV form
 #
 #   options:
-#     -o COLUMNS  Comma-separated list of columns to output.  Defaults
-#                 to _n,_id,_error.
-#     -p          Preview mode.  Don't register identifiers; instead,
-#                 write transformed metadata to standard output.
+#     -c CREDENTIALS  Either username:password, or just username
+#                     (password will be prompted for), or
+#                     sessionid=... (as obtained by using the EZID
+#                     client tool).
+#     -o COLUMNS      Comma-separated list of columns to output.
+#                     Defaults to _n,_id,_error.
+#     -p              Preview mode.  Don't register identifiers;
+#                     instead, write transformed metadata to standard
+#                     output.
+#     -s SHOULDER     The shoulder to mint under, e.g.,
+#                     ark:/99999/fk4.
+#     -t              Tab mode.  The input metadata is tab-separated
+#                     (multiline values and tab characters in values
+#                     are not supported).
 #
 # The mappings file defines how input CSV columns are mapped to EZID
-# metadata fields.  Each line of the file should have the form:
+# metadata elements.  Each line of the file should have the form:
 #
 #   destination = expression
 #
-# The destination in a mapping may be either an EZID field name
+# The destination in a mapping may be either an EZID element name
 # (erc.who, dc.title, _target, etc.) or an XPath absolute path of a
 # DataCite metadata schema element or attribute (e.g.,
 # /resource/titles/title for an element,
 # /resource/titles/title@titleType for an attribute).  If any XPaths
 # are present, a DataCite XML record is constructed and assigned as
-# the value of field 'datacite'.
+# the value of EZID element 'datacite'.  A special destination
+# element, _id, should be used to identify the identifier to create or
+# update when performing either of those operations.
 #
 # The expression in a mapping is a string in which zero or more column
 # values may be interpolated.  Columns are referenced using 1-based
@@ -50,7 +58,7 @@
 #
 #   title,author,orcid,publisher_name,publisher_place,url
 #
-# a possible complete mapping to mint DOI identifiers is:
+# a possible complete mapping to mint DOI identifiers would be:
 #
 #   _profile = datacite
 #   /resource/titles/title = $1
@@ -62,18 +70,27 @@
 #   /resource/resourceType@resourceTypeGeneral = Dataset
 #   _target = $6
 #
-# Limitation: the mapping mechanism does not currently support
-# multiple values for a given metadata field or DataCite element.
+# For another example, to update the statuses of a batch of existing
+# identifiers to public, given an input file listing the identifiers
+# (i.e., a CSV file with just one column), a mapping file would be:
+#
+#   _id = $1
+#   _status = public
+#
+# Limitations: the mapping mechanism does not currently support
+# multiple values for a given EZID metadata element or DataCite
+# element.  Additionally, it is not possible to update just a portion
+# of existing DataCite XML records.
 #
 # The output, written to standard output, is a CSV file whose columns
 # can be configured using the -o option.  An output column may be any
-# metadata field populated by the above mapping process (referenced by
-# field name) or any input column (referenced by simple integer).
+# metadata element populated by the above mapping process (referenced by
+# element name) or any input column (referenced by simple integer).
 # Three additional columns may be specified: _n, the record number in
-# the input file; _id, the newly-minted identifier; and _error, the
-# error message in case of registration failure.  Continuing the
-# previous example, to return three columns, identifier, title, and
-# url, specify
+# the input file; _id, the identifier created, minted, or updated; and
+# _error, the error message in case of registration failure.
+# Continuing the previous example, to return three columns,
+# identifier, title, and url, specify
 #
 #   -o _id,1,6
 #
@@ -82,13 +99,13 @@
 # The -p ("preview mode") option can be used to examine the metadata
 # that will be submitted, allowing confirmation that the
 # transformation is operating as expected.  Before running a batch
-# registration job it may also be helpful to run it first using a test
+# create or mint job it may also be helpful to first mint using a test
 # shoulder to ensure that all metadata is well-formed and accepted.
 # The test shoulders are ark:/99999/fk4 for ARK identifiers and
 # doi:10.5072/FK2 for DOI identifiers.
 #
 # Greg Janee <gjanee@ucop.edu>
-# December 2018
+# November 2018
 
 import argparse
 import base64
@@ -117,17 +134,17 @@ def loadMappings (file):
           assert re.match("/resource(/\w+)+(@\w+)?$", d),\
             "invalid XPath expression"
         else:
-          assert re.match("[.\w]+$", d), "invalid field name"
+          assert re.match("[.\w]+$", d), "invalid element name"
         m.append((d, e))
       except Exception, e:
         assert False, "%s, line %d: %s" % (file, n, str(e))
   return m
 
 def parseOutputColumns (columns, mappings):
-  # columns: "field,1,2,..."
+  # columns: "element,1,2,..."
   # mappings: [(destination, expression), ...]
-  # returns: ["field", 0, 1, ...]
-  fields = [d for d, e in mappings if not d.startswith("/")] +\
+  # returns: ["element", 0, 1, ...]
+  elements = [d for d, e in mappings if not d.startswith("/")] +\
     ["_n", "_id", "_error"]
   l = []
   for c in columns.split(","):
@@ -138,7 +155,7 @@ def parseOutputColumns (columns, mappings):
       assert i > 0, "argument -o: invalid input column reference"
       l.append(i-1)
     except ValueError:
-      assert c in fields, "argument -o: no such output field: " + c
+      assert c in elements, "argument -o: no such output element: " + c
       l.append(c)
   return l
 
@@ -162,7 +179,7 @@ def interpolate (expression, row):
   v += expression[i:]
   return v
 
-def setDataciteValue (args, document, path, value):
+def setDataciteValue (document, path, value):
   # document: root element or None
   # path: "/resource/path/to/element@attribute"
   # returns: root element
@@ -178,8 +195,7 @@ def setDataciteValue (args, document, path, value):
       "http://datacite.org/schema/kernel-4 " +\
       "http://schema.datacite.org/meta/kernel-4/metadata.xsd"
     n = xml.etree.ElementTree.SubElement(document, q("identifier"))
-    n.attrib["identifierType"] =\
-      "ARK" if args.shoulder.startswith("ark:/") else "DOI"
+    n.attrib["identifierType"] = "(:tba)"
     n.text = "(:tba)"
   n = document
   for e in p:
@@ -203,12 +219,18 @@ def transform (args, mappings, row):
   for i, (d, e) in enumerate(mappings):
     try:
       if d.startswith("/"):
-        dr = setDataciteValue(args, dr, d, interpolate(e, row))
+        dr = setDataciteValue(dr, d, interpolate(e, row))
       else:
         md[d] = interpolate(e, row)
     except AssertionError, err:
-      assert False, "%s, line %d: %s" % (args.mappingsFile, i, str(err))
+      assert False, "%s, line %d: %s" % (args.mappingsFile, i+1, str(err))
   if dr != None:
+    if args.operation == "mint":
+      s = args.shoulder
+    else:
+      s = md["_id"]
+    dr.findall("*[@identifierType]")[0].attrib["identifierType"] =\
+      "ARK" if s.startswith("ark:/") else "DOI"
     md["datacite"] = xml.etree.ElementTree.tostring(dr)
   return md
 
@@ -221,15 +243,21 @@ def toAnvl (record):
     else:
       p = "[%\r\n]"
     return re.sub(p, lambda c: "%%%02X" % ord(c.group(0)), s)
-  s = "".join("%s: %s\n" % (escape(k, True), escape(record[k])) for k in\
+  return "".join("%s: %s\n" % (escape(k, True), escape(record[k])) for k in\
     sorted(record.keys()))
-  return s
 
-def mintIdentifier (args, record):
+def process1 (args, record):
   # record: metadata dictionary
   # returns: (identifier or None, "error: ..." or None)
-  r = urllib2.Request("https://ezid.cdlib.org/shoulder/" +
-    urllib.quote(args.shoulder, ":/"))
+  # N.B.: _id is removed from record when creating or updating
+  if args.operation == "mint":
+    r = urllib2.Request("https://ezid.cdlib.org/shoulder/" +
+      urllib.quote(args.shoulder, ":/"))
+  else:
+    r = urllib2.Request("https://ezid.cdlib.org/id/" +
+      urllib.quote(record["_id"], ":/"))
+    r.get_method = lambda: "PUT" if args.operation == "create" else "POST"
+    del record["_id"]
   s = toAnvl(record).encode("UTF-8")
   r.add_data(s)
   r.add_header("Content-Type", "text/plain; charset=UTF-8")
@@ -281,11 +309,12 @@ def formOutputRow (args, row, record, recordNum, id, error):
 def process (args, mappings):
   w = csv.writer(sys.stdout)
   n = 0
-  for row in csv.reader(open(args.inputFile)):
+  for row in csv.reader(open(args.inputFile),
+    dialect=(csv.excel_tab if args.tabMode else csv.excel)):
     n += 1
     if n == 1:
       numColumns = len(row)
-      assert max([0] + [c for c in args.outputColumns if type(c) is int]) <\
+      assert max([-1] + [c for c in args.outputColumns if type(c) is int]) <\
         numColumns,\
         "argument -o: input column reference exceeds number of columns"
     try:
@@ -296,7 +325,7 @@ def process (args, mappings):
         sys.stdout.write("\n")
         sys.stdout.write(toAnvl(record).encode("UTF-8"))
       else:
-        id, error = mintIdentifier(args, record)
+        id, error = process1(args, record)
         w.writerow([c.encode("UTF-8")\
           for c in formOutputRow(args, row, record, n, id, error)])
         sys.stdout.flush()
@@ -304,15 +333,20 @@ def process (args, mappings):
       assert False, "record %d: %s" % (n, str(e))
 
 def main ():
+  def validateShoulder (s):
+    if not (s.startswith("ark:/") or s.startswith("doi:")):
+      raise argparse.ArgumentTypeError("invalid shoulder")
+    return s
   p = argparse.ArgumentParser(description="Batch registers identifiers.")
-  p.add_argument("credentials",
-    help="username:password, or just username (password will be prompted " +\
-    "for), or session=... (as obtained by using the EZID client tool)")
-  p.add_argument("shoulder",
-    help="the shoulder to mint under, e.g., ark:/99999/fk4")
+  p.add_argument("operation", choices=["create", "mint", "update"],
+    help="operation to perform")
   p.add_argument("mappingsFile", metavar="mappings", help="configuration file")
   p.add_argument("inputFile", metavar="input.csv",
     help="input metadata in CSV form")
+  p.add_argument("-c", metavar="CREDENTIALS", dest="credentials",
+    help="either username:password, or just username (password will be " +\
+    "prompted for), or session=... (as obtained by using the " +\
+    "EZID client tool)")
   p.add_argument("-o", metavar="COLUMNS", dest="outputColumns",
     default="_n,_id,_error",
     help="comma-separated list of columns to output, defaults to " +\
@@ -320,10 +354,21 @@ def main ():
   p.add_argument("-p", dest="previewMode", action="store_true",
     help="preview mode: don't register identifiers, instead, write " +\
     "transformed metadata to standard output")
+  p.add_argument("-s", metavar="SHOULDER", dest="shoulder",
+    type=validateShoulder,
+    help="the shoulder to mint under, e.g., ark:/99999/fk4")
+  p.add_argument("-t", dest="tabMode", action="store_true",
+    help="tab mode: the input metadata is tab-separated (multiline values " +\
+      "and tab characters in values are not supported)")
   args = p.parse_args(sys.argv[1:])
-  assert args.shoulder.startswith("ark:/") or\
-    args.shoulder.startswith("doi:"), "invalid shoulder"
+  if not args.previewMode:
+    assert args.credentials != None, "operation requires -c argument"
+  if args.operation == "mint":
+    assert args.shoulder != None, "operation requires -s argument"
   mappings = loadMappings(args.mappingsFile)
+  if args.operation in ["create", "update"]:
+    assert "_id" in [d for d, e in mappings],\
+      "operation requires mapping to _id"
   args.outputColumns = parseOutputColumns(args.outputColumns, mappings)
   if not args.previewMode:
     if args.credentials.startswith("sessionid="):
