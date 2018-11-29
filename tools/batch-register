@@ -307,10 +307,15 @@ def formOutputRow (args, row, record, recordNum, id, error):
   return l
 
 def process (args, mappings):
+  class StrictTabDialect (csv.Dialect):
+    delimiter = "\t"
+    quoting = csv.QUOTE_NONE
+    doublequote = False
+    lineterminator = "\r\n"
   w = csv.writer(sys.stdout)
   n = 0
   for row in csv.reader(open(args.inputFile),
-    dialect=(csv.excel_tab if args.tabMode else csv.excel)):
+    dialect=(StrictTabDialect if args.tabMode else csv.excel)):
     n += 1
     if n == 1:
       numColumns = len(row)
