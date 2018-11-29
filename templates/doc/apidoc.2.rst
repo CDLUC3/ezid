@@ -1860,7 +1860,7 @@ To update identifier metadata:
 Batch processing
 ----------------
 
-The EZID API does not directly support batch processing, but we do
+The API does not directly support batch processing, but EZID does
 provide two client tools, linked from this documentation, that can
 simplify the work of scripting a batch job.  First and most generally,
 the `Python command line tool`_ can exercise all API functions and is
@@ -1875,14 +1875,15 @@ ARK identifiers:
   awk '{ print $2 }'
   done
 
-Second, the batch-register.py_ script mints identifiers in bulk.  It
-reads an input CSV file containing identifier metadata, one row per
-identifier; transforms the metadata into EZID metadata as directed by
-a configuration file of mappings; mints identifiers using that
-metadata; and outputs a CSV file containing the newly-minted
-identifiers and other information.  Detailed usage information is
-contained in the script itself, but to give a taste of what it can do,
-given an input CSV file with columns,
+Second, the batch-register.py_ script automates several common types
+of batch processing.  It reads an input CSV file containing identifier
+metadata, one row per identifier; transforms the metadata into EZID
+metadata as directed by a configuration file of mappings; creates or
+mints identifiers, or updates existing identifiers, using that
+metadata; and outputs a CSV file containing the created, minted, or
+updated identifiers and other information.  Detailed usage information
+is contained in the script itself, but to give a taste of what it can
+do, given an input CSV file with columns,
 
 .. parsed-literal::
 
@@ -1904,6 +1905,15 @@ and attributes.
   /resource/publicationYear = 2018
   /resource/resourceType\@resourceTypeGeneral = Dataset
   _target = $6
+
+For another example, to update the statuses of a batch of existing
+identifiers to public, given an input file listing the identifiers
+(i.e., a CSV file with just one column), a mapping file would be:
+
+.. parsed-literal::
+
+  _id = $1
+  _status = public
 
 Batch download
 --------------
