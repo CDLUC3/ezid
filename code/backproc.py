@@ -97,8 +97,13 @@ def _backprocDaemon ():
                 uq.get_operation_display(), blob)
               if uq.updateExternalServices:
                 if uq.actualObject.isDoi:
-                  datacite_async.enqueueIdentifier(uq.identifier,
-                    uq.get_operation_display(), blob)
+                  ### CROSSREF TRANSITION TEMPORARY EXCLUSION ###
+                  movedShoulders = ["doi:10.21977/D9"]
+                  if not any(uq.identifier.startswith(s)\
+                    for s in movedShoulders):
+                    datacite_async.enqueueIdentifier(uq.identifier,
+                      uq.get_operation_display(), blob)
+                  ### --------------------------------------- ###
                   if uq.actualObject.isCrossref:
                     crossref.enqueueIdentifier(uq.identifier,
                       uq.get_operation_display(), metadata, blob)

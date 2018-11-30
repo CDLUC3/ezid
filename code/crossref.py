@@ -460,7 +460,11 @@ def _doDeposit (r):
   # before it will process them.
   if _dataciteEnabled:
     try:
-      if handle_system.getRedirect(r.identifier[4:]) == None: return
+      ### CROSSREF TRANSITION TEMPORARY EXCLUSION ###
+      movedShoulders = ["doi:10.21977/D9"]
+      if not any(r.identifier.startswith(s) for s in movedShoulders):
+        if handle_system.getRedirect(r.identifier[4:]) == None: return
+      ### --------------------------------------- ###
     except Exception, e:
       log.otherError("crossref._doDeposit",
         _wrapException("error querying Handle System", e))
