@@ -255,7 +255,7 @@ def process1 (args, record):
       urllib.quote(args.shoulder, ":/"))
   else:
     r = urllib2.Request("https://ezid.cdlib.org/id/" +
-      urllib.quote(record["_id"], ":/"))
+      urllib.quote(str(record["_id"]), ":/"))
     r.get_method = lambda: "PUT" if args.operation == "create" else "POST"
     del record["_id"]
   s = toAnvl(record).encode("UTF-8")
