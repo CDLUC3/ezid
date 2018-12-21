@@ -251,13 +251,14 @@ def process1 (args, record):
   # returns: (identifier or None, "error: ..." or None)
   # N.B.: _id is removed from record when creating or updating
   if args.operation == "mint":
+    id = None
     r = urllib2.Request("https://ezid.cdlib.org/shoulder/" +
       urllib.quote(args.shoulder, ":/"))
   else:
-    r = urllib2.Request("https://ezid.cdlib.org/id/" +
-      urllib.quote(str(record["_id"]), ":/"))
-    r.get_method = lambda: "PUT" if args.operation == "create" else "POST"
+    id = str(record["_id"])
     del record["_id"]
+    r = urllib2.Request("https://ezid.cdlib.org/id/" + urllib.quote(id, ":/"))
+    r.get_method = lambda: "PUT" if args.operation == "create" else "POST"
   s = toAnvl(record).encode("UTF-8")
   r.add_data(s)
   r.add_header("Content-Type", "text/plain; charset=UTF-8")
@@ -277,11 +278,11 @@ def process1 (args, record):
     if e.fp != None:
       s = e.fp.read().decode("UTF-8")
       if not s.startswith("error:"): s = "error: " + s
-      return (None, s)
+      return (id, s)
     else:
-      return (None, "error: %d %s" % (e.code, e.msg))
+      return (id, "error: %d %s" % (e.code, e.msg))
   except Exception, e:
-    return (None, "error: " + str(e))
+    return (id, "error: " + str(e))
   finally:
     if c != None: c.close()
 
