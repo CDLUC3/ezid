@@ -52,7 +52,13 @@
 # The expression in a mapping is a string in which zero or more column
 # values may be interpolated.  Columns are referenced using 1-based
 # indexing and may be referred to using the syntaxes "$n" or "${n}".
-# Use "$$" for a literal dollar sign.
+# Use "$$" for a literal dollar sign.  Additionally, a column may be
+# referenced as "${n:f}"; in this case the column value will first be
+# passed to a function "f" and the return value of the function will
+# be interpolated.  The referenced function should be defined in a
+# module "functions", which should be supplied by the user of this
+# script (the PYTHONPATH environment variable may need to be set for
+# the module to be found).
 #
 # For example, given an input CSV file with columns
 #
@@ -160,17 +166,26 @@ def parseOutputColumns (columns, mappings):
   return l
 
 def interpolate (expression, row):
-  # expression: string in which $n, ${n}, $$ will be interpolated
+  # expression: string in which $n, ${n}, ${n:f}, $$ will be interpolated
   # row: [value1, value2, ...]
   v = ""
   i = 0
-  for m in re.finditer("\$(?:\d+|{\d+}|\$)", expression):
+  for m in re.finditer("\$(?:\d+|{\d+(?::\w+)?}|\$)", expression):
     v += expression[i:m.start()]
     try:
       if m.group(0) == "$$":
         v += "$"
       elif m.group(0).startswith("${"):
-        v += row[int(m.group(0)[2:-1])-1]
+        if ":" in m.group(0):
+          j, f = m.group(0)[2:-1].split(":")
+          try:
+            import functions
+            v += getattr(functions, f)(row[int(j)-1])
+          except Exception, e:
+            assert False, "error calling user-defined function %s: %s" %\
+              (f, str(e))
+        else:
+          v += row[int(m.group(0)[2:-1])-1]
       else:
         v += row[int(m.group(0)[1:])-1]
     except IndexError:
