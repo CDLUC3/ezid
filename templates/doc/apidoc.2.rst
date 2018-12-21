@@ -1316,15 +1316,15 @@ EZID provides two namespaces (or "shoulders") for testing purposes:
 ark:/99999/fk4 for ARK identifiers and doi:10.5072/FK2 for DOI
 identifiers.  Identifiers in these namespaces are termed "test
 identifiers."  They are ordinary long-term identifiers in almost all
-respects, including resolvability, except that EZID deletes them after
-2 weeks.
+respects, except that EZID deletes them after 2 weeks.
 
-Test DOI identifiers resolve through the universal DOI resolver
-(\https://doi.org/), but do not appear in any of DataCite's other
-systems.  Test DOI identifiers registered with Crossref appear only in
-Crossref's test server (\http://test.crossref.org/), and are prefixed
-there with 10.15697.  For example, test identifier doi:10.5072/FK2TEST
-will appear as doi:10.15697/10.5072/FK2TEST in Crossref.
+Test ARK identifiers resolve just as real ARK identifiers do through
+the N2T_ resolver, but test DOI identifiers do not resolve and do not
+appear in any DataCite systems.  Test DOI identifiers registered with
+Crossref appear only in Crossref's test server
+(\http://test.crossref.org/), and are prefixed there with 10.15697.
+For example, test identifier doi:10.5072/FK2TEST will appear as
+doi:10.15697/10.5072/FK2TEST in Crossref.
 
 All user accounts are permitted to create test identifiers.  EZID also
 provides an "apitest" account that is permitted to create only test

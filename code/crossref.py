@@ -458,7 +458,7 @@ def _queue ():
 def _doDeposit (r):
   # Crossref requires that DOIs be registered in the Handle System
   # before it will process them.
-  if _dataciteEnabled:
+  if _dataciteEnabled and not util2.isTestDoi(r.identifier[4:]):
     try:
       ### CROSSREF TRANSITION TEMPORARY vvv
       if not any(r.identifier.startswith(s)\
