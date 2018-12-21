@@ -86,7 +86,8 @@
 # Limitations: the mapping mechanism does not currently support
 # multiple values for a given EZID metadata element or DataCite
 # element.  Additionally, it is not possible to update just a portion
-# of existing DataCite XML records.
+# of existing DataCite XML records.  The order of mappings determines
+# the ordering of XML elements.
 #
 # The output, written to standard output, is a CSV file whose columns
 # can be configured using the -o option.  An output column may be any
