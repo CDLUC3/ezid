@@ -177,7 +177,7 @@ def interpolate (expression, row):
       assert False, "input column reference exceeds number of columns"
     i = m.end()
   v += expression[i:]
-  return v
+  return v.strip()
 
 def setDataciteValue (document, path, value):
   # document: root element or None
@@ -219,7 +219,8 @@ def transform (args, mappings, row):
   for i, (d, e) in enumerate(mappings):
     try:
       if d.startswith("/"):
-        dr = setDataciteValue(dr, d, interpolate(e, row))
+        v = interpolate(e, row)
+        if v != "": dr = setDataciteValue(dr, d, v)
       else:
         md[d] = interpolate(e, row)
     except AssertionError, err:
