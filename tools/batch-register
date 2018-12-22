@@ -83,11 +83,31 @@
 #   _id = $1
 #   _status = public
 #
-# Limitations: the mapping mechanism does not currently support
-# multiple values for a given EZID metadata element or DataCite
-# element.  Additionally, it is not possible to update just a portion
-# of existing DataCite XML records.  The order of mappings determines
-# the ordering of XML elements.
+# For an example of using a user-supplied function, suppose that the
+# CSV file in the first example above has a seventh column,
+# publication_date, containing an ISO 8601 date.  Then a mapping for
+# the publication year could be
+#
+#   /resource/publicationYear = ${7:year_only}
+#
+# with, in functions.py:
+#
+#   def year_only (v):
+#     return v[:4]
+#
+# If there are multiple mappings to an EZID element or DataCite
+# metadata schema attribute, the last takes precedence.  If there are
+# multiple mappings to a DataCite metadata schema element, multiple
+# elements are created.
+#
+# Limitations: It is not possible to update just a portion of existing
+# DataCite XML records.  The order of mappings determines the ordering
+# of XML elements.  When mapping to both a DataCite metadata schema
+# element and attribute of that element, the mapping to the element
+# must come first in the mappings file.  A mapping to an attribute
+# will generally not have the desired effect if there are multiple
+# mappings to the associated element (i.e., if multiple elements are
+# created).
 #
 # The output, written to standard output, is a CSV file whose columns
 # can be configured using the -o option.  An output column may be any
@@ -96,8 +116,8 @@
 # Three additional columns may be specified: _n, the record number in
 # the input file; _id, the identifier created, minted, or updated; and
 # _error, the error message in case of registration failure.
-# Continuing the previous example, to return three columns,
-# identifier, title, and url, specify
+# Continuing the first example, to return three columns, identifier,
+# title, and url, specify
 #
 #   -o _id,1,6
 #
@@ -183,7 +203,7 @@ def interpolate (expression, row):
             import functions
             v += getattr(functions, f)(row[int(j)-1])
           except Exception, e:
-            assert False, "error calling user-defined function %s: %s" %\
+            assert False, "error calling user-supplied function %s: %s" %\
               (f, str(e))
         else:
           v += row[int(m.group(0)[2:-1])-1]
@@ -214,8 +234,13 @@ def setDataciteValue (document, path, value):
     n.attrib["identifierType"] = "(:tba)"
     n.text = "(:tba)"
   n = document
-  for e in p:
-    c = n.find(q(e))
+  for i, e in enumerate(p):
+    # If we're at the terminal element of the path and we're not
+    # setting an attribute, we always add a new child element.
+    if i == len(p)-1 and a == None:
+      c = None
+    else:
+      c = n.find(q(e))
     if c != None:
       n = c
     else:
