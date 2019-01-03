@@ -54,13 +54,7 @@
 # The expression in a mapping is a string in which zero or more column
 # values may be interpolated.  Columns are referenced using 1-based
 # indexing and may be referred to using the syntaxes "$n" or "${n}".
-# Use "$$" for a literal dollar sign.  Additionally, a column may be
-# referenced as "${n:f}"; in this case the column value will first be
-# passed to a function "f" and the return value of the function will
-# be interpolated.  The referenced function should be defined in a
-# module "functions", which should be supplied by the user of this
-# script (the PYTHONPATH environment variable may need to be set for
-# the module to be found).
+# Use "$$" for a literal dollar sign.
 #
 # For example, given an input CSV file with six columns
 #
@@ -84,6 +78,14 @@
 #
 #   _id = $1
 #   _status = public
+#
+# A column may also be referenced as "${n:f}"; in this case the column
+# value will first be passed to a function "f" and the return value of
+# the function will be interpolated.  The referenced function should
+# be defined in a module "functions", which should be supplied by the
+# user of this script (the PYTHONPATH environment variable may need to
+# be set for the module to be found).  Multiple column values can be
+# passed to a function using the syntax "${n1,n2,n3,...:f}".
 #
 # For an example of using a user-supplied function, suppose that the
 # CSV file in the first example above has a seventh column,
@@ -257,18 +259,18 @@ def interpolate (expression, row):
   # returns: string or complex object
   v = ""
   i = 0
-  for m in re.finditer("\$(?:\d+|{\d+(?::\w+)?}|\$)", expression):
+  for m in re.finditer("\$(?:\d+|{\d+}|{\d+(?:,\d+)*:\w+}|\$)", expression):
     v += expression[i:m.start()]
     try:
       if m.group(0) == "$$":
         v += "$"
       elif m.group(0).startswith("${"):
         if ":" in m.group(0):
-          j, f = m.group(0)[2:-1].split(":")
-          c = row[int(j)-1]
+          cols, f = m.group(0)[2:-1].split(":")
+          args = [row[int(c)-1] for c in cols.split(",")]
           try:
             import functions
-            r = getattr(functions, f)(c)
+            r = getattr(functions, f)(*args)
             if isinstance(r, basestring):
               v += r
             else:
