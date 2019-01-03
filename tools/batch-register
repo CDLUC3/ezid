@@ -60,11 +60,11 @@
 # script (the PYTHONPATH environment variable may need to be set for
 # the module to be found).
 #
-# For example, given an input CSV file with columns
+# For example, given an input CSV file with six columns
 #
 #   title,author,orcid,publisher_name,publisher_place,url
 #
-# a possible complete mapping to mint DOI identifiers would be:
+# a complete mapping to mint DOI identifiers would be:
 #
 #   _profile = datacite
 #   /resource/titles/title = $1
@@ -86,28 +86,91 @@
 # For an example of using a user-supplied function, suppose that the
 # CSV file in the first example above has a seventh column,
 # publication_date, containing an ISO 8601 date.  Then a mapping for
-# the publication year could be
+# the publication year would be
 #
 #   /resource/publicationYear = ${7:year_only}
 #
 # with, in functions.py:
 #
-#   def year_only (v):
+#   def year_only(v):
 #     return v[:4]
-#
-# If there are multiple mappings to an EZID element or DataCite
-# metadata schema attribute, the last takes precedence.  If there are
-# multiple mappings to a DataCite metadata schema element, multiple
-# elements are created.
 #
 # Limitations: It is not possible to update just a portion of existing
 # DataCite XML records.  The order of mappings determines the ordering
 # of XML elements.  When mapping to both a DataCite metadata schema
 # element and attribute of that element, the mapping to the element
-# must come first in the mappings file.  A mapping to an attribute
-# will generally not have the desired effect if there are multiple
-# mappings to the associated element (i.e., if multiple elements are
-# created).
+# must come first in the mappings file.
+#
+# Multiple mappings to EZID metadata elements and to DataCite metadata
+# schema attributes are not supported; the last mapping overwrites any
+# previous mappings.  But for DataCite metadata schema elements,
+# multiple mappings cause multiple XML elements to be created.
+# Specifically, given an XPath /resource/path/terminus, a new terminus
+# element is created for each mapping.  Continuing with our running
+# example, given eighth and ninth CSV columns
+#
+#   ...,subject1,subject2
+#
+# and additional mappings
+#
+#   /resource/subjects/subject = $8
+#   /resource/subjects/subject = $9
+#
+# then the following XML structure would be created:
+#
+#   <resource>
+#     ...
+#     <subjects>
+#       <subject>$8</subject>
+#       <subject>$9</subject>
+#     </subjects>
+#   </resource>
+#
+# User-supplied functions provide considerably more flexibility in
+# mapping, and are required in certain cases to create the necessary
+# hierarchical DataCite XML structure.  A user-supplied function may
+# return:
+#
+#   1. A string value, as illustrated previously.
+#
+#   2. A tuple (relpath, value) where relpath is an XPath relative
+#      path of a DataCite metadata schema element or attribute, and
+#      value is any valid return from a user-supplied function (i.e.,
+#      a string, tuple, or list).  The path is interpreted relative to
+#      the terminus element in the mapping or, in nested cases, to the
+#      previous contextual node; and the path establishes a new
+#      contextual node against which the value is processed.
+#
+#   3. A list of zero or more tuples.
+#
+# For example, suppose our CSV file has a tenth column containing zero
+# or more editor names separated by semicolons.  A mapping
+#
+#   /resource/contributors = ${10:split_editors}
+#
+# and a function
+#
+#   def split_editors(v):
+#     if v == "":
+#       return ""
+#     else:
+#       return [( "contributor",
+#                 [("contributorName", n), (".@contributorType", "Editor")]
+#               ) for n in v.split(";")]
+#
+# would create the XML structure DataCite requires, namely:
+#
+#   <resource>
+#     <contributors>
+#       <contributor contributorType="Editor">
+#         <contributorName>first editor</contributorName>
+#       </contributor>
+#       <contributor contributorType="Editor">
+#         <contributorName>second editor</contributorName>
+#       </contributor>
+#       ...
+#     </contributors>
+#   </resource>
 #
 # The output, written to standard output, is a CSV file whose columns
 # can be configured using the -o option.  An output column may be any
@@ -159,7 +222,7 @@ def loadMappings (file):
         d, e = [v.strip() for v in l.split("=", 1)]
         if d.startswith("/"):
           assert re.match("/resource(/\w+)+(@\w+)?$", d),\
-            "invalid XPath expression"
+            "invalid absolute XPath expression"
         else:
           assert re.match("[.\w]+$", d), "invalid element name"
         m.append((d, e))
@@ -189,6 +252,7 @@ def parseOutputColumns (columns, mappings):
 def interpolate (expression, row):
   # expression: string in which $n, ${n}, ${n:f}, $$ will be interpolated
   # row: [value1, value2, ...]
+  # returns: string or complex object
   v = ""
   i = 0
   for m in re.finditer("\$(?:\d+|{\d+(?::\w+)?}|\$)", expression):
@@ -199,9 +263,21 @@ def interpolate (expression, row):
       elif m.group(0).startswith("${"):
         if ":" in m.group(0):
           j, f = m.group(0)[2:-1].split(":")
+          c = row[int(j)-1]
           try:
             import functions
-            v += getattr(functions, f)(row[int(j)-1])
+            r = getattr(functions, f)(c)
+            if isinstance(r, basestring):
+              v += r
+            else:
+              # We allow a function to return a complex object only if
+              # the expression consists of the function reference and
+              # nothing more--- and in this case, the object can be
+              # returned immediately.
+              assert m.group(0) == expression, "unsupported interpolation: " +\
+                "function returned complex object but there is " +\
+                "other text in expression"
+              return r
           except Exception, e:
             assert False, "error calling user-supplied function %s: %s" %\
               (f, str(e))
@@ -215,41 +291,64 @@ def interpolate (expression, row):
   v += expression[i:]
   return v.strip()
 
-def setDataciteValue (document, path, value):
-  # document: root element or None
-  # path: "/resource/path/to/element@attribute"
-  # returns: root element
+def setDataciteValue (node, path, value):
+  # node: XML node or None
+  # path: "/resource/abspath@attribute" or "relpath@attribute"
+  # value: string or complex object
+  # returns: node if node was supplied, else root node
   def q (tag):
     return "{http://datacite.org/schema/kernel-4}" + tag
-  p = path.split("/")[2:]
+  if type(value) is list:
+    if len(value) == 0: return node
+    assert all(type(v) is tuple and len(v) == 2 for v in value),\
+      "invalid return value from user-supplied function: malformed list"
+  elif type(value) is tuple:
+    assert len(value) == 2 and isinstance(value[0], basestring),\
+      "invalid return value from user-supplied function: malformed tuple"
+    assert re.match("(\w+|[.])(/(\w+|[.]))*(@\w+)?$", value[0]),\
+      "invalid return value from user-supplied function: " +\
+      "invalid relative XPath expression"
+  elif isinstance(value, basestring):
+    value = value.strip()
+    if value == "": return node
+  else:
+    assert False, "invalid return value from user-supplied function"
+  p = path[10 if path.startswith("/resource/") else 0:].split("/")
   a = None
   if "@" in p[-1]: p[-1], a = p[-1].split("@")
-  if document == None:
-    document = xml.etree.ElementTree.Element(q("resource"))
-    document.attrib[
+  if node == None:
+    node = xml.etree.ElementTree.Element(q("resource"))
+    node.attrib[
       "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
       "http://datacite.org/schema/kernel-4 " +\
       "http://schema.datacite.org/meta/kernel-4/metadata.xsd"
-    n = xml.etree.ElementTree.SubElement(document, q("identifier"))
+    n = xml.etree.ElementTree.SubElement(node, q("identifier"))
     n.attrib["identifierType"] = "(:tba)"
     n.text = "(:tba)"
-  n = document
+  n = node
   for i, e in enumerate(p):
-    # If we're at the terminal element of the path and we're not
-    # setting an attribute, we always add a new child element.
-    if i == len(p)-1 and a == None:
-      c = None
-    else:
-      c = n.find(q(e))
-    if c != None:
-      n = c
-    else:
-      n = xml.etree.ElementTree.SubElement(n, q(e))
+    if e != ".":
+      # If we're at the terminal element of the path and we're not
+      # setting an attribute, we always add a new child element.
+      if i == len(p)-1 and a == None:
+        c = None
+      else:
+        c = n.find(q(e))
+      if c != None:
+        n = c
+      else:
+        n = xml.etree.ElementTree.SubElement(n, q(e))
   if a != None:
+    assert isinstance(value, basestring),\
+      "unsupported interpolation: attribute %s requires string value" % a
     n.attrib[a] = value
   else:
-    n.text = value
-  return document
+    if isinstance(value, basestring):
+      n.text = value
+    else:
+      if type(value) is tuple: value = [value]
+      for relpath, v in value: setDataciteValue(n, relpath, v)
+  return node
 
 def transform (args, mappings, row):
   # mappings: [(destination, expression), ...]
@@ -259,11 +358,14 @@ def transform (args, mappings, row):
   dr = None
   for i, (d, e) in enumerate(mappings):
     try:
+      v = interpolate(e, row)
       if d.startswith("/"):
-        v = interpolate(e, row)
-        if v != "": dr = setDataciteValue(dr, d, v)
+        dr = setDataciteValue(dr, d, v)
       else:
-        md[d] = interpolate(e, row)
+        assert isinstance(v, basestring), "unsupported interpolation: " +\
+          "user-supplied function must return string value in mapping to " +\
+          "EZID metadata element"
+        md[d] = v
     except AssertionError, err:
       assert False, "%s, line %d: %s" % (args.mappingsFile, i+1, str(err))
   if dr != None:
