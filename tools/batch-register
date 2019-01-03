@@ -28,6 +28,8 @@
 #     -p              Preview mode.  Don't register identifiers;
 #                     instead, write transformed metadata to standard
 #                     output.
+#     -r              Remove any mapping to _id; useful when
+#                     temporarily minting.
 #     -s SHOULDER     The shoulder to mint under, e.g.,
 #                     ark:/99999/fk4.
 #     -t              Tab mode.  The input metadata is tab-separated
@@ -393,9 +395,10 @@ def toAnvl (record):
 def process1 (args, record):
   # record: metadata dictionary
   # returns: (identifier or None, "error: ..." or None)
-  # N.B.: _id is removed from record when creating or updating
+  # N.B.: _id is removed from record
   if args.operation == "mint":
     id = None
+    if args.removeIdMapping and "_id" in record: del record["_id"]
     r = urllib2.Request("https://ezid.cdlib.org/shoulder/" +
       urllib.quote(args.shoulder, ":/"))
   else:
@@ -504,6 +507,8 @@ def main ():
   p.add_argument("-p", dest="previewMode", action="store_true",
     help="preview mode: don't register identifiers, instead, write " +\
     "transformed metadata to standard output")
+  p.add_argument("-r", dest="removeIdMapping", action="store_true",
+    help="remove any mapping to _id; useful when temporarily minting")
   p.add_argument("-s", metavar="SHOULDER", dest="shoulder",
     type=validateShoulder,
     help="the shoulder to mint under, e.g., ark:/99999/fk4")
