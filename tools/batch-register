@@ -155,8 +155,8 @@
 #       return ""
 #     else:
 #       return [( "contributor",
-#                 [("contributorName", n), (".@contributorType", "Editor")]
-#               ) for n in v.split(";")]
+#                 [("contributorName", n), (".@contributorType", "Editor")] )\
+#               for n in v.split(";")]
 #
 # would create the XML structure DataCite requires, namely:
 #
@@ -298,14 +298,15 @@ def setDataciteValue (node, path, value):
   # returns: node if node was supplied, else root node
   def q (tag):
     return "{http://datacite.org/schema/kernel-4}" + tag
+  if type(value) is tuple: value = [value]
   if type(value) is list:
     if len(value) == 0: return node
-    assert all(type(v) is tuple and len(v) == 2 for v in value),\
-      "invalid return value from user-supplied function: malformed list"
-  elif type(value) is tuple:
-    assert len(value) == 2 and isinstance(value[0], basestring),\
-      "invalid return value from user-supplied function: malformed tuple"
-    assert re.match("(\w+|[.])(/(\w+|[.]))*(@\w+)?$", value[0]),\
+    assert all(type(v) is tuple and len(v) == 2 and\
+      isinstance(v[0], basestring) for v in value),\
+      "invalid return value from user-supplied function: " +\
+      "malformed list or tuple"
+    assert all(re.match("(\w+|[.])(/(\w+|[.]))*(@\w+)?$", v[0])\
+      for v in value),\
       "invalid return value from user-supplied function: " +\
       "invalid relative XPath expression"
   elif isinstance(value, basestring):
@@ -346,7 +347,6 @@ def setDataciteValue (node, path, value):
     if isinstance(value, basestring):
       n.text = value
     else:
-      if type(value) is tuple: value = [value]
       for relpath, v in value: setDataciteValue(n, relpath, v)
   return node
 
