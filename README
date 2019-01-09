@@ -100,7 +100,6 @@ indicates the deployment level.  Possible values:
 
     settings.localdev
     settings.remotedev
-    settings.development
     settings.staging
     settings.production
 

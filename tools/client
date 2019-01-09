@@ -18,7 +18,6 @@
 #
 #   server:
 #     l (local server, no https)
-#     d (development)
 #     s (staging)
 #     p (production)
 #     http[s]://...
@@ -85,7 +84,6 @@ signal.signal(signal.SIGINT, lambda signal, frame: sys.exit())
 
 KNOWN_SERVERS = {
   "l": "http://localhost:8000",
-  "d": "https://ids-ezid-dev.cdlib.org",
   "s": "https://ids-ezid-stg.cdlib.org",
   "p": "https://ezid.cdlib.org"
 }
@@ -117,7 +115,6 @@ USAGE_TEXT = """Usage: client [options] server credentials operation...
 
   server:
     l (local server, no https)
-    d (development)
     s (staging)
     p (production)
     http[s]://...
