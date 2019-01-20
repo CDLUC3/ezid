@@ -1372,7 +1372,7 @@ response will resemble the following:</p>
 </div>
 <div class="section" id="python-command-line-tool">
 <h1>Python command line tool</h1>
-<p><a class="reference external" href="ezid.py">ezid.py</a> is a command line tool, written in Python, that is capable of
+<p><a class="reference external" href="https://github.com/CDLUC3/ezid-client-tools/blob/master/ezid.py">ezid.py</a> is a command line tool, written in Python, that is capable of
 exercising all API functions.  It serves as an example of how to use
 the API from Python, but it's also useful in its own right as an easy,
 scriptable means of accessing EZID functionality.  The general usage
@@ -1817,7 +1817,7 @@ for i in {1..100}; do
   ezid.py <span class="hl2">username</span>:<span class="hl2">password</span> mint ark:/99999/fk4 | awk '{ print $2 }'
 done
 </pre>
-<p>Second, the <a class="reference external" href="batch-register.py">batch-register.py</a> script automates several common types
+<p>Second, the <a class="reference external" href="https://github.com/CDLUC3/ezid-client-tools/blob/master/batch-register.py">batch-register.py</a> script automates several common types
 of batch processing.  It reads an input CSV file containing identifier
 metadata, one row per identifier; transforms the metadata into EZID
 metadata as directed by a configuration file of mappings; creates or
@@ -2141,7 +2141,7 @@ For example:</p>
 curl -u <span class="hl2">username</span>:<span class="hl2">password</span> -d format=anvl -d type=ark -d type=doi
   -d permanence=real https://ezid.cdlib.org/download_request
 </pre>
-<p>For even more convenience, a simple Bash script, <a class="reference external" href="batch-download.sh">batch-download.sh</a>,
+<p>For even more convenience, a simple Bash script, <a class="reference external" href="https://github.com/CDLUC3/ezid-client-tools/blob/master/batch-download.sh">batch-download.sh</a>,
 turns a batch download into a one-step operation.  The script issues a
 download request using curl, waits for the request to be processed,
 and when ready downloads to a file in the current directory.  Its

@@ -9,8 +9,10 @@
 
 .. _ANVL: https://wiki.ucop.edu/display/Curation/Anvl
 .. _Apache Commons Codec: http://commons.apache.org/codec/
-.. _batch-download.sh: batch-download.sh
-.. _batch-register.py: batch-register.py
+.. _batch-download.sh:
+   https://github.com/CDLUC3/ezid-client-tools/blob/master/batch-download.sh
+.. _batch-register.py:
+   https://github.com/CDLUC3/ezid-client-tools/blob/master/batch-register.py
 .. _Comma-separated values (CSV):
    http://en.wikipedia.org/wiki/Comma-separated_values
 .. _Contact us: /contact
@@ -25,7 +27,7 @@
 .. _DataCite Metadata Scheme: http://schema.datacite.org/
 .. _Dublin Core Metadata Element Set: http://dublincore.org/documents/dces/
 .. _ERC: https://wiki.ucop.edu/display/Curation/ERC
-.. _ezid.py: ezid.py
+.. _ezid.py: https://github.com/CDLUC3/ezid-client-tools/blob/master/ezid.py
 .. _gzip: http://www.gzip.org/
 .. _libwww-perl: http://search.cpan.org/dist/libwww-perl/
 .. _N2T: https://n2t.net/

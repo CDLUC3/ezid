@@ -1,0 +1,12 @@
+Note and caution: all files in this directory whose names end with
+.html, .py, or .sh are served by the EZID server.
+
+The tools in this directory (i.e., the files ending with .py or .sh)
+are replicated in https://github.com/CDLUC3/ezid-client-tools, and the
+API documentation links to the tools there and not in EZID.  There is
+currently no automated means of updating GitHub from this repository
+(but there ought to be).
+
+ezid.py is essentially identical to PROJECT_ROOT/tools/client, except
+that it excludes several administrative features not of interest to
+general clients.
