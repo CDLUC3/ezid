@@ -1363,11 +1363,11 @@ response will resemble the following:
 Python command line tool
 ------------------------
 
-ezid.py_ is a command line tool, written in Python, that is capable of
-exercising all API functions.  It serves as an example of how to use
-the API from Python, but it's also useful in its own right as an easy,
-scriptable means of accessing EZID functionality.  The general usage
-is:
+ezid.py_ `\ `:ext-icon: is a command line tool, written in Python,
+that is capable of exercising all API functions.  It serves as an
+example of how to use the API from Python, but it's also useful in its
+own right as an easy, scriptable means of accessing EZID
+functionality.  The general usage is:
 
 .. parsed-literal::
 
@@ -1877,15 +1877,15 @@ ARK identifiers:
   awk '{ print $2 }'
   done
 
-Second, the batch-register.py_ script automates several common types
-of batch processing.  It reads an input CSV file containing identifier
-metadata, one row per identifier; transforms the metadata into EZID
-metadata as directed by a configuration file of mappings; creates or
-mints identifiers, or updates existing identifiers, using that
-metadata; and outputs a CSV file containing the created, minted, or
-updated identifiers and other information.  Detailed usage information
-is contained in the script itself, but to give a taste of what it can
-do, given an input CSV file with columns,
+Second, the batch-register.py_ `\ `:ext-icon: script automates several
+common types of batch processing.  It reads an input CSV file
+containing identifier metadata, one row per identifier; transforms the
+metadata into EZID metadata as directed by a configuration file of
+mappings; creates or mints identifiers, or updates existing
+identifiers, using that metadata; and outputs a CSV file containing
+the created, minted, or updated identifiers and other information.
+Detailed usage information is contained in the script itself, but to
+give a taste of what it can do, given an input CSV file with columns,
 
 .. parsed-literal::
 
@@ -2252,11 +2252,11 @@ For example:
   -d type=doi
     -d permanence=real \https://ezid.cdlib.org/download_request
 
-For even more convenience, a simple Bash script, batch-download.sh_,
-turns a batch download into a one-step operation.  The script issues a
-download request using curl, waits for the request to be processed,
-and when ready downloads to a file in the current directory.  Its
-usage equivalent to the above example would be:
+For even more convenience, a simple Bash script, batch-download.sh_
+`\ `:ext-icon:, turns a batch download into a one-step operation.  The
+script issues a download request using curl, waits for the request to
+be processed, and when ready downloads to a file in the current
+directory.  Its usage equivalent to the above example would be:
 
 .. parsed-literal::
 
