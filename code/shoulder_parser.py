@@ -6,8 +6,9 @@
 # shoulder.py so that it can be imported by offline tools without
 # importing the rest of EZID.
 #
-# A shoulder file lists different types of entries, each of which has
-# the general multi-line form:
+# A shoulder file is a plain text file, assumed to be UTF-8 encoded,
+# that lists different types of entries, each of which has the general
+# multi-line form:
 #
 #    :: key
 #    field: value
@@ -268,7 +269,7 @@ def _read (fileContent, errors, warnings):
     line = line.strip()
     if line.startswith("#") or line == "": continue
     try:
-      _testAbort(util.validateAsciiSafeCharset(line), "illegal character",
+      _testAbort(util.validateXmlSafeCharset(line), "illegal character",
         lineNum, errors)
       if line.startswith("::"):
         if entry != None:

@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
-# Validates a shoulder file.  Usage:
+# Validates a shoulder file.  The file should be UTF-8 encoded.
+# Usage:
 #
 #    validate-shoulders [options] file shoulders...
 #
@@ -72,7 +73,7 @@ infile = args[0]
 shouldersToTest = args[1:]
 
 try:
-  fileContent = open(infile).read()
+  fileContent = open(infile).read().decode("UTF-8")
 except Exception, e:
   fatal(str(e))
 

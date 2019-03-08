@@ -164,7 +164,7 @@ def _reconcileShoulders ():
         r.add_header("Authorization", "Basic " +\
           base64.b64encode("%s:%s" % (_username, _password)))
       f = urllib2.urlopen(r)
-      fc = f.read()
+      fc = f.read().decode("UTF-8")
     finally:
       if f: f.close()
     entries, errors, warnings = shoulder_parser.parse(fc)
