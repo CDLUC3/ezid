@@ -15,8 +15,8 @@ SECRET_PATHS.remove(("DATABASES", "default", "PASSWORD"))
 SEARCH_STORE_SAME_DATABASE = False
 
 ALLOWED_HOSTS = ["localhost"]
-LOCALIZATIONS = { "default": ("cdl", ["andy.mardesich@ucop.edu"]) }
-LOCALIZATIONS["localhost:8001"] = ("purdue", ["gjanee@ucop.edu"])
+LOCALIZATIONS = { "default": ("cdl", ["somebody@ucop.edu"]) }
+LOCALIZATIONS["localhost:8001"] = ("purdue", ["somebody@ucop.edu"])
 
 injectSecrets(DEPLOYMENT_LEVEL)
 
