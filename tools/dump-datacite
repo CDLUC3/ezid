@@ -34,7 +34,7 @@ except ImportError:
     os.path.abspath(__file__))[0])[0], "code"))
   import util
 
-template = "https://api.datacite.org/works?data-center-id=%s" +\
+template = "https://api.datacite.org/works?client-id=%s" +\
   "&page[size]=500&page[number]=%d"
 
 w = csv.writer(sys.stdout)
