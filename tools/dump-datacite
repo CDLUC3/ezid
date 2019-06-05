@@ -24,6 +24,7 @@
 import csv
 import json
 import os.path
+import urllib
 import urllib2
 import sys
 
@@ -34,17 +35,19 @@ except ImportError:
     os.path.abspath(__file__))[0])[0], "code"))
   import util
 
-template = "https://api.datacite.org/works?client-id=%s" +\
-  "&page[size]=500&page[number]=%d"
+listTemplate = "https://api.datacite.org/dois?client-id=%s" +\
+  "&page[size]=1000&page[cursor]=1"
+doiTemplate = "https://api.datacite.org/dois/%s"
 
 w = csv.writer(sys.stdout)
 
-for dc in sys.argv[1:]:
-  p = 1
-  while True:
-    j = json.loads(urllib2.urlopen(template % (dc, p)).read())
-    if len(j["data"]) == 0: break
+for datacenter in sys.argv[1:]:
+  link = listTemplate % datacenter.lower()
+  while link != None:
+    j = json.loads(urllib2.urlopen(link).read())
     for r in j["data"]:
-      id = "doi:" + util.validateDoi(r["attributes"]["doi"])
-      w.writerow([id, dc, r["attributes"]["xml"]])
-    p += 1
+      doi = r["attributes"]["doi"]
+      id = "doi:" + util.validateDoi(doi)
+      jj = json.loads(urllib2.urlopen(doiTemplate % urllib.quote(doi)).read())
+      w.writerow([id, datacenter, jj["data"]["attributes"]["xml"]])
+    link = j["links"].get("next")
