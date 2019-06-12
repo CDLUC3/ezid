@@ -16,7 +16,6 @@ SEARCH_STORE_SAME_DATABASE = False
 
 ALLOWED_HOSTS = ["localhost"]
 LOCALIZATIONS = { "default": ("cdl", ["somebody@ucop.edu"]) }
-LOCALIZATIONS["localhost:8001"] = ("purdue", ["somebody@ucop.edu"])
 
 injectSecrets(DEPLOYMENT_LEVEL)
 

@@ -8,7 +8,6 @@ ADMINS.append(("Marisa Strong", "marisa.strong@ucop.edu"))
 ADMINS.append(("Perry Willett", "perry.willett@ucop.edu"))
 ADMINS.append(("Maria Gould", "maria.gould@ucop.edu"))
 
-ALLOWED_HOSTS = ["ezid.cdlib.org", "ezid.lib.purdue.edu"]
-LOCALIZATIONS["ezid.lib.purdue.edu"] = ("purdue", ["datacite@purdue.edu"])
+ALLOWED_HOSTS = ["ezid.cdlib.org"]
 
 injectSecrets(DEPLOYMENT_LEVEL)

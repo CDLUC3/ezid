@@ -36,6 +36,5 @@ else:
 SEARCH_STORE_SAME_DATABASE = STORE_MYSQL and SEARCH_MYSQL
 
 ALLOWED_HOSTS = ["localhost"]
-LOCALIZATIONS["localhost:8001"] = ("purdue", ["somebody@ucop.edu"])
 
 injectSecrets(DEPLOYMENT_LEVEL)
