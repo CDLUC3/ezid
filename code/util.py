@@ -180,6 +180,21 @@ def validateShoulder (shoulder):
   else:
     return False
 
+def inferredShoulder (identifier):
+  """
+  Given a normalized, qualified identifier (e.g., "ark:/12345/xy7qz"),
+  infers and returns the identifier's shoulder (e.g.,
+  "ark:/12345/xy").  This is typically the identifier up to the first
+  two characters following the NAAN- or prefix-separating slash.
+  """
+  if identifier.startswith("ark:/"):
+    return re.match("ark:/(\d{5}(\d{4})?|[b-k]\d{4})/[0-9a-zA-Z]{0,2}",
+      identifier).group(0)
+  elif identifier.startswith("doi:"):
+    return re.match("doi:10\.[1-9]\d{3,4}/[0-9A-Z]{0,2}", identifier).group(0)
+  else:
+    return identifier.split(":")[0] + ":"
+
 datacenterSymbolRE = re.compile(
   "^([A-Z][-A-Z0-9]{0,6}[A-Z0-9])\.([A-Z][-A-Z0-9]{0,6}[A-Z0-9])$", re.I)
 maxDatacenterSymbolLength = 17
