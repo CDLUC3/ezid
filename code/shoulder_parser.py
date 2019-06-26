@@ -34,10 +34,15 @@
 #    minter
 #       The absolute URL of the associated minter, or empty if none.
 #
+#    registration_agency
+#       For DOI shoulders (only), the shoulder's prefix's DOI
+#       registration agency.  Must be "datacite" or "crossref".
+#
 #    datacenter
-#       For DOI shoulders (only), the qualified name of the DataCite
-#       datacenter to use, e.g., "CDL.BUL".  Note that each referenced
-#       datacenter must be defined by a datacenter entry (see below).
+#       For DataCite DOI shoulders (only), the qualified name of the
+#       DataCite datacenter to use, e.g., "CDL.BUL".  Note that each
+#       referenced datacenter must be defined by a datacenter entry
+#       (see below).
 #
 # The optional fields for a shoulder are:
 #
@@ -57,16 +62,11 @@
 #       an extension of) another shoulder.  Useful for silencing
 #       warnings related to subshoulders.
 #
-#    crossref
-#       Must be "true" or "false"; if "true", indicates the shoulder
-#       supports Crossref registration.  May be used with DOI
-#       shoulders only.
-#
 #    prefix_shares_datacenter
 #       Must be "true" or "false"; if "true", the shoulder's
 #       datacenter may be shared with another shoulder having a
 #       different DOI prefix.  Useful for silencing warnings.  May be
-#       used with DOI shoulders only.
+#       used with DataCite DOI shoulders only.
 #
 #    redirect
 #       Resolver information.
@@ -115,12 +115,12 @@ _fields = {
     "name": True,
     "minter": True,
     "redirect": False,
+    "registration_agency": False,
     "datacenter": False,
     "active": False,
     "date": False,
     "is_supershoulder": False,
     "is_subshoulder": False,
-    "crossref": False,
     "prefix_shares_datacenter": False },
   "datacenter": {
     "manager": True,
@@ -180,30 +180,39 @@ def _validateShoulder (entry, errors, warnings):
   else:
     entry["active"] = True
   if entry.key.startswith("doi:"):
-    if mytest("datacenter" in entry, "missing DOI shoulder datacenter",
+    if mytest("registration_agency" in entry,
+      "missing DOI shoulder registration agency",
       entry.lineNum.key):
-      mytest(util.validateDatacenter(entry.datacenter) == entry.datacenter,
-        "invalid datacenter symbol", entry.lineNum.datacenter)
-    if "crossref" in entry:
-      if mytest(entry.crossref in ["true", "false"],
-        "invalid boolean value", entry.lineNum.crossref):
-        entry["crossref"] = (entry.crossref == "true")
+      mytest(entry.registration_agency in ["datacite", "crossref"],
+        "invalid registration agency", entry.lineNum.registration_agency)
     else:
-      entry["crossref"] = False
-    if "prefix_shares_datacenter" in entry:
-      if mytest(entry.prefix_shares_datacenter in ["true", "false"],
-        "invalid boolean value", entry.lineNum.prefix_shares_datacenter):
-        entry["prefix_shares_datacenter"] =\
-          (entry.prefix_shares_datacenter == "true")
+      entry["registration_agency"] = "unknown"
+    if entry.registration_agency == "datacite":
+      if mytest("datacenter" in entry,
+        "missing DataCite DOI shoulder datacenter", entry.lineNum.key):
+        mytest(util.validateDatacenter(entry.datacenter) == entry.datacenter,
+          "invalid datacenter symbol", entry.lineNum.datacenter)
+      if "prefix_shares_datacenter" in entry:
+        if mytest(entry.prefix_shares_datacenter in ["true", "false"],
+          "invalid boolean value", entry.lineNum.prefix_shares_datacenter):
+          entry["prefix_shares_datacenter"] =\
+            (entry.prefix_shares_datacenter == "true")
+      else:
+        entry["prefix_shares_datacenter"] = False
     else:
-      entry["prefix_shares_datacenter"] = False
+      if "datacenter" in entry:
+        warnings.append((entry.lineNum.datacenter,
+          "non-DataCite DOI shoulder has datacenter field"))
+      if "prefix_shares_datacenter" in entry:
+        warnings.append((entry.lineNum.prefix_shares_datacenter,
+          "non-DataCite DOI shoulder has prefix_shares_datacenter field"))
   else:
+    if "registration_agency" in entry:
+      warnings.append((entry.lineNum.registration_agency,
+        "non-DOI shoulder has registration_agency field"))
     if "datacenter" in entry:
       warnings.append((entry.lineNum.datacenter,
         "non-DOI shoulder has datacenter field"))
-    if "crossref" in entry:
-      warnings.append((entry.lineNum.crossref,
-        "non-DOI shoulder has crossref field"))
     if "prefix_shares_datacenter" in entry:
       warnings.append((entry.lineNum.prefix_shares_datacenter,
         "non-DOI shoulder has prefix_shares_datacenter field"))
@@ -314,16 +323,32 @@ def _globalValidations (entries, errors, warnings):
   for i in range(len(shoulders)-1):
     _test(qualifiedName(shoulders[i]) != qualifiedName(shoulders[i+1]),
       "duplicate shoulder name", shoulders[i+1].lineNum.name, errors)
-  # Test for DOI prefixes shared across datacenters.
+  # Test for DOI prefixes shared across registration agencies.
   shoulders.sort(key=lambda s: s.lineNum.key)
+  def getPrefix (s):
+    return s.key.split("/", 1)[0]
   d = {}
   for s in shoulders:
-    if s.key.startswith("doi:") and "datacenter" in s:
+    if s.key.startswith("doi:"):
+      l = d.get(getPrefix(s), [])
+      l.append(s)
+      d[getPrefix(s)] = l
+  for p, l in d.items():
+    if len(l) > 1:
+      if not all(s.registration_agency == l[0].registration_agency\
+        for s in l[1:]):
+        for s in l:
+          errors.append((s.lineNum.key,
+            "DOI prefix used by multiple registration agencies at lines " +\
+            ", ".join("%d" % ss.lineNum.key for ss in l)))
+  # Test for DataCite DOI prefixes shared across datacenters.
+  d = {}
+  for s in shoulders:
+    if s.key.startswith("doi:") and s.registration_agency == "datacite" and\
+      "datacenter" in s:
       l = d.get(s.datacenter, [])
       l.append(s)
       d[s.datacenter] = l
-  def getPrefix (s):
-    return s.key.split("/", 1)[0]
   for dc, l in d.items():
     if len(l) > 1:
       p = getPrefix(l[0])
@@ -331,7 +356,7 @@ def _globalValidations (entries, errors, warnings):
         for s in l:
           if not s.prefix_shares_datacenter:
             warnings.append((s.lineNum.key,
-              "datacenter is shared across DOI prefixes at lines " +\
+              "datacenter is shared across DataCite DOI prefixes at lines " +\
               ", ".join("%d" % ss.lineNum.key for ss in l)))
   # Test for duplicate datacenters.
   datacenters = [e for e in entries if e.type == "datacenter" and e.active]

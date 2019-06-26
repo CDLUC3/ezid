@@ -224,6 +224,11 @@ def createIdentifier (identifier, user, metadata={}, updateIfExists=False):
       # Should never happen.
       assert s != None, "no matching shoulder found"
       si.datacenter = s.datacenter
+      ### CROSSREF TRANSITION TEMPORARY vvv
+      # For now, assign Crossref DOIs the CDL.CDL datacenter.
+      if si.datacenter is None:
+        si.datacenter = ezidapp.models.getDatacenterBySymbol("CDL.CDL")
+      ### CROSSREF TRANSITION TEMPORARY ^^^
     si.my_full_clean()
     if si.owner != user:
       if not policy.authorizeOwnershipChange(user, user, si.owner):

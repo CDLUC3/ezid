@@ -130,6 +130,8 @@ for shoulder in shouldersToTest:
       testMinter(shoulder, entry.minter)
     else:
       error("testing minters requires -m option")
-  if shoulder.startswith("doi:"): testDatacenter(shoulder, entry.datacenter)
+  # We don't have a way to test Crossref shoulders yet.
+  if shoulder.startswith("doi:") and entry.registration_agency == "datacite":
+    testDatacenter(shoulder, entry.datacenter)
 
 sys.exit(exitStatus)

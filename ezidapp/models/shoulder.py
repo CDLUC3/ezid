@@ -90,13 +90,34 @@ class Shoulder (django.db.models.Model):
 
   datacenter = django.db.models.ForeignKey(store_datacenter.StoreDatacenter,
     blank=True, null=True, default=None, on_delete=django.db.models.PROTECT)
-  # For DOI shoulders only, the shoulder's default datacenter;
-  # otherwise, None.
+  # For DataCite DOI shoulders only, the shoulder's default
+  # datacenter; otherwise, None.
 
   crossrefEnabled = django.db.models.BooleanField("Crossref enabled",
     default=False)
-  # For DOI shoulders only, True if the shoulder supports Crossref
-  # registration; otherwise, False.
+  # For DOI shoulders only, True if the shoulder uses a Crossref
+  # prefix and False if the shoulder uses a DataCite prefix;
+  # otherwise, False.  This field is deprecated in favor of the
+  # functions below (it should be replaced by a true registration
+  # agency field someday).
+
+  @property
+  def registrationAgency (self):
+    if self.isDoi:
+      if self.crossrefEnabled:
+        return "crossref"
+      else:
+        return "datacite"
+    else:
+      return None
+
+  @property
+  def isCrossref (self):
+    return self.isDoi and self.crossrefEnabled
+
+  @property
+  def isDatacite (self):
+    return self.isDoi and not self.crossrefEnabled
 
   isTest = django.db.models.BooleanField(editable=False)
   # Computed value.  True if the shoulder is a test shoulder.
@@ -109,9 +130,14 @@ class Shoulder (django.db.models.Model):
     self.type = self.prefix.split(":")[0].upper()
     self.name = self.name.strip()
     if self.isDoi:
-      if self.datacenter == None:
-        raise django.core.exceptions.ValidationError(
-          { "datacenter": "Missing datacenter." })
+      if self.crossrefEnabled:
+        if self.datacenter != None:
+          raise django.core.exceptions.ValidationError(
+            { "datacenter": "Non-DataCite DOI shoulder has datacenter." })
+      else:
+        if self.datacenter == None:
+          raise django.core.exceptions.ValidationError(
+            { "datacenter": "Missing datacenter." })
     else:
       if self.datacenter != None:
         raise django.core.exceptions.ValidationError(
@@ -194,9 +220,11 @@ def _reconcileShoulders ():
             ((s.datacenter == None and "datacenter" in ns) or\
             (s.datacenter != None and\
             s.datacenter.symbol != ns.get("datacenter", ""))) or\
-            (s.crossrefEnabled ^ ns.get("crossref", False)):
+            (s.crossrefEnabled ^\
+            (ns.get("registration_agency", "") == "crossref")):
             shoulderFixups.append((s, ns.name, ns.minter,
-              ns.get("datacenter", None), ns.get("crossref", False)))
+              ns.get("datacenter", None),
+              ns.get("registration_agency", "") == "crossref"))
             s.name = str(uuid.uuid1())
             s.datacenter = None
             s.save()
@@ -254,7 +282,7 @@ def _reconcileShoulders ():
       for prefix, ns in newShoulders.items():
         if prefix not in shoulders:
           s = Shoulder(prefix=prefix, name=ns.name, minter=ns.minter,
-            crossrefEnabled=ns.get("crossref", False))
+            crossrefEnabled=(ns.get("registration_agency", "") == "crossref"))
           if "datacenter" in ns:
             s.datacenter = datacenters[ns.datacenter]
           else:

@@ -115,6 +115,17 @@ class ShoulderHasMinterFilter (django.contrib.admin.SimpleListFilter):
         queryset = queryset.filter(minter="")
     return queryset
 
+class ShoulderRegistrationAgencyFilter (django.contrib.admin.SimpleListFilter):
+  title = "DOI registration agency"
+  parameter_name = "registrationAgency"
+  def lookups (self, request, model_admin):
+    return [("datacite", "DataCite"), ("crossref", "Crossref")]
+  def queryset (self, request, queryset):
+    if self.value() != None:
+      queryset = queryset.filter(prefix__startswith="doi:",
+        crossrefEnabled=(self.value() == "crossref"))
+    return queryset
+
 class ShoulderUnusedFilter (django.contrib.admin.SimpleListFilter):
   title = "is unused"
   parameter_name = "isUnused"
@@ -175,6 +186,18 @@ class StoreUserInlineForShoulder (django.contrib.admin.TabularInline):
     return False
 
 class ShoulderAdmin (django.contrib.admin.ModelAdmin):
+  def registrationAgency (self, obj):
+    if obj.isDoi:
+      if obj.isDatacite:
+        return "DataCite"
+      elif obj.isCrossref:
+        return "Crossref"
+      else:
+        return "?"
+    else:
+      return "(None)"
+  registrationAgency.allow_tags = True
+  registrationAgency.short_description = "DOI registration agency"
   def datacenterLink (self, obj):
     link = django.core.urlresolvers.reverse(
       "admin:ezidapp_storedatacenter_change", args=[obj.datacenter.id])
@@ -184,12 +207,12 @@ class ShoulderAdmin (django.contrib.admin.ModelAdmin):
   search_fields = ["prefix", "name"]
   actions = None
   list_filter = [ShoulderTypeFilter, ShoulderHasMinterFilter,
-    "crossrefEnabled", ShoulderUnusedFilter]
+    ShoulderRegistrationAgencyFilter, ShoulderUnusedFilter]
   ordering = ["name"]
   list_display = ["prefix", "name"]
-  fields = ["prefix", "name", "minter", "datacenterLink", "crossrefEnabled"]
-  readonly_fields = ["prefix", "name", "minter", "datacenterLink",
-    "crossrefEnabled"]
+  fields = ["prefix", "name", "minter", "registrationAgency", "datacenterLink"]
+  readonly_fields = ["prefix", "name", "minter", "registrationAgency",
+    "datacenterLink"]
   inlines = [StoreGroupInline, StoreUserInlineForShoulder]
   form = ShoulderForm
   def has_add_permission (self, request):
@@ -208,8 +231,8 @@ class ShoulderInline (django.contrib.admin.TabularInline):
     return "<a href=\"%s\">%s</a>" % (link, obj.prefix)
   shoulderLink.allow_tags = True
   shoulderLink.short_description = "prefix"
-  fields = ["shoulderLink", "name", "crossrefEnabled"]
-  readonly_fields = ["shoulderLink", "name", "crossrefEnabled"]
+  fields = ["shoulderLink", "name"]
+  readonly_fields = ["shoulderLink", "name"]
   ordering = ["name"]
   extra = 0
   def has_add_permission (self, request):
