@@ -136,10 +136,10 @@ class Identifier (django.db.models.Model):
 
   # datacenter = django.db.models.ForeignKey(datacenter.Datacenter,
   #   blank=True, null=True, default=None)
-  # For DOI identifiers only, the DataCite datacenter at which the
+  # For DataCite DOI identifiers only, the datacenter at which the
   # identifier is registered (or will be registered when the
   # identifier becomes public, in the case of a reserved identifier);
-  # for non-DOI identifiers, None.
+  # for Crossref DOI and non-DOI identifiers, None.
 
   CR_RESERVED = "R"
   CR_WORKING = "B"
@@ -152,15 +152,22 @@ class Identifier (django.db.models.Model):
     (CR_SUCCESS, "successfully registered"),
     (CR_WARNING, "registered with warning"),
     (CR_FAILURE, "registration failure")], default="")
-  # For DOI identifiers only, determines (when nonempty) if the
-  # identifier is registered with Crossref (or will be registered when
-  # the identifier becomes public, in the case of a reserved
-  # identifier), and also indicates the status of the registration
-  # process; otherwise, empty.
+  # For Crossref DOI identifiers only, indicates the status of the
+  # registration process; otherwise, empty.
+
+  # For DOI identifiers, the preceding two fields both indirectly
+  # indicate the DOI registration agency: a DataCite DOI has a
+  # datacenter and an empty crossrefStatus, while a Crossref DOI has
+  # no datacenter and a nonempty crossrefStatus.  Someday, a true
+  # registration agency field should be added.
+
+  @property
+  def isDatacite (self):
+    return self.isDoi and self.crossrefStatus == ""
 
   @property
   def isCrossref (self):
-    return self.crossrefStatus != ""
+    return self.isDoi and self.crossrefStatus != ""
 
   @property
   def isCrossrefGood (self):
@@ -316,10 +323,20 @@ class Identifier (django.db.models.Model):
         "unavailability reason." })
     self.crossrefMessage = self.crossrefMessage.strip()
     if self.isDoi:
-      if self.datacenter == None:
-        raise django.core.exceptions.ValidationError(
-          { "datacenter": "Missing datacenter." })
-      if self.isCrossref:
+      if self.isDatacite:
+        if self.datacenter == None:
+          raise django.core.exceptions.ValidationError(
+            { "datacenter": "Missing datacenter." })
+        if self.crossrefMessage != "":
+          raise django.core.exceptions.ValidationError(
+            { "crossrefMessage":\
+            "DataCite DOI has nonempty Crossref message." })
+      elif self.isCrossref:
+        if self.datacenter != None:
+          # This is the correct error message in most cases.
+          raise django.core.exceptions.ValidationError(
+            { "_crossref":
+            "Crossref registration is incompatible with shoulder." })
         try:
           validation.crossrefDoi(self.identifier)
         except django.core.exceptions.ValidationError, e:
@@ -336,15 +353,12 @@ class Identifier (django.db.models.Model):
             { "crossrefMessage": "Non-problematic Crossref-registered " +\
             "DOI has nonempty Crossref message." })
       else:
-        if self.crossrefMessage != "":
-          raise django.core.exceptions.ValidationError(
-            { "crossrefMessage": "Non-Crossref-registered DOI has " +\
-            "nonempty Crossref message." })
+        assert False, "unhandled case"
     else:
       if self.datacenter != None:
         raise django.core.exceptions.ValidationError(
           { "datacenter": "Non-DOI identifier has datacenter." })
-      if self.isCrossref:
+      if self.crossrefStatus != "":
         raise django.core.exceptions.ValidationError(
           { "crossrefStatus":
           "Only DOI identifiers may be registered with Crossref." })
@@ -443,7 +457,7 @@ class Identifier (django.db.models.Model):
 
   def checkMetadataRequirements (self):
     import datacite
-    if self.isDoi and not self.isReserved:
+    if self.isDatacite and not self.isReserved:
       # If the identifier has DataCite or Crossref XML metadata, we
       # know automatically that metadata requirements are satisfied
       # (in the Crossref case, by virtue of the design of the
@@ -490,7 +504,7 @@ class Identifier (django.db.models.Model):
       d["_t"] = self.resolverTarget
       d["_t1"] = self.target
     if not self.exported: d["_x"] = "no"
-    if self.isDoi: d["_d"] = self.datacenter.symbol
+    if self.isDatacite: d["_d"] = self.datacenter.symbol
     if self.isCrossref:
       d["_cr"] = "yes | " + self.get_crossrefStatus_display()
       if self.crossrefMessage != "": d["_cr"] += " | " + self.crossrefMessage

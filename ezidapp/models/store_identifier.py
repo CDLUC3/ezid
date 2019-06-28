@@ -59,7 +59,7 @@ class StoreIdentifier (identifier.Identifier):
     if d["_o"] != "anonymous": self.owner = store_user.getByPid(d["_o"])
     if d["_g"] != "anonymous": self.ownergroup = store_group.getByPid(d["_g"])
     self.profile = store_profile.getByLabel(d["_p"])
-    if self.isDoi:
+    if self.isDatacite:
       self.datacenter = shoulder.getDatacenterBySymbol(d["_d"])
 
   def updateFromUntrustedLegacy (self, d, allowRestrictedSettings=False):
@@ -74,9 +74,9 @@ class StoreIdentifier (identifier.Identifier):
     # django.core.exceptions.ValidationError on all errors.
     # my_full_clean should be called after this method to fully fill
     # out and validate the object.  This method checks for state
-    # transition violations, but does no permissions checking, and in
-    # particular, does not check the allowability of ownership
-    # changes.
+    # transition violations and DOI registration agency changes, but
+    # does no permissions checking, and in particular, does not check
+    # the allowability of ownership changes.
     for k in d:
       if k == "_owner":
         o = store_user.getByUsername(d[k])
@@ -143,32 +143,36 @@ class StoreIdentifier (identifier.Identifier):
         if not allowRestrictedSettings:
           raise django.core.exceptions.ValidationError(
             { "_datacenter": "Field is not settable." })
-        try:
-          self.datacenter = shoulder.getDatacenterBySymbol(d[k])
-        except store_datacenter.StoreDatacenter.DoesNotExist:
-          raise django.core.exceptions.ValidationError(
-            { "datacenter": "No such datacenter." })
+        if d[k] != "":
+          try:
+            self.datacenter = shoulder.getDatacenterBySymbol(d[k])
+          except store_datacenter.StoreDatacenter.DoesNotExist:
+            raise django.core.exceptions.ValidationError(
+              { "datacenter": "No such datacenter." })
+        else:
+          self.datacenter = None
       elif k == "_crossref":
         if d[k].lower() == "yes":
+          if self.pk != None and self.isDatacite and\
+            not allowRestrictedSettings:
+            raise django.core.exceptions.ValidationError(
+              { "crossrefStatus":
+              "DataCite DOI cannot be registered with Crossref." })
           if self.isReserved:
             self.crossrefStatus = StoreIdentifier.CR_RESERVED
           else:
             self.crossrefStatus = StoreIdentifier.CR_WORKING
           self.crossrefMessage = ""
-        elif d[k].lower() == "no":
-          if self.pk == None or self.isReserved or allowRestrictedSettings:
+        elif allowRestrictedSettings:
+          if d[k] == "":
             self.crossrefStatus = ""
             self.crossrefMessage = ""
           else:
-            raise django.core.exceptions.ValidationError(
-              { "crossrefStatus": "Crossref registration can be " +\
-              "removed from reserved identifiers only." })
-        elif allowRestrictedSettings:
-          # OK, this is a hack used by the Crossref queue.
-          self.crossrefStatus, self.crossrefMessage = d[k].split("/", 1)
+            # OK, this is a hack used by the Crossref queue.
+            self.crossrefStatus, self.crossrefMessage = d[k].split("/", 1)
         else:
           raise django.core.exceptions.ValidationError(
-            { "crossrefStatus": "Value must be 'yes' or 'no'." })
+            { "crossrefStatus": "Value must be 'yes'." })
       elif k == "_target":
         self.target = d[k]
       elif k == "_profile":

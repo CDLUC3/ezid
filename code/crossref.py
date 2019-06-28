@@ -28,7 +28,6 @@ import uuid
 import ezid
 import ezidapp.models
 import config
-import handle_system
 import log
 import util
 import util2
@@ -456,19 +455,6 @@ def _queue ():
   return ezidapp.models.CrossrefQueue
 
 def _doDeposit (r):
-  # Crossref requires that DOIs be registered in the Handle System
-  # before it will process them.
-  if _dataciteEnabled and not util2.isTestDoi(r.identifier[4:]):
-    try:
-      ### CROSSREF TRANSITION TEMPORARY vvv
-      if not any(r.identifier.startswith(s)\
-        for s in config.get("crossref.moved_shoulders").split()):
-        if handle_system.getRedirect(r.identifier[4:]) == None: return
-      ### CROSSREF TRANSITION TEMPORARY ^^^
-    except Exception, e:
-      log.otherError("crossref._doDeposit",
-        _wrapException("error querying Handle System", e))
-      return
   m = util.deblobify(r.metadata)
   if r.operation == ezidapp.models.CrossrefQueue.DELETE:
     url = "http://datacite.org/invalidDOI"

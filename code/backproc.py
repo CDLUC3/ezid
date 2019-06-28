@@ -96,17 +96,13 @@ def _backprocDaemon ():
               binder_async.enqueueIdentifier(uq.identifier,
                 uq.get_operation_display(), blob)
               if uq.updateExternalServices:
-                if uq.actualObject.isDoi:
+                if uq.actualObject.isDatacite:
                   if not uq.actualObject.isTest:
-                    ### CROSSREF TRANSITION TEMPORARY vvv
-                    if not any(uq.identifier.startswith(s)\
-                      for s in config.get("crossref.moved_shoulders").split()):
-                      datacite_async.enqueueIdentifier(uq.identifier,
-                        uq.get_operation_display(), blob)
-                    ### CROSSREF TRANSITION TEMPORARY ^^^
-                  if uq.actualObject.isCrossref:
-                    crossref.enqueueIdentifier(uq.identifier,
-                      uq.get_operation_display(), metadata, blob)
+                    datacite_async.enqueueIdentifier(uq.identifier,
+                      uq.get_operation_display(), blob)
+                elif uq.actualObject.isCrossref:
+                  crossref.enqueueIdentifier(uq.identifier,
+                    uq.get_operation_display(), metadata, blob)
             uq.delete()
       else:
         django.db.connections["default"].close()

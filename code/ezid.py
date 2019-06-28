@@ -219,28 +219,25 @@ def createIdentifier (identifier, user, metadata={}, updateIfExists=False):
       owner=(None if user == ezidapp.models.AnonymousUser else user))
     si.updateFromUntrustedLegacy(metadata,
       allowRestrictedSettings=user.isSuperuser)
-    if si.isDoi and si.datacenter == None:
+    if si.isDoi:
       s = ezidapp.models.getLongestShoulderMatch(si.identifier)
       # Should never happen.
       assert s != None, "no matching shoulder found"
-      si.datacenter = s.datacenter
-      ### CROSSREF TRANSITION TEMPORARY vvv
-      # For now, assign Crossref DOIs the CDL.CDL datacenter.
-      if si.datacenter is None:
-        si.datacenter = ezidapp.models.getDatacenterBySymbol("CDL.CDL")
-      ### CROSSREF TRANSITION TEMPORARY ^^^
+      if s.isDatacite:
+        if si.datacenter == None: si.datacenter = s.datacenter
+      elif s.isCrossref:
+        if not si.isCrossref:
+          if si.isReserved:
+            si.crossrefStatus = ezidapp.models.StoreIdentifier.CR_RESERVED
+          else:
+            si.crossrefStatus = ezidapp.models.StoreIdentifier.CR_WORKING
+      else:
+        assert False, "unhandled case"
     si.my_full_clean()
     if si.owner != user:
       if not policy.authorizeOwnershipChange(user, user, si.owner):
         log.badRequest(tid)
         return "error: bad request - ownership change prohibited"
-    if si.isCrossref:
-      if not policy.authorizeCrossref(user, si):
-        # Technically it's an authorization error, but it makes more
-        # sense to clients to receive a bad request.
-        log.badRequest(tid)
-        return "error: bad request - Crossref registration is not enabled " +\
-          "for user and shoulder"
     with django.db.transaction.atomic():
       si.save()
       ezidapp.models.update_queue.enqueue(si, "create")
@@ -359,7 +356,6 @@ def setMetadata (identifier, user, metadata, updateExternalServices=True,
       log.forbidden(tid)
       return "error: forbidden"
     previousOwner = si.owner
-    wasAlreadyCrossref = si.isCrossref
     si.updateFromUntrustedLegacy(metadata,
       allowRestrictedSettings=user.isSuperuser)
     if si.isCrossref and not si.isReserved and updateExternalServices:
@@ -371,13 +367,6 @@ def setMetadata (identifier, user, metadata, updateExternalServices=True,
       if not policy.authorizeOwnershipChange(user, previousOwner, si.owner):
         log.badRequest(tid)
         return "error: bad request - ownership change prohibited"
-    if si.isCrossref and not wasAlreadyCrossref:
-      if not policy.authorizeCrossref(user, si):
-        # Technically it's an authorization error, but it makes more
-        # sense to clients to receive a bad request.
-        log.badRequest(tid)
-        return "error: bad request - Crossref registration is not " +\
-          "enabled for user and shoulder"
     with django.db.transaction.atomic():
       si.save()
       ezidapp.models.update_queue.enqueue(si, "update", updateExternalServices)

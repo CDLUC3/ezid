@@ -184,7 +184,7 @@ class SearchIdentifier (identifier.Identifier):
     else:
       self.searchableResourceType = ""
     kw = [self.identifier, self.owner.username, self.ownergroup.groupname]
-    if self.isDoi: kw.append(self.datacenter.symbol)
+    if self.isDatacite: kw.append(self.datacenter.symbol)
     if self.target != self.defaultTarget: kw.append(self.target)
     for k, v in self.cm.items():
       if k in ["datacite", "crossref"]:
@@ -216,7 +216,7 @@ class SearchIdentifier (identifier.Identifier):
     self.owner = _getUser(d["_o"])
     self.ownergroup = _getGroup(d["_g"])
     self.profile = _getProfile(d["_p"])
-    if self.isDoi: self.datacenter = _getDatacenter(d["_d"])
+    if self.isDatacite: self.datacenter = _getDatacenter(d["_d"])
 
   # Note that MySQL FULLTEXT indexes must be created outside Django;
   # see .../etc/search-mysql-addendum.sql.

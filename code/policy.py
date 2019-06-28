@@ -127,20 +127,3 @@ def authorizeDownload (user, owner=None, ownergroup=None):
   if user.isRealmAdministrator and user.realm == ownergroup.realm: return True
   if user.isSuperuser: return True
   return False
-
-def authorizeCrossref (user, identifier):
-  """
-  Returns True if a request to register an identifier with Crossref is
-  authorized.  'user' is the requestor and should be an authenticated
-  StoreUser object.  'identifier' is the identifier in question and
-  should be a StoreIdentifier object.  Note that authorization is only
-  checked when registration is first requested; once granted, it is
-  never revisited.
-  """
-  s = ezidapp.models.getLongestShoulderMatch(identifier.identifier)
-  if s == None:
-    # It's unlikely that the shoulder will have disappeared.  But if
-    # it has, we take it as a sign that Crossref is no longer
-    # supported.
-    return False
-  return (user.crossrefEnabled or user.isSuperuser) and s.crossrefEnabled
