@@ -218,7 +218,7 @@ def validateDcmsRecord (identifier, record, schemaValidate=True):
   well-formedness check is performed.  (In an extension to DCMS, we
   allow the identifier to be something other than a DOI, for example,
   an ARK.)  The record is normalized by removing any encoding
-  declaration; by converting from schema version 2.1 to 2.2 if
+  declaration; by converting from deprecated schema versions if
   necessary; and by inserting an appropriate 'schemaLocation'
   attribute.  Also, 'identifier' is inserted in the returned record.
   """
@@ -242,17 +242,11 @@ def validateDcmsRecord (identifier, record, schemaValidate=True):
   m = _rootTagRE.match(root.tag)
   assert m, "not a DataCite record"
   version = m.group(2)
-  # As a special case, upgrade schema version 2.1 to 2.2.
-  if version == "2.1":
-    def changeNamespace (node):
-      # The order is important here: parent before children.
-      node.tag = "{http://datacite.org/schema/kernel-2.2}" +\
-        node.tag.split("}")[1]
-      for child in node: changeNamespace(child)
-    changeNamespace(root)
-    lxml.etree.cleanup_namespaces(root)
+  # Upgrade schema versions that have been deprecated by DataCite.
+  if version == "2.1" or version == "2.2":
+    root = upgradeDcmsRecord(root, parseString=False, returnString=False)
     m = _rootTagRE.match(root.tag)
-    version = "2.2"
+    version = m.group(2)
   schema = _schemas.get(version, None)
   assert schema != None, "unsupported DataCite record version"
   i = root.xpath("N:identifier", namespaces={ "N": m.group(1) })
@@ -602,17 +596,21 @@ def crossrefToDatacite (record, overrides={}):
 _schemaVersionRE =\
   re.compile("{http://datacite\.org/schema/kernel-([^}]*)}resource$")
 
-def upgradeDcmsRecord (record, returnString=True):
+def upgradeDcmsRecord (record, parseString=True, returnString=True):
   """
   Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
-  record (supplied as an unencoded Unicode string) to the latest
+  record (supplied as an unencoded Unicode string if 'parseString' is
+  true, or a root lxml.etree.Element object if not) to the latest
   version of the schema (currently, version 4).  If 'returnString' is
   true, the record is returned as an unencoded Unicode string, in
   which case the record has no XML declaration.  Otherwise, an
   lxml.etree.Element object is returned.  In both cases, the root
   element's xsi:schemaLocation attribute is set or added as necessary.
   """
-  root = util.parseXmlString(record)
+  if parseString:
+    root = util.parseXmlString(record)
+  else:
+    root = record
   root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] =\
     "http://datacite.org/schema/kernel-4 " +\
     "http://schema.datacite.org/meta/kernel-4/metadata.xsd"
