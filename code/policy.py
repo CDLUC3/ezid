@@ -37,6 +37,8 @@ def authorizeCreate (user, prefix):
   if util2.isTestIdentifier(prefix): return True
   if any(map(lambda s: prefix.startswith(s.prefix), user.shoulders.all())):
     return True
+  if any(authorizeCreate(u, prefix) for u in user.proxy_for.all()):
+    return True
   # Note what's missing here: group and realm administrators get no
   # extra identifier creation privileges.
   if user.isSuperuser: return True

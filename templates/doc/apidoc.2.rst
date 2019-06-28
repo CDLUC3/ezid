@@ -741,6 +741,9 @@ owner, with two exceptions:
   a proxy for multiple other users.  Generally speaking, a proxy may
   operate on behalf of the proxied user.  Specifically, a proxy may:
 
+  - create identifiers under any shoulder available to the proxied
+    user;
+
   - create identifiers owned by the proxied user, by setting the
     "_owner" reserved metadata element (see `Internal metadata`_
     below);
@@ -771,15 +774,6 @@ owner, with two exceptions:
   - view group-level identifier statistics; and
 
   - download all the group's identifiers.
-
-In operating on behalf of other users, proxies and group
-administrators temporarily inherit the identity of those other users.
-However, that inheritance does not extend to shoulders or Crossref
-enablement.  For any EZID user, proxy user or group administrator or
-not, the shoulders under which identifiers may be created, and the
-ability to register identifiers with Crossref (see `Crossref
-registration`_ below), are determined by the user's own account
-record.
 
 Proxies can be set up and managed in the EZID UI, Account Settings
 tab.  Group administrators can be appointed only by an EZID
