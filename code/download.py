@@ -182,6 +182,7 @@ _parameters = {
   "createdAfter": (False, _validateTimestamp),
   "createdBefore": (False, _validateTimestamp),
   "crossref": (False, _validateBoolean),
+  "datacite": (False, _validateBoolean),
   "exported": (False, _validateBoolean),
   "format": (False, lambda v: _validateEnumerated(v, ["anvl", "csv", "xml"])),
   "compression": (False, lambda v: _validateEnumerated(v, ["gzip", "zip"])),
@@ -393,6 +394,8 @@ def _satisfiesConstraints (id, constraints):
       if id.createTime >= v: return False
     elif k == "crossref":
       if id.isCrossref^v: return False
+    elif k == "datacite":
+      if id.isDatacite^v: return False
     elif k == "exported":
       if id.exported^v: return False
     elif k == "permanence":

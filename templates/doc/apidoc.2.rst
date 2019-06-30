@@ -2192,6 +2192,11 @@ identifiers).
   Return identifiers that either are or are not registered with
   Crossref.
 
+- datacite={yes|no}
+
+  Return identifiers that either are or are not registered with
+  DataCite.
+
 - exported={yes|no}
 
   Return identifiers that either are or are not exported.

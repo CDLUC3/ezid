@@ -22,6 +22,7 @@ if [ $# -lt 3 ]; then
   echo "   createdAfter={t|YYYY-MM-DDTHH:MM:SSZ}    inclusive"
   echo "   createdBefore={t|YYYY-MM-DDTHH:MM:SSZ}   exclusive"
   echo "   crossref={yes|no}"
+  echo "   datacite={yes|no}"
   echo "   exported={yes|no}"
   echo "   owner=u                                  repeatable"
   echo "   ownergroup=g                             repeatable"
