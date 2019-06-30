@@ -98,7 +98,7 @@ def edit(request):
     d['secondaryContactPhone'] = user.secondaryContactPhone
     d['accountDisplayName'] = user.displayName
     d['accountEmail'] = user.accountEmail
-    if user.crossrefEnabled: d['crossrefEmail'] = user.crossrefEmail
+    d['crossrefEmail'] = user.crossrefEmail
     proxy_for_list = user.proxy_for.all().order_by("username")
     d['proxy_for'] = "<br/> ".join("[" + u.username + "]&nbsp;&nbsp;&nbsp;" + u.displayName \
       for u in proxy_for_list) if proxy_for_list else "None"

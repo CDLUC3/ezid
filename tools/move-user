@@ -44,8 +44,7 @@ MOVE_REQUIREMENTS = """For a user to be moved, the user must:
    - Not be privileged
    - Not inherit its current group's shoulders
    - Have no shoulders
-   - Not have any proxies or be a proxy for another user
-   - Not be Crossref-enabled"""
+   - Not have any proxies or be a proxy for another user"""
 
 def error (message):
   sys.stderr.write("move-user: %s\n" % message)
@@ -72,7 +71,7 @@ if newGroup == None or args.new_group == "anonymous":
 
 if user.loginEnabled or user.isPrivileged or user.inheritGroupShoulders or\
   user.shoulders.count() > 0 or user.proxies.count() > 0 or\
-  user.proxy_for.count() > 0 or user.crossrefEnabled:
+  user.proxy_for.count() > 0:
   error("user can't be moved\n\n%s\n" % MOVE_REQUIREMENTS)
 
 if args.step == None:

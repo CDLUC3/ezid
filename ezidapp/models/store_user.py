@@ -83,10 +83,11 @@ class StoreUser (user.User):
 
   crossrefEnabled = django.db.models.BooleanField("Crossref enabled",
     default=False)
+  # Deprecated and not used at present.  (Former usage:
   # If the user's group is Crossref-enabled, determines if the user
   # may register identifiers with Crossref; otherwise, False.  Note
   # that Crossref registration requires the enablement of both the
-  # user and the shoulder.
+  # user and the shoulder.)
 
   crossrefEmail = django.db.models.EmailField("Crossref email", max_length=255,
     blank=True)

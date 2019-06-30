@@ -544,14 +544,14 @@ class StoreGroupAdmin (django.contrib.admin.ModelAdmin):
     "organizationStreetAddress", "notes"]
   actions = None
   list_filter = [("realm__name", StoreGroupRealmFilter), "accountType",
-    "crossrefEnabled", StoreGroupShoulderlessFilter]
+    StoreGroupShoulderlessFilter]
   ordering = ["groupname"]
   list_display = ["groupname", "organizationNameSpelledOut", "realm"]
   fieldsets = [
     (None, { "fields": ["pid", "groupname", "realm"] }),
     ("Organization", { "fields": ["organizationName", "organizationAcronym",
       "organizationUrl", "organizationStreetAddress"] }),
-    (None, { "fields": ["accountType", "agreementOnFile", "crossrefEnabled",
+    (None, { "fields": ["accountType", "agreementOnFile",
       "shoulders", "shoulderLinks", "notes"] })]
   readonly_fields = ["pid", "shoulderLinks"]
   def get_readonly_fields (self, request, obj=None):
@@ -800,7 +800,7 @@ class StoreUserAdmin (django.contrib.admin.ModelAdmin):
     "secondaryContactName", "notes"]
   actions = None
   list_filter = [("realm__name", StoreUserRealmFilter),
-    "crossrefEnabled", StoreUserHasProxiesFilter, StoreUserIsProxyFilter,
+    StoreUserHasProxiesFilter, StoreUserIsProxyFilter,
     "loginEnabled", StoreUserAdministratorFilter]
   ordering = ["username"]
   list_display = ["username", "displayName", "groupGroupname", "realm"]
@@ -812,7 +812,7 @@ class StoreUserAdmin (django.contrib.admin.ModelAdmin):
     ("Secondary contact", { "fields": ["secondaryContactName",
       "secondaryContactEmail", "secondaryContactPhone"] }),
     (None, { "fields": ["inheritGroupShoulders", "shoulders", "shoulderLinks",
-      "crossrefEnabled", "crossrefEmail"] }),
+      "crossrefEmail"] }),
     ("Proxy users", { "fields": ["proxies", "proxyLinks",
       "reverseProxyLinks"], "classes": ["collapse"] }),
     ("Authentication", { "fields": ["loginEnabled", "password",

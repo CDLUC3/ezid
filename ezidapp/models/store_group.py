@@ -56,9 +56,10 @@ class StoreGroup (group.Group):
 
   crossrefEnabled = django.db.models.BooleanField("Crossref enabled",
     default=False)
+  # Deprecated and not used at present.  (Former usage:
   # Determines if users in the group may register identifiers with
   # Crossref.  Note that Crossref registration requires the enablement
-  # of both the user and the shoulder.
+  # of both the user and the shoulder.)
 
   shoulders = django.db.models.ManyToManyField(shoulder.Shoulder, blank=True)
   # The shoulders to which users in the group have access.  The test
