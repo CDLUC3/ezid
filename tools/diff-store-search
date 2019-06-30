@@ -79,7 +79,7 @@ while stid != None or seid != None:
       seid.unavailableReason)
     compare("exported", formatBoolean(stid.exported),
       formatBoolean(seid.exported))
-    if stid.isDoi:
+    if stid.isDatacite:
       compare("datacenter", stid.datacenter.symbol, seid.datacenter.symbol)
     compare("crossrefStatus", stid.get_crossrefStatus_display(),
       seid.get_crossrefStatus_display())
