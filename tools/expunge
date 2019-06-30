@@ -36,7 +36,8 @@ if len(sys.argv) != 1:
 
 expungeList = []
 for prefix in [ezidapp.models.getArkTestShoulder().prefix,
-  ezidapp.models.getDoiTestShoulder().prefix]:
+  ezidapp.models.getDoiTestShoulder().prefix,
+  ezidapp.models.getCrossrefTestShoulder().prefix]:
   expungeList.extend([si.identifier for si in\
     ezidapp.models.StoreIdentifier.objects.filter(
     identifier__startswith=prefix).filter(createTime__lte=expireTime).\

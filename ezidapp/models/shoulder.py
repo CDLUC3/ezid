@@ -44,6 +44,7 @@ _username = None
 _password = None
 _arkTestPrefix = None
 _doiTestPrefix = None
+_crossrefTestPrefix = None
 _agentPrefix = None
 _shoulders = None
 _datacenters = None # (symbolLookup, idLookup)
@@ -154,6 +155,7 @@ class Shoulder (django.db.models.Model):
 def _loadConfig (acquireLock=True):
   global _url, _username, _password, _arkTestPrefix, _doiTestPrefix
   global _agentPrefix, _shoulders, _datacenters
+  global _crossrefTestPrefix
   import config
   if acquireLock: _lock.acquire()
   try:
@@ -166,6 +168,7 @@ def _loadConfig (acquireLock=True):
       _password = None
     _arkTestPrefix = config.get("shoulders.ark_test")
     _doiTestPrefix = config.get("shoulders.doi_test")
+    _crossrefTestPrefix = config.get("shoulders.crossref_test")
     _agentPrefix = config.get("shoulders.agent")
     _shoulders = None
     _datacenters = None
@@ -347,6 +350,11 @@ def getArkTestShoulder ():
 def getDoiTestShoulder ():
   # Returns the DOI test shoulder.
   return _shoulders[_doiTestPrefix]
+
+@_lockAndLoad
+def getCrossrefTestShoulder ():
+  # Returns the Crossref test shoulder.
+  return _shoulders[_crossrefTestPrefix]
 
 @_lockAndLoad
 def getAgentShoulder ():

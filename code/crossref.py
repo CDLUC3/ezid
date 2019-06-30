@@ -82,7 +82,6 @@ _tagRE =\
   re.compile("\{(http://www\.crossref\.org/schema/(4\.[34]\.\d))\}([-\w.]+)$")
 _rootTags = ["journal", "book", "conference", "sa_component", "dissertation",
   "report-paper", "standard", "database"]
-_crossrefTestPrefix = "10.15697/"
 
 def _notOne (n):
   if n == 0:
@@ -196,9 +195,7 @@ def _buildDeposit (body, registrant, doi, targetUrl, withdrawTitles=False,
   tuple (document, body, batchId) where 'document' is the entire
   submission document as a serialized Unicode string (with the DOI and
   target URL inserted), 'body' is the same but just the <body> child
-  element, and 'batchId' is the submission batch identifier.  If 'doi'
-  is a test identifier, it is prefixed with _crossrefTestPrefix in
-  'document' only.
+  element, and 'batchId' is the submission batch identifier.
   Options: if 'withdrawTitles' is true, the title(s) corresponding to
   the DOI being defined are prepended with "WITHDRAWN:" (in 'document'
   only).  If 'bodyOnly' is true, only the body is returned.
@@ -231,7 +228,6 @@ def _buildDeposit (body, registrant, doi, targetUrl, withdrawTitles=False,
   lxml.etree.SubElement(head, q("registrant")).text = registrant
   e = lxml.etree.SubElement(root, q("body"))
   del body.attrib[_schemaLocation]
-  if util2.isTestDoi(doi): doiElement.text = _crossrefTestPrefix + doi
   if withdrawTitles:
     for p in _titlePaths:
       for t in doiData.xpath(p, namespaces=ns):
@@ -298,7 +294,8 @@ def _submitDeposit (deposit, batchId, doi):
     ("login_id", _username), ("login_passwd", _password),
     ("fname", batchId + ".xml", "application/xml; charset=UTF-8",
     deposit.encode("UTF-8")))
-  url = _depositUrl % (_testServer if util2.isTestDoi(doi) else _realServer)
+  url = _depositUrl %\
+    (_testServer if util2.isTestCrossrefDoi(doi) else _realServer)
   try:
     c = None
     try:
@@ -354,7 +351,8 @@ def _pollDepositStatus (batchId, doi):
     ...
   """
   if not _enabled: return ("completed successfully", None)
-  url = _resultsUrl % (_testServer if util2.isTestDoi(doi) else _realServer)
+  url = _resultsUrl %\
+    (_testServer if util2.isTestCrossrefDoi(doi) else _realServer)
   try:
     c = None
     try:

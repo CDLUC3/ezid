@@ -38,6 +38,7 @@ getLongestShoulderMatch = shoulder.getLongestMatch
 getExactShoulderMatch = shoulder.getExactMatch
 getArkTestShoulder = shoulder.getArkTestShoulder
 getDoiTestShoulder = shoulder.getDoiTestShoulder
+getCrossrefTestShoulder = shoulder.getCrossrefTestShoulder
 getAgentShoulder = shoulder.getAgentShoulder
 getDatacenterBySymbol = shoulder.getDatacenterBySymbol
 getDatacenterById = shoulder.getDatacenterById

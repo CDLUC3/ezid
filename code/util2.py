@@ -21,6 +21,7 @@ import ezidapp.models
 _ezidUrl = None
 _arkTestPrefix = None
 _doiTestPrefix = None
+_crossrefTestPrefix = None
 _defaultArkProfile = None
 _defaultDoiProfile = None
 _defaultUuidProfile = None
@@ -30,9 +31,11 @@ _arkResolver = None
 def _loadConfig ():
   global _ezidUrl, _arkTestPrefix, _doiTestPrefix, _defaultArkProfile
   global _defaultDoiProfile, _defaultUuidProfile, _doiResolver, _arkResolver
+  global _crossrefTestPrefix
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
   _arkTestPrefix = config.get("shoulders.ark_test")
   _doiTestPrefix = config.get("shoulders.doi_test")
+  _crossrefTestPrefix = config.get("shoulders.crossref_test")
   _defaultArkProfile = config.get("DEFAULT.default_ark_profile")
   _defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
   _defaultUuidProfile = config.get("DEFAULT.default_uuid_profile")
@@ -74,7 +77,8 @@ def isTestIdentifier (identifier):
   identifier.
   """
   return identifier.startswith(_arkTestPrefix) or\
-    identifier.startswith(_doiTestPrefix)
+    identifier.startswith(_doiTestPrefix) or\
+    identifier.startswith(_crossrefTestPrefix)
 
 def isTestArk (identifier):
   """
@@ -89,6 +93,13 @@ def isTestDoi (identifier):
   is a test identifier.
   """
   return identifier.startswith(_doiTestPrefix[4:])
+
+def isTestCrossrefDoi (identifier):
+  """
+  Returns True if the supplied unqualified DOI (e.g., "10.1234/FOO")
+  is a Crossref test identifier.
+  """
+  return identifier.startswith(_crossrefTestPrefix[4:])
 
 def defaultProfile (identifier):
   """
