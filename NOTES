@@ -148,18 +148,19 @@ and toExchange in util.py) used in database dumps.
 |        |             | publicized by exporting it to external        |
 |        |             | indexing and harvesting services.  Always     |
 |        |             | returned.                                     |
-| _d     | _datacenter | DOIs only.  The DataCite datacenter at which  |
+| _d     | _datacenter | DataCite DOIs only.  The datacenter at which  |
 |        |             | the identifier is registered, e.g.,           |
 |        |             | "CDL.DRYAD" (or will be registered, in the    |
 |        |             | case of a reserved identifier).               |
-| _cr    | _crossref   | DOIs only.  If present, indicates that the    |
-|        |             | identifier is registered with Crossref (or,   |
-|        |             | in the case of a reserved identifier, will be |
-|        |             | registered), and also indicates the status of |
-|        |             | the registration process.  Syntactically, has |
-|        |             | the value "yes" followed by a pipe character  |
-|        |             | followed by a status message, e.g., "yes |    |
-|        |             | successfully registered".                     |
+| _cr    | _crossref   | Crossref DOIs only.  If present, indicates    |
+|        |             | that the identifier is registered with        |
+|        |             | Crossref (or, in the case of a reserved       |
+|        |             | identifier, will be  registered), and also    |
+|        |             | indicates the status of the registration      |
+|        |             | process.  Syntactically, has the value "yes"  |
+|        |             | followed by a pipe character followed by a    |
+|        |             | status message, e.g., "yes | successfully     |
+|        |             | registered".                                  |
 +--------+-------------+---------------------------------------------- +
 
 4. Agent identifiers
@@ -314,14 +315,12 @@ Crossref does not provide an 'active' flag like DataCite does, and
 this limits our ability to implement identifier status changes.  Our
 next-best-thing approach is as follows:
 
-  - The _crossref element may be set and unset while the identifier is
-    reserved.
+  - The _crossref element is always set.
 
-  - If the _crossref element is set, the identifier must be exported.
+  - The identifier must be exported.
 
   - When the identifier is made public, it is registered with
-    Crossref.  And once the identifier is public, the _crossref
-    element may not be unset.
+    Crossref.
 
   - If the identifier's status is set to unavailable, the identifier
     remains registered with Crossref, but its target URL is set to the

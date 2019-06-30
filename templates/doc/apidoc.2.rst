@@ -864,7 +864,7 @@ first column indicates the element is updatable by clients.
                   by exporting it to external indexing and
                   harvesting services.  Must be "yes" or "no";
                   defaults to "yes".
-  \   _datacenter DOIs only.  The DataCite datacenter at which CDL.CDL
+  \   _datacenter DataCite DOIs only.  The datacenter at which CDL.CDL
                   the identifier is registered (or will be
                   registered, in the case of a reserved
                   identifier).
@@ -873,7 +873,7 @@ first column indicates the element is updatable by clients.
                   of a reserved identifier, will be            registered
                   registered), and also indicates the status
                   of the registration process.  When setting,
-                  must be set to "yes" or "no".  See
+                  must be set to "yes".  See
                   `Crossref registration`_ below for more
                   information.
   === =========== ============================================ ================
