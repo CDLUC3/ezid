@@ -698,7 +698,7 @@ class StoreUserForm (django.forms.ModelForm):
         # Should never happen.
         raise django.core.validators.ValidationError({ "shoulders":
           "User's shoulder set is not a subset of group's." })
-    if cd["crossrefEnabled"]:
+    if cd.get("crossrefEnabled", False):
       if (self.instance.pk != None and\
         not self.instance.group.crossrefEnabled) or\
         (self.instance.pk == None and "group" in cd and\
