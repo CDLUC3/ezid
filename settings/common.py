@@ -20,7 +20,6 @@ DEBUG = True
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 MANAGERS = ADMINS = [
-  ("Greg Janee", "gjanee@ucop.edu"),
   ("John Kunze", "jak@ucop.edu"),
   ("Rushiraj Nenuji", "rushiraj.nenuji@ucop.edu")]
 
