@@ -1129,18 +1129,21 @@ element.
 Metadata requirements & mapping
 -------------------------------
 
-A DOI identifier created by EZID must have title, creator, publisher,
-and publication year metadata any time its status is not reserved (see
-`Identifier status`_ above).  Other than that, EZID imposes no
-requirements on the presence or form of citation metadata, but
-uploading at least minimal citation metadata to EZID is strongly
-encouraged in all cases to record the identifier's meaning and to
-facilitate its long-term maintenance.  Regardless of the metadata
-profile used, population of the "datacite.resourcetype" element is
-encouraged to support broad categorization of identifiers.
+DOI identifiers must satisfy specific metadata requirements.  A
+DataCite DOI created by EZID must have title, creator, publisher, and
+publication year metadata any time its status is not reserved (see
+`Identifier status`_ above).  A Crossref DOI must have Crossref
+metadata at all times (see `Crossref registration`_ below), though the
+metadata need not be complete if the identifier is reserved.  Other
+than that, EZID imposes no requirements on the presence or form of
+citation metadata, but uploading at least minimal citation metadata to
+EZID is strongly encouraged in all cases to record the identifier's
+meaning and to facilitate its long-term maintenance.  Regardless of
+the metadata profile used, population of the "datacite.resourcetype"
+element is encouraged to support broad categorization of identifiers.
 
-To satisfy the aforementioned DOI metadata requirements, EZID looks in
-order for:
+To satisfy the aforementioned DataCite DOI metadata requirements, EZID
+looks in order for:
 
 1. DataCite XML metadata bound to the "datacite" element;
 2. Individual elements from the "datacite" profile as described in
@@ -1184,14 +1187,11 @@ equivalent or a more specific description, as in:
 Crossref registration
 ---------------------
 
-A DOI identifier may be registered with `Crossref`_ `\ `:ext-icon: in
-addition to being registered with `DataCite`_ `\ `:ext-icon:, thereby
-making it available to Crossref's indexing and linking services
-(DataCite remains the primary registrar with regard to the DOI
-system).  **Note:** to take advantage of this, both the identifier
-shoulder and the user making the request must be enabled for Crossref
-registration by an EZID administrator.  In addition, the user must
-have an account with Crossref.
+A DOI identifier may be registered with either the `Crossref`_ `\
+`:ext-icon: or the `DataCite`_ `\ `:ext-icon: registration agency.
+The choice of registration agency is not selectable, but is entirely
+determined by the identifier's shoulder.  This section discusses
+registration with Crossref.
 
 Once registered, an identifier cannot be removed from Crossref.  If
 the identifier's status is set to unavailable (recall `Identifier
@@ -1201,30 +1201,29 @@ Crossref's systems.
 
 Registering an identifier with Crossref requires three steps:
 
-1. Set the "_crossref" reserved metadata element to "yes".
+1. Optionally set the "_crossref" reserved metadata element to "yes".
 2. Supply Crossref deposit metadata as the value of the "crossref"
    element.
-3. Set the "_profile" reserved metadata element to "crossref" to
-   support DataCite metadata mapping and to be able to view the
-   metadata in the EZID UI.
+3. Set the "_profile" reserved metadata element to "crossref" to be
+   able to view the metadata in the EZID UI.
 
 These steps are discussed in more detail next.
 
-Crossref registration is asynchronous.  Registration is requested by,
-in a create, mint, or update identifier request, setting the
-"_crossref" reserved metadata element to "yes".  (Registration may be
-removed from reserved identifiers, and reserved identifiers only, by
-setting "_crossref" to "no".)  In responses, the "_crossref" element
-has the value "yes" followed by a pipe character ("|", U+007C)
-followed by the status of the registration, e.g., "yes | registration
-in progress" or "yes | successfully registered".  The status of the
-registration is updated automatically by EZID and may be polled by the
-client.  If a warning or error occurred during registration, the
-status is followed by another pipe character and the message received
-from Crossref, e.g., "yes | registration failure | xml error...".
-Warnings and errors may also be viewed in the EZID UI and may also be
-emailed to a specified mailbox.  Warnings and errors can be removed
-only by submitting new metadata and re-registering identifiers.
+Crossref registration is asynchronous.  Registration is initiated by a
+create, mint, or update identifier request, when the identifier's
+status is public.  Setting the "_crossref" reserved metadata element
+to "yes" in the request is optional.  In responses, the "_crossref"
+element is always returned and has the value "yes" followed by a pipe
+character ("|", U+007C) followed by the status of the registration,
+e.g., "yes | registration in progress" or "yes | successfully
+registered".  The status of the registration is updated automatically
+by EZID and may be polled by the client.  If a warning or error
+occurred during registration, the status is followed by another pipe
+character and the message received from Crossref, e.g., "yes |
+registration failure | xml error...".  Warnings and errors may also be
+viewed in the EZID UI and may also be emailed to a specified mailbox.
+Warnings and errors can be removed only by submitting new metadata and
+re-registering identifiers.
 
 Crossref deposit metadata should adhere to the `Crossref Deposit
 Schema`_ `\ `:ext-icon:, version 4.3.0 or later.  The metadata should
@@ -1285,15 +1284,14 @@ response bodies`_ above).
 
 If the identifier's preferred metadata profile is "crossref", EZID
 automatically creates a DataCite Metadata Scheme record from the
-Crossref deposit metadata to satisfy DOI metadata requirements (recall
-`Metadata requirements & mapping`_ above).  Where conversion values
-are missing (e.g., a journal does not have a creator) EZID supplies
-the code "(:unav)".  This automatic conversion can be overriden by
-supplying an entire DataCite Metadata Scheme XML record as the value
-of the "datacite" element (see `Profile "datacite"`_ above).
-Additionally, individual DataCite elements (e.g., "datacite.title")
-may be specified to override selected portions of the automatic
-conversion.
+Crossref deposit metadata for display and search purposes.  Where
+conversion values are missing (e.g., a journal does not have a
+creator) EZID supplies the code "(:unav)".  This automatic conversion
+can be overriden by supplying an entire DataCite Metadata Scheme XML
+record as the value of the "datacite" element (see `Profile
+"datacite"`_ above).  Additionally, individual DataCite elements
+(e.g., "datacite.title") may be specified to override selected
+portions of the automatic conversion.
 
 Putting it all together, uploaded metadata in a Crossref registration
 request will resemble:
@@ -1308,19 +1306,16 @@ request will resemble:
 Testing the API
 ---------------
 
-EZID provides two namespaces (or "shoulders") for testing purposes:
-ark:/99999/fk4 for ARK identifiers and doi:10.5072/FK2 for DOI
-identifiers.  Identifiers in these namespaces are termed "test
-identifiers."  They are ordinary long-term identifiers in almost all
-respects, except that EZID deletes them after 2 weeks.
+EZID provides three namespaces (or "shoulders") for testing purposes:
+ark:/99999/fk4 for ARK identifiers, doi:10.5072/FK2 for DataCite DOI
+identifiers, and doi:10.15697/ for Crossref DOI identifiers.
+Identifiers in these namespaces are termed "test identifiers."  They
+are ordinary long-term identifiers in almost all respects, except that
+EZID deletes them after 2 weeks.
 
 Test ARK identifiers resolve just as real ARK identifiers do through
 the N2T_ resolver, but test DOI identifiers do not resolve and do not
-appear in any DataCite systems.  Test DOI identifiers registered with
-Crossref appear only in Crossref's test server
-(\http://test.crossref.org/), and are prefixed there with 10.15697.
-For example, test identifier doi:10.5072/FK2TEST will appear as
-doi:10.15697/10.5072/FK2TEST in Crossref.
+appear in any DataCite or Crossref systems.
 
 All user accounts are permitted to create test identifiers.  EZID also
 provides an "apitest" account that is permitted to create only test
