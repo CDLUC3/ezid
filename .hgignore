@@ -10,3 +10,4 @@
 ^dev/css/*$
 \.map$
 ^ui_library$
+.ezid-venv/

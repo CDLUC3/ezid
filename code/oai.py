@@ -170,7 +170,14 @@ def _buildDublinCoreRecord (identifier):
   km = identifier.kernelMetadata()
   for e in ["creator", "title", "publisher", "date", "type"]:
     if getattr(km, e) != None:
-      lxml.etree.SubElement(root, q(e)).text = getattr(km, e)
+      # Adding a try catch block to generate XML
+      try:
+        # Generate XML node text from the arrtibute value
+        lxml.etree.SubElement(root, q(e)).text = getattr(km, e)
+      except:
+        # Function "sanitizeXmlSafeCharset" returns a copy of the given Unicode string
+        # in which characters not accepted by XML 1.1 have been replaced with spaces.
+        lxml.etree.SubElement(root, q(e)).text = util.sanitizeXmlSafeCharset(getattr(km, e)).strip()
   return root
 
 def _doGetRecord (oaiRequest):
