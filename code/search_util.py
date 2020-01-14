@@ -162,7 +162,7 @@ def _processFulltextConstraint (constraint):
   i = 0
   while i < len(words):
     if not words[i][1].startswith('"') and\
-      (len(words[i][1]) < _minimumWordLength or words[i][1] in _stopwords):
+      (len(words[i][1]) < _minimumWordLength or (words[i][1]).lower() in _stopwords):
       del words[i]
     else:
       i += 1
