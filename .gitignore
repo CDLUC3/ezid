@@ -1,0 +1,13 @@
+~$
+\.map$
+*.pyc
+\.project$
+\.DS_Store$
+^dev/css/*$
+\.old[0-9]*$
+^ui_library$
+^node_modules$
+\.pydevproject$
+templates/info/
+settings/ezid.conf.shadow
+static/javascripts/metadata_tooltips.js
