@@ -57,7 +57,7 @@ def validateDoi (doi):
   if len(doi) > maxIdentifierLength-4: return None
   return doi.upper()
 
-_arkPattern1 = re.compile("((?:\d{6}(?:\d{5})(?:\d{4})?|[bcdfghjkmnpqrstvwxz]\d{4})/)([!-~]+)$")
+_arkPattern1 = re.compile("((?:\d{5}(?:\d{4})?|[bcdfghjkmnpqrstvwxz]\d{4})/)([!-~]+)$")
 _arkPattern2 = re.compile("\./|/\.")
 _arkPattern3 = re.compile("([./])[./]+")
 _arkPattern4 = re.compile("^[./]|[./]$")
