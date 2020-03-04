@@ -84,7 +84,7 @@ signal.signal(signal.SIGINT, lambda signal, frame: sys.exit())
 
 KNOWN_SERVERS = {
   "l": "http://localhost:8000",
-  "s": "https://ids-ezid-stg.cdlib.org",
+  "s": "https://uc3-ezidx2-stg.cdlib.org",
   "p": "https://ezid.cdlib.org"
 }
 
