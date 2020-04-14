@@ -12,7 +12,7 @@ from random import choice
 
 import config
 import ezidapp.models
-import newsfeed 
+import newsfeed
 import userauth
 import urlparse
 from django.utils.translation import ugettext as _
@@ -46,7 +46,7 @@ def _loadConfig():
   p = ezidapp.models.getDoiTestShoulder()
   testPrefixes.append({ "namespace": p.name, "prefix": p.prefix })
   google_analytics_id = config.get("DEFAULT.google_analytics_id")
-  
+
 #loads the templates directory recursively (dir_list is a list)
 def _load_templates(dir_list):
   global templates
@@ -61,11 +61,11 @@ def _load_templates(dir_list):
 
 _loadConfig()
 config.registerReloadListener(_loadConfig)
-  
+
 def render(request, template, context={}):
   global alertMessage, google_analytics_id, reload_templates
   c = { "session": request.session, "authenticatedUser": userauth.getUser(request),
-    "alertMessage": alertMessage, "feed_cache": newsfeed.getLatestItems(), 
+    "alertMessage": alertMessage, "feed_cache": newsfeed.getLatestItems(),
     "google_analytics_id": google_analytics_id, "debug": django.conf.settings.DEBUG }
   c.update(context)
   #this is to keep from having to restart the server every 3 seconds
@@ -84,10 +84,10 @@ def render(request, template, context={}):
   return r
 
 def renderIdPage(request, path, d):
-  """ 
+  """
   Used by Create and Demo ID pages.
   path is string of one of the following '[create|demo]/[simple|advanced]'.
-  d['id_gen_result'] will be either 'method_not_allowed', 'bad_request', 'edit_page' or 
+  d['id_gen_result'] will be either 'method_not_allowed', 'bad_request', 'edit_page' or
   'created_identifier: <new_id>'
   """
   result = 'edit_page' if 'id_gen_result' not in d else d['id_gen_result']
@@ -151,8 +151,8 @@ redirect = django.http.HttpResponseRedirect
 
 def error (request, code, content_custom=None):
   global alertMessage, google_analytics_id
-  t = django.template.RequestContext(request, {'menu_item' : 'ui_home.null', 
-    'session': request.session, 'alertMessage': alertMessage, 'feed_cache': newsfeed.getLatestItems(), 
+  t = django.template.RequestContext(request, {'menu_item' : 'ui_home.null',
+    'session': request.session, 'alertMessage': alertMessage, 'feed_cache': newsfeed.getLatestItems(),
     'google_analytics_id': google_analytics_id, 'content_custom' : content_custom})
   content = templates[str(code)][0].render(t)
   return django.http.HttpResponse(content, status=code)
@@ -231,7 +231,7 @@ def owner_names(user, page):
     Dashboard at this level. Thus diff't choices available based on page "dashboard"
     or "manage"
   """
-  r = [] 
+  r = []
   me = _userList([user], 0, "  (" + _("me") + ")")
   if user.isSuperuser:
     r += me if page == 'manage' else [('all', 'ALL EZID')]
@@ -284,7 +284,7 @@ def _userList(users, indent, suffix):
   return [(x[0], x[1] + x[2]) for x in r2]   # Concat 2nd and 3rd items
 
 def getOwnerOrGroupOrRealm(ownerkey):
-  """ 
+  """
   Takes ownerkey like 'user_uitesting' or 'group_merritt' or 'realm_purdue'
   and returns as tuple of user_id, group_id, realm_id
   """
@@ -297,17 +297,17 @@ def getOwnerOrGroupOrRealm(ownerkey):
     return getOwnerOrGroup(ownerkey) + (None,)
 
 def getOwnerOrGroup(ownerkey):
-  """ 
+  """
   Takes ownerkey like 'user_uitesting' or 'group_merritt'
   and returns as tuple of user_id, group_id
   Note: At the time of writing, is it not possible to search for all identifiers
-    within a realm or entirety of EZID. But once it is, use of this function can be 
+    within a realm or entirety of EZID. But once it is, use of this function can be
     replaced by getOwnerOrGroupOrRealm
   """
   user_id, group_id = None, None
   if ownerkey is None:
     # ToDo: Is this insecure?
-    user_id = 'all' 
+    user_id = 'all'
   elif ownerkey.startswith('user_'):
     user_id = ownerkey[5:]
   elif ownerkey.startswith('group_'):
