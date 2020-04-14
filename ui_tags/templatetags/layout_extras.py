@@ -1,3 +1,5 @@
+import django.utils.html
+import django.utils.safestring
 from django import template
 from django.conf import settings
 from django.utils.html import escape
@@ -20,7 +22,7 @@ def settings_value(name):
     return settings.__getattr__(name)
   except AttributeError:
     return ""
-  
+
 @register.simple_tag
 def content_heading(heading):
   """Outputs primary heading at top of page"""
@@ -37,7 +39,7 @@ def choices(name, value, choice_string):
            for x in choices])
 
 @register.tag
-@basictag(takes_context=True) 
+@basictag(takes_context=True)
 def request_value(context, key_name):
   """Outputs the value of context[key_name], required because
   normal django templating will not retrieve any variables starting with an underscore
@@ -51,9 +53,9 @@ def request_value(context, key_name):
     return escape(REQUEST[key_name])
   else:
     return ''
-  
+
 @register.tag
-@basictag(takes_context=True) 
+@basictag(takes_context=True)
 def set_dict_value(context, dt, key_name):
   """Sets value in the context object equal to the dictionary dt[key_name]"""
   context['value'] = dt[key_name]
@@ -67,7 +69,7 @@ def get_dict_value(dt, key_name):
     return escape(dt[key_name])
   else:
     return ''
-  
+
 @register.simple_tag
 def identifier_display(id_text, testPrefixes):
   for pre in testPrefixes:
@@ -81,13 +83,18 @@ def active_id_display(id_text, testPrefixes):
 
 @register.simple_tag
 def help_icon(id_of_help, specifics="", css_class="button__icon-help", placement="auto bottom"):
-  """ data-container="#' + str(id_of_help) """ 
-  title = _("Click for additional help") + " " + unicode(specifics)
-  return '<a href="#" class="button__icon-link" id="' + str(id_of_help) + '" ' +\
-    'role="button" data-toggle="popover" data-placement="' + placement + '" ' +\
-    'data-trigger="click" tabindex="0">' +\
-    '<img src="/static/images/iconHelp.svg" alt="' + str(title) + '"' + \
-    ' class="' + str(css_class) + '" title="' + str(title) + '"/></a>'
+  """ data-container="#' + str(id_of_help) """
+  title = django.utils.safestring.mark_safe("Click for additional help" + " " + unicode(specifics))
+  return django.utils.html.format_html(
+    '<a href="#" class="button__icon-link" id={} role="button" data-toggle="popover" data-placement={} data-trigger="click" tabindex="0">'
+    '<img src="/static/images/iconHelp.svg" alt={}  class={} title={}/>'
+    '</a>', id_of_help, placement, title, css_class, title
+    # '<a href="#" class="button__icon-link" id="' + str(id_of_help) + '" ' +
+    # 'role="button" data-toggle="popover" data-placement="' + placement + '" ' +
+    # 'data-trigger="click" tabindex="0">' +
+    # '<img src="/static/images/iconHelp.svg" alt="' + str(title) + '"' +
+    # ' class="' + str(css_class) + '" title="' + str(title) + '"/></a>'
+  )
 
 @register.filter('fieldtype')
 def fieldtype(field):
@@ -119,11 +126,12 @@ def host_based_include(context, template_path):
   template_path = template_path.replace("/_/",
     "/%s/" % django.conf.settings.LOCALIZATIONS[host][0])
   t = django.template.loader.get_template(template_path)
-  return t.render(context)
+  return t.render(context.dicts[3])
+  # return t.render(context)
 
 #@register.simple_tag(takes_context=True)
 @register.tag
-@basictag(takes_context=True) 
+@basictag(takes_context=True)
 def form_or_dict_value(context, dict, key_name):
   """Outputs the value of the dict[key_name] unless request.POST contains the data
   for the item which then overrides the dictionary's value.
@@ -140,11 +148,11 @@ def form_or_dict_value(context, dict, key_name):
     return escape(dict[key_name])
   else:
     return ''
-  
+
 @register.tag
-@basictag(takes_context=True) 
+@basictag(takes_context=True)
 def form_or_default(context, key_name, default):
-  """Outputs the value of the reposted value unless it doesn't exist then 
+  """Outputs the value of the reposted value unless it doesn't exist then
   outputs the default value passed in.
   """
   request = context['request']
@@ -191,7 +199,7 @@ def shoulder_display(prefix_dict, id_type_only="False", testPrefixes=[], sans_na
       return escape(_get_id_type(prefix_dict['prefix'])) + display_prefix
     else:
       type = _get_id_type(prefix_dict['prefix'])
-      return escape(prefix_dict['namespace'] + ' ' + type) + display_prefix 
+      return escape(prefix_dict['namespace'] + ' ' + type) + display_prefix
   else:
     return escape(_get_id_type(prefix_dict['prefix']))
 
@@ -224,7 +232,7 @@ def unavailable_codes(for_field):
 def full_url_to_id_details(context, id_text):
   """return URL form of identifier"""
   return util2.urlForm(id_text)
-  
+
 @register.tag
 @basictag(takes_context=True)
 def full_url_to_id_details_urlencoded(context, id_text):
