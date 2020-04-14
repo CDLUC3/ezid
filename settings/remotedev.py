@@ -12,7 +12,7 @@ if STORE_MYSQL:
   SECRET_PATHS.remove(("DATABASES", "default", "HOST"))
 else:
   DATABASES["default"] = {
-    "ENGINE": "transaction_hooks.backends.sqlite3",
+    "ENGINE": "django.db.backends.sqlite3",
     "NAME": os.path.join(SITE_ROOT, "db", "store.sqlite3"),
     "OPTIONS": { "timeout": 60 }
   }
@@ -25,7 +25,7 @@ if SEARCH_MYSQL:
   SECRET_PATHS.remove(("DATABASES", "search", "HOST"))
 else:
   DATABASES["search"] = {
-    "ENGINE": "transaction_hooks.backends.sqlite3",
+    "ENGINE": "django.db.backends.sqlite3",
     "NAME": os.path.join(SITE_ROOT, "db", "search.sqlite3"),
     "OPTIONS": { "timeout": 60 },
     "fulltextSearchSupported": False
