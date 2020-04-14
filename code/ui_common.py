@@ -74,8 +74,8 @@ def render(request, template, context={}):
     templ = django.template.loader.get_template(templates[template][1])
   else:
     templ = templates[template][0]
-  content = templ.render(
-    django.template.RequestContext(request, c))
+  # content = templ.render(django.template.RequestContext(request, c))
+  content = templ.render(c, request)
   # By setting the content type ourselves, we gain control over the
   # character encoding and can properly set the content length.
   ec = content.encode("UTF-8")
