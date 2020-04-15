@@ -28,7 +28,7 @@ _defaultUuidProfile = None
 _doiResolver = None
 _arkResolver = None
 
-def _loadConfig ():
+def loadConfig ():
   global _ezidUrl, _arkTestPrefix, _doiTestPrefix, _defaultArkProfile
   global _defaultDoiProfile, _defaultUuidProfile, _doiResolver, _arkResolver
   global _crossrefTestPrefix
@@ -41,9 +41,6 @@ def _loadConfig ():
   _defaultUuidProfile = config.get("DEFAULT.default_uuid_profile")
   _doiResolver = config.get("resolver.doi")
   _arkResolver = config.get("resolver.ark")
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
 
 def urlForm (identifier):
   """

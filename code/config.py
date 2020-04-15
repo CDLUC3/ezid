@@ -74,7 +74,7 @@ def _getVersion ():
     _getVersion1(os.path.join(django.conf.settings.PROJECT_ROOT, "templates",
       "info")))
 
-def _load ():
+def load ():
   global _config, _version
   _config = config_loader.Config(django.conf.settings.SITE_ROOT,
     django.conf.settings.PROJECT_ROOT, django.conf.settings.EZID_CONFIG_FILE,
@@ -87,7 +87,7 @@ def reload ():
   """
   Reloads the configuration file.
   """
-  _load()
+  load()
   for f in _reloadFunctions: f()
   # The following functions are explicitly listed here, and don't use
   # the registerReloadListener mechanism, to avoid circular import
@@ -97,7 +97,7 @@ def reload ():
   ezidapp.models.store_user.clearCaches()
   ezidapp.models.search_identifier.clearCaches()
 
-_load()
+# load()
 _startupVersion = _version
 
 def get (option):

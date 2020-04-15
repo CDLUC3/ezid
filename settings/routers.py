@@ -8,6 +8,7 @@ class Router (object):
     else:
       return "default"
   db_for_write = db_for_read
+
   def allow_migrate (self, db, app_label, model_name=None, **hints):
     if django.conf.settings.SEARCH_STORE_SAME_DATABASE:
       return True

@@ -50,7 +50,7 @@ _idleSleep = None
 _gzipCommand = None
 _zipCommand = None
 
-def _loadConfig ():
+def loadConfig ():
   global _ezidUrl, _usedFilenames, _daemonEnabled, _threadName, _idleSleep
   global _gzipCommand, _zipCommand
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
@@ -651,5 +651,3 @@ def _daemonThread ():
       log.otherError("download._daemonThread", e)
       doSleep = True
 
-_loadConfig()
-config.registerReloadListener(_loadConfig)

@@ -30,14 +30,11 @@ import util2
 _perUserThreadLimit = None
 _perUserThrottle = None
 
-def _loadConfig ():
+def loadConfig ():
   global _perUserThreadLimit, _perUserThrottle
   _perUserThreadLimit = int(config.get("DEFAULT.max_threads_per_user"))
   _perUserThrottle =\
     int(config.get("DEFAULT.max_concurrent_operations_per_user"))
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
 
 # Simple locking mechanism to ensure that, in a multi-threaded
 # environment, no given identifier is operated on by two threads

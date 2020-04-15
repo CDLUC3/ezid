@@ -47,7 +47,7 @@ _idleSleep = None
 _ezidUrl = None
 _dataciteEnabled = None
 
-def _loadConfig ():
+def loadConfig ():
   global _enabled, _depositorName, _depositorEmail, _realServer, _testServer
   global _depositUrl, _resultsUrl, _username, _password
   global _daemonEnabled, _threadName, _idleSleep, _ezidUrl, _dataciteEnabled
@@ -595,5 +595,3 @@ def _daemonThread ():
       log.otherError("crossref._daemonThread", e)
       maxSeq = None
 
-_loadConfig()
-config.registerReloadListener(_loadConfig)

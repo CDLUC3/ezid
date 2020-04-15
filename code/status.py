@@ -111,7 +111,7 @@ def _statusDaemon ():
     django.db.connections["default"].close()
     time.sleep(_reportingInterval)
 
-def _loadConfig ():
+def loadConfig ():
   global _enabled, _reportingInterval, _threadName, _cloudwatchEnabled
   global _cloudwatchRegion, _cloudwatchNamespace, _cloudwatchInstanceName
   _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
@@ -128,5 +128,3 @@ def _loadConfig ():
     t.setDaemon(True)
     t.start()
 
-_loadConfig()
-config.registerReloadListener(_loadConfig)

@@ -104,7 +104,7 @@ def _statisticsDaemon ():
     else:
       time.sleep(max(_computeCycle-(time.time()-start), 0))
 
-def _loadConfig ():
+def loadConfig ():
   global _enabled, _computeCycle, _computeSameTimeOfDay, _threadName
   _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
     config.get("daemons.statistics_enabled").lower() == "true"
@@ -117,9 +117,6 @@ def _loadConfig ():
     t = threading.Thread(target=_statisticsDaemon, name=_threadName)
     t.setDaemon(True)
     t.start()
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
 
 def query (month=None, owner=None, ownergroup=None, realm=None, type=None,
   hasMetadata=None):

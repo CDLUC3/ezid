@@ -106,7 +106,7 @@ def _linkcheckUpdateDaemon ():
     else:
       time.sleep(max(_resultsUploadCycle-(time.time()-start), 0))
 
-def _loadConfig ():
+def loadConfig ():
   global _enabled, _resultsUploadCycle, _resultsUploadSameTimeOfDay
   global _notificationThreshold, _threadName
   _enabled = django.conf.settings.DAEMON_THREADS_ENABLED and\
@@ -122,5 +122,3 @@ def _loadConfig ():
     t.setDaemon(True)
     t.start()
 
-_loadConfig()
-config.registerReloadListener(_loadConfig)

@@ -6,5 +6,6 @@
 
 mkdir -p ../logs
 mkdir -p ../download/public
+mkdir -p ./db
 
 touch ../logs/transaction_log

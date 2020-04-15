@@ -26,7 +26,7 @@ reload_templates = None
 
 manual_profiles = {'datacite_xml': 'DataCite'}
 
-def _loadConfig():
+def loadConfig():
   #these aren't really globals for the whole app, but globals for ui_common
   #outside of this module, use ui_common.varname
   global ezidUrl, templates, alertMessage, testPrefixes
@@ -58,9 +58,6 @@ def _load_templates(dir_list):
       local_path = apply(os.path.join, dir_list[1:] + [f])
       templates[local_path[:-5]] =\
         (django.template.loader.get_template(local_path), local_path)
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
 
 def render(request, template, context={}):
   global alertMessage, google_analytics_id, reload_templates

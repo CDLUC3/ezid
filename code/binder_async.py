@@ -73,7 +73,7 @@ def getQueueLength ():
   """
   return ezidapp.models.BinderQueue.objects.count()
 
-def _loadConfig ():
+def loadConfig ():
   _daemonEnabled[0] = django.conf.settings.DAEMON_THREADS_ENABLED and\
     config.get("daemons.binder_enabled").lower() == "true"
   if _daemonEnabled[0]:
@@ -85,5 +85,3 @@ def _loadConfig ():
       int(config.get("daemons.binder_processing_error_sleep")),
       _daemonEnabled, _threadName)
 
-_loadConfig()
-config.registerReloadListener(_loadConfig)

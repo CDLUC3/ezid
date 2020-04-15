@@ -56,7 +56,7 @@ _errorLifetime = None
 _errorSimilarityThreshold = None
 _sentErrors = None
 
-def _loadConfig ():
+def loadConfig ():
   global _operationCount, _suppressionWindow, _errorLifetime
   global _errorSimilarityThreshold, _sentErrors
   _errorLock.acquire()
@@ -73,9 +73,6 @@ def _loadConfig ():
     _operationCount = 0
   finally:
     _countLock.release()
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
 
 def getOperationCount ():
   """

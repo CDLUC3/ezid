@@ -37,7 +37,7 @@ _stopwords = None
 _maxTargetLength = None
 _numActiveSearches = 0
 
-def _loadConfig ():
+def loadConfig ():
   global _reconnectDelay, _fulltextSupported, _minimumWordLength
   global _stopwords, _maxTargetLength
   _reconnectDelay = int(config.get("databases.reconnect_delay"))
@@ -49,9 +49,6 @@ def _loadConfig ():
       config.get("search.extra_stopwords")).split()
   _maxTargetLength = ezidapp.models.SearchIdentifier._meta.\
     get_field("searchableTarget").max_length
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
 
 class AbortException (Exception):
   pass

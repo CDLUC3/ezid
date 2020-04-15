@@ -32,16 +32,13 @@ _repositoryName = None
 _adminEmail = None
 _batchSize = None
 
-def _loadConfig ():
+def loadConfig ():
   global _enabled, _baseUrl, _repositoryName, _adminEmail, _batchSize
   _enabled = (config.get("oai.enabled").lower() == "true")
   _baseUrl = config.get("DEFAULT.ezid_base_url")
   _repositoryName = config.get("oai.repository_name")
   _adminEmail = config.get("oai.admin_email")
   _batchSize = int(config.get("oai.batch_size"))
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
 
 def _q (elementName):
   return "{http://www.openarchives.org/OAI/2.0/}" + elementName

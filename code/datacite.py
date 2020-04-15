@@ -49,7 +49,7 @@ _pingTarget = None
 _numActiveOperations = 0
 _schemas = None
 
-def _loadConfig ():
+def loadConfig ():
   global _enabled, _doiUrl, _metadataUrl, _numAttempts, _reattemptDelay
   global _timeout, _allocators, _stylesheet, _crossrefTransform, _pingDoi
   global _pingDatacenter, _pingTarget, _schemas
@@ -77,9 +77,6 @@ def _loadConfig ():
         os.path.join(django.conf.settings.PROJECT_ROOT, "xsd", f,
         "metadata.xsd"))), threading.Lock())
   _schemas = schemas
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
 
 def _modifyActiveCount (delta):
   global _numActiveOperations

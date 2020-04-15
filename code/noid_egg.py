@@ -41,7 +41,7 @@ _authorization = None
 _numAttempts = None
 _reattemptDelay = None
 
-def _loadConfig ():
+def loadConfig ():
   global _server, _authorization, _numAttempts, _reattemptDelay
   _server = config.get("binder.url")
   _authorization = "Basic " +\
@@ -49,9 +49,6 @@ def _loadConfig ():
     config.get("binder.password"))
   _numAttempts = int(config.get("binder.num_attempts"))
   _reattemptDelay = int(config.get("binder.reattempt_delay"))
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
 
 def _issue (method, operations):
   r = urllib2.Request(_server + "?-")

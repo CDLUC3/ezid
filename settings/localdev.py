@@ -32,4 +32,5 @@ LOCALIZATIONS = { "default": ("cdl", ["somebody@ucop.edu"]) }
 injectSecrets(DEPLOYMENT_LEVEL)
 
 # Andy's MySQL driver won't allow utf8mb4 for some reason.
-DATABASES["search"]["OPTIONS"]["charset"] = "utf8"
+# If enabled, this line causes initial setup of the search database to fail.
+# DATABASES["search"]["OPTIONS"]["charset"] = "utf8"

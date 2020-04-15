@@ -29,7 +29,7 @@ _reattemptDelay = None
 _minters = None
 _cacheSize = None
 
-def _loadConfig ():
+def loadConfig ():
   global _minterServers, _numAttempts, _reattemptDelay, _minters, _cacheSize
   d = {}
   for ms in config.get("shoulders.minter_servers").split(","):
@@ -46,9 +46,6 @@ def _loadConfig ():
   finally:
     _lock.release()
   _cacheSize = int(config.get("shoulders.minter_cache_size"))
-
-_loadConfig()
-config.registerReloadListener(_loadConfig)
 
 def _addAuthorization (request):
   d = _minterServers

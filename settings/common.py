@@ -68,7 +68,7 @@ LANGUAGES = [
 ]
 LOCALE_PATHS = [os.path.join(STATIC_ROOT, "locale")]
 
-# The secret key is loaded from the store database by config._load.
+# The secret key is loaded from the store database by config.load.
 SECRET_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 PASSWORD_HASHERS = [
@@ -112,8 +112,9 @@ INSTALLED_APPS = [
   "django.contrib.admin",
   "django.contrib.auth",
   "django.contrib.contenttypes",
+
+  "ui_tags",
   "ezidapp",
-  "ui_tags"
 ]
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
