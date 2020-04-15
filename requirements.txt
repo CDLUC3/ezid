@@ -1,0 +1,7 @@
+Django==1.11.29
+django-mysql==2.5.0
+libsass==0.19.4
+lxml==4.5.0
+MySQL-python==1.2.5
+pytz==2019.3
+six==1.14.0
