@@ -44,5 +44,15 @@ def d (request, apiFunction, uiFunction):
     f = uiFunction
   else:
     f = apiFunction
-  module, function = f.rsplit(".", 1)
+  #module, function = f.rsplit(".", 1)
+  #return getattr(__import__(module, fromlist=module), function)(request)
+  ## DV f.rsplit not available in current version
+  module = None
+  function = None
+  try:
+    module, function = f.rsplit(".", 1)
+  except AttributeError:
+    module = f.__module__
+    function = f.__name__
+  #logging.debug("module: %s function: %s", module, function)
   return getattr(__import__(module, fromlist=module), function)(request)
