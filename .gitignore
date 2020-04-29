@@ -13,4 +13,5 @@ settings/ezid.conf.shadow
 static/javascripts/metadata_tooltips.js
 env
 db
+.idea
 master_shoulders.txt
