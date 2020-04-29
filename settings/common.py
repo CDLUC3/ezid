@@ -68,6 +68,8 @@ LANGUAGES = [
 ]
 LOCALE_PATHS = [os.path.join(STATIC_ROOT, "locale")]
 
+LANGUAGE_CODE='en'
+
 # The secret key is loaded from the store database by config.load.
 SECRET_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
