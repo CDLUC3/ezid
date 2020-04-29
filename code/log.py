@@ -48,6 +48,36 @@ import traceback
 import config
 import util
 
+## DV ++
+## @stacklog decorator for assisting with call tracing
+import traceback
+_LT = logging.getLogger("tracer")
+SYS_PATH = os.path.abspath(os.path.join(os.path.dirname(threading.__file__),".."))
+ENV_PATH = os.path.abspath(os.path.join(os.path.dirname(datetime.__file__),".."))
+EZID_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
+def stacklog(f):
+  def ST(*args, **kwargs):
+    if _LT.level >= logging.DEBUG:
+      try:
+        stack = traceback.extract_stack()
+        i = 0
+        dlm=""
+        for s in reversed(stack[:-1]):
+          fn = s[0].replace(SYS_PATH,"")
+          fn = fn.replace(ENV_PATH,"")
+          fn = fn.replace(EZID_PATH,"")
+          ln = str(s[1])
+          op = s[2]
+          pa = s[3]
+          dlm = " "*i + "^-" if i>0 else ""
+          _LT.debug("%s%s:%s:%s:%s" % (dlm,fn,ln,op,pa))
+          i += 1
+      except Exception as e:
+        _LT.exception(e)
+    return f(*args, **kwargs)
+  return ST
+## --
+
 _errorLock = threading.Lock()
 _countLock = threading.Lock()
 _operationCount = 0
