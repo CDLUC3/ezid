@@ -1,2 +1,2 @@
-# default_app_config = 'startup.Startup'
+default_app_config = 'startup.Startup'
 
