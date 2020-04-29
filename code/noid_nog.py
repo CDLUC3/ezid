@@ -22,6 +22,11 @@ import urllib2
 
 import config
 
+import logging
+from log import stacklog
+_LT = logging.getLogger("tracer")
+
+
 _lock = threading.Lock()
 _minterServers = None
 _numAttempts = None
@@ -67,6 +72,7 @@ class Minter (object):
     self.cache = []
     self.lock = threading.Lock()
 
+  @stacklog
   def mintIdentifier (self):
     """
     Mints and returns a scheme-less ARK identifier, e.g.,

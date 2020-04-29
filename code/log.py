@@ -49,14 +49,14 @@ import config
 import util
 
 ## DV ++
+## for performance reasons, this code should not be enabled in a production environment
 ## @stacklog decorator for assisting with call tracing
-import traceback
-_LT = logging.getLogger("tracer")
 SYS_PATH = os.path.abspath(os.path.join(os.path.dirname(threading.__file__),".."))
 ENV_PATH = os.path.abspath(os.path.join(os.path.dirname(datetime.__file__),".."))
 EZID_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
 def stacklog(f):
   def ST(*args, **kwargs):
+    _LT = logging.getLogger("tracer")
     if _LT.level >= logging.DEBUG:
       try:
         stack = traceback.extract_stack()

@@ -36,6 +36,10 @@ import urllib2
 import config
 import util
 
+import logging
+from log import stacklog
+_LT = logging.getLogger("tracer")
+
 _server = None
 _authorization = None
 _numAttempts = None
@@ -50,6 +54,7 @@ def loadConfig ():
   _numAttempts = int(config.get("binder.num_attempts"))
   _reattemptDelay = int(config.get("binder.reattempt_delay"))
 
+@stacklog
 def _issue (method, operations):
   r = urllib2.Request(_server + "?-")
   r.get_method = lambda: method
