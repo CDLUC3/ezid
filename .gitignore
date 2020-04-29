@@ -11,3 +11,4 @@
 templates/info/
 settings/ezid.conf.shadow
 static/javascripts/metadata_tooltips.js
+master_shoulders.txt
