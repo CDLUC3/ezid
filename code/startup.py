@@ -6,8 +6,13 @@ class Startup(django.apps.AppConfig):
     name = "ezidapp"
 
     def ready(self):
-        import config
-        config.load()
+        try:
+            import config
+            config.load()
+        except Exception:
+            # App not ready to be configured yet. This allows running
+            # `django-admin migrate` to create the initial databases.
+            return
 
         import backproc
         config.registerReloadListener(backproc.loadConfig)
@@ -84,3 +89,5 @@ class Startup(django.apps.AppConfig):
         import ui_common
         ui_common.loadConfig()
         config.registerReloadListener(ui_common.loadConfig)
+
+        print('INITIALIZED')
