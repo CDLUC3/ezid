@@ -8,9 +8,9 @@ Keeping setup instructions separate from the [original README](README.orig.md) f
 
 sudo bash -c '
     apt update
-    apt -fy dist-upgrade
+    apt dist-upgrade -fy
     apt install -y \
-        \    
+        \
         build-essential \
         llvm \
         make \
@@ -49,15 +49,19 @@ sudo bash -c '
 
 ## Python 2.7
 
+Prepare pyenv
+
 ```shell script
 curl https://pyenv.run | bash
 ```
 
-- Install and activate the env vars printed at the end of the pyenv setup.  
+- Follow the instructions printed at the end of the pyenv setup.  
+
+Install Python 2.7
 
 ```shell script
 bash -c '
-    pyver=2.7.17
+    pyver=2.7.18
     venv=ezid_${pyver}
     export CONFIGURE_OPTS=--enable-shared
     export CFLAGS=-O2
@@ -72,7 +76,7 @@ bash -c '
 
 ```shell script
 bash -c '
-    export ez=$HOME/ezid
+    export ez=$HOME/dev
     mkdir -p $ez
     cd $ez
     
@@ -85,13 +89,19 @@ bash -c '
     cd $ez/ezid
     pip install -r requirements.txt
 
+    . ./dev_env_vars.sourceme.sh 
     ./dev_prep_env.sh
 
     django-admin migrate
     django-admin migrate --database=search
 '
+```
 
-. ./dev_env_vars.sourceme.sh 
+Start
 
-django-admin runserver
+```shell script
+$ export ez=$HOME/dev
+$ cd $ez/ezid
+$ . ./dev_env_vars.sourceme.sh 
+$ django-admin runserver
 ```
