@@ -1,0 +1,11 @@
+language: python
+python:
+  - "2.7"
+virtualenv:
+  system_site_packages: true
+install:
+  - pip install -r requirements.txt
+before_script:
+  - DJANGO_SETTINGS_MODULE=settings.localdev
+  - export PYTHONPATH=$PYTHONPATH:$(pwd)/code
+script: pytest
