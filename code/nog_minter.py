@@ -6,12 +6,12 @@ Terminology:
 
 - Sping: Semi-opaque string. E.g., '77913/r7006t'
 - Minter: Sping generator
-- Shoulder: Unique part of the sping. E.g., '77913/r7'
+- Shoulder: Static part of the sping. E.g., '77913/r7'
 - Expandable template: The form of the minted spings. E.g., '77913/r7{eedk}'
 - Mask: Format specifier for the generated part of the sping. E.g., 'eedk'
 - Type: Always 'rand', designating pseudo-random sequence of spings (as opposed to
   sequential)
-- DIG: Extended Digit. The alphabet used in the generated identifiers.
+- XDIG: Extended Digit. The alphabet used in the generated identifiers.
 
 BerkeleyDB keys:
 
@@ -45,6 +45,8 @@ except ImportError:
     # noinspection PyUnresolvedReferences
     import bsddb3 as bsddb
 
+import django.conf
+
 # fmt:off
 XDIG_DICT = {
     # digits
@@ -59,8 +61,10 @@ XDIG_STR = "0123456789bcdfghjkmnpqrstvwxz"
 ALPHA_COUNT = len(XDIG_STR)
 DIGIT_COUNT = 10
 COUNTER_COUNT = 290
+
 # MINDERS_PATH = pathlib.Path("~/.minders").expanduser().resolve()
-MINDERS_PATH = os.path.abspath(os.path.expanduser("~/.minders"))
+# MINDERS_PATH = os.path.abspath(os.path.expanduser("~/.minders"))
+MINDERS_PATH = os.path.join(django.conf.settings.PROJECT_ROOT, "db", "minters")
 
 
 log = logging.getLogger(__name__)
@@ -83,11 +87,10 @@ def main():
             bdb.dump()
         return
 
-    for i, id_str in enumerate(
+    for i, sping_str in enumerate(
         mint(args.naan_str, args.shoulder_str, args.mint_count, args.dry_run)
     ):
-        # log.info("{: 10d} {}".format(i + 1, id_str))
-        print(id_str)
+        print("{: 10d} {}".format(i + 1, sping_str))
 
 
 def parse_command_line_args():
@@ -119,8 +122,32 @@ def parse_command_line_args():
     return parser.parse_args()
 
 
+def mint_identifier(shoulder):
+    """
+    {
+        '_datacenter_cache': None,
+        '_state': <django.db.models.base.ModelState object at 0x7fa140fc8590>,
+        'crossrefEnabled': False,
+        'datacenter_id': None,
+        'id': 10,
+        'isTest': True,
+        'minter': u'https://n2t.net/a/ezid/m/ark/99999/fk4',
+        'name': u'ARK Test',
+        'prefix': u'ark:/99999/fk4',
+        'type': u'ARK'
+    }
+    """
+    #log.debug(pprint.pformat(shoulder))
+    prefix_str = shoulder.prefix
+    m = re.match(r'ark:/(\d+)/(.*)', prefix_str)
+    assert m, 'Invalid prefix: {}'.format(prefix_str)
+    naan_str, pre_str = m.groups()
+    for sping_str in mint(naan_str, pre_str, mint_count=1, dry_run=False):
+        return sping_str
+
+
 def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
-    """Generate ids with the given minter.
+    """Generate spings with the given minter.
 
     Unless {dry_run} is set, the BerkeleyDB is updated to reflect the new state of the
     minder after successfully minting the requested number of spings.
@@ -144,18 +171,14 @@ def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
         )
 
         mask_str = bdb.get("mask")
-        per_counter = bdb.get_int("percounter")
-
         assert re.match(r"[def]+k?$", mask_str), "Invalid mask_str: {}".format(mask_str)
 
+        per_counter = bdb.get_int("percounter")
         counter_key_list = _get_active_counter_list(bdb)
 
-        for i in range(mint_count):
-            # log.debug("percounter={}".format(per_counter))
-
+        for _ in range(mint_count):
             if total_count == max_total_count:
                 log.info("Extending template. total={}".format(total_count))
-
                 mask_str = _extend_template(mask_str, bdb.get("atlast"))
                 bdb.set("mask", mask_str)
                 # We don't use :/template but update it so that it matches for testing.
@@ -164,21 +187,21 @@ def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
                 bdb.set("oatop", max_total_count)
                 max_single_count = max_total_count // COUNTER_COUNT + 1
                 _set_counter_max_values(bdb, max_single_count)
+                counter_key_list[:] = _get_active_counter_list(bdb)
 
-            counter_idx_and_value = _next(bdb, counter_key_list, per_counter,
-                                          total_count)
+                per_counter = max_single_count + 1
+                print(per_counter)
 
-            counter_key_list = _get_active_counter_list(bdb)
-
+            counter_idx_and_value = _next(bdb, counter_key_list, per_counter, total_count)
             total_count += 1
 
             s = _get_xdig_str(counter_idx_and_value, mask_str)
-            id_str = "{}/{}{}".format(naan_str, shoulder_str, s)
+            sping_str = "{}/{}{}".format(naan_str, shoulder_str, s)
 
             if mask_str.endswith("k"):
-                id_str += _get_check_char(id_str)
+                sping_str += _get_check_char(sping_str)
 
-            yield id_str
+            yield sping_str
 
         if not dry_run:
             bdb.set("oacounter", total_count)
@@ -192,12 +215,14 @@ def _next(bdb, counter_key_list, per_counter, total_count):
     """
     rnd = _Drand48(total_count)
     counter_idx = int(rnd.drand() * len(counter_key_list))
+    # log.debug('len(counter_key_list)={}'.format(len(counter_key_list)))
+    # log.debug('counter_idx={}'.format(counter_idx))
     counter_name = counter_key_list[counter_idx]
-    counter_idx = int(counter_name[1:])
+    counter_idx2 = int(counter_name[1:])
     counter_key = "{}/value".format(counter_name)
     counter_int = bdb.get_int(counter_key) + 1
     bdb.set(counter_key, counter_int)
-    n = counter_int + counter_idx * per_counter
+    n = counter_int + counter_idx2 * per_counter
 
     # log.debug(
     #     "counter_idx={} counter_name={} counter_int={} n={}".format(
@@ -212,6 +237,7 @@ def _next(bdb, counter_key_list, per_counter, total_count):
     )
     if counter_int == max_int:
         _deactivate_exhausted_counter(bdb, counter_idx)
+        counter_key_list[:] = _get_active_counter_list(bdb)
 
     return n
 
@@ -223,7 +249,10 @@ def _deactivate_exhausted_counter(bdb, counter_idx):
 
 def _get_active_counter_list(bdb):
     active_list = bdb.get_list("saclist")
-    # log.debug("active_list: {}".format(active_list))
+    # log.debug(
+    #     "active_list="
+    #     + " ".join("{}={}".format(i, v) for i, v in enumerate(active_list))
+    # )
     if not active_list:
         _reset_active_counter_list(bdb)
         _reset_exhausted_counter_list(bdb)
@@ -265,7 +294,6 @@ def _get_xdig_str(comp_counter, mask_str):
             divider = DIGIT_COUNT
 
         # noinspection PyUnboundLocalVariable
-        # log.debug((comp_counter, divider))
         comp_counter, rem = divmod(comp_counter, divider)
         x_char = XDIG_STR[rem]
 
@@ -310,7 +338,7 @@ class _Bdb:
         self._dry_run = dry_run
         # bdb_path = MINDERS_PATH / pathlib.Path(naan_str, shoulder_str, "nog.bdb")
         bdb_path = os.path.join(MINDERS_PATH, naan_str, shoulder_str, "nog.bdb")
-        log.debug("Minter BerkeleyDB: {}".format(bdb_path))
+        log.error("Minter BerkeleyDB: {}".format(bdb_path))
         # dry_run
         self.__bdb = bsddb.btopen(bdb_path, "rw")
         # self.__bdb = bsddb.btopen(bdb_path, "r" if dry_run else 'w')
@@ -382,13 +410,13 @@ class _Drand48:
     """48-bit linear congruential PRNG, matching srand48() and drand48() in glibc."""
 
     def __init__(self, seed):
-        # log.debug('seed={}'.format(seed))
+        log.debug("drand48 seed={}".format(seed))
         self.state = (seed << 16) + 0x330E
 
     def drand(self):
         self.state = (25214903917 * self.state + 11) & (2 ** 48 - 1)
         rnd = self.state / 2 ** 48
-        # log.debug('rnd={}'.format(rnd))
+        log.debug("drand48 value={}".format(rnd))
         return rnd
 
 

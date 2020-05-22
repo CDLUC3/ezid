@@ -103,10 +103,11 @@ def get_test_docs_path(naan_str, shoulder_str):
 
 
 def mkdir_p(file_path):
+    dir_path = os.path.dirname(file_path)
     try:
-        os.makedirs(os.path.dirname(file_path))
+        os.makedirs(dir_path)
     except OSError as e:
-        if not (e.errno == errno.EEXIST and os.path.isdir(file_path)):
+        if not (e.errno == errno.EEXIST and os.path.isdir(dir_path)):
             raise
 
 
