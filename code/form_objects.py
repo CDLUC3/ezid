@@ -497,7 +497,8 @@ class DateForm(forms.Form):
     ("Issued", _("Issued")),
     ("Submitted", _("Submitted")),
     ("Updated", _("Updated")),
-    ("Valid", _("Valid"))
+    ("Valid", _("Valid")),
+    ("Other", _("Other"))
   ) 
   dateType= forms.ChoiceField(required=False, label = _("Type"), choices=DATE_TYPES)
 
