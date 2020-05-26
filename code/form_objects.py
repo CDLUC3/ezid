@@ -40,7 +40,7 @@ REMAINDER_BOX_DEFAULT = _("Recommended: Leave blank")
 RESOURCE_TYPES = (
   ('', _("Select a type of object")), ('Audiovisual', _('Audiovisual')), 
   ('Collection', _('Collection')), ('Dataset', _('Dataset')), 
-  ('Event', _('Event')), ('Image', _('Image')), 
+  ('DataPaper', _('DataPaper')), ('Event', _('Event')), ('Image', _('Image')), 
   ('InteractiveResource', _('Interactive Resource')), ('Model', _('Model')), 
   ('PhysicalObject', _('Physical Object')), ('Service', _('Service')), 
   ('Software', _('Software')), ('Sound', _('Sound')), ('Text', _('Text')), 
