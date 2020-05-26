@@ -7,6 +7,7 @@
 \.old[0-9]*$
 ^ui_library$
 ^node_modules$
+node_modules
 \.pydevproject$
 templates/info/
 settings/ezid.conf.shadow
