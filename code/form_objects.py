@@ -341,6 +341,13 @@ class CreatorForm(forms.Form):
   """
   def __init__(self, *args, **kwargs):
     super(CreatorForm,self).__init__(*args,**kwargs)
+    CREATOR_NAME_TYPES = (
+      ("", _("Select a name type of creator")),
+      ("Organizational", _("Organizational")),
+      ("Personal", _("Personal"))
+    )
+    self.fields["nameType"] = forms.ChoiceField(required=False, 
+      label = _("Name Type"), choices=CREATOR_NAME_TYPES)
     self.fields["creatorName"] = forms.CharField(label=_("Name"),
       error_messages={'required': _("Please fill in a value for creator name.")})
     self.fields["familyName"] = forms.CharField(required=False, label=_("Family Name"))
@@ -455,8 +462,15 @@ class ContribForm(forms.Form):
       ("WorkPackageLeader", _("Work Package Leader")),
       ("Other", _("Other"))
     ) 
+    CONTRIB_NAME_TYPES = (
+      ("", _("Select a name type of contributor")),
+      ("Organizational", _("Organizational")),
+      ("Personal", _("Personal"))
+    )
     self.fields["contributorType"] = forms.ChoiceField(required=False, 
       label = _("Contributor Type"), choices=CONTRIB_TYPES)
+    self.fields["nameType"] = forms.ChoiceField(required=False, 
+      label = _("Name Type"), choices=CONTRIB_NAME_TYPES)
     self.fields["contributorName"] = forms.CharField(required=False, label=_("Name"))
     self.fields["familyName"] = forms.CharField(required=False, label=_("Family Name"))
     self.fields["givenName"] = forms.CharField(required=False, label=_("Given Name"))
@@ -467,6 +481,7 @@ class ContribForm(forms.Form):
     cleaned_data = super(ContribForm, self).clean()
     ctype = cleaned_data.get("contributorType")
     cname = cleaned_data.get("contributorName")
+    cnametype = cleaned_data.get("nameType")
     cfname = cleaned_data.get("familyName")
     cgname = cleaned_data.get("givenName")
     err1, err2 = {}, {}
@@ -476,7 +491,7 @@ class ContribForm(forms.Form):
       ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0].format(str(i)))
       caff = cleaned_data.get("affiliation")
       """ Use of contributor element requires name and type be populated """
-      if (ctype or cname or cfname or cgname or caff or ni or ni_s or ni_s_uri):
+      if (ctype or cname or cnametype or cfname or cgname or caff or ni or ni_s or ni_s_uri):
         err1 = _gatherContribErr1(err1, ctype, cname)
       err = _validateNameIdGrouping(i, ni, ni_s, ni_s_uri)
       if err: err2.update(err.items()) 
@@ -577,14 +592,17 @@ class RelIdForm(forms.Form):
     ("References", _("References")),
     ("Requires", _("Requires")),
     ("Reviews", _("Reviews"))
-  )
+  ) 
   relationType = forms.ChoiceField(required=False, label = _("Relation Type"), choices=RELATION_TYPES)
+  resourceType = forms.ChoiceField(choices=RESOURCE_TYPES, label=_("Resource type"),
+      error_messages={'required': ERR_RESOURCE}) 
   relatedMetadataScheme = forms.CharField(required=False, label=_("Related Metadata Scheme"))
   schemeURI = forms.CharField(required=False, label=_("Scheme URI"))
   schemeType = forms.CharField(required=False, label=_("Scheme Type"))
   def clean(self):
     cleaned_data = super(RelIdForm, self).clean()
     ri = cleaned_data.get("relatedIdentifier")
+    rt = cleaned_data.get("resourceType")
     ri_type = cleaned_data.get("relatedIdentifierType")
     r_type = cleaned_data.get("relationType")
     rm_s = cleaned_data.get("relatedMetadataScheme")
@@ -592,7 +610,7 @@ class RelIdForm(forms.Form):
     s_type = cleaned_data.get("schemeType")
     err={}
     """ Use of RelId element requires relatedIdentifier and relatedIdentifierType be populated """
-    if (ri or ri_type or r_type or rm_s or s_uri or s_type):
+    if (ri or rt or ri_type or r_type or rm_s or s_uri or s_type):
       if not ri_type:
         err['relatedIdentifierType'] = _("Related Identifier Type is required if this property is used.")
       if not r_type:
@@ -617,6 +635,8 @@ class RightsForm(forms.Form):
   """ Form object for Rights Element in DataCite Advanced (XML) profile """
   rights = forms.CharField(required=False, label=_("Rights"))
   rightsURI = forms.CharField(required=False, label=_("Rights URI"))
+  rightsLanguage = forms.RegexField(required=False,
+      label=_("Rights Language"), regex=REGEX_LANGUAGE, error_messages={'invalid': ERR_LANGUAGE})
 
 class GeoLocForm(forms.Form):
   """ Form object for GeoLocation Element in DataCite Advanced (XML) profile """
