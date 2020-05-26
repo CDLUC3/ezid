@@ -10,7 +10,7 @@ var browserSync = require('browser-sync');
 var useref = require('gulp-useref');
 var uglify = require('gulp-uglify');
 var gulpIf = require('gulp-if');
-var minifyCSS = require('gulp-minify-css');
+var cleanCSS = require('gulp-clean-css');
 var imagemin = require('gulp-imagemin');
 var cache = require('gulp-cache');
 var del = require('del');
@@ -101,7 +101,7 @@ gulp.task('useref', function(){
 
   return gulp.src(['dev/**/*.html', '!dev/includes/*'])
     .pipe(assets)
-    .pipe(gulpIf('*.css', minifyCSS())) // Minifies only if it's a CSS file
+    .pipe(gulpIf('*.css', cleanCSS())) // Minifies only if it's a CSS file
     .pipe(gulpIf('*.js', uglify())) // Uglifies only if it's a Javascript file
     .pipe(assets.restore())
     .pipe(useref())
