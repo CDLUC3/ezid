@@ -10,8 +10,8 @@ install:
 before_script:
   - DJANGO_SETTINGS_MODULE=settings.localdev
   - export PYTHONPATH=$PYTHONPATH:$(pwd)/code
-  - pushd tests/test_docs; for f in $(ls *.bdb); do A=${f%_*};B={f##*_}; C=${B%.*};D=${HOME}/.minders/${A}/${C}; mkdir -p ${D}; cp ${f} ${D}/nog.bdb; done; popd
 script:
+  - bash tests/setup_tests.sh
   - pwd
   - ls -la
   - python --version
