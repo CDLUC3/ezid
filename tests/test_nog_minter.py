@@ -30,6 +30,7 @@ class TestNogMinter:
 
     def mkdir_p(self, file_path):
         dir_path = os.path.dirname(file_path)
+        print("*** " + dir_path)
         try:
             os.makedirs(dir_path)
         except OSError as e:

@@ -10,4 +10,8 @@ install:
 before_script:
   - DJANGO_SETTINGS_MODULE=settings.localdev
   - export PYTHONPATH=$PYTHONPATH:$(pwd)/code
-script: pytest
+script:
+  - pwd
+  - ls -la
+  - python --version
+  - pytest
