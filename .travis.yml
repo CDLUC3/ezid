@@ -13,7 +13,6 @@ before_script:
 script:
   - bash tests/setup_tests.sh
   - pwd
-  - ls -la
+  - ls -la ${HOME}/.minders
   - python --version
   - pytest
-  - ls -la
