@@ -10,7 +10,7 @@ install:
 before_script:
   - DJANGO_SETTINGS_MODULE=settings.localdev
   - export PYTHONPATH=$PYTHONPATH:$(pwd)/code
-  - pushd tests/test_docs; for f in $(ls *.bdb); do A=${f%_*};B=${${f##*_}%.*}; C="${HOME}/.minders/${A}/${B}"; mkdir -p ${C}; cp ${f} ${C}/nog.bdb; done; popd
+  - pushd tests/test_docs; for f in $(ls *.bdb); do A=${f%_*};B={f##*_}; C=${B%.*};D="${HOME}/.minders/${A}/${C}"; mkdir -p ${D}; cp ${f} ${D}/nog.bdb; done; popd
 script:
   - pwd
   - ls -la
