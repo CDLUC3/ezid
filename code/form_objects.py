@@ -550,13 +550,16 @@ class RelIdForm(forms.Form):
     ("Compiles", _("Compiles")),
     ("Continues", _("Continues")),
     ("Documents", _("Documents")),
+    ("Describes", _("Describes")),
     ("HasMetadata", _("Has Metadata")),
     ("HasPart", _("Has Part")),
+    ("HasVersion", _("Has Version")),
     ("IsCitedBy", _("Is Cited By")),
     ("IsCompiledBy", _("Is Compiled By")),
     ("IsContinuedBy", _("Is Continued By")),
     ("IsDocumentedBy", _("Is Documented By")),
     ("IsDerivedFrom", _("Is Derived From")),
+    ("IsDescribedBy", _("Is Described By")),
     ("IsIdenticalTo", _("Is Identical To")),
     ("IsMetadataFor", _("Is Metadata For")),
     ("IsPartOf", _("Is Part Of")),
@@ -564,14 +567,17 @@ class RelIdForm(forms.Form):
     ("IsOriginalFormOf", _("Is Original Form Of")),
     ("IsPreviousVersionOf", _("Is Previous Version Of")),
     ("IsReferencedBy", _("Is Referenced By")),
+    ("IsRequiredBy", _("Is Required By")),
     ("IsReviewedBy", _("Is Reviewed By")),
     ("IsSourceOf", _("Is Source Of")),
     ("IsSupplementedBy", _("Is Supplemented By")),
     ("IsSupplementTo", _("Is Supplement To")),
     ("IsVariantFormOf", _("Is Variant Form Of")),
+    ("IsVersionOf", _("Is Version Of")),
     ("References", _("References")),
+    ("Requires", _("Requires")),
     ("Reviews", _("Reviews"))
-  ) 
+  )
   relationType = forms.ChoiceField(required=False, label = _("Relation Type"), choices=RELATION_TYPES)
   relatedMetadataScheme = forms.CharField(required=False, label=_("Related Metadata Scheme"))
   schemeURI = forms.CharField(required=False, label=_("Scheme URI"))
