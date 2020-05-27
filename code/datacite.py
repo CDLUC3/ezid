@@ -241,6 +241,8 @@ def validateDcmsRecord (identifier, record, schemaValidate=True):
     assert False, "XML parse error: " + str(e)
   m = _rootTagRE.match(root.tag)
   assert m, "not a DataCite record"
+  print(version)
+
   version = m.group(2)
   # Upgrade schema versions that have been deprecated by DataCite.
   if version == "2.1" or version == "2.2":
