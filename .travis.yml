@@ -3,9 +3,16 @@ python:
   - "2.7"
 virtualenv:
   system_site_packages: true
+before_install:
+  - sudo apt-get install -y libdb5.3-dev
 install:
   - pip install -r requirements.txt
 before_script:
   - DJANGO_SETTINGS_MODULE=settings.localdev
   - export PYTHONPATH=$PYTHONPATH:$(pwd)/code
-script: pytest
+script:
+  - bash tests/setup_tests.sh
+  - pwd
+  - ls -la ${HOME}/.minders
+  - python --version
+  - pytest

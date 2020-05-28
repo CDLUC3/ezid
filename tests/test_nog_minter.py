@@ -18,7 +18,9 @@ MINT_COUNT = 1000
 class TestNogMinter:
     def _abs_path(self, rel_path):
         return os.path.abspath(
-            os.path.join(os.path.dirname(sys._getframe(1).f_code.co_filename), rel_path)
+            # This returns the path of the pytest assertion, not this file
+            #os.path.join(os.path.dirname(sys._getframe(1).f_code.co_filename), rel_path)
+            os.path.join(os.path.dirname(__file__), rel_path)
         )
 
     def _reset_db(self, naan_str, prefix_str):

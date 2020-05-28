@@ -30,3 +30,4 @@ typing==3.7.4.1
 virtualenv==20.0.20
 wcwidth==0.1.9
 zipp==1.2.0
+bsddb3
