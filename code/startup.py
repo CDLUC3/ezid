@@ -1,3 +1,5 @@
+import logging
+
 import django.apps
 import django.db.utils
 
@@ -6,6 +8,8 @@ class Startup(django.apps.AppConfig):
     name = "ezidapp"
 
     def ready(self):
+        logging.debug('code.startup START')
+
         try:
             import config
             config.load()
@@ -13,6 +17,10 @@ class Startup(django.apps.AppConfig):
             # App not ready to be configured yet. This allows running
             # `django-admin migrate` to create the initial databases.
             return
+
+        import log
+        log.loadConfig()
+        config.registerReloadListener(log.loadConfig)
 
         import backproc
         config.registerReloadListener(backproc.loadConfig)
@@ -45,10 +53,6 @@ class Startup(django.apps.AppConfig):
         import linkcheck_update
         linkcheck_update.loadConfig()
         config.registerReloadListener(linkcheck_update.loadConfig)
-
-        import log
-        log.loadConfig()
-        config.registerReloadListener(log.loadConfig)
 
         import metadata
         metadata.loadConfig()
@@ -90,4 +94,4 @@ class Startup(django.apps.AppConfig):
         ui_common.loadConfig()
         config.registerReloadListener(ui_common.loadConfig)
 
-        print('INITIALIZED')
+        logging.debug('code.startup END')
