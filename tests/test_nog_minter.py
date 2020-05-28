@@ -3,8 +3,11 @@ import os
 import shutil
 import sys
 
+import django.conf
+
 import nog_minter
 import backports.lzma as lzma
+
 
 NAAN_STR = "77913"
 PREFIX_STR = "r7"
@@ -20,8 +23,8 @@ class TestNogMinter:
 
     def _reset_db(self, naan_str, prefix_str):
         src_path = self._abs_path("./test_docs/{}_{}.bdb".format(naan_str, prefix_str))
-        dst_path = self._abs_path(
-            "../db/minters/{}/{}/nog.bdb".format(naan_str, prefix_str)
+        dst_path = os.path.join(
+            django.conf.settings.MINTERS_PATH, naan_str, prefix_str, "nog.bdb",
         )
         self.mkdir_p(dst_path)
         shutil.copy(src_path, dst_path)
@@ -37,9 +40,7 @@ class TestNogMinter:
     def test_1000(self):
         self._reset_db(NAAN_STR, PREFIX_STR)
 
-        csv_name = "perl_{}_{}_1000000_spings.csv.xz".format(
-            NAAN_STR, PREFIX_STR
-        )
+        csv_name = "perl_{}_{}_1000000_spings.csv.xz".format(NAAN_STR, PREFIX_STR)
         csv_path = self._abs_path("test_docs/{}".format(csv_name))
 
         with lzma.open(csv_path) as f:

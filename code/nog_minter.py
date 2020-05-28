@@ -62,10 +62,6 @@ ALPHA_COUNT = len(XDIG_STR)
 DIGIT_COUNT = 10
 COUNTER_COUNT = 290
 
-# MINDERS_PATH = pathlib.Path("~/.minders").expanduser().resolve()
-# MINDERS_PATH = os.path.abspath(os.path.expanduser("~/.minders"))
-MINDERS_PATH = os.path.join(django.conf.settings.PROJECT_ROOT, "db", "minters")
-
 
 log = logging.getLogger(__name__)
 
@@ -137,10 +133,10 @@ def mint_identifier(shoulder):
         'type': u'ARK'
     }
     """
-    #log.debug(pprint.pformat(shoulder))
+    # log.debug(pprint.pformat(shoulder))
     prefix_str = shoulder.prefix
-    m = re.match(r'ark:/(\d+)/(.*)', prefix_str)
-    assert m, 'Invalid prefix: {}'.format(prefix_str)
+    m = re.match(r"ark:/(\d+)/(.*)", prefix_str)
+    assert m, "Invalid prefix: {}".format(prefix_str)
     naan_str, pre_str = m.groups()
     for sping_str in mint(naan_str, pre_str, mint_count=1, dry_run=False):
         return sping_str
@@ -192,7 +188,9 @@ def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
                 per_counter = max_single_count + 1
                 print(per_counter)
 
-            counter_idx_and_value = _next(bdb, counter_key_list, per_counter, total_count)
+            counter_idx_and_value = _next(
+                bdb, counter_key_list, per_counter, total_count
+            )
             total_count += 1
 
             s = _get_xdig_str(counter_idx_and_value, mask_str)
@@ -336,9 +334,10 @@ def _extend_template(mask_str, extend_str):
 class _Bdb:
     def __init__(self, naan_str, shoulder_str, dry_run):
         self._dry_run = dry_run
-        # bdb_path = MINDERS_PATH / pathlib.Path(naan_str, shoulder_str, "nog.bdb")
-        bdb_path = os.path.join(MINDERS_PATH, naan_str, shoulder_str, "nog.bdb")
-        log.error("Minter BerkeleyDB: {}".format(bdb_path))
+        bdb_path = os.path.join(
+            django.conf.settings.MINTERS_PATH, naan_str, shoulder_str, "nog.bdb"
+        )
+        log.debug("Minter BerkeleyDB: {}".format(bdb_path))
         # dry_run
         self.__bdb = bsddb.btopen(bdb_path, "rw")
         # self.__bdb = bsddb.btopen(bdb_path, "r" if dry_run else 'w')
