@@ -21,6 +21,7 @@ pluggy==0.13.1
 py==1.8.1
 pyparsing==2.4.7
 pytest==4.6.10
+pytest-django==3.9.0
 pytz==2019.3
 scandir==1.10.0
 singledispatch==3.4.0.3
@@ -30,4 +31,3 @@ typing==3.7.4.1
 virtualenv==20.0.20
 wcwidth==0.1.9
 zipp==1.2.0
-bsddb3
