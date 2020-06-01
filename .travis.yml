@@ -18,7 +18,7 @@ before_script:
   - python --version
   - pip freeze
   - pip check || true
-  - ls -la ${HOME}/.minders
+  #- ls -la ${HOME}/.minders
 script:
   - pip install -r requirements.txt
   - pytest
