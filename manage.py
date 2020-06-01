@@ -7,10 +7,10 @@ import django.core.management
 
 
 def main():
-    sys.path.append(_abs_path('..'))
-    sys.path.append(_abs_path('.'))
-    sys.path.append(_abs_path('code'))
-    sys.path = sorted(set(sys.path), key=lambda x: (0,x) if '/ezid' in x else (1,x))
+    sys.path.append(_abs_path(".."))
+    sys.path.append(_abs_path("."))
+    sys.path.append(_abs_path("code"))
+    sys.path = sorted(set(sys.path), key=lambda x: (0, x) if "/ezid" in x else (1, x))
 
     # print('syspath:\n' + '\n'.join(sys.path))
 
@@ -26,4 +26,3 @@ def _abs_path(rel_path):
 
 if __name__ == "__main__":
     main()
-
