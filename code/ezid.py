@@ -22,7 +22,8 @@ import uuid
 import config
 import ezidapp.models
 import log
-import noid_nog
+# import noid_nog
+import nog_minter
 import policy
 import util
 import util2
@@ -154,8 +155,11 @@ def mintIdentifier (shoulder, user, metadata={}):
       if s.minter == "":
         log.badRequest(tid)
         return "error: bad request - shoulder does not support minting"
+
       # Minters always return unqualified ARKs.
-      ark = noid_nog.getMinter(s.minter).mintIdentifier()
+      ark = nog_minter.mint_identifier(s)
+
+
       if s.isArk:
         identifier = "ark:/" + ark
       elif s.isDoi:
