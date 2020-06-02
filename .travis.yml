@@ -14,5 +14,6 @@ script:
   - bash tests/setup_tests.sh
   - pwd
   - ls -la ${HOME}/.minders
+  - tree ${HOME}/.minders
   - python --version
   - pytest
