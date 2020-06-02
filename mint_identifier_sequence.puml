@@ -1,0 +1,48 @@
+@startuml
+participant ui_home.py
+participant ui_create.py
+participant ezid
+participant ezidapp.models
+participant noid_nog.minter
+box N2T app
+participant N2T
+end box
+ui_home.py -> ui_create.py: simpleForm()
+ui_create.py -> ui_create.py: _createSimpleId()
+ui_create.py -> ezid: mintIdentifier(shoulder, user, metadata)
+activate ezid
+ezid ->  ezidapp.models: getExactShoulderMatch(shoulder)
+activate ezidapp.models
+ezidapp.models -> ezid: s = shoulder
+deactivate ezidapp.models
+ezid -> noid_nog.minter: getMinter(s.minter)
+activate noid_nog.minter
+noid_nog.minter -> ezid: minter
+deactivate noid_nog.minter
+ezid -> noid_nog.minter: minter.mintIdentifier()
+activate noid_nog.minter
+noid_nog.minter -> N2T: HTTP request
+activate N2T
+N2T -> noid_nog.minter: HTTP response
+deactivate N2T
+noid_nog.minter -> ezid: 10 identifiers
+deactivate noid_nog.minter
+ezid -> ezid:createIdentifier(identifier, user, metadata)
+ezid -> ezid: _acquireIdentifierLock
+note left: Lock acquired
+activate ezid
+ezid -> ezidapp.models: StoreIdentifier
+activate ezidapp.models
+ezidapp.models -> ezid: si
+deactivate ezidapp.models
+ezid -> ezid: si.updateFromUntrustedLegacy()
+ezid -> ezid: si.my_full_clean()
+ezid -> ezid: si.save()
+ezid -> ezidapp.models: update_queue.enqueue
+ezid -> ezid: _releaseIdentifierLock
+deactivate ezid
+note left: Lock released
+ezid -> ui_create.py: "success: " + nqidentifier
+deactivate noid_nog.minter
+deactivate ezid
+@enduml
