@@ -28,7 +28,7 @@ else:
   DATABASES["search"] = {
     "ENGINE": "django.db.backends.sqlite3",
     "HOST": "databases.store_host",
-    "NAME": os.path.join(PROJECT_ROOT, "..", "db", "store.sqlite3"),
+    "NAME": os.path.join(PROJECT_ROOT, "..", "db", "search.sqlite3"),
     "OPTIONS": { "timeout": 60 },
     "fulltextSearchSupported": False
   }
