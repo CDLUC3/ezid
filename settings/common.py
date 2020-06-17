@@ -16,7 +16,7 @@ LOGGING_CONFIG_FILE = "logging.server.conf"
 MINTERS_PATH = os.path.join(PROJECT_ROOT, "db", "minters")
 
 # TODO: Stop fudging the syspath
-sys.path.append(os.path.join(PROJECT_ROOT, "code"))
+sys.path.append(os.path.join(PROJECT_ROOT, "impl"))
 
 
 DEBUG = True

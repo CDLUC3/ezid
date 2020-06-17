@@ -13,7 +13,7 @@
 # gzip-compressed.
 #
 # This script requires an EZID module.  The PYTHONPATH environment
-# variable must include the .../SITE_ROOT/PROJECT_ROOT/code directory;
+# variable must include the .../SITE_ROOT/PROJECT_ROOT/impl directory;
 # if it doesn't, we attempt to dynamically locate it and add it.
 #
 # Greg Janee <gjanee@ucop.edu>
@@ -28,7 +28,7 @@ try:
   import util
 except ImportError:
   sys.path.append(os.path.join(os.path.split(os.path.split(
-    os.path.abspath(__file__))[0])[0], "code"))
+    os.path.abspath(__file__))[0])[0], "impl"))
   import util
 
 def formatTimestamp (t):

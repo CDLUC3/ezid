@@ -8,7 +8,7 @@ class Startup(django.apps.AppConfig):
     name = "ezidapp"
 
     def ready(self):
-        logging.debug('code.startup START')
+        logging.debug('impl.startup START')
 
         try:
             import config
@@ -94,4 +94,4 @@ class Startup(django.apps.AppConfig):
         ui_common.loadConfig()
         config.registerReloadListener(ui_common.loadConfig)
 
-        logging.debug('code.startup END')
+        logging.debug('impl.startup END')

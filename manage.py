@@ -9,7 +9,7 @@ import django.core.management
 def main():
     sys.path.append(_abs_path(".."))
     sys.path.append(_abs_path("."))
-    sys.path.append(_abs_path("code"))
+    sys.path.append(_abs_path("impl"))
     sys.path = sorted(set(sys.path), key=lambda x: (0, x) if "/ezid" in x else (1, x))
 
     # print('syspath:\n' + '\n'.join(sys.path))
