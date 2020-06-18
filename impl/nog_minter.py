@@ -139,7 +139,10 @@ def mint_identifier(shoulder):
     assert m, "Invalid prefix: {}".format(prefix_str)
     naan_str, pre_str = m.groups()
     for sping_str in mint(naan_str, pre_str, mint_count=1, dry_run=False):
-        return sping_str
+        # TODO: Remove "EZ".
+        # We temporarily add an "EZ" suffix to identifiers in order to distinguish
+        # them from identifiers minted by N2T.
+        return sping_str + "EZ"
 
 
 def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):

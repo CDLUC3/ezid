@@ -20,5 +20,4 @@ before_script:
   - pip check || true
   #- ls -la ${HOME}/.minders
 script:
-  - pip install -r requirements.txt
   - pytest
