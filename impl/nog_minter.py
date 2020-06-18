@@ -216,6 +216,9 @@ def open_bdb(naan_str, shoulder_str, root_path=None, flags_str='rw'):
     # django.conf.settings.MINTERS_PATH, naan_str, shoulder_str, "nog.bdb")
     # self.__bdb = bsddb.btopen(bdb_path, "r" if dry_run else 'w')
 
+    if 'c' in flags_str:
+        utils.filesystem.mkdir_p(bdb_path)
+
     try:
         return bsddb.btopen(bdb_path, flags_str)
     except bsddb.db.DBNoSuchFileError as e:
