@@ -37,6 +37,6 @@ else:
 
 SEARCH_STORE_SAME_DATABASE = STORE_MYSQL and SEARCH_MYSQL
 
-ALLOWED_HOSTS = ["localhost"]
+ALLOWED_HOSTS = ["uc3-ezidx2-dev.cdlib.org","localhost"]
 
 injectSecrets(DEPLOYMENT_LEVEL)
