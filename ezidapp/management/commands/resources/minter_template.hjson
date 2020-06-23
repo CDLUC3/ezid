@@ -13,10 +13,10 @@
   ":/gseqnum_date": "0"
   ":/held": "0"
   ":/lzskipcount": "0"
-  ":/mask": eedeedk
+  ":/mask": eedk
   ":/maskskipcount": "0"
   ":/oacounter": "0"
-  ":/oatop": "70728100"
+  ":/oatop": "8410"
   ":/oklz": "1"
   ":/original_template": $NAAN$/$PREFIX${eedk}
   ":/origmask": eedk
