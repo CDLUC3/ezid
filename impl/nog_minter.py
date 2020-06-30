@@ -6,7 +6,7 @@ Terminology:
 
 - Sping: Semi-opaque string. E.g., '77913/r7006t'
 - Minter: Sping generator
-- Shoulder: Static part of the sping. E.g., '77913/r7'
+- Shoulder: Static part of the identifier. E.g., '77913/r7'
 - Expandable template: The form of the minted spings. E.g., '77913/r7{eedk}'
 - Mask: Format specifier for the generated part of the sping. E.g., 'eedk'
 - Type: Always 'rand', designating pseudo-random sequence of spings (as opposed to
@@ -46,6 +46,7 @@ except ImportError:
     import bsddb3 as bsddb
 
 import django.conf
+import utils
 
 # fmt:off
 XDIG_DICT = {
@@ -118,35 +119,22 @@ def parse_command_line_args():
     return parser.parse_args()
 
 
-def mint_identifier(shoulder):
+def mint_identifier(naan_str, shoulder_str):
     """
-    {
-        '_datacenter_cache': None,
-        '_state': <django.db.models.base.ModelState object at 0x7fa140fc8590>,
-        'crossrefEnabled': False,
-        'datacenter_id': None,
-        'id': 10,
-        'isTest': True,
-        'minter': u'https://n2t.net/a/ezid/m/ark/99999/fk4',
-        'name': u'ARK Test',
-        'prefix': u'ark:/99999/fk4',
-        'type': u'ARK'
-    }
     """
-    # log.debug(pprint.pformat(shoulder))
-    prefix_str = shoulder.prefix
-    m = re.match(r"ark:/(\d+)/(.*)", prefix_str)
-    assert m, "Invalid prefix: {}".format(prefix_str)
-    naan_str, pre_str = m.groups()
-    for sping_str in mint(naan_str, pre_str, mint_count=1, dry_run=False):
+    for sping_str in mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
         # TODO: Remove "EZ".
-        # We temporarily add an "EZ" suffix to identifiers in order to distinguish
+        # We temporarily add an "/EZ" suffix to identifiers in order to distinguish
         # them from identifiers minted by N2T.
-        return sping_str + "EZ"
+        # return prefix_str + sping_str + "/EZ"
+        return sping_str + "/EZ"
 
 
 def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
     """Generate spings with the given minter.
+
+    A sping is the unique, generated part of an identifier and is agnostic to the the
+    type of the identifier (ARK, DOI).
 
     Unless {dry_run} is set, the BerkeleyDB is updated to reflect the new state of the
     minder after successfully minting the requested number of spings.
@@ -208,7 +196,7 @@ def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
             bdb.set("oacounter", total_count)
 
 
-def open_bdb(naan_str, shoulder_str, root_path=None, flags_str='rw'):
+def open_bdb(naan_str, shoulder_str, root_path=None, flags_str="rw"):
     bdb_path = get_bdb_path(naan_str, shoulder_str, root_path)
     log.debug("Opening minter BerkeleyDB: {}".format(bdb_path))
 
@@ -216,7 +204,7 @@ def open_bdb(naan_str, shoulder_str, root_path=None, flags_str='rw'):
     # django.conf.settings.MINTERS_PATH, naan_str, shoulder_str, "nog.bdb")
     # self.__bdb = bsddb.btopen(bdb_path, "r" if dry_run else 'w')
 
-    if 'c' in flags_str:
+    if "c" in flags_str:
         utils.filesystem.mkdir_p(bdb_path)
 
     try:

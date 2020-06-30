@@ -142,7 +142,7 @@ def edit(request, identifier):
     d['stat_reason'] = t_stat[1]
   d['export'] = id_metadata['_export'] if '_export' in id_metadata else 'yes'
   d['id_text'] = s.split()[1]
-  d['id_as_url'] = util2.urlForm(d['id_text'])
+  d['id_as_url'] = util2.urlForm(d['id_text']).replace(':', '')
   d['internal_profile'] = metadata.getProfile('internal')
   d['profiles'] = metadata.getProfiles()[1:]
  
@@ -303,7 +303,7 @@ def details(request):
     id_metadata["_owner"], id_metadata["_ownergroup"])
   d['identifier'] = id_metadata
   d['id_text'] = s.split()[1]
-  d['id_as_url'] = util2.urlForm(d['id_text'])
+  d['id_as_url'] = util2.urlForm(d['id_text']).replace(':', '')
   d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes'])
   d['internal_profile'] = metadata.getProfile('internal')
   d['target'] = id_metadata['_target']

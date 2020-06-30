@@ -265,17 +265,12 @@ def shadow2doi (ark):
   (e.g., "10.5060/FOO").  The returned identifier is in canonical
   form.
   """
-  beta_numeric_char = "bcdfghjkmnpqrstvwxz"
-  if ark[0] == "b":
-    doi = "10." + ark[1:]
-  else:
-    try:
-      if beta_numeric_char.find(ark[0]) > -1:
-        doi = "10." + str(beta_numeric_char.find(ark[0])) + ark[1:]
-      else:
-        raise Exception("Not a valid ark") 
-    except:
-      print "Sorry, an error occured while converting shadow 2 doi"
+  beta_str = 'bcdfghjkmnpqrstvwxz'
+  m = re.match(r'([{}])(.*)/(.*)$'.format(beta_str), ark)
+  assert m, 'Invalid scheme-less shadow ARK identifier for a DOI: {}'.format(ark)
+  beta_char, naan_str, prefix_str = m.groups()
+  c = '' if beta_char == 'b' else beta_str.find(beta_char)
+  doi = '10.{}{}/{}'.format(c, naan_str, prefix_str)
   return _hexDecodePattern.sub(lambda c: chr(int(c.group(1), 16)), doi).upper()
 
 _shadowedDoiPattern = re.compile("ark:/[bcdfghjkmnpqrstvwxz]") # see _arkPattern1 above

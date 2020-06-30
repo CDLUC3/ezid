@@ -12,6 +12,7 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
+import re
 
 import django.core.exceptions
 import django.db.transaction
@@ -142,39 +143,71 @@ def mintIdentifier (shoulder, user, metadata={}):
     error: concurrency limit exceeded
   """
   tid = uuid.uuid1()
-  try:
-    log.begin(tid, "mintIdentifier", shoulder, user.username, user.pid,
-      user.group.groupname, user.group.pid)
-    s = ezidapp.models.getExactShoulderMatch(shoulder)
-    if s == None:
-      log.badRequest(tid)
-      return "error: bad request - no such shoulder"
-    if s.isUuid:
-      identifier = "uuid:" + str(uuid.uuid1())
-    else:
-      if s.minter == "":
-        log.badRequest(tid)
-        return "error: bad request - shoulder does not support minting"
 
-      # Minters always return unqualified ARKs.
-      ark = nog_minter.mint_identifier(s)
+  # TODO: We want to be able to support rendering error messages to end users in
+  # production like current version of EZID does without breaking rendering of
+  # Django's exception diagnostics page in debug mode and without having to wrap large
+  # sections of code in exception handlers just for redirecting to a logger.
 
+  log.begin(tid, "mintIdentifier", shoulder, user.username, user.pid,
+    user.group.groupname, user.group.pid)
 
-      if s.isArk:
-        identifier = "ark:/" + ark
-      elif s.isDoi:
-        doi = util.shadow2doi(ark)
-        assert util.doi2shadow(doi) == ark, "invalid DOI shadow ARK"
-        identifier = "doi:" + doi
-      else:
-        assert False, "unhandled case"
-      assert identifier.startswith(s.prefix),\
-        "minted identifier does not match shoulder"
-  except Exception, e:
-    log.error(tid, e)
-    return "error: internal server error"
+  s = ezidapp.models.getExactShoulderMatch(shoulder)
+
+  if s == None:
+    log.badRequest(tid)
+    # TODO: Errors should be raised, not returned.
+    return "error: bad request - no such shoulder"
+
+  if s.isUuid:
+    identifier = "uuid:" + str(uuid.uuid1())
+
   else:
-    log.success(tid, identifier)
+    if s.minter == "":
+      log.badRequest(tid)
+      return "error: bad request - shoulder does not support minting"
+
+    # Example shoulder ORM object for ARK:
+    # {
+    #   '_datacenter_cache': None,
+    #   '_state': <django.db.models.base.ModelState object at 0x7fa140fc8590>,
+    #   'crossrefEnabled': False,
+    #   'datacenter_id': None,
+    #   'id': 10,
+    #   'isTest': True,
+    #   'minter': u'https://n2t.net/a/ezid/m/ark/99999/fk4',
+    #   'name': u'ARK Test',
+    #   'prefix': u'ark:/99999/fk4',
+    #   'type': u'ARK'
+    # }
+    #
+    # ORM changes for DOIs:
+    #
+    #   prefix: doi:10.7941/S9
+    #   type:   DOI
+    #   minter: https://n2t.net/a/ezid/m/ark/b7941/s9
+    #
+    # DOIs also use ARK minters, "shadow arks".
+
+    # "10." is the only valid Directory Indicator for DOIs.
+    m = re.match(r'(ark:/|doi:10\.)(.*)/(.*)', s.prefix)
+    assert m, 'Invalid shoulder prefix: {}'.format(s.prefix)
+
+    protocol_str, naan_str, shoulder_str = m.groups()
+
+    assert (
+      (protocol_str == 'ark:/' and s.isArk) or
+      (protocol_str == 'doi:' and s.isDoi)
+    ), "Protocol does not match shoulder type"
+
+    # Derive the shadow ark from the minter URL
+    naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
+    unqualified_ark = nog_minter.mint_identifier(naan_str, shoulder_str)
+
+    identifier = s.prefix + unqualified_ark
+
+  log.success(tid, identifier)
+
   return createIdentifier(identifier, user, metadata)
 
 def createIdentifier (identifier, user, metadata={}, updateIfExists=False):
@@ -217,7 +250,7 @@ def createIdentifier (identifier, user, metadata={}, updateIfExists=False):
       log.forbidden(tid)
       return "error: forbidden"
     si = ezidapp.models.StoreIdentifier(identifier=nqidentifier,
-      owner=(None if user == ezidapp.models.AnonymousUser else user))
+        owner=(None if user == ezidapp.models.AnonymousUser else user))
     si.updateFromUntrustedLegacy(metadata,
       allowRestrictedSettings=user.isSuperuser)
     if si.isDoi:
