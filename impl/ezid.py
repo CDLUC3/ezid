@@ -193,13 +193,6 @@ def mintIdentifier (shoulder, user, metadata={}):
     m = re.match(r'(ark:/|doi:10\.)(.*)/(.*)', s.prefix)
     assert m, 'Invalid shoulder prefix: {}'.format(s.prefix)
 
-    protocol_str, naan_str, shoulder_str = m.groups()
-
-    assert (
-      (protocol_str == 'ark:/' and s.isArk) or
-      (protocol_str == 'doi:' and s.isDoi)
-    ), "Protocol does not match shoulder type"
-
     # Derive the shadow ark from the minter URL
     naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
     unqualified_ark = nog_minter.mint_identifier(naan_str, shoulder_str)

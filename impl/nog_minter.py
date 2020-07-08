@@ -126,7 +126,6 @@ def mint_identifier(naan_str, shoulder_str):
         # TODO: Remove "EZ".
         # We temporarily add an "/EZ" suffix to identifiers in order to distinguish
         # them from identifiers minted by N2T.
-        # return prefix_str + sping_str + "/EZ"
         return sping_str + "/EZ"
 
 
@@ -185,12 +184,12 @@ def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
             total_count += 1
 
             s = _get_xdig_str(counter_idx_and_value, mask_str)
-            sping_str = "{}/{}{}".format(naan_str, shoulder_str, s)
+            # sping_str = "{}/{}{}".format(naan_str, shoulder_str, s)
 
             if mask_str.endswith("k"):
-                sping_str += _get_check_char(sping_str)
+                s += _get_check_char(s)
 
-            yield sping_str
+            yield s
 
         if not dry_run:
             bdb.set("oacounter", total_count)
