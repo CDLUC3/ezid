@@ -20,37 +20,40 @@
 import ConfigParser
 import os.path
 
-class Config (object):
-  """
+
+class Config(object):
+    """
   Holds the contents of the EZID configuration files.
   """
 
-  def __init__ (self, siteRoot, projectRoot, configFile, shadowConfigFile,
-    deploymentLevel):
-    self._config = ConfigParser.ConfigParser({ "SITE_ROOT": siteRoot,
-      "PROJECT_ROOT": projectRoot })
-    f = open(configFile)
-    self._config.readfp(f)
-    f.close()
-    self._shadowConfig = ConfigParser.ConfigParser()
-    if os.path.exists(shadowConfigFile):
-      f = open(shadowConfigFile)
-      self._shadowConfig.readfp(f)
-      f.close()
-    self._level = "{%s}" % deploymentLevel
+    def __init__(
+        self, siteRoot, projectRoot, configFile, shadowConfigFile, deploymentLevel
+    ):
+        self._config = ConfigParser.ConfigParser(
+            {"SITE_ROOT": siteRoot, "PROJECT_ROOT": projectRoot}
+        )
+        f = open(configFile)
+        self._config.readfp(f)
+        f.close()
+        self._shadowConfig = ConfigParser.ConfigParser()
+        if os.path.exists(shadowConfigFile):
+            f = open(shadowConfigFile)
+            self._shadowConfig.readfp(f)
+            f.close()
+        self._level = "{%s}" % deploymentLevel
 
-  def getOption (self, option):
-    """
+    def getOption(self, option):
+        """
     Returns the value of a configuration option.  The option name
     should be specified in section.option syntax, e.g.,
     "datacite.username".
     """
-    s, o = option.split(".")
-    if self._shadowConfig.has_option(s, self._level+o):
-      return self._shadowConfig.get(s, self._level+o)
-    elif self._config.has_option(s, self._level+o):
-      return self._config.get(s, self._level+o)
-    elif self._shadowConfig.has_option(s, o):
-      return self._shadowConfig.get(s, o)
-    else:
-      return self._config.get(s, o)
+        s, o = option.split(".")
+        if self._shadowConfig.has_option(s, self._level + o):
+            return self._shadowConfig.get(s, self._level + o)
+        elif self._config.has_option(s, self._level + o):
+            return self._config.get(s, self._level + o)
+        elif self._shadowConfig.has_option(s, o):
+            return self._shadowConfig.get(s, o)
+        else:
+            return self._config.get(s, o)

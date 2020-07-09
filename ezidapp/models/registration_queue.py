@@ -17,52 +17,52 @@ import django.db.models
 
 import util
 
-class RegistrationQueue (django.db.models.Model):
-  # Describes identifiers awaiting asynchronous registration with an
-  # external registrar.  Also, identifiers that previously encountered
-  # permanent errors during registration are retained in this table
-  # until manually removed.  This class is abstract; there are
-  # separate instantiated subclasses of this class for each external
-  # registrar.
 
-  class Meta:
-    abstract = True
+class RegistrationQueue(django.db.models.Model):
+    # Describes identifiers awaiting asynchronous registration with an
+    # external registrar.  Also, identifiers that previously encountered
+    # permanent errors during registration are retained in this table
+    # until manually removed.  This class is abstract; there are
+    # separate instantiated subclasses of this class for each external
+    # registrar.
 
-  seq = django.db.models.AutoField(primary_key=True)
-  # Order of insertion into this table; also, the order in which
-  # identifier operations are to be performed.
+    class Meta:
+        abstract = True
 
-  enqueueTime = django.db.models.IntegerField()
-  # The time this record was enqueued as a Unix timestamp.
+    seq = django.db.models.AutoField(primary_key=True)
+    # Order of insertion into this table; also, the order in which
+    # identifier operations are to be performed.
 
-  identifier = django.db.models.CharField(max_length=util.maxIdentifierLength)
-  # The identifier in qualified, normalized form, e.g.,
-  # "doi:10.5060/FOO".
+    enqueueTime = django.db.models.IntegerField()
+    # The time this record was enqueued as a Unix timestamp.
 
-  metadata = django.db.models.BinaryField()
-  # The identifier's metadata dictionary, stored as a gzipped blob.
+    identifier = django.db.models.CharField(max_length=util.maxIdentifierLength)
+    # The identifier in qualified, normalized form, e.g.,
+    # "doi:10.5060/FOO".
 
-  CREATE = "C"
-  UPDATE = "U"
-  DELETE = "D"
-  operation = django.db.models.CharField(max_length=1,
-    choices=[(CREATE, "create"), (UPDATE, "update"), (DELETE, "delete")])
-  # The operation to perform.
+    metadata = django.db.models.BinaryField()
+    # The identifier's metadata dictionary, stored as a gzipped blob.
 
-  _operationMapping = {
-    "create": CREATE,
-    "update": UPDATE,
-    "delete": DELETE }
+    CREATE = "C"
+    UPDATE = "U"
+    DELETE = "D"
+    operation = django.db.models.CharField(
+        max_length=1,
+        choices=[(CREATE, "create"), (UPDATE, "update"), (DELETE, "delete")],
+    )
+    # The operation to perform.
 
-  @staticmethod
-  def operationLabelToCode (label):
-    return RegistrationQueue._operationMapping[label]
+    _operationMapping = {"create": CREATE, "update": UPDATE, "delete": DELETE}
 
-  error = django.db.models.TextField(blank=True)
-  # Any error (transient or permanent) received in processing the
-  # identifier.
+    @staticmethod
+    def operationLabelToCode(label):
+        return RegistrationQueue._operationMapping[label]
 
-  errorIsPermanent = django.db.models.BooleanField(default=False)
-  # True if the error received is not transient.  Permanent errors
-  # disable processing on the identifier and can be removed only
-  # manually.
+    error = django.db.models.TextField(blank=True)
+    # Any error (transient or permanent) received in processing the
+    # identifier.
+
+    errorIsPermanent = django.db.models.BooleanField(default=False)
+    # True if the error received is not transient.  Permanent errors
+    # disable processing on the identifier and can be removed only
+    # manually.

@@ -15,5 +15,6 @@
 
 import datacenter
 
-class SearchDatacenter (datacenter.Datacenter):
-  pass
+
+class SearchDatacenter(datacenter.Datacenter):
+    pass

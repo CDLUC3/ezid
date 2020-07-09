@@ -17,18 +17,20 @@ import django.db.models
 
 import validation
 
-class Realm (django.db.models.Model):
-  # An EZID realm, which corresponds to a broad administrative area.
 
-  class Meta:
-    abstract = True
+class Realm(django.db.models.Model):
+    # An EZID realm, which corresponds to a broad administrative area.
 
-  name = django.db.models.CharField(max_length=32, unique=True,
-    validators=[validation.nonEmpty])
-  # The realm's name, e.g., "CDL".
+    class Meta:
+        abstract = True
 
-  def clean (self):
-    self.name = self.name.strip()
+    name = django.db.models.CharField(
+        max_length=32, unique=True, validators=[validation.nonEmpty]
+    )
+    # The realm's name, e.g., "CDL".
 
-  def __unicode__ (self):
-    return self.name
+    def clean(self):
+        self.name = self.name.strip()
+
+    def __unicode__(self):
+        return self.name

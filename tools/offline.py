@@ -15,23 +15,22 @@ import os
 import sys
 
 if "DJANGO_SETTINGS_MODULE" not in os.environ:
-  sys.stderr.write(
-    "The DJANGO_SETTINGS_MODULE environment variable is not set.\n")
-  sys.exit(1)
+    sys.stderr.write("The DJANGO_SETTINGS_MODULE environment variable is not set.\n")
+    sys.exit(1)
 
 # Set the Python path.
 
 try:
-  import settings
+    import settings
 except ImportError:
-  sys.path.append(os.path.split(os.path.split(
-    os.path.abspath(__file__))[0])[0])
-  import settings
+    sys.path.append(os.path.split(os.path.split(os.path.abspath(__file__))[0])[0])
+    import settings
 
 # Bootstrapping: among other things, the following causes the Python
 # path to be further modified, supporting subsequent imports.
 
 import django
+
 django.setup()
 
 # Configure the logging so that errors don't get added to the server's

@@ -27,13 +27,20 @@ class EZIDHTTPErrorProcessor(urllib2.HTTPErrorProcessor):
 
 
 class EZIDClient(object):
-    def __init__(self, server_url, session_id=None, username=None, password=None, encoding="UTF-8"):
+    def __init__(
+        self,
+        server_url,
+        session_id=None,
+        username=None,
+        password=None,
+        encoding="UTF-8",
+    ):
         self._L = logging.getLogger(self.__class__.__name__)
         self._server = server_url.strip("/")
         self._cookie = session_id
         self._encoding = encoding
         self._opener = urllib2.build_opener(EZIDHTTPErrorProcessor())
-        self._username = username  #preserve for test validation
+        self._username = username  # preserve for test validation
         if self._cookie is None:
             self._setAuthHandler(username, password)
 
@@ -50,7 +57,7 @@ class EZIDClient(object):
         for i in range(0, len(args), 2):
             k = args[i].decode(self._encoding)
             if k == "@":
-                f = codecs.open(args[i + 1], encoding= self._encoding)
+                f = codecs.open(args[i + 1], encoding=self._encoding)
                 request += [l.strip("\r\n") for l in f.readlines()]
                 f.close()
             else:
@@ -62,33 +69,29 @@ class EZIDClient(object):
                 if v.startswith("@@"):
                     v = v[1:]
                 elif v.startswith("@") and len(v) > 1:
-                    f = codecs.open(v[1:], encoding= self._encoding)
+                    f = codecs.open(v[1:], encoding=self._encoding)
                     v = f.read()
                     f.close()
                 v = re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), v)
                 request.append("%s: %s" % (k, v))
         return "\n".join(request)
 
-    def anvlresponseToDict(self, response, format_timestamps=True, decode=False, encoding="UTF-8"):
-        res = {
-            "status":"unknown",
-            "status_message":"no content",
-            "body":""
-        }
+    def anvlresponseToDict(
+        self, response, format_timestamps=True, decode=False, encoding="UTF-8"
+    ):
+        res = {"status": "unknown", "status_message": "no content", "body": ""}
         if response is None:
             return res
         response = response.splitlines()
-        #Treat the first response line as the status
-        K,V = response[0].split(":", 1)
+        # Treat the first response line as the status
+        K, V = response[0].split(":", 1)
         res["status"] = K
         res["status_message"] = V.strip(" ")
         for line in response[1:]:
             try:
-                K,V = line.split(":", 1)
+                K, V = line.split(":", 1)
                 V = V.strip()
-                if format_timestamps and (
-                    K == "_created:" or K == "_updated:"
-                ):
+                if format_timestamps and (K == "_created:" or K == "_updated:"):
                     ls = line.split(":")
                     V = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(int(ls[1])))
                 if decode:
@@ -102,7 +105,6 @@ class EZIDClient(object):
             except ValueError as e:
                 res["body"] += line
         return res
-
 
     def anvlResponseToText(
         self,
@@ -176,10 +178,8 @@ class EZIDClient(object):
             self._cookie = None
         response, headers = self.issueRequest("login", "GET")
         try:
-            self._cookie = headers.get("set-cookie","").split(";")[0].split("=")[1]
-            response += (
-                "\nsessionid=%s\n" % self._cookie
-            )
+            self._cookie = headers.get("set-cookie", "").split(";")[0].split("=")[1]
+            response += "\nsessionid=%s\n" % self._cookie
         except IndexError as e:
             self._L.warning("No sessionid cookie in response.")
         return self.anvlresponseToDict(response)

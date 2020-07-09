@@ -47,68 +47,87 @@ import ezidapp.models.store_user
 
 _reloadFunctions = []
 
-def registerReloadListener (loader):
-  """
+
+def registerReloadListener(loader):
+    """
   Adds a reload listener.
   """
-  _reloadFunctions.append(loader)
+    _reloadFunctions.append(loader)
+
 
 _config = None
 _version = None
 _startupVersion = None
 
-def _getVersion1 (r):
-  try:
-    p = subprocess.Popen(["hg", "identify", "-inb", "-R", r],
-      stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    o = p.communicate()[0]
-    if p.returncode == 0:
-      return o.strip()
-    else:
-      return "unknown"
-  except:
-    return "unknown"
 
-def _getVersion ():
-  return (_getVersion1(django.conf.settings.PROJECT_ROOT),
-    _getVersion1(os.path.join(django.conf.settings.PROJECT_ROOT, "templates",
-      "info")))
+def _getVersion1(r):
+    try:
+        p = subprocess.Popen(
+            ["hg", "identify", "-inb", "-R", r],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        o = p.communicate()[0]
+        if p.returncode == 0:
+            return o.strip()
+        else:
+            return "unknown"
+    except:
+        return "unknown"
 
-def load ():
-  global _config, _version
-  _config = config_loader.Config(django.conf.settings.SITE_ROOT,
-    django.conf.settings.PROJECT_ROOT, django.conf.settings.EZID_CONFIG_FILE,
-    django.conf.settings.EZID_SHADOW_CONFIG_FILE,
-    django.conf.settings.DEPLOYMENT_LEVEL)
-  _version = (int(time.time()),) + _getVersion()
-  django.conf.settings.SECRET_KEY = ezidapp.models.getOrSetSecretKey()
 
-def reload ():
-  """
+def _getVersion():
+    return (
+        _getVersion1(django.conf.settings.PROJECT_ROOT),
+        _getVersion1(
+            os.path.join(django.conf.settings.PROJECT_ROOT, "templates", "info")
+        ),
+    )
+
+
+def load():
+    global _config, _version
+    _config = config_loader.Config(
+        django.conf.settings.SITE_ROOT,
+        django.conf.settings.PROJECT_ROOT,
+        django.conf.settings.EZID_CONFIG_FILE,
+        django.conf.settings.EZID_SHADOW_CONFIG_FILE,
+        django.conf.settings.DEPLOYMENT_LEVEL,
+    )
+    _version = (int(time.time()),) + _getVersion()
+    django.conf.settings.SECRET_KEY = ezidapp.models.getOrSetSecretKey()
+
+
+def reload():
+    """
   Reloads the configuration file.
   """
-  load()
-  for f in _reloadFunctions: f()
-  # The following functions are explicitly listed here, and don't use
-  # the registerReloadListener mechanism, to avoid circular import
-  # problems.
-  ezidapp.models.store_group.clearCaches()
-  ezidapp.models.store_profile.clearCaches()
-  ezidapp.models.store_user.clearCaches()
-  ezidapp.models.search_identifier.clearCaches()
+    load()
+    for f in _reloadFunctions:
+        f()
+    # The following functions are explicitly listed here, and don't use
+    # the registerReloadListener mechanism, to avoid circular import
+    # problems.
+    ezidapp.models.store_group.clearCaches()
+    ezidapp.models.store_profile.clearCaches()
+    ezidapp.models.store_user.clearCaches()
+    ezidapp.models.search_identifier.clearCaches()
+
 
 # load()
 _startupVersion = _version
 
-def get (option):
-  """
+
+def get(option):
+    """
   Returns the value of a configuration option.  The option name should
   be specified in section.option syntax, e.g., "datacite.username".
   """
-  return _config.getOption(option)
+    return _config.getOption(option)
 
-def getVersionInfo ():
-  """
+
+def getVersionInfo():
+    """
   Returns two tuples, each of the form (timestamp, ezidVersion,
   infoVersion).  The first tuple reflects the state of EZID's
   Mercurial repositories at the time of server startup, the second at
@@ -117,16 +136,17 @@ def getVersionInfo ():
   second is the EZID repository's version, and the third is the info
   repository's version.
   """
-  return (_startupVersion, _version)
+    return (_startupVersion, _version)
+
 
 # Start daemon threads by importing their modules.
 if django.conf.settings.DAEMON_THREADS_ENABLED:
-  import backproc
-  import binder_async
-  import crossref
-  import datacite_async
-  import download
-  import linkcheck_update
-  import newsfeed
-  import stats
-  import status
+    import backproc
+    import binder_async
+    import crossref
+    import datacite_async
+    import download
+    import linkcheck_update
+    import newsfeed
+    import stats
+    import status

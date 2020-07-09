@@ -28,4 +28,3 @@ def abs_path(rel_path):
         # This returns the path of the pytest assertion, not this file
         os.path.join(os.path.dirname(sys._getframe(1).f_code.co_filename), rel_path)
     )
-

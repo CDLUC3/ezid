@@ -15,5 +15,6 @@
 
 import profile
 
-class SearchProfile (profile.Profile):
-  pass
+
+class SearchProfile(profile.Profile):
+    pass

@@ -19,8 +19,11 @@ import search_group
 import search_realm
 import user
 
-class SearchUser (user.User):
-  group = django.db.models.ForeignKey(search_group.SearchGroup,
-    on_delete=django.db.models.PROTECT)
-  realm = django.db.models.ForeignKey(search_realm.SearchRealm,
-    on_delete=django.db.models.PROTECT)
+
+class SearchUser(user.User):
+    group = django.db.models.ForeignKey(
+        search_group.SearchGroup, on_delete=django.db.models.PROTECT
+    )
+    realm = django.db.models.ForeignKey(
+        search_realm.SearchRealm, on_delete=django.db.models.PROTECT
+    )

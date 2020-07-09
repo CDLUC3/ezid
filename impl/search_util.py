@@ -37,24 +37,30 @@ _stopwords = None
 _maxTargetLength = None
 _numActiveSearches = 0
 
-def loadConfig ():
-  global _reconnectDelay, _fulltextSupported, _minimumWordLength
-  global _stopwords, _maxTargetLength
-  _reconnectDelay = int(config.get("databases.reconnect_delay"))
-  _fulltextSupported =\
-    django.conf.settings.DATABASES["search"]["fulltextSearchSupported"]
-  if _fulltextSupported:
-    _minimumWordLength = int(config.get("search.minimum_word_length"))
-    _stopwords = (config.get("search.stopwords") + " " +\
-      config.get("search.extra_stopwords")).split()
-  _maxTargetLength = ezidapp.models.SearchIdentifier._meta.\
-    get_field("searchableTarget").max_length
 
-class AbortException (Exception):
-  pass
+def loadConfig():
+    global _reconnectDelay, _fulltextSupported, _minimumWordLength
+    global _stopwords, _maxTargetLength
+    _reconnectDelay = int(config.get("databases.reconnect_delay"))
+    _fulltextSupported = django.conf.settings.DATABASES["search"][
+        "fulltextSearchSupported"
+    ]
+    if _fulltextSupported:
+        _minimumWordLength = int(config.get("search.minimum_word_length"))
+        _stopwords = (
+            config.get("search.stopwords") + " " + config.get("search.extra_stopwords")
+        ).split()
+    _maxTargetLength = ezidapp.models.SearchIdentifier._meta.get_field(
+        "searchableTarget"
+    ).max_length
 
-def withAutoReconnect (functionName, function, continuationCheck=None):
-  """
+
+class AbortException(Exception):
+    pass
+
+
+def withAutoReconnect(functionName, function, continuationCheck=None):
+    """
   Calls 'function' and returns the result.  If an operational database
   error is encountered (e.g., a lost connection), the call is repeated
   until it succeeds.  'continuationCheck', if not None, should be
@@ -64,120 +70,134 @@ def withAutoReconnect (functionName, function, continuationCheck=None):
   module).  'functionName' is the name of 'function' for logging
   purposes.
   """
-  firstError = True
-  while True:
-    try:
-      return function()
-    except django.db.OperationalError, e:
-      # We're silent about the first error because it might simply be
-      # due to the database connection having timed out.
-      if not firstError:
-        log.otherError("search_util.withAutoReconnect/" + functionName, e)
-        time.sleep(_reconnectDelay)
-      if continuationCheck != None and not continuationCheck():
-        raise AbortException()
-      # In some cases a lost connection causes the thread's database
-      # connection object to be permanently screwed up.  The following
-      # call solves the problem.  (Note that Django's database
-      # connection objects are indexed generically, but are stored
-      # thread-local.)
-      django.db.connections["search"].close()
-      firstError = False
+    firstError = True
+    while True:
+        try:
+            return function()
+        except django.db.OperationalError, e:
+            # We're silent about the first error because it might simply be
+            # due to the database connection having timed out.
+            if not firstError:
+                log.otherError("search_util.withAutoReconnect/" + functionName, e)
+                time.sleep(_reconnectDelay)
+            if continuationCheck != None and not continuationCheck():
+                raise AbortException()
+            # In some cases a lost connection causes the thread's database
+            # connection object to be permanently screwed up.  The following
+            # call solves the problem.  (Note that Django's database
+            # connection objects are indexed generically, but are stored
+            # thread-local.)
+            django.db.connections["search"].close()
+            firstError = False
 
-def ping ():
-  """
+
+def ping():
+    """
   Tests the search database, returning "up" or "down".
   """
-  try:
-    n = ezidapp.models.SearchRealm.objects.count()
-  except:
-    return "down"
-  else:
-    return "up"
+    try:
+        n = ezidapp.models.SearchRealm.objects.count()
+    except:
+        return "down"
+    else:
+        return "up"
 
-_fulltextFields = ["resourceCreator", "resourceTitle", "resourcePublisher",
-  "keywords"]
 
-def _processFulltextConstraint (constraint):
-  # The primary purposes of this function are 1) to remove characters
-  # that might be interpreted by MySQL as operators and 2) to change
-  # the default semantics of MySQL's freetext search from OR to AND.
-  # The latter is accomplished by making every search term required,
-  # so that a constraint "foo bar" is transformed into "+foo +bar".
-  # Quoted phrases are treated like atomic terms and are left as is.
-  # Additionally, this function implements an explicit OR operator.
-  # An "OR" placed between two terms has the effect of making those
-  # terms optional.  Thus, "foo bar OR baz" becomes "+foo bar baz".
-  # Finally, stopwords are removed.
-  #
-  # Step 1: Parse the constraint into words and quoted phrases.  MySQL
-  # interprets some characters as operators, and will return an error
-  # if a query is malformed according to its less-than-well-defined
-  # rules.  For safety we remove all operators that are outside double
-  # quotes (i.e., quotes are the only MySQL operator we retain).
-  inQuote = False
-  inWord = False
-  words = []
-  for c in constraint:
-    if c == '"':
-      if inQuote:
-        words[-1].append(c)
-        inQuote = False
-      else:
-        words.append([])
-        words[-1].append(c)
-        inQuote = True
-        inWord = False
-    elif c.isalnum():
-      if inQuote or inWord:
-        words[-1].append(c)
-      else:
-        words.append([])
-        words[-1].append(c)
-        inWord = True
+_fulltextFields = ["resourceCreator", "resourceTitle", "resourcePublisher", "keywords"]
+
+
+def _processFulltextConstraint(constraint):
+    # The primary purposes of this function are 1) to remove characters
+    # that might be interpreted by MySQL as operators and 2) to change
+    # the default semantics of MySQL's freetext search from OR to AND.
+    # The latter is accomplished by making every search term required,
+    # so that a constraint "foo bar" is transformed into "+foo +bar".
+    # Quoted phrases are treated like atomic terms and are left as is.
+    # Additionally, this function implements an explicit OR operator.
+    # An "OR" placed between two terms has the effect of making those
+    # terms optional.  Thus, "foo bar OR baz" becomes "+foo bar baz".
+    # Finally, stopwords are removed.
+    #
+    # Step 1: Parse the constraint into words and quoted phrases.  MySQL
+    # interprets some characters as operators, and will return an error
+    # if a query is malformed according to its less-than-well-defined
+    # rules.  For safety we remove all operators that are outside double
+    # quotes (i.e., quotes are the only MySQL operator we retain).
+    inQuote = False
+    inWord = False
+    words = []
+    for c in constraint:
+        if c == '"':
+            if inQuote:
+                words[-1].append(c)
+                inQuote = False
+            else:
+                words.append([])
+                words[-1].append(c)
+                inQuote = True
+                inWord = False
+        elif c.isalnum():
+            if inQuote or inWord:
+                words[-1].append(c)
+            else:
+                words.append([])
+                words[-1].append(c)
+                inWord = True
+        else:
+            if inQuote:
+                words[-1].append(c)
+            else:
+                inWord = False
+    if inQuote:
+        words[-1].append('"')
+    # Step 2.  OR processing.  All OR terms are ultimately discarded.
+    words = [[True, "".join(w)] for w in words]
+    i = 0
+    while i < len(words):
+        if words[i][1].upper() == "OR":
+            if i > 0 and i < len(words) - 1:
+                words[i - 1][0] = False
+                words[i + 1][0] = False
+            del words[i]
+        else:
+            i += 1
+    # Step 3.  Remove all stopwords.  We can't leave MySQL's default
+    # stopwords in because a plus sign in front of a stopword will cause
+    # zero results to be returned.  Also, we need to remove our own
+    # stopwords anyway.
+    i = 0
+    while i < len(words):
+        if not words[i][1].startswith('"') and (
+            len(words[i][1]) < _minimumWordLength or (words[i][1]).lower() in _stopwords
+        ):
+            del words[i]
+        else:
+            i += 1
+    if len(words) > 0:
+        return " ".join("%s%s" % ("+" if w[0] else "", w[1]) for w in words)
     else:
-      if inQuote:
-        words[-1].append(c)
-      else:
-        inWord = False
-  if inQuote: words[-1].append('"')
-  # Step 2.  OR processing.  All OR terms are ultimately discarded.
-  words = [[True, "".join(w)] for w in words]
-  i = 0
-  while i < len(words):
-    if words[i][1].upper() == "OR":
-      if i > 0 and i < len(words)-1:
-        words[i-1][0] = False
-        words[i+1][0] = False
-      del words[i]
-    else:
-      i += 1
-  # Step 3.  Remove all stopwords.  We can't leave MySQL's default
-  # stopwords in because a plus sign in front of a stopword will cause
-  # zero results to be returned.  Also, we need to remove our own
-  # stopwords anyway.
-  i = 0
-  while i < len(words):
-    if not words[i][1].startswith('"') and\
-      (len(words[i][1]) < _minimumWordLength or (words[i][1]).lower() in _stopwords):
-      del words[i]
-    else:
-      i += 1
-  if len(words) > 0:
-    return " ".join("%s%s" % ("+" if w[0] else "", w[1]) for w in words)
-  else:
-    # If a constraint has no search terms (e.g., consists of all
-    # stopwords), MySQL returns zero results.  To mimic this behavior
-    # we return an arbitrary constraint having the same behavior.
-    return "+x"
+        # If a constraint has no search terms (e.g., consists of all
+        # stopwords), MySQL returns zero results.  To mimic this behavior
+        # we return an arbitrary constraint having the same behavior.
+        return "+x"
+
 
 defaultSelectRelated = ["owner", "ownergroup"]
-defaultDefer = ["cm", "keywords", "target", "searchableTarget",
-  "resourceCreatorPrefix", "resourceTitlePrefix", "resourcePublisherPrefix"]
+defaultDefer = [
+    "cm",
+    "keywords",
+    "target",
+    "searchableTarget",
+    "resourceCreatorPrefix",
+    "resourceTitlePrefix",
+    "resourcePublisherPrefix",
+]
 
-def formulateQuery (constraints, orderBy=None,
-  selectRelated=defaultSelectRelated, defer=defaultDefer):
-  """
+
+def formulateQuery(
+    constraints, orderBy=None, selectRelated=defaultSelectRelated, defer=defaultDefer
+):
+    """
   Formulates a search database query and returns an unevaluated
   QuerySet that can then be evaluated, indexed, etc.  'constraints'
   should be a dictionary mapping search columns to constraint values.
@@ -241,267 +261,383 @@ def formulateQuery (constraints, orderBy=None,
   forgiving, and will produce a QuerySet even if constraint values are
   nonsensical.
   """
-  filters = []
-  scopeRequirementMet = False
-  for column, value in constraints.items():
-    if column in ["exported", "isTest", "hasMetadata", "publicSearchVisible",
-      "linkIsBroken", "hasIssues"]:
-      filters.append(django.db.models.Q(**{ column: value }))
-      if column == "publicSearchVisible" and value == True:
-        scopeRequirementMet = True
-    elif column == "identifier":
-      v = util.validateIdentifier(value)
-      if v == None:
-        if re.match("\d{5}/", value):
-          v = util.validateArk(value)
-          if v != None: v = "ark:/" + v
-        elif re.match("10\.[1-9]\d{3,4}/", value):
-          v = util.validateDoi(value)
-          if v != None: v = "doi:" + v
-        if v == None: v = value
-      filters.append(django.db.models.Q(identifier__startswith=v))
-    elif column == "identifierType":
-      if isinstance(value, basestring): value = [value]
-      filters.append(reduce(operator.or_,
-        [django.db.models.Q(identifier__startswith=(v.lower() + ":"))\
-        for v in value]))
-    elif column == "owner":
-      if isinstance(value, basestring): value = [value]
-      filters.append(reduce(operator.or_,
-        [django.db.models.Q(owner__username=v) for v in value]))
-      scopeRequirementMet = True
-    elif column == "ownergroup":
-      if isinstance(value, basestring): value = [value]
-      filters.append(reduce(operator.or_,
-        [django.db.models.Q(ownergroup__groupname=v) for v in value]))
-      scopeRequirementMet = True
-    elif column in ["createTime", "updateTime"]:
-      if value[0] != None:
-        if value[1] != None:
-          filters.append(django.db.models.Q(**{ (column + "__range"): value }))
-        else:
-          filters.append(
-            django.db.models.Q(**{ (column + "__gte"): value[0] }))
-      else:
-        if value[1] != None:
-          filters.append(
-            django.db.models.Q(**{ (column + "__lte"): value[1] }))
-    elif column == "status":
-      if isinstance(value, basestring): value = [value]
-      filters.append(reduce(operator.or_,
-        [django.db.models.Q(status=\
-        ezidapp.models.Identifier.statusDisplayToCode.get(v, v))\
-        for v in value]))
-    elif column == "crossref":
-      if value:
-        filters.append(~django.db.models.Q(crossrefStatus=""))
-      else:
-        filters.append(django.db.models.Q(crossrefStatus=""))
-    elif column == "crossrefStatus":
-      if isinstance(value, basestring): value = [value]
-      filters.append(reduce(operator.or_,
-        [django.db.models.Q(crossrefStatus=v) for v in value]))
-    elif column == "target":
-      # Unfortunately we don't store URLs in any kind of normalized
-      # form, so we have no real means to take URL equivalence into
-      # account.  The one thing we give flexibility on in matching is
-      # the presence or absence of a trailing slash (well, that and
-      # case-insensitivity.)
-      values = [value]
-      u = urlparse.urlparse(value)
-      if u.params == "" and u.query == "" and u.fragment == "":
-        # Make sure all post-path syntax is removed.
-        value = u.geturl()
-        if value.endswith("/"):
-          values.append(value[:-1])
-        else:
-          values.append(value + "/")
-      qlist = []
-      for v in values:
-        q = django.db.models.Q(searchableTarget=v[::-1][:_maxTargetLength])
-        if len(v) > _maxTargetLength: q &= django.db.models.Q(target=v)
-        qlist.append(q)
-      filters.append(reduce(operator.or_, qlist))
-    elif column == "profile":
-      if isinstance(value, basestring): value = [value]
-      filters.append(reduce(operator.or_,
-        [django.db.models.Q(profile__label=v) for v in value]))
-    elif column in _fulltextFields:
-      if _fulltextSupported:
-        filters.append(django.db.models.Q(**{ (column + "__search"):\
-          _processFulltextConstraint(value) }))
-      else:
-        value = value.split()
-        if len(value) > 0:
-          filters.append(reduce(operator.and_,
-            [django.db.models.Q(**{ (column + "__icontains"): v })\
-            for v in value]))
-    elif column == "resourcePublicationYear":
-      if value[0] != None:
-        if value[1] != None:
-          if value[0] == value[1]:
+    filters = []
+    scopeRequirementMet = False
+    for column, value in constraints.items():
+        if column in [
+            "exported",
+            "isTest",
+            "hasMetadata",
+            "publicSearchVisible",
+            "linkIsBroken",
+            "hasIssues",
+        ]:
+            filters.append(django.db.models.Q(**{column: value}))
+            if column == "publicSearchVisible" and value == True:
+                scopeRequirementMet = True
+        elif column == "identifier":
+            v = util.validateIdentifier(value)
+            if v == None:
+                if re.match("\d{5}/", value):
+                    v = util.validateArk(value)
+                    if v != None:
+                        v = "ark:/" + v
+                elif re.match("10\.[1-9]\d{3,4}/", value):
+                    v = util.validateDoi(value)
+                    if v != None:
+                        v = "doi:" + v
+                if v == None:
+                    v = value
+            filters.append(django.db.models.Q(identifier__startswith=v))
+        elif column == "identifierType":
+            if isinstance(value, basestring):
+                value = [value]
             filters.append(
-              django.db.models.Q(searchablePublicationYear=value[0]))
-          else:
-            filters.append(django.db.models.Q(
-              searchablePublicationYear__range=value))
+                reduce(
+                    operator.or_,
+                    [
+                        django.db.models.Q(identifier__startswith=(v.lower() + ":"))
+                        for v in value
+                    ],
+                )
+            )
+        elif column == "owner":
+            if isinstance(value, basestring):
+                value = [value]
+            filters.append(
+                reduce(
+                    operator.or_, [django.db.models.Q(owner__username=v) for v in value]
+                )
+            )
+            scopeRequirementMet = True
+        elif column == "ownergroup":
+            if isinstance(value, basestring):
+                value = [value]
+            filters.append(
+                reduce(
+                    operator.or_,
+                    [django.db.models.Q(ownergroup__groupname=v) for v in value],
+                )
+            )
+            scopeRequirementMet = True
+        elif column in ["createTime", "updateTime"]:
+            if value[0] != None:
+                if value[1] != None:
+                    filters.append(django.db.models.Q(**{(column + "__range"): value}))
+                else:
+                    filters.append(django.db.models.Q(**{(column + "__gte"): value[0]}))
+            else:
+                if value[1] != None:
+                    filters.append(django.db.models.Q(**{(column + "__lte"): value[1]}))
+        elif column == "status":
+            if isinstance(value, basestring):
+                value = [value]
+            filters.append(
+                reduce(
+                    operator.or_,
+                    [
+                        django.db.models.Q(
+                            status=ezidapp.models.Identifier.statusDisplayToCode.get(
+                                v, v
+                            )
+                        )
+                        for v in value
+                    ],
+                )
+            )
+        elif column == "crossref":
+            if value:
+                filters.append(~django.db.models.Q(crossrefStatus=""))
+            else:
+                filters.append(django.db.models.Q(crossrefStatus=""))
+        elif column == "crossrefStatus":
+            if isinstance(value, basestring):
+                value = [value]
+            filters.append(
+                reduce(
+                    operator.or_, [django.db.models.Q(crossrefStatus=v) for v in value]
+                )
+            )
+        elif column == "target":
+            # Unfortunately we don't store URLs in any kind of normalized
+            # form, so we have no real means to take URL equivalence into
+            # account.  The one thing we give flexibility on in matching is
+            # the presence or absence of a trailing slash (well, that and
+            # case-insensitivity.)
+            values = [value]
+            u = urlparse.urlparse(value)
+            if u.params == "" and u.query == "" and u.fragment == "":
+                # Make sure all post-path syntax is removed.
+                value = u.geturl()
+                if value.endswith("/"):
+                    values.append(value[:-1])
+                else:
+                    values.append(value + "/")
+            qlist = []
+            for v in values:
+                q = django.db.models.Q(searchableTarget=v[::-1][:_maxTargetLength])
+                if len(v) > _maxTargetLength:
+                    q &= django.db.models.Q(target=v)
+                qlist.append(q)
+            filters.append(reduce(operator.or_, qlist))
+        elif column == "profile":
+            if isinstance(value, basestring):
+                value = [value]
+            filters.append(
+                reduce(
+                    operator.or_, [django.db.models.Q(profile__label=v) for v in value]
+                )
+            )
+        elif column in _fulltextFields:
+            if _fulltextSupported:
+                filters.append(
+                    django.db.models.Q(
+                        **{(column + "__search"): _processFulltextConstraint(value)}
+                    )
+                )
+            else:
+                value = value.split()
+                if len(value) > 0:
+                    filters.append(
+                        reduce(
+                            operator.and_,
+                            [
+                                django.db.models.Q(**{(column + "__icontains"): v})
+                                for v in value
+                            ],
+                        )
+                    )
+        elif column == "resourcePublicationYear":
+            if value[0] != None:
+                if value[1] != None:
+                    if value[0] == value[1]:
+                        filters.append(
+                            django.db.models.Q(searchablePublicationYear=value[0])
+                        )
+                    else:
+                        filters.append(
+                            django.db.models.Q(searchablePublicationYear__range=value)
+                        )
+                else:
+                    filters.append(
+                        django.db.models.Q(searchablePublicationYear__gte=value[0])
+                    )
+            else:
+                if value[1] != None:
+                    filters.append(
+                        django.db.models.Q(searchablePublicationYear__lte=value[1])
+                    )
+        elif column == "resourceType":
+            if isinstance(value, basestring):
+                value = [value]
+            filters.append(
+                reduce(
+                    operator.or_,
+                    [
+                        django.db.models.Q(
+                            searchableResourceType=ezidapp.models.validation.resourceTypes.get(
+                                v, v
+                            )
+                        )
+                        for v in value
+                    ],
+                )
+            )
         else:
-          filters.append(
-            django.db.models.Q(searchablePublicationYear__gte=value[0]))
-      else:
-        if value[1] != None:
-          filters.append(
-            django.db.models.Q(searchablePublicationYear__lte=value[1]))
-    elif column == "resourceType":
-      if isinstance(value, basestring): value = [value]
-      filters.append(reduce(operator.or_,
-        [django.db.models.Q(searchableResourceType=\
-        ezidapp.models.validation.resourceTypes.get(v, v)) for v in value]))
-    else:
-      assert False, "unrecognized column"
-  assert scopeRequirementMet, "query scope requirement not met"
-  qs = ezidapp.models.SearchIdentifier.objects.filter(*filters)
-  if len(selectRelated) > 0: qs = qs.select_related(*selectRelated)
-  if len(defer) > 0: qs = qs.defer(*defer)
-  if orderBy != None:
-    prefix = ""
-    if orderBy.startswith("-"):
-      prefix = "-"
-      orderBy = orderBy[1:]
-    if orderBy in ["identifier", "createTime", "updateTime", "status",
-      "exported", "isTest", "hasMetadata", "publicSearchVisible",
-      "linkIsBroken", "hasIssues"]:
-      pass
-    elif orderBy == "identifierType":
-      orderBy = "identifier"
-    elif orderBy == "owner":
-      orderBy = "owner__username"
-    elif orderBy == "ownergroup":
-      orderBy = "ownergroup__groupname"
-    elif orderBy == "profile":
-      orderBy = "profile__label"
-    elif orderBy == "resourceCreator":
-      orderBy = "resourceCreatorPrefix"
-    elif orderBy == "resourceTitle":
-      orderBy = "resourceTitlePrefix"
-    elif orderBy == "resourcePublisher":
-      orderBy = "resourcePublisherPrefix"
-    elif orderBy == "resourcePublicationYear":
-      orderBy = "searchablePublicationYear"
-    elif orderBy == "resourceType":
-      orderBy = "searchableResourceType"
-    else:
-      assert False, "column does not support ordering"
-    qs = qs.order_by(prefix + orderBy)
-  return qs
+            assert False, "unrecognized column"
+    assert scopeRequirementMet, "query scope requirement not met"
+    qs = ezidapp.models.SearchIdentifier.objects.filter(*filters)
+    if len(selectRelated) > 0:
+        qs = qs.select_related(*selectRelated)
+    if len(defer) > 0:
+        qs = qs.defer(*defer)
+    if orderBy != None:
+        prefix = ""
+        if orderBy.startswith("-"):
+            prefix = "-"
+            orderBy = orderBy[1:]
+        if orderBy in [
+            "identifier",
+            "createTime",
+            "updateTime",
+            "status",
+            "exported",
+            "isTest",
+            "hasMetadata",
+            "publicSearchVisible",
+            "linkIsBroken",
+            "hasIssues",
+        ]:
+            pass
+        elif orderBy == "identifierType":
+            orderBy = "identifier"
+        elif orderBy == "owner":
+            orderBy = "owner__username"
+        elif orderBy == "ownergroup":
+            orderBy = "ownergroup__groupname"
+        elif orderBy == "profile":
+            orderBy = "profile__label"
+        elif orderBy == "resourceCreator":
+            orderBy = "resourceCreatorPrefix"
+        elif orderBy == "resourceTitle":
+            orderBy = "resourceTitlePrefix"
+        elif orderBy == "resourcePublisher":
+            orderBy = "resourcePublisherPrefix"
+        elif orderBy == "resourcePublicationYear":
+            orderBy = "searchablePublicationYear"
+        elif orderBy == "resourceType":
+            orderBy = "searchableResourceType"
+        else:
+            assert False, "column does not support ordering"
+        qs = qs.order_by(prefix + orderBy)
+    return qs
 
-def _modifyActiveCount (delta):
-  global _numActiveSearches
-  _lock.acquire()
-  try:
-    _numActiveSearches += delta
-  finally:
-    _lock.release()
 
-def numActiveSearches ():
-  """
+def _modifyActiveCount(delta):
+    global _numActiveSearches
+    _lock.acquire()
+    try:
+        _numActiveSearches += delta
+    finally:
+        _lock.release()
+
+
+def numActiveSearches():
+    """
   Returns the number of active searches.
   """
-  _lock.acquire()
-  try:
-    return _numActiveSearches
-  finally:
-    _lock.release()
+    _lock.acquire()
+    try:
+        return _numActiveSearches
+    finally:
+        _lock.release()
 
-def _isMysqlFulltextError (exception):
-  return isinstance(exception, django.db.utils.InternalError) and\
-    exception.args == (188, "FTS query exceeds result cache limit")
 
-def executeSearchCountOnly (user, constraints,
-  selectRelated=defaultSelectRelated, defer=defaultDefer):
-  """
+def _isMysqlFulltextError(exception):
+    return isinstance(exception, django.db.utils.InternalError) and exception.args == (
+        188,
+        "FTS query exceeds result cache limit",
+    )
+
+
+def executeSearchCountOnly(
+    user, constraints, selectRelated=defaultSelectRelated, defer=defaultDefer
+):
+    """
   Executes a search database query, returning just the number of
   results.  'user' is the requestor, and should be an authenticated
   StoreUser object or AnonymousUser.  'constraints', 'selectRelated',
   and 'defer' are as in formulateQuery above.
   """
-  tid = uuid.uuid1()
-  try:
-    _modifyActiveCount(1)
-    qs = formulateQuery(constraints, selectRelated=selectRelated, defer=defer)
-    log.begin(tid, "search/count", "-", user.username, user.pid,
-      user.group.groupname, user.group.pid, *reduce(operator.__concat__,
-      [[k, unicode(v)] for k, v in constraints.items()]))
-    c = qs.count()
-  except Exception, e:
-    # MySQL's FULLTEXT engine chokes on a too-frequently-occurring
-    # word (call it a "bad" word) that is not on its own stopword
-    # list.  We weed out bad words using our own stopword list, but
-    # not if they're quoted, and unfortunately MySQL chokes on bad
-    # words quoted or not.  Furthermore, we are unable to add to
-    # MySQL's stopword list.  If MySQL chokes, we retry the query
-    # without any quotes in the hopes that any quoted bad words will
-    # be removed by our own processing.
-    if _isMysqlFulltextError(e) and\
-      any('"' in constraints.get(f, "") for f in _fulltextFields):
-      constraints2 = constraints.copy()
-      for f in _fulltextFields:
-        if f in constraints2:
-          constraints2[f] = constraints2[f].replace('"', " ")
-      log.success(tid, "-1")
-      return executeSearchCountOnly(user, constraints2, selectRelated, defer)
+    tid = uuid.uuid1()
+    try:
+        _modifyActiveCount(1)
+        qs = formulateQuery(constraints, selectRelated=selectRelated, defer=defer)
+        log.begin(
+            tid,
+            "search/count",
+            "-",
+            user.username,
+            user.pid,
+            user.group.groupname,
+            user.group.pid,
+            *reduce(
+                operator.__concat__, [[k, unicode(v)] for k, v in constraints.items()]
+            )
+        )
+        c = qs.count()
+    except Exception, e:
+        # MySQL's FULLTEXT engine chokes on a too-frequently-occurring
+        # word (call it a "bad" word) that is not on its own stopword
+        # list.  We weed out bad words using our own stopword list, but
+        # not if they're quoted, and unfortunately MySQL chokes on bad
+        # words quoted or not.  Furthermore, we are unable to add to
+        # MySQL's stopword list.  If MySQL chokes, we retry the query
+        # without any quotes in the hopes that any quoted bad words will
+        # be removed by our own processing.
+        if _isMysqlFulltextError(e) and any(
+            '"' in constraints.get(f, "") for f in _fulltextFields
+        ):
+            constraints2 = constraints.copy()
+            for f in _fulltextFields:
+                if f in constraints2:
+                    constraints2[f] = constraints2[f].replace('"', " ")
+            log.success(tid, "-1")
+            return executeSearchCountOnly(user, constraints2, selectRelated, defer)
+        else:
+            log.error(tid, e)
+            raise
     else:
-      log.error(tid, e)
-      raise
-  else:
-    log.success(tid, str(c))
-    return c
-  finally:
-    _modifyActiveCount(-1)
+        log.success(tid, str(c))
+        return c
+    finally:
+        _modifyActiveCount(-1)
 
-def executeSearch (user, constraints, from_, to, orderBy=None,
-  selectRelated=defaultSelectRelated, defer=defaultDefer):
-  """
+
+def executeSearch(
+    user,
+    constraints,
+    from_,
+    to,
+    orderBy=None,
+    selectRelated=defaultSelectRelated,
+    defer=defaultDefer,
+):
+    """
   Executes a search database query, returning an evaluated QuerySet.
   'user' is the requestor, and should be an authenticated StoreUser
   object or AnonymousUser.  'from_' and 'to' are range bounds, and
   must be supplied.  'constraints', 'orderBy', 'selectRelated', and
   'defer' are as in formulateQuery above.
   """
-  tid = uuid.uuid1()
-  try:
-    _modifyActiveCount(1)
-    qs = formulateQuery(constraints, orderBy=orderBy,
-      selectRelated=selectRelated, defer=defer)
-    log.begin(tid, "search/results", "-", user.username, user.pid,
-      user.group.groupname, user.group.pid, str(orderBy), str(from_), str(to),
-      *reduce(operator.__concat__,
-      [[k, unicode(v)] for k, v in constraints.items()]))
-    qs = qs[from_:to]
-    c = len(qs)
-  except Exception, e:
-    # MySQL's FULLTEXT engine chokes on a too-frequently-occurring
-    # word (call it a "bad" word) that is not on its own stopword
-    # list.  We weed out bad words using our own stopword list, but
-    # not if they're quoted, and unfortunately MySQL chokes on bad
-    # words quoted or not.  Furthermore, we are unable to add to
-    # MySQL's stopword list.  If MySQL chokes, we retry the query
-    # without any quotes in the hopes that any quoted bad words will
-    # be removed by our own processing.
-    if _isMysqlFulltextError(e) and\
-      any('"' in constraints.get(f, "") for f in _fulltextFields):
-      constraints2 = constraints.copy()
-      for f in _fulltextFields:
-        if f in constraints2:
-          constraints2[f] = constraints2[f].replace('"', " ")
-      log.success(tid, "-1")
-      return executeSearch(user, constraints2, from_, to, orderBy,
-        selectRelated, defer)
+    tid = uuid.uuid1()
+    try:
+        _modifyActiveCount(1)
+        qs = formulateQuery(
+            constraints, orderBy=orderBy, selectRelated=selectRelated, defer=defer
+        )
+        log.begin(
+            tid,
+            "search/results",
+            "-",
+            user.username,
+            user.pid,
+            user.group.groupname,
+            user.group.pid,
+            str(orderBy),
+            str(from_),
+            str(to),
+            *reduce(
+                operator.__concat__, [[k, unicode(v)] for k, v in constraints.items()]
+            )
+        )
+        qs = qs[from_:to]
+        c = len(qs)
+    except Exception, e:
+        # MySQL's FULLTEXT engine chokes on a too-frequently-occurring
+        # word (call it a "bad" word) that is not on its own stopword
+        # list.  We weed out bad words using our own stopword list, but
+        # not if they're quoted, and unfortunately MySQL chokes on bad
+        # words quoted or not.  Furthermore, we are unable to add to
+        # MySQL's stopword list.  If MySQL chokes, we retry the query
+        # without any quotes in the hopes that any quoted bad words will
+        # be removed by our own processing.
+        if _isMysqlFulltextError(e) and any(
+            '"' in constraints.get(f, "") for f in _fulltextFields
+        ):
+            constraints2 = constraints.copy()
+            for f in _fulltextFields:
+                if f in constraints2:
+                    constraints2[f] = constraints2[f].replace('"', " ")
+            log.success(tid, "-1")
+            return executeSearch(
+                user, constraints2, from_, to, orderBy, selectRelated, defer
+            )
+        else:
+            log.error(tid, e)
+            raise
     else:
-      log.error(tid, e)
-      raise
-  else:
-    log.success(tid, str(c))
-    return qs
-  finally:
-    _modifyActiveCount(-1)
+        log.success(tid, str(c))
+        return qs
+    finally:
+        _modifyActiveCount(-1)

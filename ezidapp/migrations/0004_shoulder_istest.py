@@ -25,6 +25,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='searchgroup',
             name='pid',
-            field=models.CharField(unique=True, max_length=255, validators=[ezidapp.models.validation.agentPidOrEmpty]),
+            field=models.CharField(
+                unique=True,
+                max_length=255,
+                validators=[ezidapp.models.validation.agentPidOrEmpty],
+            ),
         ),
     ]

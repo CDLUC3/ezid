@@ -52,15 +52,19 @@ getAdminUser = store_user.getAdminUser
 getProfileByLabel = store_profile.getByLabel
 getProfileById = store_profile.getById
 
-def getIdentifier (identifier, prefixMatch=False):
-  if prefixMatch:
-    l = list(StoreIdentifier.objects.select_related("owner", "owner__group",
-      "ownergroup", "datacenter", "profile").\
-      filter(identifier__in=util.explodePrefixes(identifier)))
-    if len(l) > 0:
-      return max(l, key=lambda si: len(si.identifier))
+
+def getIdentifier(identifier, prefixMatch=False):
+    if prefixMatch:
+        l = list(
+            StoreIdentifier.objects.select_related(
+                "owner", "owner__group", "ownergroup", "datacenter", "profile"
+            ).filter(identifier__in=util.explodePrefixes(identifier))
+        )
+        if len(l) > 0:
+            return max(l, key=lambda si: len(si.identifier))
+        else:
+            raise StoreIdentifier.DoesNotExist()
     else:
-      raise StoreIdentifier.DoesNotExist()
-  else:
-    return StoreIdentifier.objects.select_related("owner", "owner__group",
-      "ownergroup", "datacenter", "profile").get(identifier=identifier)
+        return StoreIdentifier.objects.select_related(
+            "owner", "owner__group", "ownergroup", "datacenter", "profile"
+        ).get(identifier=identifier)

@@ -18,27 +18,30 @@ import django.db.models
 import util
 import validation
 
-class Datacenter (django.db.models.Model):
-  # A DataCite datacenter.
 
-  class Meta:
-    abstract = True
+class Datacenter(django.db.models.Model):
+    # A DataCite datacenter.
 
-  symbol = django.db.models.CharField(
-    max_length=util.maxDatacenterSymbolLength, unique=True,
-    validators=[validation.datacenterSymbol])
-  # The datacenter's so-called symbol, e.g., "CDL.BUL".
+    class Meta:
+        abstract = True
 
-  @property
-  def allocator (self):
-    return self.symbol.split(".")[0]
+    symbol = django.db.models.CharField(
+        max_length=util.maxDatacenterSymbolLength,
+        unique=True,
+        validators=[validation.datacenterSymbol],
+    )
+    # The datacenter's so-called symbol, e.g., "CDL.BUL".
 
-  @property
-  def datacenter (self):
-    return self.symbol.split(".")[1]
+    @property
+    def allocator(self):
+        return self.symbol.split(".")[0]
 
-  def clean (self):
-    self.symbol = self.symbol.upper()
+    @property
+    def datacenter(self):
+        return self.symbol.split(".")[1]
 
-  def __unicode__ (self):
-    return self.symbol
+    def clean(self):
+        self.symbol = self.symbol.upper()
+
+    def __unicode__(self):
+        return self.symbol

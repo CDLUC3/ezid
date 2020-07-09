@@ -27,7 +27,6 @@ urlpatterns = i18n_patterns(
     # url("^i18n/", include(django.conf.urls.i18n), name="i18n"),
     url("^i18n/", JavaScriptCatalog.as_view(), name='i18n'),
     # url("jsi18n/", JavaScriptCatalog.as_view(), name='javascript-catalog'),
-
     # url("^$", ui_home.inde, name="ui_home.index)
     # UI - RENDERED FROM TEMPLATES IN INFO REPOSITORY
     url("^$", ui_home.index, name="ui_home.index"),
@@ -71,7 +70,6 @@ urlpatterns = i18n_patterns(
     url("^doc/[-\w.]*\\.(?:html|py|sh)$", ui.doc, name="ui.doc"),
     url("^download_confirm$", ui_manage.download, name="ui_manage.download"),
     url("^download_error$", ui_manage.download_error, name="ui_manage.download_error"),
-
     url("^manage/?$", ui_manage.index, name="ui_manage.index"),
     url("^manage/edit/(.*)", ui_manage.edit, name="ui_manage.edit"),
     url(
@@ -110,11 +108,11 @@ urlpatterns = i18n_patterns(
     # ADMIN
     url("^admin/login/?$", ui_account.login, name="ui_account.login"),
     url("^admin/logout/?$", ui_account.logout, name="ui_account.logout"),
-    prefix_default_language=False
+    prefix_default_language=False,
 )
-    # url(
-    #     "^admin/", include(ezidapp.admin.superuser.urls) # RD
-    # ),
+# url(
+#     "^admin/", include(ezidapp.admin.superuser.urls) # RD
+# ),
 # ]
 
 if django.conf.settings.STANDALONE:

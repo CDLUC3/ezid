@@ -101,6 +101,7 @@ def render(request, template, context={}):
     r["Content-Length"] = len(ec)
     return r
 
+
 def renderIdPage(request, path, d):
     """
   Used by Create and Demo ID pages.

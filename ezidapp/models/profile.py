@@ -17,19 +17,26 @@ import django.core.validators
 import django.db.models
 import re
 
-class Profile (django.db.models.Model):
-  # A metadata profile.
 
-  class Meta:
-    abstract = True
+class Profile(django.db.models.Model):
+    # A metadata profile.
 
-  label = django.db.models.CharField(max_length=32, unique=True,
-    validators=[django.core.validators.RegexValidator(
-    "^[a-z0-9]+([-_.][a-z0-9]+)*$", "Invalid profile name.", flags=re.I)])
-  # The profile's label, e.g., "erc".
+    class Meta:
+        abstract = True
 
-  def clean (self):
-    self.label = self.label.strip()
+    label = django.db.models.CharField(
+        max_length=32,
+        unique=True,
+        validators=[
+            django.core.validators.RegexValidator(
+                "^[a-z0-9]+([-_.][a-z0-9]+)*$", "Invalid profile name.", flags=re.I
+            )
+        ],
+    )
+    # The profile's label, e.g., "erc".
 
-  def __unicode__ (self):
-    return self.label
+    def clean(self):
+        self.label = self.label.strip()
+
+    def __unicode__(self):
+        return self.label

@@ -27,7 +27,7 @@ SECRET_PATHS.remove(("DATABASES", "default", "PASSWORD"))
 SEARCH_STORE_SAME_DATABASE = False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-LOCALIZATIONS = { "default": ("cdl", ["somebody@ucop.edu"]) }
+LOCALIZATIONS = {"default": ("cdl", ["somebody@ucop.edu"])}
 
 injectSecrets(DEPLOYMENT_LEVEL)
 

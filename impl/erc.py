@@ -48,67 +48,82 @@
 
 import re
 
-class ErcParseException (Exception):
-  pass
+
+class ErcParseException(Exception):
+    pass
+
 
 _encodings = {
-  "sp": " ",
-  "ex": "!",
-  "dq": "\"",
-  "ns": "#",
-  "do": "$",
-  "pe": "%",
-  "am": "&",
-  "sq": "'",
-  "op": "(",
-  "cp": ")",
-  "as": "*",
-  "pl": "+",
-  "co": ",",
-  "pd": ".",
-  "sl": "/",
-  "cn": ":",
-  "sc": ";",
-  "lt": "<",
-  "eq": "=",
-  "gt": ">",
-  "qu": "?",
-  "at": "@",
-  "ox": "[",
-  "ls": "\\",
-  "cx": "]",
-  "vb": "|",
-  "nu": chr(0),
-  "%": "%",
-  "_": "" }
+    "sp": " ",
+    "ex": "!",
+    "dq": "\"",
+    "ns": "#",
+    "do": "$",
+    "pe": "%",
+    "am": "&",
+    "sq": "'",
+    "op": "(",
+    "cp": ")",
+    "as": "*",
+    "pl": "+",
+    "co": ",",
+    "pd": ".",
+    "sl": "/",
+    "cn": ":",
+    "sc": ";",
+    "lt": "<",
+    "eq": "=",
+    "gt": ">",
+    "qu": "?",
+    "at": "@",
+    "ox": "[",
+    "ls": "\\",
+    "cx": "]",
+    "vb": "|",
+    "nu": chr(0),
+    "%": "%",
+    "_": "",
+}
 
 _encodingRE = re.compile("%([a-z][a-z]|%|_)")
-def _decodeNonExpansionBlock (s):
-  return _encodingRE.sub(lambda c: _encodings.get(c.group(1), c.group(0)), s)
+
+
+def _decodeNonExpansionBlock(s):
+    return _encodingRE.sub(lambda c: _encodings.get(c.group(1), c.group(0)), s)
+
 
 _whitespaceRE = re.compile("\s")
-def _decodeExpansionBlock (s):
-  return _whitespaceRE.sub("", s)
 
-def _decode (s):
-  r = ""
-  j = 0
-  while j < len(s):
-    i = s.find("%{", j)
-    if i < 0: i = len(s)
-    r += _decodeNonExpansionBlock(s[j:i])
-    j = s.find("%}", i+2)
-    if j < 0: j = len(s)
-    r += _decodeExpansionBlock(s[i+2:j])
-    j += 2
-  return r
+
+def _decodeExpansionBlock(s):
+    return _whitespaceRE.sub("", s)
+
+
+def _decode(s):
+    r = ""
+    j = 0
+    while j < len(s):
+        i = s.find("%{", j)
+        if i < 0:
+            i = len(s)
+        r += _decodeNonExpansionBlock(s[j:i])
+        j = s.find("%}", i + 2)
+        if j < 0:
+            j = len(s)
+        r += _decodeExpansionBlock(s[i + 2 : j])
+        j += 2
+    return r
+
 
 _spaceRE = re.compile("\s+")
-def _decodeLabel (s):
-  return _spaceRE.sub("_", _decode(s).strip()).lower()
 
-def parse (s, concatenateValues=True):
-  """
+
+def _decodeLabel(s):
+    return _spaceRE.sub("_", _decode(s).strip()).lower()
+
+
+def parse(s, concatenateValues=True):
+    """
   Parses an ANVL/ERC record (represented as a single string) and
   returns a dictionary of metadata element name/value pairs.  If
   'concatenateValues' is true, repeated values for a given element are
@@ -116,34 +131,40 @@ def parse (s, concatenateValues=True):
   list.  If the input contains multiple records, only the first is
   processed.  Raises ErcParseException (defined in this module).
   """
-  d = {}
-  k = None
-  for l in s.splitlines():
-    if len(l) == 0:
-      break
-    elif l[0] == "#":
-      pass
-    elif l[0].isspace():
-      if k == None:
-        raise ErcParseException, "no previous label for continuation line"
-      v = l.strip()
-      if v != "":
-        if d[k][-1] == "":
-          d[k][-1] = v
+    d = {}
+    k = None
+    for l in s.splitlines():
+        if len(l) == 0:
+            break
+        elif l[0] == "#":
+            pass
+        elif l[0].isspace():
+            if k == None:
+                raise ErcParseException, "no previous label for continuation line"
+            v = l.strip()
+            if v != "":
+                if d[k][-1] == "":
+                    d[k][-1] = v
+                else:
+                    d[k][-1] += " " + v
         else:
-          d[k][-1] += " " + v
+            if ":" not in l:
+                raise ErcParseException, "no colon in line"
+            k, v = l.split(":", 1)
+            k = _decodeLabel(k)
+            if k == "":
+                raise ErcParseException, "empty label"
+            if k not in d:
+                d[k] = []
+            d[k].append(v.strip())
+    if concatenateValues:
+        for k in d:
+            d[k] = " ; ".join(v for v in [_decode(v) for v in d[k]] if v != "")
+        if "erc" in d and d["erc"] == "":
+            del d["erc"]
     else:
-      if ":" not in l: raise ErcParseException, "no colon in line"
-      k, v = l.split(":", 1)
-      k = _decodeLabel(k)
-      if k == "": raise ErcParseException, "empty label"
-      if k not in d: d[k] = []
-      d[k].append(v.strip())
-  if concatenateValues:
-    for k in d:
-      d[k] = " ; ".join(v for v in [_decode(v) for v in d[k]] if v != "")
-    if "erc" in d and d["erc"] == "": del d["erc"]
-  else:
-    for k in d: d[k] = [v for v in [_decode(v) for v in d[k]] if v != ""]
-    if "erc" in d and len(d["erc"]) == 0: del d["erc"]
-  return d
+        for k in d:
+            d[k] = [v for v in [_decode(v) for v in d[k]] if v != ""]
+        if "erc" in d and len(d["erc"]) == 0:
+            del d["erc"]
+    return d

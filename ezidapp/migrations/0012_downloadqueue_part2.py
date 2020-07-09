@@ -11,12 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='downloadqueue',
-            name='coOwners',
-        ),
-        migrations.RemoveField(
-            model_name='downloadqueue',
-            name='currentOwner',
-        ),
+        migrations.RemoveField(model_name='downloadqueue', name='coOwners',),
+        migrations.RemoveField(model_name='downloadqueue', name='currentOwner',),
     ]

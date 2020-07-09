@@ -15,5 +15,6 @@
 
 import registration_queue
 
-class BinderQueue (registration_queue.RegistrationQueue):
-  pass
+
+class BinderQueue(registration_queue.RegistrationQueue):
+    pass
