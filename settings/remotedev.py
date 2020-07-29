@@ -6,7 +6,17 @@ DEPLOYMENT_LEVEL = "remotedev"
 
 STANDALONE = True
 
-STORE_MYSQL = False
+# True: Use MYSQL
+# False: Use SQLite
+STORE_MYSQL = True
+SEARCH_MYSQL = True
+
+# If both the store and search databases are on MySQL, they share a single database.
+SEARCH_STORE_SAME_DATABASE = STORE_MYSQL and SEARCH_MYSQL
+
+
+ALLOWED_HOSTS = ["uc3-ezidx2-dev.cdlib.org", "localhost", "127.0.0.1"]
+
 if STORE_MYSQL:
     DATABASES["default"]["HOST"] = "127.0.0.1"
     SECRET_PATHS.remove(("DATABASES", "default", "HOST"))
@@ -20,7 +30,7 @@ else:
     SECRET_PATHS.remove(("DATABASES", "default", "HOST"))
     SECRET_PATHS.remove(("DATABASES", "default", "PASSWORD"))
 
-SEARCH_MYSQL = False
+
 if SEARCH_MYSQL:
     DATABASES["search"]["HOST"] = "127.0.0.1"
     SECRET_PATHS.remove(("DATABASES", "search", "HOST"))
@@ -34,9 +44,5 @@ else:
     }
     SECRET_PATHS.remove(("DATABASES", "search", "HOST"))
     SECRET_PATHS.remove(("DATABASES", "search", "PASSWORD"))
-
-SEARCH_STORE_SAME_DATABASE = STORE_MYSQL and SEARCH_MYSQL
-
-ALLOWED_HOSTS = ["uc3-ezidx2-dev.cdlib.org", "localhost"]
 
 injectSecrets(DEPLOYMENT_LEVEL)

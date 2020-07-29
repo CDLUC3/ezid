@@ -45,6 +45,8 @@ def loadConfig():
     if reload_templates:
         reload_templates = django.conf.settings.RELOAD_TEMPLATES
     testPrefixes = []
+
+    # Depends on loadConfig() for models.shoulder having been called first.
     p = ezidapp.models.getArkTestShoulder()
     testPrefixes.append({"namespace": p.name, "prefix": p.prefix})
     p = ezidapp.models.getDoiTestShoulder()
