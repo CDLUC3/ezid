@@ -23,7 +23,10 @@ DEBUG = True
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 MANAGERS = ADMINS = [
+    ("Dave Vieglais", "dave.vieglais@gmail.com"),
     ("John Kunze", "jak@ucop.edu"),
+    ("Maria Gould", "Maria.Gould@ucop.edu"),
+    ("Roger Dahl", "cdl-ezid@dahlsys.com"),
     ("Rushiraj Nenuji", "rushiraj.nenuji@ucop.edu"),
 ]
 
