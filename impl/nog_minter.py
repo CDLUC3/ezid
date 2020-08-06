@@ -28,7 +28,6 @@ BerkeleyDB keys:
 # noinspection PyCompatibility
 from __future__ import absolute_import, division, print_function
 
-import argparse
 import logging
 import os
 import pprint
@@ -38,6 +37,7 @@ import sys
 # A 3rd-party implementation of pathlib is available for Python 2.7 but it doesn't
 # behave in quite the same way, so we'll use os.path until we move to Py3.
 # import pathlib
+import pathlib
 
 try:
     import bsddb
@@ -46,7 +46,7 @@ except ImportError:
     import bsddb3 as bsddb
 
 import django.conf
-import utils
+import impl.utils.filesystem
 
 # fmt:off
 XDIG_DICT = {
@@ -67,66 +67,38 @@ COUNTER_COUNT = 290
 log = logging.getLogger(__name__)
 
 
-def main():
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(name)s %(levelname)9s %(message)s",
-        stream=sys.stdout,
-    )
+def mint_identifier(shoulder_model):
+    """Mint a single new identifier on an existing ARK or DOI shoulder.
 
-    args = parse_command_line_args()
+    Example shoulder ORM object for ARK:
+    {
+      '_datacenter_cache': None,
+      '_state': <django.db.models.base.ModelState object at 0x7fa140fc8590>,
+      'crossrefEnabled': False,
+      'datacenter_id': None,
+      'id': 10,
+      'isTest': True,
+      'minter': u'https://n2t.net/a/ezid/m/ark/99999/fk4',
+      'name': u'ARK Test',
+      'prefix': u'ark:/99999/fk4',
+      'type': u'ARK'
+    }
 
-    if args.debug:
-        logging.getLogger("").setLevel(logging.DEBUG)
+    ORM changes for DOIs:
 
-    if args.dump:
-        with _Bdb(args.naan_str, args.shoulder_str, dry_run=True) as bdb:
-            bdb.dump()
-        return
+      prefix: doi:10.7941/S9
+      type :  DOI
+      minter: https://n2t.net/a/ezid/m/ark/b7941/s9
 
-    for i, sping_str in enumerate(
-        mint(args.naan_str, args.shoulder_str, args.mint_count, args.dry_run)
-    ):
-        print("{: 10d} {}".format(i + 1, sping_str))
+    DOIs also use ARK minters, "shadow arks".
 
-
-def parse_command_line_args():
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter, description=__doc__
-    )
-    parser.add_argument("naan_str", metavar="naan")
-    parser.add_argument("shoulder_str", metavar="shoulder")
-    parser.add_argument(
-        "--mint_count",
-        "-c",
-        metavar="mint-count",
-        type=int,
-        default=1,
-        help="Number of spings to mint",
-    )
-    parser.add_argument(
-        "--dump", "-d", action="store_true", help="Dump the minder BerkeleyDB and exit"
-    )
-    parser.add_argument(
-        "--dry-run",
-        "-n",
-        action="store_true",
-        help="Do not update the minder BerkeleyDB",
-    )
-    parser.add_argument(
-        "--debug", "-g", action="store_true", help="Debug level logging",
-    )
-    return parser.parse_args()
-
-
-def mint_identifier(naan_str, shoulder_str):
+    "10." is the only valid Directory Indicator for DOIs.
     """
-    """
+    m = re.match(r'(ark:/|doi:10\.)(.*)/(.*)', shoulder_model.prefix)
+    assert m, 'Invalid shoulder prefix: {}'.format(shoulder_model.prefix)
+    naan_str, shoulder_str = re.split(r'[/:.]', shoulder_model.minter)[-2:]
     for sping_str in mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
-        # TODO: Remove "EZ".
-        # We temporarily add an "/EZ" suffix to identifiers in order to distinguish
-        # them from identifiers minted by N2T.
-        return sping_str + "/EZ"
+        return sping_str
 
 
 def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
@@ -204,7 +176,7 @@ def open_bdb(naan_str, shoulder_str, root_path=None, flags_str="rw"):
     # self.__bdb = bsddb.btopen(bdb_path, "r" if dry_run else 'w')
 
     if "c" in flags_str:
-        utils.filesystem.mkdir_p(bdb_path)
+        impl.utils.filesystem.create_missing_directories_for_file(bdb_path)
 
     try:
         return bsddb.btopen(bdb_path, flags_str)
@@ -217,12 +189,37 @@ def open_bdb(naan_str, shoulder_str, root_path=None, flags_str="rw"):
 
 
 def get_bdb_path(naan_str, shoulder_str, root_path=None):
-    return os.path.join(
-        root_path or django.conf.settings.MINTERS_PATH,
-        naan_str,
-        shoulder_str,
-        "nog.bdb",
-    )
+    return os.path.join(get_bdb_root(root_path), naan_str, shoulder_str, "nog.bdb",)
+
+
+def get_bdb_root(root_path=None):
+    """Return the root of the bdb minter hierarchy. This is a convenient stub for
+    mocking out temp dirs during testing.
+    """
+    return root_path or django.conf.settings.MINTERS_PATH
+
+
+def dump_bdb(naan_str, shoulder_str):
+    _Bdb(naan_str, shoulder_str, dry_run=True).dump()
+
+
+def iter_bdb(root_path=None):
+    """Yield all minter databases
+
+    Yield: (naan/prefix, shoulder, Bdb), ...
+    """
+    bdb_root_path = pathlib.Path(root_path or django.conf.settings.MINTERS_PATH)
+    for x in bdb_root_path.iterdir():
+        if x.is_dir():
+            for y in x.iterdir():
+                if y.is_dir():
+                    for z in y.iterdir():
+                        if z.suffix == '.bdb':
+                            with _Bdb(x.name, y.name, dry_run=True) as bdb:
+                                yield x.name, y.name, bdb
+
+
+# Private
 
 
 def _next(bdb, counter_key_list, per_counter, total_count):

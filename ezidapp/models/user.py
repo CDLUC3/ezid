@@ -71,8 +71,6 @@ class User(django.db.models.Model):
 
     def clean(self):
         import log
-        import noid_nog
-
         # The following two statements are here just to support the Django
         # admin app, which has its own rules about how model objects are
         # constructed.  If no group has been assigned, we can return
@@ -89,8 +87,8 @@ class User(django.db.models.Model):
         if self.pid == "":
             try:
                 s = shoulder.getAgentShoulder()
-                assert s.isArk, "agent shoulder type must be ARK"
-                self.pid = "ark:/" + nog_minter.mint_identifier(s)
+                assert s.isArk, "Agent shoulder type must be ARK"
+                self.pid = "{}{}".format(s.prefix, nog_minter.mint_identifier(s))
             except Exception, e:
                 log.otherError("user.User.clean", e)
                 raise

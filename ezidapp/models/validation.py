@@ -48,7 +48,7 @@ def agentPid(pid):
     # purposes we require only that they be ARKs.
     if not pid.startswith("ark:/") or util.validateArk(pid[5:]) != pid[5:]:
         raise django.core.exceptions.ValidationError(
-            "Invalid agent persistent identifier."
+            "Invalid agent persistent identifier: {}".format(pid)
         )
 
 
