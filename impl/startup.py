@@ -3,12 +3,14 @@ import logging
 import django.apps
 import django.db.utils
 
+logger = logging.getLogger(__name__)
+
 
 class Startup(django.apps.AppConfig):
     name = "ezidapp"
 
     def ready(self):
-        logging.debug('impl.startup START')
+        # logging.debug('impl.startup START')
 
         try:
             import config
@@ -16,7 +18,7 @@ class Startup(django.apps.AppConfig):
 
             import ezidapp.models.shoulder
             ezidapp.models.shoulder.loadConfig()
-            config.registerReloadListener(ezidapp.models.shoulder.loadConfig())
+            config.registerReloadListener(ezidapp.models.shoulder.loadConfig)
 
             import util2
             util2.loadConfig()
@@ -26,6 +28,7 @@ class Startup(django.apps.AppConfig):
             ui_common.loadConfig()
             config.registerReloadListener(ui_common.loadConfig)
         except Exception:
+            logger.exception('')
             # App not ready to be configured yet. This allows running
             # `django-admin migrate` to create the initial databases.
             return
@@ -98,4 +101,4 @@ class Startup(django.apps.AppConfig):
         status.loadConfig()
         config.registerReloadListener(status.loadConfig)
 
-        logging.debug('impl.startup END')
+        # logging.debug('impl.startup END')

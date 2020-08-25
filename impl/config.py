@@ -32,11 +32,12 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
-import django.conf
+import logging
 import os.path
 import subprocess
 import time
+
+import django.conf
 
 import config_loader
 import ezidapp.models
@@ -47,11 +48,18 @@ import ezidapp.models.store_user
 
 _reloadFunctions = []
 
+logger = logging.getLogger(__name__)
+
 
 def registerReloadListener(loader):
     """
   Adds a reload listener.
   """
+    if not callable(loader):
+        import inspect
+
+        logger.error("Reload listener must be a callable. Received: {}".format(loader))
+        logger.error("Caller: {}".format(inspect.stack()))
     _reloadFunctions.append(loader)
 
 
@@ -104,7 +112,11 @@ def reload():
   """
     load()
     for f in _reloadFunctions:
-        f()
+        logger.debug('Calling configuration callback: {}'.format(f))
+        try:
+            f()
+        except Exception:
+            logger.exception('Configuration callback raised exception')
     # The following functions are explicitly listed here, and don't use
     # the registerReloadListener mechanism, to avoid circular import
     # problems.
@@ -141,12 +153,4 @@ def getVersionInfo():
 
 # Start daemon threads by importing their modules.
 if django.conf.settings.DAEMON_THREADS_ENABLED:
-    import backproc
-    import binder_async
-    import crossref
-    import datacite_async
-    import download
-    import linkcheck_update
-    import newsfeed
-    import stats
-    import status
+    pass
