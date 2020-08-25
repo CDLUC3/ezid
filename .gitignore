@@ -3,10 +3,11 @@
 *.pyc
 \.project$
 \.DS_Store$
-^dev/css/*$
+dev/css/*
+dev/legacy-scss/css/*
 \.old[0-9]*$
-^ui_library$
-^node_modules$
+ui_library
+node_modules
 \.pydevproject$
 templates/info/
 settings/ezid.conf.shadow
