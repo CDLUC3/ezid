@@ -24,27 +24,39 @@
 		background: $design-secondary-lighter;
 		text-align: left;
 
-		.sorting:after {
-			content: url('../images/sort.png');
-			position: relative;
-			top: 0;
-			right: 6px;
-			bottom: 0;
-			left: auto;
-			height: 11px;
-			margin: auto;
-			line-height: 1;
-			// background-image: url('../images/sort.png');
-			// background-position: right center;
-			// background-size: 9px 11px;
-		}
+	}
 
+	.sorting {
+		position: absolute;
+		top: 0;
+		right: 2px;
+		padding: 12px;
+		border: none;
+		background: no-repeat url('../images/sort_brown.png') 12px 8px;
+	}
+
+	.sort__desc {
+		position: absolute;
+		top: 0;
+		right: 2px;
+		padding: 12px;
+		border: none;
+		background: no-repeat url('../images/sort_desc_brown.png') 12px 8px;
+	}
+
+	.sort__asc {
+		position: absolute;
+		top: 0;
+		right: 2px;
+		padding: 12px;
+		border: none;
+		background: no-repeat url('../images/sort_asc_brown.png') 12px 8px;
 	}
 
 	tbody {
 		display: flex; // removes margin between <tr>s
-		overflow-x: auto;
 		white-space: nowrap;
+		overflow-x: auto;
 
 		tr {
 			display: inline-block;
@@ -63,10 +75,10 @@
 		width: 10em;
 		margin: 0;
 		padding: 0.5em;
-		overflow: hidden;
 		border-right: 1px solid $design-secondary-color;
 		border-bottom: 1px solid $design-secondary-color;
 		text-overflow: ellipsis;
+		overflow: hidden;
 		vertical-align: top;
 	}
 
@@ -76,6 +88,13 @@
 
 	.table2 {
 		display: table;
+
+		th {
+			display: table-cell;
+			width: auto;
+			overflow: visible;
+		}
+
 	}
 
 	.table2 thead {
@@ -85,12 +104,6 @@
 
 	.table2 thead tr {
 		display: table-row;
-	}
-
-	.table2 th {
-		display: table-cell;
-		width: auto;
-		overflow: visible;
 	}
 
 	.table2 tbody {
@@ -108,7 +121,7 @@
 		overflow: visible;
 
 		&:first-child {
-			border-left: 1px solid $design-light-gray-border-color;
+			border-left: 1px solid $design-secondary-color;
 		}
 
 	}
