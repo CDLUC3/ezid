@@ -37,7 +37,12 @@ import sys
 # A 3rd-party implementation of pathlib is available for Python 2.7 but it doesn't
 # behave in quite the same way, so we'll use os.path until we move to Py3.
 # import pathlib
+import django.core
+import django.db
+import hjson
 import pathlib
+
+import utils.filesystem
 
 try:
     import bsddb
@@ -65,40 +70,28 @@ COUNTER_COUNT = 290
 
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.WARNING)
 
 
-def mint_identifier(shoulder_model):
-    """Mint a single new identifier on an existing ARK or DOI shoulder.
+def mint_identifier(shoulder_model, mint_count=1, dry_run=False):
+    """Mint a single identifier on an existing ARK or DOI shoulder / namespace. The
+    returned id does not include the namespace. The caller creates the final id by
+    appending it to the shoulder namespace.
+    """
+    for sping_str in mint_identifier_gen(shoulder_model, mint_count, dry_run):
+        return sping_str
 
-    Example shoulder ORM object for ARK:
-    {
-      '_datacenter_cache': None,
-      '_state': <django.db.models.base.ModelState object at 0x7fa140fc8590>,
-      'crossrefEnabled': False,
-      'datacenter_id': None,
-      'id': 10,
-      'isTest': True,
-      'minter': u'https://n2t.net/a/ezid/m/ark/99999/fk4',
-      'name': u'ARK Test',
-      'prefix': u'ark:/99999/fk4',
-      'type': u'ARK'
-    }
 
-    ORM changes for DOIs:
-
-      prefix: doi:10.7941/S9
-      type :  DOI
-      minter: https://n2t.net/a/ezid/m/ark/b7941/s9
-
-    DOIs also use ARK minters, "shadow arks".
-
-    "10." is the only valid Directory Indicator for DOIs.
+def mint_identifier_gen(shoulder_model, mint_count=1, dry_run=False):
+    """Generator that mints spings on an existing ARK or DOI shoulder / namespace. The
+    returned ids do not include the namespace. The caller creates the final ids by
+    appending them to the shoulder namespace.
     """
     m = re.match(r'(ark:/|doi:10\.)(.*)/(.*)', shoulder_model.prefix)
     assert m, 'Invalid shoulder prefix: {}'.format(shoulder_model.prefix)
     naan_str, shoulder_str = re.split(r'[/:.]', shoulder_model.minter)[-2:]
-    for sping_str in mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
-        return sping_str
+    for sping_str in mint(naan_str, shoulder_str, mint_count, dry_run):
+        yield sping_str
 
 
 def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
@@ -108,7 +101,7 @@ def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
     type of the identifier (ARK, DOI).
 
     Unless {dry_run} is set, the BerkeleyDB is updated to reflect the new state of the
-    minder after successfully minting the requested number of spings.
+    minter after successfully minting the requested number of spings.
 
     If the minter is interrupted before completing the minting, the database is not
     updated. This reflects the way N2T Nog operates.
@@ -117,7 +110,7 @@ def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
         naan_str (str):
         shoulder_str (str):
         mint_count (int): Number of spings to yield
-        dry_run (bool): Don't update the minder BerkeleyDB after completed minting
+        dry_run (bool): Don't update the minter BerkeleyDB after completed minting
     """
     with _Bdb(naan_str, shoulder_str, dry_run) as bdb:
         total_count = bdb.get_int("oacounter")
@@ -156,15 +149,43 @@ def mint(naan_str, shoulder_str, mint_count=1, dry_run=False):
             total_count += 1
 
             s = _get_xdig_str(counter_idx_and_value, mask_str)
-            # sping_str = "{}/{}{}".format(naan_str, shoulder_str, s)
+            sping_str = "{}/{}{}".format(naan_str, shoulder_str, s)
 
             if mask_str.endswith("k"):
-                s += _get_check_char(s)
+                s += _get_check_char(sping_str)
 
             yield s
 
         if not dry_run:
             bdb.set("oacounter", total_count)
+
+
+def create_minter_database(naan_str, shoulder_str=None, root_path=None):
+    """Create a new BerkeleyDB minter database.
+
+    Returns:
+        full_shoulder_str: The NAAN and shoulder separated by a slash. The full shoulder
+        doubles as the two elements in the path from the root of the minter dir
+        hierarchy to the dir in which the minter DB is stored.
+    """
+    if not shoulder_str:
+        shoulder_str = 'unspecified'
+
+    template_path = utils.filesystem.abs_path("../../ezid/etc/minter_template.hjson")
+    with open(template_path) as f:
+        template_str = f.read()
+
+    template_str = template_str.replace("$NAAN$", naan_str)
+    template_str = template_str.replace("$PREFIX$", shoulder_str)
+
+    minter_dict = hjson.loads(template_str)
+    d = {bytes(k): bytes(v) for k, v in minter_dict.items()}
+
+    bdb = open_bdb(naan_str, shoulder_str, root_path=root_path, flags_str="c")
+    bdb.clear()
+    bdb.update(d)
+
+    return '/'.join([naan_str, shoulder_str])
 
 
 def open_bdb(naan_str, shoulder_str, root_path=None, flags_str="rw"):
@@ -223,7 +244,7 @@ def iter_bdb(root_path=None):
 
 
 def _next(bdb, counter_key_list, per_counter, total_count):
-    """Step the BerkeleyDB minder to the next state and return compounded counter index
+    """Step the BerkeleyDB minter to the next state and return compounded counter index
     and value to use for the next sping.
 
     Exhausted counters are removed from counter_key_list.
@@ -407,7 +428,7 @@ class _Bdb:
         return s
 
     def dump(self):
-        """Dump the minder BerkeleyDB"""
+        """Dump the minter BerkeleyDB"""
         pprint.pprint(dict(self._bdb), indent=2)
 
     @staticmethod
@@ -466,7 +487,3 @@ def get_split_logger(name_str):
 
 class MinterError(Exception):
     pass
-
-
-if __name__ == "__main__":
-    main()
