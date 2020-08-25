@@ -3,12 +3,12 @@ from __future__ import absolute_import, division, print_function
 import datetime
 import logging
 
+import django.core
 import django.core.management
 import django.core.management.base
+import django.db
+
 import ezidapp.models
-import hjson
-import impl.nog_minter
-import utils.filesystem
 
 try:
     import bsddb
@@ -18,8 +18,6 @@ except ImportError:
 import django.contrib.auth.models
 import django.core.management.base
 import django.db.transaction
-import impl.util
-
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +48,20 @@ def assert_valid_datacenter(datacenter_str):
         )
 
 
-def add_shoulder_db_record(
+def dump_shoulders():
+    print('Shoulders:')
+    for x in ezidapp.models.Shoulder.objects.all().order_by('name', 'prefix'):
+        print(x)
+
+
+def dump_datacenters():
+    # for x in ezidapp.models.SearchDatacenter.objects.all():
+    #     print(x)
+    for x in ezidapp.models.StoreDatacenter.objects.all():
+        print(x)
+
+
+def create_shoulder_db_record(
     namespace_str,
     type_str,
     name_str,
@@ -87,35 +98,3 @@ def add_shoulder_db_record(
         raise django.core.management.CommandError(
             'Unable to create database record for shoulder. Error: {}'.format(str(e))
         )
-
-
-def create_minter_database(naan_str, shoulder_str):
-    """Create a new BerkeleyDB minter database"""
-    template_path = utils.filesystem.abs_path("minter_template.hjson")
-    with open(template_path) as f:
-        template_str = f.read()
-
-    template_str = template_str.replace("$NAAN$", naan_str)
-    template_str = template_str.replace("$PREFIX$", shoulder_str)
-
-    minter_dict = hjson.loads(template_str)
-    d = {bytes(k): bytes(v) for k, v in minter_dict.items()}
-
-    bdb = impl.nog_minter.open_bdb(
-        naan_str, shoulder_str, root_path=None, flags_str="c"
-    )
-    bdb.clear()
-    bdb.update(d)
-
-
-def dump_shoulders():
-    print('Shoulders:')
-    for x in ezidapp.models.Shoulder.objects.all().order_by('name', 'prefix'):
-        print(x)
-
-
-def dump_datacenters():
-    # for x in ezidapp.models.SearchDatacenter.objects.all():
-    #     print(x)
-    for x in ezidapp.models.StoreDatacenter.objects.all():
-        print(x)

@@ -18,15 +18,13 @@
 #
 # -----------------------------------------------------------------------------
 
+import threading
+
 import contextlib2
 import django.db
 import django.db.models
 import django.db.transaction
-import threading
-import urllib2
-import uuid
 
-import shoulder_parser
 import store_datacenter
 import util
 import validation
@@ -123,7 +121,7 @@ class Shoulder(django.db.models.Model):
     isTest = django.db.models.BooleanField(editable=False)
     # Computed value.  True if the shoulder is a test shoulder.
 
-    # Fields previously only master_shoulders.txt
+    # Fields previously only in master_shoulders.txt
     shoulder_type = django.db.models.ForeignKey(ShoulderType, null=True)
     registration_agency = django.db.models.ForeignKey(RegistrationAgency, null=True)
     prefix_shares_datacenter = django.db.models.BooleanField(

@@ -5,13 +5,15 @@ from __future__ import absolute_import, division, print_function
 
 import argparse
 import logging
-import pprint
 import re
 
 import django.core.management
 import django.core.management.base
+
+import ezidapp.management.commands.resources.shoulder
 import ezidapp.models
 import impl.nog_minter
+import nog_minter
 
 try:
     import bsddb
@@ -24,6 +26,7 @@ import django.db.transaction
 import impl.util
 
 import ezidapp.management.commands.resources.shoulder as shoulder
+import ezidapp.management.commands.resources.reload as reload
 
 log = logging.getLogger(__name__)
 
@@ -83,7 +86,7 @@ class Command(django.core.management.base.BaseCommand):
         opt = argparse.Namespace(**opt)
 
         if opt.debug:
-            pprint.pprint(vars(opt))
+            logging.getLogger('').setLevel(logging.DEBUG)
 
         # The shoulder must always be upper case for DOIs
         shoulder_str = opt.shoulder_str.upper()
@@ -95,15 +98,14 @@ class Command(django.core.management.base.BaseCommand):
         shadow_str = impl.util.doi2shadow(scheme_less_str)
 
         prefix_str, shoulder_str = shadow_str.split('/')
-        full_shoulder_str = '/'.join([prefix_str, shoulder_str])
 
         if not re.match(r'[a-z0-9]\d{4}$', prefix_str):
             raise django.core.management.CommandError(
-                'prefix for a DOI must be 5 digits, or one lower case character '
+                'Prefix for a DOI must be 5 digits, or one lower case character '
                 'and 4 digits:'.format(prefix_str)
             )
 
-        # namespace is the user selected name of the shoulder. E.g., doi:10.9111/FK4
+        # namespace is the scheme + full shoulder. E.g., doi:10.9111/FK4
         namespace_str = 'doi:{}'.format(scheme_less_str)
         print('Creating DOI minter: {}'.format(namespace_str))
 
@@ -117,7 +119,9 @@ class Command(django.core.management.base.BaseCommand):
                 symbol=opt.datacenter_str
             )
 
-        shoulder.add_shoulder_db_record(
+        full_shoulder_str = nog_minter.create_minter_database(prefix_str, shoulder_str)
+
+        ezidapp.management.commands.resources.shoulder.create_shoulder_db_record(
             namespace_str,
             'DOI',
             opt.name_str,
@@ -130,6 +134,6 @@ class Command(django.core.management.base.BaseCommand):
             is_debug=opt.debug,
         )
 
-        shoulder.create_minter_database(prefix_str, shoulder_str)
+        print('Shoulder created: {}'.format(namespace_str))
 
-        print('Shoulder created successfully. Restart the EZID service to activate.')
+        reload.trigger_reload()

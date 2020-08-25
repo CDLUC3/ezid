@@ -14,11 +14,12 @@
 # -----------------------------------------------------------------------------
 
 import ast
+import json
+import zlib
+
 import django.core.exceptions
 import django.core.serializers
 import django.db.models
-import json
-import zlib
 
 import shoulder
 import store_group
@@ -34,18 +35,23 @@ class CompressedJsonField(django.db.models.BinaryField):
     def get_db_prep_save(self, value, *args, **kwargs):
         if value is None:
             return None
-        else:
-            try:
-                return super(CompressedJsonField, self).get_db_prep_save(
-                    zlib.compress(json.dumps(value, separators=(",", ":"))),
-                    *args,
-                    **kwargs
-                )
-            except Exception, e:
-                raise django.core.exceptions.ValidationError(
-                    "Exception encountered packing compressed JSON database value: "
-                    + util.formatException(e)
-                )
+        # When the DB is populated via a JSON fixture, using the loaddata management
+        # command, the values arrive here as strings wrapped in native C buffer objects
+        # instead of the expected Python container type. This only occurs when invoking
+        # loaddata using the Django call_command() method, not when invoking loaddata
+        # via manage.py.
+        if isinstance(value, buffer):
+            value = eval(str(value))
+        try:
+            json_str = json.dumps(value, separators=(",", ":"))
+            return super(CompressedJsonField, self).get_db_prep_save(
+                zlib.compress(json_str), *args, **kwargs
+            )
+        except Exception, e:
+            raise django.core.exceptions.ValidationError(
+                "Exception encountered packing compressed JSON database value: "
+                + util.formatException(e)
+            )
 
     def from_db_value(self, value, *args, **kwargs):
         if value is None:

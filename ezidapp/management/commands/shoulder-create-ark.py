@@ -5,12 +5,14 @@ from __future__ import absolute_import, division, print_function
 
 import argparse
 import logging
-import pprint
 import re
 
 import django.core.management
 import django.core.management.base
-import ezidapp.management.commands.resources.shoulder as shoulder
+
+import ezidapp.management.commands.resources.reload as reload
+import ezidapp.management.commands.resources.shoulder
+import nog_minter
 
 try:
     import bsddb
@@ -60,18 +62,21 @@ class Command(django.core.management.base.BaseCommand):
         opt = argparse.Namespace(**opt)
 
         if opt.debug:
-            pprint.pprint(vars(opt))
+            logging.getLogger('').setLevel(logging.DEBUG)
 
         if not re.match(r'\d{5}$', opt.naan_str):
             raise django.core.management.CommandError(
                 'NAAN for an ARK must be 5 digits: {}'.format(opt.naan_str)
             )
 
-        full_shoulder_str = '/'.join([opt.naan_str, opt.shoulder_str])
-        namespace_str = 'ark:/{}'.format(full_shoulder_str)
+        namespace_str = 'ark:/{}/{}'.format(opt.naan_str, opt.shoulder_str)
         print('Creating ARK minter: {}'.format(namespace_str))
 
-        shoulder.add_shoulder_db_record(
+        full_shoulder_str = nog_minter.create_minter_database(
+            opt.naan_str, opt.shoulder_str
+        )
+
+        ezidapp.management.commands.resources.shoulder.create_shoulder_db_record(
             namespace_str,
             'ARK',
             opt.name_str,
@@ -84,6 +89,6 @@ class Command(django.core.management.base.BaseCommand):
             is_debug=opt.debug,
         )
 
-        shoulder.create_minter_database(opt.naan_str, opt.shoulder_str)
+        print('Shoulder created: {}'.format(namespace_str))
 
-        print('Shoulder created successfully. Restart the EZID service to activate.')
+        reload.trigger_reload()
