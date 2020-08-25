@@ -26,7 +26,7 @@ var ghPages = require('gulp-gh-pages');
 
 exports.default = parallel(scss, start, watcher);
 
-exports.build = series(clean, fonts, scsslint, jslint, scss, assemble, copyimages);
+exports.build = series(clean, fonts, scsslint_legacy, scsslint, jslint, scss_legacy, scss, assemble, copyimages);
 
 exports.upload = githubpages;
 
@@ -44,6 +44,15 @@ function scss(cb) {
     loadPaths: ['fonts/', 'images/']
   })]))
   .pipe(dest('dev/css', { sourcemaps: 'sourcemaps' }))
+  .pipe(browserSync.stream());
+  cb();
+}
+
+function scss_legacy(cb) {
+  return src('dev/legacy-scss/*.scss', { sourcemaps: true })
+  .pipe(sass().on('error', sass.logError))
+  .pipe(autoprefixer('last 2 versions'))
+  .pipe(dest('dev/legacy-scss/css', { sourcemaps: 'sourcemaps' }))
   .pipe(browserSync.stream());
   cb();
 }
@@ -120,6 +129,16 @@ function clean(cb) {
 
 function scsslint(cb) {
   return src(['dev/scss/*.scss', '!dev/scss/vendor/*.scss'])
+  .pipe(stylelint({
+    reporters: [
+      {formatter: 'string', console: true}
+    ]
+  }));
+  cb();
+}
+
+function scsslint_legacy(cb) {
+  return src(['dev/legacy-scss/*.scss', '!dev/legacy-scss/vendor/*.scss'])
   .pipe(stylelint({
     reporters: [
       {formatter: 'string', console: true}
