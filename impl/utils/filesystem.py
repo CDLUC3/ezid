@@ -1,15 +1,89 @@
+import contextlib
 import errno
 import os
 import sys
+import tempfile
+import urllib
+
+import pathlib
+
+FILENAME_SAFE_CHARS = " @$,~*&"
 
 
-def mkdir_p(file_path):
+def get_safe_reversible_path(*path_list):
+    """Escape characters that are not allowed or often cause issues when used in file-
+    or directory names, then join the arguments to a filesystem path.
+
+    This generates a string that is reversible but may not be easy to read.
+
+    Args:
+        *path_list (list):
+
+    Returns:
+        (:obj:`str` or :obj:`Path`): A path safe for use as a as a file- or directory name.
+
+    See Also:
+        If a reversible path is not required, see :func:`get_safe_lossy_path`, which is
+        not reversible, but may be easier to read.
+
+        To get get the original string from the path, see :func:`get_original_path`.
+    """
+    return os.path.join(*[get_safe_reversible_path_element(p) for p in path_list])
+
+
+def get_safe_reversible_path_element(s):
+    """Replace characters that are not allowed, have special semantics, or may cause
+    security issues, when used in file- or directory names, with filesystem safe
+    reversible codes
+
+    On Unix, names starting with period are usually hidden in the filesystem. We don't
+    want there to be a chance of generating hidden files by using this function. But
+    we also don't want to escape dots in general since that makes the filenames much
+    harder to read. So we escape the dot only when it's at the start of the string.
+
+   Args:
+        s (str): Any Unicode string
+
+    Returns:
+        str: A string safe for use as a file- or directory name.
+    """
+    out_str = urllib.quote(s.encode("utf-8"), safe=FILENAME_SAFE_CHARS)
+    if out_str.startswith('.'):
+        out_str = '%2e{}'.format(out_str[1:])
+    return out_str
+
+
+def create_missing_directories_for_file(file_path):
     """Create any missing directories leading up to the file specified by {file_path}.
 
     Note that {file_path} is assumed to be a file path, so the last element in the path
     is ignored.
+
+    Args:
+        file_path (str): Relative or absolute path to a file that may or may not exist.
+
+            Must be a file path, as any directory element at the end of the path will
+              not be created.
+
+    See Also:
+        create_missing_directories_for_dir()
     """
-    dir_path = os.path.dirname(file_path)
+    create_missing_directories_for_dir(os.path.dirname(file_path))
+
+
+def create_missing_directories_for_dir(dir_path):
+    """Create any directories in ``dir_path`` that do not yet exist.
+
+    Args:
+        dir_path (str): Relative or absolute path to a directory that may or may not
+          exist.
+
+            Must be a directory path, as any filename element at the end of the path
+              will also be created as a directory.
+
+    See Also:
+        create_missing_directories_for_file()
+    """
     try:
         os.makedirs(dir_path)
     except OSError as e:
@@ -17,15 +91,41 @@ def mkdir_p(file_path):
             raise
 
 
-def abs_path(rel_path):
-    """Resolve {rel_path} relative to the dir in which the module of the caller is
-    located.
+def abs_path_from_base(base_path, rel_path):
+    """Join a base and a relative path and return an absolute path to the resulting
+    location.
 
-    E.g., calling filesystem.abs_path('..') from /a/b/c.py returns /a.
+    Args:
+        base_path (str): Relative or absolute path to prepend to ``rel_path``.
+        rel_path (str): Path relative to the location of the module file from which this
+          function is called.
+
+    Returns:
+        (:obj:`str` or :obj:`Path`): Absolute path to the location specified by ``rel_path``.
     """
+    # noinspection PyProtectedMember
     return os.path.abspath(
-        # os.path.join(os.path.dirname(__file__), rel_path)
-        # This returns the path of the pytest assertion, not this file
+        os.path.join(
+            os.path.dirname(sys._getframe(1).f_code.co_filename), base_path, rel_path
+        )
+    )
+
+
+def abs_path(rel_path):
+    """Convert a path that is relative to the module from which this function is called,
+    to an absolute path.
+
+    E.g., calling abs_path('..') from /a/b/c.py returns /a.
+
+    Args:
+        rel_path (str): Path relative to the location of the module file from which this
+          function is called.
+
+    Returns:
+        (:obj:`str` or :obj:`Path`): Absolute path to the location specified by ``rel_path``.
+    """
+    # noinspection PyProtectedMember
+    return os.path.abspath(
         os.path.join(os.path.dirname(sys._getframe(1).f_code.co_filename), rel_path)
     )
 
