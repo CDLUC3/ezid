@@ -1,7 +1,7 @@
-import json
 import base64
 import bz2
 import contextlib
+import json
 import logging
 import os
 import pprint
@@ -15,8 +15,8 @@ import django
 import django.core
 import django.core.management
 import filelock
-import utils.filesystem
 
+import utils.filesystem
 
 MAX_LINE_WIDTH = 130
 DEFAULT_DIFF_COLUMN_WIDTH = 100
@@ -115,7 +115,7 @@ def _get_sample_path(filename=None):
     """
     ``filename==``None``: Return path to sample directory.
     """
-    p = os.path.join(utils.filesystem.abs_path("./test_docs/sample"), filename or "")
+    p = os.path.join(utils.filesystem.abs_path("../test_docs/sample"), filename or "")
     with sample_path_lock:
         yield p
 
