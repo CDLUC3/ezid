@@ -1,15 +1,14 @@
-"""Create BerkeleyDB minter instances for any shoulders in the database that are
-referencing non-existing minters.
+"""Refresh the in-memory caches of the running EZID process
 """
 
 from __future__ import absolute_import, division, print_function
 
 import argparse
 import logging
-import pprint
 
 import django.core.management
-import ezidapp.models
+
+import ezidapp.management.commands.resources.reload as reload
 
 try:
     import bsddb
@@ -34,13 +33,9 @@ class Command(django.core.management.base.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        argparse.Namespace.is_doi = argparse.Namespace
-
-        self.opt = opt = argparse.Namespace(**opt)
+        opt = argparse.Namespace(**opt)
 
         if opt.debug:
-            pprint.pprint(vars(opt))
+            logging.getLogger('').setLevel(logging.DEBUG)
 
-        for statistics_model in ezidapp.models.Statistics.objects.all():
-            print(statistics_model)
-
+        reload.trigger_reload()
