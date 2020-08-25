@@ -3,12 +3,16 @@
 
 from __future__ import absolute_import, division, print_function
 
+import argparse
 import datetime
+import logging
 
 import django.contrib.auth.models
 import django.core.management
 import django.core.management.base
 import django.db.transaction
+
+import ezidapp.management.commands.resources.reload as reload
 import ezidapp.models
 import ezidapp.models.store_datacenter
 import shoulder_parser
@@ -26,9 +30,16 @@ class Command(django.core.management.base.BaseCommand):
         self.opt = None
 
     def add_arguments(self, parser):
-        pass
+        parser.add_argument(
+            '--debug', action='store_true', help='Debug level logging',
+        )
 
     def handle(self, *_, **opt):
+        opt = argparse.Namespace(**opt)
+
+        if opt.debug:
+            logging.getLogger('').setLevel(logging.DEBUG)
+
         try:
             with django.db.transaction.atomic():
                 self.add_shoulder_db_records()
@@ -70,7 +81,7 @@ class Command(django.core.management.base.BaseCommand):
             print('Deleting db records for shoulders not in file:')
             print(','.join(delete_list))
 
-        ezidapp.models.Shoulder.objects.filter(prefix__in=delete_list).delete()
+        # ezidapp.models.Shoulder.objects.filter(prefix__in=delete_list).delete()
 
         # Create and update db entries to match file
 
@@ -142,3 +153,7 @@ class Command(django.core.management.base.BaseCommand):
             # - Fill in missing types
             s.type = s.prefix[:3].upper()
             s.save()
+
+        print('{} merged'.format(MASTER_SHOULDERS_PATH))
+
+        reload.trigger_reload()
