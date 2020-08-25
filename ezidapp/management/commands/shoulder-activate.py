@@ -3,8 +3,12 @@
 
 from __future__ import absolute_import, division, print_function
 
+import argparse
+import logging
+
 import django.core.management
 import django.core.management.base
+
 import ezidapp.models
 
 try:
@@ -15,6 +19,7 @@ except ImportError:
 import django.contrib.auth.models
 import django.core.management.base
 import django.db.transaction
+import ezidapp.management.commands.resources.reload as reload
 
 
 class Command(django.core.management.base.BaseCommand):
@@ -25,12 +30,24 @@ class Command(django.core.management.base.BaseCommand):
         self.opt = None
 
     def add_arguments(self, parser):
-        parser.add_argument('shoulder_str', metavar='shoulder', help="""
+        parser.add_argument(
+            'shoulder_str',
+            metavar='shoulder',
+            help="""
             Full shoulder. E.g., ark:/99999/fk4        
-        """)
+        """,
+        )
+        parser.add_argument(
+            '--debug', action='store_true', help='Debug level logging',
+        )
 
     def handle(self, *_, **opt):
-        shoulder_str = opt['shoulder_str']
+        opt = argparse.Namespace(**opt)
+
+        if opt.debug:
+            logging.getLogger('').setLevel(logging.DEBUG)
+
+        shoulder_str = opt.shoulder_str
         try:
             shoulder_model = ezidapp.models.Shoulder.objects.get(prefix=shoulder_str)
         except ezidapp.models.Shoulder.DoesNotExist:
@@ -43,4 +60,7 @@ class Command(django.core.management.base.BaseCommand):
             )
         shoulder_model.active = True
         shoulder_model.save()
+
         print('Shoulder activated: {}'.format(shoulder_str))
+
+        reload.trigger_reload()
