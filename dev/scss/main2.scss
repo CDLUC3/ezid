@@ -7,10 +7,10 @@
 
 
 // ***** Global Settings ***** //
-@import '../../src/styles/variables';
+@import '../legacy-scss/variables';
 
 // ***** Vendor Libraries ***** //
-@import '../../src/styles/bootstrap';
+@import '../legacy-scss/bootstrap';
 
 @import 'mixins';
 @import 'fonts';
