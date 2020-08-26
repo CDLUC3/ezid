@@ -81,7 +81,7 @@ _schemaLocationTemplate =\
 _tagRE =\
   re.compile("\{(http://www\.crossref\.org/schema/(4\.[34]\.\d))\}([-\w.]+)$")
 _rootTags = ["journal", "book", "conference", "sa_component", "dissertation",
-  "report-paper", "standard", "database"]
+  "report-paper", "standard", "database", "peer_review", "posted_content"]
 
 def _notOne (n):
   if n == 0:
