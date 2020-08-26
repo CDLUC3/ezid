@@ -1,4 +1,7 @@
 user: uc3adm
 group: uc3adm
-homedir: /apps/ezid
+app_dir: /apps/ezid
+
+pyenv_root: "{{ansible_env.HOME}}/.pyenv"
 pyver: 2.7.18
+venv_name: ezid

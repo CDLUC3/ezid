@@ -3,48 +3,68 @@
 - name: "Create application directory trees"
   # shell:RUN mkdir -p etc/{httpd/{conf,conf.d,conf.modules.d},init.d} var/{run,log/{httpd,ezid},www/{html,download/{public}}}; \
   file:
-    path: "{{ item }}"
-    owner: "{{ user }}"
-    group: "{{ group }}"
+    path: "{{item}}"
+    owner: "{{user}}"
+    group: "{{group}}"
     state: directory
     recurse: yes
   with_items:
-  - "{{ homedir }}/bin"
-  - "{{ homedir }}/etc/httpd/conf"
-  - "{{ homedir }}/etc/httpd/conf.d"
-  - "{{ homedir }}/etc/httpd/modules.d"
-  - "{{ homedir }}/etc/init.d"
-  - "{{ homedir }}/var/run"
-  - "{{ homedir }}/var/log/ezid"
-  - "{{ homedir }}/var/log/httpd"
-  - "{{ homedir }}/var/www/html"
-  - "{{ homedir }}/var/www/download/public"
+  - "{{app_dir}}/bin"
+  - "{{app_dir}}/etc/httpd/conf"
+  - "{{app_dir}}/etc/httpd/conf.d"
+  - "{{app_dir}}/etc/httpd/modules.d"
+  - "{{app_dir}}/etc/init.d"
+  - "{{app_dir}}/var/run"
+  - "{{app_dir}}/var/log/ezid"
+  - "{{app_dir}}/var/log/httpd"
+  - "{{app_dir}}/var/www/html"
+  - "{{app_dir}}/var/www/download/public"
 - name: symlink httpd modules
   # ln -s /etc/httpd/modules /apps/ezid/etc/httpd/modules; \
   file:
-    path: "{{ homedir }}/etc/httpd/modules"
+    path: "{{app_dir}}/etc/httpd/modules"
     src: "/etc/httpd/modules"
     state: link
 - name: symlink ezid logs
   # ln -s /apps/ezid/var/log/ezid /apps/ezid/logs; \
   file:
-    path: "{{ homedir }}/logs"
-    src: "{{ homedir }}/var/log/ezid"
+    path: "{{app_dir}}/logs"
+    src: "{{app_dir}}/var/log/ezid"
     state: link
-
-- name: update .bash_profile
-  blockinfile:
-    dest: "{{ homedir }}/.bash_profile"
-    block: |
-      # pyenv setup
-      export PATH="$HOME.pyenv/bin:$PATH"
-      eval "\$(pyenv init -)"
-      eval "\$(pyenv virtualenv-init -)"
 
 - name: setup pyenv 
   # from https://galaxy.ansible.com/suzuki-shunsuke/pyenv-module
   pyenv:
-    version: "{{ pyver }}"
-    pyenv_root: "{{ homedir }}/.pyenv"
+    version: "{{pyver}}"
+    pyenv_root: "{{pyenv_root}}"
+    #subcommand: uninstall
+  environment:
+    CONFIGURE_OPTS: "--enable-shared"
+    CFLAGS: "-O2"
+- name: pyenv virtualenv
+  pyenv:
+    subcommand: virtualenv
+    version: "{{pyver}}"
+    pyenv_root: "{{pyenv_root}}"
+    virtualenv_name: "{{venv_name}}"
+- name: pyenv global
+  pyenv:
+    subcommand: global
+    versions:
+    - "{{venv_name}}"
+    pyenv_root: "{{pyenv_root}}"
 
+- name: update .bash_profile
+  blockinfile:
+    dest: "{{ansible_env.HOME}}/.bash_profile"
+    block: |
+      # pyenv setup
+      export PATH="$HOME/.pyenv/bin:$PATH"
+      eval "$(pyenv init -)"
+      eval "$(pyenv virtualenv-init -)"
+
+- name: install python packages on the virtualenv
+  pip:
+    name: ['mysqlclient', 'mod_wsgi']
+    executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
 
