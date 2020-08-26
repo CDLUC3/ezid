@@ -1,0 +1,59 @@
+##
+##  SSL Global Context
+##
+##  All SSL configuration in this context applies both to
+##  the main server and all SSL-enabled virtual hosts.
+##
+AddType application/x-x509-ca-cert .crt
+AddType application/x-pkcs7-crl    .crl
+
+Listen 18443
+SSLProtocol TLSv1.2
+SSLOpenSSLConfCmd Curves secp521r1:secp384r1:prime256v1
+SSLHonorCipherOrder on
+SSLCipherSuite "!ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:!ECDHE-ECDSA-AES128-SHA:!ECDHE-ECDSA-AES256-SHA:!ECDHE-ECDSA-AES128-SHA256:!ECDHE-ECDSA-AES256-SHA384:!ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:!ECDHE-RSA-AES128-SHA:!ECDHE-RSA-AES256-SHA:!ECDHE-RSA-AES128-SHA256:!ECDHE-RSA-AES256-SHA384:!DHE-RSA-AES128-GCM-SHA256:!DHE-RSA-AES256-GCM-SHA384:!DHE-RSA-AES128-SHA:!DHE-RSA-AES256-SHA:!DHE-RSA-AES128-SHA256:!DHE-RSA-AES256-SHA256"
+
+#   Pass Phrase Dialog:
+#   Configure the pass phrase gathering process.
+#   The filtering dialog program (`builtin' is a internal
+#   terminal dialog) has to provide the pass phrase on stdout.
+SSLPassPhraseDialog exec:/usr/libexec/httpd-ssl-pass-dialog
+
+#   Inter-Process Session Cache:
+#   Configure the SSL Session Cache: First the mechanism 
+#   to use and second the expiring timeout (in seconds).
+SSLSessionCache         shmcb:/apps/ezid/var/run/httpd/sslcache(512000)
+SSLSessionCacheTimeout  300
+
+SSLCompression off
+SSLSessionTickets off
+SSLStaplingCache shmcb:/apps/ezid/var/run/httpd/ssl_stapling_cache(128000)
+
+Mutex default
+
+#   Pseudo Random Number Generator (PRNG):
+#   Configure one or more sources to seed the PRNG of the 
+#   SSL library. The seed data should be of good random quality.
+#   WARNING! On some platforms /dev/random blocks if not enough entropy
+#   is available. This means you then cannot use the /dev/random device
+#   because it would lead to very long connection times (as long as
+#   it requires to make more entropy available). But usually those
+#   platforms additionally provide a /dev/urandom device which doesn't
+#   block. So, if available, use this one instead. Read the mod_ssl User
+#   Manual for more details.
+SSLRandomSeed startup file:/dev/urandom  256
+SSLRandomSeed connect builtin
+#SSLRandomSeed startup file:/dev/random  512
+#SSLRandomSeed connect file:/dev/random  512
+#SSLRandomSeed connect file:/dev/urandom 512
+
+#
+# Use "SSLCryptoDevice" to enable any supported hardware
+# accelerators. Use "openssl engine -v" to list supported
+# engine names.  NOTE: If you enable an accelerator and the
+# server does not start, consult the error logs and ensure
+# your accelerator is functioning properly. 
+#
+SSLCryptoDevice builtin
+#SSLCryptoDevice ubsec
+

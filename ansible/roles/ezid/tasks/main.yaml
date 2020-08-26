@@ -7,7 +7,6 @@
     owner: "{{user}}"
     group: "{{group}}"
     state: directory
-    recurse: yes
   with_items:
   - "{{app_dir}}/bin"
   - "{{app_dir}}/etc/httpd/conf"
@@ -19,18 +18,6 @@
   - "{{app_dir}}/var/log/httpd"
   - "{{app_dir}}/var/www/html"
   - "{{app_dir}}/var/www/download/public"
-- name: symlink httpd modules
-  # ln -s /etc/httpd/modules /apps/ezid/etc/httpd/modules; \
-  file:
-    path: "{{app_dir}}/etc/httpd/modules"
-    src: "/etc/httpd/modules"
-    state: link
-- name: symlink ezid logs
-  # ln -s /apps/ezid/var/log/ezid /apps/ezid/logs; \
-  file:
-    path: "{{app_dir}}/logs"
-    src: "{{app_dir}}/var/log/ezid"
-    state: link
 
 - name: ~/.bash_profile
   copy:
@@ -106,4 +93,84 @@
     name: ['mod_wsgi']
     #name: ['mysqlclient', 'mod_wsgi']
     executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
+
+
+- name: Clone ezid repo
+  git:
+    repo: "https://github.com/CDLUC3/ezid.git"
+    dest: "{{app_dir}}/ezid/"
+    version: "initial-setup"
+- name: Clone ezid-info-pages repo
+  git:
+    repo: "https://github.com/CDLUC3/ezid-info-pages.git"
+    dest: "{{app_dir}}/ezid/templates/info/"
+    version: "master"
+- name: install ezid requirements
+  pip:
+    requirements: "{{app_dir}}/ezid/requirements.txt"
+    executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
+
+- name: symlink httpd modules
+  # ln -s /etc/httpd/modules /apps/ezid/etc/httpd/modules; \
+  file:
+    path: "{{app_dir}}/etc/httpd/modules"
+    src: "/etc/httpd/modules"
+    state: link
+- name: symlink ezid logs
+  # ln -s /apps/ezid/var/log/ezid /apps/ezid/logs; \
+  file:
+    path: "{{app_dir}}/logs"
+    src: "{{app_dir}}/var/log/ezid"
+    state: link
+- name: symlink httpd magic
+  # ln -s /etc/httpd/conf/magic /apps/ezid/etc/httpd/conf/magic
+  file:
+    path: "{{app_dir}}/etc/httpd/conf/magic"
+    src: "/etc/httpd/conf/magic"
+    state: link
+
+- name: httpd.conf
+  copy:
+    src: "files/etc/httpd/conf/httpd.conf"
+    dest: "{{app_dir}}/etc/httpd/conf/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+- name: httpd/conf.d/*
+  copy:
+    src: "files/etc/httpd/conf.d/"
+    dest: "{{app_dir}}/etc/httpd/conf.d/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+- name: httpd/conf.modules.d/*
+  copy:
+    src: "files/etc/httpd/conf.modules.d/"
+    dest: "{{app_dir}}/etc/httpd/conf.modules.d/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+- name: etc/init.d/*
+  copy:
+    src: "files/etc/init.d/httpd"
+    dest: "{{app_dir}}/etc/init.d/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0755"
+- name: ezid_env.sh
+  copy:
+    src: "files/etc/ezid_env.sh"
+    dest: "{{app_dir}}/etc/ezid_env.sh"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0755"
+
+#- name: robots.txt
+#  copy:
+#    src: "files/var/www/html/robots.txt"
+#    dest: "{{app_dir}}/var/www/html/"
+#    owner: "{{user}}"
+#    group: "{{group}}"
+#    mode: "0644"
+
 

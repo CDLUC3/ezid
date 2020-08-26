@@ -1,0 +1,134 @@
+#! /bin/bash
+
+USAGE="Usage: $0 start|stop|force-stop|restart|force-restart|status"
+APACHE_BASE="/apps/ezid/etc/httpd"
+APACHE_CONF="${APACHE_BASE}/conf/httpd.conf"
+APACHECTL="/usr/sbin/apachectl -d ${APACHE_BASE} -f ${APACHE_CONF} -k"
+WGET=/usr/bin/wget
+PR=/apps/ezid/ezid
+SHADOWFILE=${PR}/ezid/settings/ezid.conf.shadow
+CLIENT=${PR}/ezid/tools/client
+PROTOCOL="http"
+
+# This should not be necessary when running the script as ezid user
+source /apps/ezid/etc/ezid_env.sh
+
+if [ $# -ne 1 ]; then
+    echo $USAGE
+    exit 1
+fi
+
+function checkStatus {
+    if [ $status -eq 0 ]; then
+        echo "OK"
+    else
+        echo "FAILED"
+        exit 1
+    fi
+}
+
+function pauseEzid {
+    echo "Pausing the server..."
+    pidcount=`ps -fU ezid | grep -c '[h]ttpd'`
+    if [ $pidcount -eq 0 ]; then
+        echo "(server doesn't appear to be running)"
+        status=0
+        return
+    fi
+    level=${DJANGO_SETTINGS_MODULE#*.}
+    # The parsing below is far from foolproof, but we do at least look
+    # for a deployment-level-specific value before a generic value.
+    password=`grep -m1 '^{'$level'}admin_password: [^ ]' $SHADOWFILE`
+    if [ "$password" == "" ]; then
+        password=`grep -m1 '^admin_password: [^ ]' $SHADOWFILE`
+        if [ "$password" == "" ]; then
+            echo "unable to locate admin password"
+            status=1
+            return
+        fi
+    fi
+    password=${password#*: }
+    #echo "$CLIENT https://$HOSTNAME \"admin:${password}\" pause idlewait"
+    $CLIENT $PROTOCOL://$HOSTNAME "admin:$password" pause idlewait
+    status=$?
+}
+
+function exerciseEzid {
+  # The various components of EZID are loaded on demand.  The
+  # following request does not cause everything to be loaded and
+  # tested, but it does confirm that Apache, mod_wsgi, Django, and
+  # EZID are basically functioning.
+  echo "Exercising the server..."
+  $WGET -q -T 10 -t 1 -O /dev/null $PROTOCOL://$HOSTNAME/status
+  status=$?
+}
+
+# N.B.: We avoid Apache's "graceful" command as it doesn't work due to
+# our long mod_wsgi shutdown timeout.
+case $1 in
+    start)
+        echo "Starting the server..."
+        $APACHECTL start
+        status=$?
+        checkStatus
+        exerciseEzid
+        checkStatus
+        ;;
+    stop)
+        pauseEzid
+        checkStatus
+        ;&
+    force-stop)
+        echo "Stopping the server..."
+        $APACHECTL stop
+        status=$?
+        checkStatus
+        ;;
+    restart)
+        pauseEzid
+        checkStatus
+        ;&
+    force-restart)
+        echo "Restarting the server..."
+        $APACHECTL restart
+        status=$?
+        checkStatus
+        exerciseEzid
+        checkStatus
+        ;;
+    status)
+        pidcount=`ps -fU ezid | grep -c '[h]ttpd'`
+        if [ $pidcount -gt 0 ]; then
+            # The server appears to be running; check that it's
+            # responsive.
+            $WGET -q -T 10 -t 1 -O /dev/null $PROTOCOL://$HOSTNAME/status
+            status=$?
+            if [ $status -eq 0 ]; then
+                echo "up"
+                exit 0
+            else
+                # Not responsive.  Is it an EZID problem or a
+                # network/DNS problem?  Try connecting to another
+                # CDL production service.
+                $WGET -q -T 10 -t 1 -O /dev/null http://n2t.net/
+                status=$?
+                if [ $status -eq 0 ]; then
+                    # It appears to be EZID's problem.
+                    echo "down (unresponsive)"
+                    exit 1
+                else
+                    echo "up (maybe; there might be network problems)"
+                    exit 0
+                fi
+            fi
+        else
+            echo "down (not running)"
+            exit 1
+        fi
+        ;;
+    *)
+        echo $USAGE
+        exit 1
+        ;;
+esac
+
