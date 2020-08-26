@@ -1,0 +1,7 @@
+---
+- hosts: all
+  connection: local
+  remote_user: "{{ user }}"
+  roles:
+    - suzuki-shunsuke.pyenv-module
+    - ezid

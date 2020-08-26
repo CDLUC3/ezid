@@ -1,0 +1,4 @@
+user: uc3adm
+group: uc3adm
+homedir: /apps/ezid
+pyver: 2.7.18
