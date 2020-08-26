@@ -32,34 +32,6 @@
     src: "{{app_dir}}/var/log/ezid"
     state: link
 
-- name: setup pyenv 
-  # from https://galaxy.ansible.com/suzuki-shunsuke/pyenv-module
-  pyenv:
-    version: "{{pyver}}"
-    pyenv_root: "{{pyenv_root}}"
-    #subcommand: uninstall
-  environment:
-    CONFIGURE_OPTS: "--enable-shared"
-    CFLAGS: "-O2"
-- name: pyenv virtualenv
-  pyenv:
-    subcommand: virtualenv
-    version: "{{pyver}}"
-    pyenv_root: "{{pyenv_root}}"
-    virtualenv_name: "{{venv_name}}"
-- name: pyenv global
-  pyenv:
-    subcommand: global
-    versions:
-    - "{{venv_name}}"
-    pyenv_root: "{{pyenv_root}}"
-- name: install python packages on the virtualenv
-  pip:
-    name: ['mod_wsgi']
-    #name: ['mysqlclient', 'mod_wsgi']
-    executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
-
-
 - name: ~/.bash_profile
   copy:
     src: files/.bash_profile
@@ -105,3 +77,32 @@
         eval "$(pyenv init -)"
         eval "$(pyenv virtualenv-init -)"
       fi
+
+
+- name: setup pyenv 
+  # from https://galaxy.ansible.com/suzuki-shunsuke/pyenv-module
+  pyenv:
+    version: "{{pyver}}"
+    pyenv_root: "{{pyenv_root}}"
+    #subcommand: uninstall
+  environment:
+    CONFIGURE_OPTS: "--enable-shared"
+    CFLAGS: "-O2"
+- name: pyenv virtualenv
+  pyenv:
+    subcommand: virtualenv
+    version: "{{pyver}}"
+    pyenv_root: "{{pyenv_root}}"
+    virtualenv_name: "{{venv_name}}"
+- name: pyenv global
+  pyenv:
+    subcommand: global
+    versions:
+    - "{{venv_name}}"
+    pyenv_root: "{{pyenv_root}}"
+- name: install python packages on the virtualenv
+  pip:
+    name: ['mod_wsgi']
+    #name: ['mysqlclient', 'mod_wsgi']
+    executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
+
