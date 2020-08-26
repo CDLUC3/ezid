@@ -1,0 +1,84 @@
+# ~/.alias
+#
+# Creaed by ansible project: ezid-ansible.  But you can make local changes.
+# Aliases and functions were extracted from .bash_profile on uc3-ezidx2-dev
+
+
+# Copy stdin to clipboard, removing final newline
+alias clip="perl -pe 'chomp if eof' | xclip -se c"
+# Write clipboard to stdout
+alias oclip='xclip -o'
+# Case insensitive search in man pages
+alias man='man -i'
+# Case insensitive less
+alias less='less -i'
+# Source .bashrc again
+alias sb='. $HOME/.bashrc'
+
+# Modern alterantives for commonly used commands
+# Use exa for ll if available
+if command -v exa >/dev/null 2>&1; then
+  # Have removed --git for now because of 1 second delay in d1_python
+  # and a bug where it crashes on dangling symlink.
+  exa_args='--long --bytes --group --time-style=long-iso --group-directories-first --extended'
+  alias ll="exa --sort name $exa_args"
+  alias lw="exa --sort new $exa_args"
+  alias lo="exa --sort old $exa_args"
+else
+  alias ll='ls -l --group-directories-first --color=auto'
+fi
+if command -v bat >/dev/null 2>&1; then
+   alias cat=bat
+   alias b='bat --language python'
+   alias br='bat --language python --decorations=never'
+fi
+
+# Git
+alias gs="git status"
+alias gd="git difftool -y"
+alias gb="git branch"
+alias gc="git checkout"
+alias gdhi="git difftool -y --cached"
+alias gdiw="git difftool -y"
+alias gdhw="git difftool -y HEAD"
+
+# grep
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Others
+alias xml="xmlstarlet"
+alias pipup='pip install --upgrade pip'
+alias nobuffer='stdbuf -i0 -o0 -e0'
+alias make='make -j16'
+alias rs='rsync --recursive --verbose --progress --links --times --omit-dir-times'
+alias rmempty='find . -empty -delete'
+alias v='gpicview'
+
+
+# Functions
+
+# Grep with color, current dir, recursive, Perl compatible regexp
+function gr () { grep -R --perl-regex --color=always "$1" . | less --raw; }
+# Copy a path to the clipboard
+function pclip () { realpath "$1" | tr -d '\n' | xclip -se c; }
+# Copy a string to the clipboard
+function eclip () { echo "$@" | xclip -se c; }
+# Locate with ls -l on each result
+function locates() { locate -0 "$1" | xargs -0 --no-run-if-empty ls -ld; }
+# View log files
+function pl { black - < "$1" | bat --language python; }
+alias batlog='bat --paging=never --language python'
+# View XML docs (xmlstarlet + bat)
+function px { xmlstarlet format "$1" | bat --language xml; }
+# View Python (Black + bat)
+function pp { black - < "$1" 2>/dev/null  | bat --language python --style plain,changes,grid,numbers,snip;
+}
+# View CSV file (column + bat)
+function bc {
+  column -t -s, -n "$@" |
+  --wrap never --language python --pager \
+  "less --no-init --quit-if-one-screen --chop-long-lines --quit-on-intr --RAW-CONTROL-CHARS";
+}
+

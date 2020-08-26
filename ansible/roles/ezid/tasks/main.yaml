@@ -53,18 +53,55 @@
     versions:
     - "{{venv_name}}"
     pyenv_root: "{{pyenv_root}}"
-
-- name: update .bash_profile
-  blockinfile:
-    dest: "{{ansible_env.HOME}}/.bash_profile"
-    block: |
-      # pyenv setup
-      export PATH="$HOME/.pyenv/bin:$PATH"
-      eval "$(pyenv init -)"
-      eval "$(pyenv virtualenv-init -)"
-
 - name: install python packages on the virtualenv
   pip:
-    name: ['mysqlclient', 'mod_wsgi']
+    name: ['mod_wsgi']
+    #name: ['mysqlclient', 'mod_wsgi']
     executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
 
+
+- name: ~/.bash_profile
+  copy:
+    src: files/.bash_profile
+    dest: "{{ansible_env.HOME}}/.bash_profile"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+- name: ~/.bashrc
+  copy:
+    src: files/.bashrc
+    dest: "{{ansible_env.HOME}}/.bashrc"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+    force: no
+- name: ~/.alias
+  copy:
+    src: files/.alias
+    dest: "{{ansible_env.HOME}}/.alias"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+    force: no
+- name: mkdir ~/.profile.d
+  file:
+    path: "{{ansible_env.HOME}}/.profile.d"
+    owner: "{{user}}"
+    group: "{{group}}"
+    state: directory
+- name: update ~/.profile.d/pyenv
+  blockinfile:
+    path: "{{ansible_env.HOME}}/.profile.d/pyenv"
+    create: yes
+    owner: "{{user}}"
+    group: "{{group}}"
+    block: |
+      #
+      # pyenv setup
+      #
+      if [ -d "$HOME"/.pyenv ]; then
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+      fi
