@@ -1,4 +1,6 @@
 ---
 roles:
+  - name: suzuki-shunsuke.pyenv
+  - name: suzuki-shunsuke.pyenv-virtualenv
   - name: suzuki-shunsuke.pyenv-module
 

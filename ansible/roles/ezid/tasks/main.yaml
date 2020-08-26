@@ -67,6 +67,7 @@
     create: yes
     owner: "{{user}}"
     group: "{{group}}"
+    mode: "0644"
     block: |
       #
       # pyenv setup
