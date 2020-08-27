@@ -43,6 +43,7 @@ DATABASES = {
         "HOST": "databases.store_host",  # see below
         "NAME": "ezid",
         "USER": "ezidrw",
+        "PORT": "databases.store_port",
         "PASSWORD": "databases.store_password",  # see below
         "OPTIONS": {"charset": "utf8mb4"},
     },
@@ -51,6 +52,7 @@ DATABASES = {
         "HOST": "databases.search_host",  # see below
         "NAME": "ezid",
         "USER": "ezidrw",
+        "PORT": "databases.search_port",
         "PASSWORD": "databases.search_password",  # see below
         "OPTIONS": {"charset": "utf8mb4"},
         "fulltextSearchSupported": True,
@@ -140,8 +142,10 @@ LOCALIZATIONS = {"default": ("cdl", ["ezid@ucop.edu"])}
 SECRET_PATHS = [
     ("DATABASES", "default", "HOST"),
     ("DATABASES", "default", "PASSWORD"),
+    ("DATABASES", "default", "PORT"),
     ("DATABASES", "search", "HOST"),
     ("DATABASES", "search", "PASSWORD"),
+    ("DATABASES", "search", "PORT"),
 ]
 
 
