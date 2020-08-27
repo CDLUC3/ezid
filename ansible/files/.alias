@@ -56,6 +56,10 @@ alias rs='rsync --recursive --verbose --progress --links --times --omit-dir-time
 alias rmempty='find . -empty -delete'
 alias v='gpicview'
 
+# Ashley's favs
+alias la='ls -la'
+alias ..='cd ..'
+
 
 # Functions
 
@@ -81,4 +85,3 @@ function bc {
   --wrap never --language python --pager \
   "less --no-init --quit-if-one-screen --chop-long-lines --quit-on-intr --RAW-CONTROL-CHARS";
 }
-

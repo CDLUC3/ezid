@@ -50,7 +50,7 @@
     state: directory
 - name: update ~/.profile.d/pyenv
   blockinfile:
-    path: "{{ansible_env.HOME}}/.profile.d/pyenv"
+    path: "{{ansible_env.HOME}}/.profile.d/ezid"
     create: yes
     owner: "{{user}}"
     group: "{{group}}"
@@ -65,7 +65,10 @@
         eval "$(pyenv init -)"
         eval "$(pyenv virtualenv-init -)"
       fi
-
+      #
+      # ezid config
+      #
+      export DJANGO_SETTINGS_MODULE=settings.remotedev
 
 - name: setup pyenv 
   # from https://galaxy.ansible.com/suzuki-shunsuke/pyenv-module
@@ -91,24 +94,40 @@
 - name: install python packages on the virtualenv
   pip:
     name: ['mod_wsgi']
-    #name: ['mysqlclient', 'mod_wsgi']
     executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
 
 
 - name: Clone ezid repo
   git:
-    repo: "https://github.com/CDLUC3/ezid.git"
+    repo: "{{ezid_repo}}"
     dest: "{{app_dir}}/ezid/"
-    version: "initial-setup"
+    version: "{{git_branch}}"
+    force: yes
 - name: Clone ezid-info-pages repo
   git:
-    repo: "https://github.com/CDLUC3/ezid-info-pages.git"
+    repo: "{{ezid_info_pages_repo}}"
     dest: "{{app_dir}}/ezid/templates/info/"
-    version: "master"
+    version: "{{git_branch}}"
+
+
 - name: install ezid requirements
   pip:
     requirements: "{{app_dir}}/ezid/requirements.txt"
     executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
+
+
+- name: mv ezid/db var/db
+  command:
+    cmd: mv "{{app_dir}}/ezid/db" "{{app_dir}}/var/"
+    creates: "{{app_dir}}/var/db"
+    removes: "{{app_dir}}/ezid/db"
+- name: symlink ezid/db -> var/db
+  # ln -s /apps/ezid/var/db /apps/ezid/ezid/db;
+  file:
+    path: "{{app_dir}}/ezid/db"
+    src: "{{app_dir}}/var/db"
+    state: link
+
 
 - name: symlink httpd modules
   # ln -s /etc/httpd/modules /apps/ezid/etc/httpd/modules; \
@@ -128,6 +147,13 @@
     path: "{{app_dir}}/etc/httpd/conf/magic"
     src: "/etc/httpd/conf/magic"
     state: link
+- name: symlink download dir
+  # ln -s /apps/ezid/var/www/download /apps/ezid/download
+  file:
+    path: "{{app_dir}}/download"
+    src: "{{app_dir}}/var/www/download"
+    state: link
+
 
 - name: httpd.conf
   copy:
@@ -156,21 +182,31 @@
     dest: "{{app_dir}}/etc/init.d/"
     owner: "{{user}}"
     group: "{{group}}"
-    mode: "0755"
+    mode: "0775"
 - name: ezid_env.sh
   copy:
     src: "files/etc/ezid_env.sh"
     dest: "{{app_dir}}/etc/ezid_env.sh"
     owner: "{{user}}"
     group: "{{group}}"
-    mode: "0755"
+    mode: "0775"
 
-#- name: robots.txt
-#  copy:
-#    src: "files/var/www/html/robots.txt"
-#    dest: "{{app_dir}}/var/www/html/"
-#    owner: "{{user}}"
-#    group: "{{group}}"
-#    mode: "0644"
+- name: robots.txt
+  copy:
+    src: "files/var/www/html/robots.txt"
+    dest: "{{app_dir}}/var/www/html/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
 
+
+## Configure the EZID application
+- name: ezid_env.sh
+  # ADD --chown=ezid:ezid etc/ezid.conf.template /apps/ezid/ezid/settings/ezid.conf.shadow
+  template:
+    src: "templates/etc/ezid.conf.template"
+    dest: "{{app_dir}}/ezid/settings/ezid.conf.shadow"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0600"
 
