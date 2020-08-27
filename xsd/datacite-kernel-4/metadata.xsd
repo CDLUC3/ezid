@@ -7,8 +7,12 @@
   2011-06-27 v2.2: namespace: kernel-2.2, additions to controlled lists "resourceType", "contributorType", "relatedIdentifierType", and "descriptionType". Removal of intermediate include-files.
   2013-07-24 v3.0: namespace: kernel-3.0; delete LastMetadataUpdate & MetadateVersionNumber; additions to controlled lists "contributorType", "dateType", "descriptionType", "relationType", "relatedIdentifierType" & "resourceType"; deletion of "StartDate" & "EndDate" from list "dateType" and "Film" from "resourceType";  allow arbitrary order of elements; allow optional wrapper elements to be empty; include xml:lang attribute for title, subject & description; include attribute schemeURI for nameIdentifier of creator, contributor & subject; added new attributes "relatedMetadataScheme", "schemeURI" & "schemeType" to relatedIdentifier; included new property "geoLocation"
   2014-08-20 v3.1: additions to controlled lists "relationType", contributorType" and "relatedIdentifierType"; introduction of new child element "affiliation" to "creator" and "contributor"
-  2016-09-19 v4.0: namespace: kernel-4.0; makes "resourceType" required field, added optional "givenName" and "familyName" to creator and contributor, added "funderReference", added "valueURI" for subject, added "geoLocationPolygon" -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://datacite.org/schema/kernel-4" targetNamespace="http://datacite.org/schema/kernel-4" elementFormDefault="qualified" xml:lang="EN">
+  2016-09-19 v4.0: namespace: kernel-4.0; makes "resourceType" required field, added optional "givenName" and "familyName" to creator and contributor, added "funderReference", added "valueURI" for subject, added "geoLocationPolygon"
+  2017-10-23 v4.1: Addition of dateType value "Other", relationType values "Describes", "IsDescribedBy", "HasVersion", "IsVersionOf", "Requires", "IsRequiredBy", resourceType value "DataPaper", new subproperties "dateInformation", "inPolygonPoint", new attribute "nameType", optional attribute "resourceTypeGeneral" for relatedIdentifier 
+  2018-09-08 v4.1.1 Make schema 4.1 backwards compatible to 4.0 by allowing geolocation elements in any order
+  2019-02-14 v4.2: Addition of dateType value "Withdrawn", relationType values "Obsoletes", "isObsoletedBy", addition of new subproperties for Rights: rightsIdentifier, rightsIdentifierScheme, schemeURI, addition of the XML language attribute to the properties Creator, Contributor and Publisher for organizational names, don't check format of DOI
+  2019-07-13 v4.3: Addition of new subproperties for Affiliation: "affiliationIdentifier", "affiliationIdentifierScheme", "schemeURI", addition of new sub-property for funderIdentifier: "schemeURI", addition of new funderIdentifierScheme: "ROR", added documentation for nameIdentifier -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" targetNamespace="http://datacite.org/schema/kernel-4" elementFormDefault="qualified" xml:lang="EN">
   <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="include/xml.xsd"/>
   <xs:include schemaLocation="include/datacite-titleType-v4.xsd"/>
   <xs:include schemaLocation="include/datacite-contributorType-v4.xsd"/>
@@ -18,6 +22,7 @@
   <xs:include schemaLocation="include/datacite-relatedIdentifierType-v4.xsd"/>
   <xs:include schemaLocation="include/datacite-funderIdentifierType-v4.xsd"/>
   <xs:include schemaLocation="include/datacite-descriptionType-v4.xsd"/>
+  <xs:include schemaLocation="include/datacite-nameType-v4.xsd"/>
   <xs:element name="resource">
     <xs:annotation>
       <xs:documentation>
@@ -31,12 +36,11 @@
         <xs:element name="identifier">
           <xs:annotation>
             <xs:documentation>A persistent identifier that identifies a resource.</xs:documentation>
-            <xs:documentation>Currently, only DOI is allowed.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:simpleContent>
-              <xs:extension base="doiType">
-                <xs:attribute name="identifierType" use="required" fixed="DOI"/>
+              <xs:extension base="nonemptycontentStringType">
+                <xs:attribute name="identifierType" use="required"/>
               </xs:extension>
             </xs:simpleContent>
           </xs:complexType>
@@ -53,23 +57,19 @@
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="creatorName">
-                      <xs:simpleType>
-                        <xs:restriction base="nonemptycontentStringType"/>
-                      </xs:simpleType>
-                    </xs:element>
-                    <xs:element name="givenName" minOccurs="0"/>
-                    <xs:element name="familyName" minOccurs="0"/>
-                    <xs:element name="nameIdentifier" minOccurs="0" maxOccurs="unbounded">
                       <xs:complexType>
                         <xs:simpleContent>
-                          <xs:extension base="nonemptycontentStringType">
-                            <xs:attribute name="nameIdentifierScheme" use="required"/>
-                            <xs:attribute name="schemeURI" type="xs:anyURI" use="optional"/>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="nameType" type="nameType" use="optional"/>
+                            <xs:attribute ref="xml:lang"/>
                           </xs:extension>
                         </xs:simpleContent>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="affiliation" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="givenName" minOccurs="0"/>
+                    <xs:element name="familyName" minOccurs="0"/>
+                    <xs:element name="nameIdentifier" xsi:type="nameIdentifier" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="affiliation" xsi:type="affiliation" minOccurs="0" maxOccurs="unbounded"/>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
@@ -85,7 +85,7 @@
                 </xs:annotation>
                 <xs:complexType>
                   <xs:simpleContent>
-                    <xs:extension base="nonemptycontentStringType">
+                    <xs:extension base="xs:string">
                       <xs:attribute name="titleType" type="titleType" use="optional"/>
                       <xs:attribute ref="xml:lang"/>
                     </xs:extension>
@@ -100,9 +100,13 @@
             <xs:documentation>The name of the entity that holds, archives, publishes prints, distributes, releases, issues, or produces the resource. This property will be used to formulate the citation, so consider the prominence of the role.</xs:documentation>
             <xs:documentation>In the case of datasets, "publish" is understood to mean making the data available to the community of researchers.</xs:documentation>
           </xs:annotation>
-          <xs:simpleType>
-            <xs:restriction base="nonemptycontentStringType"/>
-          </xs:simpleType>
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="nonemptycontentStringType">
+                <xs:attribute ref="xml:lang"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
         </xs:element>
         <xs:element name="publicationYear">
           <xs:annotation>
@@ -160,25 +164,19 @@
               <xs:complexType>
                 <xs:sequence>
                   <xs:element name="contributorName">
-                    <xs:simpleType>
-                      <xs:restriction base="xs:string">
-                        <xs:minLength value="1"/>
-                      </xs:restriction>
-                    </xs:simpleType>
-                  </xs:element>
-                  <xs:element name="givenName" minOccurs="0"/>
-                  <xs:element name="familyName" minOccurs="0"/>
-                  <xs:element name="nameIdentifier" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                       <xs:simpleContent>
-                        <xs:extension base="xs:string">
-                          <xs:attribute name="nameIdentifierScheme" use="required"/>
-                          <xs:attribute name="schemeURI" type="xs:anyURI" use="optional"/>
+                        <xs:extension base="nonemptycontentStringType">
+                          <xs:attribute name="nameType" type="nameType" use="optional"/>
+                          <xs:attribute ref="xml:lang"/>
                         </xs:extension>
                       </xs:simpleContent>
                     </xs:complexType>
                   </xs:element>
-                  <xs:element name="affiliation" minOccurs="0" maxOccurs="unbounded"/>
+                  <xs:element name="givenName" minOccurs="0"/>
+                  <xs:element name="familyName" minOccurs="0"/>
+                  <xs:element name="nameIdentifier" xsi:type="nameIdentifier" minOccurs="0" maxOccurs="unbounded"/>
+                  <xs:element name="affiliation" xsi:type="affiliation" minOccurs="0" maxOccurs="unbounded"/>
                 </xs:sequence>
                 <xs:attribute name="contributorType" type="contributorType" use="required"/>
               </xs:complexType>
@@ -198,6 +196,7 @@
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
                       <xs:attribute name="dateType" type="dateType" use="required"/>
+                      <xs:attribute name="dateInformation" use="optional"/>
                     </xs:extension>
                   </xs:simpleContent>
                 </xs:complexType>
@@ -238,6 +237,7 @@
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
+                      <xs:attribute name="resourceTypeGeneral" type="resourceType" use="optional"/>
                       <xs:attribute name="relatedIdentifierType" type="relatedIdentifierType" use="required"/>
                       <xs:attribute name="relationType" type="relationType" use="required"/>
                       <xs:attribute name="relatedMetadataScheme" use="optional"/>
@@ -291,6 +291,10 @@ Use the complete title of a license and include version information if applicabl
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
                       <xs:attribute name="rightsURI" type="xs:anyURI" use="optional"/>
+                      <xs:attribute name="rightsIdentifier" use="optional"/>
+                      <xs:attribute name="rightsIdentifierScheme" use="optional"/>
+                      <xs:attribute name="schemeURI" type="xs:anyURI" use="optional"/>
+                      <xs:attribute ref="xml:lang"/>
                     </xs:extension>
                   </xs:simpleContent>
                 </xs:complexType>
@@ -308,11 +312,7 @@ Use the complete title of a license and include version information if applicabl
                 <xs:complexType mixed="true">
                   <xs:choice>
                     <xs:element name="br" minOccurs="0" maxOccurs="unbounded">
-                      <xs:simpleType>
-                        <xs:restriction base="xs:string">
-                          <xs:length value="0"/>
-                        </xs:restriction>
-                      </xs:simpleType>
+                      <xs:complexType/>
                     </xs:element>
                   </xs:choice>
                   <xs:attribute name="descriptionType" type="descriptionType" use="required"/>
@@ -327,7 +327,7 @@ Use the complete title of a license and include version information if applicabl
             <xs:sequence>
               <xs:element name="geoLocation" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
-                  <xs:all>
+                  <xs:choice maxOccurs="unbounded">
                     <xs:element name="geoLocationPlace" minOccurs="0">
                       <xs:annotation>
                         <xs:documentation>Spatial region or named place where the data was gathered or about which the data is focused.</xs:documentation>
@@ -335,7 +335,7 @@ Use the complete title of a license and include version information if applicabl
                     </xs:element>
                     <xs:element name="geoLocationPoint" type="point" minOccurs="0">
                       <xs:annotation>
-                        <xs:documentation>A point contains a single latitude-longitude pair, separated by whitespace.</xs:documentation>
+                        <xs:documentation>A point contains a single latitude-longitude pair.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
                     <xs:element name="geoLocationBox" type="box" minOccurs="0">
@@ -343,17 +343,18 @@ Use the complete title of a license and include version information if applicabl
                         <xs:documentation>A box contains two white space separated latitude-longitude pairs, with each pair separated by whitespace. The first pair is the lower corner, the second is the upper corner.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
-                    <xs:element name="geoLocationPolygon" minOccurs="0">
+                    <xs:element name="geoLocationPolygon" minOccurs="0" maxOccurs="unbounded">
                       <xs:annotation>
                         <xs:documentation>A drawn polygon area, defined by a set of points and lines connecting the points in a closed chain.</xs:documentation>
                       </xs:annotation>
                       <xs:complexType>
                         <xs:sequence>
                           <xs:element name="polygonPoint" type="point" minOccurs="4" maxOccurs="unbounded"/>
+                          <xs:element name="inPolygonPoint" type="point" minOccurs="0" maxOccurs="1"/>
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
-                  </xs:all>
+                  </xs:choice>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
@@ -384,6 +385,7 @@ Use the complete title of a license and include version information if applicabl
                         <xs:simpleContent>
                           <xs:extension base="xs:string">
                             <xs:attribute name="funderIdentifierType" type="funderIdentifierType" use="required"/>
+                            <xs:attribute name="schemeURI" type="xs:anyURI" use="optional"/>
                           </xs:extension>
                         </xs:simpleContent>
                       </xs:complexType>
@@ -404,9 +406,6 @@ Use the complete title of a license and include version information if applicabl
                       <xs:annotation>
                         <xs:documentation>The human readable title of the award (grant).</xs:documentation>
                       </xs:annotation>
-                      <xs:simpleType>
-                        <xs:restriction base="nonemptycontentStringType"/>
-                      </xs:simpleType>
                     </xs:element>
                   </xs:all>
                 </xs:complexType>
@@ -418,22 +417,68 @@ Use the complete title of a license and include version information if applicabl
     </xs:complexType>
   </xs:element>
   <!-- TYPE DECLARATIONS -->
-  <!-- defines the value for a DOI"  -->
-  <xs:simpleType name="doiType">
-    <xs:restriction base="xs:token">
-      <xs:pattern value="10\..+/.+"/>
-    </xs:restriction>
-  </xs:simpleType>
   <!-- defines value for mandatory fields -->
   <xs:simpleType name="nonemptycontentStringType">
     <xs:restriction base="xs:string">
       <xs:minLength value="1"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:attributeGroup name="nameId">
-    <xs:attribute name="nameIdentifier" type="xs:string" use="optional"/>
-    <xs:attribute name="nameIdentifierScheme" type="xs:string" use="optional"/>
-  </xs:attributeGroup>
+  <!-- definition for nameIdentifier -->
+  <xs:complexType name="nameIdentifier">
+    <xs:annotation>
+      <xs:documentation>Uniquely identifies a creator or contributor, according to various identifier schemes.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="nonemptycontentStringType">
+        <xs:attribute name="nameIdentifierScheme" type="xs:string" use="required"/>
+        <xs:attribute name="schemeURI" type="xs:anyURI" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <!-- definition for EDTF dates, modified from PREMIS 2.0 -->
+  <xs:simpleType name="edtf">
+    <xs:restriction base="xs:string">
+      <!-- pattern for iso8601 dateTime -->
+      <xs:pattern value="(-)?[0-9]{4}(-[0-9]{2})?(-[0-9]{2})?(T([0-9]{2}:){2}[0-9]{2}Z)?"/>
+      
+      <!--  
+      The following pattern is for year (yyyy) or year-month (yyyy-mm)              
+      The last or last two digits of year may be '?'  meaning "one year in that range but not sure which year", for example 19?? means some year from 1990 to 1999.  Similarly month may be '??' so that 2004-?? "means some month in 2004".  And the entire string may end with '?' or '~' for "uncertain" or "approximate".
+      Hyphen must separate year and month.
+      -->
+      <xs:pattern value="\d{2}(\d{2}|\?\?|\d(\d|\?))(-(\d{2}|\?\?))?~?\??"/>
+      <!--  
+      The following pattern is for  yearMonthDay - yyyymmdd,  where 'dd' may be '??'  so '200412??' means "some day during the month of 12/2004". 
+      The whole  string may be followed by '?' or '~'  to mean "questionable" or "approximate".     Hypens are  not allowed for this pattern. 
+      -->
+      <xs:pattern value="\d{6}(\d{2}|\?\?)~?\??"/>
+      <!--  
+
+      The following pattern is for date and time with T separator:'yyyymmddThhmmss'. 
+      Hypens in date and colons in time not allowed for this pattern.   
+      -->
+      <xs:pattern value="\d{8}T\d{6}"/>
+      <!--  
+
+      The following pattern is for a date range. in years: 'yyyy/yyyy'; or year/month: yyyy-mm/yyyy-mm, or year/month/day: yyyy-mm-dd/yyyy-mm-dd. Beginning or end of range value may be 'unknown'. End of range value may be 'open'.
+      Hypens mandatory when month is present. 
+      -->
+      <xs:pattern value="((-)?(\d{4}(-\d{2})?(-\d{2})?)|unknown)/((-)?(\d{4}(-\d{2})?(-\d{2})?)|unknown|open)"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- definition for affiliation -->
+  <xs:complexType name="affiliation">
+    <xs:annotation>
+      <xs:documentation>Uniquely identifies an affiliation, according to various identifier schemes.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="nonemptycontentStringType">
+        <xs:attribute name="affiliationIdentifier" type="xs:string" use="optional"/>
+        <xs:attribute name="affiliationIdentifierScheme" type="xs:string" use="optional"/>
+        <xs:attribute name="schemeURI" type="xs:anyURI" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
   <!-- defines the value for a year -->
   <xs:simpleType name="yearType">
     <xs:restriction base="xs:token">
