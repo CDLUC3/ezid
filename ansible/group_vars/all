@@ -1,5 +1,5 @@
-user: uc3adm
-group: uc3adm
+user: ezid
+group: ezid
 app_dir: /apps/ezid
 
 pyenv_root: "{{ansible_env.HOME}}/.pyenv"
