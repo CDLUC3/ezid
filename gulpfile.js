@@ -1,88 +1,80 @@
 // ##### Gulp Tasks #####
 
-// ***** Inspired by https://css-tricks.com/gulp-for-beginners/ ***** //
-
-var gulp = require('gulp');
+var { src, dest, watch, series, parallel } = require('gulp');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
-var sourcemaps = require('gulp-sourcemaps');
 var browserSync = require('browser-sync');
+var server = browserSync.create();
 var useref = require('gulp-useref');
 var uglify = require('gulp-uglify');
 var gulpIf = require('gulp-if');
-var minifyCSS = require('gulp-minify-css');
+var minifyCSS = require('gulp-clean-css');
 var imagemin = require('gulp-imagemin');
 var cache = require('gulp-cache');
 var del = require('del');
 var modernizr = require('gulp-modernizr');
 var runSequence = require('run-sequence');
-var validateHTML = require('gulp-w3cjs');
-var scsslint = require('gulp-scss-lint');
+var stylelint = require('gulp-stylelint');
 var jshint = require('gulp-jshint');
 var lbInclude = require('gulp-lb-include');
 var ssi = require('browsersync-ssi');
+var postcss = require('gulp-postcss');
+var assets = require('postcss-assets');
+var ghPages = require('gulp-gh-pages');
 
+// Public Tasks:
 
-// Check that gulp is working by running "gulp hello" at the command line:
-gulp.task('hello', function() {
-  console.log('Hello there!');
-});
+exports.default = parallel(scss, start, watcher);
 
+exports.build = series(clean, fonts, scsslint_legacy, scsslint, jslint, scss_legacy, scss, assemble, copyimages);
 
-// Run the dev process by running "gulp" at the command line:
-gulp.task('default', function (callback) {
-  runSequence(['sass', 'browserSync', 'watch'],
-    callback
-  )
-})
+exports.upload = githubpages;
 
+exports.modernizr = runmodernizr;
 
-// Run the build process by running "gulp build" at the command line:
-gulp.task('build', function (callback) {
-  runSequence('clean', 
-    ['scss-lint', 'js-lint', 'sass', 'useref', 'images', 'fonts'],
-    callback
-  )
-})
+// Process scss to css, add sourcemaps, inline font & image files into css:
 
+sass.compiler = require('node-sass');
 
-// Run "gulp modernizr" at the command line to build a custom modernizr file based off of classes found in CSS:
-gulp.task('modernizr', function() {
-  gulp.src('dev/css/main2.css') // where modernizr will look for classes
-    .pipe(modernizr({
-      options: ['setClasses'],
-      dest: 'dev/js/modernizr-custombuild.js'
-    }))
-});
+function scss(cb) {
+  return src('dev/scss/*.scss', { sourcemaps: true })
+  .pipe(sass().on('error', sass.logError))
+  .pipe(autoprefixer('last 2 versions'))
+  .pipe(postcss([assets({
+    loadPaths: ['fonts/', 'images/']
+  })]))
+  .pipe(dest('dev/css', { sourcemaps: 'sourcemaps' }))
+  .pipe(browserSync.stream());
+  cb();
+}
 
+function scss_legacy(cb) {
+  return src('dev/legacy-scss/*.scss', { sourcemaps: true })
+  .pipe(sass().on('error', sass.logError))
+  .pipe(autoprefixer('last 2 versions'))
+  .pipe(dest('dev/legacy-scss/css', { sourcemaps: 'sourcemaps' }))
+  .pipe(browserSync.stream());
+  cb();
+}
 
-// Process sass and add sourcemaps:
-gulp.task('sass', function() {
-  return gulp.src('dev/scss/**/*.scss')
-    .pipe(sourcemaps.init())
-    .pipe(sass.sync().on('error', sass.logError))
-    .pipe(autoprefixer('last 2 versions'))
-    .pipe(sourcemaps.write('sourcemaps'))
-    .pipe(gulp.dest('dev/css'))
-    .pipe(browserSync.reload({
-      stream: true
-    }));
-})
+// Watch scss, html, and js and reload browser if any changes:
 
+function watcher(cb) {
+  watch('dev/scss/*.scss', series(scss, refresh, scsslint));
+  watch('dev/js/*.js', series(jslint, refresh));
+  watch('dev/**/*.html', refresh);
+  cb();
+}
 
-// Watch sass, html, and js and reload browser if any changes:
-gulp.task('watch', ['browserSync', 'sass', 'scss-lint', 'js-lint'], function (){
-  gulp.watch('dev/scss/**/*.scss', ['sass']);
-  gulp.watch('dev/scss/**/*.scss', ['scss-lint']);
-  gulp.watch('dev/js/**/*.js', ['js-lint']);
-  gulp.watch('dev/**/*.html', browserSync.reload); 
-  gulp.watch('dev/js/**/*.js', browserSync.reload); 
-});
+function refresh(cb) {
+  server.reload()
+  cb();
+}
 
-
-// Spin up a local browser with the index.html page at http://localhost:3000/
-gulp.task('browserSync', function() {
-  browserSync({
+function start(cb) {
+  server.init({
+    open: false,
+    reloadOnRestart: true,
     server: {
       baseDir: 'dev',
       middleware: ssi({
@@ -90,66 +82,95 @@ gulp.task('browserSync', function() {
         ext: '.html',
         version: '1.4.0'
       })
-    },
+    }
   })
-})
+  cb();
+}
 
+// Minify and uglify css and js from paths within useref comment tags in html:
 
-// Minify and uglify css and js from paths within comment tags in html:
-gulp.task('useref', function(){
-  var assets = useref.assets();
+function assemble(cb) {
+  return src(['dev/**/*.html', '!dev/includes/*'])
+  .pipe(gulpIf('*.css', minifyCSS()))
+  .pipe(gulpIf('*.js', uglify()))
+  .pipe(useref())
+  .pipe(lbInclude()) // parse <!--#include file="" --> statements
+  .pipe(dest('ui_library'))
+  cb();
+}
 
-  return gulp.src(['dev/**/*.html', '!dev/includes/*'])
-    .pipe(assets)
-    .pipe(gulpIf('*.css', minifyCSS())) // Minifies only if it's a CSS file
-    .pipe(gulpIf('*.js', uglify())) // Uglifies only if it's a Javascript file
-    .pipe(assets.restore())
-    .pipe(useref())
-    .pipe(lbInclude()) // Process <!--#include file="" --> statements
-    .pipe(gulp.dest('ui_library'))
-});
+// Compress images and copy from dev/images/ into dev/ui_library/images/:
 
-
-// Compress images:
-gulp.task('images', function(){
-  return gulp.src('dev/images/**/*.+(png|jpg|jpeg|gif|svg)')
-  .pipe(cache(imagemin({ // Caching images that ran through imagemin
+function copyimages(cb) {
+  return src('dev/images/**/*.+(png|jpg|jpeg|gif|svg)')
+  .pipe(cache(imagemin({
       interlaced: true
     })))
-  .pipe(gulp.dest('ui_library/images'))
-});
+  .pipe(dest('ui_library/images'))
+  cb();
+}
 
+// Copy font files from dev/fonts/ into dev/ui_library/fonts/:
 
-// Copy font files from "dev" directory to "ui_library" directory during build process:
-gulp.task('fonts', function() {
-  return gulp.src('dev/fonts/**/*')
-  .pipe(gulp.dest('ui_library/fonts'))
-})
+function fonts(cb) {
+  return src('dev/fonts/**/*')
+  .pipe(dest('ui_library/fonts'))
+  cb();
+}
 
+// Delete ui_library directory at start of build process:
 
-// Delete "ui_library" directory at start of build process:
-gulp.task('clean', function(callback) {
-  del('ui_library');
-  return cache.clearAll(callback);
-})
-
-// Validate build HTML:
-gulp.task('validateHTML', function () {
-  gulp.src('ui_library/**/*.html')
-    .pipe(validateHTML())
-});
+function clean(cb) {
+  return del('ui_library');
+  cb();
+}
 
 // Lint Sass:
-gulp.task('scss-lint', function() {
-  return gulp.src(['dev/scss/**/*.scss', '!dev/scss/vendor/**/*.scss'])
-    .pipe(scsslint({
-      'config': 'scss-lint-config.yml'
-    }));
-});
+
+function scsslint(cb) {
+  return src(['dev/scss/*.scss', '!dev/scss/vendor/*.scss'])
+  .pipe(stylelint({
+    reporters: [
+      {formatter: 'string', console: true}
+    ]
+  }));
+  cb();
+}
+
+function scsslint_legacy(cb) {
+  return src(['dev/legacy-scss/*.scss', '!dev/legacy-scss/vendor/*.scss'])
+  .pipe(stylelint({
+    reporters: [
+      {formatter: 'string', console: true}
+    ]
+  }));
+  cb();
+}
 
 // Lint JavaScript:
-gulp.task('js-lint', function() {
-  return gulp.src(['dev/js/**/*.js', '!dev/js/vendor/*.js'])
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
-});
+
+function jslint(cb) {
+  return src(['dev/js/**/*.js', '!dev/js/vendor/*.js'])
+  .pipe(jshint())
+  .pipe(jshint.reporter('default'))
+  cb();
+}
+
+// Upload ui_library build to GitHub Pages:
+
+function githubpages(cb) {
+  return src('./ui_library/**/*')
+  .pipe(ghPages())
+  cb();
+}
+
+// Run "gulp modernizr" to build a custom modernizr file based off of classes found in CSS:
+
+function runmodernizr(cb) {
+  return src('dev/css/main2.css') // where modernizr will look for classes
+  .pipe(modernizr({
+    options: ['setClasses'],
+    dest: 'dev/js/modernizr-custombuild.js'
+  }))
+  cb();
+}
