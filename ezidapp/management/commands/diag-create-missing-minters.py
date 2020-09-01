@@ -84,7 +84,7 @@ class Command(django.core.management.base.BaseCommand):
 
             if not s.minter.strip():
                 print(
-                    u'Warning: Minter unspecified in shoulder. prefix="{}" name="{}"'.format(
+                    u'Shoulder does not specify a minter (supershoulder?). prefix="{}" name="{}"'.format(
                         s.prefix, s.name
                     )
                 )

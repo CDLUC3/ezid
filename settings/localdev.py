@@ -1,6 +1,6 @@
 from common import *
 
-DEPLOYMENT_LEVEL = "localdev"
+DEPLOYMENT_LEVEL = "remotedev"
 
 STANDALONE = True
 RELOAD_TEMPLATES = True

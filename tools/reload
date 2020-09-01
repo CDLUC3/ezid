@@ -6,6 +6,9 @@
 # Greg Janee <gjanee@ucop.edu>
 # June 2018
 
+echo "Use instead: ./manage.py diag-reload"
+exit 1
+
 if [ $# -ne 0 ]; then echo "usage: $0" 1>&2; exit 1; fi
 
 if [ "$DJANGO_SETTINGS_MODULE" == "" ]; then

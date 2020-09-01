@@ -34,8 +34,6 @@
 
 import datetime
 import difflib
-import django.conf
-import django.core.mail
 import logging
 import logging.config
 import os.path
@@ -45,15 +43,21 @@ import threading
 import time
 import traceback
 
+import django.conf
+import django.core.mail
+
 import config
 import util
+
 
 ## DV ++
 ## for performance reasons, this code should not be enabled in a production environment
 ## @stacklog decorator for assisting with call tracing
-SYS_PATH = os.path.abspath(os.path.join(os.path.dirname(threading.__file__), ".."))
-ENV_PATH = os.path.abspath(os.path.join(os.path.dirname(datetime.__file__), ".."))
-EZID_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+# TODO: If we need these to work in CI, will need to move to using the inspect module.
+# SYS_PATH = os.path.abspath(os.path.join(os.path.dirname(threading.__file__), ".."))
+# ENV_PATH = os.path.abspath(os.path.join(os.path.dirname(datetime.__file__), ".."))
+# EZID_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 
 def stacklog(f):
@@ -65,9 +69,9 @@ def stacklog(f):
                 i = 0
                 dlm = ""
                 for s in reversed(stack[:-1]):
-                    fn = s[0].replace(SYS_PATH, "")
-                    fn = fn.replace(ENV_PATH, "")
-                    fn = fn.replace(EZID_PATH, "")
+                    fn = s[0] #.replace(SYS_PATH, "")
+                    # fn = fn.replace(ENV_PATH, "")
+                    # fn = fn.replace(EZID_PATH, "")
                     ln = str(s[1])
                     op = s[2]
                     pa = s[3]

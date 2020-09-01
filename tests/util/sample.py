@@ -70,8 +70,17 @@ def assert_match(
     with open(sample_path) as f:
         sample_str = f.read()
 
-    if bytes(sample_str.strip()) == bytes(current_str.strip()):
+    current_str = current_str.strip()
+    sample_str = sample_str.strip()
+    if sample_str == current_str:
         return
+
+    if 'IS_TRAVIS' in os.environ:
+        raise SampleException(
+            'Sample mismatch.\nActual:\n{}\nExpected:\n{}\n'.format(
+                current_str, sample_str
+            )
+        )
 
     mismatch_title_str = " -- ".join(
         ["<-- CURRENT", "Sample mismatch", file_post_str, sample_ext, "SAMPLE -->",]
@@ -270,10 +279,11 @@ def _clobber_uncontrolled_volatiles(o_str):
     # Memory address
     o_str = re.sub(r"0x[\da-fA-F]{8,}", "[MEMORY-ADDRESS]", o_str)
     # Temporary filename
-    o_str = re.sub(r"tmp[\w\d]*\.", "[tmp-path].", o_str)
+    o_str = re.sub(r"tmp[\w\d]*\.", "[TMP-PATH].", o_str)
     # Command run timer
-    o_str = re.sub(r'(?<=Parse succeeded )\(\d+\.\d+\)', '[run-timer]', o_str)
-
+    o_str = re.sub(r'(?<=Parse succeeded )\(\d+\.\d+\)', '[RUN-TIMER]', o_str)
+    # Travis hostname
+    o_str = re.sub(r'(?<=Hostname ).*', '[HOSTNAME]', o_str)
     return o_str
 
 

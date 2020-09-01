@@ -105,18 +105,20 @@ def django_db_setup(django_db_keepdb):
             "ENGINE": "django.db.backends.mysql",
             "HOST": "localhost",
             "NAME": "ezid_tests",
-            "USER": "ezid_test_user",
+            "USER": "travis",
             "PASSWORD": "",
             "OPTIONS": {"charset": "utf8mb4"},
+            'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock',},
         },
         "search": {
             "ENGINE": "django.db.backends.mysql",
             "HOST": "localhost",
             "NAME": "ezid_tests",
-            "USER": "ezid_test_user",
+            "USER": "travis",
             "PASSWORD": "",
-            "OPTIONS": {"charset": "utf8mb4"},
             "fulltextSearchSupported": True,
+            "OPTIONS": {"charset": "utf8mb4"},
+            'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock',},
         },
     }
 

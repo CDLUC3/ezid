@@ -55,23 +55,23 @@ DATABASES = {
         "HOST": "localhost",
         "NAME": "ezid_tests",
         "USER": "ezid_test_user",
-        "PASSWORD": "x",
-        "OPTIONS": {"charset": "utf8mb4"},
-
+        "PASSWORD": "",
         # "AUTOCOMMIT": False,
         "ATOMIC_REQUESTS": False,
+        "OPTIONS": {"charset": "utf8mb4"},
+        'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock', },
     },
     "search": {
         "ENGINE": "django.db.backends.mysql",
         "HOST": "localhost",
         "NAME": "ezid_tests",
         "USER": "ezid_test_user",
-        "PASSWORD": "x",
-        "OPTIONS": {"charset": "utf8mb4"},
-        "fulltextSearchSupported": True,
-
+        "PASSWORD": "",
         # "AUTOCOMMIT": False,
         "ATOMIC_REQUESTS": False,
+        "OPTIONS": {"charset": "utf8mb4"},
+        'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock', },
+        "fulltextSearchSupported": True,
     },
 }
 

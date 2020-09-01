@@ -89,11 +89,28 @@ bash -c '
     cd $ez/ezid
     pip install -r requirements.txt
 
-    . ./dev_env_vars.sourceme.sh 
     ./dev_prep_env.sh
+'
+```
 
-    django-admin migrate
-    django-admin migrate --database=search
+DB Init or reinit
+
+```shell script
+bash -c '
+    rm -f ./db/*.sqlite3
+    ./manage.py migrate
+    ./manage.py migrate --database=search
+    ./manage.py loaddata store-init
+    ./manage.py loaddata search-init --database=search
+'
+```
+
+Optionally, load more complete test database
+
+```shell script
+bash -c '
+    yes 'yes' | ./manage.py flush
+    ./manage.py loaddata store-test -e auth -e contenttypes -e sessions
 '
 ```
 
@@ -102,6 +119,14 @@ Start
 ```shell script
 $ export ez=$HOME/dev
 $ cd $ez/ezid
-$ . ./dev_env_vars.sourceme.sh 
-$ django-admin runserver
+$ ./manage.py runserver
+```
+
+## Git
+
+Set Git to ignore bulk edits in `git blame`:
+
+```shell script
+$ cd <ezid root>
+$ git config blame.ignoreRevsFile .git-blame-ignore-revs
 ```

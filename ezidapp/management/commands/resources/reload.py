@@ -24,6 +24,11 @@ def trigger_reload():
     """
     hostname = platform.uname()[1]
     if hostname not in KNOWN_EZID_HOSTNAME_TUP:
+        print(
+            'Hostname "{}" not one of {}. Assuming dev env, skipping EZID reload'.format(
+                hostname, ', '.join('"{}"'.format(s) for s in KNOWN_EZID_HOSTNAME_TUP)
+            )
+        )
         return
 
     ezid_base_url = config.get("DEFAULT.ezid_base_url")
