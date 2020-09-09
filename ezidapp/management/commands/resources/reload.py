@@ -9,7 +9,7 @@ import django.urls
 
 import config
 
-KNOWN_EZID_HOSTNAME_TUP = (('uc3-ezidx2-dev', 'uc3-ezidx2-stg', 'uc3-ezidx2-prd'),)
+KNOWN_EZID_HOSTNAME_TUP = ('uc3-ezidx2-dev', 'uc3-ezidx2-stg', 'uc3-ezidx2-prd')
 
 
 log = logging.getLogger(__name__)
