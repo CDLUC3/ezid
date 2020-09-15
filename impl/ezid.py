@@ -12,23 +12,22 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-import re
+
+import threading
+import uuid
 
 import django.core.exceptions
 import django.db.transaction
 import django.db.utils
-import threading
-import uuid
 
 import config
 import ezidapp.models
 import log
-
-# import noid_nog
-import nog_minter
 import policy
 import util
 import util2
+# import noid_nog
+from nog import minter
 
 _perUserThreadLimit = None
 _perUserThrottle = None
@@ -161,8 +160,9 @@ def mintIdentifier(shoulder, user, metadata={}):
 
     # TODO: We want to be able to support rendering error messages to end users in
     # production like current version of EZID does without breaking rendering of
-    # Django's exception diagnostics page in debug mode and without having to wrap large
-    # sections of code in exception handlers just for redirecting to a logger.
+    # Django's shoulder_model exception diagnostics page in debug mode and without
+    # having to wrap large sections of code in exception handlers just for redirecting
+    # to a logger.
 
     log.begin(
         tid,

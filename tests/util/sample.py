@@ -16,7 +16,7 @@ import django.core
 import django.core.management
 import filelock
 
-import utils.filesystem
+import impl.nog.filesystem
 
 MAX_LINE_WIDTH = 130
 DEFAULT_DIFF_COLUMN_WIDTH = 100
@@ -43,8 +43,8 @@ def start_tidy():
     log.info("Moving files to tidy dir")
     with _get_tidy_path() as tidy_dir_path:
         with _get_sample_path() as sample_dir_path:
-            utils.filesystem.create_missing_directories_for_dir(sample_dir_path)
-            utils.filesystem.create_missing_directories_for_dir(tidy_dir_path)
+            impl.nog.filesystem.create_missing_directories_for_dir(sample_dir_path)
+            impl.nog.filesystem.create_missing_directories_for_dir(tidy_dir_path)
             i = 0
             for i, item_name in enumerate(os.listdir(sample_dir_path)):
                 sample_path = os.path.join(sample_dir_path, item_name)
@@ -124,7 +124,7 @@ def _get_sample_path(filename=None):
     """
     ``filename==``None``: Return path to sample directory.
     """
-    p = os.path.join(utils.filesystem.abs_path("../test_docs/sample"), filename or "")
+    p = os.path.join(impl.nog.filesystem.abs_path("../test_docs/sample"), filename or "")
     with sample_path_lock:
         yield p
 
@@ -136,7 +136,7 @@ def _get_tidy_path(filename=None):
 
     """
     p = os.path.join(
-        utils.filesystem.abs_path("./test_docs/sample_tidy"), filename or ""
+        impl.nog.filesystem.abs_path("./test_docs/sample_tidy"), filename or ""
     )
     with sample_path_lock:
         yield p
@@ -304,7 +304,7 @@ def _get_or_create_path(filename):
 
 def _format_file_name(file_post_str, file_ext_str):
     return "{}{}".format(
-        utils.filesystem.get_safe_reversible_path_element(
+        impl.nog.filesystem.get_safe_reversible_path_element(
             "_".join([get_test_module_name(), file_post_str])
         ),
         file_ext_str,

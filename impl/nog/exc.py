@@ -1,0 +1,2 @@
+class MinterError(Exception):
+    pass

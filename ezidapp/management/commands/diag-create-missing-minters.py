@@ -6,17 +6,15 @@ from __future__ import absolute_import, division, print_function
 
 import argparse
 import logging
-import pprint
 import re
 
 import django.core.management
 import django.core.management.base
-import hjson
-import pathlib
+import pathlib2
 
 import ezidapp.models
-import impl.nog_minter
-import utils.filesystem
+import nog.bdb
+import nog.minter
 
 try:
     import bsddb
@@ -26,7 +24,8 @@ except ImportError:
 import django.contrib.auth.models
 import django.core.management.base
 import django.db.transaction
-import impl.util
+import nog.bdb
+import impl.nog.util
 
 log = logging.getLogger(__name__)
 
