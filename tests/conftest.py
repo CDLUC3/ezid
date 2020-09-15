@@ -1,6 +1,8 @@
 import bz2
 import io
 import logging
+import os
+import sys
 
 import django
 import django.conf
@@ -16,9 +18,10 @@ import ezidapp
 import ezidapp.models
 import impl.config
 import impl.config
+import impl.nog.filesystem
 import impl.userauth
+import tests.util.sample
 import tests.util.util
-import utils.filesystem
 
 DEFAULT_DB_KEY = 'default'
 import collections
@@ -114,22 +117,6 @@ def ez_admin(admin_client, admin_admin, configured, mocker):
     return admin_client
 
 
-def get_user_id_by_session_key(session_key):
-    session_model = django.contrib.sessions.models.Session.objects.get(pk=session_key)
-    session_dict = session_model.get_decoded()
-    # {'_auth_user_hash': '0fe96656c9ff4037ee12ec236e1936fc6b18d851',
-    #  '_auth_user_id': u'1',
-    #  '_auth_user_backend': u'django.contrib.auth.backends.ModelBackend'}
-    return session_dict['_auth_user_id']
-
-
-def mock_authenticate_request(request, storeSessionCookie=False):
-    print('-' * 100)
-    print('mock_authenticate_request')
-    user_id = get_user_id_by_session_key(request.session.session_key)
-    return ezidapp.models.getUserById(user_id)
-
-
 @pytest.fixture(scope='session')
 def django_db_setup(django_db_keepdb):
     django.conf.settings.DATABASES = {
@@ -155,6 +142,40 @@ def django_db_setup(django_db_keepdb):
             'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock',},
         },
     }
+
+
+@pytest.fixture(autouse=True)
+def enable_db_access_for_all_tests(db):
+    """Make the Django DB available to all tests. This will use Django's default DB,
+    which is the "store" DB in EZID. The DB connection is set up according to the
+    DJANGO_SETTINGS_MODULE setting in ezid/tox.ini.
+    """
+    pass
+
+
+@pytest.fixture()
+def tmp_bdb_root(mocker, tmp_path):
+    """Temporary root for the BerkeleyDB minters.
+
+    Returns: :class:`pathlib2.Path`
+
+    Causes nog_minter to see an empty tree of minters rooted in temp. Any minters
+    created by the test are deleted when the test exits.
+    """
+    for dot_path in ('nog.bdb.get_bdb_root',):
+        mocker.patch(
+            dot_path, return_value=(tmp_path / 'minters').resolve(),
+        )
+    for i, namespace_str in enumerate(NAMESPACE_LIST):
+        tests.util.util.create_shoulder(
+            namespace_str.full,
+            'test org {}'.format(i),
+            tmp_path.as_posix() + '/minters',
+        )
+
+    impl.config.reload()
+
+    return tmp_path, NAMESPACE_LIST
 
 
 # @pytest.fixture(scope='session')
@@ -210,47 +231,28 @@ def django_db_setup(django_db_keepdb):
 #         #     connection.close()
 
 
-@pytest.fixture(autouse=True)
-def enable_db_access_for_all_tests(db):
-    """Make the Django DB available to all tests. This will use Django's default DB,
-    which is the "store" DB in EZID. The DB connection is set up according to the
-    DJANGO_SETTINGS_MODULE setting in ezid/tox.ini.
-    """
-    pass
+# Helpers
 
 
-@pytest.fixture()
-def tmp_bdb_root(mocker, tmp_path):
-    """Temporary root for the BerkeleyDB minters.
+def get_user_id_by_session_key(session_key):
+    session_model = django.contrib.sessions.models.Session.objects.get(pk=session_key)
+    session_dict = session_model.get_decoded()
+    # {'_auth_user_hash': '0fe96656c9ff4037ee12ec236e1936fc6b18d851',
+    #  '_auth_user_id': u'1',
+    #  '_auth_user_backend': u'django.contrib.auth.backends.ModelBackend'}
+    return session_dict['_auth_user_id']
 
-    Returns: :class:`pathlib.Path`
 
-    Causes nog_minter to see an empty tree of minters rooted in temp. Any minters
-    created by the test are deleted when the test exits.
-    """
-    mocker.patch(
-        'nog_minter.get_bdb_root',
-        return_value=(tmp_path / 'minters').resolve().as_posix(),
-    )
-    mocker.patch(
-        'impl.nog_minter.get_bdb_root',
-        return_value=(tmp_path / 'minters').resolve().as_posix(),
-    )
-    for i, namespace_str in enumerate(NAMESPACE_LIST):
-        tests.util.util.create_shoulder(
-            namespace_str.full,
-            'test org {}'.format(i),
-            tmp_path.as_posix() + '/minters',
-        )
-
-    impl.config.reload()
-
-    return tmp_path, NAMESPACE_LIST
+def mock_authenticate_request(request, storeSessionCookie=False):
+    print('-' * 100)
+    print('mock_authenticate_request')
+    user_id = get_user_id_by_session_key(request.session.session_key)
+    return ezidapp.models.getUserById(user_id)
 
 
 def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
     """Save database to a bz2 compressed JSON fixture"""
-    fixture_file_path = utils.filesystem.abs_path(REL_DB_FIXTURE_PATH)
+    fixture_file_path = impl.nog.filesystem.abs_path(REL_DB_FIXTURE_PATH)
     logging.info('Writing fixture. path="{}"'.format(fixture_file_path))
     buf = io.StringIO()
     django.core.management.call_command(
