@@ -10,10 +10,9 @@ import re
 import django.core.management
 import django.core.management.base
 
-import ezidapp.management.commands.resources.shoulder
 import ezidapp.models
-import impl.nog_minter
-import nog_minter
+import impl.nog.shoulder
+import nog.bdb
 
 try:
     import bsddb
@@ -25,8 +24,9 @@ import django.core.management.base
 import django.db.transaction
 import impl.util
 
-import ezidapp.management.commands.resources.shoulder as shoulder
-import ezidapp.management.commands.resources.reload as reload
+import impl.nog.shoulder
+import impl.nog.reload
+import impl.nog.util
 
 log = logging.getLogger(__name__)
 
@@ -83,10 +83,8 @@ class Command(django.core.management.base.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        opt = argparse.Namespace(**opt)
-
-        if opt.debug:
-            logging.getLogger('').setLevel(logging.DEBUG)
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog.util.add_console_handler(opt.debug)
 
         # The shoulder must always be upper case for DOIs
         shoulder_str = opt.shoulder_str.upper()
@@ -107,21 +105,21 @@ class Command(django.core.management.base.BaseCommand):
 
         # namespace is the scheme + full shoulder. E.g., doi:10.9111/FK4
         namespace_str = 'doi:{}'.format(scheme_less_str)
-        print('Creating DOI minter: {}'.format(namespace_str))
+        log.info('Creating DOI minter: {}'.format(namespace_str))
 
         # opt.is_crossref and opt.datacenter_str are mutually exclusive with one
         # required during argument parsing.
         if opt.is_crossref:
             datacenter_model = None
         else:
-            shoulder.assert_valid_datacenter(opt.datacenter_str)
+            impl.nog.shoulder.assert_valid_datacenter(opt.datacenter_str)
             datacenter_model = ezidapp.models.StoreDatacenter.objects.get(
                 symbol=opt.datacenter_str
             )
 
-        full_shoulder_str = nog_minter.create_minter_database(prefix_str, shoulder_str)
+        full_shoulder_str = nog.bdb.create_minter_database(prefix_str, shoulder_str)
 
-        ezidapp.management.commands.resources.shoulder.create_shoulder_db_record(
+        impl.nog.shoulder.create_shoulder_db_record(
             namespace_str,
             'DOI',
             opt.name_str,
@@ -134,6 +132,6 @@ class Command(django.core.management.base.BaseCommand):
             is_debug=opt.debug,
         )
 
-        print('Shoulder created: {}'.format(namespace_str))
+        log.info('Shoulder created: {}'.format(namespace_str))
 
-        reload.trigger_reload()
+        impl.nog.reload.trigger_reload()

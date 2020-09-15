@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 def assert_valid_name(name_str):
     name_set = {x.name for x in ezidapp.models.Shoulder.objects.all()}
     if name_str not in name_set:
-        print(
+        log.error(
             'Datacenter must be one of:\n{}'.format(
                 '\n'.join(u'  {}'.format(x) for x in sorted(name_set))
             )
@@ -38,7 +38,7 @@ def assert_valid_name(name_str):
 def assert_valid_datacenter(datacenter_str):
     datacenter_set = {x.symbol for x in ezidapp.models.StoreDatacenter.objects.all()}
     if datacenter_str not in datacenter_set:
-        print(
+        log.error(
             'Datacenter must be one of:\n{}'.format(
                 '\n'.join(u'  {}'.format(x) for x in sorted(datacenter_set))
             )
@@ -49,16 +49,16 @@ def assert_valid_datacenter(datacenter_str):
 
 
 def dump_shoulders():
-    print('Shoulders:')
+    log.info('Shoulders:')
     for x in ezidapp.models.Shoulder.objects.all().order_by('name', 'prefix'):
-        print(x)
+        log.info(x)
 
 
 def dump_datacenters():
     # for x in ezidapp.models.SearchDatacenter.objects.all():
-    #     print(x)
+    #     log.info(x)
     for x in ezidapp.models.StoreDatacenter.objects.all():
-        print(x)
+        log.info(x)
 
 
 def create_shoulder_db_record(

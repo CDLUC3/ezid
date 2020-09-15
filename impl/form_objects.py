@@ -1,16 +1,16 @@
-import ui_common as uic
-from django import forms
-from django.forms import BaseFormSet, formset_factory
+import re
+
 import django.core.validators
+from django import forms
+from django.core.exceptions import ValidationError
+from django.forms import BaseFormSet, formset_factory
+from django.utils.translation import ugettext as _
+
 import ezidapp.models
 import geometry_util
-import json
-import lxml.etree
-import re
-import util
+import ui_common as uic
 import userauth
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
+import util
 
 """ Django form framework added in 2016 release of EZID UI.
     Bulk of form validation occurs here. Avoiding JavaScript form validation
@@ -1215,7 +1215,7 @@ def _validate_proxies(user):
             u = ezidapp.models.getUserByUsername(proxy)
             if u == None or u == user or u.isAnonymous:
                 raise ValidationError(
-                    _("Cannot assign this username as proxy: \"") + proxy + "\"."
+                    _("Unable to assign this username as proxy: \"") + proxy + "\"."
                 )
 
 

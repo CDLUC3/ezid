@@ -2,10 +2,11 @@ import datetime
 import subprocess
 import urllib
 
-import pathlib
+import pathlib2
 
 import ezidapp.models
-import impl.nog_minter
+import nog.bdb
+import nog.minter
 
 
 def add_basic_auth_header(request, username, password):

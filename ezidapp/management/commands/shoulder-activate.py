@@ -19,7 +19,10 @@ except ImportError:
 import django.contrib.auth.models
 import django.core.management.base
 import django.db.transaction
-import ezidapp.management.commands.resources.reload as reload
+import impl.nog.reload
+import impl.nog.util
+
+log = logging.getLogger(__name__)
 
 
 class Command(django.core.management.base.BaseCommand):
@@ -42,10 +45,8 @@ class Command(django.core.management.base.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        opt = argparse.Namespace(**opt)
-
-        if opt.debug:
-            logging.getLogger('').setLevel(logging.DEBUG)
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog.util.add_console_handler(opt.debug)
 
         shoulder_str = opt.shoulder_str
         try:
@@ -61,6 +62,6 @@ class Command(django.core.management.base.BaseCommand):
         shoulder_model.active = True
         shoulder_model.save()
 
-        print('Shoulder activated: {}'.format(shoulder_str))
+        log.info('Shoulder activated: {}'.format(shoulder_str))
 
-        reload.trigger_reload()
+        impl.nog.reload.trigger_reload()

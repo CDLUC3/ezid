@@ -52,13 +52,10 @@ class Command(django.core.management.base.BaseCommand):
 
     def handle(self, *_, **opt):
         argparse.Namespace.is_doi = argparse.Namespace
-
         self.opt = opt = argparse.Namespace(**opt)
+        impl.nog.util.add_console_handler(opt.debug)
 
-        if opt.debug:
-            pprint.pprint(vars(opt))
-
-        print('Creating missing minters...')
+        log.info('Creating missing minters...')
 
         if not opt.dry_run:
             pass
@@ -72,7 +69,7 @@ class Command(django.core.management.base.BaseCommand):
                 'Unable to create missing minter(s). Error: {}'.format(str(e))
             )
 
-        print('Completed successfully')
+        log.info('Completed successfully')
 
     def create_missing_minters(self):
         total_count = 0
@@ -83,7 +80,7 @@ class Command(django.core.management.base.BaseCommand):
             total_count += 1
 
             if not s.minter.strip():
-                print(
+                log.warn(
                     u'Shoulder does not specify a minter (supershoulder?). prefix="{}" name="{}"'.format(
                         s.prefix, s.name
                     )
@@ -92,13 +89,11 @@ class Command(django.core.management.base.BaseCommand):
                 continue
 
             naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
-            bdb_path = impl.nog_minter.get_bdb_path(
-                naan_str, shoulder_str, root_path=None
-            )
-            if pathlib.Path(bdb_path).exists():
+            bdb_path = nog.bdb.get_bdb_path(naan_str, shoulder_str, root_path=None)
+            if pathlib2.Path(bdb_path).exists():
                 continue
 
-            print(
+            log.info(
                 u'Creating missing minter. prefix="{}" name="{}"'.format(
                     s.prefix, s.name
                 )
@@ -107,32 +102,14 @@ class Command(django.core.management.base.BaseCommand):
             missing_count += 1
 
             try:
-                self.create_minter_database(naan_str, shoulder_str)
+                nog.bdb.create_minter_database(naan_str, shoulder_str)
             except Exception as e:
-                print(
-                    u'Warning: Unable to create missing minter. prefix="{}" name="{}". Error: {}'.format(
+                log.warn(
+                    u'Unable to create missing minter. prefix="{}" name="{}". Error: {}'.format(
                         s.prefix, s.name, str(e)
                     )
                 )
 
-        print('Total number of shoulders: {}'.format(total_count))
-        print('Created missing shoulders: {}'.format(missing_count))
-        print('Shoulders with unspecified minters: {}'.format(unspecified_count))
-
-    def create_minter_database(self, naan_str, shoulder_str):
-        """Create a new BerkeleyDB minter database"""
-        template_path = utils.filesystem.abs_path("./resources/minter_template.hjson")
-        with open(template_path) as f:
-            template_str = f.read()
-
-        template_str = template_str.replace("$NAAN$", naan_str)
-        template_str = template_str.replace("$PREFIX$", shoulder_str)
-
-        minter_dict = hjson.loads(template_str)
-        d = {bytes(k): bytes(v) for k, v in minter_dict.items()}
-
-        bdb = impl.nog_minter.open_bdb(
-            naan_str, shoulder_str, root_path=None, flags_str="c"
-        )
-        bdb.clear()
-        bdb.update(d)
+        log.info('Total number of shoulders: {}'.format(total_count))
+        log.info('Created missing shoulders: {}'.format(missing_count))
+        log.info('Shoulders with unspecified minters: {}'.format(unspecified_count))

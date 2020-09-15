@@ -5,9 +5,10 @@ import logging
 
 import django.core.management.base
 
-import ezidapp.management.commands.resources.reload as reload
-import ezidapp.management.commands.resources.shoulder as shoulder
 import ezidapp.models
+import impl.nog.reload
+import impl.nog.shoulder
+import impl.nog.util
 
 log = logging.getLogger(__name__)
 
@@ -33,12 +34,10 @@ class Command(django.core.management.base.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        opt = argparse.Namespace(**opt)
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog.util.add_console_handler(opt.debug)
 
-        if opt.debug:
-            logging.getLogger('').setLevel(logging.DEBUG)
-
-        shoulder.assert_valid_datacenter(opt.new_datacenter_str)
+        impl.nog.shoulder.assert_valid_datacenter(opt.new_datacenter_str)
 
         try:
             scheme_str, full_shoulder = opt.shoulder_str.split(':',)
@@ -64,7 +63,7 @@ class Command(django.core.management.base.BaseCommand):
 
         if shoulder_model.datacenter is None:
             raise django.core.management.CommandError(
-                'Cannot set datacenter. '
+                'Unable to set datacenter. '
                 'Shoulder is registered with Crossref: {}'.format(namespace_str)
             )
 
@@ -83,10 +82,10 @@ class Command(django.core.management.base.BaseCommand):
         shoulder_model.datacenter = new_datacenter_model
         shoulder_model.save()
 
-        print(
+        log.info(
             'Updated {} datacenter {} -> {}'.format(
                 namespace_str, old_datacenter_model, new_datacenter_model
             )
         )
 
-        reload.trigger_reload()
+        impl.nog.reload.trigger_reload()

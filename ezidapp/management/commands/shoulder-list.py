@@ -5,7 +5,8 @@ import logging
 
 import django.core.management.base
 
-import ezidapp.management.commands.resources.shoulder as shoulder
+import impl.nog.shoulder
+import impl.nog.util
 
 log = logging.getLogger(__name__)
 
@@ -22,9 +23,6 @@ class Command(django.core.management.base.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        opt = argparse.Namespace(**opt)
-
-        if opt.debug:
-            logging.getLogger("").setLevel(logging.DEBUG)
-
-        shoulder.dump_shoulders()
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog.util.add_console_handler(opt.debug)
+        impl.nog.shoulder.dump_shoulders()

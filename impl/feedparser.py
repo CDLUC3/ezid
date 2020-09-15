@@ -195,12 +195,11 @@ import datetime
 import re
 import struct
 import time
-import types
 import urllib
 import urllib2
 import urlparse
 
-from htmlentitydefs import name2codepoint, codepoint2name, entitydefs
+from htmlentitydefs import name2codepoint, entitydefs
 
 try:
     from io import BytesIO as _StringIO
@@ -4509,7 +4508,7 @@ def _parse_date_w3dtf(dateString):
         return hours, minutes, seconds
 
     def __extract_tzd(m):
-        '''Return the Time Zone Designator as an offset in seconds from UTC.'''
+        '''Get the Time Zone Designator as an offset in seconds from UTC.'''
         if not m:
             return 0
         tzd = m.group('tzd')

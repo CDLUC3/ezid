@@ -87,9 +87,9 @@ def assert_match(
     )
 
     with sample_review_lock:
-        with utils.filesystem.temp_file_for_obj(current_str) as cur_path:
-            print(cur_path.as_posix())
-            print(sample_path)
+        with impl.nog.filesystem.temp_file_for_obj(current_str) as cur_path:
+            log.info(cur_path.as_posix())
+            log.info(sample_path)
             out_str = subprocess.check_output(
                 (
                     'meld',
@@ -100,7 +100,7 @@ def assert_match(
                 ),
                 stderr=subprocess.STDOUT,
             )
-            print('Meld output: {}'.format(out_str))
+            log.info('Meld output: {}'.format(out_str))
 
 
 @contextlib.contextmanager
