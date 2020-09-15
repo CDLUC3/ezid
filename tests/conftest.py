@@ -50,6 +50,40 @@ REL_DB_FIXTURE_PATH = '../ezidapp/fixtures/combined-limited.json'
 log = logging.getLogger(__name__)
 
 
+# Hooks
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        '--sample-error',
+        action='store_true',
+        default=False,
+        help='Handle sample mismatch as test failure instead of opening diff viewer',
+    )
+
+
+def pytest_configure(config):
+    """Allow plugins and conftest files to perform initial configuration.
+
+    This hook is called for every plugin and initial conftest file after command line
+    options have been parsed.
+
+    After that, the hook is called for other conftest files as they are imported.
+    """
+    sys.is_running_under_travis = "TRAVIS" in os.environ
+    sys.is_running_under_pytest = True
+
+    tests.util.sample.options = {
+        "error": config.getoption("--sample-error"),
+    }
+
+    # Only accept error messages from loggers that are noisy at debug.
+    logging.getLogger('django.db.backends.schema').setLevel(logging.ERROR)
+
+
+# Fixtures
+
+
 @pytest.fixture(scope='function')
 def admin_admin(db):
     """Set the admin password to "admin".

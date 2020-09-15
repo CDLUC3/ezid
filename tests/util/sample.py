@@ -75,7 +75,7 @@ def assert_match(
     if sample_str == current_str:
         return
 
-    if 'IS_TRAVIS' in os.environ:
+    if 'IS_TRAVIS' in os.environ or options['error']:
         raise SampleException(
             'Sample mismatch.\nActual:\n{}\nExpected:\n{}\n'.format(
                 current_str, sample_str
