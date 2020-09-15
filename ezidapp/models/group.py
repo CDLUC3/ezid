@@ -13,14 +13,15 @@
 #
 # -----------------------------------------------------------------------------
 
+import re
+
 import django.core.validators
 import django.db.models
-import re
 
 import shoulder
 import util
 import validation
-import nog_minter
+from nog import minter
 
 # Deferred imports...
 """
@@ -74,7 +75,7 @@ class Group(django.db.models.Model):
             try:
                 s = shoulder.getAgentShoulder()
                 assert s.isArk, "Agent shoulder type must be ARK"
-                self.pid = "{}{}".format(s.prefix, nog_minter.mint_identifier(s))
+                self.pid = "{}{}".format(s.prefix, minter.mint_id(s))
             except Exception, e:
                 log.otherError("group.Group.clean", e)
                 raise

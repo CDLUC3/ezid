@@ -174,32 +174,30 @@ def mintIdentifier(shoulder, user, metadata={}):
         user.group.pid,
     )
 
-    s = ezidapp.models.getExactShoulderMatch(shoulder)
+    shoulder_model = ezidapp.models.getExactShoulderMatch(shoulder)
 
-    if s == None:
+    if shoulder_model is None:
         log.badRequest(tid)
         # TODO: Errors should be raised, not returned.
         return "error: bad request - no such shoulder"
 
-    if s.isUuid:
+    if shoulder_model.isUuid:
         identifier = "uuid:" + str(uuid.uuid1())
-
     else:
-        if s.minter == "":
+        if shoulder_model.minter == "":
             log.badRequest(tid)
             return "error: bad request - shoulder does not support minting"
-
         # Derive the shadow ark from the minter URL
-        unqualified_ark = nog_minter.mint_identifier(s)
-
-        identifier = s.prefix + unqualified_ark
+        minted_ns = minter.mint_id(shoulder_model)
+        identifier = str(minted_ns)
+        # identifier = shoulder_model.prefix + unqualified_ark
 
     log.success(tid, identifier)
 
     return createIdentifier(identifier, user, metadata)
 
 
-def createIdentifier(identifier, user, metadata={}, updateIfExists=False):
+def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
     """
   Creates an identifier having the given qualified name, e.g.,
   "doi:10.5060/FOO".  'user' is the requestor and should be an
@@ -226,6 +224,8 @@ def createIdentifier(identifier, user, metadata={}, updateIfExists=False):
   If 'updateIfExists' is true, an "identifier already exists" error
   falls through to a 'setMetadata' call.
   """
+    if metadata is None:
+        metadata = {}
     nqidentifier = util.normalizeIdentifier(identifier)
     if nqidentifier == None:
         return "error: bad request - invalid identifier"

@@ -67,7 +67,7 @@ def create_shoulder(namespace_str, organization_name='test shoulder', root_path=
         active=True,
         manager='ezid',
     )
-    impl.nog_minter.create_minter_database(
+    nog.bdb.create_minter_database(
         prefix_str, shoulder_str, root_path=root_path
     )
     ezidapp.models.shoulder.loadConfig()
