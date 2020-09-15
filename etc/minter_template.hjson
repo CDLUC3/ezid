@@ -27,7 +27,7 @@
   ":/shoulder": $NAAN$/$PREFIX$
   ":/siclist": ""
   ":/status": e
-  ":/template": $NAAN$/$PREFIX$
+  ":/template": $NAAN$/$PREFIX${eedk}
   ":/total": "8410"
   ":/type": rand
   ":/unbounded": "1"
