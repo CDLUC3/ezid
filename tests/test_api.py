@@ -2,7 +2,8 @@ import logging
 
 import freezegun
 
-import impl.nog_minter
+import nog.bdb
+import nog.minter
 import tests.util.anvl as anvl
 import tests.util.sample as sample
 from tests.util.util import *
@@ -35,8 +36,8 @@ class TestAPI:
         root_path, namespace_list = tmp_bdb_root
         namespace_str, prefix_str, shoulder_str = namespace_list[0]
 
-        bdb_path = impl.nog_minter.get_bdb_path(prefix_str, shoulder_str)
-        bdb_path = pathlib.Path(bdb_path)
+        bdb_path = nog.bdb.get_bdb_path(prefix_str, shoulder_str)
+        bdb_path = pathlib2.Path(bdb_path)
         assert bdb_path.exists()
 
         result_dict = self._mint(ez_admin, namespace_str)

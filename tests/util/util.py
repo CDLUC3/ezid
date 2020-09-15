@@ -82,5 +82,5 @@ def check_response(resp):
 
 def dir_tree(path):
     if isinstance(path, str):
-        path = pathlib.Path(path)
+        path = pathlib2.Path(path)
     return '\n'.join(p.as_posix() for p in path.rglob('*'))
