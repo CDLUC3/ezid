@@ -1,41 +1,66 @@
-import shutil
-
 import backports.lzma as lzma
 
-import impl.nog_minter
-import utils.filesystem
+import impl.nog.filesystem
+import nog.bdb
+import nog.id_ns
+import nog.minter
 
-NAAN_STR = "77913"
-PREFIX_STR = "r7"
-NAMESPACE_STR = 'ark:/{}/{}'.format(NAAN_STR, PREFIX_STR)
 MINT_COUNT = 1000
+
+ID_STR = 'ark:/77913/r7'
+ID_NS = nog.id_ns.split_namespace(ID_STR)
+PERL_MINTED_PATH = impl.nog.filesystem.abs_path(
+    "test_docs/perl_{}_{}_1000000_spings.csv.xz".format(
+        ID_NS.naan_prefix, ID_NS.shoulder
+    )
+)
 
 
 # noinspection PyClassHasNoInit,PyProtectedMember
 class TestNogMinter:
-    def _reset_db(self, naan_str, prefix_str):
-        src_path = utils.filesystem.abs_path(
-            "./test_docs/{}_{}.bdb".format(naan_str, prefix_str)
+    def _get_bdb_path(self, id_ns, filename_prefix_str):
+        return impl.nog.filesystem.abs_path(
+            "./test_docs/{}_{}{}.bdb".format(id_ns.naan_prefix, id_ns.shoulder, filename_prefix_str)
         )
-        dst_path = impl.nog_minter.get_bdb_path(naan_str, prefix_str)
-        utils.filesystem.create_missing_directories_for_file(dst_path)
-        shutil.copy(src_path, dst_path)
 
     def test_1000(self, tmp_bdb_root):
-        self._reset_db(NAAN_STR, PREFIX_STR)
+        """Minter yields identifiers matching N2T when no template extensions are
+        required.
 
-        csv_name = "perl_{}_{}_1000000_spings.csv.xz".format(NAAN_STR, PREFIX_STR)
-        csv_path = utils.filesystem.abs_path("test_docs/{}".format(csv_name))
-
-        with lzma.open(csv_path) as f:
+        This checks {MINT_COUNT} identifiers in an area where the minter can be stepped
+        directly to next state.
+        """
+        with lzma.open(PERL_MINTED_PATH) as f:
             for i, python_sping in enumerate(
-                impl.nog_minter.mint(NAAN_STR, PREFIX_STR, MINT_COUNT, dry_run=False)
+                nog.minter.mint_by_bdb_path(self._get_bdb_path(ID_NS, ''), MINT_COUNT, dry_run=True)
             ):
-                if i == MINT_COUNT:
-                    break
-                perl_sping = f.readline().strip()
+                perl_sping = '{}/{}{}'.format(
+                    ID_NS.naan_prefix, ID_NS.shoulder, f.readline().strip()
+                )
                 assert (
                     perl_sping == python_sping
-                ), "Mismatch after {} spings. python={} != perl={}".format(
+                ), "Mismatch after minting {} identifiers. python={} != perl={}".format(
                     i, python_sping, perl_sping
                 )
+
+    def test_1010(self, tmp_bdb_root):
+        """Minter yields identifiers matching N2T through a template extensions.
+
+        This checks identifiers in an area where where the minter template must be
+        extended before it can be stepped to the next state.
+        """
+        with lzma.open(PERL_MINTED_PATH) as f:
+            for i in range(6218):
+                f.readline()
+            for i, python_sping in enumerate(
+                nog.minter.mint_by_bdb_path(self._get_bdb_path(ID_NS, '_last_before_template_extend'), 10, dry_run=True)
+            ):
+                perl_sping = '{}/{}{}'.format(
+                    ID_NS.naan_prefix, ID_NS.shoulder, f.readline().strip()
+                )
+                assert (
+                    perl_sping == python_sping
+                ), "Mismatch after minting {} identifiers. python={} != perl={}".format(
+                    i, python_sping, perl_sping
+                )
+
