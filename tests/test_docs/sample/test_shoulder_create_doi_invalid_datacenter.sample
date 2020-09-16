@@ -1,6 +1,4 @@
-"INFO     root Setting logLevel to INFO
-INFO     ezidapp.management.commands.shoulder-create-doi Creating minter for DOI shoulder: doi:10.9111/R01
-ERROR    impl.nog.shoulder Datacenter must be one of:
+"ERROR    impl.nog.shoulder Datacenter must be one of:
   CDL.CDL
   CDL.UCB
   CDL.UCD

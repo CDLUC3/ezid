@@ -46,7 +46,7 @@ class Command(django.core.management.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        self.opt = opt = argparse.Namespace(**opt)
+        opt = argparse.Namespace(**opt)
         impl.nog.util.add_console_handler(opt.debug)
 
         try:
