@@ -126,6 +126,14 @@ class Command(django.core.management.BaseCommand):
             "-f",
             help="For use with 'unique': Set the minter field to use. E.g., 'oacounter'",
         )
+        # For 'create'
+        parser.add_argument(
+            '--clobber',
+            '-b',
+            action='store_true',
+            help="""For use with 'create': Overwrite any minter (or other file) that
+            exists at the path required by he minter being created""",
+        ),
         parser.add_argument(
             "--debug", action="store_true", help="Debug level logging",
         )
@@ -210,24 +218,29 @@ class Command(django.core.management.BaseCommand):
             )
 
     def backup(self):
-        self._assert_bdb_path()
+        self._assert_bdb_path(exists=True)
         src_path = self._get_dbd_path()
         dst_path = self._get_bdb_backup_path()
         self._copy_file(src_path, dst_path)
 
     def restore(self):
-        self._assert_bdb_path()
+        self._assert_bdb_path(exists=True)
         src_path = self._get_dbd_path()
         dst_path = self._get_bdb_backup_path()
         self._copy_file(dst_path, src_path)
 
     def dump(self):
-        self._assert_bdb_path()
+        self._assert_bdb_path(exists=True)
         print("Dumping minter state to HJSON", file=sys.stderr)
         nog.bdb.dump(self.bdb_path)
 
+    def dump_full(self):
+        self._assert_bdb_path(exists=True)
+        print("Dumping arbitrary BerkeleyDB to HJSON", file=sys.stderr)
+        nog.bdb.dump_full(self.bdb_path)
+
     def mint(self):
-        self._assert_bdb_path()
+        self._assert_bdb_path(exists=True)
         for i, id_str in enumerate(
             nog.minter.mint_by_bdb_path(
                 self.bdb_path, self.opt.count, dry_run=not self.opt.update,
@@ -236,28 +249,38 @@ class Command(django.core.management.BaseCommand):
             log.info("{: 5d}: {}".format(i + 1, id_str))
 
     def create(self):
-        self._assert_bdb_path(exists=False)
-        minter_str = nog.bdb.create_minter_database(self.opt.ns_str, self.opt.root_path)
-        log.info('Created minter for: {}'.format(minter_str))
+        self._assert_bdb_path(exists=None if self.opt.clobber else False)
+        if self.bdb_path.exists() and self.opt.clobber:
+            log.info('Overwriting existing file')
+            self.bdb_path.unlink()
+        # full_shoulder_str = '/'.join([self.opt.ns_str.naan_prefix, self.opt.ns_str.shoulder])
+        bdb_path = nog.minter.create_minter_database(
+            self.opt.ns_str, self.opt.root_path
+        )
+        log.info('Created minter for: {}'.format(bdb_path))
 
-    def _assert_bdb_path(self, exists=True):
+    def _assert_bdb_path(self, exists=None):
         if not self.bdb_path:
-            raise django.core.management.base.CommandError(
+            raise django.core.management.CommandError(
                 'NAAN/Prefix and Shoulder, OR path to a BDB file is required for this '
                 'command'
             )
-        if exists and not self.bdb_path.exists():
-            raise django.core.management.base.CommandError(
+        if exists is None:
+            return
+        elif exists is True and not self.bdb_path.exists():
+            raise django.core.management.CommandError(
                 'Path does not exist: {}'.format(self.bdb_path)
             )
-        if not exists and self.bdb_path.exists():
+        elif exists is False and self.bdb_path.exists():
             raise django.core.management.base.CommandError(
-                'Path already exists: {}'.format(self.bdb_path)
+                'Path already exists. Use --clobber to overwrite: {}'.format(
+                    self.bdb_path
+                )
             )
 
     def _get_dbd_path(self):
         try:
-            id_ns = nog.id_ns.split_namespace(self.opt.ns_str)
+            id_ns = nog.id_ns.IdNamespace.from_str(self.opt.ns_str)
         except nog.exc.MinterError:
             log.info('Argument does not look like a DOI or ARK namespace.')
             log.info('Using it as path: {}'.format(self.opt.ns_str))
