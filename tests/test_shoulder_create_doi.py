@@ -3,7 +3,6 @@
 import logging
 
 import django.core.management
-import django.core.management.base
 import freezegun
 import pytest
 
@@ -55,7 +54,7 @@ class TestShoulderCreateDoi:
         assert not ezidapp.models.Shoulder.objects.filter(
             prefix='doi:10.9111/r01'
         ).exists()
-        with pytest.raises(django.core.management.base.CommandError) as e:
+        with pytest.raises(django.core.management.CommandError) as e:
             django.core.management.call_command(
                 # <naan> <shoulder> <name>
                 'shoulder-create-doi',

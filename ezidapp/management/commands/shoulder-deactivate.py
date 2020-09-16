@@ -17,7 +17,6 @@ except ImportError:
     import bsddb3 as bsddb
 
 import django.contrib.auth.models
-import django.core.management.base
 import django.db.transaction
 import impl.nog.util
 

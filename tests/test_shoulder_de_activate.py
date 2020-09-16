@@ -17,7 +17,7 @@ class TestShoulderDeactivateActivate:
         s = ezidapp.models.Shoulder.objects.filter(prefix='ark:/87610/t6').get()
         assert not s.active
         with pytest.raises(
-            django.core.management.base.CommandError, match='already deactivated'
+            django.core.management.CommandError, match='already deactivated'
         ):
             django.core.management.call_command(
                 # <naan> <shoulder> <name>
@@ -30,7 +30,7 @@ class TestShoulderDeactivateActivate:
         s = ezidapp.models.Shoulder.objects.filter(prefix='doi:10.18739/A2').get()
         assert s.active
         with pytest.raises(
-            django.core.management.base.CommandError, match='already activated'
+            django.core.management.CommandError, match='already activated'
         ):
             django.core.management.call_command(
                 # <naan> <shoulder> <name>
