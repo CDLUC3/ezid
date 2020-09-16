@@ -162,6 +162,50 @@ def mint_by_bdb_path(bdb_path, mint_count=1, dry_run=False):
             yield minted_id
 
 
+def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
+    """Create a new BerkeleyDB file.
+
+    Args:
+        shoulder_ns: DOI or ARK shoulder namespace
+        root_path:
+        mask_str:
+
+    Returns (path): Absolute path to the new nog.bdb file.
+    """
+    shoulder_ns = nog.id_ns.IdNamespace.from_str(shoulder_ns)
+
+    bdb_path = nog.bdb.get_bdb_path_by_namespace(shoulder_ns, root_path)
+    #
+    # with open(MINTER_TEMPLATE_PATH) as f:
+    #     template_str = f.read()
+    #
+    # template_str = template_str.replace("$NAAN$", shoulder_ns.naan_prefix)
+    # template_str = template_str.replace("$PREFIX$", shoulder_ns.shoulder)
+    #
+    # minter_dict = hjson.loads(template_str)
+    # d = {bytes(k): bytes(v) for k, v in minter_dict.items()}
+
+    # with nog.bdb_wrapper.BdbWrapper(bdb_path, is_new=True, dry_run=True) as bdb:
+    with Minter(bdb_path, is_new=True, dry_run=False) as minter:
+        full_shoulder_str = '/'.join([shoulder_ns.naan_prefix, shoulder_ns.shoulder])
+        minter.create(full_shoulder_str, mask_str)
+
+    # bdb = None
+    # try:
+    #     # bdb = open_bdb(bdb_path, is_new=True)
+    #     # bdb.clear()
+    #     # bdb.update(d)
+    #
+    #     # bdb_path = get_bdb_path(x.name, y.name, root_path)
+    #     with nog.bdb_wrapper.Bdb(bdb_path, dry_run=True) as bdb:
+    #         bdb.create(str(shoulder_ns))
+    # finally:
+    #     if bdb:
+    #         bdb.close()
+
+    return bdb_path
+
+
 class Minter(nog.bdb_wrapper.BdbWrapper):
     def __init__(self, bdb_path, dry_run=False):
         super(Minter, self).__init__(bdb_path, dry_run=dry_run)
@@ -196,6 +240,52 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
                 minted_id += self._get_check_char(minted_id)
             log.debug('Minter yielding: {}'.format(minted_id))
             yield minted_id
+
+    # noinspection PyAttributeOutsideInit
+    def create(self, shoulder_str, mask_str='eedk'):
+        """Set minter to initial, unused state."""
+        # self._bdb.clear()
+
+        self.template_str = '{}{{}}'.format(shoulder_str, mask_str)
+        self.mask_str = mask_str
+
+        # m = re.match(r'(.*){{(.*)}}', template_str)
+        # if not m:
+        #     raise nog.exc.MinterError('Invalid template: {}'.format(template_str))
+
+        # self.template_str = template_str
+        # self.mask_str = m.groups(2)
+        self.base_count = 0
+        self.combined_count = 0
+        self.max_combined_count = 0
+        self.total_count = 0
+        self.atlast_str = 'add0'
+        self._extend_template()
+        self.atlast_str = 'add3'
+
+        # Values not used by the EZID minter. We set them to increase the chance that
+        # the minter can be read by N2T or other implementations.
+        self._bdb.set('shoulder', shoulder_str)
+        self._bdb.set('original_template', self.template_str)
+        self._bdb.set('origmask', self.mask_str)
+
+
+
+        # self.atlast_str = bdb.set('atlast', )
+
+        # self.base_count = bdb.set('basecount', )
+        # self.combined_count = bdb.set('oacounter', )
+        # self.max_combined_count = bdb.set('oatop', )
+        # self.total_count = bdb.set('total', )
+        # self.max_per_counter = bdb.set('percounter', )
+        # self.mask_str = bdb.set('mask', )
+        # self.active_counter_list = bdb.set_list('saclist', )
+        # self.inactive_counter_list = bdb.set_list('siclist', )
+        # .counter_list) = for n, (top, value) in enumerate(self:
+        # , top) = bdb.set('c{}/top'.format(n),
+        # , value) = bdb.set('c{}/value'.format(n),
+        #
+        # # self._extend_mask()
 
     def _next_state(self):
         """Step the minter to the next state.
