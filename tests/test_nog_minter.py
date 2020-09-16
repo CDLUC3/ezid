@@ -20,7 +20,9 @@ PERL_MINTED_PATH = impl.nog.filesystem.abs_path(
 class TestNogMinter:
     def _get_bdb_path(self, id_ns, filename_prefix_str):
         return impl.nog.filesystem.abs_path(
-            "./test_docs/{}_{}{}.bdb".format(id_ns.naan_prefix, id_ns.shoulder, filename_prefix_str)
+            "./test_docs/{}_{}{}.bdb".format(
+                id_ns.naan_prefix, id_ns.shoulder, filename_prefix_str
+            )
         )
 
     def test_1000(self, tmp_bdb_root):
@@ -32,7 +34,9 @@ class TestNogMinter:
         """
         with lzma.open(PERL_MINTED_PATH) as f:
             for i, python_sping in enumerate(
-                nog.minter.mint_by_bdb_path(self._get_bdb_path(ID_NS, ''), MINT_COUNT, dry_run=True)
+                nog.minter.mint_by_bdb_path(
+                    self._get_bdb_path(ID_NS, ''), MINT_COUNT, dry_run=True
+                )
             ):
                 perl_sping = '{}/{}{}'.format(
                     ID_NS.naan_prefix, ID_NS.shoulder, f.readline().strip()
@@ -67,4 +71,3 @@ class TestNogMinter:
                 ), "Mismatch after minting {} identifiers. python={} != perl={}".format(
                     i, python_sping, perl_sping
                 )
-

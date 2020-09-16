@@ -17,6 +17,7 @@ class BdbWrapper(object):
     def __init__(self, bdb_path, is_new=False, dry_run=False):
         self._bdb = Bdb(bdb_path, is_new, dry_run)
         # self._bdb = bdb
+        self._is_new = is_new
         self._dry_run = dry_run
 
     def __enter__(self):
@@ -170,7 +171,9 @@ class Bdb:
             log.setLevel(logging.INFO)
 
         log.debug(
-            'Creating BerkeleyDB context manager. is_new={} dry_run={}'.format(is_new, dry_run)
+            'Creating BerkeleyDB context manager. is_new={} dry_run={}'.format(
+                is_new, dry_run
+            )
         )
         self._bdb_path = pathlib2.Path(bdb_path)
         self._is_new = is_new

@@ -113,7 +113,7 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
     N2T Nog operates.
 
     Args:
-        mint_count (int) (default=1): Set the number of IDs to mint. The caller must
+        mint_count (int, default=1): Set the number of IDs to mint. The caller must
             accept this number of IDs, in order for the generator to run to completion
             and for the minter state to be updated. be run to completion in order for
             the minter state to be updated.
@@ -130,13 +130,11 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
         yield minted_ns
 
 
-def mint_by_ns(
-    ns, mint_count=1, root_path=None, dry_run=False
-):
+def mint_by_ns(ns, mint_count=1, root_path=None, dry_run=False):
     """Like mint_ids(), but accepts a full DOI or ARK namespace.
 
     Args:
-        ns (str or IdNamespace): The full namespace of a shoulder.
+        ns (str or IdNamespace): The full ARK or DOI namespace of a shoulder.
             E.g., ark:/99999/fk4 or doi:10.9111/FK4
 
     See Also:
@@ -157,7 +155,7 @@ def mint_by_bdb_path(bdb_path, mint_count=1, dry_run=False):
     See Also:
         :func:`mint_ids`
     """
-    with Minter(bdb_path, dry_run) as minter:
+    with Minter(bdb_path, is_new=False, dry_run=dry_run) as minter:
         for minted_id in minter.mint(mint_count):
             yield minted_id
 
@@ -207,8 +205,8 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
 
 
 class Minter(nog.bdb_wrapper.BdbWrapper):
-    def __init__(self, bdb_path, dry_run=False):
-        super(Minter, self).__init__(bdb_path, dry_run=dry_run)
+    def __init__(self, bdb_path, is_new=False, dry_run=False):
+        super(Minter, self).__init__(bdb_path, is_new, dry_run)
         self._dry_run = dry_run
 
     def __enter__(self):

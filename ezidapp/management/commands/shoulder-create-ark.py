@@ -19,9 +19,11 @@ try:
 except ImportError:
     import bsddb3 as bsddb
 
-import django.contrib.auth.models
-import django.core.management.base
-import django.db.transaction
+import impl.nog.shoulder
+import impl.nog.reload
+import impl.nog.util
+import nog.exc
+import nog.minter
 
 log = logging.getLogger(__name__)
 
@@ -34,16 +36,24 @@ class Command(django.core.management.BaseCommand):
         self.opt = None
 
     def add_arguments(self, parser):
-        parser.add_argument('naan_str', metavar='naan', help="ark:/<naan>/...")
         parser.add_argument(
-            'shoulder_str', metavar='shoulder', help="ark:/.../<shoulder>"
+            "ns_str",
+            metavar="shoulder-ark",
+            nargs='?',
+            help='Full ARK of new shoulder. E.g., ark:/12345/',
         )
-        parser.add_argument('name_str', metavar='name', help='Name of organization')
+        parser.add_argument('name_str', metavar='org-name', help='Name of organization')
         parser.add_argument(
             '--super-shoulder,s',
             dest='is_super_shoulder',
             action='store_true',
-            help='Set super-shoulder flag',
+            help='Create a super-shoulder',
+        )
+        parser.add_argument(
+            '--force,f',
+            dest='is_force',
+            action='store_true',
+            help='Force creating super-shoulder on apparent regular shoulder',
         )
         parser.add_argument(
             '--test,-t',
@@ -56,7 +66,15 @@ class Command(django.core.management.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        opt = argparse.Namespace(**opt)
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog.util.add_console_handler(opt.debug)
+
+        try:
+            return self._handle(self.opt)
+        except nog.exc.MinterError as e:
+            raise django.core.management.CommandError(
+                'Minter error: {}'.format(str(e))
+            )
 
     def _handle(self, opt):
         try:
@@ -64,23 +82,23 @@ class Command(django.core.management.BaseCommand):
         except nog.id_ns.IdentifierError as e:
             raise django.core.management.CommandError(str(e))
 
-        if not re.match(r'\d{5}$', opt.naan_str):
+        impl.nog.shoulder.assert_shoulder_is_type(ns, 'ark')
+        impl.nog.shoulder.assert_shoulder_type_available(opt.name_str, 'ark')
+
+        if not re.match(r'\d{5}$', ns.naan_prefix):
             raise django.core.management.CommandError(
-                'NAAN for an ARK must be 5 digits: {}'.format(opt.naan_str)
+                'NAAN must be 5 digits, not "{}"'.format(ns.naan_prefix)
             )
 
-        namespace_str = 'ark:/{}/{}'.format(opt.naan_str, opt.shoulder_str)
-        print('Creating ARK minter: {}'.format(namespace_str))
+        log.info('Creating minter for ARK shoulder: {}'.format(opt.ns_str))
+        bdb_path = nog.minter.create_minter_database(ns)
+        log.debug('Minter BerkeleyDB created at: {}'.format(bdb_path.as_posix()))
 
-        full_shoulder_str = nog_minter.create_minter_database(
-            opt.naan_str, opt.shoulder_str
-        )
-
-        ezidapp.management.commands.resources.shoulder.create_shoulder_db_record(
-            namespace_str,
-            'ARK',
+        impl.nog.shoulder.create_shoulder_db_record(
+            str(ns),
+            'ark',
             opt.name_str,
-            full_shoulder_str,
+            bdb_path,
             datacenter_model=None,
             is_crossref=False,
             is_test=opt.is_test,
@@ -89,6 +107,5 @@ class Command(django.core.management.BaseCommand):
             is_debug=opt.debug,
         )
 
-        print('Shoulder created: {}'.format(namespace_str))
-
-        reload.trigger_reload()
+        impl.nog.reload.trigger_reload()
+        log.info('Shoulder created: {}'.format(opt.ns_str))

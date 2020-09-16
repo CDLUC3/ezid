@@ -4,6 +4,10 @@ import sys
 
 def add_console_handler(is_debug):
     """Add a logging handler that writes to the console."""
+    # if not is_debug:
+    #     logging.info('Setting logLevel to INFO')
+    #     logging.getLogger('').setLevel(logging.INFO)
+
     log_format = logging.Formatter('%(levelname)-8s %(module)s - %(message)s')
     handler = logging.StreamHandler(sys.stdout)
     handler.setLevel(logging.DEBUG if is_debug else logging.INFO)

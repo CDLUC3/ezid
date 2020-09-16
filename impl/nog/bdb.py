@@ -100,6 +100,7 @@ def open_bdb(bdb_path, is_new=False):
             False: Caller expects an existing path. Raise if path does not exist
             True: Caller expects a non-existing path. Raise if path already exists
     """
+
     def append_path(s):
         return '{}: {}'.format(s, bdb_path.as_posix())
 
@@ -120,7 +121,9 @@ def open_bdb(bdb_path, is_new=False):
         return bsddb.btopen(bdb_path.as_posix(), flags_str)
     except bsddb.db.DBError as e:
         raise nog.exc.MinterError(
-            '{}. error="{}"'.format(append_path('Unable to open BerkeleyDB file'), str(e))
+            '{}. error="{}"'.format(
+                append_path('Unable to open BerkeleyDB file'), str(e)
+            )
         )
 
 
@@ -168,8 +171,8 @@ def get_bdb_path_by_namespace(ns, root_path=None):
     Returns:
         pathlib2.Path
     """
-    ns = nog.id_ns.split_namespace(ns)
-    if ns.scheme_sep == 'doi:10.':
+    ns = nog.id_ns.IdNamespace.from_str(ns)
+    if ns.scheme == 'doi':
         naan_prefix_str = doi_prefix_to_naan(ns.naan_prefix)
     else:
         naan_prefix_str = ns.naan_prefix
@@ -247,39 +250,6 @@ def doi_to_shadow_ark(doi_str, allow_lossy=False):
         'ark', ark_naan, doi_ns.slash, (doi_ns.shoulder or '').lower()
     )
     return str(ark_ns)
-
-
-def create_minter_database(shoulder_ns, root_path=None):
-    """Create a new BerkeleyDB file.
-
-    Args:
-        shoulder_ns: DOI or ARK shoulder namespace
-        root_path:
-
-    Returns (path): Absolute path to the new nog.bdb file.
-    """
-    shoulder_ns = nog.id_ns.split_namespace(shoulder_ns)
-    bdb_path = get_bdb_path_by_namespace(shoulder_ns, root_path)
-
-    with open(MINTER_TEMPLATE_PATH) as f:
-        template_str = f.read()
-
-    template_str = template_str.replace("$NAAN$", shoulder_ns.naan_prefix)
-    template_str = template_str.replace("$PREFIX$", shoulder_ns.shoulder)
-
-    minter_dict = hjson.loads(template_str)
-    d = {bytes(k): bytes(v) for k, v in minter_dict.items()}
-
-    bdb = None
-    try:
-        bdb = open_bdb(bdb_path, is_new=True)
-        bdb.clear()
-        bdb.update(d)
-    finally:
-        if bdb:
-            bdb.close()
-
-    return bdb_path
 
 
 def create_bdb_from_hjson(bdb_path, hjson_str):

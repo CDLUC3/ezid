@@ -34,6 +34,42 @@ def assert_valid_datacenter_name(name_str):
         )
 
 
+def assert_shoulder_is_type(ns, type_str):
+    """Assert that shoulder {ns} is of type {type_str}
+
+    Args:
+        ns (IdNamespace): ARK or DOI shoulder namespace
+        type_str (str): 'ark' or 'doi'
+
+    """
+    assert type_str in ('doi', 'ark'), 'Invalid shoulder type: {}'.format(type_str)
+    if ns.scheme != type_str:
+        raise django.core.management.CommandError(
+            'Shoulder scheme must be "{}", not "{}"'.format(type_str, ns.scheme)
+        )
+
+def assert_shoulder_type_available(org_str, type_str):
+    """Assert that shoulder of {type_str} does not already exist for {org_str}
+
+    Args:
+        org_str (str): Name of organization
+        type_str (str): Shoulder type to check for. Must be 'doi' or 'ark'
+    """
+    assert type_str in ('doi', 'ark'), 'Invalid shoulder type: {}'.format(type_str)
+    try:
+        shoulder_model = ezidapp.models.Shoulder.objects.filter(
+            type=type_str.upper(), name=org_str
+        ).get()
+    except ezidapp.models.Shoulder.DoesNotExist:
+        pass
+    else:
+        raise django.core.management.CommandError(
+            'Organization "{}" already has a DOI shoulder: {}'.format(
+                org_str, shoulder_model.prefix
+            )
+        )
+
+
 def assert_valid_datacenter(datacenter_str):
     datacenter_set = {x.symbol for x in ezidapp.models.StoreDatacenter.objects.all()}
     if datacenter_str not in datacenter_set:
