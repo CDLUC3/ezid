@@ -1,4 +1,5 @@
 import bz2
+import csv
 import io
 import logging
 import os
@@ -12,6 +13,7 @@ import django.core.management
 import django.db
 import django.db.transaction
 import django.http.request
+import pathlib2
 import pytest
 
 import ezidapp
@@ -34,6 +36,8 @@ NAMESPACE_LIST = [
     Namespace('doi:10.9935/x3', '9935', 'x3'),
     Namespace('doi:10.9996/x4', '9996', 'x4'),
 ]
+
+SHOULDER_CSV = impl.nog.filesystem.abs_path('./test_docs/ezidapp_shoulder.csv')
 
 # Database fixtures
 
@@ -176,6 +180,24 @@ def tmp_bdb_root(mocker, tmp_path):
     impl.config.reload()
 
     return tmp_path, NAMESPACE_LIST
+
+
+@pytest.fixture()
+def shoulder_csv():
+    """Iterable returning rows from the SHOULDER_CSV file"""
+    def itr():
+        with pathlib2.Path(SHOULDER_CSV).open('rb',) as f:
+            for row_tup in csv.reader(f):
+                ns_str, org_str, n2t_url = (s.decode('utf-8') for s in row_tup)
+                log.debug('Testing with shoulder row: {}'.format(row_tup))
+                yield ns_str, org_str, n2t_url
+    yield itr()
+
+
+@pytest.fixture()
+def test_docs():
+    """pathlib2.Path rooted in the test_docs dir."""
+    return pathlib2.Path(impl.nog.filesystem.abs_path('./test_docs'))
 
 
 # @pytest.fixture(scope='session')
