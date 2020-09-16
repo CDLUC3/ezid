@@ -20,11 +20,10 @@ class TestShoulderCreateDoi:
             prefix='doi:10.9111/r01'
         ).exists()
         django.core.management.call_command(
-            # <naan> <shoulder> <name>
+            # <ns> <org-name>
             'shoulder-create-doi',
-            '9111',
-            'r01',
-            'r01 test org',
+            'doi:10.9111/r01',
+            '91101/r01 test org',
             '--crossref',
         )
         sample.assert_match(caplog.text, 'output')
@@ -35,11 +34,10 @@ class TestShoulderCreateDoi:
             prefix='doi:10.9111/r01'
         ).exists()
         django.core.management.call_command(
-            # <naan> <shoulder> <name>
+            # <ns> <org-name>
             'shoulder-create-doi',
-            '9111',
-            'r01',
-            'r01 test org',
+            'doi:10.9111/r01',
+            '91101/r01 test org',
             '--crossref',
         )
         s = ezidapp.models.Shoulder.objects.filter(prefix='doi:10.9111/r01').get()
@@ -56,11 +54,10 @@ class TestShoulderCreateDoi:
         ).exists()
         with pytest.raises(django.core.management.CommandError) as e:
             django.core.management.call_command(
-                # <naan> <shoulder> <name>
+                # <ns> <org-name>
                 'shoulder-create-doi',
-                '9111',
-                'r01',
-                'r01 test org',
+                'doi:10.9111/r01',
+                '91101/r01 test org',
                 '--datacite',
                 'invalid-data-center',
             )
@@ -72,11 +69,10 @@ class TestShoulderCreateDoi:
             prefix='doi:10.9111/r01'
         ).exists()
         django.core.management.call_command(
-            # <naan> <shoulder> <name>
+            # <ns> <org-name>
             'shoulder-create-doi',
-            '9111',
-            'r01',
-            'r01 test org',
+            'doi:10.9111/r01',
+            '91101/r01 test org',
             '--datacite',
             'CDL.UCLA',
         )
@@ -93,11 +89,10 @@ class TestShoulderCreateDoi:
             prefix='doi:10.9111/r01'
         ).exists()
         django.core.management.call_command(
-            # <naan> <shoulder> <name>
+            # <ns> <org-name>
             'shoulder-create-doi',
-            '9111',
-            'r01',
-            'r01 test org',
+            'doi:10.9111/r01',
+            '91101/r01 test org',
             '--datacite',
             'CDL.UCLA',
             '--super-shoulder',

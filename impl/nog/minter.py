@@ -236,7 +236,7 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
             minted_id = fmt_str.format(minted_id)
             if self.mask_str.endswith("k"):
                 minted_id += self._get_check_char(minted_id)
-            log.debug('Minter yielding: {}'.format(minted_id))
+            # log.debug('Minter yielding: {}'.format(minted_id))
             yield minted_id
 
     # noinspection PyAttributeOutsideInit
@@ -251,8 +251,6 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
         # if not m:
         #     raise nog.exc.MinterError('Invalid template: {}'.format(template_str))
 
-        # self.template_str = template_str
-        # self.mask_str = m.groups(2)
         self.base_count = 0
         self.combined_count = 0
         self.max_combined_count = 0
@@ -266,24 +264,6 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
         self._bdb.set('shoulder', shoulder_str)
         self._bdb.set('original_template', self.template_str)
         self._bdb.set('origmask', self.mask_str)
-
-
-
-        # self.atlast_str = bdb.set('atlast', )
-
-        # self.base_count = bdb.set('basecount', )
-        # self.combined_count = bdb.set('oacounter', )
-        # self.max_combined_count = bdb.set('oatop', )
-        # self.total_count = bdb.set('total', )
-        # self.max_per_counter = bdb.set('percounter', )
-        # self.mask_str = bdb.set('mask', )
-        # self.active_counter_list = bdb.set_list('saclist', )
-        # self.inactive_counter_list = bdb.set_list('siclist', )
-        # .counter_list) = for n, (top, value) in enumerate(self:
-        # , top) = bdb.set('c{}/top'.format(n),
-        # , value) = bdb.set('c{}/value'.format(n),
-        #
-        # # self._extend_mask()
 
     def _next_state(self):
         """Step the minter to the next state.
@@ -485,11 +465,11 @@ class _Drand48:
     """
 
     def __init__(self, seed):
-        log.debug("drand48 seed={}".format(seed))
+        # log.debug("drand48 seed={}".format(seed))
         self.state = (seed << 16) + 0x330E
 
     def drand(self):
         self.state = (25214903917 * self.state + 11) & (2 ** 48 - 1)
         rnd = self.state / 2 ** 48
-        log.debug("drand48 value={}".format(rnd))
+        # log.debug("drand48 value={}".format(rnd))
         return rnd

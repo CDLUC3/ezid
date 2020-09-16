@@ -17,6 +17,6 @@ class TestShoulderMint:
         namespace_str = 'ark:/33333/r3'
         tests.util.util.create_shoulder(namespace_str)
         django.core.management.call_command(
-            'shoulder-mint', namespace_str, '--count', '100'
+            'shoulder-mint', namespace_str, '--count', '2'
         )
         sample.assert_match(caplog.text, 'minted')
