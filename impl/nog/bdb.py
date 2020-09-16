@@ -4,6 +4,7 @@
 from __future__ import absolute_import, division, print_function
 
 import logging
+import re
 
 import django.core
 import django.db
@@ -50,6 +51,26 @@ def dump(bdb_path, compact=True):
     are included.
     """
     log.info(as_hjson(bdb_path, compact))
+
+
+def dump_full(bdb_path):
+    """Dump all key-value pairs of any BerkeleyDB to stdout as HJSON.
+    """
+
+    def _sort_key(kv):
+        """Place counters at top and sort them numerically"""
+        k, v = kv
+        m = re.search(r".*/c(\d+)(/.*)$", k)
+        if m:
+            return 0, "{:04d}{}".format(int(m.group(1)), m.group(2))
+        return 1, k
+
+    with nog.bdb_wrapper.Bdb(bdb_path) as bdb:
+        print(
+            hjson.dumps(
+                dict(bdb._bdb_dict), sort_keys=True, indent=2, item_sort_key=_sort_key
+            )
+        )
 
 
 def as_hjson(bdb_path, compact=True):

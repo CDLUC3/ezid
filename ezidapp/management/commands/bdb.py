@@ -80,7 +80,16 @@ class Command(django.core.management.BaseCommand):
         parser.formatter_class = argparse.RawDescriptionHelpFormatter
         parser.add_argument(
             "action_str",
-            choices=('list', 'unique', 'backup', 'restore', 'dump', 'mint', 'create'),
+            choices=(
+                'list',
+                'unique',
+                'backup',
+                'restore',
+                'dump',
+                'dump-full',
+                'mint',
+                'create',
+            ),
         )
         parser.add_argument(
             "ns_str", metavar="identifier", nargs='?', help='Full ARK or DOI identifier'
@@ -128,6 +137,7 @@ class Command(django.core.management.BaseCommand):
         # 'list' is a reserved keyword.
         if opt.action_str == 'list':
             opt.action_str = 'list_bdb'
+        opt.action_str = opt.action_str.replace('-', '_')
 
         if self.opt.ns_str is not None:
             self.bdb_path = self._get_dbd_path()
