@@ -43,7 +43,7 @@ class TestNogMinter:
                     i, python_sping, perl_sping
                 )
 
-    def test_1010(self, tmp_bdb_root):
+    def test_1010(self, tmp_bdb_root, test_docs):
         """Minter yields identifiers matching N2T through a template extensions.
 
         This checks identifiers in an area where where the minter template must be
@@ -53,7 +53,11 @@ class TestNogMinter:
             for i in range(6218):
                 f.readline()
             for i, python_sping in enumerate(
-                nog.minter.mint_by_bdb_path(self._get_bdb_path(ID_NS, '_last_before_template_extend'), 10, dry_run=True)
+                nog.minter.mint_by_bdb_path(
+                    test_docs.joinpath('77913_r7_last_before_template_extend.bdb'),
+                    10,
+                    dry_run=True,
+                )
             ):
                 perl_sping = '{}/{}{}'.format(
                     ID_NS.naan_prefix, ID_NS.shoulder, f.readline().strip()
