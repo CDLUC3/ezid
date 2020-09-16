@@ -24,8 +24,8 @@ DOWNLOAD_WORK_DIR = os.path.join(SITE_ROOT, "download")
 DOWNLOAD_PUBLIC_DIR = os.path.join(DOWNLOAD_WORK_DIR, "public")
 SETTINGS_DIR = os.path.join(PROJECT_ROOT, "settings")
 EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "test_config.conf")
-EZID_SHADOW_CONFIG_FILE = '/dev/null' #EZID_CONFIG_FILE + ".shadow"
-DEPLOYMENT_LEVEL='local'
+EZID_SHADOW_CONFIG_FILE = '/dev/null'  # EZID_CONFIG_FILE + ".shadow"
+DEPLOYMENT_LEVEL = 'local'
 LOGGING_CONFIG_FILE = "test_logging.conf"
 MINTERS_PATH = os.path.join(PROJECT_ROOT, "db", "minters")
 
@@ -40,8 +40,8 @@ ADMIN_USER = 'admin'
 ADMIN_PW = 'admin'
 
 ALLOWED_HOSTS = [
-        'testserver',
-        ]
+    'testserver',
+]
 
 
 if "HOSTNAME" in os.environ:
@@ -59,7 +59,7 @@ DATABASES = {
         # "AUTOCOMMIT": False,
         "ATOMIC_REQUESTS": False,
         "OPTIONS": {"charset": "utf8mb4"},
-        'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock', },
+        'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock',},
     },
     "search": {
         "ENGINE": "django.db.backends.mysql",
@@ -70,7 +70,7 @@ DATABASES = {
         # "AUTOCOMMIT": False,
         "ATOMIC_REQUESTS": False,
         "OPTIONS": {"charset": "utf8mb4"},
-        'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock', },
+        'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock',},
         "fulltextSearchSupported": True,
     },
 }

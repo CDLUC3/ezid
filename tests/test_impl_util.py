@@ -7,7 +7,7 @@ class TestImplUtil:
     """Test the impl.util module."""
 
     @pytest.mark.parametrize(
-        ("sping_str,doi_str"),
+        ("minted_id,doi_str"),
         (
             ("c3022/m3", "10.13022/M3"),
             ("c5140/d3", "10.15140/D3"),
@@ -19,14 +19,14 @@ class TestImplUtil:
             ("d1986/s6.caida", "10.21986/S6.CAIDA"),
         ),
     )
-    def test_1000(self, sping_str, doi_str):
+    def test_1000(self, minted_id, doi_str):
         """shadow2doi() successful
         b5060/foo') == '10.5060/FOO
         """
-        assert impl.util.shadow2doi(sping_str) == doi_str
+        assert impl.util.shadow2doi(minted_id) == doi_str
 
     @pytest.mark.parametrize(
-        "sping_str",
+        "minted_id",
         (
             # Invalid beta char ("a")
             "a3022/m3",
@@ -36,15 +36,15 @@ class TestImplUtil:
             "a3022m3",
         ),
     )
-    def test_1010(self, sping_str):
+    def test_1010(self, minted_id):
         """shadow2doi() invalid
         """
         with pytest.raises(AssertionError) as e:
-            impl.util.shadow2doi(sping_str)
+            impl.util.shadow2doi(minted_id)
         assert e.match("Invalid scheme-less")
 
     @pytest.mark.parametrize(
-        ("doi_str,sping_str"),
+        ("doi_str,minted_id"),
         (
             ("10.13022/M3", "c3022/m3"),
             ("10.15140/D3", "c5140/d3"),
@@ -56,6 +56,6 @@ class TestImplUtil:
             ("10.21986/S6.CAIDA", "d1986/s6.caida"),
         ),
     )
-    def test_1020(self, doi_str, sping_str):
+    def test_1020(self, doi_str, minted_id):
         """doi2shadow()"""
-        assert impl.util.doi2shadow(doi_str) == sping_str
+        assert impl.util.doi2shadow(doi_str) == minted_id

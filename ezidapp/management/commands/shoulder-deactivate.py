@@ -7,10 +7,9 @@ import argparse
 import logging
 
 import django.core.management
-import django.core.management.base
 
-import ezidapp.management.commands.resources.reload as reload
 import ezidapp.models
+import impl.nog.reload
 
 try:
     import bsddb
@@ -18,14 +17,14 @@ except ImportError:
     import bsddb3 as bsddb
 
 import django.contrib.auth.models
-import django.core.management.base
 import django.db.transaction
+import impl.nog.util
 
 
 log = logging.getLogger(__name__)
 
 
-class Command(django.core.management.base.BaseCommand):
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):
@@ -43,10 +42,8 @@ class Command(django.core.management.base.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        opt = argparse.Namespace(**opt)
-
-        if opt.debug:
-            logging.getLogger("").setLevel(logging.DEBUG)
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog.util.add_console_handler(opt.debug)
 
         shoulder_str = opt.shoulder_str
         try:
@@ -62,6 +59,6 @@ class Command(django.core.management.base.BaseCommand):
         shoulder_model.active = False
         shoulder_model.save()
 
-        print('Shoulder deactivated: {}'.format(shoulder_str))
+        log.info('Shoulder deactivated: {}'.format(shoulder_str))
 
-        reload.trigger_reload()
+        impl.nog.reload.trigger_reload()

@@ -5,36 +5,31 @@ from __future__ import absolute_import, division, print_function
 
 import argparse
 import logging
-import re
 
+import django.contrib.auth.models
 import django.core.management
-import django.core.management.base
+import django.db.transaction
 
-import ezidapp.management.commands.resources.shoulder
 import ezidapp.models
-import impl.nog_minter
-import nog_minter
+import impl.nog.shoulder
+import nog.id_ns
 
 try:
     import bsddb
 except ImportError:
     import bsddb3 as bsddb
 
-import django.contrib.auth.models
-import django.core.management.base
-import django.db.transaction
-import impl.util
 
-import ezidapp.management.commands.resources.shoulder as shoulder
-import ezidapp.management.commands.resources.reload as reload
+import impl.nog.shoulder
+import impl.nog.reload
+import impl.nog.util
+import nog.exc
+import nog.minter
 
 log = logging.getLogger(__name__)
 
 
-class Command(django.core.management.base.BaseCommand):
-    # - Naming conventions:
-    # https://docs.google.com/document/d/1uJiC5jGfTBuKBWAoddOyxUCO4ZbbL8c75O72YxgIr08/edit
-
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):
@@ -42,11 +37,13 @@ class Command(django.core.management.base.BaseCommand):
         self.opt = None
 
     def add_arguments(self, parser):
-        parser.add_argument('prefix_str', metavar='prefix', help="doi:10.<prefix>/...")
         parser.add_argument(
-            'shoulder_str', metavar='shoulder', help="doi:10.../<shoulder>"
+            "ns_str",
+            metavar="shoulder-doi",
+            nargs='?',
+            help='Full DOI of new shoulder. E.g., doi:10.12345/',
         )
-        parser.add_argument('name_str', metavar='name', help='Name of organization')
+        parser.add_argument('name_str', metavar='org-name', help='Name of organization')
         ex_group = parser.add_mutually_exclusive_group(required=True)
         ex_group.add_argument(
             '--crossref,-c',
@@ -61,16 +58,23 @@ class Command(django.core.management.base.BaseCommand):
             help='DOI is registered with DataCite',
         )
         parser.add_argument(
-            '--super-shoulder,s',
-            dest='is_super_shoulder',
-            action='store_true',
-            help='Set super-shoulder flag',
-        )
-        parser.add_argument(
-            '--shares-datacenter,p',
+            '--shares-datacenter,-p',
             dest='is_sharing_datacenter',
             action='store_true',
             help='Shoulder is assigned to more than one datacenter',
+        )
+
+        parser.add_argument(
+            '--super-shoulder,s',
+            dest='is_super_shoulder',
+            action='store_true',
+            help='Create a super-shoulder',
+        )
+        parser.add_argument(
+            '--force,f',
+            dest='is_force',
+            action='store_true',
+            help='Force creating super-shoulder on apparent regular shoulder',
         )
         parser.add_argument(
             '--test,-t',
@@ -83,49 +87,44 @@ class Command(django.core.management.base.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        opt = argparse.Namespace(**opt)
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog.util.add_console_handler(opt.debug)
 
-        if opt.debug:
-            logging.getLogger('').setLevel(logging.DEBUG)
-
-        # The shoulder must always be upper case for DOIs
-        shoulder_str = opt.shoulder_str.upper()
-
-        # shadow_str is the name of the minter, which always has 5 digits, while
-        # the prefix may have only 4 digits. E.g.:
-        # scheme_less = 10.9111/FK4 -> shadow = 10.b9111/FK4
-        scheme_less_str = '10.{}/{}'.format(opt.prefix_str, shoulder_str)
-        shadow_str = impl.util.doi2shadow(scheme_less_str)
-
-        prefix_str, shoulder_str = shadow_str.split('/')
-
-        if not re.match(r'[a-z0-9]\d{4}$', prefix_str):
+        try:
+            return self._handle(self.opt)
+        except nog.exc.MinterError as e:
             raise django.core.management.CommandError(
-                'Prefix for a DOI must be 5 digits, or one lower case character '
-                'and 4 digits:'.format(prefix_str)
+                'Minter error: {}'.format(str(e))
             )
 
-        # namespace is the scheme + full shoulder. E.g., doi:10.9111/FK4
-        namespace_str = 'doi:{}'.format(scheme_less_str)
-        print('Creating DOI minter: {}'.format(namespace_str))
+    def _handle(self, opt):
+        try:
+            ns = nog.id_ns.IdNamespace.from_str(opt.ns_str)
+        except nog.id_ns.IdentifierError as e:
+            raise django.core.management.CommandError(str(e))
+
+        impl.nog.shoulder.assert_shoulder_is_type(ns, 'doi')
+        impl.nog.shoulder.assert_shoulder_type_available(opt.name_str, 'doi')
 
         # opt.is_crossref and opt.datacenter_str are mutually exclusive with one
         # required during argument parsing.
         if opt.is_crossref:
             datacenter_model = None
         else:
-            shoulder.assert_valid_datacenter(opt.datacenter_str)
+            impl.nog.shoulder.assert_valid_datacenter(opt.datacenter_str)
             datacenter_model = ezidapp.models.StoreDatacenter.objects.get(
                 symbol=opt.datacenter_str
             )
 
-        full_shoulder_str = nog_minter.create_minter_database(prefix_str, shoulder_str)
+        log.info('Creating minter for DOI shoulder: {}'.format(opt.ns_str))
+        bdb_path = nog.minter.create_minter_database(ns)
+        log.debug('Minter BerkeleyDB created at: {}'.format(bdb_path.as_posix()))
 
-        ezidapp.management.commands.resources.shoulder.create_shoulder_db_record(
-            namespace_str,
-            'DOI',
+        impl.nog.shoulder.create_shoulder_db_record(
+            str(ns),
+            'doi',
             opt.name_str,
-            full_shoulder_str,
+            bdb_path,
             datacenter_model,
             is_crossref=opt.is_crossref,
             is_test=opt.is_test,
@@ -134,6 +133,5 @@ class Command(django.core.management.base.BaseCommand):
             is_debug=opt.debug,
         )
 
-        print('Shoulder created: {}'.format(namespace_str))
-
-        reload.trigger_reload()
+        impl.nog.reload.trigger_reload()
+        log.info('Shoulder created: {}'.format(opt.ns_str))

@@ -5,7 +5,6 @@ import logging
 
 import django.core
 import django.core.management
-import django.core.management.base
 import django.db
 
 import ezidapp.models
@@ -16,56 +15,92 @@ except ImportError:
     import bsddb3 as bsddb
 
 import django.contrib.auth.models
-import django.core.management.base
+import django.core.management
 import django.db.transaction
 
 log = logging.getLogger(__name__)
 
 
-def assert_valid_name(name_str):
+def assert_valid_datacenter_name(name_str):
     name_set = {x.name for x in ezidapp.models.Shoulder.objects.all()}
     if name_str not in name_set:
-        print(
+        log.error(
             'Datacenter must be one of:\n{}'.format(
                 '\n'.join(u'  {}'.format(x) for x in sorted(name_set))
             )
         )
-        raise django.core.management.base.CommandError(
+        raise django.core.management.CommandError(
             'Invalid name: {}'.format(name_str)
+        )
+
+
+def assert_shoulder_is_type(ns, type_str):
+    """Assert that shoulder {ns} is of type {type_str}
+
+    Args:
+        ns (IdNamespace): ARK or DOI shoulder namespace
+        type_str (str): 'ark' or 'doi'
+
+    """
+    assert type_str in ('doi', 'ark'), 'Invalid shoulder type: {}'.format(type_str)
+    if ns.scheme != type_str:
+        raise django.core.management.CommandError(
+            'Shoulder scheme must be "{}", not "{}"'.format(type_str, ns.scheme)
+        )
+
+def assert_shoulder_type_available(org_str, type_str):
+    """Assert that shoulder of {type_str} does not already exist for {org_str}
+
+    Args:
+        org_str (str): Name of organization
+        type_str (str): Shoulder type to check for. Must be 'doi' or 'ark'
+    """
+    assert type_str in ('doi', 'ark'), 'Invalid shoulder type: {}'.format(type_str)
+    try:
+        shoulder_model = ezidapp.models.Shoulder.objects.filter(
+            type=type_str.upper(), name=org_str
+        ).get()
+    except ezidapp.models.Shoulder.DoesNotExist:
+        pass
+    else:
+        raise django.core.management.CommandError(
+            'Organization "{}" already has a DOI shoulder: {}'.format(
+                org_str, shoulder_model.prefix
+            )
         )
 
 
 def assert_valid_datacenter(datacenter_str):
     datacenter_set = {x.symbol for x in ezidapp.models.StoreDatacenter.objects.all()}
     if datacenter_str not in datacenter_set:
-        print(
+        log.error(
             'Datacenter must be one of:\n{}'.format(
                 '\n'.join(u'  {}'.format(x) for x in sorted(datacenter_set))
             )
         )
-        raise django.core.management.base.CommandError(
+        raise django.core.management.CommandError(
             'Invalid datacenter: {}'.format(datacenter_str)
         )
 
 
 def dump_shoulders():
-    print('Shoulders:')
+    log.info('Shoulders:')
     for x in ezidapp.models.Shoulder.objects.all().order_by('name', 'prefix'):
-        print(x)
+        log.info(x)
 
 
 def dump_datacenters():
     # for x in ezidapp.models.SearchDatacenter.objects.all():
-    #     print(x)
+    #     log.info(x)
     for x in ezidapp.models.StoreDatacenter.objects.all():
-        print(x)
+        log.info(x)
 
 
 def create_shoulder_db_record(
     namespace_str,
     type_str,
     name_str,
-    full_shoulder_str,
+    bdb_path,
     datacenter_model,
     is_crossref,
     is_test,
@@ -77,9 +112,9 @@ def create_shoulder_db_record(
     try:
         ezidapp.models.Shoulder.objects.create(
             prefix=namespace_str,
-            type=type_str,
+            type=type_str.upper(),
             name=name_str,
-            minter="ezid:/{}".format(full_shoulder_str),
+            minter="ezid:/{}".format('/'.join(bdb_path.parts[-3:-1]),),
             datacenter=datacenter_model,
             crossrefEnabled=is_crossref,
             isTest=is_test,

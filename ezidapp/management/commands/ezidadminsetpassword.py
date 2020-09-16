@@ -1,7 +1,8 @@
-import django.contrib.auth.models
-import django.core.management.base
-import django.db.transaction
 import os.path
+
+import django.contrib.auth.models
+import django.core.management
+import django.db.transaction
 
 # The following must precede any EZID module imports:
 execfile(
@@ -16,7 +17,7 @@ import config
 import ezidapp.models
 
 
-class Command(django.core.management.base.BaseCommand):
+class Command(django.core.management.BaseCommand):
     help = "Set the EZID administrator password"
 
     def handle(self, *args, **options):

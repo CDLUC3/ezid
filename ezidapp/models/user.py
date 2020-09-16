@@ -13,15 +13,16 @@
 #
 # -----------------------------------------------------------------------------
 
+import re
+
 import django.core.exceptions
 import django.core.validators
 import django.db.models
-import re
 
+import nog.minter
 import shoulder
 import util
 import validation
-import nog_minter
 
 # Deferred imports...
 """
@@ -88,7 +89,7 @@ class User(django.db.models.Model):
             try:
                 s = shoulder.getAgentShoulder()
                 assert s.isArk, "Agent shoulder type must be ARK"
-                self.pid = "{}{}".format(s.prefix, nog_minter.mint_identifier(s))
+                self.pid = "{}{}".format(s.prefix, nog.minter.mint_id(s))
             except Exception, e:
                 log.otherError("user.User.clean", e)
                 raise

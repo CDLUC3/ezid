@@ -11,7 +11,7 @@
   'isUuid': False,
   'manager': None,
   'minter': u'ezid:/91101/r01',
-  'name': u'r01 test org',
+  'name': u'91101/r01 test org',
   'prefix': u'ark:/91101/r01',
   'prefix_shares_datacenter': False,
   'registration_agency': None,

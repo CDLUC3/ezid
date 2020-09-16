@@ -9,20 +9,22 @@ import logging
 
 import django.contrib.auth.models
 import django.core.management
-import django.core.management.base
 import django.db.transaction
 
-import ezidapp.management.commands.resources.reload as reload
 import ezidapp.models
 import ezidapp.models.store_datacenter
+import impl.nog.filesystem
+import impl.nog.reload
+import impl.nog.util
 import shoulder_parser
-import utils.filesystem
 
-MASTER_SHOULDERS_PATH = utils.filesystem.abs_path('../../../master_shoulders.txt')
+log = logging.getLogger(__name__)
+
+MASTER_SHOULDERS_PATH = impl.nog.filesystem.abs_path('../../../master_shoulders.txt')
 DEBUG = True
 
 
-class Command(django.core.management.base.BaseCommand):
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):
@@ -35,10 +37,8 @@ class Command(django.core.management.base.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        opt = argparse.Namespace(**opt)
-
-        if opt.debug:
-            logging.getLogger('').setLevel(logging.DEBUG)
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog.util.add_console_handler(opt.debug)
 
         try:
             with django.db.transaction.atomic():
@@ -50,21 +50,21 @@ class Command(django.core.management.base.BaseCommand):
                 'Merge failed. Error: {}'.format(str(e))
             )
         else:
-            print('Completed successfully')
+            log.info('Completed successfully')
 
     def add_shoulder_db_records(self):
         with open(MASTER_SHOULDERS_PATH, 'r') as f:
             entries, errors, warnings = shoulder_parser.parse(f.read())
 
         if errors:
-            print('File validation error(s):')
+            log.error('File validation error(s):')
             for e in errors:
-                print("  (line %d) %s" % e)
+                log.error("  (line %d) %s" % e)
 
         if warnings:
-            print('File validation warnings(s):')
+            log.warn('File validation warnings(s):')
             for e in warnings:
-                print("  (line %d) %s" % e)
+                log.warn("  (line %d) %s" % e)
 
         # list of dicts to dict keyed on 'key'
         file_dict = {v['key']: v for v in entries}
@@ -78,8 +78,8 @@ class Command(django.core.management.base.BaseCommand):
                 delete_list.append(s.prefix)
 
         if delete_list:
-            print('Deleting db records for shoulders not in file:')
-            print(','.join(delete_list))
+            log.info('Deleting db records for shoulders not in file:')
+            log.info(','.join(delete_list))
 
         # ezidapp.models.Shoulder.objects.filter(prefix__in=delete_list).delete()
 
@@ -154,6 +154,6 @@ class Command(django.core.management.base.BaseCommand):
             s.type = s.prefix[:3].upper()
             s.save()
 
-        print('{} merged'.format(MASTER_SHOULDERS_PATH))
+        log.info('{} merged'.format(MASTER_SHOULDERS_PATH))
 
-        reload.trigger_reload()
+        impl.nog.reload.trigger_reload()

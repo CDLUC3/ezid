@@ -3,15 +3,16 @@
 import argparse
 import logging
 
-import django.core.management.base
+import django.core.management
 
-import ezidapp.management.commands.resources.reload as reload
 import ezidapp.models
+import impl.nog.reload
+import impl.nog.util
 
 log = logging.getLogger(__name__)
 
 
-class Command(django.core.management.base.BaseCommand):
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):
@@ -34,10 +35,8 @@ class Command(django.core.management.base.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        opt = argparse.Namespace(**opt)
-
-        if opt.debug:
-            logging.getLogger('').setLevel(logging.DEBUG)
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog.util.add_console_handler(opt.debug)
 
         try:
             scheme_str, full_shoulder = opt.shoulder_str.split(':',)
@@ -79,4 +78,4 @@ class Command(django.core.management.base.BaseCommand):
             )
         )
 
-        reload.trigger_reload()
+        impl.nog.reload.trigger_reload()

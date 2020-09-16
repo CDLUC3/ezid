@@ -3,15 +3,16 @@
 import argparse
 import logging
 
-import django.core.management.base
+import django.core.management
 
 import ezidapp.models
-import impl.nog_minter
+import impl.nog.util
+import nog.minter
 
 log = logging.getLogger(__name__)
 
 
-class Command(django.core.management.base.BaseCommand):
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):
@@ -32,11 +33,13 @@ class Command(django.core.management.base.BaseCommand):
             help="Number of identifiers to mint",
         )
         parser.add_argument(
-            "--preview",
-            "-p",
+            "--update",
+            "-u",
             action="store_true",
-            help="""Do not update the minter state (BerkeleyDB). This causes the minter
-            to yield the same sequence of identifier(s) the next time it is used""",
+            help="""For use with 'mint': After minting, update the starting point of the
+            minter to the next new identifier. Without this switch, minting does not
+            interfere with the sequence of identifiers that the minter will yield in
+            regular use.""",
         )
         parser.add_argument(
             "--debug", action="store_true", help="Debug level logging",
@@ -44,9 +47,7 @@ class Command(django.core.management.base.BaseCommand):
 
     def handle(self, *_, **opt):
         opt = argparse.Namespace(**opt)
-
-        if opt.debug:
-            logging.getLogger('').setLevel(logging.DEBUG)
+        impl.nog.util.add_console_handler(opt.debug)
 
         try:
             shoulder_model = ezidapp.models.Shoulder.objects.get(
@@ -58,6 +59,6 @@ class Command(django.core.management.base.BaseCommand):
             )
 
         for i, id_str in enumerate(
-            impl.nog_minter.mint_identifier_gen(shoulder_model, opt.count, opt.preview)
+            nog.minter.mint_ids(shoulder_model, opt.count, not opt.update)
         ):
-            print("{: 5d} {}".format(i + 1, id_str))
+            log.info("{: 5d} {}".format(i + 1, id_str))
