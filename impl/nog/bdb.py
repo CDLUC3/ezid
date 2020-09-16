@@ -238,13 +238,13 @@ def doi_to_shadow_ark(doi_str, allow_lossy=False):
     """Convert DOI to a 'shadow ARK'. Should give the same results as the N2T doip2naan
     command line program.
     """
-    doi_ns = nog.id_ns.split_doi_namespace(doi_str)
+    doi_ns = nog.id_ns.IdNamespace.from_str(doi_str)
     try:
         ark_naan = doi_prefix_to_naan(doi_ns.naan_prefix, allow_lossy)
     except OverflowError as e:
         raise nog.exc.MinterError('Unable to create shadow ark: {}'.format(str(e)))
     ark_ns = nog.id_ns.IdNamespace(
-        'ark:/', ark_naan, doi_ns.slash, doi_ns.shoulder.lower()
+        'ark', ark_naan, doi_ns.slash, (doi_ns.shoulder or '').lower()
     )
     return str(ark_ns)
 

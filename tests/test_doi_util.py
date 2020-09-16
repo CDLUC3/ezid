@@ -10,17 +10,6 @@ import nog.id_ns
 
 class TestDoiUtil:
     @pytest.mark.parametrize(
-        'arg_tup,repr_str',
-        (
-            (('a1', 'a2', 'a3', 'a4'), "IdNamespace(a1a2a3a4)"),
-            (('a1', 'a2', None, None), "IdNamespace(a1a2)",),
-            (('a1', '', None, ''), "IdNamespace(a1)",),
-        ),
-    )
-    def test_0900(self, arg_tup, repr_str):
-        assert repr(nog.id_ns.IdNamespace(*arg_tup)) == repr_str
-
-    @pytest.mark.parametrize(
         'doi,naan_or_exc',
         (
             ('0', 'b0000'),

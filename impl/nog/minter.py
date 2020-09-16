@@ -125,10 +125,8 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
         :func:`mint_id`
     """
     # naan_str, shoulder_str = re.split(r'[/:.]', shoulder_model.minter)[-2:]
-    shoulder_ns = nog.id_ns.split_namespace(shoulder_model.prefix)
-    for minted_ns in mint_by_ns(
-        shoulder_ns, mint_count, dry_run=dry_run
-    ):
+    shoulder_ns = nog.id_ns.IdNamespace.from_str(shoulder_model.prefix)
+    for minted_ns in mint_by_ns(shoulder_ns, mint_count, dry_run=dry_run):
         yield minted_ns
 
 
@@ -147,7 +145,8 @@ def mint_by_ns(
     bdb_path = nog.bdb.get_bdb_path_by_namespace(ns, root_path)
     for minted_id in mint_by_bdb_path(bdb_path, mint_count, dry_run):
         naan_str, shoulder_str = minted_id.split('/', 1)
-        yield nog.id_ns.IdNamespace(ns.scheme_sep, naan_str, '/', shoulder_str)
+        yield nog.id_ns.IdNamespace(ns.scheme, naan_str, '/', shoulder_str)
+
 
 def mint_by_bdb_path(bdb_path, mint_count=1, dry_run=False):
     """Like mint_ids(), but accepts the path to a BerkeleyDB nog.bdb minter file.

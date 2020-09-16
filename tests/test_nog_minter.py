@@ -8,7 +8,7 @@ import nog.minter
 MINT_COUNT = 1000
 
 ID_STR = 'ark:/77913/r7'
-ID_NS = nog.id_ns.split_namespace(ID_STR)
+ID_NS = nog.id_ns.IdNamespace.from_str(ID_STR)
 PERL_MINTED_PATH = impl.nog.filesystem.abs_path(
     "test_docs/perl_{}_{}_1000000_spings.csv.xz".format(
         ID_NS.naan_prefix, ID_NS.shoulder
