@@ -5,7 +5,6 @@ import logging
 
 import django.core
 import django.core.management
-import django.core.management.base
 import django.db
 
 import ezidapp.models
@@ -16,13 +15,13 @@ except ImportError:
     import bsddb3 as bsddb
 
 import django.contrib.auth.models
-import django.core.management.base
+import django.core.management
 import django.db.transaction
 
 log = logging.getLogger(__name__)
 
 
-def assert_valid_name(name_str):
+def assert_valid_datacenter_name(name_str):
     name_set = {x.name for x in ezidapp.models.Shoulder.objects.all()}
     if name_str not in name_set:
         log.error(
@@ -30,7 +29,7 @@ def assert_valid_name(name_str):
                 '\n'.join(u'  {}'.format(x) for x in sorted(name_set))
             )
         )
-        raise django.core.management.base.CommandError(
+        raise django.core.management.CommandError(
             'Invalid name: {}'.format(name_str)
         )
 
@@ -43,7 +42,7 @@ def assert_valid_datacenter(datacenter_str):
                 '\n'.join(u'  {}'.format(x) for x in sorted(datacenter_set))
             )
         )
-        raise django.core.management.base.CommandError(
+        raise django.core.management.CommandError(
             'Invalid datacenter: {}'.format(datacenter_str)
         )
 
@@ -65,7 +64,7 @@ def create_shoulder_db_record(
     namespace_str,
     type_str,
     name_str,
-    full_shoulder_str,
+    bdb_path,
     datacenter_model,
     is_crossref,
     is_test,
@@ -77,9 +76,9 @@ def create_shoulder_db_record(
     try:
         ezidapp.models.Shoulder.objects.create(
             prefix=namespace_str,
-            type=type_str,
+            type=type_str.upper(),
             name=name_str,
-            minter="ezid:/{}".format(full_shoulder_str),
+            minter="ezid:/{}".format('/'.join(bdb_path.parts[-3:-1]),),
             datacenter=datacenter_model,
             crossrefEnabled=is_crossref,
             isTest=is_test,

@@ -7,12 +7,12 @@ import argparse
 import logging
 import re
 
+import django.contrib.auth.models
 import django.core.management
-import django.core.management.base
+import django.db.transaction
 
-import ezidapp.management.commands.resources.reload as reload
-import ezidapp.management.commands.resources.shoulder
-import nog_minter
+import impl.nog.shoulder
+import nog.id_ns
 
 try:
     import bsddb
@@ -26,10 +26,7 @@ import django.db.transaction
 log = logging.getLogger(__name__)
 
 
-class Command(django.core.management.base.BaseCommand):
-    # - Naming conventions:
-    # https://docs.google.com/document/d/1uJiC5jGfTBuKBWAoddOyxUCO4ZbbL8c75O72YxgIr08/edit
-
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):
@@ -61,8 +58,11 @@ class Command(django.core.management.base.BaseCommand):
     def handle(self, *_, **opt):
         opt = argparse.Namespace(**opt)
 
-        if opt.debug:
-            logging.getLogger('').setLevel(logging.DEBUG)
+    def _handle(self, opt):
+        try:
+            ns = nog.id_ns.IdNamespace.from_str(opt.ns_str)
+        except nog.id_ns.IdentifierError as e:
+            raise django.core.management.CommandError(str(e))
 
         if not re.match(r'\d{5}$', opt.naan_str):
             raise django.core.management.CommandError(

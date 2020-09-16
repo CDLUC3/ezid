@@ -3,7 +3,7 @@
 import argparse
 import logging
 
-import django.core.management.base
+import django.core.management
 
 import impl.nog.shoulder
 import impl.nog.util
@@ -11,7 +11,7 @@ import impl.nog.util
 log = logging.getLogger(__name__)
 
 
-class Command(django.core.management.base.BaseCommand):
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):

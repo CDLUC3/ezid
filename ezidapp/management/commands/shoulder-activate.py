@@ -7,7 +7,6 @@ import argparse
 import logging
 
 import django.core.management
-import django.core.management.base
 
 import ezidapp.models
 
@@ -17,7 +16,7 @@ except ImportError:
     import bsddb3 as bsddb
 
 import django.contrib.auth.models
-import django.core.management.base
+import django.core.management
 import django.db.transaction
 import impl.nog.reload
 import impl.nog.util
@@ -25,7 +24,7 @@ import impl.nog.util
 log = logging.getLogger(__name__)
 
 
-class Command(django.core.management.base.BaseCommand):
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):

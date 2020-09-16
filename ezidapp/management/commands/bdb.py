@@ -28,6 +28,10 @@ connect to the EZID database.
 
   E.g.: ./manage.py bdb dump ark:/99999/fk4
 
+- dump-full: Dump arbitrary BerkeleyDB to HJSON.
+
+  E.g.: ./manage.py bdb dump-full path/to/database.xyz
+
 - mint: Mint any number of identifiers with a given minter. By default, the minter state
   is not updated to reflect the minted identifiers, so the result can be considered as
   a "preview" of the identifiers the minter will yield when next used by EZID.
@@ -46,7 +50,7 @@ import shutil
 import sys
 
 import django.conf
-import django.core.management.base
+import django.core.management
 import pathlib2
 
 import impl.nog.filesystem
@@ -64,7 +68,7 @@ except ImportError:
 log = logging.getLogger(__name__)
 
 
-class Command(django.core.management.base.BaseCommand):
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):
@@ -90,6 +94,7 @@ class Command(django.core.management.base.BaseCommand):
             metavar="path",
             help="Override default root path for BerkeleyDB minters",
         )
+        # For 'mint'
         parser.add_argument(
             "--update",
             "-u",
@@ -97,7 +102,7 @@ class Command(django.core.management.base.BaseCommand):
             help="""For use with 'mint': After minting, update the starting point of the
             minter to the next new identifier. Without this switch, minting only
             provides a 'preview' of the sequence of identifiers that the minter will
-            yield in regular use.""",
+            yield in regular use""",
         )
         parser.add_argument(
             "--count",
@@ -106,6 +111,7 @@ class Command(django.core.management.base.BaseCommand):
             default=1,
             help="For use with 'mint': Set the number of identifiers to mint",
         )
+        # For 'unique'
         parser.add_argument(
             "--field",
             "-f",
@@ -136,7 +142,7 @@ class Command(django.core.management.base.BaseCommand):
         try:
             return getattr(self, opt.action_str)()
         except nog.exc.MinterError as e:
-            raise django.core.management.base.CommandError(
+            raise django.core.management.CommandError(
                 'Minter error: {}'.format(str(e))
             )
 
@@ -145,7 +151,7 @@ class Command(django.core.management.base.BaseCommand):
     def list_bdb(self):
         root_path = nog.bdb.get_bdb_root(self.opt.root_path)
         if not root_path.is_dir():
-            raise django.core.management.base.CommandError(
+            raise django.core.management.CommandError(
                 'Invalid root path: {}'.format(root_path.as_posix())
             )
         log.info("Listing minters below root: {}".format(root_path))
@@ -167,11 +173,11 @@ class Command(django.core.management.base.BaseCommand):
     def unique(self):
         root_path = nog.bdb.get_bdb_root(self.opt.root_path)
         if not root_path.is_dir():
-            raise django.core.management.base.CommandError(
+            raise django.core.management.CommandError(
                 'Invalid root path: {}'.format(root_path.as_posix())
             )
         if not self.opt.field:
-            raise django.core.management.base.CommandError(
+            raise django.core.management.CommandError(
                 'The --field parameter is required for this command'
             )
         log.info("Finding unique values for field: {}".format(self.opt.field))

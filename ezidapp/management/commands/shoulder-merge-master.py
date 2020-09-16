@@ -9,7 +9,6 @@ import logging
 
 import django.contrib.auth.models
 import django.core.management
-import django.core.management.base
 import django.db.transaction
 
 import ezidapp.models
@@ -25,7 +24,7 @@ MASTER_SHOULDERS_PATH = impl.nog.filesystem.abs_path('../../../master_shoulders.
 DEBUG = True
 
 
-class Command(django.core.management.base.BaseCommand):
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):

@@ -9,7 +9,6 @@ import logging
 import re
 
 import django.core.management
-import django.core.management.base
 import pathlib2
 
 import ezidapp.models
@@ -22,7 +21,7 @@ except ImportError:
     import bsddb3 as bsddb
 
 import django.contrib.auth.models
-import django.core.management.base
+import django.core.management
 import django.db.transaction
 import nog.bdb
 import impl.nog.util
@@ -30,7 +29,7 @@ import impl.nog.util
 log = logging.getLogger(__name__)
 
 
-class Command(django.core.management.base.BaseCommand):
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):
@@ -50,7 +49,6 @@ class Command(django.core.management.base.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        argparse.Namespace.is_doi = argparse.Namespace
         self.opt = opt = argparse.Namespace(**opt)
         impl.nog.util.add_console_handler(opt.debug)
 
@@ -101,7 +99,7 @@ class Command(django.core.management.base.BaseCommand):
             missing_count += 1
 
             try:
-                nog.bdb.create_minter_database(naan_str, shoulder_str)
+                nog.minter.create_minter_database(naan_str, shoulder_str)
             except Exception as e:
                 log.warn(
                     u'Unable to create missing minter. prefix="{}" name="{}". Error: {}'.format(

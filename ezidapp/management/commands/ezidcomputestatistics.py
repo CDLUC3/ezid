@@ -1,5 +1,6 @@
-import django.core.management.base
 import os.path
+
+import django.core.management
 
 # The following must precede any EZID module imports:
 execfile(
@@ -13,7 +14,7 @@ execfile(
 import stats
 
 
-class Command(django.core.management.base.BaseCommand):
+class Command(django.core.management.BaseCommand):
     help = "Compute identifier statistics"
 
     def handle(self, *args, **options):

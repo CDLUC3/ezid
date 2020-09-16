@@ -5,14 +5,14 @@ from __future__ import absolute_import, division, print_function
 
 import argparse
 import logging
-import re
 
+import django.contrib.auth.models
 import django.core.management
-import django.core.management.base
+import django.db.transaction
 
 import ezidapp.models
 import impl.nog.shoulder
-import nog.bdb
+import nog.id_ns
 
 try:
     import bsddb
@@ -31,10 +31,7 @@ import impl.nog.util
 log = logging.getLogger(__name__)
 
 
-class Command(django.core.management.base.BaseCommand):
-    # - Naming conventions:
-    # https://docs.google.com/document/d/1uJiC5jGfTBuKBWAoddOyxUCO4ZbbL8c75O72YxgIr08/edit
-
+class Command(django.core.management.BaseCommand):
     help = __doc__
 
     def __init__(self):
@@ -89,11 +86,11 @@ class Command(django.core.management.base.BaseCommand):
         # The shoulder must always be upper case for DOIs
         shoulder_str = opt.shoulder_str.upper()
 
-        # shadow_str is the name of the minter, which always has 5 digits, while
-        # the prefix may have only 4 digits. E.g.:
-        # scheme_less = 10.9111/FK4 -> shadow = 10.b9111/FK4
-        scheme_less_str = '10.{}/{}'.format(opt.prefix_str, shoulder_str)
-        shadow_str = impl.util.doi2shadow(scheme_less_str)
+    def _handle(self, opt):
+        try:
+            ns = nog.id_ns.IdNamespace.from_str(opt.ns_str)
+        except nog.id_ns.IdentifierError as e:
+            raise django.core.management.CommandError(str(e))
 
         prefix_str, shoulder_str = shadow_str.split('/')
 
@@ -116,6 +113,10 @@ class Command(django.core.management.base.BaseCommand):
             datacenter_model = ezidapp.models.StoreDatacenter.objects.get(
                 symbol=opt.datacenter_str
             )
+
+        log.info('Creating minter for DOI shoulder: {}'.format(opt.ns_str))
+        bdb_path = nog.minter.create_minter_database(ns)
+        log.debug('Minter BerkeleyDB created at: {}'.format(bdb_path.as_posix()))
 
         full_shoulder_str = nog.bdb.create_minter_database(prefix_str, shoulder_str)
 
