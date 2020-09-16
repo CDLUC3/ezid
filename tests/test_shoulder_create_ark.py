@@ -21,11 +21,10 @@ class TestShoulderCreateArk:
             prefix='ark:/91101/r01'
         ).exists()
         django.core.management.call_command(
-            # <naan> <shoulder> <name>
+            # <ns> <org-name>
             'shoulder-create-ark',
-            '91101',
-            'r01',
-            'r01 test org',
+            'ark:/91101/r01',
+            '91101/r01 test org',
         )
         sample.assert_match(caplog.text, 'output')
 
@@ -35,11 +34,10 @@ class TestShoulderCreateArk:
             prefix='ark:/91101/r01'
         ).exists()
         django.core.management.call_command(
-            # <naan> <shoulder> <name>
+            # <ns> <org-name>
             'shoulder-create-ark',
-            '91101',
-            'r01',
-            'r01 test org',
+            'ark:/91101/r01',
+            '91101/r01 test org',
         )
         s = ezidapp.models.Shoulder.objects.filter(prefix='ark:/91101/r01').get()
         sample.assert_match(tests.util.util.shoulder_to_dict(s), 'basic')
@@ -53,11 +51,10 @@ class TestShoulderCreateArk:
             prefix='ark:/91101/r01'
         ).exists()
         django.core.management.call_command(
-            # <naan> <shoulder> <name>
+            # <ns> <org-name>
             'shoulder-create-ark',
-            '91101',
-            'r01',
-            'r01 test org',
+            'ark:/91101/r01',
+            '91101/r01 test org',
             '--super-shoulder',
             '--test',
         )
@@ -69,24 +66,23 @@ class TestShoulderCreateArk:
 
     def test_1030(self, caplog, tmp_bdb_root):
         """Creating a full shoulder without specifying the shoulder causes the minters
-        to be stored in a separate directory named 'unspecified'.
+        to be stored in a separate directory named 'NULL'.
         """
-        org_str = 'test org unspecified shoulder'
-        namespace_str = 'ark:/99920/'
-        assert not ezidapp.models.Shoulder.objects.filter(prefix=namespace_str).exists()
+        ns_str = 'ark:/99920/'
+        org_str = '91101/r01 test org'
+        assert not ezidapp.models.Shoulder.objects.filter(prefix=ns_str).exists()
         django.core.management.call_command(
-            # <naan> <shoulder> <name>
+            # <ns> <org-name>
             'shoulder-create-ark',
-            '99920',
-            '',
+            ns_str,
             org_str,
             '--super-shoulder',
             '--test',
         )
-        assert ezidapp.models.Shoulder.objects.filter(prefix=namespace_str).exists()
-        ezid_uri = "ezid:/99920/unspecified"
+        ezid_uri = "ezid:/99920/NULL"
+        assert ezidapp.models.Shoulder.objects.filter(prefix=ns_str).exists()
         s = ezidapp.models.Shoulder.objects.filter(minter=ezid_uri).get()
-        sample.assert_match(tests.util.util.shoulder_to_dict(s), 'unspecified')
+        sample.assert_match(tests.util.util.shoulder_to_dict(s), 'NULL')
         assert s.minter == ezid_uri
         assert s.name == org_str
         assert s.active
