@@ -173,7 +173,7 @@ class IdNamespace(
 
     @staticmethod
     def _split_ark_ns_to_tup(ark_ns):
-        m = re.match(r'(?:(ark)(?::/))((?:\d|\w)(?:\d+))(?:(/)(.*))?', ark_ns)
+        m = re.match(r'(?:(ark)(?::/))((?:\d|\w)(?:\d*))(?:(/)(.*))?', ark_ns)
         if not m:
             IdNamespace._raise_invalid_ns('ARK', ark_ns)
         return m.groups()
