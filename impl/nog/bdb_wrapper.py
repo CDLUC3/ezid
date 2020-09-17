@@ -97,9 +97,7 @@ class BdbWrapper(object):
                 'Dry-run: Minter state not saved. Any minted IDs will be repeated.'
             )
             return
-        if exc_type in (StopIteration, GeneratorExit):
-            return
-        if exc_type:
+        if exc_type and exc_type not in (StopIteration, GeneratorExit):
             log.error(
                 'Minter state not written back to BerkeleyDB due to exception. '
                 'Any minted IDs will be repeated.'
@@ -192,9 +190,7 @@ class Bdb:
                 'Dry-run: Minter state not saved. Any minted IDs will be repeated.'
             )
             return
-        if exc_type in (StopIteration, GeneratorExit):
-            return
-        if exc_type:
+        if exc_type and exc_type not in (StopIteration, GeneratorExit):
             log.error(
                 'Minter state not written back to BerkeleyDB due to exception. '
                 'Any minted IDs will be repeated.'

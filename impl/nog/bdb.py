@@ -50,7 +50,7 @@ def dump(bdb_path, compact=True):
     """Dump the state of a minter BerkeleyDB to stdout as HJSON. Only the fields used by EZID
     are included.
     """
-    log.info(as_hjson(bdb_path, compact))
+    print(as_hjson(bdb_path, compact))
 
 
 def dump_full(bdb_path):
@@ -180,6 +180,27 @@ def get_bdb_path_by_namespace(ns, root_path=None):
         get_bdb_root(root_path),
         naan_prefix_str,
         ns.shoulder.lower() if ns.shoulder else 'NULL',
+        'nog.bdb',
+    ).resolve()
+
+
+def get_bdb_path_by_shoulder_model(shoulder_model, root_path=None):
+    """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
+
+    Args:
+        shoulder_model (Shoulder): The Django ORM model for the shoulder to use for
+            the minting. The model may be a legacy record for N2T based minting, or
+            a record from a minter created in EZID.
+        root_path (str, optional):
+            Path to the root of the minter directory hierarchy. If not provided, the
+            default for EZID is used.
+
+    Returns:
+        pathlib2.Path
+    """
+    return pathlib2.Path(
+        get_bdb_root(root_path),
+        '/'.join(shoulder_model.minter.split('/')[-2:]),
         'nog.bdb',
     ).resolve()
 
