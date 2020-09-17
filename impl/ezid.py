@@ -12,7 +12,7 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
+import logging
 import threading
 import uuid
 
@@ -32,6 +32,8 @@ from nog import minter
 _perUserThreadLimit = None
 _perUserThrottle = None
 
+
+logger = logging.getLogger('__name__')
 
 def loadConfig():
     global _perUserThreadLimit, _perUserThrottle
@@ -187,10 +189,13 @@ def mintIdentifier(shoulder, user, metadata={}):
         if shoulder_model.minter == "":
             log.badRequest(tid)
             return "error: bad request - shoulder does not support minting"
-        # Derive the shadow ark from the minter URL
-        minted_ns = minter.mint_id(shoulder_model)
-        identifier = str(minted_ns)
-        # identifier = shoulder_model.prefix + unqualified_ark
+
+        identifier = minter.mint_id(shoulder_model)
+
+        if shoulder_model.prefix.startswith('doi:'):
+            identifier = 'doi:{}'.format(util.shadow2doi(identifier))
+        elif shoulder_model.prefix.startswith('ark:/'):
+            identifier = 'ark:/{}'.format(identifier)
 
     log.success(tid, identifier)
 
@@ -277,7 +282,8 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
     except django.core.exceptions.ValidationError, e:
         log.badRequest(tid)
         return "error: bad request - " + util.formatValidationError(e)
-    except django.db.utils.IntegrityError:
+    except django.db.utils.IntegrityError as e:
+        logger.error(str(e))
         log.badRequest(tid)
         if updateIfExists:
             return setMetadata(identifier, user, metadata, internalCall=True)
