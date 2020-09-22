@@ -7,7 +7,6 @@ EZID's custom configuration system is not used.
 
 pytest finds this file via the DJANGO_SETTINGS_MODULE setting in ~/tox.ini.
 """
-import logging
 import logging.config
 import os.path
 import socket
@@ -163,7 +162,7 @@ logging.config.dictConfig(
         'disable_existing_loggers': False,
         'formatters': {
             'verbose': {
-                'format': '%(levelname)8s %(module)s %(process)d %(thread)s %(message)s',
+                'format': '%(levelname)8s %(name)8s %(module)s %(process)d %(thread)s %(message)s',
             },
             'simple': {'format': '%(levelname)8s %(message)s'},
         },
@@ -178,14 +177,14 @@ logging.config.dictConfig(
         'loggers': {
             '': {'handlers': ['console'], 'propagate': True, 'level': 'DEBUG',},
             # Increase logging level on loggers that are noisy at debug level
+            'django.db': {
+                'level': 'ERROR',
+            },
+            # Increase logging level on loggers that are noisy at debug level
             'django.request': {
-                'handlers': ['console'],
-                'propagate': False,
                 'level': 'ERROR',
             },
             'filelock': {
-                'handlers': ['console'],
-                'propagate': False,
                 'level': 'ERROR',
             },
         },
