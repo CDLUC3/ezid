@@ -20,6 +20,7 @@ import shoulder_parser
 
 log = logging.getLogger(__name__)
 
+
 MASTER_SHOULDERS_PATH = impl.nog.filesystem.abs_path('../../../master_shoulders.txt')
 DEBUG = True
 

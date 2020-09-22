@@ -60,11 +60,6 @@ import nog.exc
 import nog.id_ns
 import nog.minter
 
-try:
-    import bsddb
-except ImportError:
-    import bsddb3 as bsddb
-
 log = logging.getLogger(__name__)
 
 
@@ -140,7 +135,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.add_console_handler(opt.debug)
+        impl.nog.util.log_to_console(__name__, opt.debug)
 
         # 'list' is a reserved keyword.
         if opt.action_str == 'list':

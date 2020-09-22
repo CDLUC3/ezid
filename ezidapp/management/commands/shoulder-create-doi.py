@@ -11,19 +11,12 @@ import django.core.management
 import django.db.transaction
 
 import ezidapp.models
-import impl.nog.shoulder
-import nog.id_ns
-
-try:
-    import bsddb
-except ImportError:
-    import bsddb3 as bsddb
-
-
-import impl.nog.shoulder
 import impl.nog.reload
+import impl.nog.shoulder
+import impl.nog.shoulder
 import impl.nog.util
 import nog.exc
+import nog.id_ns
 import nog.minter
 
 log = logging.getLogger(__name__)

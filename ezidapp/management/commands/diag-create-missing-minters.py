@@ -8,23 +8,17 @@ import argparse
 import logging
 import re
 
+import django.contrib.auth.models
 import django.core.management
+import django.core.management
+import django.db.transaction
 import pathlib2
 
 import ezidapp.models
+import impl.nog.util
+import nog.bdb
 import nog.bdb
 import nog.minter
-
-try:
-    import bsddb
-except ImportError:
-    import bsddb3 as bsddb
-
-import django.contrib.auth.models
-import django.core.management
-import django.db.transaction
-import nog.bdb
-import impl.nog.util
 
 log = logging.getLogger(__name__)
 

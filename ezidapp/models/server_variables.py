@@ -13,8 +13,10 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.db.models
+import logging
 import random
+
+import django.db.models
 
 _secretKeyLength = 50
 

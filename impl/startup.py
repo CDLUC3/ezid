@@ -28,7 +28,6 @@ class Startup(django.apps.AppConfig):
             ui_common.loadConfig()
             config.registerReloadListener(ui_common.loadConfig)
         except Exception:
-            logger.exception('')
             # App not ready to be configured yet. This allows running
             # `django-admin migrate` to create the initial databases.
             return

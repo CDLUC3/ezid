@@ -7,15 +7,9 @@ import argparse
 import logging
 
 import django.core.management
+import django.db.transaction
 
 import impl.nog.reload
-
-try:
-    import bsddb
-except ImportError:
-    import bsddb3 as bsddb
-
-import django.db.transaction
 import impl.nog.util
 
 log = logging.getLogger(__name__)

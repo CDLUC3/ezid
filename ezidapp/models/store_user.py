@@ -13,6 +13,8 @@
 #
 # -----------------------------------------------------------------------------
 
+import logging
+
 import django.contrib.auth.hashers
 import django.contrib.auth.models
 import django.core.validators
@@ -24,6 +26,9 @@ import store_group
 import store_realm
 import user
 import validation
+
+logger = logging.getLogger(__name__)
+
 
 # Deferred imports...
 """
