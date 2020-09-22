@@ -88,6 +88,26 @@ def pytest_configure(config):
     logging.getLogger('django.db.backends.schema').setLevel(logging.ERROR)
 
 
+# Autouse fixtures
+
+
+@pytest.fixture(autouse=True)
+def enable_db_access_for_all_tests(db):
+    """Make the Django DB available to all tests. This will use Django's default DB,
+    which is the "store" DB in EZID. The DB connection is set up according to the
+    DJANGO_SETTINGS_MODULE setting in ezid/tox.ini.
+    """
+    pass
+
+
+@pytest.fixture(autouse=True)
+def disable_log_to_console(mocker):
+    """Prevent management commands from reconfiguring the logging that has been set up
+    by pytest."""
+    mocker.patch('impl.nog.util.log_to_console')
+    mocker.patch('nog.util.log_to_console')
+
+
 # Fixtures
 
 
@@ -124,8 +144,6 @@ def ez_admin(admin_client, admin_admin, configured, mocker):
 @pytest.fixture(scope='session')
 def django_db_setup(django_db_keepdb):
     django.conf.settings.DATABASES = {
-        # To keep the Django admin app happy, the store database must be
-        # referred to as 'default', despite our use of a router below.
         "default": {
             "ENGINE": "django.db.backends.mysql",
             "HOST": "localhost",
@@ -146,15 +164,6 @@ def django_db_setup(django_db_keepdb):
             'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock',},
         },
     }
-
-
-@pytest.fixture(autouse=True)
-def enable_db_access_for_all_tests(db):
-    """Make the Django DB available to all tests. This will use Django's default DB,
-    which is the "store" DB in EZID. The DB connection is set up according to the
-    DJANGO_SETTINGS_MODULE setting in ezid/tox.ini.
-    """
-    pass
 
 
 @pytest.fixture()
@@ -185,12 +194,14 @@ def tmp_bdb_root(mocker, tmp_path):
 @pytest.fixture()
 def shoulder_csv():
     """Iterable returning rows from the SHOULDER_CSV file"""
+
     def itr():
         with pathlib2.Path(SHOULDER_CSV).open('rb',) as f:
             for row_tup in csv.reader(f):
                 ns_str, org_str, n2t_url = (s.decode('utf-8') for s in row_tup)
                 log.debug('Testing with shoulder row: {}'.format(row_tup))
                 yield ns_str, org_str, n2t_url
+
     yield itr()
 
 
