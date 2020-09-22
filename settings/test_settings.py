@@ -7,26 +7,25 @@ EZID's custom configuration system is not used.
 
 pytest finds this file via the DJANGO_SETTINGS_MODULE setting in ~/tox.ini.
 """
-
+import logging
+import logging.config
 import os.path
 import socket
 import sys
 
 import django.utils.translation
 
-STANDALONE = False
+STANDALONE = True
 DAEMON_THREADS_ENABLED = False
 LOCALIZATIONS = {"default": ("cdl", ["ezid@ucop.edu"])}
-
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 SITE_ROOT = os.path.split(PROJECT_ROOT)[0]
 DOWNLOAD_WORK_DIR = os.path.join(SITE_ROOT, "download")
 DOWNLOAD_PUBLIC_DIR = os.path.join(DOWNLOAD_WORK_DIR, "public")
 SETTINGS_DIR = os.path.join(PROJECT_ROOT, "settings")
 EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "test_config.conf")
-EZID_SHADOW_CONFIG_FILE = '/dev/null'  # EZID_CONFIG_FILE + ".shadow"
+EZID_SHADOW_CONFIG_FILE = '/dev/null'
 DEPLOYMENT_LEVEL = 'local'
-LOGGING_CONFIG_FILE = "test_logging.conf"
 MINTERS_PATH = os.path.join(PROJECT_ROOT, "db", "minters")
 
 sys.path.append(os.path.join(PROJECT_ROOT, "impl"))
@@ -40,14 +39,18 @@ ADMIN_USER = 'admin'
 ADMIN_PW = 'admin'
 
 ALLOWED_HOSTS = [
-    'testserver',
+    "localhost",
+    "127.0.0.1",
+    'testserver',  # Travis
+    "uc3-ezidx2-dev.cdlib.org",
 ]
-
 
 if "HOSTNAME" in os.environ:
     SERVER_EMAIL = "ezid@" + os.environ["HOSTNAME"]
 else:
     SERVER_EMAIL = "ezid@" + socket.gethostname()
+
+ALLOWED_HOSTS = []
 
 DATABASES = {
     "default": {
@@ -144,33 +147,67 @@ INSTALLED_APPS = [
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
-LOGGING = {
-    'version': 1,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)8s %(module)s %(process)d %(thread)s %(message)s',
+
+# Logging
+
+# Disable Django's built-in logging config
+LOGGING_CONFIG = None
+
+# Disable EZID's logging config (would be performed in impl.log)
+LOGGING_CONFIG_FILE = None
+
+# Configure logging directly, overriding any existing config
+logging.config.dictConfig(
+    {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)8s %(module)s %(process)d %(thread)s %(message)s',
+            },
+            'simple': {'format': '%(levelname)8s %(message)s'},
         },
-        'simple': {'format': '%(levelname)8s %(message)s'},
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+        'handlers': {
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+                'formatter': 'verbose',
+                'stream': sys.stdout,
+            },
         },
-    },
-    'loggers': {
-        '': {'handlers': ['console'], 'propagate': True, 'level': 'INFO',},
-        # Silence loggers that are noisy at debug level
-        'django.request': {
-            'handlers': ['console'],
-            'propagate': False,
-            'level': 'ERROR',  # WARN also shows 404 errors
+        'loggers': {
+            '': {'handlers': ['console'], 'propagate': True, 'level': 'DEBUG',},
+            # Increase logging level on loggers that are noisy at debug level
+            'django.request': {
+                'handlers': ['console'],
+                'propagate': False,
+                'level': 'ERROR',
+            },
+            'filelock': {
+                'handlers': ['console'],
+                'propagate': False,
+                'level': 'ERROR',
+            },
         },
-        'filelock': {
-            'handlers': ['console'],
-            'propagate': False,
-            'level': 'ERROR',  # WARN also shows 404 errors
-        },
-    },
-}
+    }
+)
+
+# Ensure that user 'admin' with password 'admin' exists and is an admin
+# import ezidapp.models
+# store_user_model = ezidapp.models.StoreUser.objects.update_or_create(
+#     name='admin',
+#     password='admin',
+#     displayName='Test Admin',
+#     isSuperuser=True,
+#     loginEnabled=True,
+# )
+#
+
+# These messages should always make it to stdout
+sys.__stdout__.write('{}\n'.format('-' * 100))
+sys.__stdout__.write('The next 3 lines should contain DEBUG, INFO AND ERROR level\n')
+sys.__stdout__.write('test messages from logging:\n')
+log = logging.getLogger(__name__)
+log.debug('DEBUG level test message')
+log.info('INFO level test message')
+log.error('ERROR level test message')
