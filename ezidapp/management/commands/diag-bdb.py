@@ -155,9 +155,7 @@ class Command(django.core.management.BaseCommand):
         try:
             return getattr(self, opt.action_str)()
         except nog.exc.MinterError as e:
-            raise django.core.management.CommandError(
-                'Minter error: {}'.format(str(e))
-            )
+            raise django.core.management.CommandError('Minter error: {}'.format(str(e)))
 
     # See the docstring for descriptions of the actions.
 

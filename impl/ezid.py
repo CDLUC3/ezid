@@ -33,7 +33,7 @@ _perUserThreadLimit = None
 _perUserThrottle = None
 
 
-logger = logging.getLogger('__name__')
+logger = logging.getLogger(__name__)
 
 def loadConfig():
     global _perUserThreadLimit, _perUserThrottle

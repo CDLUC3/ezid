@@ -21,6 +21,9 @@ import django.db.models
 _secretKeyLength = 50
 
 
+logger = logging.getLogger(__name__)
+
+
 class ServerVariables(django.db.models.Model):
     # This is a one-row pseudo-table that stores server variables.
 
