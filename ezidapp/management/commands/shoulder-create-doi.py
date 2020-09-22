@@ -33,7 +33,6 @@ class Command(django.core.management.BaseCommand):
         parser.add_argument(
             "ns_str",
             metavar="shoulder-doi",
-            nargs='?',
             help='Full DOI of new shoulder. E.g., doi:10.12345/',
         )
         parser.add_argument('name_str', metavar='org-name', help='Name of organization')

@@ -33,7 +33,6 @@ class Command(django.core.management.BaseCommand):
         parser.add_argument(
             "ns_str",
             metavar="shoulder-ark",
-            nargs='?',
             help='Full ARK of new shoulder. E.g., ark:/12345/',
         )
         parser.add_argument('name_str', metavar='org-name', help='Name of organization')
