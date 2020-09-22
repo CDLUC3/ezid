@@ -192,6 +192,9 @@ class StoreUser(user.User):
         # corresponding user in the Django auth app, that user's password
         # is both set and saved.  Thus calls to this method should
         # generally be wrapped in a transaction.
+        logger.debug(
+            'Setting password for user. displayName="{}"'.format(self.displayName)
+        )
         self.password = django.contrib.auth.hashers.make_password(password)
         try:
             au = django.contrib.auth.models.User.objects.get(username=self.username)
@@ -201,24 +204,52 @@ class StoreUser(user.User):
             pass
 
     def authenticate(self, password):
-        # Returns True if the supplied password matches the user's.
-        if self.loginEnabled and django.contrib.auth.hashers.check_password(
-            password, self.password
-        ):
-            # Upgrade older LDAP password hashes.
-            if self.password.split("$")[0] == "ldap_sha1":
-                import ezidapp.admin
+        """Returns True if the supplied password matches the user's."""
+        logger.debug(
+            'Authenticating StoreUser. displayName="{}"'.format(self.displayName)
+        )
 
-                try:
-                    with django.db.transaction.atomic():
-                        self.setPassword(password)
-                        self.save()
-                        ezidapp.admin.scheduleUserChangePostCommitActions(self)
-                except:
-                    pass
-            return True
-        else:
+        if not self.loginEnabled:
+            logger.debug('Auth denied. loginEnabled="{}"'.format(self.loginEnabled))
             return False
+
+        if not django.contrib.auth.hashers.check_password(password, self.password):
+            logger.debug('Auth denied. Password check failed')
+            logger.debug(
+                'User\'s hashed pw: {}'.format(
+                    # self.password
+                    django.contrib.auth.hashers.make_password(password)
+                )
+            )
+            try:
+                user_model = django.contrib.auth.models.User.objects.get(
+                    username=self.username
+                )
+            except django.contrib.auth.models.User.DoesNotExist:
+                logger.debug('Auth record does not exist for user')
+            else:
+                logger.debug(
+                    'Auth record exists for user and contains hashed pw: {}'.format(
+                        user_model.password
+                    )
+                )
+            return False
+
+        logger.debug('Auth successful')
+
+        # Upgrade older LDAP password hashes.
+        if self.password.split("$")[0] == "ldap_sha1":
+            import ezidapp.admin
+
+            try:
+                with django.db.transaction.atomic():
+                    self.setPassword(password)
+                    self.save()
+                    ezidapp.admin.scheduleUserChangePostCommitActions(self)
+            except:
+                pass
+
+        return True
 
     class Meta:
         verbose_name = "user"
@@ -345,4 +376,5 @@ class AnonymousUser(object):
 
     @staticmethod
     def authenticate(password):
+        logger.debug('User is anonymous. Auth denied')
         return False

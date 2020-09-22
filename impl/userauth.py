@@ -14,17 +14,22 @@
 # -----------------------------------------------------------------------------
 
 import base64
+import hashlib
+import logging
+
 import django.conf
 import django.contrib.auth
 import django.contrib.auth.hashers
 import django.contrib.auth.models
 import django.utils.encoding
-import hashlib
 
 import ezidapp.models
 import log
 
 SESSION_KEY = "ezidAuthenticatedUser"
+
+
+logger = logging.getLogger(__name__)
 
 
 def authenticate(username, password, request=None, coAuthenticate=True):
@@ -40,24 +45,49 @@ def authenticate(username, password, request=None, coAuthenticate=True):
   exists, then a StoreUser object for "user" is returned (even if
   logins are not enabled for the user).
   """
+    logger.debug('Authenticating user. username="{}"'.format(username))
     if username.startswith("@"):
         username = username[1:]
         sudo = True
+        logger.debug('User is authenticating as an administrator')
     else:
         sudo = False
+        logger.debug('User is authenticating as a regular, non-privileged user')
+
     username = username.strip()
     if username == "":
+        logger.debug(
+            'Auth failed due to missing username. username="{}"'.format(username)
+        )
         return "error: bad request - username required"
+
     password = password.strip()
     if password == "":
+        logger.debug(
+            'Auth failed due to missing password. username="{}"'.format(username)
+        )
         return "error: bad request - password required"
+
     user = ezidapp.models.getUserByUsername(username)
+    logger.debug('Username resolved. user="{}"'.format(user))
+
     if user == None or user.isAnonymous:
+        logger.debug(
+            'Auth failed due unknown or anonymous user. '
+            'user="{}" user.isAnonymous={}'.format(
+                user, None if not user else user.isAnonymous
+            )
+        )
         return None
+
     if (sudo and ezidapp.models.getAdminUser().authenticate(password)) or (
         not sudo and user.authenticate(password)
     ):
+        logger.debug('Auth successful. user="{}" sudo="{}"'.format(user, sudo))
+
         if request != None:
+            logger.debug('Auth in active request')
+
             request.session[SESSION_KEY] = user.id
             # Add session variables to support the Django admin interface.
             if (
@@ -80,8 +110,11 @@ def authenticate(username, password, request=None, coAuthenticate=True):
                             + "'django-admin ezidadminsetpassword' to correct"
                         ),
                     )
+        else:
+            logger.debug('Auth without an active request')
         return user
     else:
+        logger.debug('Auth failed. username="{}" sudo="{}"'.format(username, sudo))
         return None
 
 
