@@ -1,0 +1,132 @@
+// ##### Stackable Table v.2 ##### //
+
+// Inspired from: https://css-tricks.com/examples/ResponsiveTables/responsive.php
+
+@include bp(screen2) {
+	.table3 {
+		width: 100%;
+		max-width: 1000px;
+		margin: 10px auto;
+		border-collapse: collapse;
+	}
+
+	.table3 thead tr {
+		background: $design-secondary-lighter;
+	}
+
+	.table3 th,
+	.table3 td {
+		min-width: 80px;
+		padding: 0.5em;
+		border: 1px solid $design-secondary-color;
+		vertical-align: top;
+                /* https://kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
+                /* Warning: Needed for oldIE support, but words are broken up letter-by-letter */
+                /* -ms-word-break: break-all;
+
+                /* Non standard for webkit */
+                /* word-break: break-all; */
+
+                /* -moz-hyphens: auto; */
+                /* -ms-hyphens: auto; */
+                /* -webkit-hyphens: auto; */
+                /* hyphens: auto; */
+	}
+
+	.table3 th {
+		position: relative;
+		padding: 0.5em 30px 0.5em 0.5em;
+		text-align: left;
+	}
+
+	.sorting {
+		position: absolute;
+		top: 0;
+		right: 2px;
+		padding: 12px;
+		border: none;
+		background: no-repeat url('../images/sort_brown.png') 12px 8px;
+	}
+
+	.sort__desc {
+		position: absolute;
+		top: 0;
+		right: 2px;
+		padding: 12px;
+		border: none;
+		background: no-repeat url('../images/sort_desc_brown.png') 12px 8px;
+	}
+
+	.sort__asc {
+		position: absolute;
+		top: 0;
+		right: 2px;
+		padding: 12px;
+		border: none;
+		background: no-repeat url('../images/sort_asc_brown.png') 12px 8px;
+ 	}
+
+}
+
+@media (max-width: $screen-md-min) {
+	.table3 table,
+	.table3 thead,
+	.table3 tbody,
+	.table3 th,
+	.table3 td,
+	.table3 tr {
+		display: block;
+	}
+
+	.table3 thead tr {
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+
+	.table3 tbody {
+		margin: 0 0 15px;
+		border: 1px solid $design-secondary-color;
+
+		tr:nth-child(even) {
+		  border-top: 1px solid $design-secondary-color;
+		  border-bottom: 1px solid $design-secondary-color;
+		  background: $design-secondary-lighter;
+		}
+
+	}
+
+	.table3 td {
+		position: relative;
+		margin: 0 0 0 150px;
+		padding: 6px;
+		border-left: 1px solid $design-secondary-color;
+
+		&::before {
+			position: absolute;
+			top: 6px;
+			left: -145px;
+			font-weight: bold;
+			white-space: nowrap;
+		}
+	}
+
+	// .table3 .c_identifier {
+		// truncate identifier table cell:
+	//	max-width: 50vw;
+	//	text-overflow: ellipsis;
+	//	white-space: nowrap;
+	//	overflow: hidden;
+	// }
+
+	.table3 .c_title::before { content: 'Object Title'; }
+	.table3 .c_creator::before { content: 'Object Creator'; }
+	.table3 .c_identifier::before { content: 'Identifier'; }
+	.table3 .c_owner::before { content: 'ID Owner'; }
+	.table3 .c_create_time::before { content: 'ID Date Created'; }
+	.table3 .c_update_time::before { content: 'ID Date Last Mod'; }
+	.table3 .c_publisher::before { content: 'Object Publisher'; }
+	.table3 .c_pubyear::before { content: 'Object Pub Date'; }
+	.table3 .c_object_type::before { content: 'Object Type'; }
+	.table3 .c_id_status::before { content: 'ID Status'; }
+}

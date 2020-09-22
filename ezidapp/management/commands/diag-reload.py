@@ -7,15 +7,9 @@ import argparse
 import logging
 
 import django.core.management
+import django.db.transaction
 
 import impl.nog.reload
-
-try:
-    import bsddb
-except ImportError:
-    import bsddb3 as bsddb
-
-import django.db.transaction
 import impl.nog.util
 
 log = logging.getLogger(__name__)
@@ -35,5 +29,5 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.add_console_handler(opt.debug)
+        impl.nog.util.log_to_console(__name__, opt.debug)
         impl.nog.reload.trigger_reload()

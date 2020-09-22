@@ -46,8 +46,8 @@ class Command(django.core.management.BaseCommand):
         )
 
     def handle(self, *_, **opt):
-        opt = argparse.Namespace(**opt)
-        impl.nog.util.add_console_handler(opt.debug)
+        self.opt = opt = argparse.Namespace(**opt)
+        impl.nog.util.log_to_console(__name__, opt.debug)
 
         try:
             shoulder_model = ezidapp.models.Shoulder.objects.get(

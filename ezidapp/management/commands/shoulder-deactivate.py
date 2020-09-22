@@ -6,20 +6,13 @@ from __future__ import absolute_import, division, print_function
 import argparse
 import logging
 
+import django.contrib.auth.models
 import django.core.management
+import django.db.transaction
 
 import ezidapp.models
 import impl.nog.reload
-
-try:
-    import bsddb
-except ImportError:
-    import bsddb3 as bsddb
-
-import django.contrib.auth.models
-import django.db.transaction
 import impl.nog.util
-
 
 log = logging.getLogger(__name__)
 
@@ -43,7 +36,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.add_console_handler(opt.debug)
+        impl.nog.util.log_to_console(__name__, opt.debug)
 
         shoulder_str = opt.shoulder_str
         try:

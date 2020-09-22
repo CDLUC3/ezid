@@ -36,7 +36,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.add_console_handler(opt.debug)
+        impl.nog.util.log_to_console(__name__, opt.debug)
 
         try:
             scheme_str, full_shoulder = opt.shoulder_str.split(':',)

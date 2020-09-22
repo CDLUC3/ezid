@@ -20,6 +20,7 @@ import shoulder_parser
 
 log = logging.getLogger(__name__)
 
+
 MASTER_SHOULDERS_PATH = impl.nog.filesystem.abs_path('../../../master_shoulders.txt')
 DEBUG = True
 
@@ -38,7 +39,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.add_console_handler(opt.debug)
+        impl.nog.util.log_to_console(__name__, opt.debug)
 
         try:
             with django.db.transaction.atomic():

@@ -1,0 +1,27 @@
+// ##### Citation Component ##### //
+
+.citation {
+	$box-padding: 1.5rem;
+
+	padding: $box-padding;
+	border: 1px solid $design-primary-color;
+	border-radius: $form-element-border-radius;
+
+	header {
+		margin: (-$box-padding) (-$box-padding) $box-padding (-$box-padding);
+		padding: 1rem 1rem 1rem $box-padding;
+		background-color: $design-primary-color;
+	}
+
+	h3 {
+		margin: 0;
+		color: $design-white-color;
+	}
+
+	p {
+		margin: 0;
+		font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+		font-size: 1.6rem;
+		line-height: 1.3;
+	}
+}

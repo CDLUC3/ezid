@@ -1,0 +1,70 @@
+// ##### Login Modal Component ##### //
+
+.login-modal {
+	display: none;
+	position: absolute; // to .header__loginout
+	top: 40px;
+	right: 0;
+	width: 250px;
+	padding: 20px;
+	background: rgba($design-white-color, 0.9);
+	box-shadow: 0 6px 12px;
+}
+
+.login-modal__header {
+	display: flex;
+	justify-content: space-between;
+}
+
+.login-modal__title {
+	margin: 0 0 10px;
+	color: $design-primary-color;
+	font-size: 1.3em;
+}
+
+.login-modal__close {
+	width: 15px;
+	height: 15px;
+	padding: 2px;
+	background-color: $design-white-color;
+	cursor: pointer;
+}
+
+.login-modal__form {
+	display: flex;
+	flex-flow: column nowrap;
+}
+
+// Not working. Remove?:
+.login-modal__label {
+	// @extend %screen-readers-only;
+}
+
+.login-modal__form-element {
+	margin: 0 0 15px;
+}
+
+.login-modal__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.login-modal__submit {
+	@extend %button__primary;
+}
+
+.login-modal__forgot {
+	@extend %link__primary;
+	font-size: 0.8em;
+}
+
+.login-modal__new {
+	margin: 15px 0 0;
+	font-size: 1.1em;
+}
+
+.login-modal__sign-up-link {
+	@extend %link__pop;
+}
+

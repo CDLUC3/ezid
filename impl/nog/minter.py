@@ -124,11 +124,9 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
     See Also:
         :func:`mint_id`
     """
-    # naan_str, shoulder_str = re.split(r'[/:.]', shoulder_model.minter)[-2:]
-    shoulder_ns = nog.id_ns.IdNamespace.from_str(shoulder_model.prefix)
-    for minted_ns in mint_by_ns(shoulder_ns, mint_count, dry_run=dry_run):
-        yield minted_ns
-
+    bdb_path = nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
+    for minted_str in mint_by_bdb_path(bdb_path, mint_count, dry_run=dry_run):
+        yield minted_str
 
 def mint_by_ns(ns, mint_count=1, root_path=None, dry_run=False):
     """Like mint_ids(), but accepts a full DOI or ARK namespace.

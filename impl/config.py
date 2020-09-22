@@ -103,6 +103,7 @@ def load():
         django.conf.settings.DEPLOYMENT_LEVEL,
     )
     _version = (int(time.time()),) + _getVersion()
+
     django.conf.settings.SECRET_KEY = ezidapp.models.getOrSetSecretKey()
 
 

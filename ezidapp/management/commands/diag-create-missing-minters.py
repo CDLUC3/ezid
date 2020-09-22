@@ -8,23 +8,17 @@ import argparse
 import logging
 import re
 
+import django.contrib.auth.models
 import django.core.management
+import django.core.management
+import django.db.transaction
 import pathlib2
 
 import ezidapp.models
+import impl.nog.util
+import nog.bdb
 import nog.bdb
 import nog.minter
-
-try:
-    import bsddb
-except ImportError:
-    import bsddb3 as bsddb
-
-import django.contrib.auth.models
-import django.core.management
-import django.db.transaction
-import nog.bdb
-import impl.nog.util
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +44,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.add_console_handler(opt.debug)
+        impl.nog.util.log_to_console(__name__, opt.debug)
 
         log.info('Creating missing minters...')
 
