@@ -187,6 +187,9 @@ def get_bdb_path_by_namespace(ns, root_path=None):
 def get_bdb_path_by_shoulder_model(shoulder_model, root_path=None):
     """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
 
+    The path may or may not exist. The caller may be obtaining the path in which to
+    create a new minter, so the path is not checked.
+
     Args:
         shoulder_model (Shoulder): The Django ORM model for the shoulder to use for
             the minting. The model may be a legacy record for N2T based minting, or
@@ -198,10 +201,14 @@ def get_bdb_path_by_shoulder_model(shoulder_model, root_path=None):
     Returns:
         pathlib2.Path
     """
+    m = shoulder_model
+    minter_uri = m.minter.strip()
+    if not minter_uri:
+        raise nog.exc.MinterNotSpecified(
+            'A minter has not been specified (minter field in the database is empty)'
+        )
     return pathlib2.Path(
-        get_bdb_root(root_path),
-        '/'.join(shoulder_model.minter.split('/')[-2:]),
-        'nog.bdb',
+        get_bdb_root(root_path), '/'.join(minter_uri.split('/')[-2:]), 'nog.bdb',
     ).resolve()
 
 
