@@ -13,11 +13,6 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.conf
-import django.core.mail
-import django.db
-import django.db.models
-import lxml.etree
 import re
 import threading
 import time
@@ -25,9 +20,15 @@ import urllib
 import urllib2
 import uuid
 
+import django.conf
+import django.core.mail
+import django.db
+import django.db.models
+import lxml.etree
+
+import config
 import ezid
 import ezidapp.models
-import config
 import log
 import util
 import util2
@@ -47,7 +48,7 @@ _idleSleep = None
 _ezidUrl = None
 _dataciteEnabled = None
 
-def _loadConfig ():
+def loadConfig ():
   global _enabled, _depositorName, _depositorEmail, _realServer, _testServer
   global _depositUrl, _resultsUrl, _username, _password
   global _daemonEnabled, _threadName, _idleSleep, _ezidUrl, _dataciteEnabled
@@ -595,5 +596,5 @@ def _daemonThread ():
       log.otherError("crossref._daemonThread", e)
       maxSeq = None
 
-_loadConfig()
-config.registerReloadListener(_loadConfig)
+loadConfig()
+config.registerReloadListener(loadConfig)
