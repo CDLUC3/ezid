@@ -91,6 +91,10 @@ class Command(django.core.management.BaseCommand):
 
     def _handle(self, opt):
         try:
+            # Ensure lower case "doi:" and upper case shoulder.
+            ns_tup = opt.ns_str.split('/', 1)
+            ns = '/'.join([ns_tup[0].lower(), ns_tup[1].upper()])
+            opt.ns_str = str(ns)
             ns = nog.id_ns.IdNamespace.from_str(opt.ns_str)
         except nog.id_ns.IdentifierError as e:
             raise django.core.management.CommandError(str(e))
