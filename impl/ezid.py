@@ -193,7 +193,7 @@ def mintIdentifier(shoulder, user, metadata={}):
         identifier = minter.mint_id(shoulder_model)
 
         if shoulder_model.prefix.startswith('doi:'):
-            identifier = 'doi:{}'.format(util.shadow2doi(identifier))
+            identifier = 'doi:{}'.format(util.shadow2doi(identifier.upper()))
         elif shoulder_model.prefix.startswith('ark:/'):
             identifier = 'ark:/{}'.format(identifier)
 
