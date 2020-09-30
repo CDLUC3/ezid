@@ -9,7 +9,7 @@
   'isSupershoulder': True,
   'isTest': True,
   'isUuid': False,
-  'manager': None,
+  'manager': u'ezid',
   'minter': u'ezid:/99920/NULL',
   'name': u'91101/r01 test org',
   'prefix': u'ark:/99920/',

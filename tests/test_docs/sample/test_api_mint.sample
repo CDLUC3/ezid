@@ -1,5 +1,52 @@
-{
-  "body": "",
-  "status": "success",
-  "status_message": "ark:/99933/x14w2j"
-}
+[
+  {
+    "_url": "ark:/99933/x1",
+    "body": "",
+    "status": "success",
+    "status_message": "ark:/99933/x14w2j"
+  },
+  {
+    "_url": "ark:/99934/x2",
+    "body": "",
+    "status": "success",
+    "status_message": "ark:/99934/x24w20"
+  },
+  {
+    "_url": "ark:/99933/x3y4",
+    "body": "",
+    "status": "success",
+    "status_message": "ark:/99933/x3y44w2p"
+  },
+  {
+    "_url": "ark:/99934/",
+    "body": "",
+    "status": "success",
+    "status_message": "ark:/99934/4w2q"
+  },
+  {
+    "_url": "doi:10.9935/X5",
+    "body": "",
+    "status": "error",
+    "status_message": "bad request - public DOI metadata requirements not satisfied: no creator"
+  },
+  {
+    "_url": "doi:10.19936/X6Y7",
+    "body": "",
+    "status": "error",
+    "status_message": "bad request - public DOI metadata requirements not satisfied: no creator"
+  },
+  {
+    "_url": "doi:10.9935/X8",
+    "body": "",
+    "status": "error",
+    "status_message": "bad request - registration with Crossref requires Crossref metadata supplied as value of element
+'crossref'"
+  },
+  {
+    "_url": "doi:10.19936/X9Y0",
+    "body": "",
+    "status": "error",
+    "status_message": "bad request - registration with Crossref requires Crossref metadata supplied as value of element
+'crossref'"
+  }
+]
