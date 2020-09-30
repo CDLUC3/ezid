@@ -87,8 +87,8 @@ def assert_valid_datacenter(datacenter_str):
 
 def dump_shoulders():
     log.info('Shoulders:')
-    for x in ezidapp.models.Shoulder.objects.all().order_by('name', 'prefix'):
-        log.info(x)
+    for m in ezidapp.models.Shoulder.objects.all().order_by('name', 'prefix'):
+        log.info('{:<20} {} '.format(m.prefix.encode('utf-8'), m.name.encode('utf-8')))
 
 
 def dump_datacenters():

@@ -36,10 +36,9 @@ class Command(django.core.management.BaseCommand):
             "--update",
             "-u",
             action="store_true",
-            help="""For use with 'mint': After minting, update the starting point of the
-            minter to the next new identifier. Without this switch, minting does not
-            interfere with the sequence of identifiers that the minter will yield in
-            regular use.""",
+            help="""After minting, update the starting point of the minter to the next
+            new identifier. Without --update, minting does not interfere with the
+            sequence of identifiers that the minter will yield in regular use.""",
         )
         parser.add_argument(
             "--debug", action="store_true", help="Debug level logging",

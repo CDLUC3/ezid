@@ -225,7 +225,7 @@ def ez_admin(admin_client, admin_admin, skip_auth):
     necessary to pull in skip_auth here.
     """
     admin_client.login(username='admin', password='admin')
-    # print('cookies={}'.format(admin_client.cookies))
+    #log.info('cookies={}'.format(admin_client.cookies))
     return admin_client
 
 

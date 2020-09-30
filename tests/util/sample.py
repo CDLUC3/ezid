@@ -81,7 +81,7 @@ def assert_match(
             'Sample mismatch.\nActual:\n{}\nExpected:\n{}\nDiff:\n{}\n'.format(
                 current_str,
                 sample_str,
-                ''.join(
+                '\n'.join(
                     difflib.Differ().compare(
                         current_str.splitlines(), sample_str.splitlines()
                     )
