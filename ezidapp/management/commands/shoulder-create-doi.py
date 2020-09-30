@@ -10,7 +10,7 @@ import django.core.management
 
 import ezidapp.models
 import impl.nog.reload
-import impl.nog.shoulder
+import nog.shoulder
 import impl.nog.util
 import nog.exc
 import nog.id_ns
@@ -94,12 +94,12 @@ class Command(django.core.management.BaseCommand):
         if opt.is_crossref:
             datacenter_model = None
         else:
-            impl.nog.shoulder.assert_valid_datacenter(opt.datacenter_str)
+            nog.shoulder.assert_valid_datacenter(opt.datacenter_str)
             datacenter_model = ezidapp.models.StoreDatacenter.objects.get(
                 symbol=opt.datacenter_str
             )
 
-        impl.nog.shoulder.create_shoulder(
+        nog.shoulder.create_shoulder(
             ns=ns,
             organization_name_str=opt.org_name_str,
             datacenter_model=datacenter_model,

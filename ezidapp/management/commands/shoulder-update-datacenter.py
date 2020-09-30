@@ -7,7 +7,7 @@ import django.core.management
 
 import ezidapp.models
 import impl.nog.reload
-import impl.nog.shoulder
+import nog.shoulder
 import impl.nog.util
 
 log = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ class Command(django.core.management.BaseCommand):
         self.opt = opt = argparse.Namespace(**opt)
         impl.nog.util.log_to_console(__name__, opt.debug)
 
-        impl.nog.shoulder.assert_valid_datacenter(opt.new_datacenter_str)
+        nog.shoulder.assert_valid_datacenter(opt.new_datacenter_str)
 
         try:
             scheme_str, full_shoulder = opt.shoulder_str.split(':',)

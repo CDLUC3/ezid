@@ -9,7 +9,7 @@ import logging
 import django.core.management
 
 import impl.nog.reload
-import impl.nog.shoulder
+import nog.shoulder
 import impl.nog.util
 import nog.exc
 import nog.id_ns
@@ -70,7 +70,7 @@ class Command(django.core.management.BaseCommand):
         except nog.id_ns.IdentifierError as e:
             raise django.core.management.CommandError(str(e))
 
-        impl.nog.shoulder.create_shoulder(
+        nog.shoulder.create_shoulder(
             ns=ns,
             organization_name_str=opt.org_name_str,
             datacenter_model=None,

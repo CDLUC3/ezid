@@ -5,7 +5,7 @@ import logging
 
 import django.core.management
 
-import impl.nog.shoulder
+import nog.shoulder
 import impl.nog.util
 
 log = logging.getLogger(__name__)
@@ -26,4 +26,4 @@ class Command(django.core.management.BaseCommand):
         self.opt = opt = argparse.Namespace(**opt)
         impl.nog.util.log_to_console(__name__, opt.debug)
 
-        impl.nog.shoulder.dump_shoulders()
+        nog.shoulder.dump_shoulders()
