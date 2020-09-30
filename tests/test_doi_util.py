@@ -90,13 +90,13 @@ class TestDoiUtil:
         with pytest.raises(nog.id_ns.IdentifierError):
             bdb.get_path(ns_str, 'root', is_new=True)
 
-    def test_1035(self, shoulder_csv):
+    def test_1035(self, shoulder_csv, tmp_bdb_root):
         """get_path(): Yields the expected paths for shoulders that have minters
         """
         result_list = []
         for ns_str, org_str, n2t_url in shoulder_csv:
             try:
-                result_list.append(bdb.get_path(ns_str))
+                result_list.append(bdb.get_path(ns_str, is_new=True))
             except nog.exc.MinterError as e:
                 result_list.append(repr(e))
         tests.util.sample.assert_match(result_list, 'get_path')
