@@ -16,28 +16,29 @@ import django.http.request
 import pathlib2
 import pytest
 
+import config
 import ezidapp
 import ezidapp.models
-import impl.config
-import impl.config
-import impl.nog.filesystem
-import impl.userauth
+import nog.filesystem
+import nog.shoulder
 import tests.util.sample
 import tests.util.util
 
 DEFAULT_DB_KEY = 'default'
-import collections
-
-Namespace = collections.namedtuple('Namespace', ['full', 'prefix', 'shoulder'])
+import nog.id_ns
 
 NAMESPACE_LIST = [
-    Namespace('ark:/99933/x1', '99933', 'x1'),
-    Namespace('ark:/99934/x2', '99934', 'x2'),
-    Namespace('doi:10.9935/x3', '9935', 'x3'),
-    Namespace('doi:10.9996/x4', '9996', 'x4'),
+    (nog.id_ns.IdNamespace.from_str('ark:/99933/x1'), tuple()),
+    (nog.id_ns.IdNamespace.from_str('ark:/99934/x2'), tuple()),
+    (nog.id_ns.IdNamespace.from_str('ark:/99933/x3y4'), ('supershoulder',)),
+    (nog.id_ns.IdNamespace.from_str('ark:/99934/'), ('supershoulder', 'force',)),
+    (nog.id_ns.IdNamespace.from_str('doi:10.9935/X5'), ('datacenter',)),
+    (nog.id_ns.IdNamespace.from_str('doi:10.19936/X6Y7'), ('datacenter',)),
+    (nog.id_ns.IdNamespace.from_str('doi:10.9935/X8'), ('crossref',)),
+    (nog.id_ns.IdNamespace.from_str('doi:10.19936/X9Y0'), ('crossref',)),
 ]
 
-SHOULDER_CSV = impl.nog.filesystem.abs_path('./test_docs/ezidapp_shoulder.csv')
+SHOULDER_CSV = nog.filesystem.abs_path('./test_docs/ezidapp_shoulder.csv')
 
 # Database fixtures
 
@@ -100,49 +101,29 @@ def enable_db_access_for_all_tests(db):
     pass
 
 
-@pytest.fixture(autouse=True)
-def disable_log_to_console(mocker):
-    """Prevent management commands from reconfiguring the logging that has been set up
-    by pytest."""
-    mocker.patch('impl.nog.util.log_to_console')
-    mocker.patch('nog.util.log_to_console')
-
-
-# Fixtures
-
-
-@pytest.fixture(scope='function')
-def admin_admin(db):
-    """Set the admin password to "admin".
-    """
-    with django.db.transaction.atomic():
-        if not django.contrib.auth.models.User.objects.filter(
-            username='admin'
-        ).exists():
-            django.contrib.auth.models.User.objects.create_superuser(
-                username='admin', password=None, email=""
-            )
-        o = ezidapp.models.getUserByUsername('admin')
-        o.setPassword('admin')
-        o.save()
-
-
-@pytest.fixture(scope='function')
-def configured(db):
-    """EZID's in-memory caches are loaded and valid."""
-    impl.config.reload()
-
-
-@pytest.fixture(scope='function')
-def ez_admin(admin_client, admin_admin, configured, mocker):
-    admin_client.login(username='admin', password='admin')
-    # print('cookies={}'.format(admin_client.cookies))
-    mocker.patch('userauth.authenticateRequest', side_effect=mock_authenticate_request)
-    return admin_client
-
-
 @pytest.fixture(scope='session')
 def django_db_setup(django_db_keepdb):
+    """Prevent pytest from clearing the database at the end of the test session. Also
+    see the --reuse-db and --create-db pytest command line arguments.
+
+    This also prevents Django from creating blank test databases, instead redirecting
+    back to the main database.
+
+    The tests are intended to run with real data in the database since that may help
+    catch database related errors and provides context that the tests can reference
+    without having to create it first.
+
+    The database is populated from a fixture with a `./manage.py loaddata` command as
+    required. On Travis, this is done in `./.travis.yml`.
+
+    Changes made to the database by the tests are done in transactions that are rolled
+    back after each test. However, tests done manually in the UI will permanently change
+    the database, which may cause the tests to fail until the database is reset with
+    `./manage.py loaddata`.
+
+    Note: The name of this fixture must be 'django_db_setup', as it replaces the fixture
+    of the same name in pytest-django.
+    """
     django.conf.settings.DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
@@ -166,126 +147,205 @@ def django_db_setup(django_db_keepdb):
     }
 
 
+@pytest.fixture(autouse=True)
+def disable_log_to_console(mocker):
+    """Prevent management commands from reconfiguring the logging that has been set up
+    by pytest."""
+    mocker.patch('nog.util.log_to_console')
+
+
+# Fixtures
+
+# See also: https://pytest-django.readthedocs.io/en/latest/helpers.html#fixtures
+
+
+@pytest.fixture(scope='function')
+def reloaded():
+    """Refresh EZID's in-memory caches of the database. In the test, additional reloads
+    can be triggered by calling the fixture.
+    """
+
+    def reload_():
+        assert django.conf.settings.configured
+        config.reload()
+        # noinspection PyProtectedMember
+        log.debug(
+            'reloaded(): db_shoulders={} cache_shoulders={}'.format(
+                ezidapp.models.Shoulder.objects.filter(
+                    active=True, manager='ezid'
+                ).count(),
+                len(ezidapp.models.shoulder._shoulders),
+            )
+        )
+
+    reload_()
+    return reload_
+
+
+@pytest.fixture(scope='function')
+def admin_admin(reloaded):
+    """Set the admin password to "admin". This may be useful when testing
+    authentication. To instead skip authentication, see skip_auth.
+    """
+    with django.db.transaction.atomic():
+        if not django.contrib.auth.models.User.objects.filter(
+            username='admin'
+        ).exists():
+            django.contrib.auth.models.User.objects.create_superuser(
+                username='admin', password=None, email=""
+            )
+        reloaded()
+        o = ezidapp.models.getUserByUsername('admin')
+        o.setPassword('admin')
+        o.save()
+        reloaded()
+
+
+@pytest.fixture(scope='function')
+def skip_auth(django_db_keepdb, admin_client, mocker):
+    """Replace EZID's user authentication system with a stub that successfully
+    authenticates any user. The user must already exist in EZID. By default, only the
+    admin user exists.
+    """
+
+    def mock_authenticate_request(request):
+        user_id = get_user_id_by_session_key(request.session.session_key)
+        return ezidapp.models.getUserById(user_id)
+
+    mocker.patch('userauth.authenticateRequest', side_effect=mock_authenticate_request)
+
+
+@pytest.fixture(scope='function')
+def ez_admin(admin_client, admin_admin, skip_auth):
+    """A Django test client that has been logged in as admin. When EZID endpoints are
+    called via the client, a cookie for an active authenticated session is included
+    automatically. This also sets the admin password to "admin".
+
+    Note: Because EZID does not use a standard authentication procedure, it's also
+    necessary to pull in skip_auth here.
+    """
+    admin_client.login(username='admin', password='admin')
+    # print('cookies={}'.format(admin_client.cookies))
+    return admin_client
+
+
+@pytest.fixture(scope='function')
+def ez_user(client, django_user_model):
+    """A Django test client that has been logged in as a regular user named "ezuser",
+    with password "password".
+    """
+    username, password = "ezuser", "password"
+    django_user_model.objects.create_user(username=username, password=password)
+    client.login(username=username, password=password)
+    return client
+
+
 @pytest.fixture()
 def tmp_bdb_root(mocker, tmp_path):
-    """Temporary root for the BerkeleyDB minters.
+    """Set a temporary root directory for the BerkeleyDB minter hierarchy.
 
-    Returns: :class:`pathlib2.Path`
-
-    Causes nog_minter to see an empty tree of minters rooted in temp. Any minters
+    By default, a BDB path resolved by the minter will reference a location in EZID's
+    minter hierarchy, as configured in the EZID settings. Currently, `ezid/db/minters`.
+    This fixture causes BDB paths to resolve to an empty tree under /tmp. Any minters
     created by the test are deleted when the test exits.
+
+    Returns a pathlib2.Path referencing the root of the tree. The slash operator can be
+    used for creating paths below the root. E.g., `tmp_bdb_root / 'b2345' / 'x1'`.
     """
-    for dot_path in ('nog.bdb.get_bdb_root',):
+    for dot_path in ('nog.bdb._get_bdb_root',):
         mocker.patch(
             dot_path, return_value=(tmp_path / 'minters').resolve(),
         )
-    for i, namespace_str in enumerate(NAMESPACE_LIST):
-        tests.util.util.create_shoulder(
-            namespace_str.full,
-            'test org {}'.format(i),
-            tmp_path.as_posix() + '/minters',
+
+    return tmp_path
+
+
+@pytest.fixture()
+def minters(tmp_bdb_root, reloaded):
+    """Add four ready to use minters below the temporary root created by tmp_bdb_root.
+
+    Returns a list containing the IdNamespace objects for the shoulders of the minters.
+    """
+    for ns, arg_tup in NAMESPACE_LIST:
+        nog.shoulder.create_shoulder(
+            ns,
+            'test org for shoulder {}'.format(str(ns)),
+            datacenter_model=(
+                ezidapp.models.store_datacenter.StoreDatacenter.objects.filter(
+                    symbol='CDL.CDL'
+                ).get()
+                if 'datacenter' in arg_tup
+                else None
+            ),
+            is_crossref='crossref' in arg_tup,
+            is_test=True,
+            is_super_shoulder='supershoulder' in arg_tup,
+            is_sharing_datacenter=False,
+            is_force='force' in arg_tup,
+            is_debug=True,
         )
 
-    impl.config.reload()
-
-    return tmp_path, NAMESPACE_LIST
+    reloaded()
+    return NAMESPACE_LIST
 
 
 @pytest.fixture()
 def shoulder_csv():
-    """Iterable returning rows from the SHOULDER_CSV file"""
+    """Generator returning rows from the SHOULDER_CSV file"""
 
     def itr():
         with pathlib2.Path(SHOULDER_CSV).open('rb',) as f:
             for row_tup in csv.reader(f):
                 ns_str, org_str, n2t_url = (s.decode('utf-8') for s in row_tup)
-                log.debug('Testing with shoulder row: {}'.format(row_tup))
+                # log.debug('Testing with shoulder row: {}'.format(row_tup))
                 yield ns_str, org_str, n2t_url
 
-    yield itr()
+    return itr()
 
 
 @pytest.fixture()
 def test_docs():
     """pathlib2.Path rooted in the test_docs dir."""
-    return pathlib2.Path(impl.nog.filesystem.abs_path('./test_docs'))
+    return pathlib2.Path(nog.filesystem.abs_path('./test_docs'))
 
 
-# @pytest.fixture(scope='session')
-# def django_db_setup(django_db_setup, django_db_blocker):
-#     """Populate the database from a fixture.
-#     Note: The double "django_db_setup" in the signature is correct.
-#     """
-#     with django_db_blocker.unblock():
-#         if '--create-db' in sys.argv:
-#             # We can modify the DB settings here because the django_db_setup fixture
-#             # includes django_db_modify_db_settings. We use this to prevent pytest
-#             # from generating a new name.
-#             django.conf.settings.DATABASES['default']['NAME'] = 'ezid_tests'
-#
-#             # log.debug(
-#             #     'Using database: {}'.format(django.conf.settings.DATABASES['default']['NAME'])
-#             # )
-#
-#             # with django.db.transaction.atomic():
-#             django.core.management.call_command(
-#                 'loaddata', 'combined-limited', '--settings', 'settings.test_settings',
-#             )
-#
-#             # Read admin username and password from config file and create a hashed
-#             # password entry in the DB.
-#             # impl.config.load()
-#             # u = impl.config.get("auth.admin_username")
-#             # p = impl.config.get("auth.admin_password")
-#             u = 'admin'
-#             p = 'admin'
-#             # with django.db.transaction.atomic():
-#
-#             if not django.contrib.auth.models.User.objects.filter(
-#                 username=u
-#             ).exists():
-#                 django.contrib.auth.models.User.objects.create_superuser(
-#                     username=u, password=None, email=""
-#                 )
-#             o = ezidapp.models.getUserByUsername(u)
-#             o.setPassword(p)
-#             o.save()
-#
-#         # log.debug('Using database: {}'.format(settings.DATABASES['default']['NAME']))
-#         # log.debug('Using database: {}'.format(django.conf.settings.DATABASES['default']['NAME']))
-#         # log.debug('Shoulders: {}'.format(ezidapp.models.Shoulder.objects.count()))
-#         # log.debug(
-#         #     'Identifiers: {}'.format(ezidapp.models.StoreIdentifier.objects.count())
-#         # )
-#         #
-#         # yield
-#         #
-#         # for connection in django.db.connections.all():
-#         #     connection.close()
+@pytest.fixture()
+def log_shoulder_count():
+    # noinspection PyProtectedMember
+    def log_(s):
+        log.debug(
+            '{}: db_shoulders={} cache_shoulders={}'.format(
+                s,
+                ezidapp.models.Shoulder.objects.filter(
+                    active=True, manager='ezid'
+                ).count(),
+                len(ezidapp.models.shoulder._shoulders),
+            )
+        )
+
+    log_('Shoulders before test launch')
+    return log_
 
 
-# Helpers
+# Util
+
+
+def dump_shoulder_table():
+    for shoulder_model in ezidapp.models.Shoulder.objects.filter(
+        active=True, manager='ezid'
+    ):
+        log.debug(shoulder_model)
 
 
 def get_user_id_by_session_key(session_key):
     session_model = django.contrib.sessions.models.Session.objects.get(pk=session_key)
     session_dict = session_model.get_decoded()
-    # {'_auth_user_hash': '0fe96656c9ff4037ee12ec236e1936fc6b18d851',
-    #  '_auth_user_id': u'1',
-    #  '_auth_user_backend': u'django.contrib.auth.backends.ModelBackend'}
     return session_dict['_auth_user_id']
-
-
-def mock_authenticate_request(request, storeSessionCookie=False):
-    print('-' * 100)
-    print('mock_authenticate_request')
-    user_id = get_user_id_by_session_key(request.session.session_key)
-    return ezidapp.models.getUserById(user_id)
 
 
 def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
     """Save database to a bz2 compressed JSON fixture"""
-    fixture_file_path = impl.nog.filesystem.abs_path(REL_DB_FIXTURE_PATH)
+    fixture_file_path = nog.filesystem.abs_path(REL_DB_FIXTURE_PATH)
     logging.info('Writing fixture. path="{}"'.format(fixture_file_path))
     buf = io.StringIO()
     django.core.management.call_command(
