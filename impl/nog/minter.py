@@ -191,12 +191,11 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
                 self._extend_template()
             compounded_counter = self._next_state()
             self.combined_count += 1
-            minted_id = self._get_xdig_str(compounded_counter)
-            minted_id = fmt_str.format(minted_id)
+            xdig_str = self._get_xdig_str(compounded_counter)
             if self.mask_str.endswith("k"):
-                minted_id += self._get_check_char(minted_id)
-            # log.debug('Minter yielding: {}'.format(minted_id))
-            yield minted_id
+                minted_id = fmt_str.format(xdig_str)
+                xdig_str += self._get_check_char(minted_id)
+            yield xdig_str
 
     # noinspection PyAttributeOutsideInit
     def create(self, shoulder_str, mask_str='eedk'):

@@ -195,9 +195,15 @@ def mintIdentifier(shoulder, user, metadata={}):
         logger.debug('Minter returned identifier: {}'.format(identifier))
 
         if shoulder_model.prefix.startswith('doi:'):
-            identifier = 'doi:{}'.format(util.shadow2doi(identifier.upper()))
+            identifier = shoulder_model.prefix + identifier.upper()
         elif shoulder_model.prefix.startswith('ark:/'):
-            identifier = 'ark:/{}'.format(identifier)
+            identifier = shoulder_model.prefix + identifier.lower()
+        else:
+            raise False, 'Expected ARK or DOI prefix, not "{}"'.format(
+                shoulder_model.prefix
+            )
+
+        logger.debug('Final shoulder + identifier: {}'.format(identifier))
 
     log.success(tid, identifier)
 

@@ -154,9 +154,9 @@ class Command(django.core.management.BaseCommand):
             )
 
         if shoulder_model.prefix.startswith('doi:'):
-            id_ns = 'doi:{}'.format(util.shadow2doi(minted_id))
+            id_ns = shoulder_model.prefix + minted_id.upper()
         elif shoulder_model.prefix.startswith('ark:/'):
-            id_ns = 'ark:/{}'.format(minted_id)
+            id_ns = shoulder_model.prefix + minted_id.lower()
         else:
             raise CheckError(
                 'Prefix must start with "doi:" or "ark:/"',
