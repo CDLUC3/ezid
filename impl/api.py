@@ -82,8 +82,9 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.http
 import time
+
+import django.http
 
 import anvl
 import binder_async
@@ -426,10 +427,17 @@ def getStatus(request):
 
 def getVersion(request):
     """
-  Returns EZID's version.
-  """
+    Returns EZID's version.
+    """
     if request.method != "GET":
         return _methodNotAllowed()
+
+    # TODO: This is currently disabled as it relies on Mercurial.
+    return django.http.HttpResponse(
+        'version currently not available',
+        content_type="text/plain; charset=UTF-8",
+    )
+
     options = _validateOptions(request, {})
     if type(options) is str:
         return _response(options)
