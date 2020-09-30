@@ -77,6 +77,7 @@ class TestShoulderCreateArk:
             ns_str,
             org_str,
             '--super-shoulder',
+            '--force',
             '--test',
         )
         ezid_uri = "ezid:/99920/NULL"
