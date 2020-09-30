@@ -173,7 +173,10 @@ class IdNamespace(
 
     @staticmethod
     def _split_ark_ns_to_tup(ark_ns):
-        m = re.match(r'(?:(ark)(?::/))((?:\d|\w)(?:\d*))(?:(/)(.*))?', ark_ns)
+        m = re.match(
+            r'(?:(ark)(?::/))([0-9bcdfghjkmnpqrstvwxz]\d{3,4})(?:(/)([0-9a-z./]*))?$',
+            ark_ns,
+        )
         if not m:
             IdNamespace._raise_invalid_ns('ARK', ark_ns)
         return m.groups()
@@ -181,7 +184,7 @@ class IdNamespace(
     @staticmethod
     def _raise_invalid_ns(type_str, ns_str):
         raise IdentifierError(
-            'Unable to split namespace. Expected full {}. Received: "{}"'.format(
+            'Invalid namespace. Expected full {}. Received: "{}"'.format(
                 type_str, ns_str
             )
         )
