@@ -61,9 +61,9 @@ class TestDoiUtil:
     def test_1030(self, ns_str, path_or_exc, tmp_bdb_root):
         """get_path(): Well formed identifiers generate the expected paths"""
         assert (
-            bdb.get_path(ns_str, 'root', is_new=True,)
+            bdb.get_path(ns_str, is_new=True,)
             .as_posix()
-            .endswith('/root/{}/nog.bdb'.format(path_or_exc))
+            .endswith('/{}/nog.bdb'.format(path_or_exc))
         )
 
     @pytest.mark.parametrize(
@@ -96,9 +96,10 @@ class TestDoiUtil:
         result_list = []
         for ns_str, org_str, n2t_url in shoulder_csv:
             try:
-                result_list.append(bdb.get_path(ns_str, is_new=True))
+                p = bdb.get_path(ns_str, is_new=True).as_posix()
             except nog.exc.MinterError as e:
-                result_list.append(repr(e))
+                p = repr(e)
+            result_list.append(p.replace(tmp_bdb_root.as_posix(), ''))
         tests.util.sample.assert_match(result_list, 'get_path')
 
     @pytest.mark.parametrize(
