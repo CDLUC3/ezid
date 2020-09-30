@@ -6,6 +6,7 @@ import pytest
 import impl.nog.bdb as bdb
 import nog.exc
 import nog.id_ns
+import tests.util.sample
 
 
 class TestDoiUtil:
@@ -60,9 +61,9 @@ class TestDoiUtil:
     def test_1030(self, ns_str, path_or_exc, tmp_bdb_root):
         """get_path(): Well formed identifiers generate the expected paths"""
         assert (
-            bdb.get_path(ns_str, 'root', is_new=True,)
+            bdb.get_path(ns_str, is_new=True,)
             .as_posix()
-            .endswith('/root/{}/nog.bdb'.format(path_or_exc))
+            .endswith('/{}/nog.bdb'.format(path_or_exc))
         )
 
     @pytest.mark.parametrize(
@@ -89,18 +90,17 @@ class TestDoiUtil:
         with pytest.raises(nog.id_ns.IdentifierError):
             bdb.get_path(ns_str, 'root', is_new=True)
 
-    def test_1035(self, shoulder_csv):
-        """get_path(): Non-shoulders where the minter field is set
-        yield a path to an existing minter.
+    def test_1035(self, shoulder_csv, tmp_bdb_root):
+        """get_path(): Yields the expected paths for shoulders that have minters
         """
+        result_list = []
         for ns_str, org_str, n2t_url in shoulder_csv:
-            if not ns_str.endswith('/') and n2t_url:
-                assert bdb.get_path(ns_str).exists()
-
-    # if ns_str.startswith('doi:') and n2t_url:
-    #     ez_str = bdb.doi_to_shadow_ark(ns_str)
-    #     n2t_str = '{}:/{}/{}'.format(*n2t_url.split('/')[-3:])
-    #     assert ez_str == n2t_str
+            try:
+                p = bdb.get_path(ns_str, is_new=True).as_posix()
+            except nog.exc.MinterError as e:
+                p = repr(e)
+            result_list.append(p.replace(tmp_bdb_root.as_posix(), ''))
+        tests.util.sample.assert_match(result_list, 'get_path')
 
     @pytest.mark.parametrize(
         'doi_str,ark_str',

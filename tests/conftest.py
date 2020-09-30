@@ -252,7 +252,7 @@ def tmp_bdb_root(mocker, tmp_path):
     Returns a pathlib2.Path referencing the root of the tree. The slash operator can be
     used for creating paths below the root. E.g., `tmp_bdb_root / 'b2345' / 'x1'`.
     """
-    for dot_path in ('nog.bdb._get_bdb_root',):
+    for dot_path in ('nog.bdb._get_bdb_root','impl.nog.bdb._get_bdb_root',):
         mocker.patch(
             dot_path, return_value=(tmp_path / 'minters').resolve(),
         )
