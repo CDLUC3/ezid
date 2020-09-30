@@ -2,7 +2,7 @@
 """
 import logging
 
-import impl.nog.shoulder as shoulder
+import nog.shoulder as shoulder
 import tests.util.sample as sample
 
 

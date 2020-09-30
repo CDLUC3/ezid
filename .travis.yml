@@ -19,11 +19,14 @@ install:
   - pip install --upgrade pip setuptools wheel
 before_script:
   - mysql -e "
-    create database if not exists ezid_tests;
-    use ezid_tests;
-    create user 'ezid_test_user'@'%' identified by '';
-    grant all privileges on *.* to 'ezid_test_user'@'%';
-    flush privileges;
+      create database if not exists ezid_tests;
+      use ezid_tests;
+      create user 'ezid_test_user'@'%' identified by '';
+      grant all privileges on *.* to 'ezid_test_user'@'%';
+      flush privileges;
+    "
+  - mysql -e "
+      select prefix, minter from ezidapp_shoulder where prefix like '%2222/%';
     "
   - ls -l
   - pip install -r ./requirements.txt
