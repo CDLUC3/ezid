@@ -25,9 +25,6 @@ before_script:
       grant all privileges on *.* to 'ezid_test_user'@'%';
       flush privileges;
     "
-  - mysql -e "
-      select prefix, minter from ezidapp_shoulder where prefix like '%2222/%';
-    "
   - ls -l
   - pip install -r ./requirements.txt
   - python --version
@@ -40,5 +37,9 @@ script:
   - mkdir -p ../download/public ../logs
   - python ${TRAVIS_BUILD_DIR}/manage.py migrate --run-syncdb
   - python ${TRAVIS_BUILD_DIR}/manage.py loaddata combined-limited
-  - mysql -e 'show tables in ezid_tests;'
+  - mysql -e "
+      use ezid_tests;
+      show tables;
+      select prefix, minter from ezidapp_shoulder;
+    "
   - pytest
