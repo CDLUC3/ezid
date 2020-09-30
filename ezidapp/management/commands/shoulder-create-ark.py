@@ -5,19 +5,14 @@ from __future__ import absolute_import, division, print_function
 
 import argparse
 import logging
-import re
 
-import django.contrib.auth.models
 import django.core.management
-import django.db.transaction
 
 import impl.nog.reload
-import impl.nog.shoulder
 import impl.nog.shoulder
 import impl.nog.util
 import nog.exc
 import nog.id_ns
-import nog.minter
 
 log = logging.getLogger(__name__)
 
@@ -35,7 +30,9 @@ class Command(django.core.management.BaseCommand):
             metavar="shoulder-ark",
             help='Full ARK of new shoulder. E.g., ark:/12345/',
         )
-        parser.add_argument('name_str', metavar='org-name', help='Name of organization')
+        parser.add_argument(
+            'org_name_str', metavar='org-name', help='Name of organization'
+        )
         parser.add_argument(
             '--super-shoulder,s',
             dest='is_super_shoulder',
@@ -46,7 +43,7 @@ class Command(django.core.management.BaseCommand):
             '--force,f',
             dest='is_force',
             action='store_true',
-            help='Force creating super-shoulder on apparent regular shoulder',
+            help='Create a super-shoulder that does not end with "/"',
         )
         parser.add_argument(
             '--test,-t',
@@ -65,40 +62,25 @@ class Command(django.core.management.BaseCommand):
         try:
             return self._handle(self.opt)
         except nog.exc.MinterError as e:
-            raise django.core.management.CommandError(
-                'Minter error: {}'.format(str(e))
-            )
+            raise django.core.management.CommandError('Minter error: {}'.format(str(e)))
 
     def _handle(self, opt):
         try:
-            ns = nog.id_ns.IdNamespace.from_str(opt.ns_str)
+            ns = nog.id_ns.IdNamespace.split_ark_namespace(opt.ns_str)
         except nog.id_ns.IdentifierError as e:
             raise django.core.management.CommandError(str(e))
 
-        impl.nog.shoulder.assert_shoulder_is_type(ns, 'ark')
-        impl.nog.shoulder.assert_shoulder_type_available(opt.name_str, 'ark')
-
-        if not re.match(r'\d{5}$', ns.naan_prefix):
-            raise django.core.management.CommandError(
-                'NAAN must be 5 digits, not "{}"'.format(ns.naan_prefix)
-            )
-
-        log.info('Creating minter for ARK shoulder: {}'.format(opt.ns_str))
-        bdb_path = nog.minter.create_minter_database(ns)
-        log.debug('Minter BerkeleyDB created at: {}'.format(bdb_path.as_posix()))
-
-        impl.nog.shoulder.create_shoulder_db_record(
-            str(ns),
-            'ark',
-            opt.name_str,
-            bdb_path,
+        impl.nog.shoulder.create_shoulder(
+            ns=ns,
+            organization_name_str=opt.org_name_str,
             datacenter_model=None,
             is_crossref=False,
             is_test=opt.is_test,
             is_super_shoulder=opt.is_super_shoulder,
             is_sharing_datacenter=False,
+            is_force=opt.is_force,
             is_debug=opt.debug,
         )
 
         impl.nog.reload.trigger_reload()
-        log.info('Shoulder created: {}'.format(opt.ns_str))
+        log.info('Shoulder created')

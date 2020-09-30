@@ -6,18 +6,14 @@ from __future__ import absolute_import, division, print_function
 import argparse
 import logging
 
-import django.contrib.auth.models
 import django.core.management
-import django.db.transaction
 
 import ezidapp.models
 import impl.nog.reload
 import impl.nog.shoulder
-import impl.nog.shoulder
 import impl.nog.util
 import nog.exc
 import nog.id_ns
-import nog.minter
 
 log = logging.getLogger(__name__)
 
@@ -35,7 +31,7 @@ class Command(django.core.management.BaseCommand):
             metavar="shoulder-doi",
             help='Full DOI of new shoulder. E.g., doi:10.12345/',
         )
-        parser.add_argument('name_str', metavar='org-name', help='Name of organization')
+        parser.add_argument('org_name_str', metavar='org-name', help='Name of organization')
         ex_group = parser.add_mutually_exclusive_group(required=True)
         ex_group.add_argument(
             '--crossref,-c',
@@ -66,7 +62,7 @@ class Command(django.core.management.BaseCommand):
             '--force,f',
             dest='is_force',
             action='store_true',
-            help='Force creating super-shoulder on apparent regular shoulder',
+            help='Create a super-shoulder that does not end with "/"',
         )
         parser.add_argument(
             '--test,-t',
@@ -85,22 +81,13 @@ class Command(django.core.management.BaseCommand):
         try:
             return self._handle(self.opt)
         except nog.exc.MinterError as e:
-            raise django.core.management.CommandError(
-                'Minter error: {}'.format(str(e))
-            )
+            raise django.core.management.CommandError('Minter error: {}'.format(str(e)))
 
     def _handle(self, opt):
         try:
-            # Ensure lower case "doi:" and upper case shoulder.
-            ns_tup = opt.ns_str.split('/', 1)
-            ns = '/'.join([ns_tup[0].lower(), ns_tup[1].upper()])
-            opt.ns_str = str(ns)
-            ns = nog.id_ns.IdNamespace.from_str(opt.ns_str)
+            ns = nog.id_ns.IdNamespace.split_doi_namespace(opt.ns_str)
         except nog.id_ns.IdentifierError as e:
             raise django.core.management.CommandError(str(e))
-
-        impl.nog.shoulder.assert_shoulder_is_type(ns, 'doi')
-        impl.nog.shoulder.assert_shoulder_type_available(opt.name_str, 'doi')
 
         # opt.is_crossref and opt.datacenter_str are mutually exclusive with one
         # required during argument parsing.
@@ -112,22 +99,17 @@ class Command(django.core.management.BaseCommand):
                 symbol=opt.datacenter_str
             )
 
-        log.info('Creating minter for DOI shoulder: {}'.format(opt.ns_str))
-        bdb_path = nog.minter.create_minter_database(ns)
-        log.debug('Minter BerkeleyDB created at: {}'.format(bdb_path.as_posix()))
-
-        impl.nog.shoulder.create_shoulder_db_record(
-            str(ns),
-            'doi',
-            opt.name_str,
-            bdb_path,
-            datacenter_model,
+        impl.nog.shoulder.create_shoulder(
+            ns=ns,
+            organization_name_str=opt.org_name_str,
+            datacenter_model=datacenter_model,
             is_crossref=opt.is_crossref,
             is_test=opt.is_test,
             is_super_shoulder=opt.is_super_shoulder,
             is_sharing_datacenter=opt.is_sharing_datacenter,
+            is_force=opt.is_force,
             is_debug=opt.debug,
         )
 
         impl.nog.reload.trigger_reload()
-        log.info('Shoulder created: {}'.format(opt.ns_str))
+        log.info('Shoulder created')
