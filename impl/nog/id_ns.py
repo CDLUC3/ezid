@@ -171,5 +171,24 @@ class IdNamespace(
             IdNamespace._raise_invalid_ns('DOI', doi_ns)
         return m.groups()
 
+    @staticmethod
+    def _split_ark_ns_to_tup(ark_ns):
+        m = re.match(
+            r'(?:(ark)(?::/))([0-9bcdfghjkmnpqrstvwxz]\d{3,4})(?:(/)([0-9a-z./]*))?$',
+            ark_ns,
+        )
+        if not m:
+            IdNamespace._raise_invalid_ns('ARK', ark_ns)
+        return m.groups()
+
+    @staticmethod
+    def _raise_invalid_ns(type_str, ns_str):
+        raise IdentifierError(
+            'Invalid namespace. Expected full {}. Received: "{}"'.format(
+                type_str, ns_str
+            )
+        )
+
+
 class IdentifierError(nog.exc.MinterError):
     pass
