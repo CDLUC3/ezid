@@ -8,6 +8,7 @@ import django.core.management
 import django.db
 
 import ezidapp.models
+import nog.id_ns
 
 try:
     import bsddb

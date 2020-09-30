@@ -156,7 +156,7 @@ class IdNamespace(
 
     @staticmethod
     def _split_ns_to_tup(ns_str):
-        m = re.match('(?:(ark)(?::/))|(?:(doi)(?::10\.))(.*)$', str(ns_str))
+        m = re.match('(?:(ark)(?::/))|(?:(doi)(?::10\.))', str(ns_str))
         if not m:
             IdNamespace._raise_invalid_ns('DOI or ARK', ns_str)
         if m.group(1) == 'ark':
@@ -166,26 +166,10 @@ class IdNamespace(
 
     @staticmethod
     def _split_doi_ns_to_tup(doi_ns):
-        m = re.match(r'(?:(doi)(?::10.))([\d\w]+)(?:(/)(.*))?', doi_ns)
+        m = re.match(r'(?:(doi)(?::10.))(\d{4,5})(?:(/)([0-9A-Z./]*))?$', doi_ns)
         if not m:
             IdNamespace._raise_invalid_ns('DOI', doi_ns)
         return m.groups()
-
-    @staticmethod
-    def _split_ark_ns_to_tup(ark_ns):
-        m = re.match(r'(?:(ark)(?::/))((?:\d|\w)(?:\d*))(?:(/)(.*))?', ark_ns)
-        if not m:
-            IdNamespace._raise_invalid_ns('ARK', ark_ns)
-        return m.groups()
-
-    @staticmethod
-    def _raise_invalid_ns(type_str, ns_str):
-        raise IdentifierError(
-            'Unable to split namespace. Expected full {}. Received: "{}"'.format(
-                type_str, ns_str
-            )
-        )
-
 
 class IdentifierError(nog.exc.MinterError):
     pass
