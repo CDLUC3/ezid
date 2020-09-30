@@ -80,7 +80,7 @@ class Command(django.core.management.BaseCommand):
                 continue
 
             naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
-            bdb_path = nog.bdb.get_bdb_path(naan_str, shoulder_str, root_path=None)
+            bdb_path = nog.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
             if pathlib2.Path(bdb_path).exists():
                 continue
 

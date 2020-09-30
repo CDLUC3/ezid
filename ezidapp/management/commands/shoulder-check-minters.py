@@ -20,7 +20,6 @@ import nog.bdb
 import nog.exc
 import nog.minter
 import nog.minter
-import util
 
 log = logging.getLogger(__name__)
 
@@ -111,7 +110,7 @@ class Command(django.core.management.BaseCommand):
 
     def check_minter(self, shoulder_model):
         try:
-            bdb_path = nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
+            bdb_path = nog.bdb._get_bdb_path_by_shoulder_model(shoulder_model)
         except nog.exc.MinterNotSpecified as e:
             return 'Skipped: No minter registered'
 

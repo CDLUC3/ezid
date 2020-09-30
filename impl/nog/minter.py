@@ -124,24 +124,9 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
     See Also:
         :func:`mint_id`
     """
-    bdb_path = nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
+    bdb_path = nog.bdb._get_bdb_path_by_shoulder_model(shoulder_model)
     for minted_str in mint_by_bdb_path(bdb_path, mint_count, dry_run=dry_run):
         yield minted_str
-
-def mint_by_ns(ns, mint_count=1, root_path=None, dry_run=False):
-    """Like mint_ids(), but accepts a full DOI or ARK namespace.
-
-    Args:
-        ns (str or IdNamespace): The full ARK or DOI namespace of a shoulder.
-            E.g., ark:/99999/fk4 or doi:10.9111/FK4
-
-    See Also:
-        :func:`mint_ids`
-    """
-    bdb_path = nog.bdb.get_bdb_path_by_namespace(ns, root_path)
-    for minted_id in mint_by_bdb_path(bdb_path, mint_count, dry_run):
-        naan_str, shoulder_str = minted_id.split('/', 1)
-        yield nog.id_ns.IdNamespace(ns.scheme, naan_str, '/', shoulder_str)
 
 
 def mint_by_bdb_path(bdb_path, mint_count=1, dry_run=False):
@@ -169,35 +154,11 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
     Returns (path): Absolute path to the new nog.bdb file.
     """
     shoulder_ns = nog.id_ns.IdNamespace.from_str(shoulder_ns)
+    bdb_path = nog.bdb.get_path(shoulder_ns, root_path, is_new=True)
 
-    bdb_path = nog.bdb.get_bdb_path_by_namespace(shoulder_ns, root_path)
-    #
-    # with open(MINTER_TEMPLATE_PATH) as f:
-    #     template_str = f.read()
-    #
-    # template_str = template_str.replace("$NAAN$", shoulder_ns.naan_prefix)
-    # template_str = template_str.replace("$PREFIX$", shoulder_ns.shoulder)
-    #
-    # minter_dict = hjson.loads(template_str)
-    # d = {bytes(k): bytes(v) for k, v in minter_dict.items()}
-
-    # with nog.bdb_wrapper.BdbWrapper(bdb_path, is_new=True, dry_run=True) as bdb:
     with Minter(bdb_path, is_new=True, dry_run=False) as minter:
         full_shoulder_str = '/'.join([shoulder_ns.naan_prefix, shoulder_ns.shoulder])
         minter.create(full_shoulder_str, mask_str)
-
-    # bdb = None
-    # try:
-    #     # bdb = open_bdb(bdb_path, is_new=True)
-    #     # bdb.clear()
-    #     # bdb.update(d)
-    #
-    #     # bdb_path = get_bdb_path(x.name, y.name, root_path)
-    #     with nog.bdb_wrapper.Bdb(bdb_path, dry_run=True) as bdb:
-    #         bdb.create(str(shoulder_ns))
-    # finally:
-    #     if bdb:
-    #         bdb.close()
 
     return bdb_path
 

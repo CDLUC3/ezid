@@ -27,22 +27,21 @@ import nog.id_ns
 
 log = logging.getLogger(__name__)
 
-
 MINTER_TEMPLATE_PATH = impl.nog.filesystem.abs_path("../../etc/minter_template.hjson")
 
 
 def dump_by_ns(ns, root_path=None, compact=True):
-    bdb_path = get_bdb_path_by_namespace(ns, root_path)
+    bdb_path = get_path(ns, root_path)
     return dump(bdb_path, compact)
 
 
 def as_hjson_by_shoulder(ns, root_path=None, compact=True):
-    bdb_path = get_bdb_path_by_namespace(ns, root_path)
+    bdb_path = get_path(ns, root_path)
     return as_hjson(bdb_path, compact)
 
 
 def as_dict_by_shoulder(ns, root_path=None, compact=True):
-    bdb_path = get_bdb_path_by_namespace(ns, root_path)
+    bdb_path = get_path(ns, root_path)
     return as_dict(bdb_path, compact)
 
 
@@ -127,7 +126,173 @@ def open_bdb(bdb_path, is_new=False):
         )
 
 
-def get_bdb_path(naan_str, shoulder_str, root_path=None):
+def iter_bdb(root_path=None):
+    """Yield paths to all the BerkeleyDB 'nog.bdb' minter database files in a
+    minter directory hierarchy.
+
+    Only databases files that are correctly placed in the hierarchy are returned, so
+    the returned naan/prefix, slash and shoulder strings should always be valid.
+
+    Yields: (naan/prefix, shoulder, Bdb), ...
+    """
+
+    bdb_root_path = _get_bdb_root(root_path)
+    for x in bdb_root_path.iterdir():
+        if x.is_dir():
+            for y in x.iterdir():
+                if y.is_dir():
+                    for z in y.iterdir():
+                        if z.suffix == '.bdb':
+                            bdb_path = _get_bdb_path(x.name, y.name, root_path)
+                            with nog.bdb_wrapper.Bdb(bdb_path, dry_run=True) as bdb:
+                                yield x.name, y.name, bdb
+
+
+def get_path(ns, root_path=None, is_new=False):
+    """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
+
+    This is the only public method for determining the path to a minter. The main uses are:
+
+    1) Generate a new path for a minter that is about to be created
+    2) Return the path to an existing minter that was created in EZID
+    3) Return the path to an existing minter that has been imported from N2T
+
+    Basic validation to ensure that the identifiers match ARK and DOIs as used by EZID
+    is performed. Case is significant, and upper case in an ARK or lower case in a DOI
+    shoulder will cause validation to fail.
+
+    Args:
+        ns (str or IdNamespace): The full namespace of a shoulder.
+            E.g., ark:/99999/fk4, doi:10.9111/FK4, doi:10.9111/
+
+            For DOI shoulders, this is always the actual shoulder, not the shadow ark.
+
+            Ending slash is significant and must be included if present in the minter
+            namespace.
+
+        is_new (bool or None):
+            True: The caller intends to create a new minter at the given path. Causes the
+                returned path to be checked to ensure that it's available, and causes any
+                missing directories in the path to be created.
+            False: The caller intends to open an existing minter at the returned path. Causes
+                the returned path to be checked, to ensure that there is a minter available
+                at the path.
+
+        root_path (str or path, optional):
+            Path to the root of the minter directory hierarchy. If not provided, the
+            default for EZID is used. EZID's default path is read from the Django settings
+            as specified by the DJANGO_SETTINGS_MODULE environment variable at startup.
+    """
+
+    # This performs basic validation of the DOI or ARK.
+    ns = nog.id_ns.IdNamespace.from_str(ns)
+    if is_new:
+        if ns.scheme == 'doi':
+            prefix_str = doi_prefix_to_naan(ns.naan_prefix)
+            shoulder_str = ns.shoulder.lower() if ns.shoulder else None
+        elif ns.scheme == 'ark':
+            prefix_str, shoulder_str = ns.naan_prefix, ns.shoulder
+        else:
+            assert False, 'Internal error. ns="{}" is_new={}'.format(ns, is_new)
+    else:
+        prefix_str, shoulder_str = _get_existing_path(ns)
+
+    bdb_path = pathlib2.Path(
+        _get_bdb_root(root_path), prefix_str, shoulder_str or 'NULL', 'nog.bdb'
+    ).resolve()
+
+    if is_new:
+        if bdb_path.exists():
+            raise nog.exc.MinterPathError('Path already exists', bdb_path, ns)
+        try:
+            impl.nog.filesystem.create_missing_directories_for_file(bdb_path)
+        except IOError as e:
+            raise nog.exc.MinterPathError(
+                'Unable to create missing directories: {}'.format(str(e)), bdb_path, ns
+            )
+    else:
+        if not bdb_path.exists():
+            raise nog.exc.MinterError('Invalid BerkeleyDB path', bdb_path, ns)
+
+    log.debug(
+        'Resolved {} path. "{}" -> "{}"'.
+        format('new' if is_new else 'existing', str(ns), bdb_path.as_posix()),
+    )
+
+    return bdb_path
+
+
+def _get_existing_path(ns):
+    import ezidapp.models
+
+    try:
+        shoulder_model = ezidapp.models.Shoulder.objects.get(prefix=str(ns))
+    except ezidapp.models.Shoulder.DoesNotExist:
+        raise nog.exc.MinterPathError(
+            'Unable to get path to minter: No matching prefix in Shoulder ORM',
+            None,
+            ns,
+        )
+
+    minter_uri = (shoulder_model.minter or '').strip()
+    if not minter_uri:
+        raise nog.exc.MinterPathError(
+            'Unable to get path to minter: '
+            'Matching prefix in Shoulder ORM does not specify a minter',
+            None,
+            ns,
+        )
+
+    minter_list = minter_uri.split('/')
+    if len(minter_list) < 2:
+        raise nog.exc.MinterPathError(
+            'Unable to get path minter: '
+            'Matching prefix in Shoulder ORM contains invalid minter str: {}'.format(
+                minter_uri
+            ),
+            None,
+            ns,
+        )
+
+    return minter_list[-2:]
+
+
+def _get_bdb_path_by_namespace(ns, root_path=None):
+    """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
+
+    Use this only for generating a new path in which to create a minter BDB. For looking
+    up the path to an existing minter, use _get_bdb_path_by_shoulder_model().
+
+    While this method should work for looking up existing minters created by EZID, the
+    namespace alone does not always contain enough information for finding the path to a
+    minter imported from N2T, which renders this method unsafe for use in the general
+    case, where a minter may have been created either by EZID or N2T.
+
+    If the namespace does not have a shoulder, the last directory in the returned path
+    will be "NULL".
+
+    Args:
+        ns (str or IdNamespace): The full namespace of a shoulder.
+            E.g., ark:/99999/fk4 or doi:10.9111/FK4
+        root_path (str, optional):
+            Path to the root of the minter directory hierarchy. If not provided, the
+            default for EZID is used.
+
+    Returns:
+        pathlib2.Path
+    """
+    ns = nog.id_ns.IdNamespace.from_str(ns)
+    if ns.scheme == 'doi':
+        naan_prefix_str = doi_prefix_to_naan(ns.naan_prefix)
+    else:
+        naan_prefix_str = ns.naan_prefix
+    shoulder_str = ns.shoulder.lower() if ns.shoulder else 'NULL'
+    return pathlib2.Path(
+        _get_bdb_root(root_path), naan_prefix_str, shoulder_str, 'nog.bdb',
+    ).resolve()
+
+
+def _get_bdb_path(naan_str, shoulder_str, root_path=None):
     """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
 
     The path may or may not exist.
@@ -151,40 +316,12 @@ def get_bdb_path(naan_str, shoulder_str, root_path=None):
     if not shoulder_str:
         shoulder_str = 'NULL'
         log.debug('Replaced empty shoulder with the "NULL" string')
-    root_path = get_bdb_root(root_path)
+    root_path = _get_bdb_root(root_path)
     minter_path = root_path.joinpath(naan_str, shoulder_str, "nog.bdb")
     return minter_path.resolve()
 
 
-def get_bdb_path_by_namespace(ns, root_path=None):
-    """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
-
-    The path may or may not exist.
-
-    Args:
-        ns (str or IdNamespace): The full namespace of a shoulder.
-            E.g., ark:/99999/fk4 or doi:10.9111/FK4
-        root_path (str, optional):
-            Path to the root of the minter directory hierarchy. If not provided, the
-            default for EZID is used.
-
-    Returns:
-        pathlib2.Path
-    """
-    ns = nog.id_ns.IdNamespace.from_str(ns)
-    if ns.scheme == 'doi':
-        naan_prefix_str = doi_prefix_to_naan(ns.naan_prefix)
-    else:
-        naan_prefix_str = ns.naan_prefix
-    return pathlib2.Path(
-        get_bdb_root(root_path),
-        naan_prefix_str,
-        ns.shoulder.lower() if ns.shoulder else 'NULL',
-        'nog.bdb',
-    ).resolve()
-
-
-def get_bdb_path_by_shoulder_model(shoulder_model, root_path=None):
+def _get_bdb_path_by_shoulder_model(shoulder_model, root_path=None):
     """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
 
     The path may or may not exist. The caller may be obtaining the path in which to
@@ -208,37 +345,15 @@ def get_bdb_path_by_shoulder_model(shoulder_model, root_path=None):
             'A minter has not been specified (minter field in the database is empty)'
         )
     return pathlib2.Path(
-        get_bdb_root(root_path), '/'.join(minter_uri.split('/')[-2:]), 'nog.bdb',
+        _get_bdb_root(root_path), '/'.join(minter_uri.split('/')[-2:]), 'nog.bdb',
     ).resolve()
 
 
-def get_bdb_root(root_path=None):
+def _get_bdb_root(root_path=None):
     """Get the root of the bdb minter hierarchy. This is a convenient stub for
     mocking out temp dirs during testing.
     """
     return pathlib2.Path(root_path or django.conf.settings.MINTERS_PATH)
-
-
-def iter_bdb(root_path=None):
-    """Yield paths to all the BerkeleyDB 'nog.bdb' minter database files in a
-    minter directory hierarchy.
-
-    Only databases files that are correctly placed in the hierarchy are returned, so
-    the returned naan/prefix, slash and shoulder strings should always be valid.
-
-    Yields: (naan/prefix, shoulder, Bdb), ...
-    """
-
-    bdb_root_path = get_bdb_root(root_path)
-    for x in bdb_root_path.iterdir():
-        if x.is_dir():
-            for y in x.iterdir():
-                if y.is_dir():
-                    for z in y.iterdir():
-                        if z.suffix == '.bdb':
-                            bdb_path = get_bdb_path(x.name, y.name, root_path)
-                            with nog.bdb_wrapper.Bdb(bdb_path, dry_run=True) as bdb:
-                                yield x.name, y.name, bdb
 
 
 def doi_prefix_to_naan(prefix_str, allow_lossy=False):
@@ -270,6 +385,7 @@ def doi_to_shadow_ark(doi_str, allow_lossy=False):
     command line program.
     """
     doi_ns = nog.id_ns.IdNamespace.from_str(doi_str)
+    assert doi_ns.scheme == 'doi', 'Expected a complete DOI, not "{}"'.format(doi_str)
     try:
         ark_naan = doi_prefix_to_naan(doi_ns.naan_prefix, allow_lossy)
     except OverflowError as e:

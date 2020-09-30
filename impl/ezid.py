@@ -35,6 +35,7 @@ _perUserThrottle = None
 
 logger = logging.getLogger(__name__)
 
+
 def loadConfig():
     global _perUserThreadLimit, _perUserThrottle
     _perUserThreadLimit = int(config.get("DEFAULT.max_threads_per_user"))

@@ -143,7 +143,7 @@ class Command(django.core.management.BaseCommand):
         opt.action_str = opt.action_str.replace('-', '_')
 
         if self.opt.ns_str is not None:
-            self.bdb_path = self._get_dbd_path()
+            self.bdb_path = self._get_dbd_path(is_new=False)
 
         # src_path = impl.nog.filesystem.abs_path(
         #     "./test_docs/{}_{}.bdb".format(ns_str, shoulder_str)
@@ -160,7 +160,7 @@ class Command(django.core.management.BaseCommand):
     # See the docstring for descriptions of the actions.
 
     def list_bdb(self):
-        root_path = nog.bdb.get_bdb_root(self.opt.root_path)
+        root_path = nog.bdb._get_bdb_root(self.opt.root_path)
         if not root_path.is_dir():
             raise django.core.management.CommandError(
                 'Invalid root path: {}'.format(root_path.as_posix())
@@ -182,7 +182,7 @@ class Command(django.core.management.BaseCommand):
             )
 
     def unique(self):
-        root_path = nog.bdb.get_bdb_root(self.opt.root_path)
+        root_path = nog.bdb._get_bdb_root(self.opt.root_path)
         if not root_path.is_dir():
             raise django.core.management.CommandError(
                 'Invalid root path: {}'.format(root_path.as_posix())
@@ -212,13 +212,13 @@ class Command(django.core.management.BaseCommand):
 
     def backup(self):
         self._assert_bdb_path(exists=True)
-        src_path = self._get_dbd_path()
+        src_path = self._get_dbd_path(is_new=False)
         dst_path = self._get_bdb_backup_path()
         self._copy_file(src_path, dst_path)
 
     def restore(self):
         self._assert_bdb_path(exists=True)
-        src_path = self._get_dbd_path()
+        src_path = self._get_dbd_path(is_new=False)
         dst_path = self._get_bdb_backup_path()
         self._copy_file(dst_path, src_path)
 
@@ -271,7 +271,7 @@ class Command(django.core.management.BaseCommand):
                 )
             )
 
-    def _get_dbd_path(self):
+    def _get_dbd_path(self, is_new):
         try:
             id_ns = nog.id_ns.IdNamespace.from_str(self.opt.ns_str)
         except nog.exc.MinterError:
@@ -282,7 +282,7 @@ class Command(django.core.management.BaseCommand):
             )
             return pathlib2.Path(self.opt.ns_str)
         else:
-            p = nog.bdb.get_bdb_path_by_namespace(id_ns, self.opt.root_path)
+            p = nog.bdb.get_path(id_ns, self.opt.root_path, is_new)
             log.info('Resolved namespace to path.')
             log.info('Namespace: {}'.format(self.opt.ns_str))
             log.info('Path: {}'.format(p))
