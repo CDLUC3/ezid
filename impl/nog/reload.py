@@ -52,8 +52,12 @@ def trigger_reload():
     auth_b64 = base64.b64encode('%s:%s' % ('admin', admin_pw_str))
     request.add_header("Authorization", "Basic {}".format(auth_b64))
 
-    response = urllib2.urlopen(request)
-    body_str = response.read()
+    try:
+        response = urllib2.urlopen(request)
+        body_str = response.read()
+    except Exception as e:
+        raise ReloadError('EZID reload trigger failed. Error: {}'.format(str(e)))
+
     if response.code != 200:
         raise ReloadError(
             'EZID reload trigger failed. EZID returned: status_code={} body="{}"'.format(
@@ -61,8 +65,7 @@ def trigger_reload():
             )
         )
 
-    log.info('EZID reload request returned: 200 OK')
-    log.debug('Response body: {}'.format(body_str))
+    log.info('EZID reload request successful: {}'.format(body_str))
 
 
 class ReloadError(Exception):

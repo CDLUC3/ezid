@@ -8,6 +8,7 @@ import pathlib2
 import ezidapp.models
 import nog.bdb
 import nog.minter
+import nog.shoulder
 
 
 def add_basic_auth_header(request, username, password):

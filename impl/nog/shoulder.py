@@ -18,6 +18,9 @@ import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
 
+import nog.minter
+
+
 log = logging.getLogger(__name__)
 
 
@@ -29,24 +32,8 @@ def assert_valid_datacenter_name(name_str):
                 '\n'.join(u'  {}'.format(x) for x in sorted(name_set))
             )
         )
-        raise django.core.management.CommandError(
-            'Invalid name: {}'.format(name_str)
-        )
+        raise django.core.management.CommandError('Invalid name: {}'.format(name_str))
 
-
-def assert_shoulder_is_type(ns, type_str):
-    """Assert that shoulder {ns} is of type {type_str}
-
-    Args:
-        ns (IdNamespace): ARK or DOI shoulder namespace
-        type_str (str): 'ark' or 'doi'
-
-    """
-    assert type_str in ('doi', 'ark'), 'Invalid shoulder type: {}'.format(type_str)
-    if ns.scheme != type_str:
-        raise django.core.management.CommandError(
-            'Shoulder scheme must be "{}", not "{}"'.format(type_str, ns.scheme)
-        )
 
 def assert_shoulder_type_available(org_str, type_str):
     """Assert that shoulder of {type_str} does not already exist for {org_str}
@@ -64,8 +51,8 @@ def assert_shoulder_type_available(org_str, type_str):
         pass
     else:
         raise django.core.management.CommandError(
-            'Organization "{}" already has a DOI shoulder: {}'.format(
-                org_str, shoulder_model.prefix
+            'Organization "{}" already has a {} shoulder: {}'.format(
+                org_str, type_str.upper(), shoulder_model.prefix
             )
         )
 

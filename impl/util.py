@@ -16,16 +16,21 @@
 
 import calendar
 import datetime
-import lxml.etree
+import logging
 import re
 import sys
 import time
 import xml.sax.saxutils
 import zlib
 
+import lxml.etree
+
 maxIdentifierLength = 255
 
 _doiPattern = re.compile("10\.[1-9]\d{3,4}/[!\"$->@-~]+$")
+
+
+logger = logging.getLogger(__name__)
 
 
 def validateDoi(doi):
@@ -106,6 +111,8 @@ def validateArk(ark):
     # shadow ARKs (since order of period-delimited components in DOIs is
     # significant).  Also, hash marks (#) are percent encoded to avoid
     # confusion with their interpretation as fragment identifiers.
+    logger.debug('validateArk(): {}'.format(ark))
+
     m = _arkPattern1.match(ark)
     if not m or ark[-1] == "\n":
         return None
@@ -143,6 +150,8 @@ def validateUuid(id):
   <http://www.ietf.org/rfc/rfc4122.txt>, returns the canonical form of
   the identifier (namely, lowercased).  Otherwise, returns None.
   """
+    logger.debug('validateUuid(): {}'.format(id))
+
     if _uuidPattern.match(id) and id[-1] != "\n":
         return id.lower()
     else:
@@ -155,6 +164,8 @@ def validateIdentifier(identifier):
   identifier, returns the canonical form of the identifier.
   Otherwise, returns None.
   """
+    logger.debug('validateIdentifier(): {}'.format(identifier))
+
     if identifier.startswith("ark:/"):
         s = validateArk(identifier[5:])
         if s != None:
@@ -185,6 +196,8 @@ def validateShoulder(shoulder):
   """
     # Strategy: a shoulder is valid if adding a single character yields
     # a valid identifier.
+    logger.debug('validateShoulder(): {}'.format(shoulder))
+
     if shoulder.startswith("ark:/"):
         id = shoulder[5:] + "x"
         return validateArk(id) == id
@@ -261,6 +274,8 @@ def doi2shadow(doi):
     # Update: to prevent different DOIs from mapping to the same shadow
     # ARK, we percent-encode characters (and only those characters) that
     # would otherwise be removed by the ARK normalization process.
+    logger.debug('doi2shadow(): {}'.format(doi))
+
     beta_numeric_char = "bcdfghjkmnpqrstvwxz"
     doi_prefix = doi.split("/")[0]
     i = len(doi_prefix) + 1
@@ -294,6 +309,8 @@ def shadow2doi(ark):
   (e.g., "10.5060/FOO").  The returned identifier is in canonical
   form.
   """
+    logger.debug('shadow2doi(): {}'.format(ark))
+
     beta_str = 'bcdfghjkmnpqrstvwxz'
     m = re.match(r'([{}])(.*)/(.*)$'.format(beta_str), ark)
     assert m, 'Invalid scheme-less shadow ARK identifier for a DOI: {}'.format(ark)
@@ -314,6 +331,8 @@ def normalizeIdentifier(identifier):
   this function instead returns (the canonical form of) the shadowed
   identifier.  On any kind of error, returns None.
   """
+    logger.debug('normalizeIdentifier(): {}'.format(identifier))
+
     id = validateIdentifier(identifier)
     if id == None:
         return None

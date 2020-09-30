@@ -275,8 +275,11 @@ class Command(django.core.management.BaseCommand):
         try:
             id_ns = nog.id_ns.IdNamespace.from_str(self.opt.ns_str)
         except nog.exc.MinterError:
-            log.info('Argument does not look like a DOI or ARK namespace.')
-            log.info('Using it as path: {}'.format(self.opt.ns_str))
+            log.info(
+                'Argument is not a DOI or ARK. Using it as path: {}'.format(
+                    self.opt.ns_str
+                )
+            )
             return pathlib2.Path(self.opt.ns_str)
         else:
             p = nog.bdb.get_bdb_path_by_namespace(id_ns, self.opt.root_path)
