@@ -1,6 +1,7 @@
 import base64
 import bz2
 import contextlib
+import difflib
 import json
 import logging
 import os
@@ -77,8 +78,14 @@ def assert_match(
 
     if 'IS_TRAVIS' in os.environ or options['error']:
         raise SampleException(
-            'Sample mismatch.\nActual:\n{}\nExpected:\n{}\n'.format(
-                current_str, sample_str
+            'Sample mismatch.\nActual:\n{}\nExpected:\n{}\nDiff:\n{}\n'.format(
+                current_str,
+                sample_str,
+                ''.join(
+                    difflib.Differ().compare(
+                        current_str.splitlines(), sample_str.splitlines()
+                    )
+                ),
             )
         )
 
@@ -124,7 +131,9 @@ def _get_sample_path(filename=None):
     """
     ``filename==``None``: Return path to sample directory.
     """
-    p = os.path.join(impl.nog.filesystem.abs_path("../test_docs/sample"), filename or "")
+    p = os.path.join(
+        impl.nog.filesystem.abs_path("../test_docs/sample"), filename or ""
+    )
     with sample_path_lock:
         yield p
 
