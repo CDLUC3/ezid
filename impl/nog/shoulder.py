@@ -8,6 +8,7 @@ import django.core.management
 import django.db
 
 import ezidapp.models
+import nog.id_ns
 
 try:
     import bsddb
@@ -17,6 +18,9 @@ except ImportError:
 import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
+
+import nog.minter
+
 
 log = logging.getLogger(__name__)
 
@@ -29,24 +33,8 @@ def assert_valid_datacenter_name(name_str):
                 '\n'.join(u'  {}'.format(x) for x in sorted(name_set))
             )
         )
-        raise django.core.management.CommandError(
-            'Invalid name: {}'.format(name_str)
-        )
+        raise django.core.management.CommandError('Invalid name: {}'.format(name_str))
 
-
-def assert_shoulder_is_type(ns, type_str):
-    """Assert that shoulder {ns} is of type {type_str}
-
-    Args:
-        ns (IdNamespace): ARK or DOI shoulder namespace
-        type_str (str): 'ark' or 'doi'
-
-    """
-    assert type_str in ('doi', 'ark'), 'Invalid shoulder type: {}'.format(type_str)
-    if ns.scheme != type_str:
-        raise django.core.management.CommandError(
-            'Shoulder scheme must be "{}", not "{}"'.format(type_str, ns.scheme)
-        )
 
 def assert_shoulder_type_available(org_str, type_str):
     """Assert that shoulder of {type_str} does not already exist for {org_str}
@@ -64,10 +52,24 @@ def assert_shoulder_type_available(org_str, type_str):
         pass
     else:
         raise django.core.management.CommandError(
-            'Organization "{}" already has a DOI shoulder: {}'.format(
-                org_str, shoulder_model.prefix
+            'Organization "{}" already has a {} shoulder: {}'.format(
+                org_str, type_str.upper(), shoulder_model.prefix
             )
         )
+
+
+def assert_super_shoulder_slash(ns, is_super_shoulder, is_force):
+    """Assert that super-shoulder ends with "/" or that --force was set"""
+    if not is_super_shoulder:
+        return
+    if str(ns).endswith('/'):
+        if is_force:
+            log.info('Accepting super-shoulder not ending with "/" due to --force')
+        else:
+            raise django.core.management.CommandError(
+                'Super-shoulder normally ends with "/". Use --force to skip this check '
+                'and create a super-shoulder not ending with "/"'
+            )
 
 
 def assert_valid_datacenter(datacenter_str):
@@ -96,29 +98,36 @@ def dump_datacenters():
         log.info(x)
 
 
-def create_shoulder_db_record(
-    namespace_str,
-    type_str,
-    name_str,
-    bdb_path,
+def create_shoulder(
+    ns,
+    organization_name_str,
     datacenter_model,
     is_crossref,
     is_test,
     is_super_shoulder,
     is_sharing_datacenter,
+    is_force,
     is_debug,
 ):
-    """Add a new shoulder row to the shoulder table"""
+    assert isinstance(ns, nog.id_ns.IdNamespace)
+    assert_shoulder_type_available(organization_name_str, ns.scheme)
+    assert_super_shoulder_slash(ns, is_super_shoulder, is_force)
+    log.info('Creating minter for {} shoulder: {}'.format(ns.scheme.upper(), ns))
+    # Create the minter BerkeleyDB.
+    bdb_path = nog.minter.create_minter_database(ns)
+    log.debug('Minter BerkeleyDB created at: {}'.format(bdb_path.as_posix()))
+    # Add new shoulder row to the shoulder table.
     try:
         ezidapp.models.Shoulder.objects.create(
-            prefix=namespace_str,
-            type=type_str.upper(),
-            name=name_str,
+            prefix=ns,
+            type=ns.scheme.upper(),
+            name=organization_name_str,
             minter="ezid:/{}".format('/'.join(bdb_path.parts[-3:-1]),),
             datacenter=datacenter_model,
             crossrefEnabled=is_crossref,
             isTest=is_test,
             isSupershoulder=is_super_shoulder,
+            manager='ezid',
             prefix_shares_datacenter=is_sharing_datacenter,
             date=datetime.date.today(),
             active=True,

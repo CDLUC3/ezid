@@ -46,9 +46,13 @@ import ezidapp.models.store_group
 import ezidapp.models.store_profile
 import ezidapp.models.store_user
 
-_reloadFunctions = []
-
 logger = logging.getLogger(__name__)
+
+
+_reloadFunctions = []
+logger.debug('Reload listeners cleared')
+# import inspect
+# logger.error("Caller: {}".format(inspect.stack()))
 
 
 def registerReloadListener(loader):
@@ -57,9 +61,10 @@ def registerReloadListener(loader):
   """
     if not callable(loader):
         import inspect
-
-        logger.error("Reload listener must be a callable. Received: {}".format(loader))
+        logger.error("Reload listener must be a callable. Received: {}".format(repr(loader)))
         logger.error("Caller: {}".format(inspect.stack()))
+
+    logger.debug('Registering reload listener: {}'.format(loader.__module__))
     _reloadFunctions.append(loader)
 
 
@@ -112,12 +117,17 @@ def reload():
   Reloads the configuration file.
   """
     load()
-    for f in _reloadFunctions:
-        logger.debug('Calling configuration callback: {}'.format(f))
-        try:
-            f()
-        except Exception:
-            logger.exception('Configuration callback raised exception')
+    if not _reloadFunctions:
+        logger.warning('config.reload(): Called with no registered callbacks')
+        # raise Exception('No registered callbacks')
+    else:
+        logger.debug('config.reload(): Calling {} registered callbacks'.format(len(_reloadFunctions)))
+        for f in _reloadFunctions:
+            # logger.debug('Calling configuration callback: {}'.format(f.__module__))
+            try:
+                f()
+            except Exception:
+                logger.exception('Configuration callback raised exception')
     # The following functions are explicitly listed here, and don't use
     # the registerReloadListener mechanism, to avoid circular import
     # problems.

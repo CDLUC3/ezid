@@ -21,7 +21,7 @@ def log_to_console(module_name, is_debug):
         all existing loggers to ERROR.
     """
     root_logger = logging.getLogger()
-    # Remove any existing logger that writes to the console (stdout or stderr).
+    # Remove any existing handlers that write to the console (stdout or stderr).
     while True:
         for h in root_logger.handlers:
             if isinstance(h, logging.StreamHandler):
@@ -32,12 +32,16 @@ def log_to_console(module_name, is_debug):
         else:
             break
 
+    # Adjust the logging levels of existing loggers
     if is_debug:
         print('Setting up logging to console')
     else:
         for logger_name in list(logging.root.manager.loggerDict):
             logging.getLogger(logger_name).setLevel(logging.ERROR)
+    for n in ('impl.nog.reload', 'impl.nog.shoulder'):
+        logging.getLogger(n).setLevel(logging.DEBUG if is_debug else logging.INFO)
 
+    # Add new handlers
     formatter = logging.Formatter('%(levelname)-8s %(module)s - %(message)s')
     base_level = logging.DEBUG if is_debug else logging.INFO
     handler = logging.StreamHandler(sys.stdout)

@@ -57,21 +57,20 @@ def test_1020(arg_tup, expected):
 
 
 @pytest.mark.parametrize(
-    'ns_str, expected',
+    'ns_str',
     (
-        ('', id_ns.IdentifierError('Unable to split')),
-        ('123', id_ns.IdentifierError('Unable to split')),
-        ('doi', id_ns.IdentifierError('Unable to split')),
-        ('doi:10.', id_ns.IdentifierError('Unable to split')),
-        ('ark', id_ns.IdentifierError('Unable to split')),
-        ('ark:/', id_ns.IdentifierError('Unable to split')),
+        '',
+        '123',
+        'doi',
+        'doi:10.',
+        'ark',
+        'ark:/',
     ),
 )
-def test_1030(ns_str, expected):
+def test_1030(ns_str):
     """IdNamespace(): Instantiated with invalid str"""
-    with pytest.raises(expected.__class__) as match:
+    with pytest.raises(id_ns.IdentifierError) as match:
         id_ns.IdNamespace.from_str(ns_str)
-    assert str(expected) in str(match.value)
 
 
 @pytest.mark.parametrize(
@@ -98,7 +97,7 @@ def test_1040(ns_str, expected_tup):
         'ark:10.1234/xyz',
     ),
 )
-def test_1050( ns_str):
+def test_1050(ns_str):
     """IdNamespace.from_str(): Attempting to split invalid namespaces raises
     MinterError """
     with pytest.raises(nog.exc.MinterError):
@@ -108,19 +107,17 @@ def test_1050( ns_str):
 @pytest.mark.parametrize(
     'ns_str, ns_tup',
     (
-        ('doi:10.1', ('doi', '1', None, None)),
         ('doi:10.1234', ('doi', '1234', None, None)),
         ('doi:10.1234/', ('doi', '1234', '/', '')),
         ('doi:10.1234/X', ('doi', '1234', '/', 'X')),
         ('doi:10.1234/XYZ', ('doi', '1234', '/', 'XYZ')),
-        ('ark:/1', ('ark', '1', None, None)),
         ('ark:/1234', ('ark', '1234', None, None)),
         ('ark:/1234/', ('ark', '1234', '/', '')),
         ('ark:/1234/x', ('ark', '1234', '/', 'x')),
         ('ark:/1234/xyz', ('ark', '1234', '/', 'xyz')),
     ),
 )
-def test_1060( ns_str, ns_tup):
+def test_1060(ns_str, ns_tup):
     """IdNamespace.from_str(): Splitting valid namespaces returns expected
     components"""
     assert nog.id_ns.IdNamespace.from_str(ns_str).as_tup() == ns_tup
@@ -131,7 +128,7 @@ def test_1070(shoulder_csv):
     result_list = []
     for ns_str, org_str, n2t_url in shoulder_csv:
         result_list.append(
-            '{:<20s} {}'.format(ns_str, id_ns.IdNamespace.from_str(ns_str).as_tup(),)
+            '{:<20s} {}'.format(ns_str, id_ns.IdNamespace.from_str(ns_str).as_tup(), )
         )
     sample.assert_match(u'\n'.join(result_list), 'from_str')
 

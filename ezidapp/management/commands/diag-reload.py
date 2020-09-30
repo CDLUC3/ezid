@@ -30,4 +30,16 @@ class Command(django.core.management.BaseCommand):
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
         impl.nog.util.log_to_console(__name__, opt.debug)
-        impl.nog.reload.trigger_reload()
+        logging.getLogger('impl.nog.reload').setLevel(
+            logging.DEBUG if opt.debug else logging.INFO)
+        try:
+            impl.nog.reload.trigger_reload()
+        except impl.nog.reload.ReloadError as e:
+            log.error('Server reload failed: {}'.format(str(e)))
+        except Exception as e:
+            log.error(
+                'Server reload failed with unhandled exception: {}'.format(str(e)))
+            if opt.debug:
+                raise e
+        else:
+            log.info('Reload successful')

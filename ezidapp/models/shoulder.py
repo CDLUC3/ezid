@@ -17,7 +17,7 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
+import logging
 import threading
 
 import contextlib2
@@ -46,6 +46,9 @@ _crossrefTestPrefix = None
 _agentPrefix = None
 _shoulders = None
 _datacenters = None  # (symbolLookup, idLookup)
+
+
+logger = logging.getLogger(__name__)
 
 
 class ShoulderType(django.db.models.Model):
@@ -224,7 +227,13 @@ def getLongestMatch(identifier):
 
 def getExactMatch(prefix):
     # Returns the shoulder having prefix 'prefix', or None.
-    return _shoulders.get(prefix, None)
+    shoulder_model = _shoulders.get(prefix, None)
+    if not shoulder_model:
+        logger.debug(
+            'Shoulder lookup from cache failed. prefix="{}" len(_shoulders)={}'.format(
+                prefix, len(_shoulders)
+            ))
+    return shoulder_model
 
 
 def getArkTestShoulder():

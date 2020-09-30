@@ -38,9 +38,7 @@ class TestNogMinter:
                     self._get_bdb_path(ID_NS, ''), MINT_COUNT, dry_run=True
                 )
             ):
-                perl_sping = '{}/{}{}'.format(
-                    ID_NS.naan_prefix, ID_NS.shoulder, f.readline().strip()
-                )
+                perl_sping = f.readline().strip()
                 assert (
                     perl_sping == python_sping
                 ), "Mismatch after minting {} identifiers. python={} != perl={}".format(
@@ -63,9 +61,7 @@ class TestNogMinter:
                     dry_run=True,
                 )
             ):
-                perl_sping = '{}/{}{}'.format(
-                    ID_NS.naan_prefix, ID_NS.shoulder, f.readline().strip()
-                )
+                perl_sping = f.readline().strip()
                 assert (
                     perl_sping == python_sping
                 ), "Mismatch after minting {} identifiers. python={} != perl={}".format(

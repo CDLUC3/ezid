@@ -10,7 +10,7 @@ class Startup(django.apps.AppConfig):
     name = "ezidapp"
 
     def ready(self):
-        # logging.debug('impl.startup START')
+        logging.debug('impl.startup: START')
 
         try:
             import config
@@ -30,6 +30,7 @@ class Startup(django.apps.AppConfig):
         except Exception:
             # App not ready to be configured yet. This allows running
             # `django-admin migrate` to create the initial databases.
+            logging.debug('impl.startup: Early exit: App not ready yet')
             return
 
         import log
@@ -100,4 +101,4 @@ class Startup(django.apps.AppConfig):
         status.loadConfig()
         config.registerReloadListener(status.loadConfig)
 
-        # logging.debug('impl.startup END')
+        logging.debug('impl.startup: END')

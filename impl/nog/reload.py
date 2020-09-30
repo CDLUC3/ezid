@@ -10,10 +10,17 @@ import django.urls
 import config
 
 KNOWN_EZID_HOSTNAME_TUP = (
-    'uc3-ezidx2-dev',
-    'uc3-ezidx2-stg',
-    'uc3-ezidx2-prd',
+#    'cdl',
+    'ezid-stg',
+    'ezid-stg.cdlib.org',
     'uc3-ezidui01x2-stg',
+    'uc3-ezidui01x2-stg.cdlib.org',
+    'uc3-ezidx2-dev',
+    'uc3-ezidx2-dev.cdlib.org',
+    'uc3-ezidx2-prd',
+    'uc3-ezidx2-prd.cdlib.org',
+    'uc3-ezidx2-stg',
+    'uc3-ezidx2-stg.cdlib.org',
 )
 
 log = logging.getLogger(__name__)
@@ -28,7 +35,7 @@ def trigger_reload():
     """
     hostname = platform.uname()[1]
     if hostname not in KNOWN_EZID_HOSTNAME_TUP:
-        print(
+        log.info(
             'Hostname "{}" not one of {}. Assuming dev env, skipping EZID reload'.format(
                 hostname, ', '.join('"{}"'.format(s) for s in KNOWN_EZID_HOSTNAME_TUP)
             )
@@ -45,13 +52,21 @@ def trigger_reload():
     auth_b64 = base64.b64encode('%s:%s' % ('admin', admin_pw_str))
     request.add_header("Authorization", "Basic {}".format(auth_b64))
 
-    response = urllib2.urlopen(request)
-    body_str = response.read()
+    try:
+        response = urllib2.urlopen(request)
+        body_str = response.read()
+    except Exception as e:
+        raise ReloadError('EZID reload trigger failed. Error: {}'.format(str(e)))
+
     if response.code != 200:
-        raise Exception(
+        raise ReloadError(
             'EZID reload trigger failed. EZID returned: status_code={} body="{}"'.format(
                 response.code, body_str
             )
         )
 
-    print('EZID reload request returned: 200 OK: {}'.format(body_str))
+    log.info('EZID reload request successful: {}'.format(body_str))
+
+
+class ReloadError(Exception):
+    pass

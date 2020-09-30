@@ -35,6 +35,7 @@ _perUserThrottle = None
 
 logger = logging.getLogger(__name__)
 
+
 def loadConfig():
     global _perUserThreadLimit, _perUserThrottle
     _perUserThreadLimit = int(config.get("DEFAULT.max_threads_per_user"))
@@ -162,7 +163,7 @@ def mintIdentifier(shoulder, user, metadata={}):
 
     # TODO: We want to be able to support rendering error messages to end users in
     # production like current version of EZID does without breaking rendering of
-    # Django's shoulder_model exception diagnostics page in debug mode and without
+    # Django's exception diagnostics page in debug mode and without
     # having to wrap large sections of code in exception handlers just for redirecting
     # to a logger.
 
@@ -191,11 +192,18 @@ def mintIdentifier(shoulder, user, metadata={}):
             return "error: bad request - shoulder does not support minting"
 
         identifier = minter.mint_id(shoulder_model)
+        logger.debug('Minter returned identifier: {}'.format(identifier))
 
         if shoulder_model.prefix.startswith('doi:'):
-            identifier = 'doi:{}'.format(util.shadow2doi(identifier))
+            identifier = shoulder_model.prefix + identifier.upper()
         elif shoulder_model.prefix.startswith('ark:/'):
-            identifier = 'ark:/{}'.format(identifier)
+            identifier = shoulder_model.prefix + identifier.lower()
+        else:
+            raise False, 'Expected ARK or DOI prefix, not "{}"'.format(
+                shoulder_model.prefix
+            )
+
+        logger.debug('Final shoulder + identifier: {}'.format(identifier))
 
     log.success(tid, identifier)
 

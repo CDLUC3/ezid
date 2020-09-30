@@ -69,18 +69,16 @@ def getOrSetSecretKey():
     # Returns the stored value of django.conf.settings.SECRET_KEY.  If
     # there is no stored value, a new key is generated and stored (and
     # returned).
+    # try:
     row = ServerVariables.objects.get(id=1)
-    logger.debug(
-        'Read SECRET_KEY from ServerVariables. length="{}"'.format(len(row.secretKey))
-    )
+
     while row.secretKey == "":
-        logger.debug('Found empty SECRET_KEY. Generating new')
+        logger.debug('Current SECRET_KEY is empty. Generating new')
         rng = random.SystemRandom()
         alphabet = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
-        key = "".join(rng.choice(alphabet) for i in range(_secretKeyLength))
+        key = "".join(rng.choice(alphabet) for _ in range(_secretKeyLength))
         # We go to some effort to avoid race conditions.  We set the key
         # only if it hasn't been set, then ask for the value back.
         ServerVariables.objects.filter(secretKey="").update(secretKey=key)
         row = ServerVariables.objects.get(id=1)
-    logger.debug('Returning SECRET_KEY. length="{}"'.format(len(row.secretKey)))
     return row.secretKey

@@ -31,7 +31,7 @@ class TestDoiUtil:
             (1000001, OverflowError),
         ),
     )
-    def test_1000(self, doi, naan_or_exc):
+    def test_1000(self, doi, naan_or_exc, tmp_bdb_root):
         """doi_prefix_to_naan()"""
         if isinstance(naan_or_exc, basestring):
             assert bdb.doi_prefix_to_naan(doi, allow_lossy=True) == naan_or_exc
@@ -42,59 +42,77 @@ class TestDoiUtil:
     @pytest.mark.parametrize(
         'ns_str,path_or_exc',
         (
-            ('doi:10.1', 'b0001/NULL'),
             ('doi:10.1234', 'b1234/NULL'),
             ('doi:10.1234/', 'b1234/NULL'),
             ('doi:10.1234/XYZ', 'b1234/xyz'),
             ('doi:10.99999/X', 'n9999/x'),
-
-            ('doi:10.100000/X', OverflowError),
-            ('doi:10.100001/X', OverflowError),
-            ('doi:10.200000', OverflowError),
-
-            ('ark:/1', '1/NULL'),
-            ('ark:/1/', '1/NULL'),
-            ('ark:/1/x', '1/x'),
-            ('ark:/1/xyz', '1/xyz'),
-
             ('ark:/1234', '1234/NULL'),
             ('ark:/1234/', '1234/NULL'),
             ('ark:/1234/x', '1234/x'),
             ('ark:/1234/xyz', '1234/xyz'),
-
             ('ark:/12345', '12345/NULL'),
             ('ark:/12345/', '12345/NULL'),
             ('ark:/12345/x', '12345/x'),
             ('ark:/12345/xyz', '12345/xyz'),
-
             ('ark:/99999/xyz', '99999/xyz'),
-            ('ark:/100000/xyz', '100000/xyz'),
         ),
     )
-    def test_1030(self, ns_str, path_or_exc):
-        """get_bdb_path_by_namespace()"""
-        if isinstance(path_or_exc, basestring):
-            assert bdb.get_bdb_path_by_namespace(
-                ns_str, '/root'
-            ).as_posix() == '/root/{}/nog.bdb'.format(path_or_exc)
-        else:
-            with pytest.raises(path_or_exc):
-                bdb.get_bdb_path_by_namespace(ns_str, '/root')
+    def test_1030(self, ns_str, path_or_exc, tmp_bdb_root):
+        """get_path(): Well formed identifiers generate the expected paths"""
+        assert (
+            bdb.get_path(ns_str, 'root', is_new=True,)
+            .as_posix()
+            .endswith('/root/{}/nog.bdb'.format(path_or_exc))
+        )
+
+    @pytest.mark.parametrize(
+        'ns_str',
+        (
+            'doi:10.1',
+            'doi:10.100000',
+            'ark:/1',
+            'ark:/100000/',
+            'ark:/1/x',
+            'ark:/100000/xyz',
+        ),
+    )
+    def test_1031(self, ns_str, tmp_bdb_root):
+        """get_path(): Invalid identifiers raise IdentifierError"""
+        with pytest.raises(nog.id_ns.IdentifierError):
+            bdb.get_path(ns_str, 'root', is_new=True)
+
+    @pytest.mark.parametrize(
+        'ns_str', ('doi:10.100000/X', 'doi:10.100001/X', 'doi:10.200000',),
+    )
+    def test_1032(self, ns_str, tmp_bdb_root):
+        """get_path(): Raises IdentifierError for prefix that exceeds 5 digits"""
+        with pytest.raises(nog.id_ns.IdentifierError):
+            bdb.get_path(ns_str, 'root', is_new=True)
+
+    def test_1035(self, shoulder_csv):
+        """get_path(): Non-shoulders where the minter field is set
+        yield a path to an existing minter.
+        """
+        for ns_str, org_str, n2t_url in shoulder_csv:
+            if not ns_str.endswith('/') and n2t_url:
+                assert bdb.get_path(ns_str).exists()
+
+    # if ns_str.startswith('doi:') and n2t_url:
+    #     ez_str = bdb.doi_to_shadow_ark(ns_str)
+    #     n2t_str = '{}:/{}/{}'.format(*n2t_url.split('/')[-3:])
+    #     assert ez_str == n2t_str
 
     @pytest.mark.parametrize(
         'doi_str,ark_str',
         (
             # ARKs generated from DOI by N2T doip2naan.
-            ('doi:10.0', 'ark:/b0000'),
             ('doi:10.9999', 'ark:/b9999'),
             ('doi:10.10000', 'ark:/c0000'),
-            ('doi:10.0', 'ark:/b0000'),
-            ('doi:10.1', 'ark:/b0001'),
             ('doi:10.9999', 'ark:/b9999'),
             ('doi:10.10000', 'ark:/c0000'),
             ('doi:10.16543', 'ark:/c6543'),
             ('doi:10.99999', 'ark:/n9999'),
-            ('doi:10.0/', 'ark:/b0000/'),
+            # ('doi:10.0/', 'ark:/b0000/'),
             ('doi:10.9999/X', 'ark:/b9999/x'),
         ),
     )
@@ -121,3 +139,13 @@ class TestDoiUtil:
         """doi_to_shadow_ark(): Lossy conversions are rejected as by N2T doip2naan"""
         with pytest.raises(nog.exc.MinterError):
             bdb.doi_to_shadow_ark(doi_str)
+
+    def test_1060(self, shoulder_csv):
+        """doi_to_shadow_ark(): Matches all imported N2T paths for non-shoulders"""
+        for ns_str, org_str, n2t_url in shoulder_csv:
+            # We exclude identifiers ending with "/" because most of them can only be
+            # resolved via DB lookup.
+            if ns_str.startswith('doi:') and not ns_str.endswith('/') and n2t_url:
+                ez_str = bdb.doi_to_shadow_ark(ns_str)
+                n2t_str = '{}:/{}/{}'.format(*n2t_url.split('/')[-3:])
+                assert ez_str == n2t_str
