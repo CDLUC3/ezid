@@ -161,7 +161,10 @@ logging.config.dictConfig(
         'version': 1,
         'disable_existing_loggers': False,
         'formatters': {
-            'verbose': {'format': '%(levelname)8s %(name)8s %(module)s %(message)s',},
+            'verbose': {
+                'format': '%(levelname)8s %(name)8s %(module)s %(process)d %(thread)s %(message)s',
+            },
+            'simple': {'format': '%(levelname)8s %(message)s'},
         },
         'handlers': {
             'console': {
@@ -170,37 +173,40 @@ logging.config.dictConfig(
                 'formatter': 'verbose',
                 'stream': sys.stdout,
             },
-            'null': {'class': 'logging.NullHandler',},
         },
         'loggers': {
-            '': {
-                'handlers': [
-                    # let pytest configure all the logging
-                    'null'
-                    # 'console',
-                ],
-                'propagate': True,
-                'level': 'DEBUG',
+            '': {'handlers': ['console'], 'propagate': True, 'level': 'DEBUG',},
+            # Increase logging level on loggers that are noisy at debug level
+            'django.db': {
+                'level': 'ERROR',
             },
             # Increase logging level on loggers that are noisy at debug level
-            'django.db': {'level': 'INFO'},
-            'django.request': {'level': 'INFO'},
-            'filelock': {'level': 'INFO'},
+            'django.request': {
+                'level': 'ERROR',
+            },
+            'filelock': {
+                'level': 'ERROR',
+            },
         },
     }
 )
 
+# Ensure that user 'admin' with password 'admin' exists and is an admin
+# import ezidapp.models
+# store_user_model = ezidapp.models.StoreUser.objects.update_or_create(
+#     name='admin',
+#     password='admin',
+#     displayName='Test Admin',
+#     isSuperuser=True,
+#     loginEnabled=True,
+# )
+#
+
 # These messages should always make it to stdout
 sys.__stdout__.write('{}\n'.format('-' * 100))
-sys.__stdout__.write(
-    'The next 3 lines should contain DEBUG, INFO AND ERROR level test messages from '
-    'logging:\n'
-)
-sys.__stdout__.write('\n')
+sys.__stdout__.write('The next 3 lines should contain DEBUG, INFO AND ERROR level\n')
+sys.__stdout__.write('test messages from logging:\n')
 log = logging.getLogger(__name__)
 log.debug('DEBUG level test message')
 log.info('INFO level test message')
 log.error('ERROR level test message')
-
-# import logging_tree
-# logging_tree.printout()
