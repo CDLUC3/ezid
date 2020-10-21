@@ -18,12 +18,15 @@ class Migration(migrations.Migration):
                 ('enqueueTime', models.IntegerField()),
                 ('identifier', models.CharField(max_length=255)),
                 ('metadata', models.BinaryField()),
-                ('operation', models.CharField(max_length=1, choices=[(b'O', b'overwrite'), (b'D', b'delete')])),
+                (
+                    'operation',
+                    models.CharField(
+                        max_length=1, choices=[(b'O', b'overwrite'), (b'D', b'delete')]
+                    ),
+                ),
                 ('error', models.TextField(blank=True)),
                 ('errorIsPermanent', models.BooleanField(default=False)),
             ],
-            options={
-                'abstract': False,
-            },
+            options={'abstract': False,},
         ),
     ]

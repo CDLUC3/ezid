@@ -15,5 +15,6 @@
 
 import realm
 
-class SearchRealm (realm.Realm):
-  pass
+
+class SearchRealm(realm.Realm):
+    pass

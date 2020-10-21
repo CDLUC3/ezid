@@ -12,8 +12,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='linkchecker',
-            name='error',
-            field=models.TextField(blank=True),
+            model_name='linkchecker', name='error', field=models.TextField(blank=True),
         ),
     ]

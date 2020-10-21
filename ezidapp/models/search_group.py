@@ -18,6 +18,8 @@ import django.db.models
 import group
 import search_realm
 
-class SearchGroup (group.Group):
-  realm = django.db.models.ForeignKey(search_realm.SearchRealm,
-    on_delete=django.db.models.PROTECT)
+
+class SearchGroup(group.Group):
+    realm = django.db.models.ForeignKey(
+        search_realm.SearchRealm, on_delete=django.db.models.PROTECT
+    )

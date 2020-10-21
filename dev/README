@@ -21,6 +21,9 @@ EZID UI.
  Files in the '/src/bootstrap' directory
 The primary stylesheet for legacy styles are compiled by main.scss into main.css
 
+Note: Moved everything from the /src directory and merge them here in /dev/legacy-scss,
+when time allows. It will make things more manageable to have all UI development components
+in one place.
 
 ## New /dev
 This /dev directory contains the static, client-side elements, completeley separate from
@@ -31,12 +34,6 @@ Javascript, and html mock page templates.
 The primary stylesheet for this work area is compiled by main2.scss into main2.min.css.
 Primary Javascript file is main2.js, minified into main2.min.js. These files also need
 to be copied over to /static when ready to run on Django.
-
-## TO DO
-Eventually, please move everything from the /src directory and merge them here in /dev,
-when time allows. It will make things more manageable to have all UI development components
-in one place.
-
 
 ## Legacy stylesheet compilation 
 EZID (development build only) includes libsass python extension module for processing SassScript.

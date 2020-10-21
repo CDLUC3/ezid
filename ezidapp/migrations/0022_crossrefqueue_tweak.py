@@ -14,6 +14,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='crossrefqueue',
             name='operation',
-            field=models.CharField(max_length=1, choices=[(b'C', b'create'), (b'U', b'update'), (b'D', b'delete')]),
+            field=models.CharField(
+                max_length=1,
+                choices=[(b'C', b'create'), (b'U', b'update'), (b'D', b'delete')],
+            ),
         ),
     ]

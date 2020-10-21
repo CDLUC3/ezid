@@ -18,17 +18,19 @@ import django.db.models
 import datacenter
 import validation
 
-class StoreDatacenter (datacenter.Datacenter):
-  # A DataCite datacenter as stored in the store database.
 
-  name = django.db.models.CharField(max_length=255, unique=True,
-    validators=[validation.nonEmpty])
-  # The datacenter's full name, e.g., "Brown University Library".
+class StoreDatacenter(datacenter.Datacenter):
+    # A DataCite datacenter as stored in the store database.
 
-  def clean (self):
-    super(StoreDatacenter, self).clean()
-    self.name = self.name.strip()
+    name = django.db.models.CharField(
+        max_length=255, unique=True, validators=[validation.nonEmpty]
+    )
+    # The datacenter's full name, e.g., "Brown University Library".
 
-  class Meta:
-    verbose_name = "datacenter"
-    verbose_name_plural = "datacenters"
+    def clean(self):
+        super(StoreDatacenter, self).clean()
+        self.name = self.name.strip()
+
+    class Meta:
+        verbose_name = "datacenter"
+        verbose_name_plural = "datacenters"

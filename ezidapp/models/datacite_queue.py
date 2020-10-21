@@ -15,5 +15,6 @@
 
 import registration_queue
 
-class DataciteQueue (registration_queue.RegistrationQueue):
-  pass
+
+class DataciteQueue(registration_queue.RegistrationQueue):
+    pass

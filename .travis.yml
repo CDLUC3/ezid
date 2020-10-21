@@ -1,0 +1,45 @@
+language:
+  python
+dist:
+  xenial
+python:
+  - "2.7"
+services:
+  - mysql
+addons:
+  apt:
+    packages:
+      - libdb5.3-dev
+env:
+  - DJANGO_SETTINGS_MODULE='settings.test_settings'
+    IS_TRAVIS=1
+virtualenv:
+  system_site_packages: true
+install:
+  - pip install --upgrade pip setuptools wheel
+before_script:
+  - mysql -e "
+      create database if not exists ezid_tests;
+      use ezid_tests;
+      create user 'ezid_test_user'@'%' identified by '';
+      grant all privileges on *.* to 'ezid_test_user'@'%';
+      flush privileges;
+    "
+  - ls -l
+  - pip install -r ./requirements.txt
+  - python --version
+  - pip freeze
+  - pip check || true
+  - ls -la ${HOME}
+  - ls -la ${TRAVIS_BUILD_DIR}
+  - echo "CWD=${PWD}"
+script:
+  - mkdir -p ../download/public ../logs
+  - python ${TRAVIS_BUILD_DIR}/manage.py migrate --run-syncdb
+  - python ${TRAVIS_BUILD_DIR}/manage.py loaddata combined-limited
+  - mysql -e "
+      use ezid_tests;
+      show tables;
+      select prefix, minter from ezidapp_shoulder;
+    "
+  - pytest

@@ -1,0 +1,32 @@
+// ##### Download Component ##### //
+
+.download {
+	$box-padding: 1.5rem;
+
+	padding: $box-padding;
+	border: 1px solid $design-primary-color;
+	border-radius: $form-element-border-radius;
+
+	header {
+		margin: (-$box-padding) (-$box-padding) $box-padding (-$box-padding);
+		padding: 1rem 1rem 1rem $box-padding;
+		background: $design-primary-color url('../images/icon_share-all-solid.svg') left $box-padding center / 1.8rem no-repeat;
+	}
+
+	h3 {
+		margin: 0 0 0 3.5rem;
+		color: $design-white-color;
+	}
+
+	ul {
+		margin: 0;
+		padding: 0;
+		padding-left: 1rem;
+	}
+
+	li:not(:last-child) {
+		margin-top: 1rem;
+		margin-bottom: 1rem;
+	}
+
+}

@@ -48,12 +48,14 @@ def simple_decorator(decorator):
        your decorator and it will automatically preserve the
        docstring and function attributes of functions to which
        it is applied."""
+
     def new_decorator(f):
         g = decorator(f)
         g.__name__ = f.__name__
         g.__doc__ = f.__doc__
         g.__dict__.update(f.__dict__)
         return g
+
     # Now a few lines needed to make simple_decorator itself
     # be a well-behaved decorator.
     new_decorator.__name__ = decorator.__name__
@@ -74,6 +76,7 @@ def basictag(takes_context=False):
         def printuser(context):
             return context['user']
     """
+
     class BasicTagNode(template.Node):
         def __init__(self, take_context, tag_name, tag_func, args):
             self.takes_context = takes_context
@@ -93,29 +96,32 @@ def basictag(takes_context=False):
         def _setup_tag(parser, token):
             bits = token.split_contents()
             tag_name = bits[0]
-            del(bits[0])
+            del bits[0]
 
             params, xx, xxx, defaults = getargspec(tag_func)
             max_args = len(params)
 
             if takes_context:
                 if params[0] == 'context':
-                    max_args -= 1 # Ignore context
+                    max_args -= 1  # Ignore context
                 else:
-                    raise TemplateSyntaxError, \
-                        "Any tag function decorated with takes_context=True " \
-                        "must have a first argument of 'context'"
+                    raise TemplateSyntaxError, "Any tag function decorated with takes_context=True " "must have a first argument of 'context'"
 
             min_args = max_args - len(defaults or [])
 
             if not min_args <= len(bits) <= max_args:
                 if min_args == max_args:
-                    raise TemplateSyntaxError, \
-                        "%r tag takes %d arguments." % (tag_name, min_args)
+                    raise TemplateSyntaxError, "%r tag takes %d arguments." % (
+                        tag_name,
+                        min_args,
+                    )
                 else:
-                    raise TemplateSyntaxError, \
-                        "%r tag takes %d to %d arguments, got %d." % \
-                        (tag_name, min_args, max_args, len(bits))
+                    raise TemplateSyntaxError, "%r tag takes %d to %d arguments, got %d." % (
+                        tag_name,
+                        min_args,
+                        max_args,
+                        len(bits),
+                    )
 
             return BasicTagNode(takes_context, tag_name, tag_func, bits)
 
@@ -143,6 +149,7 @@ def blocktag(tag_func):
                 s += " id='%s'" % div_id
             return s + ">" + nodelist.render(context) + "</div>"
     """
+
     class BlockTagNode(template.Node):
         def __init__(self, tag_name, tag_func, nodelist, args):
             self.tag_name = tag_name
@@ -157,20 +164,25 @@ def blocktag(tag_func):
     def _setup_tag(parser, token):
         bits = token.split_contents()
         tag_name = bits[0]
-        del(bits[0])
+        del bits[0]
 
         params, xx, xxx, defaults = getargspec(tag_func)
-        max_args = len(params) - 2 # Ignore context and nodelist
+        max_args = len(params) - 2  # Ignore context and nodelist
         min_args = max_args - len(defaults or [])
 
         if not min_args <= len(bits) <= max_args:
             if min_args == max_args:
-                raise TemplateSyntaxError, \
-                    "%r tag takes %d arguments." % (tag_name, min_args)
+                raise TemplateSyntaxError, "%r tag takes %d arguments." % (
+                    tag_name,
+                    min_args,
+                )
             else:
-                raise TemplateSyntaxError, \
-                    "%r tag takes %d to %d arguments, got %d." % \
-                    (tag_name, min_args, max_args, len(bits))
+                raise TemplateSyntaxError, "%r tag takes %d to %d arguments, got %d." % (
+                    tag_name,
+                    min_args,
+                    max_args,
+                    len(bits),
+                )
 
         nodelist = parser.parse(('end%s' % tag_name),)
         parser.delete_first_token()

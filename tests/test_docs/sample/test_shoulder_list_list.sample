@@ -1,0 +1,442 @@
+"    INFO nog.shoulder shoulder Shoulders:
+    INFO nog.shoulder shoulder ark:/13030/bn        ?1?
+    INFO nog.shoulder shoulder ark:/86073/b3        American University of Beirut
+    INFO nog.shoulder shoulder ark:/99999/fk4       ARK Test
+    INFO nog.shoulder shoulder ark:/99999/fk8       ARK Test (non-expiring)
+    INFO nog.shoulder shoulder ark:/85779/j4        Berkeley Law Library
+    INFO nog.shoulder shoulder doi:10.15779/J2      Berkeley Law Library
+    INFO nog.shoulder shoulder doi:10.15779/Z38     Berkeley Law School Journals
+    INFO nog.shoulder shoulder ark:/80354/b3        Berkeley Linguistics Society
+    INFO nog.shoulder shoulder doi:10.20354/B4      Berkeley Linguistics Society
+    INFO nog.shoulder shoulder doi:10.5070/BP3      Berkeley Planning Journal
+    INFO nog.shoulder shoulder doi:10.5070/B8       Berkeley Review of Education
+    INFO nog.shoulder shoulder ark:/87932/k0        Berkeley Seismological Laboratory
+    INFO nog.shoulder shoulder doi:10.7932/         Berkeley Seismological Laboratory
+    INFO nog.shoulder shoulder ark:/57799/b9        bioCADDIE
+    INFO nog.shoulder shoulder ark:/57799/          bioCADDIE no minter
+    INFO nog.shoulder shoulder ark:/21547/          Biocode Commons
+    INFO nog.shoulder shoulder ark:/87286/          Biocode Commons (UCB only)
+    INFO nog.shoulder shoulder doi:10.7286/         Biocode Commons (UCB only)
+    INFO nog.shoulder shoulder ark:/86084/b4        Blavatnik Archive
+    INFO nog.shoulder shoulder ark:/84246/p7        California Coastal Atlas
+    INFO nog.shoulder shoulder doi:10.4246/         California Coastal Atlas
+    INFO nog.shoulder shoulder ark:/99166/p9        CDL Agent
+    INFO nog.shoulder shoulder ark:/13030/j2        CDL Auxiliary
+    INFO nog.shoulder shoulder ark:/13030/c8        CDL Digital Special Collections
+    INFO nog.shoulder shoulder doi:10.5070/C2       CDL eScholarship
+    INFO nog.shoulder shoulder doi:10.17602/C2      CDL General Purpose
+    INFO nog.shoulder shoulder ark:/13030/sw1       CDL Web Archiving System
+    INFO nog.shoulder shoulder ark:/87285/t8        Center for Multiscale Modeling of Atmospheric Processes
+    INFO nog.shoulder shoulder doi:10.7285/T7       Center for Multiscale Modeling of Atmospheric Processes
+    INFO nog.shoulder shoulder ark:/87915/n7        Center for Nanotechnology in Society
+    INFO nog.shoulder shoulder doi:10.17915/N5      Center for Nanotechnology in Society
+    INFO nog.shoulder shoulder ark:/87295/w8        Center for Research in Biological Systems
+    INFO nog.shoulder shoulder doi:10.7295/W9       Center for Research in Biological Systems
+    INFO nog.shoulder shoulder ark:/87607/c7        Chicago Collections Consortium
+    INFO nog.shoulder shoulder doi:10.21237/C7      Cliodynamics Journal
+    INFO nog.shoulder shoulder ark:/87942/          CLIVAR & Carbon Hydrographic Data Office
+    INFO nog.shoulder shoulder doi:10.7942/         CLIVAR & Carbon Hydrographic Data Office
+    INFO nog.shoulder shoulder doi:10.7942/C2       CLIVAR & CCHDO Minter
+    INFO nog.shoulder shoulder ark:/86080/k3        Collaborative Research in Computational Neuroscience (CRCNS)
+    INFO nog.shoulder shoulder doi:10.6080/K0       Collaborative Research in Computational Neuroscience (CRCNS)
+    INFO nog.shoulder shoulder ark:/81220/w2        College of William & Mary Libraries
+    INFO nog.shoulder shoulder ark:/19153/b2        CRDP academie d'Aix-Marseille
+    INFO nog.shoulder shoulder doi:10.15697/        Crossref test
+    INFO nog.shoulder shoulder doi:10.25497/D7      Dangermond Preserve
+    INFO nog.shoulder shoulder ark:/83024/d4        Dartmouth College Library
+    INFO nog.shoulder shoulder ark:/44461/r4        Dartmouth Remix the Manuscript
+    INFO nog.shoulder shoulder ark:/87296/s6        Dartmouth Spatial Archaeometry Lab
+    INFO nog.shoulder shoulder ark:/88736/t6        Dartmouth Thayer Instructional Labs
+    INFO nog.shoulder shoulder ark:/81428/v8        Dartmouth Virtual Basilica
+    INFO nog.shoulder shoulder ark:/83022/m4        DataMares
+    INFO nog.shoulder shoulder doi:10.13022/M3      DataMares
+    INFO nog.shoulder shoulder ark:/13030/d3        DCPPC Team Sodium
+    INFO nog.shoulder shoulder doi:10.5070/D8       Diagonal: An Ibero-American Music Review
+    INFO nog.shoulder shoulder ark:/21198/n1        DLP
+    INFO nog.shoulder shoulder doi:10.5072/FK2      DOI Test
+    INFO nog.shoulder shoulder doi:10.5070/D6       Dotawo: A Journal of Nubian Studies
+    INFO nog.shoulder shoulder ark:/13030/fq        DPR Legacy
+    INFO nog.shoulder shoulder ark:/85782/d8        Drug Design Data (D3R) Resource
+    INFO nog.shoulder shoulder doi:10.15782/D6      Drug Design Data (D3R) Resource
+    INFO nog.shoulder shoulder ark:/87924/r4        Duke Digital Repository
+    INFO nog.shoulder shoulder ark:/87924/r3        Duke Digital Repository (Retired Minter)
+    INFO nog.shoulder shoulder ark:/87924/g9        Duke University
+    INFO nog.shoulder shoulder doi:10.25352/G2      EarthCube
+    INFO nog.shoulder shoulder ark:/23942/g3        EarthCube Documents
+    INFO nog.shoulder shoulder ark:/23942/g2        EarthCube Resources
+    INFO nog.shoulder shoulder doi:10.7288/V4       EarthRef
+    INFO nog.shoulder shoulder doi:10.25498/E4      Engineering Biology Research Consortium (EBRC)
+    INFO nog.shoulder shoulder ark:/78662/s2        Environmental System Science Data Infrastructure for a Virtual Ecosystem (ESS-
+DIVE)
+    INFO nog.shoulder shoulder doi:10.6074/D4       eschol DataCite
+    INFO nog.shoulder shoulder doi:10.5070/S8       eScholarship
+    INFO nog.shoulder shoulder ark:/99166/p3        eScholarship Agents
+    INFO nog.shoulder shoulder ark:/13030/qt        eScholarship Legacy
+    INFO nog.shoulder shoulder doi:10.5070/P2       eScholarship: California Jrnl of Politics and Policy
+    INFO nog.shoulder shoulder ark:/12345/          Examples Shoulder
+    INFO nog.shoulder shoulder ark:/13030/c7        EZID
+    INFO nog.shoulder shoulder ark:/13030/g3        EZID binder ids
+    INFO nog.shoulder shoulder ark:/88119/f7        Facebase Consortium
+    INFO nog.shoulder shoulder ark:/19153/s9        Formulaire Scolomfr
+    INFO nog.shoulder shoulder ark:/88118/p7        Geotechnical Extreme Events Reconnaissance
+    INFO nog.shoulder shoulder doi:10.18118/G6      Geotechnical Extreme Events Reconnaissance
+    INFO nog.shoulder shoulder ark:/85147/j4        iDASH Repository
+    INFO nog.shoulder shoulder doi:10.15147/J2      iDASH Repository
+    INFO nog.shoulder shoulder ark:/88122/          Industry Documents Library
+    INFO nog.shoulder shoulder doi:10.21433/B3      International Conference on GIScience Short Paper Proceedings
+    INFO nog.shoulder shoulder ark:/87292/w9        Iowa State University
+    INFO nog.shoulder shoulder ark:/87281/t2        Johns Hopkins University Data Archive
+    INFO nog.shoulder shoulder doi:10.15310/J3      Journal of Evolution and Health
+    INFO nog.shoulder shoulder doi:10.15310/        Journal of Evolution and Health (no minter)
+    INFO nog.shoulder shoulder doi:10.26081/K6      KITP
+    INFO nog.shoulder shoulder doi:10.5070/L2       L2 Journal
+    INFO nog.shoulder shoulder ark:/88115/d6        Laboratory for Basic and Translational Cognitive Neuroscience
+    INFO nog.shoulder shoulder doi:10.18115/D5      Laboratory for Basic and Translational Cognitive Neuroscience
+    INFO nog.shoulder shoulder ark:/87941/t2        Lawrence Berkeley National Laboratory
+    INFO nog.shoulder shoulder doi:10.7941/S9       Lawrence Berkeley National Laboratory
+    INFO nog.shoulder shoulder doi:10.21990/C2      LBNL ACDO CRD
+    INFO nog.shoulder shoulder doi:10.21990/S9      LBNL ACDO ESnet
+    INFO nog.shoulder shoulder doi:10.21990/B9      LBNL ACDO NERSC
+    INFO nog.shoulder shoulder ark:/51986/b6        LBNL BTUSAdmin
+    INFO nog.shoulder shoulder doi:10.20357/B7      LBNL BTUSAdmin
+    INFO nog.shoulder shoulder doi:10.25342/        LBNL Cascade
+    INFO nog.shoulder shoulder ark:/80358/s5        LBNL CESD
+    INFO nog.shoulder shoulder doi:10.20358/C8      LBNL CESD
+    INFO nog.shoulder shoulder doi:10.25344/S4      LBNL Computational Science Department
+    INFO nog.shoulder shoulder doi:10.21990/R2      LBNL CRD
+    INFO nog.shoulder shoulder doi:10.7941/D1       LBNL Dash
+    INFO nog.shoulder shoulder ark:/88431/b4        LBNL EAEI
+    INFO nog.shoulder shoulder doi:10.18431/B3      LBNL EAEI
+    INFO nog.shoulder shoulder ark:/88734/p3        LBNL JCAP/CSD
+    INFO nog.shoulder shoulder doi:10.18734/P4      LBNL JCAP/CSD
+    INFO nog.shoulder shoulder doi:10.7933/N3       LBNL National Energy Research Scientific Computing Center
+    INFO nog.shoulder shoulder ark:/87943/t4        LBNL OpenMSI
+    INFO nog.shoulder shoulder doi:10.7943/T3       LBNL OpenMSI
+    INFO nog.shoulder shoulder ark:/13030/vf        Legacy arkpreserve
+    INFO nog.shoulder shoulder ark:/81239/m9        Marine and Coastal Research Institute of Columbia
+    INFO nog.shoulder shoulder doi:10.21239/V9      Marine and Coastal Research Institute of Columbia
+    INFO nog.shoulder shoulder ark:/13030/m5        Merritt
+    INFO nog.shoulder shoulder ark:/75788/m4        Montana State University
+    INFO nog.shoulder shoulder ark:/87602/m4        Morphosource Project
+    INFO nog.shoulder shoulder ark:/85335/m5        MSU Libraries
+    INFO nog.shoulder shoulder ark:/85065/d7        National Center for Atmospheric Research (NCAR)
+    INFO nog.shoulder shoulder ark:/85063/f2        National Center for Ecological Analysis and Synthesis (NCEAS)
+    INFO nog.shoulder shoulder doi:10.5063/         National Center for Ecological Analysis and Synthesis (NCEAS)
+    INFO nog.shoulder shoulder ark:/65665/n6        National Museum of Natural History, Smithsonian Institution
+    INFO nog.shoulder shoulder ark:/65665/          National Museum of Natural History, Smithsonian Institution - empty shoulder
+    INFO nog.shoulder shoulder ark:/88112/x2        National Registry of Exonerations
+    INFO nog.shoulder shoulder ark:/81985/n2        NorthwesternUniv
+    INFO nog.shoulder shoulder doi:10.18739/        NSF Arctic Data Center
+    INFO nog.shoulder shoulder doi:10.18739/A2      NSF Arctic Data Center Minter
+    INFO nog.shoulder shoulder doi:10.25494/P6      Ocean Protection Council
+    INFO nog.shoulder shoulder ark:/13030/kt        Online Archive of California (OAC)
+    INFO nog.shoulder shoulder ark:/13030/ft        Online Archive of California (OAC) Legacy ft
+    INFO nog.shoulder shoulder ark:/13030/tf        Online Archive of California (OAC) Legacy tf
+    INFO nog.shoulder shoulder ark:/13030/p8        Open Access Policy
+    INFO nog.shoulder shoulder ark:/13030/p4        Open Access Policy (Retired Minter)
+    INFO nog.shoulder shoulder ark:/13960/t         Open Content Alliance
+    INFO nog.shoulder shoulder ark:/28722/k2        OpenContext
+    INFO nog.shoulder shoulder doi:10.6078/M7       OpenContext
+    INFO nog.shoulder shoulder ark:/99152/p0        OpenContext PeriodO
+    INFO nog.shoulder shoulder ark:/85069/g8        OpenTopography Facility
+    INFO nog.shoulder shoulder doi:10.5069/G9       OpenTopography Facility
+    INFO nog.shoulder shoulder ark:/19153/p4        Parcours EGO-PAC
+    INFO nog.shoulder shoulder ark:/86085/n0        Partnership for Interdisciplinary Studies of Coastal Oceans (PISCO)
+    INFO nog.shoulder shoulder doi:10.6085/         Partnership for Interdisciplinary Studies of Coastal Oceans (PISCO)
+    INFO nog.shoulder shoulder ark:/21549/          Phoebe A. Hearst Museum of Anthropology
+    INFO nog.shoulder shoulder doi:10.21239/        Phoebe A. Hearst Museum of Anthropology
+    INFO nog.shoulder shoulder doi:10.21978/P8      Planetary Data System
+    INFO nog.shoulder shoulder ark:/88435/dsp01     Princeton University Library
+    INFO nog.shoulder shoulder ark:/88435/pr1       Princeton University Open Access Repository
+    INFO nog.shoulder shoulder doi:10.5070/V4       Proceedings of the Vertebrate Pest Conference
+    INFO nog.shoulder shoulder ark:/88435/          PUL Digital Collections
+    INFO nog.shoulder shoulder ark:/88114/p7        Purdue Polytechnic Institute (Retired Minter)
+    INFO nog.shoulder shoulder doi:10.5070/R7       Refract
+    INFO nog.shoulder shoulder ark:/19153/spbb9     Scolomfr -- Association Fran\u00e7aise pour la Lecture
+    INFO nog.shoulder shoulder ark:/19153/sdbb9     Scolomfr -- BrainPop
+    INFO nog.shoulder shoulder ark:/19153/spbc9     Scolomfr -- BRNE - Myria\u00e9
+    INFO nog.shoulder shoulder ark:/19153/sdbc9     Scolomfr -- Cadmos
+    INFO nog.shoulder shoulder ark:/19153/rcbc9     Scolomfr -- Canop\u00e9
+    INFO nog.shoulder shoulder ark:/19153/spbd9     Scolomfr -- Canoprof
+    INFO nog.shoulder shoulder ark:/19153/sdbd9     Scolomfr -- Cfactuel
+    INFO nog.shoulder shoulder ark:/19153/sdbf9     Scolomfr -- Delagrave
+    INFO nog.shoulder shoulder ark:/19153/sdbg9     Scolomfr -- Didier
+    INFO nog.shoulder shoulder ark:/19153/sdbh9     Scolomfr -- Didier (2017)
+    INFO nog.shoulder shoulder ark:/19153/sdbt9     Scolomfr -- e-Toiles \u00e9ditions
+    INFO nog.shoulder shoulder ark:/19153/sdbj9     Scolomfr -- Editions Chavir\u00f4
+    INFO nog.shoulder shoulder ark:/19153/spbf9     Scolomfr -- Edubases pour Myria\u00e9
+    INFO nog.shoulder shoulder ark:/19153/sdbn9     Scolomfr -- Educ'Arte
+    INFO nog.shoulder shoulder ark:/19153/sdbm9     Scolomfr -- Educagri
+    INFO nog.shoulder shoulder ark:/19153/sdbp9     Scolomfr -- Educlever
+    INFO nog.shoulder shoulder ark:/19153/sdbq9     Scolomfr -- Educode
+    INFO nog.shoulder shoulder ark:/19153/sdbr9     Scolomfr -- eduMedia
+    INFO nog.shoulder shoulder ark:/19153/sdbs9     Scolomfr -- EduPad
+    INFO nog.shoulder shoulder ark:/19153/spbg9     Scolomfr -- Eduth\u00e8que - AFP
+    INFO nog.shoulder shoulder ark:/19153/spbh9     Scolomfr -- Eduth\u00e8que - ARTE
+    INFO nog.shoulder shoulder ark:/19153/spbj9     Scolomfr -- Eduth\u00e8que - BBC
+    INFO nog.shoulder shoulder ark:/19153/spbk9     Scolomfr -- Eduth\u00e8que - BNF
+    INFO nog.shoulder shoulder ark:/19153/spbm9     Scolomfr -- Eduth\u00e8que - BNF Partenariats
+    INFO nog.shoulder shoulder ark:/19153/spbn9     Scolomfr -- Eduth\u00e8que - BRGM
+    INFO nog.shoulder shoulder ark:/19153/spbp9     Scolomfr -- Eduth\u00e8que - Centre Pompidou
+    INFO nog.shoulder shoulder ark:/19153/spbq9     Scolomfr -- Eduth\u00e8que - Ch\u00e2teau de Versailles
+    INFO nog.shoulder shoulder ark:/19153/spbr9     Scolomfr -- Eduth\u00e8que - Cit\u00e9 de l'architecture et du patrimoine
+    INFO nog.shoulder shoulder ark:/19153/spbs9     Scolomfr -- Eduth\u00e8que - CMN
+    INFO nog.shoulder shoulder ark:/19153/spbt9     Scolomfr -- Eduth\u00e8que - CNES
+    INFO nog.shoulder shoulder ark:/19153/spbv9     Scolomfr -- Eduth\u00e8que - CNRS
+    INFO nog.shoulder shoulder ark:/19153/spbw9     Scolomfr -- Eduth\u00e8que - Deutsche Welle
+    INFO nog.shoulder shoulder ark:/19153/spbx9     Scolomfr -- Eduth\u00e8que - ECPAD
+    INFO nog.shoulder shoulder ark:/19153/spbz9     Scolomfr -- Eduth\u00e8que - Espace Myria\u00e9
+    INFO nog.shoulder shoulder ark:/19153/spcb9     Scolomfr -- Eduth\u00e8que - Ifremer
+    INFO nog.shoulder shoulder ark:/19153/spcc9     Scolomfr -- Eduth\u00e8que - IGN \u00e9dug\u00e9o
+    INFO nog.shoulder shoulder ark:/19153/spcd9     Scolomfr -- Eduth\u00e8que - INA GRM
+    INFO nog.shoulder shoulder ark:/19153/spcf9     Scolomfr -- Eduth\u00e8que - Inserm
+    INFO nog.shoulder shoulder ark:/19153/spcg9     Scolomfr -- Eduth\u00e8que - Institut du Monde arabe
+    INFO nog.shoulder shoulder ark:/19153/spch9     Scolomfr -- Eduth\u00e8que - LE BAL
+    INFO nog.shoulder shoulder ark:/19153/spcj9     Scolomfr -- Eduth\u00e8que - Louvre
+    INFO nog.shoulder shoulder ark:/19153/spck9     Scolomfr -- Eduth\u00e8que - M\u00e9t\u00e9o France
+    INFO nog.shoulder shoulder ark:/19153/spcm9     Scolomfr -- Eduth\u00e8que - MNHN
+    INFO nog.shoulder shoulder ark:/19153/rcbd9     Scolomfr -- Eduth\u00e8que - Offre th\u00e9\u00e2tre
+    INFO nog.shoulder shoulder ark:/19153/spcn9     Scolomfr -- Eduth\u00e8que - Philharmonie de Paris
+    INFO nog.shoulder shoulder ark:/19153/spcp9     Scolomfr -- Eduth\u00e8que - Radio France
+    INFO nog.shoulder shoulder ark:/19153/spcq9     Scolomfr -- Eduth\u00e8que - Retronews - BNF
+    INFO nog.shoulder shoulder ark:/19153/spcr9     Scolomfr -- Eduth\u00e8que - RMN HPI
+    INFO nog.shoulder shoulder ark:/19153/spcs9     Scolomfr -- Eduth\u00e8que - RMN PA
+    INFO nog.shoulder shoulder ark:/19153/spct9     Scolomfr -- Eduth\u00e8que - RTVE
+    INFO nog.shoulder shoulder ark:/19153/spcv9     Scolomfr -- Eduth\u00e8que - Site.tv
+    INFO nog.shoulder shoulder ark:/19153/spcw9     Scolomfr -- Encyclop\u00e6dia Universalis
+    INFO nog.shoulder shoulder ark:/19153/rcbf9     Scolomfr -- ENI ressources
+    INFO nog.shoulder shoulder ark:/19153/sdbv9     Scolomfr -- Euro-France M\u00e9dias
+    INFO nog.shoulder shoulder ark:/19153/sdbw9     Scolomfr -- Floc Production Multim\u00e9dia
+    INFO nog.shoulder shoulder ark:/19153/sdbx9     Scolomfr -- Foucher
+    INFO nog.shoulder shoulder ark:/19153/sdbz9     Scolomfr -- Foucher (2017)
+    INFO nog.shoulder shoulder ark:/19153/sdcb9     Scolomfr -- Fourmikili
+    INFO nog.shoulder shoulder ark:/19153/sdcc9     Scolomfr -- G\u00e9n\u00e9ration 5
+    INFO nog.shoulder shoulder ark:/19153/sdcd9     Scolomfr -- Hachette
+    INFO nog.shoulder shoulder ark:/19153/sdcf9     Scolomfr -- Hachette (2017)
+    INFO nog.shoulder shoulder ark:/19153/sdcg9     Scolomfr -- Hachette FLE
+    INFO nog.shoulder shoulder ark:/19153/sdch9     Scolomfr -- Hachette FLE (2017)
+    INFO nog.shoulder shoulder ark:/19153/sdcj9     Scolomfr -- Hatier
+    INFO nog.shoulder shoulder ark:/19153/sdck9     Scolomfr -- Hatier (2017)
+    INFO nog.shoulder shoulder ark:/19153/spcx9     Scolomfr -- INS HEA
+    INFO nog.shoulder shoulder ark:/19153/sdcm9     Scolomfr -- International d\u00e9veloppement syst\u00e8me
+    INFO nog.shoulder shoulder ark:/19153/sdcn9     Scolomfr -- Istra
+    INFO nog.shoulder shoulder ark:/19153/sdcp9     Scolomfr -- Istra (2017)
+    INFO nog.shoulder shoulder ark:/19153/sdcq9     Scolomfr -- Itop Education
+    INFO nog.shoulder shoulder ark:/19153/spcz9     Scolomfr -- Jeu Num\u00e9rique
+    INFO nog.shoulder shoulder ark:/19153/sdcr9     Scolomfr -- Kiupe
+    INFO nog.shoulder shoulder ark:/19153/sdcs9     Scolomfr -- Kwyk
+    INFO nog.shoulder shoulder ark:/19153/sddb9     Scolomfr -- L'Escapadou
+    INFO nog.shoulder shoulder ark:/19153/sdct9     Scolomfr -- Larousse
+    INFO nog.shoulder shoulder ark:/19153/sdcv9     Scolomfr -- Larousse (2017)
+    INFO nog.shoulder shoulder ark:/19153/sdcw9     Scolomfr -- Le Kiosque de l'Education
+    INFO nog.shoulder shoulder ark:/19153/sdcx9     Scolomfr -- Le Web P\u00e9dagogique
+    INFO nog.shoulder shoulder ark:/19153/sdcz9     Scolomfr -- Learn Enjoy
+    INFO nog.shoulder shoulder ark:/19153/sddc9     Scolomfr -- Magist\u00e8re
+    INFO nog.shoulder shoulder ark:/19153/sddd9     Scolomfr -- Magnard
+    INFO nog.shoulder shoulder ark:/19153/sddf9     Scolomfr -- MusicAmour SAS
+    INFO nog.shoulder shoulder ark:/19153/spdb9     Scolomfr -- Myria\u00e9 - Espace prescripteurs acad\u00e9miques
+    INFO nog.shoulder shoulder ark:/19153/sddg9     Scolomfr -- Neotis
+    INFO nog.shoulder shoulder ark:/19153/sddh9     Scolomfr -- Pixel Cookers
+    INFO nog.shoulder shoulder ark:/19153/sddj9     Scolomfr -- Planet N\u00e9mo Interactive
+    INFO nog.shoulder shoulder ark:/19153/sddk9     Scolomfr -- Plateforme p\u00e9dagogiques multim\u00e9dia
+    INFO nog.shoulder shoulder ark:/19153/sddm9     Scolomfr -- Promethean
+    INFO nog.shoulder shoulder ark:/19153/rcbg9     Scolomfr -- R\u00e9seau Canop\u00e9 - Espace Myria\u00e9
+    INFO nog.shoulder shoulder ark:/19153/sddn9     Scolomfr -- Retronews-BNF
+    INFO nog.shoulder shoulder ark:/19153/sddp9     Scolomfr -- Seira
+    INFO nog.shoulder shoulder ark:/19153/sddq9     Scolomfr -- Sejer
+    INFO nog.shoulder shoulder ark:/19153/sddr9     Scolomfr -- Serpodile
+    INFO nog.shoulder shoulder ark:/19153/sdds9     Scolomfr -- SlimCricket
+    INFO nog.shoulder shoulder ark:/19153/sddt9     Scolomfr -- Te\u00efta conseil
+    INFO nog.shoulder shoulder ark:/19153/stst9     Scolomfr -- Test
+    INFO nog.shoulder shoulder ark:/19153/sddv9     Scolomfr -- Texas Instruments
+    INFO nog.shoulder shoulder ark:/19153/sddw9     Scolomfr -- Tom Pouce Interactive
+    INFO nog.shoulder shoulder ark:/19153/sddx9     Scolomfr -- Tralal\u00e8re
+    INFO nog.shoulder shoulder ark:/19153/sddz9     Scolomfr -- Vuilbert
+    INFO nog.shoulder shoulder ark:/81986/caida     SDSC CAIDA
+    INFO nog.shoulder shoulder doi:10.21986/CAIDA   SDSC CAIDA
+    INFO nog.shoulder shoulder ark:/81986/s6.caida  SDSC CAIDA Minter
+    INFO nog.shoulder shoulder doi:10.21986/S6.CAIDA SDSC CAIDA Minter
+    INFO nog.shoulder shoulder ark:/99166/w6        SNAC
+    INFO nog.shoulder shoulder doi:10.5070/T3       Teaching and Learning Anthropology
+    INFO nog.shoulder shoulder ark:/10945/t4        TeachPitch
+    INFO nog.shoulder shoulder doi:10.5070/T2       Territories: A Trans-Cultural Journal of Regional Studies
+    INFO nog.shoulder shoulder ark:/81423/b1        Texas A&M Univ Batt
+    INFO nog.shoulder shoulder ark:/81423/d2        Texas A&M Univ DigProjects
+    INFO nog.shoulder shoulder ark:/81423/m3        Texas A&M Univ Libr
+    INFO nog.shoulder shoulder ark:/81423/g1        Texas A&M Univ MSL
+    INFO nog.shoulder shoulder doi:10.26085/C3      The Center for Effective Global Action
+    INFO nog.shoulder shoulder doi:10.5070/Q2       The Equilibrium
+    INFO nog.shoulder shoulder ark:/28722/d9        UC Berkeley
+    INFO nog.shoulder shoulder ark:/87297/x3        UC Berkeley Department of Linguistics
+    INFO nog.shoulder shoulder doi:10.7297/X2       UC Berkeley Department of Linguistics
+    INFO nog.shoulder shoulder doi:10.5070/B2       UC Berkeley eScholarship
+    INFO nog.shoulder shoulder doi:10.6078/J8       UC Berkeley Human Rights Center
+    INFO nog.shoulder shoulder ark:/87922/g3        UC Berkeley Institute of Transportation Studies (ITS)
+    INFO nog.shoulder shoulder doi:10.7922/G2       UC Berkeley Institute of Transportation Studies (ITS)
+    INFO nog.shoulder shoulder ark:/13030/hb        UC Berkeley Legacy Library
+    INFO nog.shoulder shoulder ark:/28722/bk        UC Berkeley Legacy Library bk
+    INFO nog.shoulder shoulder ark:/28722/h2        UC Berkeley Library - HathiTrust/UCB
+    INFO nog.shoulder shoulder ark:/28722/b8        UC Berkeley Miscellany
+    INFO nog.shoulder shoulder doi:10.25350/B5      UC Berkeley Miscellany
+    INFO nog.shoulder shoulder ark:/87299/x6        UC Berkeley Museum of Vertebrate Zoology
+    INFO nog.shoulder shoulder doi:10.7299/X7       UC Berkeley Museum of Vertebrate Zoology
+    INFO nog.shoulder shoulder ark:/87928/h7        UC Berkeley Research IT
+    INFO nog.shoulder shoulder doi:10.7928/H6       UC Berkeley Research IT
+    INFO nog.shoulder shoulder ark:/13030/k6        UC Berkeley/Digital Special Collections
+    INFO nog.shoulder shoulder ark:/87293/d3        UC Davis Archives and Institutional Assets Program
+    INFO nog.shoulder shoulder doi:10.25338/B8      UC Davis Bio Agr Eng Dash
+    INFO nog.shoulder shoulder ark:/85781/m7        UC Davis DAMS (legacy branch)
+    INFO nog.shoulder shoulder doi:10.25347/D7      UC Davis DAMS (legacy branch)
+    INFO nog.shoulder shoulder doi:10.5070/D2       UC Davis eScholarship
+    INFO nog.shoulder shoulder ark:/85141/s6        UC Davis, Social Science Data Service
+    INFO nog.shoulder shoulder doi:10.15141/S5      UC Davis, Social Science Data Service
+    INFO nog.shoulder shoulder doi:10.5070/RV2      UC Irvine eScholarship
+    INFO nog.shoulder shoulder ark:/87280/t0        UC Irvine Library
+    INFO nog.shoulder shoulder doi:10.7280/S9       UC Irvine Library
+    INFO nog.shoulder shoulder ark:/86071/h7        UC Merced
+    INFO nog.shoulder shoulder doi:10.6071/H8       UC Merced
+    INFO nog.shoulder shoulder doi:10.5070/M2       UC Merced eScholarship
+    INFO nog.shoulder shoulder ark:/81973/r7        UC Natural Reserve System
+    INFO nog.shoulder shoulder doi:10.21973/N3      UC Natural Reserve System
+    INFO nog.shoulder shoulder ark:/81973/s3        UC NRS Santa Cruz Island Reserve
+    INFO nog.shoulder shoulder doi:10.21973/S3      UC NRS Santa Cruz Island Reserve
+    INFO nog.shoulder shoulder ark:/80353/k5        UC Observatories
+    INFO nog.shoulder shoulder doi:10.20353/K3      UC Observatories
+    INFO nog.shoulder shoulder doi:10.17916/P6      UC Press
+    INFO nog.shoulder shoulder ark:/86086/n2        UC Riverside
+    INFO nog.shoulder shoulder doi:10.6086/N1       UC Riverside
+    INFO nog.shoulder shoulder ark:/87268/p2        UC Riverside Bourns College of Engineering
+    INFO nog.shoulder shoulder doi:10.7268/P1       UC Riverside Bourns College of Engineering
+    INFO nog.shoulder shoulder doi:10.6086/D1       UC Riverside DASH
+    INFO nog.shoulder shoulder doi:10.5070/R2       UC Riverside eScholarship
+    INFO nog.shoulder shoulder ark:/87908/b9        UC San Diego Department of Biomedical Informatics
+    INFO nog.shoulder shoulder doi:10.17908/B8      UC San Diego Department of Biomedical Informatics
+    INFO nog.shoulder shoulder ark:/81224/h2        UC San Diego Philosophy Dept
+    INFO nog.shoulder shoulder doi:10.21224/P4      UC San Diego Philosophy Dept
+    INFO nog.shoulder shoulder doi:10.6078/D1       UCB Dash
+    INFO nog.shoulder shoulder ark:/81418/g4        UCB Geotechnical Engineering Research
+    INFO nog.shoulder shoulder doi:10.21418/G8      UCB Geotechnical Engineering Research
+    INFO nog.shoulder shoulder ark:/28722/s7        UCB Library Systems Office
+    INFO nog.shoulder shoulder ark:/87287/d7        UCD Online Strategies
+    INFO nog.shoulder shoulder doi:10.18439/S9      UCD Online Strategies
+    INFO nog.shoulder shoulder doi:10.25351/V3      UCI Chemistry Dept.
+    INFO nog.shoulder shoulder doi:10.7280/D1       UCI Dash
+    INFO nog.shoulder shoulder doi:10.24432/C5      UCI Department of Computer Science
+    INFO nog.shoulder shoulder doi:10.21980/J8      UCI JETem
+    INFO nog.shoulder shoulder ark:/81235/d8        UCI Library Digital Assets
+    INFO nog.shoulder shoulder doi:10.15145/D5      UCI Library Digital Assets
+    INFO nog.shoulder shoulder ark:/81416/p4        UCI PECE Project
+    INFO nog.shoulder shoulder doi:10.21416/P6      UCI PECE Project
+    INFO nog.shoulder shoulder doi:10.21977/D9      UCI School of Education
+    INFO nog.shoulder shoulder ark:/21198/r1        UCLA
+    INFO nog.shoulder shoulder doi:10.5068/G5       UCLA
+    INFO nog.shoulder shoulder ark:/80352/c5        UCLA Civil and Environmental Engineering
+    INFO nog.shoulder shoulder doi:10.20352/C2      UCLA Civil and Environmental Engineering
+    INFO nog.shoulder shoulder doi:10.5068/D1       UCLA Dash
+    INFO nog.shoulder shoulder doi:10.15144/S4      UCLA Department of Atmospheric & Oceanic Sciences
+    INFO nog.shoulder shoulder doi:10.6079/J9       UCLA Department of Ecology and Evolutionary Biology
+    INFO nog.shoulder shoulder doi:10.25348/H8      UCLA Department of History
+    INFO nog.shoulder shoulder ark:/21198/z1        UCLA Digital Library
+    INFO nog.shoulder shoulder doi:10.5070/LX2      UCLA eScholarship
+    INFO nog.shoulder shoulder doi:10.17610/T6      UCLA Institute of Transportation Studies
+    INFO nog.shoulder shoulder ark:/21198/zz        UCLA Legacy
+    INFO nog.shoulder shoulder ark:/21198/r2        UCLA Library
+    INFO nog.shoulder shoulder ark:/87909/s7        UCLA Library Data Science Center
+    INFO nog.shoulder shoulder doi:10.25346/S6      UCLA Library Data Science Center
+    INFO nog.shoulder shoulder ark:/81222/c2        UCLA_CEEGEO
+    INFO nog.shoulder shoulder doi:10.21222/C2      UCLA_CEEGEO
+    INFO nog.shoulder shoulder doi:10.21426/B6      UCM Biogeographia
+    INFO nog.shoulder shoulder doi:10.6071/M3       UCM Dash
+    INFO nog.shoulder shoulder doi:10.21425/F5      UCM Frontiers of Biogeography
+    INFO nog.shoulder shoulder ark:/86071/d2        UCM Library Digital Assets
+    INFO nog.shoulder shoulder doi:10.6071/Z7       UCM SSCZO
+    INFO nog.shoulder shoulder doi:10.18737/D7      UCOP Dash
+    INFO nog.shoulder shoulder ark:/48907/b7        UCSB
+    INFO nog.shoulder shoulder doi:10.5062/F4       UCSB
+    INFO nog.shoulder shoulder ark:/87919/f5        UCSB Advanced Graphics Lab
+    INFO nog.shoulder shoulder doi:10.7919/F4       UCSB Advanced Graphics Lab
+    INFO nog.shoulder shoulder ark:/48907/f3        UCSB Alexandria Digital Research Library
+    INFO nog.shoulder shoulder ark:/85788/g4        UCSB Climate Hazards Group, Dept of Geography
+    INFO nog.shoulder shoulder doi:10.15780/G2      UCSB Climate Hazards Group, Dept of Geography
+    INFO nog.shoulder shoulder doi:10.25349/D9      UCSB Dash
+    INFO nog.shoulder shoulder ark:/81424/r2        UCSB Earth Research Institute
+    INFO nog.shoulder shoulder doi:10.21424/R4      UCSB Earth Research Institute
+    INFO nog.shoulder shoulder ark:/81229/m2        UCSB ECE Dept Mostofi Lab
+    INFO nog.shoulder shoulder doi:10.21229/M9      UCSB ECE Dept Mostofi Lab
+    INFO nog.shoulder shoulder ark:/81972/g7        UCSB English Department
+    INFO nog.shoulder shoulder doi:10.21972/G2      UCSB English Department
+    INFO nog.shoulder shoulder doi:10.5070/SB2      UCSB eScholarship
+    INFO nog.shoulder shoulder doi:10.5070/H9       UCSB Himalayan Linguistics
+    INFO nog.shoulder shoulder ark:/84135/p5        UCSB Punctum Books
+    INFO nog.shoulder shoulder doi:10.21983/P3      UCSB Punctum Books
+    INFO nog.shoulder shoulder doi:10.25496/W6      UCSB WhatEvery1Says
+    INFO nog.shoulder shoulder ark:/87940/m4        UCSB Writing Program
+    INFO nog.shoulder shoulder doi:10.7940/M3       UCSB Writing Program
+    INFO nog.shoulder shoulder ark:/86074/z4        UCSB Zapruder World
+    INFO nog.shoulder shoulder doi:10.21431/Z3      UCSB Zapruder World
+    INFO nog.shoulder shoulder doi:10.7291/D1       UCSC Dash
+    INFO nog.shoulder shoulder doi:10.5070/SC2      UCSC eScholarship
+    INFO nog.shoulder shoulder ark:/38305/g4        UCSC Grateful Dead Archive
+    INFO nog.shoulder shoulder ark:/38305/f1        UCSC Library
+    INFO nog.shoulder shoulder doi:10.7291/V9       UCSC Library
+    INFO nog.shoulder shoulder ark:/20775/          UCSD
+    INFO nog.shoulder shoulder doi:10.6075/J0       UCSD
+    INFO nog.shoulder shoulder ark:/88437/c3        UCSD CDIP
+    INFO nog.shoulder shoulder doi:10.18437/C7      UCSD CDIP
+    INFO nog.shoulder shoulder ark:/80359/c9        UCSD Center for Computational Mass Spectrometry
+    INFO nog.shoulder shoulder doi:10.25345/C5      UCSD Center for Computational Mass Spectrometry
+    INFO nog.shoulder shoulder doi:10.5070/SD2      UCSD eScholarship
+    INFO nog.shoulder shoulder doi:10.21975/H5      UCSD Hydraulics Laboratory
+    INFO nog.shoulder shoulder doi:10.21221/S2      UCSD Library Scholarly Comm
+    INFO nog.shoulder shoulder ark:/81228/w2        UCSD Metabolomics Workbench
+    INFO nog.shoulder shoulder doi:10.21228/M8      UCSD Metabolomics Workbench
+    INFO nog.shoulder shoulder doi:10.18119/N9      UCSD NDEx
+    INFO nog.shoulder shoulder ark:/87279/s8        UCSD Ocean Observatory Initiative
+    INFO nog.shoulder shoulder doi:10.7279/S7       UCSD Ocean Observatory Initiative
+    INFO nog.shoulder shoulder ark:/87300/x9        UCSD OneLab
+    INFO nog.shoulder shoulder doi:10.7300/X8       UCSD OneLab
+    INFO nog.shoulder shoulder doi:10.6075/W7       UCSD Research Cyberinfrastructure Data Curation
+    INFO nog.shoulder shoulder ark:/88436/s3        UCSD SCCOOS
+    INFO nog.shoulder shoulder doi:10.18436/S6      UCSD SCCOOS
+    INFO nog.shoulder shoulder ark:/81976/p7        UCSD Scripps CASPO
+    INFO nog.shoulder shoulder doi:10.21976/C6      UCSD Scripps CASPO
+    INFO nog.shoulder shoulder ark:/81422/d4        UCSD Scripps ProjectIDA
+    INFO nog.shoulder shoulder doi:10.21422/D2      UCSD Scripps ProjectIDA
+    INFO nog.shoulder shoulder ark:/81238/s3        UCSD Scripps Spray Plotting
+    INFO nog.shoulder shoulder doi:10.21238/S8      UCSD Scripps Spray Plotting
+    INFO nog.shoulder shoulder ark:/86072/h9        UCSD Signaling Gateway
+    INFO nog.shoulder shoulder doi:10.6072/H0       UCSD Signaling Gateway
+    INFO nog.shoulder shoulder ark:/87270/q3        UCSD Skaggs School of Pharmacy and Pharmaceutical Sciences
+    INFO nog.shoulder shoulder doi:10.7270/Q2       UCSD Skaggs School of Pharmacy and Pharmaceutical Sciences
+    INFO nog.shoulder shoulder ark:/29114/q5        UCSF
+    INFO nog.shoulder shoulder doi:10.7271/Q4       UCSF
+    INFO nog.shoulder shoulder ark:/81983/s9        UCSF Archives & Special Collections
+    INFO nog.shoulder shoulder ark:/87272/q7        UCSF Clinical & Translational Science Institute (CTSI)
+    INFO nog.shoulder shoulder doi:10.7272/Q6       UCSF Clinical & Translational Science Institute (CTSI)
+    INFO nog.shoulder shoulder doi:10.5070/SF2      UCSF eScholarship
+    INFO nog.shoulder shoulder ark:/67034/k4        UMichigan Medical School DLHS-DLKS
+    INFO nog.shoulder shoulder ark:/87925/          University College Dublin
+    INFO nog.shoulder shoulder ark:/87925/h1        University College Dublin Minter
+    INFO nog.shoulder shoulder ark:/85140/d4        University of California, Davis, University Library
+    INFO nog.shoulder shoulder doi:10.15140/D3      University of California, Davis, University Library
+    INFO nog.shoulder shoulder ark:/81984/c8        University of Illinois at Chicago
+    INFO nog.shoulder shoulder ark:/81984/d3        University of Illinois Chicago Digital Collections
+    INFO nog.shoulder shoulder ark:/47881/m6        University of Lyon
+    INFO nog.shoulder shoulder ark:/87302/z3        University of Michigan Library (Retired Minter)
+    INFO nog.shoulder shoulder ark:/81431/p3        University of Pennsylvania Libraries
+    INFO nog.shoulder shoulder ark:/87290/v8        University of Tennessee
+    INFO nog.shoulder shoulder ark:/87278/s6        University of Utah
+    INFO nog.shoulder shoulder ark:/62930/w1        UNLV Libraries Web Archives
+    INFO nog.shoulder shoulder ark:/62930/v3        UNLV Library
+    INFO nog.shoulder shoulder ark:/62930/d1        UNLV Library Digital Objects
+    INFO nog.shoulder shoulder ark:/62930/f1        UNLV Library Finding Aids
+    INFO nog.shoulder shoulder ark:/62930/          UNLV Library No Minter
+    INFO nog.shoulder shoulder ark:/87610/t6        UTA Institute of Classical Archaeology
+    INFO nog.shoulder shoulder ark:/85142/t4        Utah State University Merrill-Cazier Library
+    INFO nog.shoulder shoulder ark:/81968/g6        UWisc German Program (Retired Minter)
+    INFO nog.shoulder shoulder ark:/88737/t7        Visible Thinking
+    INFO nog.shoulder shoulder ark:/87273/q8        Washington State University
+    INFO nog.shoulder shoulder ark:/87936/k8        Washington University in St. Louis
+    INFO nog.shoulder shoulder ark:/87936/b7        WUSTL Center for Biomedical Informatics
+    INFO nog.shoulder shoulder ark:/87936/g6        WUSTL GIS
+"

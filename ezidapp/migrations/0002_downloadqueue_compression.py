@@ -14,7 +14,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='downloadqueue',
             name='compression',
-            field=models.CharField(default='G', max_length=1, choices=[(b'G', b'GZIP'), (b'Z', b'ZIP')]),
+            field=models.CharField(
+                default='G', max_length=1, choices=[(b'G', b'GZIP'), (b'Z', b'ZIP')]
+            ),
             preserve_default=False,
         ),
     ]

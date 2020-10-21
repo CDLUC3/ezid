@@ -39,27 +39,30 @@
 		text-align: left;
 	}
 
-	%sorting-base {
+	.sorting {
 		position: absolute;
 		top: 0;
 		right: 2px;
 		padding: 12px;
 		border: none;
-
-	}
-
-	.sorting {
-		@extend %sorting-base;
 		background: no-repeat url('../images/sort_brown.png') 12px 8px;
 	}
 
 	.sort__desc {
-		@extend %sorting-base;
+		position: absolute;
+		top: 0;
+		right: 2px;
+		padding: 12px;
+		border: none;
 		background: no-repeat url('../images/sort_desc_brown.png') 12px 8px;
 	}
 
 	.sort__asc {
-		@extend %sorting-base;
+		position: absolute;
+		top: 0;
+		right: 2px;
+		padding: 12px;
+		border: none;
 		background: no-repeat url('../images/sort_asc_brown.png') 12px 8px;
  	}
 
