@@ -7,7 +7,7 @@ pyver: 2.7.18
 venv_name: ezid
 ezid_repo: https://github.com/CDLUC3/ezid.git
 ezid_info_pages_repo: https://github.com/CDLUC3/ezid-info-pages.git
-git_branch: initial-setup
+git_branch: master
 
 ## config params
 admin_password:
