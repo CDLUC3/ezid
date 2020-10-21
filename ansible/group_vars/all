@@ -1,7 +1,16 @@
-user: uc3adm
-group: uc3adm
+user: ezid
+group: ezid
 app_dir: /apps/ezid
 
 pyenv_root: "{{ansible_env.HOME}}/.pyenv"
 pyver: 2.7.18
 venv_name: ezid
+ezid_repo: https://github.com/CDLUC3/ezid.git
+ezid_info_pages_repo: https://github.com/CDLUC3/ezid-info-pages.git
+git_branch: initial-setup
+
+## config params
+admin_password:
+db_host: docker.for.mac.host.internal
+db_port: 4306
+db_password:
