@@ -168,7 +168,8 @@ admin_username: admin                                             <2>
 
 ----
 [auth]
-admin_password: ****                                              <1>
+admin_password:
+{production}admin_password: ****                                  <1>
 
 [databases]
 store_host: ****                                                  <2>
@@ -178,11 +179,30 @@ search_host: ****                                                 <4>
 search_port: 3306
 search_password: ****                                             <5>
 ----
-<1> *Set* the password for the administrator account
+<1> *Add* line `{production}admin_password:` and set the password for the administrator (EZID admin) account
 <2> *Set* the RDS host for `DB-2`
 <3> *Set* the RDS password for `DB-2`
 <4> *Set* to same as `store_host`
 <5> *Set* to same as `store_password`
+
+#### Edit file: `~/ezid/settings/production.py` and change `ALLOWED_HOSTS` to:
+----
+ALLOWED_HOSTS = ['*']
+----
+
+#### Run `hostname` in the shell and add the output to the list at `impl/nog/reload.py`
+
+----
+KNOWN_EZID_HOSTNAME_TUP = (
+    <The new hostname goes here. E.g., 'uc3-ezidui01x2-prd'>,
+    ...
+----
+
+Verify correct setup for automatic reload
+----
+$ ./manage.py diag-reload
+----
+It should return `success: configuration file reloaded and caches emptied`.
 
 
 ## Dry-Run Upgrade
