@@ -74,9 +74,43 @@ _startupVersion = None
 
 
 def _getVersion1(r):
+    '''
+    Runs the command:
+      hg identify -inb -R .
+      82e55d328c8c 1 default
+      a            b c
+      a = revision
+      b = number of local changes
+      c = branch name
+
+      # added --dirty for completeness, leave it off for command
+      git describe --abbrev=12 --always --dirty=+
+      35beb4c08d25+
+
+      # final xargs pipe removes space
+      $ git status --porcelain | wc -l | xargs
+      2
+
+      $ git branch --show-current
+      ezid-minter
+
+      As a single line:
+      echo "$(git describe --abbrev=12 --always) $(git status --porcelain | wc -l | xargs) $(git branch --show-current)"
+    '''
     try:
+        script_path = os.path.abspath(
+            os.path.join(
+                django.conf.settings.PROJECT_ROOT,
+                'tools','show_version.sh'
+            )
+        )
+        #p = subprocess.Popen(
+        #    ["hg", "identify", "-inb", "-R", r],
+        #    stdout=subprocess.PIPE,
+        #    stderr=subprocess.PIPE,
+        #)
         p = subprocess.Popen(
-            ["hg", "identify", "-inb", "-R", r],
+            [script_path, r],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -85,7 +119,8 @@ def _getVersion1(r):
             return o.strip()
         else:
             return "unknown"
-    except:
+    except Exception as e:
+        logger.warning("_getVersion: %s", e)
         return "unknown"
 
 
@@ -138,6 +173,7 @@ def reload():
 
 
 # load()
+_version = (int(time.time()),) + _getVersion()
 _startupVersion = _version
 
 

@@ -13,6 +13,7 @@ SEARCH_MYSQL = True
 SEARCH_STORE_SAME_DATABASE = STORE_MYSQL and SEARCH_MYSQL
 
 ALLOWED_HOSTS = [
+    '*',
     u'ezid-stg.cdlib.org',
     u'uc3-ezidx2-dev.cdlib.org',
     u'uc3-ezidui01x2-stg.cdlib.org',
@@ -22,3 +23,4 @@ ALLOWED_HOSTS = [
 ]
 
 injectSecrets(DEPLOYMENT_LEVEL)
+
