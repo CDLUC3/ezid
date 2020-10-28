@@ -114,10 +114,10 @@ The `settings.*` files override common settings in `settings/common.py`
 The settings files load configuration information from `settings/ezid.conf`
 and `settings/ezid.conf.shadow`, with the latter holding passwords.
 
-In the following, substitute `{ENVIRONMENT}` for the environment name
-(e.g. `{production}` for the production environment).
+In the following, substitute `{production}` for the name of the environment
+being deployed (e.g. `{remotedev}` for a development environment).
 
-#### File: `~/ezid/settings/common.py`
+#### Edit File: `~/ezid/settings/common.py`
 
 Run:
 
@@ -132,44 +132,57 @@ and update minters path to:
 MINTERS_PATH = '/apps/ezid/var/minters'
 ----
 
-#### File: `~/ezid/settings/ezid.conf`
+#### Edit File: `~/ezid/settings/ezid.conf`
 
-##### Section: `[DEFAULT]`
+----
+[DEFAULT]
+{production}ezid_base_url: https://uc3-ezid-ui-prd.cdlib.org      <1>
 
-`{ENVIRONMENT}ezid_base_url`: *Set the external URL of the service*
+[auth]
+admin_username: admin                                             <2>
 
-##### Section: `[auth]`
+[email]
+{production}new_account_email: jak@ucop.edu,maria.gould@ucop.edu  <3>
 
-`admin_username`: Verify entry
+[shoulders]
+{production}url: file:///apps/ezid/ezid/master_shoulders.txt      <4>
 
-##### Section: `[email]`
+[cloudwatch]
+{production}instance_name: uc3-ezidx2-prd                         <5>
 
-`{ENVIRONMENT}new_account_email`: Verify entry
+[datacite]                                                        <6>
 
-##### Section: `[shoulders]`
+[crossref]                                                        <7>
 
-`url`:: *Set the file url like `file:///absolute/path/to/master_shoulders.txt`*
+----
+<1> *Set* to the external URL that will be used to access EZID
+<2> Verify this is the expected value for the administrator username
+<3> Verify email address entries for new account requests
+<4> *Set* the absolute file URL for the location of the
+    `master_shoulders.txt` file
+<5> Verify the correct value for the cloudwatch service
+<6> Verify entries for DataCite configuration
+<7> Verify entries for Crossref configuration
 
-##### Section: `[cloudwatch]`
+#### Edit File: `~/ezid/settings/ezid.conf.shadow`
 
-`{ENVIRONMENT}instance_name`:: Verify entry, `uc3-ezidx2-prd`
+----
+[auth]
+admin_password: ****                                              <1>
 
-
-#### File: `~/ezid/settings/ezid.conf.shadow`
-
-##### Section: `[auth]`
-
-`admin_password`:: *Set the password for the adminstrator account*
-
-##### Section: `[databases]`
-
-`store_host`:: *Set the host for the RDS database instance*
-`store_port`:: Verify, `3306`
-`store_password`:: *Set the password for the RDS database instance*
-`search_host`:: *Set the host, usually same as `store_host`*
-`search_port`:: *Set the port, usually same as `store_port`*
-`search_password`:: *Set the password, usually same as `store_password`*
-
+[databases]
+store_host: ****                                                  <2>
+store_port: 3306
+store_password: ****                                              <3>
+search_host: ****                                                 <4>
+search_port: 3306
+search_password: ****                                             <5>
+----
+<1> *Set* the password for the administrator account
+<2> *Set* the RDS host for `DB-2`
+<3> *Set* the RDS password for `DB-2`
+<4> *Set* to same as `store_host`
+<5> *Set* to same as `store_password`
 
 
 ## Dry-Run Upgrade
@@ -179,6 +192,80 @@ replace the existing EZID instance.
 
 Prerequisite: The steps in "Preparation/Base Installation" and
 "Preparation/Application Configuration" have been completed.
+
+In the following `ad-1` refers to an administrator for `EZID-1`, and
+`ad-2` refers to an administrator for `EZID-2`. They may be the same person.
+
+[cols="1,2,15", options="header"]
+|===
+|# |Who |Action
+|1
+|`ad-1`
+|Set the offline notice for `EZID-1`
+|2
+|`ad-2`
+a|Shut down `EZID-2` if it is running
+
+----
+~/etc/init.d/httpd stop
+----
+
+|3
+|IAS
+|Clone `DB-1` to create / overwrite `DB-2`
+
+|4
+|`ad-1`
+|Unset the offline notice for `EZID-1`. *Note:* this step
+is not done when doing an actual upgrade.
+
+|5
+|`ad-2`
+|Get the most recent copy of `master_shoulders.txt` and
+place in `~/ezid/master_shoulders.txt`
+
+|6
+|`ad-2`
+|Verify database settings
+
+|7
+|`ad-2`
+a|Upgrade the database schema:
+
+----
+./manage.py migrate
+----
+
+|8
+|`ad-2`
+a|Check minters:
+
+----
+./manage.py  shoulder-check-minters
+----
+
+|9
+|`ad-2`
+a|Merge Shoulders
+
+----
+./manage.py shoulder-merge-master
+----
+
+|10
+|`ad-2`
+a|Startup `EZID-2`
+
+----
+~/etc/init.d/httpd start
+----
+
+|11
+|all
+|Verify `EZID-2` running as expected.
+
+|===
+
 
 ## Upgrade
 
