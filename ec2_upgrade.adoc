@@ -1,0 +1,185 @@
+# Upgrade EZID Deployment
+
+Describes the process for replacing an exising EZID instance with 
+a parallel deployment of the upgrade instance.
+
+[NOTE]
+This document targets the late 2020 upgrade of EZID for support of
+local minting instead of reliance on N2T. Subsequent upgrades may differ in
+some details.
+
+The process outlined here uses a parallel installation of the EZID 
+application on a different EC2 instance to the existing EZID instance. 
+The outcome of the process is a new instance of EZID initiated with 
+data from the original installation.
+
+The following definitions apply here:
+
+`VM-1`:: Virtual machine (i.e. EC2 instance) hosting the existing installation
+of the EZID application.
+`EZID-1`:: Existing instance of the EZID application running on `VM-1`
+`DB-1`:: Existing RDS database instance holding the data for `EZID-1`
+`VM-2`:: The new virtual machine (EC2 instance) that will be hosting the new
+instance of the EZID application
+`EZID-2`:: The new instance of the EZID application to be running on `VM-2`
+`DB-2`:: The new RDS database instance used by `EZID-2`
+
+## Preparation
+
+### Base Installation
+
+1. Create a new EC2 instance (`VM-2`) to host the new EZID instance 
+(`EZID-2`).
+2. Run the Ansible and Puppet scripts to perform the base installation.
+
+The outcome of these steps is an EC2 instance with the EZID application
+and associated configuration located under `/apps/ezid`.
+
+The folder layout looks like:
+
+[source]
+----
+.
+├── .profile.d      # <1>
+├── .pyenv          # <2>
+├── bin
+├── download -> /apps/ezid/var/www/download
+├── etc
+│   ├── httpd
+│   └── init.d
+├── ezid            # <3>
+│   ├── settings
+│   ├── tools
+│   ...
+├── install
+│   └── ezid-ansible
+├── logs -> /apps/ezid/var/log/ezid
+└── var
+    ├── log
+    ├── minters
+    ├── run
+    └── www
+----
+<1> Environment variables
+<2> Python virtual environment
+<3> Location of the new EZID application, `EZID-2`
+
+
+Manual configuration and operation of the EZID application is achieved by
+logging in to `VM-2` and becomming the `ezid` user by:
+
+[source, bash]
+----
+sudo su - ezid
+----
+
+Environment variables for the user are set by `~/.profile.d/ezid`:
+
+[source, bash]
+----
+if [ -d "$HOME"/.pyenv ]; then
+  export PYENV_ROOT="$HOME/.pyenv"                 #<1>
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+export DJANGO_SETTINGS_MODULE=settings.remotedev   #<2>
+----
+<1> The application uses a Python virtual environment rather than the system Python
+installation. The Python virtual environment is located under `~/.pyenv` and
+additional Python dependencies (if needed) should be installed using `pip` as the
+`ezid` user.
+<2> The `DJANGO_SETTINGS_MODULE` will need to be set according to
+the environment being deployed (e.g. `settings.production` for the production
+environment). The value refers to the python settings module within the EZID
+application, and corresponds with the file location `~/ezid/settings/`.
+
+
+### Application Configuration
+
+
+#### ~/etc/ezid_env.sh and ~/.profile.d/ezid
+
+Sets up the python virtual environment for the EZID application.
+
+`DJANGO_SETTINGS_MODULE` determines which settings are loaded for
+the application:
+
+Production environment:: `settings.production`
+Stage2 environment:: `settings.remotedev`
+Dev environment:: `settings.remotedev`
+
+The `settings.*` files override common settings in `settings/common.py`
+
+The settings files load configuration information from `settings/ezid.conf`
+and `settings/ezid.conf.shadow`, with the latter holding passwords.
+
+In the following, substitute `{ENVIRONMENT}` for the environment name
+(e.g. `{production}` for the production environment).
+
+#### File: `~/ezid/settings/common.py`
+
+Run:
+
+[source, bash]
+----
+mkdir -p /apps/ezid/var/minters
+chmod ug+s /apps/ezid/var/minters
+----
+
+and update minters path to:
+----
+MINTERS_PATH = '/apps/ezid/var/minters'
+----
+
+#### File: `~/ezid/settings/ezid.conf`
+
+##### Section: `[DEFAULT]`
+
+`{ENVIRONMENT}ezid_base_url`: *Set the external URL of the service*
+
+##### Section: `[auth]`
+
+`admin_username`: Verify entry
+
+##### Section: `[email]`
+
+`{ENVIRONMENT}new_account_email`: Verify entry
+
+##### Section: `[shoulders]`
+
+`url`:: *Set the file url like `file:///absolute/path/to/master_shoulders.txt`*
+
+##### Section: `[cloudwatch]`
+
+`{ENVIRONMENT}instance_name`:: Verify entry, `uc3-ezidx2-prd`
+
+
+#### File: `~/ezid/settings/ezid.conf.shadow`
+
+##### Section: `[auth]`
+
+`admin_password`:: *Set the password for the adminstrator account*
+
+##### Section: `[databases]`
+
+`store_host`:: *Set the host for the RDS database instance*
+`store_port`:: Verify, `3306`
+`store_password`:: *Set the password for the RDS database instance*
+`search_host`:: *Set the host, usually same as `store_host`*
+`search_port`:: *Set the port, usually same as `store_port`*
+`search_password`:: *Set the password, usually same as `store_password`*
+
+
+
+## Dry-Run Upgrade
+
+This procedure will step through the upgrade process but will not 
+replace the existing EZID instance.
+
+Prerequisite: The steps in "Preparation/Base Installation" and
+"Preparation/Application Configuration" have been completed.
+
+## Upgrade
+
+## Cleanup
