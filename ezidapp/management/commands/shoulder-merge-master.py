@@ -157,4 +157,3 @@ class Command(django.core.management.BaseCommand):
 
         log.info('{} merged'.format(MASTER_SHOULDERS_PATH))
 
-        impl.nog.reload.trigger_reload()
