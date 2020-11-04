@@ -1,113 +1,64 @@
 Ansible project for building out the EZID UI application
 ========================================================
 
+This project performs initial setup and installation of the UC3 EZID UI application.
+It does not attempt to configure the application for service.
 
-Integration with Puppet
------------------------
+It is designed to work in conjunction with the uc3_ezid_ui puppet module.
+But it could be used with docker also.
+
+In general, the tasks in this project run as the application user 'ezid'.  It does
+not touch any root owned resources.  This is left to puppet.
 
 
-This is the copy of the uc3_ezid_ui puppet `config` manifest as of
-Wed Oct 21 10:56:51 PDT 2020
+Usage
+-----
 
 ```
-agould@uc3-ezidui01x2-prd:~/puppet/uc3/modules/uc3_ezid_ui> cat manifests/config.pp
-define uc3_ezid_ui::config (
-    $service_ensure  = "running",
-    $package_ensure  = "installed",
-    $user            = lookup('app_user',),
-    $group           = lookup('app_group'),
-    $home_dir        = lookup('app_home'),
-    $install_dir     = "$home_dir/install",
-    $localbin_dir    = "$home_dir/local/bin",
-    $git_repo        = undef,
-    $revision        = undef,
-){
-
-    # kludge for testing on uc3ops-dev
-    if $home_dir != "/ezid" {
-        file {"/apps/ezid":
-            ensure => present,
-            target => "/apps/uc3adm",
-        }
-    }
-
-    # Set up application directory layout
-    #
-    file {[
-        "$install_dir",
-    ]:
-        ensure => directory,
-        owner  => $user,
-        group  => $group,
-        mode   => "0755",
-    }
-
-
-    $package_list = [
-        httpd-devel,
-        mariadb,
-        mariadb-devel,
-        openssl-devel,
-        python2-pip,
-        bzip2-devel,
-        readline-devel,
-        sqlite-devel,
-        xz-devel,
-    ]
-    ensure_packages($package_list, {ensure => $package_ensure})
-
-
-    # install ansible as app_user
-    exec { "/usr/bin/pip install --user ansible":
-        user     => $user,
-        group    => $group,
-        unless   => "/usr/bin/pip show ansible"
-    }
-
-    # clone ansible project repo into install_dir
-    vcsrepo { "ezid-ansible":
-        ensure   => present,
-        path     => "${install_dir}/ezid-ansible",
-        provider => git,
-        source   => $git_repo,
-        revision => $revision,
-        owner    => $user,
-        user     => $user,
-        group    => $group,
-        require  => File[$install_dir],
-    }
-   # install required galaxy roles
-    exec { "ansible-galaxy install":
-        command     => "ansible-galaxy install -r ${install_dir}/ezid-ansible/roles/requirements.yml",
-        user        => $user,
-        group       => $group,
-        path        => "${home_dir}/.local/bin",
-        subscribe   => Vcsrepo["ezid-ansible"],
-        refreshonly => true,
-    }
-
-    # deploy ansible project
-    exec { "ansible-playbook -i hosts site.yaml":
-        command     => "/usr/bin/su - $user -c \"cd $install_dir/ezid-ansible && ${home_dir}/.local/bin/ansible-playbook -i hosts site.yaml\"",
-        subscribe   => Vcsrepo["ezid-ansible"],
-        refreshonly => true,
-        require     => Exec["ansible-galaxy install"],
-    }
-
-    systemd::unit_file { 'ezid.service':
-     source => "puppet:///modules/uc3_ezid_ui/ezid.service",
-    }
-    ~> service {'ezid':
-      ensure => 'running',
-    }
-
-
-}
+ansible-galaxy install -r ${install_dir}/ezid-ansible/roles/requirements.yml
+ansible-playbook -i hosts site.yaml
 ```
 
-#### Issues
+What Puppet does
+----------------
 
-- install ansible into ezid venv
-- [clone ezid repo] changes every run. how can I ignore local changes after cloning the first time?
-- make use of pyenv hooks for .bashrc or at least suppress warnings
+- Set up application directory layout
+- Install system package prerequisites
+- Install ansible as $app_user
+- Clone ansible project repo into $install_dir
+- Install required additional ansible (Galaxy) roles.  These are used to set up pyenv.
+- Run ansible-playbook to deploy application.
+- Manage ezid service with systemd (calls etc/init.d/apache for now)
+
+
+What ezid-ansible does
+----------------------
+
+- Create application directory layout
+- Configure bash shell environment for application user
+
+  - ~/.bash_profile
+  - ~/.bashrc
+  - ~/.alias
+  - ~/.profile.d/pyenv
+
+- Setup python virtual environment with `pyenv`
+- Install python packages on the virtualenv (`mod_wsgi`)
+- Clone ezid repo (See: https://github.com/CDLUC3/ezid)
+- Clone ezid-info-pages repo
+- Install python packages needed by EZID (Requirements.txt)
+- Do preliminary application setup:
+
+  - symlink httpd modules
+  - symlink ezid logs
+  - symlink httpd magic
+  - symlink download dir
+  - httpd.conf
+  - httpd/conf.d/*
+  - httpd/conf.modules.d/*
+  - etc/init.d/*
+  - ezid_env.sh
+  - robots.txt
+  - ezid_env.sh
+
 
