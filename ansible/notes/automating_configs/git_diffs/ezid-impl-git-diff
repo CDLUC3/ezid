@@ -1,0 +1,24 @@
+diff --git a/impl/config.py b/impl/config.py
+index c4769fec..a1d354dd 100644
+--- a/impl/config.py
++++ b/impl/config.py
+@@ -144,6 +144,7 @@ def load():
+     )
+     _version = (int(time.time()),) + _getVersion()
+
++    #django.conf.settings.SECRET_KEY = 'av%$$=50=)hgn^hz7fit)ap5cw9x%5z-1vfl67&84ij5#(38$)'
+     django.conf.settings.SECRET_KEY = ezidapp.models.getOrSetSecretKey()
+
+
+diff --git a/impl/nog/reload.py b/impl/nog/reload.py
+index f25295ec..dbe64394 100644
+--- a/impl/nog/reload.py
++++ b/impl/nog/reload.py
+@@ -10,6 +10,7 @@ import django.urls
+ import config
+
+ KNOWN_EZID_HOSTNAME_TUP = (
++    'uc3-ezidui01x2-prd',
+ #    'cdl',
+     'ezid-stg',
+     'ezid-stg.cdlib.org',

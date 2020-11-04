@@ -1,0 +1,79 @@
+diff --git a/ezid_env.sh b/ezid_env.sh
+index 7d7b41a..ffa7afe 100755
+--- a/ezid_env.sh
++++ b/ezid_env.sh
+@@ -5,7 +5,7 @@ export venv=ezid
+ eval "$(pyenv init -)"
+ eval "$(pyenv virtualenv-init -)"
+ # uc3-ezidx2-dev.cdlib.org
+-export HOSTNAME=$(hostname -f)
+-export DJANGO_SETTINGS_MODULE=settings.remotedev
++export HOSTNAME=$(hostname -f):18880
++export DJANGO_SETTINGS_MODULE=settings.production
+ EZID_DEV="/apps/ezid/ezid"
+ export PYTHONPATH="${EZID_DEV}:${EZID_DEV}/impl:$PYTHONPATH"
+diff --git a/httpd/conf.d/03-ezid-nossl.conf b/httpd/conf.d/03-ezid-nossl.conf
+index b2f3917..f4c9200 100644
+--- a/httpd/conf.d/03-ezid-nossl.conf
++++ b/httpd/conf.d/03-ezid-nossl.conf
+@@ -1,7 +1,8 @@
+-<VirtualHost *:18080>
++<VirtualHost *:18880>
+ 	ServerName uc3-ezidx2-dev.cdlib.org
+ 	DirectorySlash Off
+ 	AllowEncodedSlashes On
++	Header unset Upgrade
+ 
+ 	<Directory />
+ 		Options FollowSymLinks
+@@ -126,4 +127,4 @@
+     	Alias /sitemap.xml /apps/ezid/ezid/static/sitemap.xml
+     	Alias /favicon.ico /apps/ezid/ezid/static/images/favicon.ico	
+     </VirtualHost>
+-</IfDefine>
+\ No newline at end of file
++</IfDefine>
+diff --git a/httpd/conf/httpd.conf b/httpd/conf/httpd.conf
+index a9bc9e3..e6cd145 100644
+--- a/httpd/conf/httpd.conf
++++ b/httpd/conf/httpd.conf
+@@ -39,7 +39,7 @@ ServerRoot "/apps/ezid/etc/httpd"
+ # prevent Apache from glomming onto all bound IP addresses.
+ #
+ #Listen 12.34.56.78:80
+-Listen 18080
++Listen 18880
+ 
+ #
+ # Dynamic Shared Object (DSO) Support
+diff --git a/init.d/httpd b/init.d/httpd
+index 8009d0e..733fa03 100755
+--- a/init.d/httpd
++++ b/init.d/httpd
+@@ -1,18 +1,24 @@
+ #! /bin/bash
+ 
++#set -x
++
+ USAGE="Usage: $0 start|stop|force-stop|restart|force-restart|status"
+ APACHE_BASE="/apps/ezid/etc/httpd"
+ APACHE_CONF="${APACHE_BASE}/conf/httpd.conf"
+ APACHECTL="/usr/sbin/apachectl -d ${APACHE_BASE} -f ${APACHE_CONF} -k"
+ WGET=/usr/bin/wget
+ PR=/apps/ezid/ezid
+-SHADOWFILE=${PR}/ezid/settings/ezid.conf.shadow
+-CLIENT=${PR}/ezid/tools/client
++SHADOWFILE=${PR}/settings/ezid.conf.shadow
++CLIENT=${PR}/tools/client
+ PROTOCOL="http"
+ 
+ # This should not be necessary when running the script as ezid user
+ source /apps/ezid/etc/ezid_env.sh
+ 
++HOSTNAME="$(hostname):18880"
++echo "HOSTNAME = ${HOSTNAME}"
++echo "DJANGO_SETTINGS_MODULE = ${DJANGO_SETTINGS_MODULE}"
++
+ if [ $# -ne 1 ]; then
+     echo $USAGE
+     exit 1

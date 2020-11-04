@@ -1,0 +1,33 @@
+I had set up /ezid/etc as a local git repo prior to hand editting configs by
+ezid devs.  see ezid-etc-git-diff for changes after initial install
+
+(ezid) ezid@uc3-ezidui01x2-prd:14:30:59:~/etc$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   ezid_env.sh
+	modified:   httpd/conf.d/03-ezid-nossl.conf
+	modified:   httpd/conf/httpd.conf
+	modified:   init.d/httpd
+
+
+
+And here is list of altered files in ezid repo /ezid/ezid:
+
+(ezid) ezid@uc3-ezidui01x2-prd:14:32:55:~/ezid$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   impl/config.py
+	modified:   impl/nog/reload.py
+	modified:   master_shoulders.txt
+	modified:   settings/common.py
+	modified:   settings/ezid.conf
+	modified:   settings/production.py
+
+see ezid-impl-git-diff and ezid-settings-git-diff for details.
+I did not take a diff on master_shoulders.txt.  This looks auto-generated.
