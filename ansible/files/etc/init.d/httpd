@@ -1,5 +1,6 @@
 #! /bin/bash
-
+# Note that $HOSTNAME is expected to be set to the value of $(hostname -f) 
+# for this machine. It is set in profile of the ezid user.
 USAGE="Usage: $0 start|stop|force-stop|restart|force-restart|status"
 APACHE_BASE="/apps/ezid/etc/httpd"
 APACHE_CONF="${APACHE_BASE}/conf/httpd.conf"
@@ -49,7 +50,7 @@ function pauseEzid {
     fi
     password=${password#*: }
     #echo "$CLIENT https://$HOSTNAME \"admin:${password}\" pause idlewait"
-    $CLIENT $PROTOCOL://$HOSTNAME "admin:$password" pause idlewait
+    $CLIENT $PROTOCOL://$HOSTNAME:18880 "admin:$password" pause idlewait
     status=$?
 }
 
@@ -59,7 +60,7 @@ function exerciseEzid {
   # tested, but it does confirm that Apache, mod_wsgi, Django, and
   # EZID are basically functioning.
   echo "Exercising the server..."
-  $WGET -q -T 10 -t 1 -O /dev/null $PROTOCOL://$HOSTNAME/status
+  $WGET -q -T 10 -t 1 -O /dev/null $PROTOCOL://$HOSTNAME:18880/status
   status=$?
 }
 
@@ -101,7 +102,7 @@ case $1 in
         if [ $pidcount -gt 0 ]; then
             # The server appears to be running; check that it's
             # responsive.
-            $WGET -q -T 10 -t 1 -O /dev/null $PROTOCOL://$HOSTNAME/status
+            $WGET -q -T 10 -t 1 -O /dev/null $PROTOCOL://$HOSTNAME:18880/status
             status=$?
             if [ $status -eq 0 ]; then
                 echo "up"
