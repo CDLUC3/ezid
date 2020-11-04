@@ -1,3 +1,5 @@
+Wed Nov  4 14:49:25 PST 2020
+
 I had set up /ezid/etc as a local git repo prior to hand editting configs by
 ezid devs.  see ezid-etc-git-diff for changes after initial install
 
@@ -31,3 +33,9 @@ Changes not staged for commit:
 
 see ezid-impl-git-diff and ezid-settings-git-diff for details.
 I did not take a diff on master_shoulders.txt.  This looks auto-generated.
+
+
+
+Dave made a PR into this repo where he resolved many of the issues found under /ezid/etc.
+the PR diff is ezid-ansible-pr-diff
+
