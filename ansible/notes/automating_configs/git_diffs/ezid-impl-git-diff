@@ -6,7 +6,7 @@ index c4769fec..a1d354dd 100644
      )
      _version = (int(time.time()),) + _getVersion()
 
-+    #django.conf.settings.SECRET_KEY = 'av%$$=50=)hgn^hz7fit)ap5cw9x%5z-1vfl67&84ij5#(38$)'
++    #django.conf.settings.SECRET_KEY = redacted
      django.conf.settings.SECRET_KEY = ezidapp.models.getOrSetSecretKey()
 
 
