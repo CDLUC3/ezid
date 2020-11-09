@@ -163,6 +163,12 @@ class Command(django.core.management.BaseCommand):
                 'Bad prefix: "{}"'.format(shoulder_model.prefix),
             )
 
+        if ezidapp.models.StoreIdentifier.objects.filter(identifier=id_ns).exists():
+            raise CheckError(
+                'Next identifier to be minted is already in the database (outdated minter)',
+                'Existing identifier: "{}"'.format(id_ns),
+            )
+
         return 'OK: Preview of next ID: {}'.format(id_ns)
 
 
