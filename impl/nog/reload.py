@@ -10,6 +10,7 @@ import django.urls
 import config
 
 KNOWN_EZID_HOSTNAME_TUP = (
+    'uc3-ezidui01x2-prd',
 #    'cdl',
     'ezid-stg',
     'ezid-stg.cdlib.org',
