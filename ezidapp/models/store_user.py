@@ -198,7 +198,7 @@ class StoreUser(user.User):
         # is both set and saved.  Thus calls to this method should
         # generally be wrapped in a transaction.
         logger.debug(
-            'Setting password for user. displayName="{}"'.format(self.displayName)
+            u'Setting password for user. displayName="{}"'.format(self.displayName)
         )
         self.password = django.contrib.auth.hashers.make_password(password)
         try:
@@ -211,7 +211,7 @@ class StoreUser(user.User):
     def authenticate(self, password):
         """Returns True if the supplied password matches the user's."""
         logger.debug(
-            'Authenticating StoreUser. displayName="{}"'.format(self.displayName)
+            u'Authenticating StoreUser. displayName="{}"'.format(self.displayName)
         )
 
         if not self.loginEnabled:
