@@ -71,8 +71,7 @@ def _load_templates(dir_list):
 
 def render(request, template, context={}):
     global alertMessage, google_analytics_id, reload_templates
-
-    c = {
+    ctx = {
         "session": request.session,
         "authenticatedUser": userauth.getUser(request),
         "alertMessage": alertMessage,
@@ -80,22 +79,16 @@ def render(request, template, context={}):
         "google_analytics_id": google_analytics_id,
         "debug": django.conf.settings.DEBUG,
     }
-    c.update(context)
-
-    # this is to keep from having to restart the server every 3 seconds
-    # to see template changes in development, only reloads if set for optimal performance
-    if reload_templates:
-        templ = django.template.loader.get_template(templates[template][1])
-    else:
+    ctx.update(context)
+    try:
         templ = templates[template][0]
-    # content = templ.render(django.template.RequestContext(request, c))
-
+    except (TypeError, LookupError):
+        templ = django.template.loader.get_template(templates[template][1])
     # TODO: Remove this temporary workaround and modify dynamically generated HTML
     # instead.
     templ.backend.engine.autoescape = False
 
-    content = templ.render(c, request)
-
+    content = templ.render(ctx, request)
     # By setting the content type ourselves, we gain control over the
     # character encoding and can properly set the content length.
     ec = content.encode("UTF-8")
@@ -181,18 +174,19 @@ redirect = django.http.HttpResponseRedirect
 
 def error(request, code, content_custom=None):
     global alertMessage, google_analytics_id
-    t = django.template.RequestContext(
-        request,
-        {
-            "menu_item": "ui_home.null",
-            "session": request.session,
-            "alertMessage": alertMessage,
-            "feed_cache": newsfeed.getLatestItems(),
-            "google_analytics_id": google_analytics_id,
-            "content_custom": content_custom,
-        },
-    )
-    content = templates[str(code)][0].render(t)
+    ctx = {
+        "menu_item": "ui_home.null",
+        "session": request.session,
+        "alertMessage": alertMessage,
+        "feed_cache": newsfeed.getLatestItems(),
+        "google_analytics_id": google_analytics_id,
+        "content_custom": content_custom,
+    }
+    # TODO: Remove this temporary workaround and modify dynamically generated HTML
+    # instead.
+    templ = templates[str(code)][0]
+    templ.backend.engine.autoescape = False
+    content = templ.render(ctx, request=request)
     return django.http.HttpResponse(content, status=code)
 
 
