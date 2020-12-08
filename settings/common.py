@@ -13,7 +13,8 @@ SETTINGS_DIR = os.path.join(PROJECT_ROOT, "settings")
 EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "ezid.conf")
 EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
 LOGGING_CONFIG_FILE = "logging.server.conf"
-MINTERS_PATH = os.path.join(PROJECT_ROOT, "db", "minters")
+#MINTERS_PATH = os.path.join(PROJECT_ROOT, "db", "minters")
+MINTERS_PATH = '/apps/ezid/var/minters'
 
 # TODO: Stop fudging the syspath
 sys.path.append(os.path.join(PROJECT_ROOT, "impl"))
@@ -23,7 +24,6 @@ DEBUG = True
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 MANAGERS = ADMINS = [
-    ("Dave Vieglais", "dave.vieglais@gmail.com"),
     ("John Kunze", "jak@ucop.edu"),
     ("Maria Gould", "Maria.Gould@ucop.edu"),
     ("Roger Dahl", "cdl-ezid@dahlsys.com"),
