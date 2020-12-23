@@ -1,8 +1,8 @@
-from django.utils.translation import ugettext_lazy as _
-import os
 import os.path
 import socket
 import sys
+
+from django.utils.translation import ugettext_lazy as _
 
 # EZID-specific paths...
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
@@ -131,7 +131,18 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
 # EZID-specific settings...
 STANDALONE = False
-DAEMON_THREADS_ENABLED = True
+
+# DAEMON_THREADS_ENABLED:
+#   - True: Always enable daemon threads
+#   - False: Always disable daemon threads
+#   - 'auto': Enable daemon threads if, and only if, process is running under Apache /
+#      mod_wsgi.
+DAEMON_THREADS_ENABLED = 'auto'
+
+assert DAEMON_THREADS_ENABLED in (True, False, 'auto')
+if DAEMON_THREADS_ENABLED == 'auto':
+    DAEMON_THREADS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
+
 LOCALIZATIONS = {"default": ("cdl", ["ezid@ucop.edu"])}
 
 # The following is a necessarily cockamamie scheme to get passwords
