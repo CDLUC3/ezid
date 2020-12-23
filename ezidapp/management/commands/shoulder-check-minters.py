@@ -9,16 +9,13 @@ import logging
 
 import django.contrib.auth.models
 import django.core.management
-import django.core.management
 import django.db.transaction
 import pathlib2
 
 import ezidapp.models
 import impl.nog.util
 import nog.bdb
-import nog.bdb
 import nog.exc
-import nog.minter
 import nog.minter
 
 log = logging.getLogger(__name__)
@@ -110,7 +107,7 @@ class Command(django.core.management.BaseCommand):
 
     def check_minter(self, shoulder_model):
         try:
-            bdb_path = nog.bdb._get_bdb_path_by_shoulder_model(shoulder_model)
+            bdb_path = nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
         except nog.exc.MinterNotSpecified as e:
             return 'Skipped: No minter registered'
 
@@ -169,7 +166,7 @@ class Command(django.core.management.BaseCommand):
             raise CheckError(
                 'Next identifier to be minted is already in the database (outdated minter)',
                 'Existing identifier: "{}" "{}"'.format(id_ns, ' and '.join(
-                    [('is in {}' if f else 'is not in {}').format(n) 
+                    [('is in {}' if f else 'is not in {}').format(n)
                         for n, f in zip(('Store', 'Search'), (is_in_store, is_in_search))
                     ]
                 )),

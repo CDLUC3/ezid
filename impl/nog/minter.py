@@ -124,7 +124,7 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
     See Also:
         :func:`mint_id`
     """
-    bdb_path = nog.bdb._get_bdb_path_by_shoulder_model(shoulder_model)
+    bdb_path = nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
     for minted_str in mint_by_bdb_path(bdb_path, mint_count, dry_run=dry_run):
         yield minted_str
 

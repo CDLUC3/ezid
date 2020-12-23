@@ -137,11 +137,16 @@ def pause(newValue):
 
 def mintIdentifier(shoulder, user, metadata={}):
     try:
-        if not _acquireIdentifierLock(shoulder + '.shoulder_lock', user.username + '.shoulder_lock'):
+        if not _acquireIdentifierLock(
+            shoulder + '.shoulder_lock', user.username + '.shoulder_lock'
+        ):
             return "error: concurrency limit exceeded"
         return _mintIdentifier(shoulder, user, metadata)
     finally:
-        _releaseIdentifierLock(shoulder + '.shoulder_lock', user.username + '.shoulder_lock')
+        _releaseIdentifierLock(
+            shoulder + '.shoulder_lock', user.username + '.shoulder_lock'
+        )
+
 
 def _mintIdentifier(shoulder, user, metadata={}):
     """

@@ -12,7 +12,6 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
 import re
 import threading
 import time
@@ -62,8 +61,10 @@ def loadConfig ():
   _username = config.get("crossref.username")
   _password = config.get("crossref.password")
   _idleSleep = int(config.get("daemons.crossref_processing_idle_sleep"))
-  _daemonEnabled = (django.conf.settings.DAEMON_THREADS_ENABLED and\
-    config.get("daemons.crossref_enabled").lower() == "true")
+  _daemonEnabled = (
+    django.conf.settings.DAEMON_THREADS_ENABLED
+    and config.get("daemons.crossref_enabled").lower() == "true"
+  )
   _ezidUrl = config.get("DEFAULT.ezid_base_url")
   _dataciteEnabled = (config.get("datacite.enabled").lower() == "true")
   if _daemonEnabled:

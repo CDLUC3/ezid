@@ -16,12 +16,14 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.conf
-import django.db
-import django.db.transaction
+import logging
 import threading
 import time
 import uuid
+
+import django.conf
+import django.db
+import django.db.transaction
 
 import binder_async
 import config
@@ -40,6 +42,9 @@ _threadName = None
 _idleSleep = None
 
 
+logger = logging.getLogger(__name__)
+
+
 def _updateSearchDatabase(identifier, operation, metadata, blob):
     if operation in ["create", "update"]:
         ezidapp.models.search_identifier.updateFromLegacy(identifier, metadata)
@@ -55,8 +60,13 @@ def _checkContinue():
 
 def _backprocDaemon():
     _lock.acquire()
+
     try:
+        logger.debug('Running background processing threads: count={}'.format(len(_runningThreads)))
+        logger.debug('New thread: {}'.format(threading.currentThread().getName()))
         _runningThreads.add(threading.currentThread().getName())
+        logger.debug('New count: {}'.format(threading.active_count()))
+
     finally:
         _lock.release()
     # If we were started due to a reload, we wait for the previous
@@ -81,21 +91,21 @@ def _backprocDaemon():
     # Regular processing.
     while _checkContinue():
         try:
-            l = list(ezidapp.models.UpdateQueue.objects.all().order_by("seq")[:1000])
-            if len(l) > 0:
-                for uq in l:
+            update_list = list(ezidapp.models.UpdateQueue.objects.all().order_by("seq")[:1000])
+            if len(update_list) > 0:
+                for update_model in update_list:
                     if not _checkContinue():
                         break
                     # The use of legacy representations and blobs will go away soon.
-                    metadata = uq.actualObject.toLegacy()
+                    metadata = update_model.actualObject.toLegacy()
                     blob = util.blobify(metadata)
-                    if uq.actualObject.owner != None:
+                    if update_model.actualObject.owner != None:
                         try:
                             search_util.withAutoReconnect(
                                 "backproc._updateSearchDatabase",
                                 lambda: _updateSearchDatabase(
-                                    uq.identifier,
-                                    uq.get_operation_display(),
+                                    update_model.identifier,
+                                    update_model.get_operation_display(),
                                     metadata,
                                     blob,
                                 ),
@@ -104,26 +114,26 @@ def _backprocDaemon():
                         except search_util.AbortException:
                             break
                     with django.db.transaction.atomic():
-                        if not uq.actualObject.isReserved:
+                        if not update_model.actualObject.isReserved:
                             binder_async.enqueueIdentifier(
-                                uq.identifier, uq.get_operation_display(), blob
+                                update_model.identifier, update_model.get_operation_display(), blob
                             )
-                            if uq.updateExternalServices:
-                                if uq.actualObject.isDatacite:
-                                    if not uq.actualObject.isTest:
+                            if update_model.updateExternalServices:
+                                if update_model.actualObject.isDatacite:
+                                    if not update_model.actualObject.isTest:
                                         datacite_async.enqueueIdentifier(
-                                            uq.identifier,
-                                            uq.get_operation_display(),
+                                            update_model.identifier,
+                                            update_model.get_operation_display(),
                                             blob,
                                         )
-                                elif uq.actualObject.isCrossref:
+                                elif update_model.actualObject.isCrossref:
                                     crossref.enqueueIdentifier(
-                                        uq.identifier,
-                                        uq.get_operation_display(),
+                                        update_model.identifier,
+                                        update_model.get_operation_display(),
                                         metadata,
                                         blob,
                                     )
-                        uq.delete()
+                        update_model.delete()
             else:
                 django.db.connections["default"].close()
                 django.db.connections["search"].close()

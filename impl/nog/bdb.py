@@ -261,7 +261,7 @@ def _get_bdb_path_by_namespace(ns, root_path=None):
     """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
 
     Use this only for generating a new path in which to create a minter BDB. For looking
-    up the path to an existing minter, use _get_bdb_path_by_shoulder_model().
+    up the path to an existing minter, use get_bdb_path_by_shoulder_model().
 
     While this method should work for looking up existing minters created by EZID, the
     namespace alone does not always contain enough information for finding the path to a
@@ -321,7 +321,7 @@ def _get_bdb_path(naan_str, shoulder_str, root_path=None):
     return minter_path.resolve()
 
 
-def _get_bdb_path_by_shoulder_model(shoulder_model, root_path=None):
+def get_bdb_path_by_shoulder_model(shoulder_model, root_path=None):
     """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
 
     The path may or may not exist. The caller may be obtaining the path in which to
