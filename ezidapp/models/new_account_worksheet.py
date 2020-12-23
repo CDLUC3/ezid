@@ -19,7 +19,7 @@ import datetime
 import django.core.validators
 import django.db.models
 
-import validation
+from . import validation
 
 
 class NewAccountWorksheet(django.db.models.Model):

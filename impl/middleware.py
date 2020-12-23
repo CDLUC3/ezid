@@ -23,7 +23,7 @@ import base64
 # incomprehensibly, it goes away if the 'config' module imported here.
 # Why?!
 
-import config
+from . import config
 
 
 class ExceptionScrubberMiddleware:

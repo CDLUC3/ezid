@@ -17,7 +17,7 @@
 #
 # -----------------------------------------------------------------------------
 
-import ConfigParser
+import configparser
 import os.path
 
 
@@ -29,13 +29,13 @@ class Config(object):
     def __init__(
         self, siteRoot, projectRoot, configFile, shadowConfigFile, deploymentLevel
     ):
-        self._config = ConfigParser.ConfigParser(
+        self._config = configparser.ConfigParser(
             {"SITE_ROOT": siteRoot, "PROJECT_ROOT": projectRoot}
         )
         f = open(configFile)
         self._config.readfp(f)
         f.close()
-        self._shadowConfig = ConfigParser.ConfigParser()
+        self._shadowConfig = configparser.ConfigParser()
         if os.path.exists(shadowConfigFile):
             f = open(shadowConfigFile)
             self._shadowConfig.readfp(f)

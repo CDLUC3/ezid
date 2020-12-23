@@ -1,8 +1,8 @@
 from django.template import loader
-import ui_common as uic
+from . import ui_common as uic
 from django.shortcuts import redirect
-import ui_create
-import urllib
+from . import ui_create
+import urllib.request, urllib.parse, urllib.error
 
 
 def index(request):
@@ -19,7 +19,7 @@ def index(request):
         return uic.badRequest(request)
     elif result.startswith('created_identifier:'):
         return redirect(
-            "/id/" + urllib.quote(result.split()[1], ":/")
+            "/id/" + urllib.parse.quote(result.split()[1], ":/")
         )  # ID Details page
 
 

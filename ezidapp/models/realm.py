@@ -15,7 +15,7 @@
 
 import django.db.models
 
-import validation
+from . import validation
 
 
 class Realm(django.db.models.Model):

@@ -1,9 +1,9 @@
 from django import template
 from django.conf import settings
 from django.utils.html import escape
-from decorators import basictag
+from .decorators import basictag
 import datetime
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from django.core.urlresolvers import reverse
 import itertools
 from django.utils.translation import ugettext as _
@@ -59,7 +59,7 @@ def column_choices_hidden(fields_selected):
 @register.simple_tag
 def rewrite_hidden(request, exclude=None):
     hidden = ''
-    for key, value in request.iteritems():
+    for key, value in request.items():
         if exclude is None or not (key in exclude):
             hidden += (
                 "<input type='hidden' name='"

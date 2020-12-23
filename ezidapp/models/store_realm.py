@@ -15,7 +15,7 @@
 
 import django.core.validators
 
-import realm
+from . import realm
 
 
 class StoreRealm(realm.Realm):

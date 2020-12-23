@@ -2,7 +2,7 @@
 referencing non-existing minters.
 """
 
-from __future__ import absolute_import, division, print_function
+
 
 import argparse
 import logging
@@ -72,7 +72,7 @@ class Command(django.core.management.BaseCommand):
 
             if not s.minter.strip():
                 log.warn(
-                    u'Shoulder does not specify a minter (supershoulder?). prefix="{}" name="{}"'.format(
+                    'Shoulder does not specify a minter (supershoulder?). prefix="{}" name="{}"'.format(
                         s.prefix, s.name
                     )
                 )
@@ -85,7 +85,7 @@ class Command(django.core.management.BaseCommand):
                 continue
 
             log.info(
-                u'Creating missing minter. prefix="{}" name="{}"'.format(
+                'Creating missing minter. prefix="{}" name="{}"'.format(
                     s.prefix, s.name
                 )
             )
@@ -96,7 +96,7 @@ class Command(django.core.management.BaseCommand):
                 nog.minter.create_minter_database(naan_str, shoulder_str)
             except Exception as e:
                 log.warn(
-                    u'Unable to create missing minter. prefix="{}" name="{}". Error: {}'.format(
+                    'Unable to create missing minter. prefix="{}" name="{}". Error: {}'.format(
                         s.prefix, s.name, str(e)
                     )
                 )

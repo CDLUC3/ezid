@@ -26,7 +26,7 @@ def log_to_console(module_name, is_debug):
         for h in root_logger.handlers:
             if isinstance(h, logging.StreamHandler):
                 if h.stream in (sys.stdout, sys.stderr):
-                    print('Removing handler: {}'.format(h.level))
+                    print(('Removing handler: {}'.format(h.level)))
                     root_logger.removeHandler(h)
                     break
         else:

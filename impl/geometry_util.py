@@ -17,7 +17,7 @@ import json
 import lxml.etree
 import re
 
-import util
+from . import util
 
 # N.B.: the namespace for KML 2.3 is still 2.2.
 _kmlNamespace = "http://www.opengis.net/kml/2.2"
@@ -45,7 +45,7 @@ def kmlPolygonToDatacite(kml):
   """
     try:
         root = util.parseXmlString(kml)
-    except Exception, e:
+    except Exception as e:
         return "XML parse error: " + util.formatException(e)
     if root.tag != "{%s}kml" % _kmlNamespace:
         return "not a KML document"
@@ -157,7 +157,7 @@ def geojsonPolygonToDatacite(geojson):
 
     try:
         root = json.loads(geojson, object_hook=objectHandler)
-    except Exception, e:
+    except Exception as e:
         return "JSON parse error: " + util.formatException(e)
     if type(root) is not dict or root.get("type", "unknown") not in _geojsonTypes:
         return "not a GeoJSON document"

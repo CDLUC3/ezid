@@ -17,13 +17,13 @@ import django.core.exceptions
 import django.db.models
 import re
 
-import custom_fields
-import identifier
-import shoulder
-import store_datacenter
-import store_group
-import store_profile
-import store_user
+from . import custom_fields
+from . import identifier
+from . import shoulder
+from . import store_datacenter
+from . import store_group
+from . import store_profile
+from . import store_user
 
 # Deferred imports...
 """
@@ -218,7 +218,7 @@ class StoreIdentifier(identifier.Identifier):
                 else:
                     try:
                         self.profile = store_profile.getByLabel(d[k])
-                    except django.core.exceptions.ValidationError, e:
+                    except django.core.exceptions.ValidationError as e:
                         raise django.core.exceptions.ValidationError({"profile": [e]})
             elif k == "_ezid_role":
                 if not allowRestrictedSettings:

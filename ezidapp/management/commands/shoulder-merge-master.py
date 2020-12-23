@@ -1,7 +1,7 @@
 """Permanently merge the master_shoulders.txt file into the database.
 """
 
-from __future__ import absolute_import, division, print_function
+
 
 import argparse
 import datetime
@@ -98,7 +98,7 @@ class Command(django.core.management.BaseCommand):
         #     'type': 'shoulder',
         # }
 
-        for k, v in file_dict.items():
+        for k, v in list(file_dict.items()):
 
             if v['type'] != 'shoulder':
                 continue

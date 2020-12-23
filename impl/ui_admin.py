@@ -1,12 +1,12 @@
-import ui_common as uic
-import userauth
+from . import ui_common as uic
+from . import userauth
 import ezidapp.models
-import stats
+from . import stats
 from datetime import datetime
-import ui_search
+from . import ui_search
 from collections import *
 import csv
-import StringIO
+import io
 from django.utils.translation import ugettext as _
 
 NO_CONSTRAINTS = True
@@ -213,7 +213,7 @@ def csvStats(request):
             users.add(u)
     for u in requestor.proxy_for.all():
         users.add(u)
-    f = StringIO.StringIO()
+    f = io.StringIO()
     w = csv.writer(f)
     w.writerow(
         [

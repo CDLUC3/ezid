@@ -42,7 +42,7 @@ def _decodeRewriter(m):
     if len(m.group(0)) == 3:
         return chr(int(m.group(0)[1:], 16))
     else:
-        raise AnvlParseException, "percent-decode error"
+        raise AnvlParseException("percent-decode error")
 
 
 def _decode(s):
@@ -61,7 +61,7 @@ def format(d):
   Formats a dictionary into an ANVL string.  Labels and values are
   suitably percent-encoded.
   """
-    return "".join(formatPair(k, v) for k, v in d.items())
+    return "".join(formatPair(k, v) for k, v in list(d.items()))
 
 
 def parse(s):
@@ -81,7 +81,7 @@ def parse(s):
             pass
         elif l[0].isspace():
             if k == None:
-                raise AnvlParseException, "no previous label for continuation line"
+                raise AnvlParseException("no previous label for continuation line")
             ll = _decode(l).strip()
             if ll != "":
                 if d[k] == "":
@@ -90,12 +90,12 @@ def parse(s):
                     d[k] += " " + ll
         else:
             if ":" not in l:
-                raise AnvlParseException, "no colon in line"
+                raise AnvlParseException("no colon in line")
             k, v = [_decode(w).strip() for w in l.split(":", 1)]
             if len(k) == 0:
-                raise AnvlParseException, "empty label"
+                raise AnvlParseException("empty label")
             if k in d:
-                raise AnvlParseException, "repeated label"
+                raise AnvlParseException("repeated label")
             d[k] = v
     return d
 
@@ -123,7 +123,7 @@ def parseConcatenate(s):
             pass
         elif l[0].isspace():
             if k == None:
-                raise AnvlParseException, "no previous label for continuation line"
+                raise AnvlParseException("no previous label for continuation line")
             ll = _decode(l).strip()
             if ll != "":
                 if d[k] == "":
@@ -132,10 +132,10 @@ def parseConcatenate(s):
                     d[k] += " " + ll
         else:
             if ":" not in l:
-                raise AnvlParseException, "no colon in line"
+                raise AnvlParseException("no colon in line")
             k, v = [_decode(w).strip() for w in l.split(":", 1)]
             if len(k) == 0:
-                raise AnvlParseException, "empty label"
+                raise AnvlParseException("empty label")
             if k in d and d[k] != "":
                 if v != "":
                     d[k] += " ; " + v

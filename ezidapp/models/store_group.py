@@ -16,10 +16,10 @@
 import django.core.validators
 import django.db.models
 
-import group
-import shoulder
-import store_realm
-import validation
+from . import group
+from . import shoulder
+from . import store_realm
+from . import validation
 
 
 class StoreGroup(group.Group):
@@ -129,8 +129,8 @@ def _getCaches():
     caches = _caches
     if caches == None:
         pidCache = dict((g.pid, g) for g in _databaseQuery().all())
-        groupnameCache = dict((g.groupname, g) for g in pidCache.values())
-        idCache = dict((g.id, g) for g in pidCache.values())
+        groupnameCache = dict((g.groupname, g) for g in list(pidCache.values()))
+        idCache = dict((g.id, g) for g in list(pidCache.values()))
         caches = (pidCache, groupnameCache, idCache)
         _caches = caches
     return caches

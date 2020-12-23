@@ -31,13 +31,13 @@
 import base64
 import re
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
-import config
-import util
+from . import config
+from . import util
 
 import logging
-from log import stacklog
+from .log import stacklog
 
 _LT = logging.getLogger("tracer")
 
@@ -59,7 +59,7 @@ def loadConfig():
 
 @stacklog
 def _issue(method, operations):
-    r = urllib2.Request(_server + "?-")
+    r = urllib.request.Request(_server + "?-")
     r.get_method = lambda: method
     r.add_header("Authorization", _authorization)
     if len(operations) > 0:
@@ -77,7 +77,7 @@ def _issue(method, operations):
     for i in range(_numAttempts):
         c = None
         try:
-            c = urllib2.urlopen(r)
+            c = urllib.request.urlopen(r)
             s = c.readlines()
         except:
             if i == _numAttempts - 1:
@@ -142,7 +142,7 @@ def batchSetElements(batch):
   """
     l = []
     for identifier, d in batch:
-        for e, v in d.items():
+        for e, v in list(d.items()):
             e = e.strip()
             assert len(e) > 0, "empty label"
             v = v.strip()

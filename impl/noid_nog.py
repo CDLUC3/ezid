@@ -18,12 +18,12 @@
 import base64
 import threading
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
-import config
+from . import config
 
 import logging
-from log import stacklog
+from .log import stacklog
 
 _LT = logging.getLogger("tracer")
 
@@ -86,12 +86,12 @@ class Minter(object):
         try:
             cs = _cacheSize
             if len(self.cache) == 0:
-                r = urllib2.Request("%s?mint%%20%d" % (self.url, cs))
+                r = urllib.request.Request("%s?mint%%20%d" % (self.url, cs))
                 _addAuthorization(r)
                 for i in range(_numAttempts):
                     c = None
                     try:
-                        c = urllib2.urlopen(r)
+                        c = urllib.request.urlopen(r)
                         s = c.readlines()
                     except:
                         if i == _numAttempts - 1:
@@ -119,11 +119,11 @@ class Minter(object):
     Tests the minter, returning "up" or "down".
     """
         try:
-            r = urllib2.Request(self.url)
+            r = urllib.request.Request(self.url)
             _addAuthorization(r)
             c = None
             try:
-                c = urllib2.urlopen(r)
+                c = urllib.request.urlopen(r)
                 s = c.readlines()
             finally:
                 if c:

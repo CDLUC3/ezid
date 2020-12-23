@@ -24,14 +24,14 @@ import os.path
 import re
 import threading
 import time
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
-import config
+from . import config
 import ezidapp.models
 import ezidapp.models.validation
-import mapping
-import util
+from . import mapping
+from . import util
 
 _lock = threading.Lock()
 _enabled = None
@@ -152,8 +152,8 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
     # To deal with transient problems with the Handle system underlying
     # the DataCite service, we make multiple attempts.
     for i in range(_numAttempts):
-        o = urllib2.build_opener(_HTTPErrorProcessor)
-        r = urllib2.Request(_doiUrl)
+        o = urllib.request.build_opener(_HTTPErrorProcessor)
+        r = urllib.request.Request(_doiUrl)
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
@@ -172,7 +172,7 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
             assert (
                 c.read() == "OK"
             ), "unexpected return from DataCite register DOI operation"
-        except urllib2.HTTPError, e:
+        except urllib.error.HTTPError as e:
             message = e.fp.read()
             if e.code == 400 and message.startswith("[url]"):
                 return message
@@ -211,8 +211,8 @@ def getTargetUrl(doi, datacenter=None):
   """
     # To hide transient network errors, we make multiple attempts.
     for i in range(_numAttempts):
-        o = urllib2.build_opener(_HTTPErrorProcessor)
-        r = urllib2.Request(_doiUrl + "/" + urllib.quote(doi))
+        o = urllib.request.build_opener(_HTTPErrorProcessor)
+        r = urllib.request.Request(_doiUrl + "/" + urllib.parse.quote(doi))
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
@@ -222,7 +222,7 @@ def getTargetUrl(doi, datacenter=None):
             _modifyActiveCount(1)
             c = o.open(r, timeout=_timeout)
             return c.read()
-        except urllib2.HTTPError, e:
+        except urllib.error.HTTPError as e:
             if e.code == 404:
                 return None
             if e.code != 500 or i == _numAttempts - 1:
@@ -276,7 +276,7 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
     # include other identifier types.
     try:
         root = lxml.etree.XML(record)
-    except Exception, e:
+    except Exception as e:
         assert False, "XML parse error: " + str(e)
     m = _rootTagRE.match(root.tag)
     assert m, "not a DataCite record"
@@ -316,8 +316,8 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
         i.text = "10.1234/X"
         schema[1].acquire()
         try:
-            schema[0].assert_(root)
-        except Exception, e:
+            schema[0].assertTrue(root)
+        except Exception as e:
             # Ouch.  On some LXML installations, but not all, an error is
             # "sticky" and, unless it is cleared out, will be returned
             # repeatedly regardless of what new error is encountered.
@@ -341,9 +341,9 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
         # We re-sanitize the document because unacceptable characters can
         # be (and have been) introduced via XML character entities.
         return "<?xml version=\"1.0\"?>\n" + util.sanitizeXmlSafeCharset(
-            lxml.etree.tostring(root, encoding=unicode)
+            lxml.etree.tostring(root, encoding=str)
         )
-    except Exception, e:
+    except Exception as e:
         assert False, "XML serialization error: " + str(e)
 
 
@@ -351,7 +351,7 @@ def _interpolate(template, *args):
     return template % tuple(util.xmlEscape(a) for a in args)
 
 
-_metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
+_metadataTemplate = """<?xml version="1.0" encoding="UTF-8"?>
 <resource xmlns="http://datacite.org/schema/kernel-4"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://datacite.org/schema/kernel-4
@@ -369,10 +369,10 @@ _metadataTemplate = u"""<?xml version="1.0" encoding="UTF-8"?>
   <publicationYear>%s</publicationYear>
 """
 
-_resourceTypeTemplate1 = u"""  <resourceType resourceTypeGeneral="%s"/>
+_resourceTypeTemplate1 = """  <resourceType resourceTypeGeneral="%s"/>
 """
 
-_resourceTypeTemplate2 = u"""  <resourceType resourceTypeGeneral="%s">%s</resourceType>
+_resourceTypeTemplate2 = """  <resourceType resourceTypeGeneral="%s">%s</resourceType>
 """
 
 
@@ -429,7 +429,7 @@ def formRecord(identifier, metadata, supplyMissing=False, profile=None):
             return util.insertXmlEncodingDeclaration(
                 crossrefToDatacite(metadata["crossref"].strip(), overrides)
             )
-        except Exception, e:
+        except Exception as e:
             assert False, "Crossref to DataCite metadata conversion error: " + str(e)
     else:
         km = mapping.map(metadata, datacitePriority=True, profile=profile)
@@ -460,7 +460,7 @@ def formRecord(identifier, metadata, supplyMissing=False, profile=None):
             r += _interpolate(_resourceTypeTemplate2, gt, st)
         else:
             r += _interpolate(_resourceTypeTemplate1, t)
-        r += u"</resource>\n"
+        r += "</resource>\n"
         return r
 
 
@@ -488,7 +488,7 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
     m.update(delta)
     try:
         newRecord = formRecord("doi:" + doi, m)
-    except AssertionError, e:
+    except AssertionError as e:
         return "DOI metadata requirements not satisfied: " + str(e)
     if newRecord == oldRecord and not forceUpload:
         return None
@@ -496,8 +496,8 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
         return None
     # To hide transient network errors, we make multiple attempts.
     for i in range(_numAttempts):
-        o = urllib2.build_opener(_HTTPErrorProcessor)
-        r = urllib2.Request(_metadataUrl)
+        o = urllib.request.build_opener(_HTTPErrorProcessor)
+        r = urllib.request.Request(_metadataUrl)
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
@@ -512,7 +512,7 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
             assert s.startswith("OK"), (
                 "unexpected return from DataCite store metadata operation: " + s
             )
-        except urllib2.HTTPError, e:
+        except urllib.error.HTTPError as e:
             message = e.fp.read()
             if e.code in [400, 422]:
                 return "element 'datacite': " + message
@@ -533,8 +533,8 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
 def _deactivate(doi, datacenter):
     # To hide transient network errors, we make multiple attempts.
     for i in range(_numAttempts):
-        o = urllib2.build_opener(_HTTPErrorProcessor)
-        r = urllib2.Request(_metadataUrl + "/" + urllib.quote(doi))
+        o = urllib.request.build_opener(_HTTPErrorProcessor)
+        r = urllib.request.Request(_metadataUrl + "/" + urllib.parse.quote(doi))
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
@@ -547,7 +547,7 @@ def _deactivate(doi, datacenter):
             assert (
                 c.read() == "OK"
             ), "unexpected return from DataCite deactivate DOI operation"
-        except urllib2.HTTPError, e:
+        except urllib.error.HTTPError as e:
             if e.code != 500 or i == _numAttempts - 1:
                 raise e
         except:
@@ -577,7 +577,7 @@ def deactivate(doi, datacenter=None):
         return
     try:
         _deactivate(doi, datacenter)
-    except urllib2.HTTPError, e:
+    except urllib.error.HTTPError as e:
         if e.code == 404:
             # The identifier must already have metadata in DataCite; in case
             # it doesn't (as may be the case with legacy identifiers),
@@ -626,8 +626,8 @@ def pingDataciteOnly():
         return "up"
     # To hide transient network errors, we make multiple attempts.
     for i in range(_numAttempts):
-        o = urllib2.build_opener(_HTTPErrorProcessor)
-        r = urllib2.Request(_doiUrl + "/" + _pingDoi)
+        o = urllib.request.build_opener(_HTTPErrorProcessor)
+        r = urllib.request.Request(_doiUrl + "/" + _pingDoi)
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
@@ -657,7 +657,7 @@ def dcmsRecordToHtml(record):
   """
     try:
         r = lxml.etree.tostring(
-            _stylesheet(util.parseXmlString(record)), encoding=unicode
+            _stylesheet(util.parseXmlString(record)), encoding=str
         )
         assert r.startswith("<table")
         return r
@@ -676,10 +676,10 @@ def crossrefToDatacite(record, overrides={}):
   exception on error.
   """
     d = {}
-    for k, v in overrides.items():
+    for k, v in list(overrides.items()):
         d[k] = lxml.etree.XSLT.strparam(v)
     return lxml.etree.tostring(
-        _crossrefTransform(util.parseXmlString(record), **d), encoding=unicode
+        _crossrefTransform(util.parseXmlString(record), **d), encoding=str
     )
 
 
@@ -709,7 +709,7 @@ def upgradeDcmsRecord(record, parseString=True, returnString=True):
     if m.group(1) == "4":
         # Nothing to do.
         if returnString:
-            return lxml.etree.tostring(root, encoding=unicode)
+            return lxml.etree.tostring(root, encoding=str)
         else:
             return root
 
@@ -783,6 +783,6 @@ def upgradeDcmsRecord(record, parseString=True, returnString=True):
                 e.getparent().remove(e)
     lxml.etree.cleanup_namespaces(root)
     if returnString:
-        return lxml.etree.tostring(root, encoding=unicode)
+        return lxml.etree.tostring(root, encoding=str)
     else:
         return root

@@ -21,11 +21,11 @@ import django.core.validators
 import django.db.models
 import django.db.transaction
 
-import shoulder
-import store_group
-import store_realm
-import user
-import validation
+from . import shoulder
+from . import store_group
+from . import store_realm
+from . import user
+from . import validation
 
 logger = logging.getLogger(__name__)
 
@@ -198,7 +198,7 @@ class StoreUser(user.User):
         # is both set and saved.  Thus calls to this method should
         # generally be wrapped in a transaction.
         logger.debug(
-            u'Setting password for user. displayName="{}"'.format(self.displayName)
+            'Setting password for user. displayName="{}"'.format(self.displayName)
         )
         self.password = django.contrib.auth.hashers.make_password(password)
         try:
@@ -211,7 +211,7 @@ class StoreUser(user.User):
     def authenticate(self, password):
         """Returns True if the supplied password matches the user's."""
         logger.debug(
-            u'Authenticating StoreUser. displayName="{}"'.format(self.displayName)
+            'Authenticating StoreUser. displayName="{}"'.format(self.displayName)
         )
 
         if not self.loginEnabled:
@@ -290,8 +290,8 @@ def _getCaches():
     caches = _caches
     if caches == None:
         pidCache = dict((u.pid, u) for u in _databaseQuery().all())
-        usernameCache = dict((u.username, u) for u in pidCache.values())
-        idCache = dict((u.id, u) for u in pidCache.values())
+        usernameCache = dict((u.username, u) for u in list(pidCache.values()))
+        idCache = dict((u.id, u) for u in list(pidCache.values()))
         caches = (pidCache, usernameCache, idCache)
         _caches = caches
     return caches

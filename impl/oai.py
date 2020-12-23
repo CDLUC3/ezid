@@ -21,10 +21,10 @@ import hashlib
 import lxml.etree
 import time
 
-import config
-import datacite
+from . import config
+from . import datacite
 import ezidapp.models
-import util
+from . import util
 
 _enabled = None
 _baseUrl = None
@@ -76,7 +76,7 @@ def _buildResponse(oaiRequest, body):
         "badArgument",
     ]:
         e.attrib["verb"] = oaiRequest[0]
-        for k, v in oaiRequest[1].items():
+        for k, v in list(oaiRequest[1].items()):
             e.attrib[k] = v
     root.append(body)
     return lxml.etree.tostring(
@@ -135,12 +135,12 @@ def _buildRequest(request):
         if len(REQUEST.getlist(k)) > 1:
             return _error(None, "badArgument", "multiple values for argument: " + k)
         if _arguments[verb][k] == "X":
-            if len(REQUEST.keys()) > 2:
+            if len(list(REQUEST.keys())) > 2:
                 return _error(None, "badArgument", "argument is not exclusive: " + k)
             exclusive = True
         r[1][k] = REQUEST[k]
     if not exclusive:
-        for k, rox in _arguments[verb].items():
+        for k, rox in list(_arguments[verb].items()):
             if rox == "R" and k not in r[1]:
                 return _error(None, "badArgument", "missing required argument: " + k)
     return r

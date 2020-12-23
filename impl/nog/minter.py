@@ -43,7 +43,7 @@ BerkeleyDB keys (EZID names / N2T names):
   to max_combined_count / max_per_counter.
 """
 
-from __future__ import absolute_import, division, print_function
+
 
 import logging
 import re

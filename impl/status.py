@@ -24,16 +24,16 @@ import threading
 import time
 import uuid
 
-import binder_async
-import config
-import crossref
-import datacite
-import datacite_async
-import download
-import ezid
+from . import binder_async
+from . import config
+from . import crossref
+from . import datacite
+from . import datacite_async
+from . import download
+from . import ezid
 import ezidapp.models
-import log
-import search_util
+from . import log
+from . import search_util
 
 # Deferred imports...
 """
@@ -51,7 +51,7 @@ _cloudwatchInstanceName = None
 
 def _formatUserCountList(d):
     if len(d) > 0:
-        l = d.items()
+        l = list(d.items())
         l.sort(cmp=lambda x, y: -cmp(x[1], y[1]))
         return " (" + " ".join("%s=%d" % i for i in l) + ")"
     else:
@@ -120,14 +120,14 @@ def _statusDaemon():
                                 if k == "OperationRate"
                                 else "Count",
                             }
-                            for k, v in data.items()
+                            for k, v in list(data.items())
                         ],
                     )
                     assert r["ResponseMetadata"]["HTTPStatusCode"] == 200
                 except:
                     # Ignore CloudWatch exceptions, as it's not essential.
                     pass
-        except Exception, e:
+        except Exception as e:
             log.otherError("status._statusDaemon", e)
         django.db.connections["default"].close()
         time.sleep(_reportingInterval)

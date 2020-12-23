@@ -13,9 +13,9 @@
 #
 # -----------------------------------------------------------------------------
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
-import config
+from . import config
 import ezidapp.models
 
 _ezidUrl = None
@@ -50,9 +50,9 @@ def urlForm(identifier):
   is no resolver defined for the identifier type.
   """
     if identifier.startswith("doi:"):
-        return "%s/%s" % (_doiResolver, urllib.quote(identifier[4:], ":/"))
+        return "%s/%s" % (_doiResolver, urllib.parse.quote(identifier[4:], ":/"))
     elif identifier.startswith("ark:/"):
-        return "%s/%s" % (_arkResolver, urllib.quote(identifier, ":/"))
+        return "%s/%s" % (_arkResolver, urllib.parse.quote(identifier, ":/"))
     else:
         return "[None]"
 
@@ -62,7 +62,7 @@ def defaultTargetUrl(identifier):
   Returns the default target URL for an identifier.  The identifier
   is assumed to be in normalized, qualified form.
   """
-    return "%s/id/%s" % (_ezidUrl, urllib.quote(identifier, ":/"))
+    return "%s/id/%s" % (_ezidUrl, urllib.parse.quote(identifier, ":/"))
 
 
 def tombstoneTargetUrl(identifier):
@@ -70,7 +70,7 @@ def tombstoneTargetUrl(identifier):
   Returns the "tombstone" target URL for an identifier.  The
   identifier is assumed to be in normalized, qualified form.
   """
-    return "%s/tombstone/id/%s" % (_ezidUrl, urllib.quote(identifier, ":/"))
+    return "%s/tombstone/id/%s" % (_ezidUrl, urllib.parse.quote(identifier, ":/"))
 
 
 def isTestIdentifier(identifier):
@@ -160,7 +160,7 @@ def convertLegacyToExternal(d, convertAgents=True):
     if d["_is"] != "public":
         d["_t"] = d["_t1"]
         del d["_t1"]
-    for k in d.keys():
+    for k in list(d.keys()):
         if k in _labelMapping:
             d[_labelMapping[k]] = d[k]
             del d[k]

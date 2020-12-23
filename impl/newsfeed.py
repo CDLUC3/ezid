@@ -21,9 +21,9 @@ import threading
 import time
 import uuid
 
-import config
-import feedparser
-import log
+from . import config
+from . import feedparser
+from . import log
 
 _enabled = None
 _lock = threading.Lock()
@@ -45,7 +45,7 @@ def _newsDaemon():
                     items.append((feed.entries[i].title, feed.entries[i].link))
             else:
                 items = _noItems
-        except Exception, e:
+        except Exception as e:
             log.otherError("newsfeed._newsDaemon", e)
             items = _noItems
         _lock.acquire()

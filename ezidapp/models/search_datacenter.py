@@ -13,7 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
-import datacenter
+from . import datacenter
 
 
 class SearchDatacenter(datacenter.Datacenter):

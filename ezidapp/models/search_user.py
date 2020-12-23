@@ -15,9 +15,9 @@
 
 import django.db.models
 
-import search_group
-import search_realm
-import user
+from . import search_group
+from . import search_realm
+from . import user
 
 
 class SearchUser(user.User):

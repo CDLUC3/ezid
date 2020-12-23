@@ -46,7 +46,7 @@ def main():
         with TagLog(args) as tag_log:
             tag_log.tag()
     except Exception as e:
-        print(repr(e))
+        print((repr(e)))
         raise
 
     log.info('Completed')
@@ -109,9 +109,9 @@ class TagLog:
 
     def write_id_ref(self):
         """Append a map of tag ID to real identifier to end of tagged log."""
-        print('-' * 100)
-        for type_str, type_dict in self.rx_dict.items():
-            for id_str, instance_dict in type_dict['id_dict'].items():
+        print(('-' * 100))
+        for type_str, type_dict in list(self.rx_dict.items()):
+            for id_str, instance_dict in list(type_dict['id_dict'].items()):
                 s = '{} ID={} C={}'.format(type_str, instance_dict['tag_id'], instance_dict['acc_count'])
                 print(f'{s}: {id_str}')
 
@@ -129,7 +129,7 @@ class TagLog:
             new_str = ''
             pos = 0
 
-            for type_str, type_dict in self.rx_dict.items():
+            for type_str, type_dict in list(self.rx_dict.items()):
 
                 for m in type_dict['rx'].finditer(line_str):
                     id_dict = type_dict['id_dict']
@@ -168,11 +168,11 @@ class TagLog:
 
             new_str += line_str[pos:]
 
-            print('{:>8} {}'.format(line_no, new_str))
+            print(('{:>8} {}'.format(line_no, new_str)))
             line_no += 1
 
     def log_db_counts(self):
-        [log.info(f'{k}: {len(d)} strings') for k, d in self.rx_dict.items()]
+        [log.info(f'{k}: {len(d)} strings') for k, d in list(self.rx_dict.items())]
 
 
 class TagLogError(Exception):

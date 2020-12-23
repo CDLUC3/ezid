@@ -31,10 +31,10 @@
 
 import re
 
-import datacite
-import erc
+from . import datacite
+from . import erc
 import ezidapp.models.validation
-import util
+from . import util
 
 
 class KernelMetadata(object):

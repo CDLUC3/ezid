@@ -33,13 +33,13 @@ import threading
 import time
 import uuid
 
-import anvl
-import config
+from . import anvl
+from . import config
 import ezidapp.models
-import log
-import policy
-import util
-import util2
+from . import log
+from . import policy
+from . import util
+from . import util2
 
 _ezidUrl = None
 _usedFilenames = None
@@ -159,15 +159,15 @@ def _encode(o):
         return "B" + str(o)
     elif type(o) is int:
         return "I" + str(o)
-    elif type(o) in [str, unicode]:
+    elif type(o) in [str, str]:
         return "S" + o
     elif type(o) is list:
-        return "L" + ",".join(map(lambda i: _escape(_encode(i)), o))
+        return "L" + ",".join([_escape(_encode(i)) for i in o])
     elif type(o) is dict:
         return "D" + ",".join(
             map(
                 lambda kv: "%s=%s" % (_escape(_encode(kv[0])), _escape(_encode(kv[1]))),
-                o.items(),
+                list(o.items()),
             )
         )
     else:
@@ -187,18 +187,18 @@ def _decode(s):
         return s[1:]
     elif s[0] == "L":
         if len(s) > 1:
-            return map(lambda i: _decode(_unescape(i)), s[1:].split(","))
+            return [_decode(_unescape(i)) for i in s[1:].split(",")]
         else:
             return []
     elif s[0] == "D":
         if len(s) > 1:
             return dict(
-                map(
+                list(map(
                     lambda i: tuple(
-                        map(lambda kv: _decode(_unescape(kv)), i.split("="))
+                        [_decode(_unescape(kv)) for kv in i.split("=")]
                     ),
                     s[1:].split(","),
-                )
+                ))
             )
         else:
             return {}
@@ -281,12 +281,12 @@ def enqueueRequest(user, request):
                 return error("invalid parameter: " + util.oneLine(k))
             try:
                 if _parameters[k][0]:
-                    d[k] = map(_parameters[k][1], request.getlist(k))
+                    d[k] = list(map(_parameters[k][1], request.getlist(k)))
                 else:
                     if len(request.getlist(k)) > 1:
                         return error("parameter is not repeatable: " + k)
                     d[k] = _parameters[k][1](request[k])
-            except _ValidationException, e:
+            except _ValidationException as e:
                 return error("parameter '%s': %s" % (k, str(e)))
         if "format" not in d:
             return error("missing required parameter: format")
@@ -351,7 +351,7 @@ def enqueueRequest(user, request):
         )
         r.save()
         return "success: %s/download/%s.%s" % (_ezidUrl, filename, _fileSuffix(r))
-    except Exception, e:
+    except Exception as e:
         log.otherError("download.enqueueRequest", e)
         return "error: internal server error"
 
@@ -434,7 +434,7 @@ def _createFile(r):
         # We don't know exactly what the CSV writer wrote, so we must
         # probe the file to find its size.
         n = f.tell()
-    except Exception, e:
+    except Exception as e:
         raise _wrapException("error creating file", e)
     else:
         r.stage = ezidapp.models.DownloadQueue.HARVEST
@@ -446,7 +446,7 @@ def _createFile(r):
 
 
 def _satisfiesConstraints(id, constraints):
-    for k, v in constraints.items():
+    for k, v in list(constraints.items()):
         if k == "createdAfter":
             if id.createTime < v:
                 return False
@@ -526,7 +526,7 @@ def _writeCsv(f, columns, id, metadata):
 
 def _writeXml(f, id, metadata):
     f.write("<record identifier=\"%s\">" % util.xmlEscape(id.identifier))
-    for k, v in metadata.items():
+    for k, v in list(metadata.items()):
         if k in ["datacite", "crossref"]:
             v = util.removeXmlDeclaration(v)
         else:
@@ -571,7 +571,7 @@ def _harvest1(r, f):
             _flushFile(f)
         except _AbortException:
             raise
-        except Exception, e:
+        except Exception as e:
             raise _wrapException("error writing file", e)
         r.lastId = ids[-1].identifier
         r.fileSize = f.tell()
@@ -586,7 +586,7 @@ def _harvest(r):
             f = open(_path(r, 1), "r+b")
             f.seek(r.fileSize)
             f.truncate()
-        except Exception, e:
+        except Exception as e:
             raise _wrapException("error re-opening/seeking/truncating file", e)
         start = r.currentIndex
         for i in range(r.currentIndex, len(r.toHarvest.split(","))):
@@ -601,7 +601,7 @@ def _harvest(r):
             try:
                 f.write("</records>")
                 _flushFile(f)
-            except Exception, e:
+            except Exception as e:
                 raise _wrapException("error writing file footer", e)
         r.stage = ezidapp.models.DownloadQueue.COMPRESS
         r.save()
@@ -650,7 +650,7 @@ def _compressFile(r):
         )
     except _AbortException:
         raise
-    except Exception, e:
+    except Exception as e:
         raise _wrapException("error compressing file", e)
     else:
         r.stage = ezidapp.models.DownloadQueue.DELETE
@@ -666,7 +666,7 @@ def _deleteUncompressedFile(r):
     try:
         if os.path.exists(_path(r, 1)):
             os.unlink(_path(r, 1))
-    except Exception, e:
+    except Exception as e:
         raise _wrapException("error deleting uncompressed file", e)
     else:
         r.stage = ezidapp.models.DownloadQueue.MOVE
@@ -679,7 +679,7 @@ def _moveCompressedFile(r):
             os.rename(_path(r, 2), _path(r, 3))
         else:
             assert os.path.exists(_path(r, 3)), "file has disappeared"
-    except Exception, e:
+    except Exception as e:
         raise _wrapException("error moving compressed file", e)
     else:
         r.stage = ezidapp.models.DownloadQueue.NOTIFY
@@ -697,7 +697,7 @@ def _notifyRequestor(r):
                 r.rawRequest.encode("UTF-8"),
             )
         )
-    except Exception, e:
+    except Exception as e:
         raise _wrapException("error writing sidecar file", e)
     finally:
         if f:
@@ -727,7 +727,7 @@ def _notifyRequestor(r):
                 [emailAddress],
                 fail_silently=True,
             )
-        except Exception, e:
+        except Exception as e:
             raise _wrapException("error sending email", e)
     r.delete()
 
@@ -764,6 +764,6 @@ def _daemonThread():
             doSleep = False
         except _AbortException:
             break
-        except Exception, e:
+        except Exception as e:
             log.otherError("download._daemonThread", e)
             doSleep = True

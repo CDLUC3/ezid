@@ -1,27 +1,27 @@
 import django.contrib.messages
 import django.db.models
-import datacite
-import datacite_xml
-import erc
-import ezid
-import download as ezid_download
+from . import datacite
+from . import datacite_xml
+from . import erc
+from . import ezid
+from . import download as ezid_download
 import ezidapp.models
-import form_objects
+from . import form_objects
 import json
-import metadata
-import mapping
+from . import metadata
+from . import mapping
 import math
 import os.path
-import policy
+from . import policy
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 import time
-import ui_common as uic
-import ui_search
-import ui_create
-import urllib
-import userauth
-import util2
+from . import ui_common as uic
+from . import ui_search
+from . import ui_create
+import urllib.request, urllib.parse, urllib.error
+from . import userauth
+from . import util2
 from django.utils.translation import ugettext as _
 
 FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") + _(
@@ -52,10 +52,10 @@ def index(request):
     # Check if anything has actually been entered into search fields
     searchfields = {
         k: v
-        for k, v in d['q'].items()
-        if k not in [u'sort', u'ps', u'order_by', u'owner_selected']
+        for k, v in list(d['q'].items())
+        if k not in ['sort', 'ps', 'order_by', 'owner_selected']
     }
-    searchfields = filter(None, searchfields.values())
+    searchfields = [_f for _f in list(searchfields.values()) if _f]
     if searchfields:
         noConstraintsReqd = False
         d[
@@ -174,7 +174,7 @@ def edit(request, identifier):
                 + "If this ID belongs to you and you'd like to edit, please log in."
             ),
         )
-        return redirect("/id/" + urllib.quote(identifier, ":/"))
+        return redirect("/id/" + urllib.parse.quote(identifier, ":/"))
     d['identifier'] = id_metadata
     t_stat = [x.strip() for x in id_metadata['_status'].split("|", 1)]
     d['pub_status'] = t_stat[0]
@@ -252,7 +252,7 @@ def edit(request, identifier):
                 )
                 if s.startswith("success:"):
                     _alertMessageUpdateSuccess(request)
-                    return redirect("/id/" + urllib.quote(identifier, ":/"))
+                    return redirect("/id/" + urllib.parse.quote(identifier, ":/"))
                 else:
                     _alertMessageUpdateError(request, s)
         else:
@@ -280,10 +280,10 @@ def edit(request, identifier):
                             _alertMessageUpdateError(request, result)
                         else:
                             _alertMessageUpdateSuccess(request)
-                            return redirect("/id/" + urllib.quote(identifier, ":/"))
+                            return redirect("/id/" + urllib.parse.quote(identifier, ":/"))
                     else:
                         _alertMessageUpdateSuccess(request)
-                        return redirect("/id/" + urllib.quote(identifier, ":/"))
+                        return redirect("/id/" + urllib.parse.quote(identifier, ":/"))
     else:
         return uic.methodNotAllowed(request)
     return uic.render(request, "manage/edit", d)
@@ -368,7 +368,7 @@ def details(request):
         django.contrib.messages.info(
             request, "Identifier %s returned in lieu of %s." % (newid, identifier)
         )
-        return redirect("/id/" + urllib.quote(newid, ":/"))
+        return redirect("/id/" + urllib.parse.quote(newid, ":/"))
     d['allow_update'] = policy.authorizeUpdateLegacy(
         userauth.getUser(request, returnAnonymous=True),
         id_metadata["_owner"],

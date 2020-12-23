@@ -15,7 +15,7 @@
 
 import django.db.utils
 
-import profile
+from . import profile
 
 
 class StoreProfile(profile.Profile):
@@ -39,7 +39,7 @@ def _getCaches():
     caches = _caches
     if caches == None:
         labelCache = dict((p.label, p) for p in StoreProfile.objects.all())
-        idCache = dict((p.id, p) for p in labelCache.values())
+        idCache = dict((p.id, p) for p in list(labelCache.values()))
         caches = (labelCache, idCache)
         _caches = caches
     return caches

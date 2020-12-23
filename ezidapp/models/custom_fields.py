@@ -21,10 +21,10 @@ import django.core.exceptions
 import django.core.serializers
 import django.db.models
 
-import shoulder
-import store_group
-import store_profile
-import store_user
+from . import shoulder
+from . import store_group
+from . import store_profile
+from . import store_user
 import util
 
 
@@ -47,7 +47,7 @@ class CompressedJsonField(django.db.models.BinaryField):
             return super(CompressedJsonField, self).get_db_prep_save(
                 zlib.compress(json_str), *args, **kwargs
             )
-        except Exception, e:
+        except Exception as e:
             raise django.core.exceptions.ValidationError(
                 "Exception encountered packing compressed JSON database value: "
                 + util.formatException(e)
@@ -59,7 +59,7 @@ class CompressedJsonField(django.db.models.BinaryField):
         else:
             try:
                 return json.loads(zlib.decompress(value))
-            except Exception, e:
+            except Exception as e:
                 raise django.core.exceptions.ValidationError(
                     "Exception encountered unpacking compressed JSON database value: "
                     + util.formatException(e)
@@ -96,7 +96,7 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
                 return super(StoreIdentifierObjectField, self).get_db_prep_save(
                     v, *args, **kwargs
                 )
-            except Exception, e:
+            except Exception as e:
                 raise django.core.exceptions.ValidationError(
                     "Exception encountered packing StoreIdentifier database value: "
                     + util.formatException(e)
@@ -129,7 +129,7 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
                     si.datacenter = shoulder.getDatacenterById(si.datacenter_id)
                 si.profile = store_profile.getById(si.profile_id)
                 return (si, value)
-            except Exception, e:
+            except Exception as e:
                 raise django.core.exceptions.ValidationError(
                     "Exception encountered unpacking StoreIdentifier database value: "
                     + util.formatException(e)

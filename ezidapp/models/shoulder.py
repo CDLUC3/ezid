@@ -25,9 +25,9 @@ import django.db
 import django.db.models
 import django.db.transaction
 
-import store_datacenter
+from . import store_datacenter
 import util
-import validation
+from . import validation
 
 # Deferred imports...
 """
@@ -206,19 +206,19 @@ def loadConfig(acquireLock=True):
         )
 
         dc = dict((d.symbol, d) for d in store_datacenter.StoreDatacenter.objects.all())
-        _datacenters = (dc, dict((d.id, d) for d in dc.values()))
+        _datacenters = (dc, dict((d.id, d) for d in list(dc.values())))
 
 
 def getAll():
     # Returns all shoulders as a list.
-    return _shoulders.values()
+    return list(_shoulders.values())
 
 
 def getLongestMatch(identifier):
     # Returns the longest shoulder that matches 'identifier', i.e., that
     # is a prefix of 'identifier', or None.
     lm = None
-    for s in _shoulders.itervalues():
+    for s in _shoulders.values():
         if identifier.startswith(s.prefix):
             if lm is None or len(s.prefix) > len(lm.prefix):
                 lm = s

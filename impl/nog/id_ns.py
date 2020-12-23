@@ -111,7 +111,7 @@ class IdNamespace(
         """
         if isinstance(ns_str, IdNamespace):
             return ns_str
-        if not isinstance(ns_str, basestring):
+        if not isinstance(ns_str, str):
             raise IdentifierError('Expected a string, not {}'.format(repr(ns_str)))
         return IdNamespace.split_namespace(ns_str)
 

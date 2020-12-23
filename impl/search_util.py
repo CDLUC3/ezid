@@ -21,13 +21,14 @@ import operator
 import re
 import threading
 import time
-import urlparse
+import urllib.parse
 import uuid
 
-import config
+from . import config
 import ezidapp.models
-import log
-import util
+from . import log
+from . import util
+from functools import reduce
 
 _lock = threading.Lock()
 _reconnectDelay = None
@@ -74,7 +75,7 @@ def withAutoReconnect(functionName, function, continuationCheck=None):
     while True:
         try:
             return function()
-        except django.db.OperationalError, e:
+        except django.db.OperationalError as e:
             # We're silent about the first error because it might simply be
             # due to the database connection having timed out.
             if not firstError:
@@ -263,7 +264,7 @@ def formulateQuery(
   """
     filters = []
     scopeRequirementMet = False
-    for column, value in constraints.items():
+    for column, value in list(constraints.items()):
         if column in [
             "exported",
             "isTest",
@@ -290,7 +291,7 @@ def formulateQuery(
                     v = value
             filters.append(django.db.models.Q(identifier__startswith=v))
         elif column == "identifierType":
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 value = [value]
             filters.append(
                 reduce(
@@ -302,7 +303,7 @@ def formulateQuery(
                 )
             )
         elif column == "owner":
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 value = [value]
             filters.append(
                 reduce(
@@ -311,7 +312,7 @@ def formulateQuery(
             )
             scopeRequirementMet = True
         elif column == "ownergroup":
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 value = [value]
             filters.append(
                 reduce(
@@ -330,7 +331,7 @@ def formulateQuery(
                 if value[1] != None:
                     filters.append(django.db.models.Q(**{(column + "__lte"): value[1]}))
         elif column == "status":
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 value = [value]
             filters.append(
                 reduce(
@@ -351,7 +352,7 @@ def formulateQuery(
             else:
                 filters.append(django.db.models.Q(crossrefStatus=""))
         elif column == "crossrefStatus":
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 value = [value]
             filters.append(
                 reduce(
@@ -365,7 +366,7 @@ def formulateQuery(
             # the presence or absence of a trailing slash (well, that and
             # case-insensitivity.)
             values = [value]
-            u = urlparse.urlparse(value)
+            u = urllib.parse.urlparse(value)
             if u.params == "" and u.query == "" and u.fragment == "":
                 # Make sure all post-path syntax is removed.
                 value = u.geturl()
@@ -381,7 +382,7 @@ def formulateQuery(
                 qlist.append(q)
             filters.append(reduce(operator.or_, qlist))
         elif column == "profile":
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 value = [value]
             filters.append(
                 reduce(
@@ -428,7 +429,7 @@ def formulateQuery(
                         django.db.models.Q(searchablePublicationYear__lte=value[1])
                     )
         elif column == "resourceType":
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 value = [value]
             filters.append(
                 reduce(
@@ -542,11 +543,11 @@ def executeSearchCountOnly(
             user.group.groupname,
             user.group.pid,
             *reduce(
-                operator.__concat__, [[k, unicode(v)] for k, v in constraints.items()]
+                operator.__concat__, [[k, str(v)] for k, v in list(constraints.items())]
             )
         )
         c = qs.count()
-    except Exception, e:
+    except Exception as e:
         # MySQL's FULLTEXT engine chokes on a too-frequently-occurring
         # word (call it a "bad" word) that is not on its own stopword
         # list.  We weed out bad words using our own stopword list, but
@@ -608,12 +609,12 @@ def executeSearch(
             str(from_),
             str(to),
             *reduce(
-                operator.__concat__, [[k, unicode(v)] for k, v in constraints.items()]
+                operator.__concat__, [[k, str(v)] for k, v in list(constraints.items())]
             )
         )
         qs = qs[from_:to]
         c = len(qs)
-    except Exception, e:
+    except Exception as e:
         # MySQL's FULLTEXT engine chokes on a too-frequently-occurring
         # word (call it a "bad" word) that is not on its own stopword
         # list.  We weed out bad words using our own stopword list, but

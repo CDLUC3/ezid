@@ -130,7 +130,7 @@ def test_1070(shoulder_csv):
         result_list.append(
             '{:<20s} {}'.format(ns_str, id_ns.IdNamespace.from_str(ns_str).as_tup(), )
         )
-    sample.assert_match(u'\n'.join(result_list), 'from_str')
+    sample.assert_match('\n'.join(result_list), 'from_str')
 
 
 def test_1080(shoulder_csv):

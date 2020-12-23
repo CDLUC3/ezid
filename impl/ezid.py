@@ -20,14 +20,14 @@ import django.core.exceptions
 import django.db.transaction
 import django.db.utils
 
-import config
+from . import config
 import ezidapp.models
-import log
-import policy
-import util
-import util2
+from . import log
+from . import policy
+from . import util
+from . import util2
 # import noid_nog
-from nog import minter
+from .nog import minter
 
 _perUserThreadLimit = None
 _perUserThrottle = None
@@ -212,9 +212,9 @@ def _mintIdentifier(shoulder, user, metadata={}):
         elif shoulder_model.prefix.startswith('ark:/'):
             identifier = shoulder_model.prefix + identifier.lower()
         else:
-            raise False, 'Expected ARK or DOI prefix, not "{}"'.format(
+            raise False('Expected ARK or DOI prefix, not "{}"'.format(
                 shoulder_model.prefix
-            )
+            ))
 
         logger.debug('Final shoulder + identifier: {}'.format(identifier))
 
@@ -267,7 +267,7 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
             user.pid,
             user.group.groupname,
             user.group.pid,
-            *[a for p in metadata.items() for a in p]
+            *[a for p in list(metadata.items()) for a in p]
         )
         if not policy.authorizeCreate(user, nqidentifier):
             log.forbidden(tid)
@@ -300,7 +300,7 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
         with django.db.transaction.atomic():
             si.save()
             ezidapp.models.update_queue.enqueue(si, "create")
-    except django.core.exceptions.ValidationError, e:
+    except django.core.exceptions.ValidationError as e:
         log.badRequest(tid)
         return "error: bad request - " + util.formatValidationError(e)
     except django.db.utils.IntegrityError as e:
@@ -310,7 +310,7 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
             return setMetadata(identifier, user, metadata, internalCall=True)
         else:
             return "error: bad request - identifier already exists"
-    except Exception, e:
+    except Exception as e:
         log.error(tid, e)
         return "error: internal server error"
     else:
@@ -381,7 +381,7 @@ def getMetadata(identifier, user=ezidapp.models.AnonymousUser, prefixMatch=False
     except ezidapp.models.StoreIdentifier.DoesNotExist:
         log.badRequest(tid)
         return "error: bad request - no such identifier"
-    except Exception, e:
+    except Exception as e:
         log.error(tid, e)
         return "error: internal server error"
     finally:
@@ -429,7 +429,7 @@ def setMetadata(
             user.pid,
             user.group.groupname,
             user.group.pid,
-            *[a for p in metadata.items() for a in p]
+            *[a for p in list(metadata.items()) for a in p]
         )
         si = ezidapp.models.getIdentifier(nqidentifier)
         if not policy.authorizeUpdate(user, si):
@@ -453,10 +453,10 @@ def setMetadata(
     except ezidapp.models.StoreIdentifier.DoesNotExist:
         log.badRequest(tid)
         return "error: bad request - no such identifier"
-    except django.core.exceptions.ValidationError, e:
+    except django.core.exceptions.ValidationError as e:
         log.badRequest(tid)
         return "error: bad request - " + util.formatValidationError(e)
-    except Exception, e:
+    except Exception as e:
         log.error(tid, e)
         return "error: internal server error"
     else:
@@ -513,7 +513,7 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
     except ezidapp.models.StoreIdentifier.DoesNotExist:
         log.badRequest(tid)
         return "error: bad request - no such identifier"
-    except Exception, e:
+    except Exception as e:
         log.error(tid, e)
         return "error: internal server error"
     else:

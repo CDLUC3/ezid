@@ -470,7 +470,7 @@ def toExchange(metadata, identifier=None):
         # We're assuming here that the identifier contains no spaces or
         # newlines, but we don't check that.
         l.append(identifier)
-    for k, v in metadata.items():
+    for k, v in list(metadata.items()):
         k = k.strip()
         assert len(k) > 0, "empty label"
         v = v.strip()
@@ -665,8 +665,8 @@ if sys.maxunicode >= 0x10000:
     )
 
 _illegalUnichrsRE = re.compile(
-    u"[%s]"
-    % u"".join("%s-%s" % (unichr(low), unichr(high)) for low, high in _illegalUnichrs)
+    "[%s]"
+    % "".join("%s-%s" % (chr(low), chr(high)) for low, high in _illegalUnichrs)
 )
 
 
@@ -692,9 +692,9 @@ else:
     _illegalUnichrsPlusSuppPlanes = _illegalUnichrs + [(0xD800, 0xDFFF)]
 
 _illegalUnichrsPlusSuppPlanesRE = re.compile(
-    u"[%s]"
-    % u"".join(
-        "%s-%s" % (unichr(low), unichr(high))
+    "[%s]"
+    % "".join(
+        "%s-%s" % (chr(low), chr(high))
         for low, high in _illegalUnichrsPlusSuppPlanes
     )
 )
@@ -771,7 +771,7 @@ def parseXmlString(document):
   """
     if type(document) is str:
         return lxml.etree.XML(document)
-    elif type(document) is unicode:
+    elif type(document) is str:
         return lxml.etree.XML(removeXmlEncodingDeclaration(document))
     else:
         assert False, "unhandled case"
@@ -815,9 +815,9 @@ def extractXmlContent(document):
     global _extractTransform
     if _extractTransform == None:
         _extractTransform = lxml.etree.XSLT(lxml.etree.XML(_extractTransformSource))
-    if isinstance(document, basestring):
+    if isinstance(document, str):
         document = parseXmlString(document)
-    return unicode(_extractTransform(document)).strip()[:-2]
+    return str(_extractTransform(document)).strip()[:-2]
 
 
 _datespecRE = re.compile("(\d{4})(?:-(\d\d)(?:-(\d\d))?)?$")

@@ -11,8 +11,8 @@ import codecs
 import logging
 import re
 import time
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
 
 class EZIDHTTPErrorProcessor(urllib2.HTTPErrorProcessor):
@@ -39,16 +39,16 @@ class EZIDClient(object):
         self._server = server_url.strip("/")
         self._cookie = session_id
         self._encoding = encoding
-        self._opener = urllib2.build_opener(EZIDHTTPErrorProcessor())
+        self._opener = urllib.request.build_opener(EZIDHTTPErrorProcessor())
         self._username = username  # preserve for test validation
         if self._cookie is None:
             self._setAuthHandler(username, password)
 
     def _encode(self, id):
-        return urllib.quote(id, ":/")
+        return urllib.parse.quote(id, ":/")
 
     def _setAuthHandler(self, username, password):
-        h = urllib2.HTTPBasicAuthHandler()
+        h = urllib.request.HTTPBasicAuthHandler()
         h.add_password("EZID", self._server, username, password)
         self._opener.add_handler(h)
 
@@ -148,7 +148,7 @@ class EZIDClient(object):
     def issueRequest(self, path, method, data=None, dest_f=None):
         url = "%s/%s" % (self._server, path)
         self._L.info("sending request: %s", url)
-        request = urllib2.Request(url)
+        request = urllib.request.Request(url)
         request.get_method = lambda: method
         response = None
         if data is not None:
@@ -165,7 +165,7 @@ class EZIDClient(object):
             else:
                 response = connection.read()
                 return response.decode("UTF-8"), connection.info()
-        except urllib2.HTTPError, e:
+        except urllib.error.HTTPError as e:
             self._L.error("%d %s" % (e.code, e.msg))
             if e.fp != None:
                 response = e.fp.read()

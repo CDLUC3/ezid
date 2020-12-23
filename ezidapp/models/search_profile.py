@@ -13,7 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
-import profile
+from . import profile
 
 
 class SearchProfile(profile.Profile):

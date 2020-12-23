@@ -46,8 +46,8 @@ import traceback
 import django.conf
 import django.core.mail
 
-import config
-import util
+from . import config
+from . import util
 
 
 ## DV ++
@@ -246,7 +246,7 @@ def _notifyAdmins(error):
         # Check if the error is sufficiently similar to a previously-sent
         # error.
         similarError = None
-        for e, r in _sentErrors.items():
+        for e, r in list(_sentErrors.items()):
             if t - r[0] > _errorLifetime:
                 # Error has expired; remove it from cache.
                 del _sentErrors[e]

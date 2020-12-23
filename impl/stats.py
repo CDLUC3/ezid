@@ -29,9 +29,9 @@ import threading
 import time
 import uuid
 
-import config
+from . import config
 import ezidapp.models
-import log
+from . import log
 
 _enabled = None
 _computeCycle = None
@@ -93,7 +93,7 @@ def recomputeStatistics():
             lastIdentifier = qs[-1].identifier
         with django.db.transaction.atomic():
             ezidapp.models.Statistics.objects.all().delete()
-            for t, v in counts.items():
+            for t, v in list(counts.items()):
                 c = ezidapp.models.Statistics(
                     month=t[0],
                     owner=users[t[1]][0],
@@ -105,7 +105,7 @@ def recomputeStatistics():
                 )
                 c.full_clean(validate_unique=False)
                 c.save(force_insert=True)
-    except Exception, e:
+    except Exception as e:
         log.otherError("stats.recomputeStatistics", e)
 
 
@@ -220,7 +220,7 @@ def getTable(owner=None, ownergroup=None, realm=None):
         return "%04d-%02d" % (y, m)
 
     table = []
-    months = counts.keys()
+    months = list(counts.keys())
     months.sort()
     for m in months:
         if m != months[0]:

@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function
+
 
 import datetime
 import logging
@@ -30,7 +30,7 @@ def assert_valid_datacenter_name(name_str):
     if name_str not in name_set:
         log.error(
             'Datacenter must be one of:\n{}'.format(
-                '\n'.join(u'  {}'.format(x) for x in sorted(name_set))
+                '\n'.join('  {}'.format(x) for x in sorted(name_set))
             )
         )
         raise django.core.management.CommandError('Invalid name: {}'.format(name_str))
@@ -77,7 +77,7 @@ def assert_valid_datacenter(datacenter_str):
     if datacenter_str not in datacenter_set:
         log.error(
             'Datacenter must be one of:\n{}'.format(
-                '\n'.join(u'  {}'.format(x) for x in sorted(datacenter_set))
+                '\n'.join('  {}'.format(x) for x in sorted(datacenter_set))
             )
         )
         raise django.core.management.CommandError(

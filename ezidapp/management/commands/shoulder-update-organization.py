@@ -72,10 +72,10 @@ class Command(django.core.management.BaseCommand):
         shoulder_model.name = opt.new_org_name
         shoulder_model.save()
 
-        print(
+        print((
             'Updated {} organization name "{}" -> "{}"'.format(
                 namespace_str, old_org_str, opt.new_org_name
             )
-        )
+        ))
 
         impl.nog.reload.trigger_reload()

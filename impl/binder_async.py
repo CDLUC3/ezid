@@ -16,10 +16,10 @@
 import django.conf
 import uuid
 
-import config
+from . import config
 import ezidapp.models
-import noid_egg
-import register_async
+from . import noid_egg
+from . import register_async
 
 _daemonEnabled = [None]
 _threadName = [None]
@@ -37,12 +37,12 @@ def _update(sh, rows, id, metadata):
     )
     if m == None:
         m = {}
-    for k, v in metadata.items():
+    for k, v in list(metadata.items()):
         if m.get(k) == v:
             del m[k]
         else:
             m[k] = v
-    for k in m.keys():
+    for k in list(m.keys()):
         if k not in metadata:
             m[k] = ""
     if len(m) > 0:

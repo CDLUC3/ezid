@@ -16,7 +16,7 @@
 import django.db.models
 
 import util
-import validation
+from . import validation
 
 
 class Datacenter(django.db.models.Model):

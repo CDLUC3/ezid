@@ -9,14 +9,14 @@ import django.utils.http
 import os
 import re
 import string
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from random import choice
 
-import config
+from . import config
 import ezidapp.models
-import newsfeed
-import userauth
-import urlparse
+from . import newsfeed
+from . import userauth
+import urllib.parse
 
 from django.utils import safestring
 from django.utils.translation import ugettext as _
@@ -57,12 +57,12 @@ def loadConfig():
 # loads the templates directory recursively (dir_list is a list)
 def _load_templates(dir_list):
     global templates
-    my_dir = apply(os.path.join, dir_list)
+    my_dir = os.path.join(*dir_list)
     for f in os.listdir(my_dir):
         if os.path.isdir(os.path.join(my_dir, f)):
             _load_templates(dir_list + [f])
         elif os.path.isfile(os.path.join(my_dir, f)) and f.endswith(".html"):
-            local_path = apply(os.path.join, dir_list[1:] + [f])
+            local_path = os.path.join(*dir_list[1:] + [f])
             templates[local_path[:-5]] = (
                 django.template.loader.get_template(local_path),
                 local_path,
@@ -113,7 +113,7 @@ def renderIdPage(request, path, d):
         return methodNotAllowed(request)
     elif d["id_gen_result"].startswith("created_identifier:"):
         return redirect(
-            "/id/" + urllib.quote(result.split()[1], ":/")
+            "/id/" + urllib.parse.quote(result.split()[1], ":/")
         )  # ID Details page
 
 
@@ -150,10 +150,10 @@ _jsonRe = re.compile('[\\x00-\\x1F"\\\\\\xFF]')
 def json(o):
     if type(o) is dict:
         assert all(type(k) is str for k in o), "unexpected object type"
-        return "{" + ", ".join(json(k) + ": " + json(v) for k, v in o.items()) + "}"
+        return "{" + ", ".join(json(k) + ": " + json(v) for k, v in list(o.items())) + "}"
     elif type(o) is list:
         return "[" + ", ".join(json(v) for v in o) + "]"
-    elif type(o) is str or type(o) is unicode:
+    elif type(o) is str or type(o) is str:
         return '"' + _jsonRe.sub(lambda c: "\\u%04X" % ord(c.group(0)), o) + '"'
     elif type(o) is bool:
         return "true" if o else "false"

@@ -4,11 +4,11 @@ from django import template
 from django.conf import settings
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
-from decorators import basictag
+from .decorators import basictag
 from django.core.urlresolvers import reverse
 from operator import itemgetter
 import django.template
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import util2
 import re
 
@@ -30,7 +30,7 @@ def content_heading(heading):
     return (
         '<div class="heading__primary-container">'
         + '<h1 class="heading__primary-text">'
-        + unicode(heading)
+        + str(heading)
         + '</h1></div>'
     )
 
@@ -109,7 +109,7 @@ def help_icon(
 ):
     """ data-container="#' + str(id_of_help) """
     title = django.utils.safestring.mark_safe(
-        "Click for additional help" + " " + unicode(specifics)
+        "Click for additional help" + " " + str(specifics)
     )
     return django.utils.html.format_html(
         '<a href="#" class="button__icon-link" id={} role="button" data-toggle="popover" data-placement={} data-trigger="click" tabindex="0">'
@@ -298,7 +298,7 @@ def full_url_to_id_details(context, id_text):
 @basictag(takes_context=True)
 def full_url_to_id_details_urlencoded(context, id_text):
     """return URL form of identifier, URL-encoded"""
-    return urllib.quote(util2.urlForm(id_text))
+    return urllib.parse.quote(util2.urlForm(id_text))
 
 
 # check for more than one of the same identifer type
@@ -313,7 +313,7 @@ def duplicate_id_types(prefixes):
             kinds[t] = kinds[t] + 1
         else:
             kinds[t] = 1
-    for key, value in kinds.iteritems():
+    for key, value in kinds.items():
         if value > 1:
             return True
     return False
@@ -329,5 +329,5 @@ def unique_id_types(prefixes):
         t = re.search('^[A-Za-z]+:', prefix['prefix'])
         t = t.group(0)[:-1]
         kinds[t] = prefix
-    i = [(x[0].upper(), x[1],) for x in kinds.items()]
+    i = [(x[0].upper(), x[1],) for x in list(kinds.items())]
     return sorted(i, key=itemgetter(0))

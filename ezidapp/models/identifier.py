@@ -18,11 +18,11 @@ import django.core.validators
 import django.db.models
 import re
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
-import custom_fields
+from . import custom_fields
 import util
-import validation
+from . import validation
 
 # Deferred imports...
 """
@@ -383,7 +383,7 @@ class Identifier(django.db.models.Model):
                     )
                 try:
                     validation.crossrefDoi(self.identifier)
-                except django.core.exceptions.ValidationError, e:
+                except django.core.exceptions.ValidationError as e:
                     raise django.core.exceptions.ValidationError({"identifier": e})
                 if not self.exported:
                     raise django.core.exceptions.ValidationError(
@@ -427,7 +427,7 @@ class Identifier(django.db.models.Model):
             # Insert the identifier in the target URL... but for safety,
             # ensure that the resulting URL is still valid.
             self.target = self.target.replace(
-                "${identifier}", urllib.quote(self.identifier, ":/")
+                "${identifier}", urllib.parse.quote(self.identifier, ":/")
             )
             self._meta.get_field("target").run_validators(self.target)
         # Per RFC 3986, URI schemes are case-insensitive, but some systems
@@ -436,7 +436,7 @@ class Identifier(django.db.models.Model):
         self.target = "%s:%s" % (scheme.lower(), rest)
         if self.profile == None:
             self.profile = self.defaultProfile
-        for k, v in self.cm.items():
+        for k, v in list(self.cm.items()):
             if k.strip() != k or k == "" or k.startswith("_"):
                 raise django.core.exceptions.ValidationError(
                     {"cm": "Invalid citation metadata key."}
@@ -491,7 +491,7 @@ class Identifier(django.db.models.Model):
                 self.cm["datacite.resourcetype"] = validation.resourceType(
                     self.cm["datacite.resourcetype"]
                 )
-            except django.core.exceptions.ValidationError, e:
+            except django.core.exceptions.ValidationError as e:
                 raise django.core.exceptions.ValidationError(
                     {"datacite.resourcetype": e}
                 )
@@ -510,7 +510,7 @@ class Identifier(django.db.models.Model):
                     self.cm["datacite"],
                     schemaValidate=(not self.isReserved),
                 )
-            except AssertionError, e:
+            except AssertionError as e:
                 raise django.core.exceptions.ValidationError(
                     {
                         "datacite": "Metadata validation error: %s."
@@ -529,7 +529,7 @@ class Identifier(django.db.models.Model):
                     self.cm["crossref"] = crossref.replaceTbas(
                         self.cm["crossref"], self.identifier[4:], self.resolverTarget
                     )
-            except AssertionError, e:
+            except AssertionError as e:
                 raise django.core.exceptions.ValidationError(
                     {
                         "crossref": "Metadata validation error: %s."
@@ -553,7 +553,7 @@ class Identifier(django.db.models.Model):
                     datacite.formRecord(
                         self.identifier, self.cm, profile=self.profile.label
                     )
-                except AssertionError, e:
+                except AssertionError as e:
                     raise django.core.exceptions.ValidationError(
                         "Public DOI metadata requirements not satisfied: %s." % str(e)
                     )
@@ -630,7 +630,7 @@ class Identifier(django.db.models.Model):
             self.status = self.PUBLIC
             self.target = d["_t"]
         self.exported = "_x" not in d
-        for k, v in d.items():
+        for k, v in list(d.items()):
             if not k.startswith("_"):
                 self.cm[k] = v
         if "_cr" in d:
@@ -638,7 +638,7 @@ class Identifier(django.db.models.Model):
                 (v, k) for k, v in self._meta.get_field("crossrefStatus").get_choices()
             )
             assert d["_cr"].startswith("yes | "), "malformed legacy Crossref status"
-            l = [s for s in statuses.keys() if d["_cr"][6:].startswith(s)]
+            l = [s for s in list(statuses.keys()) if d["_cr"][6:].startswith(s)]
             assert len(l) == 1, "unrecognized legacy Crossref status"
             self.crossrefStatus = statuses[l[0]]
             if len(d["_cr"]) > 6 + len(l[0]):

@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function
+
 
 import sys
 import traceback
@@ -31,7 +31,7 @@ def traceback_with_local_vars():
                 frame.f_code.co_name, frame.f_code.co_filename, frame.f_lineno,
             )
         )
-        for k, v in frame.f_locals.items():
+        for k, v in list(frame.f_locals.items()):
             try:
                 v = str(v)
             except Exception as e:

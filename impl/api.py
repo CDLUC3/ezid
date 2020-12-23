@@ -86,18 +86,18 @@ import time
 
 import django.http
 
-import anvl
-import binder_async
-import config
-import datacite
-import datacite_async
-import download
-import ezid
+from . import anvl
+from . import binder_async
+from . import config
+from . import datacite
+from . import datacite_async
+from . import download
+from . import ezid
 import ezidapp.models
-import noid_egg
-import search_util
-import userauth
-import util
+from . import noid_egg
+from . import search_util
+from . import userauth
+from . import util
 
 
 def _readInput(request):
@@ -122,11 +122,11 @@ def _readInput(request):
             # that's a real edge case, so we don't worry about it.
             return {
                 util.sanitizeXmlSafeCharset(k): util.sanitizeXmlSafeCharset(v)
-                for k, v in anvl.parse(request.body.decode("UTF-8")).items()
+                for k, v in list(anvl.parse(request.body.decode("UTF-8")).items())
             }
         except UnicodeDecodeError:
             return "error: bad request - character decoding error"
-        except anvl.AnvlParseException, e:
+        except anvl.AnvlParseException as e:
             return "error: bad request - ANVL parse error (%s)" % str(e)
         except:
             return "error: bad request - malformed or incomplete request body"
@@ -136,7 +136,7 @@ def _readInput(request):
 
 def _validateOptions(request, options):
     d = {}
-    for k, v in request.GET.items():
+    for k, v in list(request.GET.items()):
         if k in options:
             if options[k] == None:
                 d[k] = v
@@ -464,7 +464,7 @@ def getVersion(request):
 
 def _formatUserCountList(d):
     if len(d) > 0:
-        l = d.items()
+        l = list(d.items())
         l.sort(cmp=lambda x, y: -cmp(x[1], y[1]))
         return " (" + " ".join("%s=%d" % i for i in l) + ")"
     else:

@@ -64,8 +64,8 @@ import re
 import sys
 import time
 import types
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
 KNOWN_SERVERS = {"p": "https://ezid.cdlib.org"}
 
@@ -158,11 +158,11 @@ def formatAnvlRequest(args):
 
 
 def encode(id):
-    return urllib.quote(id, ":/")
+    return urllib.parse.quote(id, ":/")
 
 
 def issueRequest(path, method, data=None, returnHeaders=False, streamOutput=False):
-    request = urllib2.Request("%s/%s" % (_server, path))
+    request = urllib.request.Request("%s/%s" % (_server, path))
     request.get_method = lambda: method
     if data:
         request.add_header("Content-Type", "text/plain; charset=UTF-8")
@@ -181,7 +181,7 @@ def issueRequest(path, method, data=None, returnHeaders=False, streamOutput=Fals
                 return response.decode("UTF-8"), connection.info()
             else:
                 return response.decode("UTF-8")
-    except urllib2.HTTPError, e:
+    except urllib.error.HTTPError as e:
         sys.stderr.write("%d %s\n" % (e.code, e.msg))
         if e.fp != None:
             response = e.fp.read()
@@ -214,7 +214,7 @@ def printAnvlResponse(response, sortLines=False):
             )
         if _options.oneLine:
             line = line.replace("\n", " ").replace("\r", " ")
-        print line.encode(_options.encoding)
+        print(line.encode(_options.encoding))
 
 
 # Process command line arguments.
@@ -234,7 +234,7 @@ if len(args) < 3:
 
 _server = KNOWN_SERVERS.get(args[0], args[0])
 
-_opener = urllib2.build_opener(MyHTTPErrorProcessor())
+_opener = urllib.request.build_opener(MyHTTPErrorProcessor())
 if args[1].startswith("sessionid="):
     _cookie = args[1]
 elif args[1] != "-":
@@ -243,7 +243,7 @@ elif args[1] != "-":
     else:
         username = args[1]
         password = getpass.getpass()
-    h = urllib2.HTTPBasicAuthHandler()
+    h = urllib.request.HTTPBasicAuthHandler()
     h.add_password("EZID", _server, username, password)
     _opener.add_handler(h)
 
@@ -252,7 +252,7 @@ if args[2].endswith("!"):
     args[2] = args[2][:-1]
 else:
     bang = False
-operation = filter(lambda o: o.startswith(args[2]), OPERATIONS)
+operation = [o for o in OPERATIONS if o.startswith(args[2])]
 if len(operation) != 1:
     parser.error("unrecognized or ambiguous operation")
 operation = operation[0]

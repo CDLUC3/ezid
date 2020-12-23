@@ -15,8 +15,8 @@
 
 import django.db.models
 
-import group
-import search_realm
+from . import group
+from . import search_realm
 
 
 class SearchGroup(group.Group):

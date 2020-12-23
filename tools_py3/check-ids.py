@@ -129,7 +129,7 @@ class CheckIdentifiers:
             count(id_str, "Empty identifier")
             return
 
-        for table_key, table_dict in TABLE_NAME_TO_ORM.items():
+        for table_key, table_dict in list(TABLE_NAME_TO_ORM.items()):
             db_str, orm_str = table_dict["db"], table_dict["orm"]
             await self.check_identifier(cur, id_str, db_str, orm_str)
             count(id_str, "Identifiers checked")
@@ -222,7 +222,7 @@ class CheckIdentifiers:
                 )
             )
         login_dict = {
-            **{CONFIG_TO_CONNECT.get(k, k): v for k, v in login_dict.items()},
+            **{CONFIG_TO_CONNECT.get(k, k): v for k, v in list(login_dict.items())},
             'db': login_path,
 
         }
@@ -232,7 +232,7 @@ class CheckIdentifiers:
 
     def log_kv(self, title_str, d, log_fn=log.info):
         log_fn(f'{title_str}:')
-        [log_fn(f'  {k}: {v}') for k, v in {**d, "pw": "***"}.items()]
+        [log_fn(f'  {k}: {v}') for k, v in list({**d, "pw": "***"}.items())]
 
     def log_pp(self, title_str, d, log_fn=log.info):
         log_fn(f'{title_str}:')
@@ -257,7 +257,7 @@ class Counter:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print("-" * 100)
+        print(("-" * 100))
         self.print_counters()
 
     def count(self, id_str, key, detail_obj=None):

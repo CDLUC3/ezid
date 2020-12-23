@@ -34,7 +34,7 @@ class TestDoiUtil:
     )
     def test_1000(self, doi, naan_or_exc, tmp_bdb_root):
         """doi_prefix_to_naan()"""
-        if isinstance(naan_or_exc, basestring):
+        if isinstance(naan_or_exc, str):
             assert bdb.doi_prefix_to_naan(doi, allow_lossy=True) == naan_or_exc
         else:
             with pytest.raises(naan_or_exc):

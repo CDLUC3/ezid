@@ -13,13 +13,13 @@
 #
 # -----------------------------------------------------------------------------
 
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
 
-class _RedirectCatcher(urllib2.HTTPRedirectHandler):
+class _RedirectCatcher(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        raise urllib2.HTTPError(req.get_full_url(), code, "redirect", headers, fp)
+        raise urllib.error.HTTPError(req.get_full_url(), code, "redirect", headers, fp)
 
 
 def getRedirect(doi):
@@ -29,13 +29,13 @@ def getRedirect(doi):
   'doi' should be a scheme-less DOI identifier, e.g., "10.1234/FOO".
   Raises an exception on other errors.
   """
-    o = urllib2.build_opener(_RedirectCatcher())
-    r = urllib2.Request("https://doi.org/" + urllib.quote(doi, ":/"))
+    o = urllib.request.build_opener(_RedirectCatcher())
+    r = urllib.request.Request("https://doi.org/" + urllib.parse.quote(doi, ":/"))
     c = None
     try:
         c = o.open(r)
         c.read()
-    except urllib2.HTTPError, e:
+    except urllib.error.HTTPError as e:
         if e.code in [301, 302, 303, 307]:
             assert "location" in e.headers, "redirect has no Location header"
             return e.headers["location"]

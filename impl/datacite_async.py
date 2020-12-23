@@ -16,10 +16,10 @@
 import django.conf
 import uuid
 
-import config
-import datacite
+from . import config
+from . import datacite
 import ezidapp.models
-import register_async
+from . import register_async
 
 _daemonEnabled = [None]
 _threadName = [None]

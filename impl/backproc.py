@@ -25,15 +25,15 @@ import django.conf
 import django.db
 import django.db.transaction
 
-import binder_async
-import config
-import crossref
-import datacite_async
+from . import binder_async
+from . import config
+from . import crossref
+from . import datacite_async
 import ezidapp.models
 import ezidapp.models.search_identifier
-import log
-import search_util
-import util
+from . import log
+from . import search_util
+from . import util
 
 _enabled = None
 _lock = threading.Lock()
@@ -86,7 +86,7 @@ def _backprocDaemon():
             ), "new backproc daemon started before previous daemon terminated"
             totalWaitTime += _idleSleep
             time.sleep(_idleSleep)
-    except AssertionError, e:
+    except AssertionError as e:
         log.otherError("backproc._backprocDaemon", e)
     # Regular processing.
     while _checkContinue():
@@ -138,7 +138,7 @@ def _backprocDaemon():
                 django.db.connections["default"].close()
                 django.db.connections["search"].close()
                 time.sleep(_idleSleep)
-        except Exception, e:
+        except Exception as e:
             log.otherError("backproc._backprocDaemon", e)
             django.db.connections["default"].close()
             django.db.connections["search"].close()

@@ -16,15 +16,15 @@
 
 import django.db
 import django.db.transaction
-import httplib
+import http.client
 import random
 import threading
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 import ezidapp.models
-import log
-import util
+from . import log
+from . import util
 
 
 class _StateHolder(object):
@@ -183,7 +183,7 @@ def _daemonThread(sh):
                 _sleep(sh)
         except _AbortException:
             break
-        except Exception, e:
+        except Exception as e:
             log.otherError("register_async._daemonThread/" + sh.registrar, e)
             _sleep(sh)
 
@@ -202,11 +202,11 @@ def callWrapper(sh, rows, methodName, function, *args):
         _checkAbort(sh)
         try:
             return function(*args)
-        except Exception, e:
+        except Exception as e:
             if (
-                (isinstance(e, urllib2.HTTPError) and e.code >= 500)
-                or (isinstance(e, IOError) and not isinstance(e, urllib2.HTTPError))
-                or isinstance(e, httplib.HTTPException)
+                (isinstance(e, urllib.error.HTTPError) and e.code >= 500)
+                or (isinstance(e, IOError) and not isinstance(e, urllib.error.HTTPError))
+                or isinstance(e, http.client.HTTPException)
             ):
                 for r in rows:
                     r.error = util.formatException(e)
@@ -244,7 +244,7 @@ def _workerThread(sh):
                     )
             except _AbortException:
                 raise
-            except Exception, e:
+            except Exception as e:
                 # N.B.: on the assumption that the registrar-specific function
                 # used callWrapper defined above, the error can only be
                 # permanent.
@@ -270,7 +270,7 @@ def _workerThread(sh):
                 _deleteLoadedRows(sh, rows)
         except _AbortException:
             break
-        except Exception, e:
+        except Exception as e:
             log.otherError("register_async._workerThread/" + sh.registrar, e)
             _sleep(sh)
 

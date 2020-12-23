@@ -13,7 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
-import realm
+from . import realm
 
 
 class SearchRealm(realm.Realm):

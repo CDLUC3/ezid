@@ -1,14 +1,14 @@
-import ui_common as uic
+from . import ui_common as uic
 from django.shortcuts import redirect
 import django.contrib.messages
-import metadata
-import ezid
-import form_objects
+from . import metadata
+from . import ezid
+from . import form_objects
 import ezidapp.models
 import re
-import datacite_xml
+from . import datacite_xml
 import os.path
-import userauth
+from . import userauth
 from django.utils.translation import ugettext as _
 
 """
@@ -164,7 +164,7 @@ def adv_form(request, d):
     d['profiles'] = [p for p in metadata.getProfiles()[1:] if p.editable]
     profs = [
         (p.name, p.displayName,) for p in d['profiles']
-    ] + uic.manual_profiles.items()
+    ] + list(uic.manual_profiles.items())
     d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
     # 'datacite_xml' used for advanced profile instead of 'datacite'
     d['profile_names'].remove(('datacite', 'DataCite'))

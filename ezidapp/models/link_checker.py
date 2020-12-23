@@ -19,7 +19,7 @@ import hashlib
 import re
 import time
 
-import identifier
+from . import identifier
 import util
 
 _identifierModule = identifier

@@ -1,7 +1,7 @@
 """Minter BerkeleyDB related utilities
 """
 
-from __future__ import absolute_import, division, print_function
+
 
 import logging
 import re
@@ -414,5 +414,5 @@ def create_bdb_from_dict(bdb_path, bdb_dict):
         raise nog.exc.MinterError('Path already exists: {}'.format(bdb_path.as_posix()))
     impl.nog.filesystem.create_missing_directories_for_file(bdb_path)
     bdb = bsddb.btopen(bdb_path.as_posix(), 'c')
-    bdb.update({bytes(k): bytes(v) for k, v in bdb_dict.items()})
+    bdb.update({bytes(k): bytes(v) for k, v in list(bdb_dict.items())})
     bdb.close()

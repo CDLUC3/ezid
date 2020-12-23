@@ -25,9 +25,9 @@ import threading
 import time
 import uuid
 
-import config
+from . import config
 import ezidapp.models
-import log
+from . import log
 
 _enabled = None
 _resultsUploadCycle = None
@@ -55,7 +55,7 @@ def _harvest(model, only=None, filter=None):
         if len(qs) == 0:
             break
         for o in qs:
-            if filter == None or filter(o):
+            if filter == None or list(filter(o)):
                 yield o
         lastIdentifier = qs[-1].identifier
     yield None
@@ -80,15 +80,15 @@ def _linkcheckUpdateDaemon():
                 ["identifier", "numFailures"],
                 lambda lc: lc.numFailures >= _notificationThreshold,
             )
-            si = siGenerator.next()
-            lc = lcGenerator.next()
+            si = next(siGenerator)
+            lc = next(lcGenerator)
             while (
                 si != None
                 and _enabled
                 and threading.currentThread().getName() == _threadName
             ):
                 while lc != None and lc.identifier < si.identifier:
-                    lc = lcGenerator.next()
+                    lc = next(lcGenerator)
                 newValue = None
                 if lc == None or lc.identifier > si.identifier:
                     if si.linkIsBroken:
@@ -96,7 +96,7 @@ def _linkcheckUpdateDaemon():
                 else:
                     if not si.linkIsBroken:
                         newValue = True
-                    lc = lcGenerator.next()
+                    lc = next(lcGenerator)
                 if newValue != None:
                     # Before updating the SearchIdentifier, we carefully lock
                     # the table and ensure that the object still exists.
@@ -110,8 +110,8 @@ def _linkcheckUpdateDaemon():
                             si2.save(update_fields=["linkIsBroken", "hasIssues"])
                     except ezidapp.models.SearchIdentifier.DoesNotExist:
                         pass
-                si = siGenerator.next()
-        except Exception, e:
+                si = next(siGenerator)
+        except Exception as e:
             log.otherError("linkcheck_update._linkcheckUpdateDaemon", e)
         # Since we're going to be sleeping for potentially a long time,
         # release any memory held.

@@ -1,6 +1,6 @@
-import ui_common as uic
+from . import ui_common as uic
 from django.shortcuts import redirect
-import ui_create
+from . import ui_create
 
 
 def index(request):

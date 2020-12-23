@@ -1,7 +1,7 @@
 import base64
 import datetime
 import subprocess
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 import pathlib2
 
@@ -18,7 +18,7 @@ def add_basic_auth_header(request, username, password):
 
 
 def encode(s):
-    return urllib.quote(s, ":/")
+    return urllib.parse.quote(s, ":/")
 
 
 def decode(s):

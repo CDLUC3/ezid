@@ -106,7 +106,7 @@
 
 import re
 
-import util
+from . import util
 
 _fields = {
     # entryType: { fieldName: isRequired, ... }
@@ -330,7 +330,7 @@ def _validateEntry(entry, errors, warnings):
             entry.type in _fields, "invalid entry type", entry.lineNum.type, errors
         )
         missing = False
-        for field, isRequired in _fields[entry.type].items():
+        for field, isRequired in list(_fields[entry.type].items()):
             if not _test(
                 not isRequired or field in entry,
                 "missing %s %s" % (entry.type, field),
@@ -437,7 +437,7 @@ def _globalValidations(entries, errors, warnings):
             l = d.get(getPrefix(s), [])
             l.append(s)
             d[getPrefix(s)] = l
-    for p, l in d.items():
+    for p, l in list(d.items()):
         if len(l) > 1:
             if not all(
                 s.registration_agency == l[0].registration_agency for s in l[1:]
@@ -461,7 +461,7 @@ def _globalValidations(entries, errors, warnings):
             l = d.get(s.datacenter, [])
             l.append(s)
             d[s.datacenter] = l
-    for dc, l in d.items():
+    for dc, l in list(d.items()):
         if len(l) > 1:
             p = getPrefix(l[0])
             if not all(getPrefix(s) == p for s in l[1:]):

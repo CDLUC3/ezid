@@ -15,8 +15,8 @@
 import re
 import threading
 import time
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import uuid
 
 import django.conf
@@ -25,12 +25,12 @@ import django.db
 import django.db.models
 import lxml.etree
 
-import config
-import ezid
+from . import config
+from . import ezid
 import ezidapp.models
-import log
-import util
-import util2
+from . import log
+from . import util
+from . import util2
 
 _enabled = None
 _depositorName = None
@@ -121,7 +121,7 @@ def validateBody (body):
   # Parse the document.
   try:
     root = lxml.etree.XML(body)
-  except Exception, e:
+  except Exception as e:
     assert False, "XML parse error: " + str(e)
   m = _tagRE.match(root.tag)
   assert m is not None, "not Crossref submission metadata"
@@ -170,7 +170,7 @@ def validateBody (body):
     # be (and have been) introduced via XML character entities.
     return _addDeclaration(util.sanitizeXmlSafeCharset(
       lxml.etree.tostring(root, encoding="unicode")))
-  except Exception, e:
+  except Exception as e:
     assert False, "XML serialization error: " + str(e)
 
 # In the Crossref deposit schema, version 4.3.4, the <doi_data>
@@ -301,12 +301,12 @@ def _submitDeposit (deposit, batchId, doi):
   try:
     c = None
     try:
-      c = urllib2.urlopen(urllib2.Request(url, body,
+      c = urllib.request.urlopen(urllib.request.Request(url, body,
         { "Content-Type": "multipart/form-data; boundary=" + boundary }))
       r = c.read()
       assert "Your batch submission was successfully received." in r,\
         "unexpected return from metadata submission: " + r
-    except urllib2.HTTPError, e:
+    except urllib.error.HTTPError as e:
       if e.fp != None:
         try:
           m = e.fp.read()
@@ -318,7 +318,7 @@ def _submitDeposit (deposit, batchId, doi):
       raise e
     finally:
       if c: c.close()
-  except Exception, e:
+  except Exception as e:
     log.otherError("crossref._submitDeposit",
       _wrapException("error submitting deposit, doi %s, batch %s" %\
       (doi, batchId), e))
@@ -358,11 +358,11 @@ def _pollDepositStatus (batchId, doi):
   try:
     c = None
     try:
-      c = urllib2.urlopen("%s?%s" % (url,
-        urllib.urlencode({ "usr": _username, "pwd": _password,
+      c = urllib.request.urlopen("%s?%s" % (url,
+        urllib.parse.urlencode({ "usr": _username, "pwd": _password,
         "file_name": batchId + ".xml", "type": "result" })))
       response = c.read()
-    except urllib2.HTTPError, e:
+    except urllib.error.HTTPError as e:
       if e.fp != None:
         try:
           m = e.fp.read()
@@ -378,7 +378,7 @@ def _pollDepositStatus (batchId, doi):
       # We leave the returned XML undecoded, and let lxml decode it
       # based on the embedded encoding declaration.
       root = lxml.etree.XML(response)
-    except Exception, e:
+    except Exception as e:
       assert False, "XML parse error: " + str(e)
     assert root.tag == "doi_batch_diagnostic",\
       "unexpected response root element: " + root.tag
@@ -406,7 +406,7 @@ def _pollDepositStatus (batchId, doi):
         return ("completed with %s" % d.attrib["status"].lower(), m)
       else:
         assert False, "unexpected status value: " + d.attrib["status"]
-  except Exception, e:
+  except Exception as e:
     log.otherError("crossref._pollDepositStatus",
       _wrapException("error polling deposit status, doi %s, batch %s" %\
       (doi, batchId), e))
@@ -484,7 +484,7 @@ def _sendEmail (emailAddress, r):
     s = "warning"
   else:
     s = "error"
-  l = "%s/id/%s" % (_ezidUrl, urllib.quote(r.identifier, ":/"))
+  l = "%s/id/%s" % (_ezidUrl, urllib.parse.quote(r.identifier, ":/"))
   m = ("EZID received a%s %s in registering an identifier of yours with " +\
     "Crossref.\n\n" +\
     "Identifier: %s\n\n" +\
@@ -500,7 +500,7 @@ def _sendEmail (emailAddress, r):
   try:
     django.core.mail.send_mail("Crossref registration " + s, m,
       django.conf.settings.SERVER_EMAIL, [emailAddress], fail_silently=True)
-  except Exception, e:
+  except Exception as e:
     raise _wrapException("error sending email", e)
 
 def _oneline (s):
@@ -593,7 +593,7 @@ def _daemonThread ():
             pass
     except _AbortException:
       break
-    except Exception, e:
+    except Exception as e:
       log.otherError("crossref._daemonThread", e)
       maxSeq = None
 

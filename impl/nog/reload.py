@@ -1,8 +1,8 @@
 import base64
 import logging
 import platform
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
 import django.core.management
 import django.urls
@@ -48,13 +48,13 @@ def trigger_reload():
     reload_url = '{}/{}'.format(ezid_base_url.strip('/'), reload_path.strip('/'))
     admin_pw_str = config.get("auth.admin_password")
 
-    data = urllib.urlencode({})
-    request = urllib2.Request(reload_url, data=data)
+    data = urllib.parse.urlencode({})
+    request = urllib.request.Request(reload_url, data=data)
     auth_b64 = base64.b64encode('%s:%s' % ('admin', admin_pw_str))
     request.add_header("Authorization", "Basic {}".format(auth_b64))
 
     try:
-        response = urllib2.urlopen(request)
+        response = urllib.request.urlopen(request)
         body_str = response.read()
     except Exception as e:
         raise ReloadError('EZID reload trigger failed. Error: {}'.format(str(e)))

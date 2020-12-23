@@ -15,8 +15,8 @@
 
 import django.db.models
 
-import datacenter
-import validation
+from . import datacenter
+from . import validation
 
 
 class StoreDatacenter(datacenter.Datacenter):

@@ -55,7 +55,7 @@ connect to the EZID database.
   This command intended for generating a sequence expected from a given minter in order
   to determine when and where identifiers found 'in the wild' would have been minted.
 """
-from __future__ import absolute_import, division, print_function
+
 
 import argparse
 import logging
@@ -229,7 +229,7 @@ class Command(django.core.management.BaseCommand):
             count_dict.setdefault(k, 0)
             count_dict[k] += 1
 
-        for field_str, count_int in sorted(count_dict.items(), key=lambda x: x[1]):
+        for field_str, count_int in sorted(list(count_dict.items()), key=lambda x: x[1]):
             log.info(
                 'Number of minters with this value: {:<6,d} value: {}'.format(
                     count_int, field_str

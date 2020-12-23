@@ -39,7 +39,7 @@ import time
 
 import django.conf
 
-import config_loader
+from . import config_loader
 import ezidapp.models
 import ezidapp.models.search_identifier
 import ezidapp.models.store_group

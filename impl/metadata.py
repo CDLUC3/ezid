@@ -26,7 +26,7 @@ import django.template.defaultfilters
 import os.path
 import re
 
-import config
+from . import config
 
 
 class Element(object):
@@ -70,7 +70,7 @@ class Profile(object):
         for e in self.elements:
             if e.name == name or e.name == "_" + name:
                 return e
-        raise KeyError, name
+        raise KeyError(name)
 
 
 _empty = re.compile("\s*$")

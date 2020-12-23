@@ -16,9 +16,9 @@
 import django.core.validators
 import django.db.models
 
-import realm
+from . import realm
 import util
-import validation
+from . import validation
 
 
 class Statistics(django.db.models.Model):

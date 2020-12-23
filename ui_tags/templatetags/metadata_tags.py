@@ -3,8 +3,8 @@ import re
 from django.conf import settings
 from django.utils.html import escape
 import time
-from decorators import basictag
-import layout_extras
+from .decorators import basictag
+from . import layout_extras
 
 register = template.Library()
 

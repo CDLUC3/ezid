@@ -16,14 +16,14 @@
 import django.db.models
 import django.db.utils
 
-import custom_fields
-import identifier
-import search_datacenter
-import search_group
-import search_profile
-import search_user
+from . import custom_fields
+from . import identifier
+from . import search_datacenter
+from . import search_group
+from . import search_profile
+from . import search_user
 import util
-import validation
+from . import validation
 
 # Deferred imports...
 """
@@ -112,7 +112,7 @@ class SearchIdentifier(identifier.Identifier):
         max_length=2,
         editable=False,
         choices=sorted(
-            [(v, k) for k, v in validation.resourceTypes.items()],
+            [(v, k) for k, v in list(validation.resourceTypes.items())],
             cmp=lambda a, b: cmp(a[1], b[1]),
         ),
     )
@@ -220,7 +220,7 @@ class SearchIdentifier(identifier.Identifier):
             kw.append(self.datacenter.symbol)
         if self.target != self.defaultTarget:
             kw.append(self.target)
-        for k, v in self.cm.items():
+        for k, v in list(self.cm.items()):
             if k in ["datacite", "crossref"]:
                 try:
                     kw.append(util.extractXmlContent(v))

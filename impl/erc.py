@@ -140,7 +140,7 @@ def parse(s, concatenateValues=True):
             pass
         elif l[0].isspace():
             if k == None:
-                raise ErcParseException, "no previous label for continuation line"
+                raise ErcParseException("no previous label for continuation line")
             v = l.strip()
             if v != "":
                 if d[k][-1] == "":
@@ -149,11 +149,11 @@ def parse(s, concatenateValues=True):
                     d[k][-1] += " " + v
         else:
             if ":" not in l:
-                raise ErcParseException, "no colon in line"
+                raise ErcParseException("no colon in line")
             k, v = l.split(":", 1)
             k = _decodeLabel(k)
             if k == "":
-                raise ErcParseException, "empty label"
+                raise ErcParseException("empty label")
             if k not in d:
                 d[k] = []
             d[k].append(v.strip())

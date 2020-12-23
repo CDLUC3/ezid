@@ -13,7 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
-import registration_queue
+from . import registration_queue
 
 
 class DataciteQueue(registration_queue.RegistrationQueue):

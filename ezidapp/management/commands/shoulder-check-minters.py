@@ -2,7 +2,7 @@
 contains an EZID or N2T minter.
 """
 
-from __future__ import absolute_import, division, print_function
+
 
 import argparse
 import logging
@@ -102,7 +102,7 @@ class Command(django.core.management.BaseCommand):
             return
 
         log.error('Errors:')
-        for k, v in error_dict.items():
+        for k, v in list(error_dict.items()):
             log.error('{:>4} shoulders have error: {}'.format(v, k))
 
     def check_minter(self, shoulder_model):

@@ -1,5 +1,5 @@
-import ui_common as uic
-import userauth
+from . import ui_common as uic
+from . import userauth
 import django.conf
 from django.contrib import messages
 import django.core.mail
@@ -7,11 +7,11 @@ import django.core.urlresolvers
 import django.core.validators
 import django.utils.http
 import django.db.transaction
-import form_objects
+from . import form_objects
 import hashlib
 import re
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import operator
 from django.shortcuts import redirect
 import ezidapp.admin
@@ -113,7 +113,7 @@ def edit(request):
         for u in allUsersInRealm(user)
         if u.displayName != user.displayName
     }
-    d['proxy_users_choose'] = sorted(pusers.items(), key=operator.itemgetter(0))
+    d['proxy_users_choose'] = sorted(list(pusers.items()), key=operator.itemgetter(0))
     if request.method == "GET":
         d['primaryContactName'] = user.primaryContactName
         d['primaryContactEmail'] = user.primaryContactEmail
@@ -226,7 +226,7 @@ def _update_edit_user(request, user, new_proxies_selected, basic_info_changed):
             user.full_clean(validate_unique=False)
             user.save()
             ezidapp.admin.scheduleUserChangePostCommitActions(user)
-    except django.core.validators.ValidationError, e:
+    except django.core.validators.ValidationError as e:
         messages.error(request, str(e))
     else:
         if new_proxies_selected:
@@ -248,7 +248,7 @@ def _sendEmail(request, user, subject, message):
             [user.accountEmail],
             fail_silently=True,
         )
-    except Exception, e:
+    except Exception as e:
         u = user.primaryContactName + "<" + user.accountEmail + ">"
         messages.error(
             request,
@@ -392,7 +392,7 @@ def pwreset(request, pwrr):
                 return uic.render(request, "account/pwreset1", d)
             else:
                 r = sendPasswordResetEmail(username, email)
-                if type(r) in (str, unicode):
+                if type(r) in (str, str):
                     messages.error(request, r)
                     return uic.render(request, "account/pwreset1", d)
                 else:
@@ -422,7 +422,7 @@ def sendPasswordResetEmail(username, emailAddress):
     ).hexdigest()[::4]
     link = "%s/account/pwreset/%s,%d,%s" % (
         uic.ezidUrl,
-        urllib.quote(username),
+        urllib.parse.quote(username),
         t,
         hash,
     )

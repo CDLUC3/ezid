@@ -65,10 +65,10 @@ def learn_breadcrumb(view_title, parent_dir_title=None, parent_dir_link=None):
     codeblock = (
         '<div class="general__form"><ul class="breadcrumb">'
         + '<li><a href="/">'
-        + unicode(home)
+        + str(home)
         + '</a></li>'
         + '<li><a href="/learn">'
-        + unicode(learn)
+        + str(learn)
         + '</a></li>'
     )
     if parent_dir_title is not None:
@@ -77,12 +77,12 @@ def learn_breadcrumb(view_title, parent_dir_title=None, parent_dir_link=None):
         parent_dir_title_tr = _(parent_dir_title)
         codeblock += (
             '<li><a href="/learn/'
-            + unicode(parent_dir_link)
+            + str(parent_dir_link)
             + '">'
-            + unicode(parent_dir_title_tr)
+            + str(parent_dir_title_tr)
             + '</a></li>'
         )
-    codeblock += '<li class="active">' + unicode(view_title) + '</li></ul></div>'
+    codeblock += '<li class="active">' + str(view_title) + '</li></ul></div>'
     return codeblock
 
 

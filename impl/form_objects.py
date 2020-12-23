@@ -7,10 +7,10 @@ from django.forms import BaseFormSet, formset_factory
 from django.utils.translation import ugettext as _
 
 import ezidapp.models
-import geometry_util
-import ui_common as uic
-import userauth
-import util
+from . import geometry_util
+from . import ui_common as uic
+from . import userauth
+from . import util
 
 """ Django form framework added in 2016 release of EZID UI.
     Bulk of form validation occurs here. Avoiding JavaScript form validation
@@ -403,7 +403,7 @@ class NameIdMultBaseFormSet(BaseFormSet):
         form = super(NameIdMultBaseFormSet, self)._construct_form(i, **kwargs)
         if self.nameIdLastIndex:
             for d in self.generateNameIdFields(self.nameIdLastIndex[i]):
-                k, v = d.items()[0]
+                k, v = list(d.items())[0]
                 form.fields[k] = forms.CharField(required=False, label=v)
         form.fields["affiliation"] = forms.CharField(
             required=False, label=_("Affiliation")
@@ -453,7 +453,7 @@ class CreatorForm(forms.Form):
             ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0].format(str(i)))
             err = _validateNameIdGrouping(i, ni, ni_s, ni_s_uri)
             if err:
-                errs.update(err.items())
+                errs.update(list(err.items()))
         if errs:
             raise ValidationError(errs)
         return cleaned_data
@@ -630,8 +630,8 @@ class ContribForm(forms.Form):
                 err1 = _gatherContribErr1(err1, ctype, cname)
             err = _validateNameIdGrouping(i, ni, ni_s, ni_s_uri)
             if err:
-                err2.update(err.items())
-        errs = dict(err1.items() + err2.items())
+                err2.update(list(err.items()))
+        errs = dict(list(err1.items()) + list(err2.items()))
         if errs:
             raise ValidationError(errs)
         return cleaned_data
@@ -855,7 +855,7 @@ class GeoLocForm(forms.Form):
             text = geometry_util.polygonToDatacite(text)
             # Warning message broadcast deferred for now (warning on ignored things like
             #    altitudes and inner polygons (holes).)
-            if isinstance(text, basestring):
+            if isinstance(text, str):
                 raise ValidationError(text)
             else:
                 text = text[0]
@@ -1167,7 +1167,7 @@ def _getNameIdCt(fields, prefix):
     if fields:
         r1 = re.escape(prefix) + "-(\d+)"
         r2 = r1 + "-nameIdentifier_(\d+)"
-        for f in sorted(fields.iterkeys()):
+        for f in sorted(fields.keys()):
             nameIdCt = 1  # Each form should by default have 2 nameIds
             m = re.match(r1, f)
             if m:
@@ -1180,7 +1180,7 @@ def _getNameIdCt(fields, prefix):
                     if (form not in d) or (form in d and d[form] < nameIdCt)
                     else d[form]
                 )
-    y = map(lambda x: x[1], d.items() if d else r)
+    y = [x[1] for x in list(d.items()) if d else r]
     return y
 
 
@@ -1189,7 +1189,7 @@ def isValidDataciteXmlForm(form):
       Returns false if one or more items don't validate
   """
     numFailed = 0
-    for f, v in form.iteritems():
+    for f, v in form.items():
         if v is None:
             r = True
         else:
@@ -1413,7 +1413,7 @@ class BaseSearchIdForm(forms.Form):
         if len(cleaned_data) < field_count:
             return cleaned_data
         form_empty = True
-        for k, v in cleaned_data.iteritems():
+        for k, v in cleaned_data.items():
             # Check for None or '', so IntegerFields with 0 or similar things don't seem empty.
             if not isinstance(v, bool):
                 cleaned_data[k] = cleaned_data[k].strip()

@@ -23,8 +23,8 @@ import django.core.validators
 import django.db.models
 import time
 
-import custom_fields
-import store_identifier
+from . import custom_fields
+from . import store_identifier
 import util
 
 

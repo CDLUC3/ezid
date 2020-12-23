@@ -152,7 +152,7 @@ def _get_tidy_path(filename=None):
 
 
 def dump(o, log_func=log.debug):
-    map(log_func, obj_to_pretty_str(o, no_clobber=True)[1].splitlines())
+    list(map(log_func, obj_to_pretty_str(o, no_clobber=True)[1].splitlines()))
 
 
 def load(filename, mode_str="rb"):

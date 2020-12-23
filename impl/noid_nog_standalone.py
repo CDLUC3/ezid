@@ -14,7 +14,7 @@
 # -----------------------------------------------------------------------------
 
 import base64
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 
 class Minter(object):
@@ -42,11 +42,11 @@ class Minter(object):
     Mints and returns a scheme-less ARK identifier, e.g.,
     "13030/fk35717n0h".  Raises an exception on error.
     """
-        r = urllib2.Request(self.url + "?mint%201")
+        r = urllib.request.Request(self.url + "?mint%201")
         self._addAuthorization(r)
         c = None
         try:
-            c = urllib2.urlopen(r)
+            c = urllib.request.urlopen(r)
             s = c.readlines()
         finally:
             if c:

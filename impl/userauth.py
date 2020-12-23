@@ -24,7 +24,7 @@ import django.contrib.auth.models
 import django.utils.encoding
 
 import ezidapp.models
-import log
+from . import log
 
 SESSION_KEY = "ezidAuthenticatedUser"
 

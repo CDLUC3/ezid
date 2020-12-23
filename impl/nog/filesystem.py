@@ -2,7 +2,7 @@ import contextlib
 import os
 import sys
 import tempfile
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 import pathlib2
 
@@ -46,7 +46,7 @@ def get_safe_reversible_path_element(s):
     Returns:
         str: A string safe for use as a file- or directory name.
     """
-    out_str = urllib.quote(s.encode("utf-8"), safe=FILENAME_SAFE_CHARS)
+    out_str = urllib.parse.quote(s.encode("utf-8"), safe=FILENAME_SAFE_CHARS)
     if out_str.startswith('.'):
         out_str = '%2e{}'.format(out_str[1:])
     return out_str

@@ -29,10 +29,10 @@ import django.db.models
 import django.forms
 import django.utils.html
 
-import models
-import models.search_identifier
-import models.store_group
-import models.store_user
+from . import models
+from . import models.search_identifier
+from . import models.store_group
+from . import models.store_user
 import util
 
 # Deferred imports...
@@ -543,7 +543,7 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                     django.core.mail.send_mail(
                         subject, message, django.conf.settings.SERVER_EMAIL, addresses
                     )
-                except Exception, e:
+                except Exception as e:
                     django.contrib.messages.error(
                         request, "Error sending status change email: " + str(e)
                     )

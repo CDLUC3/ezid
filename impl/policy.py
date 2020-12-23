@@ -14,7 +14,7 @@
 # -----------------------------------------------------------------------------
 
 import ezidapp.models
-import util2
+from . import util2
 
 
 def authorizeView(user, identifier):
@@ -38,7 +38,7 @@ def authorizeCreate(user, prefix):
   """
     if util2.isTestIdentifier(prefix):
         return True
-    if any(map(lambda s: prefix.startswith(s.prefix), user.shoulders.all())):
+    if any([prefix.startswith(s.prefix) for s in user.shoulders.all()]):
         return True
     if any(authorizeCreate(u, prefix) for u in user.proxy_for.all()):
         return True

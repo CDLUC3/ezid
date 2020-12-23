@@ -1,14 +1,14 @@
-import ui_common as uic
-import search_util
+from . import ui_common as uic
+from . import search_util
 import django.contrib.messages
-import form_objects
+from . import form_objects
 import ezidapp.models
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from django.utils.translation import ugettext as _
-import userauth
+from . import userauth
 import math
 import locale
-import util
+from . import util
 import operator
 import re
 
@@ -118,11 +118,11 @@ DATE_CEILING = True
 
 def queryUrlEncoded(request):
     r = {}
-    for k, v in queryDict(request).iteritems():
-        if isinstance(v, unicode):
+    for k, v in queryDict(request).items():
+        if isinstance(v, str):
             v = v.encode('utf8')
         r[k] = v
-    return urllib.urlencode(r) if r else {}
+    return urllib.parse.urlencode(r) if r else {}
 
 
 def queryDict(request):
@@ -218,8 +218,8 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
             )  # Used for Google Analytics
             q = d['q'] if 'q' in d and d['q'] else request.GET
             q2 = {}
-            for k, v in q.iteritems():
-                q2[k] = q[k].strip() if isinstance(v, basestring) else q[k]
+            for k, v in q.items():
+                q2[k] = q[k].strip() if isinstance(v, str) else q[k]
             # Move searches for IDs in keyword field to identifier field.  I wanted to put this in
             # form's clean() function but unable to modify field values that route. I think I need to
             # explicitly override the form's __init__ method
@@ -449,12 +449,12 @@ def _buildConstraints(c, REQUEST, s_type="public"):
             'hasMetadata': 'hasMetadata',
         }
         cmap.update(cmap_managePage)
-    for k, v in cmap.iteritems():
+    for k, v in cmap.items():
         # Handle boolean values
         if k in REQUEST and REQUEST[k] != '':
-            if REQUEST[k] == u'True':
+            if REQUEST[k] == 'True':
                 c[v] = True
-            elif REQUEST[k] == u'False':
+            elif REQUEST[k] == 'False':
                 c[v] = False
             else:
                 c[v] = REQUEST[k]
@@ -519,7 +519,7 @@ def _buildQuerySyntax(c):
     constraints = {i: c[i] for i in c if i != "publicSearchVisible"}
     r = ""
     dlength = len(constraints)
-    for key, value in constraints.items():
+    for key, value in list(constraints.items()):
         r += key + ":"
         v = ""
         if type(value) is bool:

@@ -1,4 +1,4 @@
-import ui_common as uic
+from . import ui_common as uic
 import django.conf
 from django.contrib import messages
 import django.core.mail
@@ -6,17 +6,17 @@ import django.http
 import django.template
 import django.template.loader
 import lxml.etree
-import userauth
-import form_objects
+from . import userauth
+from . import form_objects
 import errno
 import os
 import re
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
-import ezid
-import datacite
-import metadata
+from . import ezid
+from . import datacite
+from . import metadata
 from django.utils.translation import ugettext as _
 
 
@@ -157,7 +157,7 @@ def tombstone(request):
     assert s.startswith("success:")
     id = s[8:].strip()
     if not m["_status"].startswith("unavailable"):
-        return uic.redirect("/id/%s" % urllib.quote(id, ":/"))
+        return uic.redirect("/id/%s" % urllib.parse.quote(id, ":/"))
     status = m["_status"]
     reason = tombstone_text
     if "|" in m["_status"]:
@@ -201,7 +201,7 @@ def tombstone(request):
         "tombstone",
         {
             "identifier": id,
-            "identifierLink": "/id/%s" % urllib.quote(id, ":/"),
+            "identifierLink": "/id/%s" % urllib.parse.quote(id, ":/"),
             "reason": reason,
             "htmlMode": htmlMode,
             "metadata": md,
