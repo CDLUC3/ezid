@@ -32,15 +32,28 @@ connect to the EZID database.
 
   E.g.: ./manage.py bdb dump-full path/to/database.xyz
 
+- create: Create a new minter for a given shoulder.
+
+  E.g.: ./manage.py bdb create doi:10.1234/fk4
+
 - mint: Mint any number of identifiers with a given minter. By default, the minter state
   is not updated to reflect the minted identifiers, so the result can be considered as
   a "preview" of the identifiers the minter will yield when next used by EZID.
 
+  This command is intended mainly for testing an existing minter and only provides
+  identifiers going forward from the minter's current state. See also: 'slice'
+
   E.g.: ./manage.py bdb mint doi:10.123/fk4 --update
 
-- create: Create a new minter for a given shoulder.
+- slice: Mint a "slice" of identifiers with a minter that is created on the fly and
+  destroyed after minting.
 
-  E.g.: ./manage.py bdb create doi:10.1234/fk4
+  A slice is sequence of identifiers starting after some number of identifiers have
+  already been minted, and containing a fixed number of identifiers, such as 10
+  identifiers starting after 1 million identifiers have been minted.
+
+  This command intended for generating a sequence expected from a given minter in order
+  to determine when and where identifiers found 'in the wild' would have been minted.
 """
 from __future__ import absolute_import, division, print_function
 
@@ -48,6 +61,7 @@ import argparse
 import logging
 import shutil
 import sys
+import tempfile
 
 import django.conf
 import django.core.management
@@ -84,6 +98,7 @@ class Command(django.core.management.BaseCommand):
                 'dump-full',
                 'mint',
                 'create',
+                'slice',
             ),
         )
         parser.add_argument(
@@ -109,11 +124,22 @@ class Command(django.core.management.BaseCommand):
             yield in regular use""",
         )
         parser.add_argument(
+            "--start",
+            "-s",
+            type=int,
+            default=0,
+            help="""For use with 'slice': Suppress initial identifiers. The minter has
+            to always start at zero, but this argument makes it appear as if the minter
+            was started directly at some point later in the sequence. If 'start' is a large
+            number, there will be a delay while the minter works through the suppressed
+            identifiers""",
+        )
+        parser.add_argument(
             "--count",
             "-c",
             type=int,
             default=1,
-            help="For use with 'mint': Set the number of identifiers to mint",
+            help="For use with 'mint' and 'slice': Set the number of identifiers to mint",
         )
         # For 'unique'
         parser.add_argument(
@@ -251,6 +277,24 @@ class Command(django.core.management.BaseCommand):
             self.opt.ns_str, self.opt.root_path
         )
         log.info('Created minter for: {}'.format(bdb_path))
+
+    def slice(self):
+        case_fn = str.upper if self.opt.ns_str.startswith('doi:') else str.lower
+        dir_path = pathlib2.Path(tempfile.mkdtemp())
+        try:
+            bdb_path = nog.minter.create_minter_database(
+                self.opt.ns_str, dir_path.as_posix()
+            )
+            for i, id_str in enumerate(
+                nog.minter.mint_by_bdb_path(
+                    bdb_path, self.opt.count, dry_run=True,
+                )
+            ):
+                # noinspection PyArgumentList
+                # log.info("{}".format(case_fn(self.opt.ns_str + id_str)))
+                print(case_fn(self.opt.ns_str + id_str))
+        finally:
+            shutil.rmtree(dir_path.as_posix())
 
     def _assert_bdb_path(self, exists=None):
         if not self.bdb_path:
