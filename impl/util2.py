@@ -45,10 +45,8 @@ def loadConfig():
 
 
 def urlForm(identifier):
-    """
-  Returns the URL form of a qualified identifier, or "[None]" if there
-  is no resolver defined for the identifier type.
-  """
+    """Returns the URL form of a qualified identifier, or "[None]" if there is
+    no resolver defined for the identifier type."""
     if identifier.startswith("doi:"):
         return "%s/%s" % (_doiResolver, urllib.parse.quote(identifier[4:], ":/"))
     elif identifier.startswith("ark:/"):
@@ -58,26 +56,24 @@ def urlForm(identifier):
 
 
 def defaultTargetUrl(identifier):
+    """Returns the default target URL for an identifier.
+
+    The identifier is assumed to be in normalized, qualified form.
     """
-  Returns the default target URL for an identifier.  The identifier
-  is assumed to be in normalized, qualified form.
-  """
     return "%s/id/%s" % (_ezidUrl, urllib.parse.quote(identifier, ":/"))
 
 
 def tombstoneTargetUrl(identifier):
+    """Returns the "tombstone" target URL for an identifier.
+
+    The identifier is assumed to be in normalized, qualified form.
     """
-  Returns the "tombstone" target URL for an identifier.  The
-  identifier is assumed to be in normalized, qualified form.
-  """
     return "%s/tombstone/id/%s" % (_ezidUrl, urllib.parse.quote(identifier, ":/"))
 
 
 def isTestIdentifier(identifier):
-    """
-  Returns True if the supplied qualified identifier is a test
-  identifier.
-  """
+    """Returns True if the supplied qualified identifier is a test
+    identifier."""
     return (
         identifier.startswith(_arkTestPrefix)
         or identifier.startswith(_doiTestPrefix)
@@ -86,34 +82,26 @@ def isTestIdentifier(identifier):
 
 
 def isTestArk(identifier):
-    """
-  Returns True if the supplied unqualified ARK (e.g., "12345/foo") is
-  a test identifier.
-  """
+    """Returns True if the supplied unqualified ARK (e.g., "12345/foo") is a
+    test identifier."""
     return identifier.startswith(_arkTestPrefix[5:])
 
 
 def isTestDoi(identifier):
-    """
-  Returns True if the supplied unqualified DOI (e.g., "10.1234/FOO")
-  is a test identifier.
-  """
+    """Returns True if the supplied unqualified DOI (e.g., "10.1234/FOO") is a
+    test identifier."""
     return identifier.startswith(_doiTestPrefix[4:])
 
 
 def isTestCrossrefDoi(identifier):
-    """
-  Returns True if the supplied unqualified DOI (e.g., "10.1234/FOO")
-  is a Crossref test identifier.
-  """
+    """Returns True if the supplied unqualified DOI (e.g., "10.1234/FOO") is a
+    Crossref test identifier."""
     return identifier.startswith(_crossrefTestPrefix[4:])
 
 
 def defaultProfile(identifier):
-    """
-  Returns the label of the default metadata profile (e.g., "erc") for
-  a given qualified identifier.
-  """
+    """Returns the label of the default metadata profile (e.g., "erc") for a
+    given qualified identifier."""
     if identifier.startswith("ark:/"):
         return _defaultArkProfile
     elif identifier.startswith("doi:"):
@@ -139,13 +127,14 @@ _labelMapping = {
 
 
 def convertLegacyToExternal(d, convertAgents=True):
+    """Converts a legacy metadata dictionary from internal form (i.e., as
+    stored in the Noid "egg" binder) to external form (i.e., as returned to
+    clients).
+
+    The dictionary is modified in place.  N.B.: if the dictionary is for
+    a DOI identifier, this function does *not* add the _shadowedby
+    element.
     """
-  Converts a legacy metadata dictionary from internal form (i.e., as
-  stored in the Noid "egg" binder) to external form (i.e., as returned
-  to clients).  The dictionary is modified in place.  N.B.: if the
-  dictionary is for a DOI identifier, this function does *not* add the
-  _shadowedby element.
-  """
     if "_is" not in d:
         d["_is"] = "public"
     if "_x" not in d:

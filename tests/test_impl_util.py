@@ -20,9 +20,7 @@ class TestImplUtil:
         ),
     )
     def test_1000(self, minted_id, doi_str):
-        """shadow2doi() successful
-        b5060/foo') == '10.5060/FOO
-        """
+        """shadow2doi() successful b5060/foo') == '10.5060/FOO."""
         assert impl.util.shadow2doi(minted_id) == doi_str
 
     @pytest.mark.parametrize(
@@ -37,8 +35,7 @@ class TestImplUtil:
         ),
     )
     def test_1010(self, minted_id):
-        """shadow2doi() invalid
-        """
+        """shadow2doi() invalid."""
         with pytest.raises(AssertionError) as e:
             impl.util.shadow2doi(minted_id)
         assert e.match("Invalid scheme-less")

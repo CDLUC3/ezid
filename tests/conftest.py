@@ -94,17 +94,20 @@ def pytest_configure(config):
 
 @pytest.fixture(autouse=True)
 def enable_db_access_for_all_tests(db):
-    """Make the Django DB available to all tests. This will use Django's default DB,
-    which is the "store" DB in EZID. The DB connection is set up according to the
-    DJANGO_SETTINGS_MODULE setting in ezid/tox.ini.
+    """Make the Django DB available to all tests.
+
+    This will use Django's default DB, which is the "store" DB in EZID.
+    The DB connection is set up according to the DJANGO_SETTINGS_MODULE
+    setting in ezid/tox.ini.
     """
     pass
 
 
 @pytest.fixture(scope='session')
 def django_db_setup(django_db_keepdb):
-    """Prevent pytest from clearing the database at the end of the test session. Also
-    see the --reuse-db and --create-db pytest command line arguments.
+    """Prevent pytest from clearing the database at the end of the test
+    session. Also see the --reuse-db and --create-db pytest command line
+    arguments.
 
     This also prevents Django from creating blank test databases, instead redirecting
     back to the main database.
@@ -149,8 +152,8 @@ def django_db_setup(django_db_keepdb):
 
 @pytest.fixture(autouse=True)
 def disable_log_to_console(mocker):
-    """Prevent management commands from reconfiguring the logging that has been set up
-    by pytest."""
+    """Prevent management commands from reconfiguring the logging that has been
+    set up by pytest."""
     mocker.patch('nog.util.log_to_console')
 
 
@@ -161,8 +164,10 @@ def disable_log_to_console(mocker):
 
 @pytest.fixture(scope='function')
 def reloaded():
-    """Refresh EZID's in-memory caches of the database. In the test, additional reloads
-    can be triggered by calling the fixture.
+    """Refresh EZID's in-memory caches of the database.
+
+    In the test, additional reloads can be triggered by calling the
+    fixture.
     """
 
     def reload_():
@@ -184,8 +189,10 @@ def reloaded():
 
 @pytest.fixture(scope='function')
 def admin_admin(reloaded):
-    """Set the admin password to "admin". This may be useful when testing
-    authentication. To instead skip authentication, see skip_auth.
+    """Set the admin password to "admin".
+
+    This may be useful when testing authentication. To instead skip
+    authentication, see skip_auth.
     """
     with django.db.transaction.atomic():
         if not django.contrib.auth.models.User.objects.filter(
@@ -204,8 +211,10 @@ def admin_admin(reloaded):
 @pytest.fixture(scope='function')
 def skip_auth(django_db_keepdb, admin_client, mocker):
     """Replace EZID's user authentication system with a stub that successfully
-    authenticates any user. The user must already exist in EZID. By default, only the
-    admin user exists.
+    authenticates any user.
+
+    The user must already exist in EZID. By default, only the admin user
+    exists.
     """
 
     def mock_authenticate_request(request):
@@ -217,9 +226,10 @@ def skip_auth(django_db_keepdb, admin_client, mocker):
 
 @pytest.fixture(scope='function')
 def ez_admin(admin_client, admin_admin, skip_auth):
-    """A Django test client that has been logged in as admin. When EZID endpoints are
-    called via the client, a cookie for an active authenticated session is included
-    automatically. This also sets the admin password to "admin".
+    """A Django test client that has been logged in as admin. When EZID
+    endpoints are called via the client, a cookie for an active authenticated
+    session is included automatically. This also sets the admin password to
+    "admin".
 
     Note: Because EZID does not use a standard authentication procedure, it's also
     necessary to pull in skip_auth here.
@@ -231,9 +241,8 @@ def ez_admin(admin_client, admin_admin, skip_auth):
 
 @pytest.fixture(scope='function')
 def ez_user(client, django_user_model):
-    """A Django test client that has been logged in as a regular user named "ezuser",
-    with password "password".
-    """
+    """A Django test client that has been logged in as a regular user named
+    "ezuser", with password "password"."""
     username, password = "ezuser", "password"
     django_user_model.objects.create_user(username=username, password=password)
     client.login(username=username, password=password)
@@ -262,9 +271,11 @@ def tmp_bdb_root(mocker, tmp_path):
 
 @pytest.fixture()
 def minters(tmp_bdb_root, reloaded):
-    """Add four ready to use minters below the temporary root created by tmp_bdb_root.
+    """Add four ready to use minters below the temporary root created by
+    tmp_bdb_root.
 
-    Returns a list containing the IdNamespace objects for the shoulders of the minters.
+    Returns a list containing the IdNamespace objects for the shoulders
+    of the minters.
     """
     for ns, arg_tup in NAMESPACE_LIST:
         nog.shoulder.create_shoulder(
@@ -291,7 +302,7 @@ def minters(tmp_bdb_root, reloaded):
 
 @pytest.fixture()
 def shoulder_csv():
-    """Generator returning rows from the SHOULDER_CSV file"""
+    """Generator returning rows from the SHOULDER_CSV file."""
 
     def itr():
         with pathlib2.Path(SHOULDER_CSV).open('rb',) as f:
@@ -344,7 +355,7 @@ def get_user_id_by_session_key(session_key):
 
 
 def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
-    """Save database to a bz2 compressed JSON fixture"""
+    """Save database to a bz2 compressed JSON fixture."""
     fixture_file_path = nog.filesystem.abs_path(REL_DB_FIXTURE_PATH)
     logging.info('Writing fixture. path="{}"'.format(fixture_file_path))
     buf = io.StringIO()

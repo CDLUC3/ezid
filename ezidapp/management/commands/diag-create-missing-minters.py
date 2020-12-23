@@ -1,6 +1,5 @@
-"""Create BerkeleyDB minter instances for any shoulders in the database that are
-referencing non-existing minters.
-"""
+"""Create BerkeleyDB minter instances for any shoulders in the database that
+are referencing non-existing minters."""
 
 
 

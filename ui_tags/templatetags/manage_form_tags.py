@@ -13,10 +13,13 @@ register = template.Library()
 
 @register.simple_tag
 def column_choices(field_order, fields_mapped, fields_selected):
-    """this only works when the following context variables are set from the django view:
-  field_order is the ordered list of the fields
-  fields_mapped is mapping of fields to texual names (second item in list of mapped objects)
-  fields_selected is ordered list of selected fields"""
+    """this only works when the following context variables are set from the
+    django view:
+
+    field_order is the ordered list of the fields fields_mapped is
+    mapping of fields to texual names (second item in list of mapped
+    objects) fields_selected is ordered list of selected fields
+    """
     return (
         "<div class='col-sm-4'>"
         + "</div><div class='col-sm-4'>".join(
@@ -49,7 +52,7 @@ def make_check_tag(item, friendly_names, selected):
 
 @register.simple_tag
 def column_choices_hidden(fields_selected):
-    """Include column choices in request query as hidden fields"""
+    """Include column choices in request query as hidden fields."""
     hidden = ''
     for f in fields_selected:
         hidden += "<input type='hidden' name='" + f + "' value='t'/>"

@@ -105,9 +105,7 @@ def _modifyActiveCount(delta):
 
 
 def numActiveOperations():
-    """
-  Returns the number of active operations.
-  """
+    """Returns the number of active operations."""
     _lock.acquire()
     try:
         return _numActiveOperations
@@ -139,14 +137,14 @@ def _authorization(doi, datacenter=None):
 
 
 def registerIdentifier(doi, targetUrl, datacenter=None):
+    """Registers a scheme-less DOI identifier (e.g., "10.5060/FOO") and target
+    URL (e.g., "http://whatever...") with DataCite.
+
+    'datacenter', if specified, should be the identifier's datacenter,
+    e.g., "CDL.BUL".  There are three possible returns: None on success;
+    a string error message if the target URL was not accepted by
+    DataCite; or a thrown exception on other error.
     """
-  Registers a scheme-less DOI identifier (e.g., "10.5060/FOO") and
-  target URL (e.g., "http://whatever...") with DataCite.
-  'datacenter', if specified, should be the identifier's datacenter,
-  e.g., "CDL.BUL".  There are three possible returns: None on success;
-  a string error message if the target URL was not accepted by
-  DataCite; or a thrown exception on other error.
-  """
     if not _enabled:
         return None
     # To deal with transient problems with the Handle system underlying
@@ -192,23 +190,25 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
 
 
 def setTargetUrl(doi, targetUrl, datacenter=None):
+    """Sets the target URL of an existing scheme-less DOI identifier (e.g.,
+    "10.5060/FOO").
+
+    'datacenter', if specified, should be the
+    identifier's datacenter, e.g., "CDL.BUL".  There are three possible
+    returns: None on success; a string error message if the target URL
+    was not accepted by DataCite; or a thrown exception on other error.
     """
-  Sets the target URL of an existing scheme-less DOI identifier (e.g.,
-  "10.5060/FOO").  'datacenter', if specified, should be the
-  identifier's datacenter, e.g., "CDL.BUL".  There are three possible
-  returns: None on success; a string error message if the target URL
-  was not accepted by DataCite; or a thrown exception on other error.
-  """
     return registerIdentifier(doi, targetUrl, datacenter)
 
 
 def getTargetUrl(doi, datacenter=None):
+    """Returns the target URL of a scheme-less DOI identifier (e.g.,
+    "10.5060/FOO") as registered with DataCite, or None if the identifier is
+    not registered.
+
+    'datacenter', if specified, should be the identifier's datacenter,
+    e.g., "CDL.BUL".
     """
-  Returns the target URL of a scheme-less DOI identifier (e.g.,
-  "10.5060/FOO") as registered with DataCite, or None if the
-  identifier is not registered.  'datacenter', if specified, should be
-  the identifier's datacenter, e.g., "CDL.BUL".
-  """
     # To hide transient network errors, we make multiple attempts.
     for i in range(_numAttempts):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
@@ -246,20 +246,20 @@ _rootTagRE = re.compile("{(http://datacite\.org/schema/kernel-([^}]*))}resource$
 
 
 def validateDcmsRecord(identifier, record, schemaValidate=True):
+    """Validates and normalizes a DataCite Metadata Scheme.
+
+    <http://schema.datacite.org/> record for a qualified identifier
+    (e.g., "doi:10.5060/FOO").  The record should be unencoded.  Either
+    the normalized record is returned or an assertion error is raised.
+    If 'schemaValidate' is true, the record is validated against the
+    appropriate XML schema; otherwise, only a more forgiving well-
+    formedness check is performed.  (In an extension to DCMS, we allow
+    the identifier to be something other than a DOI, for example, an
+    ARK.)  The record is normalized by removing any encoding
+    declaration; by converting from deprecated schema versions if
+    necessary; and by inserting an appropriate 'schemaLocation'
+    attribute.  Also, 'identifier' is inserted in the returned record.
     """
-  Validates and normalizes a DataCite Metadata Scheme
-  <http://schema.datacite.org/> record for a qualified identifier
-  (e.g., "doi:10.5060/FOO").  The record should be unencoded.  Either
-  the normalized record is returned or an assertion error is raised.
-  If 'schemaValidate' is true, the record is validated against the
-  appropriate XML schema; otherwise, only a more forgiving
-  well-formedness check is performed.  (In an extension to DCMS, we
-  allow the identifier to be something other than a DOI, for example,
-  an ARK.)  The record is normalized by removing any encoding
-  declaration; by converting from deprecated schema versions if
-  necessary; and by inserting an appropriate 'schemaLocation'
-  attribute.  Also, 'identifier' is inserted in the returned record.
-  """
     m = _prologRE.match(record)
     if m:
         assert m.group(2) == "1.0", "unsupported XML version"
@@ -377,20 +377,20 @@ _resourceTypeTemplate2 = """  <resourceType resourceTypeGeneral="%s">%s</resourc
 
 
 def formRecord(identifier, metadata, supplyMissing=False, profile=None):
+    """Forms an XML record for upload to DataCite, employing metadata mapping
+    if necessary.
+
+    'identifier' should be a qualified identifier (e.g.,
+    "doi:10.5060/FOO").  'metadata' should be the identifier's metadata
+    as a dictionary of (name, value) pairs.  Returns an XML document as
+    a Unicode string.  The document contains a UTF-8 encoding
+    declaration, but is not in fact encoded.  If 'supplyMissing' is
+    true, the "(:unav)" code is supplied for missing required metadata
+    fields; otherwise, missing metadata results in an assertion error
+    being raised.  'profile' is the metadata profile to use for the
+    mapping; if None, the profile is determined from any _profile or _p
+    field in the metadata dictionary and otherwise defaults to "erc".
     """
-  Forms an XML record for upload to DataCite, employing metadata
-  mapping if necessary.  'identifier' should be a qualified identifier
-  (e.g., "doi:10.5060/FOO").  'metadata' should be the identifier's
-  metadata as a dictionary of (name, value) pairs.  Returns an XML
-  document as a Unicode string.  The document contains a UTF-8
-  encoding declaration, but is not in fact encoded.  If
-  'supplyMissing' is true, the "(:unav)" code is supplied for missing
-  required metadata fields; otherwise, missing metadata results in an
-  assertion error being raised.  'profile' is the metadata profile to
-  use for the mapping; if None, the profile is determined from any
-  _profile or _p field in the metadata dictionary and otherwise
-  defaults to "erc".
-  """
     if identifier.startswith("doi:"):
         idType = "DOI"
         idBody = identifier[4:]
@@ -465,21 +465,21 @@ def formRecord(identifier, metadata, supplyMissing=False, profile=None):
 
 
 def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
+    """Uploads citation metadata for the resource identified by an existing
+    scheme-less DOI identifier (e.g., "10.5060/FOO") to DataCite.
+
+    This same function can be used to overwrite previously-uploaded
+    metadata. 'current' and 'delta' should be dictionaries mapping
+    metadata element names (e.g., "Title") to values.  'current+delta'
+    is uploaded, but only if there is at least one DataCite-relevant
+    difference between it and 'current' alone (unless 'forceUpload' is
+    true).  'datacenter', if specified, should be the identifier's
+    datacenter, e.g., "CDL.BUL".  There are three possible returns: None
+    on success; a string error message if the uploaded DataCite Metadata
+    Scheme record was not accepted by DataCite (due to an XML-related
+    problem); or a thrown exception on other error.  No error checking
+    is done on the inputs.
     """
-  Uploads citation metadata for the resource identified by an existing
-  scheme-less DOI identifier (e.g., "10.5060/FOO") to DataCite.  This
-  same function can be used to overwrite previously-uploaded metadata.
-  'current' and 'delta' should be dictionaries mapping metadata
-  element names (e.g., "Title") to values.  'current+delta' is
-  uploaded, but only if there is at least one DataCite-relevant
-  difference between it and 'current' alone (unless 'forceUpload' is
-  true).  'datacenter', if specified, should be the identifier's
-  datacenter, e.g., "CDL.BUL".  There are three possible returns: None
-  on success; a string error message if the uploaded DataCite Metadata
-  Scheme record was not accepted by DataCite (due to an XML-related
-  problem); or a thrown exception on other error.  No error checking
-  is done on the inputs.
-  """
     try:
         oldRecord = formRecord("doi:" + doi, current)
     except AssertionError:
@@ -563,16 +563,17 @@ def _deactivate(doi, datacenter):
 
 
 def deactivate(doi, datacenter=None):
+    """Deactivates an existing, scheme-less DOI identifier (e.g.,
+    "10.5060/FOO") in DataCite.
+
+    This removes the identifier from DataCite's search index, but has no
+    effect on the identifier's existence in the Handle system or on the
+    ability to change the identifier's target URL.  The identifier can
+    and will be reactivated by uploading new metadata to it (cf.
+    uploadMetadata in this module). 'datacenter', if specified, should
+    be the identifier's datacenter, e.g., "CDL.BUL".  Returns None;
+    raises an exception on error.
     """
-  Deactivates an existing, scheme-less DOI identifier (e.g.,
-  "10.5060/FOO") in DataCite.  This removes the identifier from
-  DataCite's search index, but has no effect on the identifier's
-  existence in the Handle system or on the ability to change the
-  identifier's target URL.  The identifier can and will be reactivated
-  by uploading new metadata to it (cf. uploadMetadata in this module).
-  'datacenter', if specified, should be the identifier's datacenter,
-  e.g., "CDL.BUL".  Returns None; raises an exception on error.
-  """
     if not _enabled:
         return
     try:
@@ -603,10 +604,8 @@ def deactivate(doi, datacenter=None):
 
 
 def ping():
-    """
-  Tests the DataCite API (as well as the underlying Handle System),
-  returning "up" or "down".
-  """
+    """Tests the DataCite API (as well as the underlying Handle System),
+    returning "up" or "down"."""
     if not _enabled:
         return "up"
     try:
@@ -619,9 +618,7 @@ def ping():
 
 
 def pingDataciteOnly():
-    """
-  Tests the DataCite API (only), returning "up" or "down".
-  """
+    """Tests the DataCite API (only), returning "up" or "down"."""
     if not _enabled:
         return "up"
     # To hide transient network errors, we make multiple attempts.
@@ -650,11 +647,11 @@ def pingDataciteOnly():
 
 
 def dcmsRecordToHtml(record):
+    """Converts a DataCite Metadata Scheme <http://schema.datacite.org/> record
+    to an XHTML table.
+
+    The record should be unencoded.  Returns None on error.
     """
-  Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
-  record to an XHTML table.  The record should be unencoded.  Returns
-  None on error.
-  """
     try:
         r = lxml.etree.tostring(
             _stylesheet(util.parseXmlString(record)), encoding=str
@@ -666,15 +663,15 @@ def dcmsRecordToHtml(record):
 
 
 def crossrefToDatacite(record, overrides={}):
+    """Converts a Crossref Deposit Schema.
+
+    <http://help.crossref.org/deposit_schema> document to a DataCite
+    Metadata Scheme <http://schema.datacite.org/> record.  'overrides'
+    is a dictionary of individual metadata element names (e.g.,
+    "datacite.title") and values that override the conversion values
+    that would normally be drawn from the input document.  Throws an
+    exception on error.
     """
-  Converts a Crossref Deposit Schema
-  <http://help.crossref.org/deposit_schema> document to a DataCite
-  Metadata Scheme <http://schema.datacite.org/> record.  'overrides'
-  is a dictionary of individual metadata element names (e.g.,
-  "datacite.title") and values that override the conversion values
-  that would normally be drawn from the input document.  Throws an
-  exception on error.
-  """
     d = {}
     for k, v in list(overrides.items()):
         d[k] = lxml.etree.XSLT.strparam(v)
@@ -687,16 +684,17 @@ _schemaVersionRE = re.compile("{http://datacite\.org/schema/kernel-([^}]*)}resou
 
 
 def upgradeDcmsRecord(record, parseString=True, returnString=True):
+    """Converts a DataCite Metadata Scheme <http://schema.datacite.org/> record
+    (supplied as an unencoded Unicode string if 'parseString' is true, or a
+    root lxml.etree.Element object if not) to the latest version of the schema
+    (currently, version 4).
+
+    If 'returnString' is true, the record is returned as an unencoded
+    Unicode string, in which case the record has no XML declaration.
+    Otherwise, an lxml.etree.Element object is returned.  In both cases,
+    the root element's xsi:schemaLocation attribute is set or added as
+    necessary.
     """
-  Converts a DataCite Metadata Scheme <http://schema.datacite.org/>
-  record (supplied as an unencoded Unicode string if 'parseString' is
-  true, or a root lxml.etree.Element object if not) to the latest
-  version of the schema (currently, version 4).  If 'returnString' is
-  true, the record is returned as an unencoded Unicode string, in
-  which case the record has no XML declaration.  Otherwise, an
-  lxml.etree.Element object is returned.  In both cases, the root
-  element's xsi:schemaLocation attribute is set or added as necessary.
-  """
     if parseString:
         root = util.parseXmlString(record)
     else:

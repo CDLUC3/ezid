@@ -10,9 +10,12 @@ log = logging.getLogger(__name__)
 
 
 class BdbWrapper(object):
-    """Wrap a minter BerkeleyDB and provide more convenient access to the values used by EZID.
-    Values are available as attributes with more descriptive names and strings parsed to
-    ints and lists as needed. """
+    """Wrap a minter BerkeleyDB and provide more convenient access to the
+    values used by EZID.
+
+    Values are available as attributes with more descriptive names and
+    strings parsed to ints and lists as needed.
+    """
 
     def __init__(self, bdb_path, is_new=False, dry_run=False):
         self._bdb = Bdb(bdb_path, is_new, dry_run)
@@ -124,8 +127,9 @@ class BdbWrapper(object):
         return hjson.dumps(d, indent=2)  # , sort_keys=True, item_sort_key=_sort_key,)
 
     def as_dict(self, compact=True):
-        """Get the state of a minter BerkeleyDB as a dict. Only the fields used by EZID are
-        included.
+        """Get the state of a minter BerkeleyDB as a dict.
+
+        Only the fields used by EZID are included.
         """
         d = {
             'base_count': self.base_count,
@@ -215,7 +219,7 @@ class Bdb:
         return int(self.get(key_str))
 
     def get_list(self, key_str):
-        """Read a space separated string to a list"""
+        """Read a space separated string to a list."""
         return self.get(key_str).split()
 
     def set(self, key_str, value):
@@ -228,16 +232,15 @@ class Bdb:
             log.debug("BDB: {} <- {}".format(key_str, v))
 
     def set_list(self, key_str, value_list):
-        """Write list to a space separated string"""
+        """Write list to a space separated string."""
         self.set(key_str, " ".join(value_list))
 
     def append(self, key_str, append_str):
-        """Append to space separated list.
-        """
+        """Append to space separated list."""
         self.set(key_str, "{} {}".format(self.get(key_str), append_str))
 
     def pop(self, key_str, idx):
-        """Pop from space separated list"""
+        """Pop from space separated list."""
         lst = self.get_list(key_str)
         s = lst.pop(idx)
         self.set_list(key_str, lst)

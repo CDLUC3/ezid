@@ -1,5 +1,4 @@
-"""Update the name of the organization for an existing ARK or DOI shoulder
-"""
+"""Update the name of the organization for an existing ARK or DOI shoulder."""
 import argparse
 import logging
 

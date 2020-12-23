@@ -1,5 +1,4 @@
-"""Refresh the in-memory caches of the running EZID process
-"""
+"""Refresh the in-memory caches of the running EZID process."""
 
 
 

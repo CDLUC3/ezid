@@ -61,16 +61,16 @@ class AbortException(Exception):
 
 
 def withAutoReconnect(functionName, function, continuationCheck=None):
+    """Calls 'function' and returns the result.
+
+    If an operational database error is encountered (e.g., a lost
+    connection), the call is repeated until it succeeds.
+    'continuationCheck', if not None, should be another function that
+    signals when the attempts should cease by raising an exception or
+    returning False.  If 'continuationCheck' returns False, this
+    function raises AbortException (defined in this module).
+    'functionName' is the name of 'function' for logging purposes.
     """
-  Calls 'function' and returns the result.  If an operational database
-  error is encountered (e.g., a lost connection), the call is repeated
-  until it succeeds.  'continuationCheck', if not None, should be
-  another function that signals when the attempts should cease by
-  raising an exception or returning False.  If 'continuationCheck'
-  returns False, this function raises AbortException (defined in this
-  module).  'functionName' is the name of 'function' for logging
-  purposes.
-  """
     firstError = True
     while True:
         try:
@@ -93,9 +93,7 @@ def withAutoReconnect(functionName, function, continuationCheck=None):
 
 
 def ping():
-    """
-  Tests the search database, returning "up" or "down".
-  """
+    """Tests the search database, returning "up" or "down"."""
     try:
         n = ezidapp.models.SearchRealm.objects.count()
     except:
@@ -504,9 +502,7 @@ def _modifyActiveCount(delta):
 
 
 def numActiveSearches():
-    """
-  Returns the number of active searches.
-  """
+    """Returns the number of active searches."""
     _lock.acquire()
     try:
         return _numActiveSearches
@@ -524,12 +520,12 @@ def _isMysqlFulltextError(exception):
 def executeSearchCountOnly(
     user, constraints, selectRelated=defaultSelectRelated, defer=defaultDefer
 ):
+    """Executes a search database query, returning just the number of results.
+
+    'user' is the requestor, and should be an authenticated StoreUser
+    object or AnonymousUser.  'constraints', 'selectRelated', and
+    'defer' are as in formulateQuery above.
     """
-  Executes a search database query, returning just the number of
-  results.  'user' is the requestor, and should be an authenticated
-  StoreUser object or AnonymousUser.  'constraints', 'selectRelated',
-  and 'defer' are as in formulateQuery above.
-  """
     tid = uuid.uuid1()
     try:
         _modifyActiveCount(1)
@@ -584,13 +580,13 @@ def executeSearch(
     selectRelated=defaultSelectRelated,
     defer=defaultDefer,
 ):
+    """Executes a search database query, returning an evaluated QuerySet.
+
+    'user' is the requestor, and should be an authenticated StoreUser
+    object or AnonymousUser.  'from_' and 'to' are range bounds, and
+    must be supplied.  'constraints', 'orderBy', 'selectRelated', and
+    'defer' are as in formulateQuery above.
     """
-  Executes a search database query, returning an evaluated QuerySet.
-  'user' is the requestor, and should be an authenticated StoreUser
-  object or AnonymousUser.  'from_' and 'to' are range bounds, and
-  must be supplied.  'constraints', 'orderBy', 'selectRelated', and
-  'defer' are as in formulateQuery above.
-  """
     tid = uuid.uuid1()
     try:
         _modifyActiveCount(1)

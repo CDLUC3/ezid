@@ -1,5 +1,4 @@
-"""Test the shoulder-list management command
-"""
+"""Test the shoulder-list management command."""
 import logging
 
 import nog.shoulder as shoulder

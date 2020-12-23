@@ -57,10 +57,10 @@ def _identifierType(id):
 
 
 def recomputeStatistics():
+    """Recomputes and stores identifier statistics.
+
+    The old statistics are completely replaced.
     """
-  Recomputes and stores identifier statistics.  The old statistics are
-  completely replaced.
-  """
     try:
         users = {
             u.id: (u.pid, u.group.pid, u.realm.name)
@@ -149,11 +149,11 @@ def loadConfig():
 def query(
     month=None, owner=None, ownergroup=None, realm=None, type=None, hasMetadata=None
 ):
+    """Returns the number of identifiers matching a constraint as defined by
+    the non-None argument values.
+
+    The arguments correspond to the fields in the Statistics model.
     """
-  Returns the number of identifiers matching a constraint as defined
-  by the non-None argument values.  The arguments correspond to the
-  fields in the Statistics model.
-  """
     qs = ezidapp.models.Statistics.objects
     if month != None:
         qs = qs.filter(month=month)
@@ -171,29 +171,28 @@ def query(
 
 
 def getTable(owner=None, ownergroup=None, realm=None):
+    """Returns a table (a list) of identifier counts ordered by month. Each
+    element of the list is a pair.
+
+      (month, { (type, hasMetadata): count, ... })
+
+    For example:
+
+       ("2016-01", { ("ARK", False): 14837, ("ARK", True): 1789,
+         ("DOI", "True"): 11267 })
+
+    In dictionaries zero counts are not represented, and thus
+    dictionaries will not necessarily be complete with respect to the
+    Cartesian product of identifier type and hasMetadata.  The range of
+    months returned is determined by the range of nonzero counts, but
+    within that range months are guaranteed to be consecutive.  Empty
+    entries will resemble:
+
+       ("2016-02", {})
+
+    The table can optionally be limited by owner and/or group and/or
+    realm.
     """
-  Returns a table (a list) of identifier counts ordered by month.
-  Each element of the list is a pair
-
-    (month, { (type, hasMetadata): count, ... })
-
-  For example:
-
-     ("2016-01", { ("ARK", False): 14837, ("ARK", True): 1789,
-       ("DOI", "True"): 11267 })
-
-  In dictionaries zero counts are not represented, and thus
-  dictionaries will not necessarily be complete with respect to the
-  Cartesian product of identifier type and hasMetadata.  The range of
-  months returned is determined by the range of nonzero counts, but
-  within that range months are guaranteed to be consecutive.  Empty
-  entries will resemble:
-
-     ("2016-02", {})
-
-  The table can optionally be limited by owner and/or group and/or
-  realm.
-  """
     qs = ezidapp.models.Statistics.objects
     if owner == None and ownergroup == None and realm == None:
         qs = qs.all()

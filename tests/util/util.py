@@ -26,7 +26,8 @@ def decode(s):
 
 
 def shoulder_to_dict(s):
-    """Return a dict of the user defined values/attributes in a Shoulder model"""
+    """Return a dict of the user defined values/attributes in a Shoulder
+    model."""
     return {
         'active': s.active,
         'crossrefEnabled': s.crossrefEnabled,

@@ -101,15 +101,15 @@ def _releaseIdentifierLock(identifier, user):
 
 
 def getStatus():
+    """Returns a tuple consisting of two dictionaries and a boolean flag.
+
+    The first dictionary maps local usernames to the number of
+    operations currently being performed by that user; the sum of the
+    dictionary values is the total number of operations currently being
+    performed.  The second dictionary similarly maps local usernames to
+    numbers of waiting requests.  The boolean flag indicates if the
+    server is currently paused.
     """
-  Returns a tuple consisting of two dictionaries and a boolean flag.
-  The first dictionary maps local usernames to the number of
-  operations currently being performed by that user; the sum of the
-  dictionary values is the total number of operations currently being
-  performed.  The second dictionary similarly maps local usernames to
-  numbers of waiting requests.  The boolean flag indicates if the
-  server is currently paused.
-  """
     _lock.acquire()
     try:
         return (_activeUsers.copy(), _waitingUsers.copy(), _paused)
@@ -118,11 +118,11 @@ def getStatus():
 
 
 def pause(newValue):
+    """Sets or unsets the paused flag and returns the flag's previous value.
+
+    If the server is paused, no new identifier locks are granted and all
+    requests are forced to wait.
     """
-  Sets or unsets the paused flag and returns the flag's previous
-  value.  If the server is paused, no new identifier locks are granted
-  and all requests are forced to wait.
-  """
     global _paused
     _lock.acquire()
     try:
@@ -149,29 +149,27 @@ def mintIdentifier(shoulder, user, metadata={}):
 
 
 def _mintIdentifier(shoulder, user, metadata={}):
+    """Mints an identifier under the given qualified shoulder, e.g.,
+    "doi:10.5060/".  'user' is the requestor and should be an authenticated
+    StoreUser object.  'metadata' should be a dictionary of element (name,
+    value) pairs.  If an initial target URL is not supplied, the identifier is
+    given a self-referential target URL. The successful return is a string that
+    includes the canonical, qualified form of the new identifier, as in:
+
+      success: ark:/95060/fk35717n0h
+
+    For DOI identifiers, the string also includes the qualified shadow
+    ARK, as in:
+
+      success: doi:10.5060/FK35717N0H | ark:/b5060/fk35717n0h
+
+    Unsuccessful returns include the strings:
+
+      error: forbidden
+      error: bad request - subreason...
+      error: internal server error
+      error: concurrency limit exceeded
     """
-  Mints an identifier under the given qualified shoulder, e.g.,
-  "doi:10.5060/".  'user' is the requestor and should be an
-  authenticated StoreUser object.  'metadata' should be a dictionary
-  of element (name, value) pairs.  If an initial target URL is not
-  supplied, the identifier is given a self-referential target URL.
-  The successful return is a string that includes the canonical,
-  qualified form of the new identifier, as in:
-
-    success: ark:/95060/fk35717n0h
-
-  For DOI identifiers, the string also includes the qualified shadow
-  ARK, as in:
-
-    success: doi:10.5060/FK35717N0H | ark:/b5060/fk35717n0h
-
-  Unsuccessful returns include the strings:
-
-    error: forbidden
-    error: bad request - subreason...
-    error: internal server error
-    error: concurrency limit exceeded
-  """
     tid = uuid.uuid1()
 
     # TODO: We want to be able to support rendering error messages to end users in
@@ -224,32 +222,30 @@ def _mintIdentifier(shoulder, user, metadata={}):
 
 
 def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
+    """Creates an identifier having the given qualified name, e.g.,
+    "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
+    StoreUser object.  'metadata' should be a dictionary of element (name,
+    value) pairs.  If an initial target URL is not supplied, the identifier is
+    given a self-referential target URL. The successful return is a string that
+    includes the canonical, qualified form of the new identifier, as in:
+
+      success: ark:/95060/foo
+
+    For DOI identifiers, the string also includes the qualified shadow
+    ARK, as in:
+
+      success: doi:10.5060/FOO | ark:/b5060/foo
+
+    Unsuccessful returns include the strings:
+
+      error: forbidden
+      error: bad request - subreason...
+      error: internal server error
+      error: concurrency limit exceeded
+
+    If 'updateIfExists' is true, an "identifier already exists" error
+    falls through to a 'setMetadata' call.
     """
-  Creates an identifier having the given qualified name, e.g.,
-  "doi:10.5060/FOO".  'user' is the requestor and should be an
-  authenticated StoreUser object.  'metadata' should be a dictionary
-  of element (name, value) pairs.  If an initial target URL is not
-  supplied, the identifier is given a self-referential target URL.
-  The successful return is a string that includes the canonical,
-  qualified form of the new identifier, as in:
-
-    success: ark:/95060/foo
-
-  For DOI identifiers, the string also includes the qualified shadow
-  ARK, as in:
-
-    success: doi:10.5060/FOO | ark:/b5060/foo
-
-  Unsuccessful returns include the strings:
-
-    error: forbidden
-    error: bad request - subreason...
-    error: internal server error
-    error: concurrency limit exceeded
-
-  If 'updateIfExists' is true, an "identifier already exists" error
-  falls through to a 'setMetadata' call.
-  """
     if metadata is None:
         metadata = {}
     nqidentifier = util.normalizeIdentifier(identifier)
@@ -324,30 +320,29 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
 
 
 def getMetadata(identifier, user=ezidapp.models.AnonymousUser, prefixMatch=False):
+    """Returns all metadata for a given qualified identifier, e.g.,
+    "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
+    StoreUser object.  The successful return is a pair (status, dictionary)
+    where 'status' is a string that includes the canonical, qualified form of
+    the identifier, as in:
+
+      success: doi:10.5060/FOO
+
+    and 'dictionary' contains element (name, value) pairs.  Unsuccessful
+    returns include the strings:
+
+      error: forbidden
+      error: bad request - subreason...
+      error: internal server error
+      error: concurrency limit exceeded
+
+    If 'prefixMatch' is true, prefix matching is enabled and the
+    returned identifier is the longest identifier that matches a
+    (possibly proper) prefix of the requested identifier.  In such a
+    case, the status string resembles:
+
+      success: doi:10.5060/FOO in_lieu_of doi:10.5060/FOOBAR
     """
-  Returns all metadata for a given qualified identifier, e.g.,
-  "doi:10.5060/FOO".  'user' is the requestor and should be an
-  authenticated StoreUser object.  The successful return is a pair
-  (status, dictionary) where 'status' is a string that includes the
-  canonical, qualified form of the identifier, as in:
-
-    success: doi:10.5060/FOO
-
-  and 'dictionary' contains element (name, value) pairs.  Unsuccessful
-  returns include the strings:
-
-    error: forbidden
-    error: bad request - subreason...
-    error: internal server error
-    error: concurrency limit exceeded
-
-  If 'prefixMatch' is true, prefix matching is enabled and the
-  returned identifier is the longest identifier that matches a
-  (possibly proper) prefix of the requested identifier.  In such a
-  case, the status string resembles:
-
-    success: doi:10.5060/FOO in_lieu_of doi:10.5060/FOOBAR
-  """
     nqidentifier = util.normalizeIdentifier(identifier)
     if nqidentifier == None:
         return "error: bad request - invalid identifier"
@@ -391,28 +386,26 @@ def getMetadata(identifier, user=ezidapp.models.AnonymousUser, prefixMatch=False
 def setMetadata(
     identifier, user, metadata, updateExternalServices=True, internalCall=False
 ):
+    """Sets metadata elements of a given qualified identifier, e.g.,
+    "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
+    StoreUser object.  'metadata' should be a dictionary of element (name,
+    value) pairs.  If an element being set already exists, it is overwritten,
+    if not, it is created; existing elements not set are left unchanged.  Of
+    the reserved metadata elements, only "_owner", "_target", "_profile",
+    "_status", and "_export" may be set (unless the user is the EZID
+    administrator).  The "_crossref" element may be set only in certain
+    situations.  The successful return is a string that includes the canonical,
+    qualified form of the identifier, as in:
+
+      success: doi:10.5060/FOO
+
+    Unsuccessful returns include the strings:
+
+      error: forbidden
+      error: bad request - subreason...
+      error: internal server error
+      error: concurrency limit exceeded
     """
-  Sets metadata elements of a given qualified identifier, e.g.,
-  "doi:10.5060/FOO".  'user' is the requestor and should be an
-  authenticated StoreUser object.  'metadata' should be a dictionary
-  of element (name, value) pairs.  If an element being set already
-  exists, it is overwritten, if not, it is created; existing elements
-  not set are left unchanged.  Of the reserved metadata elements, only
-  "_owner", "_target", "_profile", "_status", and "_export" may be set
-  (unless the user is the EZID administrator).  The "_crossref"
-  element may be set only in certain situations.  The successful
-  return is a string that includes the canonical, qualified form of
-  the identifier, as in:
-
-    success: doi:10.5060/FOO
-
-  Unsuccessful returns include the strings:
-
-    error: forbidden
-    error: bad request - subreason...
-    error: internal server error
-    error: concurrency limit exceeded
-  """
     nqidentifier = util.normalizeIdentifier(identifier)
     if nqidentifier == None:
         return "error: bad request - invalid identifier"
@@ -468,22 +461,20 @@ def setMetadata(
 
 
 def deleteIdentifier(identifier, user, updateExternalServices=True):
+    """Deletes an identifier having the given qualified name, e.g.,
+    "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
+    StoreUser object.  The successful return is a string that includes the
+    canonical, qualified form of the now-nonexistent identifier, as in:
+
+      success: doi:/10.5060/FOO
+
+    Unsuccessful returns include the strings:
+
+      error: forbidden
+      error: bad request - subreason...
+      error: internal server error
+      error: concurrency limit exceeded
     """
-  Deletes an identifier having the given qualified name, e.g.,
-  "doi:10.5060/FOO".  'user' is the requestor and should be an
-  authenticated StoreUser object.  The successful return is a string
-  that includes the canonical, qualified form of the now-nonexistent
-  identifier, as in:
-
-    success: doi:/10.5060/FOO
-
-  Unsuccessful returns include the strings:
-
-    error: forbidden
-    error: bad request - subreason...
-    error: internal server error
-    error: concurrency limit exceeded
-  """
     nqidentifier = util.normalizeIdentifier(identifier)
     if nqidentifier == None:
         return "error: bad request - invalid identifier"

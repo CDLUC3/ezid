@@ -247,29 +247,27 @@ def _generateFilename(requestor):
 
 
 def enqueueRequest(user, request):
+    """Enqueues a batch download request.  The request must be authenticated;
+    'user' should be a StoreUser object.  'request' should be a
+    django.http.QueryDict object (from a POST request or manually created)
+    containing the parameters of the request.  The available parameters are
+    described in the API documentation.  One feature not mentioned in the
+    documentation: for the 'notify' parameter, an email address may be a
+    straight address ("fred@slate.com") or may include an addressee name ("Fred
+    Flintstone <fred@slate.com>"); in the latter case a salutation line will be
+    added to the email message.
+
+    The successful return is a string that includes the download URL, as
+    in:
+
+      success: https://ezid.cdlib.org/download/da543b91a0.xml.gz
+
+    Unsuccessful returns include the strings:
+
+      error: forbidden
+      error: bad request - subreason...
+      error: internal server error
     """
-  Enqueues a batch download request.  The request must be
-  authenticated; 'user' should be a StoreUser object.  'request'
-  should be a django.http.QueryDict object (from a POST request or
-  manually created) containing the parameters of the request.  The
-  available parameters are described in the API documentation.  One
-  feature not mentioned in the documentation: for the 'notify'
-  parameter, an email address may be a straight address
-  ("fred@slate.com") or may include an addressee name ("Fred
-  Flintstone <fred@slate.com>"); in the latter case a salutation line
-  will be added to the email message.
-
-  The successful return is a string that includes the download URL, as
-  in:
-
-    success: https://ezid.cdlib.org/download/da543b91a0.xml.gz
-
-  Unsuccessful returns include the strings:
-
-    error: forbidden
-    error: bad request - subreason...
-    error: internal server error
-  """
 
     def error(s):
         return "error: bad request - " + s
@@ -357,9 +355,7 @@ def enqueueRequest(user, request):
 
 
 def getQueueLength():
-    """
-  Returns the length of the batch download queue.
-  """
+    """Returns the length of the batch download queue."""
     return ezidapp.models.DownloadQueue.objects.count()
 
 

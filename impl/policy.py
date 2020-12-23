@@ -18,24 +18,24 @@ from . import util2
 
 
 def authorizeView(user, identifier):
+    """Returns True if a request to view identifier metadata is authorized.
+
+    'user' is the requestor and should be an authenticated StoreUser
+    object.  'identifier' is the identifier in question; it should be a
+    StoreIdentifier object.
     """
-  Returns True if a request to view identifier metadata is authorized.
-  'user' is the requestor and should be an authenticated StoreUser
-  object.  'identifier' is the identifier in question; it should be a
-  StoreIdentifier object.
-  """
     # In EZID, essentially all identifier metadata is public.
     return not identifier.isAgentPid or user.isSuperuser
 
 
 def authorizeCreate(user, prefix):
+    """Returns True if a request to mint or create an identifier is authorized.
+
+    'user' is the requestor and should be an authenticated StoreUser
+    object.  'prefix' may be a complete identifier or just an identifier
+    prefix corresponding to a shoulder; in either case it must be
+    qualified, e.g., "doi:10.5060/".
     """
-  Returns True if a request to mint or create an identifier is
-  authorized.  'user' is the requestor and should be an authenticated
-  StoreUser object.  'prefix' may be a complete identifier or just an
-  identifier prefix corresponding to a shoulder; in either case it
-  must be qualified, e.g., "doi:10.5060/".
-  """
     if util2.isTestIdentifier(prefix):
         return True
     if any([prefix.startswith(s.prefix) for s in user.shoulders.all()]):
@@ -50,13 +50,13 @@ def authorizeCreate(user, prefix):
 
 
 def authorizeUpdate(user, identifier):
+    """Returns True if a request to update an existing identifier is authorized
+    (not including ownership changes; see authorizeOwnershipChange below).
+
+    'user' is the requestor and should be an authenticated StoreUser
+    object.  'identifier' is the identifier in question; it should be a
+    StoreIdentifier object.
     """
-  Returns True if a request to update an existing identifier is
-  authorized (not including ownership changes; see
-  authorizeOwnershipChange below).  'user' is the requestor and should
-  be an authenticated StoreUser object.  'identifier' is the
-  identifier in question; it should be a StoreIdentifier object.
-  """
     if identifier.owner != None:
         idOwner = identifier.owner
         idGroup = identifier.ownergroup
@@ -77,12 +77,13 @@ def authorizeUpdate(user, identifier):
 
 
 def authorizeUpdateLegacy(user, owner, ownergroup):
+    """Legacy version of the above function needed by the UI, which currently
+    does not utilize StoreIdentifier objects.
+
+    'user' is as above.  'owner' and 'ownergroup' describe the ownership
+    of the identifier in question; each should be a local name, e.g.,
+    "dryad".
     """
-  Legacy version of the above function needed by the UI, which
-  currently does not utilize StoreIdentifier objects.  'user' is as
-  above.  'owner' and 'ownergroup' describe the ownership of the
-  identifier in question; each should be a local name, e.g., "dryad".
-  """
     # We create a fictitious identifier filled out just enough for the
     # above policy check to work.
     u = ezidapp.models.getUserByUsername(owner)
@@ -102,13 +103,13 @@ authorizeDelete = authorizeUpdate
 
 
 def authorizeOwnershipChange(user, currentOwner, newOwner):
+    """Returns True if a request to change the ownership of an existing
+    identifier is authorized.
+
+    'user' is the requestor and should be an authenticated StoreUser
+    object.  'currentOwner' and 'newOwner' should also be StoreUser
+    objects; they may be None to indicate anonymous ownership.
     """
-  Returns True if a request to change the ownership of an existing
-  identifier is authorized.  'user' is the requestor and should be an
-  authenticated StoreUser object.  'currentOwner' and 'newOwner'
-  should also be StoreUser objects; they may be None to indicate
-  anonymous ownership.
-  """
     if currentOwner == None:
         currentOwner = ezidapp.models.AnonymousUser
     if newOwner == None:
@@ -134,13 +135,13 @@ def authorizeOwnershipChange(user, currentOwner, newOwner):
 
 
 def authorizeDownload(user, owner=None, ownergroup=None):
+    """Returns True if a request to download all identifiers owned by 'owner'
+    (given as a StoreUser object) or 'ownergroup' (given as a StoreGroup
+    object) is authorized.
+
+    'user' is the requestor and should be an authenticated StoreUser
+    object.  Only one of 'owner' and 'ownergroup' should be specified.
     """
-  Returns True if a request to download all identifiers owned by
-  'owner' (given as a StoreUser object) or 'ownergroup' (given as a
-  StoreGroup object) is authorized.  'user' is the requestor and
-  should be an authenticated StoreUser object.  Only one of 'owner'
-  and 'ownergroup' should be specified.
-  """
     if owner != None:
         if user == owner:
             return True

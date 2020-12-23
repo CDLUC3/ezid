@@ -232,17 +232,17 @@ def _mapCrossref(metadata):
 
 
 def map(metadata, profile=None, datacitePriority=False):
+    """Given 'metadata', a dictionary of citation metadata, returns mapped
+    kernel metadata encapsulated in a KernelMetadata object (defined in this
+    module).
+
+    If 'profile' is None, the metadata profile to use is determined from
+    any _profile or _p field in the metadata dictionary; the profile
+    defaults to "erc".  If datacitePriority is True, the DataCite fields
+    (the 'datacite' XML field and the datacite.* itemized fields) are
+    examined and take precedence regardless of the profile.  Note that
+    this function is forgiving in nature, and does not raise exceptions.
     """
-  Given 'metadata', a dictionary of citation metadata, returns mapped
-  kernel metadata encapsulated in a KernelMetadata object (defined in
-  this module).  If 'profile' is None, the metadata profile to use is
-  determined from any _profile or _p field in the metadata dictionary;
-  the profile defaults to "erc".  If datacitePriority is True, the
-  DataCite fields (the 'datacite' XML field and the datacite.*
-  itemized fields) are examined and take precedence regardless of the
-  profile.  Note that this function is forgiving in nature, and does
-  not raise exceptions.
-  """
     if profile == None:
         profile = _get(metadata, "_profile", "_p")
     if profile == "dc":

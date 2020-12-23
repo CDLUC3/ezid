@@ -23,12 +23,12 @@ class _RedirectCatcher(urllib.request.HTTPRedirectHandler):
 
 
 def getRedirect(doi):
+    """Returns the target URL for an identifier as recorded with the global DOI
+    resolver (doi.org), or None if the identifier isn't found.
+
+    'doi' should be a scheme-less DOI identifier, e.g., "10.1234/FOO".
+    Raises an exception on other errors.
     """
-  Returns the target URL for an identifier as recorded with the global
-  DOI resolver (doi.org), or None if the identifier isn't found.
-  'doi' should be a scheme-less DOI identifier, e.g., "10.1234/FOO".
-  Raises an exception on other errors.
-  """
     o = urllib.request.build_opener(_RedirectCatcher())
     r = urllib.request.Request("https://doi.org/" + urllib.parse.quote(doi, ":/"))
     c = None

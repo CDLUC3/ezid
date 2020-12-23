@@ -1,5 +1,4 @@
-"""Deactivate an existing shoulder
-"""
+"""Deactivate an existing shoulder."""
 
 
 

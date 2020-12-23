@@ -399,9 +399,7 @@ def _doListSets(oaiRequest):
 
 
 def dispatch(request):
-    """
-  OAI-PMH request dispatcher.
-  """
+    """OAI-PMH request dispatcher."""
     if not _enabled:
         return django.http.HttpResponse(
             "service unavailable", status=503, content_type="text/plain"

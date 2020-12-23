@@ -30,9 +30,9 @@ log = logging.getLogger(__name__)
 def trigger_reload():
     """Refresh the in-memory caches of the running EZID process.
 
-    If host is not one of the known EZID hostnames for dev, stage or production,
-    we assume that this is running in a development environment, and we don't attempt
-    to trigger a refresh.
+    If host is not one of the known EZID hostnames for dev, stage or
+    production, we assume that this is running in a development
+    environment, and we don't attempt to trigger a refresh.
     """
     hostname = platform.uname()[1]
     if hostname not in KNOWN_EZID_HOSTNAME_TUP:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-"""N2T EggNog compatible minter for EZID
+"""N2T EggNog compatible minter for EZID.
 
 Terminology:
 
@@ -105,7 +105,8 @@ def mint_id(shoulder_model, dry_run=False):
 
 
 def mint_ids(shoulder_model, mint_count=1, dry_run=False):
-    """Mint any number of identifiers on an existing ARK or DOI shoulder / namespace.
+    """Mint any number of identifiers on an existing ARK or DOI shoulder /
+    namespace.
 
     If the minter is interrupted before completing the minting, the database is not
     updated. If the minter was minting a series of IDs when it was interrupted, the same
@@ -130,7 +131,8 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
 
 
 def mint_by_bdb_path(bdb_path, mint_count=1, dry_run=False):
-    """Like mint_ids(), but accepts the path to a BerkeleyDB nog.bdb minter file.
+    """Like mint_ids(), but accepts the path to a BerkeleyDB nog.bdb minter
+    file.
 
     Args:
         bdb_path: Path to a BerkeleyDB file.
@@ -224,8 +226,7 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
         self._bdb.set('origmask', self.mask_str)
 
     def _next_state(self):
-        """Step the minter to the next state.
-        """
+        """Step the minter to the next state."""
         rnd = _Drand48(self.combined_count)
         active_counter_idx = int(rnd.drand() * len(self.active_counter_list))
         # log.debug(
@@ -243,7 +244,8 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
         return n
 
     def _get_xdig_str(self, compounded_counter):
-        """Convert compounded counter value to final sping as specified by the mask"""
+        """Convert compounded counter value to final sping as specified by the
+        mask."""
         s = []
         for c in reversed(self.mask_str):
             if c == "k":
@@ -268,11 +270,13 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
         return XDIG_STR[total_int % ALPHA_COUNT]
 
     def _extend_template(self):
-        """Called when the minter has been used for minting the maximum number of IDs
-        that is possible using the current mask (combined_count has reached
-        max_combined_count). In order to use the minter again, the mask must be extended
-        to accommodate longer IDs. This affects many of the values in the minter, which
-        have to be recalculated based on the new mask.
+        """Called when the minter has been used for minting the maximum number
+        of IDs that is possible using the current mask (combined_count has
+        reached max_combined_count).
+
+        In order to use the minter again, the mask must be extended to
+        accommodate longer IDs. This affects many of the values in the
+        minter, which have to be recalculated based on the new mask.
         """
         self._assert_exhausted_minter()
         self._transfer_to_base_count()
@@ -282,9 +286,8 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
         self._generate_active_counter_list()
 
     def _generate_active_counter_list(self):
-        """Generate new list of active counters and their top values after all counters
-        have been exhausted.
-        """
+        """Generate new list of active counters and their top values after all
+        counters have been exhausted."""
         # The total number of possible identifiers for a given mask is divided by this
         # number in order to get the max value per counter. All counters have the same
         # max value except for (usually) the last one, which receives the reminder.
@@ -313,16 +316,18 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
             n += 1
 
     def _set_new_max_counts(self):
-        """Calculate the number of identifiers that can be minted with the new mask.
-        When this number is reached, the template must be extended again.
+        """Calculate the number of identifiers that can be minted with the new
+        mask.
+
+        When this number is reached, the template must be extended
+        again.
         """
         v = self._get_max_count()
         self.total_count = v
         self.max_combined_count = v
 
     def _extend_mask(self):
-        """Extend the mask according to the "atlast" rule.
-        """
+        """Extend the mask according to the "atlast" rule."""
         m = re.match(r"add(\d)$", self.atlast_str)
         add_int = int(m.group(1))
         self.mask_str = self.mask_str[:add_int] + self.mask_str
@@ -332,29 +337,30 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
         )
 
     def _transfer_to_base_count(self):
-        """Capture combined_count by adding it to the base_count, then reset it back to
-        zero. The total number of identifiers minted since the minter was created is
-        always base_count + combined_count.
+        """Capture combined_count by adding it to the base_count, then reset it
+        back to zero.
+
+        The total number of identifiers minted since the minter was
+        created is always base_count + combined_count.
         """
         self.base_count += self.combined_count
         self.combined_count = 0
 
     def _deactivate_exhausted_counter(self, counter_idx):
-        """Deactivate an exhausted counter by moving it from the active to the inactive
-        counter list.
-        """
+        """Deactivate an exhausted counter by moving it from the active to the
+        inactive counter list."""
         counter_name = self.active_counter_list.pop(counter_idx)
         self.inactive_counter_list.append(counter_name)
 
     def _reset_inactive_counter_list(self):
-        """Clear list of exhausted counters"""
+        """Clear list of exhausted counters."""
         self.inactive_counter_list = []
 
     def _assert_exhausted_minter(self):
         """Check that we really have an exhausted minter.
 
-        An exhausted minter must have no remaining counters in the active list. All the
-        counters should be in the inactive list.
+        An exhausted minter must have no remaining counters in the
+        active list. All the counters should be in the inactive list.
         """
         if not (self.combined_count == self.max_combined_count == self.total_count):
             raise nog.exc.MinterError(
@@ -366,9 +372,11 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
             )
 
     def _assert_ezid_compatible_minter(self):
-        """Ensure that we can handle this minter. EZID uses minters that require only a
-        subset of the features available on N2T. This code handles more than the
-        EZID subset but not the full N2T set.
+        """Ensure that we can handle this minter.
+
+        EZID uses minters that require only a subset of the features
+        available on N2T. This code handles more than the EZID subset
+        but not the full N2T set.
         """
         if not re.match(r"[def]+k?$", self.mask_str):
             raise nog.exc.MinterError(
@@ -400,8 +408,8 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
             )
 
     def _get_max_count(self):
-        """Calculate the max number of spings that can be generated with a given mask.
-        """
+        """Calculate the max number of spings that can be generated with a
+        given mask."""
         max_count = 1
         for c in self.mask_str:
             if c == "k":
@@ -416,10 +424,12 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
 
 
 class _Drand48:
-    """48-bit linear congruential PRNG, matching srand48() and drand48() in glibc.
+    """48-bit linear congruential PRNG, matching srand48() and drand48() in
+    glibc.
 
-    The sequence of pseudo-random numbers generated by this PRNG matches that of N2T Nog
-    running on Perl, when Perl is built with GCC on Linux.
+    The sequence of pseudo-random numbers generated by this PRNG matches
+    that of N2T Nog running on Perl, when Perl is built with GCC on
+    Linux.
     """
 
     def __init__(self, seed):

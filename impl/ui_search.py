@@ -126,10 +126,8 @@ def queryUrlEncoded(request):
 
 
 def queryDict(request):
-    """
-  Preserve search query across requests 
-  This dictionary will be injected back into form fields
-  """
+    """Preserve search query across requests This dictionary will be injected
+    back into form fields."""
     assert request.method == "GET"
     queries = {}
     c = request.GET.copy()
@@ -140,7 +138,7 @@ def queryDict(request):
 
 
 def index(request):
-    """ (Public) Search Page """
+    """(Public) Search Page."""
     if request.method != "GET":
         return uic.methodNotAllowed(request)
     d = {'menu_item': 'ui_search.index'}
@@ -164,7 +162,7 @@ def index(request):
 
 
 def results(request):
-    """ Display different page or columns from search results page """
+    """Display different page or columns from search results page."""
     d = {'menu_item': 'ui_search.results'}
     d['q'] = queryDict(request)
     d['form'] = form_objects.BaseSearchIdForm(d['q'])
@@ -173,9 +171,8 @@ def results(request):
 
 
 def hasBrokenLinks(d, request):
-    """
-  Flag if any IDs are found satisfying hasIssues=true and linkIsBroken=true
-  """
+    """Flag if any IDs are found satisfying hasIssues=true and
+    linkIsBroken=true."""
     user_id, group_id = uic.getOwnerOrGroup(
         d['owner_selected'] if 'owner_selected' in d else None
     )
@@ -195,15 +192,16 @@ def hasBrokenLinks(d, request):
 
 
 def search(d, request, noConstraintsReqd=False, s_type="public"):
-    """ 
-  Run query and organize result set for UI, used for Search, Manage, and Dashboard pages.
-  * noConstraintsReqd==True is used by pages that don't require form validation (dashboard, and
-    manage page, whose form is unbound/unvalidated if nothing has been entered/posted.
-  * If s_type=="public", don't include owner credentials in constraints.
-  * 'filtered' means form fields have been submitted w/a search request 
-    (useful to know this for the manage page)
-  * use owner or ownergroup, not both, otherwise ownergroup takes precedence
-  """
+    """Run query and organize result set for UI, used for Search, Manage, and
+    Dashboard pages.
+
+    * noConstraintsReqd==True is used by pages that don't require form validation (dashboard, and
+      manage page, whose form is unbound/unvalidated if nothing has been entered/posted.
+    * If s_type=="public", don't include owner credentials in constraints.
+    * 'filtered' means form fields have been submitted w/a search request
+      (useful to know this for the manage page)
+    * use owner or ownergroup, not both, otherwise ownergroup takes precedence
+    """
     d['REQUEST'] = request.GET
     d = _pageLayout(d, request.GET, s_type)
     if noConstraintsReqd or 'form' in d and d['form'].is_valid():
@@ -359,9 +357,8 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
 
 
 def _pageLayout(d, REQUEST, s_type="public"):
-    """
-  Track user preferences for selected fields, field order, page, and page size
-  """
+    """Track user preferences for selected fields, field order, page, and page
+    size."""
     d['filtered'] = False if 'filtered' not in d and 'filtered' not in REQUEST else True
     d['testPrefixes'] = uic.testPrefixes
     d['fields_mapped'] = FIELDS_MAPPED
@@ -415,11 +412,12 @@ def _pageLayout(d, REQUEST, s_type="public"):
 
 
 def _buildAuthorityConstraints(request, s_type="public", owner=None, ownergroup=None):
-    """ 
-  A logged in user can use (public) Search page, but this would not limit the
-  results to just their IDs. It would also include all public IDs.
-  owner = username of owner; ownergroup = group name 
-  """
+    """A logged in user can use (public) Search page, but this would not limit
+    the results to just their IDs.
+
+    It would also include all public IDs.
+    owner = username of owner; ownergroup = group name
+    """
     if s_type == "public" or userauth.getUser(request) == None:
         c = {'publicSearchVisible': True}
     else:
@@ -429,9 +427,11 @@ def _buildAuthorityConstraints(request, s_type="public", owner=None, ownergroup=
 
 
 def _buildConstraints(c, REQUEST, s_type="public"):
-    """ Map form field values to values defined in DB model.
-      Manage Page includes additional elements. 
-      Convert unicode True/False to actual boolean."""
+    """Map form field values to values defined in DB model.
+
+    Manage Page includes additional elements. Convert unicode True/False
+    to actual boolean.
+    """
     cmap = {
         'keywords': 'keywords',
         'identifier': 'identifier',
@@ -462,7 +462,7 @@ def _buildConstraints(c, REQUEST, s_type="public"):
 
 
 def _buildTimeConstraints(c, REQUEST, s_type="public"):
-    """ Add any date related constraints """
+    """Add any date related constraints."""
     c = _timeConstraintBuilder(
         c, REQUEST, 'resourcePublicationYear', 'pubyear_from', 'pubyear_to'
     )
@@ -477,10 +477,11 @@ def _buildTimeConstraints(c, REQUEST, s_type="public"):
 
 
 def _timeConstraintBuilder(c, P, cname, begin, end):
-    """ Adds time range constraints to dictionary of constraints. 
-      cname = Name of constraint to be generated
-      begin = key for begin date;   end = key for end date
-  """
+    """Adds time range constraints to dictionary of constraints.
+
+    cname = Name of constraint to be generated
+    begin = key for begin date;   end = key for end date
+    """
     if begin in P and P[begin] == '' and end in P and P[end] != '':
         c[cname] = (None, _handleDate(P[end], DATE_CEILING))
     elif begin in P and P[begin] != '':
@@ -495,7 +496,7 @@ def _timeConstraintBuilder(c, P, cname, begin, end):
 
 
 def _handleDate(d, ceiling=None):
-    """ Convert any dates with format "YYYY-MM-DD" to Unix Timestamp"""
+    """Convert any dates with format "YYYY-MM-DD" to Unix Timestamp."""
     if d.isdigit():
         return int(d)
     if ceiling:
@@ -505,17 +506,18 @@ def _handleDate(d, ceiling=None):
 
 
 def _buildQuerySyntax(c):
-    """ Takes dictionary like this:
-       {'keywords': u'marine fish', 'resourceTitle': u'"Aral Sea"'}
-      and returns string like this:
-       keywords:(marine AND fish) AND resourceTitle:("Aral Sea") 
+    """Takes dictionary like this:
 
-      Borrowing same logic from search_util.formulateQuery
-       * Handling 2-tuple publication year
-       * Removing characters that can't be handled by MySQL.
-         For safety we remove all operators that are outside double 
-         quotes (i.e., quotes are the only operator we retain).
-  """
+     {'keywords': u'marine fish', 'resourceTitle': u'"Aral Sea"'}
+    and returns string like this:
+     keywords:(marine AND fish) AND resourceTitle:("Aral Sea")
+
+    Borrowing same logic from search_util.formulateQuery
+     * Handling 2-tuple publication year
+     * Removing characters that can't be handled by MySQL.
+       For safety we remove all operators that are outside double
+       quotes (i.e., quotes are the only operator we retain).
+    """
     constraints = {i: c[i] for i in c if i != "publicSearchVisible"}
     r = ""
     dlength = len(constraints)

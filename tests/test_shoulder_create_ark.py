@@ -1,5 +1,4 @@
-"""Test the shoulder-create-ark management command
-"""
+"""Test the shoulder-create-ark management command."""
 import logging
 
 import django.core.management
@@ -15,7 +14,7 @@ log = logging.getLogger(__name__)
 @freezegun.freeze_time('2010-10-11')
 class TestShoulderCreateArk:
     def test_1000(self, caplog, tmp_bdb_root):
-        """Creating basic ARK shoulder returns expected messages"""
+        """Creating basic ARK shoulder returns expected messages."""
         caplog.set_level(logging.INFO)
         assert not ezidapp.models.Shoulder.objects.filter(
             prefix='ark:/91101/r01'
@@ -29,7 +28,7 @@ class TestShoulderCreateArk:
         sample.assert_match(caplog.text, 'output')
 
     def test_1010(self, caplog, tmp_bdb_root):
-        """Creating a basic ARK shoulder creates expected database entries"""
+        """Creating a basic ARK shoulder creates expected database entries."""
         assert not ezidapp.models.Shoulder.objects.filter(
             prefix='ark:/91101/r01'
         ).exists()
@@ -46,7 +45,8 @@ class TestShoulderCreateArk:
         assert not s.isTest
 
     def test_1020(self, caplog, tmp_bdb_root):
-        """Creating an ARK shoulder with flags creates expected database entries"""
+        """Creating an ARK shoulder with flags creates expected database
+        entries."""
         assert not ezidapp.models.Shoulder.objects.filter(
             prefix='ark:/91101/r01'
         ).exists()
@@ -65,9 +65,8 @@ class TestShoulderCreateArk:
         assert s.isTest
 
     def test_1030(self, caplog, tmp_bdb_root):
-        """Creating a full shoulder without specifying the shoulder causes the minters
-        to be stored in a separate directory named 'NULL'.
-        """
+        """Creating a full shoulder without specifying the shoulder causes the
+        minters to be stored in a separate directory named 'NULL'."""
         ns_str = 'ark:/99920/'
         org_str = '91101/r01 test org'
         assert not ezidapp.models.Shoulder.objects.filter(prefix=ns_str).exists()

@@ -130,14 +130,15 @@ _shoulderManagers = ["ezid", "oca", "other"]
 
 
 class Entry(dict):
+    """A shoulder file entry.
+
+    This is a dictionary that maps field names to values (the entry key
+    is stored under field name "key"), but for convenience fields can
+    also be accessed as attributes. Additionally, for field F,
+    Entry.lineNum.F is the line number at which F was defined (internal
+    to this module only; lineNum attributes are removed by the parser
+    when returned).
     """
-  A shoulder file entry.  This is a dictionary that maps field names
-  to values (the entry key is stored under field name "key"), but for
-  convenience fields can also be accessed as attributes.
-  Additionally, for field F, Entry.lineNum.F is the line number at
-  which F was defined (internal to this module only; lineNum
-  attributes are removed by the parser when returned).
-  """
 
     def __init__(self, _createLineNum=True):
         if _createLineNum:
@@ -147,9 +148,7 @@ class Entry(dict):
         return self[name]
 
     def add(self, field, value, lineNum):
-        """
-    Adds a field to the entry.
-    """
+        """Adds a field to the entry."""
         self[field] = value
         self.lineNum[field] = lineNum
 
@@ -506,12 +505,13 @@ def _globalValidations(entries, errors, warnings):
 
 
 def parse(fileContent):
+    """Parses a shoulder file.
+
+    'fileContent' should be the file's entire contents as a single
+    string.  Returns a 3-tuple (entries, errors, warnings) where
+    'entries' is a list of Entry objects and 'errors' and 'warnings' are
+    each lists of tuples (line number, message).
     """
-  Parses a shoulder file.  'fileContent' should be the file's entire
-  contents as a single string.  Returns a 3-tuple (entries, errors,
-  warnings) where 'entries' is a list of Entry objects and 'errors'
-  and 'warnings' are each lists of tuples (line number, message).
-  """
     errors = []
     warnings = []
     entries = _read(fileContent, errors, warnings)

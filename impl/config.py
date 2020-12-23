@@ -56,9 +56,7 @@ logger.debug('Reload listeners cleared')
 
 
 def registerReloadListener(loader):
-    """
-  Adds a reload listener.
-  """
+    """Adds a reload listener."""
     if not callable(loader):
         import inspect
         logger.error("Reload listener must be a callable. Received: {}".format(repr(loader)))
@@ -148,9 +146,7 @@ def load():
 
 
 def reload():
-    """
-  Reloads the configuration file.
-  """
+    """Reloads the configuration file."""
     load()
     if not _reloadFunctions:
         logger.warning('config.reload(): Called with no registered callbacks')
@@ -178,23 +174,25 @@ _startupVersion = _version
 
 
 def get(option):
+    """Returns the value of a configuration option.
+
+    The option name should be specified in section.option syntax, e.g.,
+    "datacite.username".
     """
-  Returns the value of a configuration option.  The option name should
-  be specified in section.option syntax, e.g., "datacite.username".
-  """
     return _config.getOption(option)
 
 
 def getVersionInfo():
+    """Returns two tuples, each of the form (timestamp, ezidVersion,
+    infoVersion).
+
+    The first tuple reflects the state of EZID's Mercurial repositories
+    at the time of server startup, the second at the time of the last
+    configuration reload.  Within each tuple, the first element is the
+    startup or reload time as a Unix timestamp, the second is the EZID
+    repository's version, and the third is the info repository's
+    version.
     """
-  Returns two tuples, each of the form (timestamp, ezidVersion,
-  infoVersion).  The first tuple reflects the state of EZID's
-  Mercurial repositories at the time of server startup, the second at
-  the time of the last configuration reload.  Within each tuple, the
-  first element is the startup or reload time as a Unix timestamp, the
-  second is the EZID repository's version, and the third is the info
-  repository's version.
-  """
     return (_startupVersion, _version)
 
 

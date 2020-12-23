@@ -210,9 +210,7 @@ def _methodNotAllowed():
 
 
 def mintIdentifier(request):
-    """
-  Mints an identifier; interface to ezid.mintIdentifier.
-  """
+    """Mints an identifier; interface to ezid.mintIdentifier."""
     if request.method != "POST":
         return _methodNotAllowed()
     user = userauth.authenticateRequest(request)
@@ -232,11 +230,8 @@ def mintIdentifier(request):
 
 
 def identifierDispatcher(request):
-    """
-  Dispatches an identifier request depending on the HTTP method;
-  interface to ezid.getMetadata, ezid.setMetadata, and
-  ezid.createIdentifier.
-  """
+    """Dispatches an identifier request depending on the HTTP method; interface
+    to ezid.getMetadata, ezid.setMetadata, and ezid.createIdentifier."""
     if request.method == "GET":
         return _getMetadata(request)
     elif request.method == "POST":
@@ -363,9 +358,7 @@ def _deleteIdentifier(request):
 
 
 def login(request):
-    """
-  Logs in a user.
-  """
+    """Logs in a user."""
     if request.method != "GET":
         return _methodNotAllowed()
     options = _validateOptions(request, {})
@@ -381,9 +374,7 @@ def login(request):
 
 
 def logout(request):
-    """
-  Logs a user out.
-  """
+    """Logs a user out."""
     if request.method != "GET":
         return _methodNotAllowed()
     options = _validateOptions(request, {})
@@ -394,9 +385,7 @@ def logout(request):
 
 
 def getStatus(request):
-    """
-  Returns EZID's status.
-  """
+    """Returns EZID's status."""
     if request.method != "GET":
         return _methodNotAllowed()
     options = _validateOptions(
@@ -426,9 +415,7 @@ def getStatus(request):
 
 
 def getVersion(request):
-    """
-    Returns EZID's version.
-    """
+    """Returns EZID's version."""
     if request.method != "GET":
         return _methodNotAllowed()
 
@@ -505,10 +492,11 @@ def _statusLineGenerator(includeSuccessLine):
 
 
 def pause(request):
+    """Pauses or unpauses the server.
+
+    If the server is paused, server status records are streamed back to
+    the client indefinitely.
     """
-  Pauses or unpauses the server.  If the server is paused, server
-  status records are streamed back to the client indefinitely.
-  """
     if request.method != "GET":
         return _methodNotAllowed()
     user = userauth.authenticateRequest(request)
@@ -548,9 +536,7 @@ def pause(request):
 
 
 def reload(request):
-    """
-  Reloads the configuration file; interface to config.reload.
-  """
+    """Reloads the configuration file; interface to config.reload."""
     if request.method != "POST":
         return _methodNotAllowed()
     options = _validateOptions(request, {})
@@ -577,9 +563,7 @@ def reload(request):
 
 
 def batchDownloadRequest(request):
-    """
-  Enqueues a batch download request.
-  """
+    """Enqueues a batch download request."""
     if request.method != "POST":
         return _methodNotAllowed()
     options = _validateOptions(request, {})

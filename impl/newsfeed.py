@@ -80,9 +80,9 @@ def loadConfig():
 
 
 def getLatestItems():
+    """Returns the latest news items (up to 3 items) as a list of tuples.
+
+    [(title, URL), ...].  At least one item is always returned.  The URL
+    may be None in a tuple.
     """
-  Returns the latest news items (up to 3 items) as a list of tuples
-  [(title, URL), ...].  At least one item is always returned.  The URL
-  may be None in a tuple.
-  """
     return _items

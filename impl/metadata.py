@@ -30,9 +30,7 @@ from . import config
 
 
 class Element(object):
-    """
-  A metadata element.
-  """
+    """A metadata element."""
 
     def __init__(self, name, displayName, displayType, tooltip):
         self.name = name
@@ -45,12 +43,12 @@ class Element(object):
 
 
 class Profile(object):
+    """A metadata profile.
+
+    To support the (annoyingly limited) Django template language,
+    metadata element names can be used as keys. Furthermore, a leading
+    underscore is added to an element name if necessary.
     """
-  A metadata profile.  To support the (annoyingly limited) Django
-  template language, metadata element names can be used as keys.
-  Furthermore, a leading underscore is added to an element name if
-  necessary.
-  """
 
     def __init__(self, name, displayName, editable, elements):
         self.name = name
@@ -174,19 +172,20 @@ def _writeTooltips():
 
 
 def getProfiles():
+    """Returns a list of known metadata profiles.
+
+    A deep copy is performed, so the caller is free to modify the
+    returned objects.
     """
-  Returns a list of known metadata profiles.  A deep copy is
-  performed, so the caller is free to modify the returned objects.
-  """
     return [p.clone() for p in _profiles]
 
 
 def getProfile(name):
+    """Returns the named metadata profile, or None if there is no such profile.
+
+    A deep copy is performed, so the caller is free to modify the
+    returned object.
     """
-  Returns the named metadata profile, or None if there is no such
-  profile.  A deep copy is performed, so the caller is free to modify
-  the returned object.
-  """
     for p in _profiles:
         if p.name == name:
             return p.clone()

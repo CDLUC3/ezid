@@ -1,5 +1,4 @@
-"""Create a new ARK shoulder
-"""
+"""Create a new ARK shoulder."""
 
 
 

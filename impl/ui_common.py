@@ -98,12 +98,12 @@ def render(request, template, context={}):
 
 
 def renderIdPage(request, path, d):
+    """Used by Create and Demo ID pages.
+
+    path is string of one of the following '[create|demo]/[simple|advanced]'.
+    d['id_gen_result'] will be either 'method_not_allowed', 'bad_request', 'edit_page' or
+    'created_identifier: <new_id>'
     """
-  Used by Create and Demo ID pages.
-  path is string of one of the following '[create|demo]/[simple|advanced]'.
-  d['id_gen_result'] will be either 'method_not_allowed', 'bad_request', 'edit_page' or
-  'created_identifier: <new_id>'
-  """
     result = "edit_page" if "id_gen_result" not in d else d["id_gen_result"]
     if result == "edit_page":
         return render(request, path, d)  # ID Create or Demo page (Simple or Advanced)
@@ -219,7 +219,7 @@ def assembleUpdateDictionary(request, profile, additionalElements={}):
 
 
 def extract(d, keys):
-    """Gets subset of dictionary based on keys in an array"""
+    """Gets subset of dictionary based on keys in an array."""
     return dict((k, d[k]) for k in keys if k in d)
 
 
@@ -228,7 +228,7 @@ def random_password(size=8):
 
 
 def user_login_required(f):
-    """defining a decorator to require a user to be logged in"""
+    """defining a decorator to require a user to be logged in."""
 
     def wrap(request, *args, **kwargs):
         if userauth.getUser(request) == None:
@@ -246,7 +246,7 @@ def user_login_required(f):
 
 
 def admin_login_required(f):
-    """defining a decorator to require an admin to be logged in"""
+    """defining a decorator to require an admin to be logged in."""
 
     def wrap(request, *args, **kwargs):
         if not userauth.getUser(request, returnAnonymous=True).isSuperuser:
@@ -265,28 +265,26 @@ def admin_login_required(f):
 
 
 def identifier_has_block_data(identifier):
-    """
-  Returns true if the identifier has block metadata, which affects
-  both the display and the editability of the metadata in the UI.
-  """
+    """Returns true if the identifier has block metadata, which affects both
+    the display and the editability of the metadata in the UI."""
     return (identifier["_profile"] == "erc" and "erc" in identifier) or (
         identifier["_profile"] == "datacite" and "datacite" in identifier
     )
 
 
 def owner_names(user, page):
-    """
-  Menu filter/selector used on Manage and Dashboard pages
-  Generates a data structure to represent heirarchy of realm -> group -> user, eg:
-  [('realm_cdl',        'realm: cdl'),
-   ('group_groupname',  ' [groupname]  American Astronomical Society'),
-   ('user_username',    '  [username]   American Astronomical Society (by proxy)', ...
+    """Menu filter/selector used on Manage and Dashboard pages Generates a data
+    structure to represent heirarchy of realm -> group -> user, eg:
 
-  Note: At the time of writing, is it not possible to search for all identifiers
-    within a realm or entirety of EZID. But it is possible to aggregate stats for the
-    Dashboard at this level. Thus diff't choices available based on page "dashboard"
-    or "manage"
-  """
+    [('realm_cdl',        'realm: cdl'),
+     ('group_groupname',  ' [groupname]  American Astronomical Society'),
+     ('user_username',    '  [username]   American Astronomical Society (by proxy)', ...
+
+    Note: At the time of writing, is it not possible to search for all identifiers
+      within a realm or entirety of EZID. But it is possible to aggregate stats for the
+      Dashboard at this level. Thus diff't choices available based on page "dashboard"
+      or "manage"
+    """
     r = []
     me = _userList([user], 0, "  (" + _("me") + ")")
     if user.isSuperuser:
@@ -328,7 +326,7 @@ def _indent_str(size):
 
 
 def _getGroupsUsers(me, indent, groups):
-    """ Return heirarchical list of all groups and their constituent users """
+    """Return heirarchical list of all groups and their constituent users."""
     r = []
     for g in groups:
         n = g.groupname
@@ -349,7 +347,7 @@ def _getGroupsUsers(me, indent, groups):
 
 
 def _getUsersInGroup(me, indent, groupname):
-    """ Display all users in group except group admin """
+    """Display all users in group except group admin."""
     g = ezidapp.models.getGroupByGroupname(groupname)
     return _userList(
         [user for user in g.users.all() if user.username != me.username], indent, ""
@@ -357,9 +355,11 @@ def _getUsersInGroup(me, indent, groupname):
 
 
 def _userList(users, indent, suffix):
-    """ Display list of sorted tuples as follows:
-      [('user_uitesting', '**INDENT**[apitest]  EZID API test account'), ...]
-  """
+    """Display list of sorted tuples as follows:
+
+    [('user_uitesting', '**INDENT**[apitest]  EZID API test account'),
+    ...]
+    """
     k = "user_"
     # Make list of three items first so they're sortable by DisplayName
     r = [
@@ -375,10 +375,8 @@ def _userList(users, indent, suffix):
 
 
 def getOwnerOrGroupOrRealm(ownerkey):
-    """
-  Takes ownerkey like 'user_uitesting' or 'group_merritt' or 'realm_purdue'
-  and returns as tuple of user_id, group_id, realm_id
-  """
+    """Takes ownerkey like 'user_uitesting' or 'group_merritt' or
+    'realm_purdue' and returns as tuple of user_id, group_id, realm_id."""
     if ownerkey is None:
         # ToDo: Is this insecure?
         return ("all", None, None)
@@ -410,5 +408,5 @@ def getOwnerOrGroup(ownerkey):
 
 
 def isEmptyStr(v):
-    """ check for any empty string """
+    """check for any empty string."""
     return False if v is not None and v != "" and not v.isspace() else True

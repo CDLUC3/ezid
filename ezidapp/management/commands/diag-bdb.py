@@ -1,4 +1,4 @@
-"""BerkeleyDB utilities
+"""BerkeleyDB utilities.
 
 These utilities work directly with the BerkeleyDB (.bdb) files on disk. They do not
 connect to the EZID database.

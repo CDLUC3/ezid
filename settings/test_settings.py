@@ -1,4 +1,4 @@
-"""Settings for unit tests
+"""Settings for unit tests.
 
 These settings are active while tests are running under pytest.
 

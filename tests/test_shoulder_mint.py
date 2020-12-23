@@ -1,5 +1,4 @@
-"""Test the shoulder-deactivate and shoulder-activate management commands
-"""
+"""Test the shoulder-deactivate and shoulder-activate management commands."""
 import logging
 
 import django.conf

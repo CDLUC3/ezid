@@ -1,5 +1,4 @@
-"""Mint one or more new identifiers on an existing shoulder
-"""
+"""Mint one or more new identifiers on an existing shoulder."""
 import argparse
 import logging
 

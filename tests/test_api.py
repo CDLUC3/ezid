@@ -32,7 +32,7 @@ class TestAPI:
         return result_dict
 
     def test_1000(self, ez_admin, reloaded, tmp_bdb_root, minters, log_shoulder_count):
-        """Test /mint"""
+        """Test /mint."""
         log_shoulder_count('Shoulders after test launch')
         result_list = []
         for ns, arg_tup in minters:
@@ -41,7 +41,7 @@ class TestAPI:
         # sample.assert_match(result_list, 'mint')
 
     def test_1010(self, ez_admin, tmp_bdb_root, minters):
-        """Test /view"""
+        """Test /view."""
         result_list = []
         for ns, arg_tup in minters:
             result_dict = self._mint(ez_admin, str(ns))

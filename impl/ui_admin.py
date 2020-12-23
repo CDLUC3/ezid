@@ -14,10 +14,9 @@ NO_CONSTRAINTS = True
 
 @uic.user_login_required
 def dashboard(request):
-    """ 
-  ID Issues and Crossref tables load for the first time w/o ajax
-  All subsequent searches are done via ajax (ajax_dashboard_table method below)
-  """
+    """ID Issues and Crossref tables load for the first time w/o ajax All
+    subsequent searches are done via ajax (ajax_dashboard_table method
+    below)"""
     d = {'menu_item': 'ui_admin.dashboard'}
     user = userauth.getUser(request)
     d['heading_user_display'] = user.displayName + "'s EZID " + _("Dashboard")
@@ -174,31 +173,29 @@ def _computeTotals(table):
 
 
 def csvStats(request):
+    """Returns all statistics to which a user is entitled as a CSV file.
+    'requestor' is the user, and should be a StoreUser object.  The statistics
+    include those for the requestor; and all users (if the requestor is a
+    superuser) or all users in the requestor's realm (if the requestor is a
+    realm administrator) or all users in the requestor's group (if the
+    requestor is a group administrator); plus any users the requestor is a
+    proxy for.  The CSV file is returned as a single string.  The columns are:
+
+    owner
+    ownergroup
+    month
+    ARKs with metadata
+    ARKs without metadata
+    total ARKs
+    DOIs with metadata
+    DOIs without metadata
+    total DOIs
+
+    Rows are grouped by user; the order of users in the CSV file is
+    undefined.  For a given user, rows are ordered by month, and the
+    rows are complete with respect to the range of months, as described
+    in stats.Stats.getTable().
     """
-  Returns all statistics to which a user is entitled as a CSV file.
-  'requestor' is the user, and should be a StoreUser object.  The
-  statistics include those for the requestor; and all users (if the
-  requestor is a superuser) or all users in the requestor's realm (if
-  the requestor is a realm administrator) or all users in the
-  requestor's group (if the requestor is a group administrator); plus
-  any users the requestor is a proxy for.  The CSV file is returned as
-  a single string.  The columns are:
-
-  owner
-  ownergroup
-  month
-  ARKs with metadata
-  ARKs without metadata
-  total ARKs
-  DOIs with metadata
-  DOIs without metadata
-  total DOIs
-
-  Rows are grouped by user; the order of users in the CSV file is
-  undefined.  For a given user, rows are ordered by month, and the
-  rows are complete with respect to the range of months, as described
-  in stats.Stats.getTable().
-  """
     requestor = userauth.getUser(request)
     users = set([requestor])
     if requestor.isSuperuser:

@@ -26,11 +26,11 @@ def _htmlWanted(acceptHeader):
 
 
 def isUiRequest(request):
+    """Returns true if the request is to be handled by the UI as opposed to the
+    API.
+
+    The determination is based on the client's desired content type.
     """
-  Returns true if the request is to be handled by the UI as opposed to
-  the API.  The determination is based on the client's desired content
-  type.
-  """
     # In its infinite wisdom IE8 does not express a preference for any
     # variety of HTML or XML, so we cheat and return the UI if the
     # request appears to come from a browser.
@@ -41,11 +41,11 @@ def isUiRequest(request):
 
 
 def d(request, apiFunction, uiFunction):
+    """Dispatches a request to the API or UI depending on the client's desired
+    content type.
+
+    Each function name must be qualified with a module name.
     """
-  Dispatches a request to the API or UI depending on the client's
-  desired content type.  Each function name must be qualified with a
-  module name.
-  """
     if isUiRequest(request):
         f = uiFunction
     else:

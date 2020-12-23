@@ -38,8 +38,9 @@ def start_tidy():
     """Call at start of test run to tidy the samples directory.
 
     Pytest will run regular session scope fixtures in parallel with test
-    collection, while this function must complete before collection starts. The
-    best place to call it from appears to be ./conftest.pytest_sessionstart().
+    collection, while this function must complete before collection
+    starts. The best place to call it from appears to be
+    ./conftest.pytest_sessionstart().
     """
     log.info("Moving files to tidy dir")
     with _get_tidy_path() as tidy_dir_path:
@@ -112,10 +113,11 @@ def assert_match(
 
 @contextlib.contextmanager
 def get_path(filename):
-    """When tidying, get_path_list() may move samples, which can cause concurrent calls
-    to receive different paths for the same file. This is resolved by serializing calls
-    to get_path_list(). Regular multiprocessing.Lock() does not seem to work under
-    pytest-xdist.
+    """When tidying, get_path_list() may move samples, which can cause
+    concurrent calls to receive different paths for the same file.
+
+    This is resolved by serializing calls to get_path_list(). Regular
+    multiprocessing.Lock() does not seem to work under pytest-xdist.
     """
     # noinspection PyUnresolvedReferences
     with _get_sample_path(filename) as sample_path:
@@ -189,7 +191,6 @@ def obj_to_pretty_str(o, no_clobber=False, no_wrap=False, column_width=None):
     Args:
         column_width (int):
         :param o:
-
     """
 
     # noinspection PyUnreachableCode
@@ -270,7 +271,9 @@ def get_test_module_name():
 
 def _clobber_uncontrolled_volatiles(o_str):
     """Some volatile values in results are not controlled by freezing the time
-    and/or PRNG seed. We replace those with a fixed string here.
+    and/or PRNG seed.
+
+    We replace those with a fixed string here.
     """
     # requests-toolbelt is using another prng for mmp docs
     o_str = re.sub(r"(?<=boundary=)[0-9a-fA-F]+", "[BOUNDARY]", o_str)
@@ -301,7 +304,6 @@ def _get_or_create_path(filename):
     files.
 
     See the test docs for usage.
-
     """
     with get_path(filename) as path:
         if not os.path.isfile(path):

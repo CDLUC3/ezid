@@ -189,15 +189,15 @@ def _daemonThread(sh):
 
 
 def callWrapper(sh, rows, methodName, function, *args):
+    """This function should be used by registrars to wrap calls to registrar-
+    specific create/update/delete functions.
+
+    It hides all transient errors (by retrying indefinitely) and raises
+    all others. 'sh' and 'rows' are supplied by this module and should
+    simply be passed through.  'function' is the function to call;
+    'methodName' is its name for error reporting purposes.  Any
+    additional arguments are passed through to 'function'.
     """
-  This function should be used by registrars to wrap calls to
-  registrar-specific create/update/delete functions.  It hides all
-  transient errors (by retrying indefinitely) and raises all others.
-  'sh' and 'rows' are supplied by this module and should simply be
-  passed through.  'function' is the function to call; 'methodName' is
-  its name for error reporting purposes.  Any additional arguments are
-  passed through to 'function'.
-  """
     while True:
         _checkAbort(sh)
         try:
@@ -276,14 +276,14 @@ def _workerThread(sh):
 
 
 def enqueueIdentifier(model, identifier, operation, blob):
+    """Adds an identifier to the asynchronous registration queue named by
+    'model'.
+
+    'identifier' should be the normalized, qualified identifier, e.g.,
+    "doi:10.5060/FOO".  'operation' is the identifier operation and
+    should be one of the strings "create", "update", or "delete".
+    'blob' is the identifier's metadata dictionary in blob form.
     """
-  Adds an identifier to the asynchronous registration queue named by
-  'model'.  'identifier' should be the normalized, qualified
-  identifier, e.g., "doi:10.5060/FOO".  'operation' is the identifier
-  operation and should be one of the strings "create", "update", or
-  "delete".  'blob' is the identifier's metadata dictionary in blob
-  form.
-  """
     e = model(
         enqueueTime=int(time.time()),
         identifier=identifier,
@@ -308,24 +308,24 @@ def launch(
     enabledFlagHolder,
     threadNameHolder,
 ):
+    """Launches a registration thread (and subservient worker threads).
+
+    'registrar' is the registrar the thread is for, e.g., "datacite".
+    'queueModel' is the registrar's queue database model, e.g.,
+    ezidapp.models.DataciteQueue.  'createFunction', 'updateFunction',
+    and 'deleteFunction' are the registrar-specific functions to be
+    called.  Each should accept arguments (sh, rows, identifier,
+    metadata) where 'identifier' is a normalized, qualified identifier,
+    e.g., "doi:10.5060/FOO", and 'metadata' is the identifier's metadata
+    dictionary.  Each function should wrap external HTTP calls using
+    'callWrapper' above, passing through the 'sh' and 'rows' arguments.
+    The 'batch*' functions are similar.  If not None, each should
+    process multiple identifiers and accept arguments (sh, row, batch)
+    where 'batch' is a list of (identifier, metadata dictionary) tuples.
+    'enabledFlagHolder' is a singleton list containing a boolean flag
+    that indicates if the thread is enabled.  'threadNameHolder' is a
+    singleton list containing the string name of the current thread.
     """
-  Launches a registration thread (and subservient worker threads).
-  'registrar' is the registrar the thread is for, e.g., "datacite".
-  'queueModel' is the registrar's queue database model, e.g.,
-  ezidapp.models.DataciteQueue.  'createFunction', 'updateFunction',
-  and 'deleteFunction' are the registrar-specific functions to be
-  called.  Each should accept arguments (sh, rows, identifier,
-  metadata) where 'identifier' is a normalized, qualified identifier,
-  e.g., "doi:10.5060/FOO", and 'metadata' is the identifier's metadata
-  dictionary.  Each function should wrap external HTTP calls using
-  'callWrapper' above, passing through the 'sh' and 'rows' arguments.
-  The 'batch*' functions are similar.  If not None, each should
-  process multiple identifiers and accept arguments (sh, row, batch)
-  where 'batch' is a list of (identifier, metadata dictionary) tuples.
-  'enabledFlagHolder' is a singleton list containing a boolean flag
-  that indicates if the thread is enabled.  'threadNameHolder' is a
-  singleton list containing the string name of the current thread.
-  """
     sh = _StateHolder(
         registrar,
         queueModel,

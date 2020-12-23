@@ -98,16 +98,16 @@ def _addDeclaration (document):
   return "<?xml version=\"1.0\"?>\n" + document
 
 def validateBody (body):
-  """
-  Validates and normalizes an immediate child element of a <body>
-  element of a Crossref metadata submission document.  'body' should
-  be a Unicode string.  Either a normalized XML document is returned
-  or an assertion error is raised.  Validation is limited to checking
-  that 'body' is well-formed XML, that it appears to be a <body> child
-  element, and that the elements that EZID cares about are present and
-  well-formed.  Normalization includes stripping off any <doi_batch>
-  or <body> elements enclosing the child element, and normalizing the
-  one and only <doi_data> element.
+  """Validates and normalizes an immediate child element of a <body> element of
+  a Crossref metadata submission document.
+
+  'body' should be a Unicode string.  Either a normalized XML document
+  is returned or an assertion error is raised.  Validation is limited to
+  checking that 'body' is well-formed XML, that it appears to be a
+  <body> child element, and that the elements that EZID cares about are
+  present and well-formed.  Normalization includes stripping off any
+  <doi_batch> or <body> elements enclosing the child element, and
+  normalizing the one and only <doi_data> element.
   """
   # Strip off any prolog.
   m = _prologRE.match(body)
@@ -188,8 +188,9 @@ _titlePaths = [
 
 def _buildDeposit (body, registrant, doi, targetUrl, withdrawTitles=False,
   bodyOnly=False):
-  """
-  Builds a Crossref metadata submission document.  'body' should be a
+  """Builds a Crossref metadata submission document.
+
+  'body' should be a
   Crossref <body> child element as a Unicode string, and is assumed to
   have been validated and normalized per validateBody above.
   'registrant' is inserted in the header.  'doi' should be a
@@ -239,22 +240,22 @@ def _buildDeposit (body, registrant, doi, targetUrl, withdrawTitles=False,
   return (d2, d1, batchId)
 
 def replaceTbas (body, doi, targetUrl):
-  """
-  Fills in the (:tba) portions of Crossref deposit metadata with the
-  given arguments.  'body' should be a Crossref <body> child element
-  as a Unicode string, and is assumed to have been validated and
-  normalized per validateBody above.  'doi' should be a scheme-less
-  DOI identifier (e.g., "10.5060/FOO").  The return is a Unicode
-  string.
+  """Fills in the (:tba) portions of Crossref deposit metadata with the given
+  arguments.
+
+  'body' should be a Crossref <body> child element as a Unicode string,
+  and is assumed to have been validated and normalized per validateBody
+  above.  'doi' should be a scheme-less DOI identifier (e.g.,
+  "10.5060/FOO").  The return is a Unicode string.
   """
   return _buildDeposit(body, None, doi, targetUrl, bodyOnly=True)
 
 def _multipartBody (*parts):
-  """
-  Builds a multipart/form-data (RFC 2388) document out of a list of
-  constituent parts.  Each part is either a 2-tuple (name, value) or a
-  4-tuple (name, filename, contentType, value).  Returns a tuple
-  (document, boundary).
+  """Builds a multipart/form-data (RFC 2388) document out of a list of
+  constituent parts.
+
+  Each part is either a 2-tuple (name, value) or a 4-tuple (name,
+  filename, contentType, value).  Returns a tuple (document, boundary).
   """
   while True:
     boundary = "BOUNDARY_%s" % uuid.uuid1().hex
@@ -286,10 +287,11 @@ def _wrapException (context, exception):
     type(exception).__name__, m))
 
 def _submitDeposit (deposit, batchId, doi):
-  """
-  Submits a Crossref metadata submission document as built by
-  _buildDeposit above.  Returns True on success, False on (internal)
-  error.  'doi' is the identifier in question.
+  """Submits a Crossref metadata submission document as built by _buildDeposit
+  above.
+
+  Returns True on success, False on (internal) error.  'doi' is the
+  identifier in question.
   """
   if not _enabled: return True
   body, boundary = _multipartBody(("operation", "doMDUpload"),
@@ -413,12 +415,12 @@ def _pollDepositStatus (batchId, doi):
     return ("unknown", None)
 
 def enqueueIdentifier (identifier, operation, metadata, blob):
-  """
-  Adds an identifier to the Crossref queue.  'identifier' should be
-  the normalized, qualified identifier, e.g., "doi:10.5060/FOO".
-  'operation' is the identifier operation and should be one of the
-  strings "create", "update", or "delete".  'metadata' is the
-  identifier's metadata dictionary; 'blob' is the same in blob form.
+  """Adds an identifier to the Crossref queue.
+
+  'identifier' should be the normalized, qualified identifier, e.g.,
+  "doi:10.5060/FOO". 'operation' is the identifier operation and should
+  be one of the strings "create", "update", or "delete".  'metadata' is
+  the identifier's metadata dictionary; 'blob' is the same in blob form.
   """
   e = ezidapp.models.CrossrefQueue(identifier=identifier, owner=metadata["_o"],
     metadata=blob,
@@ -426,11 +428,9 @@ def enqueueIdentifier (identifier, operation, metadata, blob):
   e.save()
 
 def getQueueStatistics ():
-  """
-  Returns a 4-tuple containing the numbers of identifiers in the
-  Crossref queue by status: (awaiting submission, submitted,
-  registered with warning, registration failed).
-  """
+  """Returns a 4-tuple containing the numbers of identifiers in the Crossref
+  queue by status: (awaiting submission, submitted, registered with warning,
+  registration failed)."""
   q = ezidapp.models.CrossrefQueue.objects.values("status").\
     annotate(django.db.models.Count("status"))
   d = {}

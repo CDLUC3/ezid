@@ -34,11 +34,11 @@ proxies_default = _("None chosen")
 
 
 def login(request):
+    """Renders the login page (GET) or processes a login form submission
+    (POST).  A successful login redirects to the URL specified by.
+
+    ?next=... or, failing that, the home page.
     """
-  Renders the login page (GET) or processes a login form submission
-  (POST).  A successful login redirects to the URL specified by
-  ?next=... or, failing that, the home page.
-  """
     d = {"menu_item": "ui_null.null"}
     if request.method == "GET":
         if "next" in request.GET:
@@ -89,9 +89,7 @@ def login(request):
 
 
 def logout(request):
-    """
-  Logs the user out and redirects to the home page.
-  """
+    """Logs the user out and redirects to the home page."""
     d = {'menu_item': 'ui_null.null'}
     if request.method != "GET":
         return uic.methodNotAllowed(request)
@@ -102,7 +100,7 @@ def logout(request):
 
 @uic.user_login_required
 def edit(request):
-    """Edit account information form"""
+    """Edit account information form."""
     d = {'menu_item': 'ui_account.edit'}
     user = userauth.getUser(request)
     d["username"] = user.username
@@ -190,10 +188,11 @@ def allUsersInRealm(user):
 
 
 def _getNewProxies(user, orig, picked):
-    """ 
-  Compares two lists of usernames. Returns list of newly picked users, as User objects.
-  Not removing any users at the moment.
-  """
+    """Compares two lists of usernames.
+
+    Returns list of newly picked users, as User objects. Not removing
+    any users at the moment.
+    """
     r = []
     p = list(set(picked) - set(orig))
     if p:
@@ -203,7 +202,7 @@ def _getNewProxies(user, orig, picked):
 
 
 def _update_edit_user(request, user, new_proxies_selected, basic_info_changed):
-    """method to update the user editing his/her information"""
+    """method to update the user editing his/her information."""
     d = request.POST
     try:
         with django.db.transaction.atomic():
@@ -330,9 +329,7 @@ def _sendUserEmail(request, user, new_proxies):
 
 
 def pwreset(request, pwrr):
-    """
-  Handles all GET and POST interactions related to password resets.
-  """
+    """Handles all GET and POST interactions related to password resets."""
     if pwrr:  # Change password here after receiving email
         d = {'menu_item': 'ui_null.null'}
         r = decodePasswordResetRequest(pwrr)
@@ -403,10 +400,10 @@ def pwreset(request, pwrr):
 
 
 def sendPasswordResetEmail(username, emailAddress):
+    """Sends an email containing a password reset request link.
+
+    Returns None on success or a string message on error.
     """
-  Sends an email containing a password reset request link.  Returns
-  None on success or a string message on error.
-  """
     user = ezidapp.models.getUserByUsername(username)
     if user == None or user.isAnonymous:
         return _("No such user.")
@@ -446,10 +443,8 @@ def sendPasswordResetEmail(username, emailAddress):
 
 
 def decodePasswordResetRequest(request):
-    """
-  Decodes a password reset request, returning a tuple (username,
-  timestamp) on success or None on error.
-  """
+    """Decodes a password reset request, returning a tuple (username,
+    timestamp) on success or None on error."""
     m = re.match("/([^ ,]+),(\d+),([\da-f]+)$", request)
     if not m:
         return None

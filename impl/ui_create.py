@@ -70,11 +70,15 @@ def advanced(request):
 
 
 def simple_form(request, d):
-    """ Create simple identifier code shared by 'Create ID' and 'Demo' pages.
-  Takes request and context object, d['prefixes'] should be set before calling.
-  Returns dictionary with d['id_gen_result'] of either 'method_not_allowed', 'bad_request',
-  'edit_page' or 'created_identifier: <new_id>'. If process is as expected, also includes
-  a form object containing posted data and any related errors. """
+    """Create simple identifier code shared by 'Create ID' and 'Demo' pages.
+
+    Takes request and context object, d['prefixes'] should be set before
+    calling. Returns dictionary with d['id_gen_result'] of either
+    'method_not_allowed', 'bad_request', 'edit_page' or
+    'created_identifier: <new_id>'. If process is as expected, also
+    includes a form object containing posted data and any related
+    errors.
+    """
 
     if request.method == "GET":
         REQUEST = request.GET
@@ -124,12 +128,13 @@ def simple_form(request, d):
 
 
 def adv_form(request, d):
-    """ Like simple_form. Takes request and context object. d['prefixes'] should be set
-      before calling.  Includes addtn'l features:
-        custom remainder - optional
-        manual_profile - If true, use custom Datacite XML template
-        profile_names  - User can choose from different profiles
-  """
+    """Like simple_form. Takes request and context object. d['prefixes'] should
+    be set before calling.  Includes addtn'l features:
+
+    custom remainder - optional
+    manual_profile - If true, use custom Datacite XML template
+    profile_names  - User can choose from different profiles
+    """
 
     # selects current_profile based on parameters or profile preferred for prefix type
     d['manual_profile'] = False
@@ -280,9 +285,12 @@ def _createSimpleId(d, request, P):
 
 
 def _createAdvancedId(d, request, P):
-    """ Like _createSimpleId, but also checks for elements on advanced create page:
-      _status and _export variables; Adds datacite_xml if present. If no remainder
-      is supplied, simply mints an ID                                         """
+    """Like _createSimpleId, but also checks for elements on advanced create
+    page:
+
+    _status and _export variables; Adds datacite_xml if present. If no
+    remainder is supplied, simply mints an ID
+    """
     # ToDo: Clean this up
     if d['current_profile'].name == 'datacite' and 'generated_xml' in d:
         to_write = {

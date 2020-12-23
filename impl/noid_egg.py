@@ -98,10 +98,11 @@ def _error(operation, s):
 
 
 def identifierExists(identifier):
+    """Returns true if an identifier (given in normalized, qualified form,
+    e.g., "doi:10.1234/FOO") exists.
+
+    Raises an exception on error.
     """
-  Returns true if an identifier (given in normalized, qualified form,
-  e.g., "doi:10.1234/FOO") exists.  Raises an exception on error.
-  """
     # The question of whether an identifier exists or not is
     # surprisingly elusive.  Noid will return information for any
     # identifier string, so we can't use that as a test.  Instead, we
@@ -125,21 +126,22 @@ def identifierExists(identifier):
 
 
 def setElements(identifier, d):
+    """Binds metadata elements to an identifier (given in normalized, qualified
+    form, e.g., "doi:10.1234/FOO").
+
+    The elements should be given in a dictionary that maps names to
+    values.  Raises an exception on error.
     """
-  Binds metadata elements to an identifier (given in normalized,
-  qualified form, e.g., "doi:10.1234/FOO").  The elements should be
-  given in a dictionary that maps names to values.  Raises an
-  exception on error.
-  """
     batchSetElements([(identifier, d)])
 
 
 def batchSetElements(batch):
+    """Similar to 'setElements' above, but operates on multiple identifiers in
+    one request.
+
+    'batch' should be a list of (identifier, name/value dictionary)
+    tuples.
     """
-  Similar to 'setElements' above, but operates on multiple identifiers
-  in one request.  'batch' should be a list of (identifier, name/value
-  dictionary) tuples.
-  """
     l = []
     for identifier, d in batch:
         for e, v in list(d.items()):
@@ -155,12 +157,12 @@ def batchSetElements(batch):
 
 
 def getElements(identifier):
+    """Returns all metadata elements (in the form of a dictionary) that are
+    bound to an identifier (given in normalized, qualified form, e.g.,
+    "doi:10.1234/FOO"), or None if the identifier doesn't exist.
+
+    Raises an exception on error.
     """
-  Returns all metadata elements (in the form of a dictionary) that are
-  bound to an identifier (given in normalized, qualified form, e.g.,
-  "doi:10.1234/FOO"), or None if the identifier doesn't exist.  Raises
-  an exception on error.
-  """
     # See the comment under 'identifierExists' above.
     s = _issue("GET", [(identifier, "fetch")])
     assert (
@@ -189,16 +191,17 @@ def getElements(identifier):
 
 
 def deleteIdentifier(identifier):
+    """Deletes all metadata elements (including noid-internal elements) bound
+    to an identifier (given in normalized, qualified form, e.g.,
+    "doi:10.1234/FOO").
+
+    After calling this function, the identifier is deleted in the sense
+    that identifierExists(identifier) will return False and
+    getElements(identifier) will return None.  As far as noid is
+    concerned, however, the identifier still exists and metadata
+    elements can be re-bound to it in the future.  Raises an exception
+    on error.
     """
-  Deletes all metadata elements (including noid-internal elements)
-  bound to an identifier (given in normalized, qualified form, e.g.,
-  "doi:10.1234/FOO").  After calling this function, the identifier is
-  deleted in the sense that identifierExists(identifier) will return
-  False and getElements(identifier) will return None.  As far as noid
-  is concerned, however, the identifier still exists and metadata
-  elements can be re-bound to it in the future.  Raises an exception
-  on error.
-  """
     s = _issue("POST", [(identifier, "purge")])
     assert len(s) >= 2 and s[-2] == "egg-status: 0\n", _error("purge", s)
     # See the comment under 'identifierExists' above.
@@ -208,10 +211,8 @@ def deleteIdentifier(identifier):
 
 
 def batchDeleteIdentifier(batch):
-    """
-  Similar to 'deleteIdentifier' above, but deletes a list of
-  identifiers in one request.
-  """
+    """Similar to 'deleteIdentifier' above, but deletes a list of identifiers
+    in one request."""
     # The following code does not verify that all bindings have been
     # removed as 'deleteIdentifier' does above.  But that code is just a
     # guard against noid API changes, and having it in one place is
@@ -221,9 +222,7 @@ def batchDeleteIdentifier(batch):
 
 
 def ping():
-    """
-  Tests the server, returning "up" or "down".
-  """
+    """Tests the server, returning "up" or "down"."""
     try:
         s = _issue("GET", [])
         assert len(s) >= 2 and s[-2] == "egg-status: 0\n"
@@ -241,8 +240,9 @@ def _decodeRewriter(m):
 
 
 def decodeRaw(s):
+    """Decodes an identifier or metadata element name as stored internally in
+    noid.
+
+    Raises AssertionError and UnicodeDecodeError.
     """
-  Decodes an identifier or metadata element name as stored internally
-  in noid.  Raises AssertionError and UnicodeDecodeError.
-  """
     return _decodePattern.sub(_decodeRewriter, s).decode("UTF-8")

@@ -59,7 +59,7 @@ def assert_shoulder_type_available(org_str, type_str):
 
 
 def assert_super_shoulder_slash(ns, is_super_shoulder, is_force):
-    """Assert that super-shoulder ends with "/" or that --force was set"""
+    """Assert that super-shoulder ends with "/" or that --force was set."""
     if not is_super_shoulder:
         return
     if not str(ns).endswith('/'):

@@ -18,15 +18,11 @@ import urllib.request, urllib.error, urllib.parse
 
 
 class Minter(object):
-    """
-  A minter for a specific shoulder.
-  """
+    """A minter for a specific shoulder."""
 
     def __init__(self, url, username, password):
-        """
-    Creates an interface to the noid nog minter at the supplied URL
-    using the supplied credentials.
-    """
+        """Creates an interface to the noid nog minter at the supplied URL
+        using the supplied credentials."""
         self.url = url
         self.username = username
         self.password = password
@@ -38,10 +34,11 @@ class Minter(object):
         )
 
     def mintIdentifier(self):
+        """Mints and returns a scheme-less ARK identifier, e.g.,
+        "13030/fk35717n0h".
+
+        Raises an exception on error.
         """
-    Mints and returns a scheme-less ARK identifier, e.g.,
-    "13030/fk35717n0h".  Raises an exception on error.
-    """
         r = urllib.request.Request(self.url + "?mint%201")
         self._addAuthorization(r)
         c = None

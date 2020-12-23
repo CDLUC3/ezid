@@ -4,7 +4,8 @@ import sys
 
 
 def log_to_console(module_name, is_debug):
-    """Add a logging handler that writes to the console and configure logging levels.
+    """Add a logging handler that writes to the console and configure logging
+    levels.
 
     Args:
         is_debug: Enable debug level logging.

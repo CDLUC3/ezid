@@ -99,8 +99,11 @@ NAME_ID_SCHEME_URI = ["nameIdentifier_{0}-schemeURI", _("Scheme URI")]
 
 
 class BaseForm(forms.Form):
-    """ Base Form object: all forms have a target field. If 'placeholder' is True
-      set attribute to include specified placeholder text in text fields """
+    """Base Form object: all forms have a target field.
+
+    If 'placeholder' is True set attribute to include specified
+    placeholder text in text fields
+    """
 
     def __init__(self, *args, **kwargs):
         self.placeholder = kwargs.pop('placeholder', None)
@@ -114,9 +117,11 @@ class BaseForm(forms.Form):
 
 
 class ErcForm(BaseForm):
-    """ Form object for ID with ERC profile (Used for simple or advanced ARK).
-      BaseForm parent brings in target field. If 'placeholder' is True
-      set attribute to include specified placeholder text in text fields """
+    """Form object for ID with ERC profile (Used for simple or advanced ARK).
+
+    BaseForm parent brings in target field. If 'placeholder' is True set
+    attribute to include specified placeholder text in text fields
+    """
 
     def __init__(self, *args, **kwargs):
         super(ErcForm, self).__init__(*args, **kwargs)
@@ -130,9 +135,11 @@ class ErcForm(BaseForm):
 
 
 class DcForm(BaseForm):
-    """ Form object for ID with Dublin Core profile (Advanced ARK or DOI).
-      BaseForm parent brings in target field. If 'placeholder' is True set
-      attribute to include specified placeholder text in text fields """
+    """Form object for ID with Dublin Core profile (Advanced ARK or DOI).
+
+    BaseForm parent brings in target field. If 'placeholder' is True set
+    attribute to include specified placeholder text in text fields
+    """
 
     def __init__(self, *args, **kwargs):
         self.isDoi = kwargs.pop('isDoi', None)
@@ -153,9 +160,11 @@ class DcForm(BaseForm):
 
 
 class DataciteForm(BaseForm):
-    """ Form object for ID with (simple DOI) DataCite profile. BaseForm parent brings in
-      target field. If 'placeholder' is True set attribute to include specified
-      placeholder text in text fields """
+    """Form object for ID with (simple DOI) DataCite profile.
+
+    BaseForm parent brings in target field. If 'placeholder' is True set
+    attribute to include specified placeholder text in text fields
+    """
 
     def __init__(self, *args, **kwargs):
         super(DataciteForm, self).__init__(*args, **kwargs)
@@ -199,8 +208,11 @@ class DataciteForm(BaseForm):
 
 
 def getIdForm(profile, placeholder, elements=None):
-    """ Returns a simple ID Django form. If 'placeholder' is True
-      set attribute to include specified placeholder text in text fields """
+    """Returns a simple ID Django form.
+
+    If 'placeholder' is True set attribute to include specified
+    placeholder text in text fields
+    """
     # Django forms does not handle field names with underscores very well
     if elements and '_target' in elements:
         elements['target'] = elements['_target']
@@ -221,8 +233,8 @@ def getIdForm(profile, placeholder, elements=None):
 
 
 class RemainderForm(forms.Form):
-    """ Remainder Form object: all advanced forms have a remainder field,
-      validation of which requires passing in the shoulder """
+    """Remainder Form object: all advanced forms have a remainder field,
+    validation of which requires passing in the shoulder."""
 
     def __init__(self, *args, **kwargs):
         self.shoulder = kwargs.pop('shoulder', None)
@@ -236,8 +248,11 @@ class RemainderForm(forms.Form):
 
 
 def getAdvancedIdForm(profile, request=None):
-    """ For advanced ID (but not datacite_xml). Returns two forms: One w/a
-      single remainder field and one with profile-specific fields """
+    """For advanced ID (but not datacite_xml).
+
+    Returns two forms: One w/a single remainder field and one with
+    profile-specific fields
+    """
     P = shoulder = isDoi = None
     if request:
         if request.method == 'POST':
@@ -268,7 +283,7 @@ def _validate_phone(p):
 
 
 def _validate_url(url):
-    """ Borrowed from impl/ezid.py """
+    """Borrowed from impl/ezid.py."""
     t = url.strip()
     if t != "":
         try:
@@ -340,7 +355,8 @@ def _validate_geolat(n):
 
 
 class NonRepeatingForm(forms.Form):
-    """ Form object for single field elements in DataCite Advanced (XML) profile """
+    """Form object for single field elements in DataCite Advanced (XML)
+    profile."""
 
     target = forms.CharField(
         required=False, label=_("Location (URL)"), validators=[_validate_url]
@@ -361,7 +377,8 @@ class NonRepeatingForm(forms.Form):
 
 
 class ResourceTypeForm(forms.Form):
-    """ Form object for Resource Type Element in DataCite Advanced (XML) profile """
+    """Form object for Resource Type Element in DataCite Advanced (XML)
+    profile."""
 
     def __init__(self, *args, **kwargs):
         super(ResourceTypeForm, self).__init__(*args, **kwargs)
@@ -378,7 +395,10 @@ class ResourceTypeForm(forms.Form):
 # Django faulty design: First formset allows blank form fields.
 # http://stackoverflow.com/questions/2406537/django-formsets-make-first-required
 class RequiredFormSet(BaseFormSet):
-    """ Sets first form in a formset required. Used for TitleSet. """
+    """Sets first form in a formset required.
+
+    Used for TitleSet.
+    """
 
     def __init__(self, *args, **kwargs):
         super(RequiredFormSet, self).__init__(*args, **kwargs)
@@ -386,11 +406,13 @@ class RequiredFormSet(BaseFormSet):
 
 
 class NameIdMultBaseFormSet(BaseFormSet):
+    """Generates aribitrary number of NameID fields.
+
+    Used by Creator and Contributor formsets. UI only offers 2 nameIds
+    during initial ID creation, whereas unlimited # can be generated
+    through API. (Unlimited number of nameId fields *can* be displayed
+    in UI)
     """
-  Generates aribitrary number of NameID fields. Used by Creator and Contributor formsets.
-  UI only offers 2 nameIds during initial ID creation, whereas unlimited # can be generated through API.
-  (Unlimited number of nameId fields *can* be displayed in UI)
-  """
 
     def __init__(self, *args, **kwargs):
         self.nameIdLastIndex = kwargs.pop("nameIdLastIndex")
@@ -425,9 +447,11 @@ class NameIdMultBaseFormSet(BaseFormSet):
 
 # Remaining Datacite Forms listed below are intended to be wrapped into FormSets (repeatable)
 class CreatorForm(forms.Form):
-    """ Form object for Creator Element in DataCite Advanced (XML) profile.
-      This gets wrapped into a NameIdMultBaseFormSet (when passed into formset_factory).
-  """
+    """Form object for Creator Element in DataCite Advanced (XML) profile.
+
+    This gets wrapped into a NameIdMultBaseFormSet (when passed into
+    formset_factory).
+    """
 
     def __init__(self, *args, **kwargs):
         super(CreatorForm, self).__init__(*args, **kwargs)
@@ -460,7 +484,7 @@ class CreatorForm(forms.Form):
 
 
 class TitleForm(forms.Form):
-    """ Form object for Title Element in DataCite Advanced (XML) profile """
+    """Form object for Title Element in DataCite Advanced (XML) profile."""
 
     def __init__(self, *args, **kwargs):
         super(TitleForm, self).__init__(*args, **kwargs)
@@ -489,7 +513,8 @@ class TitleForm(forms.Form):
 
 
 class DescrForm(forms.Form):
-    """ Form object for Description Element in DataCite Advanced (XML) profile """
+    """Form object for Description Element in DataCite Advanced (XML)
+    profile."""
 
     def __init__(self, *args, **kwargs):
         super(DescrForm, self).__init__(*args, **kwargs)
@@ -534,7 +559,7 @@ class DescrForm(forms.Form):
 
 
 class SubjectForm(forms.Form):
-    """ Form object for Subject Element in DataCite Advanced (XML) profile """
+    """Form object for Subject Element in DataCite Advanced (XML) profile."""
 
     def __init__(self, *args, **kwargs):
         super(SubjectForm, self).__init__(*args, **kwargs)
@@ -567,10 +592,12 @@ def _gatherContribErr1(err1, ctype, cname):
 
 
 class ContribForm(forms.Form):
-    """ Form object for Contributor Element in DataCite Advanced (XML) profile
-      With specific validation rules. This gets wrapped into a NameIdMultBaseFormSet
-      (when passed into formset_factory).
-  """
+    """Form object for Contributor Element in DataCite Advanced (XML) profile
+    With specific validation rules.
+
+    This gets wrapped into a NameIdMultBaseFormSet (when passed into
+    formset_factory).
+    """
 
     def __init__(self, *args, **kwargs):
         super(ContribForm, self).__init__(*args, **kwargs)
@@ -638,7 +665,7 @@ class ContribForm(forms.Form):
 
 
 class DateForm(forms.Form):
-    """ Form object for Date Element in DataCite Advanced (XML) profile """
+    """Form object for Date Element in DataCite Advanced (XML) profile."""
 
     date = forms.CharField(required=False, label=_("Date"))
     DATE_TYPES = (
@@ -657,7 +684,8 @@ class DateForm(forms.Form):
 
 
 class AltIdForm(forms.Form):
-    """ Form object for Alternate ID Element in DataCite Advanced (XML) profile """
+    """Form object for Alternate ID Element in DataCite Advanced (XML)
+    profile."""
 
     alternateIdentifier = forms.CharField(required=False, label=_("Identifier"))
     alternateIdentifierType = forms.CharField(
@@ -688,9 +716,8 @@ class AltIdForm(forms.Form):
 
 
 class RelIdForm(forms.Form):
-    """ Form object for Related ID Element in DataCite Advanced (XML) profile
-      With specific validation rules
-  """
+    """Form object for Related ID Element in DataCite Advanced (XML) profile
+    With specific validation rules."""
 
     relatedIdentifier = forms.CharField(required=False, label=_("Identifier"))
     ID_TYPES = (
@@ -784,16 +811,15 @@ class RelIdForm(forms.Form):
 
 
 class SizeForm(forms.Form):
-    """ Form object for Size Element in DataCite Advanced (XML) profile """
+    """Form object for Size Element in DataCite Advanced (XML) profile."""
 
     size = forms.CharField(required=False, label=_("Size"))
 
 
 class FormatForm(forms.Form):
-    """ Form object for Format Element in DataCite Advanced (XML) profile
-      format() is a python method, so playing it safe and
-      defining field using the fields dictionary of the Form class
-  """
+    """Form object for Format Element in DataCite Advanced (XML) profile
+    format() is a python method, so playing it safe and defining field using
+    the fields dictionary of the Form class."""
 
     def __init__(self, *args, **kwargs):
         super(FormatForm, self).__init__(*args, **kwargs)
@@ -801,14 +827,15 @@ class FormatForm(forms.Form):
 
 
 class RightsForm(forms.Form):
-    """ Form object for Rights Element in DataCite Advanced (XML) profile """
+    """Form object for Rights Element in DataCite Advanced (XML) profile."""
 
     rights = forms.CharField(required=False, label=_("Rights"))
     rightsURI = forms.CharField(required=False, label=_("Rights URI"))
 
 
 class GeoLocForm(forms.Form):
-    """ Form object for GeoLocation Element in DataCite Advanced (XML) profile """
+    """Form object for GeoLocation Element in DataCite Advanced (XML)
+    profile."""
 
     def __init__(self, *args, **kwargs):
         super(GeoLocForm, self).__init__(*args, **kwargs)
@@ -863,7 +890,8 @@ class GeoLocForm(forms.Form):
 
 
 class FundingRefForm(forms.Form):
-    """ Form object for Funding Reference Element in DataCite Advanced (XML) profile """
+    """Form object for Funding Reference Element in DataCite Advanced (XML)
+    profile."""
 
     def __init__(self, *args, **kwargs):
         super(FundingRefForm, self).__init__(*args, **kwargs)
@@ -895,15 +923,15 @@ class FundingRefForm(forms.Form):
 
 
 def getIdForm_datacite_xml(form_coll=None, request=None):
-    """ For Advanced Datacite elements
-      On GET, displays 'form_coll' (named tuple) data translated from XML doc
-      On POST (when editing an ID or creating a new ID), uses request.POST
+    """For Advanced Datacite elements On GET, displays 'form_coll' (named
+    tuple) data translated from XML doc On POST (when editing an ID or creating
+    a new ID), uses request.POST.
 
-      Returns all elements combined into one dict of Django forms and formsets
-      Fields in Django FormSets follow this naming convention:
-         prefix-#-elementName
-      Thus the creatorName field in the third Creator fieldset would be named:
-         creators-creator-2-creatorName                                     """
+    Returns all elements combined into one dict of Django forms and
+    formsets Fields in Django FormSets follow this naming convention:
+    prefix-#-elementName Thus the creatorName field in the third Creator
+    fieldset would be named:    creators-creator-2-creatorName
+    """
     # Initialize forms and FormSets
     remainder_form = (
         nonrepeating_form
@@ -1128,10 +1156,13 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
 
 
 def _inclMgmtData(fields, prefix):
-    """ Only to be used for formsets with syntax <prefix>-#-<field>
-      Build Req'd Management Form fields (basically counting # of forms in set)
-      based on Formset specs. Consult Django documentation titled: 'Understanding the ManagementForm'
-  """
+    """Only to be used for formsets with syntax <prefix>-#-<field> Build Req'd
+    Management Form fields (basically counting # of forms in set) based on
+    Formset specs.
+
+    Consult Django documentation titled: 'Understanding the
+    ManagementForm'
+    """
     i_total = 0
     if fields and prefix in list(fields)[0]:
         for f in fields:
@@ -1153,15 +1184,15 @@ def _inclMgmtData(fields, prefix):
 
 
 def _getNameIdCt(fields, prefix):
-    """ Tally number of nameIdentifier fields per form
-      Only to be used for formsets with syntax <prefix>-#-<field>
+    """Tally number of nameIdentifier fields per form Only to be used for
+    formsets with syntax <prefix>-#-<field>
 
-      e.g. Second creator form has three nameId fields:
-            creators-creator-1-nameIdentifier_0, creators-creator-1-nameIdentifier_1,
-            creators-creator-1-nameIdentifier_2
+    e.g. Second creator form has three nameId fields:
+          creators-creator-1-nameIdentifier_0, creators-creator-1-nameIdentifier_1,
+          creators-creator-1-nameIdentifier_2
 
-      Returns array of integers representing last index used for each form 0 - n
-  """
+    Returns array of integers representing last index used for each form 0 - n
+    """
     r = [(0, 1)]  # Default one form with two nameIds (when first creating an ID)
     d = {}
     if fields:
@@ -1185,9 +1216,11 @@ def _getNameIdCt(fields, prefix):
 
 
 def isValidDataciteXmlForm(form):
-    """ Validate all forms and formsets included. Just pass empty or unbound form objects.
-      Returns false if one or more items don't validate
-  """
+    """Validate all forms and formsets included.
+
+    Just pass empty or unbound form objects. Returns false if one or
+    more items don't validate
+    """
     numFailed = 0
     for f, v in form.items():
         if v is None:
@@ -1232,7 +1265,8 @@ def _validate_current_pw(username):
 
 
 class BasePasswordForm(forms.Form):
-    """ Base Password Form object: used for Password Reset as well as for Account Settings """
+    """Base Password Form object: used for Password Reset as well as for
+    Account Settings."""
 
     def __init__(self, *args, **kwargs):
         self.username = kwargs.pop('username', None)
@@ -1259,7 +1293,7 @@ class BasePasswordForm(forms.Form):
 
 
 class UserForm(BasePasswordForm):
-    """ Form object for My Account Page (User editing) """
+    """Form object for My Account Page (User editing)"""
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
@@ -1337,8 +1371,8 @@ class UserForm(BasePasswordForm):
 
 
 class BaseSearchIdForm(forms.Form):
-    """ Base form object used for public Search ID page,
-      and extended for use with Manage ID page        """
+    """Base form object used for public Search ID page, and extended for use
+    with Manage ID page."""
 
     keywords = forms.CharField(
         required=False,
@@ -1405,7 +1439,7 @@ class BaseSearchIdForm(forms.Form):
     id_type = forms.ChoiceField(required=False, choices=ID_TYPES, label=_("ID Type"))
 
     def clean(self):
-        """ Invalid if all fields are empty """
+        """Invalid if all fields are empty."""
         field_count = len(self.fields)
         cleaned_data = super(BaseSearchIdForm, self).clean()
         """ cleaned_data contains all valid fields. So if one or more fields
@@ -1428,7 +1462,10 @@ class BaseSearchIdForm(forms.Form):
 
 
 class ManageSearchIdForm(BaseSearchIdForm):
-    """ Used for Searching on Manage ID page. Inherits from BaseSearchIdForm """
+    """Used for Searching on Manage ID page.
+
+    Inherits from BaseSearchIdForm
+    """
 
     target = forms.CharField(
         required=False,
@@ -1503,7 +1540,7 @@ class ManageSearchIdForm(BaseSearchIdForm):
 
 
 class ContactForm(forms.Form):
-    """ Form object for Contact Us form """
+    """Form object for Contact Us form."""
 
     # Translators: These options will appear in drop-down on contact page
     def __init__(self, *args, **kwargs):

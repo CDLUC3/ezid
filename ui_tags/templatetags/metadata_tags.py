@@ -19,7 +19,7 @@ def display_value(id_dictionary, element):
 
 
 def display_formatted(id_dictionary, element):
-    """formats the element object according to its display style"""
+    """formats the element object according to its display style."""
     if element.displayType == 'datetime':
         t = time.gmtime(float(id_dictionary[element.name]))
         return time.strftime(settings.TIME_FORMAT_UI_METADATA, t) + " UTC"
@@ -52,7 +52,9 @@ def display_formatted(id_dictionary, element):
 @basictag(takes_context=True)
 def display_form_element(context, element, id_object=None):
     """Displays a form element as indicated in the profile.
-  Automatically pulls re-POSTed values and object (optional)"""
+
+    Automatically pulls re-POSTed values and object (optional)
+    """
     if element.displayType.startswith('text'):
         return display_text_box(context, element, id_object)
     elif element.displayType.startswith('select:'):
@@ -62,7 +64,7 @@ def display_form_element(context, element, id_object=None):
 
 
 def display_text_box(context, element, id_object):
-    """displays a text box based on the element"""
+    """displays a text box based on the element."""
     return (
         "<input type=\"text\" class=\"%s form-control\" name=\"%s\" id=\"%s\" value=\"%s\" />"
         % tuple(
@@ -80,7 +82,7 @@ def display_text_box(context, element, id_object):
 
 
 def display_select(context, element, options, id_object):
-    """displays a select list based on the element"""
+    """displays a select list based on the element."""
     sel_part = "<select class=\"%s form-control\" name=\"%s\" id=\"%s\">" % (
         layout_extras.tooltip_class(element.name),
         element.name,
@@ -121,7 +123,8 @@ def _request_value(context, key_name):
 
 
 def _form_value(context, key_name, id_object):
-    """Gets a value in this priority 1) request, 2) id_object, 3) default of ''"""
+    """Gets a value in this priority 1) request, 2) id_object, 3) default of
+    ''."""
     val = ''
     if id_object != None and key_name in id_object:
         val = id_object[key_name]

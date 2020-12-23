@@ -22,9 +22,7 @@ import os.path
 
 
 class Config(object):
-    """
-  Holds the contents of the EZID configuration files.
-  """
+    """Holds the contents of the EZID configuration files."""
 
     def __init__(
         self, siteRoot, projectRoot, configFile, shadowConfigFile, deploymentLevel
@@ -43,11 +41,11 @@ class Config(object):
         self._level = "{%s}" % deploymentLevel
 
     def getOption(self, option):
+        """Returns the value of a configuration option.
+
+        The option name should be specified in section.option syntax,
+        e.g., "datacite.username".
         """
-    Returns the value of a configuration option.  The option name
-    should be specified in section.option syntax, e.g.,
-    "datacite.username".
-    """
         s, o = option.split(".")
         if self._shadowConfig.has_option(s, self._level + o):
             return self._shadowConfig.get(s, self._level + o)

@@ -1,5 +1,4 @@
-"""Minter BerkeleyDB related utilities
-"""
+"""Minter BerkeleyDB related utilities."""
 
 
 
@@ -46,18 +45,18 @@ def as_dict_by_shoulder(ns, root_path=None, compact=True):
 
 
 def dump(bdb_path, compact=True):
-    """Dump the state of a minter BerkeleyDB to stdout as HJSON. Only the fields used by EZID
-    are included.
+    """Dump the state of a minter BerkeleyDB to stdout as HJSON.
+
+    Only the fields used by EZID are included.
     """
     print(as_hjson(bdb_path, compact))
 
 
 def dump_full(bdb_path):
-    """Dump all key-value pairs of any BerkeleyDB to stdout as HJSON.
-    """
+    """Dump all key-value pairs of any BerkeleyDB to stdout as HJSON."""
 
     def _sort_key(kv):
-        """Place counters at top and sort them numerically"""
+        """Place counters at top and sort them numerically."""
         k, v = kv
         m = re.search(r".*/c(\d+)(/.*)$", k)
         if m:
@@ -73,16 +72,18 @@ def dump_full(bdb_path):
 
 
 def as_hjson(bdb_path, compact=True):
-    """Get the state of a minter BerkeleyDB as HJSON. Only the fields used by EZID are
-    included.
+    """Get the state of a minter BerkeleyDB as HJSON.
+
+    Only the fields used by EZID are included.
     """
     d = as_dict(bdb_path, compact)
     return hjson.dumps(d, indent=2)
 
 
 def as_dict(bdb_path, compact=True):
-    """Get the state of a minter BerkeleyDB as a dict. Only the fields used by EZID are
-    included.
+    """Get the state of a minter BerkeleyDB as a dict.
+
+    Only the fields used by EZID are included.
     """
     with nog.bdb_wrapper.BdbWrapper(bdb_path, dry_run=False) as w:
         return w.as_dict(compact)
@@ -149,7 +150,8 @@ def iter_bdb(root_path=None):
 
 
 def get_path(ns, root_path=None, is_new=False):
-    """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
+    """Get the path to a BerkeleyDB minter file in a minter directory
+    hierarchy.
 
     This is the only public method for determining the path to a minter. The main uses are:
 
@@ -258,7 +260,8 @@ def _get_existing_path(ns):
 
 
 def _get_bdb_path_by_namespace(ns, root_path=None):
-    """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
+    """Get the path to a BerkeleyDB minter file in a minter directory
+    hierarchy.
 
     Use this only for generating a new path in which to create a minter BDB. For looking
     up the path to an existing minter, use get_bdb_path_by_shoulder_model().
@@ -293,7 +296,8 @@ def _get_bdb_path_by_namespace(ns, root_path=None):
 
 
 def _get_bdb_path(naan_str, shoulder_str, root_path=None):
-    """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
+    """Get the path to a BerkeleyDB minter file in a minter directory
+    hierarchy.
 
     The path may or may not exist.
 
@@ -322,7 +326,8 @@ def _get_bdb_path(naan_str, shoulder_str, root_path=None):
 
 
 def get_bdb_path_by_shoulder_model(shoulder_model, root_path=None):
-    """Get the path to a BerkeleyDB minter file in a minter directory hierarchy.
+    """Get the path to a BerkeleyDB minter file in a minter directory
+    hierarchy.
 
     The path may or may not exist. The caller may be obtaining the path in which to
     create a new minter, so the path is not checked.
@@ -350,8 +355,9 @@ def get_bdb_path_by_shoulder_model(shoulder_model, root_path=None):
 
 
 def _get_bdb_root(root_path=None):
-    """Get the root of the bdb minter hierarchy. This is a convenient stub for
-    mocking out temp dirs during testing.
+    """Get the root of the bdb minter hierarchy.
+
+    This is a convenient stub for mocking out temp dirs during testing.
     """
     return pathlib2.Path(root_path or django.conf.settings.MINTERS_PATH)
 
@@ -381,8 +387,10 @@ def doi_prefix_to_naan(prefix_str, allow_lossy=False):
 
 
 def doi_to_shadow_ark(doi_str, allow_lossy=False):
-    """Convert DOI to a 'shadow ARK'. Should give the same results as the N2T doip2naan
-    command line program.
+    """Convert DOI to a 'shadow ARK'.
+
+    Should give the same results as the N2T doip2naan command line
+    program.
     """
     doi_ns = nog.id_ns.IdNamespace.from_str(doi_str)
     assert doi_ns.scheme == 'doi', 'Expected a complete DOI, not "{}"'.format(doi_str)
@@ -398,6 +406,7 @@ def doi_to_shadow_ark(doi_str, allow_lossy=False):
 
 def create_bdb_from_hjson(bdb_path, hjson_str):
     """Create a new BerkeleyDB database file from JSON or HJSON.
+
     Args:
         bdb_path (path): Absolute path to location of new BerkeleyDB file. Any
             missing directories in the path are created. The path must not already

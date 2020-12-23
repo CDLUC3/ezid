@@ -17,10 +17,10 @@ import django.contrib.sessions.models
 
 
 def deleteSessions(username):
+    """Deletes all sessions for a given user.
+
+    The number of sessions deleted is returned.
     """
-  Deletes all sessions for a given user.  The number of sessions
-  deleted is returned.
-  """
     toDelete = []
     sessions = django.contrib.sessions.models.Session.objects.all()
     for s in sessions:

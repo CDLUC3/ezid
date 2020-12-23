@@ -1,5 +1,4 @@
-"""Create a new DOI shoulder
-"""
+"""Create a new DOI shoulder."""
 
 
 

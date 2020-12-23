@@ -1,6 +1,5 @@
-"""Check that the BerkeleyDB minters are in the expected locations, can be opened, and
-contains an EZID or N2T minter.
-"""
+"""Check that the BerkeleyDB minters are in the expected locations, can be
+opened, and contains an EZID or N2T minter."""
 
 
 

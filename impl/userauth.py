@@ -33,18 +33,18 @@ logger = logging.getLogger(__name__)
 
 
 def authenticate(username, password, request=None, coAuthenticate=True):
+    """Authenticates a username and password.
+
+    Returns a StoreUser object if the authentication is successful, None
+    if unsuccessful, or a string error message if an error occurs.  If
+    'request' is not None, the appropriate variables are added to the
+    request session.  If 'request' is not None and coAuthenticate is
+    True, and if the user is an administrative user, the user is
+    authenticated with the Django admin app as well.  Easter egg: if the
+    username has the form "@user" and the EZID administrator password is
+    given, and if username "user" exists, then a StoreUser object for
+    "user" is returned (even if logins are not enabled for the user).
     """
-  Authenticates a username and password.  Returns a StoreUser object
-  if the authentication is successful, None if unsuccessful, or a
-  string error message if an error occurs.  If 'request' is not None,
-  the appropriate variables are added to the request session.  If
-  'request' is not None and coAuthenticate is True, and if the user is
-  an administrative user, the user is authenticated with the Django
-  admin app as well.  Easter egg: if the username has the form "@user"
-  and the EZID administrator password is given, and if username "user"
-  exists, then a StoreUser object for "user" is returned (even if
-  logins are not enabled for the user).
-  """
     logger.debug('Authenticating user. username="{}"'.format(username))
     if username.startswith("@"):
         username = username[1:]
@@ -119,11 +119,12 @@ def authenticate(username, password, request=None, coAuthenticate=True):
 
 
 def getUser(request, returnAnonymous=False):
+    """If the session is authenticated, returns a StoreUser object for the
+    authenticated user; otherwise, returns None.
+
+    If returnAnonymous is True, AnonymousUser is returned instead of
+    None.
     """
-  If the session is authenticated, returns a StoreUser object for the
-  authenticated user; otherwise, returns None.  If returnAnonymous is
-  True, AnonymousUser is returned instead of None.
-  """
     if SESSION_KEY in request.session:
         user = ezidapp.models.getUserById(request.session[SESSION_KEY])
         if user != None and user.loginEnabled:
@@ -135,11 +136,11 @@ def getUser(request, returnAnonymous=False):
 
 
 def authenticateRequest(request, storeSessionCookie=False):
+    """Authenticates an API request.
+
+    Returns a StoreUser object if the authentication is successful, None
+    if unsuccessful, or a string error message if an error occurs.
     """
-  Authenticates an API request.  Returns a StoreUser object if the
-  authentication is successful, None if unsuccessful, or a string
-  error message if an error occurs.
-  """
     if SESSION_KEY in request.session:
         user = ezidapp.models.getUserById(request.session[SESSION_KEY])
         if user != None and user.loginEnabled:

@@ -1,4 +1,4 @@
-"""Universal feed parser
+"""Universal feed parser.
 
 Handles RSS 0.9x, RSS 1.0, RSS 2.0, CDF, Atom 0.3, and Atom 1.0 feeds
 
@@ -2282,7 +2282,7 @@ class _BaseHTMLProcessor(sgmllib.SGMLParser):
         return '&%s;' % name
 
     def output(self):
-        '''Return processed HTML as a single string'''
+        """Return processed HTML as a single string."""
         return ''.join([str(p) for p in self.pieces])
 
     def parse_declaration(self, i):
@@ -3939,7 +3939,7 @@ def _open_resource(
     handlers,
     request_headers,
 ):
-    """URL, filename, or string --> stream
+    """URL, filename, or string --> stream.
 
     This function lets you define parsers that take any input source
     (URL, pathname to local or network file, or actual data as a string)
@@ -4028,7 +4028,7 @@ def _open_resource(
 
 
 def _convert_to_idn(url):
-    """Convert a URL to IDN notation"""
+    """Convert a URL to IDN notation."""
     # this function should only be called with a unicode string
     # strategy: if the host cannot be encoded in ascii, then
     # it'll be necessary to encode it in idn form
@@ -4120,7 +4120,8 @@ _date_handlers = []
 
 
 def registerDateHandler(func):
-    '''Register a date handler function (takes string, returns 9-tuple date in GMT)'''
+    """Register a date handler function (takes string, returns 9-tuple date in
+    GMT)"""
     _date_handlers.insert(0, func)
 
 
@@ -4175,7 +4176,7 @@ except NameError:
 
 
 def _parse_date_iso8601(dateString):
-    '''Parse a variety of ISO-8601-compatible formats like 20040105'''
+    """Parse a variety of ISO-8601-compatible formats like 20040105."""
     m = None
     for _iso8601_match in _iso8601_matches:
         m = _iso8601_match(dateString)
@@ -4283,7 +4284,7 @@ _korean_nate_date_re = re.compile(
 
 
 def _parse_date_onblog(dateString):
-    '''Parse a string according to the OnBlog 8-bit date format'''
+    """Parse a string according to the OnBlog 8-bit date format."""
     m = _korean_onblog_date_re.match(dateString)
     if not m:
         return
@@ -4306,7 +4307,7 @@ registerDateHandler(_parse_date_onblog)
 
 
 def _parse_date_nate(dateString):
-    '''Parse a string according to the Nate 8-bit date format'''
+    """Parse a string according to the Nate 8-bit date format."""
     m = _korean_nate_date_re.match(dateString)
     if not m:
         return
@@ -4373,7 +4374,7 @@ _greek_date_format_re = re.compile(
 
 
 def _parse_date_greek(dateString):
-    '''Parse a string according to a Greek 8-bit date format.'''
+    """Parse a string according to a Greek 8-bit date format."""
     m = _greek_date_format_re.match(dateString)
     if not m:
         return
@@ -4419,7 +4420,7 @@ _hungarian_date_format_re = re.compile(
 
 
 def _parse_date_hungarian(dateString):
-    '''Parse a string according to a Hungarian 8-bit date format.'''
+    """Parse a string according to a Hungarian 8-bit date format."""
     m = _hungarian_date_format_re.match(dateString)
     if not m or m.group(2) not in _hungarian_months:
         return None
@@ -4508,7 +4509,7 @@ def _parse_date_w3dtf(dateString):
         return hours, minutes, seconds
 
     def __extract_tzd(m):
-        '''Get the Time Zone Designator as an offset in seconds from UTC.'''
+        """Get the Time Zone Designator as an offset in seconds from UTC."""
         if not m:
             return 0
         tzd = m.group('tzd')
@@ -4553,7 +4554,7 @@ registerDateHandler(_parse_date_w3dtf)
 
 
 def _parse_date_rfc822(dateString):
-    '''Parse an RFC822, RFC1123, RFC2822, or asctime-style date'''
+    """Parse an RFC822, RFC1123, RFC2822, or asctime-style date."""
     data = dateString.split()
     if not data:
         return None
@@ -4591,7 +4592,7 @@ registerDateHandler(_parse_date_rfc822)
 
 
 def _parse_date_perforce(aDateString):
-    """parse a date in yyyy/mm/dd hh:mm:ss TTT format"""
+    """parse a date in yyyy/mm/dd hh:mm:ss TTT format."""
     # Fri, 2006/09/15 08:19:53 EDT
     _my_date_pattern = re.compile(
         r'(\w{,3}), (\d{,4})/(\d{,2})/(\d{2}) (\d{,2}):(\d{2}):(\d{2}) (\w{,3})'
@@ -4634,7 +4635,7 @@ registerDateHandler(_parse_date_perforce)
 
 
 def _parse_date(dateString):
-    '''Parses a variety of date formats into a 9-tuple in GMT'''
+    """Parses a variety of date formats into a 9-tuple in GMT."""
     if not dateString:
         return None
     for handler in _date_handlers:
@@ -4651,7 +4652,7 @@ def _parse_date(dateString):
 
 
 def _getCharacterEncoding(http_headers, xml_data):
-    '''Get the character encoding of the XML document
+    """Get the character encoding of the XML document.
 
     http_headers is a dictionary
     xml_data is a raw string (not Unicode)
@@ -4696,15 +4697,15 @@ def _getCharacterEncoding(http_headers, xml_data):
     correctly, which many are not).  iconv_codec can help a lot;
     you should definitely install it if you can.
     http://cjkpython.i18n.org/
-    '''
+    """
 
     def _parseHTTPContentType(content_type):
-        '''takes HTTP Content-Type header and returns (content type, charset)
+        """takes HTTP Content-Type header and returns (content type, charset)
 
-        If no charset is specified, returns (content type, '')
-        If no content type is specified, returns ('', '')
-        Both return parameters are guaranteed to be lowercase strings
-        '''
+        If no charset is specified, returns (content type, '') If no
+        content type is specified, returns ('', '') Both return
+        parameters are guaranteed to be lowercase strings
+        """
         content_type = content_type or ''
         content_type, params = cgi.parse_header(content_type)
         charset = params.get('charset', '').replace("'", "")
@@ -4840,11 +4841,12 @@ def _getCharacterEncoding(http_headers, xml_data):
 
 
 def _toUTF8(data, encoding):
-    '''Changes an XML data stream on the fly to specify a new encoding
+    """Changes an XML data stream on the fly to specify a new encoding.
 
-    data is a raw sequence of bytes (not Unicode) that is presumed to be in %encoding already
-    encoding is a string recognized by encodings.aliases
-    '''
+    data is a raw sequence of bytes (not Unicode) that is presumed to be
+    in %encoding already encoding is a string recognized by
+    encodings.aliases
+    """
     # strip Byte Order Mark (if present)
     if (
         (len(data) >= 4)
@@ -4880,11 +4882,11 @@ def _toUTF8(data, encoding):
 
 
 def _stripDoctype(data):
-    '''Strips DOCTYPE from XML document, returns (rss_version, stripped_data)
+    """Strips DOCTYPE from XML document, returns (rss_version, stripped_data)
 
-    rss_version may be 'rss091n' or None
-    stripped_data is the same XML document, minus the DOCTYPE
-    '''
+    rss_version may be 'rss091n' or None stripped_data is the same XML
+    document, minus the DOCTYPE
+    """
     start = re.search(_s2bytes('<\w'), data)
     start = start and start.start() or -1
     head, data = data[: start + 1], data[start + 1 :]
@@ -4936,11 +4938,11 @@ def parse(
     request_headers=None,
     response_headers=None,
 ):
-    '''Parse a feed from a URL, file, stream, or string.
+    """Parse a feed from a URL, file, stream, or string.
 
-    request_headers, if given, is a dict from http header name to value to add
-    to the request; this overrides internally generated values.
-    '''
+    request_headers, if given, is a dict from http header name to value
+    to add to the request; this overrides internally generated values.
+    """
 
     if handlers is None:
         handlers = []

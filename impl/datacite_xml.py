@@ -47,37 +47,36 @@ _maxNumberedElements = 2
 
 
 def dataciteXmlToFormElements(document):
+    """Converts a DataCite XML record to a dictionary of form elements. All
+    non-content (comments, etc.) is discarded.  Whitespace is processed and
+    empty element and attribute values are discarded. Dictionary keys follow
+    the pattern of element and attribute XPaths, e.g., the schemeURI attribute
+    in the following XML fragment:
+
+      <resource>
+        <creators>
+          <creator>...</creator>
+          <creator>
+            <nameIdentifier schemeURI="...">
+
+    is identified by key:
+
+      creators-creator-1-nameIdentifier_0-schemeURI
+
+    Repeatable elements are indexed at the top level only; lower-level
+    repeatable elements (e.g., contributor affiliations) are
+    concatenated.  However, certain repeatable elements (see
+    _numberedElementContainers), such as nameIdentifier in the example
+    above, are indexed, but with underscores.  An additional tweak to
+    the naming pattern is that the key for the content of a top-level
+    repeatable element carries an extra component that echoes the
+    element name, as in:
+
+      alternateIdentifiers-alternateIdentifier-0-alternateIdentifier
+      alternateIdentifiers-alternateIdentifier-1-alternateIdentifier
+
+    <br> elements in descriptions are replaced with newlines.
     """
-  Converts a DataCite XML record to a dictionary of form elements.
-  All non-content (comments, etc.) is discarded.  Whitespace is
-  processed and empty element and attribute values are discarded.
-  Dictionary keys follow the pattern of element and attribute XPaths,
-  e.g., the schemeURI attribute in the following XML fragment:
-
-    <resource>
-      <creators>
-        <creator>...</creator>
-        <creator>
-          <nameIdentifier schemeURI="...">
-
-  is identified by key:
-
-    creators-creator-1-nameIdentifier_0-schemeURI
-
-  Repeatable elements are indexed at the top level only; lower-level
-  repeatable elements (e.g., contributor affiliations) are
-  concatenated.  However, certain repeatable elements (see
-  _numberedElementContainers), such as nameIdentifier in the example
-  above, are indexed, but with underscores.  An additional tweak to
-  the naming pattern is that the key for the content of a top-level
-  repeatable element carries an extra component that echoes the
-  element name, as in:
-
-    alternateIdentifiers-alternateIdentifier-0-alternateIdentifier
-    alternateIdentifiers-alternateIdentifier-1-alternateIdentifier
-
-  <br> elements in descriptions are replaced with newlines.
-  """
     document = datacite.upgradeDcmsRecord(document)
     d = {}
 
@@ -156,12 +155,13 @@ def dataciteXmlToFormElements(document):
 
 
 def _separateByFormType(d):
-    """ Organize form elements into a manageable collection 
-      Turn empty dicts into None so that forms render properly
+    """Organize form elements into a manageable collection Turn empty dicts
+    into None so that forms render properly.
 
-      Nonrepeating fields (fields that can't be repeated into multiple forms) are: 
-         identifier, identifier-identifierType, language, publisher, publicationYear, version
-  """
+    Nonrepeating fields (fields that can't be repeated into multiple
+    forms) are:    identifier, identifier-identifierType, language,
+    publisher, publicationYear, version
+    """
     _nonRepeating = {
         k: v
         for (k, v) in d.items()
@@ -280,11 +280,11 @@ _elements = dict((e, i) for i, e in enumerate(_elementList))
 
 
 def formElementsToDataciteXml(d, shoulder=None, identifier=None):
+    """The inverse of dataciteXmlToFormElements.
+
+    Dictionary entries not related to the DataCite metadata schema
+    (Django formset *_FORMS entries, etc.) are removed.
     """
-  The inverse of dataciteXmlToFormElements.  Dictionary entries not
-  related to the DataCite metadata schema (Django formset *_FORMS
-  entries, etc.) are removed.
-  """
     d = {
         k: v
         for (k, v) in d.items()

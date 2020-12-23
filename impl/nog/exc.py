@@ -3,8 +3,7 @@ class MinterError(Exception):
 
 
 class MinterNotSpecified(MinterError):
-    """No minter is specified for shoulder.
-    """
+    """No minter is specified for shoulder."""
 
     pass
 

@@ -50,26 +50,24 @@ def _decode(s):
 
 
 def formatPair(label, value):
-    """
-  Formats a label and value into an ANVL element.
-  """
+    """Formats a label and value into an ANVL element."""
     return "%s: %s\n" % (_encodeLabel(label), _encodeValue(value))
 
 
 def format(d):
+    """Formats a dictionary into an ANVL string.
+
+    Labels and values are suitably percent-encoded.
     """
-  Formats a dictionary into an ANVL string.  Labels and values are
-  suitably percent-encoded.
-  """
     return "".join(formatPair(k, v) for k, v in list(d.items()))
 
 
 def parse(s):
+    """Parses an ANVL string and returns a dictionary.
+
+    Labels and values are percent-decoded.  Raises AnvlParseException
+    (defined in this module).
     """
-  Parses an ANVL string and returns a dictionary.  Labels and values
-  are percent-decoded.  Raises AnvlParseException (defined in this
-  module).
-  """
     d = {}
     k = None
     # We avoid splitlines here to avoid splitting on other weirdo
@@ -101,17 +99,16 @@ def parse(s):
 
 
 def parseConcatenate(s):
+    """Alternate version of 'parse' that concatenates repeated label values and
+    separates them by semicolons.  For example, the input string:
+
+      a: b
+      a: c
+
+    produces the output dictionary:
+
+      { "a": "b ; c" }
     """
-  Alternate version of 'parse' that concatenates repeated label values
-  and separates them by semicolons.  For example, the input string:
-
-    a: b
-    a: c
-
-  produces the output dictionary:
-
-    { "a": "b ; c" }
-  """
     d = {}
     k = None
     # We avoid splitlines here to avoid splitting on other weirdo

@@ -21,7 +21,7 @@ mock==3.0.5
 more-itertools==5.0.0
 mysql==0.0.2
 mysqlclient==1.4.6
-MySQL-python==1.2.5
+#MySQL-python==1.2.5
 packaging==20.4
 pathlib==1.0.1
 pathlib2==2.3.5

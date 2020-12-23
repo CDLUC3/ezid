@@ -64,24 +64,21 @@ def _addAuthorization(request):
 
 
 class Minter(object):
-    """
-  A minter for a specific shoulder.
-  """
+    """A minter for a specific shoulder."""
 
     def __init__(self, url):
-        """
-    Creates an interface to the noid nog minter at the supplied URL.
-    """
+        """Creates an interface to the noid nog minter at the supplied URL."""
         self.url = url
         self.cache = []
         self.lock = threading.Lock()
 
     @stacklog
     def mintIdentifier(self):
+        """Mints and returns a scheme-less ARK identifier, e.g.,
+        "13030/fk35717n0h".
+
+        Raises an exception on error.
         """
-    Mints and returns a scheme-less ARK identifier, e.g.,
-    "13030/fk35717n0h".  Raises an exception on error.
-    """
         self.lock.acquire()
         try:
             cs = _cacheSize
@@ -115,9 +112,7 @@ class Minter(object):
             self.lock.release()
 
     def ping(self):
-        """
-    Tests the minter, returning "up" or "down".
-    """
+        """Tests the minter, returning "up" or "down"."""
         try:
             r = urllib.request.Request(self.url)
             _addAuthorization(r)
@@ -135,9 +130,7 @@ class Minter(object):
 
 
 def getMinter(url):
-    """
-  Returns a Minter object for a noid nog minter at the supplied URL.
-  """
+    """Returns a Minter object for a noid nog minter at the supplied URL."""
     _lock.acquire()
     try:
         if url not in _minters:

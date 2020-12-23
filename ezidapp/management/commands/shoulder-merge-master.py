@@ -1,5 +1,4 @@
-"""Permanently merge the master_shoulders.txt file into the database.
-"""
+"""Permanently merge the master_shoulders.txt file into the database."""
 
 
 

@@ -1,5 +1,4 @@
-"""List existing shoulders
-"""
+"""List existing shoulders."""
 import argparse
 import logging
 

@@ -31,7 +31,8 @@ FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") + _(
 
 @uic.user_login_required
 def index(request):
-    """ Manage Page, listing all Ids owned by user, or if groupadmin, all group users """
+    """Manage Page, listing all Ids owned by user, or if groupadmin, all group
+    users."""
     d = {'menu_item': 'ui_manage.index'}
     d['collapse_advanced_search'] = "collapsed"
     if request.method != "GET":
@@ -66,7 +67,7 @@ def index(request):
 
 
 def _defaultUser(user):
-    """ Pick current user """
+    """Pick current user."""
     # ToDo: Make sure this works for Realm Admin and picking Groups
     return (
         'all'
@@ -78,24 +79,23 @@ def _defaultUser(user):
 
 
 def _getLatestMetadata(identifier, request, prefixMatch=False):
-    """
-  The successful return is a pair (status, dictionary) where 'status' is a
-  string that includes the canonical, qualified form of the identifier, as in:
+    """The successful return is a pair (status, dictionary) where 'status' is a
+    string that includes the canonical, qualified form of the identifier, as
+    in:
+
     success: doi:10.5060/FOO
-  and 'dictionary' contains element (name, value) pairs.
-  """
+    and 'dictionary' contains element (name, value) pairs.
+    """
     return ezid.getMetadata(
         identifier, userauth.getUser(request, returnAnonymous=True), prefixMatch
     )
 
 
 def _updateEzid(request, d, stts, m_to_upgrade=None):
-    """
-  Takes data from form fields in /manage/edit and applies them to IDs metadata
-  If m_to_upgrade is specified, converts record to advanced datacite
-  Returns ezid.setMetadata (successful return is the identifier string)
-  Also removes tags related to old profile if converting to advanced datacite
-  """
+    """Takes data from form fields in /manage/edit and applies them to IDs
+    metadata If m_to_upgrade is specified, converts record to advanced datacite
+    Returns ezid.setMetadata (successful return is the identifier string) Also
+    removes tags related to old profile if converting to advanced datacite."""
     m_dict = {
         '_target': request.POST['target'],
         '_status': stts,
@@ -154,7 +154,7 @@ def _assignManualTemplate(d):
 
 
 def edit(request, identifier):
-    """ Edit page for a given ID """
+    """Edit page for a given ID."""
     d = {'menu_item': 'ui_manage.null'}
     d["testPrefixes"] = uic.testPrefixes
     r = _getLatestMetadata(identifier, request)
@@ -256,9 +256,8 @@ def edit(request, identifier):
                 else:
                     _alertMessageUpdateError(request, s)
         else:
-            """ Even if converting from simple to advanced, let's make sure forms validate
-          and update identifier first, else don't upgrade.
-      """
+            """Even if converting from simple to advanced, let's make sure
+            forms validate and update identifier first, else don't upgrade."""
             d['form'] = form_objects.getIdForm(d['current_profile'], None, P)
             if d['form'].is_valid():
                 result = _updateEzid(request, d, stts)
@@ -343,7 +342,7 @@ def _schemaDotOrgMetadata(km, id_as_url):
 
 
 def details(request):
-    """ ID Details page for a given ID """
+    """ID Details page for a given ID."""
     d = {'menu_item': 'ui_manage.null'}
     d["testPrefixes"] = uic.testPrefixes
     identifier = request.path_info[len("/id/") :]
@@ -421,9 +420,7 @@ def details(request):
 
 
 def display_xml(request, identifier):
-    """
-  Used for displaying DataCite or Crossref XML
-  """
+    """Used for displaying DataCite or Crossref XML."""
     d = {'menu_item': 'ui_manage.null'}
     r = _getLatestMetadata(identifier, request)
     if type(r) is str:
@@ -457,9 +454,7 @@ def _isTestId(id_text, testPrefixes):
 
 @uic.user_login_required
 def download(request):
-    """
-  Enqueue a batch download request and display link to user
-  """
+    """Enqueue a batch download request and display link to user."""
     d = {'menu_item': 'ui_manage.null'}
     q = django.http.QueryDict(
         "format=csv&convertTimestamps=yes&compression=zip", mutable=True
@@ -498,9 +493,7 @@ def download(request):
 
 
 def download_error(request):
-    """
-  Download link error
-  """
+    """Download link error."""
     # . Translators: Copy HTML tags over and only translate words outside of these tags
     # . i.e.: <a class="don't_translate_class_names" href="don't_translate_urls">Translate this text</a>
     content = [

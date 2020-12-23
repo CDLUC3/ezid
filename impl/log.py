@@ -117,17 +117,13 @@ def loadConfig():
 
 
 def getOperationCount():
-    """
-  Returns the number of operations (transactions) begun since the last
-  reset.
-  """
+    """Returns the number of operations (transactions) begun since the last
+    reset."""
     return _operationCount
 
 
 def resetOperationCount():
-    """
-  Resets the operation (transaction) counter.
-  """
+    """Resets the operation (transaction) counter."""
     global _operationCount
     _countLock.acquire()
     try:
@@ -152,9 +148,7 @@ _log = logging.getLogger()
 
 
 def begin(transactionId, *args):
-    """
-  Logs the start of a transaction.
-  """
+    """Logs the start of a transaction."""
     global _operationCount
     _log.info(
         "%s BEGIN %s" % (transactionId.hex, " ".join(util.encode2(a) for a in args))
@@ -167,16 +161,12 @@ def begin(transactionId, *args):
 
 
 def progress(transactionId, function):
-    """
-  Logs progress made as part of a transaction.
-  """
+    """Logs progress made as part of a transaction."""
     _log.info("%s PROGRESS %s" % (transactionId.hex, function))
 
 
 def success(transactionId, *args):
-    """
-  Logs the successful end of a transaction.
-  """
+    """Logs the successful end of a transaction."""
     _log.info(
         "%s END SUCCESS%s"
         % (transactionId.hex, "".join(" " + util.encode2(a) for a in args))
@@ -184,18 +174,14 @@ def success(transactionId, *args):
 
 
 def badRequest(transactionId):
-    """
-  Logs the end of a transaction that terminated due to the request
-  being faulty.
-  """
+    """Logs the end of a transaction that terminated due to the request being
+    faulty."""
     _log.info("%s END BADREQUEST" % transactionId.hex)
 
 
 def forbidden(transactionId):
-    """
-  Logs the end of a transaction that terminated due to an
-  authorization failure.
-  """
+    """Logs the end of a transaction that terminated due to an authorization
+    failure."""
     _log.info("%s END FORBIDDEN" % transactionId.hex)
 
 
@@ -286,9 +272,11 @@ def _notifyAdmins(error):
 
 
 def error(transactionId, exception):
-    """Trigger Django's dynamic exception report or send the exception and traceback to
-  the Django administrator list. Must be called from an exception handler.
-  """
+    """Trigger Django's dynamic exception report or send the exception and
+    traceback to the Django administrator list.
+
+    Must be called from an exception handler.
+    """
     if django.conf.settings.DEBUG:
         # Pass the exception up to Django, which renders a dynamic exception report.
         raise exception
@@ -312,11 +300,12 @@ def error(transactionId, exception):
 
 
 def otherError(caller, exception):
+    """Logs an internal error.
+
+    Also, if the Django DEBUG flag is false, mails a traceback to the
+    Django administrator list.  Must be called from an exception
+    handler.
     """
-  Logs an internal error.  Also, if the Django DEBUG flag is false,
-  mails a traceback to the Django administrator list.  Must be called
-  from an exception handler.
-  """
     m = str(exception)
     if len(m) > 0:
         m = ": " + m
@@ -336,7 +325,5 @@ def otherError(caller, exception):
 
 
 def status(*args):
-    """
-  Logs the server's status.
-  """
+    """Logs the server's status."""
     _log.info("- STATUS " + " ".join(util.encode1(a) for a in args))

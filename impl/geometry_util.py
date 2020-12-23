@@ -33,16 +33,16 @@ def _isDecimalFloat(s):
 
 
 def kmlPolygonToDatacite(kml):
+    """Converts a polygon defined in a KML.
+
+    <http://www.opengeospatial.org/standards/kml> version 2.2 or 2.3
+    document to a DataCite 4.0 <geoLocationPolygon> element.  The return
+    is a pair (lxml.etree.Element, [warning, ...]) if successful or a
+    string error message if not.  The conversion fails for the usual
+    reasons (malformed KML, etc.) but also if the document defines more
+    than one geometry or does not define a polygon.  Polygon holes and
+    non-zero altitude coordinates are ignored and result in warnings.
     """
-  Converts a polygon defined in a KML
-  <http://www.opengeospatial.org/standards/kml> version 2.2 or 2.3
-  document to a DataCite 4.0 <geoLocationPolygon> element.  The return
-  is a pair (lxml.etree.Element, [warning, ...]) if successful or a
-  string error message if not.  The conversion fails for the usual
-  reasons (malformed KML, etc.) but also if the document defines more
-  than one geometry or does not define a polygon.  Polygon holes and
-  non-zero altitude coordinates are ignored and result in warnings.
-  """
     try:
         root = util.parseXmlString(kml)
     except Exception as e:
@@ -135,16 +135,16 @@ def _isNestedList(o, n):
 
 
 def geojsonPolygonToDatacite(geojson):
+    """Converts a polygon defined in a GeoJSON <RFC 7946,
+    https://tools.ietf.org/html/rfc7946> document to a DataCite 4.0.
+
+    <geoLocationPolygon> element.  The return is a pair
+    (lxml.etree.Element, [warning, ...]) if successful or a string error
+    message if not.  The conversion fails for the usual reasons
+    (malformed JSON, etc.) but also if the document defines more than
+    one geometry or does not define a polygon.  Polygon holes and non-
+    zero altitude coordinates are ignored and result in warnings.
     """
-  Converts a polygon defined in a GeoJSON <RFC 7946,
-  https://tools.ietf.org/html/rfc7946> document to a DataCite 4.0
-  <geoLocationPolygon> element.  The return is a pair
-  (lxml.etree.Element, [warning, ...]) if successful or a string error
-  message if not.  The conversion fails for the usual reasons
-  (malformed JSON, etc.) but also if the document defines more than
-  one geometry or does not define a polygon.  Polygon holes and
-  non-zero altitude coordinates are ignored and result in warnings.
-  """
     objects = []
 
     def objectHandler(d):
@@ -212,17 +212,17 @@ def geojsonPolygonToDatacite(geojson):
 
 
 def internalPolygonToDatacite(s):
+    """Converts an internal polygon description to a DataCite 4.0.
+
+    <geoLocationPolygon> element.  An internal description is a string
+    of the form
+
+       polygon ((lon, lat), (lon, lat), ...)
+
+    For conformity with other conversion functions in this module, the
+    return is a pair (lxml.etree.Element, []) if successful or a string
+    error message if not.
     """
-  Converts an internal polygon description to a DataCite 4.0
-  <geoLocationPolygon> element.  An internal description is a string
-  of the form
-
-     polygon ((lon, lat), (lon, lat), ...)
-
-  For conformity with other conversion functions in this module, the
-  return is a pair (lxml.etree.Element, []) if successful or a string
-  error message if not.
-  """
     m = re.match("\s*polygon\s*\((.*)\)\s*$", s)
     if not m:
         return "not an EZID polygon description"
@@ -261,12 +261,12 @@ def internalPolygonToDatacite(s):
 
 
 def polygonToDatacite(s):
+    """Converts a polygon defined in any supported format to a DataCite 4.0.
+
+    <geoLocationPolygon> element.  The return is a pair
+    (lxml.etree.Element, [warning, ...]) if successful or a string error
+    message if not.
     """
-  Converts a polygon defined in any supported format to a DataCite 4.0
-  <geoLocationPolygon> element.  The return is a pair
-  (lxml.etree.Element, [warning, ...]) if successful or a string error
-  message if not.
-  """
     if "kml" in s:
         r = kmlPolygonToDatacite(s)
         if type(r) is str:
@@ -312,10 +312,8 @@ _transformSource = """<?xml version="1.0"?>
 
 
 def datacitePolygonToInternal(element):
-    """
-  Converts a DataCite polygon, passed in as a <geoLocationPolygon>
-  element node, to a string internal representation.
-  """
+    """Converts a DataCite polygon, passed in as a <geoLocationPolygon> element
+    node, to a string internal representation."""
     global _transform
     if _transform == None:
         _transform = lxml.etree.XSLT(lxml.etree.XML(_transformSource))

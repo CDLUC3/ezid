@@ -123,14 +123,14 @@ def _decodeLabel(s):
 
 
 def parse(s, concatenateValues=True):
+    """Parses an ANVL/ERC record (represented as a single string) and returns a
+    dictionary of metadata element name/value pairs.
+
+    If 'concatenateValues' is true, repeated values for a given element
+    are concatenated into a single string; otherwise, they're left as a
+    list.  If the input contains multiple records, only the first is
+    processed.  Raises ErcParseException (defined in this module).
     """
-  Parses an ANVL/ERC record (represented as a single string) and
-  returns a dictionary of metadata element name/value pairs.  If
-  'concatenateValues' is true, repeated values for a given element are
-  concatenated into a single string; otherwise, they're left as a
-  list.  If the input contains multiple records, only the first is
-  processed.  Raises ErcParseException (defined in this module).
-  """
     d = {}
     k = None
     for l in s.splitlines():

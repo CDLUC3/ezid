@@ -10,8 +10,8 @@ FILENAME_SAFE_CHARS = " @$,~*&"
 
 
 def get_safe_reversible_path(*path_list):
-    """Escape characters that are not allowed or often cause issues when used in file-
-    or directory names, then join the arguments to a filesystem path.
+    """Escape characters that are not allowed or often cause issues when used
+    in file- or directory names, then join the arguments to a filesystem path.
 
     This generates a string that is reversible but may not be easy to read.
 
@@ -31,20 +31,20 @@ def get_safe_reversible_path(*path_list):
 
 
 def get_safe_reversible_path_element(s):
-    """Replace characters that are not allowed, have special semantics, or may cause
-    security issues, when used in file- or directory names, with filesystem safe
-    reversible codes
+    """Replace characters that are not allowed, have special semantics, or may
+    cause security issues, when used in file- or directory names, with
+    filesystem safe reversible codes.
 
-    On Unix, names starting with period are usually hidden in the filesystem. We don't
-    want there to be a chance of generating hidden files by using this function. But
-    we also don't want to escape dots in general since that makes the filenames much
-    harder to read. So we escape the dot only when it's at the start of the string.
+     On Unix, names starting with period are usually hidden in the filesystem. We don't
+     want there to be a chance of generating hidden files by using this function. But
+     we also don't want to escape dots in general since that makes the filenames much
+     harder to read. So we escape the dot only when it's at the start of the string.
 
-   Args:
-        s (str): Any Unicode string
+    Args:
+         s (str): Any Unicode string
 
-    Returns:
-        str: A string safe for use as a file- or directory name.
+     Returns:
+         str: A string safe for use as a file- or directory name.
     """
     out_str = urllib.parse.quote(s.encode("utf-8"), safe=FILENAME_SAFE_CHARS)
     if out_str.startswith('.'):
@@ -53,7 +53,8 @@ def get_safe_reversible_path_element(s):
 
 
 def create_missing_directories_for_file(file_path):
-    """Create any missing directories leading up to the file specified by {file_path}.
+    """Create any missing directories leading up to the file specified by
+    {file_path}.
 
     Note that {file_path} is assumed to be a file path, so the last element in the path
     is ignored.
@@ -96,8 +97,8 @@ def create_missing_directories_for_dir(dir_path):
 
 
 def abs_path_from_base(base_path, rel_path):
-    """Join a base and a relative path and return an absolute path to the resulting
-    location.
+    """Join a base and a relative path and return an absolute path to the
+    resulting location.
 
     Args:
         base_path (str): Relative or absolute path to prepend to ``rel_path``.
@@ -116,8 +117,8 @@ def abs_path_from_base(base_path, rel_path):
 
 
 def abs_path(rel_path):
-    """Convert a path that is relative to the module from which this function is called,
-    to an absolute path.
+    """Convert a path that is relative to the module from which this function
+    is called, to an absolute path.
 
     E.g., calling abs_path('..') from /a/b/c.py returns /a.
 
@@ -136,9 +137,10 @@ def abs_path(rel_path):
 
 @contextlib.contextmanager
 def temp_file_for_obj(o, ext_str=None, to_utf_8=False, keep_file=False, lf=False):
-    """Context manager that provides `o` as a path. If object is the path to a valid
-    file, the file is used directly. If `o` is ``bytes`` or ``str``, it is written to a
-    temporary file. If `o` is ``str``, it is written as UTF-8 ``bytes``.
+    """Context manager that provides `o` as a path. If object is the path to a
+    valid file, the file is used directly. If `o` is ``bytes`` or ``str``, it
+    is written to a temporary file. If `o` is ``str``, it is written as UTF-8
+    ``bytes``.
 
     Args:
         o (:obj:`str`, :obj:`bytes`, :obj:`path` or :obj:`Path`): Object for which to

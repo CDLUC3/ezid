@@ -74,22 +74,20 @@ def _batchDelete(sh, rows, batch):
 
 
 def enqueueIdentifier(identifier, operation, blob):
+    """Adds an identifier to the binder asynchronous processing queue.
+
+    'identifier' should be the normalized, qualified identifier, e.g.,
+    "doi:10.5060/FOO".  'operation' is the identifier operation and
+    should be one of the strings "create", "update", or "delete". 'blob'
+    is the identifier's metadata dictionary in blob form.
     """
-  Adds an identifier to the binder asynchronous processing queue.
-  'identifier' should be the normalized, qualified identifier, e.g.,
-  "doi:10.5060/FOO".  'operation' is the identifier operation and
-  should be one of the strings "create", "update", or "delete".
-  'blob' is the identifier's metadata dictionary in blob form.
-  """
     register_async.enqueueIdentifier(
         ezidapp.models.BinderQueue, identifier, operation, blob
     )
 
 
 def getQueueLength():
-    """
-  Returns the length of the binder queue.
-  """
+    """Returns the length of the binder queue."""
     return ezidapp.models.BinderQueue.objects.count()
 
 

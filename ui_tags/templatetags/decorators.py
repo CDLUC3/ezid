@@ -39,15 +39,16 @@ from django.template import TemplateSyntaxError, Variable
 # The decorator decorator.  This is copyright unknown, verbatim from
 # http://wiki.python.org/moin/PythonDecoratorLibrary
 def simple_decorator(decorator):
-    """This decorator can be used to turn simple functions
-       into well-behaved decorators, so long as the decorators
-       are fairly simple. If a decorator expects a function and
-       returns a function (no descriptors), and if it doesn't
-       modify function attributes or docstring, then it is
-       eligible to use this. Simply apply @simple_decorator to
-       your decorator and it will automatically preserve the
-       docstring and function attributes of functions to which
-       it is applied."""
+    """This decorator can be used to turn simple functions into well-behaved
+    decorators, so long as the decorators are fairly simple.
+
+    If a decorator expects a function and returns a function (no
+    descriptors), and if it doesn't modify function attributes or
+    docstring, then it is eligible to use this. Simply apply
+    @simple_decorator to your decorator and it will automatically
+    preserve the docstring and function attributes of functions to which
+    it is applied.
+    """
 
     def new_decorator(f):
         g = decorator(f)
@@ -65,10 +66,9 @@ def simple_decorator(decorator):
 
 
 def basictag(takes_context=False):
-    """
-    A decorator similar to Django's @register.simple_tag that optionally
-    takes a context parameter. This condenses many tag implementations down
-    to a few lines of code.
+    """A decorator similar to Django's @register.simple_tag that optionally
+    takes a context parameter. This condenses many tag implementations down to
+    a few lines of code.
 
     Example:
         @register.tag
@@ -134,11 +134,10 @@ def basictag(takes_context=False):
 
 
 def blocktag(tag_func):
-    """
-    A decorator similar to Django's @register.simple_tag that does all the
-    redundant work of parsing arguments and creating a node class in order
-    to render content between a foo and endfoo tag block. This condenses
-    many tag implementations down to a few lines of code.
+    """A decorator similar to Django's @register.simple_tag that does all the
+    redundant work of parsing arguments and creating a node class in order to
+    render content between a foo and endfoo tag block. This condenses many tag
+    implementations down to a few lines of code.
 
     Example:
         @register.tag

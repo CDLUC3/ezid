@@ -104,7 +104,8 @@ def contact(request):
 
 
 def __emails(request):
-    """gets email addresses based on environment settings and also current domain name"""
+    """gets email addresses based on environment settings and also current
+    domain name."""
     host = request.META.get("HTTP_HOST", "default")
     if host not in django.conf.settings.LOCALIZATIONS:
         host = "default"
@@ -112,10 +113,8 @@ def __emails(request):
 
 
 def doc(request):
-    """
-  Renders UTF-8 encoded HTML documentation and plain text Python code
-  files.
-  """
+    """Renders UTF-8 encoded HTML documentation and plain text Python code
+    files."""
     if request.method != "GET":
         return uic.methodNotAllowed(request)
     assert request.path_info.startswith("/doc/")
@@ -139,9 +138,7 @@ tombstone_text = _("The URL for this identifier cannot be resolved.")
 
 
 def tombstone(request):
-    """
-  Renders a tombstone (i.e., unavailable identifier) page.
-  """
+    """Renders a tombstone (i.e., unavailable identifier) page."""
     if request.method != "GET":
         return uic.methodNotAllowed(request)
     assert request.path_info.startswith("/tombstone/id/")

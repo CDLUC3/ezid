@@ -34,11 +34,12 @@ logger = logging.getLogger(__name__)
 
 
 def validateDoi(doi):
+    """If the supplied string (e.g., "10.5060/foo") is a syntactically valid
+    scheme-less DOI identifier, returns the canonical form of the identifier
+    (namely, uppercased).
+
+    Otherwise, returns None.
     """
-  If the supplied string (e.g., "10.5060/foo") is a syntactically
-  valid scheme-less DOI identifier, returns the canonical form of the
-  identifier (namely, uppercased).  Otherwise, returns None.
-  """
     # Our validation is generally more restrictive than what is allowed
     # by the DOI Handbook <doi:10.1000/186>, though not in any way that
     # should be limiting in practice.  The Handbook allows virtually any
@@ -93,11 +94,11 @@ def _normalizeArkPercentEncoding(m):
 
 
 def validateArk(ark):
+    """If the supplied string (e.g., "13030/foo") is a syntactically valid
+    scheme-less ARK identifier, returns the canonical form of the identifier.
+
+    Otherwise, returns None.
     """
-  If the supplied string (e.g., "13030/foo") is a syntactically valid
-  scheme-less ARK identifier, returns the canonical form of the
-  identifier.  Otherwise, returns None.
-  """
     # Our validation diverges from the ARK specification
     # <http://wiki.ucop.edu/display/Curation/ARK> in that it is not as
     # restrictive: we allow all graphic ASCII characters; our length
@@ -143,13 +144,12 @@ _uuidPattern = re.compile("[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$", re.I)
 
 
 def validateUuid(id):
+    """If the supplied string (e.g., "f81d4fae-7dec-11d0-a765-00a0c91e6bf6") is
+    a syntactically valid scheme-less UUID identifier as defined by RFC 4122.
+
+    <http://www.ietf.org/rfc/rfc4122.txt>, returns the canonical form of
+    the identifier (namely, lowercased).  Otherwise, returns None.
     """
-  If the supplied string (e.g.,
-  "f81d4fae-7dec-11d0-a765-00a0c91e6bf6") is a syntactically valid
-  scheme-less UUID identifier as defined by RFC 4122
-  <http://www.ietf.org/rfc/rfc4122.txt>, returns the canonical form of
-  the identifier (namely, lowercased).  Otherwise, returns None.
-  """
     logger.debug('validateUuid(): {}'.format(id))
 
     if _uuidPattern.match(id) and id[-1] != "\n":
@@ -159,11 +159,11 @@ def validateUuid(id):
 
 
 def validateIdentifier(identifier):
+    """If the supplied string is any type of qualified, syntactically valid
+    identifier, returns the canonical form of the identifier.
+
+    Otherwise, returns None.
     """
-  If the supplied string is any type of qualified, syntactically valid
-  identifier, returns the canonical form of the identifier.
-  Otherwise, returns None.
-  """
     logger.debug('validateIdentifier(): {}'.format(identifier))
 
     if identifier.startswith("ark:/"):
@@ -189,11 +189,9 @@ def validateIdentifier(identifier):
 
 
 def validateShoulder(shoulder):
-    """
-  Returns True if the supplied string is a valid shoulder, which is to
-  say, if the string is a certain allowable prefix of a qualified,
-  syntactically valid identifier.
-  """
+    """Returns True if the supplied string is a valid shoulder, which is to
+    say, if the string is a certain allowable prefix of a qualified,
+    syntactically valid identifier."""
     # Strategy: a shoulder is valid if adding a single character yields
     # a valid identifier.
     logger.debug('validateShoulder(): {}'.format(shoulder))
@@ -211,12 +209,12 @@ def validateShoulder(shoulder):
 
 
 def inferredShoulder(identifier):
+    """Given a normalized, qualified identifier (e.g., "ark:/12345/xy7qz"),
+    infers and returns the identifier's shoulder (e.g., "ark:/12345/xy").
+
+    This is typically the identifier up to the first two characters
+    following the NAAN- or prefix-separating slash.
     """
-  Given a normalized, qualified identifier (e.g., "ark:/12345/xy7qz"),
-  infers and returns the identifier's shoulder (e.g.,
-  "ark:/12345/xy").  This is typically the identifier up to the first
-  two characters following the NAAN- or prefix-separating slash.
-  """
     if identifier.startswith("ark:/"):
         return re.match(
             "ark:/(\d{5}(\d{4})?|[b-k]\d{4})/[0-9a-zA-Z]{0,2}", identifier
@@ -234,11 +232,11 @@ maxDatacenterSymbolLength = 17
 
 
 def validateDatacenter(symbol):
+    """If the supplied string (e.g., "CDL.BUL") is a valid DataCite datacenter
+    symbol, returns the canonical form of the symbol (namely, uppercased).
+
+    Otherwise, returns None.
     """
-  If the supplied string (e.g., "CDL.BUL") is a valid DataCite
-  datacenter symbol, returns the canonical form of the symbol (namely,
-  uppercased).  Otherwise, returns None.
-  """
     if datacenterSymbolRE.match(symbol) and symbol[-1] != "\n":
         return symbol.upper()
     else:
@@ -251,11 +249,11 @@ def _percentEncodeCdr(m):
 
 
 def doi2shadow(doi):
+    """Given a scheme-less DOI identifier (e.g., "10.5060/FOO"), returns the
+    corresponding scheme-less shadow ARK identifier (e.g., "b5060/foo").
+
+    The returned identifier is in canonical form.
     """
-  Given a scheme-less DOI identifier (e.g., "10.5060/FOO"), returns
-  the corresponding scheme-less shadow ARK identifier (e.g.,
-  "b5060/foo").  The returned identifier is in canonical form.
-  """
     # The conversion of DOIs to ARKs is a little tricky because ARKs
     # place semantics on certain characters in suffixes while DOIs do
     # not, and because ARKs use a restricted character set.  Our
@@ -303,12 +301,11 @@ _hexDecodePattern = re.compile("%([0-9a-fA-F][0-9a-fA-F])")
 
 
 def shadow2doi(ark):
+    """Given a scheme-less shadow ARK identifier for a DOI (e.g., "b5060/foo"),
+    returns the corresponding scheme-less DOI identifier (e.g., "10.5060/FOO").
+
+    The returned identifier is in canonical form.
     """
-  Given a scheme-less shadow ARK identifier for a DOI (e.g.,
-  "b5060/foo"), returns the corresponding scheme-less DOI identifier
-  (e.g., "10.5060/FOO").  The returned identifier is in canonical
-  form.
-  """
     logger.debug('shadow2doi(): {}'.format(ark))
 
     beta_str = 'bcdfghjkmnpqrstvwxz'
@@ -324,13 +321,14 @@ _shadowedDoiPattern = re.compile("ark:/[bcdfghjkmnpqrstvwxz]")  # see _arkPatter
 
 
 def normalizeIdentifier(identifier):
+    """Similar to 'validateIdentifier': if the supplied string is any type of
+    qualified, syntactically valid identifier, returns the canonical form of
+    the identifier.
+
+    However, if the identifier is a shadow ARK, this function instead
+    returns (the canonical form of) the shadowed identifier.  On any
+    kind of error, returns None.
     """
-  Similar to 'validateIdentifier': if the supplied string is any type
-  of qualified, syntactically valid identifier, returns the canonical
-  form of the identifier.  However, if the identifier is a shadow ARK,
-  this function instead returns (the canonical form of) the shadowed
-  identifier.  On any kind of error, returns None.
-  """
     logger.debug('normalizeIdentifier(): {}'.format(identifier))
 
     id = validateIdentifier(identifier)
@@ -353,12 +351,10 @@ def normalizeIdentifier(identifier):
 
 
 def explodePrefixes(identifier):
-    """
-  Given a normalized, qualified identifier (e.g., "ark:/12345/x/yz"),
-  returns a list of all prefixes of the identifier that are
-  syntactically valid identifiers (e.g., ["ark:/12345/x",
-  "ark:/12345/x/y", "ark:/12345/x/yz"]).
-  """
+    """Given a normalized, qualified identifier (e.g., "ark:/12345/x/yz"),
+    returns a list of all prefixes of the identifier that are syntactically
+    valid identifiers (e.g., ["ark:/12345/x", "ark:/12345/x/y",
+    "ark:/12345/x/yz"])."""
     if identifier.startswith("ark:/"):
         id = identifier[5:]
         predicate = validateArk
@@ -388,11 +384,11 @@ _pattern1 = re.compile("%|[^ -~]")
 
 
 def encode1(s):
+    """UTF-8 encodes a Unicode string, then percent-encodes all non-graphic
+    ASCII characters except space.
+
+    This form of encoding is used for log file exception strings.
     """
-  UTF-8 encodes a Unicode string, then percent-encodes all non-graphic
-  ASCII characters except space.  This form of encoding is used for
-  log file exception strings.
-  """
     return _encode(_pattern1, s)
 
 
@@ -400,11 +396,11 @@ _pattern2 = re.compile("%|[^!-~]")
 
 
 def encode2(s):
+    """Like encode1, but percent-encodes spaces as well.
+
+    This form of encoding is used for log file record fields other than
+    exception strings.
     """
-  Like encode1, but percent-encodes spaces as well.  This form of
-  encoding is used for log file record fields other than exception
-  strings.
-  """
     return _encode(_pattern2, s)
 
 
@@ -412,11 +408,11 @@ _pattern3 = re.compile("[%'\"\\\\&@|;()[\\]=]|[^!-~]")
 
 
 def encode3(s):
+    """Like encode2, but percent-encodes ('), ("), (\), (&), (@), (|), (;) ((),
+    ()), ([), (]), and (=) as well.
+
+    This form of encoding is used for noid element values.
     """
-  Like encode2, but percent-encodes ('), ("), (\), (&), (@), (|), (;)
-  ((), ()), ([), (]), and (=) as well.  This form of encoding is used
-  for noid element values.
-  """
     return _encode(_pattern3, s)
 
 
@@ -424,10 +420,11 @@ _pattern4 = re.compile("[%'\"\\\\&@|;()[\\]=:<]|[^!-~]")
 
 
 def encode4(s):
+    """Like encode3, but percent-encodes (:) and (<) as well.
+
+    This form of encoding is used for noid identifiers and noid element
+    names.
     """
-  Like encode3, but percent-encodes (:) and (<) as well.  This form of
-  encoding is used for noid identifiers and noid element names.
-  """
     return _encode(_pattern4, s)
 
 
@@ -440,10 +437,11 @@ _hexMapping = dict((a + b, chr(int(a + b, 16))) for a in _hexDigits for b in _he
 
 
 def decode(s):
+    """Decodes a string that was encoded by encode{1,2,3,4}.
+
+    Raises PercentDecodeError (defined in this module) and
+    UnicodeDecodeError.
     """
-  Decodes a string that was encoded by encode{1,2,3,4}.  Raises
-  PercentDecodeError (defined in this module) and UnicodeDecodeError.
-  """
     l = s.split("%")
     r = [l[0]]
     for p in l[1:]:
@@ -456,15 +454,16 @@ def decode(s):
 
 
 def toExchange(metadata, identifier=None):
+    """Returns an exchange representation of a metadata dictionary, which is a
+    string of the format "label value label value ..." in which labels and
+    values are percent-encoded via encode{3,4} above, and are separated by
+    single spaces.
+
+    Labels and values are stripped before being encoded; empty labels
+    are not permitted and labels with empty values are discarded.  If
+    'identifier' is not None, it is inserted as the first token in the
+    string; it is not encoded.
     """
-  Returns an exchange representation of a metadata dictionary, which
-  is a string of the format "label value label value ..." in which
-  labels and values are percent-encoded via encode{3,4} above, and are
-  separated by single spaces.  Labels and values are stripped before
-  being encoded; empty labels are not permitted and labels with empty
-  values are discarded.  If 'identifier' is not None, it is inserted
-  as the first token in the string; it is not encoded.
-  """
     l = []
     if identifier != None:
         # We're assuming here that the identifier contains no spaces or
@@ -481,13 +480,13 @@ def toExchange(metadata, identifier=None):
 
 
 def fromExchange(line, identifierEmbedded=False):
+    """Reconstitutes a metadata dictionary from an exchange representation.
+
+    If 'identifierEmbedded' is True, the first token is assumed to be an
+    identifier, and the return is a tuple (identifier, dictionary).
+    Otherwise, the return is simply a dictionary.  N.B.: this function
+    only partially checks the input.
     """
-  Reconstitutes a metadata dictionary from an exchange representation.
-  If 'identifierEmbedded' is True, the first token is assumed to be an
-  identifier, and the return is a tuple (identifier, dictionary).
-  Otherwise, the return is simply a dictionary.  N.B.: this function
-  only partially checks the input.
-  """
     if len(line) > 0 and line[-1] == "\n":
         line = line[:-1]
     if len(line) == 0:
@@ -513,19 +512,18 @@ def fromExchange(line, identifierEmbedded=False):
 
 
 def blobify(metadata):
-    """
-  Converts a metadata dictionary to a binary, compressed string, or
-  "blob."  Labels and values are stripped; labels with empty values
-  are discarded.
-  """
+    """Converts a metadata dictionary to a binary, compressed string, or
+    "blob."  Labels and values are stripped; labels with empty values are
+    discarded."""
     return zlib.compress(toExchange(metadata))
 
 
 def deblobify(blob, decompressOnly=False):
+    """Converts a blob back to a metadata dictionary.
+
+    If 'decompressOnly' is True, the metadata is returned in exchange
+    representation form.
     """
-  Converts a blob back to a metadata dictionary.  If 'decompressOnly'
-  is True, the metadata is returned in exchange representation form.
-  """
     v = zlib.decompress(blob)
     if decompressOnly:
         return v
@@ -534,16 +532,12 @@ def deblobify(blob, decompressOnly=False):
 
 
 def oneLine(s):
-    """
-  Replaces newlines in a string with spaces.
-  """
+    """Replaces newlines in a string with spaces."""
     return re.sub("\s", " ", s)
 
 
 def formatException(exception):
-    """
-  Formats an exception into a single-line string.
-  """
+    """Formats an exception into a single-line string."""
     s = oneLine(str(exception)).strip()
     if len(s) > 0:
         s = ": " + s
@@ -551,11 +545,11 @@ def formatException(exception):
 
 
 def desentencify(s):
+    """Turns a string that looks like a sentence (initial capital letter,
+    period at the end) into a phrase.
+
+    Fallible, but tries to be careful.
     """
-  Turns a string that looks like a sentence (initial capital letter,
-  period at the end) into a phrase.  Fallible, but tries to be
-  careful.
-  """
     if len(s) >= 2 and s[0].isupper() and not s[1].isupper():
         s = s[0].lower() + s[1:]
     if s.endswith("."):
@@ -585,12 +579,12 @@ _modelAnvlLabelMapping = {
 
 
 def formatValidationError(exception, convertToAnvlLabels=True):
+    """Formats a Django validation error into a single-line string.
+
+    If 'convertToAnvlLabels' is true, an attempt is made to convert any
+    model field names referenced in the error to their ANVL
+    counterparts.
     """
-  Formats a Django validation error into a single-line string.  If
-  'convertToAnvlLabels' is true, an attempt is made to convert any
-  model field names referenced in the error to their ANVL
-  counterparts.
-  """
     l = []
     for entry in exception:
         if type(entry) is tuple:
@@ -612,10 +606,8 @@ _illegalAsciiCharsRE = re.compile("[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\xFF]")
 
 
 def validateAsciiSafeCharset(s):
-    """
-  Returns true if the given ASCII string contains only non-control
-  7-bit characters.
-  """
+    """Returns true if the given ASCII string contains only non-control 7-bit
+    characters."""
     return _illegalAsciiCharsRE.search(s) == None
 
 
@@ -671,18 +663,14 @@ _illegalUnichrsRE = re.compile(
 
 
 def validateXmlSafeCharset(s):
-    """
-  Returns true if the given Unicode string contains only characters
-  that are accepted by XML 1.1.
-  """
+    """Returns true if the given Unicode string contains only characters that
+    are accepted by XML 1.1."""
     return _illegalUnichrsRE.search(s) == None
 
 
 def sanitizeXmlSafeCharset(s):
-    """
-  Returns a copy of the given Unicode string in which characters not
-  accepted by XML 1.1 have been replaced with spaces.
-  """
+    """Returns a copy of the given Unicode string in which characters not
+    accepted by XML 1.1 have been replaced with spaces."""
     return _illegalUnichrsRE.sub(" ", s)
 
 
@@ -701,11 +689,8 @@ _illegalUnichrsPlusSuppPlanesRE = re.compile(
 
 
 def validateXmlSafeCharsetBmpOnly(s):
-    """
-  Returns true if the given Unicode string contains only characters
-  that are accepted by XML 1.1 and that are in the Basic Multilingual
-  Plane.
-  """
+    """Returns true if the given Unicode string contains only characters that
+    are accepted by XML 1.1 and that are in the Basic Multilingual Plane."""
     return _illegalUnichrsPlusSuppPlanesRE.search(s) == None
 
 
@@ -717,9 +702,7 @@ xmlDeclarationRE = re.compile(
 
 
 def removeXmlEncodingDeclaration(document):
-    """
-  Removes the encoding declaration from an XML document if present.
-  """
+    """Removes the encoding declaration from an XML document if present."""
     m = xmlDeclarationRE.match(document)
     if m and m.group(3) != None:
         return document[: m.start(3)] + document[m.end(3) :]
@@ -728,9 +711,7 @@ def removeXmlEncodingDeclaration(document):
 
 
 def removeXmlDeclaration(document):
-    """
-  Removes the entire XML declaration from an XML document if present.
-  """
+    """Removes the entire XML declaration from an XML document if present."""
     m = xmlDeclarationRE.match(document)
     if m:
         return document[len(m.group(0)) :]
@@ -739,14 +720,14 @@ def removeXmlDeclaration(document):
 
 
 def insertXmlEncodingDeclaration(document):
+    """Inserts a UTF-8 encoding declaration in an XML document if it lacks one.
+
+    'document' should be an unencoded string and the return is likewise
+    an unencoded string.  (Note that, due to the discrepancy between the
+    encoding declaration and the encoding of the returned string, to be
+    parsed again by lxml, the encoding declaration will need to be
+    removed.)
     """
-  Inserts a UTF-8 encoding declaration in an XML document if it lacks
-  one.  'document' should be an unencoded string and the return is
-  likewise an unencoded string.  (Note that, due to the discrepancy
-  between the encoding declaration and the encoding of the returned
-  string, to be parsed again by lxml, the encoding declaration will
-  need to be removed.)
-  """
     m = xmlDeclarationRE.match(document)
     if m:
         if m.group(3) == None:
@@ -762,13 +743,13 @@ def insertXmlEncodingDeclaration(document):
 
 
 def parseXmlString(document):
+    """Parses an XML document from a string, returning a root element node.
+
+    If a Unicode string is supplied, any encoding declaration in the
+    document is discarded and ignored; otherwise, if an encoding
+    declaration is present, the parser treats the string as a binary
+    stream and decodes it per the declaration.
     """
-  Parses an XML document from a string, returning a root element node.
-  If a Unicode string is supplied, any encoding declaration in the
-  document is discarded and ignored; otherwise, if an encoding
-  declaration is present, the parser treats the string as a binary
-  stream and decodes it per the declaration.
-  """
     if type(document) is str:
         return lxml.etree.XML(document)
     elif type(document) is str:
@@ -805,13 +786,13 @@ _extractTransformSource = """<?xml version="1.0"?>
 
 
 def extractXmlContent(document):
+    """Extracts all content from an XML document (all attribute values, all
+    textual element content) and returns it as a single Unicode string in which
+    individual fragments are separated by " ; ".
+
+    Whitespace is normalized throughout per XPath.  The input document
+    may be a string or an already-parsed document tree.
     """
-  Extracts all content from an XML document (all attribute values, all
-  textual element content) and returns it as a single Unicode string
-  in which individual fragments are separated by " ; ".  Whitespace is
-  normalized throughout per XPath.  The input document may be a string
-  or an already-parsed document tree.
-  """
     global _extractTransform
     if _extractTransform == None:
         _extractTransform = lxml.etree.XSLT(lxml.etree.XML(_extractTransformSource))
@@ -824,21 +805,19 @@ _datespecRE = re.compile("(\d{4})(?:-(\d\d)(?:-(\d\d))?)?$")
 
 
 def xmlEscape(s):
-    """
-  Suitably escapes a string for inclusion in an XML element or
-  attribute (assuming attributes are delimited by double quotes).
-  """
+    """Suitably escapes a string for inclusion in an XML element or attribute
+    (assuming attributes are delimited by double quotes)."""
     return xml.sax.saxutils.escape(s, {"\"": "&quot;"})
 
 
 def dateToLowerTimestamp(date):
+    """Converts a string date of the form YYYY, YYYY-MM, or YYYY-MM-DD to a
+    Unix timestamp, or returns None if the date is invalid.
+
+    The returned timestamp is the first (earliest) second within the
+    specified time period.  Note that the timestamp may be negative or
+    otherwise out of the normal range for Unix timestamps.
     """
-  Converts a string date of the form YYYY, YYYY-MM, or YYYY-MM-DD to a
-  Unix timestamp, or returns None if the date is invalid.  The
-  returned timestamp is the first (earliest) second within the
-  specified time period.  Note that the timestamp may be negative or
-  otherwise out of the normal range for Unix timestamps.
-  """
     rm = _datespecRE.match(date)
     if not rm or date[-1] == "\n":
         return None
@@ -852,13 +831,13 @@ def dateToLowerTimestamp(date):
 
 
 def dateToUpperTimestamp(date):
+    """Converts a string date of the form YYYY, YYYY-MM, or YYYY-MM-DD to a
+    Unix timestamp, or returns None if the date is invalid.
+
+    The returned timestamp is the last (latest) second within the
+    specified time period.  Note that the timestamp may be negative or
+    otherwise out of the normal range for Unix timestamps.
     """
-  Converts a string date of the form YYYY, YYYY-MM, or YYYY-MM-DD to a
-  Unix timestamp, or returns None if the date is invalid.  The
-  returned timestamp is the last (latest) second within the specified
-  time period.  Note that the timestamp may be negative or otherwise
-  out of the normal range for Unix timestamps.
-  """
     # Overflow and edge cases.
     if date in ["9999", "9999-12", "9999-12-31"]:
         return calendar.timegm(datetime.datetime(9999, 12, 31, 23, 59, 59).timetuple())
@@ -887,18 +866,16 @@ def dateToUpperTimestamp(date):
 
 
 def formatTimestampZulu(t):
-    """
-  Returns a Unix timestamp in ISO 8601 UTC format.
-  """
+    """Returns a Unix timestamp in ISO 8601 UTC format."""
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
 
 
 def parseTimestampZulu(s, allowDateOnly=False):
+    """Parses a time (or just a date, if 'allowDateOnly' is true) in ISO 8601
+    UTC format and returns a Unix timestamp.
+
+    Raises an exception on parse error.
     """
-  Parses a time (or just a date, if 'allowDateOnly' is true) in ISO
-  8601 UTC format and returns a Unix timestamp.  Raises an exception
-  on parse error.
-  """
     t = None
     if allowDateOnly:
         try:

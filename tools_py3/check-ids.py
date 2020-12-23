@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-"""
-Annotate a stream of identifiers with associated metadata and misc housekeeping
-information pulled from an EZID database.
-"""
+"""Annotate a stream of identifiers with associated metadata and misc
+housekeeping information pulled from an EZID database."""
 import argparse
 import collections
 import fileinput

@@ -17,7 +17,7 @@ register = template.Library()
 # settings value
 @register.simple_tag
 def settings_value(name):
-    """ Gets a value from the settings configuration"""
+    """Gets a value from the settings configuration."""
     try:
         return settings.__getattr__(name)
     except AttributeError:
@@ -26,7 +26,7 @@ def settings_value(name):
 
 @register.simple_tag
 def content_heading(heading):
-    """Outputs primary heading at top of page"""
+    """Outputs primary heading at top of page."""
     return (
         '<div class="heading__primary-container">'
         + '<h1 class="heading__primary-text">'
@@ -37,7 +37,8 @@ def content_heading(heading):
 
 @register.simple_tag
 def choices(name, value, choice_string):
-    """Creates radio buttons (for simple admin email form) based on string choices separated by a pipe"""
+    """Creates radio buttons (for simple admin email form) based on string
+    choices separated by a pipe."""
     choices = choice_string.split("|")
     return "  ".join(
         [
@@ -58,9 +59,9 @@ def choices(name, value, choice_string):
 @register.tag
 @basictag(takes_context=True)
 def request_value(context, key_name):
-    """Outputs the value of context[key_name], required because
-  normal django templating will not retrieve any variables starting with an underscore
-  which all of the internal profile variables have"""
+    """Outputs the value of context[key_name], required because normal django
+    templating will not retrieve any variables starting with an underscore
+    which all of the internal profile variables have."""
     request = context['request']
     if request.method == "GET":
         REQUEST = request.GET
@@ -82,8 +83,8 @@ def set_dict_value(context, dt, key_name):
 
 @register.simple_tag
 def get_dict_value(dt, key_name):
-    """For getting dictionary values which Django templating can't handle,
-  such as those starting with underscore or with a dot in them"""
+    """For getting dictionary values which Django templating can't handle, such
+    as those starting with underscore or with a dot in them."""
     if key_name in dt:
         return escape(dt[key_name])
     else:
@@ -107,7 +108,7 @@ def active_id_display(id_text, testPrefixes):
 def help_icon(
     id_of_help, specifics="", css_class="button__icon-help", placement="auto bottom"
 ):
-    """ data-container="#' + str(id_of_help) """
+    """data-container="#' + str(id_of_help)"""
     title = django.utils.safestring.mark_safe(
         "Click for additional help" + " " + str(specifics)
     )
@@ -130,13 +131,14 @@ def help_icon(
 
 @register.filter('fieldtype')
 def fieldtype(field):
-    """Get the type of a django form field (thus helps you know what class to apply to it)"""
+    """Get the type of a django form field (thus helps you know what class to
+    apply to it)"""
     return field.field.widget.__class__.__name__
 
 
 @register.filter(name='add_attributes')
 def add_attributes(field, css):
-    """Add attributes to a django form field"""
+    """Add attributes to a django form field."""
     attrs = {}
     definition = css.split(',')
     for d in definition:
@@ -151,9 +153,12 @@ def add_attributes(field, css):
 @register.tag
 @basictag(takes_context=True)
 def host_based_include(context, template_path):
-    """This includes a file from a different directory instead of the
-  normal specified file based on the hostname.  This allows for some
-  simple branding changes in the templates based host name differences"""
+    """This includes a file from a different directory instead of the normal
+    specified file based on the hostname.
+
+    This allows for some simple branding changes in the templates based
+    host name differences
+    """
     request = context['request']
     host = request.META.get("HTTP_HOST", "default")
     if host not in django.conf.settings.LOCALIZATIONS:
@@ -170,13 +175,15 @@ def host_based_include(context, template_path):
 @register.tag
 @basictag(takes_context=True)
 def form_or_dict_value(context, dict, key_name):
-    """Outputs the value of the dict[key_name] unless request.POST contains the data
-  for the item which then overrides the dictionary's value.
-  This both fixes problems with normal django templating which will not retrieve
-  any keys starting with an underscore and it solves the problem of re-POSTed values
-  which were getting clobbered by the stored values.  POSTed values should override
-  so people do not lose their in-process edits.
-  """
+    """Outputs the value of the dict[key_name] unless request.POST contains the
+    data for the item which then overrides the dictionary's value.
+
+    This both fixes problems with normal django templating which will
+    not retrieve any keys starting with an underscore and it solves the
+    problem of re-POSTed values which were getting clobbered by the
+    stored values.  POSTed values should override so people do not lose
+    their in-process edits.
+    """
     request = context['request']
     if request.POST and key_name in request.POST:
         return escape(request.POST[key_name])
@@ -191,8 +198,7 @@ def form_or_dict_value(context, dict, key_name):
 @basictag(takes_context=True)
 def form_or_default(context, key_name, default):
     """Outputs the value of the reposted value unless it doesn't exist then
-  outputs the default value passed in.
-  """
+    outputs the default value passed in."""
     request = context['request']
     if request.method == "GET":
         REQUEST = request.GET
@@ -207,8 +213,8 @@ def form_or_default(context, key_name, default):
 @register.tag
 @basictag(takes_context=True)
 def selected_radio(context, request_item, loop_index, item_value):
-    """returns checked="checked" if this should be the currently selected
-  radio button based on matching request data or 1st item and nothing selected"""
+    """returns checked="checked" if this should be the currently selected radio
+    button based on matching request data or 1st item and nothing selected."""
     request = context['request']
     if request.method == "GET":
         REQUEST = request.GET
@@ -227,9 +233,12 @@ def shoulder_display(
     prefix_dict, id_type_only="False", testPrefixes=[], sans_namespace="False"
 ):
     """Three types of display:
-  FULL --------------->  Caltech Biology ARK (ark:/77912/w7))
-  SANS NAMESPACE ----->    ARK (ark:/99999/...))       <----------   used for demo page
-  ID TYPE ONLY ------->    ARK                         <----------   used for home page"""
+
+    FULL --------------->  Caltech Biology ARK (ark:/77912/w7)) SANS
+    NAMESPACE ----->    ARK (ark:/99999/...))       <----------   used
+    for demo page ID TYPE ONLY ------->    ARK
+    <----------   used for home page
+    """
     if id_type_only == "False":
         display_prefix = ""
         for pre in testPrefixes:
@@ -290,14 +299,14 @@ def unavailable_codes(for_field):
 @register.tag
 @basictag(takes_context=True)
 def full_url_to_id_details(context, id_text):
-    """return URL form of identifier"""
+    """return URL form of identifier."""
     return util2.urlForm(id_text)
 
 
 @register.tag
 @basictag(takes_context=True)
 def full_url_to_id_details_urlencoded(context, id_text):
-    """return URL form of identifier, URL-encoded"""
+    """return URL form of identifier, URL-encoded."""
     return urllib.parse.quote(util2.urlForm(id_text))
 
 
