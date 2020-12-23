@@ -9,20 +9,20 @@ pytest finds this file via the DJANGO_SETTINGS_MODULE setting in ~/tox.ini.
 """
 import logging.config
 import os.path
-import socket
 import sys
 
 import django.utils.translation
 
 STANDALONE = True
-DAEMON_THREADS_ENABLED = False
+DAEMON_THREADS_ENABLED = True
 LOCALIZATIONS = {"default": ("cdl", ["ezid@ucop.edu"])}
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 SITE_ROOT = os.path.split(PROJECT_ROOT)[0]
 DOWNLOAD_WORK_DIR = os.path.join(SITE_ROOT, "download")
 DOWNLOAD_PUBLIC_DIR = os.path.join(DOWNLOAD_WORK_DIR, "public")
 SETTINGS_DIR = os.path.join(PROJECT_ROOT, "settings")
-EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "test_config.conf")
+EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "test_config.shadow.conf")
+# EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "test_config.conf")
 EZID_SHADOW_CONFIG_FILE = '/dev/null'
 DEPLOYMENT_LEVEL = 'local'
 MINTERS_PATH = os.path.join(PROJECT_ROOT, "db", "minters")
@@ -32,25 +32,22 @@ sys.path.append(os.path.join(PROJECT_ROOT, "impl"))
 DEBUG = True
 TEST_RUNNER = None
 
-MANAGERS = ADMINS = []
+MANAGERS = ADMINS = [
+    ("Roger Dahl", "cdl-ezid@dahlsys.com"),
+]
 
 ADMIN_USER = 'admin'
 ADMIN_PW = 'admin'
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    'testserver',  # Travis
-    "uc3-ezidx2-dev.cdlib.org",
-]
+# if "HOSTNAME" in os.environ:
+#     SERVER_EMAIL = "ezid@" + os.environ["HOSTNAME"]
+# else:
+#     SERVER_EMAIL = "ezid@" + socket.gethostname()
 
-if "HOSTNAME" in os.environ:
-    SERVER_EMAIL = "ezid@" + os.environ["HOSTNAME"]
-else:
-    SERVER_EMAIL = "ezid@" + socket.gethostname()
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+# DB setup for use with tunnel
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
@@ -62,20 +59,21 @@ DATABASES = {
         "ATOMIC_REQUESTS": False,
         "OPTIONS": {"charset": "utf8mb4"},
         'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock',},
-    },
-    "search": {
-        "ENGINE": "django.db.backends.mysql",
-        "HOST": "localhost",
-        "NAME": "ezid_tests",
-        "USER": "ezid_test_user",
-        "PASSWORD": "",
-        # "AUTOCOMMIT": False,
-        "ATOMIC_REQUESTS": False,
-        "OPTIONS": {"charset": "utf8mb4"},
-        'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock',},
-        "fulltextSearchSupported": True,
+        # "ENGINE": "django.db.backends.mysql",
+        # "HOST": "127.0.0.1",
+        # # "PORT": "3300",
+        # "NAME": "ezid",
+        # # "USER": "eziddba",
+        # # "PASSWORD": "thx:)4ALLminnows",
+        # # "AUTOCOMMIT": False,
+        # "ATOMIC_REQUESTS": False,
+        # "OPTIONS": {"charset": "utf8mb4"},
+        # 'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock', },
     },
 }
+DATABASES["search"] = DATABASES["default"].copy()
+DATABASES["search"]["fulltextSearchSupported"] =  True
+
 
 SEARCH_STORE_SAME_DATABASE = True
 
@@ -146,7 +144,6 @@ INSTALLED_APPS = [
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
-
 # Logging
 
 # Disable Django's built-in logging config
@@ -175,14 +172,17 @@ logging.config.dictConfig(
             },
         },
         'loggers': {
-            '': {'handlers': ['console'], 'propagate': True, 'level': 'DEBUG',},
+            '': {'handlers': ['console'], 'propagate': True, 'level': 'DEBUG', },
             # Increase logging level on loggers that are noisy at debug level
             'django.db': {
                 'level': 'ERROR',
             },
-            # Increase logging level on loggers that are noisy at debug level
             'django.request': {
                 'level': 'ERROR',
+            },
+            # TODO: Look into messages about missing variables in templates
+            'django.template': {
+                'level': 'INFO',
             },
             'filelock': {
                 'level': 'ERROR',
