@@ -1,0 +1,50 @@
+---
+
+- name: update ~/.profile.d/pyenv
+  blockinfile:
+    path: "{{ansible_env.HOME}}/.profile.d/ezid"
+    create: yes
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+    block: |
+      #
+      # pyenv setup
+      #
+      if [ -d "$HOME"/.pyenv ]; then
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+      fi
+      #
+      # ezid config
+      #
+      export DJANGO_SETTINGS_MODULE=settings.remotedev
+
+- name: setup pyenv 
+  # from https://galaxy.ansible.com/suzuki-shunsuke/pyenv-module
+  pyenv:
+    version: "{{pyver}}"
+    pyenv_root: "{{pyenv_root}}"
+    #subcommand: uninstall
+  environment:
+    CONFIGURE_OPTS: "--enable-shared"
+    CFLAGS: "-O2"
+- name: pyenv virtualenv
+  pyenv:
+    subcommand: virtualenv
+    version: "{{pyver}}"
+    pyenv_root: "{{pyenv_root}}"
+    virtualenv_name: "{{venv_name}}"
+- name: pyenv global
+  pyenv:
+    subcommand: global
+    versions:
+    - "{{venv_name}}"
+    pyenv_root: "{{pyenv_root}}"
+- name: install python packages on the virtualenv
+  pip:
+    name: ['mod_wsgi']
+    executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
+

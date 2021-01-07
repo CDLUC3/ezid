@@ -1,0 +1,27 @@
+---
+
+- name: install ezid requirements
+  pip:
+    requirements: "{{app_dir}}/ezid/requirements.txt"
+    executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
+- name: symlink ezid logs
+  # ln -s /apps/ezid/var/log/ezid /apps/ezid/logs; \
+  file:
+    path: "{{app_dir}}/logs"
+    src: "{{app_dir}}/var/log/ezid"
+    state: link
+- name: symlink download dir
+  # ln -s /apps/ezid/var/www/download /apps/ezid/download
+  file:
+    path: "{{app_dir}}/download"
+    src: "{{app_dir}}/var/www/download"
+    state: link
+## Configure the EZID application
+- name: ezid.conf.shadow
+  # ADD --chown=ezid:ezid etc/ezid.conf.template /apps/ezid/ezid/settings/ezid.conf.shadow
+  template:
+    src: "templates/etc/ezid.conf.template"
+    dest: "{{app_dir}}/ezid/settings/ezid.conf.shadow"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0600"

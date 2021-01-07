@@ -1,0 +1,13 @@
+---
+
+- name: Clone ezid repo
+  git:
+    repo: "{{ezid_repo}}"
+    dest: "{{app_dir}}/ezid/"
+    version: "{{git_branch}}"
+    force: yes
+- name: Clone ezid-info-pages repo
+  git:
+    repo: "{{ezid_info_pages_repo}}"
+    dest: "{{app_dir}}/ezid/templates/info/"
+    version: "{{git_branch}}"

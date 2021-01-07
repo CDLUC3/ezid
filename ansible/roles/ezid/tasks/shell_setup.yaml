@@ -1,0 +1,31 @@
+---
+
+- name: ~/.bash_profile
+  copy:
+    src: files/.bash_profile
+    dest: "{{ansible_env.HOME}}/.bash_profile"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+- name: ~/.bashrc
+  copy:
+    src: files/.bashrc
+    dest: "{{ansible_env.HOME}}/.bashrc"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+    force: no
+- name: ~/.alias
+  copy:
+    src: files/.alias
+    dest: "{{ansible_env.HOME}}/.alias"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+    force: no
+- name: mkdir ~/.profile.d
+  file:
+    path: "{{ansible_env.HOME}}/.profile.d"
+    owner: "{{user}}"
+    group: "{{group}}"
+    state: directory

@@ -1,0 +1,56 @@
+---
+
+- name: symlink httpd modules
+  # ln -s /etc/httpd/modules /apps/ezid/etc/httpd/modules; \
+  file:
+    path: "{{app_dir}}/etc/httpd/modules"
+    src: "/etc/httpd/modules"
+    state: link
+- name: symlink httpd magic
+  # ln -s /etc/httpd/conf/magic /apps/ezid/etc/httpd/conf/magic
+  file:
+    path: "{{app_dir}}/etc/httpd/conf/magic"
+    src: "/etc/httpd/conf/magic"
+    state: link
+- name: httpd.conf
+  copy:
+    src: "files/etc/httpd/conf/httpd.conf"
+    dest: "{{app_dir}}/etc/httpd/conf/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+- name: httpd/conf.d/*
+  copy:
+    src: "files/etc/httpd/conf.d/"
+    dest: "{{app_dir}}/etc/httpd/conf.d/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+- name: httpd/conf.modules.d/*
+  copy:
+    src: "files/etc/httpd/conf.modules.d/"
+    dest: "{{app_dir}}/etc/httpd/conf.modules.d/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+- name: etc/init.d/*
+  copy:
+    src: "files/etc/init.d/httpd"
+    dest: "{{app_dir}}/etc/init.d/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0775"
+- name: ezid_env.sh
+  copy:
+    src: "files/etc/ezid_env.sh"
+    dest: "{{app_dir}}/etc/ezid_env.sh"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0775"
+- name: robots.txt
+  copy:
+    src: "files/var/www/html/robots.txt"
+    dest: "{{app_dir}}/var/www/html/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
