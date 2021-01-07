@@ -17,11 +17,11 @@
     src: "{{app_dir}}/var/www/download"
     state: link
 ## Configure the EZID application
-- name: ezid.conf.shadow
-  # ADD --chown=ezid:ezid etc/ezid.conf.template /apps/ezid/ezid/settings/ezid.conf.shadow
-  template:
-    src: "templates/etc/ezid.conf.template"
-    dest: "{{app_dir}}/ezid/settings/ezid.conf.shadow"
-    owner: "{{user}}"
-    group: "{{group}}"
-    mode: "0600"
+#- name: ezid.conf.shadow
+#  # ADD --chown=ezid:ezid etc/ezid.conf.template /apps/ezid/ezid/settings/ezid.conf.shadow
+#  template:
+#    src: "templates/etc/ezid.conf.template"
+#    dest: "{{app_dir}}/ezid/settings/ezid.conf.shadow"
+#    owner: "{{user}}"
+#    group: "{{group}}"
+#    mode: "0600"

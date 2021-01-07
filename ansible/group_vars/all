@@ -9,8 +9,16 @@ ezid_repo: https://github.com/CDLUC3/ezid.git
 ezid_info_pages_repo: https://github.com/CDLUC3/ezid-info-pages.git
 git_branch: master
 
-## config params
+## apache params
+http_port: 18880
+http_protocol: http
+
+
+## ezid params
+django_env: remotedev
+#django_env: local
+
 admin_password:
-db_host: docker.for.mac.host.internal
+db_host:
 db_port: 4306
 db_password:

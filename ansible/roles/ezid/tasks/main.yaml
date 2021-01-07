@@ -1,19 +1,19 @@
 ---
 
-- name: "call base_directories.yaml"
-  include_tasks: base_directories.yaml
-
-- name: "call shell_setup.yaml"
-  include_tasks: shell_setup.yaml
-
-- name: "call pyenv_setup.yaml"
-  include_tasks: pyenv_setup.yaml
-
-- name: "call clone_repos.yaml"
-  include_tasks: clone_repos.yaml
-
-- name: "call setup_ezid_application.yaml"
-  include_tasks: setup_ezid_application.yaml
+#- name: "call base_directories.yaml"
+#  include_tasks: base_directories.yaml
+#
+#- name: "call shell_setup.yaml"
+#  include_tasks: shell_setup.yaml
+#
+#- name: "call pyenv_setup.yaml"
+#  include_tasks: pyenv_setup.yaml
+#
+#- name: "call clone_repos.yaml"
+#  include_tasks: clone_repos.yaml
+#
+#- name: "call setup_ezid_application.yaml"
+#  include_tasks: setup_ezid_application.yaml
 
 - name: "call setup_apache.yaml"
   include_tasks: setup_apache.yaml
