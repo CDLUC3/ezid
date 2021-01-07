@@ -1,23 +1,8 @@
 ---
+---
 
-- name: "Create application directory trees"
-  # shell:RUN mkdir -p etc/{httpd/{conf,conf.d,conf.modules.d},init.d} var/{run,log/{httpd,ezid},www/{html,download/{public}}}; \
-  file:
-    path: "{{item}}"
-    owner: "{{user}}"
-    group: "{{group}}"
-    state: directory
-  with_items:
-  - "{{app_dir}}/bin"
-  - "{{app_dir}}/etc/httpd/conf"
-  - "{{app_dir}}/etc/httpd/conf.d"
-  - "{{app_dir}}/etc/httpd/modules.d"
-  - "{{app_dir}}/etc/init.d"
-  - "{{app_dir}}/var/run"
-  - "{{app_dir}}/var/log/ezid"
-  - "{{app_dir}}/var/log/httpd"
-  - "{{app_dir}}/var/www/html"
-  - "{{app_dir}}/var/www/download/public"
+- name: "call base_directories.yaml"
+  include_tasks: base_directories.yaml
 
 - name: ~/.bash_profile
   copy:
