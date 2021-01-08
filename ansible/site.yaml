@@ -3,7 +3,7 @@
   connection: local
   remote_user: "{{user}}"
   roles:
-    #- suzuki-shunsuke.pyenv
-    #- suzuki-shunsuke.pyenv-virtualenv
-    #- suzuki-shunsuke.pyenv-module
+    - suzuki-shunsuke.pyenv
+    - suzuki-shunsuke.pyenv-virtualenv
+    - suzuki-shunsuke.pyenv-module
     - ezid

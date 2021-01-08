@@ -20,7 +20,7 @@
       #
       # ezid config
       #
-      export DJANGO_SETTINGS_MODULE=settings.remotedev
+      export DJANGO_SETTINGS_MODULE=settings.{{ django_env }}
 
 - name: setup pyenv 
   # from https://galaxy.ansible.com/suzuki-shunsuke/pyenv-module

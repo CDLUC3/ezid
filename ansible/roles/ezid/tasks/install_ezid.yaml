@@ -6,6 +6,10 @@
     dest: "{{app_dir}}/ezid/"
     version: "{{git_branch}}"
     force: yes
+- name: install ezid requirements
+  pip:
+    requirements: "{{app_dir}}/ezid/requirements.txt"
+    executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
 - name: Clone ezid-info-pages repo
   git:
     repo: "{{ezid_info_pages_repo}}"

@@ -1,0 +1,22 @@
+---
+
+## Configure the EZID application
+
+- name: symlink ezid logs
+  file:
+    path: "{{app_dir}}/logs"
+    src: "{{app_dir}}/var/log/ezid"
+    state: link
+- name: symlink download dir
+  file:
+    path: "{{app_dir}}/download"
+    src: "{{app_dir}}/var/www/download"
+    state: link
+
+- name: ezid.conf.shadow
+  template:
+    src: "templates/ezid/settings/ezid.conf.shadow.j2"
+    dest: "{{app_dir}}/ezid/settings/ezid.conf.shadow.test"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0600"
