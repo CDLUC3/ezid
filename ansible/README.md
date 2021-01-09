@@ -15,7 +15,7 @@ Usage
 -----
 
 ```
-ansible-galaxy install -r ${install_dir}/ezid-ansible/roles/requirements.yml
+ansible-galaxy install -r ${install_dir}/ezid-ansible/roles/requirements.yaml
 ansible-playbook -i hosts site.yaml
 ```
 

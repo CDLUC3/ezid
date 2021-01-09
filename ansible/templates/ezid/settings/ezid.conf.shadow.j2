@@ -1,29 +1,29 @@
 [auth]
-admin_password: {{ auth_password }}
+admin_password: {{ admin_password }}
 
 [databases]
-store_host: {{ database_host }}
-store_port: {{ database_port }}
-store_password: {{ database_password }} 
+store_host: {{ db_host }}
+store_port: {{ db_port }}
+store_password: {{ db_password }} 
 
-search_host: {{ database_host }}
-search_port: {{ database_port }}
-search_password: {{ database_password }} 
+search_host: {{ db_host }}
+search_port: {{ db_port }}
+search_password: {{ db_password }} 
 
 [binder]
-password: {{ binder_passwod }}
+password: {{ binder_password }}
 
 [shoulders]
-password: {{ shoulders_password }}
+password: {{ binder_password }}
 
 [minter_server_main]
-password: {{ minter_server_main_password }}
+password: {{ binder_password }}
 
 [allocator_CDL]
-password: {{ allocator_CDL_password }}
+password: {{ allocator_cdl_password }}
 
 [allocator_PURDUE]
-password: {{ allocator_PURDUE_password }}
+password: {{ allocator_purdue_password }}
 
 [crossref]
 password: {{ crossref_password }}

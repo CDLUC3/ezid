@@ -4,3 +4,5 @@ roles:
   - name: suzuki-shunsuke.pyenv-virtualenv
   - name: suzuki-shunsuke.pyenv-module
 
+collections:
+  - name: amazon.aws

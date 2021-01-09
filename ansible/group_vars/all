@@ -13,12 +13,32 @@ git_branch: master
 http_port: 18880
 http_protocol: http
 
+## ssm_params
+#
+ssm_param_path: '/no/path/'
+default_ssm_params:
+  deployment_level: localdev
+  admin_password: ''
+  db_host: docker.for.mac.host.internal
+  db_port: '4306'
+  db_password: ''
+  
+ssm_params: "{{ lookup(
+    'aws_ssm',
+    ssm_param_path,
+    region='us-west-2',
+    bypath=true,
+    recursive=true,
+    shortnames=true,
+    errors='ignore'
+) | default( default_ssm_params, true ) }}"
 
-## ezid params
-django_env: remotedev
-#django_env: local
-
-admin_password:
-db_host:
-db_port: 4306
-db_password:
+deployment_level:           "{{ ssm_params['deployment_level'] }}"
+admin_password:             "{{ ssm_params['admin_password'] }}"
+db_host:                    "{{ ssm_params['db_host'] }}"
+db_port:                    "{{ ssm_params['db_port'] }}"
+db_password:                "{{ ssm_params['db_password'] }}"
+binder_password:            "{{ ssm_params['binder_password'] | default('') }}"
+allocator_cdl_password:     "{{ ssm_params['allocator_cdl_password'] | default('') }}"
+allocator_purdue_password:  "{{ ssm_params['allocator_purdue_password'] | default('') }}"
+crossref_password:          "{{ ssm_params['crossref_password'] | default('') }}"

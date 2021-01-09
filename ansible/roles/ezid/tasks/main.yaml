@@ -17,9 +17,9 @@
 
 #- name: "call configure_httpd.yaml"
 #  include_tasks: configure_httpd.yaml
-
-- name: "call configure_init_scripts.yaml"
-  include_tasks: configure_init_scripts.yaml
+#
+#- name: "call configure_init_scripts.yaml"
+#  include_tasks: configure_init_scripts.yaml
 
 
 
