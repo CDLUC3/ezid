@@ -8,7 +8,7 @@ APACHECTL="/usr/sbin/apachectl -d ${APACHE_BASE} -f ${APACHE_CONF} -k"
 CLIENT={{ app_dir }}/ezid/tools/client
 WGET=/usr/bin/wget
 
-DJANGO_SETTINGS_MODULE=settings.{{ django_env }}
+DJANGO_SETTINGS_MODULE=settings.{{ deployment_level }}
 SHADOWFILE={{ app_dir }}/ezid/settings/ezid.conf.shadow
 PROTOCOL={{ http_protocol }}
 HOSTNAME=$(hostname -f)

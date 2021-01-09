@@ -19,7 +19,9 @@ export PATH
 
 # Gather profile snippets
 if [ -d $HOME/.profile.d ]; then
-  . $HOME/.profile.d/*
+  for file in $(ls -1 $HOME/.profile.d); do
+    source ${HOME}/.profile.d/${file}
+  done
 fi
 
 

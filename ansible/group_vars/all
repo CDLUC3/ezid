@@ -15,7 +15,9 @@ http_protocol: http
 
 ## ssm_params
 #
-ssm_param_path: '/no/path/'
+#ssm_root_path: '/no/path/'
+ssm_root_path: "{{ lookup('env', 'SSM_ROOT_PATH') | default('/no/path/') }}"
+aws_region: "{{ lookup('env', 'AWS_REGION') | default('us-west-2') }}"
 default_ssm_params:
   deployment_level: localdev
   admin_password: ''
@@ -25,8 +27,8 @@ default_ssm_params:
   
 ssm_params: "{{ lookup(
     'aws_ssm',
-    ssm_param_path,
-    region='us-west-2',
+    ssm_root_path,
+    region=aws_region,
     bypath=true,
     recursive=true,
     shortnames=true,

@@ -1,0 +1,33 @@
+---
+
+- name: symlink to system httpd modules
+  file:
+    path: "{{app_dir}}/etc/httpd/modules"
+    src: "/etc/httpd/modules"
+    state: link
+- name: symlink to system httpd magic
+  file:
+    path: "{{app_dir}}/etc/httpd/conf/magic"
+    src: "/etc/httpd/conf/magic"
+    state: link
+- name: httpd.conf
+  copy:
+    src: "templates/etc/httpd/conf/httpd.conf"
+    dest: "{{app_dir}}/etc/httpd/conf/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+- name: httpd/conf.d/*
+  copy:
+    src: "files/etc/httpd/conf.d/"
+    dest: "{{app_dir}}/etc/httpd/conf.d/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
+- name: httpd/conf.modules.d/*
+  copy:
+    src: "files/etc/httpd/conf.modules.d/"
+    dest: "{{app_dir}}/etc/httpd/conf.modules.d/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"

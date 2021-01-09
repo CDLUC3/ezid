@@ -11,8 +11,8 @@
       #
       # pyenv setup
       #
-      if [ -d "$HOME"/.pyenv ]; then
-        export PYENV_ROOT="$HOME/.pyenv"
+      if [ -d {{ pyenv_root }} ]; then
+        export PYENV_ROOT={{ pyenv_root }}
         export PATH="$PYENV_ROOT/bin:$PATH"
         eval "$(pyenv init -)"
         eval "$(pyenv virtualenv-init -)"
@@ -20,7 +20,7 @@
       #
       # ezid config
       #
-      export DJANGO_SETTINGS_MODULE=settings.{{ django_env }}
+      export DJANGO_SETTINGS_MODULE=settings.{{ deployment_level }}
 
 - name: setup pyenv 
   # from https://galaxy.ansible.com/suzuki-shunsuke/pyenv-module

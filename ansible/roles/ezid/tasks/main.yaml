@@ -1,25 +1,25 @@
 ---
 
-#- name: "call setup_base_dirs.yaml"
-#  include_tasks: setup_base_dirs.yaml
-#
-#- name: "call setup_shell_env.yaml"
-#  include_tasks: setup_shell_env.yaml
-#
-#- name: "call setup_pyenv.yaml"
-#  include_tasks: setup_pyenv.yaml
-#
-#- name: "call install_ezid.yaml"
-#  include_tasks: install_ezid.yaml
+- name: "call setup_base_dirs.yaml"
+  include_tasks: setup_base_dirs.yaml
+
+- name: "call setup_shell_env.yaml"
+  include_tasks: setup_shell_env.yaml
+
+- name: "call setup_pyenv.yaml"
+  include_tasks: setup_pyenv.yaml
+
+- name: "call install_ezid.yaml"
+  include_tasks: install_ezid.yaml
 
 - name: "call configure_ezid.yaml"
   include_tasks: configure_ezid.yaml
 
-#- name: "call configure_httpd.yaml"
-#  include_tasks: configure_httpd.yaml
-#
-#- name: "call configure_init_scripts.yaml"
-#  include_tasks: configure_init_scripts.yaml
+- name: "call configure_httpd.yaml"
+  include_tasks: configure_httpd.yaml
+
+- name: "call configure_init_scripts.yaml"
+  include_tasks: configure_init_scripts.yaml
 
 
 

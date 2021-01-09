@@ -1,0 +1,23 @@
+---
+- hosts: all
+  connection: local
+  remote_user: "{{user}}"
+  tasks:
+  - name: report ssm_root_path
+    debug: msg="{{ ssm_root_path }}"
+    #debug: msg="{{ lookup('env', 'SSM_ROOT_PATH') | default('/no/path/') }}"
+
+  #- name: return a dictionary of ssm parameters from a hierarchy path
+  #debug: msg="{{ lookup('aws_ssm', '/uc3/ezid/dev/', region='us-west-2', bypath=true, recursive=true, shortnames=true) }}"
+
+  #- name: return a single param based on path as variable
+  #  debug: msg="{{ lookup('aws_ssm', ssm_path, region='us-west-2', bypath=true, recursive=true, shortnames=true) }}"
+
+  - name: return dict from group_vars
+    debug: msg="{{ ssm_params }}"
+  - name: return default_ssm_params
+    debug: msg="{{ default_ssm_params }}"
+  #  #debug: msg="{{ ssm_params['deployment_level'] }}"
+  - name: return a single param based on path as variable
+    debug: msg="{{ db_port }}"
+

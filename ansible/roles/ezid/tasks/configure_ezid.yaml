@@ -16,7 +16,7 @@
 - name: ezid.conf.shadow
   template:
     src: "templates/ezid/settings/ezid.conf.shadow.j2"
-    dest: "{{app_dir}}/ezid/settings/ezid.conf.shadow.test"
+    dest: "{{app_dir}}/ezid/settings/ezid.conf.shadow"
     owner: "{{user}}"
     group: "{{group}}"
     mode: "0600"
