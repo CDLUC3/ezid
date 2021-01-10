@@ -77,8 +77,6 @@ case $1 in
         $APACHECTL start
         status=$?
         checkStatus
-        exerciseEzid
-        checkStatus
         ;;
     stop)
         pauseEzid
@@ -98,8 +96,6 @@ case $1 in
         echo "Restarting the server..."
         $APACHECTL restart
         status=$?
-        checkStatus
-        exerciseEzid
         checkStatus
         ;;
     status)

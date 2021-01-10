@@ -1,9 +1,9 @@
 ---
 
-- name: etc/init.d/httpd
+- name: etc/init.d/pause_ezid.sh
   template:
-    src: "templates/etc/init.d/httpd.j2"
-    dest: "{{app_dir}}/etc/init.d/httpd"
+    src: "templates/etc/init.d/pause_ezid.sh.j2"
+    dest: "{{app_dir}}/etc/init.d/pause_ezid.sh"
     owner: "{{user}}"
     group: "{{group}}"
     mode: "0775"
