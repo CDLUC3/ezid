@@ -1,0 +1,45 @@
+#! /bin/bash
+#
+#  Managed by Ansible
+#set -x
+
+CLIENT={{ app_dir }}/ezid/tools/client
+DJANGO_SETTINGS_MODULE=settings.{{ deployment_level }}
+SHADOWFILE={{ app_dir }}/ezid/settings/ezid.conf.shadow
+PROTOCOL={{ http_protocol }}
+HOSTNAME=$(hostname -f)
+PORT={{ http_port }}
+
+
+function checkStatus {
+    if [ $status -eq 0 ]; then
+        echo "OK"
+    else
+        echo "FAILED"
+        exit 1
+    fi
+}
+
+function pauseEzid {
+    echo "Pausing the server..."
+    pidcount=`ps -fU ezid | grep -c '[h]ttpd'`
+    if [ $pidcount -eq 0 ]; then
+        echo "(server doesn't appear to be running)"
+        status=0
+        return
+    fi
+    password=`grep -m1 '^admin_password: [^ ]' $SHADOWFILE`
+    if [ "$password" == "" ]; then
+        echo "unable to locate admin password"
+        status=1
+        return
+    fi
+    password=${password#*: }
+    $CLIENT $PROTOCOL://$HOSTNAME:$PORT "admin:$password" pause idlewait
+    status=$?
+}
+
+
+pauseEzid
+checkStatus
+
