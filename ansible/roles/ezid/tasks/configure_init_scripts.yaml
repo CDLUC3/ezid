@@ -7,17 +7,24 @@
     owner: "{{user}}"
     group: "{{group}}"
     mode: "0775"
-- name: etc/ezid_env.sh
+- name: etc/init.d/exercise_ezid.sh
   template:
-    src: "templates/etc/ezid_env.sh.j2"
-    dest: "{{app_dir}}/etc/ezid_env.sh"
+    src: "templates/etc/init.d/exercise_ezid.sh.j2"
+    dest: "{{app_dir}}/etc/init.d/exercise_ezid.sh"
     owner: "{{user}}"
     group: "{{group}}"
     mode: "0775"
-- name: robots.txt
-  copy:
-    src: "files/var/www/html/robots.txt"
-    dest: "{{app_dir}}/var/www/html/"
-    owner: "{{user}}"
-    group: "{{group}}"
-    mode: "0644"
+
+#- name etc/init.d/README
+#  file: COMING SOON
+
+
+# not needed any more
+#- name: etc/ezid_env.sh
+#  template:
+#    src: "templates/etc/ezid_env.sh.j2"
+#    dest: "{{app_dir}}/etc/ezid_env.sh"
+#    owner: "{{user}}"
+#    group: "{{group}}"
+#    mode: "0775"
+

@@ -31,3 +31,10 @@
     owner: "{{user}}"
     group: "{{group}}"
     mode: "0644"
+- name: robots.txt
+  copy:
+    src: "files/var/www/html/robots.txt"
+    dest: "{{app_dir}}/var/www/html/"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"

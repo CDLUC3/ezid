@@ -1,0 +1,31 @@
+#! /bin/bash
+#
+#  Managed by Ansible
+
+WGET=/usr/bin/wget
+PROTOCOL={{ http_protocol }}
+HOSTNAME=$(hostname -f)
+PORT={{ http_port }}
+
+
+function checkStatus {
+    if [ $status -eq 0 ]; then
+        echo "OK"
+    else
+        echo "FAILED"
+        exit 1
+    fi
+}
+
+function exerciseEzid {
+  # The various components of EZID are loaded on demand.  The
+  # following request does not cause everything to be loaded and
+  # tested, but it does confirm that Apache, mod_wsgi, Django, and
+  # EZID are basically functioning.
+  echo "Exercising the server..."
+  $WGET -q -T 10 -t 1 -O /dev/null $PROTOCOL://$HOSTNAME:$PORT/status
+  status=$?
+}
+
+exerciseEzid
+checkStatus
