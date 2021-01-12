@@ -14,9 +14,13 @@
     owner: "{{user}}"
     group: "{{group}}"
     mode: "0775"
-
-#- name etc/init.d/README
-#  file: COMING SOON
+- name: etc/init.d/README
+  copy:
+    src: "files/etc/init.d/readme_init.d"
+    dest: "{{app_dir}}/etc/init.d/README"
+    owner: "{{user}}"
+    group: "{{group}}"
+    mode: "0644"
 
 
 # not needed any more

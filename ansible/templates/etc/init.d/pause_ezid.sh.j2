@@ -10,6 +10,18 @@ PROTOCOL={{ http_protocol }}
 HOSTNAME=$(hostname -f)
 PORT={{ http_port }}
 
+PAUSE_MODE=idlewait
+if [ $# -gt 0 ]; then
+    case $1 in
+    	on|off|idlewait|monitor)
+	    PAUSE_MODE=$1
+	    ;;
+	*) 
+            echo "Usage: $(basename $0) [ on|off|idlewait|monitor ]"
+	    exit 1
+	    ;;
+    esac
+fi
 
 function checkStatus {
     if [ $status -eq 0 ]; then
@@ -35,10 +47,9 @@ function pauseEzid {
         return
     fi
     password=${password#*: }
-    $CLIENT $PROTOCOL://$HOSTNAME:$PORT "admin:$password" pause idlewait
+    $CLIENT $PROTOCOL://$HOSTNAME:$PORT "admin:$password" pause $PAUSE_MODE
     status=$?
 }
-
 
 pauseEzid
 checkStatus
