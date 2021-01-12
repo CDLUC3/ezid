@@ -53,8 +53,8 @@ What ezid-ansible does
 - Install python packages on the virtualenv (`mod_wsgi`)
 - Clone ezid repo (See: https://github.com/CDLUC3/ezid)
 - Clone ezid-info-pages repo
-- Install python packages needed by EZID (Requirements.txt)
-- Configure ezid application using values retrived from SSM ParameteStore
+- Install python packages needed by EZID (`Requirements.txt`)
+- Configure ezid application using values retrived from SSM ParameterStore
 
   - ezid configuration:
 
