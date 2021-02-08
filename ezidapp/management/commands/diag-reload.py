@@ -1,7 +1,6 @@
 """Refresh the in-memory caches of the running EZID process."""
 
 
-
 import argparse
 import logging
 
@@ -23,21 +22,25 @@ class Command(django.core.management.BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--debug', action='store_true', help='Debug level logging',
+            '--debug',
+            action='store_true',
+            help='Debug level logging',
         )
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
         impl.nog.util.log_to_console(__name__, opt.debug)
         logging.getLogger('impl.nog.reload').setLevel(
-            logging.DEBUG if opt.debug else logging.INFO)
+            logging.DEBUG if opt.debug else logging.INFO
+        )
         try:
             impl.nog.reload.trigger_reload()
         except impl.nog.reload.ReloadError as e:
             log.error('Server reload failed: {}'.format(str(e)))
         except Exception as e:
             log.error(
-                'Server reload failed with unhandled exception: {}'.format(str(e)))
+                'Server reload failed with unhandled exception: {}'.format(str(e))
+            )
             if opt.debug:
                 raise e
         else:

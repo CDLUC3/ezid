@@ -13,7 +13,7 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
+import base64
 import calendar
 import datetime
 import logging
@@ -27,8 +27,7 @@ import lxml.etree
 
 maxIdentifierLength = 255
 
-_doiPattern = re.compile("10\.[1-9]\d{3,4}/[!\"$->@-~]+$")
-
+_doiPattern = re.compile('10\.[1-9]\d{3,4}/[!"$->@-~]+$')
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +55,9 @@ def validateDoi(doi):
     # Update: we disallow adjacent slashes and trailing slashes because
     # such constructs conflict with the direct embedding of identifiers
     # in URLs (as is done in the EZID API and the dx.doi.org resolver).
+
+    assert isinstance(doi, str)
+
     if not _doiPattern.match(doi) or doi[-1] == "\n":
         return None
     if "//" in doi or doi.endswith("/"):
@@ -78,6 +80,8 @@ _arkPattern7 = re.compile("[0-9a-zA-Z=*+@_$~./]")
 
 
 def _normalizeArkPercentEncoding(m):
+    assert isinstance(m, re.Match)
+
     s = m.group(0)
     if len(s) == 3:
         c = chr(int(s[1:], 16))
@@ -90,7 +94,7 @@ def _normalizeArkPercentEncoding(m):
         if _arkPattern7.match(s):
             return s
         else:
-            return "%%%02x" % ord(s)
+            return f"%{ord(s):02x}"
 
 
 def validateArk(ark):
@@ -112,6 +116,9 @@ def validateArk(ark):
     # shadow ARKs (since order of period-delimited components in DOIs is
     # significant).  Also, hash marks (#) are percent encoded to avoid
     # confusion with their interpretation as fragment identifiers.
+
+    assert isinstance(ark, str)
+
     logger.debug('validateArk(): {}'.format(ark))
 
     m = _arkPattern1.match(ark)
@@ -143,17 +150,17 @@ def validateArk(ark):
 _uuidPattern = re.compile("[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$", re.I)
 
 
-def validateUuid(id):
+def validateUuid(id_str):
     """If the supplied string (e.g., "f81d4fae-7dec-11d0-a765-00a0c91e6bf6") is
     a syntactically valid scheme-less UUID identifier as defined by RFC 4122.
 
     <http://www.ietf.org/rfc/rfc4122.txt>, returns the canonical form of
     the identifier (namely, lowercased).  Otherwise, returns None.
     """
-    logger.debug('validateUuid(): {}'.format(id))
+    logger.debug('validateUuid(): {}'.format(id_str))
 
-    if _uuidPattern.match(id) and id[-1] != "\n":
-        return id.lower()
+    if _uuidPattern.match(id_str) and id_str[-1] != "\n":
+        return id_str.lower()
     else:
         return None
 
@@ -168,19 +175,19 @@ def validateIdentifier(identifier):
 
     if identifier.startswith("ark:/"):
         s = validateArk(identifier[5:])
-        if s != None:
+        if s is not None:
             return "ark:/" + s
         else:
             return None
     elif identifier.startswith("doi:"):
         s = validateDoi(identifier[4:])
-        if s != None:
+        if s is not None:
             return "doi:" + s
         else:
             return None
     elif identifier.startswith("uuid:"):
         s = validateUuid(identifier[5:])
-        if s != None:
+        if s is not None:
             return "uuid:" + s
         else:
             return None
@@ -197,11 +204,11 @@ def validateShoulder(shoulder):
     logger.debug('validateShoulder(): {}'.format(shoulder))
 
     if shoulder.startswith("ark:/"):
-        id = shoulder[5:] + "x"
-        return validateArk(id) == id
+        id_str = shoulder[5:] + "x"
+        return validateArk(id_str) == id_str
     elif shoulder.startswith("doi:"):
-        id = shoulder[4:] + "X"
-        return validateDoi(id) == id
+        id_str = shoulder[4:] + "X"
+        return validateDoi(id_str) == id_str
     elif shoulder == "uuid:":
         return True
     else:
@@ -245,7 +252,7 @@ def validateDatacenter(symbol):
 
 def _percentEncodeCdr(m):
     s = m.group(0)
-    return s[0] + "".join("%%%02x" % ord(c) for c in s[1:])
+    return s[0] + "".join(f"%{ord(c):02x}" for c in s[1:])
 
 
 def doi2shadow(doi):
@@ -290,10 +297,11 @@ def doi2shadow(doi):
                 + doi[5:i]
             )
     s = doi[i:].replace("%", "%25").replace("-", "%2d").lower()
-    s = _arkPattern4.sub(lambda c: "%%%02x" % ord(c.group(0)), s)
+    s = _arkPattern4.sub(lambda c: f"%{ord(c.group(0)):02x}", s)
     s = _arkPattern3.sub(_percentEncodeCdr, s)
+    # noinspection PyUnboundLocalVariable
     a = validateArk(p + s)
-    assert a != None, "shadow ARK failed validation"
+    assert a is not None, "shadow ARK failed validation"
     return a
 
 
@@ -310,7 +318,7 @@ def shadow2doi(ark):
 
     beta_str = 'bcdfghjkmnpqrstvwxz'
     m = re.match(r'([{}])(.*)/(.*)$'.format(beta_str), ark)
-    assert m, 'Invalid scheme-less shadow ARK identifier for a DOI: {}'.format(ark)
+    assert m, f'Invalid scheme-less shadow ARK identifier for a DOI: {ark}'
     beta_char, naan_str, prefix_str = m.groups()
     c = '' if beta_char == 'b' else beta_str.find(beta_char)
     doi = '10.{}{}/{}'.format(c, naan_str, prefix_str)
@@ -320,7 +328,7 @@ def shadow2doi(ark):
 _shadowedDoiPattern = re.compile("ark:/[bcdfghjkmnpqrstvwxz]")  # see _arkPattern1 above
 
 
-def normalizeIdentifier(identifier):
+def normalizeIdentifier(id_str):
     """Similar to 'validateIdentifier': if the supplied string is any type of
     qualified, syntactically valid identifier, returns the canonical form of
     the identifier.
@@ -329,42 +337,42 @@ def normalizeIdentifier(identifier):
     returns (the canonical form of) the shadowed identifier.  On any
     kind of error, returns None.
     """
-    logger.debug('normalizeIdentifier(): {}'.format(identifier))
+    logger.debug('normalizeIdentifier(): {}'.format(id_str))
 
-    id = validateIdentifier(identifier)
-    if id == None:
+    id_str = validateIdentifier(id_str)
+    if id_str is None:
         return None
-    if id.startswith("ark:/"):
+    if id_str.startswith("ark:/"):
         # The reverse shadow function doesn't check that the supplied
         # identifier is indeed a valid shadow ARK, so we check that the
         # returned identifier is valid and produces the same shadow ARK.
-        if _shadowedDoiPattern.match(id):
-            doi = shadow2doi(id[5:])
-            if validateDoi(doi) != None and doi2shadow(doi) == id[5:]:
+        if _shadowedDoiPattern.match(id_str):
+            doi = shadow2doi(id_str[5:])
+            if validateDoi(doi) is not None and doi2shadow(doi) == id_str[5:]:
                 return "doi:" + doi
             else:
                 return None
         else:
-            return id
+            return id_str
     else:
-        return id
+        return id_str
 
 
-def explodePrefixes(identifier):
+def explodePrefixes(id_str):
     """Given a normalized, qualified identifier (e.g., "ark:/12345/x/yz"),
     returns a list of all prefixes of the identifier that are syntactically
     valid identifiers (e.g., ["ark:/12345/x", "ark:/12345/x/y",
     "ark:/12345/x/yz"])."""
-    if identifier.startswith("ark:/"):
-        id = identifier[5:]
+    if id_str.startswith("ark:/"):
+        id = id_str[5:]
         predicate = validateArk
         prefix = "ark:/"
-    elif identifier.startswith("doi:"):
-        id = identifier[4:]
+    elif id_str.startswith("doi:"):
+        id = id_str[4:]
         predicate = validateDoi
         prefix = "doi:"
-    elif identifier.startswith("uuid:"):
-        id = identifier[5:]
+    elif id_str.startswith("uuid:"):
+        id = id_str[5:]
         predicate = validateUuid
         prefix = "uuid:"
     else:
@@ -377,19 +385,24 @@ def explodePrefixes(identifier):
 
 
 def _encode(pattern, s):
-    return pattern.sub(lambda c: "%%%02X" % ord(c.group(0)), s.encode("UTF-8"))
+    # print(f'encode: {repr(s)}')
+    # s = s.encode('utf-8') if isinstance(s, str) else s
+
+    # return pattern.sub(lambda c: f'{ord(c.group(0))}:02X', s)
+    return pattern.sub(lambda c: f'{ord(c.group(0))}:02X', s)
 
 
 _pattern1 = re.compile("%|[^ -~]")
 
 
 def encode1(s):
-    """UTF-8 encodes a Unicode string, then percent-encodes all non-graphic
+    """utf-8 encodes a Unicode string, then percent-encodes all non-graphic
     ASCII characters except space.
 
     This form of encoding is used for log file exception strings.
     """
     return _encode(_pattern1, s)
+    # .decode('utf-8')
 
 
 _pattern2 = re.compile("%|[^!-~]")
@@ -404,7 +417,7 @@ def encode2(s):
     return _encode(_pattern2, s)
 
 
-_pattern3 = re.compile("[%'\"\\\\&@|;()[\\]=]|[^!-~]")
+_pattern3 = re.compile('[%\'"\\\\&@|;()[\\]=]|[^!-~]')
 
 
 def encode3(s):
@@ -413,10 +426,11 @@ def encode3(s):
 
     This form of encoding is used for noid element values.
     """
+    assert isinstance(s, str)
     return _encode(_pattern3, s)
 
 
-_pattern4 = re.compile("[%'\"\\\\&@|;()[\\]=:<]|[^!-~]")
+_pattern4 = re.compile('[%\'"\\\\&@|;()[\\]=:<]|[^!-~]')
 
 
 def encode4(s):
@@ -425,6 +439,7 @@ def encode4(s):
     This form of encoding is used for noid identifiers and noid element
     names.
     """
+    assert isinstance(s, str)
     return _encode(_pattern4, s)
 
 
@@ -450,7 +465,7 @@ def decode(s):
             r.append(p[2:])
         except KeyError:
             raise PercentDecodeError()
-    return "".join(r).decode("UTF-8")
+    return "".join(r)
 
 
 def toExchange(metadata, identifier=None):
@@ -465,7 +480,7 @@ def toExchange(metadata, identifier=None):
     string; it is not encoded.
     """
     l = []
-    if identifier != None:
+    if identifier is not None:
         # We're assuming here that the identifier contains no spaces or
         # newlines, but we don't check that.
         l.append(identifier)
@@ -506,6 +521,7 @@ def fromExchange(line, identifierEmbedded=False):
         assert len(v[i]) > 0 and len(v[i + 1]) > 0, "empty token"
         d[decode(v[i])] = decode(v[i + 1])
     if identifierEmbedded:
+        # noinspection PyUnboundLocalVariable
         return identifier, d
     else:
         return d
@@ -515,7 +531,8 @@ def blobify(metadata):
     """Converts a metadata dictionary to a binary, compressed string, or
     "blob."  Labels and values are stripped; labels with empty values are
     discarded."""
-    return zlib.compress(toExchange(metadata))
+    assert isinstance(metadata, dict)
+    return zlib.compress(toExchange(metadata).encode('utf-8'))
 
 
 def deblobify(blob, decompressOnly=False):
@@ -533,6 +550,7 @@ def deblobify(blob, decompressOnly=False):
 
 def oneLine(s):
     """Replaces newlines in a string with spaces."""
+    assert isinstance(s, str)
     return re.sub("\s", " ", s)
 
 
@@ -550,6 +568,7 @@ def desentencify(s):
 
     Fallible, but tries to be careful.
     """
+    assert isinstance(s, str)
     if len(s) >= 2 and s[0].isupper() and not s[1].isupper():
         s = s[0].lower() + s[1:]
     if s.endswith("."):
@@ -589,8 +608,7 @@ def formatValidationError(exception, convertToAnvlLabels=True):
     for entry in exception:
         if type(entry) is tuple:
             l.append(
-                "%s: %s"
-                % (
+                "{}: {}".format(
                     _modelAnvlLabelMapping.get(entry[0], entry[0])
                     if convertToAnvlLabels
                     else entry[0],
@@ -608,7 +626,8 @@ _illegalAsciiCharsRE = re.compile("[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\xFF]")
 def validateAsciiSafeCharset(s):
     """Returns true if the given ASCII string contains only non-control 7-bit
     characters."""
-    return _illegalAsciiCharsRE.search(s) == None
+    assert isinstance(s, str)
+    return _illegalAsciiCharsRE.search(s) is None
 
 
 # The following definitions are taken from the XML 1.1 specification.
@@ -657,20 +676,21 @@ if sys.maxunicode >= 0x10000:
     )
 
 _illegalUnichrsRE = re.compile(
-    "[%s]"
-    % "".join("%s-%s" % (chr(low), chr(high)) for low, high in _illegalUnichrs)
+    f"[{''.join('%s-%s' % (chr(low), chr(high)) for low, high in _illegalUnichrs)}]"
 )
 
 
 def validateXmlSafeCharset(s):
     """Returns true if the given Unicode string contains only characters that
     are accepted by XML 1.1."""
-    return _illegalUnichrsRE.search(s) == None
+    assert isinstance(s, str)
+    return _illegalUnichrsRE.search(s) is None
 
 
 def sanitizeXmlSafeCharset(s):
     """Returns a copy of the given Unicode string in which characters not
     accepted by XML 1.1 have been replaced with spaces."""
+    assert isinstance(s, str)
     return _illegalUnichrsRE.sub(" ", s)
 
 
@@ -680,10 +700,11 @@ else:
     _illegalUnichrsPlusSuppPlanes = _illegalUnichrs + [(0xD800, 0xDFFF)]
 
 _illegalUnichrsPlusSuppPlanesRE = re.compile(
-    "[%s]"
-    % "".join(
-        "%s-%s" % (chr(low), chr(high))
-        for low, high in _illegalUnichrsPlusSuppPlanes
+    "[{}]".format(
+        "".join(
+            "%s-%s" % (chr(low), chr(high))
+            for low, high in _illegalUnichrsPlusSuppPlanes
+        )
     )
 )
 
@@ -691,20 +712,22 @@ _illegalUnichrsPlusSuppPlanesRE = re.compile(
 def validateXmlSafeCharsetBmpOnly(s):
     """Returns true if the given Unicode string contains only characters that
     are accepted by XML 1.1 and that are in the Basic Multilingual Plane."""
-    return _illegalUnichrsPlusSuppPlanesRE.search(s) == None
+    assert isinstance(s, str)
+    return _illegalUnichrsPlusSuppPlanesRE.search(s) is None
 
 
 xmlDeclarationRE = re.compile(
-    "<\?xml\s+version\s*=\s*(['\"])([-\w.:]+)\\1"
-    + "(\s+encoding\s*=\s*(['\"])([a-zA-Z][-\w.]*)\\4)?"
-    + "(\s+standalone\s*=\s*(['\"])(yes|no)\\7)?\s*\?>\s*"
+    '<\?xml\s+version\s*=\s*([\'"])([-\w.:]+)\\1'
+    '(\s+encoding\s*=\s*([\'"])([a-zA-Z][-\w.]*)\\4)?'
+    '(\s+standalone\s*=\s*([\'"])(yes|no)\\7)?\s*\?>\s*'
 )
 
 
 def removeXmlEncodingDeclaration(document):
     """Removes the encoding declaration from an XML document if present."""
+    assert isinstance(document, str)
     m = xmlDeclarationRE.match(document)
-    if m and m.group(3) != None:
+    if m and m.group(3) is not None:
         return document[: m.start(3)] + document[m.end(3) :]
     else:
         return document
@@ -712,6 +735,7 @@ def removeXmlEncodingDeclaration(document):
 
 def removeXmlDeclaration(document):
     """Removes the entire XML declaration from an XML document if present."""
+    assert isinstance(document, str)
     m = xmlDeclarationRE.match(document)
     if m:
         return document[len(m.group(0)) :]
@@ -728,18 +752,19 @@ def insertXmlEncodingDeclaration(document):
     parsed again by lxml, the encoding declaration will need to be
     removed.)
     """
+    assert isinstance(document, str)
     m = xmlDeclarationRE.match(document)
     if m:
-        if m.group(3) == None:
+        if m.group(3) is None:
             return (
                 document[: m.end(2) + 1]
-                + " encoding=\"UTF-8\""
+                + ' encoding="utf-8"'
                 + document[m.end(2) + 1 :]
             )
         else:
             return document
     else:
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + document
+        return '<?xml version="1.0" encoding="utf-8"?>\n' + document
 
 
 def parseXmlString(document):
@@ -750,6 +775,8 @@ def parseXmlString(document):
     declaration is present, the parser treats the string as a binary
     stream and decodes it per the declaration.
     """
+    assert isinstance(document, str)
+
     if type(document) is str:
         return lxml.etree.XML(document)
     elif type(document) is str:
@@ -762,7 +789,7 @@ _extractTransform = None
 _extractTransformSource = """<?xml version="1.0"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-<xsl:output method="text" encoding="UTF-8"/>
+<xsl:output method="text" encoding="utf-8"/>
 <xsl:strip-space elements="*"/>
 
 <xsl:template match="*">
@@ -793,8 +820,10 @@ def extractXmlContent(document):
     Whitespace is normalized throughout per XPath.  The input document
     may be a string or an already-parsed document tree.
     """
+    assert isinstance(document, str)
+
     global _extractTransform
-    if _extractTransform == None:
+    if _extractTransform is None:
         _extractTransform = lxml.etree.XSLT(lxml.etree.XML(_extractTransformSource))
     if isinstance(document, str):
         document = parseXmlString(document)
@@ -807,7 +836,9 @@ _datespecRE = re.compile("(\d{4})(?:-(\d\d)(?:-(\d\d))?)?$")
 def xmlEscape(s):
     """Suitably escapes a string for inclusion in an XML element or attribute
     (assuming attributes are delimited by double quotes)."""
-    return xml.sax.saxutils.escape(s, {"\"": "&quot;"})
+    assert isinstance(s, str)
+
+    return xml.sax.saxutils.escape(s, {'"': "&quot;"})
 
 
 def dateToLowerTimestamp(date):
@@ -818,12 +849,14 @@ def dateToLowerTimestamp(date):
     specified time period.  Note that the timestamp may be negative or
     otherwise out of the normal range for Unix timestamps.
     """
+    assert isinstance(date, str)
+
     rm = _datespecRE.match(date)
     if not rm or date[-1] == "\n":
         return None
     y = int(rm.group(1))
-    m = int(rm.group(2)) if rm.group(2) != None else 1
-    d = int(rm.group(3)) if rm.group(3) != None else 1
+    m = int(rm.group(2)) if rm.group(2) is not None else 1
+    d = int(rm.group(3)) if rm.group(3) is not None else 1
     try:
         return calendar.timegm(datetime.date(y, m, d).timetuple())
     except ValueError:
@@ -839,6 +872,8 @@ def dateToUpperTimestamp(date):
     otherwise out of the normal range for Unix timestamps.
     """
     # Overflow and edge cases.
+    assert isinstance(date, str)
+
     if date in ["9999", "9999-12", "9999-12-31"]:
         return calendar.timegm(datetime.datetime(9999, 12, 31, 23, 59, 59).timetuple())
     elif date == "0000":
@@ -848,11 +883,11 @@ def dateToUpperTimestamp(date):
         return None
     try:
         y = int(rm.group(1))
-        if rm.group(2) == None:
+        if rm.group(2) is None:
             date = datetime.date(y + 1, 1, 1)
         else:
             m = int(rm.group(2))
-            if rm.group(3) == None:
+            if rm.group(3) is None:
                 date = (datetime.date(y, m, 1) + datetime.timedelta(days=31)).replace(
                     day=1
                 )
@@ -876,12 +911,39 @@ def parseTimestampZulu(s, allowDateOnly=False):
 
     Raises an exception on parse error.
     """
+    assert isinstance(s, str)
+
     t = None
     if allowDateOnly:
         try:
             t = time.strptime(s, "%Y-%m-%d")
-        except:
+        except Exception:
             pass
-    if t == None:
+    if t is None:
         t = time.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
     return calendar.timegm(t)
+
+
+def basic_auth(username, password):
+    """Create a HTTP Basic Authentication tuple"""
+    return 'Basic ' + base64.b64encode(
+        b"".join(
+            x.encode("utf-8") if isinstance(x, str) else x
+            for x in (username, b":", password)
+        )
+    ).decode('utf-8')
+
+
+def parse_basic_auth(auth):
+    try:
+        b = auth.encode('ascii') if isinstance(auth, str) else auth
+        basic_b, base64_b = b.split()
+        if basic_b.strip() != b'Basic':
+            raise Exception()
+        clear_b = base64.decodebytes(base64_b)
+        user_b, pw_b = b":".split(clear_b)
+        return user_b.decode('utf-8'), pw_b.decode('utf-8')
+    except Exception as e:
+        raise ValueError(
+            f'Invalid basic auth: {auth.decode("utf-8")}. Error: {repr(e)}'
+        )

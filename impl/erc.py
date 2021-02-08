@@ -139,7 +139,7 @@ def parse(s, concatenateValues=True):
         elif l[0] == "#":
             pass
         elif l[0].isspace():
-            if k == None:
+            if k is None:
                 raise ErcParseException("no previous label for continuation line")
             v = l.strip()
             if v != "":

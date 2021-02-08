@@ -104,7 +104,7 @@ Traceback (most recent call last):
   File "/apps/ezid/apps/apache/ezid/ezid_dev_2.7.17/ezid/code/startup.py", line 94, in ready
     ui_common.loadConfig()
   File "/apps/ezid/apps/apache/ezid/ezid_dev_2.7.17/ezid/code/ui_common.py", line 44, in loadConfig
-    p = ezidapp.models.getArkTestShoulder()
+    p = ezidapp.models.shoulder.getArkTestShoulder()
   File "/apps/ezid/apps/apache/ezid/ezid_dev_2.7.17/ezid/ezidapp/models/shoulder.py", line 319, in wrapped
     return f(*args, **kwargs)
   File "/apps/ezid/apps/apache/ezid/ezid_dev_2.7.17/ezid/ezidapp/models/shoulder.py", line 347, in getArkTestShoulder

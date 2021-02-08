@@ -9,7 +9,7 @@
 # Note that this module, upon being loaded, writes
 # .../PROJECT_ROOT/static/metadata_tooltips.js.
 #
-# Subtle point: to simplify referencing from Django templates, this
+# Subtle point: to simplify referencing from django templates, this
 # module enforces that metadata element names be globally unique.
 #
 # Author:
@@ -21,12 +21,13 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.conf
-import django.template.defaultfilters
 import os.path
 import re
 
-from . import config
+import django.conf
+import django.template.defaultfilters
+
+import impl.config
 
 
 class Element(object):
@@ -90,7 +91,7 @@ def _loadElements(file):
         # This is a bit of a hack to get template-like variable inclusion
         # functionality in tooltip text.
         tooltip = m.group(4).strip()
-        tooltip = re.sub("\{\{(.*?)\}\}", lambda m: eval(m.group(1)), tooltip)
+        tooltip = re.sub("{{(.*?)}}", lambda m: eval(m.group(1)), tooltip)
         l.append(
             Element(m.group(1).strip(), m.group(2).strip(), m.group(3).strip(), tooltip)
         )
@@ -105,12 +106,12 @@ def loadConfig():
     global _profiles
     profiles = [
         Profile(
-            config.get("profile_%s.name" % k),
-            config.get("profile_%s.display_name" % k),
-            config.get("profile_%s.editable" % k).lower() == "true",
-            _loadElements(config.get("profile_%s.file" % k)),
+            impl.config.get(f"profile_{k}.name"),
+            impl.config.get(f"profile_{k}.display_name"),
+            impl.config.get(f"profile_{k}.editable").lower() == "true",
+            _loadElements(impl.config.get(f"profile_{k}.file")),
         )
-        for k in config.get("profiles.keys").split(",")
+        for k in impl.config.get("profiles.keys").split(",")
     ]
     names = set()
     for p in profiles:
@@ -139,30 +140,33 @@ def _writeTooltips():
         "w",
     )
     f.write(_header)
+    # noinspection PyTypeChecker
     for p in _profiles:
         for e in p.elements:
             f.write(
-                "$(\".element_%s\").tooltip({ bodyHandler: function () { "
-                % django.template.defaultfilters.slugify(e.name)
+                '$(".element_{}").tooltip({{ bodyHandler: function () {{ '.format(
+                    django.template.defaultfilters.slugify(e.name)
+                )
             )
             f.write(
-                "return \"%s\"; } });\n"
-                % e.tooltip.replace("\n", " ")
-                .replace("\\", "\\\\")
-                .replace("\"", "\\\"")
+                'return "{}"; }} }});\n'.format(
+                    e.tooltip.replace("\n", " ")
+                    .replace('\\', r'\\')
+                    .replace('"', '\\"')
+                )
             )
     f.write("});\n")
     # For popup windows...
     f.write("var all_help_tooltip_text = {};\n")
+    # noinspection PyTypeChecker
     for p in _profiles:
         for e in p.elements:
             f.write(
-                "all_help_tooltip_text[\"element_%s\"] = \"%s\";\n"
-                % (
+                'all_help_tooltip_text["element_{}"] = "{}";\n'.format(
                     django.template.defaultfilters.slugify(e.name),
-                    e.tooltip.replace("\n", " ")
-                    .replace("\\", "\\\\")
-                    .replace("\"", "\\\""),
+                    e.tooltip.replace('\n', " ")
+                    .replace('\\', "\\\\")
+                    .replace('"', "\\\""),
                 )
             )
     f.close()
@@ -177,6 +181,7 @@ def getProfiles():
     A deep copy is performed, so the caller is free to modify the
     returned objects.
     """
+    # noinspection PyTypeChecker
     return [p.clone() for p in _profiles]
 
 
@@ -186,6 +191,7 @@ def getProfile(name):
     A deep copy is performed, so the caller is free to modify the
     returned object.
     """
+    # noinspection PyTypeChecker
     for p in _profiles:
         if p.name == name:
             return p.clone()

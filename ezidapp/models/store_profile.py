@@ -15,10 +15,10 @@
 
 import django.db.utils
 
-from . import profile
+import ezidapp.models.profile
 
 
-class StoreProfile(profile.Profile):
+class StoreProfile(ezidapp.models.profile.Profile):
     pass
 
 
@@ -37,7 +37,7 @@ def clearCaches():
 def _getCaches():
     global _caches
     caches = _caches
-    if caches == None:
+    if caches is None:
         labelCache = dict((p.label, p) for p in StoreProfile.objects.all())
         idCache = dict((p.id, p) for p in list(labelCache.values()))
         caches = (labelCache, idCache)
@@ -45,7 +45,7 @@ def _getCaches():
     return caches
 
 
-def getByLabel(label):
+def getProfileByLabel(label):
     # Returns the profile having the given label.  If there's no such
     # profile, a new profile is created and inserted in the database.
     labelCache, idCache = _getCaches()
@@ -62,11 +62,11 @@ def getByLabel(label):
     return labelCache[label]
 
 
-def getById(id):
+def getProfileById(id_str):
     # Returns the profile identified by internal identifier 'id'.
     labelCache, idCache = _getCaches()
-    if id not in idCache:
-        p = StoreProfile.objects.get(id=id)
+    if id_str not in idCache:
+        p = StoreProfile.objects.get(id_str)
         labelCache[p.label] = p
-        idCache[id] = p
-    return idCache[id]
+        idCache[id_str] = p
+    return idCache[id_str]

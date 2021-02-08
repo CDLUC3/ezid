@@ -15,7 +15,7 @@
 
 import django.db.models
 
-import util
+import impl.util
 
 
 class DownloadQueue(django.db.models.Model):
@@ -34,7 +34,7 @@ class DownloadQueue(django.db.models.Model):
     rawRequest = django.db.models.TextField()
     # The raw request, i.e., the urlencoded query string.
 
-    requestor = django.db.models.CharField(max_length=util.maxIdentifierLength)
+    requestor = django.db.models.CharField(max_length=impl.util.maxIdentifierLength)
     # The requesting user, referenced by the user's persistent
     # identifier, e.g., "ark:/99166/p92z12p14".
 
@@ -105,7 +105,9 @@ class DownloadQueue(django.db.models.Model):
     # The index into toHarvest of the user currently being harvested.
     # HARVEST stage only.
 
-    lastId = django.db.models.CharField(max_length=util.maxIdentifierLength, blank=True)
+    lastId = django.db.models.CharField(
+        max_length=impl.util.maxIdentifierLength, blank=True
+    )
     # The last identifier processed.  HARVEST stage only.
 
     fileSize = django.db.models.BigIntegerField(blank=True, null=True)

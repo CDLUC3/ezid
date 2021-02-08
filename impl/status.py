@@ -16,24 +16,26 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.conf
-import django.db
 import logging
 import os
 import threading
 import time
 import uuid
 
-from . import binder_async
-from . import config
-from . import crossref
-from . import datacite
-from . import datacite_async
-from . import download
-from . import ezid
-import ezidapp.models
-from . import log
-from . import search_util
+import boto3
+import django.conf
+import django.db
+
+import ezidapp.models.update_queue
+import impl.binder_async
+import impl.config
+import impl.crossref
+import impl.datacite
+import impl.datacite_async
+import impl.download
+import impl.ezid
+import impl.log
+import impl.search_util
 
 # Deferred imports...
 """
@@ -52,8 +54,8 @@ _cloudwatchInstanceName = None
 def _formatUserCountList(d):
     if len(d) > 0:
         l = list(d.items())
-        l.sort(cmp=lambda x, y: -cmp(x[1], y[1]))
-        return " (" + " ".join("%s=%d" % i for i in l) + ")"
+        l.sort(key=lambda x: -x[1])
+        return " (" + " ".join("{}={:d}".format(x[0], x[1]) for x in l) + ")"
     else:
         return ""
 
@@ -61,42 +63,40 @@ def _formatUserCountList(d):
 def _statusDaemon():
     while _enabled and threading.currentThread().getName() == _threadName:
         try:
-            activeUsers, waitingUsers, isPaused = ezid.getStatus()
+            activeUsers, waitingUsers, isPaused = impl.ezid.getStatus()
             na = sum(activeUsers.values())
             nw = sum(waitingUsers.values())
-            ndo = datacite.numActiveOperations()
-            uql = ezidapp.models.UpdateQueue.objects.count()
-            bql = binder_async.getQueueLength()
-            daql = datacite_async.getQueueLength()
-            cqs = crossref.getQueueStatistics()
-            doql = download.getQueueLength()
-            as_ = search_util.numActiveSearches()
-            no = log.getOperationCount()
-            log.resetOperationCount()
-            log.status(
-                "pid=%d" % os.getpid(),
-                "threads=%d" % threading.activeCount(),
+            ndo = impl.datacite.numActiveOperations()
+            uql = ezidapp.models.update_queue.UpdateQueue.objects.count()
+            bql = impl.binder_async.getQueueLength()
+            daql = impl.datacite_async.getQueueLength()
+            cqs = impl.crossref.getQueueStatistics()
+            doql = impl.download.getQueueLength()
+            as_ = impl.search_util.numActiveSearches()
+            no = impl.log.getOperationCount()
+            impl.log.resetOperationCount()
+            impl.log.status(
+                f"pid={os.getpid():d}",
+                f"threads={threading.activeCount():d}",
                 "paused" if isPaused else "running",
-                "activeOperations=%d%s" % (na, _formatUserCountList(activeUsers)),
-                "waitingRequests=%d%s" % (nw, _formatUserCountList(waitingUsers)),
-                "activeDataciteOperations=%d" % ndo,
-                "updateQueueLength=%d" % uql,
-                "binderQueueLength=%d" % bql,
-                "dataciteQueueLength=%d" % daql,
-                "crossrefQueue:archived/unsubmitted/submitted=%d/%d/%d"
-                % (cqs[2] + cqs[3], cqs[0], cqs[1]),
-                "downloadQueueLength=%d" % doql,
-                "activeSearches=%d" % as_,
-                "operationCount=%d" % no,
+                f"activeOperations={na:d}{_formatUserCountList(activeUsers)}",
+                f"waitingRequests={nw:d}{_formatUserCountList(waitingUsers)}",
+                f"activeDataciteOperations={ndo:d}",
+                f"updateQueueLength={uql:d}",
+                f"binderQueueLength={bql:d}",
+                f"dataciteQueueLength={daql:d}",
+                f"crossrefQueue:archived/unsubmitted/submitted={cqs[2] + cqs[3]:d}/{cqs[0]:d}/{cqs[1]:d}",
+                f"downloadQueueLength={doql:d}",
+                f"activeSearches={as_:d}",
+                f"operationCount={no:d}",
             )
             if _cloudwatchEnabled:
-                import boto3
-
                 # Disable annoying boto3 logging.
                 logging.getLogger("botocore").setLevel(logging.ERROR)
                 try:
                     c = boto3.client("cloudwatch", region_name=_cloudwatchRegion)
                     d = [{"Name": "InstanceName", "Value": _cloudwatchInstanceName}]
+                    # noinspection PyTypeChecker
                     data = {
                         "ActiveOperations": na,
                         "WaitingRequests": nw,
@@ -124,12 +124,13 @@ def _statusDaemon():
                         ],
                     )
                     assert r["ResponseMetadata"]["HTTPStatusCode"] == 200
-                except:
+                except Exception:
                     # Ignore CloudWatch exceptions, as it's not essential.
                     pass
         except Exception as e:
-            log.otherError("status._statusDaemon", e)
+            impl.log.otherError("status._statusDaemon", e)
         django.db.connections["default"].close()
+        # noinspection PyTypeChecker
         time.sleep(_reportingInterval)
 
 
@@ -138,16 +139,16 @@ def loadConfig():
     global _cloudwatchRegion, _cloudwatchNamespace, _cloudwatchInstanceName
     _enabled = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and config.get("daemons.status_enabled").lower() == "true"
+        and impl.config.get("daemons.status_enabled").lower() == "true"
     )
     if _enabled:
-        _reportingInterval = int(config.get("daemons.status_logging_interval"))
+        _reportingInterval = int(impl.config.get("daemons.status_logging_interval"))
         _threadName = uuid.uuid1().hex
-        _cloudwatchEnabled = config.get("cloudwatch.enabled").lower() == "true"
+        _cloudwatchEnabled = impl.config.get("cloudwatch.enabled").lower() == "true"
         if _cloudwatchEnabled:
-            _cloudwatchRegion = config.get("cloudwatch.region")
-            _cloudwatchNamespace = config.get("cloudwatch.namespace")
-            _cloudwatchInstanceName = config.get("cloudwatch.instance_name")
+            _cloudwatchRegion = impl.config.get("cloudwatch.region")
+            _cloudwatchNamespace = impl.config.get("cloudwatch.namespace")
+            _cloudwatchInstanceName = impl.config.get("cloudwatch.instance_name")
         t = threading.Thread(target=_statusDaemon, name=_threadName)
         t.setDaemon(True)
         t.start()

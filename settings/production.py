@@ -1,15 +1,15 @@
-from .common import *
+import settings.common
 
 DEPLOYMENT_LEVEL = "production"
 
 DEBUG = False
 
-ADMINS.append(("Marisa Strong", "marisa.strong@ucop.edu"))
-ADMINS.append(("Maria Gould", "maria.gould@ucop.edu"))
+settings.common.ADMINS.append(("Marisa Strong", "marisa.strong@ucop.edu"))
+settings.common.ADMINS.append(("Maria Gould", "maria.gould@ucop.edu"))
 
 ALLOWED_HOSTS = ['*']
 
-#ALLOWED_HOSTS = [
+# ALLOWED_HOSTS = [
 #        "localhost",
 #        "127.0.0.1",
 #        "172.30.43.85",
@@ -21,4 +21,4 @@ ALLOWED_HOSTS = ['*']
 #        'uc3-ezidui01x2-prd',
 #        ]
 
-injectSecrets(DEPLOYMENT_LEVEL)
+settings.common.injectSecrets(DEPLOYMENT_LEVEL)

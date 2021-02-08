@@ -57,6 +57,7 @@ connect to the EZID database.
 """
 
 
+import django.core.management.base
 import argparse
 import logging
 import shutil
@@ -65,14 +66,14 @@ import tempfile
 
 import django.conf
 import django.core.management
-import pathlib2
+import pathlib
 
 import impl.nog.filesystem
 import impl.nog.util
-import nog.bdb
-import nog.exc
-import nog.id_ns
-import nog.minter
+import impl.nog.bdb
+import impl.nog.exc
+import impl.nog.id_ns
+import impl.nog.minter
 
 log = logging.getLogger(__name__)
 
@@ -105,7 +106,7 @@ class Command(django.core.management.BaseCommand):
             "ns_str", metavar="identifier", nargs='?', help='Full ARK or DOI identifier'
         )
         parser.add_argument(
-            "--path", type=pathlib2.Path, metavar="path", help="Path to BerkeleyDB file"
+            "--path", type=pathlib.Path, metavar="path", help="Path to BerkeleyDB file"
         )
         parser.add_argument(
             "--root",
@@ -156,7 +157,9 @@ class Command(django.core.management.BaseCommand):
             exists at the path required by he minter being created""",
         ),
         parser.add_argument(
-            "--debug", action="store_true", help="Debug level logging",
+            "--debug",
+            action="store_true",
+            help="Debug level logging",
         )
 
     def handle(self, *_, **opt):
@@ -175,25 +178,25 @@ class Command(django.core.management.BaseCommand):
         #     "./test_docs/{}_{}.bdb".format(ns_str, shoulder_str)
         # )
         # dst_path = os.path.join(
-        #     django.conf.settings.MINTERS_PATH, ns_str, shoulder_str, "nog.bdb",
+        #     django.conf.settings.MINTERS_PATH, ns_str, shoulder_str, "bdb",
         # )
 
         try:
             return getattr(self, opt.action_str)()
-        except nog.exc.MinterError as e:
+        except impl.nog.exc.MinterError as e:
             raise django.core.management.CommandError('Minter error: {}'.format(str(e)))
 
     # See the docstring for descriptions of the actions.
 
     def list_bdb(self):
-        root_path = nog.bdb._get_bdb_root(self.opt.root_path)
+        root_path = impl.nog.bdb.get_bdb_root(self.opt.root_path)
         if not root_path.is_dir():
             raise django.core.management.CommandError(
                 'Invalid root path: {}'.format(root_path.as_posix())
             )
         log.info("Listing minters below root: {}".format(root_path))
-        for i, (naan_prefix_str, shoulder_str, bdb) in enumerate(
-            nog.bdb.iter_bdb(self.opt.root_path)
+        for i, (naan_prefix_str, shoulder_str, minter_bdb) in enumerate(
+            impl.nog.bdb.iter_bdb(self.opt.root_path)
         ):
             log.info(
                 'index: {:<4d} naan_or_prefix: {:<6} shoulder: {:<12} '
@@ -201,14 +204,14 @@ class Command(django.core.management.BaseCommand):
                     i,
                     naan_prefix_str,
                     shoulder_str,
-                    bdb.get("template"),
-                    bdb.get_int("oacounter"),
-                    bdb.get_int("oatop"),
+                    minter_bdb.get("template"),
+                    minter_bdb.get_int("oacounter"),
+                    minter_bdb.get_int("oatop"),
                 )
             )
 
     def unique(self):
-        root_path = nog.bdb._get_bdb_root(self.opt.root_path)
+        root_path = impl.nog.bdb.get_bdb_root(self.opt.root_path)
         if not root_path.is_dir():
             raise django.core.management.CommandError(
                 'Invalid root path: {}'.format(root_path.as_posix())
@@ -219,17 +222,17 @@ class Command(django.core.management.BaseCommand):
             )
         log.info("Finding unique values for field: {}".format(self.opt.field))
         count_dict = {}
-        for i, (naan_prefix_str, shoulder_str, bdb) in enumerate(
-            nog.bdb.iter_bdb(self.opt.root_path)
+        for i, (naan_prefix_str, shoulder_str, minter_bdb) in enumerate(
+            impl.nog.bdb.iter_bdb(self.opt.root_path)
         ):
             try:
-                k = bdb.get(self.opt.field)
+                k = minter_bdb.get(self.opt.field)
             except KeyError:
                 k = '<field not in minter>'
             count_dict.setdefault(k, 0)
             count_dict[k] += 1
 
-        for field_str, count_int in sorted(list(count_dict.items()), key=lambda x: x[1]):
+        for field_str, count_int in sorted(count_dict.items(), key=lambda x: x[1]):
             log.info(
                 'Number of minters with this value: {:<6,d} value: {}'.format(
                     count_int, field_str
@@ -251,18 +254,20 @@ class Command(django.core.management.BaseCommand):
     def dump(self):
         self._assert_bdb_path(exists=True)
         print("Dumping minter state to HJSON", file=sys.stderr)
-        nog.bdb.dump(self.bdb_path)
+        impl.nog.bdb.dump(self.bdb_path)
 
     def dump_full(self):
         self._assert_bdb_path(exists=True)
         print("Dumping arbitrary BerkeleyDB to HJSON", file=sys.stderr)
-        nog.bdb.dump_full(self.bdb_path)
+        impl.nog.bdb.dump_full(self.bdb_path)
 
     def mint(self):
         self._assert_bdb_path(exists=True)
         for i, id_str in enumerate(
-            nog.minter.mint_by_bdb_path(
-                self.bdb_path, self.opt.count, dry_run=not self.opt.update,
+            impl.nog.minter.mint_by_bdb_path(
+                self.bdb_path,
+                self.opt.count,
+                dry_run=not self.opt.update,
             )
         ):
             log.info("{: 5d}: {}".format(i + 1, id_str))
@@ -273,21 +278,23 @@ class Command(django.core.management.BaseCommand):
             log.info('Overwriting existing file')
             self.bdb_path.unlink()
         # full_shoulder_str = '/'.join([self.opt.ns_str.naan_prefix, self.opt.ns_str.shoulder])
-        bdb_path = nog.minter.create_minter_database(
+        bdb_path = impl.nog.minter.create_minter_database(
             self.opt.ns_str, self.opt.root_path
         )
         log.info('Created minter for: {}'.format(bdb_path))
 
     def slice(self):
         case_fn = str.upper if self.opt.ns_str.startswith('doi:') else str.lower
-        dir_path = pathlib2.Path(tempfile.mkdtemp())
+        dir_path = pathlib.Path(tempfile.mkdtemp())
         try:
-            bdb_path = nog.minter.create_minter_database(
+            bdb_path = impl.nog.minter.create_minter_database(
                 self.opt.ns_str, dir_path.as_posix()
             )
             for i, id_str in enumerate(
-                nog.minter.mint_by_bdb_path(
-                    bdb_path, self.opt.count, dry_run=True,
+                impl.nog.minter.mint_by_bdb_path(
+                    bdb_path,
+                    self.opt.count,
+                    dry_run=True,
                 )
             ):
                 # noinspection PyArgumentList
@@ -317,16 +324,16 @@ class Command(django.core.management.BaseCommand):
 
     def _get_dbd_path(self, is_new):
         try:
-            id_ns = nog.id_ns.IdNamespace.from_str(self.opt.ns_str)
-        except nog.exc.MinterError:
+            ns = impl.nog.id_ns.IdNamespace.from_str(self.opt.ns_str)
+        except impl.nog.exc.MinterError:
             log.info(
                 'Argument is not a DOI or ARK. Using it as path: {}'.format(
                     self.opt.ns_str
                 )
             )
-            return pathlib2.Path(self.opt.ns_str)
+            return pathlib.Path(self.opt.ns_str)
         else:
-            p = nog.bdb.get_path(id_ns, self.opt.root_path, is_new)
+            p = impl.nog.bdb.get_path(ns, self.opt.root_path, is_new)
             log.info('Resolved namespace to path.')
             log.info('Namespace: {}'.format(self.opt.ns_str))
             log.info('Path: {}'.format(p))
@@ -339,6 +346,7 @@ class Command(django.core.management.BaseCommand):
         shutil.copy(src_path.as_posix(), dst_path.as_posix())
 
     def _get_bdb_backup_path(self):
-        return pathlib2.Path(django.conf.settings.MINTERS_PATH).parent.joinpath(
-            'minter_backups', self.bdb_path.with_suffix('.backup.bdb'),
+        return pathlib.Path(django.conf.settings.MINTERS_PATH).parent.joinpath(
+            'minter_backups',
+            self.bdb_path.with_suffix('.backup.bdb'),
         )

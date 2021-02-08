@@ -15,15 +15,17 @@
 #
 # -----------------------------------------------------------------------------
 
-import base64
+import logging
 import threading
 import time
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 
-from . import config
-
-import logging
-from .log import stacklog
+import impl.config
+import impl.log
+import impl.util
 
 _LT = logging.getLogger("tracer")
 
@@ -39,26 +41,28 @@ _cacheSize = None
 def loadConfig():
     global _minterServers, _numAttempts, _reattemptDelay, _minters, _cacheSize
     d = {}
-    for ms in config.get("shoulders.minter_servers").split(","):
+    for ms in impl.config.get("shoulders.minter_servers").split(","):
         p = "minter_server_" + ms
-        d[config.get(p + ".url")] = "Basic " + base64.b64encode(
-            config.get(p + ".username") + ":" + config.get(p + ".password")
+        d[impl.config.get(p + ".url")] = impl.util.basic_auth(
+            impl.config.get(p + ".username"), impl.config.get(p + ".password")
         )
     _minterServers = d
-    _numAttempts = int(config.get("shoulders.minter_num_attempts"))
-    _reattemptDelay = int(config.get("shoulders.minter_reattempt_delay"))
+    _numAttempts = int(impl.config.get("shoulders.minter_num_attempts"))
+    _reattemptDelay = int(impl.config.get("shoulders.minter_reattempt_delay"))
     _lock.acquire()
     try:
         _minters = {}
     finally:
         _lock.release()
-    _cacheSize = int(config.get("shoulders.minter_cache_size"))
+    _cacheSize = int(impl.config.get("shoulders.minter_cache_size"))
 
 
 def _addAuthorization(request):
     d = _minterServers
+    # noinspection PyTypeChecker
     for ms in d:
         if request.get_full_url().startswith(ms):
+            # noinspection PyUnresolvedReferences
             request.add_header("Authorization", d[ms])
             break
 
@@ -72,7 +76,7 @@ class Minter(object):
         self.cache = []
         self.lock = threading.Lock()
 
-    @stacklog
+    @impl.log.stacklog
     def mintIdentifier(self):
         """Mints and returns a scheme-less ARK identifier, e.g.,
         "13030/fk35717n0h".
@@ -83,14 +87,16 @@ class Minter(object):
         try:
             cs = _cacheSize
             if len(self.cache) == 0:
-                r = urllib.request.Request("%s?mint%%20%d" % (self.url, cs))
+                r = urllib.request.Request(f"{self.url}?mint%20{cs:d}")
                 _addAuthorization(r)
+                # noinspection PyTypeChecker
                 for i in range(_numAttempts):
                     c = None
                     try:
                         c = urllib.request.urlopen(r)
                         s = c.readlines()
-                    except:
+                    except Exception:
+                        # noinspection PyTypeChecker
                         if i == _numAttempts - 1:
                             raise
                     else:
@@ -98,16 +104,19 @@ class Minter(object):
                     finally:
                         if c:
                             c.close()
+                    # noinspection PyTypeChecker
                     time.sleep(_reattemptDelay)
+                # noinspection PyTypeChecker,PyUnboundLocalVariable,PyUnboundLocalVariable
                 assert (
+                    # noinspection PyUnboundLocalVariable
                     len(s) >= cs + 1
                     and all(l.startswith("id:") or l.startswith("s:") for l in s[:cs])
                     and s[-2] == "nog-status: 0\n"
                 ), "unexpected return from minter, output follows\n" + "".join(s)
                 self.cache = [l.split(":")[1].strip() for l in s[:cs]]
-            id = self.cache[0]
+            id_str = self.cache[0]
             self.cache = self.cache[1:]
-            return id
+            return id_str
         finally:
             self.lock.release()
 
@@ -134,7 +143,9 @@ def getMinter(url):
     _lock.acquire()
     try:
         if url not in _minters:
+            # noinspection PyUnresolvedReferences
             _minters[url] = Minter(url)
+        # noinspection PyUnresolvedReferences
         return _minters[url]
     finally:
         _lock.release()

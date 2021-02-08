@@ -121,13 +121,13 @@ Example Python Client
 
   baseurl = "http://n2t.net/ezid"
 
-  h = urllib2.HTTPBasicAuthHandler()
+  h = urllib.request.HTTPBasicAuthHandler()
   h.add_password("EZID", baseurl, "username", "password")
-  opener = urllib2.build_opener(h)
+  opener = urllib.request.build_opener(h)
 
   # Create a DOI with an initial target and other metadata.
 
-  r = urllib2.Request(baseurl + "/id/doi%3A10.9999/test")
+  r = urllib.request.Request(baseurl + "/id/doi%3A10.9999/test")
   r.get_method = lambda: "PUT"
   r.add_header("Content-Type", "text/plain")
   r.add_data("_target: http://www.cnn.com/\nCreator: Francis Bacon")
@@ -141,7 +141,7 @@ Example Python Client
 
   # Add/update some metadata to a DOI.
 
-  r = urllib2.Request(baseurl + "/id/doi%3A10.9999/test")
+  r = urllib.request.Request(baseurl + "/id/doi%3A10.9999/test")
   r.add_header("Content-Type", "text/plain")
   r.add_data("Creator: J.K. Frimple")
   try:
@@ -155,7 +155,7 @@ Example Python Client
   # Retrieve a DOI's metadata.
 
   try:
-    c = urllib2.urlopen(baseurl + "/id/doi%3A10.9999/test")
+    c = urllib.request.urlopen(baseurl + "/id/doi%3A10.9999/test")
     print c.read()
     c.close()
   except urllib2.HTTPError, e:

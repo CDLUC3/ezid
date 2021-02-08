@@ -14,17 +14,21 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.db
-import django.db.transaction
 import http.client
 import random
 import threading
 import time
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 
-import ezidapp.models
-from . import log
-from . import util
+import django.db
+import django.db.transaction
+
+import ezidapp.models.registration_queue
+import impl.log
+import impl.util
 
 
 class _StateHolder(object):
@@ -49,14 +53,14 @@ class _StateHolder(object):
         # N.B.: The batch functions below may be None.
         self.functions = {
             "single": {
-                ezidapp.models.RegistrationQueue.CREATE: createFunction,
-                ezidapp.models.RegistrationQueue.UPDATE: updateFunction,
-                ezidapp.models.RegistrationQueue.DELETE: deleteFunction,
+                ezidapp.models.registration_queue.RegistrationQueue.CREATE: createFunction,
+                ezidapp.models.registration_queue.RegistrationQueue.UPDATE: updateFunction,
+                ezidapp.models.registration_queue.RegistrationQueue.DELETE: deleteFunction,
             },
             "batch": {
-                ezidapp.models.RegistrationQueue.CREATE: batchCreateFunction,
-                ezidapp.models.RegistrationQueue.UPDATE: batchUpdateFunction,
-                ezidapp.models.RegistrationQueue.DELETE: batchDeleteFunction,
+                ezidapp.models.registration_queue.RegistrationQueue.CREATE: batchCreateFunction,
+                ezidapp.models.registration_queue.RegistrationQueue.UPDATE: batchUpdateFunction,
+                ezidapp.models.registration_queue.RegistrationQueue.DELETE: batchDeleteFunction,
             },
         }
         self.idleSleep = idleSleep
@@ -136,7 +140,7 @@ def _nextUnprocessedLoadedRows(sh):
             if len(rows) == 0:
                 r.beingProcessed = True
                 rows.append(r)
-                if sh.functions["batch"][r.operation] == None:
+                if sh.functions["batch"][r.operation] is None:
                     break
             else:
                 if r.operation == rows[0].operation:
@@ -184,7 +188,7 @@ def _daemonThread(sh):
         except _AbortException:
             break
         except Exception as e:
-            log.otherError("register_async._daemonThread/" + sh.registrar, e)
+            impl.log.otherError("register_async._daemonThread/" + sh.registrar, e)
             _sleep(sh)
 
 
@@ -205,18 +209,20 @@ def callWrapper(sh, rows, methodName, function, *args):
         except Exception as e:
             if (
                 (isinstance(e, urllib.error.HTTPError) and e.code >= 500)
-                or (isinstance(e, IOError) and not isinstance(e, urllib.error.HTTPError))
+                or (
+                    isinstance(e, IOError) and not isinstance(e, urllib.error.HTTPError)
+                )
                 or isinstance(e, http.client.HTTPException)
             ):
                 for r in rows:
-                    r.error = util.formatException(e)
+                    r.error = impl.util.formatException(e)
                 _checkAbort(sh)
                 with django.db.transaction.atomic():
                     for r in rows:
                         r.save()
                 _sleep(sh, sh.reattemptDelay)
             else:
-                raise Exception("%s error: %s" % (methodName, util.formatException(e)))
+                raise Exception(f"{methodName} error: {impl.util.formatException(e)}")
 
 
 def _workerThread(sh):
@@ -234,13 +240,18 @@ def _workerThread(sh):
             try:
                 if len(rows) == 1:
                     f = sh.functions["single"][rows[0].operation]
-                    f(sh, rows, rows[0].identifier, util.deblobify(rows[0].metadata))
+                    f(
+                        sh,
+                        rows,
+                        rows[0].identifier,
+                        impl.util.deblobify(rows[0].metadata),
+                    )
                 else:
                     f = sh.functions["batch"][rows[0].operation]
                     f(
                         sh,
                         rows,
-                        [(r.identifier, util.deblobify(r.metadata)) for r in rows],
+                        [(r.identifier, impl.util.deblobify(r.metadata)) for r in rows],
                     )
             except _AbortException:
                 raise
@@ -249,13 +260,13 @@ def _workerThread(sh):
                 # used callWrapper defined above, the error can only be
                 # permanent.
                 for r in rows:
-                    r.error = util.formatException(e)
+                    r.error = impl.util.formatException(e)
                     r.errorIsPermanent = True
                 _checkAbort(sh)
                 with django.db.transaction.atomic():
                     for r in rows:
                         r.save()
-                log.otherError("register_async._workerThread/" + sh.registrar, e)
+                impl.log.otherError("register_async._workerThread/" + sh.registrar, e)
             else:
                 _checkAbort(sh)
                 with django.db.transaction.atomic():
@@ -271,7 +282,7 @@ def _workerThread(sh):
         except _AbortException:
             break
         except Exception as e:
-            log.otherError("register_async._workerThread/" + sh.registrar, e)
+            impl.log.otherError("register_async._workerThread/" + sh.registrar, e)
             _sleep(sh)
 
 
@@ -288,7 +299,9 @@ def enqueueIdentifier(model, identifier, operation, blob):
         enqueueTime=int(time.time()),
         identifier=identifier,
         metadata=blob,
-        operation=ezidapp.models.RegistrationQueue.operationLabelToCode(operation),
+        operation=ezidapp.models.registration_queue.RegistrationQueue.operationLabelToCode(
+            operation
+        ),
     )
     e.save()
 
@@ -312,7 +325,7 @@ def launch(
 
     'registrar' is the registrar the thread is for, e.g., "datacite".
     'queueModel' is the registrar's queue database model, e.g.,
-    ezidapp.models.DataciteQueue.  'createFunction', 'updateFunction',
+    ezidapp.models.datacite_queue.DataciteQueue.  'createFunction', 'updateFunction',
     and 'deleteFunction' are the registrar-specific functions to be
     called.  Each should accept arguments (sh, rows, identifier,
     metadata) where 'identifier' is a normalized, qualified identifier,
@@ -345,6 +358,6 @@ def launch(
     t.setDaemon(True)
     t.start()
     for i in range(numWorkerThreads):
-        t = threading.Thread(target=lambda: _workerThread(sh), name="%s.%d" % (name, i))
+        t = threading.Thread(target=lambda: _workerThread(sh), name=f"{name}.{i:d}")
         t.setDaemon(True)
         t.start()

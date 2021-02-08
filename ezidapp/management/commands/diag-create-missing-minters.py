@@ -1,23 +1,21 @@
 """Create BerkeleyDB minter instances for any shoulders in the database that
 are referencing non-existing minters."""
 
-
-
 import argparse
 import logging
+import pathlib
 import re
 
+import django.conf
 import django.contrib.auth.models
 import django.core.management
 import django.core.management
 import django.db.transaction
-import pathlib2
 
-import ezidapp.models
+import ezidapp.models.shoulder
+import impl.nog.bdb
+import impl.nog.minter
 import impl.nog.util
-import nog.bdb
-import nog.bdb
-import nog.minter
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +36,9 @@ class Command(django.core.management.BaseCommand):
         )
         # Misc
         parser.add_argument(
-            '--debug', action='store_true', help='Debug level logging',
+            '--debug',
+            action='store_true',
+            help='Debug level logging',
         )
 
     def handle(self, *_, **opt):
@@ -53,6 +53,10 @@ class Command(django.core.management.BaseCommand):
         try:
             self.create_missing_minters()
         except Exception as e:
+            if django.conf.settings.DEBUG:
+                import logging
+
+                logging.exception('#' * 100)
             if opt.debug:
                 raise
             raise django.core.management.CommandError(
@@ -66,11 +70,13 @@ class Command(django.core.management.BaseCommand):
         missing_count = 0
         unspecified_count = 0
 
-        for s in ezidapp.models.Shoulder.objects.all():
+        # TODO: Check for and count errors
+
+        for s in ezidapp.models.shoulder.Shoulder.objects.all():
             total_count += 1
 
             if not s.minter.strip():
-                log.warn(
+                log.warning(
                     'Shoulder does not specify a minter (supershoulder?). prefix="{}" name="{}"'.format(
                         s.prefix, s.name
                     )
@@ -79,8 +85,11 @@ class Command(django.core.management.BaseCommand):
                 continue
 
             naan_str, shoulder_str = re.split(r'[/:.]', s.minter)[-2:]
-            bdb_path = nog.bdb._get_bdb_path(naan_str, shoulder_str, root_path=None)
-            if pathlib2.Path(bdb_path).exists():
+            # noinspection PyProtectedMember
+            bdb_path = impl.nog.bdb._get_bdb_path(
+                naan_str, shoulder_str, root_path=None
+            )
+            if pathlib.Path(bdb_path).exists():
                 continue
 
             log.info(
@@ -92,9 +101,9 @@ class Command(django.core.management.BaseCommand):
             missing_count += 1
 
             try:
-                nog.minter.create_minter_database(naan_str, shoulder_str)
+                impl.nog.minter.create_minter_database(s.prefix, shoulder_str)
             except Exception as e:
-                log.warn(
+                log.warning(
                     'Unable to create missing minter. prefix="{}" name="{}". Error: {}'.format(
                         s.prefix, s.name, str(e)
                     )

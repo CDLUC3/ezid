@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
+import django.db.migrations
+import django.db.models
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0005_storegroup'),
     ]
 
     operations = [
-        migrations.AddField(
+        django.db.migrations.AddField(
             model_name='storegroup',
             name='accountType',
-            field=models.CharField(
+            field=django.db.models.CharField(
                 blank=True,
                 max_length=1,
                 verbose_name=b'account type',

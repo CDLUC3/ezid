@@ -30,10 +30,9 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-from inspect import getargspec
+import inspect
 
-from django import template
-from django.template import TemplateSyntaxError, Variable
+import django.template
 
 
 # The decorator decorator.  This is copyright unknown, verbatim from
@@ -77,15 +76,15 @@ def basictag(takes_context=False):
             return context['user']
     """
 
-    class BasicTagNode(template.Node):
-        def __init__(self, take_context, tag_name, tag_func, args):
+    class BasicTagNode(django.template.Node):
+        def __init__(self, takes_context, tag_name, tag_func, args):
             self.takes_context = takes_context
             self.tag_name = tag_name
             self.tag_func = tag_func
             self.args = args
 
         def render(self, context):
-            args = [Variable(var).resolve(context) for var in self.args]
+            args = [django.template.Variable(var).resolve(context) for var in self.args]
 
             if self.takes_context:
                 return self.tag_func(context, *args)
@@ -93,35 +92,40 @@ def basictag(takes_context=False):
                 return self.tag_func(*args)
 
     def basictag_func(tag_func):
-        def _setup_tag(parser, token):
+        def _setup_tag(_parser, token):
             bits = token.split_contents()
             tag_name = bits[0]
             del bits[0]
 
-            params, xx, xxx, defaults = getargspec(tag_func)
+            # noinspection PyDeprecation
+            params, xx, xxx, defaults = inspect.getargspec(tag_func)
             max_args = len(params)
 
             if takes_context:
                 if params[0] == 'context':
                     max_args -= 1  # Ignore context
                 else:
-                    raise TemplateSyntaxError("Any tag function decorated with takes_context=True " "must have a first argument of 'context'")
+                    raise django.template.TemplateSyntaxError(
+                        "Any tag function decorated with takes_context=True "
+                        "must have a first argument of 'context'"
+                    )
 
             min_args = max_args - len(defaults or [])
 
             if not min_args <= len(bits) <= max_args:
                 if min_args == max_args:
-                    raise TemplateSyntaxError("%r tag takes %d arguments." % (
-                        tag_name,
-                        min_args,
-                    ))
+                    raise django.template.TemplateSyntaxError(
+                        f"{tag_name!r} tag takes {min_args:d} arguments."
+                    )
                 else:
-                    raise TemplateSyntaxError("%r tag takes %d to %d arguments, got %d." % (
-                        tag_name,
-                        min_args,
-                        max_args,
-                        len(bits),
-                    ))
+                    raise django.template.TemplateSyntaxError(
+                        "{!r} tag takes {:d} to {:d} arguments, got {:d}.".format(
+                            tag_name,
+                            min_args,
+                            max_args,
+                            len(bits),
+                        )
+                    )
 
             return BasicTagNode(takes_context, tag_name, tag_func, bits)
 
@@ -149,7 +153,7 @@ def blocktag(tag_func):
             return s + ">" + nodelist.render(context) + "</div>"
     """
 
-    class BlockTagNode(template.Node):
+    class BlockTagNode(django.template.Node):
         def __init__(self, tag_name, tag_func, nodelist, args):
             self.tag_name = tag_name
             self.tag_func = tag_func
@@ -157,7 +161,7 @@ def blocktag(tag_func):
             self.args = args
 
         def render(self, context):
-            args = [Variable(var).resolve(context) for var in self.args]
+            args = [django.template.Variable(var).resolve(context) for var in self.args]
             return self.tag_func(context, self.nodelist, *args)
 
     def _setup_tag(parser, token):
@@ -165,25 +169,32 @@ def blocktag(tag_func):
         tag_name = bits[0]
         del bits[0]
 
-        params, xx, xxx, defaults = getargspec(tag_func)
+        # noinspection PyDeprecation
+        params, xx, xxx, defaults = inspect.getargspec(tag_func)
         max_args = len(params) - 2  # Ignore context and nodelist
         min_args = max_args - len(defaults or [])
 
         if not min_args <= len(bits) <= max_args:
             if min_args == max_args:
-                raise TemplateSyntaxError("%r tag takes %d arguments." % (
-                    tag_name,
-                    min_args,
-                ))
+                raise django.template.TemplateSyntaxError(
+                    "{!r} tag takes {:d} arguments.".format(
+                        tag_name,
+                        min_args,
+                    )
+                )
             else:
-                raise TemplateSyntaxError("%r tag takes %d to %d arguments, got %d." % (
-                    tag_name,
-                    min_args,
-                    max_args,
-                    len(bits),
-                ))
+                raise django.template.TemplateSyntaxError(
+                    "{!r} tag takes {:d} to {:d} arguments, got {:d}.".format(
+                        tag_name,
+                        min_args,
+                        max_args,
+                        len(bits),
+                    )
+                )
 
-        nodelist = parser.parse(('end%s' % tag_name),)
+        nodelist = parser.parse(
+            ('end%s' % tag_name),
+        )
         parser.delete_first_token()
         return BlockTagNode(tag_name, tag_func, nodelist, bits)
 

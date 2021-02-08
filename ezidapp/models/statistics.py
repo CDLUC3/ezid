@@ -13,11 +13,11 @@
 #
 # -----------------------------------------------------------------------------
 
+import ezidapp.models.realm
 import django.core.validators
 import django.db.models
 
-from . import realm
-import util
+import impl.util
 from . import validation
 
 
@@ -33,21 +33,22 @@ class Statistics(django.db.models.Model):
     # A creation month in the syntax YYYY-MM.
 
     owner = django.db.models.CharField(
-        max_length=util.maxIdentifierLength, validators=[validation.agentPid]
+        max_length=impl.util.maxIdentifierLength, validators=[validation.agentPid]
     )
     # An identifier owner as a persistent identifier, e.g.,
     # "ark:/99166/foo".  Owners are identified by PIDs and not by
     # foreign keys to avoid hard database dependencies.
 
     ownergroup = django.db.models.CharField(
-        max_length=util.maxIdentifierLength, validators=[validation.agentPid]
+        max_length=impl.util.maxIdentifierLength, validators=[validation.agentPid]
     )
     # The owner's group as a persistent identifier, e.g.,
     # "ark:/99166/bar".  Groups are identified by PIDs and not by
     # foreign keys to avoid hard database dependencies.
 
+    # noinspection PyProtectedMember
     realm = django.db.models.CharField(
-        max_length=realm.Realm._meta.get_field("name").max_length
+        max_length=ezidapp.models.realm.Realm._meta.get_field("name").max_length
     )
     # The owner's realm as a simple name, e.g., "CDL".  Realms are
     # identified by names and not by foreign keys to avoid hard database

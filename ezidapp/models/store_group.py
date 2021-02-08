@@ -16,28 +16,30 @@
 import django.core.validators
 import django.db.models
 
-from . import group
-from . import shoulder
-from . import store_realm
-from . import validation
+import ezidapp.models.group
+import ezidapp.models.shoulder
+import ezidapp.models.store_realm
+import ezidapp.models.validation
 
 
-class StoreGroup(group.Group):
+class StoreGroup(ezidapp.models.group.Group):
 
     # Inherited foreign key declarations...
     realm = django.db.models.ForeignKey(
-        store_realm.StoreRealm, on_delete=django.db.models.PROTECT
+        ezidapp.models.store_realm.StoreRealm, on_delete=django.db.models.PROTECT
     )
 
     organizationName = django.db.models.CharField(
-        "name", max_length=255, validators=[validation.nonEmpty]
+        "name", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
     )
     organizationAcronym = django.db.models.CharField(
         "acronym", max_length=255, blank=True
     )
     organizationUrl = django.db.models.URLField("URL", max_length=255)
     organizationStreetAddress = django.db.models.CharField(
-        "street address", max_length=255, validators=[validation.nonEmpty]
+        "street address",
+        max_length=255,
+        validators=[ezidapp.models.validation.nonEmpty],
     )
     # An EZID group is typically associated with some type of
     # organization, institution, or group; these fields describe that
@@ -73,7 +75,9 @@ class StoreGroup(group.Group):
     # Crossref.  Note that Crossref registration requires the enablement
     # of both the user and the shoulder.)
 
-    shoulders = django.db.models.ManyToManyField(shoulder.Shoulder, blank=True)
+    shoulders = django.db.models.ManyToManyField(
+        ezidapp.models.shoulder.Shoulder, blank=True
+    )
     # The shoulders to which users in the group have access.  The test
     # shoulders are not included in this relation.
 
@@ -101,8 +105,8 @@ class StoreGroup(group.Group):
         verbose_name = "group"
         verbose_name_plural = "groups"
 
-    def __unicode__(self):
-        return "%s (%s)" % (self.groupname, self.organizationName)
+    def __str__(self):
+        return f"{self.groupname} ({self.organizationName})"
 
     isAnonymous = False
     # See below.
@@ -127,7 +131,7 @@ def _databaseQuery():
 def _getCaches():
     global _caches
     caches = _caches
-    if caches == None:
+    if caches is None:
         pidCache = dict((g.pid, g) for g in _databaseQuery().all())
         groupnameCache = dict((g.groupname, g) for g in list(pidCache.values()))
         idCache = dict((g.id, g) for g in list(pidCache.values()))
@@ -136,7 +140,7 @@ def _getCaches():
     return caches
 
 
-def getByPid(pid):
+def getGroupByPid(pid):
     # Returns the group identified by persistent identifier 'pid', or
     # None if there is no such group.  AnonymousGroup is returned in
     # response to "anonymous".
@@ -154,7 +158,7 @@ def getByPid(pid):
     return pidCache[pid]
 
 
-def getByGroupname(groupname):
+def getGroupByGroupname(groupname):
     # Returns the group identified by local name 'groupname', or None if
     # there is no such group.  AnonymousGroup is returned in response to
     # "anonymous".
@@ -172,19 +176,19 @@ def getByGroupname(groupname):
     return groupnameCache[groupname]
 
 
-def getById(id):
+def getProfileById(id_str):
     # Returns the group identified by internal identifier 'id', or None
     # if there is no such group.
     pidCache, groupnameCache, idCache = _getCaches()
-    if id not in idCache:
+    if id_str not in idCache:
         try:
-            g = _databaseQuery().get(id=id)
+            g = _databaseQuery().get(id=id_str)
         except StoreGroup.DoesNotExist:
             return None
         pidCache[g.pid] = g
         groupnameCache[g.groupname] = g
-        idCache[id] = g
-    return idCache[id]
+        idCache[id_str] = g
+    return idCache[id_str]
 
 
 class AnonymousGroup(object):
@@ -193,7 +197,7 @@ class AnonymousGroup(object):
     # need not be instantiated.
     pid = "anonymous"
     groupname = "anonymous"
-    realm = store_realm.AnonymousRealm
+    realm = ezidapp.models.store_realm.AnonymousRealm
     crossrefEnabled = False
 
     class inner(object):

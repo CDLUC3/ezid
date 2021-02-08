@@ -1,7 +1,6 @@
 """Activate an existing shoulder."""
 
 
-
 import argparse
 import logging
 
@@ -10,9 +9,11 @@ import django.core.management
 import django.core.management
 import django.db.transaction
 
-import ezidapp.models
+# # import ezidapp.models
 import impl.nog.reload
 import impl.nog.util
+
+import ezidapp.models.shoulder
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +34,9 @@ class Command(django.core.management.BaseCommand):
         """,
         )
         parser.add_argument(
-            '--debug', action='store_true', help='Debug level logging',
+            '--debug',
+            action='store_true',
+            help='Debug level logging',
         )
 
     def handle(self, *_, **opt):
@@ -42,8 +45,10 @@ class Command(django.core.management.BaseCommand):
 
         shoulder_str = opt.shoulder_str
         try:
-            shoulder_model = ezidapp.models.Shoulder.objects.get(prefix=shoulder_str)
-        except ezidapp.models.Shoulder.DoesNotExist:
+            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(
+                prefix=shoulder_str
+            )
+        except ezidapp.models.shoulder.Shoulder.DoesNotExist:
             raise django.core.management.CommandError(
                 'Invalid shoulder: {}'.format(shoulder_str)
             )

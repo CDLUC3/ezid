@@ -1,4 +1,4 @@
-{% if alertMessage != None and alertMessage != "" %}
+{% if alertMessage is not None  and alertMessage != "" %}
   {% if not session or not "hide_alert" in session or not session.hide_alert %}
   <div id="ustatus" class="alert alert-warning" role="alert">
     <div class="alert-text">

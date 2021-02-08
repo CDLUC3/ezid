@@ -15,10 +15,10 @@
 
 import django.core.validators
 
-from . import realm
+import ezidapp.models.realm
 
 
-class StoreRealm(realm.Realm):
+class StoreRealm(ezidapp.models.realm.Realm):
     @property
     def groups(self):
         # Returns a Django related manager for the set of groups in this

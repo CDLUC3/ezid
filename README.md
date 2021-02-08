@@ -114,6 +114,13 @@ bash -c '
 '
 ```
 
+```shell
+# TODO: Outline setup via setup.py
+# Dev env with: ./setup.py develop
+# pyenv rehash
+# Tools now available as ez-* (use tab to get a list) 
+```
+
 Start
 
 ```shell script

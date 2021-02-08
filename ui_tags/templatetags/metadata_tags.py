@@ -1,12 +1,13 @@
-from django import template
-import re
-from django.conf import settings
-from django.utils.html import escape
 import time
-from .decorators import basictag
-from . import layout_extras
 
-register = template.Library()
+import django.conf
+import django.template
+import django.utils.html
+
+import ui_tags.templatetags.decorators
+import ui_tags.templatetags.layout_extras
+
+register = django.template.Library()
 
 
 @register.simple_tag
@@ -22,13 +23,13 @@ def display_formatted(id_dictionary, element):
     """formats the element object according to its display style."""
     if element.displayType == 'datetime':
         t = time.gmtime(float(id_dictionary[element.name]))
-        return time.strftime(settings.TIME_FORMAT_UI_METADATA, t) + " UTC"
+        return time.strftime(django.conf.settings.TIME_FORMAT_UI_METADATA, t) + " UTC"
     elif element.displayType == 'url':
         return (
             "<a href='"
             + id_dictionary[element.name]
             + "'>"
-            + escape(id_dictionary[element.name])
+            + django.utils.html.escape(id_dictionary[element.name])
             + "</a>"
         )
     elif element.displayType == 'boolean':
@@ -45,11 +46,11 @@ def display_formatted(id_dictionary, element):
         else:
             return 'No'
     else:
-        return escape(id_dictionary[element.name])
+        return django.utils.html.escape(id_dictionary[element.name])
 
 
 @register.tag
-@basictag(takes_context=True)
+@ui_tags.templatetags.decorators.basictag(takes_context=True)
 def display_form_element(context, element, id_object=None):
     """Displays a form element as indicated in the profile.
 
@@ -65,13 +66,13 @@ def display_form_element(context, element, id_object=None):
 
 def display_text_box(context, element, id_object):
     """displays a text box based on the element."""
-    return (
-        "<input type=\"text\" class=\"%s form-control\" name=\"%s\" id=\"%s\" value=\"%s\" />"
-        % tuple(
+    # noinspection PyUnresolvedReferences
+    return '<input type="text" class="{} form-control" name="{}" id="{}" value="{}" />'.format(
+        *tuple(
             [
-                escape(x)
+                django.utils.html.escape(x)
                 for x in (
-                    layout_extras.tooltip_class(element.name),
+                    ui_tags.templatetags.layout_extras.tooltip_class(element.name),
                     element.name,
                     element.name,
                     _form_value(context, element.name, id_object),
@@ -83,8 +84,9 @@ def display_text_box(context, element, id_object):
 
 def display_select(context, element, options, id_object):
     """displays a select list based on the element."""
-    sel_part = "<select class=\"%s form-control\" name=\"%s\" id=\"%s\">" % (
-        layout_extras.tooltip_class(element.name),
+    # noinspection PyUnresolvedReferences
+    sel_part = '<select class="{} form-control" name="{}" id="{}">'.format(
+        ui_tags.templatetags.layout_extras.tooltip_class(element.name),
         element.name,
         element.name,
     )
@@ -94,12 +96,12 @@ def display_select(context, element, options, id_object):
         + ''.join(
             [
                 (
-                    "<option value=\""
-                    + escape(x[0])
-                    + "\" "
-                    + ("selected=\"selected\"" if x[0] == selected else '')
+                    '<option value="'
+                    + django.utils.html.escape(x[0])
+                    + '" '
+                    + ('selected="selected"' if x[0] == selected else '')
                     + ">"
-                    + escape(x[1])
+                    + django.utils.html.escape(x[1])
                     + "</option>"
                 )
                 for x in options
@@ -126,7 +128,7 @@ def _form_value(context, key_name, id_object):
     """Gets a value in this priority 1) request, 2) id_object, 3) default of
     ''."""
     val = ''
-    if id_object != None and key_name in id_object:
+    if id_object is not None and key_name in id_object:
         val = id_object[key_name]
     request = context['request']
     if request.method == "GET":

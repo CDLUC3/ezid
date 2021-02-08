@@ -13,29 +13,30 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.conf
 import uuid
 
-from . import config
-import ezidapp.models
-from . import noid_egg
-from . import register_async
+import django.conf
+
+import ezidapp.models.binder_queue
+import impl.config
+import impl.noid_egg
+import impl.register_async
 
 _daemonEnabled = [None]
 _threadName = [None]
 
 
-def _create(sh, rows, id, metadata):
-    register_async.callWrapper(
-        sh, rows, "noid_egg.setElements", noid_egg.setElements, id, metadata
+def _create(sh, rows, id_str, metadata):
+    impl.register_async.callWrapper(
+        sh, rows, "noid_egg.setElements", impl.noid_egg.setElements, id_str, metadata
     )
 
 
-def _update(sh, rows, id, metadata):
-    m = register_async.callWrapper(
-        sh, rows, "noid_egg.getElements", noid_egg.getElements, id
+def _update(sh, rows, id_str, metadata):
+    m = impl.register_async.callWrapper(
+        sh, rows, "noid_egg.getElements", impl.noid_egg.getElements, id_str
     )
-    if m == None:
+    if m is None:
         m = {}
     for k, v in list(metadata.items()):
         if m.get(k) == v:
@@ -46,29 +47,29 @@ def _update(sh, rows, id, metadata):
         if k not in metadata:
             m[k] = ""
     if len(m) > 0:
-        register_async.callWrapper(
-            sh, rows, "noid_egg.setElements", noid_egg.setElements, id, m
+        impl.register_async.callWrapper(
+            sh, rows, "noid_egg.setElements", impl.noid_egg.setElements, id_str, m
         )
 
 
-def _delete(sh, rows, id, metadata):
-    register_async.callWrapper(
-        sh, rows, "noid_egg.deleteIdentifier", noid_egg.deleteIdentifier, id
+def _delete(sh, rows, id_str, _metadata):
+    impl.register_async.callWrapper(
+        sh, rows, "noid_egg.deleteIdentifier", impl.noid_egg.deleteIdentifier, id_str
     )
 
 
 def _batchCreate(sh, rows, batch):
-    register_async.callWrapper(
-        sh, rows, "noid_egg.batchSetElements", noid_egg.batchSetElements, batch
+    impl.register_async.callWrapper(
+        sh, rows, "noid_egg.batchSetElements", impl.noid_egg.batchSetElements, batch
     )
 
 
 def _batchDelete(sh, rows, batch):
-    register_async.callWrapper(
+    impl.register_async.callWrapper(
         sh,
         rows,
         "noid_egg.batchDeleteIdentifier",
-        noid_egg.batchDeleteIdentifier,
+        impl.noid_egg.batchDeleteIdentifier,
         [identifier for identifier, metadata in batch],
     )
 
@@ -81,35 +82,36 @@ def enqueueIdentifier(identifier, operation, blob):
     should be one of the strings "create", "update", or "delete". 'blob'
     is the identifier's metadata dictionary in blob form.
     """
-    register_async.enqueueIdentifier(
-        ezidapp.models.BinderQueue, identifier, operation, blob
+    impl.register_async.enqueueIdentifier(
+        ezidapp.models.binder_queue.BinderQueue, identifier, operation, blob
     )
 
 
 def getQueueLength():
     """Returns the length of the binder queue."""
-    return ezidapp.models.BinderQueue.objects.count()
+    return ezidapp.models.binder_queue.BinderQueue.objects.count()
 
 
 def loadConfig():
     _daemonEnabled[0] = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and config.get("daemons.binder_enabled").lower() == "true"
+        and impl.config.get("daemons.binder_enabled").lower() == "true"
     )
     if _daemonEnabled[0]:
+        # noinspection PyTypeChecker
         _threadName[0] = uuid.uuid1().hex
-        register_async.launch(
+        impl.register_async.launch(
             "binder",
-            ezidapp.models.BinderQueue,
+            ezidapp.models.binder_queue.BinderQueue,
             _create,
             _update,
             _delete,
             _batchCreate,
             None,
             _batchDelete,
-            int(config.get("daemons.binder_num_worker_threads")),
-            int(config.get("daemons.binder_processing_idle_sleep")),
-            int(config.get("daemons.binder_processing_error_sleep")),
+            int(impl.config.get("daemons.binder_num_worker_threads")),
+            int(impl.config.get("daemons.binder_processing_idle_sleep")),
+            int(impl.config.get("daemons.binder_processing_error_sleep")),
             _daemonEnabled,
             _threadName,
         )

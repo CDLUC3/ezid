@@ -15,7 +15,7 @@
 
 import django.db.models
 
-from . import validation
+import ezidapp.models.validation
 
 
 class Realm(django.db.models.Model):
@@ -25,12 +25,12 @@ class Realm(django.db.models.Model):
         abstract = True
 
     name = django.db.models.CharField(
-        max_length=32, unique=True, validators=[validation.nonEmpty]
+        max_length=32, unique=True, validators=[ezidapp.models.validation.nonEmpty]
     )
     # The realm's name, e.g., "CDL".
 
     def clean(self):
         self.name = self.name.strip()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

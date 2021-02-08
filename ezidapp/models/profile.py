@@ -38,5 +38,5 @@ class Profile(django.db.models.Model):
     def clean(self):
         self.label = self.label.strip()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label

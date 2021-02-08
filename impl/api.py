@@ -81,23 +81,23 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
+import logging
 import time
 
 import django.http
 
-from . import anvl
-from . import binder_async
-from . import config
-from . import datacite
-from . import datacite_async
-from . import download
-from . import ezid
-import ezidapp.models
-from . import noid_egg
-from . import search_util
-from . import userauth
-from . import util
+import ezidapp.models.update_queue
+import impl.anvl
+import impl.binder_async
+import impl.config
+import impl.datacite
+import impl.datacite_async
+import impl.download
+import impl.ezid
+import impl.noid_egg
+import impl.search_util
+import impl.userauth
+import impl.util
 
 
 def _readInput(request):
@@ -108,7 +108,7 @@ def _readInput(request):
         if (
             len(ct) > 1
             and ct[1].startswith("charset=")
-            and ct[1][8:].upper() != "UTF-8"
+            and ct[1][8:].upper() != "utf-8"
         ):
             return "error: bad request - unsupported character encoding"
         try:
@@ -121,15 +121,17 @@ def _readInput(request):
             # collapsed into one instead of resulting in an error.  But
             # that's a real edge case, so we don't worry about it.
             return {
-                util.sanitizeXmlSafeCharset(k): util.sanitizeXmlSafeCharset(v)
-                for k, v in list(anvl.parse(request.body.decode("UTF-8")).items())
+                impl.util.sanitizeXmlSafeCharset(k): impl.util.sanitizeXmlSafeCharset(v)
+                for k, v in list(impl.anvl.parse(request.body.decode("utf-8")).items())
             }
         except UnicodeDecodeError:
             return "error: bad request - character decoding error"
-        except anvl.AnvlParseException as e:
-            return "error: bad request - ANVL parse error (%s)" % str(e)
-        except:
-            return "error: bad request - malformed or incomplete request body"
+        except impl.anvl.AnvlParseException as e:
+            return f"error: bad request - ANVL parse error ({str(e)})"
+        except Exception:
+            msg_str = "error: bad request - malformed or incomplete request body"
+            logging.exception(msg_str)
+            return msg_str
     else:
         return {}
 
@@ -138,7 +140,7 @@ def _validateOptions(request, options):
     d = {}
     for k, v in list(request.GET.items()):
         if k in options:
-            if options[k] == None:
+            if options[k] is None:
                 d[k] = v
             else:
                 found = False
@@ -151,13 +153,13 @@ def _validateOptions(request, options):
                         break
                 if not found:
                     return (
-                        "error: bad request - "
-                        + "invalid value for URL query parameter '%s'"
-                    ) % k.encode("ASCII", "xmlcharrefreplace")
+                        "error: bad request - invalid value for URL query parameter "
+                        "'%s'".format(k.encode("utf-8"))
+                    )
         else:
             return (
                 "error: bad request - unrecognized URL query parameter '%s'"
-                % util.oneLine(k.encode("ASCII", "xmlcharrefreplace"))
+                % impl.util.oneLine(k.encode("ASCII", "xmlcharrefreplace"))
             )
     return d
 
@@ -180,20 +182,20 @@ def _statusMapping(content, createRequest):
 
 
 def _response(status, createRequest=False, addAuthenticateHeader=False, anvlBody=""):
-    c = anvl.formatPair(*[v.strip() for v in status.split(":", 1)])
+    c = impl.anvl.formatPair(*[v.strip() for v in status.split(":", 1)])
     if len(anvlBody) > 0:
         c += anvlBody
     else:
         c = c[:-1]
-    c = c.encode("UTF-8")
+    c = c.encode("utf-8")
     r = django.http.HttpResponse(
         c,
         status=_statusMapping(status, createRequest),
-        content_type="text/plain; charset=UTF-8",
+        content_type="text/plain; charset=utf-8",
     )
     r["Content-Length"] = len(c)
     if addAuthenticateHeader:
-        r["WWW-Authenticate"] = "Basic realm=\"EZID\""
+        r["WWW-Authenticate"] = 'Basic realm="EZID"'
     return r
 
 
@@ -213,7 +215,7 @@ def mintIdentifier(request):
     """Mints an identifier; interface to ezid.mintIdentifier."""
     if request.method != "POST":
         return _methodNotAllowed()
-    user = userauth.authenticateRequest(request)
+    user = impl.userauth.authenticateRequest(request)
     if type(user) is str:
         return _response(user)
     elif not user:
@@ -226,7 +228,9 @@ def mintIdentifier(request):
         return _response(options)
     assert request.path_info.startswith("/shoulder/")
     shoulder = request.path_info[10:]
-    return _response(ezid.mintIdentifier(shoulder, user, metadata), createRequest=True)
+    return _response(
+        impl.ezid.mintIdentifier(shoulder, user, metadata), createRequest=True
+    )
 
 
 def identifierDispatcher(request):
@@ -246,7 +250,7 @@ def identifierDispatcher(request):
 
 def _getMetadata(request):
     assert request.path_info.startswith("/id/")
-    user = userauth.authenticateRequest(request)
+    user = impl.userauth.authenticateRequest(request)
     if type(user) is str:
         return _response(user)
     options = _validateOptions(
@@ -254,31 +258,31 @@ def _getMetadata(request):
     )
     if type(options) is str:
         return _response(options)
-    if user != None:
-        r = ezid.getMetadata(
+    if user is not None:
+        r = impl.ezid.getMetadata(
             request.path_info[4:], user, prefixMatch=options.get("prefix_match", False)
         )
     else:
-        r = ezid.getMetadata(
+        r = impl.ezid.getMetadata(
             request.path_info[4:], prefixMatch=options.get("prefix_match", False)
         )
     if type(r) is str:
         if r.startswith("error: forbidden"):
-            if user != None:
+            if user is not None:
                 return _forbidden()
             else:
                 return _unauthorized()
         else:
             return _response(r)
     s, metadata = r
-    return _response(s, anvlBody=anvl.format(metadata))
+    return _response(s, anvlBody=impl.anvl.format(metadata))
 
 
 def _setMetadata(request):
-    user = userauth.authenticateRequest(request)
+    user = impl.userauth.authenticateRequest(request)
     if type(user) is str:
         return _response(user)
-    elif user == None:
+    elif user is None:
         return _unauthorized()
     metadata = _readInput(request)
     if type(metadata) is str:
@@ -295,7 +299,7 @@ def _setMetadata(request):
     assert request.path_info.startswith("/id/")
     identifier = request.path_info[4:]
     return _response(
-        ezid.setMetadata(
+        impl.ezid.setMetadata(
             identifier,
             user,
             metadata,
@@ -305,7 +309,7 @@ def _setMetadata(request):
 
 
 def _createIdentifier(request):
-    user = userauth.authenticateRequest(request)
+    user = impl.userauth.authenticateRequest(request)
     if type(user) is str:
         return _response(user)
     elif not user:
@@ -321,7 +325,7 @@ def _createIdentifier(request):
     assert request.path_info.startswith("/id/")
     identifier = request.path_info[4:]
     return _response(
-        ezid.createIdentifier(
+        impl.ezid.createIdentifier(
             identifier,
             user,
             metadata,
@@ -332,7 +336,7 @@ def _createIdentifier(request):
 
 
 def _deleteIdentifier(request):
-    user = userauth.authenticateRequest(request)
+    user = impl.userauth.authenticateRequest(request)
     if type(user) is str:
         return _response(user)
     elif not user:
@@ -349,7 +353,7 @@ def _deleteIdentifier(request):
     assert request.path_info.startswith("/id/")
     identifier = request.path_info[4:]
     return _response(
-        ezid.deleteIdentifier(
+        impl.ezid.deleteIdentifier(
             identifier,
             user,
             updateExternalServices=options.get("update_external_services", True),
@@ -364,10 +368,10 @@ def login(request):
     options = _validateOptions(request, {})
     if type(options) is str:
         return _response(options)
-    user = userauth.authenticateRequest(request, storeSessionCookie=True)
+    user = impl.userauth.authenticateRequest(request, storeSessionCookie=True)
     if type(user) is str:
         return _response(user)
-    elif user == None:
+    elif user is None:
         return _unauthorized()
     else:
         return _response("success: session cookie returned")
@@ -394,7 +398,7 @@ def getStatus(request):
     if type(options) is str:
         return _response(options)
     if options.get("detailed", False):
-        statusLine = _statusLineGenerator(False).next()[7:]
+        statusLine = next(_statusLineGenerator(False))[7:]
     else:
         statusLine = "EZID is up"
     body = ""
@@ -404,11 +408,11 @@ def getStatus(request):
             l = "binder,datacite,search"
         for ss in [ss.strip() for ss in l.split(",") if len(ss.strip()) > 0]:
             if ss == "binder":
-                body += "binder: %s\n" % noid_egg.ping()
+                body += f"binder: {impl.noid_egg.ping()}\n"
             elif ss == "datacite":
-                body += "datacite: %s\n" % datacite.ping()
+                body += f"datacite: {impl.datacite.ping()}\n"
             elif ss == "search":
-                body += "search: %s\n" % search_util.ping()
+                body += f"search: {impl.search_util.ping()}\n"
             else:
                 return _response("error: bad request - no such subsystem")
     return _response("success: " + statusLine, anvlBody=body)
@@ -422,29 +426,29 @@ def getVersion(request):
     # TODO: This is currently disabled as it relies on Mercurial.
     return django.http.HttpResponse(
         'version currently not available',
-        content_type="text/plain; charset=UTF-8",
+        content_type="text/plain; charset=utf-8",
     )
 
     options = _validateOptions(request, {})
     if type(options) is str:
         return _response(options)
-    sv, v = config.getVersionInfo()
+    sv, v = impl.config.getVersionInfo()
     # In theory the following body should be encoded, but no percent
     # signs should appear anywhere.
     body = (
-        "startup.time: %s\n"
-        + "startup.ezid_version: %s\n"
-        + "startup.info_version: %s\n"
-        + "last_reload.time: %s\n"
-        + "last_reload.ezid_version: %s\n"
-        + "last_reload.info_version: %s\n"
-    ) % (
-        time.asctime(time.localtime(sv[0])),
-        sv[1],
-        sv[2],
-        time.asctime(time.localtime(v[0])),
-        v[1],
-        v[2],
+        "startup.time: {}\n"
+        "startup.ezid_version: {}\n"
+        "startup.info_version: {}\n"
+        "last_reload.time: {}\n"
+        "last_reload.ezid_version: {}\n"
+        "last_reload.info_version: {}\n".format(
+            time.asctime(time.localtime(sv[0])),
+            sv[1],
+            sv[2],
+            time.asctime(time.localtime(v[0])),
+            v[1],
+            v[2],
+        )
     )
     return _response("success: version information follows", anvlBody=body)
 
@@ -452,7 +456,7 @@ def getVersion(request):
 def _formatUserCountList(d):
     if len(d) > 0:
         l = list(d.items())
-        l.sort(cmp=lambda x, y: -cmp(x[1], y[1]))
+        l.sort(key=lambda x: -x[1])
         return " (" + " ".join("%s=%d" % i for i in l) + ")"
     else:
         return ""
@@ -462,32 +466,32 @@ def _statusLineGenerator(includeSuccessLine):
     if includeSuccessLine:
         yield "success: server paused\n"
     while True:
-        activeUsers, waitingUsers, isPaused = ezid.getStatus()
+        activeUsers, waitingUsers, isPaused = impl.ezid.getStatus()
         na = sum(activeUsers.values())
         nw = sum(waitingUsers.values())
-        ndo = datacite.numActiveOperations()
-        ql = ezidapp.models.UpdateQueue.objects.count()
-        bql = binder_async.getQueueLength()
-        dql = datacite_async.getQueueLength()
-        nas = search_util.numActiveSearches()
+        ndo = impl.datacite.numActiveOperations()
+        ql = ezidapp.models.update_queue.UpdateQueue.objects.count()
+        bql = impl.binder_async.getQueueLength()
+        dql = impl.datacite_async.getQueueLength()
+        nas = impl.search_util.numActiveSearches()
         s = (
-            "STATUS %s activeOperations=%d%s waitingRequests=%d%s "
-            + "activeDataciteOperations=%d updateQueueLength=%d "
-            + "binderQueueLength=%d "
-            + "dataciteQueueLength=%d activeSearches=%d\n"
-        ) % (
-            "paused" if isPaused else "running",
-            na,
-            _formatUserCountList(activeUsers),
-            nw,
-            _formatUserCountList(waitingUsers),
-            ndo,
-            ql,
-            bql,
-            dql,
-            nas,
+            "STATUS {} activeOperations={:d}{} waitingRequests={:d}{} "
+            "activeDataciteOperations={:d} updateQueueLength={:d} "
+            "binderQueueLength={:d} "
+            "dataciteQueueLength={:d} activeSearches={:d}\n".format(
+                "paused" if isPaused else "running",
+                na,
+                _formatUserCountList(activeUsers),
+                nw,
+                _formatUserCountList(waitingUsers),
+                ndo,
+                ql,
+                bql,
+                dql,
+                nas,
+            )
         )
-        yield s.encode("UTF-8")
+        yield s.encode("utf-8")
         time.sleep(3)
 
 
@@ -499,10 +503,10 @@ def pause(request):
     """
     if request.method != "GET":
         return _methodNotAllowed()
-    user = userauth.authenticateRequest(request)
+    user = impl.userauth.authenticateRequest(request)
     if type(user) is str:
         return _response(user)
-    elif user == None:
+    elif user is None:
         return _unauthorized()
     elif not user.isSuperuser:
         return _forbidden()
@@ -512,24 +516,24 @@ def pause(request):
     if "op" not in options:
         return _response("error: bad request - no 'op' parameter")
     if options["op"] == "on":
-        ezid.pause(True)
+        impl.ezid.pause(True)
         return django.http.StreamingHttpResponse(
-            _statusLineGenerator(True), content_type="text/plain; charset=UTF-8"
+            _statusLineGenerator(True), content_type="text/plain; charset=utf-8"
         )
     elif options["op"] == "idlewait":
-        ezid.pause(True)
+        impl.ezid.pause(True)
         while True:
-            activeUsers, waitingUsers, isPaused = ezid.getStatus()
+            activeUsers, waitingUsers, isPaused = impl.ezid.getStatus()
             if len(activeUsers) == 0:
                 break
             time.sleep(1)
         return _response("success: server paused and idle")
     elif options["op"] == "off":
-        ezid.pause(False)
+        impl.ezid.pause(False)
         return _response("success: server unpaused")
     elif options["op"] == "monitor":
         return django.http.StreamingHttpResponse(
-            _statusLineGenerator(False), content_type="text/plain; charset=UTF-8"
+            _statusLineGenerator(False), content_type="text/plain; charset=utf-8"
         )
     else:
         assert False, "unhandled case"
@@ -542,23 +546,24 @@ def reload(request):
     options = _validateOptions(request, {})
     if type(options) is str:
         return _response(options)
-    user = userauth.authenticateRequest(request)
+    user = impl.userauth.authenticateRequest(request)
     if type(user) is str:
         return _response(user)
-    elif user == None:
+    elif user is None:
         return _unauthorized()
     elif not user.isSuperuser:
         return _forbidden()
     try:
-        oldValue = ezid.pause(True)
+        oldValue = impl.ezid.pause(True)
         # Wait for the system to become quiescent.
         while True:
-            if len(ezid.getStatus()[0]) == 0:
+            if len(impl.ezid.getStatus()[0]) == 0:
                 break
             time.sleep(1)
-        config.reload()
+        impl.config.reload()
     finally:
-        ezid.pause(oldValue)
+        # noinspection PyUnboundLocalVariable
+        impl.ezid.pause(oldValue)
     return _response("success: configuration file reloaded and caches emptied")
 
 
@@ -569,9 +574,9 @@ def batchDownloadRequest(request):
     options = _validateOptions(request, {})
     if type(options) is str:
         return _response(options)
-    user = userauth.authenticateRequest(request)
+    user = impl.userauth.authenticateRequest(request)
     if type(user) is str:
         return _response(user)
     elif not user:
         return _unauthorized()
-    return _response(download.enqueueRequest(user, request.POST))
+    return _response(impl.download.enqueueRequest(user, request.POST))

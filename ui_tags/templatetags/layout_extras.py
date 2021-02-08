@@ -1,25 +1,30 @@
+import operator
+import re
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
+
+import django.conf
+import django.urls.resolvers
+import django.template
+import django.template
+import django.template.loader
+import django.utils.html
 import django.utils.html
 import django.utils.safestring
-from django import template
-from django.conf import settings
-from django.utils.html import escape
-from django.utils.translation import ugettext as _
-from .decorators import basictag
-from django.core.urlresolvers import reverse
-from operator import itemgetter
-import django.template
-import urllib.request, urllib.parse, urllib.error
-import util2
-import re
 
-register = template.Library()
+import impl.util2
+import ui_tags.templatetags.decorators
+
+register = django.template.Library()
 
 # settings value
 @register.simple_tag
 def settings_value(name):
     """Gets a value from the settings configuration."""
     try:
-        return settings.__getattr__(name)
+        return django.conf.settings.__getattr__(name)
     except AttributeError:
         return ""
 
@@ -45,11 +50,11 @@ def choices(name, value, choice_string):
             '<input type="radio" name="'
             + name
             + '" value="'
-            + escape(x)
+            + django.utils.html.escape(x)
             + '"'
             + (' checked="checked"' if value == x else '')
             + '>'
-            + escape(x)
+            + django.utils.html.escape(x)
             + '</input>'
             for x in choices
         ]
@@ -57,7 +62,7 @@ def choices(name, value, choice_string):
 
 
 @register.tag
-@basictag(takes_context=True)
+@ui_tags.templatetags.decorators.basictag(takes_context=True)
 def request_value(context, key_name):
     """Outputs the value of context[key_name], required because normal django
     templating will not retrieve any variables starting with an underscore
@@ -68,13 +73,13 @@ def request_value(context, key_name):
     else:
         REQUEST = request.POST
     if key_name in REQUEST:
-        return escape(REQUEST[key_name])
+        return django.utils.html.escape(REQUEST[key_name])
     else:
         return ''
 
 
 @register.tag
-@basictag(takes_context=True)
+@ui_tags.templatetags.decorators.basictag(takes_context=True)
 def set_dict_value(context, dt, key_name):
     """Sets value in the context object equal to the dictionary dt[key_name]"""
     context['value'] = dt[key_name]
@@ -86,7 +91,7 @@ def get_dict_value(dt, key_name):
     """For getting dictionary values which Django templating can't handle, such
     as those starting with underscore or with a dot in them."""
     if key_name in dt:
-        return escape(dt[key_name])
+        return django.utils.html.escape(dt[key_name])
     else:
         return ''
 
@@ -95,13 +100,19 @@ def get_dict_value(dt, key_name):
 def identifier_display(id_text, testPrefixes):
     for pre in testPrefixes:
         if id_text.startswith(pre['prefix']):
-            return "&#42;&nbsp;" + escape(id_text)
-    return escape(id_text)
+            return "&#42;&nbsp;" + django.utils.html.escape(id_text)
+    return django.utils.html.escape(id_text)
 
 
 @register.simple_tag
-def active_id_display(id_text, testPrefixes):
-    return '<a href="' + util2.urlForm(id_text) + '">' + util2.urlForm(id_text) + '</a>'
+def active_id_display(id_text, _testPrefixes):
+    return (
+        '<a href="'
+        + impl.util2.urlForm(id_text)
+        + '">'
+        + impl.util2.urlForm(id_text)
+        + '</a>'
+    )
 
 
 @register.simple_tag
@@ -151,7 +162,7 @@ def add_attributes(field, css):
 
 
 @register.tag
-@basictag(takes_context=True)
+@ui_tags.templatetags.decorators.basictag(takes_context=True)
 def host_based_include(context, template_path):
     """This includes a file from a different directory instead of the normal
     specified file based on the hostname.
@@ -164,7 +175,7 @@ def host_based_include(context, template_path):
     if host not in django.conf.settings.LOCALIZATIONS:
         host = "default"
     template_path = template_path.replace(
-        "/_/", "/%s/" % django.conf.settings.LOCALIZATIONS[host][0]
+        "/_/", f"/{django.conf.settings.LOCALIZATIONS[host][0]}/"
     )
     t = django.template.loader.get_template(template_path)
     return t.render(context.dicts[3])
@@ -173,7 +184,7 @@ def host_based_include(context, template_path):
 
 # @register.simple_tag(takes_context=True)
 @register.tag
-@basictag(takes_context=True)
+@ui_tags.templatetags.decorators.basictag(takes_context=True)
 def form_or_dict_value(context, dict, key_name):
     """Outputs the value of the dict[key_name] unless request.POST contains the
     data for the item which then overrides the dictionary's value.
@@ -186,16 +197,16 @@ def form_or_dict_value(context, dict, key_name):
     """
     request = context['request']
     if request.POST and key_name in request.POST:
-        return escape(request.POST[key_name])
+        return django.utils.html.escape(request.POST[key_name])
         # return escape(request['POST'][key_name])
     elif key_name in dict:
-        return escape(dict[key_name])
+        return django.utils.html.escape(dict[key_name])
     else:
         return ''
 
 
 @register.tag
-@basictag(takes_context=True)
+@ui_tags.templatetags.decorators.basictag(takes_context=True)
 def form_or_default(context, key_name, default):
     """Outputs the value of the reposted value unless it doesn't exist then
     outputs the default value passed in."""
@@ -205,13 +216,13 @@ def form_or_default(context, key_name, default):
     else:
         REQUEST = request.POST
     if key_name in REQUEST and REQUEST[key_name] != '':
-        return escape(REQUEST[key_name])
+        return django.utils.html.escape(REQUEST[key_name])
     else:
-        return escape(default)
+        return django.utils.html.escape(default)
 
 
 @register.tag
-@basictag(takes_context=True)
+@ui_tags.templatetags.decorators.basictag(takes_context=True)
 def selected_radio(context, request_item, loop_index, item_value):
     """returns checked="checked" if this should be the currently selected radio
     button based on matching request data or 1st item and nothing selected."""
@@ -228,6 +239,7 @@ def selected_radio(context, request_item, loop_index, item_value):
         return ''
 
 
+# noinspection PyDefaultArgument
 @register.simple_tag
 def shoulder_display(
     prefix_dict, id_type_only="False", testPrefixes=[], sans_namespace="False"
@@ -243,16 +255,24 @@ def shoulder_display(
         display_prefix = ""
         for pre in testPrefixes:
             if prefix_dict['prefix'].startswith(pre['prefix']):
-                display_prefix = " (" + escape(prefix_dict['prefix']) + "/... )"
+                display_prefix = (
+                    " (" + django.utils.html.escape(prefix_dict['prefix']) + "/... )"
+                )
         if display_prefix == '':
             display_prefix = " (" + prefix_dict['prefix'] + ")"
         if sans_namespace == "True":
-            return escape(_get_id_type(prefix_dict['prefix'])) + display_prefix
+            return (
+                django.utils.html.escape(_get_id_type(prefix_dict['prefix']))
+                + display_prefix
+            )
         else:
             type = _get_id_type(prefix_dict['prefix'])
-            return escape(prefix_dict['namespace'] + ' ' + type) + display_prefix
+            return (
+                django.utils.html.escape(prefix_dict['namespace'] + ' ' + type)
+                + display_prefix
+            )
     else:
-        return escape(_get_id_type(prefix_dict['prefix']))
+        return django.utils.html.escape(_get_id_type(prefix_dict['prefix']))
 
 
 def _get_id_type(prefix):
@@ -279,14 +299,14 @@ def unavailable_codes(for_field):
         "<ul>"
         + "\n".join(
             [
-                "<li><a href=\"#"
-                + escape(x[0])
+                '<li><a href="#'
+                + django.utils.html.escape(x[0])
                 + "_"
                 + for_field
-                + "\" name=\"code_insert_link\">"
-                + escape("(:" + x[0] + ")")
+                + '" name="code_insert_link">'
+                + django.utils.html.escape("(:" + x[0] + ")")
                 + "</a> "
-                + escape(x[1])
+                + django.utils.html.escape(x[1])
                 + "</li>"
                 for x in items
             ]
@@ -297,17 +317,17 @@ def unavailable_codes(for_field):
 
 
 @register.tag
-@basictag(takes_context=True)
-def full_url_to_id_details(context, id_text):
+@ui_tags.templatetags.decorators.basictag(takes_context=True)
+def full_url_to_id_details(_context, id_text):
     """return URL form of identifier."""
-    return util2.urlForm(id_text)
+    return impl.util2.urlForm(id_text)
 
 
 @register.tag
-@basictag(takes_context=True)
-def full_url_to_id_details_urlencoded(context, id_text):
+@ui_tags.templatetags.decorators.basictag(takes_context=True)
+def full_url_to_id_details_urlencoded(_context, id_text):
     """return URL form of identifier, URL-encoded."""
-    return urllib.parse.quote(util2.urlForm(id_text))
+    return urllib.parse.quote(impl.util2.urlForm(id_text))
 
 
 # check for more than one of the same identifer type
@@ -319,10 +339,10 @@ def duplicate_id_types(prefixes):
         t = re.search('^[A-Za-z]+:', prefix['prefix'])
         t = t.group(0)[:-1]
         if t in kinds:
-            kinds[t] = kinds[t] + 1
+            kinds[t] += 1
         else:
             kinds[t] = 1
-    for key, value in kinds.items():
+    for key, value in list(kinds.items()):
         if value > 1:
             return True
     return False
@@ -338,5 +358,11 @@ def unique_id_types(prefixes):
         t = re.search('^[A-Za-z]+:', prefix['prefix'])
         t = t.group(0)[:-1]
         kinds[t] = prefix
-    i = [(x[0].upper(), x[1],) for x in list(kinds.items())]
-    return sorted(i, key=itemgetter(0))
+    i = [
+        (
+            x[0].upper(),
+            x[1],
+        )
+        for x in list(kinds.items())
+    ]
+    return sorted(i, key=operator.itemgetter(0))

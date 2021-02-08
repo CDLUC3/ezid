@@ -2,7 +2,8 @@ import os.path
 import socket
 import sys
 
-from django.utils.translation import ugettext_lazy as _
+# from django.utils.translation import ugettext as __lazy
+from django.utils.translation import ugettext as _
 
 # EZID-specific paths...
 PROJECT_ROOT = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
@@ -13,12 +14,8 @@ SETTINGS_DIR = os.path.join(PROJECT_ROOT, "settings")
 EZID_CONFIG_FILE = os.path.join(SETTINGS_DIR, "ezid.conf")
 EZID_SHADOW_CONFIG_FILE = EZID_CONFIG_FILE + ".shadow"
 LOGGING_CONFIG_FILE = "logging.server.conf"
-#MINTERS_PATH = os.path.join(PROJECT_ROOT, "db", "minters")
+# MINTERS_PATH = os.path.join(PROJECT_ROOT, "db", "minters")
 MINTERS_PATH = '/apps/ezid/var/minters'
-
-# TODO: Stop fudging the syspath
-sys.path.append(os.path.join(PROJECT_ROOT, "impl"))
-
 
 DEBUG = True
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
@@ -81,7 +78,7 @@ SECRET_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
-    "userauth.LdapSha1PasswordHasher",
+    "impl.userauth.LdapSha1PasswordHasher",
 ]
 
 MIDDLEWARE_CLASSES = (
@@ -90,7 +87,7 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.locale.LocaleMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "middleware.ExceptionScrubberMiddleware",
+    "impl.middleware.ExceptionScrubberMiddleware",
 )
 
 ROOT_URLCONF = "settings.urls"
@@ -162,9 +159,9 @@ SECRET_PATHS = [
 
 
 def injectSecrets(deploymentLevel):
-    import config_loader
+    import impl.config_loader
 
-    config = config_loader.Config(
+    config = impl.config_loader.Config(
         SITE_ROOT,
         PROJECT_ROOT,
         EZID_CONFIG_FILE,

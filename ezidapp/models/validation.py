@@ -17,7 +17,7 @@ import django.core.exceptions
 import re
 import time
 
-import util
+import impl.util
 
 
 def nonEmpty(value):
@@ -31,7 +31,7 @@ def nonEmpty(value):
 def anyIdentifier(identifier):
     # Validates that a string corresponds to the qualified, normalized
     # form of any known type of identifier.
-    i = util.validateIdentifier(identifier)
+    i = impl.util.validateIdentifier(identifier)
     if i is None:
         raise django.core.exceptions.ValidationError("Invalid identifier.")
     if i != identifier:
@@ -46,7 +46,7 @@ def agentPid(pid):
     # that's left to the calling code.  In practice agent identifiers
     # will all fall under a particular shoulder, but for validation
     # purposes we require only that they be ARKs.
-    if not pid.startswith("ark:/") or util.validateArk(pid[5:]) != pid[5:]:
+    if not pid.startswith("ark:/") or impl.util.validateArk(pid[5:]) != pid[5:]:
         raise django.core.exceptions.ValidationError(
             "Invalid agent persistent identifier: {}".format(pid)
         )
@@ -73,44 +73,32 @@ def crossrefDoi(identifier):
 
 def shoulder(shoulder):
     # Validates a shoulder.
-    if not util.validateShoulder(shoulder):
+    if not impl.util.validateShoulder(shoulder):
         raise django.core.exceptions.ValidationError("Invalid shoulder.")
 
 
 def datacenterSymbol(symbol):
     # Validates a DataCite datacenter symbol, per DataCite rules.
-    if util.validateDatacenter(symbol) is None:
+    if impl.util.validateDatacenter(symbol) is None:
         raise django.core.exceptions.ValidationError("Invalid datacenter symbol.")
 
 
 _timespecs = [
-    (4, re.compile("(\d{4})$"), "%Y", 1),
-    (6, re.compile("(\d{6})$"), "%Y%m", 2),
-    (7, re.compile("(\d{4}-\d\d)$"), "%Y-%m", 2),
-    (8, re.compile("(\d{8})$"), "%Y%m%d", 3),
-    (10, re.compile("(\d{4}-\d\d-\d\d)$"), "%Y-%m-%d", 3),
-    (16, re.compile("(\d{4}-\d\d-\d\d \d\d:\d\d)$"), "%Y-%m-%d %H:%M", 3),
-    (16, re.compile("(\d{4}-\d\d-\d\dT\d\d:\d\d)$"), "%Y-%m-%dT%H:%M", 3),
-    (
-        (19, 26),
-        re.compile(
-            "(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)" + "( ?(Z|[-+][01]\d:?(00|15|30|45)))?$"
-        ),
-        "%Y-%m-%d %H:%M:%S",
-        3,
-    ),
-    (
-        (19, 25),
-        re.compile(
-            "(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)" + "(Z|[-+][01]\d:?(00|15|30|45))?$"
-        ),
-        "%Y-%m-%dT%H:%M:%S",
-        3,
-    ),
-    (21, re.compile("(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)\.\d$"), "%Y-%m-%d %H:%M:%S", 3),
-    (21, re.compile("(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)\.\d$"), "%Y-%m-%dT%H:%M:%S", 3),
-    ((8, 14), re.compile("([a-zA-Z]+ \d{4})$"), "%B %Y", 2),
-    ((11, 18), re.compile("([a-zA-Z]+ (\d| \d|\d\d), \d{4})$"), "%B %d, %Y", 3),
+    # fmt:off
+    (4,        re.compile("(\d{4})$"),                                                                 "%Y",                 1),
+    (6,        re.compile("(\d{6})$"),                                                                 "%Y%m",               2),
+    (7,        re.compile("(\d{4}-\d\d)$"),                                                            "%Y-%m",              2),
+    (8,        re.compile("(\d{8})$"),                                                                 "%Y%m%d",             3),
+    (10,       re.compile("(\d{4}-\d\d-\d\d)$"),                                                       "%Y-%m-%d",           3),
+    (16,       re.compile("(\d{4}-\d\d-\d\d \d\d:\d\d)$"),                                             "%Y-%m-%d %H:%M",     3),
+    (16,       re.compile("(\d{4}-\d\d-\d\dT\d\d:\d\d)$"),                                             "%Y-%m-%dT%H:%M",     3),
+    ((19, 26), re.compile("(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)" + "( ?(Z|[-+][01]\d:?(00|15|30|45)))?$"), "%Y-%m-%d %H:%M:%S",  3,),
+    ((19, 25), re.compile("(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)" + "(Z|[-+][01]\d:?(00|15|30|45))?$"),     "%Y-%m-%dT%H:%M:%S",  3,),
+    (21,       re.compile("(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)\.\d$"),                                    "%Y-%m-%d %H:%M:%S",  3),
+    (21,       re.compile("(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)\.\d$"),                                    "%Y-%m-%dT%H:%M:%S",  3),
+    ((8, 14),  re.compile("([a-zA-Z]+ \d{4})$"),                                                       "%B %Y",              2),
+    ((11, 18), re.compile("([a-zA-Z]+ (\d| \d|\d\d), \d{4})$"),                                        "%B %d, %Y",          3),
+    # fmt:on
 ]
 
 
@@ -131,10 +119,11 @@ def publicationDate(date):
             t = time.strptime(m.group(1), pattern)
             # Oddly, strptime works on dates before the Unix epoch, but not
             # strftime, so we avoid it.
-            return ("%04d", "%04d-%02d", "%04d-%02d-%02d")[numComponents - 1] % t[
-                :numComponents
-            ]
-        except:
+            # return ("%04d", "%04d-%02d", "%04d-%02d-%02d")[numComponents - 1] % t[:numComponents]
+            return ("{:04d}", "{:04d}-{:02d}", "{:04d}-{:02d}-{:02d}")[
+                numComponents - 1
+            ].format(t[:numComponents])
+        except Exception:
             pass
     raise django.core.exceptions.ValidationError(
         "Invalid publication date or unrecognized date format."
@@ -184,7 +173,7 @@ def resourceType(descriptor):
     if gt not in resourceTypes:
         raise django.core.exceptions.ValidationError("Invalid resource type.")
     if st != "":
-        return "%s/%s" % (gt, st)
+        return f"{gt}/{st}"
     else:
         return gt
 
@@ -193,7 +182,7 @@ def unicodeBmpOnly(s):
     # Validates that a Unicode string contains characters in the Basic
     # Multilingual Plane only (and also doesn't contain control
     # characters, byte order marks, etc.).
-    if not util.validateXmlSafeCharsetBmpOnly(s):
+    if not impl.util.validateXmlSafeCharsetBmpOnly(s):
         raise django.core.exceptions.ValidationError(
             "Illegal or disallowed Unicode character."
         )

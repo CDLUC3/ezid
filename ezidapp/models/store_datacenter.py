@@ -15,15 +15,17 @@
 
 import django.db.models
 
-from . import datacenter
-from . import validation
+# import ezidapp.models.datacenter
+# import ezidapp.models.validation
+import ezidapp.models.validation
+import ezidapp.models.datacenter
 
 
-class StoreDatacenter(datacenter.Datacenter):
+class StoreDatacenter(ezidapp.models.datacenter.Datacenter):
     # A DataCite datacenter as stored in the store database.
 
     name = django.db.models.CharField(
-        max_length=255, unique=True, validators=[validation.nonEmpty]
+        max_length=255, unique=True, validators=[ezidapp.models.validation.nonEmpty]
     )
     # The datacenter's full name, e.g., "Brown University Library".
 

@@ -19,10 +19,10 @@ import django.core.exceptions
 import django.core.validators
 import django.db.models
 
-import nog.minter
-from . import shoulder
-import util
-from . import validation
+import impl.nog.minter
+import ezidapp.models.shoulder
+import impl.util
+import ezidapp.models.validation
 
 # Deferred imports...
 """
@@ -38,9 +38,9 @@ class User(django.db.models.Model):
         abstract = True
 
     pid = django.db.models.CharField(
-        max_length=util.maxIdentifierLength,
+        max_length=impl.util.maxIdentifierLength,
         unique=True,
-        validators=[validation.agentPid],
+        validators=[ezidapp.models.validation.agentPid],
     )
     # The user's persistent identifier, e.g., "ark:/99166/bar".  Note
     # that the uniqueness requirement is actually stronger than
@@ -71,7 +71,8 @@ class User(django.db.models.Model):
     # The user's realm.
 
     def clean(self):
-        import log
+        import impl.log as log
+
         # The following two statements are here just to support the Django
         # admin app, which has its own rules about how model objects are
         # constructed.  If no group has been assigned, we can return
@@ -80,19 +81,21 @@ class User(django.db.models.Model):
         if not hasattr(self, "group"):
             return
         if not hasattr(self, "realm"):
+            # noinspection PyUnresolvedReferences
             self.realm = self.group.realm
+        # noinspection PyUnresolvedReferences
         if self.realm != self.group.realm:
             raise django.core.exceptions.ValidationError(
                 "User's realm does not match user's group's realm."
             )
         if self.pid == "":
             try:
-                s = shoulder.getAgentShoulder()
+                s = ezidapp.models.shoulder.getAgentShoulder()
                 assert s.isArk, "Agent shoulder type must be ARK"
-                self.pid = "{}{}".format(s.prefix, nog.minter.mint_id(s))
+                self.pid = "{}{}".format(s.prefix, impl.nog.minter.mint_id(s))
             except Exception as e:
                 log.otherError("user.User.clean", e)
                 raise
 
-    def __unicode__(self):
+    def __str__(self):
         return self.username

@@ -13,10 +13,10 @@
 #
 # -----------------------------------------------------------------------------
 
-import urllib.request, urllib.parse, urllib.error
-
-from . import config
-import ezidapp.models
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 
 _ezidUrl = None
 _arkTestPrefix = None
@@ -30,27 +30,29 @@ _arkResolver = None
 
 
 def loadConfig():
+    import impl.config
+
     global _ezidUrl, _arkTestPrefix, _doiTestPrefix, _defaultArkProfile
     global _defaultDoiProfile, _defaultUuidProfile, _doiResolver, _arkResolver
     global _crossrefTestPrefix
-    _ezidUrl = config.get("DEFAULT.ezid_base_url")
-    _arkTestPrefix = config.get("shoulders.ark_test")
-    _doiTestPrefix = config.get("shoulders.doi_test")
-    _crossrefTestPrefix = config.get("shoulders.crossref_test")
-    _defaultArkProfile = config.get("DEFAULT.default_ark_profile")
-    _defaultDoiProfile = config.get("DEFAULT.default_doi_profile")
-    _defaultUuidProfile = config.get("DEFAULT.default_uuid_profile")
-    _doiResolver = config.get("resolver.doi")
-    _arkResolver = config.get("resolver.ark")
+    _ezidUrl = impl.config.get("DEFAULT.ezid_base_url")
+    _arkTestPrefix = impl.config.get("shoulders.ark_test")
+    _doiTestPrefix = impl.config.get("shoulders.doi_test")
+    _crossrefTestPrefix = impl.config.get("shoulders.crossref_test")
+    _defaultArkProfile = impl.config.get("DEFAULT.default_ark_profile")
+    _defaultDoiProfile = impl.config.get("DEFAULT.default_doi_profile")
+    _defaultUuidProfile = impl.config.get("DEFAULT.default_uuid_profile")
+    _doiResolver = impl.config.get("resolver.doi")
+    _arkResolver = impl.config.get("resolver.ark")
 
 
 def urlForm(identifier):
     """Returns the URL form of a qualified identifier, or "[None]" if there is
     no resolver defined for the identifier type."""
     if identifier.startswith("doi:"):
-        return "%s/%s" % (_doiResolver, urllib.parse.quote(identifier[4:], ":/"))
+        return f"{_doiResolver}/{urllib.parse.quote(identifier[4:], ':/')}"
     elif identifier.startswith("ark:/"):
-        return "%s/%s" % (_arkResolver, urllib.parse.quote(identifier, ":/"))
+        return f"{_arkResolver}/{urllib.parse.quote(identifier, ':/')}"
     else:
         return "[None]"
 
@@ -60,7 +62,7 @@ def defaultTargetUrl(identifier):
 
     The identifier is assumed to be in normalized, qualified form.
     """
-    return "%s/id/%s" % (_ezidUrl, urllib.parse.quote(identifier, ":/"))
+    return f"{_ezidUrl}/id/{urllib.parse.quote(identifier, ':/')}"
 
 
 def tombstoneTargetUrl(identifier):
@@ -68,7 +70,7 @@ def tombstoneTargetUrl(identifier):
 
     The identifier is assumed to be in normalized, qualified form.
     """
-    return "%s/tombstone/id/%s" % (_ezidUrl, urllib.parse.quote(identifier, ":/"))
+    return f"{_ezidUrl}/tombstone/id/{urllib.parse.quote(identifier, ':/')}"
 
 
 def isTestIdentifier(identifier):
@@ -124,32 +126,3 @@ _labelMapping = {
     "_d": "_datacenter",
     "_cr": "_crossref",
 }
-
-
-def convertLegacyToExternal(d, convertAgents=True):
-    """Converts a legacy metadata dictionary from internal form (i.e., as
-    stored in the Noid "egg" binder) to external form (i.e., as returned to
-    clients).
-
-    The dictionary is modified in place.  N.B.: if the dictionary is for
-    a DOI identifier, this function does *not* add the _shadowedby
-    element.
-    """
-    if "_is" not in d:
-        d["_is"] = "public"
-    if "_x" not in d:
-        d["_x"] = "yes"
-    if convertAgents:
-        u = ezidapp.models.getUserByPid(d["_o"])
-        if u != None:
-            d["_o"] = u.username
-        g = ezidapp.models.getGroupByPid(d["_g"])
-        if g != None:
-            d["_g"] = g.groupname
-    if d["_is"] != "public":
-        d["_t"] = d["_t1"]
-        del d["_t1"]
-    for k in list(d.keys()):
-        if k in _labelMapping:
-            d[_labelMapping[k]] = d[k]
-            del d[k]

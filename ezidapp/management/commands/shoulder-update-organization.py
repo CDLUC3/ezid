@@ -1,10 +1,11 @@
 """Update the name of the organization for an existing ARK or DOI shoulder."""
+import ezidapp.models.shoulder
 import argparse
 import logging
 
 import django.core.management
 
-import ezidapp.models
+
 import impl.nog.reload
 import impl.nog.util
 
@@ -30,7 +31,9 @@ class Command(django.core.management.BaseCommand):
             help="New name for organization",
         )
         parser.add_argument(
-            '--debug', action='store_true', help='Debug level logging',
+            '--debug',
+            action='store_true',
+            help='Debug level logging',
         )
 
     def handle(self, *_, **opt):
@@ -38,7 +41,9 @@ class Command(django.core.management.BaseCommand):
         impl.nog.util.log_to_console(__name__, opt.debug)
 
         try:
-            scheme_str, full_shoulder = opt.shoulder_str.split(':',)
+            scheme_str, full_shoulder = opt.shoulder_str.split(
+                ':',
+            )
         except ValueError:
             raise django.core.management.CommandError(
                 'Full ARK or DOI shoulder required: {}'.format(opt.shoulder_str)
@@ -56,8 +61,10 @@ class Command(django.core.management.BaseCommand):
         namespace_str = '{}:{}'.format(scheme_str, full_shoulder.upper())
 
         try:
-            shoulder_model = ezidapp.models.Shoulder.objects.get(prefix=namespace_str)
-        except ezidapp.models.Shoulder.DoesNotExist:
+            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(
+                prefix=namespace_str
+            )
+        except ezidapp.models.shoulder.Shoulder.DoesNotExist:
             raise django.core.management.CommandError(
                 'Invalid shoulder: {}'.format(namespace_str)
             )
@@ -71,10 +78,12 @@ class Command(django.core.management.BaseCommand):
         shoulder_model.name = opt.new_org_name
         shoulder_model.save()
 
-        print((
-            'Updated {} organization name "{}" -> "{}"'.format(
-                namespace_str, old_org_str, opt.new_org_name
+        print(
+            (
+                'Updated {} organization name "{}" -> "{}"'.format(
+                    namespace_str, old_org_str, opt.new_org_name
+                )
             )
-        ))
+        )
 
         impl.nog.reload.trigger_reload()

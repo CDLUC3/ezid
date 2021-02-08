@@ -102,13 +102,13 @@ import urllib2
 
 baseurl = &quot;http://n2t.net/ezid&quot;
 
-h = urllib2.HTTPBasicAuthHandler()
+h = urllib.request.HTTPBasicAuthHandler()
 h.add_password(&quot;EZID&quot;, baseurl, &quot;username&quot;, &quot;password&quot;)
-opener = urllib2.build_opener(h)
+opener = urllib.request.build_opener(h)
 
 # Create a DOI with an initial target and other metadata.
 
-r = urllib2.Request(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
+r = urllib.request.Request(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
 r.get_method = lambda: &quot;PUT&quot;
 r.add_header(&quot;Content-Type&quot;, &quot;text/plain&quot;)
 r.add_data(&quot;_target: http://www.cnn.com/\nCreator: Francis Bacon&quot;)
@@ -122,7 +122,7 @@ except urllib2.HTTPError, e:
 
 # Add/update some metadata to a DOI.
 
-r = urllib2.Request(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
+r = urllib.request.Request(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
 r.add_header(&quot;Content-Type&quot;, &quot;text/plain&quot;)
 r.add_data(&quot;Creator: J.K. Frimple&quot;)
 try:
@@ -136,7 +136,7 @@ except urllib2.HTTPError, e:
 # Retrieve a DOI's metadata.
 
 try:
-  c = urllib2.urlopen(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
+  c = urllib.request.urlopen(baseurl + &quot;/id/doi%3A10.9999/test&quot;)
   print c.read()
   c.close()
 except urllib2.HTTPError, e:

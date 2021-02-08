@@ -1,15 +1,16 @@
-from . import ui_common as uic
-from django.shortcuts import redirect
-import django.contrib.messages
-from . import metadata
-from . import ezid
-from . import form_objects
-import ezidapp.models
 import re
-from . import datacite_xml
-import os.path
-from . import userauth
+
+import django.contrib.messages
+import django.shortcuts
 from django.utils.translation import ugettext as _
+
+import ezidapp.models.shoulder
+import impl.datacite_xml
+import impl.ezid
+import impl.form_objects
+import impl.metadata
+import impl.ui_common
+import impl.userauth
 
 """
     Handles simple and advanced ID creation. If d['id_gen_result'] == 'edit_page'
@@ -26,47 +27,55 @@ def _validationErr(action):
     )
 
 
-def index(request):
-    d = {'menu_item': 'ui_create.index'}
-    return redirect("ui_create.simple")
+def index(_request):
+    _d = {'menu_item': 'ui_create.index'}
+    return django.shortcuts.redirect("ui_create.simple")
 
 
-@uic.user_login_required
+# noinspection PyDictCreation
+@impl.ui_common.user_login_required
 def simple(request):
     d = {'menu_item': 'ui_create.simple'}
-    d["testPrefixes"] = uic.testPrefixes
-    user = userauth.getUser(request)
+    d["testPrefixes"] = impl.ui_common.testPrefixes
+    user = impl.userauth.getUser(request)
     if user.isSuperuser:
-        shoulders = [s for s in ezidapp.models.getAllShoulders() if not s.isTest]
+        shoulders = [
+            s for s in ezidapp.models.shoulder.getAllShoulders() if not s.isTest
+        ]
     else:
         shoulders = user.shoulders.all()
     d["prefixes"] = sorted(
         [{"namespace": s.name, "prefix": s.prefix} for s in shoulders],
-        key=lambda p: ("%s %s" % (p["namespace"], p["prefix"])).lower(),
+        key=lambda p: f"{p['namespace']} {p['prefix']}".lower(),
     )
     if len(d['prefixes']) < 1:
-        return uic.render(request, 'create/no_shoulders', d)
+        # noinspection PyUnresolvedReferences
+        return impl.ui_common.render(request, 'create/no_shoulders', d)
     d = simple_form(request, d)
-    return uic.renderIdPage(request, 'create/simple', d)
+    return impl.ui_common.renderIdPage(request, 'create/simple', d)
 
 
-@uic.user_login_required
+# noinspection PyDictCreation
+@impl.ui_common.user_login_required
 def advanced(request):
     d = {'menu_item': 'ui_create.advanced'}
-    d["testPrefixes"] = uic.testPrefixes
-    user = userauth.getUser(request)
+    d["testPrefixes"] = impl.ui_common.testPrefixes
+    user = impl.userauth.getUser(request)
     if user.isSuperuser:
-        shoulders = [s for s in ezidapp.models.getAllShoulders() if not s.isTest]
+        shoulders = [
+            s for s in ezidapp.models.shoulder.getAllShoulders() if not s.isTest
+        ]
     else:
         shoulders = user.shoulders.all()
     d["prefixes"] = sorted(
         [{"namespace": s.name, "prefix": s.prefix} for s in shoulders],
-        key=lambda p: ("%s %s" % (p["namespace"], p["prefix"])).lower(),
+        key=lambda p: f"{p['namespace']} {p['prefix']}".lower(),
     )
     if len(d['prefixes']) < 1:
-        return uic.render(request, 'create/no_shoulders', d)
+        # noinspection PyUnresolvedReferences
+        return impl.ui_common.render(request, 'create/no_shoulders', d)
     d = adv_form(request, d)
-    return uic.renderIdPage(request, 'create/advanced', d)
+    return impl.ui_common.renderIdPage(request, 'create/advanced', d)
 
 
 def simple_form(request, d):
@@ -88,23 +97,23 @@ def simple_form(request, d):
         d['id_gen_result'] = 'method_not_allowed'
         return d
     # selects current_profile based on parameters or profile preferred for prefix type
-    d['internal_profile'] = metadata.getProfile('internal')
+    d['internal_profile'] = impl.metadata.getProfile('internal')
     if 'current_profile' in REQUEST:
-        d['current_profile'] = metadata.getProfile(REQUEST['current_profile'])
-        if d['current_profile'] == None:
-            d['current_profile'] = metadata.getProfile('erc')
+        d['current_profile'] = impl.metadata.getProfile(REQUEST['current_profile'])
+        if d['current_profile'] is None:
+            d['current_profile'] = impl.metadata.getProfile('erc')
     else:
         if len(d['prefixes']) > 0 and d['prefixes'][0]['prefix'].startswith('doi:'):
-            d['current_profile'] = metadata.getProfile('datacite')
+            d['current_profile'] = impl.metadata.getProfile('datacite')
         else:
-            d['current_profile'] = metadata.getProfile('erc')
+            d['current_profile'] = impl.metadata.getProfile('erc')
 
     if "form_placeholder" not in d:
         d['form_placeholder'] = None
     if request.method == "GET":
         # Begin ID Creation (empty form)
 
-        d['form'] = form_objects.getIdForm(
+        d['form'] = impl.form_objects.getIdForm(
             d['current_profile'], d['form_placeholder'], None
         )
         d['id_gen_result'] = 'edit_page'
@@ -112,7 +121,7 @@ def simple_form(request, d):
         if "current_profile" not in REQUEST or "shoulder" not in REQUEST:
             d['id_gen_result'] = 'bad_request'
             return d
-        d['form'] = form_objects.getIdForm(
+        d['form'] = impl.form_objects.getIdForm(
             d['current_profile'], d['form_placeholder'], REQUEST
         )
         pre_list = [pr['prefix'] for pr in d['prefixes']]
@@ -152,24 +161,30 @@ def adv_form(request, d):
     ):
         choice_is_doi = True
     if 'current_profile' in REQUEST:
-        if REQUEST['current_profile'] in uic.manual_profiles:
+        if REQUEST['current_profile'] in impl.ui_common.manual_profiles:
             d = _engage_datacite_xml_profile(request, d, 'datacite_xml')
         else:
-            d['current_profile'] = metadata.getProfile(REQUEST['current_profile'])
-            if d['current_profile'] == None:
-                d['current_profile'] = metadata.getProfile('erc')
+            d['current_profile'] = impl.metadata.getProfile(REQUEST['current_profile'])
+            if d['current_profile'] is None:
+                d['current_profile'] = impl.metadata.getProfile('erc')
     else:
+        # noinspection PySimplifyBooleanCheck
         if choice_is_doi == True:
             d = _engage_datacite_xml_profile(request, d, 'datacite_xml')
         else:
-            d['current_profile'] = metadata.getProfile('erc')
+            d['current_profile'] = impl.metadata.getProfile('erc')
+    # noinspection PySimplifyBooleanCheck
     if d['manual_profile'] == False:
         d['current_profile_name'] = d['current_profile'].name
-    d['internal_profile'] = metadata.getProfile('internal')
-    d['profiles'] = [p for p in metadata.getProfiles()[1:] if p.editable]
+    d['internal_profile'] = impl.metadata.getProfile('internal')
+    d['profiles'] = [p for p in impl.metadata.getProfiles()[1:] if p.editable]
     profs = [
-        (p.name, p.displayName,) for p in d['profiles']
-    ] + list(uic.manual_profiles.items())
+        (
+            p.name,
+            p.displayName,
+        )
+        for p in d['profiles']
+    ] + list(impl.ui_common.manual_profiles.items())
     d['profile_names'] = sorted(profs, key=lambda p: p[1].lower())
     # 'datacite_xml' used for advanced profile instead of 'datacite'
     d['profile_names'].remove(('datacite', 'DataCite'))
@@ -180,14 +195,16 @@ def adv_form(request, d):
     # Preserve remainder from GET request
     if 'remainder' in REQUEST:
         d['remainder'] = REQUEST['remainder']
-    d['remainder_box_default'] = form_objects.REMAINDER_BOX_DEFAULT
+    d['remainder_box_default'] = impl.form_objects.REMAINDER_BOX_DEFAULT
 
     if request.method == "GET":
         # Begin ID Creation (empty form)
         if d['current_profile_name'] == 'datacite_xml':
-            d['form'] = form_objects.getIdForm_datacite_xml()
+            d['form'] = impl.form_objects.getIdForm_datacite_xml()
         else:
-            d['form'] = form_objects.getAdvancedIdForm(d['current_profile'], request)
+            d['form'] = impl.form_objects.getAdvancedIdForm(
+                d['current_profile'], request
+            )
         d['id_gen_result'] = 'edit_page'
         if 'anchor' in REQUEST:
             d['anchor'] = REQUEST['anchor']
@@ -206,7 +223,9 @@ def adv_form(request, d):
             if "current_profile" not in P or "shoulder" not in P:
                 d['id_gen_result'] = 'bad_request'
                 return d
-            d['form'] = form_objects.getAdvancedIdForm(d['current_profile'], request)
+            d['form'] = impl.form_objects.getAdvancedIdForm(
+                d['current_profile'], request
+            )
             if not (
                 d['form']['form'].is_valid() and d['form']['remainder_form'].is_valid()
             ):
@@ -217,9 +236,9 @@ def adv_form(request, d):
     return d
 
 
-def _engage_datacite_xml_profile(request, d, profile_name):
+def _engage_datacite_xml_profile(_request, d, profile_name):
     # Hack: For now, this is the only manual profile
-    d['current_profile'] = metadata.getProfile('datacite')
+    d['current_profile'] = impl.metadata.getProfile('datacite')
     d['manual_profile'] = True
     d['current_profile_name'] = profile_name
     d['manual_template'] = 'create/_' + d['current_profile_name'] + '.html'
@@ -228,11 +247,11 @@ def _engage_datacite_xml_profile(request, d, profile_name):
 
 
 def validate_adv_form_datacite_xml(request, d):
-    """ Creates/validates datacite advanced (xml) form object using request.POST
-      from both create/demo and edit areas
-      Either sets d['id_gen_result'] = 'edit_page', (due to validation issue)
-      or successfully generates XML (sets d['generated_xml'])
-  """
+    """Creates/validates datacite advanced (xml) form object using request.POST
+    from both create/demo and edit areas
+    Either sets d['id_gen_result'] = 'edit_page', (due to validation issue)
+    or successfully generates XML (sets d['generated_xml'])
+    """
     P = request.POST
     assert P is not None
     identifier = None
@@ -247,8 +266,8 @@ def validate_adv_form_datacite_xml(request, d):
             d['id_gen_result'] = 'edit_page'
             return d
         identifier = P['identifier']
-    d['form'] = form_objects.getIdForm_datacite_xml(None, request)
-    if not form_objects.isValidDataciteXmlForm(d['form']):
+    d['form'] = impl.form_objects.getIdForm_datacite_xml(None, request)
+    if not impl.form_objects.isValidDataciteXmlForm(d['form']):
         django.contrib.messages.error(request, _validationErr(action_result))
         d['accordions_open'] = 'open'
         d['id_gen_result'] = 'edit_page'
@@ -256,7 +275,7 @@ def validate_adv_form_datacite_xml(request, d):
         # Testing:
         # temp_formElements = datacite_xml.temp_mockFormElements()
         # d['generated_xml'] = datacite_xml.temp_mock()
-        d['generated_xml'] = datacite_xml.formElementsToDataciteXml(
+        d['generated_xml'] = impl.datacite_xml.formElementsToDataciteXml(
             P.dict(),
             # temp_formElements,
             (P['shoulder'] if 'shoulder' in P else None),
@@ -266,10 +285,10 @@ def validate_adv_form_datacite_xml(request, d):
 
 
 def _createSimpleId(d, request, P):
-    s = ezid.mintIdentifier(
+    s = impl.ezid.mintIdentifier(
         request.POST["shoulder"],
-        userauth.getUser(request, returnAnonymous=True),
-        uic.assembleUpdateDictionary(
+        impl.userauth.getUser(request, returnAnonymous=True),
+        impl.ui_common.assembleUpdateDictionary(
             request, d["current_profile"], {"_target": P["target"], "_export": "yes"}
         ),
     )
@@ -301,7 +320,7 @@ def _createAdvancedId(d, request, P):
             "datacite": d['generated_xml'],
         }
     else:
-        to_write = uic.assembleUpdateDictionary(
+        to_write = impl.ui_common.assembleUpdateDictionary(
             request,
             d['current_profile'],
             {
@@ -310,14 +329,19 @@ def _createAdvancedId(d, request, P):
                 "_export": ("yes" if P["export"] == "yes" else "no"),
             },
         )
-    if P['remainder'] == '' or P['remainder'] == form_objects.REMAINDER_BOX_DEFAULT:
-        s = ezid.mintIdentifier(
-            P['shoulder'], userauth.getUser(request, returnAnonymous=True), to_write
+    if (
+        P['remainder'] == ''
+        or P['remainder'] == impl.form_objects.REMAINDER_BOX_DEFAULT
+    ):
+        s = impl.ezid.mintIdentifier(
+            P['shoulder'],
+            impl.userauth.getUser(request, returnAnonymous=True),
+            to_write,
         )
     else:
-        s = ezid.createIdentifier(
+        s = impl.ezid.createIdentifier(
             P['shoulder'] + P['remainder'],
-            userauth.getUser(request, returnAnonymous=True),
+            impl.userauth.getUser(request, returnAnonymous=True),
             to_write,
         )
     if s.startswith("success:"):

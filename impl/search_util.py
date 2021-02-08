@@ -13,10 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.conf
-import django.db
-import django.db.models
-import django.db.utils
+import functools
 import operator
 import re
 import threading
@@ -24,11 +21,22 @@ import time
 import urllib.parse
 import uuid
 
-from . import config
-import ezidapp.models
-from . import log
-from . import util
-from functools import reduce
+import django.conf
+import django.db
+import django.db.models
+import django.db.utils
+
+# import ezidapp.models.search_realm
+import ezidapp.models.identifier
+import ezidapp.models.identifier
+import ezidapp.models.search_identifier
+
+# import ezidapp.models.identifier
+import ezidapp.models.search_realm
+import ezidapp.models.validation
+import impl.config
+import impl.log
+import impl.util
 
 _lock = threading.Lock()
 _reconnectDelay = None
@@ -42,18 +50,23 @@ _numActiveSearches = 0
 def loadConfig():
     global _reconnectDelay, _fulltextSupported, _minimumWordLength
     global _stopwords, _maxTargetLength
-    _reconnectDelay = int(config.get("databases.reconnect_delay"))
+    _reconnectDelay = int(impl.config.get("databases.reconnect_delay"))
     _fulltextSupported = django.conf.settings.DATABASES["search"][
         "fulltextSearchSupported"
     ]
     if _fulltextSupported:
-        _minimumWordLength = int(config.get("search.minimum_word_length"))
+        _minimumWordLength = int(impl.config.get("search.minimum_word_length"))
         _stopwords = (
-            config.get("search.stopwords") + " " + config.get("search.extra_stopwords")
+            impl.config.get("search.stopwords")
+            + " "
+            + impl.config.get("search.extra_stopwords")
         ).split()
-    _maxTargetLength = ezidapp.models.SearchIdentifier._meta.get_field(
-        "searchableTarget"
-    ).max_length
+    # noinspection PyProtectedMember
+    _maxTargetLength = (
+        ezidapp.models.search_identifier.SearchIdentifier._meta.get_field(
+            "searchableTarget"
+        ).max_length
+    )
 
 
 class AbortException(Exception):
@@ -79,9 +92,10 @@ def withAutoReconnect(functionName, function, continuationCheck=None):
             # We're silent about the first error because it might simply be
             # due to the database connection having timed out.
             if not firstError:
-                log.otherError("search_util.withAutoReconnect/" + functionName, e)
+                impl.log.otherError("search_util.withAutoReconnect/" + functionName, e)
+                # noinspection PyTypeChecker
                 time.sleep(_reconnectDelay)
-            if continuationCheck != None and not continuationCheck():
+            if continuationCheck is not None and not continuationCheck():
                 raise AbortException()
             # In some cases a lost connection causes the thread's database
             # connection object to be permanently screwed up.  The following
@@ -95,8 +109,8 @@ def withAutoReconnect(functionName, function, continuationCheck=None):
 def ping():
     """Tests the search database, returning "up" or "down"."""
     try:
-        n = ezidapp.models.SearchRealm.objects.count()
-    except:
+        _n = ezidapp.models.search_realm.SearchRealm.objects.count()
+    except Exception:
         return "down"
     else:
         return "up"
@@ -154,6 +168,7 @@ def _processFulltextConstraint(constraint):
     i = 0
     while i < len(words):
         if words[i][1].upper() == "OR":
+            # noinspection PyChainedComparisons
             if i > 0 and i < len(words) - 1:
                 words[i - 1][0] = False
                 words[i + 1][0] = False
@@ -166,6 +181,7 @@ def _processFulltextConstraint(constraint):
     # stopwords anyway.
     i = 0
     while i < len(words):
+        # noinspection PyTypeChecker
         if not words[i][1].startswith('"') and (
             len(words[i][1]) < _minimumWordLength or (words[i][1]).lower() in _stopwords
         ):
@@ -173,7 +189,7 @@ def _processFulltextConstraint(constraint):
         else:
             i += 1
     if len(words) > 0:
-        return " ".join("%s%s" % ("+" if w[0] else "", w[1]) for w in words)
+        return " ".join(f"{'+' if w[0] else ''}{w[1]}" for w in words)
     else:
         # If a constraint has no search terms (e.g., consists of all
         # stopwords), MySQL returns zero results.  To mimic this behavior
@@ -193,73 +209,74 @@ defaultDefer = [
 ]
 
 
+# noinspection PyDefaultArgument,PyDefaultArgument
 def formulateQuery(
     constraints, orderBy=None, selectRelated=defaultSelectRelated, defer=defaultDefer
 ):
     """
-  Formulates a search database query and returns an unevaluated
-  QuerySet that can then be evaluated, indexed, etc.  'constraints'
-  should be a dictionary mapping search columns to constraint values.
-  The accepted search columns (most of which correspond to fields in
-  the Identifier and SearchIdentifier models) and associated
-  constraint Python types and descriptions are listed in the table
-  below.  The 'R' flag indicates if multiple constraints may be placed
-  against the column; if yes, multiple constraint values should be
-  expressed as a list, and the constraints will be OR'd together.  The
-  'O' flag indicates if the column may be used for ordering results.
-  Descending ordering is achieved, Django-style, by prefixing the
-  column name with a minus sign.
+    Formulates a search database query and returns an unevaluated
+    QuerySet that can then be evaluated, indexed, etc.  'constraints'
+    should be a dictionary mapping search columns to constraint values.
+    The accepted search columns (most of which correspond to fields in
+    the Identifier and SearchIdentifier models) and associated
+    constraint Python types and descriptions are listed in the table
+    below.  The 'R' flag indicates if multiple constraints may be placed
+    against the column; if yes, multiple constraint values should be
+    expressed as a list, and the constraints will be OR'd together.  The
+    'O' flag indicates if the column may be used for ordering results.
+    Descending ordering is achieved, Django-style, by prefixing the
+    column name with a minus sign.
 
-  =========================================================================
-                      |   |   | constraint |
-  search column       | R | O | type       | constraint value
-  --------------------+---+---+------------+-------------------------------
-  identifier          |   | Y | str        | qualified identifier, e.g.,
-                      |   |   |            | "ark:/12345/foo", not
-                      |   |   |            | necessarily normalized; if not
-                      |   |   |            | qualified, the scheme will be
-                      |   |   |            | guessed
-  identifierType      | Y | Y | str        | identifier scheme, e.g.,
-                      |   |   |            | "ARK", upper- or lowercase
-  owner               | Y | Y | str        | username
-  ownergroup          | Y | Y | str        | groupname
-  createTime          |   | Y | (int, int) | time range as pair of Unix
-                      |   |   |            | timestamps; bounds are
-                      |   |   |            | inclusive; either/both bounds
-                      |   |   |            | may be None
-  updateTime          |   | Y | (int, int) | ditto
-  status              | Y | Y | str        | status display value, e.g.,
-                      |   |   |            | "public"
-  exported            |   | Y | bool       |
-  crossref            |   |   | bool       | True if the identifier is
-                      |   |   |            | registered with Crossref
-  crossrefStatus      | Y |   | str        | Crossref status code
-  target              |   |   | str        | URL
-  profile             | Y | Y | str        | profile label, e.g., "erc"
-  isTest              |   | Y | bool       |
-  resourceCreator     |   | Y | str        | limited fulltext-style boolean
-                      |   |   |            | expression, e.g.,
-                      |   |   |            | '"green eggs" OR ham'
-  resourceTitle       |   | Y | str        | ditto
-  resourcePublisher   |   | Y | str        | ditto
-  keywords            |   |   | str        | ditto
-  resourcePublica-    |   | Y | (int, int) | time range as pair of years;
-    tionYear          |   |   |            | bounds are inclusive; either/
-                      |   |   |            | both bounds may be None
-  resourceType        | Y | Y | str        | general resource type, e.g.,
-                      |   |   |            | "Image"
-  hasMetadata         |   | Y | bool       |
-  publicSearchVisible |   | Y | bool       |
-  linkIsBroken        |   | Y | bool       |
-  hasIssues           |   | Y | bool       |
-  -------------------------------------------------------------------------
+    =========================================================================
+                        |   |   | constraint |
+    search column       | R | O | type       | constraint value
+    --------------------+---+---+------------+-------------------------------
+    identifier          |   | Y | str        | qualified identifier, e.g.,
+                        |   |   |            | "ark:/12345/foo", not
+                        |   |   |            | necessarily normalized; if not
+                        |   |   |            | qualified, the scheme will be
+                        |   |   |            | guessed
+    identifierType      | Y | Y | str        | identifier scheme, e.g.,
+                        |   |   |            | "ARK", upper- or lowercase
+    owner               | Y | Y | str        | username
+    ownergroup          | Y | Y | str        | groupname
+    createTime          |   | Y | (int, int) | time range as pair of Unix
+                        |   |   |            | timestamps; bounds are
+                        |   |   |            | inclusive; either/both bounds
+                        |   |   |            | may be None
+    updateTime          |   | Y | (int, int) | ditto
+    status              | Y | Y | str        | status display value, e.g.,
+                        |   |   |            | "public"
+    exported            |   | Y | bool       |
+    crossref            |   |   | bool       | True if the identifier is
+                        |   |   |            | registered with Crossref
+    crossrefStatus      | Y |   | str        | Crossref status code
+    target              |   |   | str        | URL
+    profile             | Y | Y | str        | profile label, e.g., "erc"
+    isTest              |   | Y | bool       |
+    resourceCreator     |   | Y | str        | limited fulltext-style boolean
+                        |   |   |            | expression, e.g.,
+                        |   |   |            | '"green eggs" OR ham'
+    resourceTitle       |   | Y | str        | ditto
+    resourcePublisher   |   | Y | str        | ditto
+    keywords            |   |   | str        | ditto
+    resourcePublica-    |   | Y | (int, int) | time range as pair of years;
+      tionYear          |   |   |            | bounds are inclusive; either/
+                        |   |   |            | both bounds may be None
+    resourceType        | Y | Y | str        | general resource type, e.g.,
+                        |   |   |            | "Image"
+    hasMetadata         |   | Y | bool       |
+    publicSearchVisible |   | Y | bool       |
+    linkIsBroken        |   | Y | bool       |
+    hasIssues           |   | Y | bool       |
+    -------------------------------------------------------------------------
 
-  'constraints' must include one or more of: an owner constraint, an
-  ownergroup constraint, or a publicSearchVisible=True constraint; if
-  not, an assertion error is raised.  Otherwise, this function is
-  forgiving, and will produce a QuerySet even if constraint values are
-  nonsensical.
-  """
+    'constraints' must include one or more of: an owner constraint, an
+    ownergroup constraint, or a publicSearchVisible=True constraint; if
+    not, an assertion error is raised.  Otherwise, this function is
+    forgiving, and will produce a QuerySet even if constraint values are
+    nonsensical.
+    """
     filters = []
     scopeRequirementMet = False
     for column, value in list(constraints.items()):
@@ -275,24 +292,24 @@ def formulateQuery(
             if column == "publicSearchVisible" and value == True:
                 scopeRequirementMet = True
         elif column == "identifier":
-            v = util.validateIdentifier(value)
-            if v == None:
+            v = impl.util.validateIdentifier(value)
+            if v is None:
                 if re.match("\d{5}/", value):
-                    v = util.validateArk(value)
-                    if v != None:
+                    v = impl.util.validateArk(value)
+                    if v is not None:
                         v = "ark:/" + v
                 elif re.match("10\.[1-9]\d{3,4}/", value):
-                    v = util.validateDoi(value)
-                    if v != None:
+                    v = impl.util.validateDoi(value)
+                    if v is not None:
                         v = "doi:" + v
-                if v == None:
+                if v is None:
                     v = value
             filters.append(django.db.models.Q(identifier__startswith=v))
         elif column == "identifierType":
             if isinstance(value, str):
                 value = [value]
             filters.append(
-                reduce(
+                functools.reduce(
                     operator.or_,
                     [
                         django.db.models.Q(identifier__startswith=(v.lower() + ":"))
@@ -304,7 +321,7 @@ def formulateQuery(
             if isinstance(value, str):
                 value = [value]
             filters.append(
-                reduce(
+                functools.reduce(
                     operator.or_, [django.db.models.Q(owner__username=v) for v in value]
                 )
             )
@@ -313,30 +330,30 @@ def formulateQuery(
             if isinstance(value, str):
                 value = [value]
             filters.append(
-                reduce(
+                functools.reduce(
                     operator.or_,
                     [django.db.models.Q(ownergroup__groupname=v) for v in value],
                 )
             )
             scopeRequirementMet = True
         elif column in ["createTime", "updateTime"]:
-            if value[0] != None:
-                if value[1] != None:
+            if value[0] is not None:
+                if value[1] is not None:
                     filters.append(django.db.models.Q(**{(column + "__range"): value}))
                 else:
                     filters.append(django.db.models.Q(**{(column + "__gte"): value[0]}))
             else:
-                if value[1] != None:
+                if value[1] is not None:
                     filters.append(django.db.models.Q(**{(column + "__lte"): value[1]}))
         elif column == "status":
             if isinstance(value, str):
                 value = [value]
             filters.append(
-                reduce(
+                functools.reduce(
                     operator.or_,
                     [
                         django.db.models.Q(
-                            status=ezidapp.models.Identifier.statusDisplayToCode.get(
+                            status=ezidapp.models.identifier.Identifier.statusDisplayToCode.get(
                                 v, v
                             )
                         )
@@ -353,7 +370,7 @@ def formulateQuery(
             if isinstance(value, str):
                 value = [value]
             filters.append(
-                reduce(
+                functools.reduce(
                     operator.or_, [django.db.models.Q(crossrefStatus=v) for v in value]
                 )
             )
@@ -375,15 +392,16 @@ def formulateQuery(
             qlist = []
             for v in values:
                 q = django.db.models.Q(searchableTarget=v[::-1][:_maxTargetLength])
+                # noinspection PyTypeChecker
                 if len(v) > _maxTargetLength:
                     q &= django.db.models.Q(target=v)
                 qlist.append(q)
-            filters.append(reduce(operator.or_, qlist))
+            filters.append(functools.reduce(operator.or_, qlist))
         elif column == "profile":
             if isinstance(value, str):
                 value = [value]
             filters.append(
-                reduce(
+                functools.reduce(
                     operator.or_, [django.db.models.Q(profile__label=v) for v in value]
                 )
             )
@@ -398,7 +416,7 @@ def formulateQuery(
                 value = value.split()
                 if len(value) > 0:
                     filters.append(
-                        reduce(
+                        functools.reduce(
                             operator.and_,
                             [
                                 django.db.models.Q(**{(column + "__icontains"): v})
@@ -407,8 +425,8 @@ def formulateQuery(
                         )
                     )
         elif column == "resourcePublicationYear":
-            if value[0] != None:
-                if value[1] != None:
+            if value[0] is not None:
+                if value[1] is not None:
                     if value[0] == value[1]:
                         filters.append(
                             django.db.models.Q(searchablePublicationYear=value[0])
@@ -422,7 +440,7 @@ def formulateQuery(
                         django.db.models.Q(searchablePublicationYear__gte=value[0])
                     )
             else:
-                if value[1] != None:
+                if value[1] is not None:
                     filters.append(
                         django.db.models.Q(searchablePublicationYear__lte=value[1])
                     )
@@ -430,7 +448,7 @@ def formulateQuery(
             if isinstance(value, str):
                 value = [value]
             filters.append(
-                reduce(
+                functools.reduce(
                     operator.or_,
                     [
                         django.db.models.Q(
@@ -445,12 +463,12 @@ def formulateQuery(
         else:
             assert False, "unrecognized column"
     assert scopeRequirementMet, "query scope requirement not met"
-    qs = ezidapp.models.SearchIdentifier.objects.filter(*filters)
+    qs = ezidapp.models.search_identifier.SearchIdentifier.objects.filter(*filters)
     if len(selectRelated) > 0:
         qs = qs.select_related(*selectRelated)
     if len(defer) > 0:
         qs = qs.defer(*defer)
-    if orderBy != None:
+    if orderBy is not None:
         prefix = ""
         if orderBy.startswith("-"):
             prefix = "-"
@@ -517,6 +535,7 @@ def _isMysqlFulltextError(exception):
     )
 
 
+# noinspection PyDefaultArgument,PyDefaultArgument
 def executeSearchCountOnly(
     user, constraints, selectRelated=defaultSelectRelated, defer=defaultDefer
 ):
@@ -530,7 +549,8 @@ def executeSearchCountOnly(
     try:
         _modifyActiveCount(1)
         qs = formulateQuery(constraints, selectRelated=selectRelated, defer=defer)
-        log.begin(
+        # noinspection PyTypeChecker
+        impl.log.begin(
             tid,
             "search/count",
             "-",
@@ -538,9 +558,9 @@ def executeSearchCountOnly(
             user.pid,
             user.group.groupname,
             user.group.pid,
-            *reduce(
+            *functools.reduce(
                 operator.__concat__, [[k, str(v)] for k, v in list(constraints.items())]
-            )
+            ),
         )
         c = qs.count()
     except Exception as e:
@@ -559,18 +579,19 @@ def executeSearchCountOnly(
             for f in _fulltextFields:
                 if f in constraints2:
                     constraints2[f] = constraints2[f].replace('"', " ")
-            log.success(tid, "-1")
+            impl.log.success(tid, "-1")
             return executeSearchCountOnly(user, constraints2, selectRelated, defer)
         else:
-            log.error(tid, e)
+            impl.log.error(tid, e)
             raise
     else:
-        log.success(tid, str(c))
+        impl.log.success(tid, str(c))
         return c
     finally:
         _modifyActiveCount(-1)
 
 
+# noinspection PyDefaultArgument,PyDefaultArgument
 def executeSearch(
     user,
     constraints,
@@ -593,7 +614,8 @@ def executeSearch(
         qs = formulateQuery(
             constraints, orderBy=orderBy, selectRelated=selectRelated, defer=defer
         )
-        log.begin(
+        # noinspection PyTypeChecker
+        impl.log.begin(
             tid,
             "search/results",
             "-",
@@ -604,9 +626,9 @@ def executeSearch(
             str(orderBy),
             str(from_),
             str(to),
-            *reduce(
+            *functools.reduce(
                 operator.__concat__, [[k, str(v)] for k, v in list(constraints.items())]
-            )
+            ),
         )
         qs = qs[from_:to]
         c = len(qs)
@@ -626,15 +648,15 @@ def executeSearch(
             for f in _fulltextFields:
                 if f in constraints2:
                     constraints2[f] = constraints2[f].replace('"', " ")
-            log.success(tid, "-1")
+            impl.log.success(tid, "-1")
             return executeSearch(
                 user, constraints2, from_, to, orderBy, selectRelated, defer
             )
         else:
-            log.error(tid, e)
+            impl.log.error(tid, e)
             raise
     else:
-        log.success(tid, str(c))
+        impl.log.success(tid, str(c))
         return qs
     finally:
         _modifyActiveCount(-1)

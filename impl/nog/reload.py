@@ -1,17 +1,19 @@
-import base64
 import logging
 import platform
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 
 import django.core.management
 import django.urls
 
-import config
+import impl.config
+import impl.util
 
 KNOWN_EZID_HOSTNAME_TUP = (
     'uc3-ezidui01x2-prd',
-#    'cdl',
+    #    'cdl',
     'ezid-stg',
     'ezid-stg.cdlib.org',
     'uc3-ezidui01x2-stg',
@@ -43,15 +45,14 @@ def trigger_reload():
         )
         return
 
-    ezid_base_url = config.get("DEFAULT.ezid_base_url")
+    ezid_base_url = impl.config.get("DEFAULT.ezid_base_url")
     reload_path = django.urls.reverse('api.reload')
     reload_url = '{}/{}'.format(ezid_base_url.strip('/'), reload_path.strip('/'))
-    admin_pw_str = config.get("auth.admin_password")
+    admin_pw_str = impl.config.get("auth.admin_password")
 
     data = urllib.parse.urlencode({})
-    request = urllib.request.Request(reload_url, data=data)
-    auth_b64 = base64.b64encode('%s:%s' % ('admin', admin_pw_str))
-    request.add_header("Authorization", "Basic {}".format(auth_b64))
+    request = urllib.request.Request(reload_url, data=data.encode('utf-8'))
+    request.add_header("Authorization", impl.util.basic_auth('admin', admin_pw_str))
 
     try:
         response = urllib.request.urlopen(request)

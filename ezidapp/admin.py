@@ -20,20 +20,45 @@
 import copy
 import django.conf
 import django.contrib.admin
+import django.contrib.admin.sites
+import django.contrib.admin.widgets
 import django.contrib.messages
+
+# import django.core.mail
+# import django.core.validators
+# import django.core.mail
+# import django.urls.resolvers
 import django.core.mail
-import django.core.urlresolvers
 import django.core.validators
 import django.db
 import django.db.models
 import django.forms
+import django.forms.widgets
+import django.urls.resolvers
 import django.utils.html
 
-from . import models
-from . import models.search_identifier
-from . import models.store_group
-from . import models.store_user
-import util
+import ezidapp.models.search_identifier
+import ezidapp.models.store_group
+
+# import django.core
+import ezidapp.models.store_user
+import ezidapp.models.store_user
+import impl.util as util
+
+# from . import models
+# from . import models.search_identifier
+# from . import models.store_group
+# from . import models.store_user
+from ezidapp.models.new_account_worksheet import NewAccountWorksheet
+from ezidapp.models.search_group import SearchGroup
+from ezidapp.models.search_realm import SearchRealm
+from ezidapp.models.search_user import SearchUser
+from ezidapp.models.server_variables import ServerVariables
+from ezidapp.models.shoulder import Shoulder
+from ezidapp.models.store_datacenter import StoreDatacenter
+from ezidapp.models.store_group import StoreGroup
+from ezidapp.models.store_realm import StoreRealm
+from ezidapp.models.store_user import StoreUser
 
 # Deferred imports...
 """
@@ -86,18 +111,18 @@ class ServerVariablesAdmin(django.contrib.admin.ModelAdmin):
         assert change
         obj.save()
         if "alertMessage" in form.changed_data:
-            import ui_common
+            import impl.ui_common
 
-            ui_common.alertMessage = obj.alertMessage
+            impl.ui_common.alertMessage = obj.alertMessage
         if obj.secretKey == "":
-            import config
+            import impl.config
 
-            config.reload()
+            impl.config.reload()
             django.contrib.messages.success(request, "Server reloaded.")
         return obj
 
 
-superuser.register(models.ServerVariables, ServerVariablesAdmin)
+superuser.register(ServerVariables, ServerVariablesAdmin)
 
 
 class ShoulderForm(django.forms.ModelForm):
@@ -115,7 +140,7 @@ class ShoulderTypeFilter(django.contrib.admin.SimpleListFilter):
         return [(t, t) for t in ["ARK", "DOI", "UUID"]]
 
     def queryset(self, request, queryset):
-        if self.value() != None:
+        if self.value() is not None:
             queryset = queryset.filter(prefix__startswith=self.value().lower() + ":")
         return queryset
 
@@ -128,7 +153,7 @@ class ShoulderHasMinterFilter(django.contrib.admin.SimpleListFilter):
         return [("Yes", "Yes"), ("No", "No")]
 
     def queryset(self, request, queryset):
-        if self.value() != None:
+        if self.value() is not None:
             if self.value() == "Yes":
                 queryset = queryset.filter(~django.db.models.Q(minter=""))
             else:
@@ -144,7 +169,7 @@ class ShoulderRegistrationAgencyFilter(django.contrib.admin.SimpleListFilter):
         return [("datacite", "DataCite"), ("crossref", "Crossref")]
 
     def queryset(self, request, queryset):
-        if self.value() != None:
+        if self.value() is not None:
             queryset = queryset.filter(
                 prefix__startswith="doi:", crossrefEnabled=(self.value() == "crossref")
             )
@@ -159,7 +184,7 @@ class ShoulderUnusedFilter(django.contrib.admin.SimpleListFilter):
         return [("Yes", "Yes"), ("No", "No")]
 
     def queryset(self, request, queryset):
-        if self.value() != None:
+        if self.value() is not None:
             if self.value() == "Yes":
                 queryset = queryset.filter(storegroup__isnull=True)
             else:
@@ -168,14 +193,14 @@ class ShoulderUnusedFilter(django.contrib.admin.SimpleListFilter):
 
 
 class StoreGroupInline(django.contrib.admin.TabularInline):
-    model = models.StoreGroup.shoulders.through
+    model = StoreGroup.shoulders.through
     verbose_name_plural = "Groups using this shoulder"
 
     def groupLink(self, obj):
-        link = django.core.urlresolvers.reverse(
+        link = django.urls.reverse(
             "admin:ezidapp_storegroup_change", args=[obj.storegroup.id]
         )
-        return "<a href=\"%s\">%s</a>" % (link, obj.storegroup.groupname)
+        return f'<a href="{link}">{obj.storegroup.groupname}</a>'
 
     groupLink.allow_tags = True
     groupLink.short_description = "groupname"
@@ -201,14 +226,14 @@ class StoreGroupInline(django.contrib.admin.TabularInline):
 
 
 class StoreUserInlineForShoulder(django.contrib.admin.TabularInline):
-    model = models.StoreUser.shoulders.through
+    model = StoreUser.shoulders.through
     verbose_name_plural = "Users using this shoulder"
 
     def userLink(self, obj):
-        link = django.core.urlresolvers.reverse(
+        link = django.urls.reverse(
             "admin:ezidapp_storeuser_change", args=[obj.storeuser.id]
         )
-        return "<a href=\"%s\">%s</a>" % (link, obj.storeuser.username)
+        return f'<a href="{link}">{obj.storeuser.username}</a>'
 
     userLink.allow_tags = True
     userLink.short_description = "username"
@@ -249,10 +274,10 @@ class ShoulderAdmin(django.contrib.admin.ModelAdmin):
     registrationAgency.short_description = "DOI registration agency"
 
     def datacenterLink(self, obj):
-        link = django.core.urlresolvers.reverse(
+        link = django.urls.reverse(
             "admin:ezidapp_storedatacenter_change", args=[obj.datacenter.id]
         )
-        return "<a href=\"%s\">%s</a>" % (link, obj.datacenter.symbol)
+        return f'<a href="{link}">{obj.datacenter.symbol}</a>'
 
     datacenterLink.allow_tags = True
     datacenterLink.short_description = "datacenter"
@@ -284,18 +309,16 @@ class ShoulderAdmin(django.contrib.admin.ModelAdmin):
         return False
 
 
-superuser.register(models.Shoulder, ShoulderAdmin)
+superuser.register(Shoulder, ShoulderAdmin)
 
 
 class ShoulderInline(django.contrib.admin.TabularInline):
-    model = models.Shoulder
+    model = Shoulder
     verbose_name_plural = "Shoulders using this datacenter"
 
     def shoulderLink(self, obj):
-        link = django.core.urlresolvers.reverse(
-            "admin:ezidapp_shoulder_change", args=[obj.id]
-        )
-        return "<a href=\"%s\">%s</a>" % (link, obj.prefix)
+        link = django.urls.reverse("admin:ezidapp_shoulder_change", args=[obj.id])
+        return f'<a href="{link}">{obj.prefix}</a>'
 
     shoulderLink.allow_tags = True
     shoulderLink.short_description = "prefix"
@@ -324,12 +347,12 @@ class StoreDatacenterAllocatorFilter(django.contrib.admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         allocators = set()
-        for dc in models.StoreDatacenter.objects.all():
+        for dc in StoreDatacenter.objects.all():
             allocators.add(dc.allocator)
         return [(a, a) for a in sorted(list(allocators))]
 
     def queryset(self, request, queryset):
-        if self.value() != None:
+        if self.value() is not None:
             queryset = queryset.filter(symbol__startswith=self.value() + ".")
         return queryset
 
@@ -342,7 +365,7 @@ class DatacenterUnusedFilter(django.contrib.admin.SimpleListFilter):
         return [("Yes", "Yes"), ("No", "No")]
 
     def queryset(self, request, queryset):
-        if self.value() != None:
+        if self.value() is not None:
             if self.value() == "Yes":
                 queryset = queryset.filter(shoulder__isnull=True)
             else:
@@ -367,7 +390,7 @@ class StoreDatacenterAdmin(django.contrib.admin.ModelAdmin):
         return False
 
 
-superuser.register(models.StoreDatacenter, StoreDatacenterAdmin)
+superuser.register(StoreDatacenter, StoreDatacenterAdmin)
 
 
 class NewAccountWorksheetForm(django.forms.ModelForm):
@@ -381,7 +404,7 @@ class NewAccountWorksheetForm(django.forms.ModelForm):
 class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
     def organizationName(self, obj):
         if obj.orgAcronym != "":
-            return "%s (%s)" % (obj.orgName, obj.orgAcronym)
+            return f"{obj.orgName} ({obj.orgAcronym})"
         else:
             return obj.orgName
 
@@ -457,59 +480,60 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
         newStatus = []
         for f in ["staReady", "staShouldersCreated", "staAccountCreated"]:
             if f in form.changed_data and getattr(obj, f):
+                # noinspection PyProtectedMember
                 newStatus.append(obj._meta.get_field(f).verbose_name)
         if len(newStatus) > 0:
-            import config
+            import impl.config
 
             addresses = [
                 a
-                for a in config.get("email.new_account_email").split(",")
+                for a in impl.config.get("email.new_account_email").split(",")
                 if len(a) > 0
             ]
             if len(addresses) > 0:
-                subject = "New account \"%s\": %s" % (str(obj), ", ".join(newStatus))
+                subject = f'New account "{str(obj)}": {", ".join(newStatus)}'
                 message = (
                     "The status of a new account request has changed.\n\n"
-                    + "Organization: %s%s\n"
-                    + "Request date: %s\n"
-                    + "New status: %s\n\n"
-                    + "View the account's worksheet at:\n\n"
-                    + "%s%s\n\n"
-                    + "This is an automated email.  Please do not reply.\n\n"
-                    + "::\n"
-                    + "organization_name: %s\n"
-                    + "organization_acronym: %s\n"
-                    + "organization_url: %s\n"
-                    + "organization_street_address: %s\n"
-                    + "requestor_name: %s\n"
-                    + "requestor_email: %s\n"
-                    + "requestor_phone: %s\n"
-                    + "primary_contact_name: %s\n"
-                    + "primary_contact_email: %s\n"
-                    + "primary_contact_phone: %s\n"
-                    + "secondary_contact_name: %s\n"
-                    + "secondary_contact_email: %s\n"
-                    + "secondary_contact_phone: %s\n"
-                    + "account_email: %s\n"
-                    + "arks: %s\n"
-                    + "dois: %s\n"
-                    + "crossref: %s\n"
-                    + "crossref_email: %s\n"
-                    + "requestor_comments: %s\n"
-                    + "realm: %s\n"
-                    + "groupname: %s\n"
-                    + "username: %s\n"
-                    + "user_display_name: %s\n"
-                    + "shoulder_display_name: %s\n"
-                    + "non_default_setup: %s\n"
-                    + "setup_notes: %s\n"
-                ) % (
+                    "Organization: {}{}\n"
+                    "Request date: {}\n"
+                    "New status: {}\n\n"
+                    "View the account's worksheet at:\n\n"
+                    "{}{}\n\n"
+                    "This is an automated email.  Please do not reply.\n\n"
+                    "::\n"
+                    "organization_name: {}\n"
+                    "organization_acronym: {}\n"
+                    "organization_url: {}\n"
+                    "organization_street_address: {}\n"
+                    "requestor_name: {}\n"
+                    "requestor_email: {}\n"
+                    "requestor_phone: {}\n"
+                    "primary_contact_name: {}\n"
+                    "primary_contact_email: {}\n"
+                    "primary_contact_phone: {}\n"
+                    "secondary_contact_name: {}\n"
+                    "secondary_contact_email: {}\n"
+                    "secondary_contact_phone: {}\n"
+                    "account_email: {}\n"
+                    "arks: {}\n"
+                    "dois: {}\n"
+                    "crossref: {}\n"
+                    "crossref_email: {}\n"
+                    "requestor_comments: {}\n"
+                    "realm: {}\n"
+                    "groupname: {}\n"
+                    "username: {}\n"
+                    "user_display_name: {}\n"
+                    "shoulder_display_name: {}\n"
+                    "non_default_setup: {}\n"
+                    "setup_notes: {}\n"
+                ).format(
                     obj.orgName,
-                    " (%s)" % obj.orgAcronym if obj.orgAcronym != "" else "",
+                    f" ({obj.orgAcronym})" if obj.orgAcronym != "" else "",
                     str(obj.requestDate),
                     ", ".join(newStatus),
-                    config.get("DEFAULT.ezid_base_url"),
-                    django.core.urlresolvers.reverse(
+                    impl.config.get("DEFAULT.ezid_base_url"),
+                    django.urls.reverse(
                         "admin:ezidapp_newaccountworksheet_change", args=[obj.id]
                     ),
                     obj.orgName,
@@ -544,6 +568,13 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                         subject, message, django.conf.settings.SERVER_EMAIL, addresses
                     )
                 except Exception as e:
+                    import django.conf
+
+                    if django.conf.settings.DEBUG:
+                        import logging
+
+                        logging.exception('#' * 100)
+
                     django.contrib.messages.error(
                         request, "Error sending status change email: " + str(e)
                     )
@@ -553,7 +584,7 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                     )
 
 
-superuser.register(models.NewAccountWorksheet, NewAccountWorksheetAdmin)
+superuser.register(NewAccountWorksheet, NewAccountWorksheetAdmin)
 
 
 class StoreRealmAdmin(django.contrib.admin.ModelAdmin):
@@ -562,21 +593,21 @@ class StoreRealmAdmin(django.contrib.admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         if change:
-            oldName = models.StoreRealm.objects.get(pk=obj.pk).name
+            oldName = StoreRealm.objects.get(pk=obj.pk).name
             obj.save()
-            models.SearchRealm.objects.filter(name=oldName).update(name=obj.name)
+            SearchRealm.objects.filter(name=oldName).update(name=obj.name)
         else:
-            sr = models.SearchRealm(name=obj.name)
+            sr = SearchRealm(name=obj.name)
             sr.full_clean()
             obj.save()
             sr.save()
 
     def delete_model(self, request, obj):
         obj.delete()
-        models.SearchRealm.objects.filter(name=obj.name).delete()
+        SearchRealm.objects.filter(name=obj.name).delete()
 
 
-superuser.register(models.StoreRealm, StoreRealmAdmin)
+superuser.register(StoreRealm, StoreRealmAdmin)
 
 
 class StoreGroupRealmFilter(django.contrib.admin.RelatedFieldListFilter):
@@ -594,7 +625,7 @@ class StoreGroupShoulderlessFilter(django.contrib.admin.SimpleListFilter):
         return [("Yes", "Yes"), ("No", "No")]
 
     def queryset(self, request, queryset):
-        if self.value() != None:
+        if self.value() is not None:
             if self.value() == "Yes":
                 queryset = queryset.filter(shoulders=None)
             else:
@@ -603,14 +634,12 @@ class StoreGroupShoulderlessFilter(django.contrib.admin.SimpleListFilter):
 
 
 class StoreUserInlineForGroup(django.contrib.admin.TabularInline):
-    model = models.StoreUser
+    model = StoreUser
     verbose_name_plural = "Users in this group"
 
     def userLink(self, obj):
-        link = django.core.urlresolvers.reverse(
-            "admin:ezidapp_storeuser_change", args=[obj.id]
-        )
-        return "<a href=\"%s\">%s</a>" % (link, obj.username)
+        link = django.urls.reverse("admin:ezidapp_storeuser_change", args=[obj.id])
+        return f'<a href="{link}">{obj.username}</a>'
 
     userLink.allow_tags = True
     userLink.short_description = "username"
@@ -632,19 +661,19 @@ class StoreGroupForm(django.forms.ModelForm):
         self.fields[
             "organizationStreetAddress"
         ].widget = django.contrib.admin.widgets.AdminTextareaWidget()
-        self.fields["shoulders"].queryset = models.Shoulder.objects.filter(
+        self.fields["shoulders"].queryset = Shoulder.objects.filter(
             isTest=False
         ).order_by("name", "type")
 
 
 def createOrUpdateGroupPid(request, obj, change):
-    import ezid
-    import log
+    import impl.ezid
+    import impl.log
 
-    f = ezid.setMetadata if change else ezid.createIdentifier
+    f = impl.ezid.setMetadata if change else impl.ezid.createIdentifier
     r = f(
         obj.pid,
-        models.getAdminUser(),
+        ezidapp.models.store_user.getAdminUser(),
         {
             "_ezid_role": "group",
             "_export": "no",
@@ -663,30 +692,29 @@ def createOrUpdateGroupPid(request, obj, change):
     )
     if r.startswith("success:"):
         django.contrib.messages.success(
-            request, "Group PID %s." % ("updated" if change else "created")
+            request, f"Group PID {'updated' if change else 'created'}."
         )
     else:
-        log.otherError(
+        impl.log.otherError(
             "admin.createOrUpdateGroupPid",
             Exception(
-                "ezid.%s call failed: %s"
-                % ("setMetadata" if change else "createIdentifier", r)
+                f"ezid.{'setMetadata' if change else 'createIdentifier'} call failed: {r}"
             ),
         )
         django.contrib.messages.error(
-            request, "Error %s group PID." % ("updating" if change else "creating")
+            request, f"Error {'updating' if change else 'creating'} group PID."
         )
 
 
 def updateUserPids(request, users):
-    import ezid
-    import log
+    import impl.ezid
+    import impl.log
 
     errors = False
     for u in users:
-        r = ezid.setMetadata(
+        r = impl.ezid.setMetadata(
             u.pid,
-            models.getAdminUser(),
+            ezidapp.models.store_user.getAdminUser(),
             {
                 "ezid.user.shoulders": " ".join(s.prefix for s in u.shoulders.all()),
                 "ezid.user.crossrefEnabled": str(u.crossrefEnabled),
@@ -695,7 +723,7 @@ def updateUserPids(request, users):
         )
         if not r.startswith("success:"):
             errors = True
-            log.otherError(
+            impl.log.otherError(
                 "admin.updateUserPids", Exception("ezid.setMetadata call failed: " + r)
             )
     if errors:
@@ -737,11 +765,8 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
 
     def shoulderLinks(self, obj):
         return "<br/>".join(
-            "<a href=\"%s\">%s (%s)</a>"
-            % (
-                django.core.urlresolvers.reverse(
-                    "admin:ezidapp_shoulder_change", args=[s.id]
-                ),
+            '<a href="{}">{} ({})</a>'.format(
+                django.urls.reverse("admin:ezidapp_shoulder_change", args=[s.id]),
                 django.utils.html.escape(s.name),
                 s.prefix,
             )
@@ -807,15 +832,13 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
         clearCaches = False
         if change:
             obj.save()
-            models.SearchGroup.objects.filter(pid=obj.pid).update(
-                groupname=obj.groupname
-            )
+            SearchGroup.objects.filter(pid=obj.pid).update(groupname=obj.groupname)
             clearCaches = True
         else:
-            sg = models.SearchGroup(
+            sg = SearchGroup(
                 pid=obj.pid,
                 groupname=obj.groupname,
-                realm=models.SearchRealm.objects.get(name=obj.realm.name),
+                realm=SearchRealm.objects.get(name=obj.realm.name),
             )
             sg.full_clean()
             obj.save()
@@ -826,8 +849,10 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
         # rely on the django-transaction-hooks 3rd party package.  (Django
         # 1.9 incorporates this functionality directly.)
         if clearCaches:
-            django.db.connection.on_commit(models.store_group.clearCaches)
-            django.db.connection.on_commit(models.search_identifier.clearGroupCache)
+            django.db.connection.on_commit(ezidapp.models.store_group.clearCaches)
+            django.db.connection.on_commit(
+                ezidapp.models.search_identifier.clearGroupCache
+            )
         onCommitWithSqliteHack(lambda: createOrUpdateGroupPid(request, obj, change))
         # Changes to shoulders and Crossref enablement may trigger
         # adjustments to users in the group.
@@ -853,28 +878,29 @@ class StoreGroupAdmin(django.contrib.admin.ModelAdmin):
                 obj.users.all().update(crossrefEnabled=False, crossrefEmail="")
                 doUpdateUserPids = True
             if doUpdateUserPids:
-                django.db.connection.on_commit(models.store_user.clearCaches)
-                django.db.connection.on_commit(models.search_identifier.clearUserCache)
+                django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
+                django.db.connection.on_commit(
+                    ezidapp.models.search_identifier.clearUserCache
+                )
                 users = list(obj.users.all())
                 onCommitWithSqliteHack(lambda: updateUserPids(request, users))
 
     def delete_model(self, request, obj):
         obj.delete()
-        models.SearchGroup.objects.filter(pid=obj.pid).delete()
+        SearchGroup.objects.filter(pid=obj.pid).delete()
         django.contrib.messages.warning(
             request,
-            "Now-defunct group PID %s not deleted; you may consider doing so."
-            % obj.pid,
+            f"Now-defunct group PID {obj.pid} not deleted; you may consider doing so.",
         )
         # See comment above.
-        django.db.connection.on_commit(models.store_group.clearCaches)
-        django.db.connection.on_commit(models.search_identifier.clearGroupCache)
+        django.db.connection.on_commit(ezidapp.models.store_group.clearCaches)
+        django.db.connection.on_commit(ezidapp.models.search_identifier.clearGroupCache)
 
     class Media:
         css = {"all": ["admin/css/base-group.css"]}
 
 
-superuser.register(models.StoreGroup, StoreGroupAdmin)
+superuser.register(StoreGroup, StoreGroupAdmin)
 
 
 class StoreUserRealmFilter(django.contrib.admin.RelatedFieldListFilter):
@@ -892,7 +918,7 @@ class StoreUserHasProxiesFilter(django.contrib.admin.SimpleListFilter):
         return [("Yes", "Yes"), ("No", "No")]
 
     def queryset(self, request, queryset):
-        if self.value() != None:
+        if self.value() is not None:
             if self.value() == "Yes":
                 queryset = queryset.filter(~django.db.models.Q(proxies=None))
             else:
@@ -908,7 +934,7 @@ class StoreUserIsProxyFilter(django.contrib.admin.SimpleListFilter):
         return [("Yes", "Yes"), ("No", "No")]
 
     def queryset(self, request, queryset):
-        if self.value() != None:
+        if self.value() is not None:
             if self.value() == "Yes":
                 queryset = queryset.filter(storeuser__isnull=False).distinct()
             else:
@@ -924,7 +950,7 @@ class StoreUserAdministratorFilter(django.contrib.admin.SimpleListFilter):
         return [("No", "No"), ("Group", "Group"), ("Realm", "Realm")]
 
     def queryset(self, request, queryset):
-        if self.value() != None:
+        if self.value() is not None:
             if self.value() == "No":
                 queryset = (
                     queryset.filter(isGroupAdministrator=False)
@@ -939,6 +965,7 @@ class StoreUserAdministratorFilter(django.contrib.admin.SimpleListFilter):
 
 
 class SetPasswordWidget(django.forms.widgets.TextInput):
+    # noinspection PyMethodOverriding
     def render(self, name, value, attrs=None):
         return super(SetPasswordWidget, self).render(name, "", attrs=attrs)
 
@@ -947,13 +974,13 @@ class StoreUserForm(django.forms.ModelForm):
     def clean(self):
         cd = super(StoreUserForm, self).clean()
         if cd["inheritGroupShoulders"]:
-            if self.instance.pk != None:
+            if self.instance.pk is not None:
                 cd["shoulders"] = self.instance.group.shoulders.all()
             else:
                 if "group" in cd:
                     cd["shoulders"] = cd["group"].shoulders.all()
         else:
-            if self.instance.pk != None:
+            if self.instance.pk is not None:
                 groupShoulders = self.instance.group.shoulders.all()
             else:
                 if "group" in cd:
@@ -967,9 +994,9 @@ class StoreUserForm(django.forms.ModelForm):
                 )
         if cd.get("crossrefEnabled", False):
             if (
-                self.instance.pk != None and not self.instance.group.crossrefEnabled
+                self.instance.pk is not None and not self.instance.group.crossrefEnabled
             ) or (
-                self.instance.pk == None
+                self.instance.pk is None
                 and "group" in cd
                 and not cd["group"].crossrefEnabled
             ):
@@ -998,19 +1025,19 @@ class StoreUserForm(django.forms.ModelForm):
 
 
 def createOrUpdateUserPid(request, obj, change):
-    import ezid
-    import log
+    import impl.ezid
+    import impl.log
 
-    f = ezid.setMetadata if change else ezid.createIdentifier
+    f = impl.ezid.setMetadata if change else impl.ezid.createIdentifier
     r = f(
         obj.pid,
-        models.getAdminUser(),
+        ezidapp.models.store_user.getAdminUser(),
         {
             "_ezid_role": "user",
             "_export": "no",
             "_profile": "ezid",
             "ezid.user.username": obj.username,
-            "ezid.user.group": "%s|%s " % (obj.group.groupname, obj.group.pid),
+            "ezid.user.group": f"{obj.group.groupname}|{obj.group.pid} ",
             "ezid.user.realm": obj.realm.name,
             "ezid.user.displayName": obj.displayName,
             "ezid.user.accountEmail": obj.accountEmail,
@@ -1025,7 +1052,7 @@ def createOrUpdateUserPid(request, obj, change):
             "ezid.user.crossrefEnabled": str(obj.crossrefEnabled),
             "ezid.user.crossrefEmail": obj.crossrefEmail,
             "ezid.user.proxies": " ".join(
-                "%s|%s" % (u.username, u.pid) for u in obj.proxies.all()
+                f"{u.username}|{u.pid}" for u in obj.proxies.all()
             ),
             "ezid.user.isGroupAdministrator": str(obj.isGroupAdministrator),
             "ezid.user.isRealmAdministrator": str(obj.isRealmAdministrator),
@@ -1036,30 +1063,29 @@ def createOrUpdateUserPid(request, obj, change):
         },
     )
     if r.startswith("success:"):
-        if request != None:
+        if request is not None:
             django.contrib.messages.success(
-                request, "User PID %s." % ("updated" if change else "created")
+                request, f"User PID {'updated' if change else 'created'}."
             )
     else:
-        log.otherError(
+        impl.log.otherError(
             "admin.createOrUpdateUserPid",
             Exception(
-                "ezid.%s call failed: %s"
-                % ("setMetadata" if change else "createIdentifier", r)
+                f"ezid.{'setMetadata' if change else 'createIdentifier'} call failed: {r}"
             ),
         )
-        if request != None:
+        if request is not None:
             django.contrib.messages.error(
-                request, "Error %s user PID." % ("updating" if change else "creating")
+                request, f"Error {'updating' if change else 'creating'} user PID."
             )
 
 
 class StoreUserAdmin(django.contrib.admin.ModelAdmin):
     def groupLink(self, obj):
-        link = django.core.urlresolvers.reverse(
+        link = django.urls.reverse(
             "admin:ezidapp_storegroup_change", args=[obj.group.id]
         )
-        return "<a href=\"%s\">%s</a>" % (link, obj.group.groupname)
+        return f'<a href="{link}">{obj.group.groupname}</a>'
 
     groupLink.allow_tags = True
     groupLink.short_description = "group"
@@ -1071,11 +1097,8 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
 
     def shoulderLinks(self, obj):
         return "<br/>".join(
-            "<a href=\"%s\">%s (%s)</a>"
-            % (
-                django.core.urlresolvers.reverse(
-                    "admin:ezidapp_shoulder_change", args=[s.id]
-                ),
+            '<a href="{}">{} ({})</a>'.format(
+                django.urls.reverse("admin:ezidapp_shoulder_change", args=[s.id]),
                 django.utils.html.escape(s.name),
                 s.prefix,
             )
@@ -1087,11 +1110,8 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
 
     def proxyLinks(self, obj):
         return "<br/>".join(
-            "<a href=\"%s\">%s (%s)</a>"
-            % (
-                django.core.urlresolvers.reverse(
-                    "admin:ezidapp_storeuser_change", args=[u.id]
-                ),
+            '<a href="{}">{} ({})</a>'.format(
+                django.urls.reverse("admin:ezidapp_storeuser_change", args=[u.id]),
                 u.username,
                 django.utils.html.escape(u.displayName),
             )
@@ -1103,11 +1123,8 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
 
     def reverseProxyLinks(self, obj):
         return "<br/>".join(
-            "<a href=\"%s\">%s (%s)</a>"
-            % (
-                django.core.urlresolvers.reverse(
-                    "admin:ezidapp_storeuser_change", args=[u.id]
-                ),
+            '<a href="{}">{} ({})</a>'.format(
+                django.urls.reverse("admin:ezidapp_storeuser_change", args=[u.id]),
                 u.username,
                 django.utils.html.escape(u.displayName),
             )
@@ -1201,7 +1218,7 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
 
     def get_fieldsets(self, request, obj=None):
         fs = copy.deepcopy(self._fieldsets)
-        if obj != None:
+        if obj is not None:
             fs[0][1]["fields"][2] = "groupLink"
         else:
             fs[0][1]["fields"][2] = "group"
@@ -1227,15 +1244,15 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(StoreUserAdmin, self).get_form(request, obj, **kwargs)
-        if obj != None:
+        if obj is not None:
             form.base_fields["shoulders"].queryset = obj.group.shoulders.all().order_by(
                 "name", "type"
             )
         else:
-            form.base_fields["shoulders"].queryset = models.Shoulder.objects.none()
+            form.base_fields["shoulders"].queryset = Shoulder.objects.none()
         form.base_fields["shoulders"].widget = django.forms.CheckboxSelectMultiple()
         form.base_fields["shoulders"].help_text = None
-        if obj != None:
+        if obj is not None:
             form.base_fields["proxies"].queryset = form.base_fields[
                 "proxies"
             ].queryset.exclude(pk=obj.pk)
@@ -1248,45 +1265,47 @@ class StoreUserAdmin(django.contrib.admin.ModelAdmin):
         clearCaches = False
         if change:
             obj.save()
-            models.SearchUser.objects.filter(pid=obj.pid).update(username=obj.username)
+            SearchUser.objects.filter(pid=obj.pid).update(username=obj.username)
             clearCaches = True
         else:
-            su = models.SearchUser(
+            su = SearchUser(
                 pid=obj.pid,
                 username=obj.username,
-                group=models.SearchGroup.objects.get(pid=obj.group.pid),
-                realm=models.SearchRealm.objects.get(name=obj.realm.name),
+                group=SearchGroup.objects.get(pid=obj.group.pid),
+                realm=SearchRealm.objects.get(name=obj.realm.name),
             )
             su.full_clean()
             obj.save()
             su.save()
         # See discussion in StoreGroupAdmin above.
         if clearCaches:
-            django.db.connection.on_commit(models.store_user.clearCaches)
-            django.db.connection.on_commit(models.search_identifier.clearUserCache)
+            django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
+            django.db.connection.on_commit(
+                ezidapp.models.search_identifier.clearUserCache
+            )
         onCommitWithSqliteHack(lambda: createOrUpdateUserPid(request, obj, change))
 
     def delete_model(self, request, obj):
         obj.delete()
-        models.SearchUser.objects.filter(pid=obj.pid).delete()
+        SearchUser.objects.filter(pid=obj.pid).delete()
         django.contrib.messages.warning(
             request,
-            "Now-defunct user PID %s not deleted; you may consider doing so." % obj.pid,
+            f"Now-defunct user PID {obj.pid} not deleted; you may consider doing so.",
         )
-        django.db.connection.on_commit(models.store_user.clearCaches)
-        django.db.connection.on_commit(models.search_identifier.clearUserCache)
+        django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
+        django.db.connection.on_commit(ezidapp.models.search_identifier.clearUserCache)
 
     class Media:
         css = {"all": ["admin/css/base-user.css"]}
 
 
-superuser.register(models.StoreUser, StoreUserAdmin)
+superuser.register(StoreUser, StoreUserAdmin)
 
 
 def scheduleUserChangePostCommitActions(user):
     # This function should be called when a StoreUser object is updated
     # and saved outside this module; it should be called within the
     # transaction making the updates.
-    django.db.connection.on_commit(models.store_user.clearCaches)
-    django.db.connection.on_commit(models.search_identifier.clearUserCache)
+    django.db.connection.on_commit(ezidapp.models.store_user.clearCaches)
+    django.db.connection.on_commit(ezidapp.models.search_identifier.clearUserCache)
     onCommitWithSqliteHack(lambda: createOrUpdateUserPid(None, user, True))

@@ -1,9 +1,6 @@
-
-
+import logging
 import sys
 import traceback
-import logging
-
 
 log = logging.getLogger(__name__)
 
@@ -28,7 +25,9 @@ def traceback_with_local_vars():
     for frame in stack:
         log.error(
             '{}:{}'.format(
-                frame.f_code.co_name, frame.f_code.co_filename, frame.f_lineno,
+                frame.f_code.co_name,
+                frame.f_code.co_filename,
+                frame.f_lineno,
             )
         )
         for k, v in list(frame.f_locals.items()):

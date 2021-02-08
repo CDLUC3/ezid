@@ -39,12 +39,9 @@ import time
 
 import django.conf
 
-from . import config_loader
-import ezidapp.models
-import ezidapp.models.search_identifier
-import ezidapp.models.store_group
-import ezidapp.models.store_profile
-import ezidapp.models.store_user
+import ezidapp.models.server_variables
+
+import impl.config_loader
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +56,10 @@ def registerReloadListener(loader):
     """Adds a reload listener."""
     if not callable(loader):
         import inspect
-        logger.error("Reload listener must be a callable. Received: {}".format(repr(loader)))
+
+        logger.error(
+            "Reload listener must be a callable. Received: {}".format(repr(loader))
+        )
         logger.error("Caller: {}".format(inspect.stack()))
 
     logger.debug('Registering reload listener: {}'.format(loader.__module__))
@@ -67,12 +67,12 @@ def registerReloadListener(loader):
 
 
 _config = None
-_version = None
-_startupVersion = None
+# _version = None
+# _startupVersion = None
 
 
 def _getVersion1(r):
-    '''
+    """
     Runs the command:
       hg identify -inb -R .
       82e55d328c8c 1 default
@@ -94,19 +94,16 @@ def _getVersion1(r):
 
       As a single line:
       echo "$(git describe --abbrev=12 --always) $(git status --porcelain | wc -l | xargs) $(git branch --show-current)"
-    '''
+    """
     try:
         script_path = os.path.abspath(
-            os.path.join(
-                django.conf.settings.PROJECT_ROOT,
-                'tools','show_version.sh'
-            )
+            os.path.join(django.conf.settings.PROJECT_ROOT, 'tools', 'show_version.sh')
         )
-        #p = subprocess.Popen(
+        # p = subprocess.Popen(
         #    ["hg", "identify", "-inb", "-R", r],
         #    stdout=subprocess.PIPE,
         #    stderr=subprocess.PIPE,
-        #)
+        # )
         p = subprocess.Popen(
             [script_path, r],
             stdout=subprocess.PIPE,
@@ -133,7 +130,7 @@ def _getVersion():
 
 def load():
     global _config, _version
-    _config = config_loader.Config(
+    _config = impl.config_loader.Config(
         django.conf.settings.SITE_ROOT,
         django.conf.settings.PROJECT_ROOT,
         django.conf.settings.EZID_CONFIG_FILE,
@@ -142,7 +139,9 @@ def load():
     )
     _version = (int(time.time()),) + _getVersion()
 
-    django.conf.settings.SECRET_KEY = ezidapp.models.getOrSetSecretKey()
+    django.conf.settings.SECRET_KEY = (
+        ezidapp.models.server_variables.getOrSetSecretKey()
+    )
 
 
 def reload():
@@ -152,16 +151,26 @@ def reload():
         logger.warning('config.reload(): Called with no registered callbacks')
         # raise Exception('No registered callbacks')
     else:
-        logger.debug('config.reload(): Calling {} registered callbacks'.format(len(_reloadFunctions)))
+        logger.debug(
+            'config.reload(): Calling {} registered callbacks'.format(
+                len(_reloadFunctions)
+            )
+        )
         for f in _reloadFunctions:
             # logger.debug('Calling configuration callback: {}'.format(f.__module__))
             try:
                 f()
             except Exception:
                 logger.exception('Configuration callback raised exception')
-    # The following functions are explicitly listed here, and don't use
-    # the registerReloadListener mechanism, to avoid circular import
-    # problems.
+
+    # Local imports to work around circular import errors.
+    # TODO: Render some call graphs and see if we can untangle things.
+
+    import ezidapp.models.search_identifier
+    import ezidapp.models.store_group
+    import ezidapp.models.store_profile
+    import ezidapp.models.store_user
+
     ezidapp.models.store_group.clearCaches()
     ezidapp.models.store_profile.clearCaches()
     ezidapp.models.store_user.clearCaches()
@@ -179,6 +188,7 @@ def get(option):
     The option name should be specified in section.option syntax, e.g.,
     "datacite.username".
     """
+    # noinspection PyUnresolvedReferences
     return _config.getOption(option)
 
 
@@ -193,7 +203,7 @@ def getVersionInfo():
     repository's version, and the third is the info repository's
     version.
     """
-    return (_startupVersion, _version)
+    return _startupVersion, _version
 
 
 # Start daemon threads by importing their modules.

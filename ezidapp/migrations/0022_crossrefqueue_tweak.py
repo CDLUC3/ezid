@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
+import django.db.migrations
+import django.db.models
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0021_updatequeue'),
     ]
 
     operations = [
-        migrations.AlterField(
+        django.db.migrations.AlterField(
             model_name='crossrefqueue',
             name='operation',
-            field=models.CharField(
+            field=django.db.models.CharField(
                 max_length=1,
                 choices=[(b'C', b'create'), (b'U', b'update'), (b'D', b'delete')],
             ),

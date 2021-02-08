@@ -1,7 +1,7 @@
 """Deactivate an existing shoulder."""
 
 
-
+import ezidapp.models.shoulder
 import argparse
 import logging
 
@@ -9,7 +9,7 @@ import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
 
-import ezidapp.models
+
 import impl.nog.reload
 import impl.nog.util
 
@@ -30,7 +30,9 @@ class Command(django.core.management.BaseCommand):
             help="Full shoulder. E.g., ark:/99999/fk4",
         )
         parser.add_argument(
-            '--debug', action='store_true', help='Debug level logging',
+            '--debug',
+            action='store_true',
+            help='Debug level logging',
         )
 
     def handle(self, *_, **opt):
@@ -39,8 +41,10 @@ class Command(django.core.management.BaseCommand):
 
         shoulder_str = opt.shoulder_str
         try:
-            shoulder_model = ezidapp.models.Shoulder.objects.get(prefix=shoulder_str)
-        except ezidapp.models.Shoulder.DoesNotExist:
+            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(
+                prefix=shoulder_str
+            )
+        except ezidapp.models.shoulder.Shoulder.DoesNotExist:
             raise django.core.management.CommandError(
                 'Invalid shoulder: {}'.format(shoulder_str)
             )

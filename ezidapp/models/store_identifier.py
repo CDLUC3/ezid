@@ -13,17 +13,19 @@
 #
 # -----------------------------------------------------------------------------
 
+import impl.util
 import django.core.exceptions
 import django.db.models
 import re
 
-from . import custom_fields
-from . import identifier
-from . import shoulder
-from . import store_datacenter
-from . import store_group
-from . import store_profile
-from . import store_user
+import ezidapp.models.custom_fields
+import ezidapp.models.identifier
+import impl.util2
+import ezidapp.models.shoulder
+import ezidapp.models.store_datacenter
+import ezidapp.models.store_group
+import ezidapp.models.store_profile
+import ezidapp.models.store_user
 
 # Deferred imports...
 """
@@ -31,32 +33,52 @@ import util2
 """
 
 
-class StoreIdentifier(identifier.Identifier):
+def getIdentifier(identifier, prefixMatch=False):
+    if prefixMatch:
+        l = list(
+            StoreIdentifier.objects.select_related(
+                "owner", "owner__group", "ownergroup", "datacenter", "profile"
+            ).filter(identifier__in=impl.util.explodePrefixes(identifier))
+        )
+        if len(l) > 0:
+            return max(l, key=lambda si: len(si.identifier))
+        else:
+            raise StoreIdentifier.DoesNotExist()
+    else:
+        return StoreIdentifier.objects.select_related(
+            "owner", "owner__group", "ownergroup", "datacenter", "profile"
+        ).get(identifier=identifier)
+
+
+class StoreIdentifier(ezidapp.models.identifier.Identifier):
     # An identifier as stored in the store database.
 
     # Foreign key declarations.  For performance we do not validate
     # foreign key references (but of course they're still checked in the
     # database).
 
-    owner = custom_fields.NonValidatingForeignKey(
-        store_user.StoreUser, blank=True, null=True, on_delete=django.db.models.PROTECT
+    owner = ezidapp.models.custom_fields.NonValidatingForeignKey(
+        ezidapp.models.store_user.StoreUser,
+        blank=True,
+        null=True,
+        on_delete=django.db.models.PROTECT,
     )
-    ownergroup = custom_fields.NonValidatingForeignKey(
-        store_group.StoreGroup,
+    ownergroup = ezidapp.models.custom_fields.NonValidatingForeignKey(
+        ezidapp.models.store_group.StoreGroup,
         blank=True,
         null=True,
         default=None,
         on_delete=django.db.models.PROTECT,
     )
-    datacenter = custom_fields.NonValidatingForeignKey(
-        store_datacenter.StoreDatacenter,
+    datacenter = ezidapp.models.custom_fields.NonValidatingForeignKey(
+        ezidapp.models.store_datacenter.StoreDatacenter,
         blank=True,
         null=True,
         default=None,
         on_delete=django.db.models.PROTECT,
     )
-    profile = custom_fields.NonValidatingForeignKey(
-        store_profile.StoreProfile,
+    profile = ezidapp.models.custom_fields.NonValidatingForeignKey(
+        ezidapp.models.store_profile.StoreProfile,
         blank=True,
         null=True,
         default=None,
@@ -65,21 +87,21 @@ class StoreIdentifier(identifier.Identifier):
 
     @property
     def defaultProfile(self):
-        import util2
-
-        return store_profile.getByLabel(util2.defaultProfile(self.identifier))
+        return ezidapp.models.store_profile.getProfileByLabel(
+            impl.util2.defaultProfile(self.identifier)
+        )
 
     def fromLegacy(self, d):
         # See Identifier.fromLegacy.  N.B.: computeComputedValues should
         # be called after this method to fill out the rest of the object.
         super(StoreIdentifier, self).fromLegacy(d)
         if d["_o"] != "anonymous":
-            self.owner = store_user.getByPid(d["_o"])
+            self.owner = ezidapp.models.store_user.getUserByPid(d["_o"])
         if d["_g"] != "anonymous":
-            self.ownergroup = store_group.getByPid(d["_g"])
-        self.profile = store_profile.getByLabel(d["_p"])
+            self.ownergroup = ezidapp.models.store_group.getGroupByPid(d["_g"])
+        self.profile = ezidapp.models.store_profile.getProfileByLabel(d["_p"])
         if self.isDatacite:
-            self.datacenter = shoulder.getDatacenterBySymbol(d["_d"])
+            self.datacenter = ezidapp.models.shoulder.getDatacenterBySymbol(d["_d"])
 
     def updateFromUntrustedLegacy(self, d, allowRestrictedSettings=False):
         # Fills out a new identifier or (partially) updates an existing
@@ -98,8 +120,8 @@ class StoreIdentifier(identifier.Identifier):
         # the allowability of ownership changes.
         for k in d:
             if k == "_owner":
-                o = store_user.getByUsername(d[k])
-                if o == None or o == store_user.AnonymousUser:
+                o = ezidapp.models.store_user.getUserByUsername(d[k])
+                if o is None or o == ezidapp.models.store_user.AnonymousUser:
                     raise django.core.exceptions.ValidationError(
                         {"owner": "No such user."}
                     )
@@ -110,8 +132,8 @@ class StoreIdentifier(identifier.Identifier):
                     raise django.core.exceptions.ValidationError(
                         {"ownergroup": "Field is not settable."}
                     )
-                g = store_group.getByGroupname(d[k])
-                if g == None or g == store_group.AnonymousGroup:
+                g = ezidapp.models.store_group.getGroupByGroupname(d[k])
+                if g is None or g == ezidapp.models.store_group.AnonymousGroup:
                     raise django.core.exceptions.ValidationError(
                         {"ownergoup": "No such group."}
                     )
@@ -130,7 +152,7 @@ class StoreIdentifier(identifier.Identifier):
                 self.updateTime = d[k]
             elif k == "_status":
                 if d[k] == "reserved":
-                    if self.pk == None or self.isReserved or allowRestrictedSettings:
+                    if self.pk is None or self.isReserved or allowRestrictedSettings:
                         self.status = StoreIdentifier.RESERVED
                         self.unavailableReason = ""
                     else:
@@ -144,10 +166,10 @@ class StoreIdentifier(identifier.Identifier):
                     m = re.match("unavailable(?:$| *\|(.*))", d[k])
                     if m:
                         if (
-                            self.pk != None and not self.isReserved
+                            self.pk is not None and not self.isReserved
                         ) or allowRestrictedSettings:
                             self.status = StoreIdentifier.UNAVAILABLE
-                            if m.group(1) != None:
+                            if m.group(1) is not None:
                                 self.unavailableReason = m.group(1)
                             else:
                                 self.unavailableReason = ""
@@ -175,8 +197,10 @@ class StoreIdentifier(identifier.Identifier):
                     )
                 if d[k] != "":
                     try:
-                        self.datacenter = shoulder.getDatacenterBySymbol(d[k])
-                    except store_datacenter.StoreDatacenter.DoesNotExist:
+                        self.datacenter = ezidapp.models.shoulder.getDatacenterBySymbol(
+                            d[k]
+                        )
+                    except ezidapp.models.store_datacenter.StoreDatacenter.DoesNotExist:
                         raise django.core.exceptions.ValidationError(
                             {"datacenter": "No such datacenter."}
                         )
@@ -185,7 +209,7 @@ class StoreIdentifier(identifier.Identifier):
             elif k == "_crossref":
                 if d[k].lower() == "yes":
                     if (
-                        self.pk != None
+                        self.pk is not None
                         and self.isDatacite
                         and not allowRestrictedSettings
                     ):
@@ -217,7 +241,9 @@ class StoreIdentifier(identifier.Identifier):
                     self.profile = None
                 else:
                     try:
-                        self.profile = store_profile.getByLabel(d[k])
+                        self.profile = ezidapp.models.store_profile.getProfileByLabel(
+                            d[k]
+                        )
                     except django.core.exceptions.ValidationError as e:
                         raise django.core.exceptions.ValidationError({"profile": [e]})
             elif k == "_ezid_role":

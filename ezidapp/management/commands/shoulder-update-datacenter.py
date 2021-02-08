@@ -1,12 +1,14 @@
 """Update the DataCenter for an existing DOI shoulder."""
+import ezidapp.models.store_datacenter
+import ezidapp.models.shoulder
 import argparse
 import logging
 
 import django.core.management
 
-import ezidapp.models
+
 import impl.nog.reload
-import nog.shoulder
+import impl.nog.shoulder
 import impl.nog.util
 
 log = logging.getLogger(__name__)
@@ -26,20 +28,26 @@ class Command(django.core.management.BaseCommand):
             help="Full DOI shoulder. E.g., doi:10.9111/FK4",
         )
         parser.add_argument(
-            'new_datacenter_str', metavar='datacenter', help="New DataCite datacenter",
+            'new_datacenter_str',
+            metavar='datacenter',
+            help="New DataCite datacenter",
         )
         parser.add_argument(
-            '--debug', action='store_true', help='Debug level logging',
+            '--debug',
+            action='store_true',
+            help='Debug level logging',
         )
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
         impl.nog.util.log_to_console(__name__, opt.debug)
 
-        nog.shoulder.assert_valid_datacenter(opt.new_datacenter_str)
+        impl.nog.shoulder.assert_valid_datacenter(opt.new_datacenter_str)
 
         try:
-            scheme_str, full_shoulder = opt.shoulder_str.split(':',)
+            scheme_str, full_shoulder = opt.shoulder_str.split(
+                ':',
+            )
         except ValueError:
             raise django.core.management.CommandError(
                 'Full DOI shoulder required. E.g., doi:10.9111/FK4": {}'.format(
@@ -54,8 +62,10 @@ class Command(django.core.management.BaseCommand):
         namespace_str = '{}:{}'.format(scheme_str, full_shoulder.upper())
 
         try:
-            shoulder_model = ezidapp.models.Shoulder.objects.get(prefix=namespace_str)
-        except ezidapp.models.Shoulder.DoesNotExist:
+            shoulder_model = ezidapp.models.shoulder.Shoulder.objects.get(
+                prefix=namespace_str
+            )
+        except ezidapp.models.shoulder.Shoulder.DoesNotExist:
             raise django.core.management.CommandError(
                 'Invalid shoulder: {}'.format(namespace_str)
             )
@@ -66,8 +76,10 @@ class Command(django.core.management.BaseCommand):
                 'Shoulder is registered with Crossref: {}'.format(namespace_str)
             )
 
-        new_datacenter_model = ezidapp.models.StoreDatacenter.objects.get(
-            symbol=opt.new_datacenter_str
+        new_datacenter_model = (
+            ezidapp.models.store_datacenter.StoreDatacenter.objects.get(
+                symbol=opt.new_datacenter_str
+            )
         )
 
         old_datacenter_model = shoulder_model.datacenter

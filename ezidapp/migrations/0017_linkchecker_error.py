@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
+import django.db.migrations
+import django.db.models
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0016_statistics'),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='linkchecker', name='error', field=models.TextField(blank=True),
+        django.db.migrations.AddField(
+            model_name='linkchecker',
+            name='error',
+            field=django.db.models.TextField(blank=True),
         ),
     ]

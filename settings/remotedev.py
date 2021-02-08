@@ -1,4 +1,4 @@
-from .common import *
+import settings.common
 
 DEPLOYMENT_LEVEL = "remotedev"
 
@@ -22,5 +22,4 @@ ALLOWED_HOSTS = [
     '172.31.57.125',
 ]
 
-injectSecrets(DEPLOYMENT_LEVEL)
-
+settings.common.injectSecrets(DEPLOYMENT_LEVEL)

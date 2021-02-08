@@ -6,6 +6,8 @@
 # Greg Janee <gjanee@ucop.edu>
 # June 2018
 
+# @executable
+
 echo "Use instead: ./manage.py diag-reload"
 exit 1
 

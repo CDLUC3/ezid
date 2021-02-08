@@ -13,8 +13,9 @@
 #
 # -----------------------------------------------------------------------------
 
-from . import registration_queue
+
+import ezidapp.models.registration_queue
 
 
-class BinderQueue(registration_queue.RegistrationQueue):
+class BinderQueue(ezidapp.models.registration_queue.RegistrationQueue):
     pass

@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
+import django.db.migrations
+import django.db.models
 import django.core.validators
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0018_binderqueue'),
     ]
 
     operations = [
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='StoreProfile',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -26,19 +27,21 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'label',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=32,
                         validators=[
                             django.core.validators.RegexValidator(
-                                b'^[a-z0-9]+([-_.][a-z0-9]+)*$',
-                                b'Invalid profile name.',
+                                '^[a-z0-9]+([-_.][a-z0-9]+)*$',
+                                'Invalid profile name.',
                                 flags=2,
                             )
                         ],
                     ),
                 ),
             ],
-            options={'abstract': False,},
+            options={
+                'abstract': False,
+            },
         ),
     ]

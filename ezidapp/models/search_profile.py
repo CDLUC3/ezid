@@ -13,8 +13,8 @@
 #
 # -----------------------------------------------------------------------------
 
-from . import profile
+import ezidapp.models.profile
 
 
-class SearchProfile(profile.Profile):
+class SearchProfile(ezidapp.models.profile.Profile):
     pass

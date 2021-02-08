@@ -13,8 +13,8 @@
 #
 # -----------------------------------------------------------------------------
 
-from . import registration_queue
+import ezidapp.models.registration_queue
 
 
-class DataciteQueue(registration_queue.RegistrationQueue):
+class DataciteQueue(ezidapp.models.registration_queue.RegistrationQueue):
     pass

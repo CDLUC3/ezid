@@ -12,14 +12,22 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
+import io
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 
 
 class _RedirectCatcher(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        raise urllib.error.HTTPError(req.get_full_url(), code, "redirect", headers, fp)
+        raise urllib.error.HTTPError(
+            req.get_full_url(),
+            code,
+            "redirect",
+            headers,
+            io.BytesIO(fp.read().encode('utf-8')),
+        )
 
 
 def getRedirect(doi):
@@ -36,7 +44,7 @@ def getRedirect(doi):
         c = o.open(r)
         c.read()
     except urllib.error.HTTPError as e:
-        if e.code in [301, 302, 303, 307]:
+        if e.code in (301, 302, 303, 307):
             assert "location" in e.headers, "redirect has no Location header"
             return e.headers["location"]
         elif e.code == 404:

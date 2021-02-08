@@ -1,10 +1,8 @@
-from django import template
-from django.core.urlresolvers import reverse
+import django.urls.resolvers
+import django.template
 from django.utils.translation import ugettext as _
-import string
-import config
 
-register = template.Library()
+register = django.template.Library()
 
 # This sets the menu and submenu structure for items that need to indicate they are active
 # in the top navigation area; And includes link information
@@ -42,19 +40,20 @@ def menu_user(current_func, session):
         acc += menu_user_item(
             menu,
             session,
-            string.split(current_func, '.')[0] == string.split(menu[1], '.')[0],
+            str.split(current_func, '.')[0] == str.split(menu[1], '.')[0],
         )
     return acc
 
 
-def menu_user_item(tup, session, is_current):
-    u = reverse(tup[1])
-    acc = '<a href=\"%s\" ' % u
+def menu_user_item(tup, _session, is_current):
+    u = django.urls.reverse(tup[1])
+    # TODO: Check if quotes must be escaped
+    acc = f'<a href="{u}" '
     if is_current:
-        class_name = "login-menu__link--selected"
+        class_name = 'login-menu__link--selected'
     else:
         class_name = "login-menu__link"
-    acc += 'class=\"' + class_name + '\">%s</a>' % tup[0]
+    acc += f'class="{class_name}">{tup[0]}</a>'
     return acc
 
 
@@ -89,8 +88,8 @@ def learn_breadcrumb(view_title, parent_dir_title=None, parent_dir_link=None):
 # Simply determines whether an element should be tagged as active; Only used for topmost nav
 @register.simple_tag
 def active(current_func, view_name):
-    if string.split(current_func, '.')[1] == view_name:
+    if str.split(current_func, '.')[1] == view_name:
         return 'active'
-    elif string.split(string.split(current_func, '.')[0], '_')[1] == view_name:
+    elif str.split(str.split(current_func, '.')[0], '_')[1] == view_name:
         return 'active'
     return ''

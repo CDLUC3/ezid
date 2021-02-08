@@ -12,7 +12,6 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
 import base64
 import hashlib
 import logging
@@ -23,8 +22,9 @@ import django.contrib.auth.hashers
 import django.contrib.auth.models
 import django.utils.encoding
 
-import ezidapp.models
-from . import log
+import ezidapp.models.store_user
+import impl.log
+import impl.util
 
 SESSION_KEY = "ezidAuthenticatedUser"
 
@@ -68,10 +68,12 @@ def authenticate(username, password, request=None, coAuthenticate=True):
         )
         return "error: bad request - password required"
 
-    user = ezidapp.models.getUserByUsername(username)
+    # noinspection PyUnresolvedReferences
+    user = ezidapp.models.store_user.getUserByUsername(username)
     logger.debug('Username resolved. user="{}"'.format(user))
 
-    if user == None or user.isAnonymous:
+    if user is None or user.isAnonymous:
+        # noinspection PyUnresolvedReferences
         logger.debug(
             'Auth failed due unknown or anonymous user. '
             'user="{}" user.isAnonymous={}'.format(
@@ -80,12 +82,12 @@ def authenticate(username, password, request=None, coAuthenticate=True):
         )
         return None
 
-    if (sudo and ezidapp.models.getAdminUser().authenticate(password)) or (
+    if (sudo and ezidapp.models.store_user.getAdminUser().authenticate(password)) or (
         not sudo and user.authenticate(password)
     ):
         logger.debug('Auth successful. user="{}" sudo="{}"'.format(user, sudo))
 
-        if request != None:
+        if request is not None:
             logger.debug('Auth in active request')
 
             request.session[SESSION_KEY] = user.id
@@ -100,10 +102,10 @@ def authenticate(username, password, request=None, coAuthenticate=True):
                 authUser = django.contrib.auth.authenticate(
                     username=username, password=password
                 )
-                if authUser != None:
+                if authUser is not None:
                     django.contrib.auth.login(request, authUser)
                 else:
-                    log.otherError(
+                    impl.log.otherError(
                         "userauth.authenticate",
                         Exception(
                             "administrator password mismatch; run "
@@ -126,13 +128,13 @@ def getUser(request, returnAnonymous=False):
     None.
     """
     if SESSION_KEY in request.session:
-        user = ezidapp.models.getUserById(request.session[SESSION_KEY])
-        if user != None and user.loginEnabled:
+        user = ezidapp.models.store_user.getUserById(request.session[SESSION_KEY])
+        if user is not None and user.loginEnabled:
             return user
         else:
-            return ezidapp.models.AnonymousUser if returnAnonymous else None
+            return ezidapp.models.store_user.AnonymousUser if returnAnonymous else None
     else:
-        return ezidapp.models.AnonymousUser if returnAnonymous else None
+        return ezidapp.models.store_user.AnonymousUser if returnAnonymous else None
 
 
 def authenticateRequest(request, storeSessionCookie=False):
@@ -142,23 +144,21 @@ def authenticateRequest(request, storeSessionCookie=False):
     if unsuccessful, or a string error message if an error occurs.
     """
     if SESSION_KEY in request.session:
-        user = ezidapp.models.getUserById(request.session[SESSION_KEY])
-        if user != None and user.loginEnabled:
+        user = ezidapp.models.store_user.getUserById(request.session[SESSION_KEY])
+        if user is not None and user.loginEnabled:
             return user
         else:
             return None
     elif "HTTP_AUTHORIZATION" in request.META:
-        h = request.META["HTTP_AUTHORIZATION"].split()
         try:
-            assert len(h) == 2 and h[0] == "Basic"
-            s = base64.decodestring(h[1])
-            assert ":" in s
-        except:
+            u, p = impl.util.parse_basic_auth(request.META["HTTP_AUTHORIZATION"])
+        except ValueError:
             return "error: bad request - malformed Authorization header"
         return authenticate(
-            *s.split(":", 1),
+            u,
+            p,
             request=(request if storeSessionCookie else None),
-            coAuthenticate=False
+            coAuthenticate=False,
         )
     else:
         return None
@@ -181,7 +181,7 @@ class LdapSha1PasswordHasher(django.contrib.auth.hashers.SHA1PasswordHasher):
         hash = hashlib.sha1(
             django.utils.encoding.force_bytes(password) + binarySalt
         ).hexdigest()
-        return "%s$%s$%s" % (self.algorithm, salt, hash)
+        return f"{self.algorithm}${salt}${hash}"
 
     def convertLegacyRepresentation(self, legacy):
         # Converts a legacy LDAP-encoded password to Django syntax.  In
@@ -195,6 +195,6 @@ class LdapSha1PasswordHasher(django.contrib.auth.hashers.SHA1PasswordHasher):
         salt = d[20:]
 
         def hexify(s):
-            return "".join("%02x" % ord(c) for c in s)
+            return "".join(f"{ord(c):02x}" for c in s)
 
-        return "%s$%s$%s" % (self.algorithm, hexify(salt), hexify(hash))
+        return f"{self.algorithm}${hexify(salt)}${hexify(hash)}"

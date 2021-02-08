@@ -1,55 +1,59 @@
-import django.contrib.messages
-import django.db.models
-from . import datacite
-from . import datacite_xml
-from . import erc
-from . import ezid
-from . import download as ezid_download
-import ezidapp.models
-from . import form_objects
 import json
-from . import metadata
-from . import mapping
-import math
-import os.path
-from . import policy
-from django.shortcuts import redirect
-from django.core.urlresolvers import reverse
 import time
-from . import ui_common as uic
-from . import ui_search
-from . import ui_create
-import urllib.request, urllib.parse, urllib.error
-from . import userauth
-from . import util2
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
+
+import django.contrib.messages
+import django.urls.resolvers
+import django.db.models
+import django.http
+import django.shortcuts
 from django.utils.translation import ugettext as _
+
+import impl.datacite
+import impl.datacite_xml
+import impl.download
+import impl.erc
+import impl.ezid
+import impl.form_objects
+import impl.mapping
+import impl.metadata
+import impl.policy
+import impl.ui_common
+import impl.ui_create
+import impl.ui_search
+import impl.userauth
+import impl.util2
 
 FORM_VALIDATION_ERROR_ON_LOAD = _("One or more fields do not validate.  ") + _(
     "Please check the highlighted fields below for details."
 )
 
 
-@uic.user_login_required
+# noinspection PyDictCreation
+@impl.ui_common.user_login_required
 def index(request):
     """Manage Page, listing all Ids owned by user, or if groupadmin, all group
     users."""
     d = {'menu_item': 'ui_manage.index'}
     d['collapse_advanced_search'] = "collapsed"
     if request.method != "GET":
-        return uic.methodNotAllowed(request)
+        return impl.ui_common.methodNotAllowed(request)
     noConstraintsReqd = True  # Empty 'manage' form means search everything
-    d['q'] = ui_search.queryDict(request)
-    user = userauth.getUser(request)
+    d['q'] = impl.ui_search.queryDict(request)
+    user = impl.userauth.getUser(request)
     d['owner_selected'] = (
         _defaultUser(user)
         if not ('owner_selected' in request.GET) or request.GET['owner_selected'] == ''
         else request.GET['owner_selected']
     )
-    d['form'] = form_objects.ManageSearchIdForm(d['q'])
+    d['form'] = impl.form_objects.ManageSearchIdForm(d['q'])
     # order_by and sort are initial sorting defaults. The request trumps these.
     d['order_by'] = 'c_update_time'
     d['sort'] = 'asc'
-    d['owner_names'] = uic.owner_names(user, "manage")
+    d['owner_names'] = impl.ui_common.owner_names(user, "manage")
     # Check if anything has actually been entered into search fields
     searchfields = {
         k: v
@@ -62,8 +66,9 @@ def index(request):
         d[
             'filtered'
         ] = True  # Flag for template to provide option of searching on all IDs
-    d = ui_search.search(d, request, noConstraintsReqd, "manage")
-    return uic.render(request, 'manage/index', d)
+    d = impl.ui_search.search(d, request, noConstraintsReqd, "manage")
+    # noinspection PyUnresolvedReferences
+    return impl.ui_common.render(request, 'manage/index', d)
 
 
 def _defaultUser(user):
@@ -86,8 +91,8 @@ def _getLatestMetadata(identifier, request, prefixMatch=False):
     success: doi:10.5060/FOO
     and 'dictionary' contains element (name, value) pairs.
     """
-    return ezid.getMetadata(
-        identifier, userauth.getUser(request, returnAnonymous=True), prefixMatch
+    return impl.ezid.getMetadata(
+        identifier, impl.userauth.getUser(request, returnAnonymous=True), prefixMatch
     )
 
 
@@ -102,10 +107,10 @@ def _updateEzid(request, d, stts, m_to_upgrade=None):
         '_export': ('yes' if (not 'export' in d) or d['export'] == 'yes' else 'no'),
     }
     if m_to_upgrade:
-        d['current_profile'] = metadata.getProfile('datacite')
+        d['current_profile'] = impl.metadata.getProfile('datacite')
         # datacite_xml ezid profile is defined by presence of 'datacite' assigned to the
         # '_profile' key and XML present in the 'datacite' key
-        m_dict['datacite'] = datacite.formRecord(d['id_text'], m_to_upgrade, True)
+        m_dict['datacite'] = impl.datacite.formRecord(d['id_text'], m_to_upgrade, True)
         m_dict['_profile'] = 'datacite'
         # Old tag cleanup
         if m_to_upgrade.get("_profile", "") == "datacite":
@@ -125,9 +130,11 @@ def _updateEzid(request, d, stts, m_to_upgrade=None):
             m_dict['erc.what'] = ''
             m_dict['erc.when'] = ''
     # ToDo: Using current_profile here, but isn't this confusing if executing simpleToAdvanced
-    to_write = uic.assembleUpdateDictionary(request, d['current_profile'], m_dict)
-    return ezid.setMetadata(
-        d['id_text'], userauth.getUser(request, returnAnonymous=True), to_write
+    to_write = impl.ui_common.assembleUpdateDictionary(
+        request, d['current_profile'], m_dict
+    )
+    return impl.ezid.setMetadata(
+        d['id_text'], impl.userauth.getUser(request, returnAnonymous=True), to_write
     )
 
 
@@ -153,17 +160,18 @@ def _assignManualTemplate(d):
     return d
 
 
+# noinspection PyDictCreation
 def edit(request, identifier):
     """Edit page for a given ID."""
     d = {'menu_item': 'ui_manage.null'}
-    d["testPrefixes"] = uic.testPrefixes
+    d["testPrefixes"] = impl.ui_common.testPrefixes
     r = _getLatestMetadata(identifier, request)
     if type(r) is str:
-        django.contrib.messages.error(request, uic.formatError(r))
-        return redirect("ui_manage.index")
+        django.contrib.messages.error(request, impl.ui_common.formatError(r))
+        return django.shortcuts.redirect("ui_manage.index")
     s, id_metadata = r
-    if not policy.authorizeUpdateLegacy(
-        userauth.getUser(request, returnAnonymous=True),
+    if not impl.policy.authorizeUpdateLegacy(
+        impl.userauth.getUser(request, returnAnonymous=True),
         id_metadata["_owner"],
         id_metadata["_ownergroup"],
     ):
@@ -174,7 +182,7 @@ def edit(request, identifier):
                 + "If this ID belongs to you and you'd like to edit, please log in."
             ),
         )
-        return redirect("/id/" + urllib.parse.quote(identifier, ":/"))
+        return django.shortcuts.redirect("/id/" + urllib.parse.quote(identifier, ":/"))
     d['identifier'] = id_metadata
     t_stat = [x.strip() for x in id_metadata['_status'].split("|", 1)]
     d['pub_status'] = t_stat[0]
@@ -184,108 +192,131 @@ def edit(request, identifier):
         d['stat_reason'] = t_stat[1]
     d['export'] = id_metadata['_export'] if '_export' in id_metadata else 'yes'
     d['id_text'] = s.split()[1]
-    d['id_as_url'] = util2.urlForm(d['id_text'])
-    d['internal_profile'] = metadata.getProfile('internal')
-    d['profiles'] = metadata.getProfiles()[1:]
+    d['id_as_url'] = impl.util2.urlForm(d['id_text'])
+    d['internal_profile'] = impl.metadata.getProfile('internal')
+    d['profiles'] = impl.metadata.getProfiles()[1:]
 
     if request.method == "GET":
         d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes'])
         if '_profile' in id_metadata:
-            d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
+            d['current_profile'] = impl.metadata.getProfile(id_metadata['_profile'])
         else:
-            d['current_profile'] = metadata.getProfile('dc')
+            d['current_profile'] = impl.metadata.getProfile('dc')
         if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
             d = _assignManualTemplate(d)
             # Testing
             # xml = datacite_xml.temp_mockxml()
             # form_coll = datacite_xml.dataciteXmlToFormElements(xml)
-            form_coll = datacite_xml.dataciteXmlToFormElements(
+            form_coll = impl.datacite_xml.dataciteXmlToFormElements(
                 d['identifier']['datacite']
             )
             # This is the only item from internal profile that needs inclusion in django form framework
             form_coll.nonRepeating['target'] = id_metadata['_target']
-            d['form'] = form_objects.getIdForm_datacite_xml(form_coll, request)
-            if not form_objects.isValidDataciteXmlForm(d['form']):
+            d['form'] = impl.form_objects.getIdForm_datacite_xml(form_coll, request)
+            if not impl.form_objects.isValidDataciteXmlForm(d['form']):
                 django.contrib.messages.error(request, FORM_VALIDATION_ERROR_ON_LOAD)
         else:
             if "form_placeholder" not in d:
                 d['form_placeholder'] = None
-            d['form'] = form_objects.getIdForm(
+            d['form'] = impl.form_objects.getIdForm(
                 d['current_profile'], d['form_placeholder'], id_metadata
             )
             if not d['form'].is_valid():
                 django.contrib.messages.error(request, FORM_VALIDATION_ERROR_ON_LOAD)
     elif request.method == "POST":
-        P = request.POST
-        d['pub_status'] = P['_status'] if '_status' in P else d['pub_status']
-        d['stat_reason'] = P['stat_reason'] if 'stat_reason' in P else d['stat_reason']
-        d['export'] = P['_export'] if '_export' in P else d['export']
+        post = request.POST
+        d['pub_status'] = post['_status'] if '_status' in post else d['pub_status']
+        d['stat_reason'] = (
+            post['stat_reason'] if 'stat_reason' in post else d['stat_reason']
+        )
+        d['export'] = post['_export'] if '_export' in post else d['export']
         ''' Profiles could previously be switched in edit template, thus generating
         posibly two differing profiles (current vs original). So we previously did a 
         check here to confirm current_profile equals original profile before saving.'''
-        d['current_profile'] = metadata.getProfile(
-            P.get('original_profile', d['identifier']['_profile'])
+
+        # noinspection PyTypeChecker
+        d['current_profile'] = impl.metadata.getProfile(
+            post.get('original_profile', d['identifier']['_profile'])
         )
-        if P['_status'] == 'unavailable':
-            stts = P['_status'] + " | " + P['stat_reason']
+
+        if post['_status'] == 'unavailable':
+            stts = post['_status'] + " | " + post['stat_reason']
         else:
-            stts = P['_status']
+            stts = post['_status']
 
         if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
             d = _assignManualTemplate(d)
-            d = ui_create.validate_adv_form_datacite_xml(request, d)
+            d = impl.ui_create.validate_adv_form_datacite_xml(request, d)
             if 'id_gen_result' in d:
-                return uic.render(request, 'manage/edit', d)  # ID Creation page
+                # noinspection PyUnresolvedReferences
+                return impl.ui_common.render(
+                    request, 'manage/edit', d
+                )  # ID Creation page
             else:
                 assert 'generated_xml' in d
                 to_write = {
                     "_profile": 'datacite',
-                    '_target': P['target'],
+                    '_target': post['target'],
                     "_status": stts,
                     "_export": d['export'],
                     "datacite": d['generated_xml'],
                 }
-                s = ezid.setMetadata(
-                    P['identifier'],
-                    userauth.getUser(request, returnAnonymous=True),
+                s = impl.ezid.setMetadata(
+                    post['identifier'],
+                    impl.userauth.getUser(request, returnAnonymous=True),
                     to_write,
                 )
                 if s.startswith("success:"):
                     _alertMessageUpdateSuccess(request)
-                    return redirect("/id/" + urllib.parse.quote(identifier, ":/"))
+                    return django.shortcuts.redirect(
+                        "/id/" + urllib.parse.quote(identifier, ":/")
+                    )
                 else:
                     _alertMessageUpdateError(request, s)
         else:
             """Even if converting from simple to advanced, let's make sure
             forms validate and update identifier first, else don't upgrade."""
-            d['form'] = form_objects.getIdForm(d['current_profile'], None, P)
+            d['form'] = impl.form_objects.getIdForm(d['current_profile'], None, post)
             if d['form'].is_valid():
                 result = _updateEzid(request, d, stts)
                 if not result.startswith("success:"):
-                    d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
+                    d['current_profile'] = impl.metadata.getProfile(
+                        id_metadata['_profile']
+                    )
                     _alertMessageUpdateError(request, result)
-                    return uic.render(request, "manage/edit", d)
+                    # noinspection PyUnresolvedReferences
+                    return impl.ui_common.render(request, "manage/edit", d)
                 else:
-                    if 'simpleToAdvanced' in P and P['simpleToAdvanced'] == 'True':
+                    if (
+                        'simpleToAdvanced' in post
+                        and post['simpleToAdvanced'] == 'True'
+                    ):
                         # Convert simple ID to advanced (datacite with XML)
                         result = _updateEzid(request, d, stts, id_metadata)
                         r = _getLatestMetadata(identifier, request)
                         if type(r) is str:
-                            django.contrib.messages.error(request, uic.formatError(r))
-                            return redirect("ui_manage.index")
-                        s, id_metadata = r
+                            django.contrib.messages.error(
+                                request, impl.ui_common.formatError(r)
+                            )
+                            return django.shortcuts.redirect("ui_manage.index")
+                        _s, _id_metadata = r
                         if not result.startswith("success:"):
                             #  if things fail, just display same simple edit page with error
                             _alertMessageUpdateError(request, result)
                         else:
                             _alertMessageUpdateSuccess(request)
-                            return redirect("/id/" + urllib.parse.quote(identifier, ":/"))
+                            return django.shortcuts.redirect(
+                                "/id/" + urllib.parse.quote(identifier, ":/")
+                            )
                     else:
                         _alertMessageUpdateSuccess(request)
-                        return redirect("/id/" + urllib.parse.quote(identifier, ":/"))
+                        return django.shortcuts.redirect(
+                            "/id/" + urllib.parse.quote(identifier, ":/")
+                        )
     else:
-        return uic.methodNotAllowed(request)
-    return uic.render(request, "manage/edit", d)
+        return impl.ui_common.methodNotAllowed(request)
+    # noinspection PyUnresolvedReferences
+    return impl.ui_common.render(request, "manage/edit", d)
 
 
 _simpleSchemaDotOrgResourceMap = {
@@ -309,7 +340,7 @@ _simpleSchemaDotOrgResourceMap = {
 def _getSchemaDotOrgType(km_type):
     try:
         return _simpleSchemaDotOrgResourceMap[km_type]
-    except:
+    except Exception:
         return "CreativeWork"
 
 
@@ -341,10 +372,11 @@ def _schemaDotOrgMetadata(km, id_as_url):
     return json.dumps(d, indent=2, sort_keys=True)
 
 
+# noinspection PyDictCreation
 def details(request):
     """ID Details page for a given ID."""
     d = {'menu_item': 'ui_manage.null'}
-    d["testPrefixes"] = uic.testPrefixes
+    d["testPrefixes"] = impl.ui_common.testPrefixes
     identifier = request.path_info[len("/id/") :]
     r = _getLatestMetadata(
         identifier,
@@ -353,35 +385,35 @@ def details(request):
     )
     if type(r) is str:
         django.contrib.messages.error(
-            request, uic.formatError(r + ":&nbsp;&nbsp;" + identifier)
+            request, impl.ui_common.formatError(r + ":&nbsp;&nbsp;" + identifier)
         )
         # ToDo: Pass details in from previous screen so we know where to send redirect back to
-        if userauth.getUser(request) == None:
-            return redirect("ui_search.index")
+        if impl.userauth.getUser(request) is None:
+            return django.shortcuts.redirect("ui_search.index")
         else:
-            return redirect("ui_home.index")
+            return django.shortcuts.redirect("ui_home.index")
     s, id_metadata = r
     assert s.startswith("success:")
     if " in_lieu_of " in s:
         newid = s.split()[1]
         django.contrib.messages.info(
-            request, "Identifier %s returned in lieu of %s." % (newid, identifier)
+            request, f"Identifier {newid} returned in lieu of {identifier}."
         )
-        return redirect("/id/" + urllib.parse.quote(newid, ":/"))
-    d['allow_update'] = policy.authorizeUpdateLegacy(
-        userauth.getUser(request, returnAnonymous=True),
+        return django.shortcuts.redirect("/id/" + urllib.parse.quote(newid, ":/"))
+    d['allow_update'] = impl.policy.authorizeUpdateLegacy(
+        impl.userauth.getUser(request, returnAnonymous=True),
         id_metadata["_owner"],
         id_metadata["_ownergroup"],
     )
     d['identifier'] = id_metadata
     d['id_text'] = s.split()[1]
-    d['id_as_url'] = util2.urlForm(d['id_text'])
+    d['id_as_url'] = impl.util2.urlForm(d['id_text'])
     d['is_test_id'] = _isTestId(d['id_text'], d['testPrefixes'])
-    d['internal_profile'] = metadata.getProfile('internal')
+    d['internal_profile'] = impl.metadata.getProfile('internal')
     d['target'] = id_metadata['_target']
-    d['current_profile'] = metadata.getProfile(
+    d['current_profile'] = impl.metadata.getProfile(
         id_metadata['_profile']
-    ) or metadata.getProfile('erc')
+    ) or impl.metadata.getProfile('erc')
     d['recent_creation'] = identifier.startswith('doi') and (
         time.time() - float(id_metadata['_created']) < 60 * 30
     )
@@ -389,7 +421,7 @@ def details(request):
         time.time() - float(id_metadata['_updated']) < 60 * 30
     )
     if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
-        r = datacite.dcmsRecordToHtml(id_metadata["datacite"])
+        r = impl.datacite.dcmsRecordToHtml(id_metadata["datacite"])
         if r:
             d['datacite_html'] = r
     if (
@@ -404,9 +436,9 @@ def details(request):
         d['stat_reason'] = t_stat[1]
     if t_stat[0] == 'public' and identifier.startswith("ark:/"):
         d['schemaDotOrgMetadata'] = _schemaDotOrgMetadata(
-            mapping.map(id_metadata), d['id_as_url']
+            impl.mapping.map(id_metadata), d['id_as_url']
         )
-    d['has_block_data'] = uic.identifier_has_block_data(id_metadata)
+    d['has_block_data'] = impl.ui_common.identifier_has_block_data(id_metadata)
     d['has_resource_type'] = (
         True
         if (
@@ -416,7 +448,8 @@ def details(request):
         )
         else False
     )
-    return uic.render(request, "manage/details", d)
+    # noinspection PyUnresolvedReferences
+    return impl.ui_common.render(request, "manage/details", d)
 
 
 def display_xml(request, identifier):
@@ -424,23 +457,23 @@ def display_xml(request, identifier):
     d = {'menu_item': 'ui_manage.null'}
     r = _getLatestMetadata(identifier, request)
     if type(r) is str:
-        django.contrib.messages.error(request, uic.formatError(r))
-        return redirect("/")
+        django.contrib.messages.error(request, impl.ui_common.formatError(r))
+        return django.shortcuts.redirect("/")
     s, id_metadata = r
     assert s.startswith("success:")
     d['identifier'] = id_metadata
-    d['current_profile'] = metadata.getProfile(id_metadata['_profile'])
+    d['current_profile'] = impl.metadata.getProfile(id_metadata['_profile'])
     if d['current_profile'].name == 'datacite' and 'datacite' in id_metadata:
         content = id_metadata["datacite"]
     elif d['current_profile'].name == 'crossref' and 'crossref' in id_metadata:
         content = id_metadata["crossref"]
     else:
-        return uic.staticTextResponse("No XML metadata.")
+        return impl.ui_common.staticTextResponse("No XML metadata.")
 
     # By setting the content type ourselves, we gain control over the
     # character encoding and can properly set the content length.
-    ec = content.encode("UTF-8")
-    r = django.http.HttpResponse(ec, content_type="application/xml; charset=UTF-8")
+    ec = content.encode("utf-8")
+    r = django.http.HttpResponse(ec, content_type="application/xml; charset=utf-8")
     r["Content-Length"] = len(ec)
     return r
 
@@ -452,7 +485,7 @@ def _isTestId(id_text, testPrefixes):
     return False
 
 
-@uic.user_login_required
+@impl.ui_common.user_login_required
 def download(request):
     """Enqueue a batch download request and display link to user."""
     d = {'menu_item': 'ui_manage.null'}
@@ -473,9 +506,9 @@ def download(request):
     )
 
     # In case you only want to download IDs based on owner selection:
-    # username = uic.getOwnerOrGroup(request.GET['owner_selected'])
-    # q['owner'] = ezidapp.models.StoreUser.objects.get(name=username)
-    user = userauth.getUser(request)
+    # username = impl.ui_common.getOwnerOrGroup(request.GET['owner_selected'])
+    # q['owner'] = ezidapp.models.store_user.StoreUser.objects.get(name=username)
+    user = impl.userauth.getUser(request)
     q['notify'] = d['mail'] = user.accountEmail
     # ToDo make changes to download.enqueueRequest() to accept multiple groups
     # if user.isRealmAdministrator: q['ownergroup'] = [g.groupname for g in user.realm.groups.all()]
@@ -483,13 +516,14 @@ def download(request):
         q['ownergroup'] = user.group.groupname
     else:
         q['owner'] = user.username
-    s = ezid_download.enqueueRequest(user, q)
+    s = impl.download.enqueueRequest(user, q)
     if not s.startswith("success:"):
         django.contrib.messages.error(request, s)
-        return redirect("ui_manage.index")
+        return django.shortcuts.redirect("ui_manage.index")
     else:
         d['link'] = s.split()[1]
-    return uic.render(request, "manage/download", d)
+    # noinspection PyUnresolvedReferences
+    return impl.ui_common.render(request, "manage/download", d)
 
 
 def download_error(request):
@@ -511,4 +545,4 @@ def download_error(request):
         _("Please <a class='link__primary' href='/contact'>contact us</a> if you need ")
         + _("assistance."),
     ]
-    return uic.error(request, 404, content)
+    return impl.ui_common.error(request, 404, content)

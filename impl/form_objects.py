@@ -1,16 +1,16 @@
 import re
 
+import django.core.exceptions
 import django.core.validators
-from django import forms
-from django.core.exceptions import ValidationError
-from django.forms import BaseFormSet, formset_factory
+import django.forms
+import django.forms
 from django.utils.translation import ugettext as _
 
-import ezidapp.models
-from . import geometry_util
-from . import ui_common as uic
-from . import userauth
-from . import util
+import ezidapp.models.store_user
+import impl.geometry_util
+import impl.ui_common
+import impl.userauth
+import impl.util
 
 """ Django form framework added in 2016 release of EZID UI.
     Bulk of form validation occurs here. Avoiding JavaScript form validation
@@ -98,7 +98,7 @@ NAME_ID_SCHEME_URI = ["nameIdentifier_{0}-schemeURI", _("Scheme URI")]
 ################# Basic ID Forms ####################
 
 
-class BaseForm(forms.Form):
+class BaseForm(django.forms.Form):
     """Base Form object: all forms have a target field.
 
     If 'placeholder' is True set attribute to include specified
@@ -109,7 +109,7 @@ class BaseForm(forms.Form):
         self.placeholder = kwargs.pop('placeholder', None)
         super(BaseForm, self).__init__(*args, **kwargs)
         # Easier to name this field as 'target', but this is reassigned in the view as '_target'
-        self.fields["target"] = forms.CharField(
+        self.fields["target"] = django.forms.CharField(
             required=False, label=_("Location (URL)"), validators=[_validate_url]
         )
         if self.placeholder is not None and self.placeholder == True:
@@ -125,9 +125,13 @@ class ErcForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super(ErcForm, self).__init__(*args, **kwargs)
-        self.fields["erc.who"] = forms.CharField(required=False, label=_("Who"))
-        self.fields["erc.what"] = forms.CharField(required=False, label=_("What"))
-        self.fields["erc.when"] = forms.CharField(required=False, label=_("When"))
+        self.fields["erc.who"] = django.forms.CharField(required=False, label=_("Who"))
+        self.fields["erc.what"] = django.forms.CharField(
+            required=False, label=_("What")
+        )
+        self.fields["erc.when"] = django.forms.CharField(
+            required=False, label=_("When")
+        )
         if self.placeholder is not None and self.placeholder == True:
             self.fields['erc.who'].widget.attrs['placeholder'] = _("Who?")
             self.fields['erc.what'].widget.attrs['placeholder'] = _("What?")
@@ -144,19 +148,19 @@ class DcForm(BaseForm):
     def __init__(self, *args, **kwargs):
         self.isDoi = kwargs.pop('isDoi', None)
         super(DcForm, self).__init__(*args, **kwargs)
-        self.fields["dc.creator"] = forms.CharField(
+        self.fields["dc.creator"] = django.forms.CharField(
             label=_("Creator"), required=True if self.isDoi else False
         )
-        self.fields["dc.title"] = forms.CharField(
+        self.fields["dc.title"] = django.forms.CharField(
             label=_("Title"), required=True if self.isDoi else False
         )
-        self.fields["dc.publisher"] = forms.CharField(
+        self.fields["dc.publisher"] = django.forms.CharField(
             label=_("Publisher"), required=True if self.isDoi else False
         )
-        self.fields["dc.date"] = forms.CharField(
+        self.fields["dc.date"] = django.forms.CharField(
             label=_("Date"), required=True if self.isDoi else False
         )
-        self.fields["dc.type"] = forms.CharField(required=False, label=_("Type"))
+        self.fields["dc.type"] = django.forms.CharField(required=False, label=_("Type"))
 
 
 class DataciteForm(BaseForm):
@@ -168,16 +172,16 @@ class DataciteForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super(DataciteForm, self).__init__(*args, **kwargs)
-        self.fields["datacite.creator"] = forms.CharField(
+        self.fields["datacite.creator"] = django.forms.CharField(
             label=_("Creator"), error_messages={'required': ERR_CREATOR}
         )
-        self.fields["datacite.title"] = forms.CharField(
+        self.fields["datacite.title"] = django.forms.CharField(
             label=_("Title"), error_messages={'required': ERR_TITLE}
         )
-        self.fields["datacite.publisher"] = forms.CharField(
+        self.fields["datacite.publisher"] = django.forms.CharField(
             label=_("Publisher"), error_messages={'required': ERR_PUBLISHER}
         )
-        self.fields["datacite.publicationyear"] = forms.RegexField(
+        self.fields["datacite.publicationyear"] = django.forms.RegexField(
             label=_("Publication year"),
             regex=REGEX_4DIGITYEAR,
             error_messages={
@@ -187,7 +191,7 @@ class DataciteForm(BaseForm):
                 'invalid': ERR_4DIGITYEAR,
             },
         )
-        self.fields["datacite.resourcetype"] = forms.ChoiceField(
+        self.fields["datacite.resourcetype"] = django.forms.ChoiceField(
             choices=RESOURCE_TYPES,
             label=_("Resource type"),
             error_messages={'required': ERR_RESOURCE},
@@ -225,6 +229,7 @@ def getIdForm(profile, placeholder, elements=None):
     elif profile.name == 'dc':
         testForDoi = None  # dc.creator is only required when creating a DOI
         form = DcForm(elements, placeholder=placeholder, isDoi=testForDoi, auto_id='%s')
+    # noinspection PyUnboundLocalVariable
     return form
 
 
@@ -232,14 +237,14 @@ def getIdForm(profile, placeholder, elements=None):
 ### (two forms technically: RemainderForm and Profile Specific Form) ###
 
 
-class RemainderForm(forms.Form):
+class RemainderForm(django.forms.Form):
     """Remainder Form object: all advanced forms have a remainder field,
     validation of which requires passing in the shoulder."""
 
     def __init__(self, *args, **kwargs):
         self.shoulder = kwargs.pop('shoulder', None)
         super(RemainderForm, self).__init__(*args, **kwargs)
-        self.fields["remainder"] = forms.CharField(
+        self.fields["remainder"] = django.forms.CharField(
             required=False,
             label=_("Custom Remainder"),
             initial=REMAINDER_BOX_DEFAULT,
@@ -270,6 +275,7 @@ def getAdvancedIdForm(profile, request=None):
         form = DataciteForm(P, auto_id='%s')
     elif profile.name == 'dc':
         form = DcForm(P, isDoi=isDoi, auto_id='%s')
+    # noinspection PyUnboundLocalVariable
     return {'remainder_form': remainder_form, 'form': form}
 
 
@@ -279,7 +285,9 @@ def getAdvancedIdForm(profile, request=None):
 def _validate_phone(p):
     r = re.sub(r'[^\d]', '', p)
     if len(r) < 8:
-        raise ValidationError(_("Please enter a valid phone number, minimum 8 digits."))
+        raise django.core.exceptions.ValidationError(
+            _("Please enter a valid phone number, minimum 8 digits.")
+        )
 
 
 def _validate_url(url):
@@ -289,15 +297,17 @@ def _validate_url(url):
         try:
             assert len(t) <= 2000
             django.core.validators.URLValidator()(t)
-        except:
-            raise ValidationError(_("Please enter a valid location (URL)"))
+        except Exception:
+            raise django.core.exceptions.ValidationError(
+                _("Please enter a valid location (URL)")
+            )
 
 
 def _validate_custom_remainder(shoulder):
     def innerfn(remainder_to_test):
         test = "" if remainder_to_test == REMAINDER_BOX_DEFAULT else remainder_to_test
-        if not (util.validateIdentifier(shoulder + test)):
-            raise ValidationError(
+        if not (impl.util.validateIdentifier(shoulder + test)):
+            raise django.core.exceptions.ValidationError(
                 _("This combination of characters cannot be used as a remainder.")
             )
 
@@ -329,13 +339,13 @@ def _validateNameIdGrouping(suffix, ni, ni_s, ni_s_uri):
 def _validate_geolong(n):
     m = re.match(REGEX_GEOPOINT, n)
     if not m or float(n) < -180 or float(n) > 180:
-        raise ValidationError(ERR_GEOPOINT_LONG)
+        raise django.core.exceptions.ValidationError(ERR_GEOPOINT_LONG)
 
 
 def _validate_geolat(n):
     m = re.match(REGEX_GEOPOINT, n)
     if not m or float(n) < -90 or float(n) > 90:
-        raise ValidationError(ERR_GEOPOINT_LAT)
+        raise django.core.exceptions.ValidationError(ERR_GEOPOINT_LAT)
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -354,17 +364,17 @@ def _validate_geolat(n):
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 
-class NonRepeatingForm(forms.Form):
+class NonRepeatingForm(django.forms.Form):
     """Form object for single field elements in DataCite Advanced (XML)
     profile."""
 
-    target = forms.CharField(
+    target = django.forms.CharField(
         required=False, label=_("Location (URL)"), validators=[_validate_url]
     )
-    publisher = forms.CharField(
+    publisher = django.forms.CharField(
         label=_("Publisher"), error_messages={'required': ERR_PUBLISHER}
     )
-    publicationYear = forms.RegexField(
+    publicationYear = django.forms.RegexField(
         label=_("Publication Year"),
         regex=REGEX_4DIGITYEAR,
         error_messages={
@@ -372,29 +382,29 @@ class NonRepeatingForm(forms.Form):
             'invalid': ERR_4DIGITYEAR,
         },
     )
-    language = forms.CharField(required=False, label=_("Language"))
-    version = forms.CharField(required=False, label=_("Version"))
+    language = django.forms.CharField(required=False, label=_("Language"))
+    version = django.forms.CharField(required=False, label=_("Version"))
 
 
-class ResourceTypeForm(forms.Form):
+class ResourceTypeForm(django.forms.Form):
     """Form object for Resource Type Element in DataCite Advanced (XML)
     profile."""
 
     def __init__(self, *args, **kwargs):
         super(ResourceTypeForm, self).__init__(*args, **kwargs)
-        self.fields['resourceType-resourceTypeGeneral'] = forms.ChoiceField(
+        self.fields['resourceType-resourceTypeGeneral'] = django.forms.ChoiceField(
             choices=RESOURCE_TYPES,
             label=_("Resource Type General"),
             error_messages={'required': ERR_RESOURCE},
         )
-        self.fields['resourceType'] = forms.CharField(
+        self.fields['resourceType'] = django.forms.CharField(
             required=False, label=_("Resource Type")
         )
 
 
 # Django faulty design: First formset allows blank form fields.
 # http://stackoverflow.com/questions/2406537/django-formsets-make-first-required
-class RequiredFormSet(BaseFormSet):
+class RequiredFormSet(django.forms.BaseFormSet):
     """Sets first form in a formset required.
 
     Used for TitleSet.
@@ -405,7 +415,7 @@ class RequiredFormSet(BaseFormSet):
         self.forms[0].empty_permitted = False
 
 
-class NameIdMultBaseFormSet(BaseFormSet):
+class NameIdMultBaseFormSet(django.forms.BaseFormSet):
     """Generates aribitrary number of NameID fields.
 
     Used by Creator and Contributor formsets. UI only offers 2 nameIds
@@ -426,8 +436,8 @@ class NameIdMultBaseFormSet(BaseFormSet):
         if self.nameIdLastIndex:
             for d in self.generateNameIdFields(self.nameIdLastIndex[i]):
                 k, v = list(d.items())[0]
-                form.fields[k] = forms.CharField(required=False, label=v)
-        form.fields["affiliation"] = forms.CharField(
+                form.fields[k] = django.forms.CharField(required=False, label=v)
+        form.fields["affiliation"] = django.forms.CharField(
             required=False, label=_("Affiliation")
         )
         return form
@@ -446,7 +456,7 @@ class NameIdMultBaseFormSet(BaseFormSet):
 
 
 # Remaining Datacite Forms listed below are intended to be wrapped into FormSets (repeatable)
-class CreatorForm(forms.Form):
+class CreatorForm(django.forms.Form):
     """Form object for Creator Element in DataCite Advanced (XML) profile.
 
     This gets wrapped into a NameIdMultBaseFormSet (when passed into
@@ -455,14 +465,14 @@ class CreatorForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(CreatorForm, self).__init__(*args, **kwargs)
-        self.fields["creatorName"] = forms.CharField(
+        self.fields["creatorName"] = django.forms.CharField(
             label=_("Name"),
             error_messages={'required': _("Please fill in a value for creator name.")},
         )
-        self.fields["familyName"] = forms.CharField(
+        self.fields["familyName"] = django.forms.CharField(
             required=False, label=_("Family Name")
         )
-        self.fields["givenName"] = forms.CharField(
+        self.fields["givenName"] = django.forms.CharField(
             required=False, label=_("Given Name")
         )
         # Wait, there's more: Min 2-n # of NameIdentifier fields are generated by NameIdMultBaseFormSet class
@@ -471,24 +481,25 @@ class CreatorForm(forms.Form):
     def clean(self):
         cleaned_data = super(CreatorForm, self).clean()
         errs = {}
-        for i in range(0, len(self.fields) / 3 - 1):
+        for i in range(0, len(self.fields) // 3 - 1):
             ni = cleaned_data.get(NAME_ID[0].format(str(i)))
             ni_s = cleaned_data.get(NAME_ID_SCHEME[0].format(str(i)))
             ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0].format(str(i)))
             err = _validateNameIdGrouping(i, ni, ni_s, ni_s_uri)
             if err:
-                errs.update(list(err.items()))
+                # errs.update(err.items())
+                errs.update(err)
         if errs:
-            raise ValidationError(errs)
+            raise django.core.exceptions.ValidationError(errs)
         return cleaned_data
 
 
-class TitleForm(forms.Form):
+class TitleForm(django.forms.Form):
     """Form object for Title Element in DataCite Advanced (XML) profile."""
 
     def __init__(self, *args, **kwargs):
         super(TitleForm, self).__init__(*args, **kwargs)
-        self.fields["title"] = forms.CharField(
+        self.fields["title"] = django.forms.CharField(
             label=_("Title"), error_messages={'required': ERR_TITLE}
         )
         TITLE_TYPES = (
@@ -498,13 +509,17 @@ class TitleForm(forms.Form):
             ("TranslatedTitle", _("Translated title")),
             ("Other", _("Other")),
         )
-        self.fields["titleType"] = forms.ChoiceField(
+        self.fields["titleType"] = django.forms.ChoiceField(
             required=False,
             label=_("Type"),
-            widget=forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}),
+            widget=django.forms.RadioSelect(
+                attrs={'class': 'fcontrol__radio-button-stacked'}
+            ),
             choices=TITLE_TYPES,
         )
-        self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.RegexField(
+        self.fields[
+            "{http://www.w3.org/XML/1998/namespace}lang"
+        ] = django.forms.RegexField(
             required=False,
             label=_("Title Language"),
             regex=REGEX_LANGUAGE,
@@ -512,16 +527,16 @@ class TitleForm(forms.Form):
         )
 
 
-class DescrForm(forms.Form):
+class DescrForm(django.forms.Form):
     """Form object for Description Element in DataCite Advanced (XML)
     profile."""
 
     def __init__(self, *args, **kwargs):
         super(DescrForm, self).__init__(*args, **kwargs)
-        self.fields["description"] = forms.CharField(
+        self.fields["description"] = django.forms.CharField(
             required=False,
             label=_("Descriptive information"),
-            widget=forms.Textarea(attrs={'rows': '3'}),
+            widget=django.forms.Textarea(attrs={'rows': '3'}),
         )
         DESCR_TYPES = (
             ("", _("Select a type of description")),
@@ -532,10 +547,12 @@ class DescrForm(forms.Form):
             ("Methods", _("Methods")),
             ("Other", _("Other")),
         )
-        self.fields["descriptionType"] = forms.ChoiceField(
+        self.fields["descriptionType"] = django.forms.ChoiceField(
             required=False, label=_("Type"), choices=DESCR_TYPES
         )
-        self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.RegexField(
+        self.fields[
+            "{http://www.w3.org/XML/1998/namespace}lang"
+        ] = django.forms.RegexField(
             required=False,
             label=_("Description Language"),
             regex=REGEX_LANGUAGE,
@@ -548,7 +565,7 @@ class DescrForm(forms.Form):
         dt = cleaned_data.get("descriptionType")
         dl = cleaned_data.get("{http://www.w3.org/XML/1998/namespace}lang")
         if (d != '' or dl != '') and dt == '':
-            raise ValidationError(
+            raise django.core.exceptions.ValidationError(
                 {
                     'descriptionType': _(
                         "Description type is required if you fill in Descriptive info."
@@ -558,20 +575,26 @@ class DescrForm(forms.Form):
         return cleaned_data
 
 
-class SubjectForm(forms.Form):
+class SubjectForm(django.forms.Form):
     """Form object for Subject Element in DataCite Advanced (XML) profile."""
 
     def __init__(self, *args, **kwargs):
         super(SubjectForm, self).__init__(*args, **kwargs)
-        self.fields["subject"] = forms.CharField(required=False, label=_("Subject"))
-        self.fields["subjectScheme"] = forms.CharField(
+        self.fields["subject"] = django.forms.CharField(
+            required=False, label=_("Subject")
+        )
+        self.fields["subjectScheme"] = django.forms.CharField(
             required=False, label=_("Subject Scheme")
         )
-        self.fields["schemeURI"] = forms.CharField(
+        self.fields["schemeURI"] = django.forms.CharField(
             required=False, label=_("Scheme URI")
         )
-        self.fields["valueURI"] = forms.CharField(required=False, label=_("Value URI"))
-        self.fields["{http://www.w3.org/XML/1998/namespace}lang"] = forms.RegexField(
+        self.fields["valueURI"] = django.forms.CharField(
+            required=False, label=_("Value URI")
+        )
+        self.fields[
+            "{http://www.w3.org/XML/1998/namespace}lang"
+        ] = django.forms.RegexField(
             required=False,
             label=_("Subject Language"),
             regex=REGEX_LANGUAGE,
@@ -591,7 +614,7 @@ def _gatherContribErr1(err1, ctype, cname):
     return err1
 
 
-class ContribForm(forms.Form):
+class ContribForm(django.forms.Form):
     """Form object for Contributor Element in DataCite Advanced (XML) profile
     With specific validation rules.
 
@@ -625,16 +648,16 @@ class ContribForm(forms.Form):
             ("WorkPackageLeader", _("Work Package Leader")),
             ("Other", _("Other")),
         )
-        self.fields["contributorType"] = forms.ChoiceField(
+        self.fields["contributorType"] = django.forms.ChoiceField(
             required=False, label=_("Contributor Type"), choices=CONTRIB_TYPES
         )
-        self.fields["contributorName"] = forms.CharField(
+        self.fields["contributorName"] = django.forms.CharField(
             required=False, label=_("Name")
         )
-        self.fields["familyName"] = forms.CharField(
+        self.fields["familyName"] = django.forms.CharField(
             required=False, label=_("Family Name")
         )
-        self.fields["givenName"] = forms.CharField(
+        self.fields["givenName"] = django.forms.CharField(
             required=False, label=_("Given Name")
         )
         # Wait, there's more: Min 2-n # of NameIdentifier fields are generated by NameIdMultBaseFormSet class
@@ -647,7 +670,7 @@ class ContribForm(forms.Form):
         cfname = cleaned_data.get("familyName")
         cgname = cleaned_data.get("givenName")
         err1, err2 = {}, {}
-        for i in range(0, len(self.fields) / 3 - 1):
+        for i in range(0, len(self.fields) // 3 - 1):
             ni = cleaned_data.get(NAME_ID[0].format(str(i)))
             ni_s = cleaned_data.get(NAME_ID_SCHEME[0].format(str(i)))
             ni_s_uri = cleaned_data.get(NAME_ID_SCHEME_URI[0].format(str(i)))
@@ -657,17 +680,18 @@ class ContribForm(forms.Form):
                 err1 = _gatherContribErr1(err1, ctype, cname)
             err = _validateNameIdGrouping(i, ni, ni_s, ni_s_uri)
             if err:
-                err2.update(list(err.items()))
+                # err2.update(err.items())
+                err2.update(err)
         errs = dict(list(err1.items()) + list(err2.items()))
         if errs:
-            raise ValidationError(errs)
+            raise django.core.exceptions.ValidationError(errs)
         return cleaned_data
 
 
-class DateForm(forms.Form):
+class DateForm(django.forms.Form):
     """Form object for Date Element in DataCite Advanced (XML) profile."""
 
-    date = forms.CharField(required=False, label=_("Date"))
+    date = django.forms.CharField(required=False, label=_("Date"))
     DATE_TYPES = (
         ("", _("Select a type of date")),
         ("Accepted", _("Accepted")),
@@ -680,15 +704,17 @@ class DateForm(forms.Form):
         ("Updated", _("Updated")),
         ("Valid", _("Valid")),
     )
-    dateType = forms.ChoiceField(required=False, label=_("Type"), choices=DATE_TYPES)
+    dateType = django.forms.ChoiceField(
+        required=False, label=_("Type"), choices=DATE_TYPES
+    )
 
 
-class AltIdForm(forms.Form):
+class AltIdForm(django.forms.Form):
     """Form object for Alternate ID Element in DataCite Advanced (XML)
     profile."""
 
-    alternateIdentifier = forms.CharField(required=False, label=_("Identifier"))
-    alternateIdentifierType = forms.CharField(
+    alternateIdentifier = django.forms.CharField(required=False, label=_("Identifier"))
+    alternateIdentifierType = django.forms.CharField(
         required=False, label=_("Identifier Type")
     )
 
@@ -697,7 +723,7 @@ class AltIdForm(forms.Form):
         a_c = cleaned_data.get("alternateIdentifier")
         at_c = cleaned_data.get("alternateIdentifierType")
         if a_c == '' and at_c != '':
-            raise ValidationError(
+            raise django.core.exceptions.ValidationError(
                 {
                     'alternateIdentifier': _(
                         "Identifier is required if you fill in identifier type information."
@@ -705,7 +731,7 @@ class AltIdForm(forms.Form):
                 }
             )
         if a_c != '' and at_c == '':
-            raise ValidationError(
+            raise django.core.exceptions.ValidationError(
                 {
                     'alternateIdentifierType': _(
                         "Identifier Type is required if you fill in identifier information."
@@ -715,11 +741,11 @@ class AltIdForm(forms.Form):
         return cleaned_data
 
 
-class RelIdForm(forms.Form):
+class RelIdForm(django.forms.Form):
     """Form object for Related ID Element in DataCite Advanced (XML) profile
     With specific validation rules."""
 
-    relatedIdentifier = forms.CharField(required=False, label=_("Identifier"))
+    relatedIdentifier = django.forms.CharField(required=False, label=_("Identifier"))
     ID_TYPES = (
         ("", _("Select the type of related identifier")),
         ("ARK", "ARK"),
@@ -741,7 +767,7 @@ class RelIdForm(forms.Form):
         ("URL", "URL"),
         ("URN", "URN"),
     )
-    relatedIdentifierType = forms.ChoiceField(
+    relatedIdentifierType = django.forms.ChoiceField(
         required=False, label=_("Identifier Type"), choices=ID_TYPES
     )
     RELATION_TYPES = (
@@ -777,14 +803,14 @@ class RelIdForm(forms.Form):
         ("References", _("References")),
         ("Reviews", _("Reviews")),
     )
-    relationType = forms.ChoiceField(
+    relationType = django.forms.ChoiceField(
         required=False, label=_("Relation Type"), choices=RELATION_TYPES
     )
-    relatedMetadataScheme = forms.CharField(
+    relatedMetadataScheme = django.forms.CharField(
         required=False, label=_("Related Metadata Scheme")
     )
-    schemeURI = forms.CharField(required=False, label=_("Scheme URI"))
-    schemeType = forms.CharField(required=False, label=_("Scheme Type"))
+    schemeURI = django.forms.CharField(required=False, label=_("Scheme URI"))
+    schemeType = django.forms.CharField(required=False, label=_("Scheme Type"))
 
     def clean(self):
         cleaned_data = super(RelIdForm, self).clean()
@@ -806,72 +832,74 @@ class RelIdForm(forms.Form):
                     "Relation Type is required if this property is used."
                 )
         if err:
-            raise ValidationError(err)
+            raise django.core.exceptions.ValidationError(err)
         return cleaned_data
 
 
-class SizeForm(forms.Form):
+class SizeForm(django.forms.Form):
     """Form object for Size Element in DataCite Advanced (XML) profile."""
 
-    size = forms.CharField(required=False, label=_("Size"))
+    size = django.forms.CharField(required=False, label=_("Size"))
 
 
-class FormatForm(forms.Form):
+class FormatForm(django.forms.Form):
     """Form object for Format Element in DataCite Advanced (XML) profile
     format() is a python method, so playing it safe and defining field using
     the fields dictionary of the Form class."""
 
     def __init__(self, *args, **kwargs):
         super(FormatForm, self).__init__(*args, **kwargs)
-        self.fields["format"] = forms.CharField(required=False, label=_("Format"))
+        self.fields["format"] = django.forms.CharField(
+            required=False, label=_("Format")
+        )
 
 
-class RightsForm(forms.Form):
+class RightsForm(django.forms.Form):
     """Form object for Rights Element in DataCite Advanced (XML) profile."""
 
-    rights = forms.CharField(required=False, label=_("Rights"))
-    rightsURI = forms.CharField(required=False, label=_("Rights URI"))
+    rights = django.forms.CharField(required=False, label=_("Rights"))
+    rightsURI = django.forms.CharField(required=False, label=_("Rights URI"))
 
 
-class GeoLocForm(forms.Form):
+class GeoLocForm(django.forms.Form):
     """Form object for GeoLocation Element in DataCite Advanced (XML)
     profile."""
 
     def __init__(self, *args, **kwargs):
         super(GeoLocForm, self).__init__(*args, **kwargs)
-        self.fields["geoLocationPoint-pointLongitude"] = forms.CharField(
+        self.fields["geoLocationPoint-pointLongitude"] = django.forms.CharField(
             required=False, label=_("Point Longitude"), validators=[_validate_geolong]
         )
-        self.fields["geoLocationPoint-pointLatitude"] = forms.CharField(
+        self.fields["geoLocationPoint-pointLatitude"] = django.forms.CharField(
             required=False, label=_("Point Latitude"), validators=[_validate_geolat]
         )
-        self.fields["geoLocationBox-westBoundLongitude"] = forms.CharField(
+        self.fields["geoLocationBox-westBoundLongitude"] = django.forms.CharField(
             required=False,
             label=_("WestBounding Longitude"),
             validators=[_validate_geolong],
         )
-        self.fields["geoLocationBox-eastBoundLongitude"] = forms.CharField(
+        self.fields["geoLocationBox-eastBoundLongitude"] = django.forms.CharField(
             required=False,
             label=_("EastBounding Longitude"),
             validators=[_validate_geolong],
         )
-        self.fields["geoLocationBox-southBoundLatitude"] = forms.CharField(
+        self.fields["geoLocationBox-southBoundLatitude"] = django.forms.CharField(
             required=False,
             label=_("SouthBounding Latitude"),
             validators=[_validate_geolat],
         )
-        self.fields["geoLocationBox-northBoundLatitude"] = forms.CharField(
+        self.fields["geoLocationBox-northBoundLatitude"] = django.forms.CharField(
             required=False,
             label=_("NorthBounding Latitude"),
             validators=[_validate_geolat],
         )
-        self.fields["geoLocationPlace"] = forms.CharField(
+        self.fields["geoLocationPlace"] = django.forms.CharField(
             required=False, label=_("Place")
         )
-        self.fields["geoLocationPolygon"] = forms.CharField(
+        self.fields["geoLocationPolygon"] = django.forms.CharField(
             required=False,
             label=_("Polygon"),
-            widget=forms.Textarea(attrs={'rows': '4'}),
+            widget=django.forms.Textarea(attrs={'rows': '4'}),
         )
 
     # A valid polygon is one which can be properly converted to DataCite from either
@@ -879,26 +907,26 @@ class GeoLocForm(forms.Form):
     def clean_geoLocationPolygon(self):
         text = self.cleaned_data['geoLocationPolygon'].strip()
         if text:
-            text = geometry_util.polygonToDatacite(text)
+            text = impl.geometry_util.polygonToDatacite(text)
             # Warning message broadcast deferred for now (warning on ignored things like
             #    altitudes and inner polygons (holes).)
             if isinstance(text, str):
-                raise ValidationError(text)
+                raise django.core.exceptions.ValidationError(text)
             else:
                 text = text[0]
         return text
 
 
-class FundingRefForm(forms.Form):
+class FundingRefForm(django.forms.Form):
     """Form object for Funding Reference Element in DataCite Advanced (XML)
     profile."""
 
     def __init__(self, *args, **kwargs):
         super(FundingRefForm, self).__init__(*args, **kwargs)
-        self.fields["funderName"] = forms.CharField(
+        self.fields["funderName"] = django.forms.CharField(
             required=False, label=_("Funder Name")
         )
-        self.fields["funderIdentifier"] = forms.CharField(
+        self.fields["funderIdentifier"] = django.forms.CharField(
             required=False, label=_("Funder Identifier")
         )
         ID_TYPES = (
@@ -908,20 +936,21 @@ class FundingRefForm(forms.Form):
             ("Crossref Funder ID", _("Crossref Funder")),
             ("Other", "Other"),
         )
-        self.fields["funderIdentifier-funderIdentifierType"] = forms.ChoiceField(
+        self.fields["funderIdentifier-funderIdentifierType"] = django.forms.ChoiceField(
             required=False, label=_("Identifier Type"), choices=ID_TYPES
         )
-        self.fields["awardNumber"] = forms.CharField(
+        self.fields["awardNumber"] = django.forms.CharField(
             required=False, label=_("Award Number")
         )
-        self.fields["awardNumber-awardURI"] = forms.CharField(
+        self.fields["awardNumber-awardURI"] = django.forms.CharField(
             required=False, label=_("Award URI")
         )
-        self.fields["awardTitle"] = forms.CharField(
+        self.fields["awardTitle"] = django.forms.CharField(
             required=False, label=_("Award Title")
         )
 
 
+# noinspection PyUnusedLocal
 def getIdForm_datacite_xml(form_coll=None, request=None):
     """For Advanced Datacite elements On GET, displays 'form_coll' (named
     tuple) data translated from XML doc On POST (when editing an ID or creating
@@ -954,60 +983,67 @@ def getIdForm_datacite_xml(form_coll=None, request=None):
     ) = (
         relid_set
     ) = size_set = format_set = rights_set = geoloc_set = fundingref_set = None
-    CreatorSet = formset_factory(CreatorForm, formset=NameIdMultBaseFormSet)
-    TitleSet = formset_factory(TitleForm, formset=RequiredFormSet)
-    DescrSet = formset_factory(DescrForm)
-    SubjectSet = formset_factory(SubjectForm)
-    ContribSet = formset_factory(ContribForm, formset=NameIdMultBaseFormSet)
-    DateSet = formset_factory(DateForm)
-    AltIdSet = formset_factory(AltIdForm)
-    RelIdSet = formset_factory(RelIdForm)
-    SizeSet = formset_factory(SizeForm)
-    FormatSet = formset_factory(FormatForm)
-    RightsSet = formset_factory(RightsForm)
-    GeoLocSet = formset_factory(GeoLocForm)
-    FundingRefSet = formset_factory(FundingRefForm)
+    CreatorSet = django.forms.formset_factory(
+        CreatorForm, formset=NameIdMultBaseFormSet
+    )
+    TitleSet = django.forms.formset_factory(TitleForm, formset=RequiredFormSet)
+    DescrSet = django.forms.formset_factory(DescrForm)
+    SubjectSet = django.forms.formset_factory(SubjectForm)
+    ContribSet = django.forms.formset_factory(
+        ContribForm, formset=NameIdMultBaseFormSet
+    )
+    DateSet = django.forms.formset_factory(DateForm)
+    AltIdSet = django.forms.formset_factory(AltIdForm)
+    RelIdSet = django.forms.formset_factory(RelIdForm)
+    SizeSet = django.forms.formset_factory(SizeForm)
+    FormatSet = django.forms.formset_factory(FormatForm)
+    RightsSet = django.forms.formset_factory(RightsForm)
+    GeoLocSet = django.forms.formset_factory(GeoLocForm)
+    FundingRefSet = django.forms.formset_factory(FundingRefForm)
     if not form_coll:
         # On Create:GET
         if not request:  # Get an empty form
-            P = shoulder = None
+            post = shoulder = None
         # On Create:POST, Edit:POST
         elif request:
             assert request.method == "POST"
-            P = request.POST
-            shoulder = P['shoulder'] if 'shoulder' in P else None
-        remainder_form = RemainderForm(P, shoulder=shoulder, auto_id='%s')
-        nonrepeating_form = NonRepeatingForm(P, auto_id='%s')
-        resourcetype_form = ResourceTypeForm(P, auto_id='%s')
+            post = request.POST
+            shoulder = post['shoulder'] if 'shoulder' in post else None
+        # noinspection PyUnboundLocalVariable
+        remainder_form = RemainderForm(post, shoulder=shoulder, auto_id='%s')
+        nonrepeating_form = NonRepeatingForm(post, auto_id='%s')
+        resourcetype_form = ResourceTypeForm(post, auto_id='%s')
+        # noinspection PyUnboundLocalVariable
         creator_nameIdLastIndex = _getNameIdCt(
-            P.dict() if P else None, PREFIX_CREATOR_SET
+            post.dict() if post else None, PREFIX_CREATOR_SET
         )
         creator_set = CreatorSet(
-            P,
+            post,
             prefix=PREFIX_CREATOR_SET,
             auto_id='%s',
             nameIdLastIndex=creator_nameIdLastIndex,
         )
-        title_set = TitleSet(P, prefix=PREFIX_TITLE_SET, auto_id='%s')
-        descr_set = DescrSet(P, prefix=PREFIX_DESCR_SET, auto_id='%s')
-        subject_set = SubjectSet(P, prefix=PREFIX_SUBJECT_SET, auto_id='%s')
+        title_set = TitleSet(post, prefix=PREFIX_TITLE_SET, auto_id='%s')
+        descr_set = DescrSet(post, prefix=PREFIX_DESCR_SET, auto_id='%s')
+        subject_set = SubjectSet(post, prefix=PREFIX_SUBJECT_SET, auto_id='%s')
+        # noinspection PyUnboundLocalVariable
         contrib_nameIdLastIndex = _getNameIdCt(
-            P.dict() if P else None, PREFIX_CONTRIB_SET
+            post.dict() if post else None, PREFIX_CONTRIB_SET
         )
         contrib_set = ContribSet(
-            P,
+            post,
             prefix=PREFIX_CONTRIB_SET,
             auto_id='%s',
             nameIdLastIndex=contrib_nameIdLastIndex,
         )
-        date_set = DateSet(P, prefix=PREFIX_DATE_SET, auto_id='%s')
-        altid_set = AltIdSet(P, prefix=PREFIX_ALTID_SET, auto_id='%s')
-        relid_set = RelIdSet(P, prefix=PREFIX_RELID_SET, auto_id='%s')
-        size_set = SizeSet(P, prefix=PREFIX_SIZE_SET, auto_id='%s')
-        format_set = FormatSet(P, prefix=PREFIX_FORMAT_SET, auto_id='%s')
-        rights_set = RightsSet(P, prefix=PREFIX_RIGHTS_SET, auto_id='%s')
-        geoloc_set = GeoLocSet(P, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
-        fundingref_set = FundingRefSet(P, prefix=PREFIX_FUNDINGREF_SET, auto_id='%s')
+        date_set = DateSet(post, prefix=PREFIX_DATE_SET, auto_id='%s')
+        altid_set = AltIdSet(post, prefix=PREFIX_ALTID_SET, auto_id='%s')
+        relid_set = RelIdSet(post, prefix=PREFIX_RELID_SET, auto_id='%s')
+        size_set = SizeSet(post, prefix=PREFIX_SIZE_SET, auto_id='%s')
+        format_set = FormatSet(post, prefix=PREFIX_FORMAT_SET, auto_id='%s')
+        rights_set = RightsSet(post, prefix=PREFIX_RIGHTS_SET, auto_id='%s')
+        geoloc_set = GeoLocSet(post, prefix=PREFIX_GEOLOC_SET, auto_id='%s')
+        fundingref_set = FundingRefSet(post, prefix=PREFIX_FUNDINGREF_SET, auto_id='%s')
     # On Edit:GET (Convert DataCite XML dict to form)
     else:
         # Note: Remainder form only needed upon ID creation
@@ -1211,7 +1247,10 @@ def _getNameIdCt(fields, prefix):
                     if (form not in d) or (form in d and d[form] < nameIdCt)
                     else d[form]
                 )
-    y = [x[1] for x in list(d.items()) if d else r]
+
+    # Orig, invalid syntax in both Py2 and 3:
+    # > y = [x[1] for x in d.items() if d else r]
+    y = [x[1] for x in (list(d.items()) if d else r)]
     return y
 
 
@@ -1222,7 +1261,7 @@ def isValidDataciteXmlForm(form):
     more items don't validate
     """
     numFailed = 0
-    for f, v in form.items():
+    for f, v in list(form.items()):
         if v is None:
             r = True
         else:
@@ -1242,21 +1281,23 @@ def isValidDataciteXmlForm(form):
 
 # ToDo: This is not working. turned off for now.
 def _validate_proxies(user):
-    def innerfn(proxies):
+    def _innerfn(proxies):
         p_list = [p.strip() for p in proxies.split(',')]
         for proxy in p_list:
-            u = ezidapp.models.getUserByUsername(proxy)
-            if u == None or u == user or u.isAnonymous:
-                raise ValidationError(
-                    _("Unable to assign this username as proxy: \"") + proxy + "\"."
+            u = ezidapp.models.store_user.getUserByUsername(proxy)
+            if u is None or u == user or u.isAnonymous:
+                raise django.core.exceptions.ValidationError(
+                    _('Unable to assign this username as proxy: "') + proxy + "\"."
                 )
 
 
 def _validate_current_pw(username):
     def innerfn(pwcurrent):
-        auth = userauth.authenticate(username, pwcurrent)
+        auth = impl.userauth.authenticate(username, pwcurrent)
         if type(auth) is str or not auth:
-            raise ValidationError(_("Your current password is incorrect."))
+            raise django.core.exceptions.ValidationError(
+                _("Your current password is incorrect.")
+            )
 
     return innerfn
 
@@ -1264,7 +1305,7 @@ def _validate_current_pw(username):
 ################# User (My Account) Form  #################
 
 
-class BasePasswordForm(forms.Form):
+class BasePasswordForm(django.forms.Form):
     """Base Password Form object: used for Password Reset as well as for
     Account Settings."""
 
@@ -1272,13 +1313,15 @@ class BasePasswordForm(forms.Form):
         self.username = kwargs.pop('username', None)
         pw_reqd = kwargs.pop('pw_reqd', None)
         super(BasePasswordForm, self).__init__(*args, **kwargs)
-        self.fields["pwnew"] = forms.CharField(
-            required=pw_reqd, label=_("New Password"), widget=forms.PasswordInput()
+        self.fields["pwnew"] = django.forms.CharField(
+            required=pw_reqd,
+            label=_("New Password"),
+            widget=django.forms.PasswordInput(),
         )
-        self.fields["pwconfirm"] = forms.CharField(
+        self.fields["pwconfirm"] = django.forms.CharField(
             required=pw_reqd,
             label=_("Confirm New Password"),
-            widget=forms.PasswordInput(),
+            widget=django.forms.PasswordInput(),
         )
 
     def clean(self):
@@ -1286,7 +1329,7 @@ class BasePasswordForm(forms.Form):
         pwnew_c = cleaned_data.get("pwnew")
         pwconfirm_c = cleaned_data.get("pwconfirm")
         if pwnew_c and pwnew_c != pwconfirm_c:
-            raise ValidationError(
+            raise django.core.exceptions.ValidationError(
                 {'pwnew': _("Password and confirmation do not match")}
             )
         return cleaned_data
@@ -1298,20 +1341,20 @@ class UserForm(BasePasswordForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super(UserForm, self).__init__(*args, **kwargs)
-        self.fields["primaryContactName"] = forms.CharField(
+        self.fields["primaryContactName"] = django.forms.CharField(
             label=_("Primary Contact Name"),
             error_messages={
                 'required': _("Please fill in the full name for the primary contact.")
             },
         )
-        self.fields["primaryContactEmail"] = forms.EmailField(
+        self.fields["primaryContactEmail"] = django.forms.EmailField(
             label=_("Primary Contact Email"),
             error_messages={
                 'required': _("Please fill in your email."),
                 'invalid': _("Please fill in a valid email address."),
             },
         )
-        self.fields["primaryContactPhone"] = forms.CharField(
+        self.fields["primaryContactPhone"] = django.forms.CharField(
             label=_("Primary Contact Phone"),
             validators=[_validate_phone],
             error_messages={
@@ -1320,21 +1363,21 @@ class UserForm(BasePasswordForm):
                 )
             },
         )
-        self.fields["secondaryContactName"] = forms.CharField(
+        self.fields["secondaryContactName"] = django.forms.CharField(
             required=False, label=_("Secondary Contact Name")
         )
-        self.fields["secondaryContactEmail"] = forms.EmailField(
+        self.fields["secondaryContactEmail"] = django.forms.EmailField(
             required=False,
             label=_("Secondary Contact Email"),
             error_messages={'invalid': _("Please fill in a valid email address.")},
         )
-        self.fields["secondaryContactPhone"] = forms.CharField(
+        self.fields["secondaryContactPhone"] = django.forms.CharField(
             required=False,
             label=_("Secondary Contact Phone"),
             validators=[_validate_phone],
         )
 
-        self.fields["accountDisplayName"] = forms.CharField(
+        self.fields["accountDisplayName"] = django.forms.CharField(
             label=_("Account Display Name"),
             error_messages={
                 'required': _(
@@ -1342,20 +1385,20 @@ class UserForm(BasePasswordForm):
                 )
             },
         )
-        self.fields["accountEmail"] = forms.EmailField(
+        self.fields["accountEmail"] = django.forms.EmailField(
             label=_("Account Email"),
             error_messages={'required': _("Please fill in the email for the account.")},
         )
-        self.fields["proxy_users_picked"] = forms.CharField(
+        self.fields["proxy_users_picked"] = django.forms.CharField(
             required=False,
             label=_("Proxy User(s)"),
-            widget=forms.Textarea(attrs={'readonly': 'readonly'}),
+            widget=django.forms.Textarea(attrs={'readonly': 'readonly'}),
         )
         # validators=[_validate_proxies(self.user)])
-        self.fields["pwcurrent"] = forms.CharField(
+        self.fields["pwcurrent"] = django.forms.CharField(
             required=False,
             label=_("Current Password"),
-            widget=forms.PasswordInput(),
+            widget=django.forms.PasswordInput(),
             validators=[_validate_current_pw(self.username)],
         )
 
@@ -1370,14 +1413,14 @@ class UserForm(BasePasswordForm):
 ################# Search ID Form  #################
 
 
-class BaseSearchIdForm(forms.Form):
+class BaseSearchIdForm(django.forms.Form):
     """Base form object used for public Search ID page, and extended for use
     with Manage ID page."""
 
-    keywords = forms.CharField(
+    keywords = django.forms.CharField(
         required=False,
         label=_("Search Terms"),
-        widget=forms.TextInput(
+        widget=django.forms.TextInput(
             attrs={
                 'placeholder': _(
                     "Full text search using words about or describing the identifier."
@@ -1386,49 +1429,49 @@ class BaseSearchIdForm(forms.Form):
         ),
     )
     # ToDo: Determine proper regex for identifier for validation purposes
-    identifier = forms.CharField(
+    identifier = django.forms.CharField(
         required=False,
         label=_("Identifier/Identifier Prefix"),
-        widget=forms.TextInput(
+        widget=django.forms.TextInput(
             attrs={'placeholder': ABBR_EX + "doi:10.17605/OSF.IO/QXUPF"}
         ),
     )
-    title = forms.CharField(
+    title = django.forms.CharField(
         required=False,
         label=_("Object Title (What)"),
-        widget=forms.TextInput(
+        widget=django.forms.TextInput(
             attrs={'placeholder': ABBR_EX + "Welfare: current vs. never"}
         ),
     )
-    creator = forms.CharField(
+    creator = django.forms.CharField(
         required=False,
         label=_("Object Creator (Who)"),
-        widget=forms.TextInput(
+        widget=django.forms.TextInput(
             attrs={'placeholder': ABBR_EX + _("Schofield, Timothy")}
         ),
     )
-    publisher = forms.CharField(
+    publisher = django.forms.CharField(
         required=False,
         label=_("Object Publisher"),
-        widget=forms.TextInput(
+        widget=django.forms.TextInput(
             attrs={'placeholder': ABBR_EX + _("Open Science Framework")}
         ),
     )
-    pubyear_from = forms.RegexField(
+    pubyear_from = django.forms.RegexField(
         required=False,
         label=_("From"),
         regex='^\d{4}$',
         error_messages={'invalid': ERR_4DIGITYEAR},
-        widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2015"}),
+        widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2015"}),
     )
-    pubyear_to = forms.RegexField(
+    pubyear_to = django.forms.RegexField(
         required=False,
         label=_("To"),
         regex='^\d{4}$',
         error_messages={'invalid': ERR_4DIGITYEAR},
-        widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2016"}),
+        widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2016"}),
     )
-    object_type = forms.ChoiceField(
+    object_type = django.forms.ChoiceField(
         required=False, choices=RESOURCE_TYPES, label=_("Object Type")
     )
     ID_TYPES = (
@@ -1436,7 +1479,9 @@ class BaseSearchIdForm(forms.Form):
         ('ark', "ARK"),
         ('doi', "DOI"),
     )
-    id_type = forms.ChoiceField(required=False, choices=ID_TYPES, label=_("ID Type"))
+    id_type = django.forms.ChoiceField(
+        required=False, choices=ID_TYPES, label=_("ID Type")
+    )
 
     def clean(self):
         """Invalid if all fields are empty."""
@@ -1447,15 +1492,15 @@ class BaseSearchIdForm(forms.Form):
         if len(cleaned_data) < field_count:
             return cleaned_data
         form_empty = True
-        for k, v in cleaned_data.items():
+        for k, v in list(cleaned_data.items()):
             # Check for None or '', so IntegerFields with 0 or similar things don't seem empty.
             if not isinstance(v, bool):
                 cleaned_data[k] = cleaned_data[k].strip()
-                if not uic.isEmptyStr(v):
+                if not impl.ui_common.isEmptyStr(v):
                     form_empty = False
         # In manage page case, just output all owners IDs - no need to throw validation error
         if form_empty and type(self).__name__ != 'ManageSearchIdForm':
-            raise forms.ValidationError(
+            raise django.forms.ValidationError(
                 _("Please enter information in at least one field.")
             )
         return cleaned_data
@@ -1467,43 +1512,43 @@ class ManageSearchIdForm(BaseSearchIdForm):
     Inherits from BaseSearchIdForm
     """
 
-    target = forms.CharField(
+    target = django.forms.CharField(
         required=False,
         label=_("Target URL"),
-        widget=forms.TextInput(
+        widget=django.forms.TextInput(
             attrs={
                 'placeholder': ABBR_EX
                 + "http://pqr.pitt.edu/mol/KQSWENSZQKJHSQ-SCSAIBSYSA-N"
             }
         ),
     )
-    create_time_from = forms.RegexField(
+    create_time_from = django.forms.RegexField(
         required=False,
         label=_("From"),
         regex='^\d{4}-\d{2}-\d{2}$',
         error_messages={'invalid': ERR_DATE},
-        widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-03-30"}),
+        widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-03-30"}),
     )
-    create_time_to = forms.RegexField(
+    create_time_to = django.forms.RegexField(
         required=False,
         label=_("To"),
         regex='^\d{4}-\d{2}-\d{2}$',
         error_messages={'invalid': ERR_DATE},
-        widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-04-29"}),
+        widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-04-29"}),
     )
-    update_time_from = forms.RegexField(
+    update_time_from = django.forms.RegexField(
         required=False,
         label=_("From"),
         regex='^\d{4}-\d{2}-\d{2}$',
         error_messages={'invalid': ERR_DATE},
-        widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-03-30"}),
+        widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-03-30"}),
     )
-    update_time_to = forms.RegexField(
+    update_time_to = django.forms.RegexField(
         required=False,
         label=_("To"),
         regex='^\d{4}-\d{2}-\d{2}$',
         error_messages={'invalid': ERR_DATE},
-        widget=forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-04-29"}),
+        widget=django.forms.TextInput(attrs={'placeholder': ABBR_EX + "2016-04-29"}),
     )
     ID_STATUS = (
         ('', _("Select a status")),
@@ -1511,35 +1556,39 @@ class ManageSearchIdForm(BaseSearchIdForm):
         ('reserved', _("Reserved")),
         ('unavailable', _("Unavailable")),
     )
-    id_status = forms.ChoiceField(
+    id_status = django.forms.ChoiceField(
         required=False, choices=ID_STATUS, label=_("ID Status")
     )
     # render BooleanField as two radio buttons instead of a checkbox:
     # http://stackoverflow.com/questions/854683/django-booleanfield-as-radio-buttons
-    harvesting = forms.TypedChoiceField(
+    harvesting = django.forms.TypedChoiceField(
         required=False,
         label=_("Allows Harvesting/Indexing?"),
         coerce=lambda x: x == True,
         empty_value=True,
         choices=((True, _('Yes')), (False, _('No'))),
         initial=True,
-        widget=forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}),
+        widget=django.forms.RadioSelect(
+            attrs={'class': 'fcontrol__radio-button-stacked'}
+        ),
     )
-    hasMetadata = forms.TypedChoiceField(
+    hasMetadata = django.forms.TypedChoiceField(
         required=False,
         label=_("Has Metadata?"),
         coerce=lambda x: x == True,
         empty_value=True,
         choices=((True, _('Yes')), (False, _('No'))),
         initial=True,
-        widget=forms.RadioSelect(attrs={'class': 'fcontrol__radio-button-stacked'}),
+        widget=django.forms.RadioSelect(
+            attrs={'class': 'fcontrol__radio-button-stacked'}
+        ),
     )
 
 
 ################# Contact Us Form  #################
 
 
-class ContactForm(forms.Form):
+class ContactForm(django.forms.Form):
     """Form object for Contact Us form."""
 
     # Translators: These options will appear in drop-down on contact page
@@ -1567,17 +1616,17 @@ class ContactForm(forms.Form):
         )
         self.localized = kwargs.pop('localized', None)
         super(ContactForm, self).__init__(*args, **kwargs)
-        self.fields["contact_reason"] = forms.ChoiceField(
+        self.fields["contact_reason"] = django.forms.ChoiceField(
             required=False,
             choices=CONTACT_REASONS,
             label=_("Reason for contacting EZID"),
         )
-        self.fields["your_name"] = forms.CharField(
+        self.fields["your_name"] = django.forms.CharField(
             max_length=200,
             label=_("Your Name"),
             error_messages={'required': _("Please fill in your name")},
         )
-        self.fields["email"] = forms.EmailField(
+        self.fields["email"] = django.forms.EmailField(
             max_length=200,
             label=_("Your Email"),
             error_messages={
@@ -1585,24 +1634,25 @@ class ContactForm(forms.Form):
                 'invalid': _("Please fill in a valid email address."),
             },
         )
-        self.fields["affiliation"] = forms.CharField(
+        self.fields["affiliation"] = django.forms.CharField(
             required=False, label=_("Your Institution"), max_length=200
         )
-        self.fields["comment"] = forms.CharField(
+        self.fields["comment"] = django.forms.CharField(
             label=_("Please indicate any question or comment you may have"),
-            widget=forms.Textarea(attrs={'rows': '4'}),
+            widget=django.forms.Textarea(attrs={'rows': '4'}),
             error_messages={'required': _("Please fill in a question or comment.")},
         )
-        self.fields["hear_about"] = forms.ChoiceField(
+        self.fields["hear_about"] = django.forms.ChoiceField(
             required=False,
             choices=REFERRAL_SOURCES,
             label=_("How did you hear about us?"),
         )
+        # noinspection PySimplifyBooleanCheck
         if self.localized == False:
-            self.fields["newsletter"] = forms.BooleanField(
+            self.fields["newsletter"] = django.forms.BooleanField(
                 required=False, label=_("Subscribe to the EZID newsletter")
             )
-        self.fields["question"] = forms.CharField(
+        self.fields["question"] = django.forms.CharField(
             max_length=200,
             label=_("Human test: How many drop down menus are in this form?"),
             error_messages={'required': _("Please answer the question")},
@@ -1612,12 +1662,12 @@ class ContactForm(forms.Form):
 ################  Password Reset Landing Page ##########
 
 
-class PwResetLandingForm(forms.Form):
-    username = forms.CharField(
+class PwResetLandingForm(django.forms.Form):
+    username = django.forms.CharField(
         label=_("Username"),
         error_messages={'required': _("Please fill in your username.")},
     )
-    email = forms.EmailField(
+    email = django.forms.EmailField(
         label=_("Email address"),
         error_messages={
             'required': _("Please fill in your email address."),

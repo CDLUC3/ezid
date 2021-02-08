@@ -16,22 +16,24 @@
 import django.db.models
 import django.db.utils
 
-from . import custom_fields
-from . import identifier
-from . import search_datacenter
-from . import search_group
-from . import search_profile
-from . import search_user
-import util
-from . import validation
+import ezidapp.models.custom_fields
+import ezidapp.models.identifier
+import ezidapp.models.search_datacenter
+import ezidapp.models.search_group
+import ezidapp.models.search_profile
+import ezidapp.models.search_user
+import impl.util
+import ezidapp.models.validation
 
 # Deferred imports...
+import impl.util2
+
 """
 import util2
 """
 
 
-class SearchIdentifier(identifier.Identifier):
+class SearchIdentifier(ezidapp.models.identifier.Identifier):
     # An identifier as stored in the search database.
 
     # Foreign key declarations.  Note that in the search database every
@@ -39,25 +41,25 @@ class SearchIdentifier(identifier.Identifier):
     # For performance we do not validate foreign key references (but of
     # course they're still checked in the database).
 
-    owner = custom_fields.NonValidatingForeignKey(
-        search_user.SearchUser, on_delete=django.db.models.PROTECT
+    owner = ezidapp.models.custom_fields.NonValidatingForeignKey(
+        ezidapp.models.search_user.SearchUser, on_delete=django.db.models.PROTECT
     )
-    ownergroup = custom_fields.NonValidatingForeignKey(
-        search_group.SearchGroup,
+    ownergroup = ezidapp.models.custom_fields.NonValidatingForeignKey(
+        ezidapp.models.search_group.SearchGroup,
         blank=True,
         null=True,
         default=None,
         on_delete=django.db.models.PROTECT,
     )
-    datacenter = custom_fields.NonValidatingForeignKey(
-        search_datacenter.SearchDatacenter,
+    datacenter = ezidapp.models.custom_fields.NonValidatingForeignKey(
+        ezidapp.models.search_datacenter.SearchDatacenter,
         blank=True,
         null=True,
         default=None,
         on_delete=django.db.models.PROTECT,
     )
-    profile = custom_fields.NonValidatingForeignKey(
-        search_profile.SearchProfile,
+    profile = ezidapp.models.custom_fields.NonValidatingForeignKey(
+        ezidapp.models.search_profile.SearchProfile,
         blank=True,
         null=True,
         default=None,
@@ -66,9 +68,7 @@ class SearchIdentifier(identifier.Identifier):
 
     @property
     def defaultProfile(self):
-        import util2
-
-        return _getProfile(util2.defaultProfile(self.identifier))
+        return _getProfile(impl.util2.defaultProfile(self.identifier))
 
     searchableTarget = django.db.models.CharField(max_length=255, editable=False)
     # Computed value.  To support searching over target URLs (which are
@@ -112,8 +112,9 @@ class SearchIdentifier(identifier.Identifier):
         max_length=2,
         editable=False,
         choices=sorted(
-            [(v, k) for k, v in list(validation.resourceTypes.items())],
-            cmp=lambda a, b: cmp(a[1], b[1]),
+            [(v, k) for k, v in list(ezidapp.models.validation.resourceTypes.items())],
+            key=lambda x: x[1],
+            # cmp=lambda a, b: cmp(a[1], b[1]),
         ),
     )
     # The general resource type stored as a single-character mnemonic
@@ -164,6 +165,7 @@ class SearchIdentifier(identifier.Identifier):
     # N.B.: see note under updateFromLegacy below regarding this field.
 
     hasIssues = django.db.models.BooleanField(editable=False)
+
     # Computed value: True if the identifier "has issues," i.e., has
     # problems of some kind.
 
@@ -195,24 +197,26 @@ class SearchIdentifier(identifier.Identifier):
         self.resourcePublicationDate = ""
         self.resourceType = ""
         km = self.kernelMetadata()
-        if km.creator != None:
+        if km.creator is not None:
             self.resourceCreator = km.creator
-        if km.title != None:
+        if km.title is not None:
             self.resourceTitle = km.title
-        if km.publisher != None:
+        if km.publisher is not None:
             self.resourcePublisher = km.publisher
-        if km.date != None:
+        if km.date is not None:
             self.resourcePublicationDate = km.date
         d = km.validatedDate
-        if d != None:
+        if d is not None:
             self.searchablePublicationYear = int(d[:4])
         else:
             self.searchablePublicationYear = None
-        if km.type != None:
+        if km.type is not None:
             self.resourceType = km.type
         t = km.validatedType
-        if t != None:
-            self.searchableResourceType = validation.resourceTypes[t.split("/")[0]]
+        if t is not None:
+            self.searchableResourceType = ezidapp.models.validation.resourceTypes[
+                t.split("/")[0]
+            ]
         else:
             self.searchableResourceType = ""
         kw = [self.identifier, self.owner.username, self.ownergroup.groupname]
@@ -223,8 +227,8 @@ class SearchIdentifier(identifier.Identifier):
         for k, v in list(self.cm.items()):
             if k in ["datacite", "crossref"]:
                 try:
-                    kw.append(util.extractXmlContent(v))
-                except:
+                    kw.append(impl.util.extractXmlContent(v))
+                except Exception:
                     kw.append(v)
             else:
                 kw.append(v)
@@ -260,7 +264,7 @@ class SearchIdentifier(identifier.Identifier):
     # Note that MySQL FULLTEXT indexes must be created outside Django;
     # see .../etc/search-mysql-addendum.sql.
 
-    class Meta(identifier.Identifier.Meta):
+    class Meta(ezidapp.models.identifier.Identifier.Meta):
         index_together = [
             # batch download and management search
             ("owner", "identifier"),
@@ -343,7 +347,7 @@ def _getFromCache(cache, model, attribute, key, insertOnMissing=True):
     # Returns (I, cache) where I is the instance of 'model' for which
     # I.'attribute' = 'key'.  'cache' may be None on input, and it is
     # possibly set and/or augmented on return.
-    if cache == None:
+    if cache is None:
         cache = dict((getattr(i, attribute), i) for i in model.objects.all())
     if key in cache:
         i = cache[key]
@@ -361,7 +365,7 @@ def _getFromCache(cache, model, attribute, key, insertOnMissing=True):
                 i = model.objects.get(**{attribute: key})
             except model.DoesNotExist:
                 raise model.DoesNotExist(
-                    "No %s for %s='%s'." % (model.__name__, attribute, key)
+                    f"No {model.__name__} for {attribute}='{key}'."
                 )
         cache[key] = i
     return i, cache
@@ -370,7 +374,11 @@ def _getFromCache(cache, model, attribute, key, insertOnMissing=True):
 def _getUser(pid):
     global _userCache
     u, _userCache = _getFromCache(
-        _userCache, search_user.SearchUser, "pid", pid, insertOnMissing=False
+        _userCache,
+        ezidapp.models.search_user.SearchUser,
+        "pid",
+        pid,
+        insertOnMissing=False,
     )
     return u
 
@@ -378,7 +386,11 @@ def _getUser(pid):
 def _getGroup(pid):
     global _groupCache
     g, _groupCache = _getFromCache(
-        _groupCache, search_group.SearchGroup, "pid", pid, insertOnMissing=False
+        _groupCache,
+        ezidapp.models.search_group.SearchGroup,
+        "pid",
+        pid,
+        insertOnMissing=False,
     )
     return g
 
@@ -386,7 +398,10 @@ def _getGroup(pid):
 def _getDatacenter(symbol):
     global _datacenterCache
     d, _datacenterCache = _getFromCache(
-        _datacenterCache, search_datacenter.SearchDatacenter, "symbol", symbol
+        _datacenterCache,
+        ezidapp.models.search_datacenter.SearchDatacenter,
+        "symbol",
+        symbol,
     )
     return d
 
@@ -394,7 +409,7 @@ def _getDatacenter(symbol):
 def _getProfile(label):
     global _profileCache
     p, _profileCache = _getFromCache(
-        _profileCache, search_profile.SearchProfile, "label", label
+        _profileCache, ezidapp.models.search_profile.SearchProfile, "label", label
     )
     return p
 

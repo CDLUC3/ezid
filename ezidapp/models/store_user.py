@@ -21,11 +21,11 @@ import django.core.validators
 import django.db.models
 import django.db.transaction
 
-from . import shoulder
-from . import store_group
-from . import store_realm
-from . import user
-from . import validation
+import ezidapp.models.shoulder
+import ezidapp.models.store_group
+import ezidapp.models.store_realm
+import ezidapp.models.user
+import ezidapp.models.validation
 
 logger = logging.getLogger(__name__)
 
@@ -37,18 +37,18 @@ import ezidapp.admin
 """
 
 
-class StoreUser(user.User):
+class StoreUser(ezidapp.models.user.User):
 
     # Inherited foreign key declarations...
     group = django.db.models.ForeignKey(
-        store_group.StoreGroup, on_delete=django.db.models.PROTECT
+        ezidapp.models.store_group.StoreGroup, on_delete=django.db.models.PROTECT
     )
     realm = django.db.models.ForeignKey(
-        store_realm.StoreRealm, on_delete=django.db.models.PROTECT
+        ezidapp.models.store_realm.StoreRealm, on_delete=django.db.models.PROTECT
     )
 
     displayName = django.db.models.CharField(
-        "display name", max_length=255, validators=[validation.nonEmpty]
+        "display name", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
     )
     # The user's display name, e.g., "Brown University Library", which
     # is displayed in the UI wherever the username is.  Editable by the
@@ -63,11 +63,11 @@ class StoreUser(user.User):
     # Editable by the user.
 
     primaryContactName = django.db.models.CharField(
-        "name", max_length=255, validators=[validation.nonEmpty]
+        "name", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
     )
     primaryContactEmail = django.db.models.EmailField("email", max_length=255)
     primaryContactPhone = django.db.models.CharField(
-        "phone", max_length=255, validators=[validation.nonEmpty]
+        "phone", max_length=255, validators=[ezidapp.models.validation.nonEmpty]
     )
     # Primary contact info, which is required.  Editable by the user.
 
@@ -93,7 +93,9 @@ class StoreUser(user.User):
     # shoulders visible to the user are limited to those explicitly
     # listed in 'shoulders'.
 
-    shoulders = django.db.models.ManyToManyField(shoulder.Shoulder, blank=True)
+    shoulders = django.db.models.ManyToManyField(
+        ezidapp.models.shoulder.Shoulder, blank=True
+    )
     # The shoulders to which the user has access.  If
     # inheritGroupShoulders is True, the set matches the group's set; if
     # inheritGroupShoulders if False, the user's set may be a proper
@@ -251,7 +253,7 @@ class StoreUser(user.User):
                     self.setPassword(password)
                     self.save()
                     ezidapp.admin.scheduleUserChangePostCommitActions(self)
-            except:
+            except Exception:
                 pass
 
         return True
@@ -260,8 +262,8 @@ class StoreUser(user.User):
         verbose_name = "user"
         verbose_name_plural = "users"
 
-    def __unicode__(self):
-        return "%s (%s)" % (self.username, self.displayName)
+    def __str__(self):
+        return f"{self.username} ({self.displayName})"
 
     isAnonymous = False
     # See below.
@@ -288,7 +290,7 @@ def _databaseQuery():
 def _getCaches():
     global _caches
     caches = _caches
-    if caches == None:
+    if caches is None:
         pidCache = dict((u.pid, u) for u in _databaseQuery().all())
         usernameCache = dict((u.username, u) for u in list(pidCache.values()))
         idCache = dict((u.id, u) for u in list(pidCache.values()))
@@ -297,7 +299,7 @@ def _getCaches():
     return caches
 
 
-def getByPid(pid):
+def getUserByPid(pid):
     # Returns the user identified by persistent identifier 'pid', or
     # None if there is no such user.  AnonymousUser is returned in
     # response to "anonymous".
@@ -315,7 +317,7 @@ def getByPid(pid):
     return pidCache[pid]
 
 
-def getByUsername(username):
+def getUserByUsername(username):
     # Returns the user identified by local name 'username', or None if
     # there is no such user.  AnonymousUser is returned in response to
     # "anonymous".
@@ -333,26 +335,26 @@ def getByUsername(username):
     return usernameCache[username]
 
 
-def getById(id):
+def getUserById(id_str):
     # Returns the user identified by internal identifier 'id', or None
     # if there is no such user.
     pidCache, usernameCache, idCache = _getCaches()
-    if id not in idCache:
+    if id_str not in idCache:
         try:
-            u = _databaseQuery().get(id=id)
+            u = _databaseQuery().get(id=id_str)
         except StoreUser.DoesNotExist:
             return None
         pidCache[u.pid] = u
         usernameCache[u.username] = u
-        idCache[id] = u
-    return idCache[id]
+        idCache[id_str] = u
+    return idCache[id_str]
 
 
 def getAdminUser():
     # Returns the EZID administrator user.
-    import config
+    import impl.config as config
 
-    return getByUsername(config.get("auth.admin_username"))
+    return getUserByUsername(config.get("auth.admin_username"))
 
 
 class AnonymousUser(object):
@@ -360,8 +362,8 @@ class AnonymousUser(object):
     # be used directly--- an object need not be instantiated.
     pid = "anonymous"
     username = "anonymous"
-    group = store_group.AnonymousGroup
-    realm = store_realm.AnonymousRealm
+    group = ezidapp.models.store_group.AnonymousGroup
+    realm = ezidapp.models.store_realm.AnonymousRealm
 
     class inner(object):
         def all(self):
@@ -380,6 +382,6 @@ class AnonymousUser(object):
     isAnonymous = True
 
     @staticmethod
-    def authenticate(password):
+    def authenticate(_password):
         logger.debug('User is anonymous. Auth denied')
         return False

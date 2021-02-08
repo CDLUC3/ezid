@@ -27,8 +27,6 @@ EZID_SHADOW_CONFIG_FILE = '/dev/null'
 DEPLOYMENT_LEVEL = 'local'
 MINTERS_PATH = os.path.join(PROJECT_ROOT, "db", "minters")
 
-sys.path.append(os.path.join(PROJECT_ROOT, "impl"))
-
 DEBUG = True
 TEST_RUNNER = None
 
@@ -48,17 +46,22 @@ ADMIN_PW = 'admin'
 ALLOWED_HOSTS = ['*']
 
 # DB setup for use with tunnel
+# noinspection PyDictDuplicateKeys,PyDictDuplicateKeys
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "HOST": "localhost",
+        # "HOST": "localhost",
+        "HOST": "r2",
         "NAME": "ezid_tests",
-        "USER": "ezid_test_user",
+        "NAME": "ezid",
+        # "USER": "ezid_test_user",
         "PASSWORD": "",
         # "AUTOCOMMIT": False,
         "ATOMIC_REQUESTS": False,
         "OPTIONS": {"charset": "utf8mb4"},
-        'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock',},
+        'DATABASE_OPTIONS': {
+            'unix_socket': '/tmp/mysql.sock',
+        },
         # "ENGINE": "django.db.backends.mysql",
         # "HOST": "127.0.0.1",
         # # "PORT": "3300",
@@ -72,7 +75,7 @@ DATABASES = {
     },
 }
 DATABASES["search"] = DATABASES["default"].copy()
-DATABASES["search"]["fulltextSearchSupported"] =  True
+DATABASES["search"]["fulltextSearchSupported"] = True
 
 
 SEARCH_STORE_SAME_DATABASE = True
@@ -97,7 +100,7 @@ SECRET_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
-    "userauth.LdapSha1PasswordHasher",
+    "impl.userauth.LdapSha1PasswordHasher",
 ]
 
 MIDDLEWARE_CLASSES = (
@@ -106,7 +109,7 @@ MIDDLEWARE_CLASSES = (
     "django.middleware.locale.LocaleMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "middleware.ExceptionScrubberMiddleware",
+    "impl.middleware.ExceptionScrubberMiddleware",
 )
 
 ROOT_URLCONF = "settings.urls"
@@ -172,7 +175,11 @@ logging.config.dictConfig(
             },
         },
         'loggers': {
-            '': {'handlers': ['console'], 'propagate': True, 'level': 'DEBUG', },
+            '': {
+                'handlers': ['console'],
+                'propagate': True,
+                'level': 'DEBUG',
+            },
             # Increase logging level on loggers that are noisy at debug level
             'django.db': {
                 'level': 'ERROR',
@@ -193,7 +200,7 @@ logging.config.dictConfig(
 
 # Ensure that user 'admin' with password 'admin' exists and is an admin
 # import ezidapp.models
-# store_user_model = ezidapp.models.StoreUser.objects.update_or_create(
+# store_user_model = ezidapp.models.store_user.StoreUser.objects.update_or_create(
 #     name='admin',
 #     password='admin',
 #     displayName='Test Admin',

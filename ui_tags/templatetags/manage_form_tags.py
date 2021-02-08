@@ -1,14 +1,12 @@
-from django import template
-from django.conf import settings
-from django.utils.html import escape
-from .decorators import basictag
 import datetime
-import urllib.request, urllib.parse, urllib.error
-from django.core.urlresolvers import reverse
-import itertools
+
+import django.conf
+import django.urls.resolvers
+import django.template
+import django.utils.html
 from django.utils.translation import ugettext as _
 
-register = template.Library()
+register = django.template.Library()
 
 
 @register.simple_tag
@@ -36,16 +34,16 @@ def make_check_tag(item, friendly_names, selected):
         checked_str = ""
     return (
         "<input type='checkbox' id='"
-        + escape(item)
+        + django.utils.html.escape(item)
         + "' name='"
-        + escape(item)
+        + django.utils.html.escape(item)
         + "' value='t'"
         + checked_str
         + " \> "
         + "<label for='"
-        + escape(item)
+        + django.utils.html.escape(item)
         + "'>"
-        + escape(friendly_names[item][1])
+        + django.utils.html.escape(friendly_names[item][1])
         + "</label>"
     )
 
@@ -62,13 +60,13 @@ def column_choices_hidden(fields_selected):
 @register.simple_tag
 def rewrite_hidden(request, exclude=None):
     hidden = ''
-    for key, value in request.items():
+    for key, value in list(request.items()):
         if exclude is None or not (key in exclude):
             hidden += (
                 "<input type='hidden' name='"
-                + escape(key)
+                + django.utils.html.escape(key)
                 + "' value='"
-                + escape(value)
+                + django.utils.html.escape(value)
                 + "'/>"
             )
     return hidden
@@ -126,11 +124,11 @@ def column_head(request, field, fields_mapped, order_by, sort, primary_page):
         c['p'] = 1
     form_and_hidden = (
         "<form method='get' action='"
-        + reverse(primary_page)
+        + django.urls.reverse(primary_page)
         + "' role='form'>"
         + rewrite_hidden(c)
     )
-    r = "<th>" + escape(fields_mapped[field][1]) + form_and_hidden
+    r = "<th>" + django.utils.html.escape(fields_mapped[field][1]) + form_and_hidden
     if field == order_by:
         r += (
             "<button class='search__action "
@@ -198,7 +196,7 @@ def string_value(x, href):
     if x is None or x.strip() == '':
         return '&nbsp;'
     else:
-        return href + escape(x) + "</a>"
+        return href + django.utils.html.escape(x) + "</a>"
 
 
 @register.simple_tag
@@ -209,18 +207,24 @@ def identifier_disp(x, testPrefixes):
                 "<a href='/id/"
                 + x
                 + "' class='link__primary'>&#42;"
-                + escape(x)
+                + django.utils.html.escape(x)
                 + "</a>"
             )
-    return "<a href='/id/" + x + "' class='link__primary'>" + escape(x) + "</a>"
+    return (
+        "<a href='/id/"
+        + x
+        + "' class='link__primary'>"
+        + django.utils.html.escape(x)
+        + "</a>"
+    )
 
 
 def datetime_disp(x, href):
     return (
         href
-        + escape(
+        + django.utils.html.escape(
             datetime.datetime.utcfromtimestamp(x).strftime(
-                settings.TIME_FORMAT_UI_METADATA
+                django.conf.settings.TIME_FORMAT_UI_METADATA
             )
         )
         + " UTC</a>"
@@ -297,7 +301,7 @@ def pager_display(request, current_page, total_pages, page_size, select_position
     return p_out
 
 
-def page_link(request, this_page, link_text, page_size, cname, title=None):
+def page_link(_request, this_page, link_text, _page_size, cname, title=None):
     attr_aria = " aria-label='" + title + "'" if title else ""
     return (
         "<button data-page='"
@@ -307,6 +311,6 @@ def page_link(request, this_page, link_text, page_size, cname, title=None):
         + "'"
         + attr_aria
         + " type='button'>"
-        + escape(link_text)
+        + django.utils.html.escape(link_text)
         + "</button>"
     )

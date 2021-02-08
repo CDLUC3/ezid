@@ -20,14 +20,20 @@ import django.core.exceptions
 import django.db.transaction
 import django.db.utils
 
-from . import config
-import ezidapp.models
-from . import log
-from . import policy
-from . import util
-from . import util2
+# import ezidapp.models.identifier
+import ezidapp.models.model_util
+import ezidapp.models.shoulder
+import ezidapp.models.store_identifier
+import ezidapp.models.store_user
+import ezidapp.models.update_queue
+import impl.config
+import impl.log
+
 # import noid_nog
-from .nog import minter
+import impl.nog.minter
+import impl.policy
+import impl.util
+import impl.util2
 
 _perUserThreadLimit = None
 _perUserThrottle = None
@@ -38,8 +44,10 @@ logger = logging.getLogger(__name__)
 
 def loadConfig():
     global _perUserThreadLimit, _perUserThrottle
-    _perUserThreadLimit = int(config.get("DEFAULT.max_threads_per_user"))
-    _perUserThrottle = int(config.get("DEFAULT.max_concurrent_operations_per_user"))
+    _perUserThreadLimit = int(impl.config.get("DEFAULT.max_threads_per_user"))
+    _perUserThrottle = int(
+        impl.config.get("DEFAULT.max_concurrent_operations_per_user")
+    )
 
 
 # Simple locking mechanism to ensure that, in a multi-threaded
@@ -67,16 +75,18 @@ def _decrementCount(d, k):
     if d[k] == 1:
         del d[k]
     else:
-        d[k] = d[k] - 1
+        d[k] -= 1
 
 
 def _acquireIdentifierLock(identifier, user):
     _lock.acquire()
+    # noinspection PyTypeChecker
     while (
         _paused
         or identifier in _lockedIdentifiers
         or _activeUsers.get(user, 0) >= _perUserThrottle
     ):
+        # noinspection PyTypeChecker
         if (
             _activeUsers.get(user, 0) + _waitingUsers.get(user, 0)
             >= _perUserThreadLimit
@@ -112,7 +122,7 @@ def getStatus():
     """
     _lock.acquire()
     try:
-        return (_activeUsers.copy(), _waitingUsers.copy(), _paused)
+        return _activeUsers.copy(), _waitingUsers.copy(), _paused
     finally:
         _lock.release()
 
@@ -135,6 +145,7 @@ def pause(newValue):
         _lock.release()
 
 
+# noinspection PyDefaultArgument
 def mintIdentifier(shoulder, user, metadata={}):
     try:
         if not _acquireIdentifierLock(
@@ -148,6 +159,7 @@ def mintIdentifier(shoulder, user, metadata={}):
         )
 
 
+# noinspection PyDefaultArgument
 def _mintIdentifier(shoulder, user, metadata={}):
     """Mints an identifier under the given qualified shoulder, e.g.,
     "doi:10.5060/".  'user' is the requestor and should be an authenticated
@@ -178,7 +190,7 @@ def _mintIdentifier(shoulder, user, metadata={}):
     # having to wrap large sections of code in exception handlers just for redirecting
     # to a logger.
 
-    log.begin(
+    impl.log.begin(
         tid,
         "mintIdentifier",
         shoulder,
@@ -188,10 +200,10 @@ def _mintIdentifier(shoulder, user, metadata={}):
         user.group.pid,
     )
 
-    shoulder_model = ezidapp.models.getExactShoulderMatch(shoulder)
+    shoulder_model = ezidapp.models.shoulder.getExactShoulderMatch(shoulder)
 
     if shoulder_model is None:
-        log.badRequest(tid)
+        impl.log.badRequest(tid)
         # TODO: Errors should be raised, not returned.
         return "error: bad request - no such shoulder"
 
@@ -199,10 +211,10 @@ def _mintIdentifier(shoulder, user, metadata={}):
         identifier = "uuid:" + str(uuid.uuid1())
     else:
         if shoulder_model.minter == "":
-            log.badRequest(tid)
+            impl.log.badRequest(tid)
             return "error: bad request - shoulder does not support minting"
 
-        identifier = minter.mint_id(shoulder_model)
+        identifier = impl.nog.minter.mint_id(shoulder_model)
         logger.debug('Minter returned identifier: {}'.format(identifier))
 
         if shoulder_model.prefix.startswith('doi:'):
@@ -210,13 +222,13 @@ def _mintIdentifier(shoulder, user, metadata={}):
         elif shoulder_model.prefix.startswith('ark:/'):
             identifier = shoulder_model.prefix + identifier.lower()
         else:
-            raise False('Expected ARK or DOI prefix, not "{}"'.format(
-                shoulder_model.prefix
-            ))
+            raise ValueError(
+                'Expected ARK or DOI prefix, not "{}"'.format(shoulder_model.prefix)
+            )
 
         logger.debug('Final shoulder + identifier: {}'.format(identifier))
 
-    log.success(tid, identifier)
+    impl.log.success(tid, identifier)
 
     return createIdentifier(identifier, user, metadata)
 
@@ -248,14 +260,14 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
     """
     if metadata is None:
         metadata = {}
-    nqidentifier = util.normalizeIdentifier(identifier)
-    if nqidentifier == None:
+    nqidentifier = impl.util.normalizeIdentifier(identifier)
+    if nqidentifier is None:
         return "error: bad request - invalid identifier"
     tid = uuid.uuid1()
     if not _acquireIdentifierLock(nqidentifier, user.username):
         return "error: concurrency limit exceeded"
     try:
-        log.begin(
+        impl.log.begin(
             tid,
             "createIdentifier",
             nqidentifier,
@@ -263,63 +275,69 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
             user.pid,
             user.group.groupname,
             user.group.pid,
-            *[a for p in list(metadata.items()) for a in p]
+            *[a for p in list(metadata.items()) for a in p],
         )
-        if not policy.authorizeCreate(user, nqidentifier):
-            log.forbidden(tid)
+        if not impl.policy.authorizeCreate(user, nqidentifier):
+            impl.log.forbidden(tid)
             return "error: forbidden"
-        si = ezidapp.models.StoreIdentifier(
+        si = ezidapp.models.store_identifier.StoreIdentifier(
             identifier=nqidentifier,
-            owner=(None if user == ezidapp.models.AnonymousUser else user),
+            owner=(None if user == ezidapp.models.store_user.AnonymousUser else user),
         )
         si.updateFromUntrustedLegacy(metadata, allowRestrictedSettings=user.isSuperuser)
         if si.isDoi:
-            s = ezidapp.models.getLongestShoulderMatch(si.identifier)
+            s = ezidapp.models.shoulder.getLongestShoulderMatch(si.identifier)
             # Should never happen.
-            assert s != None, "no matching shoulder found"
+            assert s is not None, "no matching shoulder found"
             if s.isDatacite:
-                if si.datacenter == None:
+                if si.datacenter is None:
                     si.datacenter = s.datacenter
             elif s.isCrossref:
                 if not si.isCrossref:
                     if si.isReserved:
-                        si.crossrefStatus = ezidapp.models.StoreIdentifier.CR_RESERVED
+                        si.crossrefStatus = (
+                            ezidapp.models.store_identifier.StoreIdentifier.CR_RESERVED
+                        )
                     else:
-                        si.crossrefStatus = ezidapp.models.StoreIdentifier.CR_WORKING
+                        si.crossrefStatus = (
+                            ezidapp.models.store_identifier.StoreIdentifier.CR_WORKING
+                        )
             else:
                 assert False, "unhandled case"
         si.my_full_clean()
         if si.owner != user:
-            if not policy.authorizeOwnershipChange(user, user, si.owner):
-                log.badRequest(tid)
+            if not impl.policy.authorizeOwnershipChange(user, user, si.owner):
+                impl.log.badRequest(tid)
                 return "error: bad request - ownership change prohibited"
         with django.db.transaction.atomic():
             si.save()
             ezidapp.models.update_queue.enqueue(si, "create")
     except django.core.exceptions.ValidationError as e:
-        log.badRequest(tid)
-        return "error: bad request - " + util.formatValidationError(e)
+        impl.log.badRequest(tid)
+        return "error: bad request - " + impl.util.formatValidationError(e)
     except django.db.utils.IntegrityError as e:
         logger.error(str(e))
-        log.badRequest(tid)
+        impl.log.badRequest(tid)
         if updateIfExists:
             return setMetadata(identifier, user, metadata, internalCall=True)
         else:
             return "error: bad request - identifier already exists"
     except Exception as e:
-        log.error(tid, e)
+        impl.log.error(tid, e)
         return "error: internal server error"
     else:
-        log.success(tid)
+        impl.log.success(tid)
         if si.isDoi:
-            return "success: %s | %s" % (nqidentifier, si.arkAlias)
+            return f"success: {nqidentifier} | {si.arkAlias}"
         else:
             return "success: " + nqidentifier
     finally:
         _releaseIdentifierLock(nqidentifier, user.username)
 
 
-def getMetadata(identifier, user=ezidapp.models.AnonymousUser, prefixMatch=False):
+def getMetadata(
+    identifier, user=ezidapp.models.store_user.AnonymousUser, prefixMatch=False
+):
     """Returns all metadata for a given qualified identifier, e.g.,
     "doi:10.5060/FOO".  'user' is the requestor and should be an authenticated
     StoreUser object.  The successful return is a pair (status, dictionary)
@@ -343,14 +361,14 @@ def getMetadata(identifier, user=ezidapp.models.AnonymousUser, prefixMatch=False
 
       success: doi:10.5060/FOO in_lieu_of doi:10.5060/FOOBAR
     """
-    nqidentifier = util.normalizeIdentifier(identifier)
-    if nqidentifier == None:
+    nqidentifier = impl.util.normalizeIdentifier(identifier)
+    if nqidentifier is None:
         return "error: bad request - invalid identifier"
     tid = uuid.uuid1()
     if not _acquireIdentifierLock(nqidentifier, user.username):
         return "error: concurrency limit exceeded"
     try:
-        log.begin(
+        impl.log.begin(
             tid,
             "getMetadata",
             nqidentifier,
@@ -360,24 +378,24 @@ def getMetadata(identifier, user=ezidapp.models.AnonymousUser, prefixMatch=False
             user.group.pid,
             str(prefixMatch),
         )
-        si = ezidapp.models.getIdentifier(nqidentifier, prefixMatch)
-        if not policy.authorizeView(user, si):
-            log.forbidden(tid)
+        si = ezidapp.models.store_identifier.getIdentifier(nqidentifier, prefixMatch)
+        if not impl.policy.authorizeView(user, si):
+            impl.log.forbidden(tid)
             return "error: forbidden"
         d = si.toLegacy()
-        util2.convertLegacyToExternal(d)
+        ezidapp.models.model_util.convertLegacyToExternal(d)
         if si.isDoi:
             d["_shadowedby"] = si.arkAlias
-        log.success(tid)
+        impl.log.success(tid)
         if prefixMatch and si.identifier != nqidentifier:
-            return ("success: %s in_lieu_of %s" % (si.identifier, nqidentifier), d)
+            return f"success: {si.identifier} in_lieu_of {nqidentifier}", d
         else:
-            return ("success: " + nqidentifier, d)
-    except ezidapp.models.StoreIdentifier.DoesNotExist:
-        log.badRequest(tid)
+            return "success: " + nqidentifier, d
+    except ezidapp.models.store_identifier.StoreIdentifier.DoesNotExist:
+        impl.log.badRequest(tid)
         return "error: bad request - no such identifier"
     except Exception as e:
-        log.error(tid, e)
+        impl.log.error(tid, e)
         return "error: internal server error"
     finally:
         _releaseIdentifierLock(nqidentifier, user.username)
@@ -406,15 +424,15 @@ def setMetadata(
       error: internal server error
       error: concurrency limit exceeded
     """
-    nqidentifier = util.normalizeIdentifier(identifier)
-    if nqidentifier == None:
+    nqidentifier = impl.util.normalizeIdentifier(identifier)
+    if nqidentifier is None:
         return "error: bad request - invalid identifier"
     tid = uuid.uuid1()
     if not internalCall:
         if not _acquireIdentifierLock(nqidentifier, user.username):
             return "error: concurrency limit exceeded"
     try:
-        log.begin(
+        impl.log.begin(
             tid,
             "setMetadata",
             nqidentifier,
@@ -422,38 +440,40 @@ def setMetadata(
             user.pid,
             user.group.groupname,
             user.group.pid,
-            *[a for p in list(metadata.items()) for a in p]
+            *[a for p in list(metadata.items()) for a in p],
         )
-        si = ezidapp.models.getIdentifier(nqidentifier)
-        if not policy.authorizeUpdate(user, si):
-            log.forbidden(tid)
+        si = ezidapp.models.store_identifier.getIdentifier(nqidentifier)
+        if not impl.policy.authorizeUpdate(user, si):
+            impl.log.forbidden(tid)
             return "error: forbidden"
         previousOwner = si.owner
         si.updateFromUntrustedLegacy(metadata, allowRestrictedSettings=user.isSuperuser)
         if si.isCrossref and not si.isReserved and updateExternalServices:
-            si.crossrefStatus = ezidapp.models.StoreIdentifier.CR_WORKING
+            si.crossrefStatus = (
+                ezidapp.models.store_identifier.StoreIdentifier.CR_WORKING
+            )
             si.crossrefMessage = ""
         if "_updated" not in metadata:
             si.updateTime = ""
         si.my_full_clean()
         if si.owner != previousOwner:
-            if not policy.authorizeOwnershipChange(user, previousOwner, si.owner):
-                log.badRequest(tid)
+            if not impl.policy.authorizeOwnershipChange(user, previousOwner, si.owner):
+                impl.log.badRequest(tid)
                 return "error: bad request - ownership change prohibited"
         with django.db.transaction.atomic():
             si.save()
             ezidapp.models.update_queue.enqueue(si, "update", updateExternalServices)
-    except ezidapp.models.StoreIdentifier.DoesNotExist:
-        log.badRequest(tid)
+    except ezidapp.models.store_identifier.StoreIdentifier.DoesNotExist:
+        impl.log.badRequest(tid)
         return "error: bad request - no such identifier"
     except django.core.exceptions.ValidationError as e:
-        log.badRequest(tid)
-        return "error: bad request - " + util.formatValidationError(e)
+        impl.log.badRequest(tid)
+        return "error: bad request - " + impl.util.formatValidationError(e)
     except Exception as e:
-        log.error(tid, e)
+        impl.log.error(tid, e)
         return "error: internal server error"
     else:
-        log.success(tid)
+        impl.log.success(tid)
         return "success: " + nqidentifier
     finally:
         if not internalCall:
@@ -475,14 +495,14 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
       error: internal server error
       error: concurrency limit exceeded
     """
-    nqidentifier = util.normalizeIdentifier(identifier)
-    if nqidentifier == None:
+    nqidentifier = impl.util.normalizeIdentifier(identifier)
+    if nqidentifier is None:
         return "error: bad request - invalid identifier"
     tid = uuid.uuid1()
     if not _acquireIdentifierLock(nqidentifier, user.username):
         return "error: concurrency limit exceeded"
     try:
-        log.begin(
+        impl.log.begin(
             tid,
             "deleteIdentifier",
             nqidentifier,
@@ -491,24 +511,24 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
             user.group.groupname,
             user.group.pid,
         )
-        si = ezidapp.models.getIdentifier(nqidentifier)
-        if not policy.authorizeDelete(user, si):
-            log.forbidden(tid)
+        si = ezidapp.models.store_identifier.getIdentifier(nqidentifier)
+        if not impl.policy.authorizeDelete(user, si):
+            impl.log.forbidden(tid)
             return "error: forbidden"
         if not si.isReserved and not user.isSuperuser:
-            log.badRequest(tid)
+            impl.log.badRequest(tid)
             return "error: bad request - identifier status does not support deletion"
         with django.db.transaction.atomic():
             si.delete()
             ezidapp.models.update_queue.enqueue(si, "delete", updateExternalServices)
-    except ezidapp.models.StoreIdentifier.DoesNotExist:
-        log.badRequest(tid)
+    except ezidapp.models.store_identifier.StoreIdentifier.DoesNotExist:
+        impl.log.badRequest(tid)
         return "error: bad request - no such identifier"
     except Exception as e:
-        log.error(tid, e)
+        impl.log.error(tid, e)
         return "error: internal server error"
     else:
-        log.success(tid)
+        impl.log.success(tid)
         return "success: " + nqidentifier
     finally:
         _releaseIdentifierLock(nqidentifier, user.username)

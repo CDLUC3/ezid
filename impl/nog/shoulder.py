@@ -1,32 +1,25 @@
-
-
 import datetime
 import logging
 
+import django.contrib.auth.models
 import django.core
 import django.core.management
-import django.db
-
-import ezidapp.models
-import nog.id_ns
-
-try:
-    import bsddb
-except ImportError:
-    import bsddb3 as bsddb
-
-import django.contrib.auth.models
 import django.core.management
+import django.db
 import django.db.transaction
+import django.db.utils
 
-import nog.minter
-
+import ezidapp.models.shoulder
+import ezidapp.models.store_datacenter
+import ezidapp.models.store_datacenter
+import impl.nog.id_ns
+import impl.nog.minter
 
 log = logging.getLogger(__name__)
 
 
 def assert_valid_datacenter_name(name_str):
-    name_set = {x.name for x in ezidapp.models.Shoulder.objects.all()}
+    name_set = {x.name for x in ezidapp.models.shoulder.Shoulder.objects.all()}
     if name_str not in name_set:
         log.error(
             'Datacenter must be one of:\n{}'.format(
@@ -45,10 +38,10 @@ def assert_shoulder_type_available(org_str, type_str):
     """
     assert type_str in ('doi', 'ark'), 'Invalid shoulder type: {}'.format(type_str)
     try:
-        shoulder_model = ezidapp.models.Shoulder.objects.filter(
+        shoulder_model = ezidapp.models.shoulder.Shoulder.objects.filter(
             type=type_str.upper(), name=org_str
         ).get()
-    except ezidapp.models.Shoulder.DoesNotExist:
+    except ezidapp.models.shoulder.Shoulder.DoesNotExist:
         pass
     else:
         raise django.core.management.CommandError(
@@ -73,7 +66,9 @@ def assert_super_shoulder_slash(ns, is_super_shoulder, is_force):
 
 
 def assert_valid_datacenter(datacenter_str):
-    datacenter_set = {x.symbol for x in ezidapp.models.StoreDatacenter.objects.all()}
+    datacenter_set = {
+        x.symbol for x in ezidapp.models.store_datacenter.StoreDatacenter.objects.all()
+    }
     if datacenter_str not in datacenter_set:
         log.error(
             'Datacenter must be one of:\n{}'.format(
@@ -87,14 +82,14 @@ def assert_valid_datacenter(datacenter_str):
 
 def dump_shoulders():
     log.info('Shoulders:')
-    for m in ezidapp.models.Shoulder.objects.all().order_by('name', 'prefix'):
+    for m in ezidapp.models.shoulder.Shoulder.objects.all().order_by('name', 'prefix'):
         log.info('{:<20} {} '.format(m.prefix.encode('utf-8'), m.name.encode('utf-8')))
 
 
 def dump_datacenters():
-    # for x in ezidapp.models.SearchDatacenter.objects.all():
+    # for x in ezidapp.models.search_datacenter.SearchDatacenter.objects.all():
     #     log.info(x)
-    for x in ezidapp.models.StoreDatacenter.objects.all():
+    for x in ezidapp.models.store_datacenter.StoreDatacenter.objects.all():
         log.info(x)
 
 
@@ -109,20 +104,22 @@ def create_shoulder(
     is_force,
     is_debug,
 ):
-    assert isinstance(ns, nog.id_ns.IdNamespace)
+    assert isinstance(ns, impl.nog.id_ns.IdNamespace)
     assert_shoulder_type_available(organization_name_str, ns.scheme)
     assert_super_shoulder_slash(ns, is_super_shoulder, is_force)
     log.info('Creating minter for {} shoulder: {}'.format(ns.scheme.upper(), ns))
     # Create the minter BerkeleyDB.
-    bdb_path = nog.minter.create_minter_database(ns)
+    bdb_path = impl.nog.minter.create_minter_database(ns)
     log.debug('Minter BerkeleyDB created at: {}'.format(bdb_path.as_posix()))
     # Add new shoulder row to the shoulder table.
     try:
-        ezidapp.models.Shoulder.objects.create(
+        ezidapp.models.shoulder.Shoulder.objects.create(
             prefix=ns,
             type=ns.scheme.upper(),
             name=organization_name_str,
-            minter="ezid:/{}".format('/'.join(bdb_path.parts[-3:-1]),),
+            minter="ezid:/{}".format(
+                '/'.join(bdb_path.parts[-3:-1]),
+            ),
             datacenter=datacenter_model,
             crossrefEnabled=is_crossref,
             isTest=is_test,

@@ -22,16 +22,22 @@
 # -----------------------------------------------------------------------------
 
 import datetime
-import django.db
-import django.db.models
-import django.db.transaction
 import threading
 import time
 import uuid
 
-from . import config
-import ezidapp.models
-from . import log
+import django.conf
+import django.db
+import django.db.models
+import django.db.transaction
+
+import ezidapp.models.search_identifier
+import ezidapp.models.search_user
+import ezidapp.models.statistics
+import ezidapp.models.statistics
+import ezidapp.models.statistics
+import impl.config
+import impl.log
 
 _enabled = None
 _computeCycle = None
@@ -42,6 +48,7 @@ _threadName = None
 def _sameTimeOfDayDelta():
     now = datetime.datetime.now()
     midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    # noinspection PyTypeChecker
     d = _computeCycle - (now - midnight).total_seconds()
     if d < 0:
         d += 86400
@@ -52,8 +59,8 @@ def _timestampToMonth(t):
     return time.strftime("%Y-%m", time.localtime(t))
 
 
-def _identifierType(id):
-    return id.split(":")[0].upper()
+def _identifierType(id_str):
+    return id_str.split(":")[0].upper()
 
 
 def recomputeStatistics():
@@ -64,7 +71,7 @@ def recomputeStatistics():
     try:
         users = {
             u.id: (u.pid, u.group.pid, u.realm.name)
-            for u in ezidapp.models.SearchUser.objects.all().select_related(
+            for u in ezidapp.models.search_user.SearchUser.objects.all().select_related(
                 "group", "realm"
             )
         }
@@ -72,7 +79,7 @@ def recomputeStatistics():
         lastIdentifier = ""
         while True:
             qs = (
-                ezidapp.models.SearchIdentifier.objects.filter(
+                ezidapp.models.search_identifier.SearchIdentifier.objects.filter(
                     identifier__gt=lastIdentifier
                 )
                 .only("identifier", "owner_id", "createTime", "isTest", "hasMetadata")
@@ -81,20 +88,20 @@ def recomputeStatistics():
             qs = list(qs[:1000])
             if len(qs) == 0:
                 break
-            for id in qs:
-                if not id.isTest and id.owner_id in users:
+            for id_model in qs:
+                if not id_model.isTest and id_model.owner_id in users:
                     t = (
-                        _timestampToMonth(id.createTime),
-                        id.owner_id,
-                        _identifierType(id.identifier),
-                        id.hasMetadata,
+                        _timestampToMonth(id_model.createTime),
+                        id_model.owner_id,
+                        _identifierType(id_model.identifier),
+                        id_model.hasMetadata,
                     )
                     counts[t] = counts.get(t, 0) + 1
             lastIdentifier = qs[-1].identifier
         with django.db.transaction.atomic():
-            ezidapp.models.Statistics.objects.all().delete()
+            ezidapp.models.statistics.Statistics.objects.all().delete()
             for t, v in list(counts.items()):
-                c = ezidapp.models.Statistics(
+                c = ezidapp.models.statistics.Statistics(
                     month=t[0],
                     owner=users[t[1]][0],
                     ownergroup=users[t[1]][1],
@@ -106,7 +113,7 @@ def recomputeStatistics():
                 c.full_clean(validate_unique=False)
                 c.save(force_insert=True)
     except Exception as e:
-        log.otherError("stats.recomputeStatistics", e)
+        impl.log.otherError("stats.recomputeStatistics", e)
 
 
 def _statisticsDaemon():
@@ -126,6 +133,7 @@ def _statisticsDaemon():
         if _computeSameTimeOfDay:
             time.sleep(_sameTimeOfDayDelta())
         else:
+            # noinspection PyTypeChecker
             time.sleep(max(_computeCycle - (time.time() - start), 0))
 
 
@@ -133,12 +141,13 @@ def loadConfig():
     global _enabled, _computeCycle, _computeSameTimeOfDay, _threadName
     _enabled = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and config.get("daemons.statistics_enabled").lower() == "true"
+        and impl.config.get("daemons.statistics_enabled").lower() == "true"
     )
     if _enabled:
-        _computeCycle = int(config.get("daemons.statistics_compute_cycle"))
+        _computeCycle = int(impl.config.get("daemons.statistics_compute_cycle"))
         _computeSameTimeOfDay = (
-            config.get("daemons.statistics_compute_same_time_of_day").lower() == "true"
+            impl.config.get("daemons.statistics_compute_same_time_of_day").lower()
+            == "true"
         )
         _threadName = uuid.uuid1().hex
         t = threading.Thread(target=_statisticsDaemon, name=_threadName)
@@ -154,18 +163,18 @@ def query(
 
     The arguments correspond to the fields in the Statistics model.
     """
-    qs = ezidapp.models.Statistics.objects
-    if month != None:
+    qs = ezidapp.models.statistics.Statistics.objects
+    if month is not None:
         qs = qs.filter(month=month)
-    if owner != None:
+    if owner is not None:
         qs = qs.filter(owner=owner)
-    if ownergroup != None:
+    if ownergroup is not None:
         qs = qs.filter(ownergroup=ownergroup)
-    if realm != None:
+    if realm is not None:
         qs = qs.filter(realm=realm)
-    if type != None:
+    if type is not None:
         qs = qs.filter(type=type)
-    if hasMetadata != None:
+    if hasMetadata is not None:
         qs = qs.filter(hasMetadata=hasMetadata)
     return qs.aggregate(django.db.models.Sum("count"))["count__sum"] or 0
 
@@ -193,15 +202,15 @@ def getTable(owner=None, ownergroup=None, realm=None):
     The table can optionally be limited by owner and/or group and/or
     realm.
     """
-    qs = ezidapp.models.Statistics.objects
-    if owner == None and ownergroup == None and realm == None:
+    qs = ezidapp.models.statistics.Statistics.objects
+    if owner is None and ownergroup is None and realm is None:
         qs = qs.all()
     else:
-        if owner != None:
+        if owner is not None:
             qs = qs.filter(owner=owner)
-        if ownergroup != None:
+        if ownergroup is not None:
             qs = qs.filter(ownergroup=ownergroup)
-        if realm != None:
+        if realm is not None:
             qs = qs.filter(realm=realm)
     counts = {}
     for c in qs:
@@ -216,13 +225,14 @@ def getTable(owner=None, ownergroup=None, realm=None):
         if m > 12:
             m = 1
             y += 1
-        return "%04d-%02d" % (y, m)
+        return f"{y:04d}-{m:02d}"
 
     table = []
     months = list(counts.keys())
     months.sort()
     for m in months:
         if m != months[0]:
+            # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
             nextM = incrementMonth(lastM)
             while nextM != m:
                 table.append((nextM, {}))

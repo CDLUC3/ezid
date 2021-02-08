@@ -14,17 +14,18 @@
 #
 # -----------------------------------------------------------------------------
 
+import hashlib
+import time
+
 import django.conf
 import django.db.models
 import django.http
-import hashlib
 import lxml.etree
-import time
 
-from . import config
-from . import datacite
-import ezidapp.models
-from . import util
+import ezidapp.models.search_identifier
+import impl.config
+import impl.datacite
+import impl.util
 
 _enabled = None
 _baseUrl = None
@@ -35,11 +36,11 @@ _batchSize = None
 
 def loadConfig():
     global _enabled, _baseUrl, _repositoryName, _adminEmail, _batchSize
-    _enabled = config.get("oai.enabled").lower() == "true"
-    _baseUrl = config.get("DEFAULT.ezid_base_url")
-    _repositoryName = config.get("oai.repository_name")
-    _adminEmail = config.get("oai.admin_email")
-    _batchSize = int(config.get("oai.batch_size"))
+    _enabled = impl.config.get("oai.enabled").lower() == "true"
+    _baseUrl = impl.config.get("DEFAULT.ezid_base_url")
+    _repositoryName = impl.config.get("oai.repository_name")
+    _adminEmail = impl.config.get("oai.admin_email")
+    _batchSize = int(impl.config.get("oai.batch_size"))
 
 
 def _q(elementName):
@@ -48,8 +49,8 @@ def _q(elementName):
 
 def _parseTime(s):
     try:
-        return util.parseTimestampZulu(s, True)
-    except:
+        return impl.util.parseTimestampZulu(s, True)
+    except Exception:
         return None
 
 
@@ -66,10 +67,11 @@ def _buildResponse(oaiRequest, body):
             "xml-stylesheet", "type='text/xsl' href='/static/stylesheets/oai2.xsl'"
         )
     )
-    lxml.etree.SubElement(root, _q("responseDate")).text = util.formatTimestampZulu(
-        int(time.time())
-    )
+    lxml.etree.SubElement(
+        root, _q("responseDate")
+    ).text = impl.util.formatTimestampZulu(int(time.time()))
     e = lxml.etree.SubElement(root, _q("request"))
+    # noinspection PyUnresolvedReferences
     e.text = _baseUrl + "/oai"
     if not body.tag.endswith("}error") or body.attrib["code"] not in [
         "badVerb",
@@ -80,14 +82,14 @@ def _buildResponse(oaiRequest, body):
             e.attrib[k] = v
     root.append(body)
     return lxml.etree.tostring(
-        root.getroottree(), encoding="UTF-8", xml_declaration=True
+        root.getroottree(), encoding="utf-8", xml_declaration=True
     )
 
 
 def _error(oaiRequest, code, message=None):
     e = lxml.etree.Element(_q("error"))
     e.attrib["code"] = code
-    if message != None:
+    if message is not None:
         e.text = message
     return _buildResponse(oaiRequest, e)
 
@@ -154,26 +156,24 @@ def _buildResumptionToken(from_, until, prefix, cursor, total):
     else:
         until = ""
     hash = hashlib.sha1(
-        "%d,%s,%s,%d,%d,%s"
-        % (from_, until, prefix, cursor, total, django.conf.settings.SECRET_KEY)
+        f"{from_:d},{until},{prefix},{cursor:d},{total:d},{django.conf.settings.SECRET_KEY}"
     ).hexdigest()[::4]
-    return "%d,%s,%s,%d,%d,%s" % (from_, until, prefix, cursor, total, hash)
+    return f"{from_:d},{until},{prefix},{cursor:d},{total:d},{hash}"
 
 
 def _unpackResumptionToken(token):
     try:
         from_, until, prefix, cursor, total, hash1 = token.split(",")
         hash2 = hashlib.sha1(
-            "%s,%s,%s,%s,%s,%s"
-            % (from_, until, prefix, cursor, total, django.conf.settings.SECRET_KEY)
+            f"{from_},{until},{prefix},{cursor},{total},{django.conf.settings.SECRET_KEY}"
         ).hexdigest()[::4]
         assert hash1 == hash2
         if len(until) > 0:
             until = int(until)
         else:
             until = None
-        return (int(from_), until, prefix, int(cursor), int(total))
-    except:
+        return int(from_), until, prefix, int(cursor), int(total)
+    except Exception:
         return None
 
 
@@ -196,34 +196,36 @@ def _buildDublinCoreRecord(identifier):
     lxml.etree.SubElement(root, q("identifier")).text = identifier.identifier
     km = identifier.kernelMetadata()
     for e in ["creator", "title", "publisher", "date", "type"]:
-        if getattr(km, e) != None:
+        if getattr(km, e) is not None:
             # Adding a try catch block to generate XML
             try:
                 # Generate XML node text from the arrtibute value
                 lxml.etree.SubElement(root, q(e)).text = getattr(km, e)
-            except:
+            except Exception:
                 # Function "sanitizeXmlSafeCharset" returns a copy of the given Unicode string
                 # in which characters not accepted by XML 1.1 have been replaced with spaces.
-                lxml.etree.SubElement(root, q(e)).text = util.sanitizeXmlSafeCharset(
-                    getattr(km, e)
-                ).strip()
+                lxml.etree.SubElement(
+                    root, q(e)
+                ).text = impl.util.sanitizeXmlSafeCharset(getattr(km, e)).strip()
     return root
 
 
 def _doGetRecord(oaiRequest):
-    id = util.normalizeIdentifier(oaiRequest[1]["identifier"])
-    if id == None:
+    id_str = impl.util.normalizeIdentifier(oaiRequest[1]["identifier"])
+    if id_str is None:
         return _error(oaiRequest, "idDoesNotExist")
     try:
-        identifier = ezidapp.models.SearchIdentifier.objects.get(identifier=id)
-    except ezidapp.models.SearchIdentifier.DoesNotExist:
+        identifier = ezidapp.models.search_identifier.SearchIdentifier.objects.get(
+            identifier=id_str
+        )
+    except ezidapp.models.search_identifier.SearchIdentifier.DoesNotExist:
         return _error(oaiRequest, "idDoesNotExist")
     if not identifier.oaiVisible:
         return _error(oaiRequest, "idDoesNotExist")
     if oaiRequest[1]["metadataPrefix"] == "oai_dc":
         me = _buildDublinCoreRecord(identifier)
     elif oaiRequest[1]["metadataPrefix"] == "datacite":
-        me = datacite.upgradeDcmsRecord(
+        me = impl.datacite.upgradeDcmsRecord(
             identifier.dataciteMetadata(), returnString=False
         )
     else:
@@ -232,7 +234,7 @@ def _doGetRecord(oaiRequest):
     r = lxml.etree.SubElement(root, _q("record"))
     h = lxml.etree.SubElement(r, _q("header"))
     lxml.etree.SubElement(h, _q("identifier")).text = oaiRequest[1]["identifier"]
-    lxml.etree.SubElement(h, _q("datestamp")).text = util.formatTimestampZulu(
+    lxml.etree.SubElement(h, _q("datestamp")).text = impl.util.formatTimestampZulu(
         identifier.updateTime
     )
     lxml.etree.SubElement(r, _q("metadata")).append(me)
@@ -242,15 +244,18 @@ def _doGetRecord(oaiRequest):
 def _doIdentify(oaiRequest):
     e = lxml.etree.Element(_q("Identify"))
     lxml.etree.SubElement(e, _q("repositoryName")).text = _repositoryName
+    # noinspection PyUnresolvedReferences
     lxml.etree.SubElement(e, _q("baseURL")).text = _baseUrl + "/oai"
     lxml.etree.SubElement(e, _q("protocolVersion")).text = "2.0"
     lxml.etree.SubElement(e, _q("adminEmail")).text = _adminEmail
-    t = ezidapp.models.SearchIdentifier.objects.filter(oaiVisible=True).aggregate(
-        django.db.models.Min("updateTime")
-    )["updateTime__min"]
-    if t == None:
+    t = ezidapp.models.search_identifier.SearchIdentifier.objects.filter(
+        oaiVisible=True
+    ).aggregate(django.db.models.Min("updateTime"))["updateTime__min"]
+    if t is None:
         t = 0
-    lxml.etree.SubElement(e, _q("earliestDatestamp")).text = util.formatTimestampZulu(t)
+    lxml.etree.SubElement(
+        e, _q("earliestDatestamp")
+    ).text = impl.util.formatTimestampZulu(t)
     lxml.etree.SubElement(e, _q("deletedRecord")).text = "no"
     lxml.etree.SubElement(e, _q("granularity")).text = "YYYY-MM-DDThh:mm:ssZ"
     return _buildResponse(oaiRequest, e)
@@ -259,7 +264,7 @@ def _doIdentify(oaiRequest):
 def _doHarvest(oaiRequest, batchSize, includeMetadata):
     if "resumptionToken" in oaiRequest[1]:
         r = _unpackResumptionToken(oaiRequest[1]["resumptionToken"])
-        if r == None:
+        if r is None:
             return _error(oaiRequest, "badResumptionToken")
         from_, until, prefix, cursor, total = r
     else:
@@ -270,7 +275,7 @@ def _doHarvest(oaiRequest, batchSize, includeMetadata):
             return _error(oaiRequest, "noSetHierarchy")
         if "from" in oaiRequest[1]:
             from_ = _parseTime(oaiRequest[1]["from"])
-            if from_ == None:
+            if from_ is None:
                 return _error(oaiRequest, "badArgument", "illegal 'from' UTCdatetime")
             # In OAI-PMH, from_ is inclusive, but for us it's exclusive, ergo...
             from_ -= 1
@@ -278,7 +283,7 @@ def _doHarvest(oaiRequest, batchSize, includeMetadata):
             from_ = 0
         if "until" in oaiRequest[1]:
             until = _parseTime(oaiRequest[1]["until"])
-            if until == None:
+            if until is None:
                 return _error(oaiRequest, "badArgument", "illegal 'until' UTCdatetime")
             if "from" in oaiRequest[1]:
                 if len(oaiRequest[1]["from"]) != len(oaiRequest[1]["until"]):
@@ -293,10 +298,10 @@ def _doHarvest(oaiRequest, batchSize, includeMetadata):
             until = None
         cursor = 0
         total = None
-    q = ezidapp.models.SearchIdentifier.objects.filter(oaiVisible=True).filter(
-        updateTime__gt=from_
-    )
-    if until != None:
+    q = ezidapp.models.search_identifier.SearchIdentifier.objects.filter(
+        oaiVisible=True
+    ).filter(updateTime__gt=from_)
+    if until is not None:
         q = q.filter(updateTime__lte=until)
     q = q.select_related("profile").order_by("updateTime")
     ids = list(q[:batchSize])
@@ -331,7 +336,7 @@ def _doHarvest(oaiRequest, batchSize, includeMetadata):
             if ids[i].updateTime < ids[-1].updateTime:
                 last = i
                 break
-        if last == None:
+        if last is None:
             # Truly exceptional case.
             return _doHarvest(oaiRequest, batchSize * 2, includeMetadata)
     else:
@@ -344,21 +349,22 @@ def _doHarvest(oaiRequest, batchSize, includeMetadata):
         else:
             h = lxml.etree.SubElement(e, _q("header"))
         lxml.etree.SubElement(h, _q("identifier")).text = ids[i].identifier
-        lxml.etree.SubElement(h, _q("datestamp")).text = util.formatTimestampZulu(
+        lxml.etree.SubElement(h, _q("datestamp")).text = impl.util.formatTimestampZulu(
             ids[i].updateTime
         )
         if includeMetadata:
             if prefix == "oai_dc":
                 me = _buildDublinCoreRecord(ids[i])
             elif prefix == "datacite":
-                me = datacite.upgradeDcmsRecord(
+                me = impl.datacite.upgradeDcmsRecord(
                     ids[i].dataciteMetadata(), returnString=False
                 )
             else:
                 assert False, "unhandled case"
+            # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
             lxml.etree.SubElement(r, _q("metadata")).append(me)
     if "resumptionToken" in oaiRequest[1] or len(ids) == batchSize:
-        if total == None:
+        if total is None:
             total = q.count()
         rt = lxml.etree.SubElement(e, _q("resumptionToken"))
         rt.attrib["cursor"] = str(cursor)
@@ -426,6 +432,6 @@ def dispatch(request):
             r = _doListSets(oaiRequest)
         else:
             assert False, "unhandled case"
-    response = django.http.HttpResponse(r, content_type="text/xml; charset=UTF-8")
+    response = django.http.HttpResponse(r, content_type="text/xml; charset=utf-8")
     response["Content-Length"] = len(r)
     return response

@@ -64,8 +64,10 @@ import re
 import sys
 import time
 import types
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.parse
+import urllib.error
+import urllib.response
 
 KNOWN_SERVERS = {"p": "https://ezid.cdlib.org"}
 
@@ -110,7 +112,7 @@ USAGE_TEXT = """Usage: ezid.py [options] credentials operation...
 
 # Global variables that are initialized farther down.
 
-_options = None
+# _options = None
 _server = None
 _opener = None
 _cookie = None
@@ -121,13 +123,15 @@ class MyHelpFormatter(optparse.IndentedHelpFormatter):
         return USAGE_TEXT
 
 
-class MyHTTPErrorProcessor(urllib2.HTTPErrorProcessor):
+class MyHTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
     def http_response(self, request, response):
         # Bizarre that Python leaves this out.
-        if response.code == 201:
+        if response.status == 201:
             return response
         else:
-            return urllib2.HTTPErrorProcessor.http_response(self, request, response)
+            return urllib.request.HTTPErrorProcessor.http_response(
+                self, request, response
+            )
 
     https_response = http_response
 
@@ -144,7 +148,7 @@ def formatAnvlRequest(args):
             if k == "@@":
                 k = "@"
             else:
-                k = re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), k)
+                k = re.sub("[%:\r\n]", lambda c: f"%{ord(c.group(0)):02X}", k)
             v = args[i + 1].decode(_options.encoding)
             if v.startswith("@@"):
                 v = v[1:]
@@ -152,21 +156,21 @@ def formatAnvlRequest(args):
                 f = codecs.open(v[1:], encoding=_options.encoding)
                 v = f.read()
                 f.close()
-            v = re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), v)
-            request.append("%s: %s" % (k, v))
+            v = re.sub("[%\r\n]", lambda c: f"%{ord(c.group(0)):02X}", v)
+            request.append(f"{k}: {v}")
     return "\n".join(request)
 
 
-def encode(id):
-    return urllib.parse.quote(id, ":/")
+def encode(id_str):
+    return urllib.parse.quote(id_str, ":/")
 
 
 def issueRequest(path, method, data=None, returnHeaders=False, streamOutput=False):
-    request = urllib.request.Request("%s/%s" % (_server, path))
+    request = urllib.request.Request(f"{_server}/{path}")
     request.get_method = lambda: method
     if data:
-        request.add_header("Content-Type", "text/plain; charset=UTF-8")
-        request.add_data(data.encode("UTF-8"))
+        request.add_header("Content-Type", "text/plain; charset=utf-8")
+        request.data = data.encode("utf-8")
     if _cookie:
         request.add_header("Cookie", _cookie)
     try:
@@ -178,16 +182,16 @@ def issueRequest(path, method, data=None, returnHeaders=False, streamOutput=Fals
         else:
             response = connection.read()
             if returnHeaders:
-                return response.decode("UTF-8"), connection.info()
+                return response.decode("utf-8"), connection.info()
             else:
-                return response.decode("UTF-8")
+                return response.decode("utf-8")
     except urllib.error.HTTPError as e:
-        sys.stderr.write("%d %s\n" % (e.code, e.msg))
-        if e.fp != None:
+        sys.stderr.write(f"{e.code:d} {str(e)}\n")
+        if e.fp is not None:
             response = e.fp.read()
-            if not response.endswith("\n"):
+            if not response.endswith(b"\n"):
                 response += "\n"
-            sys.stderr.write(response)
+            sys.stderr.buffer.write(response)
         sys.exit(1)
 
 
@@ -214,14 +218,14 @@ def printAnvlResponse(response, sortLines=False):
             )
         if _options.oneLine:
             line = line.replace("\n", " ").replace("\r", " ")
-        print(line.encode(_options.encoding))
+        print((line.encode(_options.encoding)))
 
 
 # Process command line arguments.
 
 parser = optparse.OptionParser(formatter=MyHelpFormatter())
 parser.add_option("-d", action="store_true", dest="decode", default=False)
-parser.add_option("-e", action="store", dest="encoding", default="UTF-8")
+parser.add_option("-e", action="store", dest="encoding", default="utf-8")
 parser.add_option("-o", action="store_true", dest="oneLine", default=False)
 parser.add_option("-t", action="store_true", dest="formatTimestamps", default=False)
 
@@ -280,38 +284,38 @@ if operation == "mint":
     response = issueRequest("shoulder/" + encode(shoulder), "POST", data)
     printAnvlResponse(response)
 elif operation == "create":
-    id = args[0]
+    id_str = args[0]
     if len(args) > 1:
         data = formatAnvlRequest(args[1:])
     else:
         data = None
-    path = "id/" + encode(id)
+    path = "id/" + encode(id_str)
     if bang:
         path += "?update_if_exists=yes"
     response = issueRequest(path, "PUT", data)
     printAnvlResponse(response)
 elif operation == "view":
-    id = args[0]
-    path = "id/" + encode(id)
+    id_str = args[0]
+    path = "id/" + encode(id_str)
     if bang:
         path += "?prefix_match=yes"
     response = issueRequest(path, "GET")
     printAnvlResponse(response, sortLines=True)
 elif operation == "update":
-    id = args[0]
+    id_str = args[0]
     if len(args) > 1:
         data = formatAnvlRequest(args[1:])
     else:
         data = None
-    response = issueRequest("id/" + encode(id), "POST", data)
+    response = issueRequest("id/" + encode(id_str), "POST", data)
     printAnvlResponse(response)
 elif operation == "delete":
-    id = args[0]
-    response = issueRequest("id/" + encode(id), "DELETE")
+    id_str = args[0]
+    response = issueRequest("id/" + encode(id_str), "DELETE")
     printAnvlResponse(response)
 elif operation == "login":
     response, headers = issueRequest("login", "GET", returnHeaders=True)
-    response += "\nsessionid=%s\n" % headers["set-cookie"].split(";")[0].split("=")[1]
+    response += f"\nsessionid={headers['set-cookie'].split(';')[0].split('=')[1]}\n"
     printAnvlResponse(response)
 elif operation == "logout":
     response = issueRequest("logout", "GET")

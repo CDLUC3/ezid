@@ -39,7 +39,7 @@ def log_to_console(module_name, is_debug):
     else:
         for logger_name in list(logging.root.manager.loggerDict):
             logging.getLogger(logger_name).setLevel(logging.ERROR)
-    for n in ('impl.nog.reload', 'nog.shoulder'):
+    for n in ('impl.nog.reload', 'impl.nog.shoulder'):
         logging.getLogger(n).setLevel(logging.DEBUG if is_debug else logging.INFO)
 
     # Add new handlers

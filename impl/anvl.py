@@ -27,7 +27,7 @@ _pattern3 = re.compile("%([0-9a-fA-F][0-9a-fA-F])?")
 
 
 def _encode(pattern, s):
-    return pattern.sub(lambda c: "%%%02X" % ord(c.group(0)), s)
+    return pattern.sub(lambda c: f"%{ord(c.group(0)):02X}", s)
 
 
 def _encodeLabel(s):
@@ -51,7 +51,7 @@ def _decode(s):
 
 def formatPair(label, value):
     """Formats a label and value into an ANVL element."""
-    return "%s: %s\n" % (_encodeLabel(label), _encodeValue(value))
+    return f"{_encodeLabel(label)}: {_encodeValue(value)}\n"
 
 
 def format(d):
@@ -78,7 +78,7 @@ def parse(s):
         elif l[0] == "#":
             pass
         elif l[0].isspace():
-            if k == None:
+            if k is None:
                 raise AnvlParseException("no previous label for continuation line")
             ll = _decode(l).strip()
             if ll != "":
@@ -119,7 +119,7 @@ def parseConcatenate(s):
         elif l[0] == "#":
             pass
         elif l[0].isspace():
-            if k == None:
+            if k is None:
                 raise AnvlParseException("no previous label for continuation line")
             ll = _decode(l).strip()
             if ll != "":

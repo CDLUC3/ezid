@@ -1,17 +1,15 @@
 """Create a new ARK shoulder."""
 
-
-
 import argparse
 import logging
 
 import django.core.management
 
 import impl.nog.reload
-import nog.shoulder
+import impl.nog.shoulder
 import impl.nog.util
-import nog.exc
-import nog.id_ns
+import impl.nog.exc
+import impl.nog.id_ns
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +49,9 @@ class Command(django.core.management.BaseCommand):
             help='Create a non-persistent test minter',
         )
         parser.add_argument(
-            '--debug', action='store_true', help='Debug level logging',
+            '--debug',
+            action='store_true',
+            help='Debug level logging',
         )
 
     def handle(self, *_, **opt):
@@ -60,16 +60,16 @@ class Command(django.core.management.BaseCommand):
 
         try:
             return self._handle(self.opt)
-        except nog.exc.MinterError as e:
+        except impl.nog.exc.MinterError as e:
             raise django.core.management.CommandError('Minter error: {}'.format(str(e)))
 
     def _handle(self, opt):
         try:
-            ns = nog.id_ns.IdNamespace.split_ark_namespace(opt.ns_str)
-        except nog.id_ns.IdentifierError as e:
+            ns = impl.nog.id_ns.IdNamespace.split_ark_namespace(opt.ns_str)
+        except impl.nog.id_ns.IdentifierError as e:
             raise django.core.management.CommandError(str(e))
 
-        nog.shoulder.create_shoulder(
+        impl.nog.shoulder.create_shoulder(
             ns=ns,
             organization_name_str=opt.org_name_str,
             datacenter_model=None,

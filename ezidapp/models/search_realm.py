@@ -13,8 +13,8 @@
 #
 # -----------------------------------------------------------------------------
 
-from . import realm
+import ezidapp.models.realm
 
 
-class SearchRealm(realm.Realm):
+class SearchRealm(ezidapp.models.realm.Realm):
     pass

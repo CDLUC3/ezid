@@ -1,7 +1,6 @@
 """Permanently merge the master_shoulders.txt file into the database."""
 
-
-
+import ezidapp.models.shoulder
 import argparse
 import datetime
 import logging
@@ -10,12 +9,12 @@ import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
 
-import ezidapp.models
+
 import ezidapp.models.store_datacenter
 import impl.nog.filesystem
 import impl.nog.reload
 import impl.nog.util
-import shoulder_parser
+import impl.shoulder_parser
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +32,9 @@ class Command(django.core.management.BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--debug', action='store_true', help='Debug level logging',
+            '--debug',
+            action='store_true',
+            help='Debug level logging',
         )
 
     def handle(self, *_, **opt):
@@ -54,17 +55,17 @@ class Command(django.core.management.BaseCommand):
 
     def add_shoulder_db_records(self):
         with open(MASTER_SHOULDERS_PATH, 'r') as f:
-            entries, errors, warnings = shoulder_parser.parse(f.read())
+            entries, errors, warnings = impl.shoulder_parser.parse(f.read())
 
         if errors:
             log.error('File validation error(s):')
             for e in errors:
-                log.error("  (line %d) %s" % e)
+                log.error(f"  {e}")
 
         if warnings:
-            log.warn('File validation warnings(s):')
+            log.warning('File validation warnings(s):')
             for e in warnings:
-                log.warn("  (line %d) %s" % e)
+                log.warning(f"  {e}")
 
         # list of dicts to dict keyed on 'key'
         file_dict = {v['key']: v for v in entries}
@@ -73,7 +74,7 @@ class Command(django.core.management.BaseCommand):
 
         delete_list = []
 
-        for s in ezidapp.models.Shoulder.objects.all():
+        for s in ezidapp.models.shoulder.Shoulder.objects.all():
             if s.prefix not in file_dict:
                 delete_list.append(s.prefix)
 
@@ -81,7 +82,7 @@ class Command(django.core.management.BaseCommand):
             log.info('Deleting db records for shoulders not in file:')
             log.info(','.join(delete_list))
 
-        # ezidapp.models.Shoulder.objects.filter(prefix__in=delete_list).delete()
+        # ezidapp.models.shoulder.Shoulder.objects.filter(prefix__in=delete_list).delete()
 
         # Create and update db entries to match file
 
@@ -102,13 +103,15 @@ class Command(django.core.management.BaseCommand):
             if v['type'] != 'shoulder':
                 continue
 
-            ezidapp.models.Shoulder.objects.update_or_create(
+            ezidapp.models.shoulder.Shoulder.objects.update_or_create(
                 defaults=dict(
                     name=v['name'],
                     registration_agency=(
-                        ezidapp.models.RegistrationAgency.objects.get_or_create(
+                        ezidapp.models.shoulder.RegistrationAgency.objects.get_or_create(
                             registration_agency='ezid'
-                        )[0]
+                        )[
+                            0
+                        ]
                     ),
                     active=v['active'],
                     manager=v['manager'],
@@ -117,7 +120,7 @@ class Command(django.core.management.BaseCommand):
                         v.get('date', '1970.01.01'), '%Y.%m.%d'
                     ),
                     shoulder_type=(
-                        ezidapp.models.ShoulderType.objects.get_or_create(
+                        ezidapp.models.shoulder.ShoulderType.objects.get_or_create(
                             shoulder_type=v['type']
                         )[0]
                     ),
@@ -128,7 +131,7 @@ class Command(django.core.management.BaseCommand):
 
         # As suggested in a comment by Greg, we replace the hardcoded "isDoi" and
         # "crossrefEnabled" based logic for registration_entry with a text field.
-        for s in ezidapp.models.Shoulder.objects.all():
+        for s in ezidapp.models.shoulder.Shoulder.objects.all():
             if s.isDoi:
                 if s.registration_agency == 'crossref' or s.crossrefEnabled:
                     s.crossrefEnabled = True
@@ -139,15 +142,15 @@ class Command(django.core.management.BaseCommand):
             else:
                 s.crossrefEnabled = False
                 reg_agency_str = 'ezid'
-            s.registration_agency = ezidapp.models.RegistrationAgency.objects.get_or_create(
-                registration_agency=reg_agency_str
-            )[
-                0
-            ]
+            s.registration_agency = (
+                ezidapp.models.shoulder.RegistrationAgency.objects.get_or_create(
+                    registration_agency=reg_agency_str
+                )[0]
+            )
             s.save()
 
         # Validate and add DOI/ARK type strings
-        for s in ezidapp.models.Shoulder.objects.all():
+        for s in ezidapp.models.shoulder.Shoulder.objects.all():
             # - Validate existing DOI/ARK types
             assert s.type in (s.prefix[:3].upper(), '')
             # - Fill in missing types
@@ -155,4 +158,3 @@ class Command(django.core.management.BaseCommand):
             s.save()
 
         log.info('{} merged'.format(MASTER_SHOULDERS_PATH))
-

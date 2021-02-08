@@ -13,30 +13,31 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.conf
 import uuid
 
-from . import config
-from . import datacite
-import ezidapp.models
-from . import register_async
+import django.conf
+
+import ezidapp.models.datacite_queue
+import impl.config
+import impl.datacite
+import impl.register_async
 
 _daemonEnabled = [None]
 _threadName = [None]
 
 
 def _uploadMetadata(doi, metadata, datacenter):
-    r = datacite.uploadMetadata(doi[4:], {}, metadata, True, datacenter)
+    r = impl.datacite.uploadMetadata(doi[4:], {}, metadata, True, datacenter)
     assert type(r) is not str, "unexpected return: " + r
 
 
 def _setTargetUrl(doi, targetUrl, datacenter):
-    r = datacite.setTargetUrl(doi[4:], targetUrl, datacenter)
+    r = impl.datacite.setTargetUrl(doi[4:], targetUrl, datacenter)
     assert type(r) is not str, "unexpected return: " + r
 
 
 def _overwrite(sh, rows, doi, metadata):
-    register_async.callWrapper(
+    impl.register_async.callWrapper(
         sh,
         rows,
         "datacite.uploadMetadata",
@@ -45,7 +46,7 @@ def _overwrite(sh, rows, doi, metadata):
         metadata,
         metadata["_d"],
     )
-    register_async.callWrapper(
+    impl.register_async.callWrapper(
         sh,
         rows,
         "datacite.setTargetUrl",
@@ -55,11 +56,11 @@ def _overwrite(sh, rows, doi, metadata):
         metadata["_d"],
     )
     if metadata.get("_is", "public") != "public" or metadata.get("_x", "yes") != "yes":
-        register_async.callWrapper(
+        impl.register_async.callWrapper(
             sh,
             rows,
             "datacite.deactivate",
-            datacite.deactivate,
+            impl.datacite.deactivate,
             doi[4:],
             metadata["_d"],
         )
@@ -67,7 +68,7 @@ def _overwrite(sh, rows, doi, metadata):
 
 def _delete(sh, rows, doi, metadata):
     # We can't actually delete a DOI, so we do the next best thing...
-    register_async.callWrapper(
+    impl.register_async.callWrapper(
         sh,
         rows,
         "datacite.setTargetUrl",
@@ -76,8 +77,13 @@ def _delete(sh, rows, doi, metadata):
         "http://datacite.org/invalidDOI",
         metadata["_d"],
     )
-    register_async.callWrapper(
-        sh, rows, "datacite.deactivate", datacite.deactivate, doi[4:], metadata["_d"]
+    impl.register_async.callWrapper(
+        sh,
+        rows,
+        "datacite.deactivate",
+        impl.datacite.deactivate,
+        doi[4:],
+        metadata["_d"],
     )
 
 
@@ -89,35 +95,36 @@ def enqueueIdentifier(identifier, operation, blob):
     should be one of the strings "create", "update", or "delete". 'blob'
     is the identifier's metadata dictionary in blob form.
     """
-    register_async.enqueueIdentifier(
-        ezidapp.models.DataciteQueue, identifier, operation, blob
+    impl.register_async.enqueueIdentifier(
+        ezidapp.models.datacite_queue.DataciteQueue, identifier, operation, blob
     )
 
 
 def getQueueLength():
     """Returns the length of the DataCite queue."""
-    return ezidapp.models.DataciteQueue.objects.count()
+    return ezidapp.models.datacite_queue.DataciteQueue.objects.count()
 
 
 def loadConfig():
     _daemonEnabled[0] = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and config.get("daemons.datacite_enabled").lower() == "true"
+        and impl.config.get("daemons.datacite_enabled").lower() == "true"
     )
     if _daemonEnabled[0]:
+        # noinspection PyTypeChecker
         _threadName[0] = uuid.uuid1().hex
-        register_async.launch(
+        impl.register_async.launch(
             "datacite",
-            ezidapp.models.DataciteQueue,
+            ezidapp.models.datacite_queue.DataciteQueue,
             _overwrite,
             _overwrite,
             _delete,
             None,
             None,
             None,
-            int(config.get("daemons.datacite_num_worker_threads")),
-            int(config.get("daemons.datacite_processing_idle_sleep")),
-            int(config.get("daemons.datacite_processing_error_sleep")),
+            int(impl.config.get("daemons.datacite_num_worker_threads")),
+            int(impl.config.get("daemons.datacite_processing_idle_sleep")),
+            int(impl.config.get("daemons.datacite_processing_error_sleep")),
             _daemonEnabled,
             _threadName,
         )

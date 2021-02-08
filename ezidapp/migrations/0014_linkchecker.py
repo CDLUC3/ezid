@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
+import django.db.migrations
+import django.db.models
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0013_linkchecker'),
     ]
 
     operations = [
-        migrations.AddField(
+        django.db.migrations.AddField(
             model_name='linkchecker',
             name='isBad',
-            field=models.BooleanField(default=False, editable=False),
+            field=django.db.models.BooleanField(default=False, editable=False),
         ),
-        migrations.AlterIndexTogether(
+        django.db.migrations.AlterIndexTogether(
             name='linkchecker',
-            index_together=set([('owner_id', 'isBad', 'lastCheckTime')]),
+            index_together={('owner_id', 'isBad', 'lastCheckTime')},
         ),
     ]

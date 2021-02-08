@@ -13,8 +13,15 @@
 #
 # -----------------------------------------------------------------------------
 
-import ezidapp.models
-from . import util2
+
+import ezidapp.models.store_group
+import ezidapp.models.store_group
+import ezidapp.models.store_identifier
+import ezidapp.models.store_user
+import ezidapp.models.store_user
+import ezidapp.models.store_user
+import ezidapp.models.store_user
+import impl.util2
 
 
 def authorizeView(user, identifier):
@@ -36,7 +43,7 @@ def authorizeCreate(user, prefix):
     prefix corresponding to a shoulder; in either case it must be
     qualified, e.g., "doi:10.5060/".
     """
-    if util2.isTestIdentifier(prefix):
+    if impl.util2.isTestIdentifier(prefix):
         return True
     if any([prefix.startswith(s.prefix) for s in user.shoulders.all()]):
         return True
@@ -57,12 +64,12 @@ def authorizeUpdate(user, identifier):
     object.  'identifier' is the identifier in question; it should be a
     StoreIdentifier object.
     """
-    if identifier.owner != None:
+    if identifier.owner is not None:
         idOwner = identifier.owner
         idGroup = identifier.ownergroup
     else:
-        idOwner = ezidapp.models.AnonymousUser
-        idGroup = ezidapp.models.AnonymousGroup
+        idOwner = ezidapp.models.store_user.AnonymousUser
+        idGroup = ezidapp.models.store_group.AnonymousGroup
     if user == idOwner:
         return True
     if user in idOwner.proxies.all():
@@ -86,9 +93,9 @@ def authorizeUpdateLegacy(user, owner, ownergroup):
     """
     # We create a fictitious identifier filled out just enough for the
     # above policy check to work.
-    u = ezidapp.models.getUserByUsername(owner)
-    g = ezidapp.models.getGroupByGroupname(ownergroup)
-    i = ezidapp.models.StoreIdentifier(
+    u = ezidapp.models.store_user.getUserByUsername(owner)
+    g = ezidapp.models.store_group.getGroupByGroupname(ownergroup)
+    i = ezidapp.models.store_identifier.StoreIdentifier(
         owner=(None if u is None or u.isAnonymous else u),
         ownergroup=(None if g is None or g.isAnonymous else g),
     )
@@ -110,10 +117,10 @@ def authorizeOwnershipChange(user, currentOwner, newOwner):
     object.  'currentOwner' and 'newOwner' should also be StoreUser
     objects; they may be None to indicate anonymous ownership.
     """
-    if currentOwner == None:
-        currentOwner = ezidapp.models.AnonymousUser
-    if newOwner == None:
-        newOwner = ezidapp.models.AnonymousUser
+    if currentOwner is None:
+        currentOwner = ezidapp.models.store_user.AnonymousUser
+    if newOwner is None:
+        newOwner = ezidapp.models.store_user.AnonymousUser
     if newOwner == currentOwner:
         return True
     # Interesting property here: by the rule below, a common proxy can
@@ -142,7 +149,7 @@ def authorizeDownload(user, owner=None, ownergroup=None):
     'user' is the requestor and should be an authenticated StoreUser
     object.  Only one of 'owner' and 'ownergroup' should be specified.
     """
-    if owner != None:
+    if owner is not None:
         if user == owner:
             return True
         if user in owner.proxies.all():

@@ -44,21 +44,13 @@ BerkeleyDB keys (EZID names / N2T names):
 """
 
 
-
 import logging
 import re
 
-import nog.bdb
-import nog.bdb_wrapper
-import nog.id_ns
-
-try:
-    import bsddb
-except ImportError:
-    # noinspection PyUnresolvedReferences
-    import bsddb3 as bsddb
-
-import nog.exc
+import impl.nog.bdb
+import impl.nog.bdb_wrapper
+import impl.nog.exc
+import impl.nog.id_ns
 
 # fmt:off
 XDIG_DICT = {
@@ -104,6 +96,7 @@ def mint_id(shoulder_model, dry_run=False):
         return minted_ns
 
 
+# noinspection PyIncorrectDocstring,PyIncorrectDocstring
 def mint_ids(shoulder_model, mint_count=1, dry_run=False):
     """Mint any number of identifiers on an existing ARK or DOI shoulder /
     namespace.
@@ -125,13 +118,14 @@ def mint_ids(shoulder_model, mint_count=1, dry_run=False):
     See Also:
         :func:`mint_id`
     """
-    bdb_path = nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
+    bdb_path = impl.nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
     for minted_str in mint_by_bdb_path(bdb_path, mint_count, dry_run=dry_run):
         yield minted_str
 
 
+# noinspection PyIncorrectDocstring,PyIncorrectDocstring
 def mint_by_bdb_path(bdb_path, mint_count=1, dry_run=False):
-    """Like mint_ids(), but accepts the path to a BerkeleyDB nog.bdb minter
+    """Like mint_ids(), but accepts the path to a BerkeleyDB bdb minter
     file.
 
     Args:
@@ -153,10 +147,10 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
         root_path:
         mask_str:
 
-    Returns (path): Absolute path to the new nog.bdb file.
+    Returns (path): Absolute path to the new bdb file.
     """
-    shoulder_ns = nog.id_ns.IdNamespace.from_str(shoulder_ns)
-    bdb_path = nog.bdb.get_path(shoulder_ns, root_path, is_new=True)
+    shoulder_ns = impl.nog.id_ns.IdNamespace.from_str(shoulder_ns)
+    bdb_path = impl.nog.bdb.get_path(shoulder_ns, root_path, is_new=True)
 
     with Minter(bdb_path, is_new=True, dry_run=False) as minter:
         full_shoulder_str = '/'.join([shoulder_ns.naan_prefix, shoulder_ns.shoulder])
@@ -165,7 +159,7 @@ def create_minter_database(shoulder_ns, root_path=None, mask_str='eedk'):
     return bdb_path
 
 
-class Minter(nog.bdb_wrapper.BdbWrapper):
+class Minter(impl.nog.bdb_wrapper.BdbWrapper):
     def __init__(self, bdb_path, is_new=False, dry_run=False):
         super(Minter, self).__init__(bdb_path, is_new, dry_run)
         self._dry_run = dry_run
@@ -209,7 +203,7 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
 
         # m = re.match(r'(.*){{(.*)}}', template_str)
         # if not m:
-        #     raise nog.exc.MinterError('Invalid template: {}'.format(template_str))
+        #     raise exc.MinterError('Invalid template: {}'.format(template_str))
 
         self.base_count = 0
         self.combined_count = 0
@@ -255,7 +249,9 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
             elif c == "d":
                 divider = DIGIT_COUNT
             else:
-                raise nog.exc.MinterError('Unsupported character in mask: {}'.format(c))
+                raise impl.nog.exc.MinterError(
+                    'Unsupported character in mask: {}'.format(c)
+                )
             compounded_counter, rem = divmod(compounded_counter, divider)
             x_char = XDIG_STR[rem]
             if c == "f" and x_char.isdigit():
@@ -363,11 +359,11 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
         active list. All the counters should be in the inactive list.
         """
         if not (self.combined_count == self.max_combined_count == self.total_count):
-            raise nog.exc.MinterError(
+            raise impl.nog.exc.MinterError(
                 "Attempted to extend a minter that is not exhausted"
             )
         if self.active_counter_list:
-            raise nog.exc.MinterError(
+            raise impl.nog.exc.MinterError(
                 "Attempted to extend a minter that still has active counters"
             )
 
@@ -379,13 +375,13 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
         but not the full N2T set.
         """
         if not re.match(r"[def]+k?$", self.mask_str):
-            raise nog.exc.MinterError(
+            raise impl.nog.exc.MinterError(
                 "Mask must use only 'd', 'e' and 'f' character types, "
                 "ending with optional 'k' check character: {}".format(self.mask_str)
             )
 
         if not re.match(r"add(\d)$", self.atlast_str):
-            raise nog.exc.MinterError(
+            raise impl.nog.exc.MinterError(
                 '"atlast" must be a string on form: add<digit>: {}'.format(
                     self.atlast_str
                 )
@@ -393,7 +389,7 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
 
     def _assert_valid_combined_count(self):
         if self.combined_count > self.max_combined_count:
-            raise nog.exc.MinterError(
+            raise impl.nog.exc.MinterError(
                 "Invalid counter total sum. total={} max={}".format(
                     self.combined_count, self.max_combined_count
                 )
@@ -401,7 +397,7 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
 
     def _assert_mask_matches_template(self):
         if self.template_str.find('{{{}}}'.format(self.mask_str)) == -1:
-            raise nog.exc.MinterError(
+            raise impl.nog.exc.MinterError(
                 'The mask that is embedded in the template key/value must match the '
                 'mask that is stored separately in the mask key/value. '
                 'template="{}" mask="{}"'.format(self.template_str, self.mask_str)
@@ -419,7 +415,9 @@ class Minter(nog.bdb_wrapper.BdbWrapper):
             elif c == "d":
                 max_count *= DIGIT_COUNT
             else:
-                raise nog.exc.MinterError('Unsupported character in mask: {}'.format(c))
+                raise impl.nog.exc.MinterError(
+                    'Unsupported character in mask: {}'.format(c)
+                )
         return max_count
 
 

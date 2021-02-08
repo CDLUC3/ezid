@@ -14,10 +14,11 @@
 # -----------------------------------------------------------------------------
 
 import json
-import lxml.etree
 import re
 
-from . import util
+import lxml.etree
+
+import impl.util
 
 # N.B.: the namespace for KML 2.3 is still 2.2.
 _kmlNamespace = "http://www.opengis.net/kml/2.2"
@@ -25,11 +26,11 @@ _dataciteNamespace = "http://datacite.org/schema/kernel-4"
 
 
 def _q(elementName):
-    return "{%s}%s" % (_dataciteNamespace, elementName)
+    return f"{{{_dataciteNamespace}}}{elementName}"
 
 
 def _isDecimalFloat(s):
-    return re.match("-?(\d+(\.\d*)?|\.\d+)$", s) != None
+    return re.match("-?(\d+(\.\d*)?|\.\d+)$", s) is not None
 
 
 def kmlPolygonToDatacite(kml):
@@ -44,10 +45,10 @@ def kmlPolygonToDatacite(kml):
     non-zero altitude coordinates are ignored and result in warnings.
     """
     try:
-        root = util.parseXmlString(kml)
+        root = impl.util.parseXmlString(kml)
     except Exception as e:
-        return "XML parse error: " + util.formatException(e)
-    if root.tag != "{%s}kml" % _kmlNamespace:
+        return "XML parse error: " + impl.util.formatException(e)
+    if root.tag != f"{{{_kmlNamespace}}}kml":
         return "not a KML document"
     ns = {"N": _kmlNamespace}
     n = root.xpath("//N:Polygon", namespaces=ns)
@@ -109,7 +110,7 @@ def kmlPolygonToDatacite(kml):
         warnings.append("polygon inner boundaries ignored")
     if altitudeWarning:
         warnings.append("altitude coordinates ignored")
-    return (output, warnings)
+    return output, warnings
 
 
 _geojsonTypes = [
@@ -158,7 +159,7 @@ def geojsonPolygonToDatacite(geojson):
     try:
         root = json.loads(geojson, object_hook=objectHandler)
     except Exception as e:
-        return "JSON parse error: " + util.formatException(e)
+        return "JSON parse error: " + impl.util.formatException(e)
     if type(root) is not dict or root.get("type", "unknown") not in _geojsonTypes:
         return "not a GeoJSON document"
     if len(objects) > 1:
@@ -208,7 +209,7 @@ def geojsonPolygonToDatacite(geojson):
         warnings.append("polygon inner boundaries ignored")
     if altitudeWarning:
         warnings.append("altitude coordinates ignored")
-    return (output, warnings)
+    return output, warnings
 
 
 def internalPolygonToDatacite(s):
@@ -226,7 +227,7 @@ def internalPolygonToDatacite(s):
     m = re.match("\s*polygon\s*\((.*)\)\s*$", s)
     if not m:
         return "not an EZID polygon description"
-    coords = re.split("\s*\)\s*,\s*\(\s*", "),%s,(" % m.group(1))
+    coords = re.split("\s*\)\s*,\s*\(\s*", f"),{m.group(1)},(")
     if (
         len(coords) < 2
         or coords[0] != ""
@@ -257,7 +258,7 @@ def internalPolygonToDatacite(s):
         output[0][1].text
     ) != float(output[-1][1].text):
         return "polygon first coordinate does not match last"
-    return (output, [])
+    return output, []
 
 
 def polygonToDatacite(s):
@@ -315,6 +316,6 @@ def datacitePolygonToInternal(element):
     """Converts a DataCite polygon, passed in as a <geoLocationPolygon> element
     node, to a string internal representation."""
     global _transform
-    if _transform == None:
+    if _transform is None:
         _transform = lxml.etree.XSLT(lxml.etree.XML(_transformSource))
     return str(_transform(element))

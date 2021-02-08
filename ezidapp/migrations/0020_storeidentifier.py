@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
+import django.db.migrations
+import django.db.models
 import ezidapp.models.identifier
-import django.db.models.deletion
 import ezidapp.models.custom_fields
 import django.core.validators
 import ezidapp.models.validation
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0019_storeprofile'),
     ]
 
     operations = [
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='StoreIdentifier',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'identifier',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=255,
                         validators=[ezidapp.models.validation.anyIdentifier],
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'createTime',
-                    models.IntegerField(
+                    django.db.models.IntegerField(
                         default=b'',
                         blank=True,
                         validators=[django.core.validators.MinValueValidator(0)],
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'updateTime',
-                    models.IntegerField(
+                    django.db.models.IntegerField(
                         default=b'',
                         blank=True,
                         validators=[django.core.validators.MinValueValidator(0)],
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'status',
-                    models.CharField(
+                    django.db.models.CharField(
                         default=b'P',
                         max_length=1,
                         choices=[
@@ -64,11 +64,14 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ('unavailableReason', models.TextField(default=b'', blank=True)),
-                ('exported', models.BooleanField(default=True)),
+                (
+                    'unavailableReason',
+                    django.db.models.TextField(default=b'', blank=True),
+                ),
+                ('exported', django.db.models.BooleanField(default=True)),
                 (
                     'crossrefStatus',
-                    models.CharField(
+                    django.db.models.CharField(
                         default=b'',
                         max_length=1,
                         blank=True,
@@ -81,10 +84,13 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ('crossrefMessage', models.TextField(default=b'', blank=True)),
+                (
+                    'crossrefMessage',
+                    django.db.models.TextField(default=b'', blank=True),
+                ),
                 (
                     'target',
-                    models.URLField(
+                    django.db.models.URLField(
                         default=b'',
                         max_length=2000,
                         blank=True,
@@ -94,19 +100,19 @@ class Migration(migrations.Migration):
                 (
                     'cm',
                     ezidapp.models.custom_fields.CompressedJsonField(
-                        default=ezidapp.models.identifier._emptyDict
+                        default=ezidapp.models.identifier.emptyDict
                     ),
                 ),
                 (
                     'agentRole',
-                    models.CharField(
+                    django.db.models.CharField(
                         default=b'',
                         max_length=1,
                         blank=True,
                         choices=[(b'U', b'user'), (b'G', b'group')],
                     ),
                 ),
-                ('isTest', models.BooleanField(editable=False)),
+                ('isTest', django.db.models.BooleanField(editable=False)),
                 (
                     'datacenter',
                     ezidapp.models.custom_fields.NonValidatingForeignKey(
@@ -147,6 +153,8 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={'abstract': False,},
+            options={
+                'abstract': False,
+            },
         ),
     ]

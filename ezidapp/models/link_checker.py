@@ -13,16 +13,17 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.core.validators
-import django.db.models
 import hashlib
 import re
 import time
 
-from . import identifier
-import util
+import django.core.validators
+import django.db.models
+import ezidapp.models.identifier
 
-_identifierModule = identifier
+import impl.util
+
+_identifierModule = ezidapp.models.identifier
 
 
 class LinkChecker(django.db.models.Model):
@@ -32,7 +33,7 @@ class LinkChecker(django.db.models.Model):
     # always lags behind; it is not synchronized.
 
     identifier = django.db.models.CharField(
-        max_length=util.maxIdentifierLength, unique=True
+        max_length=impl.util.maxIdentifierLength, unique=True
     )
     # The identifier in qualified, normalized form, e.g.,
     # "ark:/12345/abc" or "doi:10.1234/ABC".
@@ -44,6 +45,7 @@ class LinkChecker(django.db.models.Model):
     # expressed as an actual foreign key in order to avoid a hard
     # database dependency.
 
+    # noinspection PyProtectedMember
     target = django.db.models.URLField(
         max_length=_identifierModule.Identifier._meta.get_field("target").max_length
     )

@@ -31,14 +31,16 @@ class Config(object):
             {"SITE_ROOT": siteRoot, "PROJECT_ROOT": projectRoot}
         )
         f = open(configFile)
+        # noinspection PyDeprecation
         self._config.readfp(f)
         f.close()
         self._shadowConfig = configparser.ConfigParser()
         if os.path.exists(shadowConfigFile):
             f = open(shadowConfigFile)
+            # noinspection PyDeprecation
             self._shadowConfig.readfp(f)
             f.close()
-        self._level = "{%s}" % deploymentLevel
+        self._level = f"{{{deploymentLevel}}}"
 
     def getOption(self, option):
         """Returns the value of a configuration option.

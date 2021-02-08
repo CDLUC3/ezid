@@ -1,56 +1,57 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
+import django.db.migrations
+import django.db.models
 import django.core.validators
 import ezidapp.models.validation
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0015_searchidentifier_linkisbroken'),
     ]
 
     operations = [
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='Statistics',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
                         primary_key=True,
                     ),
                 ),
-                ('month', models.CharField(max_length=7, db_index=True)),
+                ('month', django.db.models.CharField(max_length=7, db_index=True)),
                 (
                     'owner',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=255, validators=[ezidapp.models.validation.agentPid]
                     ),
                 ),
                 (
                     'ownergroup',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=255, validators=[ezidapp.models.validation.agentPid]
                     ),
                 ),
-                ('realm', models.CharField(max_length=32)),
-                ('type', models.CharField(max_length=32)),
-                ('hasMetadata', models.BooleanField()),
+                ('realm', django.db.models.CharField(max_length=32)),
+                ('type', django.db.models.CharField(max_length=32)),
+                ('hasMetadata', django.db.models.BooleanField()),
                 (
                     'count',
-                    models.IntegerField(
+                    django.db.models.IntegerField(
                         validators=[django.core.validators.MinValueValidator(0)]
                     ),
                 ),
             ],
         ),
-        migrations.AlterUniqueTogether(
+        django.db.migrations.AlterUniqueTogether(
             name='statistics',
-            unique_together=set([('month', 'owner', 'type', 'hasMetadata')]),
+            unique_together={('month', 'owner', 'type', 'hasMetadata')},
         ),
     ]

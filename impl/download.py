@@ -22,8 +22,6 @@
 # -----------------------------------------------------------------------------
 
 import csv
-import django.conf
-import django.core.mail
 import hashlib
 import os
 import os.path
@@ -33,13 +31,21 @@ import threading
 import time
 import uuid
 
-from . import anvl
-from . import config
-import ezidapp.models
-from . import log
-from . import policy
-from . import util
-from . import util2
+import django.conf
+import django.core.mail
+import django.db
+
+import ezidapp.models.download_queue
+import ezidapp.models.model_util
+import ezidapp.models.search_identifier
+import ezidapp.models.store_group
+import ezidapp.models.store_user
+import impl.anvl
+import impl.config
+import impl.log
+import impl.policy
+import impl.util
+import impl.util2
 
 _ezidUrl = None
 _usedFilenames = None
@@ -54,24 +60,25 @@ _zipCommand = None
 def loadConfig():
     global _ezidUrl, _usedFilenames, _daemonEnabled, _threadName, _idleSleep
     global _gzipCommand, _zipCommand
-    _ezidUrl = config.get("DEFAULT.ezid_base_url")
+    _ezidUrl = impl.config.get("DEFAULT.ezid_base_url")
     _lock.acquire()
     try:
-        if _usedFilenames == None:
+        if _usedFilenames is None:
             _usedFilenames = [
-                r.filename for r in ezidapp.models.DownloadQueue.objects.all()
+                r.filename
+                for r in ezidapp.models.download_queue.DownloadQueue.objects.all()
             ] + [
                 f.split(".")[0]
                 for f in os.listdir(django.conf.settings.DOWNLOAD_PUBLIC_DIR)
             ]
     finally:
         _lock.release()
-    _idleSleep = int(config.get("daemons.download_processing_idle_sleep"))
-    _gzipCommand = config.get("DEFAULT.gzip_command")
-    _zipCommand = config.get("DEFAULT.zip_command")
+    _idleSleep = int(impl.config.get("daemons.download_processing_idle_sleep"))
+    _gzipCommand = impl.config.get("DEFAULT.gzip_command")
+    _zipCommand = impl.config.get("DEFAULT.zip_command")
     _daemonEnabled = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and config.get("daemons.download_enabled").lower() == "true"
+        and impl.config.get("daemons.download_enabled").lower() == "true"
     )
     if _daemonEnabled:
         _threadName = uuid.uuid1().hex
@@ -81,20 +88,20 @@ def loadConfig():
 
 
 _formatCode = {
-    "anvl": ezidapp.models.DownloadQueue.ANVL,
-    "csv": ezidapp.models.DownloadQueue.CSV,
-    "xml": ezidapp.models.DownloadQueue.XML,
+    "anvl": ezidapp.models.download_queue.DownloadQueue.ANVL,
+    "csv": ezidapp.models.download_queue.DownloadQueue.CSV,
+    "xml": ezidapp.models.download_queue.DownloadQueue.XML,
 }
 
 _formatSuffix = {
-    ezidapp.models.DownloadQueue.ANVL: "txt",
-    ezidapp.models.DownloadQueue.CSV: "csv",
-    ezidapp.models.DownloadQueue.XML: "xml",
+    ezidapp.models.download_queue.DownloadQueue.ANVL: "txt",
+    ezidapp.models.download_queue.DownloadQueue.CSV: "csv",
+    ezidapp.models.download_queue.DownloadQueue.XML: "xml",
 }
 
 _compressionCode = {
-    "gzip": ezidapp.models.DownloadQueue.GZIP,
-    "zip": ezidapp.models.DownloadQueue.ZIP,
+    "gzip": ezidapp.models.download_queue.DownloadQueue.GZIP,
+    "zip": ezidapp.models.download_queue.DownloadQueue.ZIP,
 }
 
 
@@ -122,24 +129,24 @@ def _validateBoolean(v):
 def _validateTimestamp(v):
     try:
         try:
-            return util.parseTimestampZulu(v)
-        except:
+            return impl.util.parseTimestampZulu(v)
+        except Exception:
             return int(v)
-    except:
+    except Exception:
         raise _ValidationException("invalid timestamp")
 
 
 def _validateUser(v):
-    u = ezidapp.models.getUserByUsername(v)
-    if u != None and not u.isAnonymous:
+    u = ezidapp.models.store_user.getUserByUsername(v)
+    if u is not None and not u.isAnonymous:
         return u
     else:
         raise _ValidationException("no such user")
 
 
 def _validateGroup(v):
-    g = ezidapp.models.getGroupByGroupname(v)
-    if g != None and not g.isAnonymous:
+    g = ezidapp.models.store_group.getGroupByGroupname(v)
+    if g is not None and not g.isAnonymous:
         return g
     else:
         raise _ValidationException("no such group")
@@ -151,7 +158,7 @@ def _validateGroup(v):
 
 
 def _escape(s):
-    return re.sub("[%,=]", lambda c: "%%%02X" % ord(c.group(0)), s)
+    return re.sub("[%,=]", lambda c: f"%{ord(c.group(0)):02X}", s)
 
 
 def _encode(o):
@@ -166,7 +173,7 @@ def _encode(o):
     elif type(o) is dict:
         return "D" + ",".join(
             map(
-                lambda kv: "%s=%s" % (_escape(_encode(kv[0])), _escape(_encode(kv[1]))),
+                lambda kv: f"{_escape(_encode(kv[0]))}={_escape(_encode(kv[1]))}",
                 list(o.items()),
             )
         )
@@ -193,12 +200,14 @@ def _decode(s):
     elif s[0] == "D":
         if len(s) > 1:
             return dict(
-                list(map(
-                    lambda i: tuple(
-                        [_decode(_unescape(kv)) for kv in i.split("=")]
-                    ),
-                    s[1:].split(","),
-                ))
+                list(
+                    map(
+                        lambda i: tuple(
+                            [_decode(_unescape(kv)) for kv in i.split("=")]
+                        ),
+                        s[1:].split(","),
+                    )
+                )
             )
         else:
             return {}
@@ -235,11 +244,12 @@ _parameters = {
 def _generateFilename(requestor):
     while True:
         f = hashlib.sha1(
-            "%s,%s,%s" % (requestor, str(time.time()), django.conf.settings.SECRET_KEY)
+            f"{requestor},{str(time.time())},{django.conf.settings.SECRET_KEY}"
         ).hexdigest()[::4]
         _lock.acquire()
         try:
             if f not in _usedFilenames:
+                # noinspection PyUnresolvedReferences
                 _usedFilenames.append(f)
                 return f
         finally:
@@ -276,7 +286,7 @@ def enqueueRequest(user, request):
         d = {}
         for k in request:
             if k not in _parameters:
-                return error("invalid parameter: " + util.oneLine(k))
+                return error("invalid parameter: " + impl.util.oneLine(k))
             try:
                 if _parameters[k][0]:
                     d[k] = list(map(_parameters[k][1], request.getlist(k)))
@@ -285,7 +295,7 @@ def enqueueRequest(user, request):
                         return error("parameter is not repeatable: " + k)
                     d[k] = _parameters[k][1](request[k])
             except _ValidationException as e:
-                return error("parameter '%s': %s" % (k, str(e)))
+                return error(f"parameter '{k}': {str(e)}")
         if "format" not in d:
             return error("missing required parameter: format")
         format = d["format"]
@@ -307,14 +317,14 @@ def enqueueRequest(user, request):
         toHarvest = []
         if "owner" in d:
             for o in d["owner"]:
-                if not policy.authorizeDownload(user, owner=o):
+                if not impl.policy.authorizeDownload(user, owner=o):
                     return "error: forbidden"
                 if o.pid not in toHarvest:
                     toHarvest.append(o.pid)
             del d["owner"]
         if "ownergroup" in d:
             for g in d["ownergroup"]:
-                if not policy.authorizeDownload(user, ownergroup=g):
+                if not impl.policy.authorizeDownload(user, ownergroup=g):
                     return "error: forbidden"
                 for u in g.users.all():
                     if u.pid not in toHarvest:
@@ -334,7 +344,7 @@ def enqueueRequest(user, request):
             options = {"convertTimestamps": False}
         requestor = user.pid
         filename = _generateFilename(requestor)
-        r = ezidapp.models.DownloadQueue(
+        r = ezidapp.models.download_queue.DownloadQueue(
             requestTime=int(time.time()),
             rawRequest=request.urlencode(),
             requestor=requestor,
@@ -348,15 +358,15 @@ def enqueueRequest(user, request):
             toHarvest=",".join(toHarvest),
         )
         r.save()
-        return "success: %s/download/%s.%s" % (_ezidUrl, filename, _fileSuffix(r))
+        return f"success: {_ezidUrl}/download/{filename}.{_fileSuffix(r)}"
     except Exception as e:
-        log.otherError("download.enqueueRequest", e)
+        impl.log.otherError("download.enqueueRequest", e)
         return "error: internal server error"
 
 
 def getQueueLength():
     """Returns the length of the batch download queue."""
-    return ezidapp.models.DownloadQueue.objects.count()
+    return ezidapp.models.download_queue.DownloadQueue.objects.count()
 
 
 class _AbortException(Exception):
@@ -377,13 +387,11 @@ def _wrapException(context, exception):
     m = str(exception)
     if len(m) > 0:
         m = ": " + m
-    return Exception(
-        "batch download error: %s: %s%s" % (context, type(exception).__name__, m)
-    )
+    return Exception(f"batch download error: {context}: {type(exception).__name__}{m}")
 
 
 def _fileSuffix(r):
-    if r.compression == ezidapp.models.DownloadQueue.GZIP:
+    if r.compression == ezidapp.models.download_queue.DownloadQueue.GZIP:
         return _formatSuffix[r.format] + ".gz"
     else:
         return "zip"
@@ -404,11 +412,11 @@ def _path(r, i):
         s = _fileSuffix(r)
     else:
         s = "request"
-    return os.path.join(d, "%s.%s" % (r.filename, s))
+    return os.path.join(d, f"{r.filename}.{s}")
 
 
 def _csvEncode(s):
-    return util.oneLine(s).encode("UTF-8")
+    return impl.util.oneLine(s).encode("utf-8")
 
 
 def _flushFile(f):
@@ -420,12 +428,12 @@ def _createFile(r):
     f = None
     try:
         f = open(_path(r, 1), "wb")
-        if r.format == ezidapp.models.DownloadQueue.CSV:
+        if r.format == ezidapp.models.download_queue.DownloadQueue.CSV:
             w = csv.writer(f)
             w.writerow([_csvEncode(c) for c in _decode(r.columns)])
             _flushFile(f)
-        elif r.format == ezidapp.models.DownloadQueue.XML:
-            f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<records>")
+        elif r.format == ezidapp.models.download_queue.DownloadQueue.XML:
+            f.write(b'<?xml version="1.0" encoding="utf-8"?>\n<records>')
             _flushFile(f)
         # We don't know exactly what the CSV writer wrote, so we must
         # probe the file to find its size.
@@ -433,7 +441,7 @@ def _createFile(r):
     except Exception as e:
         raise _wrapException("error creating file", e)
     else:
-        r.stage = ezidapp.models.DownloadQueue.HARVEST
+        r.stage = ezidapp.models.download_queue.DownloadQueue.HARVEST
         r.fileSize = n
         r.save()
     finally:
@@ -441,96 +449,94 @@ def _createFile(r):
             f.close()
 
 
-def _satisfiesConstraints(id, constraints):
+def _satisfiesConstraints(id_model, constraints):
     for k, v in list(constraints.items()):
         if k == "createdAfter":
-            if id.createTime < v:
+            if id_model.createTime < v:
                 return False
         elif k == "createdBefore":
-            if id.createTime >= v:
+            if id_model.createTime >= v:
                 return False
         elif k == "crossref":
-            if id.isCrossref ^ v:
+            if id_model.isCrossref ^ v:
                 return False
         elif k == "datacite":
-            if id.isDatacite ^ v:
+            if id_model.isDatacite ^ v:
                 return False
         elif k == "exported":
-            if id.exported ^ v:
+            if id_model.exported ^ v:
                 return False
         elif k == "permanence":
-            if id.isTest ^ (v == "test"):
+            if id_model.isTest ^ (v == "test"):
                 return False
         elif k == "profile":
-            if id.profile.label not in v:
+            if id_model.profile.label not in v:
                 return False
         elif k == "status":
-            if id.get_status_display() not in v:
+            if id_model.get_status_display() not in v:
                 return False
         elif k == "type":
-            if id.type not in v:
+            if id_model.type not in v:
                 return False
         elif k == "updatedAfter":
-            if id.updateTime < v:
+            if id_model.updateTime < v:
                 return False
         elif k == "updatedBefore":
-            if id.updateTime >= v:
+            if id_model.updateTime >= v:
                 return False
         else:
             assert False, "unhandled case"
     return True
 
 
-def _prepareMetadata(id, convertTimestamps):
-    d = id.toLegacy()
-    util2.convertLegacyToExternal(d)
-    if id.isDoi:
-        d["_shadowedby"] = id.arkAlias
+def _prepareMetadata(id_model, convertTimestamps):
+    d = id_model.toLegacy()
+    ezidapp.models.model_util.convertLegacyToExternal(d)
+    if id_model.isDoi:
+        d["_shadowedby"] = id_model.arkAlias
     if convertTimestamps:
-        d["_created"] = util.formatTimestampZulu(int(d["_created"]))
-        d["_updated"] = util.formatTimestampZulu(int(d["_updated"]))
+        d["_created"] = impl.util.formatTimestampZulu(int(d["_created"]))
+        d["_updated"] = impl.util.formatTimestampZulu(int(d["_updated"]))
     return d
 
 
-def _writeAnvl(f, id, metadata):
+def _writeAnvl(f, id_model, metadata):
     if f.tell() > 0:
         f.write("\n")
-    f.write(":: %s\n" % id.identifier)
-    f.write(anvl.format(metadata).encode("UTF-8"))
+    f.write(f":: {id_model.identifier}\n")
+    f.write(impl.anvl.format(metadata).encode("utf-8"))
 
 
-def _writeCsv(f, columns, id, metadata):
+def _writeCsv(f, columns, id_model, metadata):
     w = csv.writer(f)
     l = []
     for c in columns:
         if c == "_id":
-            l.append(id.identifier)
+            l.append(id_model.identifier)
         elif c == "_mappedCreator":
-            l.append(id.resourceCreator)
+            l.append(id_model.resourceCreator)
         elif c == "_mappedTitle":
-            l.append(id.resourceTitle)
+            l.append(id_model.resourceTitle)
         elif c == "_mappedPublisher":
-            l.append(id.resourcePublisher)
+            l.append(id_model.resourcePublisher)
         elif c == "_mappedDate":
-            l.append(id.resourcePublicationDate)
+            l.append(id_model.resourcePublicationDate)
         elif c == "_mappedType":
-            l.append(id.resourceType)
+            l.append(id_model.resourceType)
         else:
             l.append(metadata.get(c, ""))
     w.writerow([_csvEncode(c) for c in l])
 
 
 def _writeXml(f, id, metadata):
-    f.write("<record identifier=\"%s\">" % util.xmlEscape(id.identifier))
+    f.write(f'<record identifier="{impl.util.xmlEscape(id.identifier)}">')
     for k, v in list(metadata.items()):
         if k in ["datacite", "crossref"]:
-            v = util.removeXmlDeclaration(v)
+            v = impl.util.removeXmlDeclaration(v)
         else:
-            v = util.xmlEscape(v)
+            v = impl.util.xmlEscape(v)
         f.write(
-            ("<element name=\"%s\">%s</element>" % (util.xmlEscape(k), v)).encode(
-                "UTF-8"
-            )
+            f'<element name="{impl.util.xmlEscape(k)}">{v}</element>'.encode("utf-8")
         )
     f.write("</record>")
 
@@ -542,7 +548,9 @@ def _harvest1(r, f):
     while True:
         _checkAbort()
         qs = (
-            ezidapp.models.SearchIdentifier.objects.filter(identifier__gt=r.lastId)
+            ezidapp.models.search_identifier.SearchIdentifier.objects.filter(
+                identifier__gt=r.lastId
+            )
             .filter(owner__pid=r.toHarvest.split(",")[r.currentIndex])
             .select_related("owner", "ownergroup", "datacenter", "profile")
             .order_by("identifier")
@@ -555,11 +563,11 @@ def _harvest1(r, f):
                 _checkAbort()
                 if _satisfiesConstraints(id, constraints):
                     m = _prepareMetadata(id, options["convertTimestamps"])
-                    if r.format == ezidapp.models.DownloadQueue.ANVL:
+                    if r.format == ezidapp.models.download_queue.DownloadQueue.ANVL:
                         _writeAnvl(f, id, m)
-                    elif r.format == ezidapp.models.DownloadQueue.CSV:
+                    elif r.format == ezidapp.models.download_queue.DownloadQueue.CSV:
                         _writeCsv(f, columns, id, m)
-                    elif r.format == ezidapp.models.DownloadQueue.XML:
+                    elif r.format == ezidapp.models.download_queue.DownloadQueue.XML:
                         _writeXml(f, id, m)
                     else:
                         assert False, "unhandled case"
@@ -593,13 +601,13 @@ def _harvest(r):
                 r.save()
             _harvest1(r, f)
         _checkAbort()
-        if r.format == ezidapp.models.DownloadQueue.XML:
+        if r.format == ezidapp.models.download_queue.DownloadQueue.XML:
             try:
-                f.write("</records>")
+                f.write(b"</records>")
                 _flushFile(f)
             except Exception as e:
                 raise _wrapException("error writing file footer", e)
-        r.stage = ezidapp.models.DownloadQueue.COMPRESS
+        r.stage = ezidapp.models.download_queue.DownloadQueue.COMPRESS
         r.save()
     finally:
         if f:
@@ -617,9 +625,10 @@ def _compressFile(r):
         # natural death.
         if os.path.exists(_path(r, 2)):
             os.unlink(_path(r, 2))
-        if r.compression == ezidapp.models.DownloadQueue.GZIP:
+        if r.compression == ezidapp.models.download_queue.DownloadQueue.GZIP:
             infile = open(_path(r, 1))
             outfile = open(_path(r, 2), "w")
+            # noinspection PyTypeChecker
             p = subprocess.Popen(
                 [_gzipCommand],
                 stdin=infile,
@@ -640,16 +649,15 @@ def _compressFile(r):
             )
             stderr = p.communicate()[0]
         _checkAbort()
-        assert p.returncode == 0 and stderr == "", (
-            "compression command returned status code %d, stderr '%s'"
-            % (p.returncode, stderr)
-        )
+        assert (
+            p.returncode == 0 and stderr == ""
+        ), f"compression command returned status code {p.returncode:d}, stderr '{stderr}'"
     except _AbortException:
         raise
     except Exception as e:
         raise _wrapException("error compressing file", e)
     else:
-        r.stage = ezidapp.models.DownloadQueue.DELETE
+        r.stage = ezidapp.models.download_queue.DownloadQueue.DELETE
         r.save()
     finally:
         if infile:
@@ -665,7 +673,7 @@ def _deleteUncompressedFile(r):
     except Exception as e:
         raise _wrapException("error deleting uncompressed file", e)
     else:
-        r.stage = ezidapp.models.DownloadQueue.MOVE
+        r.stage = ezidapp.models.download_queue.DownloadQueue.MOVE
         r.save()
 
 
@@ -678,7 +686,7 @@ def _moveCompressedFile(r):
     except Exception as e:
         raise _wrapException("error moving compressed file", e)
     else:
-        r.stage = ezidapp.models.DownloadQueue.NOTIFY
+        r.stage = ezidapp.models.download_queue.DownloadQueue.NOTIFY
         r.save()
 
 
@@ -687,11 +695,7 @@ def _notifyRequestor(r):
     try:
         f = open(_path(r, 4), "w")
         f.write(
-            "%s\n%s\n"
-            % (
-                ezidapp.models.getUserByPid(r.requestor).username,
-                r.rawRequest.encode("UTF-8"),
-            )
+            f"{ezidapp.models.store_user.getUserByPid(r.requestor).username}\n{r.rawRequest.encode('utf-8')}\n"
         )
     except Exception as e:
         raise _wrapException("error writing sidecar file", e)
@@ -701,20 +705,22 @@ def _notifyRequestor(r):
     for emailAddress in _decode(r.notify):
         m = re.match("(.*)<([^>]*)>$", emailAddress)
         if m and m.group(1).strip() != "" and m.group(2).strip() != "":
-            salutation = "Dear %s,\n\n" % m.group(1).strip()
+            salutation = f"Dear {m.group(1).strip()},\n\n"
             emailAddress = m.group(2).strip()
         else:
             salutation = ""
         message = (
             "%sThank you for using EZID to easily create and manage "
-            + "your identifiers.  The batch download you requested is available "
-            + "at:\n\n"
-            + "%s/download/%s.%s\n\n"
-            + "The download will be deleted in 1 week.\n\n"
-            + "Best,\n"
-            + "EZID Team\n\n"
-            + "This is an automated email.  Please do not reply.\n"
-        ) % (salutation, _ezidUrl, r.filename, _fileSuffix(r))
+            "your identifiers.  The batch download you requested is available "
+            "at:\n\n"
+            "%s/download/%s.%s\n\n"
+            "The download will be deleted in 1 week.\n\n"
+            "Best,\n"
+            "EZID Team\n\n"
+            "This is an automated email.  Please do not reply.\n".format(
+                salutation, _ezidUrl, r.filename, _fileSuffix(r)
+            )
+        )
         try:
             django.core.mail.send_mail(
                 "Your EZID batch download link",
@@ -734,26 +740,29 @@ def _daemonThread():
         if doSleep:
             django.db.connections["default"].close()
             django.db.connections["search"].close()
+            # noinspection PyTypeChecker
             time.sleep(_idleSleep)
         try:
             _checkAbort()
-            r = ezidapp.models.DownloadQueue.objects.all().order_by("seq")[:1]
+            r = ezidapp.models.download_queue.DownloadQueue.objects.all().order_by(
+                "seq"
+            )[:1]
             if len(r) == 0:
                 doSleep = True
                 continue
             r = r[0]
             _checkAbort()
-            if r.stage == ezidapp.models.DownloadQueue.CREATE:
+            if r.stage == ezidapp.models.download_queue.DownloadQueue.CREATE:
                 _createFile(r)
-            elif r.stage == ezidapp.models.DownloadQueue.HARVEST:
+            elif r.stage == ezidapp.models.download_queue.DownloadQueue.HARVEST:
                 _harvest(r)
-            elif r.stage == ezidapp.models.DownloadQueue.COMPRESS:
+            elif r.stage == ezidapp.models.download_queue.DownloadQueue.COMPRESS:
                 _compressFile(r)
-            elif r.stage == ezidapp.models.DownloadQueue.DELETE:
+            elif r.stage == ezidapp.models.download_queue.DownloadQueue.DELETE:
                 _deleteUncompressedFile(r)
-            elif r.stage == ezidapp.models.DownloadQueue.MOVE:
+            elif r.stage == ezidapp.models.download_queue.DownloadQueue.MOVE:
                 _moveCompressedFile(r)
-            elif r.stage == ezidapp.models.DownloadQueue.NOTIFY:
+            elif r.stage == ezidapp.models.download_queue.DownloadQueue.NOTIFY:
                 _notifyRequestor(r)
             else:
                 assert False, "unhandled case"
@@ -761,5 +770,5 @@ def _daemonThread():
         except _AbortException:
             break
         except Exception as e:
-            log.otherError("download._daemonThread", e)
+            impl.log.otherError("download._daemonThread", e)
             doSleep = True

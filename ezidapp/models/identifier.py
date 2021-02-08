@@ -18,11 +18,13 @@ import django.core.validators
 import django.db.models
 import re
 import time
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 
-from . import custom_fields
-import util
-from . import validation
+import ezidapp.models.custom_fields
+import impl.util
+import ezidapp.models.validation
 
 # Deferred imports...
 """
@@ -34,7 +36,7 @@ import util2
 """
 
 
-def _emptyDict():
+def emptyDict():
     return {}
 
 
@@ -47,9 +49,9 @@ class Identifier(django.db.models.Model):
         abstract = True
 
     identifier = django.db.models.CharField(
-        max_length=util.maxIdentifierLength,
+        max_length=impl.util.maxIdentifierLength,
         unique=True,
-        validators=[validation.anyIdentifier],
+        validators=[ezidapp.models.validation.anyIdentifier],
     )
     # The identifier in qualified, normalized form, e.g.,
     # "ark:/12345/abc" or "doi:10.1234/ABC".
@@ -74,7 +76,7 @@ class Identifier(django.db.models.Model):
     def arkAlias(self):
         # For DOIs only, the identifier expressed in ARK syntax.
         if self.isDoi:
-            return "ark:/" + util.doi2shadow(self.identifier[4:])
+            return "ark:/" + impl.util.doi2shadow(self.identifier[4:])
         else:
             return None
 
@@ -205,7 +207,10 @@ class Identifier(django.db.models.Model):
     # message received from Crossref; otherwise, empty.
 
     target = django.db.models.URLField(
-        max_length=2000, blank=True, default="", validators=[validation.unicodeBmpOnly]
+        max_length=2000,
+        blank=True,
+        default="",
+        validators=[ezidapp.models.validation.unicodeBmpOnly],
     )
     # The identifier's nominal target URL, e.g., "http://foo.com/bar".
     # (The target URL actually registered with resolvers depends on the
@@ -217,14 +222,14 @@ class Identifier(django.db.models.Model):
 
     @property
     def defaultTarget(self):
-        import util2
+        import impl.util2 as util2
 
         return util2.defaultTargetUrl(self.identifier)
 
     @property
     def resolverTarget(self):
         # The URL the identifier actually resolves to.
-        import util2
+        import impl.util2 as util2
 
         if self.isReserved:
             return self.defaultTarget
@@ -241,6 +246,7 @@ class Identifier(django.db.models.Model):
     # default profile that depends on the identifier type, so this field
     # will in practice never be None.
 
+    # noinspection PyPropertyDefinition
     @property
     def defaultProfile(self):
         # Should return the default profile for the identifier's type;
@@ -263,7 +269,7 @@ class Identifier(django.db.models.Model):
     def usesErcProfile(self):
         return self.profile.label == "erc"
 
-    cm = custom_fields.CompressedJsonField(default=_emptyDict)
+    cm = ezidapp.models.custom_fields.CompressedJsonField(default=emptyDict)
     # All of the identifier's citation metadata as a dictionary of
     # name/value pairs, e.g., { "erc.who": "Proust, Marcel", ... }.
 
@@ -271,7 +277,7 @@ class Identifier(django.db.models.Model):
         # Returns citation metadata as a mapping.KernelMetadata object.
         # The mapping is based on the identifier's preferred metadata
         # profile.  Missing attributes will be None.
-        import mapping
+        import impl.mapping as mapping
 
         return mapping.map(self.cm, profile=self.profile.label)
 
@@ -282,7 +288,7 @@ class Identifier(django.db.models.Model):
         # returns a record; missing attributes will be "(:unav)".  The
         # mapping is based on the identifier's preferred metadata profile
         # but with priority given to the DataCite fields.
-        import datacite
+        import impl.datacite as datacite
 
         return datacite.formRecord(
             self.identifier, self.cm, supplyMissing=True, profile=self.profile.label
@@ -326,16 +332,19 @@ class Identifier(django.db.models.Model):
         self.checkMetadataRequirements()
         self.computeComputedValues()
 
+    # noinspection PyUnresolvedReferences
     def baseClean(self):
-        if self.owner != None and self.ownergroup == None:
+        # noinspection PyUnresolvedReferences
+        if self.owner is not None and self.ownergroup is None:
             self.ownergroup = self.owner.group
         else:
-            if (self.owner != None) ^ (self.ownergroup != None):
+            if (self.owner is not None) ^ (self.ownergroup is not None):
                 e = "Owner/ownergroup inconsistency."
                 raise django.core.exceptions.ValidationError(
                     {"owner": e, "ownergroup": e}
                 )
-            if self.ownergroup != None:
+            if self.ownergroup is not None:
+                # noinspection PyUnresolvedReferences
                 if self.ownergroup != self.owner.group:
                     raise django.core.exceptions.ValidationError(
                         {
@@ -363,7 +372,8 @@ class Identifier(django.db.models.Model):
         self.crossrefMessage = self.crossrefMessage.strip()
         if self.isDoi:
             if self.isDatacite:
-                if self.datacenter == None:
+                # noinspection PyUnresolvedReferences
+                if self.datacenter is None:
                     raise django.core.exceptions.ValidationError(
                         {"datacenter": "Missing datacenter."}
                     )
@@ -374,7 +384,8 @@ class Identifier(django.db.models.Model):
                         }
                     )
             elif self.isCrossref:
-                if self.datacenter != None:
+                # noinspection PyUnresolvedReferences
+                if self.datacenter is not None:
                     # This is the correct error message in most cases.
                     raise django.core.exceptions.ValidationError(
                         {
@@ -382,7 +393,7 @@ class Identifier(django.db.models.Model):
                         }
                     )
                 try:
-                    validation.crossrefDoi(self.identifier)
+                    ezidapp.models.validation.crossrefDoi(self.identifier)
                 except django.core.exceptions.ValidationError as e:
                     raise django.core.exceptions.ValidationError({"identifier": e})
                 if not self.exported:
@@ -404,7 +415,8 @@ class Identifier(django.db.models.Model):
             else:
                 assert False, "unhandled case"
         else:
-            if self.datacenter != None:
+            # noinspection PyUnresolvedReferences
+            if self.datacenter is not None:
                 raise django.core.exceptions.ValidationError(
                     {"datacenter": "Non-DOI identifier has datacenter."}
                 )
@@ -433,8 +445,8 @@ class Identifier(django.db.models.Model):
         # Per RFC 3986, URI schemes are case-insensitive, but some systems
         # we interact with require the scheme to be lowercase.
         scheme, rest = self.target.split(":", 1)
-        self.target = "%s:%s" % (scheme.lower(), rest)
-        if self.profile == None:
+        self.target = f"{scheme.lower()}:{rest}"
+        if self.profile is None:
             self.profile = self.defaultProfile
         for k, v in list(self.cm.items()):
             if k.strip() != k or k == "" or k.startswith("_"):
@@ -449,14 +461,14 @@ class Identifier(django.db.models.Model):
 
     def cleanAgentPid(self):
         # Checks applicable to agent PIDs only.
-        import config
-        import util2
+        import impl.config as config
+        import impl.util2 as util2
 
         if not self.isArk:
             raise django.core.exceptions.ValidationError(
                 {"identifier": "Agent PID is not an ARK."}
             )
-        if self.owner == None or self.owner.username != config.get(
+        if self.owner is None or self.owner.username != config.get(
             "auth.admin_username"
         ):
             raise django.core.exceptions.ValidationError(
@@ -483,12 +495,14 @@ class Identifier(django.db.models.Model):
     def cleanCitationMetadataFields(self):
         # Cleans certain citation metadata fields on which EZID imposes
         # structure.
-        import crossref
-        import datacite
+        import impl.crossref as crossref
+        import impl.datacite as datacite
 
         if "datacite.resourcetype" in self.cm:
             try:
-                self.cm["datacite.resourcetype"] = validation.resourceType(
+                self.cm[
+                    "datacite.resourcetype"
+                ] = ezidapp.models.validation.resourceType(
                     self.cm["datacite.resourcetype"]
                 )
             except django.core.exceptions.ValidationError as e:
@@ -513,8 +527,8 @@ class Identifier(django.db.models.Model):
             except AssertionError as e:
                 raise django.core.exceptions.ValidationError(
                     {
-                        "datacite": "Metadata validation error: %s."
-                        % util.oneLine(str(e))
+                        "datacite": f"Metadata validation error: "
+                        f"{impl.util.oneLine(str(e))}."
                     }
                 )
         if "crossref" in self.cm:
@@ -532,13 +546,13 @@ class Identifier(django.db.models.Model):
             except AssertionError as e:
                 raise django.core.exceptions.ValidationError(
                     {
-                        "crossref": "Metadata validation error: %s."
-                        % util.oneLine(str(e))
+                        "crossref": f"Metadata validation error: "
+                        f"{impl.util.oneLine(str(e))}."
                     }
                 )
 
     def checkMetadataRequirements(self):
-        import datacite
+        import impl.datacite as datacite
 
         if self.isDatacite and not self.isReserved:
             # If the identifier has DataCite or Crossref XML metadata, we
@@ -555,7 +569,7 @@ class Identifier(django.db.models.Model):
                     )
                 except AssertionError as e:
                     raise django.core.exceptions.ValidationError(
-                        "Public DOI metadata requirements not satisfied: %s." % str(e)
+                        f"Public DOI metadata requirements not satisfied: {str(e)}."
                     )
         if self.isCrossref and not self.isReserved and "crossref" not in self.cm:
             raise django.core.exceptions.ValidationError(
@@ -564,19 +578,19 @@ class Identifier(django.db.models.Model):
             )
 
     def computeComputedValues(self):
-        import util2
+        import impl.util2 as util2
 
         self.isTest = util2.isTestIdentifier(self.identifier)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.identifier
 
     def toLegacy(self):
         # Returns a legacy representation of the identifier.  See the
         # inverse of this method, 'fromLegacy' below.
         d = self.cm.copy()
-        d["_o"] = self.owner.pid if self.owner != None else "anonymous"
-        d["_g"] = self.ownergroup.pid if self.ownergroup != None else "anonymous"
+        d["_o"] = self.owner.pid if self.owner is not None else "anonymous"
+        d["_g"] = self.ownergroup.pid if self.ownergroup is not None else "anonymous"
         d["_c"] = str(self.createTime)
         d["_u"] = str(self.updateTime)
         d["_p"] = self.profile.label
@@ -594,6 +608,7 @@ class Identifier(django.db.models.Model):
         if not self.exported:
             d["_x"] = "no"
         if self.isDatacite:
+            # noinspection PyUnresolvedReferences
             d["_d"] = self.datacenter.symbol
         if self.isCrossref:
             d["_cr"] = "yes | " + self.get_crossrefStatus_display()

@@ -19,7 +19,7 @@ import datetime
 import django.core.validators
 import django.db.models
 
-from . import validation
+import ezidapp.models.validation
 
 
 class NewAccountWorksheet(django.db.models.Model):
@@ -38,7 +38,7 @@ class NewAccountWorksheet(django.db.models.Model):
     orgName = django.db.models.CharField(
         "name",
         max_length=255,
-        validators=[validation.nonEmpty],
+        validators=[ezidapp.models.validation.nonEmpty],
         help_text="Ex: The Digital Archaeological Record",
     )
     orgAcronym = django.db.models.CharField(
@@ -137,9 +137,9 @@ class NewAccountWorksheet(django.db.models.Model):
         if len(errors) > 0:
             raise django.core.validators.ValidationError(errors)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.orgAcronym != "":
-            o = "%s (%s)" % (self.orgName, self.orgAcronym)
+            o = f"{self.orgName} ({self.orgAcronym})"
         else:
             o = self.orgName
-        return "%s, %s" % (o, str(self.requestDate))
+        return f"{o}, {str(self.requestDate)}"

@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
+import django.db.migrations
+import django.db.models
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0010_storeuser_inheritgroupshoulders'),
     ]
 
     operations = [
-        migrations.AddField(
+        django.db.migrations.AddField(
             model_name='downloadqueue',
             name='currentIndex',
-            field=models.IntegerField(default=0),
+            field=django.db.models.IntegerField(default=0),
         ),
-        migrations.AddField(
+        django.db.migrations.AddField(
             model_name='downloadqueue',
             name='toHarvest',
-            field=models.TextField(default=''),
+            field=django.db.models.TextField(default=''),
             preserve_default=False,
         ),
     ]

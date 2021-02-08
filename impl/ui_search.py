@@ -1,16 +1,21 @@
-from . import ui_common as uic
-from . import search_util
-import django.contrib.messages
-from . import form_objects
-import ezidapp.models
-import urllib.request, urllib.parse, urllib.error
-from django.utils.translation import ugettext as _
-from . import userauth
-import math
 import locale
-from . import util
+import math
 import operator
 import re
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
+
+import django.contrib.messages
+from django.utils.translation import ugettext as _
+
+import ezidapp.models.identifier
+import impl.form_objects
+import impl.search_util
+import impl.ui_common
+import impl.userauth
+import impl.util
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -118,7 +123,7 @@ DATE_CEILING = True
 
 def queryUrlEncoded(request):
     r = {}
-    for k, v in queryDict(request).items():
+    for k, v in list(queryDict(request).items()):
         if isinstance(v, str):
             v = v.encode('utf8')
         r[k] = v
@@ -137,14 +142,15 @@ def queryDict(request):
     return queries if queries else {}
 
 
+# noinspection PyDictCreation
 def index(request):
     """(Public) Search Page."""
     if request.method != "GET":
-        return uic.methodNotAllowed(request)
+        return impl.ui_common.methodNotAllowed(request)
     d = {'menu_item': 'ui_search.index'}
     d['collapse_advanced_search'] = "collapsed"
     d['q'] = queryDict(request)
-    d['form'] = form_objects.BaseSearchIdForm(d['q'])
+    d['form'] = impl.form_objects.BaseSearchIdForm(d['q'])
     # if users are coming back to an advanced search, auto-open adv. search block
     if 'modify_search' in d['q'] and d['q']['modify_search'] == 't':
         if 'keywords' in d['q'] and d['q']['keywords'].strip() == '':
@@ -155,32 +161,37 @@ def index(request):
         if d['q']:
             d['p'] = 1
             d = search(d, request)
+            # noinspection PySimplifyBooleanCheck
             if d['search_success'] == True:
                 d['REQUEST'] = request.GET
-                return uic.render(request, 'search/results', d)
-    return uic.render(request, 'search/index', d)
+                # noinspection PyUnresolvedReferences
+                return impl.ui_common.render(request, 'search/results', d)
+    # noinspection PyUnresolvedReferences
+    return impl.ui_common.render(request, 'search/index', d)
 
 
+# noinspection PyDictCreation
 def results(request):
     """Display different page or columns from search results page."""
     d = {'menu_item': 'ui_search.results'}
     d['q'] = queryDict(request)
-    d['form'] = form_objects.BaseSearchIdForm(d['q'])
+    d['form'] = impl.form_objects.BaseSearchIdForm(d['q'])
     d = search(d, request)
-    return uic.render(request, 'search/results', d)
+    # noinspection PyUnresolvedReferences
+    return impl.ui_common.render(request, 'search/results', d)
 
 
 def hasBrokenLinks(d, request):
     """Flag if any IDs are found satisfying hasIssues=true and
     linkIsBroken=true."""
-    user_id, group_id = uic.getOwnerOrGroup(
+    user_id, group_id = impl.ui_common.getOwnerOrGroup(
         d['owner_selected'] if 'owner_selected' in d else None
     )
     c = _buildAuthorityConstraints(request, "issues", user_id, group_id)
     c['hasIssues'] = True
     c['linkIsBroken'] = True
-    return search_util.executeSearch(
-        userauth.getUser(request, returnAnonymous=True), c, 0, 1
+    return impl.search_util.executeSearch(
+        impl.userauth.getUser(request, returnAnonymous=True), c, 0, 1
     )
 
 
@@ -206,7 +217,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
     d = _pageLayout(d, request.GET, s_type)
     if noConstraintsReqd or 'form' in d and d['form'].is_valid():
         # Build dictionary of search constraints
-        user_id, group_id = uic.getOwnerOrGroup(
+        user_id, group_id = impl.ui_common.getOwnerOrGroup(
             d['owner_selected'] if 'owner_selected' in d else None
         )
         c = _buildAuthorityConstraints(request, s_type, user_id, group_id)
@@ -216,7 +227,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
             )  # Used for Google Analytics
             q = d['q'] if 'q' in d and d['q'] else request.GET
             q2 = {}
-            for k, v in q.items():
+            for k, v in list(q.items()):
                 q2[k] = q[k].strip() if isinstance(v, str) else q[k]
             # Move searches for IDs in keyword field to identifier field.  I wanted to put this in
             # form's clean() function but unable to modify field values that route. I think I need to
@@ -226,7 +237,7 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
                 if (
                     kw.lower().startswith(("doi:", "ark:/", "uuid:"))
                     and (' ' not in kw)
-                    and uic.isEmptyStr(q2.get('identifier', ''))
+                    and impl.ui_common.isEmptyStr(q2.get('identifier', ''))
                 ):
                     q2['keywords'] = ''
                     q2['identifier'] = kw
@@ -240,14 +251,15 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         elif s_type == 'crossref':
             d['sort'] = 'asc'
             c['crossref'] = True
+            # noinspection PyTypeChecker
             c['crossrefStatus'] = [
-                ezidapp.models.Identifier.CR_RESERVED,
-                ezidapp.models.Identifier.CR_WORKING,
-                ezidapp.models.Identifier.CR_WARNING,
-                ezidapp.models.Identifier.CR_FAILURE,
+                ezidapp.models.identifier.Identifier.CR_RESERVED,
+                ezidapp.models.identifier.Identifier.CR_WORKING,
+                ezidapp.models.identifier.Identifier.CR_WARNING,
+                ezidapp.models.identifier.Identifier.CR_FAILURE,
             ]
-        d['total_results'] = search_util.executeSearchCountOnly(
-            userauth.getUser(request, returnAnonymous=True), c
+        d['total_results'] = impl.search_util.executeSearchCountOnly(
+            impl.userauth.getUser(request, returnAnonymous=True), c
         )
         d['total_results_str'] = format(d['total_results'], "n")
         d['total_pages'] = int(math.ceil(float(d['total_results']) / float(d['ps'])))
@@ -263,8 +275,8 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         d['results'] = []
         rec_beg = (d['p'] - 1) * d['ps']
         rec_end = d['p'] * d['ps']
-        for id in search_util.executeSearch(
-            userauth.getUser(request, returnAnonymous=True),
+        for id_model in impl.search_util.executeSearch(
+            impl.userauth.getUser(request, returnAnonymous=True),
             c,
             rec_beg,
             rec_end,
@@ -272,42 +284,43 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         ):
             if s_type in ('public', 'manage'):
                 result = {
-                    "c_create_time": id.createTime,
-                    "c_identifier": id.identifier,
-                    "c_title": _truncateStr(id.resourceTitle),
-                    "c_creator": _truncateStr(id.resourceCreator),
-                    "c_owner": id.owner.username,
-                    "c_object_type": id.resourceType,
-                    "c_publisher": _truncateStr(id.resourcePublisher),
-                    "c_pubyear": _truncateStr(id.resourcePublicationDate),
-                    "c_id_status": id.get_status_display(),
-                    "c_update_time": id.updateTime,
+                    "c_create_time": id_model.createTime,
+                    "c_identifier": id_model.identifier,
+                    "c_title": _truncateStr(id_model.resourceTitle),
+                    "c_creator": _truncateStr(id_model.resourceCreator),
+                    "c_owner": id_model.owner.username,
+                    "c_object_type": id_model.resourceType,
+                    "c_publisher": _truncateStr(id_model.resourcePublisher),
+                    "c_pubyear": _truncateStr(id_model.resourcePublicationDate),
+                    "c_id_status": id_model.get_status_display(),
+                    "c_update_time": id_model.updateTime,
                 }
-                if id.isUnavailable and id.unavailableReason != "":
-                    result["c_id_status"] += " | " + id.unavailableReason
+                if id_model.isUnavailable and id_model.unavailableReason != "":
+                    result["c_id_status"] += " | " + id_model.unavailableReason
             elif s_type == 'issues':
                 result = {
-                    "c_identifier": id.identifier,
+                    "c_identifier": id_model.identifier,
                     "c_id_issue": "",
-                    "c_title": _truncateStr(id.resourceTitle),
-                    "c_update_time": id.updateTime,
+                    "c_title": _truncateStr(id_model.resourceTitle),
+                    "c_update_time": id_model.updateTime,
                 }
-                ir = id.issueReasons()
+                ir = id_model.issueReasons()
                 if ir:
                     result["c_id_issue"] += "; ".join(ir)
             elif s_type == 'crossref':
                 result = {
-                    "c_identifier": id.identifier,
-                    "c_crossref_date": id.createTime,
-                    "c_crossref_descr": id.get_crossrefStatus_display(),
+                    "c_identifier": id_model.identifier,
+                    "c_crossref_date": id_model.createTime,
+                    "c_crossref_descr": id_model.get_crossrefStatus_display(),
                 }
-                if id.isCrossrefGood and id.crossrefStatus in [
-                    id.CR_WORKING,
-                    id.CR_RESERVED,
+                if id_model.isCrossrefGood and id_model.crossrefStatus in [
+                    id_model.CR_WORKING,
+                    id_model.CR_RESERVED,
                 ]:
                     result["c_crossref_msg"] = _("No action necessary")
                 else:
-                    result["c_crossref_msg"] = id.crossrefMessage
+                    result["c_crossref_msg"] = id_model.crossrefMessage
+            # noinspection PyUnboundLocalVariable
             d['results'].append(result)
         # end of result iteration loop
         if s_type == "public":
@@ -360,7 +373,7 @@ def _pageLayout(d, REQUEST, s_type="public"):
     """Track user preferences for selected fields, field order, page, and page
     size."""
     d['filtered'] = False if 'filtered' not in d and 'filtered' not in REQUEST else True
-    d['testPrefixes'] = uic.testPrefixes
+    d['testPrefixes'] = impl.ui_common.testPrefixes
     d['fields_mapped'] = FIELDS_MAPPED
     d['field_display_types'] = FIELD_DISPLAY_TYPES
     f_order = _fieldOrderByType[s_type]
@@ -418,11 +431,11 @@ def _buildAuthorityConstraints(request, s_type="public", owner=None, ownergroup=
     It would also include all public IDs.
     owner = username of owner; ownergroup = group name
     """
-    if s_type == "public" or userauth.getUser(request) == None:
+    if s_type == "public" or impl.userauth.getUser(request) is None:
         c = {'publicSearchVisible': True}
     else:
         assert owner or ownergroup, "Owner information missing"
-        c = {'owner': owner} if (ownergroup == None) else {'ownergroup': ownergroup}
+        c = {'owner': owner} if (ownergroup is None) else {'ownergroup': ownergroup}
     return c
 
 
@@ -449,7 +462,7 @@ def _buildConstraints(c, REQUEST, s_type="public"):
             'hasMetadata': 'hasMetadata',
         }
         cmap.update(cmap_managePage)
-    for k, v in cmap.items():
+    for k, v in list(cmap.items()):
         # Handle boolean values
         if k in REQUEST and REQUEST[k] != '':
             if REQUEST[k] == 'True':
@@ -500,9 +513,9 @@ def _handleDate(d, ceiling=None):
     if d.isdigit():
         return int(d)
     if ceiling:
-        return util.dateToUpperTimestamp(d)
+        return impl.util.dateToUpperTimestamp(d)
     else:
-        return util.dateToLowerTimestamp(d)
+        return impl.util.dateToLowerTimestamp(d)
 
 
 def _buildQuerySyntax(c):
@@ -529,8 +542,8 @@ def _buildQuerySyntax(c):
         elif type(value) is tuple:  # Year tuple i.e. (2001, 2002)
             # i.e. publicationYear:>=2001 AND publicationYear:<=2002
             x, y = value
-            if x != None:
-                if y != None:
+            if x is not None:
+                if y is not None:
                     if x == y:
                         v += str(x)
                     else:
@@ -538,7 +551,7 @@ def _buildQuerySyntax(c):
                 else:
                     v += ">=" + str(x)
             else:
-                if y != None:
+                if y is not None:
                     v += "<=" + str(y)
             value = "".join(v)
             r += value

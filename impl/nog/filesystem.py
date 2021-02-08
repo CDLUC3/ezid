@@ -1,10 +1,12 @@
 import contextlib
 import os
+import pathlib
 import sys
 import tempfile
-import urllib.request, urllib.parse, urllib.error
-
-import pathlib2
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 
 FILENAME_SAFE_CHARS = " @$,~*&"
 
@@ -16,7 +18,7 @@ def get_safe_reversible_path(*path_list):
     This generates a string that is reversible but may not be easy to read.
 
     Args:
-        *path_list (list):
+        *path_list:
 
     Returns:
         (:obj:`str` or :obj:`Path`): A path safe for use as a as a file- or directory name.
@@ -68,7 +70,7 @@ def create_missing_directories_for_file(file_path):
     See Also:
         create_missing_directories_for_dir()
     """
-    create_missing_directories_for_dir(pathlib2.Path(file_path).parent)
+    create_missing_directories_for_dir(pathlib.Path(file_path).parent)
 
 
 def create_missing_directories_for_dir(dir_path):
@@ -84,7 +86,7 @@ def create_missing_directories_for_dir(dir_path):
     See Also:
         create_missing_directories_for_file()
     """
-    dir_path = pathlib2.Path(dir_path)
+    dir_path = pathlib.Path(dir_path)
     if dir_path.exists():
         if not dir_path.is_dir():
             raise IOError(
@@ -93,7 +95,7 @@ def create_missing_directories_for_dir(dir_path):
                 )
             )
     else:
-        pathlib2.Path(dir_path).mkdir(parents=True)
+        pathlib.Path(dir_path).mkdir(parents=True)
 
 
 def abs_path_from_base(base_path, rel_path):
@@ -156,16 +158,16 @@ def temp_file_for_obj(o, ext_str=None, to_utf_8=False, keep_file=False, lf=False
         lf (bool):
             True: Add a linefeed to the end of the file if one is not already there.
     Returns:
-        pathlib2.Path: The path to a file for `o`.
+        pathlib.Path: The path to a file for `o`.
     """
-    if isinstance(o, pathlib2.Path):
+    if isinstance(o, pathlib.Path):
         if not o.exists():
             raise Exception("File does not exist: {}".format(o))
         yield o.absolute()
         return
 
     if safe_path_exists(o):
-        yield pathlib2.Path(o).absolute()
+        yield pathlib.Path(o).absolute()
         return
 
     if isinstance(o, str):
@@ -182,13 +184,13 @@ def temp_file_for_obj(o, ext_str=None, to_utf_8=False, keep_file=False, lf=False
         if lf and not o.endswith(b'\n'):
             tmp_file.write(b'\n')
         tmp_file.seek(0)
-        yield pathlib2.Path(tmp_file.name).absolute()
+        yield pathlib.Path(tmp_file.name).absolute()
 
 
 def safe_path_exists(o):
     """Check if `o` is a path to an existing file.
 
-    ``pathlib2.Path(o).is_file()`` and ``os.path.exists()`` raise various types of
+    ``pathlib.Path(o).is_file()`` and ``os.path.exists()`` raise various types of
     exceptions if unable to convert `o` to a value suitable for use as a path. This
     method aims to allow checking any object without raising exceptions.
 
@@ -199,7 +201,7 @@ def safe_path_exists(o):
         bool: True if `o` is a path.
     """
     try:
-        if isinstance(o, pathlib2.Path):
+        if isinstance(o, pathlib.Path):
             return o.is_file()
         if not isinstance(o, (str, bytes)):
             return False
@@ -207,7 +209,7 @@ def safe_path_exists(o):
             return False
         if isinstance(o, bytes):
             o = o.decode("utf-8")
-        return pathlib2.Path(o).is_file()
+        return pathlib.Path(o).is_file()
     except Exception:
         pass
     return False

@@ -50,7 +50,7 @@ class ServerVariables(django.db.models.Model):
     def clean(self):
         self.alertMessage = self.alertMessage.strip()
 
-    def __unicode__(self):
+    def __str__(self):
         return "Row 1"
 
     class Meta:

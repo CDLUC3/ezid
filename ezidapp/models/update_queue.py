@@ -23,9 +23,9 @@ import django.core.validators
 import django.db.models
 import time
 
-from . import custom_fields
-from . import store_identifier
-import util
+import ezidapp.models.store_identifier
+import ezidapp.models.custom_fields
+import impl.util
 
 
 class UpdateQueue(django.db.models.Model):
@@ -42,11 +42,11 @@ class UpdateQueue(django.db.models.Model):
     # The time this record was enqueued as a Unix timestamp.  If not
     # specified, the current time is used.
 
-    identifier = django.db.models.CharField(max_length=util.maxIdentifierLength)
+    identifier = django.db.models.CharField(max_length=impl.util.maxIdentifierLength)
     # The identifier in qualified, normalized form, e.g.,
     # "doi:10.5060/FOO".
 
-    object = custom_fields.StoreIdentifierObjectField()
+    object = ezidapp.models.custom_fields.StoreIdentifierObjectField()
     # A cached copy of the identifier's StoreIdentifier object.
 
     @property
@@ -76,8 +76,8 @@ class UpdateQueue(django.db.models.Model):
     # If true, external services (DataCite, Crossref) are to be updated.
     # (The N2T binder is also external to EZID, but is always updated.)
 
-    def __unicode__(self):
-        return "%s %s" % (self.get_operation_display(), self.identifier)
+    def __str__(self):
+        return f"{self.get_operation_display()} {self.identifier}"
 
     def clean(self):
         if self.enqueueTime == "":
@@ -92,7 +92,7 @@ def enqueue(object, operation, updateExternalServices=True, identifier=None):
     # "create", "update", or "delete".  This method should be called
     # within a database transaction that includes the identifier's
     # update in the StoreIdentifier table.
-    if isinstance(object, store_identifier.StoreIdentifier):
+    if isinstance(object, ezidapp.models.store_identifier.StoreIdentifier):
         identifier = object.identifier
     r = UpdateQueue(
         identifier=identifier,

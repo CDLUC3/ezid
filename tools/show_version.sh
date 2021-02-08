@@ -2,6 +2,9 @@
 #
 # emulates "hg identify -inb -R path"
 #
+
+# @executable
+
 target_path='.'
 if [ ! -z "${1}" ]; then
   target_path="${1}"

@@ -4,7 +4,7 @@ import collections
 import logging
 import re
 
-import nog.exc
+import impl.nog.exc
 
 log = logging.getLogger(__name__)
 
@@ -192,5 +192,5 @@ class IdNamespace(
         )
 
 
-class IdentifierError(nog.exc.MinterError):
+class IdentifierError(impl.nog.exc.MinterError):
     pass

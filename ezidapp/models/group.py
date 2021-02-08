@@ -18,10 +18,11 @@ import re
 import django.core.validators
 import django.db.models
 
-from . import shoulder
-import util
-from . import validation
-from nog import minter
+import ezidapp.models.shoulder
+import impl.log
+import impl.util
+import ezidapp.models.validation
+import impl.nog.minter
 
 # Deferred imports...
 """
@@ -38,9 +39,9 @@ class Group(django.db.models.Model):
         abstract = True
 
     pid = django.db.models.CharField(
-        max_length=util.maxIdentifierLength,
+        max_length=impl.util.maxIdentifierLength,
         unique=True,
-        validators=[validation.agentPidOrEmpty],
+        validators=[ezidapp.models.validation.agentPidOrEmpty],
     )
     # The group's persistent identifier, e.g., "ark:/99166/foo".  The
     # field will in practice never be empty; rather, if empty, a new
@@ -70,15 +71,14 @@ class Group(django.db.models.Model):
     # The group's realm.
 
     def clean(self):
-        import log
         if self.pid == "":
             try:
-                s = shoulder.getAgentShoulder()
+                s = ezidapp.models.shoulder.getAgentShoulder()
                 assert s.isArk, "Agent shoulder type must be ARK"
-                self.pid = "{}{}".format(s.prefix, minter.mint_id(s))
+                self.pid = "{}{}".format(s.prefix, impl.nog.minter.mint_id(s))
             except Exception as e:
-                log.otherError("group.Group.clean", e)
+                impl.log.otherError("group.Group.clean", e)
                 raise
 
-    def __unicode__(self):
+    def __str__(self):
         return self.groupname

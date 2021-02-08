@@ -15,23 +15,25 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
-import base64
-import django.conf
-import lxml.etree
+import http.client
 import os
 import os.path
 import re
 import threading
 import time
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 
-from . import config
-import ezidapp.models
+import django.conf
+import lxml.etree
+
+import ezidapp.models.shoulder
 import ezidapp.models.validation
-from . import mapping
-from . import util
+import impl.config
+import impl.mapping
+import impl.util
 
 _lock = threading.Lock()
 _enabled = None
@@ -54,15 +56,16 @@ def loadConfig():
     global _enabled, _doiUrl, _metadataUrl, _numAttempts, _reattemptDelay
     global _timeout, _allocators, _stylesheet, _crossrefTransform, _pingDoi
     global _pingDatacenter, _pingTarget, _schemas
-    _enabled = config.get("datacite.enabled").lower() == "true"
-    _doiUrl = config.get("datacite.doi_url")
-    _metadataUrl = config.get("datacite.metadata_url")
-    _numAttempts = int(config.get("datacite.num_attempts"))
-    _reattemptDelay = int(config.get("datacite.reattempt_delay"))
-    _timeout = int(config.get("datacite.timeout"))
+
+    _enabled = impl.config.get("datacite.enabled").lower() == "true"
+    _doiUrl = impl.config.get("datacite.doi_url")
+    _metadataUrl = impl.config.get("datacite.metadata_url")
+    _numAttempts = int(impl.config.get("datacite.num_attempts"))
+    _reattemptDelay = int(impl.config.get("datacite.reattempt_delay"))
+    _timeout = int(impl.config.get("datacite.timeout"))
     _allocators = {}
-    for a in config.get("datacite.allocators").split(","):
-        _allocators[a] = config.get("allocator_%s.password" % a)
+    for a in impl.config.get("datacite.allocators").split(","):
+        _allocators[a] = impl.config.get(f"allocator_{a}.password")
     _stylesheet = lxml.etree.XSLT(
         lxml.etree.parse(
             os.path.join(django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")
@@ -75,9 +78,9 @@ def loadConfig():
             )
         )
     )
-    _pingDoi = config.get("datacite.ping_doi")
-    _pingDatacenter = config.get("datacite.ping_datacenter")
-    _pingTarget = config.get("datacite.ping_target")
+    _pingDoi = impl.config.get("datacite.ping_doi")
+    _pingDatacenter = impl.config.get("datacite.ping_datacenter")
+    _pingTarget = impl.config.get("datacite.ping_target")
     schemas = {}
     for f in os.listdir(os.path.join(django.conf.settings.PROJECT_ROOT, "xsd")):
         m = re.match("datacite-kernel-(.*)", f)
@@ -113,29 +116,32 @@ def numActiveOperations():
         _lock.release()
 
 
-class _HTTPErrorProcessor(urllib2.HTTPErrorProcessor):
-    def http_response(self, request, response):
+class _HTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
+    def http_response(self, request, response: http.client.HTTPResponse):
         # Bizarre that Python considers this an error.
-        if response.code == 201:
+        # TODO: Check if this is still required
+        if response.status == 201:
             return response
         else:
-            return urllib2.HTTPErrorProcessor.http_response(self, request, response)
+            return super().http_response(request, response)
 
     https_response = http_response
 
 
 def _authorization(doi, datacenter=None):
-    if datacenter == None:
-        s = ezidapp.models.getLongestShoulderMatch("doi:" + doi)
+    if datacenter is None:
+        s = ezidapp.models.shoulder.getLongestShoulderMatch("doi:" + doi)
         # Should never happen.
         assert s is not None, "shoulder not found"
         datacenter = s.datacenter.symbol
     a = datacenter.split(".")[0]
+    # noinspection PyUnresolvedReferences,PyUnresolvedReferences
     p = _allocators.get(a, None)
     assert p is not None, "no such allocator: " + a
-    return "Basic " + base64.b64encode(datacenter + ":" + p)
+    return impl.util.basic_auth(datacenter, p)
 
 
+# noinspection PyTypeChecker
 def registerIdentifier(doi, targetUrl, datacenter=None):
     """Registers a scheme-less DOI identifier (e.g., "10.5060/FOO") and target
     URL (e.g., "http://whatever...") with DataCite.
@@ -156,13 +162,13 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
         r.add_header("Authorization", _authorization(doi, datacenter))
-        r.add_header("Content-Type", "text/plain; charset=UTF-8")
-        r.add_data(
-            (
-                "doi=%s\nurl=%s"
-                % (doi.replace("\\", "\\\\"), targetUrl.replace("\\", "\\\\"))
-            ).encode("UTF-8")
-        )
+        r.add_header("Content-Type", "text/plain; charset=utf-8")
+
+        r.data = "doi={}\nurl={}".format(
+            doi.replace('\\', r'\\'),
+            targetUrl.replace("\\", r'\\'),
+        ).encode("utf-8")
+
         c = None
         try:
             _modifyActiveCount(1)
@@ -172,11 +178,11 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
             ), "unexpected return from DataCite register DOI operation"
         except urllib.error.HTTPError as e:
             message = e.fp.read()
-            if e.code == 400 and message.startswith("[url]"):
+            if e.code == 400 and message.startswith(b"[url]"):
                 return message
             if e.code != 500 or i == _numAttempts - 1:
                 raise e
-        except:
+        except Exception:
             if i == _numAttempts - 1:
                 raise
         else:
@@ -210,8 +216,10 @@ def getTargetUrl(doi, datacenter=None):
     e.g., "CDL.BUL".
     """
     # To hide transient network errors, we make multiple attempts.
+    # noinspection PyTypeChecker
     for i in range(_numAttempts):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
+        # noinspection PyUnresolvedReferences,PyUnresolvedReferences
         r = urllib.request.Request(_doiUrl + "/" + urllib.parse.quote(doi))
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
@@ -225,21 +233,24 @@ def getTargetUrl(doi, datacenter=None):
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 return None
+            # noinspection PyTypeChecker
             if e.code != 500 or i == _numAttempts - 1:
                 raise e
-        except:
+        except Exception:
+            # noinspection PyTypeChecker
             if i == _numAttempts - 1:
                 raise
         finally:
             _modifyActiveCount(-1)
             if c:
                 c.close()
+        # noinspection PyTypeChecker
         time.sleep(_reattemptDelay)
 
 
 _prologRE = re.compile(
-    "(<\?xml\s+version\s*=\s*['\"]([-\w.:]+)[\"'])"
-    + "(\s+encoding\s*=\s*['\"]([-\w.]+)[\"'])?"
+    '(<\?xml\s+version\s*=\s*[\'"]([-\w.:]+)["\'])'
+    '(\s+encoding\s*=\s*[\'"]([-\w.]+)["\'])?'
 )
 _utf8RE = re.compile("UTF-?8$", re.I)
 _rootTagRE = re.compile("{(http://datacite\.org/schema/kernel-([^}]*))}resource$")
@@ -263,13 +274,13 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
     m = _prologRE.match(record)
     if m:
         assert m.group(2) == "1.0", "unsupported XML version"
-        if m.group(3) != None:
+        if m.group(3) is not None:
             assert _utf8RE.match(m.group(4)), "XML encoding must be UTF-8"
             record = (
                 record[: len(m.group(1))] + record[len(m.group(1)) + len(m.group(3)) :]
             )
     else:
-        record = "<?xml version=\"1.0\"?>\n" + record
+        record = '<?xml version="1.0"?>\n' + record
     # We first do an initial parsing of the record to check
     # well-formedness and to be able to manipulate it, but hold off on
     # full schema validation because of our extension to the schema to
@@ -286,8 +297,9 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
         root = upgradeDcmsRecord(root, parseString=False, returnString=False)
         m = _rootTagRE.match(root.tag)
         version = m.group(2)
+    # noinspection PyUnresolvedReferences
     schema = _schemas.get(version, None)
-    assert schema != None, "unsupported DataCite record version"
+    assert schema is not None, "unsupported DataCite record version"
     i = root.xpath("N:identifier", namespaces={"N": m.group(1)})
     assert (
         len(i) == 1 and "identifierType" in i[0].attrib
@@ -321,6 +333,7 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
             # Ouch.  On some LXML installations, but not all, an error is
             # "sticky" and, unless it is cleared out, will be returned
             # repeatedly regardless of what new error is encountered.
+            # noinspection PyProtectedMember
             schema[0]._clear_error_log()
             # LXML error messages may contain snippets from the source
             # document, and hence may contain Unicode characters.  We're
@@ -328,19 +341,22 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
             # exceptions and so replace them.  Too, the presence of such
             # characters can be the source of the problem, so explicitly
             # exposing them can be a help.
-            assert False, e.message.encode("ASCII", "xmlcharrefreplace")
+            # noinspection PyUnresolvedReferences
+            assert False, e.message.encode("utf-8")
         finally:
             schema[1].release()
         i.attrib["identifierType"] = type
     i.text = identifier
     root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = (
         "http://datacite.org/schema/kernel-%s "
-        + "http://schema.datacite.org/meta/kernel-%s/metadata.xsd"
-    ) % (version, version)
+        "http://schema.datacite.org/meta/kernel-{}/metadata.xsd".format(
+            version, version
+        )
+    )
     try:
         # We re-sanitize the document because unacceptable characters can
         # be (and have been) introduced via XML character entities.
-        return "<?xml version=\"1.0\"?>\n" + util.sanitizeXmlSafeCharset(
+        return '<?xml version="1.0"?>\n' + impl.util.sanitizeXmlSafeCharset(
             lxml.etree.tostring(root, encoding=str)
         )
     except Exception as e:
@@ -348,7 +364,7 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
 
 
 def _interpolate(template, *args):
-    return template % tuple(util.xmlEscape(a) for a in args)
+    return template.format(*tuple(impl.util.xmlEscape(a) for a in args))
 
 
 _metadataTemplate = """<?xml version="1.0" encoding="UTF-8"?>
@@ -356,17 +372,17 @@ _metadataTemplate = """<?xml version="1.0" encoding="UTF-8"?>
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://datacite.org/schema/kernel-4
     http://schema.datacite.org/meta/kernel-4/metadata.xsd">
-  <identifier identifierType="%s">%s</identifier>
+  <identifier identifierType="{}">{}</identifier>
   <creators>
     <creator>
-      <creatorName>%s</creatorName>
+      <creatorName>{}</creatorName>
     </creator>
   </creators>
   <titles>
-    <title>%s</title>
+    <title>{}</title>
   </titles>
-  <publisher>%s</publisher>
-  <publicationYear>%s</publicationYear>
+  <publisher>{}</publisher>
+  <publicationYear>{}</publicationYear>
 """
 
 _resourceTypeTemplate1 = """  <resourceType resourceTypeGeneral="%s"/>
@@ -402,10 +418,10 @@ def formRecord(identifier, metadata, supplyMissing=False, profile=None):
         idBody = identifier[5:]
     else:
         assert False, "unhandled case"
-    if profile == None:
+    if profile is None:
         profile = metadata.get("_p", metadata.get("_profile", "erc"))
     if metadata.get("datacite", "").strip() != "":
-        return util.insertXmlEncodingDeclaration(metadata["datacite"])
+        return impl.util.insertXmlEncodingDeclaration(metadata["datacite"])
     elif profile == "crossref" and metadata.get("crossref", "").strip() != "":
         # We could run Crossref metadata through the metadata mapper using
         # the case below, but doing it this way creates a richer XML
@@ -423,18 +439,18 @@ def formRecord(identifier, metadata, supplyMissing=False, profile=None):
                 )[
                     :4
                 ]
-            except:
+            except Exception:
                 overrides["datacite.publicationyear"] = "0000"
         try:
-            return util.insertXmlEncodingDeclaration(
+            return impl.util.insertXmlEncodingDeclaration(
                 crossrefToDatacite(metadata["crossref"].strip(), overrides)
             )
         except Exception as e:
             assert False, "Crossref to DataCite metadata conversion error: " + str(e)
     else:
-        km = mapping.map(metadata, datacitePriority=True, profile=profile)
+        km = impl.mapping.map(metadata, datacitePriority=True, profile=profile)
         for a in ["creator", "title", "publisher", "date"]:
-            if getattr(km, a) == None:
+            if getattr(km, a) is None:
                 if supplyMissing:
                     setattr(km, a, "(:unav)")
                 else:
@@ -450,8 +466,8 @@ def formRecord(identifier, metadata, supplyMissing=False, profile=None):
             d[:4] if d else "0000",
         )
         t = km.validatedType
-        if t == None:
-            if km.type != None:
+        if t is None:
+            if km.type is not None:
                 t = "Other"
             else:
                 t = "Other/(:unav)"
@@ -495,15 +511,17 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
     if not _enabled:
         return None
     # To hide transient network errors, we make multiple attempts.
+    # noinspection PyTypeChecker
     for i in range(_numAttempts):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
+        # noinspection PyTypeChecker
         r = urllib.request.Request(_metadataUrl)
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
         r.add_header("Authorization", _authorization(doi, datacenter))
-        r.add_header("Content-Type", "application/xml; charset=UTF-8")
-        r.add_data(newRecord.encode("UTF-8"))
+        r.add_header("Content-Type", "application/xml; charset=utf-8")
+        r.data = newRecord.encode("utf-8")
         c = None
         try:
             _modifyActiveCount(1)
@@ -514,11 +532,13 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
             )
         except urllib.error.HTTPError as e:
             message = e.fp.read()
-            if e.code in [400, 422]:
-                return "element 'datacite': " + message
+            if e.code in (400, 422):
+                return "element 'datacite': " + message.decode('utf-8')
+            # noinspection PyTypeChecker
             if e.code != 500 or i == _numAttempts - 1:
                 raise e
-        except:
+        except Exception:
+            # noinspection PyTypeChecker
             if i == _numAttempts - 1:
                 raise
         else:
@@ -527,13 +547,16 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
             _modifyActiveCount(-1)
             if c:
                 c.close()
+        # noinspection PyTypeChecker
         time.sleep(_reattemptDelay)
 
 
 def _deactivate(doi, datacenter):
     # To hide transient network errors, we make multiple attempts.
+    # noinspection PyTypeChecker
     for i in range(_numAttempts):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
+        # noinspection PyUnresolvedReferences
         r = urllib.request.Request(_metadataUrl + "/" + urllib.parse.quote(doi))
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
@@ -548,9 +571,11 @@ def _deactivate(doi, datacenter):
                 c.read() == "OK"
             ), "unexpected return from DataCite deactivate DOI operation"
         except urllib.error.HTTPError as e:
+            # noinspection PyTypeChecker
             if e.code != 500 or i == _numAttempts - 1:
                 raise e
-        except:
+        except Exception:
+            # noinspection PyTypeChecker
             if i == _numAttempts - 1:
                 raise
         else:
@@ -559,6 +584,7 @@ def _deactivate(doi, datacenter):
             _modifyActiveCount(-1)
             if c:
                 c.close()
+        # noinspection PyTypeChecker
         time.sleep(_reattemptDelay)
 
 
@@ -566,7 +592,7 @@ def deactivate(doi, datacenter=None):
     """Deactivates an existing, scheme-less DOI identifier (e.g.,
     "10.5060/FOO") in DataCite.
 
-    This removes the identifier from DataCite's search index, but has no
+    This removes the identifier from dataCite's search index, but has no
     effect on the identifier's existence in the Handle system or on the
     ability to change the identifier's target URL.  The identifier can
     and will be reactivated by uploading new metadata to it (cf.
@@ -609,9 +635,10 @@ def ping():
     if not _enabled:
         return "up"
     try:
+        # noinspection PyTypeChecker
         r = setTargetUrl(_pingDoi, _pingTarget, _pingDatacenter)
-        assert r == None
-    except:
+        assert r is None
+    except Exception:
         return "down"
     else:
         return "up"
@@ -622,8 +649,10 @@ def pingDataciteOnly():
     if not _enabled:
         return "up"
     # To hide transient network errors, we make multiple attempts.
+    # noinspection PyTypeChecker
     for i in range(_numAttempts):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
+        # noinspection PyUnresolvedReferences
         r = urllib.request.Request(_doiUrl + "/" + _pingDoi)
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
@@ -634,7 +663,8 @@ def pingDataciteOnly():
             _modifyActiveCount(1)
             c = o.open(r, timeout=_timeout)
             assert c.read() == _pingTarget
-        except:
+        except Exception:
+            # noinspection PyTypeChecker
             if i == _numAttempts - 1:
                 return "down"
         else:
@@ -643,6 +673,7 @@ def pingDataciteOnly():
             _modifyActiveCount(-1)
             if c:
                 c.close()
+        # noinspection PyTypeChecker
         time.sleep(_reattemptDelay)
 
 
@@ -653,15 +684,17 @@ def dcmsRecordToHtml(record):
     The record should be unencoded.  Returns None on error.
     """
     try:
+        # noinspection PyCallingNonCallable
         r = lxml.etree.tostring(
-            _stylesheet(util.parseXmlString(record)), encoding=str
+            _stylesheet(impl.util.parseXmlString(record)), encoding=str
         )
         assert r.startswith("<table")
         return r
-    except:
+    except Exception:
         return None
 
 
+# noinspection PyDefaultArgument
 def crossrefToDatacite(record, overrides={}):
     """Converts a Crossref Deposit Schema.
 
@@ -674,9 +707,11 @@ def crossrefToDatacite(record, overrides={}):
     """
     d = {}
     for k, v in list(overrides.items()):
+        # noinspection PyArgumentList
         d[k] = lxml.etree.XSLT.strparam(v)
+    # noinspection PyCallingNonCallable
     return lxml.etree.tostring(
-        _crossrefTransform(util.parseXmlString(record), **d), encoding=str
+        _crossrefTransform(impl.util.parseXmlString(record), **d), encoding=str
     )
 
 
@@ -696,7 +731,7 @@ def upgradeDcmsRecord(record, parseString=True, returnString=True):
     necessary.
     """
     if parseString:
-        root = util.parseXmlString(record)
+        root = impl.util.parseXmlString(record)
     else:
         root = record
     root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = (

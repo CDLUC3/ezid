@@ -15,20 +15,23 @@
 
 import django.db.models
 
-import util
-from . import validation
+import impl.util
+
+# # import ezidapp.models
+import ezidapp.models.validation
 
 
 class Datacenter(django.db.models.Model):
+    # import ezidapp.models.validation
     # A DataCite datacenter.
 
     class Meta:
         abstract = True
 
     symbol = django.db.models.CharField(
-        max_length=util.maxDatacenterSymbolLength,
+        max_length=impl.util.maxDatacenterSymbolLength,
         unique=True,
-        validators=[validation.datacenterSymbol],
+        validators=[ezidapp.models.validation.datacenterSymbol],
     )
     # The datacenter's so-called symbol, e.g., "CDL.BUL".
 
@@ -43,5 +46,5 @@ class Datacenter(django.db.models.Model):
     def clean(self):
         self.symbol = self.symbol.upper()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.symbol

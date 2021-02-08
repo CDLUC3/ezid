@@ -16,14 +16,15 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.conf
 import threading
 import time
 import uuid
 
-from . import config
-from . import feedparser
-from . import log
+import django.conf
+import feedparser
+
+import impl.config
+import impl.log
 
 _enabled = None
 _lock = threading.Lock()
@@ -46,7 +47,7 @@ def _newsDaemon():
             else:
                 items = _noItems
         except Exception as e:
-            log.otherError("newsfeed._newsDaemon", e)
+            impl.log.otherError("newsfeed._newsDaemon", e)
             items = _noItems
         _lock.acquire()
         try:
@@ -54,6 +55,7 @@ def _newsDaemon():
                 _items = items
         finally:
             _lock.release()
+        # noinspection PyTypeChecker
         time.sleep(_pollingInterval)
 
 
@@ -61,11 +63,11 @@ def loadConfig():
     global _enabled, _url, _pollingInterval, _threadName, _items
     _enabled = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and config.get("daemons.newsfeed_enabled").lower() == "true"
+        and impl.config.get("daemons.newsfeed_enabled").lower() == "true"
     )
     if _enabled:
-        _url = config.get("newsfeed.url")
-        _pollingInterval = int(config.get("newsfeed.polling_interval"))
+        _url = impl.config.get("newsfeed.url")
+        _pollingInterval = int(impl.config.get("newsfeed.polling_interval"))
         _lock.acquire()
         try:
             _items = _noItems

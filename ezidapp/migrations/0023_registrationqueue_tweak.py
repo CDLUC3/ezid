@@ -1,28 +1,29 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
+import django.db.models
+import django.db.migrations
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0022_crossrefqueue_tweak'),
     ]
 
     operations = [
-        migrations.AlterField(
+        django.db.migrations.AlterField(
             model_name='binderqueue',
             name='operation',
-            field=models.CharField(
+            field=django.db.models.CharField(
                 max_length=1,
                 choices=[(b'C', b'create'), (b'U', b'update'), (b'D', b'delete')],
             ),
         ),
-        migrations.AlterField(
+        django.db.migrations.AlterField(
             model_name='datacitequeue',
             name='operation',
-            field=models.CharField(
+            field=django.db.models.CharField(
                 max_length=1,
                 choices=[(b'C', b'create'), (b'U', b'update'), (b'D', b'delete')],
             ),

@@ -13,14 +13,14 @@
 #
 # -----------------------------------------------------------------------------
 
-import lxml.etree
-from . import util
-import re
-import copy
 import collections
+import re
 
-from . import datacite
-from . import geometry_util
+import lxml.etree
+
+import impl.datacite
+import impl.geometry_util
+import impl.util
 
 _repeatableElementContainers = [
     "creators",
@@ -77,7 +77,7 @@ def dataciteXmlToFormElements(document):
 
     <br> elements in descriptions are replaced with newlines.
     """
-    document = datacite.upgradeDcmsRecord(document)
+    document = impl.datacite.upgradeDcmsRecord(document)
     d = {}
 
     def tagName(tag):
@@ -97,16 +97,16 @@ def dataciteXmlToFormElements(document):
         if path == "":
             mypath = tag
         else:
-            mypath = "%s-%s" % (path, tag)
-        if index != None:
-            mypath += "%s%d" % (separator, index)
-            mypathx = "%s-%s" % (mypath, tag)
+            mypath = f"{path}-{tag}"
+        if index is not None:
+            mypath += f"{separator}{index:d}"
+            mypathx = f"{mypath}-{tag}"
         else:
             mypathx = mypath
         for a in node.attrib:
             v = node.attrib[a].strip()
             if v != "":
-                d["%s-%s" % (mypath, a)] = v
+                d[f"{mypath}-{a}"] = v
         if tag in _repeatableElementContainers:
             for i, c in enumerate(getElementChildren(node)):
                 processNode(mypath, c, i)
@@ -131,7 +131,7 @@ def dataciteXmlToFormElements(document):
                 if v != "":
                     d[mypathx] = v
             elif tag == "geoLocationPolygon":
-                d[mypathx] = geometry_util.datacitePolygonToInternal(node)
+                d[mypathx] = impl.geometry_util.datacitePolygonToInternal(node)
             else:
                 children = getElementChildren(node)
                 if len(children) > 0:
@@ -147,7 +147,7 @@ def dataciteXmlToFormElements(document):
                         else:
                             d[mypathx] = v
 
-    root = util.parseXmlString(document)
+    root = impl.util.parseXmlString(document)
     for c in getElementChildren(root):
         processNode("", c)
     fc = _separateByFormType(d)
@@ -164,13 +164,13 @@ def _separateByFormType(d):
     """
     _nonRepeating = {
         k: v
-        for (k, v) in d.items()
+        for (k, v) in list(d.items())
         if not any(e in k for e in _repeatableElementContainers)
         and not k.startswith('resourceType')
     }
 
     def dict_generate(d, s):
-        dr = {k: v for (k, v) in d.items() if k.startswith(s)}
+        dr = {k: v for (k, v) in list(d.items()) if k.startswith(s)}
         return dr if dr else None
 
     """ Representation of django forms and formsets used for DataCite XML """
@@ -209,7 +209,7 @@ def temp_mockxml():
 
 def _id_type(str):
     m = re.compile("^[a-z]+")
-    if m.search(str) == None:
+    if m.search(str) is None:
         return ''
     else:
         return m.findall(str)[0].upper()
@@ -287,7 +287,7 @@ def formElementsToDataciteXml(d, shoulder=None, identifier=None):
     """
     d = {
         k: v
-        for (k, v) in d.items()
+        for (k, v) in list(d.items())
         if "_FORMS" not in k and any(e in k for e in _elementList)
     }
     d = _addIdentifierInfo(d, shoulder, identifier)
@@ -295,7 +295,7 @@ def formElementsToDataciteXml(d, shoulder=None, identifier=None):
     schemaLocation = "http://schema.datacite.org/meta/kernel-4/metadata.xsd"
 
     def q(elementName):
-        return "{%s}%s" % (namespace, elementName)
+        return f"{{{namespace}}}{elementName}"
 
     def tagName(tag):
         return tag.split("}")[1]
@@ -305,7 +305,7 @@ def formElementsToDataciteXml(d, shoulder=None, identifier=None):
         namespace + " " + schemaLocation
     )
     for key, value in list(d.items()):
-        value = util.sanitizeXmlSafeCharset(value).strip()
+        value = impl.util.sanitizeXmlSafeCharset(value).strip()
         if value == "":
             continue
         node = root
@@ -322,7 +322,7 @@ def formElementsToDataciteXml(d, shoulder=None, identifier=None):
                         remainder = ""
                 else:
                     n = node.find(q(k))
-                    if n != None:
+                    if n is not None:
                         node = n
                     else:
                         node = lxml.etree.SubElement(node, q(k))
@@ -333,7 +333,7 @@ def formElementsToDataciteXml(d, shoulder=None, identifier=None):
                         parent = node.getparent()
                         parent.insert(
                             parent.index(node) + 1,
-                            geometry_util.polygonToDatacite(value)[0],
+                            impl.geometry_util.polygonToDatacite(value)[0],
                         )
                         parent.remove(node)
                     else:
@@ -346,9 +346,9 @@ def formElementsToDataciteXml(d, shoulder=None, identifier=None):
         v = tagName(node.tag)
         m = re.match(".*_(\d+)$", v)
         if m:
-            return (_elements[v.split("_", 1)[0]], int(m.group(1)))
+            return _elements[v.split("_", 1)[0]], int(m.group(1))
         else:
-            return (_elements[v], 0)
+            return _elements[v], 0
 
     def sortChildren(node):
         if (
@@ -367,7 +367,7 @@ def formElementsToDataciteXml(d, shoulder=None, identifier=None):
         for node in root.xpath("//N:" + tag, namespaces={"N": namespace}):
             for t in _numberedElementContainers[tag]:
                 for n in node.xpath(
-                    "*[substring(local-name(), 1, %d) = '%s']" % (len(t) + 1, t + "_")
+                    f"*[substring(local-name(), 1, {len(t) + 1:d}) = '{t + '_'}']"
                 ):
                     n.tag = n.tag.rsplit("_", 1)[0]
     return lxml.etree.tostring(root, encoding=str)

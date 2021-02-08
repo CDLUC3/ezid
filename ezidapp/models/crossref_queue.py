@@ -15,7 +15,7 @@
 
 import django.db.models
 
-import util
+import impl.util
 
 
 class CrossrefQueue(django.db.models.Model):
@@ -30,13 +30,13 @@ class CrossrefQueue(django.db.models.Model):
     # identifier operations occurred.
 
     identifier = django.db.models.CharField(
-        max_length=util.maxIdentifierLength, db_index=True
+        max_length=impl.util.maxIdentifierLength, db_index=True
     )
     # The identifier in qualified, normalized form, e.g.,
     # "doi:10.5060/FOO".  Always a DOI.
 
     owner = django.db.models.CharField(
-        max_length=util.maxIdentifierLength, db_index=True
+        max_length=impl.util.maxIdentifierLength, db_index=True
     )
     # The identifier's owner, referenced by the owner's persistent
     # identifier, e.g., "ark:/99166/p92z12p14".

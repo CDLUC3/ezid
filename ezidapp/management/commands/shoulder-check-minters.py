@@ -1,21 +1,22 @@
 """Check that the BerkeleyDB minters are in the expected locations, can be
 opened, and contains an EZID or N2T minter."""
 
-
-
+import ezidapp.models.search_identifier
+import ezidapp.models.store_identifier
+import ezidapp.models.shoulder
 import argparse
 import logging
 
 import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
-import pathlib2
+import pathlib
 
-import ezidapp.models
+
 import impl.nog.util
-import nog.bdb
-import nog.exc
-import nog.minter
+import impl.nog.bdb
+import impl.nog.exc
+import impl.nog.minter
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +30,9 @@ class Command(django.core.management.BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--debug', action='store_true', help='Debug level logging',
+            '--debug',
+            action='store_true',
+            help='Debug level logging',
         )
 
     def handle(self, *_, **opt):
@@ -55,7 +58,9 @@ class Command(django.core.management.BaseCommand):
             error_dict.setdefault(s, 0)
             error_dict[s] += 1
 
-        for shoulder_model in ezidapp.models.Shoulder.objects.all().order_by('prefix'):
+        for shoulder_model in ezidapp.models.shoulder.Shoulder.objects.all().order_by(
+            'prefix'
+        ):
             total_count += 1
 
             try:
@@ -77,7 +82,7 @@ class Command(django.core.management.BaseCommand):
                     '{:<20} Check failed: {}{}{}'.format(
                         shoulder_model.prefix,
                         e.key,
-                        ': {}'.format(str(e)) if e.message else '',
+                        ': {}'.format(str(e)) if str(e) else '',
                         ' ({})'.format(tags_str),
                     )
                 )
@@ -106,19 +111,19 @@ class Command(django.core.management.BaseCommand):
 
     def check_minter(self, shoulder_model):
         try:
-            bdb_path = nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
-        except nog.exc.MinterNotSpecified as e:
+            bdb_path = impl.nog.bdb.get_bdb_path_by_shoulder_model(shoulder_model)
+        except impl.nog.exc.MinterNotSpecified:
             return 'Skipped: No minter registered'
 
-        if not pathlib2.Path(bdb_path).exists():
+        if not pathlib.Path(bdb_path).exists():
             raise CheckError(
                 'Minter BDB not at the expected path',
                 'Expected path: {}'.format(bdb_path.as_posix()),
             )
 
         try:
-            bdb = nog.bdb.open_bdb(bdb_path)
-        except nog.exc.MinterError as e:
+            bdb = impl.nog.bdb.open_bdb(bdb_path)
+        except impl.nog.exc.MinterError as e:
             raise CheckError(
                 'Path exists but could not be opened as BDB', 'Error: {}'.format(str(e))
             )
@@ -143,8 +148,8 @@ class Command(django.core.management.BaseCommand):
                 raise CheckError('Key present in BDB but empty', 'Key: {}'.format(k))
 
         try:
-            minted_id = nog.minter.mint_id(shoulder_model, dry_run=True)
-        except nog.exc.MinterError as e:
+            minted_id = impl.nog.minter.mint_id(shoulder_model, dry_run=True)
+        except impl.nog.exc.MinterError as e:
             raise CheckError(
                 'Minting test identifier failed', 'Error: {}'.format(str(e))
             )
@@ -159,16 +164,26 @@ class Command(django.core.management.BaseCommand):
                 'Bad prefix: "{}"'.format(shoulder_model.prefix),
             )
 
-        is_in_store = ezidapp.models.StoreIdentifier.objects.filter(identifier=id_ns).exists()
-        is_in_search = ezidapp.models.SearchIdentifier.objects.filter(identifier=id_ns).exists()
+        is_in_store = ezidapp.models.store_identifier.StoreIdentifier.objects.filter(
+            identifier=id_ns
+        ).exists()
+        is_in_search = ezidapp.models.search_identifier.SearchIdentifier.objects.filter(
+            identifier=id_ns
+        ).exists()
         if is_in_store or is_in_search:
             raise CheckError(
                 'Next identifier to be minted is already in the database (outdated minter)',
-                'Existing identifier: "{}" "{}"'.format(id_ns, ' and '.join(
-                    [('is in {}' if f else 'is not in {}').format(n)
-                        for n, f in zip(('Store', 'Search'), (is_in_store, is_in_search))
-                    ]
-                )),
+                'Existing identifier: "{}" "{}"'.format(
+                    id_ns,
+                    ' and '.join(
+                        [
+                            ('is in {}' if f else 'is not in {}').format(n)
+                            for n, f in zip(
+                                ('Store', 'Search'), (is_in_store, is_in_search)
+                            )
+                        ]
+                    ),
+                ),
             )
 
         return 'OK: Preview of next ID: {}'.format(id_ns)

@@ -106,7 +106,7 @@
 
 import re
 
-from . import util
+import impl.util
 
 _fields = {
     # entryType: { fieldName: isRequired, ... }
@@ -140,6 +140,7 @@ class Entry(dict):
     when returned).
     """
 
+    # noinspection PyMissingConstructor
     def __init__(self, _createLineNum=True):
         if _createLineNum:
             self.lineNum = Entry(False)
@@ -172,7 +173,7 @@ def _validateShoulder(entry, errors, warnings):
             returnValue[0] = False
         return condition
 
-    mytest(util.validateShoulder(entry.key), "invalid shoulder", entry.lineNum.key)
+    mytest(impl.util.validateShoulder(entry.key), "invalid shoulder", entry.lineNum.key)
     mytest(
         entry.manager in _shoulderManagers,
         "invalid shoulder manager",
@@ -219,7 +220,7 @@ def _validateShoulder(entry, errors, warnings):
                 entry.lineNum.key,
             ):
                 mytest(
-                    util.validateDatacenter(entry.datacenter) == entry.datacenter,
+                    impl.util.validateDatacenter(entry.datacenter) == entry.datacenter,
                     "invalid datacenter symbol",
                     entry.lineNum.datacenter,
                 )
@@ -279,7 +280,7 @@ def _validateShoulder(entry, errors, warnings):
     return returnValue[0]
 
 
-def _validateDatacenter(entry, errors, warnings):
+def _validateDatacenter(entry, errors, _warnings):
     returnValue = [True]
 
     def mytest(condition, message, lineNum):
@@ -294,7 +295,7 @@ def _validateDatacenter(entry, errors, warnings):
     ):
         entry.key = entry.key[9:]
         mytest(
-            util.validateDatacenter(entry.key) == entry.key,
+            impl.util.validateDatacenter(entry.key) == entry.key,
             "invalid datacenter symbol",
             entry.lineNum.key,
         )
@@ -332,7 +333,7 @@ def _validateEntry(entry, errors, warnings):
         for field, isRequired in list(_fields[entry.type].items()):
             if not _test(
                 not isRequired or field in entry,
-                "missing %s %s" % (entry.type, field),
+                f"missing {entry.type} {field}",
                 entry.lineNum.key,
                 errors,
             ):
@@ -361,10 +362,13 @@ def _read(fileContent, errors, warnings):
             continue
         try:
             _testAbort(
-                util.validateXmlSafeCharset(line), "illegal character", lineNum, errors
+                impl.util.validateXmlSafeCharset(line),
+                "illegal character",
+                lineNum,
+                errors,
             )
             if line.startswith("::"):
-                if entry != None:
+                if entry is not None:
                     if _validateEntry(entry, errors, warnings):
                         entries.append(entry)
                     entry = None
@@ -373,7 +377,9 @@ def _read(fileContent, errors, warnings):
                 entry = Entry()
                 entry.add("key", key, lineNum)
             else:
-                _testAbort(entry != None, "no entry is being defined", lineNum, errors)
+                _testAbort(
+                    entry is not None, "no entry is being defined", lineNum, errors
+                )
                 _testAbort(
                     ":" in line, "syntax error: no colon in line", lineNum, errors
                 )
@@ -384,7 +390,7 @@ def _read(fileContent, errors, warnings):
                 entry.add(field, value, lineNum)
         except AssertionError:
             continue
-    if entry != None and _validateEntry(entry, errors, warnings):
+    if entry is not None and _validateEntry(entry, errors, warnings):
         entries.append(entry)
     return entries
 
@@ -446,7 +452,7 @@ def _globalValidations(entries, errors, warnings):
                         (
                             s.lineNum.key,
                             "DOI prefix used by multiple registration agencies at lines "
-                            + ", ".join("%d" % ss.lineNum.key for ss in l),
+                            + ", ".join(f"{ss.lineNum.key:d}" for ss in l),
                         )
                     )
     # Test for DataCite DOI prefixes shared across datacenters.
@@ -470,7 +476,7 @@ def _globalValidations(entries, errors, warnings):
                             (
                                 s.lineNum.key,
                                 "datacenter is shared across DataCite DOI prefixes at lines "
-                                + ", ".join("%d" % ss.lineNum.key for ss in l),
+                                + ", ".join(f"{ss.lineNum.key:d}" for ss in l),
                             )
                         )
     # Test for duplicate datacenters.
@@ -518,4 +524,4 @@ def parse(fileContent):
     _globalValidations(entries, errors, warnings)
     for e in entries:
         del e.lineNum
-    return (entries, errors, warnings)
+    return entries, errors, warnings

@@ -17,19 +17,22 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
+import django.core.exceptions
 import logging
 import threading
 
-import contextlib2
+import contextlib
 import django.db
 import django.db.models
 import django.db.transaction
 
-from . import store_datacenter
-import util
-from . import validation
+import ezidapp.models.store_datacenter
+import impl.util
+import ezidapp.models.validation
 
 # Deferred imports...
+import impl.util2
+
 """
 import config
 import log
@@ -72,9 +75,9 @@ class Shoulder(django.db.models.Model):
     # relationship to any shoulder.
 
     prefix = django.db.models.CharField(
-        max_length=util.maxIdentifierLength,
+        max_length=impl.util.maxIdentifierLength,
         unique=True,
-        validators=[validation.shoulder],
+        validators=[ezidapp.models.validation.shoulder],
     )
     # The shoulder itself, qualified and normalized, e.g., "ark:/12345/"
     # or "doi:10.1234/FOO".
@@ -95,14 +98,16 @@ class Shoulder(django.db.models.Model):
     def isUuid(self):
         return self.type == "UUID"
 
-    name = django.db.models.CharField(max_length=255, validators=[validation.nonEmpty])
+    name = django.db.models.CharField(
+        max_length=255, validators=[ezidapp.models.validation.nonEmpty]
+    )
     # The shoulder's name, e.g., "Brown University Library".
 
     minter = django.db.models.URLField(max_length=255, blank=True)
     # The absolute URL of the associated minter, or empty if none.
 
     datacenter = django.db.models.ForeignKey(
-        store_datacenter.StoreDatacenter,
+        ezidapp.models.store_datacenter.StoreDatacenter,
         blank=True,
         null=True,
         default=None,
@@ -144,23 +149,21 @@ class Shoulder(django.db.models.Model):
         unique_together = ("name", "type")
 
     def clean(self):
-        import util2
-
         self.type = self.prefix.split(":")[0].upper()
         self.name = self.name.strip()
         if self.isDoi:
             if self.crossrefEnabled:
-                if self.datacenter != None:
+                if self.datacenter is not None:
                     raise django.core.exceptions.ValidationError(
                         {"datacenter": "Non-DataCite DOI shoulder has datacenter."}
                     )
             else:
-                if self.datacenter == None:
+                if self.datacenter is None:
                     raise django.core.exceptions.ValidationError(
                         {"datacenter": "Missing datacenter."}
                     )
         else:
-            if self.datacenter != None:
+            if self.datacenter is not None:
                 raise django.core.exceptions.ValidationError(
                     {"datacenter": "Non-DOI shoulder has datacenter."}
                 )
@@ -168,36 +171,37 @@ class Shoulder(django.db.models.Model):
                 raise django.core.exceptions.ValidationError(
                     {"crossrefEnabled": "Only DOI shoulders may be Crossref enabled."}
                 )
-        self.isTest = util2.isTestIdentifier(self.prefix)
+        self.isTest = impl.util2.isTestIdentifier(self.prefix)
 
-    def __unicode__(self):
-        return "%s (%s)" % (self.name, self.prefix)
+    def __str__(self):
+        return f"{self.name} ({self.prefix})"
 
 
 def loadConfig(acquireLock=True):
     global _url, _username, _password, _arkTestPrefix, _doiTestPrefix
     global _agentPrefix, _shoulders, _datacenters
     global _crossrefTestPrefix
-    import config
+    import impl.config
 
-    es = contextlib2.ExitStack()
+    es = contextlib.ExitStack()
 
     if acquireLock:
+        # noinspection PyTypeChecker
         es.enter_context(_lock)
 
     with es:
-        _url = config.get("shoulders.url")
-        _username = config.get("shoulders.username")
+        _url = impl.config.get("shoulders.url")
+        _username = impl.config.get("shoulders.username")
         if _username != "":
-            _password = config.get("shoulders.password")
+            _password = impl.config.get("shoulders.password")
         else:
             _username = None
             _password = None
 
-        _arkTestPrefix = config.get("shoulders.ark_test")
-        _doiTestPrefix = config.get("shoulders.doi_test")
-        _crossrefTestPrefix = config.get("shoulders.crossref_test")
-        _agentPrefix = config.get("shoulders.agent")
+        _arkTestPrefix = impl.config.get("shoulders.ark_test")
+        _doiTestPrefix = impl.config.get("shoulders.doi_test")
+        _crossrefTestPrefix = impl.config.get("shoulders.crossref_test")
+        _agentPrefix = impl.config.get("shoulders.agent")
 
         _shoulders = dict(
             (s.prefix, s)
@@ -205,74 +209,88 @@ def loadConfig(acquireLock=True):
             if s.active and s.manager == 'ezid'
         )
 
-        dc = dict((d.symbol, d) for d in store_datacenter.StoreDatacenter.objects.all())
+        dc = dict(
+            (d.symbol, d)
+            for d in ezidapp.models.store_datacenter.StoreDatacenter.objects.all()
+        )
         _datacenters = (dc, dict((d.id, d) for d in list(dc.values())))
 
 
-def getAll():
+def getAllShoulders():
     # Returns all shoulders as a list.
+    # noinspection PyUnresolvedReferences
     return list(_shoulders.values())
 
 
-def getLongestMatch(identifier):
+def getLongestShoulderMatch(identifier):
     # Returns the longest shoulder that matches 'identifier', i.e., that
     # is a prefix of 'identifier', or None.
     lm = None
-    for s in _shoulders.values():
+    # noinspection PyUnresolvedReferences
+    for s in list(_shoulders.values()):
         if identifier.startswith(s.prefix):
             if lm is None or len(s.prefix) > len(lm.prefix):
                 lm = s
     return lm
 
 
-def getExactMatch(prefix):
+def getExactShoulderMatch(prefix):
     # Returns the shoulder having prefix 'prefix', or None.
+    # noinspection PyUnresolvedReferences
     shoulder_model = _shoulders.get(prefix, None)
     if not shoulder_model:
+        # noinspection PyTypeChecker
         logger.debug(
             'Shoulder lookup from cache failed. prefix="{}" len(_shoulders)={}'.format(
                 prefix, len(_shoulders)
-            ))
+            )
+        )
     return shoulder_model
 
 
 def getArkTestShoulder():
     # Returns the ARK test shoulder.
+    # noinspection PyUnresolvedReferences
     return _shoulders[_arkTestPrefix]
 
 
 def getDoiTestShoulder():
     # Returns the DOI test shoulder.
+    # noinspection PyUnresolvedReferences
     return _shoulders[_doiTestPrefix]
 
 
 def getCrossrefTestShoulder():
     # Returns the Crossref test shoulder.
+    # noinspection PyUnresolvedReferences
     return _shoulders[_crossrefTestPrefix]
 
 
 def getAgentShoulder():
     # Returns the shoulder used to mint agent persistent identifiers.
+    # noinspection PyUnresolvedReferences
     return _shoulders[_agentPrefix]
 
 
 def getDatacenterBySymbol(symbol):
     # Returns the datacenter having the given symbol.
     try:
+        # noinspection PyUnresolvedReferences
         return _datacenters[0][symbol]
     except Exception:
         # Should never happen.
-        raise store_datacenter.StoreDatacenter.DoesNotExist(
-            "No StoreDatacenter for symbol='%s'." % symbol
+        raise ezidapp.models.store_datacenter.StoreDatacenter.DoesNotExist(
+            f"No StoreDatacenter for symbol='{symbol}'."
         )
 
 
-def getDatacenterById(id):
+def getDatacenterById(id_str):
     # Returns the datacenter identified by internal identifier 'id'.
     try:
-        return _datacenters[1][id]
-    except:
+        # noinspection PyUnresolvedReferences
+        return _datacenters[1][id_str]
+    except Exception:
         # Should never happen.
-        raise store_datacenter.StoreDatacenter.DoesNotExist(
-            "No StoreDatacenter for id=%d." % id
+        raise ezidapp.models.store_datacenter.StoreDatacenter.DoesNotExist(
+            f"No StoreDatacenter for id={id_str:d}."
         )

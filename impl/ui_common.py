@@ -1,25 +1,31 @@
-from pprint import pprint
+import os
+import random
+import re
+import string
+import urllib.error
+import urllib.parse
+import urllib.parse
+import urllib.request
+import urllib.response
 
 import django.conf
 import django.contrib.messages
 import django.http
 import django.template
 import django.template.loader
+import django.template.loader
 import django.utils.http
-import os
-import re
-import string
-import urllib.request, urllib.parse, urllib.error
-from random import choice
-
-from . import config
-import ezidapp.models
-from . import newsfeed
-from . import userauth
-import urllib.parse
-
-from django.utils import safestring
+import django.utils.safestring
+import django.utils.translation
 from django.utils.translation import ugettext as _
+
+import ezidapp.models.server_variables
+import ezidapp.models.shoulder
+import ezidapp.models.store_group
+import ezidapp.models.store_realm
+import impl.config
+import impl.newsfeed
+import impl.userauth
 
 ezidUrl = None
 templates = None  # { name: (template, path), ... }
@@ -37,21 +43,21 @@ def loadConfig():
     global ezidUrl, templates, alertMessage, testPrefixes
     global google_analytics_id
     global reload_templates
-    ezidUrl = config.get("DEFAULT.ezid_base_url")
+    ezidUrl = impl.config.get("DEFAULT.ezid_base_url")
     templates = {}
     _load_templates([d for t in django.conf.settings.TEMPLATES for d in t["DIRS"]])
-    alertMessage = ezidapp.models.getAlertMessage()
+    alertMessage = ezidapp.models.server_variables.getAlertMessage()
     reload_templates = hasattr(django.conf.settings, "RELOAD_TEMPLATES")
     if reload_templates:
         reload_templates = django.conf.settings.RELOAD_TEMPLATES
     testPrefixes = []
 
     # Depends on loadConfig() for models.shoulder having been called first.
-    p = ezidapp.models.getArkTestShoulder()
+    p = ezidapp.models.shoulder.getArkTestShoulder()
     testPrefixes.append({"namespace": p.name, "prefix": p.prefix})
-    p = ezidapp.models.getDoiTestShoulder()
+    p = ezidapp.models.shoulder.getDoiTestShoulder()
     testPrefixes.append({"namespace": p.name, "prefix": p.prefix})
-    google_analytics_id = config.get("DEFAULT.google_analytics_id")
+    google_analytics_id = impl.config.get("DEFAULT.google_analytics_id")
 
 
 # loads the templates directory recursively (dir_list is a list)
@@ -63,26 +69,30 @@ def _load_templates(dir_list):
             _load_templates(dir_list + [f])
         elif os.path.isfile(os.path.join(my_dir, f)) and f.endswith(".html"):
             local_path = os.path.join(*dir_list[1:] + [f])
+            # noinspection PyUnresolvedReferences
             templates[local_path[:-5]] = (
                 django.template.loader.get_template(local_path),
                 local_path,
             )
 
 
+# noinspection PyDefaultArgument
 def render(request, template, context={}):
     global alertMessage, google_analytics_id, reload_templates
     ctx = {
         "session": request.session,
-        "authenticatedUser": userauth.getUser(request),
+        "authenticatedUser": impl.userauth.getUser(request),
         "alertMessage": alertMessage,
-        "feed_cache": newsfeed.getLatestItems(),
+        "feed_cache": impl.newsfeed.getLatestItems(),
         "google_analytics_id": google_analytics_id,
         "debug": django.conf.settings.DEBUG,
     }
     ctx.update(context)
     try:
+        # noinspection PyUnresolvedReferences
         templ = templates[template][0]
     except (TypeError, LookupError):
+        # noinspection PyUnresolvedReferences
         templ = django.template.loader.get_template(templates[template][1])
     # TODO: Remove this temporary workaround and modify dynamically generated HTML
     # instead.
@@ -91,8 +101,8 @@ def render(request, template, context={}):
     content = templ.render(ctx, request)
     # By setting the content type ourselves, we gain control over the
     # character encoding and can properly set the content length.
-    ec = content.encode("UTF-8")
-    r = django.http.HttpResponse(ec, content_type="text/html; charset=UTF-8")
+    ec = content.encode("utf-8")
+    r = django.http.HttpResponse(ec, content_type="text/html; charset=utf-8")
     r["Content-Length"] = len(ec)
     return r
 
@@ -118,13 +128,13 @@ def renderIdPage(request, path, d):
 
 
 def staticHtmlResponse(content):
-    r = django.http.HttpResponse(content, content_type="text/html; charset=UTF-8")
+    r = django.http.HttpResponse(content, content_type="text/html; charset=utf-8")
     r["Content-Length"] = len(content)
     return r
 
 
 def staticTextResponse(content):
-    r = django.http.HttpResponse(content, content_type="text/plain; charset=UTF-8")
+    r = django.http.HttpResponse(content, content_type="text/plain; charset=utf-8")
     r["Content-Length"] = len(content)
     return r
 
@@ -150,11 +160,13 @@ _jsonRe = re.compile('[\\x00-\\x1F"\\\\\\xFF]')
 def json(o):
     if type(o) is dict:
         assert all(type(k) is str for k in o), "unexpected object type"
-        return "{" + ", ".join(json(k) + ": " + json(v) for k, v in list(o.items())) + "}"
+        return (
+            "{" + ", ".join(json(k) + ": " + json(v) for k, v in list(o.items())) + "}"
+        )
     elif type(o) is list:
         return "[" + ", ".join(json(v) for v in o) + "]"
     elif type(o) is str or type(o) is str:
-        return '"' + _jsonRe.sub(lambda c: "\\u%04X" % ord(c.group(0)), o) + '"'
+        return '"' + _jsonRe.sub(lambda c: f"\\u{ord(c.group(0)):04X}", o) + '"'
     elif type(o) is bool:
         return "true" if o else "false"
     else:
@@ -162,8 +174,8 @@ def json(o):
 
 
 def jsonResponse(data):
-    # Per RFC 4627, the default encoding is understood to be UTF-8.
-    ec = json(data).encode("UTF-8")
+    # Per RFC 4627, the default encoding is understood to be utf-8.
+    ec = json(data).encode("utf-8")
     r = django.http.HttpResponse(ec, content_type="application/json")
     r["Content-Length"] = len(ec)
     return r
@@ -178,12 +190,13 @@ def error(request, code, content_custom=None):
         "menu_item": "ui_home.null",
         "session": request.session,
         "alertMessage": alertMessage,
-        "feed_cache": newsfeed.getLatestItems(),
+        "feed_cache": impl.newsfeed.getLatestItems(),
         "google_analytics_id": google_analytics_id,
         "content_custom": content_custom,
     }
     # TODO: Remove this temporary workaround and modify dynamically generated HTML
     # instead.
+    # noinspection PyUnresolvedReferences
     templ = templates[str(code)][0]
     templ.backend.engine.autoescape = False
     content = templ.render(ctx, request=request)
@@ -209,6 +222,7 @@ def formatError(message):
     return message
 
 
+# noinspection PyDefaultArgument
 def assembleUpdateDictionary(request, profile, additionalElements={}):
     d = {"_profile": profile.name}
     for e in profile.elements:
@@ -224,14 +238,16 @@ def extract(d, keys):
 
 
 def random_password(size=8):
-    return "".join([choice(string.letters + string.digits) for i in range(size)])
+    return "".join(
+        [random.choice(string.ascii_letters + string.digits) for _i in range(size)]
+    )
 
 
 def user_login_required(f):
     """defining a decorator to require a user to be logged in."""
 
     def wrap(request, *args, **kwargs):
-        if userauth.getUser(request) == None:
+        if impl.userauth.getUser(request) is None:
             django.contrib.messages.error(
                 request, _("You must be logged in to view this page.")
             )
@@ -249,7 +265,7 @@ def admin_login_required(f):
     """defining a decorator to require an admin to be logged in."""
 
     def wrap(request, *args, **kwargs):
-        if not userauth.getUser(request, returnAnonymous=True).isSuperuser:
+        if not impl.userauth.getUser(request, returnAnonymous=True).isSuperuser:
             django.contrib.messages.error(
                 request,
                 _("You must be logged in as an administrator to view this page."),
@@ -289,7 +305,9 @@ def owner_names(user, page):
     me = _userList([user], 0, "  (" + _("me") + ")")
     if user.isSuperuser:
         r += me if page == "manage" else [("all", "ALL EZID")]
-        for realm in ezidapp.models.StoreRealm.objects.all().order_by("name"):
+        for realm in ezidapp.models.store_realm.StoreRealm.objects.all().order_by(
+            "name"
+        ):
             n = realm.name
             r += [("realm_" + n, "Realm: " + n)]
             r += _getGroupsUsers(user, 1, realm.groups.all().order_by("groupname"))
@@ -348,7 +366,7 @@ def _getGroupsUsers(me, indent, groups):
 
 def _getUsersInGroup(me, indent, groupname):
     """Display all users in group except group admin."""
-    g = ezidapp.models.getGroupByGroupname(groupname)
+    g = ezidapp.models.store_group.getGroupByGroupname(groupname)
     return _userList(
         [user for user in g.users.all() if user.username != me.username], indent, ""
     )
@@ -379,21 +397,21 @@ def getOwnerOrGroupOrRealm(ownerkey):
     'realm_purdue' and returns as tuple of user_id, group_id, realm_id."""
     if ownerkey is None:
         # ToDo: Is this insecure?
-        return ("all", None, None)
+        return "all", None, None
     elif ownerkey.startswith("realm_"):
-        return (None, None, ownerkey[6:])
+        return None, None, ownerkey[6:]
     else:
         return getOwnerOrGroup(ownerkey) + (None,)
 
 
 def getOwnerOrGroup(ownerkey):
     """
-  Takes ownerkey like 'user_uitesting' or 'group_merritt'
-  and returns as tuple of user_id, group_id
-  Note: At the time of writing, is it not possible to search for all identifiers
-    within a realm or entirety of EZID. But once it is, use of this function can be
-    replaced by getOwnerOrGroupOrRealm
-  """
+    Takes ownerkey like 'user_uitesting' or 'group_merritt'
+    and returns as tuple of user_id, group_id
+    Note: At the time of writing, is it not possible to search for all identifiers
+      within a realm or entirety of EZID. But once it is, use of this function can be
+      replaced by getOwnerOrGroupOrRealm
+    """
     user_id, group_id = None, None
     if ownerkey is None:
         # ToDo: Is this insecure?
@@ -404,7 +422,7 @@ def getOwnerOrGroup(ownerkey):
         group_id = ownerkey[6:]
     else:
         user_id = ownerkey
-    return (user_id, group_id)
+    return user_id, group_id
 
 
 def isEmptyStr(v):

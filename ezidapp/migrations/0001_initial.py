@@ -1,30 +1,33 @@
 # -*- coding: utf-8 -*-
-
-
-from django.db import models, migrations
+import django.db.migrations
+import django.db.models
 import datetime
 import ezidapp.models.validation
-import django.db.models.deletion
+
+# import django.db.models.deletion
 import ezidapp.models.custom_fields
 import django.core.validators
 import ezidapp.models.identifier
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = []
 
     operations = [
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='CrossrefQueue',
             fields=[
-                ('seq', models.AutoField(serialize=False, primary_key=True)),
-                ('identifier', models.CharField(max_length=255, db_index=True)),
-                ('owner', models.CharField(max_length=255, db_index=True)),
-                ('metadata', models.BinaryField()),
+                ('seq', django.db.models.AutoField(serialize=False, primary_key=True)),
+                (
+                    'identifier',
+                    django.db.models.CharField(max_length=255, db_index=True),
+                ),
+                ('owner', django.db.models.CharField(max_length=255, db_index=True)),
+                ('metadata', django.db.models.BinaryField()),
                 (
                     'operation',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=1,
                         choices=[
                             (b'C', b'create'),
@@ -35,7 +38,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'status',
-                    models.CharField(
+                    django.db.models.CharField(
                         default=b'U',
                         max_length=1,
                         db_index=True,
@@ -47,50 +50,50 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ('message', models.TextField(blank=True)),
-                ('batchId', models.CharField(max_length=36, blank=True)),
-                ('submitTime', models.IntegerField(null=True, blank=True)),
+                ('message', django.db.models.TextField(blank=True)),
+                ('batchId', django.db.models.CharField(max_length=36, blank=True)),
+                ('submitTime', django.db.models.IntegerField(null=True, blank=True)),
             ],
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='DataciteQueue',
             fields=[
-                ('seq', models.AutoField(serialize=False, primary_key=True)),
-                ('enqueueTime', models.IntegerField()),
-                ('identifier', models.CharField(max_length=255)),
-                ('metadata', models.BinaryField()),
+                ('seq', django.db.models.AutoField(serialize=False, primary_key=True)),
+                ('enqueueTime', django.db.models.IntegerField()),
+                ('identifier', django.db.models.CharField(max_length=255)),
+                ('metadata', django.db.models.BinaryField()),
                 (
                     'operation',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=1, choices=[(b'O', b'overwrite'), (b'D', b'delete')]
                     ),
                 ),
-                ('error', models.TextField(blank=True)),
-                ('errorIsPermanent', models.BooleanField(default=False)),
+                ('error', django.db.models.TextField(blank=True)),
+                ('errorIsPermanent', django.db.models.BooleanField(default=False)),
             ],
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='DownloadQueue',
             fields=[
-                ('seq', models.AutoField(serialize=False, primary_key=True)),
-                ('requestTime', models.IntegerField()),
-                ('rawRequest', models.TextField()),
-                ('requestor', models.CharField(max_length=255)),
-                ('coOwners', models.TextField(blank=True)),
+                ('seq', django.db.models.AutoField(serialize=False, primary_key=True)),
+                ('requestTime', django.db.models.IntegerField()),
+                ('rawRequest', django.db.models.TextField()),
+                ('requestor', django.db.models.CharField(max_length=255)),
+                ('coOwners', django.db.models.TextField(blank=True)),
                 (
                     'format',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=1,
                         choices=[(b'A', b'ANVL'), (b'C', b'CSV'), (b'X', b'XML')],
                     ),
                 ),
-                ('columns', models.TextField(blank=True)),
-                ('constraints', models.TextField(blank=True)),
-                ('options', models.TextField(blank=True)),
-                ('notify', models.TextField(blank=True)),
+                ('columns', django.db.models.TextField(blank=True)),
+                ('constraints', django.db.models.TextField(blank=True)),
+                ('options', django.db.models.TextField(blank=True)),
+                ('notify', django.db.models.TextField(blank=True)),
                 (
                     'stage',
-                    models.CharField(
+                    django.db.models.CharField(
                         default=b'C',
                         max_length=1,
                         choices=[
@@ -103,18 +106,21 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ('filename', models.CharField(max_length=10, blank=True)),
-                ('currentOwner', models.CharField(max_length=255, blank=True)),
-                ('lastId', models.CharField(max_length=255, blank=True)),
-                ('fileSize', models.IntegerField(null=True, blank=True)),
+                ('filename', django.db.models.CharField(max_length=10, blank=True)),
+                (
+                    'currentOwner',
+                    django.db.models.CharField(max_length=255, blank=True),
+                ),
+                ('lastId', django.db.models.CharField(max_length=255, blank=True)),
+                ('fileSize', django.db.models.IntegerField(null=True, blank=True)),
             ],
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='NewAccountWorksheet',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -123,13 +129,13 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'requestDate',
-                    models.DateField(
+                    django.db.models.DateField(
                         default=datetime.date.today, verbose_name=b'request date'
                     ),
                 ),
                 (
                     'orgName',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=255,
                         verbose_name=b'name',
                         validators=[ezidapp.models.validation.nonEmpty],
@@ -137,13 +143,13 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'orgAcronym',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=255, verbose_name=b'acronym', blank=True
                     ),
                 ),
                 (
                     'orgUrl',
-                    models.URLField(
+                    django.db.models.URLField(
                         blank=True,
                         max_length=255,
                         verbose_name=b'URL',
@@ -152,17 +158,19 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'orgStreetAddress',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=255, verbose_name=b'street address', blank=True
                     ),
                 ),
                 (
                     'reqName',
-                    models.CharField(max_length=255, verbose_name=b'name', blank=True),
+                    django.db.models.CharField(
+                        max_length=255, verbose_name=b'name', blank=True
+                    ),
                 ),
                 (
                     'reqEmail',
-                    models.EmailField(
+                    django.db.models.EmailField(
                         blank=True,
                         max_length=255,
                         verbose_name=b'email',
@@ -171,19 +179,25 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'reqPhone',
-                    models.CharField(max_length=255, verbose_name=b'phone', blank=True),
+                    django.db.models.CharField(
+                        max_length=255, verbose_name=b'phone', blank=True
+                    ),
                 ),
                 (
                     'priUseRequestor',
-                    models.BooleanField(default=False, verbose_name=b'use requestor'),
+                    django.db.models.BooleanField(
+                        default=False, verbose_name=b'use requestor'
+                    ),
                 ),
                 (
                     'priName',
-                    models.CharField(max_length=255, verbose_name=b'name', blank=True),
+                    django.db.models.CharField(
+                        max_length=255, verbose_name=b'name', blank=True
+                    ),
                 ),
                 (
                     'priEmail',
-                    models.EmailField(
+                    django.db.models.EmailField(
                         blank=True,
                         max_length=255,
                         verbose_name=b'email',
@@ -192,15 +206,19 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'priPhone',
-                    models.CharField(max_length=255, verbose_name=b'phone', blank=True),
+                    django.db.models.CharField(
+                        max_length=255, verbose_name=b'phone', blank=True
+                    ),
                 ),
                 (
                     'secName',
-                    models.CharField(max_length=255, verbose_name=b'name', blank=True),
+                    django.db.models.CharField(
+                        max_length=255, verbose_name=b'name', blank=True
+                    ),
                 ),
                 (
                     'secEmail',
-                    models.EmailField(
+                    django.db.models.EmailField(
                         blank=True,
                         max_length=255,
                         verbose_name=b'email',
@@ -209,34 +227,42 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'secPhone',
-                    models.CharField(max_length=255, verbose_name=b'phone', blank=True),
+                    django.db.models.CharField(
+                        max_length=255, verbose_name=b'phone', blank=True
+                    ),
                 ),
                 (
                     'reqUsername',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=255, verbose_name=b'requested username', blank=True
                     ),
                 ),
                 (
                     'reqAccountEmailUsePrimary',
-                    models.BooleanField(
+                    django.db.models.BooleanField(
                         default=False, verbose_name=b"use primary contact's email"
                     ),
                 ),
                 (
                     'reqAccountEmail',
-                    models.EmailField(
+                    django.db.models.EmailField(
                         blank=True,
                         max_length=255,
                         verbose_name=b'account email',
                         validators=[ezidapp.models.validation.unicodeBmpOnly],
                     ),
                 ),
-                ('reqArks', models.BooleanField(default=False, verbose_name=b'ARKs')),
-                ('reqDois', models.BooleanField(default=False, verbose_name=b'DOIs')),
+                (
+                    'reqArks',
+                    django.db.models.BooleanField(default=False, verbose_name=b'ARKs'),
+                ),
+                (
+                    'reqDois',
+                    django.db.models.BooleanField(default=False, verbose_name=b'DOIs'),
+                ),
                 (
                     'reqShoulders',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=255,
                         verbose_name=b'requested shoulders/ branding',
                         blank=True,
@@ -244,17 +270,19 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'reqCrossref',
-                    models.BooleanField(default=False, verbose_name=b'Crossref'),
+                    django.db.models.BooleanField(
+                        default=False, verbose_name=b'Crossref'
+                    ),
                 ),
                 (
                     'reqCrossrefEmailUseAccount',
-                    models.BooleanField(
+                    django.db.models.BooleanField(
                         default=False, verbose_name=b'use account email'
                     ),
                 ),
                 (
                     'reqCrossrefEmail',
-                    models.EmailField(
+                    django.db.models.EmailField(
                         blank=True,
                         max_length=255,
                         verbose_name=b'Crossref email',
@@ -263,73 +291,88 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'reqHasExistingIdentifiers',
-                    models.BooleanField(
+                    django.db.models.BooleanField(
                         default=False, verbose_name=b'has existing identifiers'
                     ),
                 ),
                 (
                     'reqComments',
-                    models.TextField(verbose_name=b'requestor comments', blank=True),
+                    django.db.models.TextField(
+                        verbose_name=b'requestor comments', blank=True
+                    ),
                 ),
                 (
                     'setRealm',
-                    models.CharField(max_length=255, verbose_name=b'realm', blank=True),
+                    django.db.models.CharField(
+                        max_length=255, verbose_name=b'realm', blank=True
+                    ),
                 ),
                 (
                     'setExistingGroup',
-                    models.BooleanField(default=False, verbose_name=b'existing group'),
+                    django.db.models.BooleanField(
+                        default=False, verbose_name=b'existing group'
+                    ),
                 ),
                 (
                     'setGroupname',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=255, verbose_name=b'groupname', blank=True
                     ),
                 ),
                 (
                     'setUsernameUseRequested',
-                    models.BooleanField(default=False, verbose_name=b'use requested'),
+                    django.db.models.BooleanField(
+                        default=False, verbose_name=b'use requested'
+                    ),
                 ),
                 (
                     'setUsername',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=255, verbose_name=b'username', blank=True
                     ),
                 ),
                 (
                     'setNeedShoulders',
-                    models.BooleanField(
+                    django.db.models.BooleanField(
                         default=False, verbose_name=b'new shoulders required'
                     ),
                 ),
                 (
                     'setNeedMinters',
-                    models.BooleanField(
+                    django.db.models.BooleanField(
                         default=False, verbose_name=b'minters required'
                     ),
                 ),
-                ('setNotes', models.TextField(verbose_name=b'notes', blank=True)),
+                (
+                    'setNotes',
+                    django.db.models.TextField(verbose_name=b'notes', blank=True),
+                ),
                 (
                     'staReady',
-                    models.BooleanField(default=False, verbose_name=b'request ready'),
+                    django.db.models.BooleanField(
+                        default=False, verbose_name=b'request ready'
+                    ),
                 ),
                 (
                     'staShouldersCreated',
-                    models.BooleanField(
+                    django.db.models.BooleanField(
                         default=False, verbose_name=b'shoulders created'
                     ),
                 ),
                 (
                     'staAccountCreated',
-                    models.BooleanField(default=False, verbose_name=b'account created'),
+                    django.db.models.BooleanField(
+                        default=False, verbose_name=b'account created'
+                    ),
                 ),
             ],
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='SearchDatacenter',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -338,21 +381,23 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'symbol',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=17,
                         validators=[ezidapp.models.validation.datacenterSymbol],
                     ),
                 ),
             ],
-            options={'abstract': False,},
+            options={
+                'abstract': False,
+            },
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='SearchGroup',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -361,7 +406,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'pid',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=255,
                         validators=[ezidapp.models.validation.agentPid],
@@ -369,27 +414,29 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'groupname',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=32,
                         validators=[
                             django.core.validators.RegexValidator(
-                                b'^[a-z0-9]+([-_.][a-z0-9]+)*$',
-                                b'Invalid groupname.',
+                                '^[a-z0-9]+([-_.][a-z0-9]+)*$',
+                                'Invalid groupname.',
                                 flags=2,
                             )
                         ],
                     ),
                 ),
             ],
-            options={'abstract': False,},
+            options={
+                'abstract': False,
+            },
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='SearchIdentifier',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -398,7 +445,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'identifier',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=255,
                         validators=[ezidapp.models.validation.anyIdentifier],
@@ -406,7 +453,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'createTime',
-                    models.IntegerField(
+                    django.db.models.IntegerField(
                         default=b'',
                         blank=True,
                         validators=[django.core.validators.MinValueValidator(0)],
@@ -414,7 +461,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'updateTime',
-                    models.IntegerField(
+                    django.db.models.IntegerField(
                         default=b'',
                         blank=True,
                         validators=[django.core.validators.MinValueValidator(0)],
@@ -422,7 +469,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'status',
-                    models.CharField(
+                    django.db.models.CharField(
                         default=b'P',
                         max_length=1,
                         choices=[
@@ -432,11 +479,14 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ('unavailableReason', models.TextField(default=b'', blank=True)),
-                ('exported', models.BooleanField(default=True)),
+                (
+                    'unavailableReason',
+                    django.db.models.TextField(default=b'', blank=True),
+                ),
+                ('exported', django.db.models.BooleanField(default=True)),
                 (
                     'crossrefStatus',
-                    models.CharField(
+                    django.db.models.CharField(
                         default=b'',
                         max_length=1,
                         blank=True,
@@ -449,10 +499,13 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ('crossrefMessage', models.TextField(default=b'', blank=True)),
+                (
+                    'crossrefMessage',
+                    django.db.models.TextField(default=b'', blank=True),
+                ),
                 (
                     'target',
-                    models.URLField(
+                    django.db.models.URLField(
                         default=b'',
                         max_length=2000,
                         blank=True,
@@ -462,32 +515,37 @@ class Migration(migrations.Migration):
                 (
                     'cm',
                     ezidapp.models.custom_fields.CompressedJsonField(
-                        default=ezidapp.models.identifier._emptyDict
+                        default=ezidapp.models.identifier.emptyDict
                     ),
                 ),
                 (
                     'agentRole',
-                    models.CharField(
+                    django.db.models.CharField(
                         default=b'',
                         max_length=1,
                         blank=True,
                         choices=[(b'U', b'user'), (b'G', b'group')],
                     ),
                 ),
-                ('isTest', models.BooleanField(editable=False)),
-                ('searchableTarget', models.CharField(max_length=255, editable=False)),
-                ('resourceCreator', models.TextField(editable=False)),
-                ('resourceTitle', models.TextField(editable=False)),
-                ('resourcePublisher', models.TextField(editable=False)),
-                ('resourcePublicationDate', models.TextField(editable=False)),
+                ('isTest', django.db.models.BooleanField(editable=False)),
+                (
+                    'searchableTarget',
+                    django.db.models.CharField(max_length=255, editable=False),
+                ),
+                ('resourceCreator', django.db.models.TextField(editable=False)),
+                ('resourceTitle', django.db.models.TextField(editable=False)),
+                ('resourcePublisher', django.db.models.TextField(editable=False)),
+                ('resourcePublicationDate', django.db.models.TextField(editable=False)),
                 (
                     'searchablePublicationYear',
-                    models.IntegerField(null=True, editable=False, blank=True),
+                    django.db.models.IntegerField(
+                        null=True, editable=False, blank=True
+                    ),
                 ),
-                ('resourceType', models.TextField(editable=False)),
+                ('resourceType', django.db.models.TextField(editable=False)),
                 (
                     'searchableResourceType',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=2,
                         editable=False,
                         choices=[
@@ -508,23 +566,23 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ('keywords', models.TextField(editable=False)),
+                ('keywords', django.db.models.TextField(editable=False)),
                 (
                     'resourceCreatorPrefix',
-                    models.CharField(max_length=50, editable=False),
+                    django.db.models.CharField(max_length=50, editable=False),
                 ),
                 (
                     'resourceTitlePrefix',
-                    models.CharField(max_length=50, editable=False),
+                    django.db.models.CharField(max_length=50, editable=False),
                 ),
                 (
                     'resourcePublisherPrefix',
-                    models.CharField(max_length=50, editable=False),
+                    django.db.models.CharField(max_length=50, editable=False),
                 ),
-                ('hasMetadata', models.BooleanField(editable=False)),
-                ('publicSearchVisible', models.BooleanField(editable=False)),
-                ('oaiVisible', models.BooleanField(editable=False)),
-                ('hasIssues', models.BooleanField(editable=False)),
+                ('hasMetadata', django.db.models.BooleanField(editable=False)),
+                ('publicSearchVisible', django.db.models.BooleanField(editable=False)),
+                ('oaiVisible', django.db.models.BooleanField(editable=False)),
+                ('hasIssues', django.db.models.BooleanField(editable=False)),
                 (
                     'datacenter',
                     ezidapp.models.custom_fields.NonValidatingForeignKey(
@@ -536,14 +594,16 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={'abstract': False,},
+            options={
+                'abstract': False,
+            },
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='SearchProfile',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -552,27 +612,29 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'label',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=32,
                         validators=[
                             django.core.validators.RegexValidator(
-                                b'^[a-z0-9]+([-_.][a-z0-9]+)*$',
-                                b'Invalid profile name.',
+                                '^[a-z0-9]+([-_.][a-z0-9]+)*$',
+                                'Invalid profile name.',
                                 flags=2,
                             )
                         ],
                     ),
                 ),
             ],
-            options={'abstract': False,},
+            options={
+                'abstract': False,
+            },
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='SearchRealm',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -581,21 +643,23 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'name',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=32,
                         validators=[ezidapp.models.validation.nonEmpty],
                     ),
                 ),
             ],
-            options={'abstract': False,},
+            options={
+                'abstract': False,
+            },
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='SearchUser',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -604,7 +668,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'pid',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=255,
                         validators=[ezidapp.models.validation.agentPid],
@@ -612,13 +676,13 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'username',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=32,
                         validators=[
                             django.core.validators.RegexValidator(
-                                b'^[a-z0-9]+([-_.][a-z0-9]+)*$',
-                                b'Invalid username.',
+                                '^[a-z0-9]+([-_.][a-z0-9]+)*$',
+                                'Invalid username.',
                                 flags=2,
                             )
                         ],
@@ -626,27 +690,29 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'group',
-                    models.ForeignKey(
+                    django.db.models.ForeignKey(
                         to='ezidapp.SearchGroup',
                         on_delete=django.db.models.deletion.PROTECT,
                     ),
                 ),
                 (
                     'realm',
-                    models.ForeignKey(
+                    django.db.models.ForeignKey(
                         to='ezidapp.SearchRealm',
                         on_delete=django.db.models.deletion.PROTECT,
                     ),
                 ),
             ],
-            options={'abstract': False,},
+            options={
+                'abstract': False,
+            },
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='ServerVariables',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -655,7 +721,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'alertMessage',
-                    models.CharField(
+                    django.db.models.CharField(
                         help_text=b'The alert message can be used to communicate urgent announcements.  It is displayed at the top of every UI page.',
                         max_length=255,
                         verbose_name=b'alert message',
@@ -664,7 +730,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'secretKey',
-                    models.CharField(
+                    django.db.models.CharField(
                         help_text=b'The secret key identifies the server; changing it invalidates every API session cookie, password reset URL, and OAI-PMH resumption token.  Set it to blank to generate a new random key.',
                         max_length=50,
                         verbose_name=b'secret key',
@@ -672,14 +738,16 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={'verbose_name_plural': 'server variables',},
+            options={
+                'verbose_name_plural': 'server variables',
+            },
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='Shoulder',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -688,22 +756,22 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'prefix',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=255,
                         validators=[ezidapp.models.validation.shoulder],
                     ),
                 ),
-                ('type', models.CharField(max_length=32, editable=False)),
+                ('type', django.db.models.CharField(max_length=32, editable=False)),
                 (
                     'name',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=255, validators=[ezidapp.models.validation.nonEmpty]
                     ),
                 ),
                 (
                     'minter',
-                    models.URLField(
+                    django.db.models.URLField(
                         blank=True,
                         max_length=255,
                         validators=[ezidapp.models.validation.unicodeBmpOnly],
@@ -711,18 +779,18 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'crossrefEnabled',
-                    models.BooleanField(
+                    django.db.models.BooleanField(
                         default=False, verbose_name=b'Crossref enabled'
                     ),
                 ),
             ],
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='StoreDatacenter',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -731,7 +799,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'symbol',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=17,
                         validators=[ezidapp.models.validation.datacenterSymbol],
@@ -739,7 +807,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'name',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=255,
                         validators=[ezidapp.models.validation.nonEmpty],
@@ -751,12 +819,12 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'datacenters',
             },
         ),
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='StoreRealm',
             fields=[
                 (
                     'id',
-                    models.AutoField(
+                    django.db.models.AutoField(
                         verbose_name='ID',
                         serialize=False,
                         auto_created=True,
@@ -765,19 +833,21 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'name',
-                    models.CharField(
+                    django.db.models.CharField(
                         unique=True,
                         max_length=32,
                         validators=[ezidapp.models.validation.nonEmpty],
                     ),
                 ),
             ],
-            options={'abstract': False,},
+            options={
+                'abstract': False,
+            },
         ),
-        migrations.AddField(
+        django.db.migrations.AddField(
             model_name='shoulder',
             name='datacenter',
-            field=models.ForeignKey(
+            field=django.db.models.ForeignKey(
                 on_delete=django.db.models.deletion.PROTECT,
                 default=None,
                 blank=True,
@@ -785,14 +855,14 @@ class Migration(migrations.Migration):
                 null=True,
             ),
         ),
-        migrations.AddField(
+        django.db.migrations.AddField(
             model_name='searchidentifier',
             name='owner',
             field=ezidapp.models.custom_fields.NonValidatingForeignKey(
                 to='ezidapp.SearchUser', on_delete=django.db.models.deletion.PROTECT
             ),
         ),
-        migrations.AddField(
+        django.db.migrations.AddField(
             model_name='searchidentifier',
             name='ownergroup',
             field=ezidapp.models.custom_fields.NonValidatingForeignKey(
@@ -803,7 +873,7 @@ class Migration(migrations.Migration):
                 null=True,
             ),
         ),
-        migrations.AddField(
+        django.db.migrations.AddField(
             model_name='searchidentifier',
             name='profile',
             field=ezidapp.models.custom_fields.NonValidatingForeignKey(
@@ -814,61 +884,60 @@ class Migration(migrations.Migration):
                 null=True,
             ),
         ),
-        migrations.AddField(
+        django.db.migrations.AddField(
             model_name='searchgroup',
             name='realm',
-            field=models.ForeignKey(
+            field=django.db.models.ForeignKey(
                 to='ezidapp.SearchRealm', on_delete=django.db.models.deletion.PROTECT
             ),
         ),
-        migrations.AlterUniqueTogether(
-            name='shoulder', unique_together=set([('name', 'type')]),
+        django.db.migrations.AlterUniqueTogether(
+            name='shoulder',
+            unique_together={('name', 'type')},
         ),
-        migrations.AlterIndexTogether(
+        django.db.migrations.AlterIndexTogether(
             name='searchidentifier',
-            index_together=set(
-                [
-                    ('publicSearchVisible', 'resourceCreatorPrefix'),
-                    ('owner', 'crossrefStatus'),
-                    ('owner', 'resourceCreatorPrefix'),
-                    ('publicSearchVisible', 'resourcePublisherPrefix'),
-                    ('ownergroup', 'hasMetadata'),
-                    ('owner', 'hasMetadata'),
-                    ('owner', 'hasIssues'),
-                    ('owner', 'profile'),
-                    ('owner', 'createTime'),
-                    ('owner', 'status'),
-                    ('publicSearchVisible', 'createTime'),
-                    ('searchableTarget',),
-                    ('ownergroup', 'searchableResourceType'),
-                    ('ownergroup', 'identifier'),
-                    ('ownergroup', 'profile'),
-                    ('ownergroup', 'exported'),
-                    ('owner', 'exported'),
-                    ('ownergroup', 'resourceTitlePrefix'),
-                    ('publicSearchVisible', 'resourceTitlePrefix'),
-                    ('owner', 'resourceTitlePrefix'),
-                    ('owner', 'identifier'),
-                    ('ownergroup', 'createTime'),
-                    ('ownergroup', 'isTest'),
-                    ('publicSearchVisible', 'updateTime'),
-                    ('publicSearchVisible', 'searchableResourceType'),
-                    ('publicSearchVisible', 'identifier'),
-                    ('owner', 'searchablePublicationYear'),
-                    ('owner', 'updateTime'),
-                    ('publicSearchVisible', 'searchablePublicationYear'),
-                    ('oaiVisible', 'updateTime'),
-                    ('ownergroup', 'resourceCreatorPrefix'),
-                    ('ownergroup', 'hasIssues'),
-                    ('ownergroup', 'updateTime'),
-                    ('owner', 'resourcePublisherPrefix'),
-                    ('ownergroup', 'crossrefStatus'),
-                    ('ownergroup', 'status'),
-                    ('owner', 'isTest'),
-                    ('ownergroup', 'resourcePublisherPrefix'),
-                    ('owner', 'searchableResourceType'),
-                    ('ownergroup', 'searchablePublicationYear'),
-                ]
-            ),
+            index_together={
+                ('publicSearchVisible', 'resourceCreatorPrefix'),
+                ('owner', 'crossrefStatus'),
+                ('owner', 'resourceCreatorPrefix'),
+                ('publicSearchVisible', 'resourcePublisherPrefix'),
+                ('ownergroup', 'hasMetadata'),
+                ('owner', 'hasMetadata'),
+                ('owner', 'hasIssues'),
+                ('owner', 'profile'),
+                ('owner', 'createTime'),
+                ('owner', 'status'),
+                ('publicSearchVisible', 'createTime'),
+                ('searchableTarget',),
+                ('ownergroup', 'searchableResourceType'),
+                ('ownergroup', 'identifier'),
+                ('ownergroup', 'profile'),
+                ('ownergroup', 'exported'),
+                ('owner', 'exported'),
+                ('ownergroup', 'resourceTitlePrefix'),
+                ('publicSearchVisible', 'resourceTitlePrefix'),
+                ('owner', 'resourceTitlePrefix'),
+                ('owner', 'identifier'),
+                ('ownergroup', 'createTime'),
+                ('ownergroup', 'isTest'),
+                ('publicSearchVisible', 'updateTime'),
+                ('publicSearchVisible', 'searchableResourceType'),
+                ('publicSearchVisible', 'identifier'),
+                ('owner', 'searchablePublicationYear'),
+                ('owner', 'updateTime'),
+                ('publicSearchVisible', 'searchablePublicationYear'),
+                ('oaiVisible', 'updateTime'),
+                ('ownergroup', 'resourceCreatorPrefix'),
+                ('ownergroup', 'hasIssues'),
+                ('ownergroup', 'updateTime'),
+                ('owner', 'resourcePublisherPrefix'),
+                ('ownergroup', 'crossrefStatus'),
+                ('ownergroup', 'status'),
+                ('owner', 'isTest'),
+                ('ownergroup', 'resourcePublisherPrefix'),
+                ('owner', 'searchableResourceType'),
+                ('ownergroup', 'searchablePublicationYear'),
+            },
         ),
     ]

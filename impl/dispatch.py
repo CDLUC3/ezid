@@ -53,8 +53,8 @@ def d(request, apiFunction, uiFunction):
     # module, function = f.rsplit(".", 1)
     # return getattr(__import__(module, fromlist=module), function)(request)
     ## DV f.rsplit not available in current version
-    module = None
-    function = None
+    _module = None
+    _function = None
     try:
         module, function = f.rsplit(".", 1)
     except AttributeError:

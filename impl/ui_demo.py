@@ -1,28 +1,31 @@
-from . import ui_common as uic
-from django.shortcuts import redirect
-from . import ui_create
+import django.shortcuts
+
+import impl.ui_common
+import impl.ui_create
 
 
-def index(request):
-    d = {'menu_item': 'ui_home.learn'}
-    return redirect("ui_demo.simple")
+def index(_request):
+    _d = {'menu_item': 'ui_home.learn'}
+    return django.shortcuts.redirect("ui_demo.simple")
 
 
+# noinspection PyDictCreation
 def simple(request):
     d = {'menu_item': 'ui_home.learn'}
-    d["testPrefixes"] = uic.testPrefixes
+    d["testPrefixes"] = impl.ui_common.testPrefixes
     d['prefixes'] = sorted(
-        uic.testPrefixes, key=lambda p: p['namespace'].lower()
+        impl.ui_common.testPrefixes, key=lambda p: p['namespace'].lower()
     )  # must be done before calling form processing
-    d = ui_create.simple_form(request, d)
-    return uic.renderIdPage(request, 'demo/simple', d)
+    d = impl.ui_create.simple_form(request, d)
+    return impl.ui_common.renderIdPage(request, 'demo/simple', d)
 
 
+# noinspection PyDictCreation
 def advanced(request):
     d = {'menu_item': 'ui_home.learn'}
-    d["testPrefixes"] = uic.testPrefixes
+    d["testPrefixes"] = impl.ui_common.testPrefixes
     d['prefixes'] = sorted(
-        uic.testPrefixes, key=lambda p: p['namespace'].lower()
+        impl.ui_common.testPrefixes, key=lambda p: p['namespace'].lower()
     )  # must be done before calling form processing
-    d = ui_create.adv_form(request, d)
-    return uic.renderIdPage(request, 'demo/advanced', d)
+    d = impl.ui_create.adv_form(request, d)
+    return impl.ui_common.renderIdPage(request, 'demo/advanced', d)

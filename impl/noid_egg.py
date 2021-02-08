@@ -6,7 +6,7 @@
 #
 # A note on encodings.  Identifiers and metadata elements (both names
 # and values) are sent to noid in encoded form; see util.encode{3,4}.
-# Metadata elements received from noid are UTF-8-encoded and utilize
+# Metadata elements received from void are UTF-8-encoded and utilize
 # percent-encoding.  Though this received encoding does not exactly
 # match the transmitted encoding, the decoding performed by
 # util.decode is nevertheless compatible and so we use it.  (Consider
@@ -28,16 +28,17 @@
 #
 # -----------------------------------------------------------------------------
 
-import base64
+import logging
 import re
 import time
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 
-from . import config
-from . import util
-
-import logging
-from .log import stacklog
+import impl.config
+import impl.log
+import impl.util
 
 _LT = logging.getLogger("tracer")
 
@@ -49,37 +50,41 @@ _reattemptDelay = None
 
 def loadConfig():
     global _server, _authorization, _numAttempts, _reattemptDelay
-    _server = config.get("binder.url")
-    _authorization = "Basic " + base64.b64encode(
-        config.get("binder.username") + ":" + config.get("binder.password")
+    _server = impl.config.get("binder.url")
+    _authorization = impl.util.basic_auth(
+        impl.config.get("binder.username"), impl.config.get("binder.password")
     )
-    _numAttempts = int(config.get("binder.num_attempts"))
-    _reattemptDelay = int(config.get("binder.reattempt_delay"))
+    _numAttempts = int(impl.config.get("binder.num_attempts"))
+    _reattemptDelay = int(impl.config.get("binder.reattempt_delay"))
 
 
-@stacklog
+@impl.log.stacklog
 def _issue(method, operations):
+    # noinspection PyUnresolvedReferences
     r = urllib.request.Request(_server + "?-")
     r.get_method = lambda: method
+    # noinspection PyTypeChecker
     r.add_header("Authorization", _authorization)
     if len(operations) > 0:
         r.add_header("Content-Type", "text/plain")
         l = []
         for o in operations:
             # o = (identifier, operation [,element [, value]])
-            s = ":hx%% %s.%s" % (util.encode4(o[0]), o[1])
+            s = f":hx% {impl.util.encode4(o[0])}.{o[1]}"
             if len(o) > 2:
-                s += " " + util.encode4(o[2])
+                s += " " + impl.util.encode4(o[2])
             if len(o) > 3:
-                s += " " + util.encode3(o[3])
+                s += " " + impl.util.encode3(o[3])
             l.append(s)
-        r.add_data("\n".join(l))
+        r.data = "\n".join(l)
+    # noinspection PyTypeChecker
     for i in range(_numAttempts):
         c = None
         try:
             c = urllib.request.urlopen(r)
             s = c.readlines()
-        except:
+        except Exception:
+            # noinspection PyTypeChecker
             if i == _numAttempts - 1:
                 raise
         else:
@@ -87,17 +92,20 @@ def _issue(method, operations):
         finally:
             if c:
                 c.close()
+        # noinspection PyTypeChecker
         time.sleep(_reattemptDelay)
+    # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
     return s
 
 
 def _error(operation, s):
     return (
-        "unexpected return from noid egg '%s' operation, " + "output follows\n%s"
-    ) % (operation, "".join(s))
+        f"unexpected return from noid egg '{operation}' "
+        f"operation, output follows\n{''.join(s)}"
+    )
 
 
-def identifierExists(identifier):
+def identifierExists(id_str):
     """Returns true if an identifier (given in normalized, qualified form,
     e.g., "doi:10.1234/FOO") exists.
 
@@ -113,7 +121,7 @@ def identifierExists(identifier):
     # functions below work to maintain the invariant property that
     # either an identifier has EZID metadata (along with noid-internal
     # metadata) or it has no metadata at all.
-    s = _issue("GET", [(identifier, "fetch")])
+    s = _issue("GET", [(id_str, "fetch")])
     assert (
         len(s) >= 4
         and s[0].startswith("# id:")
@@ -125,14 +133,14 @@ def identifierExists(identifier):
     return m.group(1) != "0"
 
 
-def setElements(identifier, d):
-    """Binds metadata elements to an identifier (given in normalized, qualified
+def setElements(id_str, d):
+    """Binds metadata elements to an id_str (given in normalized, qualified
     form, e.g., "doi:10.1234/FOO").
 
     The elements should be given in a dictionary that maps names to
     values.  Raises an exception on error.
     """
-    batchSetElements([(identifier, d)])
+    batchSetElements([(id_str, d)])
 
 
 def batchSetElements(batch):
@@ -184,7 +192,7 @@ def getElements(identifier):
             if l.startswith("__") or l.startswith("_.e") or l.startswith("_,e"):
                 continue
             e, v = l.split(":", 1)
-            d[util.decode(e)] = util.decode(v.strip())
+            d[impl.util.decode(e)] = impl.util.decode(v.strip())
         # There had better be at least one non-noid-internal binding.
         assert len(d) > 0, _error("fetch", s)
         return d
@@ -205,9 +213,9 @@ def deleteIdentifier(identifier):
     s = _issue("POST", [(identifier, "purge")])
     assert len(s) >= 2 and s[-2] == "egg-status: 0\n", _error("purge", s)
     # See the comment under 'identifierExists' above.
-    assert not identifierExists(identifier), (
-        "noid egg 'purge' operation on %s left remaining bindings" % identifier
-    )
+    assert not identifierExists(
+        identifier
+    ), f"noid egg 'purge' operation on {identifier} left remaining bindings"
 
 
 def batchDeleteIdentifier(batch):
@@ -245,4 +253,4 @@ def decodeRaw(s):
 
     Raises AssertionError and UnicodeDecodeError.
     """
-    return _decodePattern.sub(_decodeRewriter, s).decode("UTF-8")
+    return _decodePattern.sub(_decodeRewriter, s)

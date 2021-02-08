@@ -1,35 +1,35 @@
 # -*- coding: utf-8 -*-
 
-
-from django.db import models, migrations
+import django.db.migrations
+import django.db.models
 import ezidapp.models.custom_fields
 import django.core.validators
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0020_storeidentifier'),
     ]
 
     operations = [
-        migrations.CreateModel(
+        django.db.migrations.CreateModel(
             name='UpdateQueue',
             fields=[
-                ('seq', models.AutoField(serialize=False, primary_key=True)),
+                ('seq', django.db.models.AutoField(serialize=False, primary_key=True)),
                 (
                     'enqueueTime',
-                    models.IntegerField(
+                    django.db.models.IntegerField(
                         default=b'',
                         blank=True,
                         validators=[django.core.validators.MinValueValidator(0)],
                     ),
                 ),
-                ('identifier', models.CharField(max_length=255)),
+                ('identifier', django.db.models.CharField(max_length=255)),
                 ('object', ezidapp.models.custom_fields.StoreIdentifierObjectField()),
                 (
                     'operation',
-                    models.CharField(
+                    django.db.models.CharField(
                         max_length=1,
                         choices=[
                             (b'C', b'create'),
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ('updateExternalServices', models.BooleanField(default=True)),
+                ('updateExternalServices', django.db.models.BooleanField(default=True)),
             ],
         ),
     ]

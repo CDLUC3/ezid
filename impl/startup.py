@@ -3,103 +3,140 @@ import logging
 import django.apps
 import django.db.utils
 
+# import django.conf
+
 logger = logging.getLogger(__name__)
+
+
+import sys
+
+
+def global_exception_handler(type, value, traceback):
+    logger.error('=' * 100)
+    logger.error('Unhandled exception:', type, value)
+    import traceback
+
+    traceback.logger.error_tb(traceback)
+    logger.error('=' * 100)
+
+
+sys.excepthook = global_exception_handler
 
 
 class Startup(django.apps.AppConfig):
     name = "ezidapp"
 
-
     def ready(self):
         logging.debug('impl.startup: START')
 
-        try:
-            from . import config
-            config.load()
+        # try:
+        import impl.config
 
-            import ezidapp.models.shoulder
-            ezidapp.models.shoulder.loadConfig()
-            config.registerReloadListener(ezidapp.models.shoulder.loadConfig)
+        impl.config.load()
 
-            from . import util2
-            util2.loadConfig()
-            config.registerReloadListener(util2.loadConfig)
+        import ezidapp.models.shoulder
 
-            from . import ui_common
-            ui_common.loadConfig()
-            config.registerReloadListener(ui_common.loadConfig)
-        except Exception:
-            # App not ready to be configured yet. This allows running
-            # `django-admin migrate` to create the initial databases.
-            logging.debug('impl.startup: Early exit: App not ready yet')
-            return
+        ezidapp.models.shoulder.loadConfig()
+        impl.config.registerReloadListener(ezidapp.models.shoulder.loadConfig)
 
-        from . import log
-        log.loadConfig()
-        config.registerReloadListener(log.loadConfig)
+        import impl.util2
 
-        from . import backproc
-        config.registerReloadListener(backproc.loadConfig)
-        backproc.loadConfig()
+        impl.util2.loadConfig()
+        impl.config.registerReloadListener(impl.util2.loadConfig)
 
-        from . import binder_async
-        binder_async.loadConfig()
-        config.registerReloadListener(binder_async.loadConfig)
+        import impl.ui_common
 
-        from . import crossref
-        crossref.loadConfig()
-        config.registerReloadListener(crossref.loadConfig)
+        impl.ui_common.loadConfig()
+        impl.config.registerReloadListener(impl.ui_common.loadConfig)
+        # except Exception:
+        #     # App not ready to be configured yet. This allows running
+        #     # `django-admin migrate` to create the initial databases.
+        #     logging.debug('impl.startup: Early exit: App not ready yet')
+        #     return
 
-        from . import datacite
-        datacite.loadConfig()
-        config.registerReloadListener(datacite.loadConfig)
+        import impl.log
 
-        from . import datacite_async
-        datacite_async.loadConfig()
-        config.registerReloadListener(datacite_async.loadConfig)
+        impl.log.loadConfig()
+        impl.config.registerReloadListener(impl.log.loadConfig)
 
-        from . import download
-        download.loadConfig()
-        config.registerReloadListener(download.loadConfig)
+        import impl.backproc
 
-        from . import ezid
-        ezid.loadConfig()
-        config.registerReloadListener(ezid.loadConfig)
+        impl.config.registerReloadListener(impl.backproc.loadConfig)
+        impl.backproc.loadConfig()
 
-        from . import linkcheck_update
-        linkcheck_update.loadConfig()
-        config.registerReloadListener(linkcheck_update.loadConfig)
+        import impl.binder_async
 
-        from . import metadata
-        metadata.loadConfig()
-        config.registerReloadListener(metadata.loadConfig)
+        impl.binder_async.loadConfig()
+        impl.config.registerReloadListener(impl.binder_async.loadConfig)
 
-        from . import newsfeed
-        newsfeed.loadConfig()
-        config.registerReloadListener(newsfeed.loadConfig)
+        import impl.crossref
 
-        from . import noid_egg
-        noid_egg.loadConfig()
-        config.registerReloadListener(noid_egg.loadConfig)
+        impl.crossref.loadConfig()
+        impl.config.registerReloadListener(impl.crossref.loadConfig)
 
-        from . import noid_nog
-        noid_nog.loadConfig()
-        config.registerReloadListener(noid_nog.loadConfig)
+        import impl.datacite
 
-        from . import oai
-        oai.loadConfig()
-        config.registerReloadListener(oai.loadConfig)
+        impl.datacite.loadConfig()
+        impl.config.registerReloadListener(impl.datacite.loadConfig)
 
-        from . import search_util
-        search_util.loadConfig()
-        config.registerReloadListener(search_util.loadConfig)
+        import impl.datacite_async
 
-        from . import stats
-        stats.loadConfig()
-        config.registerReloadListener(stats.loadConfig)
+        impl.datacite_async.loadConfig()
+        impl.config.registerReloadListener(impl.datacite_async.loadConfig)
 
-        from . import status
-        status.loadConfig()
-        config.registerReloadListener(status.loadConfig)
+        import impl.download
+
+        impl.download.loadConfig()
+        impl.config.registerReloadListener(impl.download.loadConfig)
+
+        import impl.ezid
+
+        impl.ezid.loadConfig()
+        impl.config.registerReloadListener(impl.ezid.loadConfig)
+
+        import impl.linkcheck_update
+
+        impl.linkcheck_update.loadConfig()
+        impl.config.registerReloadListener(impl.linkcheck_update.loadConfig)
+
+        import impl.metadata
+
+        impl.metadata.loadConfig()
+        impl.config.registerReloadListener(impl.metadata.loadConfig)
+
+        import impl.newsfeed
+
+        impl.newsfeed.loadConfig()
+        impl.config.registerReloadListener(impl.newsfeed.loadConfig)
+
+        import impl.noid_egg
+
+        impl.noid_egg.loadConfig()
+        impl.config.registerReloadListener(impl.noid_egg.loadConfig)
+
+        import impl.noid_nog
+
+        impl.noid_nog.loadConfig()
+        impl.config.registerReloadListener(impl.noid_nog.loadConfig)
+
+        import impl.oai
+
+        impl.oai.loadConfig()
+        impl.config.registerReloadListener(impl.oai.loadConfig)
+
+        import impl.search_util
+
+        impl.search_util.loadConfig()
+        impl.config.registerReloadListener(impl.search_util.loadConfig)
+
+        import impl.stats
+
+        impl.stats.loadConfig()
+        impl.config.registerReloadListener(impl.stats.loadConfig)
+
+        import impl.status
+
+        impl.status.loadConfig()
+        impl.config.registerReloadListener(impl.status.loadConfig)
 
         logging.debug('impl.startup: END')

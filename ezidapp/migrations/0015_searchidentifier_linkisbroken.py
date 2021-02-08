@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
+import django.db.migrations
+import django.db.models
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0014_linkchecker'),
     ]
 
     operations = [
-        migrations.AddField(
+        django.db.migrations.AddField(
             model_name='searchidentifier',
             name='linkIsBroken',
-            field=models.BooleanField(default=False, editable=False),
+            field=django.db.models.BooleanField(default=False, editable=False),
         ),
     ]

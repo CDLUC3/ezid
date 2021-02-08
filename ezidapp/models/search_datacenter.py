@@ -13,8 +13,8 @@
 #
 # -----------------------------------------------------------------------------
 
-from . import datacenter
+import ezidapp.models.datacenter
 
 
-class SearchDatacenter(datacenter.Datacenter):
+class SearchDatacenter(ezidapp.models.datacenter.Datacenter):
     pass

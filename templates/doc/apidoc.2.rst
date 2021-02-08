@@ -196,7 +196,7 @@ methods of authentication:
    .. parsed-literal::
 
      import base64, urllib2
-     r = urllib2.Request("\https://ezid.cdlib.org/...")
+     r = urllib.request.Request("\https://ezid.cdlib.org/...")
      r.add_header("Authorization", "Basic " + \
      base64.b64encode("`username`:hl2::`password`:hl2:"))
 
@@ -206,10 +206,10 @@ methods of authentication:
    .. parsed-literal::
 
      import urllib2
-     h = urllib2.HTTPBasicAuthHandler()
+     h = urllib.request.HTTPBasicAuthHandler()
      h.add_password("EZID", "\https://ezid.cdlib.org/", "`username`:hl2:", \
      "`password`:hl2:")
-     o = urllib2.build_opener(h)
+     o = urllib.request.build_opener(h)
      o.open("\https://ezid.cdlib.org/...")
 
    The downside of using higher-level authentication mechanisms is
@@ -274,10 +274,10 @@ methods of authentication:
    .. parsed-literal::
 
      import urllib2
-     c = urllib2.urlopen("\https://ezid.cdlib.org/login")
+     c = urllib.request.urlopen("\https://ezid.cdlib.org/login")
      `cookie`:hl2: = c.headers["Set-Cookie"].split(";")[0]
      ...
-     r = urllib2.Request("\https://ezid.cdlib.org/...")
+     r = urllib.request.Request("\https://ezid.cdlib.org/...")
      r.add_header("Cookie", `cookie`:hl2:)
 
    In Java, cookies can be manually captured and set using code

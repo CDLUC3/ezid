@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
+import django.db.models
+import django.db.migrations
 
 
-class Migration(migrations.Migration):
+class Migration(django.db.migrations.Migration):
 
     dependencies = [
         ('ezidapp', '0023_registrationqueue_tweak'),
     ]
 
     operations = [
-        migrations.AlterField(
+        django.db.migrations.AlterField(
             model_name='downloadqueue',
             name='fileSize',
-            field=models.BigIntegerField(null=True, blank=True),
+            field=django.db.models.BigIntegerField(null=True, blank=True),
         ),
     ]

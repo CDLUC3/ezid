@@ -31,10 +31,10 @@
 
 import re
 
-from . import datacite
-from . import erc
 import ezidapp.models.validation
-from . import util
+import impl.datacite
+import impl.erc
+import impl.util
 
 
 class KernelMetadata(object):
@@ -60,22 +60,22 @@ class KernelMetadata(object):
 
     @property
     def validatedDate(self):
-        if self.date != None:
+        if self.date is not None:
             try:
                 return ezidapp.models.validation.publicationDate(self.date)
-            except:
+            except Exception:
                 return None
         else:
             return None
 
     @property
     def validatedType(self):
-        if self._validatedType != None:
+        if self._validatedType is not None:
             return self._validatedType
-        elif self.type != None:
+        elif self.type is not None:
             try:
                 return ezidapp.models.validation.resourceType(self.type)
-            except:
+            except Exception:
                 return None
         else:
             return None
@@ -101,11 +101,11 @@ def _mapErcItemized(metadata):
 def _mapErc(metadata):
     if _get(metadata, "erc"):
         try:
-            d = erc.parse(metadata["erc"])
+            d = impl.erc.parse(metadata["erc"])
             return KernelMetadata(
                 creator=_get(d, "who"), title=_get(d, "what"), date=_get(d, "when")
             )
-        except:
+        except Exception:
             return _mapErcItemized(metadata)
     else:
         return _mapErcItemized(metadata)
@@ -162,7 +162,7 @@ _rootTagRE = re.compile("{(http://datacite\.org/schema/kernel-[^}]*)}resource$")
 
 def _text(n):
     t = n.text
-    if t == None:
+    if t is None:
         return None
     t = t.strip()
     if t != "":
@@ -174,15 +174,15 @@ def _text(n):
 def _mapDatacite(metadata):
     if _get(metadata, "datacite"):
         try:
-            root = util.parseXmlString(_get(metadata, "datacite"))
+            root = impl.util.parseXmlString(_get(metadata, "datacite"))
             m = _rootTagRE.match(root.tag)
-            assert m != None
+            assert m is not None
             ns = {"N": m.group(1)}
             # Concatenate all creators.
             creator = " ; ".join(
                 _text(n)
                 for n in root.xpath("N:creators/N:creator/N:creatorName", namespaces=ns)
-                if _text(n) != None
+                if _text(n) is not None
             )
             if creator == "":
                 creator = None
@@ -206,14 +206,14 @@ def _mapDatacite(metadata):
             if len(l) > 0:
                 if l[0].attrib.get("resourceTypeGeneral", "").strip() != "":
                     type = l[0].attrib["resourceTypeGeneral"].strip()
-                    if _text(l[0]) != None:
+                    if _text(l[0]) is not None:
                         type += "/" + _text(l[0])
                 else:
                     type = None
             else:
                 type = None
             return KernelMetadata(creator, title, publisher, date, type)
-        except:
+        except Exception:
             return _mapDataciteItemized(metadata)
     else:
         return _mapDataciteItemized(metadata)
@@ -223,9 +223,13 @@ def _mapCrossref(metadata):
     if _get(metadata, "crossref"):
         try:
             return _mapDatacite(
-                {"datacite": datacite.crossrefToDatacite(_get(metadata, "crossref"))}
+                {
+                    "datacite": impl.datacite.crossrefToDatacite(
+                        _get(metadata, "crossref")
+                    )
+                }
             )
-        except:
+        except Exception:
             return KernelMetadata()
     else:
         return KernelMetadata()
@@ -243,7 +247,7 @@ def map(metadata, profile=None, datacitePriority=False):
     examined and take precedence regardless of the profile.  Note that
     this function is forgiving in nature, and does not raise exceptions.
     """
-    if profile == None:
+    if profile is None:
         profile = _get(metadata, "_profile", "_p")
     if profile == "dc":
         km = _mapDublinCore(metadata)
@@ -256,7 +260,7 @@ def map(metadata, profile=None, datacitePriority=False):
     if datacitePriority and profile != "datacite":
         dm = _mapDatacite(metadata)
         for a in ["creator", "title", "publisher", "date", "type"]:
-            if getattr(dm, a) != None:
+            if getattr(dm, a) is not None:
                 setattr(km, a, getattr(dm, a))
                 if a == "type":
                     km._validatedType = None

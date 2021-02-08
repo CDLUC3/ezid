@@ -12,9 +12,11 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
 import base64
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 
 
 class Minter(object):
@@ -30,7 +32,7 @@ class Minter(object):
     def _addAuthorization(self, request):
         request.add_header(
             "Authorization",
-            "Basic " + base64.b64encode(self.username + ":" + self.password),
+            b"Basic " + (base64.b64encode(self.username + ":" + self.password)),
         )
 
     def mintIdentifier(self):
