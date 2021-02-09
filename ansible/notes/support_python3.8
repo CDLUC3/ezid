@@ -1,0 +1,25 @@
+Tue Feb  9 10:16:44 PST 2021
+
+I had a lot of troble with ansible and setup of python3.8 pyenv.  Ended up doing it by hand.  here are details:
+
+  980  2021-02-09 09:04:1612890283  pyenv uninstall ezid
+  970  2021-02-09 08:57:1612889852  export CONFIGURE_OPTS="--enable-shared"
+  971  2021-02-09 08:57:1612889873  export CFLAGS="-O2"
+  994  2021-02-09 09:24:1612891472  pyenv install -fk -v 3.8.5
+  975  2021-02-09 09:03:1612890181  pyenv global 3.8.5
+  976  2021-02-09 09:03:1612890198  pyenv activate 3.8.5
+  995  2021-02-09 09:27:1612891621  /apps/ezid/.pyenv/versions/3.8.5/bin/pip install mod_wsgi
+  997  2021-02-09 09:28:1612891704  python --version
+  998  2021-02-09 09:28:1612891715  pip show mod_wsgi
+
+ezid@uc3-ezidui01x2-dev:10:21:16:~$ python --version
+Python 3.8.5
+ezid@uc3-ezidui01x2-dev:10:25:19:~$ pip show mod_wsgi
+Name: mod-wsgi
+Version: 4.7.1
+Summary: Installer for Apache/mod_wsgi.
+Home-page: http://www.modwsgi.org/
+Author: Graham Dumpleton
+Author-email: Graham.Dumpleton@gmail.com
+License: Apache License, Version 2.0
+Location: /apps/ezid/.pyenv/versions/3.8.5/lib/python3.8/site-packages
