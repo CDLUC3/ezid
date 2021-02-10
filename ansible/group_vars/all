@@ -1,8 +1,8 @@
-user: ezid
-group: ezid
-app_dir: /apps/ezid
+user: "{{ lookup('env', 'USER') | default('ezid') }}"
+group: "{{ user }}"
+app_dir: "{{ lookup('env', 'HOME') | default('ezid') }}"
 
-pyenv_root: "{{ansible_env.HOME}}/.pyenv"
+pyenv_root: "{{ app_dir }}/.pyenv"
 pyver: 2.7.18
 venv_name: ezid
 ezid_repo: https://github.com/CDLUC3/ezid.git

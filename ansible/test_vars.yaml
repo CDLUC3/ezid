@@ -1,8 +1,16 @@
 ---
 - hosts: all
   connection: local
-  remote_user: "{{user}}"
+  remote_user: "{{ user }}"
   tasks:
+  - name: report user
+    debug: msg="{{ user }}"
+  - name: report app_dir
+    debug: msg="{{ app_dir }}"
+  - name: report pyver
+    debug: msg="{{ pyver }}"
+  - name: report ezid_branch
+    debug: msg="{{ ezid_branch }}"
   - name: report ssm_root_path
     debug: msg="{{ ssm_root_path }}"
     #debug: msg="{{ lookup('env', 'SSM_ROOT_PATH') | default('/no/path/') }}"

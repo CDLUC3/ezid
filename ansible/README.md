@@ -23,6 +23,9 @@ ansible-playbook -i hosts site.yaml --check --diff
 
 # make it so
 ansible-playbook -i hosts site.yaml
+
+# with extra args as json string
+ansible-playbook -i hosts site.yaml -e '{"repo_branch": "2.0.0", "pyver": "3.8.5"}
 ```
 
 What Puppet does
