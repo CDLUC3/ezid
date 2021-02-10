@@ -3,9 +3,6 @@
 - name: "call setup_base_dirs.yaml"
   include_tasks: setup_base_dirs.yaml
 
-- name: "call setup_shell_env.yaml"
-  include_tasks: setup_shell_env.yaml
-
 - name: "call setup_pyenv.yaml"
   include_tasks: setup_pyenv.yaml
 
@@ -20,6 +17,4 @@
 
 - name: "call configure_init_scripts.yaml"
   include_tasks: configure_init_scripts.yaml
-
-
 

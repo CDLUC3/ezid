@@ -4,7 +4,7 @@
   git:
     repo: "{{ezid_repo}}"
     dest: "{{app_dir}}/ezid/"
-    version: "{{git_branch}}"
+    version: "{{ezid_branch}}"
     force: yes
 - name: install ezid requirements
   pip:
@@ -14,4 +14,4 @@
   git:
     repo: "{{ezid_info_pages_repo}}"
     dest: "{{app_dir}}/ezid/templates/info/"
-    version: "{{git_branch}}"
+    version: "{{ezid_info_pages_branch}}"

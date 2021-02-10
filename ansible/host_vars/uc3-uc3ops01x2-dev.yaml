@@ -1,0 +1,8 @@
+user: uc3adm
+group: uc3adm
+app_dir: /apps/uc3adm
+
+pyver: 3.8.5
+venv_name: ezid-py38
+ezid_branch: 2.0.0
+

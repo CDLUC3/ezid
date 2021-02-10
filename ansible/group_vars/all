@@ -6,8 +6,9 @@ pyenv_root: "{{ansible_env.HOME}}/.pyenv"
 pyver: 2.7.18
 venv_name: ezid
 ezid_repo: https://github.com/CDLUC3/ezid.git
+ezid_branch: master
 ezid_info_pages_repo: https://github.com/CDLUC3/ezid-info-pages.git
-git_branch: master
+eaid_info_pages_branch: master
 
 ## apache params
 http_port: 18880
