@@ -3,18 +3,25 @@
   connection: local
   remote_user: "{{ user }}"
   tasks:
+
   - name: report user
     debug: msg="{{ user }}"
+  - name: report group
+    debug: msg="{{ group }}"
   - name: report app_dir
     debug: msg="{{ app_dir }}"
-  - name: report python_version
-    debug: msg="{{ python_version }}"
   - name: report ezid_branch
     debug: msg="{{ ezid_branch }}"
+
+  - name: report virtual_environments
+    ansible.builtin.debug:
+      msg="python_version {{ item.python_version }}, pyenv_name {{ item.pyenv_name }}"
+    loop: "{{ virtual_environments }}"
+
+  # ssm vars
   - name: report ssm_root_path
     debug: msg="{{ ssm_root_path }}"
     #debug: msg="{{ lookup('env', 'SSM_ROOT_PATH') | default('/no/path/') }}"
-
   #- name: return a dictionary of ssm parameters from a hierarchy path
   #debug: msg="{{ lookup('aws_ssm', '/uc3/ezid/dev/', region='us-west-2', bypath=true, recursive=true, shortnames=true) }}"
 

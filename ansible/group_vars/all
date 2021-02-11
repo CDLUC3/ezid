@@ -2,10 +2,12 @@ user: "{{ lookup('env', 'USER') | default('ezid') }}"
 group: "{{ user }}"
 app_dir: "{{ lookup('env', 'HOME') | default('ezid') }}"
 
+virtual_environments:
+- python_version: 2.7.14
+  pyenv_name: ezid-py27
 pyenv_root: "{{ app_dir }}/.pyenv"
-python_version: 2.7.18
-pyenv_name: ezid-py27
 pyenv_global: ezid-py27
+
 ezid_repo: https://github.com/CDLUC3/ezid.git
 ezid_branch: master
 ezid_info_pages_repo: https://github.com/CDLUC3/ezid-info-pages.git

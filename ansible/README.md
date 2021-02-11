@@ -18,25 +18,31 @@ Usage
 # install ansible plugins
 ansible-galaxy install -r ${install_dir}/ezid-ansible/roles/requirements.yaml
 
-# dry-run
+# dry-run 
 ansible-playbook -i hosts site.yaml --check --diff
 
 # make it so
 ansible-playbook -i hosts site.yaml
 
 # with extra args as json string
-ansible-playbook -i hosts site.yaml -e '{"repo_branch": "2.0.0", "pyver": "3.8.5"}
+ansible-playbook -i hosts site.yaml -e '{"repo_branch": "2.0.1", "pyver_global": "ezid-py38"}
+
+# with extra= args as yaml file.  This is the preferred method:
+ansible-playbook -i hosts site.yaml -e @${HOME}/install/ansible_extra_vars.yaml
+
+# test variable interpolation
+ansible-playbook -i hosts test_vars.yaml -e @${HOME}/install/ansible_extra_vars.yaml
 ```
 
 What Puppet does
 ----------------
 
-- Set up application directory layout
-- Set shell envronment var SSM_ROOT_PATH in `~/.profile.d/aws_profile`
+- Configure bash shell environment for application user (SSM_ROOT_PATH, AWS_REGION)
 - Install system package prerequisites
 - Install ansible as $app_user
 - Clone ansible project repo into $install_dir
 - Install required additional ansible (Galaxy) roles.  These are used to set up pyenv.
+- Manage `ansible_extra_vars.yaml` file.
 - Run ansible-playbook to deploy application.
 - Manage ezid service with systemd. 
 
@@ -45,15 +51,12 @@ What ezid-ansible does
 ----------------------
 
 - Create application directory layout
-- Configure bash shell environment for application user
+- Setup python virtual environments with `pyenv`
 
-  - ~/.bash_profile
-  - ~/.bashrc
-  - ~/.alias
   - ~/.profile.d/pyenv
 
-- Setup python virtual environment with `pyenv`
 - Install python packages on the virtualenv (`mod_wsgi`)
+- Sets global pyenv
 - Clone ezid repo (See: https://github.com/CDLUC3/ezid)
 - Clone ezid-info-pages repo
 - Install python packages needed by EZID (`Requirements.txt`)
@@ -93,8 +96,7 @@ Ansible accesses SSM parameters using the `aws-ssm` lookup plugin
 (https://docs.ansible.com/ansible/latest/collections/amazon/aws/aws_ssm_lookup.html).
 
 This lookup is defined within `group_vars/all.yaml`.  The lookup depends upon
-the `SSM_ROOT_PATH` shell environemt var which is pre-configured by puppet in
-`~/.profile.d/aws_profile`:
+the `SSM_ROOT_PATH` shell environemt var which is pre-configured by puppet.
 
 ```
 ssm_root_path: "{{ lookup('env', 'SSM_ROOT_PATH') | default('/no/path/') }}"
@@ -148,8 +150,7 @@ under a path relevent to service environment.  This permission is specified
 within the ec2 instance profile applied to the server by our IAS team at build time. 
 
 SSM ParameterStore values are set from our AWS operations host
-`uc3-aws-ops.cdlib.org` which has write access to all SSM params under path
-`/uc3/`.
+which has write access to all SSM params under path `/uc3/`.
 
 Setting a parameter:
 
@@ -166,7 +167,7 @@ aws ssm put-parameter --name /uc3/ezid/dev/allocator_cdl --value "yyyyyyyy" --ty
 Deleting a parameter
 
 ```
-aws ssm delete-parameter --name /uc3/ezid/dev/binder_passwork
+aws ssm delete-parameter --name /uc3/ezid/dev/binder_password
 ```
 
 Reviewing parameter values
