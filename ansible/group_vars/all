@@ -12,7 +12,7 @@ pyenv_global: ezid-py27
 ezid_repo: https://github.com/CDLUC3/ezid.git
 ezid_branch: master
 ezid_info_pages_repo: https://github.com/CDLUC3/ezid-info-pages.git
-eaid_info_pages_branch: master
+ezid_info_pages_branch: master
 
 ## apache params
 http_port: 18880

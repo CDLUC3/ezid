@@ -2,16 +2,16 @@
 
 - name: Clone ezid repo
   git:
-    repo: "{{ezid_repo}}"
-    dest: "{{app_dir}}/ezid/"
-    version: "{{ezid_branch}}"
+    repo: "{{ ezid_repo }}"
+    dest: "{{ app_dir }}/ezid/"
+    version: "{{ ezid_branch }}"
     force: yes
 - name: install ezid requirements
   pip:
-    requirements: "{{app_dir}}/ezid/requirements.txt"
-    executable: "{{pyenv_root}}/versions/{{venv_name}}/bin/pip"
+    requirements: "{{ app_dir }}/ezid/requirements.txt"
+    executable: "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
 - name: Clone ezid-info-pages repo
   git:
-    repo: "{{ezid_info_pages_repo}}"
-    dest: "{{app_dir}}/ezid/templates/info/"
-    version: "{{ezid_info_pages_branch}}"
+    repo: "{{ ezid_info_pages_repo }}"
+    dest: "{{ app_dir }}/ezid/templates/info/"
+    version: "{{ ezid_info_pages_branch }}"
