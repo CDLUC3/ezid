@@ -22,8 +22,8 @@
       #
       export DJANGO_SETTINGS_MODULE=settings.{{ deployment_level }}
 
-- name: setup pyenv 
-  # from https://galaxy.ansible.com/suzuki-shunsuke/pyenv-module
+# from https://galaxy.ansible.com/suzuki-shunsuke/pyenv-module
+- name: pyenv install
   pyenv:
     version: "{{ item.python_version }}"
     pyenv_root: "{{ pyenv_root }}"
@@ -31,19 +31,36 @@
     CONFIGURE_OPTS: "--enable-shared"
     CFLAGS: "-O2"
   loop: "{{ virtual_environments }}"
+  when: not item.ensure is defined or item.ensure == 'present'
+
+- name: pyenv unistall if ensure => absent
+  pyenv:
+    subcommand: uninstall
+    version: "{{ item.python_version }}"
+    pyenv_root: "{{ pyenv_root }}"
+    #force: yes
+  loop: "{{ virtual_environments }}"
+  when: item.ensure is defined and item.ensure == 'absent'
+
+
 - name: pyenv virtualenv
   pyenv:
     subcommand: virtualenv
     pyenv_root: "{{ pyenv_root }}"
     version: "{{ item.python_version }}"
     virtualenv_name: "{{ item.pyenv_name }}"
+    force: yes
   loop: "{{ virtual_environments }}"
+  when: not item.ensure is defined or item.ensure == 'present'
+
+
 - name: pyenv global
   pyenv:
     subcommand: global
     versions:
     - "{{ pyenv_global }}"
     pyenv_root: "{{ pyenv_root }}"
+
 - name: install python packages on the virtualenv
   pip:
     name: ['mod_wsgi']
