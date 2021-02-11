@@ -4,6 +4,7 @@
   remote_user: "{{ user }}"
   tasks:
 
+  # ansible_extra_vars.yaml
   - name: report user
     debug: msg="{{ user }}"
   - name: report group
@@ -12,10 +13,9 @@
     debug: msg="{{ app_dir }}"
   - name: report ezid_branch
     debug: msg="{{ ezid_branch }}"
-
   - name: report virtual_environments
     ansible.builtin.debug:
-      msg="python_version {{ item.python_version }}, pyenv_name {{ item.pyenv_name }}"
+      msg="{{ item }}"
     loop: "{{ virtual_environments }}"
 
   # ssm vars

@@ -27,11 +27,15 @@ ansible-playbook -i hosts site.yaml
 # with extra args as json string
 ansible-playbook -i hosts site.yaml -e '{"repo_branch": "2.0.1", "pyver_global": "ezid-py38"}
 
-# with extra= args as yaml file.  This is the preferred method:
-ansible-playbook -i hosts site.yaml -e @${HOME}/install/ansible_extra_vars.yaml
+# test variable interpolation for extra vars file
+ansible-playbook -i hosts test_vars.yaml -e @ansible_extra_vars.yaml
 
-# test variable interpolation
-ansible-playbook -i hosts test_vars.yaml -e @${HOME}/install/ansible_extra_vars.yaml
+# with extra= args as yaml file.  This is the preferred method (what puppet does).
+# dry-run
+ansible-playbook -i hosts site.yaml -e @ansible_extra_vars.yaml -C -D
+# for reals
+ansible-playbook -i hosts site.yaml -e @ansible_extra_vars.yaml
+
 ```
 
 What Puppet does

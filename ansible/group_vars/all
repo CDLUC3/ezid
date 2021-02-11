@@ -5,6 +5,7 @@ app_dir: "{{ lookup('env', 'HOME') | default('ezid') }}"
 virtual_environments:
 - python_version: 2.7.14
   pyenv_name: ezid-py27
+  ensure: present
 pyenv_root: "{{ app_dir }}/.pyenv"
 pyenv_global: ezid-py27
 

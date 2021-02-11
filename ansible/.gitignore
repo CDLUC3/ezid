@@ -1,2 +1,3 @@
 *.swp
 scratch/
+ansible_extra_vars.yaml
