@@ -1,0 +1,30 @@
+---
+
+- name: pip install mod_wsgi into all virtual environments
+  pip:
+    name: ['mod_wsgi']
+    executable: "{{ pyenv_root }}/versions/{{ item.pyenv_name }}/bin/pip"
+  loop: "{{ virtual_environments }}"
+
+- name: discover site-packages location for mod_wsgi
+  shell: pip show -f mod_wsgi 2>/dev/null | egrep "^Location" | awk '{print $2}'
+  register: site_packages
+
+- when: site_packages.stdout is defined
+  block:
+
+  - name: report site_packages
+    ansible.builtin.debug: msg="{{ site_packages.stdout }}"
+
+  - name: discover path to mod_wsgi shared object file
+    shell: "find {{ site_packages.stdout }} -name \"mod_wsgi*.so\""
+    register: mod_wsgi_so
+  
+  - name: report mod_wsgi shared object filename
+    ansible.builtin.debug: msg="{{ mod_wsgi_so.stdout }}"
+  
+  - name: symlink mod_wsgi shared object file into httpd modules directory
+    file:
+      path: "{{ app_dir }}/etc/httpd/modules.d/mod_wsgi.so"
+      src: "{{ mod_wsgi_so.stdout }}"
+      state: link

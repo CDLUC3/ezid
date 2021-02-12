@@ -1,0 +1,26 @@
+(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:22:27:05:~$ pip show -f mod_wsgi 2>/dev/null | egrep "^Location" | awk '{print $2}'
+/apps/uc3adm/.pyenv/versions/2.7.14/envs/ezid-py27/lib/python2.7/site-packages
+
+(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:22:28:28:~/install/ezid-ansible/notes$ base_wsgi_path=$(pip show -f mod_wsgi 2>/dev/null | egrep "^Location" | awk '{print $2}')(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:22:29:03:~/install/ezid-ansible/notes$ echo $base_wsgi_path
+/apps/uc3adm/.pyenv/versions/2.7.14/envs/ezid-py27/lib/python2.7/site-packages
+(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:22:29:13:~/install/ezid-ansible/notes$ find $base_wsgi_path -name "mod_wsgi*.so"
+/apps/uc3adm/.pyenv/versions/2.7.14/envs/ezid-py27/lib/python2.7/site-packages/mod_wsgi/server/mod_wsgi-py27.so
+
+(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:22:33:10:~/install/ezid-ansible/notes$ mod_wsgi_full_path=$(find $base_wsgi_path -name "mod_wsgi*.so")
+(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:22:33:56:~/install/ezid-ansible/notes$ echo $mod_wsgi_full_path
+/apps/uc3adm/.pyenv/versions/2.7.14/envs/ezid-py27/lib/python2.7/site-packages/mod_wsgi/server/mod_wsgi-py27.so
+(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:22:34:05:~/install/ezid-ansible/notes$ ln -s $mod_wsgi_full_path ${HOME}/etc/httpd/modules.d/mod_wsgi.so
+(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:22:35:03:~/install/ezid-ansible/notes$ ll ${HOME}/etc/httpd/modules.d/mod_wsgi.so
+lrwxrwxrwx 1 uc3adm uc3adm 111 Feb 11 22:35 /uc3adm/etc/httpd/modules.d/mod_wsgi.so -> /apps/uc3adm/.pyenv/versions/2.7.14/envs/ezid-py27/lib/python2.7/site-packages/mod_wsgi/server/mod_wsgi-py27.so
+(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:22:35:29:~/install/ezid-ansible/notes$ file ${HOME}/etc/httpd/modules.d/mod_wsgi.so
+/uc3adm/etc/httpd/modules.d/mod_wsgi.so: symbolic link to `/apps/uc3adm/.pyenv/versions/2.7.14/envs/ezid-py27/lib/python2.7/site-packages/mod_wsgi/server/mod_wsgi-py27.so'
+
+
+
+base_wsgi_path=$(pip show -f mod_wsgi 2>/dev/null | egrep "^Location" | awk '{print $2}')
+mod_wsgi_full_path=$(find $base_wsgi_path -name "mod_wsgi*.so")
+ln -s -f $mod_wsgi_full_path ${HOME}/etc/httpd/modules.d/mod_wsgi.so
+
+ls -l ${HOME}/etc/httpd/modules.d/mod_wsgi.so
+
+

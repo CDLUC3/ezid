@@ -60,9 +60,3 @@
     versions:
     - "{{ pyenv_global }}"
     pyenv_root: "{{ pyenv_root }}"
-
-- name: install python packages on the virtualenv
-  pip:
-    name: ['mod_wsgi']
-    executable: "{{ pyenv_root }}/versions/{{ item.pyenv_name }}/bin/pip"
-  loop: "{{ virtual_environments }}"
