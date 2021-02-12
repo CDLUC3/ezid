@@ -22,13 +22,3 @@
     group: "{{group}}"
     mode: "0644"
 
-
-# not needed any more
-#- name: etc/ezid_env.sh
-#  template:
-#    src: "templates/etc/ezid_env.sh.j2"
-#    dest: "{{app_dir}}/etc/ezid_env.sh"
-#    owner: "{{user}}"
-#    group: "{{group}}"
-#    mode: "0775"
-

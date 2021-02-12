@@ -1,0 +1,50 @@
+<VirtualHost *:{{ http_port }}>
+	ServerName {{ ansible_facts.fqdn }}
+	DirectorySlash Off
+	AllowEncodedSlashes On
+	Header unset Upgrade
+
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+		Require all granted
+	</Directory>
+
+	DocumentRoot {{ app_dir }}/var/www/html
+	<Directory {{ app_dir }}/var/www/html>
+		Require all granted
+	</Directory>
+
+	ErrorLog {{ app_dir }}/var/log/httpd/ezid_error.log
+	LogLevel warn
+	LogFormat "%{Host}i:%p %h %t \"%r\" %>s %b %D" commonplus
+	CustomLog "|/usr/sbin/rotatelogs -l {{ app_dir }}/var/log/httpd/ezid_access.log.%Y-%m-%d 2419200" commonplus
+
+ 	AllowEncodedSlashes On
+ 	RewriteEngine on
+
+ 	WSGIDaemonProcess ezid_app threads=50 shutdown-timeout=60 python-home={{ app_dir }}/.pyenv/versions/{{ pyenv_global }} python-path={{ app_dir }}/ezid:{{ app_dir }}/ezid/impl
+ 	WSGIScriptAlias / {{ app_dir }}/ezid/apache/django.wsgi
+ 	<Directory {{ app_dir }}/ezid/apache>
+ 		Require all granted
+ 		WSGIApplicationGroup %{GLOBAL}
+ 		WSGIProcessGroup ezid_app
+ 		WSGIPassAuthorization on
+ 	</Directory>     	
+
+ 	Alias /static {{ app_dir }}/ezid/static
+ 	<Directory {{ app_dir }}/ezid/static>
+ 		Require all granted
+ 	</Directory>
+ 	
+ 	Alias /download {{ app_dir }}/var/www/download/public
+ 	<Directory {{ app_dir }}/var/www/download/public>
+ 		Require all granted
+ 		Options -Indexes
+ 		ErrorDocument 404 /download_error
+ 	</Directory>     	
+
+ 	Alias /robots.txt {{ app_dir }}/var/www/html/robots.txt
+ 	Alias /sitemap.xml {{ app_dir }}/ezid/static/sitemap.xml
+ 	Alias /favicon.ico {{ app_dir }}/ezid/static/images/favicon.ico	
+</VirtualHost>

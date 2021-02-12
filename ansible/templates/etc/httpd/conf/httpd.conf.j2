@@ -28,7 +28,7 @@
 # same ServerRoot for multiple httpd daemons, you will need to change at
 # least PidFile.
 #
-ServerRoot "/apps/ezid/etc/httpd"
+ServerRoot "{{ app_dir }}/etc/httpd"
 
 #
 # Listen: Allows you to bind Apache to specific IP addresses and/or
@@ -39,7 +39,7 @@ ServerRoot "/apps/ezid/etc/httpd"
 # prevent Apache from glomming onto all bound IP addresses.
 #
 #Listen 12.34.56.78:80
-Listen 18880
+Listen {{ http_port }}
 
 #
 # Dynamic Shared Object (DSO) Support
@@ -63,8 +63,8 @@ Include conf.modules.d/*.conf
 # It is usually good practice to create a dedicated user and group for
 # running httpd, as with most system services.
 #
-User ezid
-Group ezid
+User {{ user }}
+Group {{ group }}
 
 # 'Main' server configuration
 #
@@ -116,19 +116,19 @@ ServerAdmin root@localhost
 # documents. By default, all requests are taken from this directory, but
 # symbolic links and aliases may be used to point to other locations.
 #
-DocumentRoot "/apps/ezid/var/www"
+DocumentRoot "{{ app_dir }}/var/www"
 
 #
 # Relax access to content within /var/www.
 #
-<Directory "/apps/ezid/var/www">
+<Directory "{{ app_dir }}/var/www">
     AllowOverride None
     # Allow open access:
     Require all granted
 </Directory>
 
 # Further relax access to the default document root:
-<Directory "/apps/ezid/var/www/html">
+<Directory "{{ app_dir }}/var/www/html">
     #
     # Possible values for the Options directive are "None", "All",
     # or any combination of:
@@ -179,7 +179,7 @@ DocumentRoot "/apps/ezid/var/www"
 # logged here.  If you *do* define an error logfile for a <VirtualHost>
 # container, that host's errors will be logged there and not here.
 #
-ErrorLog "/apps/ezid/var/log/httpd/error.log"
+ErrorLog "{{ app_dir }}/var/log/httpd/error.log"
 
 #
 # LogLevel: Control the number of messages logged to the error_log.
@@ -214,7 +214,7 @@ LogLevel warn
     # If you prefer a logfile with access, agent, and referer information
     # (Combined Logfile Format) you can use the following directive.
     #
-    CustomLog "/apps/ezid/var/log/httpd/access.log" combined
+    CustomLog "{{ app_dir }}/var/log/httpd/access.log" combined
 </IfModule>
 
 <IfModule alias_module>

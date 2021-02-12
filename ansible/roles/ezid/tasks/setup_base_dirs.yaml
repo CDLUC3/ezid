@@ -11,6 +11,7 @@
   - "{{app_dir}}/bin"
   - "{{app_dir}}/etc/httpd/conf"
   - "{{app_dir}}/etc/httpd/conf.d"
+  - "{{app_dir}}/etc/httpd/conf.modules.d"
   - "{{app_dir}}/etc/httpd/modules.d"
   - "{{app_dir}}/etc/init.d"
   - "{{app_dir}}/var/run"
