@@ -36,6 +36,8 @@ ansible-playbook -i hosts site.yaml -e @ansible_extra_vars.yaml -C -D
 # for reals
 ansible-playbook -i hosts site.yaml -e @ansible_extra_vars.yaml
 
+# using ---skip-tags to opt out of aplication re-deployment
+ansible-playbook -i hosts site.yaml -e @ansible_extra_vars.yaml --skip-tags 'install_ezid,configure_ezid'
 ```
 
 What Puppet does
