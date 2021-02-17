@@ -1,3 +1,17 @@
+Thu Feb 11 14:16:47 PST 2021
+
+(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:14:08:40:~$ /usr/sbin/httpd -d /uc3adm/etc/httpd -f /uc3adm/etc/httpd/conf/httpd.conf -t
+httpd: Syntax error on line 56 of /uc3adm/etc/httpd/conf/httpd.conf: Syntax error on line 1 of /apps/ezid/etc/httpd/conf.modules.d/01-wsgi.conf: Cannot load /apps/ezid/.pyenv/versions/ezid/lib/python2.7/site-packages/mod_wsgi/server/mod_wsgi-py27.so into server: /apps/ezid/.pyenv/versions/ezid/lib/python2.7/site-packages/mod_wsgi/server/mod_wsgi-py27.so: cannot open shared object file: No such file or directory
+
+(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:14:18:44:~/install/ezid-ansible$ cat files/etc/httpd/conf.modules.d/01-wsgi.conf
+LoadModule wsgi_module /apps/ezid/.pyenv/versions/ezid/lib/python2.7/site-packages/mod_wsgi/server/mod_wsgi-py27.so
+
+(ezid-py27) uc3adm@uc3-uc3ops01x2-dev:14:15:13:~$ find .pyenv -name "mod_wsgi*.so"
+.pyenv/versions/2.7.14/envs/ezid-py27/lib/python2.7/site-packages/mod_wsgi/server/mod_wsgi-py27.so
+.pyenv/versions/3.8.5/envs/ezid-py38/lib/python3.8/site-packages/mod_wsgi/server/mod_wsgi-py38.cpython-38-x86_64-linux-gnu.so
+
+
+
 Tue Feb  9 10:16:44 PST 2021
 
 I had a lot of troble with ansible and setup of python3.8 pyenv.  Ended up doing it by hand.  here are details:
