@@ -6,8 +6,8 @@
     executable: "{{ pyenv_root }}/versions/{{ item.pyenv_name }}/bin/pip"
   loop: "{{ virtual_environments }}"
 
-- name: discover site-packages location for mod_wsgi
-  shell: pip show -f mod_wsgi 2>/dev/null | egrep "^Location" | awk '{print $2}'
+- name: discover site-packages location for mod_wsgi for current global pyenv
+  shell: ~/.pyenv/shims/pip show -f mod_wsgi 2>/dev/null | egrep "^Location" | awk '{print $2}'
   register: site_packages
 
 - when: site_packages.stdout is defined

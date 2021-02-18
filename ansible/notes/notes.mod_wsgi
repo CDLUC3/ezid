@@ -19,6 +19,8 @@ lrwxrwxrwx 1 uc3adm uc3adm 111 Feb 11 22:35 /uc3adm/etc/httpd/modules.d/mod_wsgi
 
 base_wsgi_path=$(pip show -f mod_wsgi 2>/dev/null | egrep "^Location" | awk '{print $2}')
 mod_wsgi_full_path=$(find $base_wsgi_path -name "mod_wsgi*.so")
+echo $mod_wsgi_full_path
+
 ln -s -f $mod_wsgi_full_path ${HOME}/etc/httpd/modules.d/mod_wsgi.so
 
 ls -l ${HOME}/etc/httpd/modules.d/mod_wsgi.so
