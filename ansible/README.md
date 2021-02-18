@@ -11,6 +11,11 @@ In general, the tasks in this project run as the application user 'ezid'.  It do
 not touch any root owned resources.  This is left to puppet.
 
 
+Installation
+------------
+
+Clone this repo onto your target host as the application user
+
 Usage
 -----
 
@@ -31,12 +36,14 @@ ansible-playbook -i hosts site.yaml -e '{"repo_branch": "2.0.1", "pyver_global":
 ansible-playbook -i hosts test_vars.yaml -e @ansible_extra_vars.yaml
 
 # with extra= args as yaml file.  This is the preferred method (what puppet does).
+#
 # dry-run
 ansible-playbook -i hosts site.yaml -e @ansible_extra_vars.yaml -C -D
+#
 # for reals
 ansible-playbook -i hosts site.yaml -e @ansible_extra_vars.yaml
 
-# using ---skip-tags to opt out of aplication re-deployment
+# using ---skip-tags to opt out of application re-deployment
 ansible-playbook -i hosts site.yaml -e @ansible_extra_vars.yaml --skip-tags 'install_ezid,configure_ezid'
 ```
 

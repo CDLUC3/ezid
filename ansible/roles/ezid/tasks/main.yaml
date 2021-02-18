@@ -3,17 +3,17 @@
 - block:
   - name: "call setup_base_dirs.yaml"
     include_tasks: setup_base_dirs.yaml
-  tags: base_dirs
+  tags: setup_base_dirs
 
 - block:
   - name: "call setup_pyenv.yaml"
     include_tasks: setup_pyenv.yaml
-  tags: pyenv 
+  tags: setup_pyenv 
 
 - block:
   - name: "call install_mod_wsgi.yaml"
     include_tasks: install_mod_wsgi.yaml
-  tags: mod_wsgi
+  tags: install_mod_wsgi
 
 - block:
   - name: "call install_ezid.yaml"
@@ -28,10 +28,10 @@
 - block:
   - name: "call configure_httpd.yaml"
     include_tasks: configure_httpd.yaml
-  tags: httpd
+  tags: configure_httpd
 
 - block:
-  - name: "call configure_init_scripts.yaml"
-    include_tasks: configure_init_scripts.yaml
-  tags: init_scripts
+  - name: "call setup_scripts.yaml"
+    include_tasks: setup_scripts.yaml
+  tags: setup_scripts
 

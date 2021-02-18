@@ -1,7 +1,9 @@
 #! /bin/bash
 #
-#  Managed by Ansible
-#set -x
+# Managed by Ansible
+#
+# This script is called from ezid.serivce in systemd during ExecStop action
+
 
 CLIENT={{ app_dir }}/ezid/tools/client
 DJANGO_SETTINGS_MODULE=settings.{{ deployment_level }}
