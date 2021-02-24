@@ -13,6 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.conf
 import uuid
 
 import django.conf
@@ -95,7 +96,7 @@ def getQueueLength():
 def loadConfig():
     _daemonEnabled[0] = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and impl.config.get("daemons.binder_enabled").lower() == "true"
+        and django.conf.settings.DAEMONS_BINDER_ENABLED
     )
     if _daemonEnabled[0]:
         # noinspection PyTypeChecker
@@ -109,9 +110,9 @@ def loadConfig():
             _batchCreate,
             None,
             _batchDelete,
-            int(impl.config.get("daemons.binder_num_worker_threads")),
-            int(impl.config.get("daemons.binder_processing_idle_sleep")),
-            int(impl.config.get("daemons.binder_processing_error_sleep")),
+            int(django.conf.settings.DAEMONS_BINDER_NUM_WORKER_THREADS),
+            int(django.conf.settings.DAEMONS_BINDER_PROCESSING_IDLE_SLEEP),
+            int(django.conf.settings.DAEMONS_BINDER_PROCESSING_ERROR_SLEEP),
             _daemonEnabled,
             _threadName,
         )

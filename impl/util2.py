@@ -17,6 +17,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import urllib.response
+import django.conf
 
 _ezidUrl = None
 _arkTestPrefix = None
@@ -35,15 +36,21 @@ def loadConfig():
     global _ezidUrl, _arkTestPrefix, _doiTestPrefix, _defaultArkProfile
     global _defaultDoiProfile, _defaultUuidProfile, _doiResolver, _arkResolver
     global _crossrefTestPrefix
-    _ezidUrl = impl.config.get("DEFAULT.ezid_base_url")
-    _arkTestPrefix = impl.config.get("shoulders.ark_test")
-    _doiTestPrefix = impl.config.get("shoulders.doi_test")
-    _crossrefTestPrefix = impl.config.get("shoulders.crossref_test")
-    _defaultArkProfile = impl.config.get("DEFAULT.default_ark_profile")
-    _defaultDoiProfile = impl.config.get("DEFAULT.default_doi_profile")
-    _defaultUuidProfile = impl.config.get("DEFAULT.default_uuid_profile")
-    _doiResolver = impl.config.get("resolver.doi")
-    _arkResolver = impl.config.get("resolver.ark")
+    _ezidUrl = django.conf.settings.EZID_BASE_URL
+    _arkTestPrefix = django.conf.settings.SHOULDERS_ARK_TEST
+    _doiTestPrefix = django.conf.settings.SHOULDERS_DOI_TEST
+    _crossrefTestPrefix = django.conf.settings.SHOULDERS_CROSSREF_TEST
+    _defaultArkProfile = (
+        django.conf.settings.ARK_PROFILE
+    )  # impl.config.get("default_ark_profile")
+    _defaultDoiProfile = (
+        django.conf.settings.DOI_PROFILE
+    )  # impl.config.get("default_doi_profile")
+    _defaultUuidProfile = (
+        django.conf.settings.UUID_PROFILE
+    )  # impl.config.get("default_uuid_profile")
+    _doiResolver = django.conf.settings.RESOLVER_DOI  # impl.config.get("resolver.doi")
+    _arkResolver = django.conf.settings.RESOLVER_ARK  # impl.config.get("resolver.ark")
 
 
 def urlForm(identifier):

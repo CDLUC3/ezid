@@ -25,7 +25,7 @@ class TestAPI:
         response = ez_admin.post(
             "/shoulder/{}".format(tests.util.util.encode(ns_str)),
             data=data_bytes,
-            content_type="text/plain; charset=UTF-8",
+            content_type="text/plain; charset=utf-8",
         )
         result_dict = anvl.response_to_dict(response.content)
         result_dict['_url'] = ns_str
@@ -48,7 +48,7 @@ class TestAPI:
             minted_id = result_dict['status_message']
             response = ez_admin.get(
                 "/id/{}".format(tests.util.util.encode(minted_id)),
-                content_type="text/plain; charset=UTF-8",
+                content_type="text/plain; charset=utf-8",
             )
             result_dict = anvl.response_to_dict(response.content)
             result_dict['_url'] = str(ns)

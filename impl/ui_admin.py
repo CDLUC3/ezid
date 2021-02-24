@@ -16,7 +16,7 @@ NO_CONSTRAINTS = True
 
 @impl.ui_common.user_login_required
 def dashboard(request):
-    """ID Issues and Crossref tables load for the first time w/o ajax All
+    """ID Issues and Crossref tables load for the first time w/o ajax. All
     subsequent searches are done via ajax (ajax_dashboard_table method
     below)"""
     d = {'menu_item': 'ui_admin.dashboard'}
@@ -156,7 +156,7 @@ def _computeMonths(table):
             total = d.get((type, True), 0) + d.get((type, False), 0)
             months[-1][type] = {
                 "total": _insertCommas(total),
-                "hasMetadataPercentage": str(_percent(d.get((type, True), 0), total)),
+                "hasMetadataPercentage": f'{_percent(d.get((type, True), 0), total):.02f}',
             }
     return months[::-1]
 
@@ -178,7 +178,7 @@ def _computeTotals(table):
         total = data[(type, True)] + data[(type, False)]
         totals[type] = {
             "total": _insertCommas(total),
-            "hasMetadataPercentage": str(_percent(data[(type, True)], total)),
+            "hasMetadataPercentage": f'{_percent(data.get((type, True), 0), total):.02f}',
         }
     return totals
 

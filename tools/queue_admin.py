@@ -62,7 +62,7 @@ def listErrors(rows):
         l.append(r)
         errors[r.error] = l
     for e, l in list(errors.items()):
-        print((util.oneLine(e)))
+        print(util.oneLine(e))
         for r in l:
             print(
                 f"   {r.seq:d} {formatTimestamp(r.enqueueTime)} {r.operation} {r.identifier}"

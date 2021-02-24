@@ -24,12 +24,6 @@ import impl.util
 import ezidapp.models.validation
 import impl.nog.minter
 
-# Deferred imports...
-"""
-import log
-import noid_nog
-"""
-
 
 class Group(django.db.models.Model):
     # An EZID group, which typically corresponds to a paying account or

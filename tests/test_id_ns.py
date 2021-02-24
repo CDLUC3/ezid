@@ -2,9 +2,9 @@ import logging
 
 import pytest
 
-import nog.exc
-import nog.id_ns
-import nog.id_ns as id_ns
+import impl.nog.exc
+import impl.nog.id_ns
+import impl.nog.id_ns as id_ns
 import tests.util.sample as sample
 
 log = logging.getLogger(__name__)
@@ -49,7 +49,8 @@ def test_1010(arg_tup, expected):
 
 
 @pytest.mark.parametrize(
-    'arg_tup, expected', ((tuple(), (None, None, None, None)),),
+    'arg_tup, expected',
+    ((tuple(), (None, None, None, None)),),
 )
 def test_1020(arg_tup, expected):
     """IdNamespace(): Instantiated with separate elements, as_tup()"""
@@ -69,7 +70,7 @@ def test_1020(arg_tup, expected):
 )
 def test_1030(ns_str):
     """IdNamespace(): Instantiated with invalid str"""
-    with pytest.raises(id_ns.IdentifierError) as match:
+    with pytest.raises(id_ns.IdentifierError) as _match:
         id_ns.IdNamespace.from_str(ns_str)
 
 
@@ -99,9 +100,9 @@ def test_1040(ns_str, expected_tup):
 )
 def test_1050(ns_str):
     """IdNamespace.from_str(): Attempting to split invalid namespaces raises
-    MinterError """
-    with pytest.raises(nog.exc.MinterError):
-        nog.id_ns.IdNamespace.from_str(ns_str)
+    MinterError"""
+    with pytest.raises(impl.nog.exc.MinterError):
+        impl.nog.id_ns.IdNamespace.from_str(ns_str)
 
 
 @pytest.mark.parametrize(
@@ -120,7 +121,7 @@ def test_1050(ns_str):
 def test_1060(ns_str, ns_tup):
     """IdNamespace.from_str(): Splitting valid namespaces returns expected
     components"""
-    assert nog.id_ns.IdNamespace.from_str(ns_str).as_tup() == ns_tup
+    assert impl.nog.id_ns.IdNamespace.from_str(ns_str).as_tup() == ns_tup
 
 
 def test_1070(shoulder_csv):
@@ -128,7 +129,10 @@ def test_1070(shoulder_csv):
     result_list = []
     for ns_str, org_str, n2t_url in shoulder_csv:
         result_list.append(
-            '{:<20s} {}'.format(ns_str, id_ns.IdNamespace.from_str(ns_str).as_tup(), )
+            '{:<20s} {}'.format(
+                ns_str,
+                id_ns.IdNamespace.from_str(ns_str).as_tup(),
+            )
         )
     sample.assert_match('\n'.join(result_list), 'from_str')
 

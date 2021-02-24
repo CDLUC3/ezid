@@ -114,11 +114,6 @@ class Startup(django.apps.AppConfig):
         impl.noid_egg.loadConfig()
         impl.config.registerReloadListener(impl.noid_egg.loadConfig)
 
-        import impl.noid_nog
-
-        impl.noid_nog.loadConfig()
-        impl.config.registerReloadListener(impl.noid_nog.loadConfig)
-
         import impl.oai
 
         impl.oai.loadConfig()

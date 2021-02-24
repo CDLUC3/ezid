@@ -16,6 +16,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.conf
 import logging
 import threading
 import time
@@ -170,10 +171,10 @@ def loadConfig():
     global _enabled, _idleSleep, _threadName
     _enabled = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and impl.config.get("daemons.backproc_enabled").lower() == "true"
+        and django.conf.settings.DAEMONS_BACKPROC_ENABLED
     )
     if _enabled:
-        _idleSleep = int(impl.config.get("daemons.background_processing_idle_sleep"))
+        _idleSleep = int(django.conf.settings.DAEMONS_BACKGROUND_PROCESSING_IDLE_SLEEP)
         _threadName = uuid.uuid1().hex
         t = threading.Thread(target=_backprocDaemon, name=_threadName)
         t.setDaemon(True)

@@ -84,7 +84,9 @@ def login(request):
                 _("Login successful."),
                 extra_tags='Accounts Submit Login',
             )
-            if django.utils.http.is_safe_url(url=d["next"], host=request.get_host()):
+            if django.utils.http.is_safe_url(
+                url=d["next"], allowed_hosts=[request.get_host()]
+            ):
                 return django.shortcuts.redirect(d["next"])
             else:
                 return django.shortcuts.redirect("ui_home.index")

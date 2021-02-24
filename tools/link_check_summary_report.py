@@ -33,10 +33,12 @@ import ezidapp.models.search_realm
 import ezidapp.models.search_user
 import ezidapp.models.search_user
 import ezidapp.models.search_user
-from impl import config
+import impl
 
-BAD_RECHECK_MIN_INTERVAL = int(config.get("linkchecker.bad_recheck_min_interval"))
-NOTIFICATION_THRESHOLD = int(config.get("linkchecker.notification_threshold"))
+BAD_RECHECK_MIN_INTERVAL = int(
+    django.conf.settings.LINKCHECKER_BAD_RECHECK_MIN_INTERVAL
+)
+NOTIFICATION_THRESHOLD = int(django.conf.settings.LINKCHECKER_NOTIFICATION_THRESHOLD)
 
 message = """Dear EZID administrator,
 

@@ -13,6 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.forms.models
 import ast
 import json
 import zlib
@@ -33,15 +34,9 @@ import impl.util
 class CompressedJsonField(django.db.models.BinaryField):
     # Stores an arbitrary (well, pickle-able) Python object as a gzipped
     # JSON string.
-
     def get_db_prep_save(self, value, *args, **kwargs):
         if value is None:
             return None
-        # When the DB is populated via a JSON fixture, using the loaddata management
-        # command, the values arrive here as strings wrapped in native C buffer objects
-        # instead of the expected Python container type. This only occurs when invoking
-        # loaddata using the Django call_command() method, not when invoking loaddata
-        # via manage.py.
         # if isinstance(value, buffer):
         #     value = eval(str(value))
         try:
@@ -87,25 +82,27 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
     def get_db_prep_save(self, value, *args, **kwargs):
         if value is None:
             return None
-        else:
-            try:
-                # if type(value) in [str, buffer]:
+        try:
+            if isinstance(value, (bytes, memoryview)):
+                pass
+            else:
+                if isinstance(value, django.db.models.Model):
+                    value = django.forms.models.model_to_dict(value)
+                if isinstance(value, dict):
+                    value = str(value)
                 if isinstance(value, str):
-                    v = value
-                else:
-                    v = zlib.compress(
-                        django.core.serializers.serialize("json", [value]).encode(
-                            'utf-8'
-                        )
-                    )
-                return super(StoreIdentifierObjectField, self).get_db_prep_save(
-                    v, *args, **kwargs
-                )
-            except Exception as e:
-                raise django.core.exceptions.ValidationError(
-                    "Exception encountered packing StoreIdentifier database value: "
-                    + impl.util.formatException(e)
-                )
+                    value = value.encode('utf-8')
+            blob_bytes = zlib.compress(value)
+            return super(StoreIdentifierObjectField, self).get_db_prep_save(
+                blob_bytes, *args, **kwargs
+            )
+        except Exception as e:
+            if django.conf.settings.DEBUG:
+                raise e
+            raise django.core.exceptions.ValidationError(
+                "Exception encountered packing StoreIdentifier database value: "
+                + impl.util.formatException(e)
+            )
 
     def from_db_value(self, value, *_args, **_kwargs):
         if value is None:
@@ -147,7 +144,6 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
                 si.profile = ezidapp.models.store_profile.getProfileById(si.profile_id)
                 return si, value
             except Exception as e:
-
                 raise django.core.exceptions.ValidationError(
                     "Exception encountered unpacking StoreIdentifier database value: "
                     + impl.util.formatException(e)

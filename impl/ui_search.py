@@ -195,16 +195,17 @@ def hasBrokenLinks(d, request):
     )
 
 
-# search function is executed from the following areas, s_type determines search parameters:
-# Public Search (default):     ui_search   "public"
-# Manage:                      ui_manage   "manage"
-# Dashboard - ID Issues:       ui_admin    "issues"
-# Dashboard - Crossref Status: ui_admin    "crossref"
-
-
 def search(d, request, noConstraintsReqd=False, s_type="public"):
     """Run query and organize result set for UI, used for Search, Manage, and
     Dashboard pages.
+
+    search function is executed from the following areas, s_type determines search
+    parameters:
+
+        Public Search (default):     ui_search   "public"
+        Manage:                      ui_manage   "manage"
+        Dashboard - ID Issues:       ui_admin    "issues"
+        Dashboard - Crossref Status: ui_admin    "crossref"
 
     * noConstraintsReqd==True is used by pages that don't require form validation (dashboard, and
       manage page, whose form is unbound/unvalidated if nothing has been entered/posted.
@@ -220,6 +221,11 @@ def search(d, request, noConstraintsReqd=False, s_type="public"):
         user_id, group_id = impl.ui_common.getOwnerOrGroup(
             d['owner_selected'] if 'owner_selected' in d else None
         )
+
+        #
+        # user_id, group_id  = 1,1
+        #
+
         c = _buildAuthorityConstraints(request, s_type, user_id, group_id)
         if s_type in ('public', 'manage'):
             d['queries_urlencoded'] = queryUrlEncoded(

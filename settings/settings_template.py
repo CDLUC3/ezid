@@ -29,8 +29,7 @@ TEMPLATE_DIR = PROJECT_ROOT / 'templates'  # /apps/ezid/ezid/templates
 
 # Dirs above PROJECT_ROOT
 HOME_DIR = (PROJECT_ROOT / '..').resolve()  # /apps/ezid
-# MINTERS_PATH = HOME_DIR / 'var' /  'minters' # /apps/ezid/var/minters
-MINTERS_PATH = PROJECT_ROOT / 'db' / 'minters'  # /apps/ezid/var/minters
+MINTERS_PATH = HOME_DIR / 'var' / 'minters'  # /apps/ezid/var/minters
 
 ROOT_URLCONF = 'settings.urls'
 
@@ -51,7 +50,7 @@ STATIC_ROOT = PROJECT_ROOT / 'static'  # /apps/ezid/ezid/static
 LOCALE_PATHS = [STATIC_ROOT / 'locale']  # /apps/ezid/ezid/locale
 
 STATICFILES_DIRS = [
-    PROJECT_ROOT / 'static-src',
+    PROJECT_ROOT / 'static_src',
 ]
 
 # Async processing daemons
@@ -110,7 +109,12 @@ DATABASES = {
         'AUTOCOMMIT': True,
         'CONN_MAX_AGE': 0,
         'TIME_ZONE': None,
-        'TEST': {'CHARSET': None, 'COLLATION': None, 'NAME': None, 'MIRROR': None},
+        'TEST': {
+            'CHARSET': None,
+            'COLLATION': None,
+            'NAME': None,
+            'MIRROR': None,
+        },
     },
 }
 
@@ -134,7 +138,11 @@ SEARCH_STOPWORDS = (
 
 # The following additional stopwords, determined empirically, are the words that appear
 # in the keyword text of more than 20% of identifiers.
-SEARCH_EXTRA_STOPWORDS = 'http https ark org cdl cdlib doi merritt lib ucb dataset and data edu 13030 type version systems inc planet conquest 6068 datasheet servlet dplanet dataplanet statisticaldatasets'
+SEARCH_EXTRA_STOPWORDS = (
+    'http https ark org cdl cdlib doi merritt lib ucb dataset and data edu 13030 type '
+    'version systems inc planet conquest 6068 datasheet servlet dplanet dataplanet '
+    'statisticaldatasets'
+)
 
 # Email
 
@@ -173,7 +181,10 @@ logging.config.dictConfig(
         'disable_existing_loggers': False,
         'formatters': {
             'verbose': {
-                'format': '%(levelname)8s %(name)8s %(module)s %(process)d %(thread)s %(message)s',
+                'format': (
+                    '%(levelname)8s %(name)8s %(module)s '
+                    '%(process)d %(thread)s %(message)s'
+                ),
             },
             'simple': {'format': '%(levelname)8s %(message)s'},
         },
@@ -283,8 +294,8 @@ SHOULDERS_AGENT = 'ark:/99166/p9'
 # DataCite
 
 DATACITE_ENABLED = False
-DATACITE_DOI_URL  = '{{ datacite_doi_url  }}'
-DATACITE_METADATA_URL  = '{{ datacite_metadata_url  }}'
+DATACITE_DOI_URL = '{{ datacite_doi_url  }}'
+DATACITE_METADATA_URL = '{{ datacite_metadata_url  }}'
 
 DATACITE_NUM_ATTEMPTS = 3
 DATACITE_REATTEMPT_DELAY = 5
@@ -296,8 +307,8 @@ DATACITE_ALLOCATORS = 'CDL,PURDUE'
 
 # Allocator
 
-ALLOCATOR_CDL_PASSWORD  = '{{ allocator_cdl_password  }}'
-ALLOCATOR_PURDUE_PASSWORD  = '{{ allocator_purdue_password  }}'
+ALLOCATOR_CDL_PASSWORD = '{{ allocator_cdl_password  }}'
+ALLOCATOR_PURDUE_PASSWORD = '{{ allocator_purdue_password  }}'
 
 # CrossRef
 
@@ -311,8 +322,8 @@ CROSSREF_REAL_SERVER = 'doi.crossref.org'
 CROSSREF_TEST_SERVER = 'test.crossref.org'
 CROSSREF_DEPOSIT_URL = 'https://%%s/servlet/deposit'
 CROSSREF_RESULTS_URL = 'https://%%s/servlet/submissionDownload'
-CROSSREF_USERNAME  = '{{ crossref_username  }}'
-CROSSREF_PASSWORD  = '{{ crossref_password  }}'
+CROSSREF_USERNAME = '{{ crossref_username  }}'
+CROSSREF_PASSWORD = '{{ crossref_password  }}'
 
 # Profiles
 
@@ -351,7 +362,7 @@ OAI_BATCH_SIZE = 100
 CLOUDWATCH_ENABLED = True
 CLOUDWATCH_REGION = 'us-west-2'
 CLOUDWATCH_NAMESPACE = 'EZID'
-CLOUDWATCH_INSTANCE_NAME  = '{{ cloudwatch_instance_name  }}'
+CLOUDWATCH_INSTANCE_NAME = '{{ cloudwatch_instance_name  }}'
 
 # Linkchecker
 
@@ -382,10 +393,9 @@ LINKCHECKER_USER_AGENT = 'EZID (EZID link checker; https://ezid.cdlib.org/)'
 # link.  Set to a negative value to make unlimited.
 LINKCHECKER_MAX_READ = 104857600
 
-
 # Internal settings
 
-# Changes in these settings may require corresponding source code modifications..
+# Changes in these settings may require corresponding source code modifications.
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
@@ -416,7 +426,6 @@ PASSWORD_HASHERS = [
     'impl.userauth.LdapSha1PasswordHasher',
 ]
 
-# noinspection PyUnresolvedReferences
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

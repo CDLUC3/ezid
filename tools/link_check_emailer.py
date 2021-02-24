@@ -14,7 +14,7 @@
 #
 # Greg Janee <gjanee@ucop.edu>
 # October 2016
-
+import django.conf
 import csv
 import http
 import optparse
@@ -120,7 +120,7 @@ def writeCsv(lcList, filename):
 
 def compressCsv(csvFilename, zipFilename):
     p = subprocess.Popen(
-        [config.get("DEFAULT.zip_command"), "-jq", zipFilename, csvFilename],
+        [django.conf.settings.ZIP_COMMAND, "-jq", zipFilename, csvFilename],
         close_fds=True,
         env={},
     )
@@ -236,7 +236,7 @@ def main():
         type="int",
         dest="threshold",
         help="override the configured notification threshold",
-        default=int(config.get("linkchecker.notification_threshold")),
+        default=int(django.conf.settings.LINKCHECKER_NOTIFICATION_THRESHOLD),
     )
     options, args = p.parse_args()
     if len(args) > 0:

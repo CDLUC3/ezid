@@ -24,12 +24,6 @@ import ezidapp.models.shoulder
 import impl.util
 import ezidapp.models.validation
 
-# Deferred imports...
-"""
-import log
-import noid_nog
-"""
-
 
 class User(django.db.models.Model):
     # An EZID user, i.e., a login account.

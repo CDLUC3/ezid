@@ -16,9 +16,9 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
-import copy
 import django.conf
+import django.conf
+import copy
 import django.contrib.admin
 import django.contrib.admin.sites
 import django.contrib.admin.widgets
@@ -40,15 +40,8 @@ import django.utils.html
 import ezidapp.models.search_identifier
 import ezidapp.models.store_group
 
-# import django.core
 import ezidapp.models.store_user
 import ezidapp.models.store_user
-import impl.util as util
-
-# from . import models
-# from . import models.search_identifier
-# from . import models.store_group
-# from . import models.store_user
 from ezidapp.models.new_account_worksheet import NewAccountWorksheet
 from ezidapp.models.search_group import SearchGroup
 from ezidapp.models.search_realm import SearchRealm
@@ -59,14 +52,6 @@ from ezidapp.models.store_datacenter import StoreDatacenter
 from ezidapp.models.store_group import StoreGroup
 from ezidapp.models.store_realm import StoreRealm
 from ezidapp.models.store_user import StoreUser
-
-# Deferred imports...
-"""
-import config
-import ezid
-import log
-import ui_common
-"""
 
 
 class SuperuserSite(django.contrib.admin.sites.AdminSite):
@@ -101,7 +86,7 @@ class ServerVariablesAdmin(django.contrib.admin.ModelAdmin):
     ]
     form = ServerVariablesForm
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
@@ -218,7 +203,7 @@ class StoreGroupInline(django.contrib.admin.TabularInline):
     ordering = ["storegroup__groupname"]
     extra = 0
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
@@ -251,7 +236,7 @@ class StoreUserInlineForShoulder(django.contrib.admin.TabularInline):
     ordering = ["storeuser__username"]
     extra = 0
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
@@ -302,7 +287,7 @@ class ShoulderAdmin(django.contrib.admin.ModelAdmin):
     inlines = [StoreGroupInline, StoreUserInlineForShoulder]
     form = ShoulderForm
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
@@ -327,7 +312,7 @@ class ShoulderInline(django.contrib.admin.TabularInline):
     ordering = ["name"]
     extra = 0
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
@@ -383,7 +368,7 @@ class StoreDatacenterAdmin(django.contrib.admin.ModelAdmin):
     inlines = [ShoulderInline]
     form = StoreDatacenterForm
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
@@ -487,7 +472,7 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
 
             addresses = [
                 a
-                for a in impl.config.get("email.new_account_email").split(",")
+                for a in django.conf.settings.EMAIL_NEW_ACCOUNT_EMAIL.split(",")
                 if len(a) > 0
             ]
             if len(addresses) > 0:
@@ -532,7 +517,7 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                     f" ({obj.orgAcronym})" if obj.orgAcronym != "" else "",
                     str(obj.requestDate),
                     ", ".join(newStatus),
-                    impl.config.get("DEFAULT.ezid_base_url"),
+                    django.conf.settings.EZID_BASE_URL,
                     django.urls.reverse(
                         "admin:ezidapp_newaccountworksheet_change", args=[obj.id]
                     ),
@@ -648,7 +633,7 @@ class StoreUserInlineForGroup(django.contrib.admin.TabularInline):
     ordering = ["username"]
     extra = 0
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):

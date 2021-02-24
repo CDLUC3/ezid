@@ -12,7 +12,7 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-
+import django.conf
 import django.core.exceptions
 import django.core.validators
 import django.db.models
@@ -25,15 +25,6 @@ import urllib.error
 import ezidapp.models.custom_fields
 import impl.util
 import ezidapp.models.validation
-
-# Deferred imports...
-"""
-import config
-import crossref
-import datacite
-import mapping
-import util2
-"""
 
 
 def emptyDict():
@@ -468,8 +459,9 @@ class Identifier(django.db.models.Model):
             raise django.core.exceptions.ValidationError(
                 {"identifier": "Agent PID is not an ARK."}
             )
-        if self.owner is None or self.owner.username != config.get(
-            "auth.admin_username"
+        if (
+            self.owner is None
+            or self.owner.username != django.conf.settings.AUTH_ADMIN_USERNAME
         ):
             raise django.core.exceptions.ValidationError(
                 {"owner": "Agent PID is not owned by the EZID administrator."}

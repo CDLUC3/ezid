@@ -441,4 +441,4 @@ for r in records:
     )
     if options.printProgressRecords:
         for pr in r.progressRecords:
-            print(("\t" + pr))
+            print("\t" + pr)

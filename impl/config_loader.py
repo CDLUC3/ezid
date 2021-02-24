@@ -19,28 +19,18 @@
 
 import configparser
 import os.path
+import django.conf
 
 
 class Config(object):
     """Holds the contents of the EZID configuration files."""
 
     def __init__(
-        self, siteRoot, projectRoot, configFile, shadowConfigFile, deploymentLevel
+        self,
+        siteRoot,
+        projectRoot,
     ):
-        self._config = configparser.ConfigParser(
-            {"SITE_ROOT": siteRoot, "PROJECT_ROOT": projectRoot}
-        )
-        f = open(configFile)
-        # noinspection PyDeprecation
-        self._config.readfp(f)
-        f.close()
-        self._shadowConfig = configparser.ConfigParser()
-        if os.path.exists(shadowConfigFile):
-            f = open(shadowConfigFile)
-            # noinspection PyDeprecation
-            self._shadowConfig.readfp(f)
-            f.close()
-        self._level = f"{{{deploymentLevel}}}"
+        pass
 
     def getOption(self, option):
         """Returns the value of a configuration option.

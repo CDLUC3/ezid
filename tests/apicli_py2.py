@@ -10,17 +10,21 @@ import codecs
 import logging
 import re
 import time
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 
 
-class EZIDHTTPErrorProcessor(urllib2.HTTPErrorProcessor):
+class EZIDHTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
     def http_response(self, request, response):
         # Bizarre that Python leaves this out.
-        if response.code == 201:
+        if response.status == 201:
             return response
         else:
-            return urllib2.HTTPErrorProcessor.http_response(self, request, response)
+            return urllib.request.HTTPErrorProcessor.http_response(
+                self, request, response
+            )
 
     https_response = http_response
 
@@ -32,7 +36,7 @@ class EZIDClient(object):
         session_id=None,
         username=None,
         password=None,
-        encoding="UTF-8",
+        encoding="utf-8",
     ):
         self._L = logging.getLogger(self.__class__.__name__)
         self._server = server_url.strip("/")
@@ -43,11 +47,12 @@ class EZIDClient(object):
         if self._cookie is None:
             self._setAuthHandler(username, password)
 
-    def _encode(self, id):
-        return urllib.parse.quote(id, ":/")
+    def _encode(self, id_str):
+        return urllib.parse.quote(id_str, ":/")
 
     def _setAuthHandler(self, username, password):
         h = urllib.request.HTTPBasicAuthHandler()
+        # noinspection PyUnresolvedReferences
         h.add_password("EZID", self._server, username, password)
         self._opener.add_handler(h)
 
@@ -63,7 +68,7 @@ class EZIDClient(object):
                 if k == "@@":
                     k = "@"
                 else:
-                    k = re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), k)
+                    k = re.sub("[%:\r\n]", lambda c: f"%{ord(c.group(0)):02X}", k)
                 v = args[i + 1].decode(self._encoding)
                 if v.startswith("@@"):
                     v = v[1:]
@@ -71,12 +76,12 @@ class EZIDClient(object):
                     f = codecs.open(v[1:], encoding=self._encoding)
                     v = f.read()
                     f.close()
-                v = re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), v)
-                request.append("%s: %s" % (k, v))
+                v = re.sub("[%\r\n]", lambda c: f"%{ord(c.group(0)):02X}", v)
+                request.append(f"{k}: {v}")
         return "\n".join(request)
 
     def anvlresponseToDict(
-        self, response, format_timestamps=True, decode=False, encoding="UTF-8"
+        self, response, format_timestamps=True, decode=False, _encoding="utf-8"
     ):
         res = {"status": "unknown", "status_message": "no content", "body": ""}
         if response is None:
@@ -101,7 +106,7 @@ class EZIDClient(object):
                     )
                 self._L.debug("K : V = %s : %s", K, V)
                 res[K] = V
-            except ValueError as e:
+            except ValueError:
                 res["body"] += line
         return res
 
@@ -112,7 +117,7 @@ class EZIDClient(object):
         format_timestamps=True,
         decode=False,
         one_line=False,
-        encoding="UTF-8",
+        encoding="utf-8",
     ):
         lines = []
         if response is None:
@@ -142,17 +147,18 @@ class EZIDClient(object):
             if one_line:
                 line = line.replace("\n", " ").replace("\r", " ")
             lines.append(line.encode(encoding))
-        return "\n".join(lines)
+        return b"\n".join(lines)
 
     def issueRequest(self, path, method, data=None, dest_f=None):
-        url = "%s/%s" % (self._server, path)
+        url = f"{self._server}/{path}"
         self._L.info("sending request: %s", url)
         request = urllib.request.Request(url)
         request.get_method = lambda: method
         response = None
         if data is not None:
-            request.add_header("Content-Type", "text/plain; charset=UTF-8")
-            request.add_data(data.encode("UTF-8"))
+            request.add_header("Content-Type", "text/plain; charset=utf-8")
+            # noinspection PyUnresolvedReferences
+            request.data = data.encode("utf-8")
         if self._cookie is not None:
             request.add_header("Cookie", self._cookie)
         try:
@@ -163,10 +169,10 @@ class EZIDClient(object):
                     dest_f.flush()
             else:
                 response = connection.read()
-                return response.decode("UTF-8"), connection.info()
+                return response.decode("utf-8"), connection.info()
         except urllib.error.HTTPError as e:
-            self._L.error("%d %s" % (e.code, e.msg))
-            if e.fp != None:
+            self._L.error(f"{e.code:d} {str(e)}")
+            if e.fp is not None:
                 response = e.fp.read()
                 self._L.error(response)
         return response, {}
@@ -178,8 +184,8 @@ class EZIDClient(object):
         response, headers = self.issueRequest("login", "GET")
         try:
             self._cookie = headers.get("set-cookie", "").split(";")[0].split("=")[1]
-            response += "\nsessionid=%s\n" % self._cookie
-        except IndexError as e:
+            response += f"\nsessionid={self._cookie}\n"
+        except IndexError:
             self._L.warning("No sessionid cookie in response.")
         return self.anvlresponseToDict(response)
 

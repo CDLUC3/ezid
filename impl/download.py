@@ -60,7 +60,7 @@ _zipCommand = None
 def loadConfig():
     global _ezidUrl, _usedFilenames, _daemonEnabled, _threadName, _idleSleep
     global _gzipCommand, _zipCommand
-    _ezidUrl = impl.config.get("DEFAULT.ezid_base_url")
+    _ezidUrl = django.conf.settings.EZID_BASE_URL
     _lock.acquire()
     try:
         if _usedFilenames is None:
@@ -73,12 +73,12 @@ def loadConfig():
             ]
     finally:
         _lock.release()
-    _idleSleep = int(impl.config.get("daemons.download_processing_idle_sleep"))
-    _gzipCommand = impl.config.get("DEFAULT.gzip_command")
-    _zipCommand = impl.config.get("DEFAULT.zip_command")
+    _idleSleep = int(django.conf.settings.DAEMONS_DOWNLOAD_PROCESSING_IDLE_SLEEP)
+    _gzipCommand = django.conf.settings.GZIP_COMMAND
+    _zipCommand = django.conf.settings.ZIP_COMMAND
     _daemonEnabled = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and impl.config.get("daemons.download_enabled").lower() == "true"
+        and django.conf.settings.DAEMONS_DOWNLOAD_ENABLED
     )
     if _daemonEnabled:
         _threadName = uuid.uuid1().hex

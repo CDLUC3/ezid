@@ -26,6 +26,9 @@ import impl.util
 
 
 class ExceptionScrubberMiddleware:
+    def __init__(self, get_response):
+        pass
+
     def process_exception(self, request, _exception):
         if "HTTP_AUTHORIZATION" in request.META:
             try:

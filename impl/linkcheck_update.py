@@ -137,16 +137,15 @@ def loadConfig():
     global _notificationThreshold, _threadName
     _enabled = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and impl.config.get("daemons.linkcheck_update_enabled").lower() == "true"
+        and django.conf.settings.DAEMONS_LINKCHECK_UPDATE_ENABLED
     )
     if _enabled:
-        _resultsUploadCycle = int(impl.config.get("linkchecker.results_upload_cycle"))
+        _resultsUploadCycle = int(django.conf.settings.LINKCHECKER_RESULTS_UPLOAD_CYCLE)
         _resultsUploadSameTimeOfDay = (
-            impl.config.get("linkchecker.results_upload_same_time_of_day").lower()
-            == "true"
+            django.conf.settings.LINKCHECKER_RESULTS_UPLOAD_SAME_TIME_OF_DAY
         )
         _notificationThreshold = int(
-            impl.config.get("linkchecker.notification_threshold")
+            django.conf.settings.LINKCHECKER_NOTIFICATION_THRESHOLD
         )
         _threadName = uuid.uuid1().hex
         t = threading.Thread(target=_linkcheckUpdateDaemon, name=_threadName)

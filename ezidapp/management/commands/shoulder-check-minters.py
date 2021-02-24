@@ -128,7 +128,15 @@ class Command(django.core.management.BaseCommand):
                 'Path exists but could not be opened as BDB', 'Error: {}'.format(str(e))
             )
 
-        bdb_dict = dict(bdb)
+        def b2s(b):
+            if isinstance(b, bytes):
+                return b.decode('utf-8')
+            return b
+
+        bdb_dict = {
+            b2s(k): b2s(v) for (k, v) in bdb.items()
+
+        }
 
         for required_key in (
             'basecount',

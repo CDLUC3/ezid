@@ -57,15 +57,15 @@ def loadConfig():
     global _timeout, _allocators, _stylesheet, _crossrefTransform, _pingDoi
     global _pingDatacenter, _pingTarget, _schemas
 
-    _enabled = impl.config.get("datacite.enabled").lower() == "true"
-    _doiUrl = impl.config.get("datacite.doi_url")
-    _metadataUrl = impl.config.get("datacite.metadata_url")
-    _numAttempts = int(impl.config.get("datacite.num_attempts"))
-    _reattemptDelay = int(impl.config.get("datacite.reattempt_delay"))
-    _timeout = int(impl.config.get("datacite.timeout"))
+    _enabled = django.conf.settings.DATACITE_ENABLED
+    _doiUrl = django.conf.settings.DATACITE_DOI_URL
+    _metadataUrl = django.conf.settings.DATACITE_METADATA_URL
+    _numAttempts = int(django.conf.settings.DATACITE_NUM_ATTEMPTS)
+    _reattemptDelay = int(django.conf.settings.DATACITE_REATTEMPT_DELAY)
+    _timeout = int(django.conf.settings.DATACITE_TIMEOUT)
     _allocators = {}
-    for a in impl.config.get("datacite.allocators").split(","):
-        _allocators[a] = impl.config.get(f"allocator_{a}.password")
+    for a in django.conf.settings.DATACITE_ALLOCATORS.split(","):
+        _allocators[a] = getattr(django.conf.settings, f"ALLOCATOR_{a}_PASSWORD")
     _stylesheet = lxml.etree.XSLT(
         lxml.etree.parse(
             os.path.join(django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")
@@ -78,9 +78,9 @@ def loadConfig():
             )
         )
     )
-    _pingDoi = impl.config.get("datacite.ping_doi")
-    _pingDatacenter = impl.config.get("datacite.ping_datacenter")
-    _pingTarget = impl.config.get("datacite.ping_target")
+    _pingDoi = django.conf.settings.DATACITE_PING_DOI
+    _pingDatacenter = django.conf.settings.DATACITE_PING_DATACENTER
+    _pingTarget = django.conf.settings.DATACITE_PING_TARGET
     schemas = {}
     for f in os.listdir(os.path.join(django.conf.settings.PROJECT_ROOT, "xsd")):
         m = re.match("datacite-kernel-(.*)", f)

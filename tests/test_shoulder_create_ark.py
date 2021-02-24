@@ -4,7 +4,7 @@ import logging
 import django.core.management
 import freezegun
 
-import ezidapp.models
+import ezidapp.models.shoulder
 import tests.util.sample as sample
 import tests.util.util
 
@@ -16,7 +16,7 @@ class TestShoulderCreateArk:
     def test_1000(self, caplog, tmp_bdb_root):
         """Creating basic ARK shoulder returns expected messages."""
         caplog.set_level(logging.INFO)
-        assert not ezidapp.models.Shoulder.objects.filter(
+        assert not ezidapp.models.shoulder.Shoulder.objects.filter(
             prefix='ark:/91101/r01'
         ).exists()
         django.core.management.call_command(
@@ -29,7 +29,7 @@ class TestShoulderCreateArk:
 
     def test_1010(self, caplog, tmp_bdb_root):
         """Creating a basic ARK shoulder creates expected database entries."""
-        assert not ezidapp.models.Shoulder.objects.filter(
+        assert not ezidapp.models.shoulder.Shoulder.objects.filter(
             prefix='ark:/91101/r01'
         ).exists()
         django.core.management.call_command(
@@ -38,7 +38,9 @@ class TestShoulderCreateArk:
             'ark:/91101/r01',
             '91101/r01 test org',
         )
-        s = ezidapp.models.Shoulder.objects.filter(prefix='ark:/91101/r01').get()
+        s = ezidapp.models.shoulder.Shoulder.objects.filter(
+            prefix='ark:/91101/r01'
+        ).get()
         sample.assert_match(tests.util.util.shoulder_to_dict(s), 'basic')
         assert s.active
         assert not s.isSupershoulder
@@ -47,7 +49,7 @@ class TestShoulderCreateArk:
     def test_1020(self, caplog, tmp_bdb_root):
         """Creating an ARK shoulder with flags creates expected database
         entries."""
-        assert not ezidapp.models.Shoulder.objects.filter(
+        assert not ezidapp.models.shoulder.Shoulder.objects.filter(
             prefix='ark:/91101/r01'
         ).exists()
         django.core.management.call_command(
@@ -58,7 +60,9 @@ class TestShoulderCreateArk:
             '--super-shoulder',
             '--test',
         )
-        s = ezidapp.models.Shoulder.objects.filter(prefix='ark:/91101/r01').get()
+        s = ezidapp.models.shoulder.Shoulder.objects.filter(
+            prefix='ark:/91101/r01'
+        ).get()
         sample.assert_match(tests.util.util.shoulder_to_dict(s), 'flags')
         assert s.active
         assert s.isSupershoulder
@@ -69,7 +73,9 @@ class TestShoulderCreateArk:
         minters to be stored in a separate directory named 'NULL'."""
         ns_str = 'ark:/99920/'
         org_str = '91101/r01 test org'
-        assert not ezidapp.models.Shoulder.objects.filter(prefix=ns_str).exists()
+        assert not ezidapp.models.shoulder.Shoulder.objects.filter(
+            prefix=ns_str
+        ).exists()
         django.core.management.call_command(
             # <ns> <org-name>
             'shoulder-create-ark',
@@ -80,8 +86,8 @@ class TestShoulderCreateArk:
             '--test',
         )
         ezid_uri = "ezid:/99920/NULL"
-        assert ezidapp.models.Shoulder.objects.filter(prefix=ns_str).exists()
-        s = ezidapp.models.Shoulder.objects.filter(minter=ezid_uri).get()
+        assert ezidapp.models.shoulder.Shoulder.objects.filter(prefix=ns_str).exists()
+        s = ezidapp.models.shoulder.Shoulder.objects.filter(minter=ezid_uri).get()
         sample.assert_match(tests.util.util.shoulder_to_dict(s), 'NULL')
         assert s.minter == ezid_uri
         assert s.name == org_str

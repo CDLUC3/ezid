@@ -141,13 +141,12 @@ def loadConfig():
     global _enabled, _computeCycle, _computeSameTimeOfDay, _threadName
     _enabled = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and impl.config.get("daemons.statistics_enabled").lower() == "true"
+        and django.conf.settings.DAEMONS_STATISTICS_ENABLED
     )
     if _enabled:
-        _computeCycle = int(impl.config.get("daemons.statistics_compute_cycle"))
+        _computeCycle = int(django.conf.settings.DAEMONS_STATISTICS_COMPUTE_CYCLE)
         _computeSameTimeOfDay = (
-            impl.config.get("daemons.statistics_compute_same_time_of_day").lower()
-            == "true"
+            django.conf.settings.DAEMONS_STATISTICS_COMPUTE_SAME_TIME_OF_DAY
         )
         _threadName = uuid.uuid1().hex
         t = threading.Thread(target=_statisticsDaemon, name=_threadName)

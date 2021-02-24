@@ -1,7 +1,7 @@
 """Test the shoulder-list management command."""
 import logging
 
-import nog.shoulder as shoulder
+import impl.nog.shoulder as shoulder
 import tests.util.sample as sample
 
 

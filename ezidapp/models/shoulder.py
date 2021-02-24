@@ -17,6 +17,7 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
+import django.conf
 import django.core.exceptions
 import logging
 import threading
@@ -30,19 +31,9 @@ import ezidapp.models.store_datacenter
 import impl.util
 import ezidapp.models.validation
 
-# Deferred imports...
 import impl.util2
 
-"""
-import config
-import log
-import util2
-"""
-
 _lock = threading.Lock()
-_url = None
-_username = None
-_password = None
 _arkTestPrefix = None
 _doiTestPrefix = None
 _crossrefTestPrefix = None
@@ -130,8 +121,12 @@ class Shoulder(django.db.models.Model):
     # Computed value.  True if the shoulder is a test shoulder.
 
     # Fields previously only in master_shoulders.txt
-    shoulder_type = django.db.models.ForeignKey(ShoulderType, null=True)
-    registration_agency = django.db.models.ForeignKey(RegistrationAgency, null=True)
+    shoulder_type = django.db.models.ForeignKey(
+        ShoulderType, on_delete=django.db.models.PROTECT, null=True
+    )
+    registration_agency = django.db.models.ForeignKey(
+        RegistrationAgency, on_delete=django.db.models.PROTECT, null=True
+    )
     prefix_shares_datacenter = django.db.models.BooleanField(
         default=False, editable=False
     )
@@ -178,9 +173,13 @@ class Shoulder(django.db.models.Model):
 
 
 def loadConfig(acquireLock=True):
-    global _url, _username, _password, _arkTestPrefix, _doiTestPrefix
-    global _agentPrefix, _shoulders, _datacenters
+    global _arkTestPrefix
+    global _doiTestPrefix
+    global _agentPrefix
+    global _shoulders
+    global _datacenters
     global _crossrefTestPrefix
+
     import impl.config
 
     es = contextlib.ExitStack()
@@ -190,18 +189,10 @@ def loadConfig(acquireLock=True):
         es.enter_context(_lock)
 
     with es:
-        _url = impl.config.get("shoulders.url")
-        _username = impl.config.get("shoulders.username")
-        if _username != "":
-            _password = impl.config.get("shoulders.password")
-        else:
-            _username = None
-            _password = None
-
-        _arkTestPrefix = impl.config.get("shoulders.ark_test")
-        _doiTestPrefix = impl.config.get("shoulders.doi_test")
-        _crossrefTestPrefix = impl.config.get("shoulders.crossref_test")
-        _agentPrefix = impl.config.get("shoulders.agent")
+        _arkTestPrefix = django.conf.settings.SHOULDERS_ARK_TEST
+        _doiTestPrefix = django.conf.settings.SHOULDERS_DOI_TEST
+        _crossrefTestPrefix = django.conf.settings.SHOULDERS_CROSSREF_TEST
+        _agentPrefix = django.conf.settings.SHOULDERS_AGENT
 
         _shoulders = dict(
             (s.prefix, s)

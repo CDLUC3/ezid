@@ -1,3 +1,4 @@
+
 # dev-check-ids
 
 Annotate a stream of identifiers with associated metadata and misc housekeeping information pulled from an EZID database.
@@ -14,13 +15,17 @@ Database credentials and related connection details are stored in an encrypted c
 
 Add all the options required to connect to an EZID database, using the `mysql_config_editor` command. E.g.,
 
-    $ mysql_config_editor set --login-path=ezid-test-db --host=server.com --user=ezidro --password
+```shell
+$ mysql_config_editor set --login-path=ezid-test-db --host=server.com --user=ezidro --password
 
-    * Type the password when prompted. Avoid passing the password as a command line argument.
+* Type the password when prompted. Avoid passing the password as a command line argument.
+```
 
 To print all connection details currently stored in the `~/.mylogin.cnf` file (passwords are not shown):
 
-    $ mysql_config_editor print --all
+```shell
+$ mysql_config_editor print --all
+```
 
 See the man pages for `mysql_config_editor`, `mysql` and other bundled commands for more information about the options and for how to perform various maintenance related tasks.
 
@@ -28,8 +33,12 @@ A port or socket can also be be specified if the service is not listening on the
 
 The new connection can now be used by `check-ids.py`, which takes the database schema name that was specified with `--login-path` as a required first parameter. E.g.,
 
-    $ check-ids.py ezid-test-db ids1.txt <(xzcat ids2.xz) <ids3-named-pipe | tee all-results.txt
+```shell
+$ check-ids.py ezid-test-db ids1.txt <(xzcat ids2.xz) <ids3-named-pipe | tee all-results.txt
+```
 
 To use thew new connection from the `mysql` command line client, pass the database name using the `--login-path` parameter. E.g.,
 
-    $ mysql --login-path=ezid-test-db
+```shell
+$ mysql --login-path=ezid-test-db
+```

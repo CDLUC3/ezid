@@ -13,6 +13,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.conf
 import logging
 
 import django.contrib.auth.hashers
@@ -28,13 +29,6 @@ import ezidapp.models.user
 import ezidapp.models.validation
 
 logger = logging.getLogger(__name__)
-
-
-# Deferred imports...
-"""
-import config
-import ezidapp.admin
-"""
 
 
 class StoreUser(ezidapp.models.user.User):
@@ -354,7 +348,7 @@ def getAdminUser():
     # Returns the EZID administrator user.
     import impl.config as config
 
-    return getUserByUsername(config.get("auth.admin_username"))
+    return getUserByUsername(django.conf.settings.AUTH_ADMIN_USERNAME)
 
 
 class AnonymousUser(object):

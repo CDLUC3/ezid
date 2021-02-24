@@ -50,16 +50,16 @@ _numActiveSearches = 0
 def loadConfig():
     global _reconnectDelay, _fulltextSupported, _minimumWordLength
     global _stopwords, _maxTargetLength
-    _reconnectDelay = int(impl.config.get("databases.reconnect_delay"))
+    _reconnectDelay = int(django.conf.settings.DATABASES_RECONNECT_DELAY)
     _fulltextSupported = django.conf.settings.DATABASES["search"][
         "fulltextSearchSupported"
     ]
     if _fulltextSupported:
-        _minimumWordLength = int(impl.config.get("search.minimum_word_length"))
+        _minimumWordLength = int(django.conf.settings.SEARCH_MINIMUM_WORD_LENGTH)
         _stopwords = (
-            impl.config.get("search.stopwords")
+            django.conf.settings.SEARCH_STOPWORDS
             + " "
-            + impl.config.get("search.extra_stopwords")
+            + django.conf.settings.SEARCH_EXTRA_STOPWORDS
         ).split()
     # noinspection PyProtectedMember
     _maxTargetLength = (

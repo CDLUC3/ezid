@@ -59,11 +59,11 @@ seid = next(searchIdentifiers)
 while stid is not None or seid is not None:
     if stid is not None and (seid is None or stid.identifier < seid.identifier):
         if stid.owner is not None:
-            print(("<", stid.identifier))
+            print("<", stid.identifier)
             print(f"\t< createTime: {formatTimestamp(stid.createTime)}")
         stid = next(storeIdentifiers)
     elif seid is not None and (stid is None or seid.identifier < stid.identifier):
-        print((">", seid.identifier))
+        print(">", seid.identifier)
         print(f"\t> createTime: {formatTimestamp(seid.createTime)}")
         seid = next(searchIdentifiers)
     else:
@@ -72,7 +72,7 @@ while stid is not None or seid is not None:
         def compare(label, a, b):
             if a != b:
                 if firstDifference[0]:
-                    print(("!", stid.identifier))
+                    print("!", stid.identifier)
                     firstDifference[0] = False
                 if a != "":
                     print(f"\t< {util.encode4(label)}: {util.encode3(a)}")

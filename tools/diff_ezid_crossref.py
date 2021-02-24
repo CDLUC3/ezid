@@ -260,10 +260,10 @@ def doComparison(doi, metadata):
         else:
             status = "unavailable"
         print(f"{doi}: in EZID ({status}){error}")
-        print(("\t< _created: {0}".format(formatTimestamp(int(metadata["_created"])))))
-        print(("\t< _updated: {0}".format(formatTimestamp(int(metadata["_updated"])))))
+        print("\t< _created: {0}".format(formatTimestamp(int(metadata["_created"]))))
+        print("\t< _updated: {0}".format(formatTimestamp(int(metadata["_updated"]))))
         for d in diffs:
-            print(("\t" + d))
+            print("\t" + d)
 
 
 numDois = max(len(crossrefDois), 1)
@@ -289,7 +289,7 @@ for record in ezidFile:
         if id in crossrefDois:
             del crossrefDois[id]
     except Exception as e:
-        print(("exception while processing %s: %s" % (id, util.formatException(e))))
+        print("exception while processing %s: %s" % (id, util.formatException(e)))
         raise
 
 # Pass 3.  There shouldn't be any identifiers remaining in

@@ -220,10 +220,10 @@ def doComparison(doi, metadata):
         else:
             status = "unavailable"
         print(f"{doi}: in EZID ({status}){error}")
-        print(("\t< _created: {0}".format(formatTimestamp(int(metadata["_created"])))))
-        print(("\t< _updated: {0}".format(formatTimestamp(int(metadata["_updated"])))))
+        print("\t< _created: {0}".format(formatTimestamp(int(metadata["_created"]))))
+        print("\t< _updated: {0}".format(formatTimestamp(int(metadata["_updated"]))))
         for d in diffs:
-            print(("\t{0}".format(d)))
+            print("\t{0}".format(d))
 
 
 numDois = max(len(mdsDois), 1)

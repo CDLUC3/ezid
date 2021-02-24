@@ -60,14 +60,14 @@ idA, recordA = nextRecord(fileA)
 idB, recordB = nextRecord(fileB)
 while idA is not None or idB is not None:
     if idA is not None and (idB is None or idA < idB):
-        print(("<", idA))
+        print("<", idA)
         # noinspection PyUnresolvedReferences,PyUnresolvedReferences
         print(
             f"\t< _created: {formatTimestamp(recordA.get('_created', recordA.get('_c')))}"
         )
         idA, recordA = nextRecord(fileA)
     elif idB is not None and (idA is None or idB < idA):
-        print((">", idB))
+        print(">", idB)
         # noinspection PyUnresolvedReferences,PyUnresolvedReferences
         print(
             f"\t> _created: {formatTimestamp(recordB.get('_created', recordB.get('_c')))}"
@@ -75,7 +75,7 @@ while idA is not None or idB is not None:
         idB, recordB = nextRecord(fileB)
     else:
         if recordA != recordB:
-            print(("!", idA))
+            print("!", idA)
             # noinspection PyUnresolvedReferences
             keysA = list(recordA.keys())
             keysA.sort()

@@ -1,14 +1,14 @@
 import backports.lzma as lzma
 
+import impl.nog.bdb
 import impl.nog.filesystem
-import nog.bdb
-import nog.id_ns
-import nog.minter
+import impl.nog.id_ns
+import impl.nog.minter
 
 MINT_COUNT = 1000
 
 ID_STR = 'ark:/77913/r7'
-ID_NS = nog.id_ns.IdNamespace.from_str(ID_STR)
+ID_NS = impl.nog.id_ns.IdNamespace.from_str(ID_STR)
 PERL_MINTED_PATH = impl.nog.filesystem.abs_path(
     "test_docs/perl_{}_{}_1000000_spings.csv.xz".format(
         ID_NS.naan_prefix, ID_NS.shoulder
@@ -34,7 +34,7 @@ class TestNogMinter:
         """
         with lzma.open(PERL_MINTED_PATH) as f:
             for i, python_sping in enumerate(
-                nog.minter.mint_by_bdb_path(
+                impl.nog.minter.mint_by_bdb_path(
                     self._get_bdb_path(ID_NS, ''), MINT_COUNT, dry_run=True
                 )
             ):
@@ -57,7 +57,7 @@ class TestNogMinter:
             for i in range(6218):
                 f.readline()
             for i, python_sping in enumerate(
-                nog.minter.mint_by_bdb_path(
+                impl.nog.minter.mint_by_bdb_path(
                     test_docs.joinpath('77913_r7_last_before_template_extend.bdb'),
                     10,
                     dry_run=True,

@@ -218,7 +218,7 @@ def printAnvlResponse(response, sortLines=False):
             )
         if _options.oneLine:
             line = line.replace("\n", " ").replace("\r", " ")
-        print((line.encode(_options.encoding)))
+        print(line.encode(_options.encoding))
 
 
 # Process command line arguments.

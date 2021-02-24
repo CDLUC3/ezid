@@ -37,11 +37,6 @@ import impl.ezid
 import impl.log
 import impl.search_util
 
-# Deferred imports...
-"""
-import boto3
-"""
-
 _enabled = None
 _reportingInterval = None
 _threadName = None
@@ -139,16 +134,16 @@ def loadConfig():
     global _cloudwatchRegion, _cloudwatchNamespace, _cloudwatchInstanceName
     _enabled = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and impl.config.get("daemons.status_enabled").lower() == "true"
+        and django.conf.settings.DAEMONS_STATUS_ENABLED
     )
     if _enabled:
-        _reportingInterval = int(impl.config.get("daemons.status_logging_interval"))
+        _reportingInterval = int(django.conf.settings.DAEMONS_STATUS_LOGGING_INTERVAL)
         _threadName = uuid.uuid1().hex
-        _cloudwatchEnabled = impl.config.get("cloudwatch.enabled").lower() == "true"
+        _cloudwatchEnabled = django.conf.settings.CLOUDWATCH_ENABLED
         if _cloudwatchEnabled:
-            _cloudwatchRegion = impl.config.get("cloudwatch.region")
-            _cloudwatchNamespace = impl.config.get("cloudwatch.namespace")
-            _cloudwatchInstanceName = impl.config.get("cloudwatch.instance_name")
+            _cloudwatchRegion = django.conf.settings.CLOUDWATCH_REGION
+            _cloudwatchNamespace = django.conf.settings.CLOUDWATCH_NAMESPACE
+            _cloudwatchInstanceName = django.conf.settings.CLOUDWATCH_INSTANCE_NAME
         t = threading.Thread(target=_statusDaemon, name=_threadName)
         t.setDaemon(True)
         t.start()

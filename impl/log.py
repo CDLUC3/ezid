@@ -101,10 +101,10 @@ def loadConfig():
     global _errorSimilarityThreshold, _sentErrors
     _errorLock.acquire()
     try:
-        _suppressionWindow = int(impl.config.get("email.error_suppression_window"))
-        _errorLifetime = int(impl.config.get("email.error_lifetime"))
+        _suppressionWindow = int(django.conf.settings.EMAIL_ERROR_SUPPRESSION_WINDOW)
+        _errorLifetime = int(django.conf.settings.EMAIL_ERROR_LIFETIME)
         _errorSimilarityThreshold = float(
-            impl.config.get("email.error_similarity_threshold")
+            django.conf.settings.EMAIL_ERROR_SIMILARITY_THRESHOLD
         )
         _sentErrors = {}
     finally:
@@ -181,7 +181,9 @@ def badRequest(transactionId):
     """Logs the end of a transaction that terminated due to the request being
     faulty."""
     # _log.info("%s END BADREQUEST" % transactionId.hex)
-    _log.info(f"{transactionId.hex} END BADREQUEST")
+    msg_str = f'{transactionId.hex} END BADREQUEST'
+    logging.exception(msg_str)
+    _log.info(msg_str)
 
 
 def forbidden(transactionId):

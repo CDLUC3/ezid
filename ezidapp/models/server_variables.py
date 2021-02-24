@@ -66,6 +66,8 @@ def setAlertMessage(s):
 
 
 def getOrSetSecretKey():
+    return
+
     # Returns the stored value of django.conf.settings.SECRET_KEY.  If
     # there is no stored value, a new key is generated and stored (and
     # returned).

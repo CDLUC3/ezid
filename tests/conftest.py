@@ -3,6 +3,7 @@ import csv
 import io
 import logging
 import os
+import pathlib
 import sys
 
 import django
@@ -13,32 +14,40 @@ import django.core.management
 import django.db
 import django.db.transaction
 import django.http.request
-import pathlib2
 import pytest
 
-import config
 import ezidapp
-import ezidapp.models
-import nog.filesystem
-import nog.shoulder
+import ezidapp.models.shoulder
+import ezidapp.models.store_datacenter
+import ezidapp.models.store_datacenter
+import ezidapp.models.store_user
+import impl.config
+import impl.nog.filesystem
+import impl.nog.shoulder
 import tests.util.sample
 import tests.util.util
 
 DEFAULT_DB_KEY = 'default'
-import nog.id_ns
+import impl.nog.id_ns
 
 NAMESPACE_LIST = [
-    (nog.id_ns.IdNamespace.from_str('ark:/99933/x1'), tuple()),
-    (nog.id_ns.IdNamespace.from_str('ark:/99934/x2'), tuple()),
-    (nog.id_ns.IdNamespace.from_str('ark:/99933/x3y4'), ('supershoulder',)),
-    (nog.id_ns.IdNamespace.from_str('ark:/99934/'), ('supershoulder', 'force',)),
-    (nog.id_ns.IdNamespace.from_str('doi:10.9935/X5'), ('datacenter',)),
-    (nog.id_ns.IdNamespace.from_str('doi:10.19936/X6Y7'), ('datacenter',)),
-    (nog.id_ns.IdNamespace.from_str('doi:10.9935/X8'), ('crossref',)),
-    (nog.id_ns.IdNamespace.from_str('doi:10.19936/X9Y0'), ('crossref',)),
+    (impl.nog.id_ns.IdNamespace.from_str('ark:/99933/x1'), tuple()),
+    (impl.nog.id_ns.IdNamespace.from_str('ark:/99934/x2'), tuple()),
+    (impl.nog.id_ns.IdNamespace.from_str('ark:/99933/x3y4'), ('supershoulder',)),
+    (
+        impl.nog.id_ns.IdNamespace.from_str('ark:/99934/'),
+        (
+            'supershoulder',
+            'force',
+        ),
+    ),
+    (impl.nog.id_ns.IdNamespace.from_str('doi:10.9935/X5'), ('datacenter',)),
+    (impl.nog.id_ns.IdNamespace.from_str('doi:10.19936/X6Y7'), ('datacenter',)),
+    (impl.nog.id_ns.IdNamespace.from_str('doi:10.9935/X8'), ('crossref',)),
+    (impl.nog.id_ns.IdNamespace.from_str('doi:10.19936/X9Y0'), ('crossref',)),
 ]
 
-SHOULDER_CSV = nog.filesystem.abs_path('./test_docs/ezidapp_shoulder.csv')
+SHOULDER_CSV = impl.nog.filesystem.abs_path('./test_docs/ezidapp_shoulder.csv')
 
 # Database fixtures
 
@@ -135,7 +144,9 @@ def django_db_setup(django_db_keepdb):
             "USER": "travis",
             "PASSWORD": "",
             "OPTIONS": {"charset": "utf8mb4"},
-            'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock',},
+            'DATABASE_OPTIONS': {
+                'unix_socket': '/tmp/mysql.sock',
+            },
         },
         "search": {
             "ENGINE": "django.db.backends.mysql",
@@ -145,7 +156,9 @@ def django_db_setup(django_db_keepdb):
             "PASSWORD": "",
             "fulltextSearchSupported": True,
             "OPTIONS": {"charset": "utf8mb4"},
-            'DATABASE_OPTIONS': {'unix_socket': '/tmp/mysql.sock',},
+            'DATABASE_OPTIONS': {
+                'unix_socket': '/tmp/mysql.sock',
+            },
         },
     }
 
@@ -154,7 +167,7 @@ def django_db_setup(django_db_keepdb):
 def disable_log_to_console(mocker):
     """Prevent management commands from reconfiguring the logging that has been
     set up by pytest."""
-    mocker.patch('nog.util.log_to_console')
+    mocker.patch('impl.nog.util.log_to_console')
 
 
 # Fixtures
@@ -172,11 +185,11 @@ def reloaded():
 
     def reload_():
         assert django.conf.settings.configured
-        config.reload()
+        impl.config.reload()
         # noinspection PyProtectedMember
         log.debug(
             'reloaded(): db_shoulders={} cache_shoulders={}'.format(
-                ezidapp.models.Shoulder.objects.filter(
+                ezidapp.models.shoulder.Shoulder.objects.filter(
                     active=True, manager='ezid'
                 ).count(),
                 len(ezidapp.models.shoulder._shoulders),
@@ -202,7 +215,7 @@ def admin_admin(reloaded):
                 username='admin', password=None, email=""
             )
         reloaded()
-        o = ezidapp.models.getUserByUsername('admin')
+        o = ezidapp.models.store_user.getUserByUsername('admin')
         o.setPassword('admin')
         o.save()
         reloaded()
@@ -219,7 +232,7 @@ def skip_auth(django_db_keepdb, admin_client, mocker):
 
     def mock_authenticate_request(request):
         user_id = get_user_id_by_session_key(request.session.session_key)
-        return ezidapp.models.getUserById(user_id)
+        return ezidapp.models.store_user.getUserById(user_id)
 
     mocker.patch('userauth.authenticateRequest', side_effect=mock_authenticate_request)
 
@@ -235,7 +248,7 @@ def ez_admin(admin_client, admin_admin, skip_auth):
     necessary to pull in skip_auth here.
     """
     admin_client.login(username='admin', password='admin')
-    #log.info('cookies={}'.format(admin_client.cookies))
+    # log.info('cookies={}'.format(admin_client.cookies))
     return admin_client
 
 
@@ -258,12 +271,16 @@ def tmp_bdb_root(mocker, tmp_path):
     This fixture causes BDB paths to resolve to an empty tree under /tmp. Any minters
     created by the test are deleted when the test exits.
 
-    Returns a pathlib2.Path referencing the root of the tree. The slash operator can be
+    Returns a pathlib.Path referencing the root of the tree. The slash operator can be
     used for creating paths below the root. E.g., `tmp_bdb_root / 'b2345' / 'x1'`.
     """
-    for dot_path in ('nog.bdb._get_bdb_root','impl.nog.bdb._get_bdb_root',):
+    for dot_path in (
+        'impl.nog.bdb.get_bdb_root',
+        'impl.nog.bdb.get_bdb_root',
+    ):
         mocker.patch(
-            dot_path, return_value=(tmp_path / 'minters').resolve(),
+            dot_path,
+            return_value=(tmp_path / 'minters').resolve(),
         )
 
     return tmp_path
@@ -278,7 +295,7 @@ def minters(tmp_bdb_root, reloaded):
     of the minters.
     """
     for ns, arg_tup in NAMESPACE_LIST:
-        nog.shoulder.create_shoulder(
+        impl.nog.shoulder.create_shoulder(
             ns,
             'test org for shoulder {}'.format(str(ns)),
             datacenter_model=(
@@ -305,9 +322,11 @@ def shoulder_csv():
     """Generator returning rows from the SHOULDER_CSV file."""
 
     def itr():
-        with pathlib2.Path(SHOULDER_CSV).open('rb',) as f:
+        with pathlib.Path(SHOULDER_CSV).open(
+            'rb',
+        ) as f:
             for row_tup in csv.reader(f):
-                ns_str, org_str, n2t_url = (s.decode('utf-8') for s in row_tup)
+                ns_str, org_str, n2t_url = row_tup
                 # log.debug('Testing with shoulder row: {}'.format(row_tup))
                 yield ns_str, org_str, n2t_url
 
@@ -316,8 +335,8 @@ def shoulder_csv():
 
 @pytest.fixture()
 def test_docs():
-    """pathlib2.Path rooted in the test_docs dir."""
-    return pathlib2.Path(nog.filesystem.abs_path('./test_docs'))
+    """pathlib.Path rooted in the test_docs dir."""
+    return pathlib.Path(impl.nog.filesystem.abs_path('./test_docs'))
 
 
 @pytest.fixture()
@@ -327,7 +346,7 @@ def log_shoulder_count():
         log.debug(
             '{}: db_shoulders={} cache_shoulders={}'.format(
                 s,
-                ezidapp.models.Shoulder.objects.filter(
+                ezidapp.models.shoulder.Shoulder.objects.filter(
                     active=True, manager='ezid'
                 ).count(),
                 len(ezidapp.models.shoulder._shoulders),
@@ -342,7 +361,7 @@ def log_shoulder_count():
 
 
 def dump_shoulder_table():
-    for shoulder_model in ezidapp.models.Shoulder.objects.filter(
+    for shoulder_model in ezidapp.models.shoulder.Shoulder.objects.filter(
         active=True, manager='ezid'
     ):
         log.debug(shoulder_model)
@@ -356,7 +375,7 @@ def get_user_id_by_session_key(session_key):
 
 def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
     """Save database to a bz2 compressed JSON fixture."""
-    fixture_file_path = nog.filesystem.abs_path(REL_DB_FIXTURE_PATH)
+    fixture_file_path = impl.nog.filesystem.abs_path(REL_DB_FIXTURE_PATH)
     logging.info('Writing fixture. path="{}"'.format(fixture_file_path))
     buf = io.StringIO()
     django.core.management.call_command(

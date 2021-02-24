@@ -43,7 +43,7 @@ def dump(bdb_path, compact=True):
 
     Only the fields used by EZID are included.
     """
-    print((as_hjson(bdb_path, compact)))
+    print(as_hjson(bdb_path, compact))
 
 
 def dump_full(bdb_path):

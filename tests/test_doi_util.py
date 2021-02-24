@@ -3,8 +3,8 @@
 import pytest
 
 import impl.nog.bdb as bdb
-import nog.exc
-import nog.id_ns
+import impl.nog.exc
+import impl.nog.id_ns
 import tests.util.sample
 
 
@@ -60,7 +60,10 @@ class TestDoiUtil:
     def test_1030(self, ns_str, path_or_exc, tmp_bdb_root):
         """get_path(): Well formed identifiers generate the expected paths"""
         assert (
-            bdb.get_path(ns_str, is_new=True,)
+            bdb.get_path(
+                ns_str,
+                is_new=True,
+            )
             .as_posix()
             .endswith('/{}/nog.bdb'.format(path_or_exc))
         )
@@ -78,25 +81,29 @@ class TestDoiUtil:
     )
     def test_1031(self, ns_str, tmp_bdb_root):
         """get_path(): Invalid identifiers raise IdentifierError"""
-        with pytest.raises(nog.id_ns.IdentifierError):
+        with pytest.raises(impl.nog.id_ns.IdentifierError):
             bdb.get_path(ns_str, 'root', is_new=True)
 
     @pytest.mark.parametrize(
-        'ns_str', ('doi:10.100000/X', 'doi:10.100001/X', 'doi:10.200000',),
+        'ns_str',
+        (
+            'doi:10.100000/X',
+            'doi:10.100001/X',
+            'doi:10.200000',
+        ),
     )
     def test_1032(self, ns_str, tmp_bdb_root):
         """get_path(): Raises IdentifierError for prefix that exceeds 5 digits"""
-        with pytest.raises(nog.id_ns.IdentifierError):
+        with pytest.raises(impl.nog.id_ns.IdentifierError):
             bdb.get_path(ns_str, 'root', is_new=True)
 
     def test_1035(self, shoulder_csv, tmp_bdb_root):
-        """get_path(): Yields the expected paths for shoulders that have minters
-        """
+        """get_path(): Yields the expected paths for shoulders that have minters"""
         result_list = []
         for ns_str, org_str, n2t_url in shoulder_csv:
             try:
                 p = bdb.get_path(ns_str, is_new=True).as_posix()
-            except nog.exc.MinterError as e:
+            except impl.nog.exc.MinterError as e:
                 p = repr(e)
             result_list.append(p.replace(tmp_bdb_root.as_posix(), ''))
         tests.util.sample.assert_match(result_list, 'get_path')
@@ -136,7 +143,7 @@ class TestDoiUtil:
     )
     def test_1050(self, doi_str):
         """doi_to_shadow_ark(): Lossy conversions are rejected as by N2T doip2naan"""
-        with pytest.raises(nog.exc.MinterError):
+        with pytest.raises(impl.nog.exc.MinterError):
             bdb.doi_to_shadow_ark(doi_str)
 
     def test_1060(self, shoulder_csv):

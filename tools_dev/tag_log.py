@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import argparse
 import contextlib
@@ -52,7 +52,7 @@ def main():
         with TagLog(args) as tag_log:
             tag_log.tag()
     except Exception as e:
-        print((repr(e)))
+        print(repr(e))
         raise
 
     log.info('Completed')
@@ -93,7 +93,7 @@ class TagLog:
 
     def write_id_ref(self):
         """Append a map of tag ID to real identifier to end of tagged log."""
-        print(('-' * 100))
+        print('-' * 100)
         for type_str, type_dict in list(self.rx_dict.items()):
             for id_str, instance_dict in list(type_dict['id_dict'].items()):
                 s = '{} ID={} C={}'.format(
@@ -156,7 +156,7 @@ class TagLog:
 
             new_str += line_str[pos:]
 
-            print(('{:>8} {}'.format(line_no, new_str)))
+            print('{:>8} {}'.format(line_no, new_str))
             line_no += 1
 
     def log_db_counts(self):

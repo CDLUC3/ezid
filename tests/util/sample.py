@@ -91,7 +91,13 @@ def assert_match(
         )
 
     mismatch_title_str = " -- ".join(
-        ["<-- CURRENT", "Sample mismatch", file_post_str, sample_ext, "SAMPLE -->",]
+        [
+            "<-- CURRENT",
+            "Sample mismatch",
+            file_post_str,
+            sample_ext,
+            "SAMPLE -->",
+        ]
     )
 
     with sample_review_lock:
@@ -179,6 +185,7 @@ def save(current_str, filename):
     save_path(current_str, path)
 
 
+# noinspection PyIncorrectDocstring,PyIncorrectDocstring,PyIncorrectDocstring
 def obj_to_pretty_str(o, no_clobber=False, no_wrap=False, column_width=None):
     """Serialize object to str.
 

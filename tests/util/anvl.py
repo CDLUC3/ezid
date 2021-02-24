@@ -21,7 +21,7 @@ def format_request(args):
             if k == "@@":
                 k = "@"
             else:
-                k = re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), k)
+                k = re.sub("[%:\r\n]", lambda c: f"%{ord(c.group(0)):02X}", k)
             v = args[i + 1].decode(ENCODING)
             if v.startswith("@@"):
                 v = v[1:]
@@ -29,8 +29,8 @@ def format_request(args):
                 f = codecs.open(v[1:], encoding=ENCODING)
                 v = f.read()
                 f.close()
-            v = re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), v)
-            request.append("%s: %s" % (k, v))
+            v = re.sub("[%\r\n]", lambda c: f"%{ord(c.group(0)):02X}", v)
+            request.append(f"{k}: {v}")
     return "\n".join(request)
 
 
@@ -52,11 +52,13 @@ def response_to_dict(response, format_timestamps=True, decode=False):
                 V = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(int(ls[1])))
             if decode:
                 V = re.sub(
-                    "%([0-9a-fA-F][0-9a-fA-F])", lambda m: chr(int(m.group(1), 16)), V,
+                    "%([0-9a-fA-F][0-9a-fA-F])",
+                    lambda m: chr(int(m.group(1), 16)),
+                    V,
                 )
             log.debug("K : V = %s : %s", K, V)
             res[K] = V
-        except ValueError as e:
+        except ValueError:
             res["body"] += line
     return res
 
@@ -67,7 +69,7 @@ def response_to_text(
     format_timestamps=True,
     decode=False,
     one_line=False,
-    encoding="UTF-8",
+    encoding="utf-8",
 ):
     lines = []
     if response is None:
@@ -90,9 +92,11 @@ def response_to_text(
             )
         if decode:
             line = re.sub(
-                "%([0-9a-fA-F][0-9a-fA-F])", lambda m: chr(int(m.group(1), 16)), line,
+                "%([0-9a-fA-F][0-9a-fA-F])",
+                lambda m: chr(int(m.group(1), 16)),
+                line,
             )
         if one_line:
             line = line.replace("\n", " ").replace("\r", " ")
         lines.append(line.encode(encoding))
-    return "\n".join(lines)
+    return b"\n".join(lines)

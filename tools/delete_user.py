@@ -135,7 +135,7 @@ searchUser.delete()
 
 s = ezid.deleteIdentifier(user.pid, ezidapp.models.store_user.getAdminUser())
 if not s.startswith("success"):
-    print(("delete-user: agent PID deletion failed: " + s))
+    print("delete-user: agent PID deletion failed: " + s)
 
 print(
     (

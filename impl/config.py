@@ -62,7 +62,8 @@ def registerReloadListener(loader):
         )
         logger.error("Caller: {}".format(inspect.stack()))
 
-    logger.debug('Registering reload listener: {}'.format(loader.__module__))
+    # logger.debug('Registering reload listener: {}'.format(loader.__module__))
+
     _reloadFunctions.append(loader)
 
 
@@ -133,9 +134,6 @@ def load():
     _config = impl.config_loader.Config(
         django.conf.settings.SITE_ROOT,
         django.conf.settings.PROJECT_ROOT,
-        django.conf.settings.EZID_CONFIG_FILE,
-        django.conf.settings.EZID_SHADOW_CONFIG_FILE,
-        django.conf.settings.DEPLOYMENT_LEVEL,
     )
     _version = (int(time.time()),) + _getVersion()
 

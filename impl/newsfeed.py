@@ -63,11 +63,11 @@ def loadConfig():
     global _enabled, _url, _pollingInterval, _threadName, _items
     _enabled = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and impl.config.get("daemons.newsfeed_enabled").lower() == "true"
+        and django.conf.settings.DAEMONS_NEWSFEED_ENABLED
     )
     if _enabled:
-        _url = impl.config.get("newsfeed.url")
-        _pollingInterval = int(impl.config.get("newsfeed.polling_interval"))
+        _url = django.conf.settings.NEWSFEED_URL
+        _pollingInterval = int(django.conf.settings.NEWSFEED_POLLING_INTERVAL)
         _lock.acquire()
         try:
             _items = _noItems

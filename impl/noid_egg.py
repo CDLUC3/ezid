@@ -28,6 +28,8 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.conf
+
 import logging
 import re
 import time
@@ -50,12 +52,13 @@ _reattemptDelay = None
 
 def loadConfig():
     global _server, _authorization, _numAttempts, _reattemptDelay
-    _server = impl.config.get("binder.url")
+    _server = django.conf.settings.BINDER_URL
     _authorization = impl.util.basic_auth(
-        impl.config.get("binder.username"), impl.config.get("binder.password")
+        django.conf.settings.BINDER_USERNAME,
+        django.conf.settings.BINDER_PASSWORD,
     )
-    _numAttempts = int(impl.config.get("binder.num_attempts"))
-    _reattemptDelay = int(impl.config.get("binder.reattempt_delay"))
+    _numAttempts = int(django.conf.settings.BINDER_NUM_ATTEMPTS)
+    _reattemptDelay = int(django.conf.settings.BINDER_REATTEMPT_DELAY)
 
 
 @impl.log.stacklog

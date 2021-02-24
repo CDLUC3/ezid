@@ -108,7 +108,7 @@ def getQueueLength():
 def loadConfig():
     _daemonEnabled[0] = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and impl.config.get("daemons.datacite_enabled").lower() == "true"
+        and django.conf.settings.DAEMONS_DATACITE_ENABLED
     )
     if _daemonEnabled[0]:
         # noinspection PyTypeChecker
@@ -122,9 +122,9 @@ def loadConfig():
             None,
             None,
             None,
-            int(impl.config.get("daemons.datacite_num_worker_threads")),
-            int(impl.config.get("daemons.datacite_processing_idle_sleep")),
-            int(impl.config.get("daemons.datacite_processing_error_sleep")),
+            int(django.conf.settings.DAEMONS_DATACITE_NUM_WORKER_THREADS),
+            int(django.conf.settings.DAEMONS_DATACITE_PROCESSING_IDLE_SLEEP),
+            int(django.conf.settings.DAEMONS_DATACITE_PROCESSING_ERROR_SLEEP),
             _daemonEnabled,
             _threadName,
         )

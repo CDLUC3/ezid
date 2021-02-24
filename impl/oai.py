@@ -27,6 +27,8 @@ import impl.config
 import impl.datacite
 import impl.util
 
+import django.conf
+
 _enabled = None
 _baseUrl = None
 _repositoryName = None
@@ -36,11 +38,11 @@ _batchSize = None
 
 def loadConfig():
     global _enabled, _baseUrl, _repositoryName, _adminEmail, _batchSize
-    _enabled = impl.config.get("oai.enabled").lower() == "true"
-    _baseUrl = impl.config.get("DEFAULT.ezid_base_url")
-    _repositoryName = impl.config.get("oai.repository_name")
-    _adminEmail = impl.config.get("oai.admin_email")
-    _batchSize = int(impl.config.get("oai.batch_size"))
+    _enabled = django.conf.settings.OAI_ENABLED
+    _baseUrl = django.conf.settings.EZID_BASE_URL
+    _repositoryName = django.conf.settings.OAI_REPOSITORY_NAME
+    _adminEmail = django.conf.settings.OAI_ADMIN_EMAIL
+    _batchSize = int(django.conf.settings.OAI_BATCH_SIZE)
 
 
 def _q(elementName):

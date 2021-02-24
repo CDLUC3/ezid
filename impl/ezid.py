@@ -44,10 +44,8 @@ logger = logging.getLogger(__name__)
 
 def loadConfig():
     global _perUserThreadLimit, _perUserThrottle
-    _perUserThreadLimit = int(impl.config.get("DEFAULT.max_threads_per_user"))
-    _perUserThrottle = int(
-        impl.config.get("DEFAULT.max_concurrent_operations_per_user")
-    )
+    _perUserThreadLimit = int(django.conf.settings.MAX_THREADS_PER_USER)
+    _perUserThrottle = int(django.conf.settings.MAX_CONCURRENT_OPERATIONS_PER_USER)
 
 
 # Simple locking mechanism to ensure that, in a multi-threaded

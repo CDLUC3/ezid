@@ -43,7 +43,7 @@ def loadConfig():
     global ezidUrl, templates, alertMessage, testPrefixes
     global google_analytics_id
     global reload_templates
-    ezidUrl = impl.config.get("DEFAULT.ezid_base_url")
+    ezidUrl = django.conf.settings.EZID_BASE_URL
     templates = {}
     _load_templates([d for t in django.conf.settings.TEMPLATES for d in t["DIRS"]])
     alertMessage = ezidapp.models.server_variables.getAlertMessage()
@@ -57,7 +57,7 @@ def loadConfig():
     testPrefixes.append({"namespace": p.name, "prefix": p.prefix})
     p = ezidapp.models.shoulder.getDoiTestShoulder()
     testPrefixes.append({"namespace": p.name, "prefix": p.prefix})
-    google_analytics_id = impl.config.get("DEFAULT.google_analytics_id")
+    google_analytics_id = django.conf.settings.GOOGLE_ANALYTICS_ID
 
 
 # loads the templates directory recursively (dir_list is a list)
@@ -336,6 +336,11 @@ def owner_names(user, page):
             r += _getUsersInGroup(user, 1, user.group.groupname)
         else:
             r += my_proxies
+    import pprint
+    import logging
+
+    logging.info('-' * 100)
+    logging.info(pprint.pformat(r))
     return r
 
 

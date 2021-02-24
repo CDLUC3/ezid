@@ -81,6 +81,7 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
+import django.conf
 import logging
 import time
 

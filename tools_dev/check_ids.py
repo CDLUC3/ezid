@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """Annotate a stream of identifiers with associated metadata and misc
 housekeeping information pulled from an EZID database.
@@ -264,7 +264,7 @@ class Counter:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print(("-" * 100))
+        print("-" * 100)
         self.print_counters()
 
     def count(self, id_str, key, detail_obj=None):

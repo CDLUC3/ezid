@@ -25,6 +25,7 @@ import urllib.request
 import urllib.response
 
 import django.db
+import django.conf
 
 import ezidapp.models.shoulder
 import ezidapp.models.store_identifier
@@ -33,8 +34,8 @@ from impl import config
 # from impl # import ezidapp.models
 
 expireTime = int(time.time()) - 14 * 86400
-baseUrl = config.get("DEFAULT.ezid_base_url")
-adminPassword = config.get("auth.admin_password")
+baseUrl = django.conf.settings.EZID_BASE_URL
+adminPassword = django.conf.settings.AUTH_ADMIN_PASSWORD
 
 if len(sys.argv) != 1:
     sys.stderr.write("Usage: expunge\n")

@@ -106,12 +106,12 @@ def loadConfig():
     global _profiles
     profiles = [
         Profile(
-            impl.config.get(f"profile_{k}.name"),
-            impl.config.get(f"profile_{k}.display_name"),
-            impl.config.get(f"profile_{k}.editable").lower() == "true",
-            _loadElements(impl.config.get(f"profile_{k}.file")),
+            getattr(django.conf.settings, f"PROFILE_{k}_NAME"),
+            getattr(django.conf.settings, f"PROFILE_{k}_DISPLAY_NAME"),
+            getattr(django.conf.settings, f"PROFILE_{k}_EDITABLE"),
+            _loadElements(getattr(django.conf.settings, f"PROFILE_{k}_FILE")),
         )
-        for k in impl.config.get("profiles.keys").split(",")
+        for k in django.conf.settings.PROFILES_KEYS.split(',')
     ]
     names = set()
     for p in profiles:

@@ -27,11 +27,6 @@ import ezidapp.models.store_group
 import ezidapp.models.store_profile
 import ezidapp.models.store_user
 
-# Deferred imports...
-"""
-import util2
-"""
-
 
 def getIdentifier(identifier, prefixMatch=False):
     if prefixMatch:

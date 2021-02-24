@@ -11,6 +11,9 @@ import django.urls
 import impl.config
 import impl.util
 
+import django.conf
+
+
 KNOWN_EZID_HOSTNAME_TUP = (
     'uc3-ezidui01x2-prd',
     #    'cdl',
@@ -45,10 +48,10 @@ def trigger_reload():
         )
         return
 
-    ezid_base_url = impl.config.get("DEFAULT.ezid_base_url")
+    ezid_base_url = django.conf.settings.EZID_BASE_URL
     reload_path = django.urls.reverse('api.reload')
     reload_url = '{}/{}'.format(ezid_base_url.strip('/'), reload_path.strip('/'))
-    admin_pw_str = impl.config.get("auth.admin_password")
+    admin_pw_str = django.conf.settings.AUTH_ADMIN_PASSWORD
 
     data = urllib.parse.urlencode({})
     request = urllib.request.Request(reload_url, data=data.encode('utf-8'))

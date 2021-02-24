@@ -55,22 +55,22 @@ def loadConfig():
     global _enabled, _depositorName, _depositorEmail, _realServer, _testServer
     global _depositUrl, _resultsUrl, _username, _password
     global _daemonEnabled, _threadName, _idleSleep, _ezidUrl, _dataciteEnabled
-    _enabled = impl.config.get("crossref.enabled").lower() == "true"
-    _depositorName = impl.config.get("crossref.depositor_name")
-    _depositorEmail = impl.config.get("crossref.depositor_email")
-    _realServer = impl.config.get("crossref.real_server")
-    _testServer = impl.config.get("crossref.test_server")
-    _depositUrl = impl.config.get("crossref.deposit_url")
-    _resultsUrl = impl.config.get("crossref.results_url")
-    _username = impl.config.get("crossref.username")
-    _password = impl.config.get("crossref.password")
-    _idleSleep = int(impl.config.get("daemons.crossref_processing_idle_sleep"))
+    _enabled = django.conf.settings.CROSSREF_ENABLED
+    _depositorName = django.conf.settings.CROSSREF_DEPOSITOR_NAME
+    _depositorEmail = django.conf.settings.CROSSREF_DEPOSITOR_EMAIL
+    _realServer = django.conf.settings.CROSSREF_REAL_SERVER
+    _testServer = django.conf.settings.CROSSREF_TEST_SERVER
+    _depositUrl = django.conf.settings.CROSSREF_DEPOSIT_URL
+    _resultsUrl = django.conf.settings.CROSSREF_RESULTS_URL
+    _username = django.conf.settings.CROSSREF_USERNAME
+    _password = django.conf.settings.CROSSREF_PASSWORD
+    _idleSleep = int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP)
     _daemonEnabled = (
         django.conf.settings.DAEMON_THREADS_ENABLED
-        and impl.config.get("daemons.crossref_enabled").lower() == "true"
+        and django.conf.settings.DAEMONS_CROSSREF_ENABLED
     )
-    _ezidUrl = impl.config.get("DEFAULT.ezid_base_url")
-    _dataciteEnabled = impl.config.get("datacite.enabled").lower() == "true"
+    _ezidUrl = django.conf.settings.EZID_BASE_URL
+    _dataciteEnabled = django.conf.settings.DATACITE_ENABLED
     if _daemonEnabled:
         _threadName = uuid.uuid1().hex
         t = threading.Thread(target=_daemonThread, name=_threadName)

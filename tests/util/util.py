@@ -1,20 +1,20 @@
-import base64
 import datetime
+import pathlib
 import subprocess
-import urllib.request, urllib.parse, urllib.error
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.response
 
-import pathlib2
-
-import ezidapp.models
-import nog.bdb
-import nog.minter
-import nog.shoulder
+import ezidapp.models.shoulder
+import ezidapp.models.shoulder
+import ezidapp.models.shoulder
+import impl.nog.minter
+import impl.util
 
 
 def add_basic_auth_header(request, username, password):
-    request["Authorization"] = "Basic {} ".format(
-        base64.b64encode(username + ":" + password)
-    )
+    request["Authorization"] = impl.util.basic_auth(username, password)
 
 
 def encode(s):
@@ -58,7 +58,7 @@ def create_shoulder(
 ):
     is_doi = namespace_str[:4] == 'doi:'
     prefix_str, shoulder_str = namespace_str.split('/')[-2:]
-    ezidapp.models.Shoulder.objects.create(
+    ezidapp.models.shoulder.Shoulder.objects.create(
         prefix=namespace_str,
         type='DOI' if is_doi else 'ARK',
         name=organization_name,
@@ -72,7 +72,7 @@ def create_shoulder(
         active=True,
         manager='ezid',
     )
-    nog.minter.create_minter_database(namespace_str, root_path, mask_str)
+    impl.nog.minter.create_minter_database(namespace_str, root_path, mask_str)
     ezidapp.models.shoulder.loadConfig()
 
 
@@ -85,5 +85,5 @@ def check_response(resp):
 
 def dir_tree(path):
     if isinstance(path, str):
-        path = pathlib2.Path(path)
+        path = pathlib.Path(path)
     return '\n'.join(p.as_posix() for p in path.rglob('*'))

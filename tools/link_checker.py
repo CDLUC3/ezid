@@ -91,18 +91,24 @@ import ezidapp.models.link_checker
 import ezidapp.models.link_checker
 import ezidapp.models.search_identifier
 import ezidapp.models.search_user
-from impl import config
-from impl import util
+import impl
+import impl.util
 
-TABLE_UPDATE_CYCLE = int(config.get("linkchecker.table_update_cycle"))
-GOOD_RECHECK_MIN_INTERVAL = int(config.get("linkchecker.good_recheck_min_interval"))
-BAD_RECHECK_MIN_INTERVAL = int(config.get("linkchecker.bad_recheck_min_interval"))
-OWNER_REVISIT_MIN_INTERVAL = int(config.get("linkchecker.owner_revisit_min_interval"))
-NUM_WORKERS = int(config.get("linkchecker.num_workers"))
-WORKSET_OWNER_MAX_LINKS = int(config.get("linkchecker.workset_owner_max_links"))
-CHECK_TIMEOUT = int(config.get("linkchecker.check_timeout"))
-USER_AGENT = config.get("linkchecker.user_agent")
-MAX_READ = int(config.get("linkchecker.max_read"))
+TABLE_UPDATE_CYCLE = int(django.conf.settings.LINKCHECKER_TABLE_UPDATE_CYCLE)
+GOOD_RECHECK_MIN_INTERVAL = int(
+    django.conf.settings.LINKCHECKER_GOOD_RECHECK_MIN_INTERVAL
+)
+BAD_RECHECK_MIN_INTERVAL = int(
+    django.conf.settings.LINKCHECKER_BAD_RECHECK_MIN_INTERVAL
+)
+OWNER_REVISIT_MIN_INTERVAL = int(
+    django.conf.settings.LINKCHECKER_OWNER_REVISIT_MIN_INTERVAL
+)
+NUM_WORKERS = int(django.conf.settings.LINKCHECKER_NUM_WORKERS)
+WORKSET_OWNER_MAX_LINKS = int(django.conf.settings.LINKCHECKER_WORKSET_OWNER_MAX_LINKS)
+CHECK_TIMEOUT = int(django.conf.settings.LINKCHECKER_CHECK_TIMEOUT)
+USER_AGENT = django.conf.settings.LINKCHECKER_USER_AGENT
+MAX_READ = int(django.conf.settings.LINKCHECKER_MAX_READ)
 
 
 class OwnerWorkset(object):
@@ -547,7 +553,7 @@ def worker():
                     lc.checkFailed(returnCode)
                 else:
                     # noinspection PyUnboundLocalVariable
-                    lc.checkFailed(returnCode, util.formatException(e))
+                    lc.checkFailed(returnCode, impl.util.formatException(e))
             lc.full_clean(validate_unique=False)
             lc.save()
             markLinkChecked(index)

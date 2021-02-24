@@ -5,7 +5,7 @@ import django.core.management
 import freezegun
 import pytest
 
-import ezidapp.models
+import ezidapp.models.shoulder
 import tests.util.sample as sample
 import tests.util.util
 
@@ -15,7 +15,7 @@ class TestShoulderCreateDoi:
     def test_1000(self, caplog, tmp_bdb_root):
         """Creating basic Crossref DOI shoulder returns expected messages."""
         caplog.set_level(logging.INFO)
-        assert not ezidapp.models.Shoulder.objects.filter(
+        assert not ezidapp.models.shoulder.Shoulder.objects.filter(
             prefix='doi:10.9111/R01'
         ).exists()
         django.core.management.call_command(
@@ -29,7 +29,7 @@ class TestShoulderCreateDoi:
 
     def test_1010(self, caplog, tmp_bdb_root):
         """Creating Crossref DOI shoulder creates expected database entries."""
-        assert not ezidapp.models.Shoulder.objects.filter(
+        assert not ezidapp.models.shoulder.Shoulder.objects.filter(
             prefix='doi:10.9111/R01'
         ).exists()
         django.core.management.call_command(
@@ -39,7 +39,9 @@ class TestShoulderCreateDoi:
             '91101/r01 test org',
             '--crossref',
         )
-        s = ezidapp.models.Shoulder.objects.filter(prefix='doi:10.9111/R01').get()
+        s = ezidapp.models.shoulder.Shoulder.objects.filter(
+            prefix='doi:10.9111/R01'
+        ).get()
         sample.assert_match(tests.util.util.shoulder_to_dict(s), 'crossref')
         assert s.active
         assert not s.isSupershoulder
@@ -48,10 +50,10 @@ class TestShoulderCreateDoi:
     def test_1020(self, caplog, tmp_bdb_root):
         """Creating DataCite DOI returns error if datacenter is invalid."""
         caplog.set_level(logging.INFO)
-        assert not ezidapp.models.Shoulder.objects.filter(
+        assert not ezidapp.models.shoulder.Shoulder.objects.filter(
             prefix='doi:10.9111/R01'
         ).exists()
-        with pytest.raises(django.core.management.CommandError) as e:
+        with pytest.raises(django.core.management.CommandError):
             django.core.management.call_command(
                 # <ns> <org-name>
                 'shoulder-create-doi',
@@ -64,7 +66,7 @@ class TestShoulderCreateDoi:
 
     def test_1030(self, caplog, tmp_bdb_root):
         """Creating DataCite DOI shoulder creates expected database entries."""
-        assert not ezidapp.models.Shoulder.objects.filter(
+        assert not ezidapp.models.shoulder.Shoulder.objects.filter(
             prefix='doi:10.9111/R01'
         ).exists()
         django.core.management.call_command(
@@ -75,7 +77,9 @@ class TestShoulderCreateDoi:
             '--datacite',
             'CDL.UCLA',
         )
-        s = ezidapp.models.Shoulder.objects.filter(prefix='doi:10.9111/R01').get()
+        s = ezidapp.models.shoulder.Shoulder.objects.filter(
+            prefix='doi:10.9111/R01'
+        ).get()
         sample.assert_match(tests.util.util.shoulder_to_dict(s), 'datacite')
         assert s.active
         assert not s.isSupershoulder
@@ -84,7 +88,7 @@ class TestShoulderCreateDoi:
 
     def test_1040(self, caplog, tmp_bdb_root):
         """Creating DataCite DOI shoulder creates expected database entries."""
-        assert not ezidapp.models.Shoulder.objects.filter(
+        assert not ezidapp.models.shoulder.Shoulder.objects.filter(
             prefix='doi:10.9111/R01'
         ).exists()
         django.core.management.call_command(
@@ -98,7 +102,9 @@ class TestShoulderCreateDoi:
             '--shares-datacenter',
             '--test',
         )
-        s = ezidapp.models.Shoulder.objects.filter(prefix='doi:10.9111/R01').get()
+        s = ezidapp.models.shoulder.Shoulder.objects.filter(
+            prefix='doi:10.9111/R01'
+        ).get()
         sample.assert_match(tests.util.util.shoulder_to_dict(s), 'datacite_flags')
         assert s.active
         assert s.isSupershoulder

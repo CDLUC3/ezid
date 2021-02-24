@@ -7,7 +7,7 @@ class TestImplUtil:
     """Test the impl.util module."""
 
     @pytest.mark.parametrize(
-        ("minted_id,doi_str"),
+        "minted_id,doi_str",
         (
             ("c3022/m3", "10.13022/M3"),
             ("c5140/d3", "10.15140/D3"),
@@ -41,7 +41,7 @@ class TestImplUtil:
         assert e.match("Invalid scheme-less")
 
     @pytest.mark.parametrize(
-        ("doi_str,minted_id"),
+        "doi_str,minted_id",
         (
             ("10.13022/M3", "c3022/m3"),
             ("10.15140/D3", "c5140/d3"),
