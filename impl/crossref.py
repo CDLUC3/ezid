@@ -388,24 +388,42 @@ def _pollDepositStatus (batchId, doi):
       return ("submitted", root.attrib["status"])
     else:
       d = root.findall("record_diagnostic")
-      assert len(d) == 1, ("<doi_batch_diagnostic> element contains %s " +\
-        "<record_diagnostic> element") % _notOne(len(d))
-      d = d[0]
-      assert "status" in d.attrib, "missing record_diagnostic/status attribute"
-      if d.attrib["status"] == "Success":
-        return ("completed successfully", None)
-      elif d.attrib["status"] in ["Warning", "Failure"]:
-        m = d.findall("msg")
-        assert len(m) == 1, ("<record_diagnostic> element contains %s " +\
-          "<msg> element") % _notOne(len(m))
-        m = m[0].text
-        e = d.find("conflict_id")
-        if e != None: m += "\nconflict_id=" + e.text
-        for e in d.xpath("dois_in_conflict/doi"):
-          m += "\nin conflict with: " + e.text
-        return ("completed with %s" % d.attrib["status"].lower(), m)
+      if len(d) > 1:
+        allSuccess = 0
+        for element in d:
+          assert "status" in element.attrib, "missing record_diagnostic/status attribute"
+          if element.attrib["status"] == "Success":
+            allSuccess += 1
+          elif element.attrib["status"] in ["Warning", "Failure"]:
+            m = element.findall("msg")
+            m = m[0].text
+            e = element.find("conflict_id")
+            if e != None: m += "\nconflict_id=" + e.text
+            for e in element.xpath("dois_in_conflict/doi"):
+              m += "\nin conflict with: " + e.text
+            return ("completed with %s" % element.attrib["status"].lower(), m)
+          else:
+            assert False, "unexpected status value: " + element.attrib["status"]
+        if allSuccess == len(d):
+          return ("completed successfully", None)
       else:
-        assert False, "unexpected status value: " + d.attrib["status"]
+        assert len(d) == 1, ("<doi_batch_diagnostic> element contains %s " +\
+        "<record_diagnostic> element") % _notOne(len(d))
+        assert "status" in d.attrib, "missing record_diagnostic/status attribute"
+        if d.attrib["status"] == "Success":
+          return ("completed successfully", None)
+        elif d.attrib["status"] in ["Warning", "Failure"]:
+          m = d.findall("msg")
+          assert len(m) == 1, ("<record_diagnostic> element contains %s " +\
+            "<msg> element") % _notOne(len(m))
+          m = m[0].text
+          e = d.find("conflict_id")
+          if e != None: m += "\nconflict_id=" + e.text
+          for e in d.xpath("dois_in_conflict/doi"):
+            m += "\nin conflict with: " + e.text
+          return ("completed with %s" % d.attrib["status"].lower(), m)
+        else:
+          assert False, "unexpected status value: " + d.attrib["status"]
   except Exception, e:
     log.otherError("crossref._pollDepositStatus",
       _wrapException("error polling deposit status, doi %s, batch %s" %\
