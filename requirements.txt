@@ -16,3 +16,4 @@ sgmllib3k~=1.0.0
 chardet~=4.0.0
 PyMySQL~=0.9.3
 Jinja2~=2.11.3
+mysqlclient~=1.4.6
