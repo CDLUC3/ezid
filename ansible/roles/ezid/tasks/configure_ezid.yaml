@@ -32,6 +32,7 @@
 
 - when: _response.rc is defined
   block:
+
   - name: report setup.py response std_out
     debug:
       msg="{{ _response.stdout_lines }}"
@@ -40,14 +41,3 @@
     debug:
       msg="{{ _response.stderr_lines }}"
 
-    # - name: install ezid requirements
-    #   pip:
-    #     requirements: "{{ app_dir }}/ezid/requirements.txt"
-    #     executable: "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
-
-    #- name: discover path to mod_wsgi shared object file
-    #  shell: "find {{ site_packages.stdout }} -name \"mod_wsgi*.so\""
-    #  register: mod_wsgi_so
-    #
-    #- name: report mod_wsgi shared object filename
-    #  ansible.builtin.debug: msg="{{ mod_wsgi_so.stdout }}"
