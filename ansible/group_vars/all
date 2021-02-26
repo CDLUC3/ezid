@@ -27,10 +27,10 @@ http_protocol: http
 # Gather any environment specific application settings from AWS SSM ParameterStore
 # using aws_ssm pluggin
 #
-ssm_root_path: "{{ lookup('env', 'SSM_ROOT_PATH') | default('/no/path/') }}"
-ssm_default_path: "{{ lookup('env', 'SSM_DEFAULT_PATH') | default('/no/path/') }}"
 aws_region: "{{ lookup('env', 'AWS_REGION') | default('us-west-2') }}"
-default_params: "{{ lookup(
+ssm_default_path: "{{ lookup('env', 'SSM_DEFAULT_PATH') | default('/no/path/') }}"
+ssm_root_path: "{{ lookup('env', 'SSM_ROOT_PATH') | default('/no/path/') }}"
+ssm_default_params: "{{ lookup(
     'aws_ssm',
     ssm_default_path,
     region=aws_region,
@@ -39,7 +39,7 @@ default_params: "{{ lookup(
     shortnames=true,
     errors='ignore'
 ) | default({}, true)}}"
-ssm_params: "{{ lookup(
+ssm_root_params: "{{ lookup(
     'aws_ssm',
     ssm_root_path,
     region=aws_region,
@@ -47,86 +47,33 @@ ssm_params: "{{ lookup(
     recursive=true,
     shortnames=true,
     errors='ignore'
-) | default(default_params, true)}}"
+) | default({}, true)}}"
+ssm_params: "{{ ssm_default_params|combine(ssm_root_params) }}"
 
 
 # Application Settings
 # These are used to populate settings/settings.py
 #
-allocator_cdl_password:     "{{ ssm_params['allocator_cdl_password']    | default('') }}"
-allocator_purdue_password:  "{{ ssm_params['allocator_purdue_password'] | default('') }}"
-admin_username:             "{{ ssm_params['admin_username']            | default('') }}"
-admin_password:             "{{ ssm_params['admin_password']            | default('') }}"
-binder_url:                 "{{ ssm_params['binder_url']                | default('') }}"
-binder_username:            "{{ ssm_params['binder_username']           | default('') }}"
-binder_password:            "{{ ssm_params['binder_password']           | default('') }}"
+allocator_cdl_password:     "{{ ssm_params['allocator_cdl_password'] }}"
+allocator_purdue_password:  "{{ ssm_params['allocator_purdue_password'] }}"
+admin_username:             "{{ ssm_params['admin_username'] }}"
+admin_password:             "{{ ssm_params['admin_password'] }}"
+binder_url:                 "{{ ssm_params['binder_url'] }}"
+binder_username:            "{{ ssm_params['binder_username'] }}"
+binder_password:            "{{ ssm_params['binder_password'] }}"
 cloudwatch_instance_name:   "{{ ansible_facts.hostname }}"
-crossref_username:          "{{ ssm_params['crossref_username']         | default('') }}"
-crossref_password:          "{{ ssm_params['crossref_password']         | default('') }}"
+crossref_username:          "{{ ssm_params['crossref_username'] }}"
+crossref_password:          "{{ ssm_params['crossref_password'] }}"
 
-database_host:              "{{ ssm_params['database_host']             | default('') }}"
-database_port:              "{{ ssm_params['database_port']             | default('') }}"
-database_name:              "{{ ssm_params['database_name']             | default('') }}"
-database_user:              "{{ ssm_params['database_user']             | default('') }}"
-database_password:          "{{ ssm_params['database_password']         | default('') }}"
+database_host:              "{{ ssm_params['database_host'] }}"
+database_port:              "{{ ssm_params['database_port'] }}"
+database_name:              "{{ ssm_params['database_name'] }}"
+database_user:              "{{ ssm_params['database_user'] }}"
+database_password:          "{{ ssm_params['database_password'] }}"
 
-datacite_doi_url:           "{{ ssm_params['datacite_doi_url']          | default('') }}"
-datacite_metadata_url:      "{{ ssm_params['datacite_metadata_url']     | default('') }}"
-email_new_account:          "{{ ssm_params['email_new_account']         | default('') }}"
-resolver_doi:               "{{ ssm_params['resolver_doi']              | default('') }}"
-resolver_ark:               "{{ ssm_params['resolver_ark']              | default('') }}"
-
-## allocator_cdl_password:     "{{ ssm_params['allocator_cdl_password']    | default('') }}"
-## allocator_purdue_password:  "{{ ssm_params['allocator_purdue_password'] | default('') }}"
-## admin_username:             "{{ ssm_params['admin_username']            | default('admin') }}"
-## admin_password:             "{{ ssm_params['admin_password']            | default('') }}"
-## binder_url:                 "{{ ssm_params['binder_url']                | default('https://n2t-stg.n2t.net/a/ezid/b') }}"
-## binder_username:            "{{ ssm_params['binder_username']           | default('ezid') }}"
-## binder_password:            "{{ ssm_params['binder_password']           | default('') }}"
-## cloudwatch_instance_name:   "{{ ansible_facts.hostname }}"
-## crossref_username:          "{{ ssm_params['crossref_username']         | default('cdlb') }}"
-## crossref_password:          "{{ ssm_params['crossref_password']         | default('') }}"
-## 
-## database_host:              "{{ ssm_params['database_host']             | default('') }}"
-## database_port:              "{{ ssm_params['database_port']             | default('3306') }}"
-## database_name:              "{{ ssm_params['database_name']             | default('ezid') }}"
-## database_user:              "{{ ssm_params['database_user']             | default('ezidrw') }}"
-## database_password:          "{{ ssm_params['database_password']         | default('') }}"
-## 
-## datacite_doi_url:           "{{ ssm_params['datacite_doi_url']          | default('https://mds.datacite.org/doi') }}"
-## datacite_metadata_url:      "{{ ssm_params['datacite_metadata_url']     | default('https://mds.datacite.org/metadata') }}"
-## email_new_account:          "{{ ssm_params['email_new_account']         | default('jak@ucop.edu,maria.gould@ucop.edu') }}"
-## resolver_doi:               "{{ ssm_params['resolver_doi']              | default('https://doi.org') }}"
-## resolver_ark:               "{{ ssm_params['resolver_ark']              | default('https://n2t-stg.n2t.net') }}"
-
-
-
-
-#######################
-# old style from v0.1.2
-#default_params:
-#  deployment_level: localdev
-#  admin_password: ''
-#  db_host: docker.for.mac.host.internal
-#  db_port: '4306'
-#  db_password: ''
-#
-#ssm_params: "{{ lookup(
-#    'aws_ssm',
-#    ssm_root_path,
-#    region=aws_region,
-#    bypath=true,
-#    recursive=true,
-#    shortnames=true,
-#    errors='ignore'
-#) | default( default_params, true ) }}"
-#
-#deployment_level:           "{{ ssm_params['deployment_level'] }}"
-#admin_password:             "{{ ssm_params['admin_password'] }}"
-#db_host:                    "{{ ssm_params['db_host'] }}"
-#db_port:                    "{{ ssm_params['db_port'] }}"
-#db_password:                "{{ ssm_params['db_password'] }}"
-#binder_password:            "{{ ssm_params['binder_password'] | default('') }}"
-#allocator_cdl_password:     "{{ ssm_params['allocator_cdl_password'] | default('') }}"
-#allocator_purdue_password:  "{{ ssm_params['allocator_purdue_password'] | default('') }}"
-#crossref_password:          "{{ ssm_params['crossref_password'] | default('') }}"
+datacite_doi_url:           "{{ ssm_params['datacite_doi_url'] }}"
+datacite_metadata_url:      "{{ ssm_params['datacite_metadata_url'] }}"
+ezid_base_url:              "{{ ssm_params['ezid_base_url']}}"
+email_new_account:          "{{ ssm_params['email_new_account'] }}"
+resolver_doi:               "{{ ssm_params['resolver_doi'] }}"
+resolver_ark:               "{{ ssm_params['resolver_ark'] }}"

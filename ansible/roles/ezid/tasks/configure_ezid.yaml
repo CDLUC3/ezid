@@ -23,7 +23,6 @@
     mode: "0600"
 
 - name: run setup.py
-  #ansible.builtin.command: "{{ app_dir }}/ezid/setup.py"
   ansible.builtin.command:
     chdir: "{{ app_dir }}/ezid"
     argv:

@@ -100,9 +100,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': '{{ database_host }}',
-        "NAME": "{{ database_name }}",
+        'NAME': '{{ database_name }}',
         'USER': '{{ database_user }}',
-        "PASSWORD": '{{ database_password }}',
+        'PASSWORD': '{{ database_password }}',
         'PORT': '{{ database_port }}',
         'OPTIONS': {'charset': 'utf8mb4'},
         'ATOMIC_REQUESTS': False,
@@ -231,7 +231,7 @@ logging.config.dictConfig(
 
 # Server instance
 
-EZID_BASE_URL = 'https://ezid.cdlib.org'
+EZID_BASE_URL = '{{ ezid_base_url }}'
 ALLOWED_HOSTS = ['*']
 SECRET_KEY = '< placeholder - do not modify >'
 

@@ -13,6 +13,8 @@
     debug: msg="{{ app_dir }}"
   - name: report ezid_branch
     debug: msg="{{ ezid_branch }}"
+  - name: report pyenv_global
+    debug: msg="{{ pyenv_global }}"
   - name: report virtual_environments
     ansible.builtin.debug:
       msg="{{ item }}"
@@ -21,18 +23,22 @@
   # ssm vars
   - name: report ssm_root_path
     debug: msg="{{ ssm_root_path }}"
-    #debug: msg="{{ lookup('env', 'SSM_ROOT_PATH') | default('/no/path/') }}"
-  #- name: return a dictionary of ssm parameters from a hierarchy path
-  #debug: msg="{{ lookup('aws_ssm', '/uc3/ezid/dev/', region='us-west-2', bypath=true, recursive=true, shortnames=true) }}"
-
-  #- name: return a single param based on path as variable
-  #  debug: msg="{{ lookup('aws_ssm', ssm_path, region='us-west-2', bypath=true, recursive=true, shortnames=true) }}"
-
-  - name: return dict from group_vars
+  - name: report ssm_default_path
+    debug: msg="{{ ssm_default_path }}"
+  - name: return ssm_default_params dict from group_vars
+    debug: msg="{{ ssm_default_params }}"
+  - name: return ssm_root_params dict from group_vars
+    debug: msg="{{ ssm_root_params }}"
+  - name: return ssm_params dict from group_vars
     debug: msg="{{ ssm_params }}"
-  - name: return default_ssm_params
-    debug: msg="{{ default_ssm_params }}"
-  #  #debug: msg="{{ ssm_params['deployment_level'] }}"
-  - name: return a single param based on path as variable
-    debug: msg="{{ db_port }}"
+  - name: return a single param based on ssm_default_path as variable
+    ##debug: msg="{{ ssm_params['database_port'] }}"
+    debug: msg="database_port {{ database_port }}"
+  - name: return a single param based on ssm_root_path as variable
+    ##debug: msg="{{ ssm_params['database_host'] }}"
+    debug: msg="database_host {{ database_host }}"
+  - name: return binder_url
+    debug: msg="{{ binder_url }}"
+  - name: return resolver_ark
+    debug: msg="{{ resolver_ark }}"
 
