@@ -20,7 +20,7 @@
       #
       # ezid config
       #
-      export DJANGO_SETTINGS_MODULE=settings.{{ deployment_level }}
+      export DJANGO_SETTINGS_MODULE=settings.setttings
 
 # from https://galaxy.ansible.com/suzuki-shunsuke/pyenv-module
 - name: pyenv install

@@ -10,6 +10,10 @@
   pip:
     requirements: "{{ app_dir }}/ezid/requirements.txt"
     executable: "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
+- name: install wheel
+  pip:
+    name: wheel
+    executable: "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
 - name: Clone ezid-info-pages repo
   git:
     repo: "{{ ezid_info_pages_repo }}"
