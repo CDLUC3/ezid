@@ -15,7 +15,6 @@
 
 - name: settings.py
   template:
-    #src: "templates/ezid/settings/settings.py.j2"
     src: "{{ app_dir }}/ezid/settings/settings_template.py"
     dest: "{{ app_dir }}/ezid/settings/settings.py"
     owner: "{{ user }}"
@@ -26,6 +25,7 @@
   ansible.builtin.command:
     chdir: "{{ app_dir }}/ezid"
     argv:
+      - "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/python"
       - "{{ app_dir }}/ezid/setup.py"
       - develop
   register: _response

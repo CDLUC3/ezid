@@ -62,8 +62,11 @@
     pyenv_root: "{{ pyenv_root }}"
 
 
-    #- name: install wheel
-    #  pip:
-    #    name: item
-    #    executable: "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
-    #  loop: ['wheel', 'setuptools']
+- name: pip install wheel
+  pip:
+    name:
+    - wheel
+    - pip
+    executable: "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
+    extra_args: --upgrade
+
