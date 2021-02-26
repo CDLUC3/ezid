@@ -30,14 +30,20 @@
       - develop
   register: _response
 
-- name: report setup.py response std_out
-  debug:
-    msg="{{ _response.stdout_lines }}"
+- when: _response.rc is defined
+  block:
+  - name: report setup.py response std_out
+    debug:
+      msg="{{ _response.stdout_lines }}"
+  
+  - name: report setup.py response std_err
+    debug:
+      msg="{{ _response.stderr_lines }}"
 
-- name: report setup.py response std_err
-  debug:
-    msg="{{ _response.stderr_lines }}"
-
+    # - name: install ezid requirements
+    #   pip:
+    #     requirements: "{{ app_dir }}/ezid/requirements.txt"
+    #     executable: "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
 
     #- name: discover path to mod_wsgi shared object file
     #  shell: "find {{ site_packages.stdout }} -name \"mod_wsgi*.so\""

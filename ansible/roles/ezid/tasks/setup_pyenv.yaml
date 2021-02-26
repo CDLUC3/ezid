@@ -60,3 +60,9 @@
     versions:
     - "{{ pyenv_global }}"
     pyenv_root: "{{ pyenv_root }}"
+
+
+- name: install wheel
+  pip:
+    name: wheel
+    executable: "{{ pyenv_root }}/versions/{{ pyenv_global }}/bin/pip"
