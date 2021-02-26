@@ -28,3 +28,20 @@
     argv:
       - "{{ app_dir }}/ezid/setup.py"
       - develop
+  register: _response
+
+- name: report setup.py response std_out
+  debug:
+    msg="{{ _response.stdout_lines }}"
+
+- name: report setup.py response std_err
+  debug:
+    msg="{{ _response.stderr_lines }}"
+
+
+    #- name: discover path to mod_wsgi shared object file
+    #  shell: "find {{ site_packages.stdout }} -name \"mod_wsgi*.so\""
+    #  register: mod_wsgi_so
+    #
+    #- name: report mod_wsgi shared object filename
+    #  ansible.builtin.debug: msg="{{ mod_wsgi_so.stdout }}"
