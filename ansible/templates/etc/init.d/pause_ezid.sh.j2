@@ -7,7 +7,7 @@
 
 CLIENT={{ app_dir }}/.pyenv/shims/ez-client
 DJANGO_SETTINGS_MODULE=settings.settings
-SHADOWFILE={{ app_dir }}/ezid/settings/settings.py
+SETTINGS={{ app_dir }}/ezid/settings/settings.py
 PROTOCOL={{ http_protocol }}
 HOSTNAME=$(hostname -f)
 PORT={{ http_port }}
@@ -42,7 +42,7 @@ function pauseEzid {
         status=0
         return
     fi
-    password=`grep -m1 '^ADMIN_PASSWORD: [^ ]' $SHADOWFILE`
+    password=`grep -m1 '^AUTH_ADMIN_PASSWORD [^ ]' $SETTINGS`
     if [ "$password" == "" ]; then
         echo "unable to locate admin password"
         status=1
