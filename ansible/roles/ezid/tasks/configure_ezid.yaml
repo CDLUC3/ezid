@@ -30,14 +30,17 @@
       - develop
   register: _response
 
-- when: _response.rc is defined
-  block:
+- name: run pyenv rehash
+  ansible.builtin.command: pyenv rehash
 
-  - name: report setup.py response std_out
-    debug:
-      msg="{{ _response.stdout_lines }}"
-  
-  - name: report setup.py response std_err
-    debug:
-      msg="{{ _response.stderr_lines }}"
+#- when: _response.rc is defined
+#  block:
+#
+#  - name: report setup.py response std_out
+#    debug:
+#      msg="{{ _response.stdout_lines }}"
+#  
+#  - name: report setup.py response std_err
+#    debug:
+#      msg="{{ _response.stderr_lines }}"
 
