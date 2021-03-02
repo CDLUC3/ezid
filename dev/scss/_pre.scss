@@ -1,0 +1,29 @@
+// ##### Link Elements ##### //
+
+%pre__base {
+	margin: 1em 0;
+	padding: 0.5em;
+	border: 1px dotted $gray-light;
+	background-color: $gray-lighter;
+	font-size: 0.85em;
+}
+
+//Used only for api doc page
+.literal-block {
+	@extend %pre__base;
+	display: block;
+	font-family: monospace;
+	white-space: pre-wrap;
+	overflow: visible;
+}
+
+//Used on learn pages. For some reason pre-wrap wasn't working
+// for pages besides api doc page so I created a separate class
+// for these pages. Each line is wrapped with <code> tag.
+.pre-block {
+	@extend %pre__base;
+
+	code {
+		white-space: pre-wrap;
+	}
+}

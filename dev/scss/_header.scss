@@ -1,0 +1,271 @@
+// ##### Header Component ##### //
+
+.header__admin-text {
+	display: none;
+
+	@include bp(screen2) {
+		display: flex;
+		justify-content: flex-end;
+		max-width: 1000px;
+		margin: 10px auto;
+		color: $design-pop-color;
+	}
+
+}
+
+.header {
+	display: flex;
+	position: relative; // to .header__nav-button
+	flex-flow: row wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	max-width: 1000px;
+	margin: 15px auto;
+
+	@include bp(screen2) {
+		flex-flow: row nowrap;
+		margin: 0 auto 15px;
+	}
+
+}
+
+.header__logos {
+	display: flex;
+
+	@include bp(screen2) {
+		flex: 1 0 auto;
+		margin: 0 0 13px;
+	}
+
+}
+
+.header__main-logo-link {
+	// empty
+}
+
+.header__main-logo-image {
+	width: 40vw;
+	height: 100%;
+
+	@include bp(screen2) {
+		width: 320px;
+	}
+
+}
+
+.header__affiliate-logo-link {
+	margin: 0 0 0 20px;
+}
+
+.header__affiliate-logo-image {
+	width: 15vw;
+	height: 100%;
+
+	@include bp(screen2) {
+		width: 130px;
+	}
+
+}
+
+// ***** Show/Hide Navigation ***** //
+
+.header__nav-button {
+	position: absolute; // to .header
+	top: -5px;
+	right: 0;
+	padding: 6px;
+	border: 1px solid $design-light-gray-border-color;
+	background: transparent;
+
+	@include bp(screen2) {
+		display: none;
+	}
+
+}
+
+.header__nav-button-icon {
+	width: 25px;
+}
+
+%header__nav {
+	width: 100%;
+	height: 0; // hide small screen nav
+	overflow: hidden; // hide small screen nav
+
+	@include bp(screen2) {
+    display: flex;
+		justify-content: space-between;
+		width: 400px;
+		height: auto; // show large screen nav
+		padding: 0 0 0 20px;
+		overflow: visible; // show large screen nav
+  }
+
+}
+
+.header__nav {
+	@extend %header__nav;
+}
+
+.header__nav--selected {
+	@extend %header__nav;
+	height: auto; // show small screen nav
+	margin: 10px 0 0;
+	padding: 0 0 1px;
+
+	@include bp(screen2) {
+		display: flex;
+		margin: 0;
+		padding: 0;
+	}
+
+}
+
+// ***** Navigation Elements ***** //
+
+%header__nav-items {
+	display: block;
+	box-sizing: content-box;
+	padding: 15px 0 15px 45px;
+	border: 1px solid $design-light-gray-border-color;
+	border-top: none;
+	background-color: $design-light-gray-bg-color;
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 23px 23px;
+	color: $design-primary-color;
+	font-size: 0.9em;
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+
+	@include bp(screen2) {
+		margin: 0;
+		padding: 35px 0 10px;
+		border: none;
+		background-color: transparent;
+		background-position: top center;
+		cursor: pointer;
+	}
+
+	&:hover,
+	&:focus {
+		color: $design-black-color;
+		text-decoration: underline;
+	}
+
+}
+
+.header__nav-item-search {
+	@extend %header__nav-items;
+	border-top: 1px solid $design-light-gray-border-color;
+	background-image: url('../images/searchOff.svg');
+
+	@include bp(screen2) {
+		border: none;
+	}
+
+	&:hover,
+	&:focus {
+		background-image: url('../images/searchOn.svg');
+	}
+
+}
+
+.header__nav-item-learn {
+	@extend %header__nav-items;
+	background-image: url('../images/learnOff.svg');
+
+	&:hover,
+	&:focus {
+		background-image: url('../images/learnOn.svg');
+	}
+
+}
+
+.header__subnav-panel {
+
+	@include bp(screen2) {
+		position: absolute;
+		top: 60px;
+		min-width: 150px;
+		box-shadow: 0 6px 12px;
+	}
+
+}
+
+.header__nav-subitem {
+	display: block;
+	position: relative;
+	padding: 12px 0 12px 45px;
+	border: 1px solid $design-light-gray-border-color;
+	border-top: none;
+	background-color: $design-white-color;
+	color: $design-primary-color;
+	font-size: 0.9em;
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+
+	@include bp(screen2) {
+		padding: 12px 15px;
+		border: none;
+		color: $design-black-color;
+		font-size: 1em;
+		font-weight: normal;
+		text-transform: none;
+
+		&::before {
+			display: none;
+		}
+
+		&:nth-of-type(6) {
+			border-bottom: 1px dotted $design-black-color;
+		}
+
+		&:hover {
+			background: linear-gradient(to bottom, $design-secondary-gradient-top, $design-secondary-color);
+			color: $design-white-color;
+			font-weight: bold;
+			text-decoration: none;
+		}
+
+	}
+
+	&::before {
+		content: '\2219'; // bullet
+		position: absolute;
+		top: 10px;
+		left: 22px;
+		font-size: 1.4em;
+	}
+
+}
+
+.header__nav-item-contact {
+	@extend %header__nav-items;
+
+	background-image: url('../images/contactOff.svg');
+
+	&:hover,
+	&:focus {
+		background-image: url('../images/contactOn.svg');
+	}
+
+}
+
+.header__loginout {
+	display: none;
+
+	@include bp(screen2) {
+		display: block;
+		position: relative; // to .login-modal
+		align-self: flex-end; // align login button to bottom of other nav items
+		margin: 0 0 12px; // align button bottom with nav text
+	}
+
+}
+
+.header__loginout-link {
+	@extend %button__pop;
+}
