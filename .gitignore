@@ -18,3 +18,4 @@ env
 db
 .idea
 master_shoulders.txt
+.DS_Store*
