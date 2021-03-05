@@ -409,6 +409,7 @@ def _pollDepositStatus (batchId, doi):
       else:
         assert len(d) == 1, ("<doi_batch_diagnostic> element contains %s " +\
         "<record_diagnostic> element") % _notOne(len(d))
+        d = d[0]
         assert "status" in d.attrib, "missing record_diagnostic/status attribute"
         if d.attrib["status"] == "Success":
           return ("completed successfully", None)
