@@ -81,10 +81,11 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-import django.conf
+
 import logging
 import time
 
+import django.conf
 import django.http
 
 import ezidapp.models.update_queue
@@ -102,40 +103,38 @@ import impl.util
 
 
 def _readInput(request):
-    if "CONTENT_TYPE" in request.META:
-        ct = [w.strip() for w in request.META["CONTENT_TYPE"].split(";")]
-        if ct[0] != "text/plain":
-            return "error: bad request - unsupported content type"
-        if (
-            len(ct) > 1
-            and ct[1].startswith("charset=")
-            and ct[1][8:].upper() != "utf-8"
-        ):
-            return "error: bad request - unsupported character encoding"
-        try:
-            # We'd like to call sanitizeXmlSafeCharset just once, before the
-            # ANVL parsing, but the problem is that hex-percent-encoded
-            # characters, when decoded, can result in additional disallowed
-            # characters appearing.  So we sanitize after ANVL parsing.
-            # Note that it is possible here that two different labels, that
-            # differ in only disallowed characters, will be silently
-            # collapsed into one instead of resulting in an error.  But
-            # that's a real edge case, so we don't worry about it.
-            return {
-                impl.util.sanitizeXmlSafeCharset(k): impl.util.sanitizeXmlSafeCharset(v)
-                for k, v in list(impl.anvl.parse(request.body.decode("utf-8")).items())
-            }
-        except UnicodeDecodeError:
-            return "error: bad request - character decoding error"
-        except impl.anvl.AnvlParseException as e:
-            return f"error: bad request - ANVL parse error ({str(e)})"
-        except Exception:
-            msg_str = "error: bad request - malformed or incomplete request body"
-            logging.exception(msg_str)
-            return msg_str
-    else:
+    content_type = request.META.get('CONTENT_TYPE')
+    if content_type is None:
         return {}
 
+    maintype, subtype = [s.strip().lower() for s in content_type.split(';', maxsplit=1)]
+    charset, encoding = [s.strip().lower() for s in subtype.split('=', maxsplit=1)]
+    if maintype != 'text/plain':
+        return 'error: bad request - expected Content-Type text/plain'
+    if encoding and encoding != 'utf-8':
+        return 'error: bad request - if specified, Content-Type subtype must be "utf-8"'
+
+    try:
+        # We'd like to call sanitizeXmlSafeCharset just once, before the
+        # ANVL parsing, but the problem is that hex-percent-encoded
+        # characters, when decoded, can result in additional disallowed
+        # characters appearing.  So we sanitize after ANVL parsing.
+        # Note that it is possible here that two different labels, that
+        # differ in only disallowed characters, will be silently
+        # collapsed into one instead of resulting in an error.  But
+        # that's a real edge case, so we don't worry about it.
+        return {
+            impl.util.sanitizeXmlSafeCharset(k): impl.util.sanitizeXmlSafeCharset(v)
+            for k, v in list(impl.anvl.parse(request.body.decode("utf-8")).items())
+        }
+    except UnicodeDecodeError:
+        return "error: bad request - character decoding error"
+    except impl.anvl.AnvlParseException as e:
+        return f"error: bad request - ANVL parse error ({str(e)})"
+    except Exception:
+        msg_str = "error: bad request - malformed or incomplete request body"
+        logging.exception(msg_str)
+        return msg_str
 
 def _validateOptions(request, options):
     d = {}
