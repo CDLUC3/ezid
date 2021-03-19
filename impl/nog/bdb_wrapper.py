@@ -211,8 +211,7 @@ class Bdb:
         return self.bdb_dict
 
     def get(self, key_str):
-        # return self._bdb[self._key(key_str)].decode("ascii") # Py3
-        v = self.bdb_dict[self._key(key_str)].decode('utf-8')
+        v = Bdb._to_str(self.bdb_dict[self._key(key_str)])
         if '/top' not in key_str and '/value' not in key_str:
             log.debug("BDB: {} -> {}".format(key_str, v))
         return v
@@ -250,5 +249,13 @@ class Bdb:
 
     @staticmethod
     def _key(key_str):
-        return f":/{key_str}".encode("utf-8")  # Py3
-        # return ":/{}".format(key_str)
+        """BDB requires keys to be bytes"""
+        return Bdb._to_bytes(f":/{key_str}")
+
+    @staticmethod
+    def _to_str(x):
+        return x.decode('utf-8') if not isinstance(x, str) else x
+
+    @staticmethod
+    def _to_bytes(x):
+        return x.encode('utf-8') if not isinstance(x, bytes) else x

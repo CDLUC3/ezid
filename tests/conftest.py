@@ -4,6 +4,7 @@ import io
 import logging
 import os
 import pathlib
+import re
 import sys
 
 import django
@@ -24,8 +25,12 @@ import ezidapp.models.store_user
 import impl.config
 import impl.nog.filesystem
 import impl.nog.shoulder
+import tests.util.metadata_generator
 import tests.util.sample
 import tests.util.util
+
+HERE_PATH = pathlib.Path(__file__).parent.resolve()
+ROOT_PATH = HERE_PATH / '..'
 
 DEFAULT_DB_KEY = 'default'
 import impl.nog.id_ns
@@ -66,9 +71,7 @@ REL_DB_FIXTURE_PATH = '../ezidapp/fixtures/combined-limited.json'
 
 log = logging.getLogger(__name__)
 
-
 # Hooks
-
 
 def pytest_addoption(parser):
     parser.addoption(
