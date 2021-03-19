@@ -212,7 +212,7 @@ def _extractRaiser(tbList):
 
     j = None
     for i in range(len(tbList) - 1, -1, -1):
-        if tbList[i][0].startswith(django.conf.settings.PROJECT_ROOT):
+        if tbList[i][0].startswith(django.conf.settings.PROJECT_ROOT.as_posix()):
             if tbList[i][2].startswith("_"):
                 if j is None or moduleName(tbList[i][0]) == moduleName(tbList[j][0]):
                     j = i
