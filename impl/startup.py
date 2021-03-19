@@ -13,10 +13,7 @@ import sys
 
 def global_exception_handler(type, value, traceback):
     logger.error('=' * 100)
-    logger.error('Unhandled exception:', type, value)
-    import traceback
-
-    traceback.logger.error_tb(traceback)
+    logger.error('Unhandled exception', exc_info=(type,value,traceback))
     logger.error('=' * 100)
 
 
