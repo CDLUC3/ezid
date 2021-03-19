@@ -68,6 +68,9 @@ REL_DB_FIXTURE_PATH = '../ezidapp/fixtures/combined-limited.json'
 # store-test: Small DB with only a few shoulder records. Fast to load as a fixture.
 # REL_DB_FIXTURE_PATH = '../ezidapp/fixtures/store-test.json'
 
+# We use pytest's CLI logging, so can clear out the handlers created by Django here.
+if logging.getLogger().hasHandlers():
+    logging.getLogger().handlers.clear()
 
 log = logging.getLogger(__name__)
 
