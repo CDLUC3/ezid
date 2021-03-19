@@ -231,7 +231,7 @@ logging.config.dictConfig(
 
 # Server instance
 
-EZID_BASE_URL = 'https://ezid.cdlib.org'
+EZID_BASE_URL = '{{ ezid_base_url }}'
 ALLOWED_HOSTS = ['*']
 SECRET_KEY = '< placeholder - do not modify >'
 
