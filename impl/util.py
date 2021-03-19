@@ -389,7 +389,7 @@ def _encode(pattern, s):
     # s = s.encode('utf-8') if isinstance(s, str) else s
 
     # return pattern.sub(lambda c: f'{ord(c.group(0))}:02X', s)
-    return pattern.sub(lambda c: f'{ord(c.group(0))}:02X', s)
+    return pattern.sub(lambda c: f'%{ord(c.group(0)):02X}', s)
 
 
 _pattern1 = re.compile("%|[^ -~]")
