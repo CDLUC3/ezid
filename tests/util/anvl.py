@@ -12,7 +12,7 @@ ENCODING = 'utf-8'
 def format_request(args):
     request = []
     for i in range(0, len(args), 2):
-        k = args[i].decode(ENCODING)
+        k = args[i]
         if k == "@":
             f = codecs.open(args[i + 1], encoding=ENCODING)
             request += [l.strip("\r\n") for l in f.readlines()]
@@ -21,15 +21,15 @@ def format_request(args):
             if k == "@@":
                 k = "@"
             else:
-                k = re.sub("[%:\r\n]", lambda c: f"%{ord(c.group(0)):02X}", k)
-            v = args[i + 1].decode(ENCODING)
+                k = re.sub("[%:\r\n]", (lambda c: f"%{ord(c.group(0)):02X}"), k)
+            v = args[i + 1]
             if v.startswith("@@"):
                 v = v[1:]
             elif v.startswith("@") and len(v) > 1:
                 f = codecs.open(v[1:], encoding=ENCODING)
                 v = f.read()
                 f.close()
-            v = re.sub("[%\r\n]", lambda c: f"%{ord(c.group(0)):02X}", v)
+            v = re.sub("[%\r\n]", (lambda c: f"%{ord(c.group(0)):02X}"), v)
             request.append(f"{k}: {v}")
     return "\n".join(request)
 
@@ -40,12 +40,12 @@ def response_to_dict(response, format_timestamps=True, decode=False):
         return res
     response = response.splitlines()
     # Treat the first response line as the status
-    K, V = response[0].split(":", 1)
+    K, V = response[0].split(b":", 1)
     res["status"] = K
-    res["status_message"] = V.strip(" ")
+    res["status_message"] = V.strip(b" ")
     for line in response[1:]:
         try:
-            K, V = line.split(":", 1)
+            K, V = line.split(b":", 1)
             V = V.strip()
             if format_timestamps and (K == "_created:" or K == "_updated:"):
                 ls = line.split(":")
@@ -56,7 +56,7 @@ def response_to_dict(response, format_timestamps=True, decode=False):
                     lambda m: chr(int(m.group(1), 16)),
                     V,
                 )
-            log.debug("K : V = %s : %s", K, V)
+            # log.debug("K : V = %s : %s", K, V)
             res[K] = V
         except ValueError:
             res["body"] += line
