@@ -1,4 +1,3 @@
-"    INFO nog.shoulder shoulder Creating minter for DOI shoulder: doi:10.9111/R01
+INFO impl.nog.shoulder shoulder Creating minter for DOI shoulder: doi:10.9111/R01
     INFO impl.nog.reload reload Hostname [HOSTNAME]
     INFO ezidapp.management.commands.shoulder-create-doi shoulder-create-doi Shoulder created
-"

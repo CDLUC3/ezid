@@ -58,7 +58,7 @@ SHOULDER_CSV = TEST_DOCS_PATH / 'ezidapp_shoulder.csv'
 
 # combined-limited: Complete snapshot of the combined store/search DB from stg. All tables
 # are included but limited to 1000 rows.
-REL_DB_FIXTURE_PATH = '../ezidapp/fixtures/combined-limited.json'
+REL_DB_FIXTURE_PATH = ROOT_PATH / 'ezidapp/fixtures/combined-limited.json'
 
 # store-full: Complete snapshot of the combined store/search DB from stg, only the three
 # large tables holding the resolve metadata for the existing minters have been dropped.
@@ -247,7 +247,9 @@ def skip_auth(django_db_keepdb, admin_client, mocker):
         user_id = get_user_id_by_session_key(request.session.session_key)
         return ezidapp.models.store_user.getUserById(user_id)
 
-    mocker.patch('userauth.authenticateRequest', side_effect=mock_authenticate_request)
+    mocker.patch(
+        'impl.userauth.authenticateRequest', side_effect=mock_authenticate_request
+    )
 
 
 @pytest.fixture(scope='function')
@@ -281,7 +283,7 @@ def tmp_bdb_root(mocker, tmp_path):
 
     By default, a BDB path resolved by the minter will reference a location in EZID's
     minter hierarchy, as configured in the EZID settings. Currently, `ezid/db/minters`.
-    This fixture causes BDB paths to resolve to an empty tree under /tmp. Any minters
+    This fixture causes BDB paths to resolve to a temporary tree under /tmp. Any minters
     created by the test are deleted when the test exits.
 
     Returns a pathlib.Path referencing the root of the tree. The slash operator can be
@@ -361,7 +363,7 @@ def shoulder_csv():
 @pytest.fixture()
 def test_docs():
     """pathlib.Path rooted in the test_docs dir."""
-    return pathlib.Path(impl.nog.filesystem.abs_path('./test_docs'))
+    return TEST_DOCS_PATH
 
 
 @pytest.fixture()

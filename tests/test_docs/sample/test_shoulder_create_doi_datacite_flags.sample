@@ -9,13 +9,15 @@
   'isSupershoulder': True,
   'isTest': True,
   'isUuid': False,
-  'manager': u'ezid',
-  'minter': u'ezid:/b9111/r01',
-  'name': u'91101/r01 test org',
-  'prefix': u'doi:10.9111/R01',
+  'manager': 'ezid',
+  'minter': 'ezid:/b9111/r01',
+  'name': '91101/r01 test org',
+  'prefix': 'doi:10.9111/R01/',
   'prefix_shares_datacenter': True,
   'registration_agency': None,
   'shoulder_type': None,
-  'storegroup_set': <django.db.models.fields.related_descriptors.ManyRelatedManager object at [MEMORY-ADDRESS]>,
-  'storeuser_set': <django.db.models.fields.related_descriptors.ManyRelatedManager object at [MEMORY-ADDRESS]>,
-  'type': u'DOI'}
+  'storegroup_set': <django.db.models.fields.related_descriptors.create_forward_many_to_many_manager.<locals>.ManyRelatedManager
+object at [MEMORY-ADDRESS]>,
+  'storeuser_set': <django.db.models.fields.related_descriptors.create_forward_many_to_many_manager.<locals>.ManyRelatedManager
+object at [MEMORY-ADDRESS]>,
+  'type': 'DOI'}

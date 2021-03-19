@@ -5,6 +5,7 @@ import difflib
 import json
 import logging
 import os
+import pathlib
 import pprint
 import re
 import subprocess
@@ -89,6 +90,13 @@ def assert_match(
                 ),
             )
         )
+        return
+
+    if options['update']:
+        if not isinstance(current_str, str):
+            current_str.decode('utf-8')
+        pathlib.Path(sample_path).write_text(current_str)
+        return
 
     mismatch_title_str = " -- ".join(
         [

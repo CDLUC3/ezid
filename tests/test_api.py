@@ -9,7 +9,6 @@ import tests.util.util
 
 log = logging.getLogger(__name__)
 
-
 @freezegun.freeze_time('2010-10-11')
 class TestAPI:
     def _mint(self, ez_admin, ns, meta_type=None, test_docs=None):
