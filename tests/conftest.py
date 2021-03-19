@@ -341,7 +341,7 @@ def shoulder_csv():
 
     def itr():
         with pathlib.Path(SHOULDER_CSV).open(
-            'rb',
+            'rt',
         ) as f:
             for row_tup in csv.reader(f):
                 ns_str, org_str, n2t_url = row_tup
