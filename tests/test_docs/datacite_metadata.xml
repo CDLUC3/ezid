@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<resource xmlns="http://datacite.org/schema/kernel-3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://datacite.org/schema/kernel-3
+          http://schema.datacite.org/meta/kernel-3/metadata.xsd"
+>
+  <identifier identifierType="DOI">A DOI on form 10.9999/* will be inserted here
+  </identifier>
+  <creators>
+    <creator>
+      <creatorName>CN=First Last A12345,O=Google,C=US,DC=cilogon,DC=org</creatorName>
+    </creator>
+  </creators>
+  <titles>
+    <title xml:lang="en">(:unkn)</title>
+  </titles>
+  <publisher>Test publisher</publisher>
+  <publicationYear>1999</publicationYear>
+  <resourceType resourceTypeGeneral="Dataset"/>
+  <formats>
+    <format>text/plain</format>
+  </formats>
+</resource>
