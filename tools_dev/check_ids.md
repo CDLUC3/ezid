@@ -1,4 +1,3 @@
-
 # dev-check-ids
 
 Annotate a stream of identifiers with associated metadata and misc housekeeping information pulled from an EZID database.
