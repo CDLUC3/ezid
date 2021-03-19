@@ -17,12 +17,12 @@ class TestShoulderCreateArk:
         """Creating basic ARK shoulder returns expected messages."""
         caplog.set_level(logging.INFO)
         assert not ezidapp.models.shoulder.Shoulder.objects.filter(
-            prefix='ark:/91101/r01'
+            prefix='ark:/91101/r01/'
         ).exists()
         django.core.management.call_command(
             # <ns> <org-name>
             'shoulder-create-ark',
-            'ark:/91101/r01',
+            'ark:/91101/r01/',
             '91101/r01 test org',
         )
         sample.assert_match(caplog.text, 'output')
@@ -30,16 +30,16 @@ class TestShoulderCreateArk:
     def test_1010(self, caplog, tmp_bdb_root):
         """Creating a basic ARK shoulder creates expected database entries."""
         assert not ezidapp.models.shoulder.Shoulder.objects.filter(
-            prefix='ark:/91101/r01'
+            prefix='ark:/91101/r01/'
         ).exists()
         django.core.management.call_command(
             # <ns> <org-name>
             'shoulder-create-ark',
-            'ark:/91101/r01',
+            'ark:/91101/r01/',
             '91101/r01 test org',
         )
         s = ezidapp.models.shoulder.Shoulder.objects.filter(
-            prefix='ark:/91101/r01'
+            prefix='ark:/91101/r01/'
         ).get()
         sample.assert_match(tests.util.util.shoulder_to_dict(s), 'basic')
         assert s.active
@@ -50,18 +50,18 @@ class TestShoulderCreateArk:
         """Creating an ARK shoulder with flags creates expected database
         entries."""
         assert not ezidapp.models.shoulder.Shoulder.objects.filter(
-            prefix='ark:/91101/r01'
+            prefix='ark:/91101/r01/'
         ).exists()
         django.core.management.call_command(
             # <ns> <org-name>
             'shoulder-create-ark',
-            'ark:/91101/r01',
+            'ark:/91101/r01/',
             '91101/r01 test org',
             '--super-shoulder',
             '--test',
         )
         s = ezidapp.models.shoulder.Shoulder.objects.filter(
-            prefix='ark:/91101/r01'
+            prefix='ark:/91101/r01/'
         ).get()
         sample.assert_match(tests.util.util.shoulder_to_dict(s), 'flags')
         assert s.active
@@ -82,7 +82,7 @@ class TestShoulderCreateArk:
             ns_str,
             org_str,
             '--super-shoulder',
-            '--force',
+            '--skip-checks',
             '--test',
         )
         ezid_uri = "ezid:/99920/NULL"
