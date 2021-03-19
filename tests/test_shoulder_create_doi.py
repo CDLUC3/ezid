@@ -89,12 +89,12 @@ class TestShoulderCreateDoi:
     def test_1040(self, caplog, tmp_bdb_root):
         """Creating DataCite DOI shoulder creates expected database entries."""
         assert not ezidapp.models.shoulder.Shoulder.objects.filter(
-            prefix='doi:10.9111/R01'
+            prefix='doi:10.9111/R01/'
         ).exists()
         django.core.management.call_command(
             # <ns> <org-name>
             'shoulder-create-doi',
-            'doi:10.9111/R01',
+            'doi:10.9111/R01/',
             '91101/r01 test org',
             '--datacite',
             'CDL.UCLA',
@@ -103,7 +103,7 @@ class TestShoulderCreateDoi:
             '--test',
         )
         s = ezidapp.models.shoulder.Shoulder.objects.filter(
-            prefix='doi:10.9111/R01'
+            prefix='doi:10.9111/R01/'
         ).get()
         sample.assert_match(tests.util.util.shoulder_to_dict(s), 'datacite_flags')
         assert s.active
