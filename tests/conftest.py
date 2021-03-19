@@ -83,6 +83,12 @@ def pytest_addoption(parser):
         default=False,
         help='Handle sample mismatch as test failure instead of opening diff viewer',
     )
+    parser.addoption(
+        '--sample-update',
+        action='store_true',
+        default=False,
+        help='Update mismatched samples instead of opening diff viewer',
+    )
 
 
 def pytest_configure(config):
@@ -98,6 +104,7 @@ def pytest_configure(config):
 
     tests.util.sample.options = {
         "error": config.getoption("--sample-error"),
+        "update": config.getoption("--sample-update"),
     }
 
     # Only accept error messages from loggers that are noisy at debug.

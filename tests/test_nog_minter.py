@@ -32,7 +32,7 @@ class TestNogMinter:
         This checks {MINT_COUNT} identifiers in an area where the minter
         can be stepped directly to next state.
         """
-        with lzma.open(PERL_MINTED_PATH) as f:
+        with lzma.open(PERL_MINTED_PATH, 'rt') as f:
             for i, python_sping in enumerate(
                 impl.nog.minter.mint_by_bdb_path(
                     self._get_bdb_path(ID_NS, ''), MINT_COUNT, dry_run=True
@@ -53,7 +53,7 @@ class TestNogMinter:
         template must be extended before it can be stepped to the next
         state.
         """
-        with lzma.open(PERL_MINTED_PATH) as f:
+        with lzma.open(PERL_MINTED_PATH, 'rt') as f:
             for i in range(6218):
                 f.readline()
             for i, python_sping in enumerate(

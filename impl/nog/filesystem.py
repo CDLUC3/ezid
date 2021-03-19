@@ -8,7 +8,7 @@ import urllib.parse
 import urllib.request
 import urllib.response
 
-FILENAME_SAFE_CHARS = " @$,~*&"
+FILENAME_SAFE_CHARS = " @$,~*&[]"
 
 
 def get_safe_reversible_path(*path_list):
