@@ -12,19 +12,21 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
+import pprint
+import re
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
 import django.conf
 import django.core.exceptions
 import django.core.validators
 import django.db.models
-import re
-import time
-import urllib.request
-import urllib.parse
-import urllib.error
 
 import ezidapp.models.custom_fields
-import impl.util
 import ezidapp.models.validation
+import impl.util
 
 
 def emptyDict():
@@ -299,7 +301,8 @@ class Identifier(django.db.models.Model):
     def isAgentPid(self):
         return self.agentRole != ""
 
-    isTest = django.db.models.BooleanField(editable=False)
+    isTest = django.db.models.BooleanField(editable=False, blank=True)
+
     # Computed value: True if the identifier is a test identifier.
 
     def my_full_clean(self, exclude=None, validate_unique=False):
@@ -310,10 +313,16 @@ class Identifier(django.db.models.Model):
             exclude = []
         else:
             exclude = list(exclude)
-        self.clean_fields(exclude=exclude)
-        self.clean()
-        if validate_unique:
-            self.validate_unique(exclude=exclude)
+        try:
+            self.clean_fields(exclude=exclude)
+            self.clean()
+            if validate_unique:
+                self.validate_unique(exclude=exclude)
+        except django.core.exceptions.ValidationError as e:
+            raise django.core.exceptions.ValidationError(
+                f'Error="{repr(e)}" '
+                f'Metadata: {pprint.pformat(getattr(self, "cm", "cm=None"))}'
+            )
 
     def clean(self):
         self.baseClean()
@@ -452,7 +461,6 @@ class Identifier(django.db.models.Model):
 
     def cleanAgentPid(self):
         # Checks applicable to agent PIDs only.
-        import impl.config as config
         import impl.util2 as util2
 
         if not self.isArk:
@@ -520,7 +528,8 @@ class Identifier(django.db.models.Model):
                 raise django.core.exceptions.ValidationError(
                     {
                         "datacite": f"Metadata validation error: "
-                        f"{impl.util.oneLine(str(e))}."
+                        f"{impl.util.oneLine(str(e))}. "
+                        f'metadata="{self.cm.get("datacite", "<missing>")}"'
                     }
                 )
         if "crossref" in self.cm:
@@ -565,8 +574,8 @@ class Identifier(django.db.models.Model):
                     )
         if self.isCrossref and not self.isReserved and "crossref" not in self.cm:
             raise django.core.exceptions.ValidationError(
-                "Registration with Crossref requires Crossref metadata supplied "
-                + "as value of element 'crossref'."
+                f"Registration with Crossref requires Crossref metadata supplied "
+                f"as value of element 'crossref'. Received metadata: {self.cm}"
             )
 
     def computeComputedValues(self):

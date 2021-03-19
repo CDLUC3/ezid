@@ -52,15 +52,15 @@ def assert_shoulder_type_available(org_str, type_str):
 
 
 def assert_super_shoulder_slash(ns, is_super_shoulder, is_force):
-    """Assert that super-shoulder ends with "/" or that --force was set."""
+    """Assert that super-shoulder ends with "/" or that --skip-checks was set."""
     if not is_super_shoulder:
         return
     if not str(ns).endswith('/'):
         if is_force:
-            log.info('Accepting super-shoulder not ending with "/" due to --force')
+            log.info('Accepting super-shoulder not ending with "/" due to --skip-checks')
         else:
             raise django.core.management.CommandError(
-                'Super-shoulder normally ends with "/". Use --force to skip this check '
+                'Super-shoulder normally ends with "/". Use --skip-checks to skip this check '
                 'and create a super-shoulder not ending with "/"'
             )
 
@@ -83,7 +83,7 @@ def assert_valid_datacenter(datacenter_str):
 def dump_shoulders():
     log.info('Shoulders:')
     for m in ezidapp.models.shoulder.Shoulder.objects.all().order_by('name', 'prefix'):
-        log.info('{:<20} {} '.format(m.prefix.encode('utf-8'), m.name.encode('utf-8')))
+        log.info(f'{m.prefix:<20} {m.name}')
 
 
 def dump_datacenters():
