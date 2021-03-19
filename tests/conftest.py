@@ -35,24 +35,24 @@ ROOT_PATH = HERE_PATH / '..'
 DEFAULT_DB_KEY = 'default'
 import impl.nog.id_ns
 
-NAMESPACE_LIST = [
-    (impl.nog.id_ns.IdNamespace.from_str('ark:/99933/x1'), tuple()),
-    (impl.nog.id_ns.IdNamespace.from_str('ark:/99934/x2'), tuple()),
-    (impl.nog.id_ns.IdNamespace.from_str('ark:/99933/x3y4'), ('supershoulder',)),
-    (
-        impl.nog.id_ns.IdNamespace.from_str('ark:/99934/'),
-        (
-            'supershoulder',
-            'force',
-        ),
-    ),
-    (impl.nog.id_ns.IdNamespace.from_str('doi:10.9935/X5'), ('datacenter',)),
-    (impl.nog.id_ns.IdNamespace.from_str('doi:10.19936/X6Y7'), ('datacenter',)),
-    (impl.nog.id_ns.IdNamespace.from_str('doi:10.9935/X8'), ('crossref',)),
-    (impl.nog.id_ns.IdNamespace.from_str('doi:10.19936/X9Y0'), ('crossref',)),
-]
+NS = impl.nog.id_ns.IdNamespace
 
-SHOULDER_CSV = impl.nog.filesystem.abs_path('./test_docs/ezidapp_shoulder.csv')
+# fmt=off
+NAMESPACE_LIST = [
+    (NS.from_str('ark:/99933/x1'),     tuple()),
+    (NS.from_str('ark:/99934/x2'),     tuple()),
+    (NS.from_str('ark:/99933/x3y4/'),  ('supershoulder',)),
+    (NS.from_str('ark:/99934/'),       ('supershoulder', 'force')),
+    (NS.from_str('doi:10.9935/X5'),    tuple()),
+    (NS.from_str('doi:10.19936/X6Y7'), tuple()),
+    (NS.from_str('doi:10.9935/X8'),    tuple()),
+    (NS.from_str('doi:10.19936/X9Y0'), tuple()),
+]
+# fmt=on
+META_TYPE_LIST = ['datacite', 'crossref', 'dc', 'unknown']
+
+TEST_DOCS_PATH = HERE_PATH / 'test_docs'
+SHOULDER_CSV = TEST_DOCS_PATH / 'ezidapp_shoulder.csv'
 
 # Database fixtures
 
@@ -289,35 +289,47 @@ def tmp_bdb_root(mocker, tmp_path):
     return tmp_path
 
 
+@pytest.fixture(
+    params=NAMESPACE_LIST,
+    ids=lambda x: re.sub("[^\d\w]+", "-", '-'.join([str(x[0]), *x[1]])),
+)
+def namespace(request):
+    return request.param
+
+
+@pytest.fixture(params=META_TYPE_LIST)
+def meta_type(request):
+    """meta_type = 'datacite', 'crossref', 'dc', 'unknown'"""
+    return request.param
+
 @pytest.fixture()
-def minters(tmp_bdb_root, reloaded):
-    """Add four ready to use minters below the temporary root created by
-    tmp_bdb_root.
+def minters(tmp_bdb_root, reloaded, namespace, meta_type):
+    """Add a set of minters and corresponding shoulders. The minters are stored below
+    the temporary root created by tmp_bdb_root. The shoulders are registered to the
+    admin user in the DB, and are ready for use.
 
-    Returns a list containing the IdNamespace objects for the shoulders
-    of the minters.
+    Yields a Returns a list containing the IdNamespace objects for the shoulders.
     """
-    for ns, arg_tup in NAMESPACE_LIST:
-        impl.nog.shoulder.create_shoulder(
-            ns,
-            'test org for shoulder {}'.format(str(ns)),
-            datacenter_model=(
-                ezidapp.models.store_datacenter.StoreDatacenter.objects.filter(
-                    symbol='CDL.CDL'
-                ).get()
-                if 'datacenter' in arg_tup
-                else None
-            ),
-            is_crossref='crossref' in arg_tup,
-            is_test=True,
-            is_super_shoulder='supershoulder' in arg_tup,
-            is_sharing_datacenter=False,
-            is_force='force' in arg_tup,
-            is_debug=True,
-        )
-
+    ns, arg_tup = namespace
+    impl.nog.shoulder.create_shoulder(
+        ns,
+        'test org for shoulder {}'.format(str(ns)),
+        datacenter_model=(
+            ezidapp.models.store_datacenter.StoreDatacenter.objects.filter(
+                symbol='CDL.CDL'
+            ).get()
+            if meta_type == 'datacite'
+            else None
+        ),
+        is_crossref=meta_type == 'crossref',
+        is_test=True,
+        is_super_shoulder='supershoulder' in arg_tup,
+        is_sharing_datacenter=False,
+        is_force='force' in arg_tup,
+        is_debug=True,
+    )
     reloaded()
-    return NAMESPACE_LIST
+    yield namespace
 
 
 @pytest.fixture()
