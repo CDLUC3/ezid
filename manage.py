@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import sys
 import os
+import sys
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings.settings'
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.settings')
 
 import django.core.management
 
