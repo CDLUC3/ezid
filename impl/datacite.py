@@ -328,7 +328,7 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
         i.text = "10.1234/X"
         schema[1].acquire()
         try:
-            schema[0].assertTrue(root)
+            schema[0].assertValid(root)
         except Exception as e:
             # Ouch.  On some LXML installations, but not all, an error is
             # "sticky" and, unless it is cleared out, will be returned
@@ -342,7 +342,7 @@ def validateDcmsRecord(identifier, record, schemaValidate=True):
             # characters can be the source of the problem, so explicitly
             # exposing them can be a help.
             # noinspection PyUnresolvedReferences
-            assert False, e.message.encode("utf-8")
+            raise AssertionError(repr(e))
         finally:
             schema[1].release()
         i.attrib["identifierType"] = type
