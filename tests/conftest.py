@@ -360,6 +360,16 @@ def log_shoulder_count():
     return log_
 
 
+@pytest.fixture()
+def meta_types():
+    """A list of metadata types trigger different types of validation in EZID. We
+    test with specific metadata for each.
+    """
+    # return ('datacite', 'crossref', 'dc', 'unknown')
+    for n in ('datacite',):
+        yield n
+
+
 # Util
 
 
