@@ -28,7 +28,6 @@ import ezidapp.models.store_user
 import ezidapp.models.update_queue
 import impl.config
 import impl.log
-
 # import noid_nog
 import impl.nog.minter
 import impl.policy
@@ -145,11 +144,11 @@ def pause(newValue):
 
 # noinspection PyDefaultArgument
 def mintIdentifier(shoulder, user, metadata={}):
+    if not _acquireIdentifierLock(
+        shoulder + '.shoulder_lock', user.username + '.shoulder_lock'
+    ):
+        return "error: concurrency limit exceeded"
     try:
-        if not _acquireIdentifierLock(
-            shoulder + '.shoulder_lock', user.username + '.shoulder_lock'
-        ):
-            return "error: concurrency limit exceeded"
         return _mintIdentifier(shoulder, user, metadata)
     finally:
         _releaseIdentifierLock(
