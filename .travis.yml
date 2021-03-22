@@ -3,7 +3,7 @@ language:
 dist:
   xenial
 python:
-  - "2.7"
+  - "3.8"
 services:
   - mysql
 addons:
