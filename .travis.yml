@@ -13,8 +13,8 @@ addons:
 env:
   - DJANGO_SETTINGS_MODULE='settings.test_settings'
     IS_TRAVIS=1
-virtualenv:
-  system_site_packages: true
+#virtualenv:
+#  system_site_packages: true
 install:
   - pip install --upgrade pip setuptools wheel
 before_script:
