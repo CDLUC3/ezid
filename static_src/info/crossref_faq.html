@@ -1,0 +1,67 @@
+{% extends "layouts/learn.html" %}
+{% load layout_extras %}
+{% load menus %}
+{% load i18n %}
+
+{% block title %}{% block title-twitter %}{% trans "Crossref FAQ" %}{% endblock %}{% endblock %}
+{% block heading %}{% content_heading _("Crossref: Frequently Asked Questions") %}{% endblock %}
+{% block content %}
+
+{% comment %}Don't need to translate this{% endcomment %}
+{% learn_breadcrumb 'Crossref FAQ' 'FAQ' '#05' %}
+<div class="container api">
+{% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
+i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+{% endcomment %}
+{% blocktrans trimmed %}
+<p><strong>If CDL is a &quot;Sponsoring Member&quot; of Crossref, does that mean you aren't a member of DataCite anymore?</strong></p>
+
+<p>CDL is a member of both organizations. CDL is a founding member of <a href="http://www.datacite.org/" class="ext-link">DataCite</a> and one of the most active, with representation on the DataCite Board and the Metadata Working Group.</p>
+
+<p><strong>What is the EZID-to-Crossref service exactly?</strong></p>
+
+<p>For participating clients (see below), EZID registers DOIs for open access scholarly journal articles and other open access content, and then sends metadata about these items (provided by the clients) to Crossref. EZID manages the linkage to Crossref. Clients can submit records for this service using <a href="/doc/apidoc.html#crossref-registration" class="link__primary">EZID's API (application programming interface)</a>. Clients can monitor the progress of submissions via messages from Crossref (sent by EZID).</p>
+
+<p><strong>What are the benefits to this service?</strong></p>
+
+<p>Crossref says their value proposition for journal publishers is this: &quot;By joining this collaborative network, you will add reader utility to your digital content through outbound links to cited material, while augmenting access to your material through incoming links from other publishers.&quot;</p>
+
+<p>To be specific, for most open access journal publishers, the number one benefit is the inclusion of their journal's metadata in the <a href="http://www.crossref.org/cms/index.html" class="ext-link">Crossref Metadata Services</a>. Many organizations (<a href="http://www.crossref.org/01company/08affiliates.html#cms_affiliates" class="ext-link">listed here</a>) subscribe to Crossref metadata, so your journal articles are instantly more discoverable.</p>
+
+<p><strong>Who is eligible to participate?</strong></p>
+
+<p>EZID clients with these characteristics:</p>
+<ul>
+  <li>non-profit, educational or governmental organizations that publish open access content</li>
+  <li><em>and</em> have &quot;Research Institution or Non-Profit Organization&quot; level EZID accounts (see <a href="/learn/#03" class="link__primary">the EZID pricing page</a> for details)</li>
+  <li><em>and</em> subscribe for both DOIs &amp; ARKs</li>
+</ul>
+
+<p><strong>If we don't have this type of account, can we upgrade?</strong></p>
+
+<p>In many cases, the answer is yes. <a href="/contact" class="link__primary">Contact us</a> to discuss this option.</p>
+
+<p><strong>What is the status of the EZID-Crossref &quot;connection&quot;?</strong></p>
+
+<p>This service is in production. If you are interested in participating, please <a href="/contact" class="link__primary">contact us</a>.</p>
+
+<p><strong>How much will it cost EZID clients to participate?</strong></p>
+
+<p>Crossref charges <a href="http://www.crossref.org/02publishers/20pub_fees.html#deposit" class="ext-link">DOI deposit fees</a>, and all such fees for the participating clients will be sent to California Digital Library (CDL) as the Sponsoring Member. CDL will cover these fees for time being, and then re-assess based on individual client volume. We reserve the right to pass through deposit fees for subsequent billing cycles, and we will share our decision process with you.</p>
+
+<p><strong>What do eligible clients have to do to participate?</strong></p>
+
+<p>Each client that wishes to participate in this service must agree to comply with Crossref requirements. These include:</p>
+
+<ul>
+  <li>provision of <a href="http://help.crossref.org/#deposit_schema" class="ext-link">Crossref metadata</a> for each &quot;original work,&quot; which, in turn, requires an ISSN (International Standard Serial Number) for each participating journal; for more information about ISSNs, see <a href="http://www.issn.org/">www.issn.org</a></li>
+  <li><a href="http://help.crossref.org/#outbound_linking" class="ext-link">outbound linking</a>, &quot;meaning members must add DOI links (when available) to the reference list for journal articles deposited with Crossref&quot; (Note: these links <em>need only to be present on the journal's site</em>, not in the metadata provided to Crossref and this requirement is prospective only.)</li>
+  <li>provision of &quot;response&quot; pages (or &quot;landing&quot; pages in DataCite parlance) for each DOI, if the material is not open access</li>
+</ul>
+
+<p>In addition, there are a (very) few setup steps which we can discuss when you <a href="/contact" class="link__primary">contact us</a> about participating.</p>
+
+{% endblocktrans %}
+</div>
+{% endblock %}

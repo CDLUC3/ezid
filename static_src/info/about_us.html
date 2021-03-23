@@ -1,0 +1,62 @@
+{% extends "layouts/information.html" %}
+{% load layout_extras %}
+{% load i18n %}
+
+{% block title %}{% block title-twitter %}{% trans "About Us" %}{% endblock %}{% endblock %}
+{% block description %}{%trans "Learn about EZID's history and the team members who make EZID possible." %}{% endblock %}
+{% block heading %}{% content_heading _("About Us") %}{% endblock %}
+{% block content %}
+<div class="container vertical-buffer-xs">
+
+  {% host_based_include "info/localized/_/about_us_include.html" %}
+
+<p>&nbsp;</p>
+{% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
+i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+{% endcomment %}
+{% blocktrans trimmed %}
+	<h2 class="heading_2">About EZID</h2>
+
+<p>
+	EZID is a service conceived, built, and maintained by the	
+        <a href="http://www.cdlib.org/" class="ext-link">California Digital Library</a> 
+        (CDL). CDL
+	was founded by the University of California in 1997 to take
+	advantage of emerging technologies that were transforming
+	the way digital information was being published and
+	accessed. CDL's diverse and talented staff has assembled
+	one of the world's largest digital research libraries and
+	has changed the ways that faculty, students, and researchers
+	discover and access information. 
+</p>
+
+<p>
+	CDL has relationships with a wide range of
+	researchers across the University, including natural history
+	museums, research groups, individual scientists, and faculty
+	members on all 10 UC campuses. CDL staff members bring a
+	unique blend of experience to this multi-disciplinary
+	venture.  CDL staff members have formal training in science,
+	mathematics, the humanities, and information science, as
+	well as deep professional experience in the creation of
+	software, services, and funded proposals.
+</p>
+
+
+<p>  
+	CDL has	extensive contacts with scientists, within the University of
+	California and beyond via projects funded by the Library of
+	Congress, National Science Foundation, National Institutes
+	of Health (pending) and the Gordon and Betty Moore
+	Foundation.  More information about CDL's
+        <a href="http://www.cdlib.org/about/grants.html" class="ext-link">grants and partnerships</a>
+        is available. Finally, CDL is a founding member of the international 
+        <a href="http://www.datacite.org/" class="ext-link">DataCite</a> 
+        consortium, which is dedicated to providing the social and technical 
+        infrastructure that will enable data sharing and publication. 
+</p>
+{% endblocktrans %}
+
+</div>
+{% endblock %}

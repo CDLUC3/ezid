@@ -1,0 +1,145 @@
+{% extends "layouts/learn.html" %}
+{% load layout_extras %}
+{% load menus %}
+{% load i18n %}
+
+{% block title %}{% block title-twitter %}{% trans "Identifier Concepts and Practices at the California Digital Library" %}{% endblock %}{% endblock %}
+{% block heading %}{% content_heading _("Identifier Concepts and Practices at the California Digital Library") %}{% endblock %}
+{% block content %}
+
+{% comment %}Don't need to translate this{% endcomment %}
+{% learn_breadcrumb _("Identifier Concepts") 'FAQ' '#05' %}
+<div class="container api">
+{% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
+i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+{% endcomment %}
+{% blocktrans trimmed %}
+<p>This document specifies identifier-related terms, conventions, and practices as observed at the California Digital Library (CDL) in support of the following roles.</p>
+
+<ol>
+	<li>Providing the EZID (easy eye-dee) identifier management service, which lets users create and manage DOIs, ARKs, and (soon) identifiers of other types.</li>
+	<li>Hosting the Name-to-Thing (N2T) resolver, which redirects all identifiers managed by EZID as well as a variety of identifier types, including LSID, LSRN, Handle, DOI, and some classes of URN.</li>
+	<li>Maintaining the primary instance of the Name Assigning Authority Number (NAAN) registry, which is replicated at the US National Library of Medicine and at the National Library of France.</li>
+	<li>Serving as maintenance agency for the Archival Resource Key (ARK) scheme.</li>
+</ol>
+
+
+<p>Many of the conventions arose in the context of ARK identifiers, but they apply broadly across mainstream identifiers, including URLs, DOIs, URNs, and Handles.  Unless otherwise specified, the conventions here apply to all identifiers whose creation we support.</p>
+
+<h2 class="heading_2">Terminology</h2>
+
+<p>The main concepts covered include:</p>
+
+<ol>
+	<li>Name Assigning Authority Numbers (NAANs) identifying large institutional namespaces.</li>
+	<li>NAAN &quot;shoulder&quot; extensions identifying sub-namespaces.</li>
+	<li>Name Mapping Authority (NMA) services that accept names and return information about them</li>
+	<li>Name resolution (&quot;resolver&quot;) services, a special class of NMA services.</li>
+</ol>
+
+
+<p>The terminology that follows is based on the metaphor of a key (or name or identifier) in the context of locksmithing jargon.</p>
+
+<img src="/static/info/learn_id_concepts_example.png" alt="Diagram describing Cover, Bow, Shoulder, Blade, and Tip of a key, and how this illusatrates Name Mapping Authority and the Base Identifier" />
+
+<h2 class="heading_2">NAANs and shoulders</h2>
+
+
+<p>A core concept is that of the NAAN (Name Assigning Authority), which identifies an organization that creates or assigns identifiers.  The combination of scheme name and NAAN (together comprising the &quot;bow&quot; of a  physical  key) is immutable.  The NAAN is usually a number, but in the URN identifier scheme it is  often a string of letters.  Numeric NAANs are more opaque and may  therefore be less susceptible than non-opaque names to &quot;semantic rot&quot;  over the long term. The intention behind the NAAN is to assign it at the highest  level practical within one memory organization, such as a national library, a national archive, or a university campus. </p>
+
+<p>Beginning every identifier assigned by an organization, a NAAN defines its <em>namespace</em>, or the pool of identifiers (sharing that NAAN) that it has or may potentially assign.  It is common for a large organization with a NAAN to delegate name assignment to semi-autonomous organizational units, typically &quot;departments&quot;.</p>
+
+<p>To prevent accidental creation of non-unique names between them, each unit is often assigned its own <em>shoulder</em>, which is a NAAN extension corresponding to the &quot;shoulder&quot; of a physical key.  The shoulder then begins every identifier assigned by the given unit, defining its <em>sub-namespace</em>.  Unique shoulders guarantee that names unique within the sub-namespace will also be unique outside of it, and the unit need only focus on creating the rest of the key in a way that is unique.  While the NAAN and shoulder are fixed for a given unit, the rest of the key, known as the <em>blade</em>, is different for every identifier in the unit's sub-namespace.</p>
+
+<h2 class="heading_2">The &quot;First Digit&quot; shoulder convention</h2>
+
+<p>An easy way to extend the NAAN with a shoulder so that one will always have an unlimited supply of non-conflicting shoulders is to adhere to the &quot;first digit&quot; convention.  In this case each shoulder is a string of one of more letters ending in a digit  (inclusive).  For example, &quot;ark:/13030/b3th89n&quot; would have fixed shoulder prefix &quot;b3&quot;, and the 13030 NAAN could then enjoy an infinite set of potential future shoulders, including,</p>
+
+<p>   b3, c3, d3, ...<br />
+   bb3, bc3, bd3, ..., cb3, cc3, cd3, ...<br />
+   bbb3, bbc3, bbd3, ..., bcb3, bcd3, ..., cbb3, cbc3, ...<br />
+    ...</p>
+
+<h2 class="heading_2">EZID support for NAANs and shoulders</h2>
+
+<p>An organization is free to manage its shoulders and identifiers in any way that it wishes, and the EZID service can significantly reduce the infrastructural burden of that management for those who choose to use it.  This section pertains to EZID function and policy current at the time of writing.</p>
+
+<p>An EZID user account is first set up with one (or several) NAAN+shoulder combinations under which the user can create identifiers. While there is in principle an unlimited number of shoulders under the &quot;first digit&quot; convention, each additional shoulder is not without cost, especially if there is a &quot;minter&quot; (a small identifier generating database) associated with it.  Also, although it may be convenient for assigning organizations to use different shoulders for different object collections, this practice promotes attachments to thematic or administrative object groupings that are frequently very transient; over the long-term, a widening gap between what a shoulder used to &quot;mean&quot; and what it currently suggests (unintentionally) creates pressure to abandon older identifiers.  EZID discourages practices that destabilize identifiers by making them needlessly costly or hard to maintain.</p>
+
+<p>The EZID user interface also permits you to choose the form of  the identifier <em>after</em> the shoulder, which may be confusing.  In fact we  recommend that you let the system generate new identifiers for you, as  we can guarantee that the &quot;blade&quot; it generates will make for an identifier that is unique and opaque.  EZID strongly discourages placing brand strings in identifier blades because successor organizations, which tend to be former competitors, will often be motivated to extinguish your brand rather than honor previous name assignments.  Branding is most appropriately placed in the NMA, described next.</p>
+
+<h2 class="heading_2">Name Mapping Authority (NMA) services</h2>
+
+<p>The protocol and hostname combination (e.g., <a href="http://OwlBike.example.org/" class="link__primary">http://OwlBike.example.org/</a>) may be thought of as a key cover (a plastic accessory, sometimes known as a &quot;key identifier&quot;, that slips over the key and makes it easy to find).  This metaphorical &quot;cover&quot;, which does not alter the key's core identity, and is usually disposable and replaceable, serves to make the key actionable when  embedded in a URL.  As such it identifies an <em>NMA</em> (Name Mapping Authority) because it is a service that accepts a name as input and returns (&quot;maps&quot; it to) such things as object content, object metadata, object policies, etc.  Any given identifier will have exactly one NAAN but may have more than one NMA (at a time or over time).</p>
+
+<p>Multiple serial and simultaneous &quot;name mapping&quot; (hosting) arrangements are common, but some NMAs are meant to be long-term stable, including <a href="http://n2t.net/" class="ext-link">http://n2t.net/</a>, <a href="http://handle.net/" class="ext-link">http://handle.net/</a>, and <a href="http://dx.doi.org/" class="ext-link">http://dx.doi.org/</a>.</p>
+
+<h2 class="heading_2">Resolution<br class="atl-forced-newline" /></h2>
+
+<p>In general, a Name Mapping Authority (NMA) can be a starting place  for internet resolution, an ending place for it, or both.  The main  requirement for being an NMA for an object is being able to take a  request associated with its identifier and do something useful with it  (to &quot;map&quot; it to a practical function), such as providing access to the  object or its metadata, or forwarding the request to another NMA.  Often  an NMA will provide object access for some requests and forwarding services for  others.
+<br class="atl-forced-newline" /></p>
+
+<p>A broadly helpful practice is for NMAs to forward completely unknown  identifier requests to a root resolver such as n2t.net, which can work  with many identifier scheme (described below).  With very little burden  to the original NMA, this practice increases the chances that resolution  will be successful no matter where the user starts it.
+<br class="atl-forced-newline" /></p>
+
+<p>ARKs, URLs, and PURLs use manifest, scheme-agnostic redirecting HTTP  servers as NMAs.  The DOI, Handle, and URN schemes are each designed to  use an implicit, scheme-specific root resolver (NMA) with its own  protocol.  Resolution in all these cases relies on a final HTTP access.
+<br class="atl-forced-newline" /></p>
+
+<h2 class="heading_2">N2T (Name-to-Thing) resolver<br class="atl-forced-newline" /></h2>
+
+<p>The N2T (Name-to-Thing) resolver is rooted at <a href="http://n2t.net/" class="ext-link">http://n2t.net</a> and administered by the California Digital Library.  It resolves ARKs, DOIs, Handles, LSIDs, LSRNs, and some classes of   URNs, and we plan to expand its range of identifier types.  The EZID   service, which populates a portion of the N2T resolver database, can be used to create and manage ARKs and DOIs, and we plan to expand its range as well.
+<br class="atl-forced-newline" /></p>
+
+<p>N2T was originally designed for global resolution of ARK identifiers,  but it is general enough to apply to identifiers from any scheme.  It's  NAAN mapping mechanism is functionally equivalent to and much simpler than the DOI, Handle, and  URN resolution mechanisms.
+<br class="atl-forced-newline" /></p>
+
+
+
+
+
+
+
+<h2 class="heading_2">Opacity</h2>
+
+<p>Many of the terms in this document serve semantic opacity, which is useful in creating identifiers that age and travel well.  Opacity is often balanced by the insertion of hints in replaceable appendages to the base, such as NMA branding before it and extensions (after it) that suggest current service offerings.</p>
+
+<p>Perfect opacity in identifiers is not as important as identifiers' having semantics that are <em>not widely recognizable</em>, even if those semantics may support administrative activity by specialists (cf. ISBNs).  In fact a numeric NAAN does disclose the original naming authority, but only if you have the NAAN registry handy, and a shoulder discloses a naming sub-authority if you understand the &quot;first digit&quot; convention below and have a registry of shoulders handy.  For the purposes of longevity, however, it is critical that attachments to authority and sub-authority names (NAANs and shoulders) be avoided; it is common for political pressures to require sacrificing identifiers created out of short-sighted administrative or branding convenience.</p>
+
+<h2 class="heading_2">Test identifier conventions</h2>
+
+<p>As an important exception to opacity, it is often necessary to use identifiers in testing workflows, and because it is easy for test identifiers to &quot;escape&quot; into the wild, we follow certain conventions to prevent them from being interpreted as real identifiers if users mistakenly try to use them.  Any identifier beginning with the NAAN, &quot;99999&quot; will be considered a test identifier.  Furthermore, any identifier beginning with the shoulder &quot;fk&quot; will also usually be considered a test identifier.</p>
+
+
+
+<h2 class="heading_2">Base identifier extensions</h2>
+
+<p>An identifier frequently appears with an extension added to its base.  For every assigned base identifier, there is in principle an infinite number of extended forms.  In practice, the NAA may not officially list all its extended forms publically.  Moreover, many extended forms are created and publicized by NMAs independent of the NAA assignments.</p>
+
+<p>Still more extended forms are discovered by users exploring an NMA's services, for example, by noticing identifier patterns and changing some of the values.  Names designed so that logical changes have logical consequences have been called &quot;hackable identifiers&quot;.  Also, sometimes an NMA supports substitution of &quot;parameters&quot; (values) inside of query strings appended to its identifiers (after a &quot;?&quot;), in order to produce certain documented effects.</p>
+
+<p>Identifier schemes tend to specify little beyond the form of the NAAN (or other designation for the NAA, sometimes called a Name Authority).  The ARK scheme permits formal disclosure of hierarchy and equivalence in name extensions; if used in an ARK, '/' indicates containment and '.' indicates variation.  For example,</p>
+
+<div class="pre-block">
+ <code>ark:/13030/tqb3kh8z/                  # names an object containing...</code><br />
+ <code>ark:/13030/tqb3kh8z/chap3             # that in turn contains...</code><br />
+ <code>ark:/13030/tqb3kh8z/chap3/fig5.jpg    # that is a variant of...</code><br />
+ <code>ark:/13030/tqb3kh8z/chap3/fig5.pdf    # and so forth</code>
+</div>
+
+<h2 class="heading_2">The &quot;Noid1&quot; Check Character Convention</h2>
+
+<p>Check characters, if included at all, often protect only formally published identifiers, such as the base identifier with no extensions.  Check characters lengthen whatever sub-string they protect by at least one character, so protecting all sub-string extensions could create fairly long identifiers.  Also, check character generation is a deliberate process that can conflict with the need for rapid and flexible creation of extensions.</p>
+
+<p>One useful check character convention, called &quot;Noid1&quot;, uses exactly one check character that appears at the tip of the blade, in other words, as the last character of the base identifier.  It also uses the Noid1 algorithm ( <a href="https://confluence.ucop.edu/display/Curation/NOID" class="ext-link">https://confluence.ucop.edu/display/Curation/NOID</a> ), which guarantees the base identifier against the most common transcription errors: transposition of two adjacent characters and single character errors.  Noid1 does not protect either the hostname or any extensions.  For example, in the identifier,</p>
+
+<div class="pre-block">
+<code>                                    ,------------,</code><br/>
+<code>     http://OwlBike.example.org/hdl:13030/tqb3kh8w/chap3/fig5.jpg</code><br/>
+</div>
+
+<p>the protected string, &quot;13030/tqb3kh8w&quot;, ends with a &quot;w&quot; that is (hypothetically) the computed Noid1 check character.  Also, all Noid1 examples use a restricted character repertoire consisting of digits and lowercase letters minus vowels and minus the letter 'l' (ell).  The Noid software uses this repertoire to reduce the chance of &quot;accidental&quot; semantics in generated identifiers and to avoid some of the confusion that arises over mistaking digits for letters, such as '1' for 'l' and '0' for 'O'.</p>
+
+{% endblocktrans %}
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "layouts/learn.html" %}
+{% load layout_extras %}
+{% load menus %}
+{% load i18n %}
+
+{% block title %}{% block title-twitter %}{% trans "Open Source Software for EZID" %}{% endblock %}{% endblock %}
+{% block heading %}{% content_heading _("Open Source Software for EZID") %}{% endblock %}
+{% block content %}
+
+{% comment %}Don't need to translate this{% endcomment %}
+{% learn_breadcrumb _("Open Source Software for EZID") 'Documentation' '#04' %}
+<div class="container">
+{% comment %}Translators: Copy HTML tags over and only translate words outside of these tags 
+i.e.: <p>TRANSLATE TEXT WRAPPED BY HTML TAGS</p> 
+i.e.: <a href="don't_translate_urls">PLEASE PRESERVE HTML TAGS</a> 
+{% endcomment %}
+{% blocktrans trimmed %}
+
+        <strong>IMPORTANT:</strong> The software listed below is not endorsed or supported 
+           by the EZID Team. It is listed here solely as a courtesy. If you are the author of 
+           a resource listed here and you wish us to remove it, please <a class="link__primary" href="/contact">
+           contact us</a>. If you are the author of software that you wish to be listed, 
+           please <a class="link__primary" href="/contact">contact us</a>.
+        <ul>
+				<li><a href="https://github.com/ucsblibrary/ezid.js" class="ext-link">JavaScript API client for EZID</a></li>
+        <li><a href="https://github.com/mbjones/ezid" class="ext-link">Java code library</a></li>
+        <li><a href="https://github.com/psu-stewardship/hydra-ezid" class="ext-link">
+           EZID services for Hydra</a> applications</li>
+        <li><a href="https://wiki.duraspace.org/display/DSDOC4x/DOI+Digital+Object+Identifier#DOIDigitalObjectIdenti
+fier-ConfigureDSpacetouseEZIDserviceforregistrationofDOIs" class="ext-link">Using EZID with DSpace</a></li>
+        <li><a href="https://rubygems.org/gems/ezid-client" class="ext-link">Ruby client for 
+           EZID</a></li>
+        <li><a href="https://github.com/olendorf/ezid-php" 
+           class="ext-link">PHP Library for interacting with the EZID API</a></li>
+        <li>eScholarship Extensions to OJS Crossref Export Plugin</li>
+        <ul>
+          <li><a href="https://github.com/cdlib/eschol-ojs/tree/eschol_prod/plugins/importexport/crossref" 
+            class="ext-link">Crossref</a></li>
+          <li><a href="https://github.com/cdlib/eschol-ojs/blob/eschol_prod/pages/editor/IssueManagementHandler.inc.php" 
+            class="ext-link">IssueManagementHandler</a></li>
+        </ul>
+        <li>Virginia Tech's <a href="https://github.com/VTUL/EzidDOI" class="ext-link">plug-in 
+          for assigning and registering DOIs with EZID for OJS articles and issues</a></li>
+
+{% endblocktrans %}
+</div>
+{% endblock %}
