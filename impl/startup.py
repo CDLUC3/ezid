@@ -1,4 +1,5 @@
 import logging
+import sys
 
 import django.apps
 import django.db.utils
@@ -6,9 +7,6 @@ import django.db.utils
 # import django.conf
 
 logger = logging.getLogger(__name__)
-
-
-import sys
 
 
 def global_exception_handler(type, value, traceback):
@@ -26,30 +24,31 @@ class Startup(django.apps.AppConfig):
     def ready(self):
         logging.debug('impl.startup: START')
 
-        # try:
-        import impl.config
+        try:
+            import impl.config
 
-        impl.config.load()
+            impl.config.load()
 
-        import ezidapp.models.shoulder
+            import ezidapp.models.shoulder
 
-        ezidapp.models.shoulder.loadConfig()
-        impl.config.registerReloadListener(ezidapp.models.shoulder.loadConfig)
+            ezidapp.models.shoulder.loadConfig()
+            impl.config.registerReloadListener(ezidapp.models.shoulder.loadConfig)
 
-        import impl.util2
+            import impl.util2
 
-        impl.util2.loadConfig()
-        impl.config.registerReloadListener(impl.util2.loadConfig)
+            impl.util2.loadConfig()
+            impl.config.registerReloadListener(impl.util2.loadConfig)
 
-        import impl.ui_common
+            import impl.ui_common
 
-        impl.ui_common.loadConfig()
-        impl.config.registerReloadListener(impl.ui_common.loadConfig)
-        # except Exception:
-        #     # App not ready to be configured yet. This allows running
-        #     # `django-admin migrate` to create the initial databases.
-        #     logging.debug('impl.startup: Early exit: App not ready yet')
-        #     return
+            impl.ui_common.loadConfig()
+            impl.config.registerReloadListener(impl.ui_common.loadConfig)
+
+        except Exception:
+            # App not ready to be configured yet. This allows running
+            # `django-admin migrate` to create the initial databases.
+            logging.debug('impl.startup: Early exit: App not ready yet')
+            return
 
         import impl.log
 

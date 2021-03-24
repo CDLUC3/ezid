@@ -39,7 +39,7 @@ import time
 
 import django.conf
 
-import ezidapp.models.server_variables
+# import ezidapp.models.server_variables
 
 import impl.config_loader
 
@@ -136,10 +136,10 @@ def load():
         django.conf.settings.PROJECT_ROOT,
     )
     _version = (int(time.time()),) + _getVersion()
-
-    django.conf.settings.SECRET_KEY = (
-        ezidapp.models.server_variables.getOrSetSecretKey()
-    )
+    #
+    # django.conf.settings.SECRET_KEY = (
+    #     ezidapp.models.server_variables.getOrSetSecretKey()
+    # )
 
 
 def reload():

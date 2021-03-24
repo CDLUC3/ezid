@@ -19,7 +19,7 @@ import django.utils.safestring
 import django.utils.translation
 from django.utils.translation import ugettext as _
 
-import ezidapp.models.server_variables
+# import ezidapp.models.server_variables
 import ezidapp.models.shoulder
 import ezidapp.models.store_group
 import ezidapp.models.store_realm
@@ -46,7 +46,7 @@ def loadConfig():
     ezidUrl = django.conf.settings.EZID_BASE_URL
     templates = {}
     _load_templates([d for t in django.conf.settings.TEMPLATES for d in t["DIRS"]])
-    alertMessage = ezidapp.models.server_variables.getAlertMessage()
+    # alertMessage = ezidapp.models.server_variables.getAlertMessage()
     reload_templates = hasattr(django.conf.settings, "RELOAD_TEMPLATES")
     if reload_templates:
         reload_templates = django.conf.settings.RELOAD_TEMPLATES

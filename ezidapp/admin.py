@@ -46,7 +46,7 @@ from ezidapp.models.new_account_worksheet import NewAccountWorksheet
 from ezidapp.models.search_group import SearchGroup
 from ezidapp.models.search_realm import SearchRealm
 from ezidapp.models.search_user import SearchUser
-from ezidapp.models.server_variables import ServerVariables
+# from ezidapp.models.server_variables import ServerVariables
 from ezidapp.models.shoulder import Shoulder
 from ezidapp.models.store_datacenter import StoreDatacenter
 from ezidapp.models.store_group import StoreGroup
@@ -69,45 +69,45 @@ class SuperuserSite(django.contrib.admin.sites.AdminSite):
 superuser = SuperuserSite()
 
 
-class ServerVariablesForm(django.forms.ModelForm):
-    def clean(self):
-        super(ServerVariablesForm, self).clean()
-        if "secretKey" in self.changed_data and self.cleaned_data["secretKey"] != "":
-            raise django.core.validators.ValidationError(
-                {"secretKey": "The secret key can only be set to blank."}
-            )
+# class ServerVariablesForm(django.forms.ModelForm):
+#     def clean(self):
+#         super(ServerVariablesForm, self).clean()
+#         if "secretKey" in self.changed_data and self.cleaned_data["secretKey"] != "":
+#             raise django.core.validators.ValidationError(
+#                 {"secretKey": "The secret key can only be set to blank."}
+#             )
 
 
-class ServerVariablesAdmin(django.contrib.admin.ModelAdmin):
-    actions = None
-    fieldsets = [
-        (None, {"fields": ["alertMessage"]}),
-        ("Advanced", {"fields": ["secretKey"], "classes": ["collapse"]}),
-    ]
-    form = ServerVariablesForm
+# class ServerVariablesAdmin(django.contrib.admin.ModelAdmin):
+#     actions = None
+#     fieldsets = [
+#         (None, {"fields": ["alertMessage"]}),
+#         ("Advanced", {"fields": ["secretKey"], "classes": ["collapse"]}),
+#     ]
+#     form = ServerVariablesForm
+#
+#     def has_add_permission(self, request, obj=None):
+#         return False
+#
+#     def has_delete_permission(self, request, obj=None):
+#         return False
+#
+#     def save_model(self, request, obj, form, change):
+#         assert change
+#         obj.save()
+#         if "alertMessage" in form.changed_data:
+#             import impl.ui_common
+#
+#             impl.ui_common.alertMessage = obj.alertMessage
+#         if obj.secretKey == "":
+#             import impl.config
+#
+#             impl.config.reload()
+#             django.contrib.messages.success(request, "Server reloaded.")
+#         return obj
 
-    def has_add_permission(self, request, obj=None):
-        return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def save_model(self, request, obj, form, change):
-        assert change
-        obj.save()
-        if "alertMessage" in form.changed_data:
-            import impl.ui_common
-
-            impl.ui_common.alertMessage = obj.alertMessage
-        if obj.secretKey == "":
-            import impl.config
-
-            impl.config.reload()
-            django.contrib.messages.success(request, "Server reloaded.")
-        return obj
-
-
-superuser.register(ServerVariables, ServerVariablesAdmin)
+# superuser.register(ServerVariables, ServerVariablesAdmin)
 
 
 class ShoulderForm(django.forms.ModelForm):

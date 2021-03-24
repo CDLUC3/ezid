@@ -37,8 +37,8 @@ class CompressedJsonField(django.db.models.BinaryField):
     def get_db_prep_save(self, value, *args, **kwargs):
         if value is None:
             return None
-        # if isinstance(value, buffer):
-        #     value = eval(str(value))
+        if isinstance(value, memoryview):
+            value = value.tobytes().decode('utf-8')
         try:
             json_str = json.dumps(value, separators=(",", ":"))
             return super(CompressedJsonField, self).get_db_prep_save(
