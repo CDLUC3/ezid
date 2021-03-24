@@ -37,7 +37,7 @@ before_script:
 script:
   - mkdir -p ../download/public ../logs
   - python ${TRAVIS_BUILD_DIR}/manage.py migrate --run-syncdb
-  - python ${TRAVIS_BUILD_DIR}/manage.py makemigrations --run-syncdb
+  - python ${TRAVIS_BUILD_DIR}/manage.py makemigrations
   - python ${TRAVIS_BUILD_DIR}/manage.py migrate
   - python ${TRAVIS_BUILD_DIR}/manage.py collectstatic
   - python ${TRAVIS_BUILD_DIR}/manage.py loaddata combined-limited
