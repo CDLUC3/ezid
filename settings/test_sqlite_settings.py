@@ -100,17 +100,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'HOST': 'localhost',
-        "NAME": "ezid_tests.db",
-        'USER': 'ezid_test_user',
-        "PASSWORD": '',
-        'PORT': '3306',
-        'OPTIONS': {'charset': 'utf8mb4'},
+        "NAME": "db/ezid_tests.db",
         'ATOMIC_REQUESTS': False,
         'AUTOCOMMIT': True,
         'CONN_MAX_AGE': 0,
         'TIME_ZONE': None,
         'TEST': {
-            'CHARSET': None,
             'COLLATION': None,
             'NAME': None,
             'MIRROR': None,
