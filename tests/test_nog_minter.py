@@ -1,5 +1,5 @@
-import backports.lzma as lzma
-
+#import backports.lzma as lzma
+import lzma
 import impl.nog.bdb
 import impl.nog.filesystem
 import impl.nog.id_ns
