@@ -22,6 +22,7 @@ log = logging.getLogger(__name__)
 MASTER_SHOULDERS_PATH = impl.nog.filesystem.abs_path('../../../master_shoulders.txt')
 DEBUG = True
 
+log.debug("MASTER_SHOULDERS_PATH = %s", MASTER_SHOULDERS_PATH)
 
 class Command(django.core.management.BaseCommand):
     help = __doc__
@@ -102,33 +103,35 @@ class Command(django.core.management.BaseCommand):
 
             if v['type'] != 'shoulder':
                 continue
-
-            ezidapp.models.shoulder.Shoulder.objects.update_or_create(
-                defaults=dict(
-                    name=v['name'],
-                    registration_agency=(
-                        ezidapp.models.shoulder.RegistrationAgency.objects.get_or_create(
-                            registration_agency='ezid'
-                        )[
-                            0
-                        ]
+            try:
+                ezidapp.models.shoulder.Shoulder.objects.update_or_create(
+                    defaults=dict(
+                        name=v['name'],
+                        registration_agency=(
+                            ezidapp.models.shoulder.RegistrationAgency.objects.get_or_create(
+                                registration_agency='ezid'
+                            )[
+                                0
+                            ]
+                        ),
+                        active=v['active'],
+                        manager=v['manager'],
+                        minter=v.get('minter', 'ezid:'),
+                        date=datetime.datetime.strptime(
+                            v.get('date', '1970.01.01'), '%Y.%m.%d'
+                        ),
+                        shoulder_type=(
+                            ezidapp.models.shoulder.ShoulderType.objects.get_or_create(
+                                shoulder_type=v['type']
+                            )[0]
+                        ),
+                        isTest=False,
                     ),
-                    active=v['active'],
-                    manager=v['manager'],
-                    minter=v.get('minter', 'ezid:'),
-                    date=datetime.datetime.strptime(
-                        v.get('date', '1970.01.01'), '%Y.%m.%d'
-                    ),
-                    shoulder_type=(
-                        ezidapp.models.shoulder.ShoulderType.objects.get_or_create(
-                            shoulder_type=v['type']
-                        )[0]
-                    ),
-                    isTest=False,
-                ),
-                prefix=k,
-            )
-
+                    prefix=k,
+                )
+            except Exception as e:
+                log.error("Shoulder.objects.update_or_create: %s", v["name"])
+                log.error(e)
         # As suggested in a comment by Greg, we replace the hardcoded "isDoi" and
         # "crossrefEnabled" based logic for registration_entry with a text field.
         for s in ezidapp.models.shoulder.Shoulder.objects.all():
