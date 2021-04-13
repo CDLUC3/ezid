@@ -26,8 +26,8 @@ import ezidapp.models.store_user
 import impl.nog.filesystem
 import impl.nog.shoulder
 import tests.util.metadata_generator
-import tests.util.util
 import tests.util.sample
+import tests.util.util
 
 HERE_PATH = pathlib.Path(__file__).parent.resolve()
 ROOT_PATH = HERE_PATH / '..'
@@ -317,7 +317,7 @@ def tmp_bdb_root(mocker, tmp_path):
 
 @pytest.fixture(
     params=NAMESPACE_LIST,
-    ids=lambda x: re.sub("[^\d\w]+", "-", '-'.join([str(x[0]), *x[1]])),
+    ids=lambda x: re.sub(r"[^\d\w]+", "-", '-'.join([str(x[0]), *x[1]])),
 )
 def namespace(request):
     return request.param
