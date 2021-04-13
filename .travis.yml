@@ -58,7 +58,7 @@ script:
       use ezid_test_db;
       show tables;
       select prefix, minter from ezidapp_shoulder;
-  "
+    "
 
   - pip install -e .
   - pytest
