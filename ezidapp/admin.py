@@ -16,9 +16,9 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
-import django.conf
-import django.conf
 import copy
+
+import django.conf
 import django.contrib.admin
 import django.contrib.admin.sites
 import django.contrib.admin.widgets
@@ -39,13 +39,13 @@ import django.utils.html
 
 import ezidapp.models.search_identifier
 import ezidapp.models.store_group
-
 import ezidapp.models.store_user
 import ezidapp.models.store_user
 from ezidapp.models.new_account_worksheet import NewAccountWorksheet
 from ezidapp.models.search_group import SearchGroup
 from ezidapp.models.search_realm import SearchRealm
 from ezidapp.models.search_user import SearchUser
+
 # from ezidapp.models.server_variables import ServerVariables
 from ezidapp.models.shoulder import Shoulder
 from ezidapp.models.store_datacenter import StoreDatacenter
@@ -100,9 +100,7 @@ superuser = SuperuserSite()
 #
 #             impl.ui_common.alertMessage = obj.alertMessage
 #         if obj.secretKey == "":
-#             import impl.config
 #
-#             impl.config.reload()
 #             django.contrib.messages.success(request, "Server reloaded.")
 #         return obj
 
@@ -468,7 +466,6 @@ class NewAccountWorksheetAdmin(django.contrib.admin.ModelAdmin):
                 # noinspection PyProtectedMember
                 newStatus.append(obj._meta.get_field(f).verbose_name)
         if len(newStatus) > 0:
-            import impl.config
 
             addresses = [
                 a

@@ -12,6 +12,9 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
+import sys
+
+import django.conf
 import logging
 import threading
 import uuid
@@ -26,25 +29,16 @@ import ezidapp.models.shoulder
 import ezidapp.models.store_identifier
 import ezidapp.models.store_user
 import ezidapp.models.update_queue
-import impl.config
 import impl.log
+
 # import noid_nog
 import impl.nog.minter
 import impl.policy
 import impl.util
 import impl.util2
 
-_perUserThreadLimit = None
-_perUserThrottle = None
-
 
 logger = logging.getLogger(__name__)
-
-
-def loadConfig():
-    global _perUserThreadLimit, _perUserThrottle
-    _perUserThreadLimit = int(django.conf.settings.MAX_THREADS_PER_USER)
-    _perUserThrottle = int(django.conf.settings.MAX_CONCURRENT_OPERATIONS_PER_USER)
 
 
 # Simple locking mechanism to ensure that, in a multi-threaded
@@ -81,12 +75,12 @@ def _acquireIdentifierLock(identifier, user):
     while (
         _paused
         or identifier in _lockedIdentifiers
-        or _activeUsers.get(user, 0) >= _perUserThrottle
+        or _activeUsers.get(user, 0)
+        >= int(django.conf.settings.MAX_CONCURRENT_OPERATIONS_PER_USER)
     ):
         # noinspection PyTypeChecker
-        if (
-            _activeUsers.get(user, 0) + _waitingUsers.get(user, 0)
-            >= _perUserThreadLimit
+        if _activeUsers.get(user, 0) + _waitingUsers.get(user, 0) >= int(
+            django.conf.settings.MAX_THREADS_PER_USER
         ):
             _lock.release()
             return False
@@ -321,6 +315,8 @@ def createIdentifier(identifier, user, metadata=None, updateIfExists=False):
             return "error: bad request - identifier already exists"
     except Exception as e:
         impl.log.error(tid, e)
+        if sys.is_running_under_pytest:
+            raise
         return "error: internal server error"
     else:
         impl.log.success(tid)
@@ -393,6 +389,8 @@ def getMetadata(
         return "error: bad request - no such identifier"
     except Exception as e:
         impl.log.error(tid, e)
+        if sys.is_running_under_pytest:
+            raise
         return "error: internal server error"
     finally:
         _releaseIdentifierLock(nqidentifier, user.username)
@@ -468,6 +466,8 @@ def setMetadata(
         return "error: bad request - " + impl.util.formatValidationError(e)
     except Exception as e:
         impl.log.error(tid, e)
+        if sys.is_running_under_pytest:
+            raise
         return "error: internal server error"
     else:
         impl.log.success(tid)
@@ -523,6 +523,8 @@ def deleteIdentifier(identifier, user, updateExternalServices=True):
         return "error: bad request - no such identifier"
     except Exception as e:
         impl.log.error(tid, e)
+        if sys.is_running_under_pytest:
+            raise
         return "error: internal server error"
     else:
         impl.log.success(tid)

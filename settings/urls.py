@@ -1,3 +1,4 @@
+# import impl.daemon.daemon_base
 import django.conf.urls
 import django.conf.urls.static
 
@@ -22,11 +23,10 @@ import impl.ui_home
 import impl.ui_manage
 import impl.ui_search
 
-import django.conf.urls.static
-
 import ezidapp.admin
 import django.urls
 
+# import impl.daemon.crossref
 
 # fmt:off
 urlpatterns = [
@@ -74,7 +74,7 @@ urlpatterns = [
     django.urls.re_path("^version$",                       impl.api.getVersion,                name="api.getVersion"),
     django.urls.re_path("^download_request$",              impl.api.batchDownloadRequest,      name="api.batchDownloadRequest",),
     django.urls.re_path("^admin/pause$",                   impl.api.pause,                     name="api.pause"),
-    django.urls.re_path("^admin/reload$",                  impl.api.reload,                    name="api.reload"),
+    # django.urls.re_path("^admin/reload$",                  impl.api.reload,                    name="api.reload"),
     # OAI
     django.urls.re_path("^oai$",                           impl.oai.dispatch,                  name="oai.dispatch"),
     # ADMIN

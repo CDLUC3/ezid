@@ -23,26 +23,10 @@ import django.http
 import lxml.etree
 
 import ezidapp.models.search_identifier
-import impl.config
 import impl.datacite
 import impl.util
 
 import django.conf
-
-_enabled = None
-_baseUrl = None
-_repositoryName = None
-_adminEmail = None
-_batchSize = None
-
-
-def loadConfig():
-    global _enabled, _baseUrl, _repositoryName, _adminEmail, _batchSize
-    _enabled = django.conf.settings.OAI_ENABLED
-    _baseUrl = django.conf.settings.EZID_BASE_URL
-    _repositoryName = django.conf.settings.OAI_REPOSITORY_NAME
-    _adminEmail = django.conf.settings.OAI_ADMIN_EMAIL
-    _batchSize = int(django.conf.settings.OAI_BATCH_SIZE)
 
 
 def _q(elementName):
@@ -74,7 +58,7 @@ def _buildResponse(oaiRequest, body):
     ).text = impl.util.formatTimestampZulu(int(time.time()))
     e = lxml.etree.SubElement(root, _q("request"))
     # noinspection PyUnresolvedReferences
-    e.text = _baseUrl + "/oai"
+    e.text = django.conf.settings.EZID_BASE_URL + "/oai"
     if not body.tag.endswith("}error") or body.attrib["code"] not in [
         "badVerb",
         "badArgument",
@@ -245,11 +229,17 @@ def _doGetRecord(oaiRequest):
 
 def _doIdentify(oaiRequest):
     e = lxml.etree.Element(_q("Identify"))
-    lxml.etree.SubElement(e, _q("repositoryName")).text = _repositoryName
+    lxml.etree.SubElement(
+        e, _q("repositoryName")
+    ).text = django.conf.settings.OAI_REPOSITORY_NAME
     # noinspection PyUnresolvedReferences
-    lxml.etree.SubElement(e, _q("baseURL")).text = _baseUrl + "/oai"
+    lxml.etree.SubElement(e, _q("baseURL")).text = (
+        django.conf.settings.EZID_BASE_URL + "/oai"
+    )
     lxml.etree.SubElement(e, _q("protocolVersion")).text = "2.0"
-    lxml.etree.SubElement(e, _q("adminEmail")).text = _adminEmail
+    lxml.etree.SubElement(
+        e, _q("adminEmail")
+    ).text = django.conf.settings.OAI_ADMIN_EMAIL
     t = ezidapp.models.search_identifier.SearchIdentifier.objects.filter(
         oaiVisible=True
     ).aggregate(django.db.models.Min("updateTime"))["updateTime__min"]
@@ -408,7 +398,7 @@ def _doListSets(oaiRequest):
 
 def dispatch(request):
     """OAI-PMH request dispatcher."""
-    if not _enabled:
+    if not django.conf.settings.CROSSREF_ENABLED:
         return django.http.HttpResponse(
             "service unavailable", status=503, content_type="text/plain"
         )
@@ -425,11 +415,19 @@ def dispatch(request):
         elif oaiRequest[0] == "Identify":
             r = _doIdentify(oaiRequest)
         elif oaiRequest[0] == "ListIdentifiers":
-            r = _doHarvest(oaiRequest, _batchSize, includeMetadata=False)
+            r = _doHarvest(
+                oaiRequest,
+                int(django.conf.settings.OAI_BATCH_SIZE),
+                includeMetadata=False,
+            )
         elif oaiRequest[0] == "ListMetadataFormats":
             r = _doListMetadataFormats(oaiRequest)
         elif oaiRequest[0] == "ListRecords":
-            r = _doHarvest(oaiRequest, _batchSize, includeMetadata=True)
+            r = _doHarvest(
+                oaiRequest,
+                int(django.conf.settings.OAI_BATCH_SIZE),
+                includeMetadata=True,
+            )
         elif oaiRequest[0] == "ListSets":
             r = _doListSets(oaiRequest)
         else:

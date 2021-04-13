@@ -6,6 +6,7 @@ import os
 import pathlib
 import re
 import sys
+import types
 
 import django
 import django.conf
@@ -22,12 +23,11 @@ import ezidapp.models.shoulder
 import ezidapp.models.store_datacenter
 import ezidapp.models.store_datacenter
 import ezidapp.models.store_user
-import impl.config
 import impl.nog.filesystem
 import impl.nog.shoulder
 import tests.util.metadata_generator
-import tests.util.sample
 import tests.util.util
+import tests.util.sample
 
 HERE_PATH = pathlib.Path(__file__).parent.resolve()
 ROOT_PATH = HERE_PATH / '..'
@@ -39,13 +39,13 @@ NS = impl.nog.id_ns.IdNamespace
 
 # fmt=off
 NAMESPACE_LIST = [
-    (NS.from_str('ark:/99933/x1'),     tuple()),
-    (NS.from_str('ark:/99934/x2'),     tuple()),
-    (NS.from_str('ark:/99933/x3y4/'),  ('supershoulder',)),
-    (NS.from_str('ark:/99934/'),       ('supershoulder', 'force')),
-    (NS.from_str('doi:10.9935/X5'),    tuple()),
+    (NS.from_str('ark:/99933/x1'), tuple()),
+    (NS.from_str('ark:/99934/x2'), tuple()),
+    (NS.from_str('ark:/99933/x3y4/'), ('supershoulder',)),
+    (NS.from_str('ark:/99934/'), ('supershoulder', 'force')),
+    (NS.from_str('doi:10.9935/X5'), tuple()),
     (NS.from_str('doi:10.19936/X6Y7'), tuple()),
-    (NS.from_str('doi:10.9935/X8'),    tuple()),
+    (NS.from_str('doi:10.9935/X8'), tuple()),
     (NS.from_str('doi:10.19936/X9Y0'), tuple()),
 ]
 # fmt=on
@@ -76,19 +76,30 @@ log = logging.getLogger(__name__)
 
 # Hooks
 
+
 def pytest_addoption(parser):
     parser.addoption(
         '--sample-error',
+        dest='sample_error',
         action='store_true',
         default=False,
         help='Handle sample mismatch as test failure instead of opening diff viewer',
     )
     parser.addoption(
         '--sample-update',
+        dest='sample_update',
         action='store_true',
         default=False,
         help='Update mismatched samples instead of opening diff viewer',
     )
+
+
+# @pytest.fixture(autouse=True)
+# def sample_options(request):
+#     return types.SimpleNamespace(
+#         error=request.config.getoption("--sample-error"),
+#         update=request.config.getoption("--sample-update"),
+#     )
 
 
 def pytest_configure(config):
@@ -102,10 +113,10 @@ def pytest_configure(config):
     sys.is_running_under_travis = "TRAVIS" in os.environ
     sys.is_running_under_pytest = True
 
-    tests.util.sample.options = {
-        "error": config.getoption("--sample-error"),
-        "update": config.getoption("--sample-update"),
-    }
+    tests.util.sample.options = types.SimpleNamespace(
+        error=config.getoption("--sample-error"),
+        update=config.getoption("--sample-update"),
+    )
 
     # Only accept error messages from loggers that are noisy at debug.
     logging.getLogger('django.db.backends.schema').setLevel(logging.ERROR)
@@ -153,7 +164,7 @@ def django_db_setup(django_db_keepdb):
         "default": {
             "ENGINE": "django.db.backends.mysql",
             "HOST": "localhost",
-            "NAME": "ezid_tests",
+            "NAME": "ezid_test_db",
             "USER": "travis",
             "PASSWORD": "",
             "OPTIONS": {"charset": "utf8mb4"},
@@ -164,7 +175,7 @@ def django_db_setup(django_db_keepdb):
         "search": {
             "ENGINE": "django.db.backends.mysql",
             "HOST": "localhost",
-            "NAME": "ezid_tests",
+            "NAME": "ezid_test_db",
             "USER": "travis",
             "PASSWORD": "",
             "fulltextSearchSupported": True,
@@ -188,50 +199,53 @@ def disable_log_to_console(mocker):
 # See also: https://pytest-django.readthedocs.io/en/latest/helpers.html#fixtures
 
 
+# @pytest.fixture(scope='function')
+# def reloaded():
+#     """Refresh EZID's in-memory caches of the database.
+#
+#     In the test, additional reloads can be triggered by calling the
+#     fixture.
+#     """
+#
+#     def reload_():
+#         assert django.conf.settings.configured
+#         # noinspection PyProtectedMember
+#         log.debug(
+#             'reloaded(): db_shoulders={} cache_shoulders={}'.format(
+#                 ezidapp.models.shoulder.Shoulder.objects.filter(
+#                     active=True, manager='ezid'
+#                 ).count(),
+#                 len(ezidapp.models.shoulder._shoulders),
+#             )
+#         )
+#
+#     reload_()
+#     return reload_
+#
+
+
 @pytest.fixture(scope='function')
-def reloaded():
-    """Refresh EZID's in-memory caches of the database.
-
-    In the test, additional reloads can be triggered by calling the
-    fixture.
-    """
-
-    def reload_():
-        assert django.conf.settings.configured
-        impl.config.reload()
-        # noinspection PyProtectedMember
-        log.debug(
-            'reloaded(): db_shoulders={} cache_shoulders={}'.format(
-                ezidapp.models.shoulder.Shoulder.objects.filter(
-                    active=True, manager='ezid'
-                ).count(),
-                len(ezidapp.models.shoulder._shoulders),
-            )
-        )
-
-    reload_()
-    return reload_
+def admin_admin():
+    pass
 
 
-@pytest.fixture(scope='function')
-def admin_admin(reloaded):
-    """Set the admin password to "admin".
-
-    This may be useful when testing authentication. To instead skip
-    authentication, see skip_auth.
-    """
-    with django.db.transaction.atomic():
-        if not django.contrib.auth.models.User.objects.filter(
-            username='admin'
-        ).exists():
-            django.contrib.auth.models.User.objects.create_superuser(
-                username='admin', password=None, email=""
-            )
-        reloaded()
-        o = ezidapp.models.store_user.getUserByUsername('admin')
-        o.setPassword('admin')
-        o.save()
-        reloaded()
+#     """Set the admin password to "admin".
+#
+#     This may be useful when testing authentication. To instead skip
+#     authentication, see skip_auth.
+#     """
+#     with django.db.transaction.atomic():
+#         if not django.contrib.auth.models.User.objects.filter(
+#             username='admin'
+#         ).exists():
+#             django.contrib.auth.models.User.objects.create_superuser(
+#                 username='admin', password=None, email=""
+#             )
+#         reloaded()
+#         o = ezidapp.models.store_user.getUserByUsername('admin')
+#         o.setPassword('admin')
+#         o.save()
+#         reloaded()
 
 
 @pytest.fixture(scope='function')
@@ -314,8 +328,9 @@ def meta_type(request):
     """meta_type = 'datacite', 'crossref', 'dc', 'unknown'"""
     return request.param
 
+
 @pytest.fixture()
-def minters(tmp_bdb_root, reloaded, namespace, meta_type):
+def minters(tmp_bdb_root, namespace, meta_type):
     """Add a set of minters and corresponding shoulders. The minters are stored below
     the temporary root created by tmp_bdb_root. The shoulders are registered to the
     admin user in the DB, and are ready for use.
@@ -340,7 +355,7 @@ def minters(tmp_bdb_root, reloaded, namespace, meta_type):
         is_force='force' in arg_tup,
         is_debug=True,
     )
-    reloaded()
+    # reloaded()
     yield namespace
 
 
@@ -371,12 +386,11 @@ def log_shoulder_count():
     # noinspection PyProtectedMember
     def log_(s):
         log.debug(
-            '{}: db_shoulders={} cache_shoulders={}'.format(
+            '{}: db_shoulders={}'.format(
                 s,
                 ezidapp.models.shoulder.Shoulder.objects.filter(
                     active=True, manager='ezid'
                 ).count(),
-                len(ezidapp.models.shoulder._shoulders),
             )
         )
 

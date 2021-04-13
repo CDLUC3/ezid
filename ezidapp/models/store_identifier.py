@@ -53,27 +53,27 @@ class StoreIdentifier(ezidapp.models.identifier.Identifier):
     # database).
 
     owner = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        ezidapp.models.store_user.StoreUser,
+        'ezidapp.StoreUser',
         blank=True,
         null=True,
         on_delete=django.db.models.PROTECT,
     )
     ownergroup = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        ezidapp.models.store_group.StoreGroup,
+        'ezidapp.StoreGroup',
         blank=True,
         null=True,
         default=None,
         on_delete=django.db.models.PROTECT,
     )
     datacenter = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        ezidapp.models.store_datacenter.StoreDatacenter,
+        'ezidapp.StoreDatacenter',
         blank=True,
         null=True,
         default=None,
         on_delete=django.db.models.PROTECT,
     )
     profile = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        ezidapp.models.store_profile.StoreProfile,
+        'ezidapp.StoreProfile',
         blank=True,
         null=True,
         default=None,

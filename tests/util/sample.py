@@ -18,6 +18,9 @@ import django.core
 import django.core.management
 import filelock
 
+# import _pytest.config
+import pytest
+
 import impl.nog.filesystem
 
 MAX_LINE_WIDTH = 130
@@ -78,7 +81,7 @@ def assert_match(
     if sample_str == current_str:
         return
 
-    if 'IS_TRAVIS' in os.environ or options['error']:
+    if 'IS_TRAVIS' in os.environ or options.error:
         raise SampleException(
             'Sample mismatch.\nActual:\n{}\nExpected:\n{}\nDiff:\n{}\n'.format(
                 current_str,
@@ -92,7 +95,7 @@ def assert_match(
         )
         return
 
-    if options['update']:
+    if options.update:
         if not isinstance(current_str, str):
             current_str.decode('utf-8')
         pathlib.Path(sample_path).write_text(current_str)

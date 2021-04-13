@@ -29,73 +29,35 @@ import urllib.response
 import django.conf
 import lxml.etree
 
-import ezidapp.models.shoulder
+# import ezidapp.models.shoulder
 import ezidapp.models.validation
-import impl.config
 import impl.mapping
 import impl.util
 
 _lock = threading.Lock()
-_enabled = None
-_doiUrl = None
-_metadataUrl = None
-_numAttempts = None
-_reattemptDelay = None
-_timeout = None
-_allocators = None
-_stylesheet = None
-_crossrefTransform = None
-_pingDoi = None
-_pingDatacenter = None
-_pingTarget = None
+
+
 _numActiveOperations = 0
-_schemas = None
 
+_allocators = {}
+for a in django.conf.settings.DATACITE_ALLOCATORS.split(","):
+    _allocators[a] = getattr(django.conf.settings, f"ALLOCATOR_{a}_PASSWORD")
 
-def loadConfig():
-    global _enabled, _doiUrl, _metadataUrl, _numAttempts, _reattemptDelay
-    global _timeout, _allocators, _stylesheet, _crossrefTransform, _pingDoi
-    global _pingDatacenter, _pingTarget, _schemas
-
-    _enabled = django.conf.settings.DATACITE_ENABLED
-    _doiUrl = django.conf.settings.DATACITE_DOI_URL
-    _metadataUrl = django.conf.settings.DATACITE_METADATA_URL
-    _numAttempts = int(django.conf.settings.DATACITE_NUM_ATTEMPTS)
-    _reattemptDelay = int(django.conf.settings.DATACITE_REATTEMPT_DELAY)
-    _timeout = int(django.conf.settings.DATACITE_TIMEOUT)
-    _allocators = {}
-    for a in django.conf.settings.DATACITE_ALLOCATORS.split(","):
-        _allocators[a] = getattr(django.conf.settings, f"ALLOCATOR_{a}_PASSWORD")
-    _stylesheet = lxml.etree.XSLT(
-        lxml.etree.parse(
-            os.path.join(django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl")
-        )
-    )
-    _crossrefTransform = lxml.etree.XSLT(
-        lxml.etree.parse(
-            os.path.join(
-                django.conf.settings.PROJECT_ROOT, "profiles", "crossref2datacite.xsl"
-            )
-        )
-    )
-    _pingDoi = django.conf.settings.DATACITE_PING_DOI
-    _pingDatacenter = django.conf.settings.DATACITE_PING_DATACENTER
-    _pingTarget = django.conf.settings.DATACITE_PING_TARGET
-    schemas = {}
-    for f in os.listdir(os.path.join(django.conf.settings.PROJECT_ROOT, "xsd")):
-        m = re.match("datacite-kernel-(.*)", f)
-        if m:
-            schemas[m.group(1)] = (
-                lxml.etree.XMLSchema(
-                    lxml.etree.parse(
-                        os.path.join(
-                            django.conf.settings.PROJECT_ROOT, "xsd", f, "metadata.xsd"
-                        )
+schemas = {}
+for f in os.listdir(os.path.join(django.conf.settings.PROJECT_ROOT, "xsd")):
+    m = re.match("datacite-kernel-(.*)", f)
+    if m:
+        schemas[m.group(1)] = (
+            lxml.etree.XMLSchema(
+                lxml.etree.parse(
+                    os.path.join(
+                        django.conf.settings.PROJECT_ROOT, "xsd", f, "metadata.xsd"
                     )
-                ),
-                threading.Lock(),
-            )
-    _schemas = schemas
+                )
+            ),
+            threading.Lock(),
+        )
+_schemas = schemas
 
 
 def _modifyActiveCount(delta):
@@ -128,8 +90,14 @@ class _HTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
     https_response = http_response
 
 
+# def impl.util.basic_auth(django.conf.settings.BINDER_USERNAME,
+# django.conf.settings.BINDER_PASSWORD,)(doi, datacenter=None):
+
+
 def _authorization(doi, datacenter=None):
     if datacenter is None:
+        import ezidapp.models.shoulder
+
         s = ezidapp.models.shoulder.getLongestShoulderMatch("doi:" + doi)
         # Should never happen.
         assert s is not None, "shoulder not found"
@@ -151,17 +119,23 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
     a string error message if the target URL was not accepted by
     DataCite; or a thrown exception on other error.
     """
-    if not _enabled:
+    if not django.conf.settings.DATACITE_ENABLED:
         return None
     # To deal with transient problems with the Handle system underlying
     # the DataCite service, we make multiple attempts.
-    for i in range(_numAttempts):
+    for i in range(int(django.conf.settings.DATACITE_NUM_ATTEMPTS)):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
-        r = urllib.request.Request(_doiUrl)
+        r = urllib.request.Request(django.conf.settings.DATACITE_DOI_URL)
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
-        r.add_header("Authorization", _authorization(doi, datacenter))
+        r.add_header(
+            "Authorization",
+            impl.util.basic_auth(
+                django.conf.settings.BINDER_USERNAME,
+                django.conf.settings.BINDER_PASSWORD,
+            )(doi, datacenter),
+        )
         r.add_header("Content-Type", "text/plain; charset=utf-8")
 
         r.data = "doi={}\nurl={}".format(
@@ -172,7 +146,7 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
         c = None
         try:
             _modifyActiveCount(1)
-            c = o.open(r, timeout=_timeout)
+            c = o.open(r, timeout=int(django.conf.settings.DATACITE_TIMEOUT))
             assert (
                 c.read() == "OK"
             ), "unexpected return from DataCite register DOI operation"
@@ -180,10 +154,13 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
             message = e.fp.read()
             if e.code == 400 and message.startswith(b"[url]"):
                 return message
-            if e.code != 500 or i == _numAttempts - 1:
+            if (
+                e.code != 500
+                or i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1
+            ):
                 raise e
         except Exception:
-            if i == _numAttempts - 1:
+            if i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1:
                 raise
         else:
             break
@@ -191,7 +168,7 @@ def registerIdentifier(doi, targetUrl, datacenter=None):
             _modifyActiveCount(-1)
             if c:
                 c.close()
-        time.sleep(_reattemptDelay)
+        time.sleep(int(django.conf.settings.DATACITE_REATTEMPT_DELAY))
     return None
 
 
@@ -217,35 +194,46 @@ def getTargetUrl(doi, datacenter=None):
     """
     # To hide transient network errors, we make multiple attempts.
     # noinspection PyTypeChecker
-    for i in range(_numAttempts):
+    for i in range(int(django.conf.settings.DATACITE_NUM_ATTEMPTS)):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
         # noinspection PyUnresolvedReferences,PyUnresolvedReferences
-        r = urllib.request.Request(_doiUrl + "/" + urllib.parse.quote(doi))
+        r = urllib.request.Request(
+            django.conf.settings.DATACITE_DOI_URL + "/" + urllib.parse.quote(doi)
+        )
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
-        r.add_header("Authorization", _authorization(doi, datacenter))
+        r.add_header(
+            "Authorization",
+            impl.util.basic_auth(
+                django.conf.settings.BINDER_USERNAME,
+                django.conf.settings.BINDER_PASSWORD,
+            )(doi, datacenter),
+        )
         c = None
         try:
             _modifyActiveCount(1)
-            c = o.open(r, timeout=_timeout)
+            c = o.open(r, timeout=int(django.conf.settings.DATACITE_TIMEOUT))
             return c.read()
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 return None
             # noinspection PyTypeChecker
-            if e.code != 500 or i == _numAttempts - 1:
+            if (
+                e.code != 500
+                or i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1
+            ):
                 raise e
         except Exception:
             # noinspection PyTypeChecker
-            if i == _numAttempts - 1:
+            if i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1:
                 raise
         finally:
             _modifyActiveCount(-1)
             if c:
                 c.close()
         # noinspection PyTypeChecker
-        time.sleep(_reattemptDelay)
+        time.sleep(int(django.conf.settings.DATACITE_REATTEMPT_DELAY))
 
 
 _prologRE = re.compile(
@@ -508,24 +496,30 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
         return "DOI metadata requirements not satisfied: " + str(e)
     if newRecord == oldRecord and not forceUpload:
         return None
-    if not _enabled:
+    if not django.conf.settings.DATACITE_ENABLED:
         return None
     # To hide transient network errors, we make multiple attempts.
     # noinspection PyTypeChecker
-    for i in range(_numAttempts):
+    for i in range(int(django.conf.settings.DATACITE_NUM_ATTEMPTS)):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
         # noinspection PyTypeChecker
-        r = urllib.request.Request(_metadataUrl)
+        r = urllib.request.Request(django.conf.settings.DATACITE_METADATA_URL)
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
-        r.add_header("Authorization", _authorization(doi, datacenter))
+        r.add_header(
+            "Authorization",
+            impl.util.basic_auth(
+                django.conf.settings.BINDER_USERNAME,
+                django.conf.settings.BINDER_PASSWORD,
+            )(doi, datacenter),
+        )
         r.add_header("Content-Type", "application/xml; charset=utf-8")
         r.data = newRecord.encode("utf-8")
         c = None
         try:
             _modifyActiveCount(1)
-            c = o.open(r, timeout=_timeout)
+            c = o.open(r, timeout=int(django.conf.settings.DATACITE_TIMEOUT))
             s = c.read()
             assert s.startswith("OK"), (
                 "unexpected return from DataCite store metadata operation: " + s
@@ -535,11 +529,14 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
             if e.code in (400, 422):
                 return "element 'datacite': " + message.decode('utf-8')
             # noinspection PyTypeChecker
-            if e.code != 500 or i == _numAttempts - 1:
+            if (
+                e.code != 500
+                or i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1
+            ):
                 raise e
         except Exception:
             # noinspection PyTypeChecker
-            if i == _numAttempts - 1:
+            if i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1:
                 raise
         else:
             return None
@@ -548,35 +545,46 @@ def uploadMetadata(doi, current, delta, forceUpload=False, datacenter=None):
             if c:
                 c.close()
         # noinspection PyTypeChecker
-        time.sleep(_reattemptDelay)
+        time.sleep(int(django.conf.settings.DATACITE_REATTEMPT_DELAY))
 
 
 def _deactivate(doi, datacenter):
     # To hide transient network errors, we make multiple attempts.
     # noinspection PyTypeChecker
-    for i in range(_numAttempts):
+    for i in range(int(django.conf.settings.DATACITE_NUM_ATTEMPTS)):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
         # noinspection PyUnresolvedReferences
-        r = urllib.request.Request(_metadataUrl + "/" + urllib.parse.quote(doi))
+        r = urllib.request.Request(
+            django.conf.settings.DATACITE_METADATA_URL + "/" + urllib.parse.quote(doi)
+        )
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
-        r.add_header("Authorization", _authorization(doi, datacenter))
+        r.add_header(
+            "Authorization",
+            impl.util.basic_auth(
+                django.conf.settings.BINDER_USERNAME,
+                django.conf.settings.BINDER_PASSWORD,
+            )(doi, datacenter),
+        )
         r.get_method = lambda: "DELETE"
         c = None
         try:
             _modifyActiveCount(1)
-            c = o.open(r, timeout=_timeout)
+            c = o.open(r, timeout=int(django.conf.settings.DATACITE_TIMEOUT))
             assert (
                 c.read() == "OK"
             ), "unexpected return from DataCite deactivate DOI operation"
         except urllib.error.HTTPError as e:
             # noinspection PyTypeChecker
-            if e.code != 500 or i == _numAttempts - 1:
+            if (
+                e.code != 500
+                or i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1
+            ):
                 raise e
         except Exception:
             # noinspection PyTypeChecker
-            if i == _numAttempts - 1:
+            if i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1:
                 raise
         else:
             break
@@ -585,7 +593,7 @@ def _deactivate(doi, datacenter):
             if c:
                 c.close()
         # noinspection PyTypeChecker
-        time.sleep(_reattemptDelay)
+        time.sleep(int(django.conf.settings.DATACITE_REATTEMPT_DELAY))
 
 
 def deactivate(doi, datacenter=None):
@@ -600,7 +608,7 @@ def deactivate(doi, datacenter=None):
     be the identifier's datacenter, e.g., "CDL.BUL".  Returns None;
     raises an exception on error.
     """
-    if not _enabled:
+    if not django.conf.settings.DATACITE_ENABLED:
         return
     try:
         _deactivate(doi, datacenter)
@@ -632,11 +640,15 @@ def deactivate(doi, datacenter=None):
 def ping():
     """Tests the DataCite API (as well as the underlying Handle System),
     returning "up" or "down"."""
-    if not _enabled:
+    if not django.conf.settings.DATACITE_ENABLED:
         return "up"
     try:
         # noinspection PyTypeChecker
-        r = setTargetUrl(_pingDoi, _pingTarget, _pingDatacenter)
+        r = setTargetUrl(
+            django.conf.settings.DATACITE_PING_DOI,
+            django.conf.settings.DATACITE_PING_TARGET,
+            django.conf.settings.DATACITE_PING_DATACENTER,
+        )
         assert r is None
     except Exception:
         return "down"
@@ -646,26 +658,39 @@ def ping():
 
 def pingDataciteOnly():
     """Tests the DataCite API (only), returning "up" or "down"."""
-    if not _enabled:
+    if not django.conf.settings.DATACITE_ENABLED:
         return "up"
     # To hide transient network errors, we make multiple attempts.
     # noinspection PyTypeChecker
-    for i in range(_numAttempts):
+    for i in range(int(django.conf.settings.DATACITE_NUM_ATTEMPTS)):
         o = urllib.request.build_opener(_HTTPErrorProcessor)
         # noinspection PyUnresolvedReferences
-        r = urllib.request.Request(_doiUrl + "/" + _pingDoi)
+        r = urllib.request.Request(
+            django.conf.settings.DATACITE_DOI_URL
+            + "/"
+            + django.conf.settings.DATACITE_PING_DOI
+        )
         # We manually supply the HTTP Basic authorization header to avoid
         # the doubling of the number of HTTP transactions caused by the
         # challenge/response model.
-        r.add_header("Authorization", _authorization(_pingDoi, _pingDatacenter))
+        r.add_header(
+            "Authorization",
+            impl.util.basic_auth(
+                django.conf.settings.BINDER_USERNAME,
+                django.conf.settings.BINDER_PASSWORD,
+            )(
+                django.conf.settings.DATACITE_PING_DOI,
+                django.conf.settings.DATACITE_PING_DATACENTER,
+            ),
+        )
         c = None
         try:
             _modifyActiveCount(1)
-            c = o.open(r, timeout=_timeout)
-            assert c.read() == _pingTarget
+            c = o.open(r, timeout=int(django.conf.settings.DATACITE_TIMEOUT))
+            assert c.read() == django.conf.settings.DATACITE_PING_TARGET
         except Exception:
             # noinspection PyTypeChecker
-            if i == _numAttempts - 1:
+            if i == int(django.conf.settings.DATACITE_NUM_ATTEMPTS) - 1:
                 return "down"
         else:
             return "up"
@@ -674,7 +699,7 @@ def pingDataciteOnly():
             if c:
                 c.close()
         # noinspection PyTypeChecker
-        time.sleep(_reattemptDelay)
+        time.sleep(int(django.conf.settings.DATACITE_REATTEMPT_DELAY))
 
 
 def dcmsRecordToHtml(record):
@@ -686,7 +711,14 @@ def dcmsRecordToHtml(record):
     try:
         # noinspection PyCallingNonCallable
         r = lxml.etree.tostring(
-            _stylesheet(impl.util.parseXmlString(record)), encoding=str
+            lxml.etree.XSLT(
+                lxml.etree.parse(
+                    os.path.join(
+                        django.conf.settings.PROJECT_ROOT, "profiles", "datacite.xsl"
+                    )
+                )
+            )(impl.util.parseXmlString(record)),
+            encoding=str,
         )
         assert r.startswith("<table")
         return r
@@ -711,7 +743,16 @@ def crossrefToDatacite(record, overrides={}):
         d[k] = lxml.etree.XSLT.strparam(v)
     # noinspection PyCallingNonCallable
     return lxml.etree.tostring(
-        _crossrefTransform(impl.util.parseXmlString(record), **d), encoding=str
+        lxml.etree.XSLT(
+            lxml.etree.parse(
+                os.path.join(
+                    django.conf.settings.PROJECT_ROOT,
+                    "profiles",
+                    "crossref2datacite.xsl",
+                )
+            )
+        )(impl.util.parseXmlString(record), **d),
+        encoding=str,
     )
 
 

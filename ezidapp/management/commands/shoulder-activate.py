@@ -10,7 +10,7 @@ import django.core.management
 import django.db.transaction
 
 # # import ezidapp.models
-import impl.nog.reload
+# import impl.nog.reload
 import impl.nog.util
 
 import ezidapp.models.shoulder
@@ -61,4 +61,4 @@ class Command(django.core.management.BaseCommand):
 
         log.info('Shoulder activated: {}'.format(shoulder_str))
 
-        impl.nog.reload.trigger_reload()
+        # impl.nog.reload.trigger_reload()

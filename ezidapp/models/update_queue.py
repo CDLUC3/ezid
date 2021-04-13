@@ -7,7 +7,7 @@
 # identifier processing.  An identifier is inserted into the update
 # queue as part of the same transaction that inserts, updates, or
 # deletes the identifier in the main StoreIdentifier table.
-# Identifiers are removed from the queue by the 'backproc' module
+# Identifiers are removed from the queue by the SearchDbDaemon
 # after they have been processed.
 #
 # Author:

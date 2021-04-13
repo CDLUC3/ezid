@@ -60,13 +60,6 @@
   "model": "contenttypes.contenttype",
   "fields": {
     "app_label": "ezidapp",
-    "model": "servervariables"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "ezidapp",
     "model": "updatequeue"
   }
 },
@@ -81678,14 +81671,6 @@
   }
 },
 {
-  "model": "ezidapp.servervariables",
-  "pk": 1,
-  "fields": {
-    "alertMessage": "",
-    "secretKey": "1r@hr3447&a_aw3^$8=y_wykg^^l9eeg&&(28^h6a1kylu%txi"
-  }
-},
-{
   "model": "ezidapp.statistics",
   "pk": 5780549,
   "fields": {
@@ -116914,39 +116899,6 @@
       "storedatacenter"
     ],
     "codename": "delete_storedatacenter"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add server variables",
-    "content_type": [
-      "ezidapp",
-      "servervariables"
-    ],
-    "codename": "add_servervariables"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change server variables",
-    "content_type": [
-      "ezidapp",
-      "servervariables"
-    ],
-    "codename": "change_servervariables"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete server variables",
-    "content_type": [
-      "ezidapp",
-      "servervariables"
-    ],
-    "codename": "delete_servervariables"
   }
 },
 {

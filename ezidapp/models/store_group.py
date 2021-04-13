@@ -18,7 +18,8 @@ import django.db.models
 
 import ezidapp.models.group
 import ezidapp.models.shoulder
-import ezidapp.models.store_realm
+
+# import ezidapp.models.store_realm
 import ezidapp.models.validation
 
 
@@ -26,7 +27,7 @@ class StoreGroup(ezidapp.models.group.Group):
 
     # Inherited foreign key declarations...
     realm = django.db.models.ForeignKey(
-        ezidapp.models.store_realm.StoreRealm, on_delete=django.db.models.PROTECT
+        'ezidapp.StoreRealm', on_delete=django.db.models.PROTECT
     )
 
     organizationName = django.db.models.CharField(
@@ -116,28 +117,30 @@ class StoreGroup(ezidapp.models.group.Group):
 # existing entries are never modified.  Thus, with appropriate coding
 # below, they are threadsafe without needing locking.
 
-_caches = None  # (pidCache, groupnameCache, idCache)
-
-
-def clearCaches():
-    global _caches
-    _caches = None
-
-
+# _caches = None  # (pidCache, groupnameCache, idCache)
+#
+#
+# def clearCaches():
+#     global _caches
+#     _caches = None
+#
+#
 def _databaseQuery():
     return StoreGroup.objects.select_related("realm").prefetch_related("shoulders")
 
 
-def _getCaches():
-    global _caches
-    caches = _caches
-    if caches is None:
-        pidCache = dict((g.pid, g) for g in _databaseQuery().all())
-        groupnameCache = dict((g.groupname, g) for g in list(pidCache.values()))
-        idCache = dict((g.id, g) for g in list(pidCache.values()))
-        caches = (pidCache, groupnameCache, idCache)
-        _caches = caches
-    return caches
+#
+#
+# def _getCaches():
+#     global _caches
+#     caches = _caches
+#     if caches is None:
+#         pidCache = dict((g.pid, g) for g in _databaseQuery().all())
+#         groupnameCache = dict((g.groupname, g) for g in list(pidCache.values()))
+#         idCache = dict((g.id, g) for g in list(pidCache.values()))
+#         caches = (pidCache, groupnameCache, idCache)
+#         _caches = caches
+#     return caches
 
 
 def getGroupByPid(pid):
@@ -146,16 +149,10 @@ def getGroupByPid(pid):
     # response to "anonymous".
     if pid == "anonymous":
         return AnonymousGroup
-    pidCache, groupnameCache, idCache = _getCaches()
-    if pid not in pidCache:
-        try:
-            g = _databaseQuery().get(pid=pid)
-        except StoreGroup.DoesNotExist:
-            return None
-        pidCache[pid] = g
-        groupnameCache[g.groupname] = g
-        idCache[g.id] = g
-    return pidCache[pid]
+    try:
+        return _databaseQuery().get(pid=pid)
+    except StoreGroup.DoesNotExist:
+        return None
 
 
 def getGroupByGroupname(groupname):
@@ -164,31 +161,19 @@ def getGroupByGroupname(groupname):
     # "anonymous".
     if groupname == "anonymous":
         return AnonymousGroup
-    pidCache, groupnameCache, idCache = _getCaches()
-    if groupname not in groupnameCache:
-        try:
-            g = _databaseQuery().get(groupname=groupname)
-        except StoreGroup.DoesNotExist:
-            return None
-        pidCache[g.pid] = g
-        groupnameCache[groupname] = g
-        idCache[g.id] = g
-    return groupnameCache[groupname]
+    try:
+        return _databaseQuery().get(groupname=groupname)
+    except StoreGroup.DoesNotExist:
+        return None
 
 
 def getProfileById(id_str):
     # Returns the group identified by internal identifier 'id', or None
     # if there is no such group.
-    pidCache, groupnameCache, idCache = _getCaches()
-    if id_str not in idCache:
-        try:
-            g = _databaseQuery().get(id=id_str)
-        except StoreGroup.DoesNotExist:
-            return None
-        pidCache[g.pid] = g
-        groupnameCache[g.groupname] = g
-        idCache[id_str] = g
-    return idCache[id_str]
+    try:
+        return _databaseQuery().get(id=id_str)
+    except StoreGroup.DoesNotExist:
+        return None
 
 
 class AnonymousGroup(object):
@@ -197,7 +182,8 @@ class AnonymousGroup(object):
     # need not be instantiated.
     pid = "anonymous"
     groupname = "anonymous"
-    realm = ezidapp.models.store_realm.AnonymousRealm
+    # realm = ezidapp.models.store_realm.AnonymousRealm
+    realm = 'ezidapp.AnonymousRealm'
     crossrefEnabled = False
 
     class inner(object):

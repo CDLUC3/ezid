@@ -6,7 +6,7 @@ from django.utils.translation import ugettext as _
 
 import ezidapp.models.store_group
 import ezidapp.models.store_user
-import impl.stats
+import impl.daemon.stats
 import impl.ui_common
 import impl.ui_search
 import impl.userauth
@@ -93,16 +93,16 @@ def _getUsage(REQUEST, _user, d):
         d['owner_selected']
     )
     if realm_id is not None:
-        table = impl.stats.getTable(realm=realm_id)
+        table = impl.daemon.stats.getTable(realm=realm_id)
     elif group_id is not None:
-        table = impl.stats.getTable(
+        table = impl.daemon.stats.getTable(
             ownergroup=ezidapp.models.store_group.getGroupByGroupname(group_id).pid
         )
     else:
         if user_id == 'all':
-            table = impl.stats.getTable()
+            table = impl.daemon.stats.getTable()
         else:
-            table = impl.stats.getTable(
+            table = impl.daemon.stats.getTable(
                 owner=ezidapp.models.store_user.getUserByUsername(user_id).pid
             )
     all_months = _computeMonths(table)
@@ -237,7 +237,7 @@ def csvStats(request):
         ]
     )
     for u in users:
-        for r in impl.stats.getTable(owner=u.pid):
+        for r in impl.daemon.stats.getTable(owner=u.pid):
             outputRow = [u.username, u.group.groupname, r[0]]
             for type in ["ARK", "DOI"]:
                 t = 0

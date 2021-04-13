@@ -379,7 +379,7 @@ def _pageLayout(d, REQUEST, s_type="public"):
     """Track user preferences for selected fields, field order, page, and page
     size."""
     d['filtered'] = False if 'filtered' not in d and 'filtered' not in REQUEST else True
-    d['testPrefixes'] = impl.ui_common.testPrefixes
+    # d['testPrefixes'] = impl.ui_common.testPrefixes
     d['fields_mapped'] = FIELDS_MAPPED
     d['field_display_types'] = FIELD_DISPLAY_TYPES
     f_order = _fieldOrderByType[s_type]

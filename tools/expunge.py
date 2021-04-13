@@ -35,7 +35,7 @@ from impl import config
 
 expireTime = int(time.time()) - 14 * 86400
 baseUrl = django.conf.settings.EZID_BASE_URL
-adminPassword = django.conf.settings.AUTH_ADMIN_PASSWORD
+adminPassword = django.conf.settings.ADMIN_PASSWORD
 
 if len(sys.argv) != 1:
     sys.stderr.write("Usage: expunge\n")

@@ -68,7 +68,7 @@ if DAEMON_THREADS_ENABLED == 'auto':
 
 # The following enablement flags are subservient to the DAEMON_THREADS_ENABLED Django
 # setting.
-DAEMONS_BACKPROC_ENABLED = True
+DAEMONS_SEARCHDB_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
 DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
@@ -261,6 +261,45 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 SESSION_COOKIE_PATH = '/'
 
+# EZID administrator account
+
+# Note: The `diag-update-admin` management command must be run in order to apply
+# changes made to any of the `ADMIN_` settings. E.g.,
+#
+# $ cd ezid
+# $ ./manage.py diag-update-admin
+
+ADMIN_USERNAME = '{{ admin_username }}'
+ADMIN_PASSWORD = '{{ admin_password }}'
+
+ADMIN_GROUPNAME = 'admin'
+ADMIN_NOTES = 'This user owns 1 identifier under former shoulder doi:10.5060/D2'
+ADMIN_EMAIL = 'ezid@ucop.edu'
+ADMIN_DISPLAY_NAME = 'EZID superuser'
+
+ADMIN_ORG_ACRONYM = 'CDL'
+ADMIN_ORG_NAME = 'EZID'
+ADMIN_ORG_URL = 'http://ezid.cdlib.org/'
+
+ADMIN_CROSSREF_EMAIL = ''
+ADMIN_CROSSREF_ENABLED = False
+
+ADMIN_PRIMARY_CONTACT_EMAIL = 'ezid@ucop.edu'
+ADMIN_PRIMARY_CONTACT_NAME = 'EZID superuser'
+ADMIN_PRIMARY_CONTACT_PHONE = '(510) 987-0555'
+
+ADMIN_SECONDARY_CONTACT_EMAIL = ''
+ADMIN_SECONDARY_CONTACT_NAME = ''
+ADMIN_SECONDARY_CONTACT_PHONE = ''
+
+ADMIN_STORE_REALM = 'CDL'
+ADMIN_STORE_USER_PID = 'ark:/99166/p9kw57h4w'
+ADMIN_STORE_GROUP_PID = 'ark:/99166/p9g44hq02'
+
+ADMIN_SEARCH_REALM = 'CDL'
+ADMIN_SEARCH_USER_PID = 'ark:/99166/p9kw57h4w'
+ADMIN_SEARCH_GROUP_PID = 'ark:/99166/p9g44hq02'
+
 # Credentials
 
 ARK_PROFILE = 'ERC'
@@ -271,9 +310,6 @@ GOOGLE_ANALYTICS_ID = None
 
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
-
-AUTH_ADMIN_USERNAME = '{{ admin_username }}'
-AUTH_ADMIN_PASSWORD = '{{ admin_password }}'
 
 BINDER_URL = '{{ binder_url }}'
 BINDER_USERNAME = '{{ binder_username }}'
@@ -290,6 +326,11 @@ SHOULDERS_ARK_TEST = 'ark:/99999/fk4'
 SHOULDERS_DOI_TEST = 'doi:10.5072/FK2'
 SHOULDERS_CROSSREF_TEST = 'doi:10.15697/'
 SHOULDERS_AGENT = 'ark:/99166/p9'
+
+TEST_SHOULDER_DICT = [
+    {"namespace": 'ARK Test', "prefix": 'ark:/99999/fk4'},
+    {"namespace": 'DOI Test', "prefix": 'doi:10.5072/FK2'},
+]
 
 # DataCite
 

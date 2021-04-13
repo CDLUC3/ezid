@@ -12,7 +12,8 @@ import django.db.transaction
 
 import ezidapp.models.store_datacenter
 import impl.nog.filesystem
-import impl.nog.reload
+
+# import impl.nog.reload
 import impl.nog.util
 import impl.shoulder_parser
 

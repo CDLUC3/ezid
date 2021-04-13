@@ -35,10 +35,10 @@ class StoreUser(ezidapp.models.user.User):
 
     # Inherited foreign key declarations...
     group = django.db.models.ForeignKey(
-        ezidapp.models.store_group.StoreGroup, on_delete=django.db.models.PROTECT
+        'ezidapp.StoreGroup', on_delete=django.db.models.PROTECT
     )
     realm = django.db.models.ForeignKey(
-        ezidapp.models.store_realm.StoreRealm, on_delete=django.db.models.PROTECT
+        'ezidapp.StoreRealm', on_delete=django.db.models.PROTECT
     )
 
     displayName = django.db.models.CharField(
@@ -214,6 +214,13 @@ class StoreUser(ezidapp.models.user.User):
             logger.debug('Auth denied. loginEnabled="{}"'.format(self.loginEnabled))
             return False
 
+        try:
+            is_valid = django.contrib.auth.hashers.check_password(
+                password, self.password
+            )
+        except Exception as e:
+            logger.exception('failed')
+
         if not django.contrib.auth.hashers.check_password(password, self.password):
             logger.debug('Auth denied. Password check failed')
             logger.debug(
@@ -267,12 +274,12 @@ class StoreUser(ezidapp.models.user.User):
 # existing entries are never modified.  Thus, with appropriate coding
 # below, they are threadsafe without needing locking.
 
-_caches = None  # (pidCache, usernameCache, idCache)
+# _caches = None  # (pidCache, usernameCache, idCache)
 
 
-def clearCaches():
-    global _caches
-    _caches = None
+# def clearCaches():
+#     global _caches
+#     _caches = None
 
 
 def _databaseQuery():
@@ -281,16 +288,16 @@ def _databaseQuery():
     )
 
 
-def _getCaches():
-    global _caches
-    caches = _caches
-    if caches is None:
-        pidCache = dict((u.pid, u) for u in _databaseQuery().all())
-        usernameCache = dict((u.username, u) for u in list(pidCache.values()))
-        idCache = dict((u.id, u) for u in list(pidCache.values()))
-        caches = (pidCache, usernameCache, idCache)
-        _caches = caches
-    return caches
+# def _getCaches():
+#     global _caches
+#     caches = _caches
+#     if caches is None:
+#         pidCache = dict((u.pid, u) for u in _databaseQuery().all())
+#         usernameCache = dict((u.username, u) for u in list(pidCache.values()))
+#         idCache = dict((u.id, u) for u in list(pidCache.values()))
+#         caches = (pidCache, usernameCache, idCache)
+#         _caches = caches
+#     return caches
 
 
 def getUserByPid(pid):
@@ -299,16 +306,16 @@ def getUserByPid(pid):
     # response to "anonymous".
     if pid == "anonymous":
         return AnonymousUser
-    pidCache, usernameCache, idCache = _getCaches()
-    if pid not in pidCache:
-        try:
-            u = _databaseQuery().get(pid=pid)
-        except StoreUser.DoesNotExist:
-            return None
-        pidCache[pid] = u
-        usernameCache[u.username] = u
-        idCache[u.id] = u
-    return pidCache[pid]
+    # pidCache, usernameCache, idCache = _getCaches()
+    # if pid not in pidCache:
+    try:
+        return _databaseQuery().get(pid=pid)
+    except StoreUser.DoesNotExist:
+        return None
+        # pidCache[pid] = u
+        # usernameCache[u.username] = u
+        # idCache[u.id] = u
+    # return pidCache[pid]
 
 
 def getUserByUsername(username):
@@ -317,38 +324,36 @@ def getUserByUsername(username):
     # "anonymous".
     if username == "anonymous":
         return AnonymousUser
-    pidCache, usernameCache, idCache = _getCaches()
-    if username not in usernameCache:
-        try:
-            u = _databaseQuery().get(username=username)
-        except StoreUser.DoesNotExist:
-            return None
-        pidCache[u.pid] = u
-        usernameCache[username] = u
-        idCache[u.id] = u
-    return usernameCache[username]
+    # pidCache, usernameCache, idCache = _getCaches()
+    # if username not in usernameCache:
+    try:
+        return _databaseQuery().get(username=username)
+    except StoreUser.DoesNotExist:
+        return None
+    #     pidCache[u.pid] = u
+    #     usernameCache[username] = u
+    #     idCache[u.id] = u
+    # return usernameCache[username]
 
 
 def getUserById(id_str):
     # Returns the user identified by internal identifier 'id', or None
     # if there is no such user.
-    pidCache, usernameCache, idCache = _getCaches()
-    if id_str not in idCache:
-        try:
-            u = _databaseQuery().get(id=id_str)
-        except StoreUser.DoesNotExist:
-            return None
-        pidCache[u.pid] = u
-        usernameCache[u.username] = u
-        idCache[id_str] = u
-    return idCache[id_str]
+    # pidCache, usernameCache, idCache = _getCaches()
+    # if id_str not in idCache:
+    try:
+        return _databaseQuery().get(id=id_str)
+    except StoreUser.DoesNotExist:
+        return None
+    #     pidCache[u.pid] = u
+    #     usernameCache[u.username] = u
+    #     idCache[id_str] = u
+    # return idCache[id_str]
 
 
 def getAdminUser():
     # Returns the EZID administrator user.
-    import impl.config as config
-
-    return getUserByUsername(django.conf.settings.AUTH_ADMIN_USERNAME)
+    return getUserByUsername(django.conf.settings.ADMIN_USERNAME)
 
 
 class AnonymousUser(object):
@@ -376,6 +381,6 @@ class AnonymousUser(object):
     isAnonymous = True
 
     @staticmethod
-    def authenticate(_password):
+    def authenticate(password):
         logger.debug('User is anonymous. Auth denied')
         return False

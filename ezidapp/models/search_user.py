@@ -15,15 +15,15 @@
 
 import django.db.models
 
-import ezidapp.models.search_group
-import ezidapp.models.search_realm
+# import ezidapp.models.search_group
+# import ezidapp.models.search_realm
 import ezidapp.models.user
 
 
 class SearchUser(ezidapp.models.user.User):
     group = django.db.models.ForeignKey(
-        ezidapp.models.search_group.SearchGroup, on_delete=django.db.models.PROTECT
+        'ezidapp.SearchGroup', on_delete=django.db.models.PROTECT
     )
     realm = django.db.models.ForeignKey(
-        ezidapp.models.search_realm.SearchRealm, on_delete=django.db.models.PROTECT
+        'ezidapp.SearchRealm', on_delete=django.db.models.PROTECT
     )

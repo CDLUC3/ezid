@@ -20,8 +20,8 @@ install:
   - pip install --upgrade pip setuptools wheel
 before_script:
   - mysql -e "
-      create database if not exists ezid_tests;
-      use ezid_tests;
+      create database if not exists ezid_test_db;
+      use ezid_test_db;
       create user 'ezid_test_user'@'%' identified by '';
       grant all privileges on *.* to 'ezid_test_user'@'%';
       flush privileges;
@@ -42,9 +42,8 @@ script:
   - python ${TRAVIS_BUILD_DIR}/manage.py collectstatic
   - python ${TRAVIS_BUILD_DIR}/manage.py loaddata combined-limited
   - mysql -e "
-      use ezid_tests;
+      use ezid_test_db;
       show tables;
       select prefix, minter from ezidapp_shoulder;
     "
   - pytest
-

@@ -6,7 +6,7 @@ import logging
 import django.core.management
 
 
-import impl.nog.reload
+# import impl.nog.reload
 import impl.nog.util
 
 log = logging.getLogger(__name__)
@@ -86,4 +86,4 @@ class Command(django.core.management.BaseCommand):
             )
         )
 
-        impl.nog.reload.trigger_reload()
+        # impl.nog.reload.trigger_reload()

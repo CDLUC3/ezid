@@ -469,7 +469,7 @@ class Identifier(django.db.models.Model):
             )
         if (
             self.owner is None
-            or self.owner.username != django.conf.settings.AUTH_ADMIN_USERNAME
+            or self.owner.username != django.conf.settings.ADMIN_USERNAME
         ):
             raise django.core.exceptions.ValidationError(
                 {"owner": "Agent PID is not owned by the EZID administrator."}
@@ -495,7 +495,7 @@ class Identifier(django.db.models.Model):
     def cleanCitationMetadataFields(self):
         # Cleans certain citation metadata fields on which EZID imposes
         # structure.
-        import impl.crossref as crossref
+        import impl.daemon.crossref as crossref
         import impl.datacite as datacite
 
         if "datacite.resourcetype" in self.cm:

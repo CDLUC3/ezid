@@ -7,9 +7,8 @@ import urllib.request
 import urllib.response
 
 import ezidapp.models.shoulder
-import ezidapp.models.shoulder
-import ezidapp.models.shoulder
 import impl.nog.minter
+import impl.daemon.stats
 import impl.util
 
 
@@ -73,7 +72,6 @@ def create_shoulder(
         manager='ezid',
     )
     impl.nog.minter.create_minter_database(namespace_str, root_path, mask_str)
-    ezidapp.models.shoulder.loadConfig()
 
 
 def check_response(resp):

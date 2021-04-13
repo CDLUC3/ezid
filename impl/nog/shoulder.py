@@ -57,7 +57,9 @@ def assert_super_shoulder_slash(ns, is_super_shoulder, is_force):
         return
     if not str(ns).endswith('/'):
         if is_force:
-            log.info('Accepting super-shoulder not ending with "/" due to --skip-checks')
+            log.info(
+                'Accepting super-shoulder not ending with "/" due to --skip-checks'
+            )
         else:
             raise django.core.management.CommandError(
                 'Super-shoulder normally ends with "/". Use --skip-checks to skip this check '

@@ -10,7 +10,7 @@ import django.core.management
 import django.db.transaction
 
 
-import impl.nog.reload
+# import impl.nog.reload
 import impl.nog.util
 
 log = logging.getLogger(__name__)
@@ -57,4 +57,4 @@ class Command(django.core.management.BaseCommand):
 
         log.info('Shoulder deactivated: {}'.format(shoulder_str))
 
-        impl.nog.reload.trigger_reload()
+        # impl.nog.reload.trigger_reload()

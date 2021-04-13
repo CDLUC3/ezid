@@ -35,15 +35,21 @@ logger = logging.getLogger(__name__)
 def authenticate(username, password, request=None, coAuthenticate=True):
     """Authenticates a username and password.
 
-    Returns a StoreUser object if the authentication is successful, None
-    if unsuccessful, or a string error message if an error occurs.  If
-    'request' is not None, the appropriate variables are added to the
-    request session.  If 'request' is not None and coAuthenticate is
-    True, and if the user is an administrative user, the user is
-    authenticated with the Django admin app as well.  Easter egg: if the
-    username has the form "@user" and the EZID administrator password is
-    given, and if username "user" exists, then a StoreUser object for
-    "user" is returned (even if logins are not enabled for the user).
+    Returns a StoreUser object if the authentication is successful, None if
+    unsuccessful, or a string error message if an error occurs.
+
+    This implements EZID's custom authentication, and in this context, the 'admin'
+    user authenticates like regular users.
+
+    If 'request' is not None, the appropriate variables are added to the request
+    session.
+
+    If 'request' is not None and coAuthenticate is True, and if the user is an
+    administrative user, the user is authenticated with the Django admin app as well.
+
+    Easter egg: if the username has the form "@user" and the EZID administrator password
+    is given, and if username "user" exists, then a StoreUser object for "user" is
+    returned (even if logins are not enabled for the user).
     """
     logger.debug('Authenticating user. username="{}"'.format(username))
     if username.startswith("@"):
@@ -109,7 +115,7 @@ def authenticate(username, password, request=None, coAuthenticate=True):
                         "userauth.authenticate",
                         Exception(
                             "administrator password mismatch; run "
-                            + "'django-admin ezidadminsetpassword' to correct"
+                            + "'./manage.py diag-update-admin' to correct"
                         ),
                     )
         else:

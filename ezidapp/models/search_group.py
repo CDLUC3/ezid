@@ -16,10 +16,11 @@
 import django.db.models
 
 import ezidapp.models.group
-import ezidapp.models.search_realm
+
+# import ezidapp.models.search_realm
 
 
 class SearchGroup(ezidapp.models.group.Group):
     realm = django.db.models.ForeignKey(
-        ezidapp.models.search_realm.SearchRealm, on_delete=django.db.models.PROTECT
+        'ezidapp.SearchRealm', on_delete=django.db.models.PROTECT
     )

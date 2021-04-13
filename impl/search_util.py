@@ -28,45 +28,34 @@ import django.db.utils
 
 # import ezidapp.models.search_realm
 import ezidapp.models.identifier
-import ezidapp.models.identifier
 import ezidapp.models.search_identifier
-
-# import ezidapp.models.identifier
 import ezidapp.models.search_realm
 import ezidapp.models.validation
-import impl.config
 import impl.log
 import impl.util
 
 _lock = threading.Lock()
-_reconnectDelay = None
-_fulltextSupported = None
-_minimumWordLength = None
+
+
+# noinspection PyProtectedMember
+_maxTargetLength = ezidapp.models.search_identifier.SearchIdentifier._meta.get_field(
+    "searchableTarget"
+).max_length
+
 _stopwords = None
-_maxTargetLength = None
+_minimumWordLength = None
+django.conf.settings.DATABASES["search"][
+    "fulltextSearchSupported"
+] = django.conf.settings.DATABASES["search"]["fulltextSearchSupported"]
+if django.conf.settings.DATABASES["search"]["fulltextSearchSupported"]:
+    _stopwords = (
+        django.conf.settings.SEARCH_STOPWORDS
+        + " "
+        + django.conf.settings.SEARCH_EXTRA_STOPWORDS
+    ).split()
+    _minimumWordLength = int(django.conf.settings.SEARCH_MINIMUM_WORD_LENGTH)
+
 _numActiveSearches = 0
-
-
-def loadConfig():
-    global _reconnectDelay, _fulltextSupported, _minimumWordLength
-    global _stopwords, _maxTargetLength
-    _reconnectDelay = int(django.conf.settings.DATABASES_RECONNECT_DELAY)
-    _fulltextSupported = django.conf.settings.DATABASES["search"][
-        "fulltextSearchSupported"
-    ]
-    if _fulltextSupported:
-        _minimumWordLength = int(django.conf.settings.SEARCH_MINIMUM_WORD_LENGTH)
-        _stopwords = (
-            django.conf.settings.SEARCH_STOPWORDS
-            + " "
-            + django.conf.settings.SEARCH_EXTRA_STOPWORDS
-        ).split()
-    # noinspection PyProtectedMember
-    _maxTargetLength = (
-        ezidapp.models.search_identifier.SearchIdentifier._meta.get_field(
-            "searchableTarget"
-        ).max_length
-    )
 
 
 class AbortException(Exception):
@@ -94,7 +83,7 @@ def withAutoReconnect(functionName, function, continuationCheck=None):
             if not firstError:
                 impl.log.otherError("search_util.withAutoReconnect/" + functionName, e)
                 # noinspection PyTypeChecker
-                time.sleep(_reconnectDelay)
+                time.sleep(int(django.conf.settings.DATABASES_RECONNECT_DELAY))
             if continuationCheck is not None and not continuationCheck():
                 raise AbortException()
             # In some cases a lost connection causes the thread's database
@@ -406,7 +395,7 @@ def formulateQuery(
                 )
             )
         elif column in _fulltextFields:
-            if _fulltextSupported:
+            if django.conf.settings.DATABASES["search"]["fulltextSearchSupported"]:
                 filters.append(
                     django.db.models.Q(
                         **{(column + "__search"): _processFulltextConstraint(value)}

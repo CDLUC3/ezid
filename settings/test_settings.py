@@ -68,7 +68,7 @@ if DAEMON_THREADS_ENABLED == 'auto':
 
 # The following enablement flags are subservient to the DAEMON_THREADS_ENABLED Django
 # setting.
-DAEMONS_BACKPROC_ENABLED = True
+DAEMONS_SEARCHDB_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
 DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
@@ -100,7 +100,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': 'localhost',
-        "NAME": "ezid_tests",
+        "NAME": "ezid_test_db",
         'USER': 'ezid_test_user',
         "PASSWORD": '',
         'PORT': '3306',
@@ -233,7 +233,7 @@ logging.config.dictConfig(
 
 EZID_BASE_URL = 'https://ezid.cdlib.org'
 ALLOWED_HOSTS = ['*']
-SECRET_KEY = '< placeholder - do not modify >'
+SECRET_KEY = 'nb6@8#38y4o)^!b&*ax(zy-cpf^%a^t=#@uk+4j*q7ho09m6=9'
 
 # i18n / locale
 
@@ -261,6 +261,44 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 SESSION_COOKIE_PATH = '/'
 
+# EZID administrator account
+
+# Note: The `diag-apply-admin-password` management command must be run in order to apply
+# changes made to any of the `ADMIN_` settings. E.g.,
+#
+# $ cd ezid
+# $ ./manage.py diag-apply-admin-password
+
+ADMIN_USERNAME = 'admin'
+ADMIN_PASSWORD = 'admin'
+ADMIN_GROUPNAME = 'admin'
+ADMIN_NOTES = 'This user owns 1 identifier under former shoulder doi:10.5060/D2'
+ADMIN_EMAIL = 'ezid@ucop.edu'
+ADMIN_DISPLAY_NAME = 'EZID superuser'
+
+ADMIN_ORG_ACRONYM = 'CDL'
+ADMIN_ORG_NAME = 'EZID'
+ADMIN_ORG_URL = 'http://ezid.cdlib.org/'
+
+ADMIN_CROSSREF_EMAIL = ''
+ADMIN_CROSSREF_ENABLED = False
+
+ADMIN_PRIMARY_CONTACT_EMAIL = 'ezid@ucop.edu'
+ADMIN_PRIMARY_CONTACT_NAME = 'EZID superuser'
+ADMIN_PRIMARY_CONTACT_PHONE = '(510) 987-0555'
+
+ADMIN_SECONDARY_CONTACT_EMAIL = 'ezid@ucop.edu'
+ADMIN_SECONDARY_CONTACT_NAME = 'EZID superuser'
+ADMIN_SECONDARY_CONTACT_PHONE = '(510) 987-0555'
+
+ADMIN_STORE_REALM = 'CDL'
+ADMIN_STORE_USER_PID = 'ark:/99166/p9kw57h4w'
+ADMIN_STORE_GROUP_PID = 'ark:/99166/p9g44hq02'
+
+ADMIN_SEARCH_REALM = 'CDL'
+ADMIN_SEARCH_USER_PID = 'ark:/99166/p9kw57h4w'
+ADMIN_SEARCH_GROUP_PID = 'ark:/99166/p9g44hq02'
+
 # Credentials
 
 ARK_PROFILE = 'erc'
@@ -271,9 +309,6 @@ GOOGLE_ANALYTICS_ID = None
 
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
-
-AUTH_ADMIN_USERNAME = 'admin'
-AUTH_ADMIN_PASSWORD = 'admin'
 
 BINDER_URL = 'https://n2t-stg.n2t.net/a/ezid/b'
 BINDER_USERNAME = 'ezid'
@@ -290,6 +325,11 @@ SHOULDERS_ARK_TEST = 'ark:/99999/fk4'
 SHOULDERS_DOI_TEST = 'doi:10.5072/FK2'
 SHOULDERS_CROSSREF_TEST = 'doi:10.15697/'
 SHOULDERS_AGENT = 'ark:/99166/p9'
+
+TEST_SHOULDER_DICT = [
+    {"namespace": 'ARK Test', "prefix": SHOULDERS_ARK_TEST},
+    {"namespace": 'DOI Test', "prefix": SHOULDERS_DOI_TEST},
+]
 
 # DataCite
 

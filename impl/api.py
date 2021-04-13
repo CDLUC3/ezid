@@ -89,17 +89,7 @@ import django.conf
 import django.http
 
 import ezidapp.models.update_queue
-import impl.anvl
-import impl.binder_async
-import impl.config
-import impl.datacite
-import impl.datacite_async
-import impl.download
-import impl.ezid
-import impl.noid_egg
-import impl.search_util
 import impl.userauth
-import impl.util
 
 
 def _readInput(request):
@@ -135,6 +125,7 @@ def _readInput(request):
         msg_str = "error: bad request - malformed or incomplete request body"
         logging.exception(msg_str)
         return msg_str
+
 
 def _validateOptions(request, options):
     d = {}
@@ -432,23 +423,12 @@ def getVersion(request):
     options = _validateOptions(request, {})
     if type(options) is str:
         return _response(options)
-    sv, v = impl.config.getVersionInfo()
     # In theory the following body should be encoded, but no percent
     # signs should appear anywhere.
     body = (
         "startup.time: {}\n"
         "startup.ezid_version: {}\n"
         "startup.info_version: {}\n"
-        "last_reload.time: {}\n"
-        "last_reload.ezid_version: {}\n"
-        "last_reload.info_version: {}\n".format(
-            time.asctime(time.localtime(sv[0])),
-            sv[1],
-            sv[2],
-            time.asctime(time.localtime(v[0])),
-            v[1],
-            v[2],
-        )
     )
     return _response("success: version information follows", anvlBody=body)
 
@@ -471,8 +451,8 @@ def _statusLineGenerator(includeSuccessLine):
         nw = sum(waitingUsers.values())
         ndo = impl.datacite.numActiveOperations()
         ql = ezidapp.models.update_queue.UpdateQueue.objects.count()
-        bql = impl.binder_async.getQueueLength()
-        dql = impl.datacite_async.getQueueLength()
+        bql = impl.daemon.binder.getQueueLength()
+        dql = impl.daemon.datacite.getQueueLength()
         nas = impl.search_util.numActiveSearches()
         s = (
             "STATUS {} activeOperations={:d}{} waitingRequests={:d}{} "
@@ -539,34 +519,6 @@ def pause(request):
         assert False, "unhandled case"
 
 
-def reload(request):
-    """Reloads the configuration file; interface to config.reload."""
-    if request.method != "POST":
-        return _methodNotAllowed()
-    options = _validateOptions(request, {})
-    if type(options) is str:
-        return _response(options)
-    user = impl.userauth.authenticateRequest(request)
-    if type(user) is str:
-        return _response(user)
-    elif user is None:
-        return _unauthorized()
-    elif not user.isSuperuser:
-        return _forbidden()
-    try:
-        oldValue = impl.ezid.pause(True)
-        # Wait for the system to become quiescent.
-        while True:
-            if len(impl.ezid.getStatus()[0]) == 0:
-                break
-            time.sleep(1)
-        impl.config.reload()
-    finally:
-        # noinspection PyUnboundLocalVariable
-        impl.ezid.pause(oldValue)
-    return _response("success: configuration file reloaded and caches emptied")
-
-
 def batchDownloadRequest(request):
     """Enqueues a batch download request."""
     if request.method != "POST":
@@ -579,4 +531,4 @@ def batchDownloadRequest(request):
         return _response(user)
     elif not user:
         return _unauthorized()
-    return _response(impl.download.enqueueRequest(user, request.POST))
+    return _response(impl.daemon.download.enqueueRequest(user, request.POST))

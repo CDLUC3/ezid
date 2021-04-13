@@ -133,10 +133,7 @@ class Command(django.core.management.BaseCommand):
                 return b.decode('utf-8')
             return b
 
-        bdb_dict = {
-            b2s(k): b2s(v) for (k, v) in bdb.items()
-
-        }
+        bdb_dict = {b2s(k): b2s(v) for (k, v) in bdb.items()}
 
         for required_key in (
             'basecount',

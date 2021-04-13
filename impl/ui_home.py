@@ -1,3 +1,4 @@
+import django.conf
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -16,7 +17,7 @@ def index(request):
         return impl.ui_common.methodNotAllowed(request)
     d = {'menu_item': 'ui_home.index'}
     d['prefixes'] = sorted(
-        impl.ui_common.testPrefixes, key=lambda p: p['namespace'].lower()
+        django.conf.settings.TEST_SHOULDER_DICT, key=lambda p: p['namespace'].lower()
     )
     d['form_placeholder'] = True
     d = impl.ui_create.simple_form(request, d)

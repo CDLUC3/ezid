@@ -9,6 +9,7 @@ import tests.util.util
 
 log = logging.getLogger(__name__)
 
+
 @freezegun.freeze_time('2010-10-11')
 class TestAPI:
     def _mint(self, ez_admin, ns, meta_type=None, test_docs=None):
@@ -23,14 +24,25 @@ class TestAPI:
         result_dict['_url'] = ns
         return result_dict
 
-    def test_1000(self, request, ez_admin, reloaded, tmp_bdb_root, minters, log_shoulder_count, test_docs, meta_types):
+    def test_1000(
+        self,
+        request,
+        ez_admin,
+        tmp_bdb_root,
+        minters,
+        log_shoulder_count,
+        test_docs,
+        meta_types,
+    ):
         """Test /mint."""
         log_shoulder_count('Shoulders after test launch')
         result_list = []
         ns, arg_tup = minters
         result_dict = self._mint(ez_admin, ns, meta_types, test_docs)
         result_list.append(result_dict)
-        sample.assert_match(result_list, 'mint-{}'.format(request.node.name))#re.sub("[^\d\w]+", "-",request.node.name)))
+        sample.assert_match(
+            result_list, 'mint-{}'.format(request.node.name)
+        )  # re.sub("[^\d\w]+", "-",request.node.name)))
 
     def test_1010(self, ez_admin, tmp_bdb_root, minters, test_docs, meta_types):
         """Test /view."""

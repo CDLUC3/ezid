@@ -19,47 +19,14 @@ import urllib.request
 import urllib.response
 import django.conf
 
-_ezidUrl = None
-_arkTestPrefix = None
-_doiTestPrefix = None
-_crossrefTestPrefix = None
-_defaultArkProfile = None
-_defaultDoiProfile = None
-_defaultUuidProfile = None
-_doiResolver = None
-_arkResolver = None
-
-
-def loadConfig():
-    import impl.config
-
-    global _ezidUrl, _arkTestPrefix, _doiTestPrefix, _defaultArkProfile
-    global _defaultDoiProfile, _defaultUuidProfile, _doiResolver, _arkResolver
-    global _crossrefTestPrefix
-    _ezidUrl = django.conf.settings.EZID_BASE_URL
-    _arkTestPrefix = django.conf.settings.SHOULDERS_ARK_TEST
-    _doiTestPrefix = django.conf.settings.SHOULDERS_DOI_TEST
-    _crossrefTestPrefix = django.conf.settings.SHOULDERS_CROSSREF_TEST
-    _defaultArkProfile = (
-        django.conf.settings.ARK_PROFILE
-    )  # impl.config.get("default_ark_profile")
-    _defaultDoiProfile = (
-        django.conf.settings.DOI_PROFILE
-    )  # impl.config.get("default_doi_profile")
-    _defaultUuidProfile = (
-        django.conf.settings.UUID_PROFILE
-    )  # impl.config.get("default_uuid_profile")
-    _doiResolver = django.conf.settings.RESOLVER_DOI  # impl.config.get("resolver.doi")
-    _arkResolver = django.conf.settings.RESOLVER_ARK  # impl.config.get("resolver.ark")
-
 
 def urlForm(identifier):
     """Returns the URL form of a qualified identifier, or "[None]" if there is
     no resolver defined for the identifier type."""
     if identifier.startswith("doi:"):
-        return f"{_doiResolver}/{urllib.parse.quote(identifier[4:], ':/')}"
+        return f"{django.conf.settings.RESOLVER_DOI}/{urllib.parse.quote(identifier[4:], ':/')}"
     elif identifier.startswith("ark:/"):
-        return f"{_arkResolver}/{urllib.parse.quote(identifier, ':/')}"
+        return f"{django.conf.settings.RESOLVER_ARK}/{urllib.parse.quote(identifier, ':/')}"
     else:
         return "[None]"
 
@@ -69,7 +36,7 @@ def defaultTargetUrl(identifier):
 
     The identifier is assumed to be in normalized, qualified form.
     """
-    return f"{_ezidUrl}/id/{urllib.parse.quote(identifier, ':/')}"
+    return f"{django.conf.settings.EZID_BASE_URL}/id/{urllib.parse.quote(identifier, ':/')}"
 
 
 def tombstoneTargetUrl(identifier):
@@ -77,46 +44,46 @@ def tombstoneTargetUrl(identifier):
 
     The identifier is assumed to be in normalized, qualified form.
     """
-    return f"{_ezidUrl}/tombstone/id/{urllib.parse.quote(identifier, ':/')}"
+    return f"{django.conf.settings.EZID_BASE_URL}/tombstone/id/{urllib.parse.quote(identifier, ':/')}"
 
 
 def isTestIdentifier(identifier):
     """Returns True if the supplied qualified identifier is a test
     identifier."""
     return (
-        identifier.startswith(_arkTestPrefix)
-        or identifier.startswith(_doiTestPrefix)
-        or identifier.startswith(_crossrefTestPrefix)
+        identifier.startswith(django.conf.settings.SHOULDERS_ARK_TEST)
+        or identifier.startswith(django.conf.settings.SHOULDERS_DOI_TEST)
+        or identifier.startswith(django.conf.settings.SHOULDERS_CROSSREF_TEST)
     )
 
 
 def isTestArk(identifier):
     """Returns True if the supplied unqualified ARK (e.g., "12345/foo") is a
     test identifier."""
-    return identifier.startswith(_arkTestPrefix[5:])
+    return identifier.startswith(django.conf.settings.SHOULDERS_ARK_TEST[5:])
 
 
 def isTestDoi(identifier):
     """Returns True if the supplied unqualified DOI (e.g., "10.1234/FOO") is a
     test identifier."""
-    return identifier.startswith(_doiTestPrefix[4:])
+    return identifier.startswith(django.conf.settings.SHOULDERS_DOI_TEST[4:])
 
 
 def isTestCrossrefDoi(identifier):
     """Returns True if the supplied unqualified DOI (e.g., "10.1234/FOO") is a
     Crossref test identifier."""
-    return identifier.startswith(_crossrefTestPrefix[4:])
+    return identifier.startswith(django.conf.settings.SHOULDERS_CROSSREF_TEST[4:])
 
 
 def defaultProfile(identifier):
     """Returns the label of the default metadata profile (e.g., "erc") for a
     given qualified identifier."""
     if identifier.startswith("ark:/"):
-        return _defaultArkProfile
+        return django.conf.settings.ARK_PROFILE
     elif identifier.startswith("doi:"):
-        return _defaultDoiProfile
+        return django.conf.settings.DOI_PROFILE
     elif identifier.startswith("uuid:"):
-        return _defaultUuidProfile
+        return django.conf.settings.UUID_PROFILE
     else:
         assert False, "unhandled case"
 

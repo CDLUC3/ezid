@@ -1,4 +1,3 @@
-import os
 import random
 import re
 import string
@@ -23,81 +22,26 @@ from django.utils.translation import ugettext as _
 import ezidapp.models.shoulder
 import ezidapp.models.store_group
 import ezidapp.models.store_realm
-import impl.config
-import impl.newsfeed
+
+import impl.daemon.newsfeed
 import impl.userauth
-
-ezidUrl = None
-templates = None  # { name: (template, path), ... }
-alertMessage = None
-testPrefixes = None
-google_analytics_id = None
-reload_templates = None
-
-manual_profiles = {"datacite_xml": "DataCite"}
-
-
-def loadConfig():
-    # these aren't really globals for the whole app, but globals for ui_common
-    # outside of this module, use ui_common.varname
-    global ezidUrl, templates, alertMessage, testPrefixes
-    global google_analytics_id
-    global reload_templates
-    ezidUrl = django.conf.settings.EZID_BASE_URL
-    templates = {}
-    _load_templates([d for t in django.conf.settings.TEMPLATES for d in t["DIRS"]])
-    # alertMessage = ezidapp.models.server_variables.getAlertMessage()
-    reload_templates = hasattr(django.conf.settings, "RELOAD_TEMPLATES")
-    if reload_templates:
-        reload_templates = django.conf.settings.RELOAD_TEMPLATES
-    testPrefixes = []
-
-    # Depends on loadConfig() for models.shoulder having been called first.
-    p = ezidapp.models.shoulder.getArkTestShoulder()
-    testPrefixes.append({"namespace": p.name, "prefix": p.prefix})
-    p = ezidapp.models.shoulder.getDoiTestShoulder()
-    testPrefixes.append({"namespace": p.name, "prefix": p.prefix})
-    google_analytics_id = django.conf.settings.GOOGLE_ANALYTICS_ID
-
-
-# loads the templates directory recursively (dir_list is a list)
-def _load_templates(dir_list):
-    global templates
-    my_dir = os.path.join(*dir_list)
-    for f in os.listdir(my_dir):
-        if os.path.isdir(os.path.join(my_dir, f)):
-            _load_templates(dir_list + [f])
-        elif os.path.isfile(os.path.join(my_dir, f)) and f.endswith(".html"):
-            local_path = os.path.join(*dir_list[1:] + [f])
-            # noinspection PyUnresolvedReferences
-            templates[local_path[:-5]] = (
-                django.template.loader.get_template(local_path),
-                local_path,
-            )
-
 
 # noinspection PyDefaultArgument
 def render(request, template, context={}):
-    global alertMessage, google_analytics_id, reload_templates
     ctx = {
         "session": request.session,
         "authenticatedUser": impl.userauth.getUser(request),
-        "alertMessage": alertMessage,
-        "feed_cache": impl.newsfeed.getLatestItems(),
-        "google_analytics_id": google_analytics_id,
+        # Todo: Reimplement alertMessage without ServerVariables
+        "alertMessage": None,
+        "feed_cache": [],  # impl.daemon.newsfeed.getLatestItems(),
+        "google_analytics_id": django.conf.settings.GOOGLE_ANALYTICS_ID,
         "debug": django.conf.settings.DEBUG,
     }
     ctx.update(context)
-    try:
-        # noinspection PyUnresolvedReferences
-        templ = templates[template][0]
-    except (TypeError, LookupError):
-        # noinspection PyUnresolvedReferences
-        templ = django.template.loader.get_template(templates[template][1])
+    templ = django.template.loader.get_template(f'{template}.html')
     # TODO: Remove this temporary workaround and modify dynamically generated HTML
     # instead.
     templ.backend.engine.autoescape = False
-
     content = templ.render(ctx, request)
     # By setting the content type ourselves, we gain control over the
     # character encoding and can properly set the content length.
@@ -185,19 +129,19 @@ redirect = django.http.HttpResponseRedirect
 
 
 def error(request, code, content_custom=None):
-    global alertMessage, google_analytics_id
     ctx = {
         "menu_item": "ui_home.null",
         "session": request.session,
-        "alertMessage": alertMessage,
-        "feed_cache": impl.newsfeed.getLatestItems(),
-        "google_analytics_id": google_analytics_id,
+        # Todo: Reimplement alertMessage without ServerVariables
+        "alertMessage": None,
+        "feed_cache": [],  # impl.daemon.newsfeed.getLatestItems(),
+        "google_analytics_id": django.conf.settings.GOOGLE_ANALYTICS_ID,
         "content_custom": content_custom,
     }
     # TODO: Remove this temporary workaround and modify dynamically generated HTML
     # instead.
     # noinspection PyUnresolvedReferences
-    templ = templates[str(code)][0]
+    templ = templ = django.template.loader.get_template(f'{code}.html')
     templ.backend.engine.autoescape = False
     content = templ.render(ctx, request=request)
     return django.http.HttpResponse(content, status=code)

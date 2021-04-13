@@ -7,7 +7,8 @@ import django.core.management
 
 import impl.nog.exc
 import impl.nog.id_ns
-import impl.nog.reload
+
+# import impl.nog.reload
 import impl.nog.shoulder
 import impl.nog.util
 
@@ -81,5 +82,5 @@ class Command(django.core.management.BaseCommand):
             is_debug=opt.debug,
         )
 
-        impl.nog.reload.trigger_reload()
+        # impl.nog.reload.trigger_reload()
         log.info('Shoulder created')

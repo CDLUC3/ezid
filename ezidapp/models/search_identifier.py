@@ -19,9 +19,11 @@ import django.db.utils
 import ezidapp.models.custom_fields
 import ezidapp.models.identifier
 import ezidapp.models.search_datacenter
-import ezidapp.models.search_group
+
+# import ezidapp.models.search_group
 import ezidapp.models.search_profile
-import ezidapp.models.search_user
+
+# import ezidapp.models.search_user
 import impl.util
 import ezidapp.models.validation
 
@@ -54,11 +56,11 @@ class SearchIdentifier(ezidapp.models.identifier.Identifier):
     # course they're still checked in the database).
 
     owner = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        ezidapp.models.search_user.SearchUser,
+        'ezidapp.SearchUser',
         on_delete=django.db.models.PROTECT,
     )
     ownergroup = ezidapp.models.custom_fields.NonValidatingForeignKey(
-        ezidapp.models.search_group.SearchGroup,
+        'ezidapp.SearchGroup',
         blank=True,
         null=True,
         default=None,
@@ -433,7 +435,7 @@ def updateFromLegacy(identifier, metadata, forceInsert=False, forceUpdate=False)
     i = SearchIdentifier(identifier=identifier)
     i.fromLegacy(metadata)
     i.my_full_clean()
-    # Because backproc.py's call to this function is really the only
+    # Because SearchDbDaemon's call to this function is really the only
     # place identifiers get inserted and updated in the search database,
     # we're not concerned with race conditions.
     if not forceInsert:

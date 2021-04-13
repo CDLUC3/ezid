@@ -14,7 +14,7 @@ from django.utils.translation import ugettext as _
 
 import impl.datacite
 import impl.datacite_xml
-import impl.download
+import impl.daemon.download
 import impl.erc
 import impl.ezid
 import impl.form_objects
@@ -164,7 +164,7 @@ def _assignManualTemplate(d):
 def edit(request, identifier):
     """Edit page for a given ID."""
     d = {'menu_item': 'ui_manage.null'}
-    d["testPrefixes"] = impl.ui_common.testPrefixes
+    # d["testPrefixes"] = impl.ui_common.testPrefixes
     r = _getLatestMetadata(identifier, request)
     if type(r) is str:
         django.contrib.messages.error(request, impl.ui_common.formatError(r))
@@ -376,7 +376,7 @@ def _schemaDotOrgMetadata(km, id_as_url):
 def details(request):
     """ID Details page for a given ID."""
     d = {'menu_item': 'ui_manage.null'}
-    d["testPrefixes"] = impl.ui_common.testPrefixes
+    # d["testPrefixes"] = impl.ui_common.testPrefixes
     identifier = request.path_info[len("/id/") :]
     r = _getLatestMetadata(
         identifier,
@@ -516,7 +516,7 @@ def download(request):
         q['ownergroup'] = user.group.groupname
     else:
         q['owner'] = user.username
-    s = impl.download.enqueueRequest(user, q)
+    s = impl.daemon.download.enqueueRequest(user, q)
     if not s.startswith("success:"):
         django.contrib.messages.error(request, s)
         return django.shortcuts.redirect("ui_manage.index")
