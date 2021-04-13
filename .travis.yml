@@ -46,4 +46,5 @@ script:
       show tables;
       select prefix, minter from ezidapp_shoulder;
     "
+  - pip install -e .
   - pytest
