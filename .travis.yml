@@ -1,12 +1,16 @@
 language:
   python
+
 dist:
   # xenial
   bionic
+
 python:
   - "3.8"
+
 services:
   - mysql
+
 addons:
   apt:
     packages:
@@ -16,8 +20,10 @@ env:
     IS_TRAVIS=1
 #virtualenv:
 #  system_site_packages: true
+
 install:
   - pip install --upgrade pip setuptools wheel
+
 before_script:
   - mysql -e "
       create database if not exists ezid_test_db;
@@ -26,6 +32,7 @@ before_script:
       grant all privileges on *.* to 'ezid_test_user'@'%';
       flush privileges;
     "
+
   - ls -l
   - pip install -r ./requirements.txt
   - python --version
@@ -34,21 +41,26 @@ before_script:
   - ls -la ${HOME}
   - ls -la ${TRAVIS_BUILD_DIR}
   - echo "CWD=${PWD}"
+
 script:
   - mkdir -p ../download/public ../logs
   - python ${TRAVIS_BUILD_DIR}/manage.py makemigrations --merge --no-input
   - python ${TRAVIS_BUILD_DIR}/manage.py migrate
-  - python ${TRAVIS_BUILD_DIR}/manage.py diag-update-admin
   - python ${TRAVIS_BUILD_DIR}/manage.py collectstatic --no-input
+
   - python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent store-test
   - python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent search-init
   - python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent combined-limited
-
+  
+  - python ${TRAVIS_BUILD_DIR}/manage.py diag-update-admin
 
   - mysql -e "
       use ezid_test_db;
       show tables;
       select prefix, minter from ezidapp_shoulder;
-    "
+  "
+
   - pip install -e .
   - pytest
+
+
