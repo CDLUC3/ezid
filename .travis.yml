@@ -40,7 +40,22 @@ script:
   - python ${TRAVIS_BUILD_DIR}/manage.py migrate
   - python ${TRAVIS_BUILD_DIR}/manage.py diag-update-admin
   - python ${TRAVIS_BUILD_DIR}/manage.py collectstatic --no-input
+  - python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent store-test
+  - python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent search-init
   - python ${TRAVIS_BUILD_DIR}/manage.py loaddata --ignorenonexistent combined-limited
+
+  
+  store-full.json
+  store-test.json
+  store-init.json
+  store-test-pretty.json
+  combined-limited.json
+  combined-limited.json.before removing servervariables
+  search-init.json
+  store-full-pp.json
+  git-1.2-py3.8.egg/EGG-INFO/metadata.json
+  
+  
   - mysql -e "
       use ezid_test_db;
       show tables;
