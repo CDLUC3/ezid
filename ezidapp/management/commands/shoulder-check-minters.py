@@ -1,22 +1,21 @@
 """Check that the BerkeleyDB minters are in the expected locations, can be
 opened, and contains an EZID or N2T minter."""
 
-import ezidapp.models.search_identifier
-import ezidapp.models.store_identifier
-import ezidapp.models.shoulder
 import argparse
 import logging
+import pathlib
 
 import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
-import pathlib
 
-
-import impl.nog.util
+import ezidapp.models.identifier
+import ezidapp.models.identifier
+import ezidapp.models.shoulder
 import impl.nog.bdb
 import impl.nog.exc
 import impl.nog.minter
+import impl.nog.util
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +36,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_to_console(__name__, opt.debug)
+        impl.nog.util.log_setup(__name__, opt.debug)
 
         log.info('Checking minter BerkeleyDB (BDB) databases...')
 
@@ -169,10 +168,10 @@ class Command(django.core.management.BaseCommand):
                 'Bad prefix: "{}"'.format(shoulder_model.prefix),
             )
 
-        is_in_store = ezidapp.models.store_identifier.StoreIdentifier.objects.filter(
+        is_in_store = ezidapp.models.identifier.StoreIdentifier.objects.filter(
             identifier=id_ns
         ).exists()
-        is_in_search = ezidapp.models.search_identifier.SearchIdentifier.objects.filter(
+        is_in_search = ezidapp.models.identifier.SearchIdentifier.objects.filter(
             identifier=id_ns
         ).exists()
         if is_in_store or is_in_search:

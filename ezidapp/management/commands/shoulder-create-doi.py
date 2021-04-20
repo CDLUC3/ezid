@@ -5,10 +5,9 @@ import logging
 
 import django.core.management
 
-import ezidapp.models.store_datacenter
+import ezidapp.models.datacenter
 import impl.nog.exc
 import impl.nog.id_ns
-
 # import impl.nog.reload
 import impl.nog.shoulder
 import impl.nog.util
@@ -78,7 +77,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_to_console(__name__, opt.debug)
+        impl.nog.util.log_setup(__name__, opt.debug)
 
         try:
             return self._handle(self.opt)
@@ -97,10 +96,8 @@ class Command(django.core.management.BaseCommand):
             datacenter_model = None
         else:
             impl.nog.shoulder.assert_valid_datacenter(opt.datacenter_str)
-            datacenter_model = (
-                ezidapp.models.store_datacenter.StoreDatacenter.objects.get(
-                    symbol=opt.datacenter_str
-                )
+            datacenter_model = ezidapp.models.datacenter.StoreDatacenter.objects.get(
+                symbol=opt.datacenter_str
             )
 
         impl.nog.shoulder.create_shoulder(

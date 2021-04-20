@@ -1,11 +1,10 @@
 """Update the name of the organization for an existing ARK or DOI shoulder."""
-import ezidapp.models.shoulder
 import argparse
 import logging
 
 import django.core.management
 
-
+import ezidapp.models.shoulder
 # import impl.nog.reload
 import impl.nog.util
 
@@ -38,7 +37,7 @@ class Command(django.core.management.BaseCommand):
 
     def handle(self, *_, **opt):
         self.opt = opt = argparse.Namespace(**opt)
-        impl.nog.util.log_to_console(__name__, opt.debug)
+        impl.nog.util.log_setup(__name__, opt.debug)
 
         try:
             scheme_str, full_shoulder = opt.shoulder_str.split(

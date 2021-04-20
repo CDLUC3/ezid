@@ -12,13 +12,12 @@ ezidapp_updatequeue       object
 import json
 import logging
 import zlib
-import pymysql.cursors
 
 import django.conf
 import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
-
+import pymysql.cursors
 
 log = logging.getLogger(__name__)
 
