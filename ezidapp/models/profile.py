@@ -4,18 +4,12 @@
 #
 # Abstract database model for metadata profiles.
 #
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
 # -----------------------------------------------------------------------------
+
+import re
 
 import django.core.validators
 import django.db.models
-import re
 
 
 class Profile(django.db.models.Model):
@@ -40,3 +34,20 @@ class Profile(django.db.models.Model):
 
     def __str__(self):
         return self.label
+
+
+class SearchProfile(Profile):
+    pass
+
+
+class StoreProfile(Profile):
+    pass
+
+#     if caches is None:
+#         labelCache = dict((p.label, p) for p in StoreProfile.objects.all())
+#         idCache = dict((p.id, p) for p in list(labelCache.values()))
+
+
+def getProfileById(id_str):
+    # Returns the profile identified by internal identifier 'id'.
+    return StoreProfile.objects.get(id_str)

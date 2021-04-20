@@ -19,18 +19,19 @@
 # -----------------------------------------------------------------------------
 import logging
 
+import django.apps
 import django.conf
 import django.core.exceptions
 import django.db
 import django.db.models
 import django.db.transaction
 
-# import ezidapp.models.store_datacenter
+# import ezidapp.models.datacenter
 import ezidapp.models.validation
 import impl.util
 import impl.util2
 
-import logging
+# import logging
 
 logger = logging.getLogger(__name__)
 
@@ -43,12 +44,12 @@ logger = logging.getLogger(__name__)
 # )
 
 # dc = dict(
-#     (d.symbol, d) for d in ezidapp.models.store_datacenter.StoreDatacenter.objects.all()
+#     (d.symbol, d) for d in ezidapp.models.datacenter.StoreDatacenter.objects.all()
 # )
 # _datacenters = (dc, dict((d.id, d) for d in list(dc.values())))
 
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 class ShoulderType(django.db.models.Model):
@@ -221,9 +222,9 @@ def getExactShoulderMatch(prefix):
     # noinspection PyUnresolvedReferences
     shoulder_model = Shoulder.objects.select_related("datacenter").get(prefix=prefix)
     # shoulder_model = _shoulders.get(prefix, None)
-    if not shoulder_model:
-        # noinspection PyTypeChecker
-        logger.debug('Shoulder lookup from cache failed. prefix="{}"'.format(prefix))
+    # if not shoulder_model:
+    # noinspection PyTypeChecker
+    # logger.debug('Shoulder lookup from cache failed. prefix="{}"'.format(prefix))
     return shoulder_model
 
 
@@ -250,27 +251,6 @@ def _getShoulder(s):
         logger.warning(f'Shoulder does not exist: {s}')
 
 
-def getDatacenterBySymbol(symbol):
-    # Returns the datacenter having the given symbol.
-
-    # dc = dict(
-    #     (d.symbol, d)
-    #     for d in ezidapp.models.store_datacenter.StoreDatacenter.objects.all()
-    # )
-    # _datacenters = (
-    #     dc, dict((d.id, d) for d in list(dc.values()))
-    # )
-    _datacenters = _get_datacenters()
-    try:
-        # noinspection PyUnresolvedReferences
-        return _datacenters[0][symbol]
-    except Exception:
-        # Should never happen.
-        raise ezidapp.models.store_datacenter.StoreDatacenter.DoesNotExist(
-            f"No StoreDatacenter for symbol='{symbol}'."
-        )
-
-
 def getDatacenterById(id_str):
     # Returns the datacenter identified by internal identifier 'id'.
     _datacenters = _get_datacenters()
@@ -279,15 +259,12 @@ def getDatacenterById(id_str):
         return _datacenters[1][id_str]
     except Exception:
         # Should never happen.
-        raise ezidapp.models.store_datacenter.StoreDatacenter.DoesNotExist(
-            f"No StoreDatacenter for id={id_str:d}."
-        )
+        datacenter_model = django.apps.apps.get_model('ezidapp', 'StoreDatacenter')
+        raise datacenter_model.DoesNotExist(f"No StoreDatacenter for id={id_str:d}.")
 
 
 def _get_datacenters():
-    dc = {
-        d.symbol: d
-        for d in ezidapp.models.store_datacenter.StoreDatacenter.objects.all()
-    }
+    datacenter_model = django.apps.apps.get_model('ezidapp', 'StoreDatacenter')
+    dc = {d.symbol: d for d in datacenter_model.objects.all()}
     _datacenters = (dc, dict((d.id, d) for d in list(dc.values())))
     return _datacenters
