@@ -19,11 +19,12 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.core.validators
-import django.db.models
 import time
 
-import ezidapp.models.store_identifier
+import django.core.validators
+import django.db.models
+
+# import ezidapp.models.identifier
 import ezidapp.models.custom_fields
 import impl.util
 
@@ -92,7 +93,8 @@ def enqueue(object, operation, updateExternalServices=True, identifier=None):
     # "create", "update", or "delete".  This method should be called
     # within a database transaction that includes the identifier's
     # update in the StoreIdentifier table.
-    if isinstance(object, ezidapp.models.store_identifier.StoreIdentifier):
+    store_identifier_model = django.apps.apps.get_model('ezidapp', 'StoreIdentifier')
+    if isinstance(object, store_identifier_model):
         identifier = object.identifier
     r = UpdateQueue(
         identifier=identifier,

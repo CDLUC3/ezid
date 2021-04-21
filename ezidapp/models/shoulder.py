@@ -249,22 +249,3 @@ def _getShoulder(s):
         return Shoulder.objects.select_related("datacenter").get(prefix=s)
     except Shoulder.DoesNotExist as e:
         logger.warning(f'Shoulder does not exist: {s}')
-
-
-def getDatacenterById(id_str):
-    # Returns the datacenter identified by internal identifier 'id'.
-    _datacenters = _get_datacenters()
-    try:
-        # noinspection PyUnresolvedReferences
-        return _datacenters[1][id_str]
-    except Exception:
-        # Should never happen.
-        datacenter_model = django.apps.apps.get_model('ezidapp', 'StoreDatacenter')
-        raise datacenter_model.DoesNotExist(f"No StoreDatacenter for id={id_str:d}.")
-
-
-def _get_datacenters():
-    datacenter_model = django.apps.apps.get_model('ezidapp', 'StoreDatacenter')
-    dc = {d.symbol: d for d in datacenter_model.objects.all()}
-    _datacenters = (dc, dict((d.id, d) for d in list(dc.values())))
-    return _datacenters

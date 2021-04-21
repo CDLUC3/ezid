@@ -12,6 +12,7 @@
 #   http://creativecommons.org/licenses/BSD/
 #
 # -----------------------------------------------------------------------------
+
 import pprint
 import re
 import time
@@ -19,29 +20,27 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+import django.apps
 import django.conf
+import django.core.exceptions
 import django.core.exceptions
 import django.core.validators
 import django.db
 import django.db.models
 import django.db.models
+import django.db.models
 import django.db.utils
 
+import ezidapp.crossref
 import ezidapp.models.custom_fields
 import ezidapp.models.custom_fields
+import ezidapp.models.custom_fields
+import ezidapp.models.group
+import ezidapp.models.util
 import ezidapp.models.validation
 import ezidapp.models.validation
-import impl.util
-# import ezidapp.models.user
 import impl.util
 import impl.util2
-
-
-# import ezidapp.models.custom_fields
-# import ezidapp.models.identifier
-# import ezidapp.models.datacenter
-# import ezidapp.models.group
-# import ezidapp.models.search_profile
 
 
 def emptyDict():
@@ -554,9 +553,9 @@ class Identifier(django.db.models.Model):
                 # records, we simply require that they be well-formed and that
                 # the parts that EZID cares about are present and sufficiently
                 # correct to support our processing.
-                self.cm["crossref"] = crossref.validateBody(self.cm["crossref"])
+                self.cm["crossref"] = ezidapp.crossref.validateBody(self.cm["crossref"])
                 if self.isDoi and not self.isReserved:
-                    self.cm["crossref"] = crossref.replaceTbas(
+                    self.cm["crossref"] = ezidapp.crossref.replaceTbas(
                         self.cm["crossref"], self.identifier[4:], self.resolverTarget
                     )
             except AssertionError as e:
@@ -600,84 +599,6 @@ class Identifier(django.db.models.Model):
 
     def __str__(self):
         return self.identifier
-
-    def toLegacy(self):
-        # Returns a legacy representation of the identifier.  See the
-        # inverse of this method, 'fromLegacy' below.
-        d = self.cm.copy()
-        d["_o"] = self.owner.pid if self.owner is not None else "anonymous"
-        d["_g"] = self.ownergroup.pid if self.ownergroup is not None else "anonymous"
-        d["_c"] = str(self.createTime)
-        d["_u"] = str(self.updateTime)
-        d["_p"] = self.profile.label
-        if self.isPublic:
-            d["_t"] = self.target
-        else:
-            if self.isReserved:
-                d["_is"] = "reserved"
-            else:
-                d["_is"] = "unavailable"
-                if self.unavailableReason != "":
-                    d["_is"] += " | " + self.unavailableReason
-            d["_t"] = self.resolverTarget
-            d["_t1"] = self.target
-        if not self.exported:
-            d["_x"] = "no"
-        if self.isDatacite:
-            # noinspection PyUnresolvedReferences
-            d["_d"] = self.datacenter.symbol
-        if self.isCrossref:
-            d["_cr"] = "yes | " + self.get_crossrefStatus_display()
-            if self.crossrefMessage != "":
-                d["_cr"] += " | " + self.crossrefMessage
-        if self.isAgentPid:
-            d["_ezid_role"] = "user" if self.agentRole == self.USER else "group"
-        return d
-
-    _legacyUnavailableStatusRE = re.compile("unavailable \| (.*)")
-
-    def fromLegacy(self, d):
-        # Creates an identifier from a legacy representation (or more
-        # accurately, fills out an identifier from a legacy
-        # representation).  This method should be called after the
-        # concrete subclass instance has been created with the identifier
-        # set as in, for example, SearchIdentifier(identifier=...).  All
-        # foreign key values (owner, ownergroup, datacenter, profile) must
-        # be set externally to this method.  Finally,
-        # computeComputedValues should be called after this method to fill
-        # out the rest of the object.
-        self.createTime = int(d["_c"])
-        self.updateTime = int(d["_u"])
-        if "_is" in d:
-            if d["_is"] == "reserved":
-                self.status = self.RESERVED
-            else:
-                self.status = self.UNAVAILABLE
-                m = self._legacyUnavailableStatusRE.match(d["_is"])
-                if m:
-                    self.unavailableReason = m.group(1)
-            self.target = d["_t1"]
-        else:
-            self.status = self.PUBLIC
-            self.target = d["_t"]
-        self.exported = "_x" not in d
-        for k, v in list(d.items()):
-            if not k.startswith("_"):
-                self.cm[k] = v
-        if "_cr" in d:
-            statuses = dict(
-                (v, k) for k, v in self._meta.get_field("crossrefStatus").get_choices()
-            )
-            assert d["_cr"].startswith("yes | "), "malformed legacy Crossref status"
-            l = [s for s in list(statuses.keys()) if d["_cr"][6:].startswith(s)]
-            assert len(l) == 1, "unrecognized legacy Crossref status"
-            self.crossrefStatus = statuses[l[0]]
-            if len(d["_cr"]) > 6 + len(l[0]):
-                m = d["_cr"][6 + len(l[0]) :]
-                assert m.startswith(" | "), "malformed legacy Crossref status"
-                self.crossrefMessage = m[3:]
-        if "_ezid_role" in d:
-            self.agentRole = self.USER if d["_ezid_role"] == "user" else self.GROUP
 
 
 
@@ -737,11 +658,8 @@ class SearchIdentifier(Identifier):
 
     @property
     def defaultProfile(self):
-        return ezidapp.models.search_profile.SearchProfile, "label", label
-        #     )
-        #     return p
-
-        return _getProfile(impl.util2.defaultProfile(self.identifier))
+        # return ezidapp.models.profile.SearchProfile, "label", label
+        return defaultProfile(self.identifier)
 
     searchableTarget = django.db.models.CharField(max_length=255, editable=False)
     # Computed value.  To support searching over target URLs (which are
@@ -924,15 +842,15 @@ class SearchIdentifier(Identifier):
         )
         self.computeHasIssues()
 
-    def fromLegacy(self, d):
-        # See Identifier.fromLegacy.  N.B.: computeComputedValues should
-        # be called after this method to fill out the rest of the object.
-        super(SearchIdentifier, self).fromLegacy(d)
-        self.owner = _getUser(d["_o"])
-        self.ownergroup = _getGroup(d["_g"])
-        self.profile = _getProfile(d["_p"])
-        if self.isDatacite:
-            self.datacenter = _getDatacenter(d["_d"])
+    # def fromLegacy(self, d):
+    #     # See Identifier.fromLegacy.  N.B.: computeComputedValues should
+    #     # be called after this method to fill out the rest of the object.
+    #     super(SearchIdentifier, self).fromLegacy(d)
+    #     self.owner = _getUser(d["_o"])
+    #     self.ownergroup = _getGroup(d["_g"])
+    #     self.profile = _getProfile(d["_p"])
+    #     if self.isDatacite:
+    #         self.datacenter = _getDatacenter(d["_d"])
 
     # Note that MySQL FULLTEXT indexes must be created outside Django;
     # see .../etc/search-mysql-addendum.sql.
@@ -986,35 +904,6 @@ class SearchIdentifier(Identifier):
             ("oaiVisible", "updateTime"),
         ]
 
-
-# The following caches are only added to or replaced entirely;
-# existing entries are never modified.  Thus, with appropriate coding
-# below, they are threadsafe without needing locking.
-
-# _userCache = None
-# _groupCache = None
-# _datacenterCache = None
-# _profileCache = None
-
-
-# def clearUserCache():
-#     global _userCache
-#     _userCache = None
-#
-#
-# def clearGroupCache():
-#     global _groupCache
-#     _groupCache = None
-#
-#
-# def clearCaches():
-#     global _userCache, _groupCache, _datacenterCache, _profileCache
-#     _userCache = None
-#     _groupCache = None
-#     _datacenterCache = None
-#     _profileCache = None
-
-
 # def _getFromCache(cache, model, attribute, key, insertOnMissing=True):
 #     # Generic caching function supporting the caches in this module.
 #     # Returns (I, cache) where I is the instance of 'model' for which
@@ -1044,46 +933,12 @@ class SearchIdentifier(Identifier):
 #     return i, cache
 
 
-# def _getUser(pid):
-#     global _userCache
-#     u, _userCache = _getFromCache(
-#         _userCache,
-#         ezidapp.models.user.SearchUser,
-#         "pid",
-#         pid,
-#         insertOnMissing=False,
-#     )
-#     return u
-
-
-# def _getGroup(pid):
-#     global _groupCache
-#     g, _groupCache = _getFromCache(
-#         _groupCache,
-#         ezidapp.models.group.SearchGroup,
-#         "pid",
-#         pid,
-#         insertOnMissing=False,
-#     )
-#     return g
-
-
-# def _getDatacenter(symbol):
-#     global _datacenterCache
-#     d, _datacenterCache = _getFromCache(
-#         _datacenterCache,
-#         ezidapp.models.datacenter.SearchDatacenter,
-#         "symbol",
-#         symbol,
-#     )
-#     return d
-
 
 def updateFromLegacy(identifier, metadata, forceInsert=False, forceUpdate=False):
     # Inserts or updates an identifier in the search database.  The
     # identifier is constructed from a legacy representation.
     i = SearchIdentifier(identifier=identifier)
-    i.fromLegacy(metadata)
+    # i.fromLegacy(metadata)
     i.my_full_clean()
     # Because SearchDbDaemon's call to this function is really the only
     # place identifiers get inserted and updated in the search database,
@@ -1101,38 +956,6 @@ def updateFromLegacy(identifier, metadata, forceInsert=False, forceUpdate=False)
     i.save(force_insert=forceInsert, force_update=forceUpdate)
 
 
-# =============================================================================
-#
-# EZID :: ezidapp/models.identifier.py
-#
-# Database model for identifiers in the store database.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2017, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
-import django.apps
-import ezidapp.models.util
-import impl.util
-import django.core.exceptions
-import django.db.models
-import re
-
-import impl.util2
-
-import ezidapp.models.custom_fields
-
-# import ezidapp.models.identifier
-# import ezidapp.models.shoulder
-# import ezidapp.models.datacenter
-# import ezidapp.models.group
-# import ezidapp.models.store_profile
-# import ezidapp.models.user
-import ezidapp.models.group
 
 
 def getIdentifier(identifier, prefixMatch=False):
@@ -1190,7 +1013,7 @@ class StoreIdentifier(Identifier):
     @property
     def defaultProfile(self):
         return ezidapp.models.util.getProfileByLabel(
-            impl.util2.defaultProfile(self.identifier)
+            defaultProfile(self.identifier)
         )
 
     def fromLegacy(self, d):
@@ -1200,7 +1023,7 @@ class StoreIdentifier(Identifier):
         if d["_o"] != "anonymous":
             self.owner = ezidapp.models.util.getUserByPid(d["_o"])
         if d["_g"] != "anonymous":
-            self.ownergroup = ezidapp.models.group.getGroupByPid(d["_g"])
+            self.ownergroup = ezidapp.models.util.getGroupByPid(d["_g"])
         self.profile = ezidapp.models.util.getProfileByLabel(d["_p"])
         if self.isDatacite:
             self.datacenter = ezidapp.models.util.getDatacenterBySymbol(d["_d"])
@@ -1235,7 +1058,7 @@ class StoreIdentifier(Identifier):
                     raise django.core.exceptions.ValidationError(
                         {"ownergroup": "Field is not settable."}
                     )
-                g = ezidapp.models.group.getGroupByGroupname(d[k])
+                g = ezidapp.models.util.getGroupByGroupname(d[k])
                 if g is None or g == ezidapp.models.group.AnonymousGroup:
                     raise django.core.exceptions.ValidationError(
                         {"ownergoup": "No such group."}
@@ -1362,3 +1185,16 @@ class StoreIdentifier(Identifier):
                 )
             else:
                 self.cm[k] = d[k]
+
+
+def defaultProfile(identifier):
+    """Returns the label of the default metadata profile (e.g., "erc") for a
+    given qualified identifier."""
+    if identifier.startswith("ark:/"):
+        return django.conf.settings.ARK_PROFILE
+    elif identifier.startswith("doi:"):
+        return django.conf.settings.DOI_PROFILE
+    elif identifier.startswith("uuid:"):
+        return django.conf.settings.UUID_PROFILE
+    else:
+        assert False, "unhandled case"

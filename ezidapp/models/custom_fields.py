@@ -13,21 +13,21 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.forms.models
 import ast
 import json
-import zlib
 import logging
+import zlib
 
+import django.conf
 import django.core.exceptions
 import django.core.serializers
 import django.db.models
+import django.forms.models
 
+import ezidapp.models.group
+import ezidapp.models.profile
 import ezidapp.models.shoulder
-import ezidapp.models.store_group
-import ezidapp.models.store_profile
-import ezidapp.models.store_user
-
+import ezidapp.models.util
 import impl.util
 
 
@@ -132,16 +132,14 @@ class StoreIdentifierObjectField(django.db.models.BinaryField):
                 # Replace subservient objects referenced by foreign keys with
                 # pointers to cached copies to avoid database lookups.
                 if si.owner_id is not None:
-                    si.owner = ezidapp.models.store_user.getUserById(si.owner_id)
+                    si.owner = ezidapp.models.util.getUserById(si.owner_id)
                 if si.ownergroup_id is not None:
-                    si.ownergroup = ezidapp.models.store_group.getProfileById(
-                        si.ownergroup_id
-                    )
+                    si.ownergroup = ezidapp.models.util.getProfileById(si.ownergroup_id)
                 if si.datacenter_id is not None:
                     si.datacenter = ezidapp.models.shoulder.getDatacenterById(
                         si.datacenter_id
                     )
-                si.profile = ezidapp.models.store_profile.getProfileById(si.profile_id)
+                si.profile = ezidapp.models.profile.getProfileById(si.profile_id)
                 return si, value
             except Exception as e:
                 raise django.core.exceptions.ValidationError(

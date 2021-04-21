@@ -15,7 +15,7 @@
 
 import django.db.models
 
-# # import ezidapp.models
+import ezidapp.models.validation
 import ezidapp.models.validation
 import impl.util
 
@@ -49,44 +49,10 @@ class Datacenter(django.db.models.Model):
         return self.symbol
 
 
-# =============================================================================
-#
-# EZID :: ezidapp/models/datacenter.py
-#
-# Database model for DataCite datacenters in the search database.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
-
-
 class SearchDatacenter(Datacenter):
     pass
 
 
-# =============================================================================
-#
-# EZID :: ezidapp/models/datacenter.py
-#
-# Database model for DataCite datacenters in the store database.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2016, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
-
-import django.db.models
-
-import ezidapp.models.validation
 
 
 class StoreDatacenter(Datacenter):

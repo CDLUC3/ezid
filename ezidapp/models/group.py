@@ -17,13 +17,15 @@ import re
 
 import django.apps
 import django.core.validators
+import django.core.validators
+import django.db.models
 import django.db.models
 
+import ezidapp.models.validation
 import ezidapp.models.validation
 import impl.log
 import impl.nog.minter
 import impl.util
-from ezidapp.models.util import _databaseQuery
 
 
 class Group(django.db.models.Model):
@@ -82,48 +84,12 @@ class Group(django.db.models.Model):
         return self.groupname
 
 
-# =============================================================================
-#
-# EZID :: ezidapp/models/search_group.py
-#
-# Database model for groups in the search database.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2015, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
-
-import django.db.models
 
 
 class SearchGroup(Group):
     realm = django.db.models.ForeignKey(
         'ezidapp.SearchRealm', on_delete=django.db.models.PROTECT
     )
-
-
-# =============================================================================
-#
-# EZID :: ezidapp/models/store_group.py
-#
-# Database model for groups in the store database.
-#
-# Author:
-#   Greg Janee <gjanee@ucop.edu>
-#
-# License:
-#   Copyright (c) 2016, Regents of the University of California
-#   http://creativecommons.org/licenses/BSD/
-#
-# -----------------------------------------------------------------------------
-
-import django.core.validators
-import django.db.models
-import ezidapp.models.validation
 
 
 class StoreGroup(Group):
@@ -225,13 +191,7 @@ class StoreGroup(Group):
 #     global _caches
 #     _caches = None
 #
-#
-def _databaseQuery():
-    return StoreGroup.objects.select_related("realm").prefetch_related("shoulders")
 
-
-#
-#
 # def _getCaches():
 #     global _caches
 #     caches = _caches
@@ -242,27 +202,6 @@ def _databaseQuery():
 #         caches = (pidCache, groupnameCache, idCache)
 #         _caches = caches
 #     return caches
-
-
-def getGroupByGroupname(groupname):
-    # Returns the group identified by local name 'groupname', or None if
-    # there is no such group.  AnonymousGroup is returned in response to
-    # "anonymous".
-    if groupname == "anonymous":
-        return AnonymousGroup
-    try:
-        return _databaseQuery().get(groupname=groupname)
-    except StoreGroup.DoesNotExist:
-        return None
-
-
-def getProfileById(id_str):
-    # Returns the group identified by internal identifier 'id', or None
-    # if there is no such group.
-    try:
-        return _databaseQuery().get(id=id_str)
-    except StoreGroup.DoesNotExist:
-        return None
 
 
 class AnonymousGroup(object):
@@ -282,15 +221,3 @@ class AnonymousGroup(object):
     shoulders = inner()
     users = inner()
     isAnonymous = True
-
-
-def getGroupByPid(pid):
-    # Returns the group identified by persistent identifier 'pid', or
-    # None if there is no such group.  AnonymousGroup is returned in
-    # response to "anonymous".
-    if pid == "anonymous":
-        return AnonymousGroup
-    try:
-        return _databaseQuery().get(pid=pid)
-    except StoreGroup.DoesNotExist:
-        return None

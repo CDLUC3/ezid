@@ -13,10 +13,11 @@
 #
 # -----------------------------------------------------------------------------
 
-import ezidapp.models.realm
+# import ezidapp.models.realm
 import django.core.validators
 import django.db.models
 
+import ezidapp.models.realm
 import impl.util
 from . import validation
 

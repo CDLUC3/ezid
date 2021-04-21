@@ -13,9 +13,10 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.core.exceptions
 import re
 import time
+
+import django.core.exceptions
 
 import impl.util
 

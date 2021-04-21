@@ -43,11 +43,7 @@ class SearchProfile(Profile):
 class StoreProfile(Profile):
     pass
 
+
 #     if caches is None:
 #         labelCache = dict((p.label, p) for p in StoreProfile.objects.all())
 #         idCache = dict((p.id, p) for p in list(labelCache.values()))
-
-
-def getProfileById(id_str):
-    # Returns the profile identified by internal identifier 'id'.
-    return StoreProfile.objects.get(id_str)

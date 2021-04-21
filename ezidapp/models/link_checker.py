@@ -19,11 +19,13 @@ import time
 
 import django.core.validators
 import django.db.models
-import ezidapp.models.identifier
 
+# import ezidapp.models.identifier
+import ezidapp.models.identifier
 import impl.util
 
-_identifierModule = ezidapp.models.identifier
+
+# print('\n'.join(str(s) for s in django.apps.apps.get_models()))
 
 
 class LinkChecker(django.db.models.Model):
@@ -45,15 +47,19 @@ class LinkChecker(django.db.models.Model):
     # expressed as an actual foreign key in order to avoid a hard
     # database dependency.
 
-    # noinspection PyProtectedMember
+    # id_model = django.apps.apps.get_model('ezidapp', 'Identifier')
+    # max_length=id_model.meta.get_field("target").max_length,
+
     target = django.db.models.URLField(
-        max_length=_identifierModule.Identifier._meta.get_field("target").max_length
+        max_length=ezidapp.models.identifier.Identifier._meta.get_field(
+            "target"
+        ).max_length,
     )
     # The identifier's target URL, e.g., "http://foo.com/bar".
-
     lastCheckTime = django.db.models.IntegerField(
         default=0, validators=[django.core.validators.MinValueValidator(0)]
     )
+
     # The time the target URL was last checked as a Unix timestamp.
 
     @property
