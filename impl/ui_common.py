@@ -18,13 +18,14 @@ import django.utils.safestring
 import django.utils.translation
 from django.utils.translation import ugettext as _
 
+import ezidapp.models.group
+import ezidapp.models.realm
 # import ezidapp.models.server_variables
 import ezidapp.models.shoulder
-import ezidapp.models.store_group
-import ezidapp.models.store_realm
-
-import impl.daemon.newsfeed
+import ezidapp.models.util
+import impl.newsfeed
 import impl.userauth
+
 
 # noinspection PyDefaultArgument
 def render(request, template, context={}):
@@ -33,7 +34,7 @@ def render(request, template, context={}):
         "authenticatedUser": impl.userauth.getUser(request),
         # Todo: Reimplement alertMessage without ServerVariables
         "alertMessage": None,
-        "feed_cache": [],  # impl.daemon.newsfeed.getLatestItems(),
+        "feed_cache": [],  # ezidapp.management.commands.newsfeed.getLatestItems(),
         "google_analytics_id": django.conf.settings.GOOGLE_ANALYTICS_ID,
         "debug": django.conf.settings.DEBUG,
     }
@@ -125,16 +126,13 @@ def jsonResponse(data):
     return r
 
 
-redirect = django.http.HttpResponseRedirect
-
-
 def error(request, code, content_custom=None):
     ctx = {
         "menu_item": "ui_home.null",
         "session": request.session,
         # Todo: Reimplement alertMessage without ServerVariables
         "alertMessage": None,
-        "feed_cache": [],  # impl.daemon.newsfeed.getLatestItems(),
+        "feed_cache": [],  # ezidapp.management.commands.newsfeed.getLatestItems(),
         "google_analytics_id": django.conf.settings.GOOGLE_ANALYTICS_ID,
         "content_custom": content_custom,
     }
@@ -249,9 +247,7 @@ def owner_names(user, page):
     me = _userList([user], 0, "  (" + _("me") + ")")
     if user.isSuperuser:
         r += me if page == "manage" else [("all", "ALL EZID")]
-        for realm in ezidapp.models.store_realm.StoreRealm.objects.all().order_by(
-            "name"
-        ):
+        for realm in ezidapp.models.realm.StoreRealm.objects.all().order_by("name"):
             n = realm.name
             r += [("realm_" + n, "Realm: " + n)]
             r += _getGroupsUsers(user, 1, realm.groups.all().order_by("groupname"))
@@ -315,7 +311,7 @@ def _getGroupsUsers(me, indent, groups):
 
 def _getUsersInGroup(me, indent, groupname):
     """Display all users in group except group admin."""
-    g = ezidapp.models.store_group.getGroupByGroupname(groupname)
+    g = ezidapp.models.util.getGroupByGroupname(groupname)
     return _userList(
         [user for user in g.users.all() if user.username != me.username], indent, ""
     )

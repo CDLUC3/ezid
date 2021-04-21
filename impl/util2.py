@@ -17,6 +17,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import urllib.response
+
 import django.conf
 
 
@@ -73,30 +74,3 @@ def isTestCrossrefDoi(identifier):
     """Returns True if the supplied unqualified DOI (e.g., "10.1234/FOO") is a
     Crossref test identifier."""
     return identifier.startswith(django.conf.settings.SHOULDERS_CROSSREF_TEST[4:])
-
-
-def defaultProfile(identifier):
-    """Returns the label of the default metadata profile (e.g., "erc") for a
-    given qualified identifier."""
-    if identifier.startswith("ark:/"):
-        return django.conf.settings.ARK_PROFILE
-    elif identifier.startswith("doi:"):
-        return django.conf.settings.DOI_PROFILE
-    elif identifier.startswith("uuid:"):
-        return django.conf.settings.UUID_PROFILE
-    else:
-        assert False, "unhandled case"
-
-
-_labelMapping = {
-    "_o": "_owner",
-    "_g": "_ownergroup",
-    "_c": "_created",
-    "_u": "_updated",
-    "_t": "_target",
-    "_p": "_profile",
-    "_is": "_status",
-    "_x": "_export",
-    "_d": "_datacenter",
-    "_cr": "_crossref",
-}

@@ -8,7 +8,6 @@ import urllib.response
 
 import ezidapp.models.shoulder
 import impl.nog.minter
-import impl.daemon.stats
 import impl.util
 
 

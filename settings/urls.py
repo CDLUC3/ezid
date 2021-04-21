@@ -1,16 +1,11 @@
-# import impl.daemon.daemon_base
+# import ezidapp.management.commands.daemon_base
 import django.conf.urls
 import django.conf.urls.static
-
+import django.urls
 # import django.urls
 import django.views.defaults
 
-# import django.conf
-# import django.conf.urls.i18n
-# import django.views.i18n
-
-# import django.views.static
-
+import ezidapp.admin
 import impl.api
 import impl.dispatch
 import impl.oai
@@ -23,10 +18,12 @@ import impl.ui_home
 import impl.ui_manage
 import impl.ui_search
 
-import ezidapp.admin
-import django.urls
+# import django.conf
+# import django.conf.urls.i18n
+# import django.views.i18n
+# import django.views.static
 
-# import impl.daemon.crossref
+# import ezidapp.management.commands.crossref
 
 # fmt:off
 urlpatterns = [

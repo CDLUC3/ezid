@@ -55,26 +55,34 @@ STATICFILES_DIRS = [
 
 # Async processing daemons
 
-# DAEMON_THREADS_ENABLED:
-#   - True: Always enable daemon threads
-#   - False: Always disable daemon threads
-#   - 'auto': Enable daemon threads only if process is running under Apache /
-#      mod_wsgi.
-DAEMON_THREADS_ENABLED = 'auto'
+# DAEMONS_ENABLED:
+# - True: Daemons (asynchronous processing tasks) that are enabled in the
+#   DAEMONS_*_ENABLED settings listed below are available to be started. For a daemon
+#   to be able to be started, both this setting and its individual setting must be set
+#   to ENABLED (True). A daemon that is started without being enabled will will stop
+#   without modifying the system state in any way, with a message indicating the
+#   settings that were used.
+# - False: Daemons cannot run. They are disabled regardless of the DAEMONS_*_ENABLED
+#   settings listed below.
+# - 'auto': Set to True if EZID is running under Apache / mod_wsgi, False otherwise.
+DAEMONS_ENABLED = 'auto'
 
-assert DAEMON_THREADS_ENABLED in (True, False, 'auto')
-if DAEMON_THREADS_ENABLED == 'auto':
-    DAEMON_THREADS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
+assert DAEMONS_ENABLED in (True, False, 'auto')
+if DAEMONS_ENABLED == 'auto':
+    DAEMONS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
 
-# The following enablement flags are subservient to the DAEMON_THREADS_ENABLED Django
-# setting.
-DAEMONS_SEARCHDB_ENABLED = True
+# DAEMONS_*_ENABLED:
+# - True: The daemon is available to be started.
+# - False: The daemon cannot run.
+# - See the DAEMONS_ENABLED setting above.
+# DAEMONS_SEARCHDB_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
-DAEMONS_STATUS_ENABLED = True
+# DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
 DAEMONS_DATACITE_ENABLED = True
 DAEMONS_CROSSREF_ENABLED = True
 DAEMONS_DOWNLOAD_ENABLED = True
+DAEMONS_LINKCHECKER_ENABLED = True
 DAEMONS_LINKCHECK_UPDATE_ENABLED = True
 DAEMONS_STATISTICS_ENABLED = True
 

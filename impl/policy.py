@@ -14,13 +14,14 @@
 # -----------------------------------------------------------------------------
 
 
-import ezidapp.models.store_group
-import ezidapp.models.store_group
-import ezidapp.models.store_identifier
-import ezidapp.models.store_user
-import ezidapp.models.store_user
-import ezidapp.models.store_user
-import ezidapp.models.store_user
+import ezidapp.models.group
+import ezidapp.models.group
+import ezidapp.models.identifier
+import ezidapp.models.user
+import ezidapp.models.user
+import ezidapp.models.user
+import ezidapp.models.user
+import ezidapp.models.util
 import impl.util2
 
 
@@ -68,8 +69,8 @@ def authorizeUpdate(user, identifier):
         idOwner = identifier.owner
         idGroup = identifier.ownergroup
     else:
-        idOwner = ezidapp.models.store_user.AnonymousUser
-        idGroup = ezidapp.models.store_group.AnonymousGroup
+        idOwner = ezidapp.models.util.AnonymousUser
+        idGroup = ezidapp.models.group.AnonymousGroup
     if user == idOwner:
         return True
     if user in idOwner.proxies.all():
@@ -93,9 +94,9 @@ def authorizeUpdateLegacy(user, owner, ownergroup):
     """
     # We create a fictitious identifier filled out just enough for the
     # above policy check to work.
-    u = ezidapp.models.store_user.getUserByUsername(owner)
-    g = ezidapp.models.store_group.getGroupByGroupname(ownergroup)
-    i = ezidapp.models.store_identifier.StoreIdentifier(
+    u = ezidapp.models.util.getUserByUsername(owner)
+    g = ezidapp.models.util.getGroupByGroupname(ownergroup)
+    i = ezidapp.models.identifier.StoreIdentifier(
         owner=(None if u is None or u.isAnonymous else u),
         ownergroup=(None if g is None or g.isAnonymous else g),
     )
@@ -118,9 +119,9 @@ def authorizeOwnershipChange(user, currentOwner, newOwner):
     objects; they may be None to indicate anonymous ownership.
     """
     if currentOwner is None:
-        currentOwner = ezidapp.models.store_user.AnonymousUser
+        currentOwner = ezidapp.models.util.AnonymousUser
     if newOwner is None:
-        newOwner = ezidapp.models.store_user.AnonymousUser
+        newOwner = ezidapp.models.util.AnonymousUser
     if newOwner == currentOwner:
         return True
     # Interesting property here: by the rule below, a common proxy can

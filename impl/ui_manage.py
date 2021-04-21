@@ -6,15 +6,15 @@ import urllib.request
 import urllib.response
 
 import django.contrib.messages
-import django.urls.resolvers
 import django.db.models
 import django.http
 import django.shortcuts
+import django.urls.resolvers
 from django.utils.translation import ugettext as _
 
 import impl.datacite
 import impl.datacite_xml
-import impl.daemon.download
+import impl.download
 import impl.erc
 import impl.ezid
 import impl.form_objects
@@ -507,7 +507,7 @@ def download(request):
 
     # In case you only want to download IDs based on owner selection:
     # username = impl.ui_common.getOwnerOrGroup(request.GET['owner_selected'])
-    # q['owner'] = ezidapp.models.store_user.StoreUser.objects.get(name=username)
+    # q['owner'] = ezidapp.models.user.StoreUser.objects.get(name=username)
     user = impl.userauth.getUser(request)
     q['notify'] = d['mail'] = user.accountEmail
     # ToDo make changes to download.enqueueRequest() to accept multiple groups
@@ -516,7 +516,7 @@ def download(request):
         q['ownergroup'] = user.group.groupname
     else:
         q['owner'] = user.username
-    s = impl.daemon.download.enqueueRequest(user, q)
+    s = impl.download.enqueueRequest(user, q)
     if not s.startswith("success:"):
         django.contrib.messages.error(request, s)
         return django.shortcuts.redirect("ui_manage.index")

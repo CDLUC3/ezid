@@ -28,8 +28,6 @@
 #
 # -----------------------------------------------------------------------------
 
-import django.conf
-
 import logging
 import re
 import time
@@ -38,11 +36,12 @@ import urllib.parse
 import urllib.request
 import urllib.response
 
+import django.conf
+
 import impl.log
 import impl.util
 
 _LT = logging.getLogger("tracer")
-
 
 
 @impl.log.stacklog

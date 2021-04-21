@@ -89,7 +89,17 @@ import django.conf
 import django.http
 
 import ezidapp.models.update_queue
+import impl.anvl
+import impl.datacite
+import impl.download
+import impl.ezid
+import impl.ezid
+import impl.noid_egg
+import impl.search_util
+import impl.search_util
+import impl.statistics
 import impl.userauth
+import impl.util
 
 
 def _readInput(request):
@@ -426,11 +436,24 @@ def getVersion(request):
     # In theory the following body should be encoded, but no percent
     # signs should appear anywhere.
     body = (
-        "startup.time: {}\n"
-        "startup.ezid_version: {}\n"
-        "startup.info_version: {}\n"
+        "startup.time: {}\n" "startup.ezid_version: {}\n" "startup.info_version: {}\n"
     )
     return _response("success: version information follows", anvlBody=body)
+
+
+def batchDownloadRequest(request):
+    """Enqueues a batch download request."""
+    if request.method != "POST":
+        return _methodNotAllowed()
+    options = _validateOptions(request, {})
+    if type(options) is str:
+        return _response(options)
+    user = impl.userauth.authenticateRequest(request)
+    if type(user) is str:
+        return _response(user)
+    elif not user:
+        return _unauthorized()
+    return _response(impl.download.enqueueRequest(user, request.POST))
 
 
 def _formatUserCountList(d):
@@ -451,8 +474,8 @@ def _statusLineGenerator(includeSuccessLine):
         nw = sum(waitingUsers.values())
         ndo = impl.datacite.numActiveOperations()
         ql = ezidapp.models.update_queue.UpdateQueue.objects.count()
-        bql = impl.daemon.binder.getQueueLength()
-        dql = impl.daemon.datacite.getQueueLength()
+        bql = impl.statistics.getBinderQueueLength()
+        dql = impl.statistics.getDataCiteQueueLength()
         nas = impl.search_util.numActiveSearches()
         s = (
             "STATUS {} activeOperations={:d}{} waitingRequests={:d}{} "
@@ -517,18 +540,3 @@ def pause(request):
         )
     else:
         assert False, "unhandled case"
-
-
-def batchDownloadRequest(request):
-    """Enqueues a batch download request."""
-    if request.method != "POST":
-        return _methodNotAllowed()
-    options = _validateOptions(request, {})
-    if type(options) is str:
-        return _response(options)
-    user = impl.userauth.authenticateRequest(request)
-    if type(user) is str:
-        return _response(user)
-    elif not user:
-        return _unauthorized()
-    return _response(impl.daemon.download.enqueueRequest(user, request.POST))

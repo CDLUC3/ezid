@@ -25,6 +25,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import urllib.response
+from typing import Pattern
 
 import django.conf
 import lxml.etree
@@ -236,7 +237,7 @@ def getTargetUrl(doi, datacenter=None):
         time.sleep(int(django.conf.settings.DATACITE_REATTEMPT_DELAY))
 
 
-_prologRE = re.compile(
+_prologRE: Pattern[str] = re.compile(
     '(<\?xml\s+version\s*=\s*[\'"]([-\w.:]+)["\'])'
     '(\s+encoding\s*=\s*[\'"]([-\w.]+)["\'])?'
 )

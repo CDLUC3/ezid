@@ -6,7 +6,8 @@ import django.forms
 import django.forms
 from django.utils.translation import ugettext as _
 
-import ezidapp.models.store_user
+import ezidapp.models.user
+import ezidapp.models.util
 import impl.geometry_util
 import impl.ui_common
 import impl.userauth
@@ -1284,7 +1285,7 @@ def _validate_proxies(user):
     def _innerfn(proxies):
         p_list = [p.strip() for p in proxies.split(',')]
         for proxy in p_list:
-            u = ezidapp.models.store_user.getUserByUsername(proxy)
+            u = ezidapp.models.util.getUserByUsername(proxy)
             if u is None or u == user or u.isAnonymous:
                 raise django.core.exceptions.ValidationError(
                     _('Unable to assign this username as proxy: "') + proxy + "\"."

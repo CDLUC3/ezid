@@ -55,18 +55,18 @@ STATICFILES_DIRS = [
 
 # Async processing daemons
 
-# DAEMON_THREADS_ENABLED:
+# DAEMONS_ENABLED:
 #   - True: Always enable daemon threads
 #   - False: Always disable daemon threads
 #   - 'auto': Enable daemon threads only if process is running under Apache /
 #      mod_wsgi.
-DAEMON_THREADS_ENABLED = 'auto'
+DAEMONS_ENABLED = True
 
-assert DAEMON_THREADS_ENABLED in (True, False, 'auto')
-if DAEMON_THREADS_ENABLED == 'auto':
-    DAEMON_THREADS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
+assert DAEMONS_ENABLED in (True, False, 'auto')
+if DAEMONS_ENABLED == 'auto':
+    DAEMONS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
 
-# The following enablement flags are subservient to the DAEMON_THREADS_ENABLED Django
+# The following enablement flags are subservient to the DAEMONS_ENABLED Django
 # setting.
 DAEMONS_SEARCHDB_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
@@ -76,6 +76,7 @@ DAEMONS_DATACITE_ENABLED = True
 DAEMONS_CROSSREF_ENABLED = True
 DAEMONS_DOWNLOAD_ENABLED = True
 DAEMONS_LINKCHECK_UPDATE_ENABLED = True
+DAEMONS_LINKCHECKER_ENABLED = True
 DAEMONS_STATISTICS_ENABLED = True
 
 DAEMONS_BACKGROUND_PROCESSING_IDLE_SLEEP = 5
@@ -102,6 +103,9 @@ DATABASES = {
         'HOST': 'localhost',
         "NAME": "ezid_test_db",
         'USER': 'ezid_test_user',
+        # 'HOST': 'r2',
+        # "NAME": "ezid",
+        # 'USER': 'ezidrw',
         "PASSWORD": '',
         'PORT': '3306',
         'OPTIONS': {'charset': 'utf8mb4'},
@@ -193,7 +197,7 @@ logging.config.dictConfig(
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
                 'formatter': 'verbose',
-                'stream': sys.stdout,
+                # 'stream': sys.stdout,
             },
         },
         'loggers': {

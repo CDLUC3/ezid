@@ -26,10 +26,10 @@ import django.db
 import django.db.models
 import django.db.utils
 
-# import ezidapp.models.search_realm
+# import ezidapp.models.realm
 import ezidapp.models.identifier
-import ezidapp.models.search_identifier
-import ezidapp.models.search_realm
+import ezidapp.models.identifier
+import ezidapp.models.realm
 import ezidapp.models.validation
 import impl.log
 import impl.util
@@ -38,7 +38,7 @@ _lock = threading.Lock()
 
 
 # noinspection PyProtectedMember
-_maxTargetLength = ezidapp.models.search_identifier.SearchIdentifier._meta.get_field(
+_maxTargetLength = ezidapp.models.identifier.SearchIdentifier._meta.get_field(
     "searchableTarget"
 ).max_length
 
@@ -98,7 +98,7 @@ def withAutoReconnect(functionName, function, continuationCheck=None):
 def ping():
     """Tests the search database, returning "up" or "down"."""
     try:
-        _n = ezidapp.models.search_realm.SearchRealm.objects.count()
+        _n = ezidapp.models.realm.SearchRealm.objects.count()
     except Exception:
         return "down"
     else:
@@ -452,7 +452,7 @@ def formulateQuery(
         else:
             assert False, "unrecognized column"
     assert scopeRequirementMet, "query scope requirement not met"
-    qs = ezidapp.models.search_identifier.SearchIdentifier.objects.filter(*filters)
+    qs = ezidapp.models.identifier.SearchIdentifier.objects.filter(*filters)
     if len(selectRelated) > 0:
         qs = qs.select_related(*selectRelated)
     if len(defer) > 0:

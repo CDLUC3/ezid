@@ -3,7 +3,7 @@ import logging.config
 import sys
 
 
-def log_to_console(module_name, is_debug):
+def log_setup(module_name, is_debug):
     """Add a logging handler that writes to the console and configure logging
     levels.
 
@@ -27,7 +27,7 @@ def log_to_console(module_name, is_debug):
         for h in root_logger.handlers:
             if isinstance(h, logging.StreamHandler):
                 if h.stream in (sys.stdout, sys.stderr):
-                    print('Removing handler: {}'.format(h.level))
+                    # print('Removing handler: {}'.format(h.level))
                     root_logger.removeHandler(h)
                     break
         else:
@@ -39,17 +39,19 @@ def log_to_console(module_name, is_debug):
     else:
         for logger_name in list(logging.root.manager.loggerDict):
             logging.getLogger(logger_name).setLevel(logging.ERROR)
-    # for n in ('impl.nog.reload', 'impl.nog.shoulder'):
-    #     logging.getLogger(n).setLevel(logging.DEBUG if is_debug else logging.INFO)
+    for n in ('impl.nog.reload', 'impl.nog.shoulder'):
+        logging.getLogger(n).setLevel(logging.DEBUG if is_debug else logging.INFO)
 
     # Add new handlers
-    formatter = logging.Formatter('%(levelname)-8s %(module)s - %(message)s')
+    format_str = '%(name)s %(levelname)-8s %(module)s - %(message)s'
+    if is_debug:
+        format_str = '%(filename)s:%(lineno)d %(module)s ' + format_str
+    formatter = logging.Formatter(format_str)
     base_level = logging.DEBUG if is_debug else logging.INFO
     handler = logging.StreamHandler(sys.stdout)
     handler.setLevel(base_level)
     handler.setFormatter(formatter)
     root_logger.addHandler(handler)
-
     root_logger.setLevel(base_level)
 
     # Ensure that log records from the logger at __name__ will propagate to the root.
@@ -63,3 +65,6 @@ def log_to_console(module_name, is_debug):
         log.debug('logging: DEBUG level logging enabled')
         log.info('logging: INFO level logging enabled')
         log.error('logging: ERROR level logging enabled')
+
+    # import logging_tree
+    # print(logging_tree.printout())

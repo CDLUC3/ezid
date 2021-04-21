@@ -1,4 +1,4 @@
-"""Update the DataCenter for an existing DOI shoulder."""
+"""Update the Datacenter for an existing DOI shoulder."""
 import argparse
 import logging
 

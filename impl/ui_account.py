@@ -11,15 +11,16 @@ import urllib.response
 import django.conf
 import django.contrib.messages
 import django.core.mail
-import django.urls.resolvers
 import django.core.validators
 import django.db.transaction
 import django.shortcuts
+import django.urls.resolvers
 import django.utils.http
 from django.utils.translation import ugettext as _
 
 import ezidapp.admin
-import ezidapp.models.store_user
+import ezidapp.models.user
+import ezidapp.models.util
 import impl.form_objects
 import impl.ui_common
 import impl.userauth
@@ -208,7 +209,7 @@ def _getNewProxies(_user, orig, picked):
     p = list(set(picked) - set(orig))
     if p:
         for proxyname in p:
-            r.extend([ezidapp.models.store_user.getUserByUsername(proxyname)])
+            r.extend([ezidapp.models.util.getUserByUsername(proxyname)])
     return r
 
 
@@ -230,9 +231,7 @@ def _update_edit_user(request, user, new_proxies_selected, basic_info_changed):
                 p_user.strip() for p_user in d["proxy_users_picked"].split(",")
             ]:
                 if p_user not in ["", proxies_default]:
-                    user.proxies.add(
-                        ezidapp.models.store_user.getUserByUsername(p_user)
-                    )
+                    user.proxies.add(ezidapp.models.util.getUserByUsername(p_user))
             if d["pwcurrent"].strip() != "":
                 user.setPassword(d["pwnew"].strip())
             user.full_clean(validate_unique=False)
@@ -379,7 +378,7 @@ def pwreset(request, pwrr):
                 )
                 django.contrib.messages.error(request, err)
             else:
-                user = ezidapp.models.store_user.getUserByUsername(username)
+                user = ezidapp.models.util.getUserByUsername(username)
                 if user is None or user.isAnonymous:
                     django.contrib.messages.error(request, _("No such user."))
                     # noinspection PyUnresolvedReferences
@@ -429,7 +428,7 @@ def sendPasswordResetEmail(username, emailAddress):
 
     Returns None on success or a string message on error.
     """
-    user = ezidapp.models.store_user.getUserByUsername(username)
+    user = ezidapp.models.util.getUserByUsername(username)
     if user is None or user.isAnonymous:
         return _("No such user.")
     if emailAddress not in [

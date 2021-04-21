@@ -22,7 +22,8 @@ import django.contrib.auth.hashers
 import django.contrib.auth.models
 import django.utils.encoding
 
-import ezidapp.models.store_user
+import ezidapp.models.user
+import ezidapp.models.util
 import impl.log
 import impl.util
 
@@ -75,7 +76,7 @@ def authenticate(username, password, request=None, coAuthenticate=True):
         return "error: bad request - password required"
 
     # noinspection PyUnresolvedReferences
-    user = ezidapp.models.store_user.getUserByUsername(username)
+    user = ezidapp.models.util.getUserByUsername(username)
     logger.debug('Username resolved. user="{}"'.format(user))
 
     if user is None or user.isAnonymous:
@@ -88,7 +89,7 @@ def authenticate(username, password, request=None, coAuthenticate=True):
         )
         return None
 
-    if (sudo and ezidapp.models.store_user.getAdminUser().authenticate(password)) or (
+    if (sudo and ezidapp.models.util.getAdminUser().authenticate(password)) or (
         not sudo and user.authenticate(password)
     ):
         logger.debug('Auth successful. user="{}" sudo="{}"'.format(user, sudo))
@@ -134,13 +135,13 @@ def getUser(request, returnAnonymous=False):
     None.
     """
     if SESSION_KEY in request.session:
-        user = ezidapp.models.store_user.getUserById(request.session[SESSION_KEY])
+        user = ezidapp.models.util.getUserById(request.session[SESSION_KEY])
         if user is not None and user.loginEnabled:
             return user
         else:
-            return ezidapp.models.store_user.AnonymousUser if returnAnonymous else None
+            return ezidapp.models.util.AnonymousUser if returnAnonymous else None
     else:
-        return ezidapp.models.store_user.AnonymousUser if returnAnonymous else None
+        return ezidapp.models.util.AnonymousUser if returnAnonymous else None
 
 
 def authenticateRequest(request, storeSessionCookie=False):
@@ -150,7 +151,7 @@ def authenticateRequest(request, storeSessionCookie=False):
     if unsuccessful, or a string error message if an error occurs.
     """
     if SESSION_KEY in request.session:
-        user = ezidapp.models.store_user.getUserById(request.session[SESSION_KEY])
+        user = ezidapp.models.util.getUserById(request.session[SESSION_KEY])
         if user is not None and user.loginEnabled:
             return user
         else:
