@@ -55,26 +55,34 @@ STATICFILES_DIRS = [
 
 # Async processing daemons
 
-# DAEMON_THREADS_ENABLED:
-#   - True: Always enable daemon threads
-#   - False: Always disable daemon threads
-#   - 'auto': Enable daemon threads only if process is running under Apache /
-#      mod_wsgi.
-DAEMON_THREADS_ENABLED = 'auto'
+# DAEMONS_ENABLED:
+# - True: Daemons (asynchronous processing tasks) that are enabled in the
+#   DAEMONS_*_ENABLED settings listed below are available to be started. For a daemon
+#   to be able to be started, both this setting and its individual setting must be set
+#   to ENABLED (True). A daemon that is started without being enabled will will stop
+#   without modifying the system state in any way, with a message indicating the
+#   settings that were used.
+# - False: Daemons cannot run. They are disabled regardless of the DAEMONS_*_ENABLED
+#   settings listed below.
+# - 'auto': Set to True if EZID is running under Apache / mod_wsgi, False otherwise.
+DAEMONS_ENABLED = 'auto'
 
-assert DAEMON_THREADS_ENABLED in (True, False, 'auto')
-if DAEMON_THREADS_ENABLED == 'auto':
-    DAEMON_THREADS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
+assert DAEMONS_ENABLED in (True, False, 'auto')
+if DAEMONS_ENABLED == 'auto':
+    DAEMONS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
 
-# The following enablement flags are subservient to the DAEMON_THREADS_ENABLED Django
-# setting.
-DAEMONS_BACKPROC_ENABLED = True
+# DAEMONS_*_ENABLED:
+# - True: The daemon is available to be started.
+# - False: The daemon cannot run.
+# - See the DAEMONS_ENABLED setting above.
+# DAEMONS_SEARCHDB_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
-DAEMONS_STATUS_ENABLED = True
+# DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
 DAEMONS_DATACITE_ENABLED = True
 DAEMONS_CROSSREF_ENABLED = True
 DAEMONS_DOWNLOAD_ENABLED = True
+DAEMONS_LINKCHECKER_ENABLED = True
 DAEMONS_LINKCHECK_UPDATE_ENABLED = True
 DAEMONS_STATISTICS_ENABLED = True
 
@@ -261,6 +269,45 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 SESSION_COOKIE_PATH = '/'
 
+# EZID administrator account
+
+# Note: The `diag-update-admin` management command must be run in order to apply
+# changes made to any of the `ADMIN_` settings. E.g.,
+#
+# $ cd ezid
+# $ ./manage.py diag-update-admin
+
+ADMIN_USERNAME = '{{ admin_username }}'
+ADMIN_PASSWORD = '{{ admin_password }}'
+
+ADMIN_GROUPNAME = '{{ admin_groupname }}'
+ADMIN_NOTES = '{{ admin_notes }}'
+ADMIN_EMAIL = '{{ admin_email }}'
+ADMIN_DISPLAY_NAME = '{{ admin_display_name }}'
+
+ADMIN_ORG_ACRONYM = '{{ admin_org_acronym }}'
+ADMIN_ORG_NAME = '{{ admin_org_name }}'
+ADMIN_ORG_URL = '{{ admin_org_url }}'
+
+ADMIN_CROSSREF_EMAIL = '{{ admin_crossref_email }}'
+ADMIN_CROSSREF_ENABLED = '{{ admin_crossref_enabled }}'
+
+ADMIN_PRIMARY_CONTACT_EMAIL = '{{ admin_primary_contact_email }}'
+ADMIN_PRIMARY_CONTACT_NAME = '{{ admin_primary_contact_name }}'
+ADMIN_PRIMARY_CONTACT_PHONE = '{{ admin_primary_contact_phone }}'
+
+ADMIN_SECONDARY_CONTACT_EMAIL = '{{ admin_secondary_contact_email }}'
+ADMIN_SECONDARY_CONTACT_NAME = '{{ admin_secondary_contact_name }}'
+ADMIN_SECONDARY_CONTACT_PHONE = '{{ admin_secondary_contact_phone }}'
+
+ADMIN_STORE_REALM = '{{ admin_store_realm }}'
+ADMIN_STORE_USER_PID = '{{ admin_store_user_pid }}'
+ADMIN_STORE_GROUP_PID = '{{ admin_store_group_pid }}'
+
+ADMIN_SEARCH_REALM = '{{ admin_search_realm }}'
+ADMIN_SEARCH_USER_PID = '{{ admin_search_user_pid }}'
+ADMIN_SEARCH_GROUP_PID = '{{ admin_search_group_pid }}'
+
 # Credentials
 
 ARK_PROFILE = 'ERC'
@@ -271,33 +318,6 @@ GOOGLE_ANALYTICS_ID = None
 
 GZIP_COMMAND = '/usr/bin/gzip'
 ZIP_COMMAND = '/usr/bin/zip'
-
-AUTH_ADMIN_USERNAME = '{{ admin_username }}'
-AUTH_ADMIN_PASSWORD = '{{ admin_password }}'
-
-ADMIN_USERNAME = '{{ admin_username }}'
-ADMIN_PASSWORD = '{{ admin_password }}'
-ADMIN_GROUPNAME = '{{ admin_groupname }}'
-ADMIN_NOTES = '{{ admin_notes }}'
-ADMIN_EMAIL = '{{ admin_email }}'
-ADMIN_DISPLAY_NAME = '{{ admin_display_name }}'
-ADMIN_ORG_ACRONYM = '{{ admin_org_acronym }}'
-ADMIN_ORG_NAME = '{{ admin_org_name }}'
-ADMIN_ORG_URL = '{{ admin_org_url }}'
-ADMIN_CROSSREF_EMAIL = '{{ admin_crossref_email }}'
-ADMIN_CROSSREF_ENABLED = '{{ admin_crossref_enabled }}'
-ADMIN_PRIMARY_CONTACT_EMAIL = '{{ admin_primary_contact_email }}'
-ADMIN_PRIMARY_CONTACT_NAME = '{{ admin_primary_contact_name }}'
-ADMIN_PRIMARY_CONTACT_PHONE = '{{ admin_primary_contact_phone }}'
-ADMIN_SECONDARY_CONTACT_EMAIL = '{{ admin_secondary_contact_email }}'
-ADMIN_SECONDARY_CONTACT_NAME = '{{ admin_secondary_contact_name }}'
-ADMIN_SECONDARY_CONTACT_PHONE = '{{ admin_secondary_contact_phone }}'
-ADMIN_STORE_REALM = '{{ admin_store_realm }}'
-ADMIN_STORE_USER_PID = '{{ admin_store_user_pid }}'
-ADMIN_STORE_GROUP_PID = '{{ admin_store_group_pid }}'
-ADMIN_SEARCH_REALM = '{{ admin_search_realm }}'
-ADMIN_SEARCH_USER_PID = '{{ admin_search_user_pid }}'
-ADMIN_SEARCH_GROUP_PID = '{{ admin_search_group_pid }}'
 
 BINDER_URL = '{{ binder_url }}'
 BINDER_USERNAME = '{{ binder_username }}'
@@ -314,6 +334,7 @@ SHOULDERS_ARK_TEST = 'ark:/99999/fk4'
 SHOULDERS_DOI_TEST = 'doi:10.5072/FK2'
 SHOULDERS_CROSSREF_TEST = 'doi:10.15697/'
 SHOULDERS_AGENT = 'ark:/99166/p9'
+
 TEST_SHOULDER_DICT = '{{ test_shoulder_dict }}'
 
 # DataCite
