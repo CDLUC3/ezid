@@ -71,6 +71,18 @@ assert DAEMONS_ENABLED in (True, False, 'auto')
 if DAEMONS_ENABLED == 'auto':
     DAEMONS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
 
+
+# KLUDGE ALERT!!!
+# Mon Apr 26 17:04:18 PDT 2021
+# This is here to support ezid version 3.0.0-0.2.4 (branch ezid-py3) which is currently
+# live on https://ezid-py3-stg.cdlib.org
+#
+DAEMON_THREADS_ENABLED = 'auto'
+assert DAEMON_THREADS_ENABLED in (True, False, 'auto')
+if DAEMON_THREADS_ENABLED == 'auto':
+    DAEMON_THREADS_ENABLED = os.environ.get('IS_RUNNING_UNDER_MOD_WSGI', False)
+
+
 # DAEMONS_*_ENABLED:
 # - True: The daemon is available to be started.
 # - False: The daemon cannot run.
