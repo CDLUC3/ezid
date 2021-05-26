@@ -27,8 +27,6 @@ import django.db.transaction
 
 import ezidapp.management.commands.proc_base
 import ezidapp.models.identifier
-import ezidapp.models.identifier
-import ezidapp.models.link_checker
 import ezidapp.models.link_checker
 import impl.log
 import impl.nog.util
@@ -38,7 +36,8 @@ log = logging.getLogger(__name__)
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    name = 'LinkCheckerUpdate'
+    display = 'LinkCheckerUpdate'
+    name = 'linkcheckerupdate'
     setting = 'DAEMONS_LINKCHECK_UPDATE_ENABLED'
 
     def __init__(self):
@@ -131,10 +130,12 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                                 si2.computeHasIssues()
                                 si2.save(update_fields=["linkIsBroken", "hasIssues"])
                         except ezidapp.models.identifier.SearchIdentifier.DoesNotExist:
+                            log.exception(' ezidapp.models.identifier.SearchIdentifier.DoesNotExist')
                             pass
                     si = next(siGenerator)
             except Exception as e:
-                impl.log.otherError("linkcheck_update._linkcheckUpdateDaemon", e)
+                log.exception(' Exception as e')
+                self.otherError("linkcheck_update._linkcheckUpdateDaemon", e)
             # Since we're going to be sleeping for potentially a long time,
             # release any memory held.
             _siGenerator = _lcGenerator = _si = _lc = _si2 = None

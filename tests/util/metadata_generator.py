@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Generate CrossRef, DataCite and DC metadata test objects.
+"""Generate Crossref, DataCite and DC metadata test objects.
 
 The objects are based on samples from the EZID production database. The text nodes have
 been modified to indicate that they are generic test objects.

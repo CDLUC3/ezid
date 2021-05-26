@@ -18,7 +18,6 @@ import hashlib
 import time
 
 import django.conf
-import django.conf
 import django.db.models
 import django.http
 import lxml.etree

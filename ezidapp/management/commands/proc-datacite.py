@@ -24,7 +24,8 @@ log = logging.getLogger(__name__)
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    name = 'DataCite'
+    display = 'DataCite'
+    name = 'datacite'
     setting = 'DAEMONS_DATACITE_ENABLED'
 
     def __init__(self):

@@ -22,6 +22,7 @@ import sys
 import threading
 import time
 
+import fasteners as fasteners
 import impl.ipc
 
 # MAX_LOCKED_IDENTIFIERS = 1024
@@ -35,6 +36,8 @@ DEFAULT_LOOP_COUNT = 10000
 a_resource_lock = impl.ipc.CombinedLock()
 
 log = logging.getLogger(__name__)
+
+mm = impl.ipc.MemMapDict('test', 100, 'i')
 
 
 def main():
@@ -91,7 +94,7 @@ def main():
         },
     )
 
-    mm = impl.ipc.MemMapDict(args.name, args.max_items, 'i')
+    # mm = impl.ipc.MemMapDict(args.name, args.max_items, 'i')
 
     start_ts = time.time()
     print_ts = time.time()
@@ -112,12 +115,7 @@ def main():
     log.info(f'Target total: {adjust_total}')
 
     while True:
-        check_total = 0
-        with mm as x:
-            for i in range(args.max_items):
-                check_total += x.get(i, 0)
-
-        log.info(f'#### {args.tag} {check_total}')
+        check(args, log)
 
         time.sleep(5)
 
@@ -147,6 +145,15 @@ def main():
     # # while True:
     # #     log.info(f'Check total fromm : {args.tag}')
     # #     time.sleep(3)
+
+
+@fasteners.interprocess_write_locked('../impl/init')
+def check(args, log):
+    check_total = 0
+    with mm as x:
+        for i in range(args.max_items):
+            check_total += x.get(i, 0)
+    log.info(f'#### {args.tag} {check_total}')
 
 
 class ProcAdapter(logging.LoggerAdapter):

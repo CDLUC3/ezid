@@ -96,7 +96,8 @@ log = logging.getLogger(__name__)
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    name = 'LinkChecker'
+    display = 'LinkChecker'
+    name = 'linkchecker'
     setting = 'DAEMONS_LINKCHECKER_ENABLED'
 
     def __init__(self):
@@ -126,11 +127,11 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         # fully processed.  In general rounds may be interrupted.
         firstRound = True
         while (
-            firstRound
-            or self.remaining(
-                start, django.conf.settings.LINKCHECKER_TABLE_UPDATE_CYCLE
-            )
-            > 0
+                firstRound
+                or self.remaining(
+            start, django.conf.settings.LINKCHECKER_TABLE_UPDATE_CYCLE
+        )
+                > 0
         ):
             self.loadWorkset()
             log.info("begin processing")
@@ -161,8 +162,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         ),
                         django.conf.settings.LINKCHECKER_WORKSET_OWNER_MAX_LINKS
                         * (
-                            1
-                            + django.conf.settings.LINKCHECKER_OWNER_REVISIT_MIN_INTERVAL
+                                1
+                                + django.conf.settings.LINKCHECKER_OWNER_REVISIT_MIN_INTERVAL
                         ),
                     )
                 threads = []
@@ -241,6 +242,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 try:
                     user, flag = l.split()
                 except ValueError:
+                    log.exception(' ValueError')
                     assert False, "syntax error on line %d" % n
                 assert flag in ["permanent", "temporary"], "syntax error on line %d" % n
                 # search_user_model = django.apps.apps.get_model('ezidapp', 'SearchUser')
@@ -251,12 +253,14 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         ezidapp.models.user.SearchUser.objects.get(username=user).id
                     )
                 except ezidapp.models.user.SearchUser.DoesNotExist:
+                    log.exception(' ezidapp.models.user.SearchUser.DoesNotExist')
                     assert False, "no such user: " + user
             _permanentExcludes = pe
             _temporaryExcludes = te
             _exclusionFileModifyTime = s.st_mtime
             log.info("exclusion file successfully loaded")
         except Exception as e:
+            log.exception(' Exception as e')
             if s is not None:
                 _exclusionFileModifyTime = s.st_mtime
             log.error("error loading exclusion file: " + str(e))
@@ -305,9 +309,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
             ezidapp.models.identifier.SearchIdentifier,
             ["identifier", "owner", "status", "target", "isTest"],
             lambda si: si.isPublic
-            and not si.isTest
-            and si.target != si.defaultTarget
-            and si.owner_id not in self._permanentExcludes,
+                       and not si.isTest
+                       and si.target != si.defaultTarget
+                       and si.owner_id not in self._permanentExcludes,
         )
         lc = next(lcGenerator)
         si = next(siGenerator)
@@ -352,9 +356,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             good[0] += 1
                             # noinspection PyUnresolvedReferences
                             if (
-                                lc.lastCheckTime
-                                < nowi()
-                                - django.conf.settings.LINKCHECKER_GOOD_RECHECK_MIN_INTERVAL
+                                    lc.lastCheckTime
+                                    < nowi()
+                                    - django.conf.settings.LINKCHECKER_GOOD_RECHECK_MIN_INTERVAL
                             ):
                                 good[1] += 1
                             # noinspection PyUnresolvedReferences
@@ -363,9 +367,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                             bad[0] += 1
                             # noinspection PyUnresolvedReferences
                             if (
-                                lc.lastCheckTime
-                                < nowi()
-                                - django.conf.settings.LINKCHECKER_BAD_RECHECK_MIN_INTERVAL
+                                    lc.lastCheckTime
+                                    < nowi()
+                                    - django.conf.settings.LINKCHECKER_BAD_RECHECK_MIN_INTERVAL
                             ):
                                 bad[1] += 1
                             # noinspection PyUnresolvedReferences
@@ -374,10 +378,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 si = next(siGenerator)
         log.info(
             (
-                "end update table, %d identifier%s, %d addition%s, "
-                + "%d deletion%s, %d update%s, %d unvisited link%s, "
-                + "%d good link%s (%d to check, oldest=%dd), "
-                + "%d bad link%s (%d to check, oldest=%dd)"
+                    "end update table, %d identifier%s, %d addition%s, "
+                    + "%d deletion%s, %d update%s, %d unvisited link%s, "
+                    + "%d good link%s (%d to check, oldest=%dd), "
+                    + "%d bad link%s (%d to check, oldest=%dd)"
             )
             % (
                 numIdentifiers,
@@ -425,9 +429,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     ezidapp.models.link_checker.LinkChecker.objects.filter(
                         owner_id=user.id
                     )
-                    .filter(isBad=isBad)
-                    .filter(lastCheckTime__lt=timeBound)
-                    .order_by("lastCheckTime")[:limit]
+                        .filter(isBad=isBad)
+                        .filter(lastCheckTime__lt=timeBound)
+                        .order_by("lastCheckTime")[:limit]
                 )
 
             qs = query(
@@ -460,9 +464,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         numLinks = numUnvisited + good[0] + bad[0]
         log.info(
             (
-                "end load workset, %d owner%s (%d capped), %d link%s, "
-                + "%d unvisited link%s, %d good link%s (oldest=%dd), "
-                + "%d bad link%s (oldest=%dd)"
+                    "end load workset, %d owner%s (%d capped), %d link%s, "
+                    + "%d unvisited link%s, %d good link%s (oldest=%dd), "
+                    + "%d bad link%s (oldest=%dd)"
             )
             % (
                 numOwners,
@@ -482,7 +486,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
         )
 
     def getNextLink(self):
-        # _lock.acquire()
+        # acquire.acquire()
         try:
             self.loadExclusionFile()
             startingIndex = self._index
@@ -493,10 +497,10 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 ow = _workset[self._index]
                 if not ow.isFinished():
                     if (
-                        not ow.isLocked
-                        and ow.lastCheckTime
-                        < t
-                        - django.conf.settings.LINKCHECKER_OWNER_REVISIT_MIN_INTERVAL
+                            not ow.isLocked
+                            and ow.lastCheckTime
+                            < t
+                            - django.conf.settings.LINKCHECKER_OWNER_REVISIT_MIN_INTERVAL
                     ):
                         ow.isLocked = True
                         return self._index, ow.list[ow.nextIndex]
@@ -552,8 +556,8 @@ class OwnerWorkset(Command):
         # exclusions take more immediate effect when added, we add the
         # check below.
         if not self.isLocked and (
-            self.owner_id in self._permanentExcludes
-            or self.owner_id in self._temporaryExcludes
+                self.owner_id in self._permanentExcludes
+                or self.owner_id in self._temporaryExcludes
         ):
             self.nextIndex = len(self.list)
         return self.nextIndex >= len(self.list)
@@ -617,13 +621,14 @@ class Worker(Command):
                     mimeType = c.info().get("Content-Type", "unknown")
                     content = c.read(django.conf.settings.LINKCHECKER_MAX_READ)
                 except http.client.IncompleteRead as e:
+                    log.exception(' http.client.IncompleteRead as e')
                     # Some servers deliver a complete HTML document, but,
                     # apparently expecting further requests from a web browser
                     # that never arrive, hold the connection open and ultimately
                     # deliver a read failure.  We consider these cases successes.
                     # noinspection PyUnresolvedReferences
                     if mimeType.startswith("text/html") and re.search(
-                        "</\s*html\s*>\s*$", e.partial, re.I
+                            "</\s*html\s*>\s*$", e.partial, re.I
                     ):
                         success = True
                         # noinspection PyUnresolvedReferences
@@ -632,9 +637,11 @@ class Worker(Command):
                         success = False
                         returnCode = -1
                 except urllib.error.HTTPError as e:
+                    log.exception(' urllib.error.HTTPError as e')
                     success = False
                     returnCode = e.code
                 except Exception as e:
+                    log.exception(' Exception as e')
                     success = False
                     returnCode = -1
                 else:
@@ -659,4 +666,5 @@ class Worker(Command):
                 self.markLinkChecked(index)
 
         except Exception as e:
+            log.exception(' Exception as e')
             pass

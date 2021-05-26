@@ -25,7 +25,6 @@
 # September 2011
 
 import http.server
-import http.server
 import os.path
 import re
 import socketserver

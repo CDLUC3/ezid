@@ -19,6 +19,7 @@
 #
 # -----------------------------------------------------------------------------
 
+import django.apps
 import time
 
 import django.core.validators
@@ -27,6 +28,11 @@ import django.db.models
 # import ezidapp.models.identifier
 import ezidapp.models.custom_fields
 import impl.util
+
+CREATE = "C"
+UPDATE = "U"
+DELETE = "D"
+OPERATION_DICT = {"create": CREATE, "update": UPDATE, "delete": DELETE}
 
 
 class UpdateQueue(django.db.models.Model):
@@ -58,20 +64,14 @@ class UpdateQueue(django.db.models.Model):
     def objectBlob(self):
         return self.object[1]
 
-    CREATE = "C"
-    UPDATE = "U"
-    DELETE = "D"
     operation = django.db.models.CharField(
         max_length=1,
         choices=[(CREATE, "create"), (UPDATE, "update"), (DELETE, "delete")],
     )
-    # The operation that caused the identifier to be placed in this table.
-
-    _operationMapping = {"create": CREATE, "update": UPDATE, "delete": DELETE}
 
     @staticmethod
     def operationLabelToCode(label):
-        return UpdateQueue._operationMapping[label]
+        return OPERATION_DICT[label]
 
     updateExternalServices = django.db.models.BooleanField(default=True)
     # If true, external services (DataCite, Crossref) are to be updated.
@@ -97,7 +97,8 @@ def enqueue(object, operation, updateExternalServices=True, identifier=None):
     if isinstance(object, store_identifier_model):
         identifier = object.identifier
     r = UpdateQueue(
-        identifier=identifier,
+        #!#
+        identifier=identifier.encode('utf-8'),
         object=object,
         operation=UpdateQueue.operationLabelToCode(operation),
         updateExternalServices=updateExternalServices,

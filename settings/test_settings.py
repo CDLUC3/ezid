@@ -9,9 +9,20 @@ import sys
 
 import django.utils.translation
 
+
+import impl.nog.tb
+
+
+def my_excepthook(type, value, traceback):
+    impl.nog.tb.traceback_with_local_vars(type, value, traceback)
+    # print ('Unhandled error:', type, value)
+
+sys.excepthook = my_excepthook
+
+
 # When DEBUG == True, any errors in EZID are returned to the user as pages containing
 # full stack traces and additional information. Should only be used for development.
-DEBUG = True
+DEBUG = False
 
 # When STANDALONE == True, Django handles serving of static files. Should only be used
 # for development.
@@ -80,7 +91,7 @@ DAEMONS_LINKCHECKER_ENABLED = True
 DAEMONS_STATISTICS_ENABLED = True
 
 DAEMONS_BACKGROUND_PROCESSING_IDLE_SLEEP = 5
-DAEMONS_STATUS_LOGGING_INTERVAL = 60
+DAEMONS_STATUS_LOGGING_INTERVAL = 1 ################# 60
 DAEMONS_BINDER_PROCESSING_IDLE_SLEEP = 5
 DAEMONS_BINDER_PROCESSING_ERROR_SLEEP = 300
 DAEMONS_BINDER_NUM_WORKER_THREADS = 3
@@ -196,7 +207,8 @@ logging.config.dictConfig(
             'console': {
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
-                'formatter': 'verbose',
+                # 'formatter': 'verbose',
+                'formatter': 'simple',
                 # 'stream': sys.stdout,
             },
         },
@@ -354,7 +366,7 @@ DATACITE_ALLOCATORS = 'CDL,PURDUE'
 ALLOCATOR_CDL_PASSWORD = ''
 ALLOCATOR_PURDUE_PASSWORD = ''
 
-# CrossRef
+# Crossref
 
 # The 'daemons.crossref_enabled' flag governs whether the Crossref
 # daemon thread runs.  The flag below governs if the daemon actually
@@ -485,3 +497,7 @@ TEMPLATES = [
         },
     }
 ]
+
+# SERIALIZATION_MODULES = {
+#     'extjson': 'ezidapp.models.serialization',
+# }

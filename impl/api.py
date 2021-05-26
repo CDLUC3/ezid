@@ -93,9 +93,7 @@ import impl.anvl
 import impl.datacite
 import impl.download
 import impl.ezid
-import impl.ezid
 import impl.noid_egg
-import impl.search_util
 import impl.search_util
 import impl.statistics
 import impl.userauth

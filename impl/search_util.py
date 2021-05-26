@@ -28,7 +28,6 @@ import django.db.utils
 
 # import ezidapp.models.realm
 import ezidapp.models.identifier
-import ezidapp.models.identifier
 import ezidapp.models.realm
 import ezidapp.models.validation
 import impl.log

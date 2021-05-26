@@ -16,7 +16,6 @@
 import django.db.models
 
 import ezidapp.models.validation
-import ezidapp.models.validation
 import impl.util
 
 

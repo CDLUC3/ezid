@@ -9,7 +9,6 @@ import re
 import django.conf
 import django.contrib.auth.models
 import django.core.management
-import django.core.management
 import django.db.transaction
 
 import ezidapp.models.shoulder

@@ -23,7 +23,7 @@ import sys
 
 # import ezidapp.models
 import ezidapp.models.shoulder
-import ezidapp.models.store_identifier
+import ezidapp.models.identifier
 from impl import util
 
 shoulders = [s.prefix for s in ezidapp.models.shoulder.Shoulder.objects.all()]
@@ -33,7 +33,7 @@ orphans = {}  # username: { shoulder: count }
 lastIdentifier = ""
 while True:
     qs = (
-        ezidapp.models.store_identifier.StoreIdentifier.objects.filter(
+        ezidapp.models.identifier.StoreIdentifier.objects.filter(
             identifier__gt=lastIdentifier
         )
         .order_by("identifier")

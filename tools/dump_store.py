@@ -23,7 +23,7 @@ import optparse
 import sys
 
 import ezidapp.models.model_util
-import ezidapp.models.store_identifier
+import ezidapp.models.identifier
 
 # from impl import ezidapp.models
 from impl import util
@@ -54,7 +54,7 @@ else:
 lastIdentifier = ""
 while True:
     qs = (
-        ezidapp.models.store_identifier.StoreIdentifier.objects.filter(
+        ezidapp.models.identifier.StoreIdentifier.objects.filter(
             identifier__gt=lastIdentifier
         )
         .order_by("identifier")

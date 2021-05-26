@@ -17,11 +17,8 @@ import re
 
 import django.apps
 import django.core.validators
-import django.core.validators
-import django.db.models
 import django.db.models
 
-import ezidapp.models.validation
 import ezidapp.models.validation
 import impl.log
 import impl.nog.minter

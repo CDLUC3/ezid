@@ -41,7 +41,8 @@ import ezidapp.models.crossref_queue
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    name = 'CrossRef'
+    display = 'Crossref'
+    name = 'crossref'
     setting = 'DAEMONS_CROSSREF_ENABLED'
 
     def __init__(self):
@@ -108,7 +109,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         else:
                             pass
             except Exception as e:
-                impl.log.otherError("crossref.run", e)
+                log.exception(' Exception as e')
+                self.otherError("crossref.run", e)
                 maxSeq = None
 
     def _notOne(self, n):
@@ -269,18 +271,21 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     "unexpected return from metadata submission: " + r
                 )
             except urllib.error.HTTPError as e:
+                log.exception(' urllib.error.HTTPError as e')
                 msg = None
                 if e.fp is not None:
                     try:
                         msg = e.fp.read()
                     except Exception:
+                        log.exception(' Exception')
                         pass
                 raise Exception(msg) from e
             finally:
                 if c:
                     c.close()
         except Exception as e:
-            impl.log.otherError(
+            log.exception(' Exception as e')
+            self.otherError(
                 "crossref._submitDeposit",
                 self._wrapException(
                     f"error submitting deposit, doi {doi}, batch {batchId}", e
@@ -342,11 +347,13 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 )
                 response = c.read()
             except urllib.error.HTTPError as e:
+                log.exception(' urllib.error.HTTPError as e')
                 msg = None
                 if e.fp is not None:
                     try:
                         msg = e.fp.read()
                     except Exception:
+                        log.exception(' Exception')
                         pass
                 raise Exception(msg) from e
             finally:
@@ -357,6 +364,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 # based on the embedded encoding declaration.
                 root = lxml.etree.XML(response)
             except Exception as e:
+                log.exception(' Exception as e')
                 assert False, "XML parse error: " + str(e)
             assert root.tag == "doi_batch_diagnostic", (
                 "unexpected response root element: " + root.tag
@@ -394,7 +402,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 else:
                     assert False, "unexpected status value: " + d.attrib["status"]
         except Exception as e:
-            impl.log.otherError(
+            log.exception(' Exception as e')
+            self.otherError(
                 "crossref._pollDepositStatus",
                 self._wrapException(
                     f"error polling deposit status, doi {doi}, batch {batchId}", e
@@ -465,6 +474,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 fail_silently=True,
             )
         except Exception as e:
+            log.exception(' Exception as e')
             raise self._wrapException("error sending email", e)
 
     def _oneline(self, s):

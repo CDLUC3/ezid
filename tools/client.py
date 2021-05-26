@@ -79,10 +79,7 @@ import sys
 import time
 import types
 import urllib.error
-import urllib.error
 import urllib.parse
-import urllib.parse
-import urllib.request
 import urllib.request
 
 signal.signal(signal.SIGINT, lambda signal, frame: sys.exit())

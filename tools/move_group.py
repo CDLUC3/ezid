@@ -22,12 +22,13 @@ import sys
 
 import django.db.transaction
 
-import ezidapp.models.search_group
-import ezidapp.models.search_realm
-import ezidapp.models.store_group
-import ezidapp.models.store_realm
+import ezidapp.models.group
+import ezidapp.models.realm
+import ezidapp.models.group
+import ezidapp.models.realm
 
 # @executable
+import ezidapp.models.util
 
 STEPS = [
     "1) Move the group (this script, step=1).",
@@ -58,13 +59,13 @@ p.add_argument("step", type=int, choices=[1], nargs="?", help="processing step")
 
 args = p.parse_args(sys.argv[1:])
 
-group = ezidapp.models.store_group.getGroupByGroupname(args.group)
+group = ezidapp.models.util.getGroupByGroupname(args.group)
 if group is None or args.group == "anonymous":
     error("no such group: " + args.group)
 
 try:
-    newRealm = ezidapp.models.store_realm.StoreRealm.objects.get(name=args.new_realm)
-except ezidapp.models.store_realm.StoreRealm.DoesNotExist:
+    newRealm = ezidapp.models.realm.StoreRealm.objects.get(name=args.new_realm)
+except ezidapp.models.realm.StoreRealm.DoesNotExist:
     error("no such realm: " + args.new_realm)
 
 if any(u.isRealmAdministrator for u in group.users.all()):
@@ -83,10 +84,8 @@ if args.step == 1:
         for u in group.users.all():
             u.realm = newRealm
             u.save()
-    newSearchRealm = ezidapp.models.search_realm.SearchRealm.objects.get(
-        name=newRealm.name
-    )
-    searchGroup = ezidapp.models.search_group.SearchGroup.objects.get(
+    newSearchRealm = ezidapp.models.realm.SearchRealm.objects.get(name=newRealm.name)
+    searchGroup = ezidapp.models.group.SearchGroup.objects.get(
         groupname=group.groupname
     )
     with django.db.transaction.atomic():

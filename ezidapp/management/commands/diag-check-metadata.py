@@ -37,6 +37,48 @@ class Command(django.core.management.BaseCommand):
         )
 
     def handle(self, *_, **opt):
+        self.decode_object_field(**opt)
+
+
+    def decode_object_field(self, **opt):
+        connection = self.connect()
+
+        with connection.cursor(pymysql.cursors.SSDictCursor) as cursor:
+            sql = "select object from ezidapp_updatequeue"
+            cursor.execute(sql, tuple())
+
+            checked_total = 0
+            while True:
+                blob_list = cursor.fetchmany(1000)
+                for d in blob_list:
+                    blob_bytes = zlib.decompress(d['object'])
+                    j = json.loads(blob_bytes)
+                    log.info(blob_bytes)
+                checked_total += len(blob_list)
+                if checked_total >= 10000 or not len(blob_list):
+                    log.info('stopping...')
+                    return
+
+    def decode_storeidentifier_cm(self):
+        connection = self.connect()
+
+        with connection.cursor(pymysql.cursors.SSDictCursor) as cursor:
+            sql = "select cm from ezid.ezidapp_storeidentifier where identifier='ark:/86073/b3d07s'"
+            cursor.execute(sql, tuple())
+
+            checked_total = 0
+            while True:
+                blob_list = cursor.fetchmany(1000)
+                for d in blob_list:
+                    blob_bytes = zlib.decompress(d['cm'])
+                    j = json.loads(blob_bytes)
+                    log.info(blob_bytes)
+                checked_total += len(blob_list)
+                if checked_total >= 10000 or not len(blob_list):
+                    log.info('stopping...')
+                    return
+
+    def connect(self):
         # Connect to the database
         connection = pymysql.connect(
             host=django.conf.settings.DATABASES['default']['HOST'],
@@ -46,17 +88,4 @@ class Command(django.core.management.BaseCommand):
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor,
         )
-
-        with connection.cursor(pymysql.cursors.SSDictCursor) as cursor:
-            sql = "select cm from ezid.ezidapp_storeidentifier"
-            cursor.execute(
-                sql,
-                tuple(),
-            )
-
-            while True:
-                blob_list = cursor.fetchmany(10000)
-                for d in blob_list:
-                    blob_bytes = zlib.decompress(d['cm'])
-                    j = json.loads(blob_bytes)
-                x += len(blob_list)
+        return connection

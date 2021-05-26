@@ -2,7 +2,9 @@ import contextlib
 import http.client
 import logging
 import os
+import pprint
 import random
+import sys
 import threading
 import time
 import types
@@ -11,7 +13,6 @@ import urllib.parse
 import urllib.request
 import urllib.response
 
-import django.conf
 import django.conf
 import django.db
 import django.db.transaction
@@ -25,36 +26,57 @@ log = logging.getLogger(__name__)
 
 import django.core.management
 
+"""
+Queue tables:
+
+ezidapp_binderqueue
+ezidapp_crossrefqueue
+ezidapp_datacitequeue
+ezidapp_downloadqueue
+ezidapp_updatequeue       
+
+"""
+
 
 class AsyncProcessingCommand(django.core.management.BaseCommand):
     help = __doc__
     setting = None
     name = None
-    queue_model = None
+
+    # queue_model = None
 
     class _AbortException(Exception):
         pass
 
-    def __init__(self, module_name):
+    def __init__(self, module_name, **state):
         super().__init__()
         global log
-        self.state = dict(
-            registrar=None,
-            queueModel=None,
-            createFunction=None,
-            updateFunction=None,
-            deleteFunction=None,
-            batchCreateFunction=None,
-            batchUpdateFunction=None,
-            batchDeleteFunction=None,
-            idleSleep=None,
-            reattemptDelay=None,
-            threadNameHolder=None,
-        )
+        self.state = types.SimpleNamespace(**state)
+        # self.state = types.SimpleNamespace(
+        #     registrar=None,
+        #     queueModel=None,
+        #     createFunction=None,
+        #     updateFunction=None,
+        #     deleteFunction=None,
+        #     batchCreateFunction=None,
+        #     batchUpdateFunction=None,
+        #     batchDeleteFunction=None,
+        #     idleSleep=None,
+        #     reattemptDelay=None,
+        #     threadNameHolder=None,
+        # )
         self.module_name = module_name
-        self.lock = impl.daemon.Lock(self.setting.lower())
+        self.lock = threading.RLock()  # impl.daemon.Lock(self.setting.lower())
         self.log = logging.getLogger(self.module_name)
         log = self.log
+
+        # noinspection PyArgumentList
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format='%(levelname)8s %(name)8s %(module)s %(process)d %(thread)s %(message)s',
+            stream=sys.stderr,
+            force=True,
+        )
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -64,9 +86,15 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         )
 
     def handle(self, *args, **opt):
+        log.debug('Testing log level: DEBUG')
+        log.info('Testing log level: INFO')
+        log.error('Testing log level: ERROR')
+        print('Testing stdout')
+        print('Testing stderr', file=sys.stderr)
+
         if not impl.daemon.is_daemon_enabled(self.setting):
             raise django.core.management.CommandError(
-                f'This daemon is not currently enabled and cannot be started. '
+                f'The {self.display, } daemon is not currently enabled and cannot be started. '
                 f'To start this daemon, ensure that both '
                 f'"DAEMONS_ENABLED" and "{self.setting}" '
                 f'are set to True in {os.environ["DJANGO_SETTINGS_MODULE"]}.'
@@ -75,7 +103,8 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         self.opt = types.SimpleNamespace(**opt)
         self.is_debug = self.opt.debug
         impl.nog.util.log_setup(self.module_name, self.opt.debug)
-        with self.lock.lock(self.name, write=True):
+        # with self.lock.lock(self.name, write=True):
+        with self.lock:
             return self.handle_daemon(self.opt)
 
     def run(self):
@@ -92,7 +121,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
             # except _AbortException:
             #     break
             except Exception as e:
-                impl.log.otherError("register_async.run/" + self.state.registrar, e)
+                self.otherError("register_async.run/" + self.state.registrar, e)
                 self._sleep()
 
     def callWrapper(self, rows, methodName, function, *args):
@@ -105,9 +134,23 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         'methodName' is its name for error reporting purposes.  Any
         additional arguments are passed through to 'function'.
         """
+        log.debug(
+            pprint.pformat(
+                dict(
+                    callWrapper=self,
+                    rows=rows,
+                    methodName=methodName,
+                    function=function,
+                    args=args,
+                )
+            )
+        )
         while True:
             try:
-                return function(*args)
+                # r = function(*args)
+                breakpoint()
+                log.debug(f'Returning: {r}')
+                return r
             except Exception as e:
                 if (
                     (isinstance(e, urllib.error.HTTPError) and e.code >= 500)
@@ -146,28 +189,41 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
     ):
         """Launches a registration thread (and subservient Worker threads).
 
-        'registrar' is the registrar the thread is for, e.g., "datacite".
-        'queueModel' is the registrar's queue database model, e.g.,
-        ezidapp.models.datacite_queue.DataciteQueue.  'createFunction', 'updateFunction',
-        and 'deleteFunction' are the registrar-specific functions to be
-        called.  Each should accept arguments (sh, rows, identifier,
-        metadata) where 'identifier' is a normalized, qualified identifier,
-        e.g., "doi:10.5060/FOO", and 'metadata' is the identifier's metadata
-        dictionary.  Each function should wrap external HTTP calls using
-        'callWrapper' above, passing through the 'sh' and 'rows' arguments.
-        The 'batch*' functions are similar.  If not None, each should
-        process multiple identifiers and accept arguments (sh, row, batch)
-        where 'batch' is a list of (identifier, metadata dictionary) tuples.
-        'enabledFlagHolder' is a singleton list containing a boolean flag
-        that indicates if the thread is enabled.  'threadNameHolder' is a
-        singleton list containing the string name of the current thread.
+        Args:
+            self:
+            registrar:
+                The registrar the thread is for, e.g., "datacite"
+            queueModel:
+                Is the registrar's queue database model, e.g.,
+                ezidapp.models.datacite_queue.DataciteQueue.
+            createFunction:
+            updateFunction:
+            deleteFunction:
+                The registrar-specific functions to be called.  Each should accept arguments (sh,
+                rows, identifier, metadata) where 'identifier' is a normalized, qualified
+                identifier, e.g., "doi:10.5060/FOO", and 'metadata' is the identifier's metadata
+                dictionary.  Each function should wrap external HTTP calls using 'callWrapper'
+                above, passing through the 'sh' and 'rows' arguments.
+            batchCreateFunction:
+            batchUpdateFunction:
+            batchDeleteFunction:
+                The 'batch*' functions are similar to the create/update/delete functions. If not
+                none, each should process multiple identifiers and accept arguments (sh, row, batch)
+                where 'batch' is a list of (identifier, metadata dictionary) tuples.
+            numWorkerThreads:
+            idleSleep:
+            reattemptDelay:
+
+        No longer used:
+        'enabledFlagHolder' is a singleton list containing a boolean flag that indicates if the thread is enabled.
+        'threadNameHolder' is a singleton list containing the string name of the current thread.
         """
-        name = threadNameHolder[0]
-        t = threading.Thread(target=lambda: self.run(), name=name)
+        # name = threadNameHolder[0]
+        t = threading.Thread(target=lambda: self.run(), name=self.name)
 
         for i in range(numWorkerThreads):
             t = threading.Thread(
-                target=lambda: self._workerThread(), name=f"{name}.{i:d}"
+                target=lambda: self._workerThread(), name=f"{self.name}.{i:d}"
             )
 
     def _sleep(self, duration=None):
@@ -175,7 +231,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         time.sleep(duration or self.state.idleSleep)
 
     def _queue(self):
-        return self.queue_model
+        return self.state.queueModel
 
     @contextlib.contextmanager
     def _lockLoadedRows(self):
@@ -184,7 +240,9 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         def wrapped(f, *args, **kwargs):
             self.state.lock.acquire()
             try:
-                return f(*args, **kwargs)
+                r = f(*args, **kwargs)
+                log.debug(f'{f}({args} {kwargs.items()}) -> {r}')
+                return r
             finally:
                 self.state.lock.release()
 
@@ -249,6 +307,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
         # running synchronously.
         time.sleep(self.state.idleSleep * (random.random() + 1))
         while True:
+            log.debug('_workerThread TOP')
             try:
                 while True:
                     rows = self._nextUnprocessedLoadedRows()
@@ -285,7 +344,7 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
                     with django.db.transaction.atomic():
                         for r in rows:
                             r.save()
-                    impl.log.otherError(
+                    self.otherError(
                         "register_async._workerThread/" + self.state.registrar, e
                     )
                 else:
@@ -300,10 +359,14 @@ class AsyncProcessingCommand(django.core.management.BaseCommand):
                 finally:
                     self._deleteLoadedRows(rows)
             except Exception as e:
-                impl.log.otherError(
+                self.otherError(
                     "register_async._workerThread/" + self.state.registrar, e
                 )
                 self._sleep()
+
+    def otherError(*a, **kw):
+        log.error(f'otherError: {a} {kw}')
+        return impl.log.otherError(*a, **kw)
 
     @staticmethod
     def now():

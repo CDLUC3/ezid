@@ -22,8 +22,6 @@ import django.contrib.auth.hashers
 import django.contrib.auth.models
 import django.core.exceptions
 import django.core.validators
-import django.core.validators
-import django.db.models
 import django.db.models
 import django.db.transaction
 

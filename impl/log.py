@@ -331,7 +331,9 @@ def otherError(caller, exception):
             impl.util.encode1(m),
         )
     )
-    if not django.conf.settings.DEBUG:
+    if django.conf.settings.DEBUG:
+        raise
+    else:
         _notifyAdmins(
             "Exception raised in {}:\n{}{}\n\n{}".format(
                 caller, type(exception).__name__, m, traceback.format_exc()
@@ -339,6 +341,6 @@ def otherError(caller, exception):
         )
 
 
-def status(*args):
-    """Logs the server's status."""
-    _log.info("- STATUS " + " ".join(impl.util.encode1(a) for a in args))
+# def status(*args):
+#     """Logs the server's status."""
+#     _log.info("- STATUS " + " ".join(impl.util.encode1(a) for a in args))

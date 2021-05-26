@@ -77,7 +77,7 @@ if DAEMONS_ENABLED == 'auto':
 # - See the DAEMONS_ENABLED setting above.
 # DAEMONS_SEARCHDB_ENABLED = True
 DAEMONS_NEWSFEED_ENABLED = True
-# DAEMONS_STATUS_ENABLED = True
+DAEMONS_STATUS_ENABLED = True
 DAEMONS_BINDER_ENABLED = True
 DAEMONS_DATACITE_ENABLED = True
 DAEMONS_CROSSREF_ENABLED = True
@@ -233,6 +233,7 @@ logging.config.dictConfig(
             'django.utils.autoreload': {
                 'level': 'ERROR',
             },
+            'botocore': {'level': 'ERROR'},
         },
     }
 )
@@ -359,7 +360,7 @@ DATACITE_ALLOCATORS = 'CDL,PURDUE'
 ALLOCATOR_CDL_PASSWORD = '{{ allocator_cdl_password  }}'
 ALLOCATOR_PURDUE_PASSWORD = '{{ allocator_purdue_password  }}'
 
-# CrossRef
+# Crossref
 
 # The 'daemons.crossref_enabled' flag governs whether the Crossref
 # daemon thread runs.  The flag below governs if the daemon actually
@@ -440,7 +441,7 @@ LINKCHECKER_CHECK_TIMEOUT = 30
 LINKCHECKER_USER_AGENT = 'EZID (EZID link checker; https://ezid.cdlib.org/)'
 # The following governs the number of bytes to read from any given
 # link.  Set to a negative value to make unlimited.
-LINKCHECKER_MAX_READ = 104857600
+LINKCHECKER_MAX_READ = 104_857_600
 
 # Internal settings
 

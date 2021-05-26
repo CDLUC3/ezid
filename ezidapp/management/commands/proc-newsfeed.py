@@ -31,7 +31,8 @@ log = logging.getLogger(__name__)
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    name = 'NewsFeed'
+    display = 'NewsFeed'
+    name = 'newsfeed'
     setting = 'DAEMONS_NEWSFEED_ENABLED'
 
     def __init__(self):
@@ -57,7 +58,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                 else:
                     items = self._noItems
             except Exception as e:
-                impl.log.otherError("newsfeed._newsDaemon", e)
+                log.exception(' Exception as e')
+                self.otherError("newsfeed._newsDaemon", e)
                 items = self._noItems
             self._lock.acquire()
             try:

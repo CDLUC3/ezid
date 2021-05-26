@@ -20,7 +20,6 @@ import threading
 import time
 
 import django.conf
-import django.conf
 import django.db
 import django.db.transaction
 
@@ -38,7 +37,8 @@ log = logging.getLogger(__name__)
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    name = 'SearchDB'
+    display = 'SearchDB'
+    name = 'searchdb'
     setting = 'DAEMONS_SEARCHDB_ENABLED'
 
     def __init__(self):
@@ -114,7 +114,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP)
                 )
         except AssertionError as e:
-            impl.log.otherError("_searchDbDaemon", e)
+            log.exception(' AssertionError as e')
+            self.otherError("_searchDbDaemon", e)
 
         # Regular processing.
         while self._checkContinue():
@@ -144,6 +145,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                                     self._checkContinue,
                                 )
                             except impl.search_util.AbortException:
+                                log.exception(' impl.search_util.AbortException')
                                 break
 
                         with django.db.transaction.atomic():
@@ -162,7 +164,7 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                                                 blob,
                                             )
                                     elif update_model.actualObject.isCrossref:
-                                        impl.daemon.enqueueCrossRefIdentifier(
+                                        impl.daemon.enqueueCrossrefIdentifier(
                                             update_model.identifier,
                                             update_model.get_operation_display(),
                                             metadata,
@@ -177,8 +179,9 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                         int(django.conf.settings.DAEMONS_CROSSREF_PROCESSING_IDLE_SLEEP)
                     )
             except Exception as e:
+                log.exception(' Exception as e')
                 logging.exception(f'Exception in searchDbDaemon thread: {str(e)}')
-                impl.log.otherError("searchDb._searchDbDaemon", e)
+                self.otherError("searchDb._searchDbDaemon", e)
                 django.db.connections["default"].close()
                 django.db.connections["search"].close()
                 # noinspection PyTypeChecker

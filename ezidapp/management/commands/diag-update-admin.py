@@ -22,15 +22,11 @@ import datetime
 import django.conf
 import django.contrib.auth
 import django.contrib.auth.models
-import django.contrib.auth.models
 import django.core.management
 import django.db.transaction
 
 import ezidapp.models.group
-import ezidapp.models.group
 import ezidapp.models.realm
-import ezidapp.models.realm
-import ezidapp.models.user
 import ezidapp.models.user
 
 NOW_TS = datetime.datetime.now()

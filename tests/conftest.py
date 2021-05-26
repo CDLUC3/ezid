@@ -9,6 +9,7 @@ import sys
 import types
 
 import django
+import django.apps
 import django.conf
 import django.contrib.auth.models
 import django.contrib.sessions.models
@@ -19,15 +20,25 @@ import django.http.request
 import pytest
 
 import ezidapp
+import ezidapp.models.datacenter
 import ezidapp.models.shoulder
-import ezidapp.models.store_datacenter
-import ezidapp.models.store_datacenter
-import ezidapp.models.store_user
+import ezidapp.models.user
+import ezidapp.models.util
 import impl.nog.filesystem
 import impl.nog.shoulder
 import tests.util.metadata_generator
 import tests.util.sample
 import tests.util.util
+
+# Queues
+import ezidapp.models.binder_queue
+import ezidapp.models.crossref_queue
+import ezidapp.models.datacite_queue
+import ezidapp.models.download_queue
+import ezidapp.models.update_queue
+import ezidapp.models.link_checker
+
+APP_LABEL = 'ezidapp'
 
 HERE_PATH = pathlib.Path(__file__).parent.resolve()
 ROOT_PATH = HERE_PATH / '..'
@@ -73,6 +84,7 @@ if logging.getLogger().hasHandlers():
     logging.getLogger().handlers.clear()
 
 log = logging.getLogger(__name__)
+
 
 # Hooks
 
@@ -188,10 +200,10 @@ def django_db_setup(django_db_keepdb):
 
 
 @pytest.fixture(autouse=True)
-def disable_log_to_console(mocker):
+def disable_log_setup(mocker):
     """Prevent management commands from reconfiguring the logging that has been
     set up by pytest."""
-    mocker.patch('impl.nog.util.log_to_console')
+    mocker.patch('impl.nog.util.log_setup')
 
 
 # Fixtures
@@ -242,7 +254,7 @@ def admin_admin():
 #                 username='admin', password=None, email=""
 #             )
 #         reloaded()
-#         o = ezidapp.models.store_user.getUserByUsername('admin')
+#         o = ezidapp.models.user.getUserByUsername('admin')
 #         o.setPassword('admin')
 #         o.save()
 #         reloaded()
@@ -259,7 +271,7 @@ def skip_auth(django_db_keepdb, admin_client, mocker):
 
     def mock_authenticate_request(request):
         user_id = get_user_id_by_session_key(request.session.session_key)
-        return ezidapp.models.store_user.getUserById(user_id)
+        return ezidapp.models.util.getUserById(user_id)
 
     mocker.patch(
         'impl.userauth.authenticateRequest', side_effect=mock_authenticate_request
@@ -323,12 +335,6 @@ def namespace(request):
     return request.param
 
 
-@pytest.fixture(params=META_TYPE_LIST)
-def meta_type(request):
-    """meta_type = 'datacite', 'crossref', 'dc', 'unknown'"""
-    return request.param
-
-
 @pytest.fixture()
 def minters(tmp_bdb_root, namespace, meta_type):
     """Add a set of minters and corresponding shoulders. The minters are stored below
@@ -342,7 +348,7 @@ def minters(tmp_bdb_root, namespace, meta_type):
         ns,
         'test org for shoulder {}'.format(str(ns)),
         datacenter_model=(
-            ezidapp.models.store_datacenter.StoreDatacenter.objects.filter(
+            ezidapp.models.datacenter.StoreDatacenter.objects.filter(
                 symbol='CDL.CDL'
             ).get()
             if meta_type == 'datacite'
@@ -398,17 +404,110 @@ def log_shoulder_count():
     return log_
 
 
-@pytest.fixture()
-def meta_types():
-    """A list of metadata types trigger different types of validation in EZID. We
+@pytest.fixture(params=META_TYPE_LIST)
+def meta_type(request):
+    """A list of metadata types which trigger different types of validation in EZID. We
     test with specific metadata for each.
     """
-    # return ('datacite', 'crossref', 'dc', 'unknown')
-    for n in ('datacite',):
-        yield n
+    return request.param
+
+
+@pytest.fixture()
+def block_outgoing(mocker):
+    mocker.patch(
+        'ezidapp.management.commands.proc_base.AsyncProcessingCommand.callWrapper'
+    )
+
+
+@pytest.fixture()
+def binder_queue(request):
+    """BinderQueue populated with tasks marked as not yet processed"""
+    django_load_db_fixture('ezidapp/fixtures/binder_queue.json')
+
+
+# Queues
+
+@pytest.fixture()
+def binder_queue(request):
+    """BinderQueue populated with tasks marked as not yet processed"""
+    django_load_db_fixture('ezidapp/fixtures/binder_queue.json')
+
+
+# ezidapp.models.binder_queue
+# ezidapp.models.crossref_queue
+# ezidapp.models.datacite_queue
+# ezidapp.models.download_queue
+# ezidapp.models.link_checker
+
+@pytest.fixture()
+def update_queue(request):
+    """UpdateQueue populated with tasks marked as not yet processed"""
+    ezidapp.models.update_queue.UpdateQueue()
 
 
 # Util
+
+
+
+def dump_models():
+    """Print a list of registered models"""
+    model_dict = {model.__name__: model for model in django.apps.apps.get_models()}
+    print('Registered models:')
+    for k, v in sorted(model_dict.items()):
+        print(f'  {k:<20} {v}')
+
+
+def create_fixtures():
+    """Queue tables:
+
+    ezidapp_binderqueue
+    ezidapp_crossrefqueue
+    ezidapp_datacitequeue
+    ezidapp_downloadqueue
+    ezidapp_updatequeue
+    """
+    dump_models()
+
+    fixture_dir_path = pathlib.Path(impl.nog.filesystem.abs_path('../ezidapp/fixtures'))
+
+    for model_label in (
+        'BinderQueue',
+        'CrossrefQueue',
+        'DataciteQueue',
+        'DownloadQueue',
+        'UpdateQueue',
+        # 'LinkChecker',
+    ):
+        log.info(f'Creating DB fixture for model: {model_label}')
+        table_name = model_label.lower()
+        fixture_file_path = (fixture_dir_path / table_name).with_suffix('.json')
+        log.info('Writing fixture. path="{}"'.format(fixture_file_path))
+        buf = io.StringIO()
+        # Example from Django source:
+        # call_command('loaddata', *cls.fixtures, **{'verbosity': 0, 'database': db_name})
+        django.core.management.call_command(
+            "dumpdata",
+            f'{APP_LABEL}.{model_label}',
+            # exclude=["auth.permission", "contenttypes"],
+            database=DEFAULT_DB_KEY,
+            stdout=buf,
+            indent=2,
+            verbosity=3,
+            traceback=True,
+            # xyz=43,
+            # skip_checks=True,
+        )
+        # with bz2.BZ2File(
+        #     fixture_file_path, "w", buffering=1024 ** 2, compresslevel=9
+        # ) as bz2_file:
+        #     bz2_file.write(buf.getvalue().encode("utf-8"))
+
+    django_load_db_fixture('ezidapp/fixtures/binder_queue.json')
+
+
+
+
+
 
 
 def dump_shoulder_table():
@@ -427,7 +526,7 @@ def get_user_id_by_session_key(session_key):
 def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
     """Save database to a bz2 compressed JSON fixture."""
     fixture_file_path = impl.nog.filesystem.abs_path(REL_DB_FIXTURE_PATH)
-    logging.info('Writing fixture. path="{}"'.format(fixture_file_path))
+    log.info('Writing fixture. path="{}"'.format(fixture_file_path))
     buf = io.StringIO()
     django.core.management.call_command(
         "dumpdata",
@@ -439,3 +538,38 @@ def django_save_db_fixture(db_key=DEFAULT_DB_KEY):
         fixture_file_path, "w", buffering=1024 ** 2, compresslevel=9
     ) as bz2_file:
         bz2_file.write(buf.getvalue().encode("utf-8"))
+
+
+def django_load_db_fixture(rel_json_fixture_path, db_key=DEFAULT_DB_KEY):
+    log.debug(
+        "Populating DB from compressed JSON fixture file. db_key={}".format(db_key)
+    )
+    fixture_file_path = impl.nog.filesystem.abs_path(REL_DB_FIXTURE_PATH)
+    django.core.management.call_command("loaddata", fixture_file_path, database=db_key)
+    django_commit_and_close(db_key)
+
+
+def django_migrate(db_key=DEFAULT_DB_KEY):
+    log.debug("Applying DB migrations. db_key={}".format(db_key))
+    django.core.management.call_command("migrate", "--run-syncdb", database=db_key)
+    django_commit_and_close(db_key)
+
+
+def django_clear_db(db_key=DEFAULT_DB_KEY):
+    django.core.management.call_command("flush", interactive=False, database=db_key)
+
+
+def django_commit_and_close(db_key=DEFAULT_DB_KEY):
+    django_commit(db_key)
+    django_close_all_connections()
+
+
+def django_commit(db_key=DEFAULT_DB_KEY):
+    django.db.connections[db_key].commit()
+
+
+def django_close_all_connections():
+    for connection in django.db.connections.all():
+        connection.close()
+    # TODO: Needed?
+    django.db.connections.close_all()

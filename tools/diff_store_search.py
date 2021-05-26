@@ -15,8 +15,7 @@ import sys
 import time
 
 # import ezidapp.models
-import ezidapp.models.search_identifier
-import ezidapp.models.store_identifier
+import ezidapp.models.identifier
 from impl import util
 
 if len(sys.argv) != 1:
@@ -50,9 +49,9 @@ def harvest(model):
 
 
 # noinspection PyTypeChecker
-storeIdentifiers = harvest(ezidapp.models.store_identifier.StoreIdentifier)
+storeIdentifiers = harvest(ezidapp.models.identifier.StoreIdentifier)
 # noinspection PyTypeChecker
-searchIdentifiers = harvest(ezidapp.models.search_identifier.SearchIdentifier)
+searchIdentifiers = harvest(ezidapp.models.identifier.SearchIdentifier)
 
 stid = next(storeIdentifiers)
 seid = next(searchIdentifiers)

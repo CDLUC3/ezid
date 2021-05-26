@@ -17,10 +17,7 @@ import sys
 import time
 import urllib.error
 import urllib.error
-import urllib.error
 import urllib.parse
-import urllib.parse
-import urllib.request
 import urllib.request
 import urllib.response
 
@@ -28,7 +25,7 @@ import django.db
 import django.conf
 
 import ezidapp.models.shoulder
-import ezidapp.models.store_identifier
+import ezidapp.models.identifier
 from impl import config
 
 # from impl # import ezidapp.models
@@ -50,7 +47,7 @@ for prefix in [
     expungeList.extend(
         [
             si.identifier
-            for si in ezidapp.models.store_identifier.StoreIdentifier.objects.filter(
+            for si in ezidapp.models.identifier.StoreIdentifier.objects.filter(
                 identifier__startswith=prefix
             )
             .filter(createTime__lte=expireTime)

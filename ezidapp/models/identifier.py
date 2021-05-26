@@ -23,22 +23,16 @@ import urllib.request
 import django.apps
 import django.conf
 import django.core.exceptions
-import django.core.exceptions
 import django.core.validators
 import django.db
 import django.db.models
-import django.db.models
-import django.db.models
 import django.db.utils
 
-import ezidapp.crossref
-import ezidapp.models.custom_fields
-import ezidapp.models.custom_fields
-import ezidapp.models.custom_fields
+# import ezidapp.models.custom_fields
 import ezidapp.models.group
 import ezidapp.models.util
 import ezidapp.models.validation
-import ezidapp.models.validation
+import impl.crossref
 import impl.util
 import impl.util2
 
@@ -276,7 +270,10 @@ class Identifier(django.db.models.Model):
     def usesErcProfile(self):
         return self.profile.label == "erc"
 
-    cm = ezidapp.models.custom_fields.CompressedJsonField(default=emptyDict)
+    cm = None
+    # import ezidapp.models.custom_fields
+    # cm = ezidapp.models.custom_fields.CompressedJsonField(default=emptyDict)
+
     # All of the identifier's citation metadata as a dictionary of
     # name/value pairs, e.g., { "erc.who": "Proust, Marcel", ... }.
 
@@ -553,9 +550,9 @@ class Identifier(django.db.models.Model):
                 # records, we simply require that they be well-formed and that
                 # the parts that EZID cares about are present and sufficiently
                 # correct to support our processing.
-                self.cm["crossref"] = ezidapp.crossref.validateBody(self.cm["crossref"])
+                self.cm["crossref"] = impl.crossref.validateBody(self.cm["crossref"])
                 if self.isDoi and not self.isReserved:
-                    self.cm["crossref"] = ezidapp.crossref.replaceTbas(
+                    self.cm["crossref"] = impl.crossref.replaceTbas(
                         self.cm["crossref"], self.identifier[4:], self.resolverTarget
                     )
             except AssertionError as e:
@@ -601,8 +598,6 @@ class Identifier(django.db.models.Model):
         return self.identifier
 
 
-
-
 class Search(django.db.models.Lookup):
     lookup_name = 'search'
 
@@ -624,6 +619,8 @@ class SearchIdentifier(Identifier):
     # identifier has an owner; anonymous identifiers are not stored.
     # For performance we do not validate foreign key references (but of
     # course they're still checked in the database).
+
+    import ezidapp.models.custom_fields
 
     # non_validating_key = django.apps.apps.get_model('ezidapp', '')
     owner = ezidapp.models.custom_fields.NonValidatingForeignKey(
@@ -904,6 +901,7 @@ class SearchIdentifier(Identifier):
             ("oaiVisible", "updateTime"),
         ]
 
+
 # def _getFromCache(cache, model, attribute, key, insertOnMissing=True):
 #     # Generic caching function supporting the caches in this module.
 #     # Returns (I, cache) where I is the instance of 'model' for which
@@ -933,7 +931,6 @@ class SearchIdentifier(Identifier):
 #     return i, cache
 
 
-
 def updateFromLegacy(identifier, metadata, forceInsert=False, forceUpdate=False):
     # Inserts or updates an identifier in the search database.  The
     # identifier is constructed from a legacy representation.
@@ -954,8 +951,6 @@ def updateFromLegacy(identifier, metadata, forceInsert=False, forceUpdate=False)
     # checker update daemon runs it will correct the value, which is
     # some consolation.
     i.save(force_insert=forceInsert, force_update=forceUpdate)
-
-
 
 
 def getIdentifier(identifier, prefixMatch=False):
@@ -981,6 +976,8 @@ class StoreIdentifier(Identifier):
     # Foreign key declarations.  For performance we do not validate
     # foreign key references (but of course they're still checked in the
     # database).
+
+    import ezidapp.models.custom_fields
 
     owner = ezidapp.models.custom_fields.NonValidatingForeignKey(
         'ezidapp.StoreUser',
@@ -1012,9 +1009,7 @@ class StoreIdentifier(Identifier):
 
     @property
     def defaultProfile(self):
-        return ezidapp.models.util.getProfileByLabel(
-            defaultProfile(self.identifier)
-        )
+        return ezidapp.models.util.getProfileByLabel(defaultProfile(self.identifier))
 
     def fromLegacy(self, d):
         # See Identifier.fromLegacy.  N.B.: computeComputedValues should

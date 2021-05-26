@@ -35,7 +35,7 @@ import impl.util2
 
 logger = logging.getLogger(__name__)
 
-# _lock = threading.Lock()
+# acquire = threading.Lock()
 
 # _shoulders = dict(
 #     (s.prefix, s)

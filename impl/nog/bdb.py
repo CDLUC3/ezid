@@ -14,7 +14,6 @@ import hjson
 import ezidapp.models.shoulder
 import impl.nog.bdb_wrapper
 import impl.nog.exc
-import impl.nog.exc
 import impl.nog.filesystem
 import impl.nog.id_ns
 

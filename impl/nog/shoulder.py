@@ -4,12 +4,10 @@ import logging
 import django.contrib.auth.models
 import django.core
 import django.core.management
-import django.core.management
 import django.db
 import django.db.transaction
 import django.db.utils
 
-import ezidapp.models.datacenter
 import ezidapp.models.datacenter
 import ezidapp.models.shoulder
 import impl.nog.id_ns

@@ -25,12 +25,13 @@ log = logging.getLogger(__name__)
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    name = 'Binder'
+    display = 'Binder'
+    name = 'binder'
     setting = 'DAEMONS_BINDER_ENABLED'
 
     def __init__(self):
-        super(Command, self).__init__(__name__)
-        self.state = dict(
+        super().__init__(
+            __name__,
             registrar="binder",
             queueModel=ezidapp.models.binder_queue.BinderQueue,
             createFunction=self._create,

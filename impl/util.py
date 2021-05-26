@@ -17,7 +17,9 @@ import base64
 import calendar
 import datetime
 import logging
+import pprint
 import re
+import shutil
 import sys
 import time
 import xml.sax.saxutils
@@ -947,3 +949,27 @@ def parse_basic_auth(auth):
         raise ValueError(
             f'Invalid basic auth: {auth.decode("utf-8")}. Error: {repr(e)}'
         )
+
+
+def log_obj(*obj_list, msg=None, logger=logging.info, sep=True, sep_before=None, sep_after=None, w=None, attrs=False):
+    """Pretty print an object to a logger"""
+    # Hard coding the width of the logger context for now.
+    #     INFO     root util 25626 140207058034816
+    log_ctx_w = 46
+    w = w or shutil.get_terminal_size().columns - log_ctx_w - 1
+    sep_str = '-' * w
+    sep_before = sep if sep_before is None else sep_before
+    sep_after = sep if sep_after is None else sep_after
+    # if sep_before:
+    #     logger(sep_str)
+    logger(sep_str if sep_before else '')
+    logger(f'{msg or "Object(s)"}:')
+    for obj in obj_list:
+        logger(f'  {obj.__class__.__name__}:')
+        if attrs:
+            logger(f'  dir={",".join(s for s in dir(obj) if not s.startswith("_"))}')
+        obj_str = pprint.pformat(obj, width=w, indent=2)
+        tuple(map(logger, tuple(f"    {line}" for line in obj_str.splitlines())))
+    # logger(sep_str if sep_after else '')
+    if sep_after:
+        logger(sep_str)

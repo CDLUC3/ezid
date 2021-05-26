@@ -10,7 +10,6 @@ import django.core.management
 import django.db.transaction
 
 import ezidapp.models.identifier
-import ezidapp.models.identifier
 import ezidapp.models.shoulder
 import impl.nog.bdb
 import impl.nog.exc

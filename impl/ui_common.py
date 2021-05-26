@@ -3,7 +3,6 @@ import re
 import string
 import urllib.error
 import urllib.parse
-import urllib.parse
 import urllib.request
 import urllib.response
 
@@ -11,7 +10,6 @@ import django.conf
 import django.contrib.messages
 import django.http
 import django.template
-import django.template.loader
 import django.template.loader
 import django.utils.http
 import django.utils.safestring

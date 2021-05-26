@@ -39,7 +39,8 @@ import impl.nog.util
 
 class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
     help = __doc__
-    name = 'Statistics'
+    display = 'Statistics'
+    name = 'statistics'
     setting = 'DAEMONS_STATISTICS_ENABLED'
 
     def __init__(self):
@@ -118,7 +119,8 @@ class Command(ezidapp.management.commands.proc_base.AsyncProcessingCommand):
                     c.full_clean(validate_unique=False)
                     c.save(force_insert=True)
         except Exception as e:
-            impl.log.otherError("stats.recomputeStatistics", e)
+            log.exception(' Exception as e')
+            self.otherError("stats.recomputeStatistics", e)
 
     def run(self):
         if self._computeSameTimeOfDay:

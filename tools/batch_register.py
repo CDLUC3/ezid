@@ -209,10 +209,7 @@ import getpass
 import re
 import sys
 import urllib.error
-import urllib.error
 import urllib.parse
-import urllib.parse
-import urllib.request
 import urllib.request
 import urllib.response
 
