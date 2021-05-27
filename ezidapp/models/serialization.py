@@ -15,7 +15,7 @@ import django.core.serializers.python
 #
 #         if isinstance(obj, si):
 #             return 'X'
-#             # return ezidapp.models.custom_fields._field_to_compressed_blob(si.cm)
+#             # return ezidapp.models.custom_fields._field_to_compressed_json_blob(si.cm)
 #
 #         return super().default(obj)
 #
@@ -33,7 +33,7 @@ class CompressedJsonEncoder(django.core.serializers.json.DjangoJSONEncoder):
 
         # si = django.apps.apps.get_model('ezidapp', 'StoreIdentifier')
         # if isinstance(obj, si):
-        #     return _field_to_compressed_blob(si.cm)
+        #     return _field_to_compressed_json_blob(si.cm)
         # return super().default(obj)
 
 

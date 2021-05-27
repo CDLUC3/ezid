@@ -16,6 +16,7 @@
 import base64
 import calendar
 import datetime
+import functools
 import logging
 import pprint
 import re
@@ -293,10 +294,10 @@ def doi2shadow(doi):
             p = beta_numeric_char[(ord(doi[3]) - ord("0"))] + doi[4:i]
         elif i == 10:
             p = (
-                beta_numeric_char[
-                    ((ord(doi[3]) - ord("0")) * 10) + (ord(doi[4]) - ord("0"))
-                ]
-                + doi[5:i]
+                    beta_numeric_char[
+                        ((ord(doi[3]) - ord("0")) * 10) + (ord(doi[4]) - ord("0"))
+                        ]
+                    + doi[5:i]
             )
     s = doi[i:].replace("%", "%25").replace("-", "%2d").lower()
     s = _arkPattern4.sub(lambda c: f"%{ord(c.group(0)):02x}", s)
@@ -730,7 +731,7 @@ def removeXmlEncodingDeclaration(document):
     assert isinstance(document, str)
     m = xmlDeclarationRE.match(document)
     if m and m.group(3) is not None:
-        return document[: m.start(3)] + document[m.end(3) :]
+        return document[: m.start(3)] + document[m.end(3):]
     else:
         return document
 
@@ -740,7 +741,7 @@ def removeXmlDeclaration(document):
     assert isinstance(document, str)
     m = xmlDeclarationRE.match(document)
     if m:
-        return document[len(m.group(0)) :]
+        return document[len(m.group(0)):]
     else:
         return document
 
@@ -759,9 +760,9 @@ def insertXmlEncodingDeclaration(document):
     if m:
         if m.group(3) is None:
             return (
-                document[: m.end(2) + 1]
-                + ' encoding="utf-8"'
-                + document[m.end(2) + 1 :]
+                    document[: m.end(2) + 1]
+                    + ' encoding="utf-8"'
+                    + document[m.end(2) + 1:]
             )
         else:
             return document
@@ -951,7 +952,8 @@ def parse_basic_auth(auth):
         )
 
 
-def log_obj(*obj_list, msg=None, logger=logging.info, sep=True, sep_before=None, sep_after=None, w=None, attrs=False):
+def log_obj(*obj_list, msg=None, logger=logging.info, sep=True, sep_before=None, sep_after=None,
+            w=None, attrs=False):
     """Pretty print an object to a logger"""
     # Hard coding the width of the logger context for now.
     #     INFO     root util 25626 140207058034816
@@ -973,3 +975,25 @@ def log_obj(*obj_list, msg=None, logger=logging.info, sep=True, sep_before=None,
     # logger(sep_str if sep_after else '')
     if sep_after:
         logger(sep_str)
+
+
+def log_inout(msg_str=None):
+    """The wrapped function must take at least one argument. The return value will be logged if
+    present, and show as None if not.
+    """
+
+    def decorator(f, *a, **kw):
+        functools.wraps(f)
+        msg_list = [f'{f.__name__}()']
+        if msg_str:
+            msg_list.append(msg_str)
+
+        def wrapper(obj, *a, **kw):
+            log_obj(obj, msg=f'{" ".join(msg_list)}: input')
+            obj = f(obj, *a, **kw)
+            log_obj(obj, msg=f'{" ".join(msg_list)}: return')
+            return obj
+
+        return wrapper
+
+    return decorator
