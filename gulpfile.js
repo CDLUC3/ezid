@@ -26,7 +26,7 @@ var ghPages = require('gulp-gh-pages');
 
 exports.default = parallel(scss, start, watcher);
 
-exports.build = series(clean, fonts, scsslint_legacy, scsslint, jslint, scss_legacy, scss, assemble, copyimages);
+exports.build = series(clean, fonts, scsslint_legacy, scsslint, jslint, scss_legacy, scss, assemble, copyimages, fonts);
 
 exports.upload = githubpages;
 
