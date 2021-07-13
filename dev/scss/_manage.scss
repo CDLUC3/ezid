@@ -1,0 +1,83 @@
+// ##### Manage IDs Layout ##### //
+
+.manage {
+	// empty
+}
+
+.manage__form-element-container {
+	margin: 0 0 30px;
+
+	@include bp(screen2) {
+
+		&:nth-child(even) {
+			padding: 0 0 0 30px;
+		}
+
+  }
+
+}
+
+.manage__form-element-container--harvesting {
+
+	@include bp(screen2) {
+		margin: 20px 0 0;
+		padding: 0 0 0 30px;
+  }
+
+}
+
+.manage__fieldset {
+	margin: 0;
+}
+
+.manage__fieldset-legend {
+	margin: 0 0 2px;
+	font-size: 1.1em;
+	font-weight: normal;
+}
+
+.manage__text-label-inline {
+	font-weight: normal;
+}
+
+.manage__simple-search {
+	max-width: 1000px;
+	margin: 10px auto 30px;
+
+	@include bp(screen1) {
+		display: flex;
+		margin: 30px auto;
+	}
+
+}
+
+.manage__simple-search-button {
+	@extend %button__primary;
+	margin: 10px 0 0;
+
+	@include bp(screen1) {
+		margin: 0 0 0 10px;
+	}
+
+}
+
+.manage__identifiers-submit-controls {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+.manage__identifiers-select {
+	margin: 0 0 30px;
+}
+
+.manage__download-button {
+	margin: 0 0 30px;
+}
+
+.manage__note {
+	max-width: 1000px;
+	margin: 30px auto;
+}

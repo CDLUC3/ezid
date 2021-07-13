@@ -1,0 +1,59 @@
+// ##### Button Elements ##### //
+
+%button__base {
+	display: inline-block; // if class applied to <a>instead of <button>
+	height: $form-element-height;
+	padding: 0 1.3em;
+	border: none; // reset default style
+	color: $design-white-color;
+	font-size: 0.9em;
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+	cursor: pointer; // reset default style
+
+	&:hover { // OK to remove if links disabled in bootstrap
+		color: $design-white-color;
+	}
+
+}
+
+%button__primary {
+	@extend %button__base;
+	background: linear-gradient(to bottom, $design-primary-gradient-top, $design-primary-gradient-bottom);
+}
+
+.button__primary {
+	@extend %button__primary;
+}
+
+%button__pop {
+	@extend %button__base;
+	background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+}
+
+.button__pop {
+	@extend %button__pop;
+}
+
+%button__plus-minus {
+	position: relative;
+	width: 32px;
+	height: 32px;
+	border: 1px solid $design-light-gray-border-color;
+	border-radius: $form-element-border-radius;
+}
+
+.button__plus {
+	@extend %button__plus-minus;
+	background: url('../images/icon_plus-sign.svg') center / 12px no-repeat, $design-form-element-bg;
+}
+
+.button__minus {
+	@extend %button__plus-minus;
+	background: url('../images/icon_minus-sign.svg') center / 12px no-repeat, $design-form-element-bg;
+}
+
+.button__text {
+	@extend %hide;
+}

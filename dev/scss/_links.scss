@@ -1,0 +1,68 @@
+// ##### Link Elements ##### //
+
+%link__base {
+	position: relative;
+	line-height: 1.2;
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: none; // bootstrap override
+	}
+
+	&[href$='.pdf']:after {
+		content: url('../images/pdf-icon_18x18.png');
+		position: absolute;
+		right: -25px;
+		width: 15px;
+		height: 15px;
+	}
+
+}
+
+%link__primary {
+	@extend %link__base;
+	border-bottom: 1px solid $design-light-gray-border-color;
+	color: $design-primary-color;
+
+	&:hover {
+		border-bottom: 1px solid $design-primary-color;
+		color: $design-primary-color;
+	}
+
+}
+
+.link__primary {
+	@extend %link__primary;
+}
+
+%link__over-beige {
+	@extend %link__base;
+	border-bottom: 1px solid $design-light-gray-border-color;
+	background: $design-secondary-lightest;
+	color: $text-link-over-beige;
+
+	&:hover {
+		border-bottom: 1px solid $text-link-over-beige;
+		color: $text-link-over-beige;
+	}
+
+}
+
+.link__over-beige {
+	@extend %link__over-beige;
+}
+
+%link__pop {
+	@extend %link__base;
+	color: $design-pop-color;
+
+	&:hover {
+		border-bottom: 1px solid $design-pop-color;
+		color: $design-pop-color;
+	}
+
+}
+
+.link__pop {
+	@extend %link__pop;
+}

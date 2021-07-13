@@ -1,0 +1,29 @@
+// ##### Accordion Component ##### //
+
+$accordion-padding: 15px;
+
+.accordion {
+	// empty
+}
+
+.accordion__section {
+	display: block;
+	margin: 0 0 10px;
+	padding: 0 $accordion-padding;
+	border: 1px solid $design-light-gray-border-color;
+	border-radius: $form-element-border-radius;
+
+	&[open] .accordion__title {
+		border-bottom: 1px solid $design-light-gray-border-color;
+		background: url('../images/icon_minus-sign.svg') left $accordion-padding center / 12px no-repeat, $design-form-element-bg;
+	}
+
+}
+
+.accordion__title {
+	display: block;
+	margin: 0 (-$accordion-padding);
+	padding: 8px 8px 8px ($accordion-padding + 25px);
+	background: url('../images/icon_plus-sign.svg') left $accordion-padding center / 12px no-repeat, $design-form-element-bg;
+	font-weight: bold;
+}

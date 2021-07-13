@@ -1,0 +1,133 @@
+// ##### Footer Component ##### //
+
+.footer {
+	margin: 10px -10px 0;
+	background-color: $design-secondary-lightest;
+
+	@include bp(screen2) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    background: linear-gradient(to right, $design-secondary-lightest 67%, $design-secondary-footer-newsfeed 32%); // split the bg into two colors each for the lang/logo and news regions
+  }
+
+}
+
+.footer__lang,
+.footer__logo-link {
+	margin: $layout-box-padding 0 $layout-box-padding $layout-box-padding;
+	padding: 0 20px 0 0;
+
+	@include bp(screen2) {
+    order: 1;
+    border-right: 1px solid $design-black-color;
+  }
+
+}
+
+.footer__lang-label {
+	display: block;
+	margin: 0 0 1em;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.footer__news {
+	padding: $layout-box-padding;
+	background-color: $design-secondary-footer-newsfeed;
+
+	@include bp(screen2) {
+    display: flex;
+    flex-flow: column nowrap;
+    align-self: stretch;
+    order: 4;
+    width: 250px;
+  }
+
+}
+
+.footer__news-title {
+	margin: 0;
+	font-size: 1em;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.footer__news-feed {
+	flex: 1 0 auto;
+}
+
+.footer__news-link {
+	@extend %link__primary;
+	align-self: flex-start;
+	font-size: 0.7em;
+}
+
+.footer__icons {
+	display: flex;
+	align-self: stretch;
+	justify-content: space-around;
+	padding: 10px 50px;
+	background-color: $design-secondary-footer-icon-bg;
+
+	@include bp(screen2) {
+    flex-flow: column nowrap;
+    order: 3;
+    padding: 10px 20px;
+  }
+
+}
+
+.footer__icon-link {
+	// empty
+}
+
+.footer__icon {
+	width: 30px;
+	height: 100%;
+}
+
+.footer__logo-link {
+	display: none;
+
+	@include bp(screen2) {
+    display: block;
+  }
+
+}
+
+.footer__logo {
+	width: 100px;
+	height: 100%;
+}
+
+.footer__copyright {
+	flex: 0 1 40%;
+	padding: $layout-box-padding;
+
+	@include bp(screen2) {
+    order: 2;
+    padding: $layout-box-padding $layout-box-padding $layout-box-padding 20px;
+  }
+
+}
+
+.footer__text {
+	margin: 0 0 0.8em;
+	font-size: 0.7em;
+	line-height: 1.5;
+}
+
+.footer__link {
+	@extend %link__over-beige;
+	line-height: 1.5;
+}
+
+.footer__copyright-link {
+	@extend %link__over-beige;
+	margin: 0 0.5em 0 0;
+	font-size: 0.7em;
+	line-height: 1.5;
+}
+
