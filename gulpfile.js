@@ -8,7 +8,8 @@ var server = browserSync.create();
 var useref = require('gulp-useref');
 var uglify = require('gulp-uglify');
 var gulpIf = require('gulp-if');
-var minifyCSS = require('gulp-clean-css');
+var cleanCSS = require('gulp-clean-css');
+var rename = require('gulp-rename');
 var imagemin = require('gulp-imagemin');
 var cache = require('gulp-cache');
 var del = require('del');
@@ -26,7 +27,7 @@ var ghPages = require('gulp-gh-pages');
 
 exports.default = parallel(scss, start, watcher);
 
-exports.build = series(clean, fonts, scsslint_legacy, scsslint, jslint, scss_legacy, scss, assemble, copyimages, fonts);
+exports.build = series(clean, fonts, scsslint_legacy, scsslint, jslint, scss_legacy, scss, assemble, minifyCss, copyimages, fonts);
 
 exports.upload = githubpages;
 
@@ -90,11 +91,20 @@ function start(cb) {
 // Minify and uglify css and js from paths within useref comment tags in html:
 
 function assemble(cb) {
-  return src(['dev/**/*.html', '!dev/includes/*'])
-  .pipe(gulpIf('*.css', minifyCSS()))
+  return src(['dev/**/*.html', '!dev/includes/*', 'dev/css/*.css'])
   .pipe(gulpIf('*.js', uglify()))
   .pipe(useref())
   .pipe(lbInclude()) // parse <!--#include file="" --> statements
+  .pipe(dest('ui_library'))
+  cb();
+}
+
+function minifyCss(cb) {
+  return src(['dev/css/*.css'])
+  .pipe(cleanCSS({debug: true, level: 2}, (details) => {
+    console.log(`${details.name}: ${details.stats.originalSize}`);
+    console.log(`${details.name}: ${details.stats.minifiedSize}`);
+  }))
   .pipe(dest('ui_library'))
   cb();
 }
