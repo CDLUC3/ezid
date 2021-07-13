@@ -1,7 +1,7 @@
 // ##### Gulp Tasks #####
 
 var { src, dest, watch, series, parallel } = require('gulp');
-var sass = require('gulp-sass');
+var sass = require('gulp-sass')(require('node-sass'));
 var autoprefixer = require('gulp-autoprefixer');
 var browserSync = require('browser-sync');
 var server = browserSync.create();
