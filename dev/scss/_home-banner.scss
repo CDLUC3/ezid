@@ -18,11 +18,11 @@
 }
 
 .home-banner__lead {
-	box-sizing: content-box;
 	width: 71vw;
 	margin: 0 auto;
 	padding: 3vw 0 0;
 	text-align: center;
+	box-sizing: content-box;
 
 	@include bp(screen1) {
 		width: 430px;

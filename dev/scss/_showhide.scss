@@ -6,12 +6,22 @@
 
 	&[open] .showhide__summary {
 
-		&:after { // flip down arrow to up
+		&::after { // flip down arrow to up
 			transform: rotate(-180deg);
 		}
 
 	}
 
+}
+
+// Different kind of show/hide which uses bootstrap collapse.js instead of html5 details
+// all because we need to put the help icon right beside the heading and I couldn't
+// figure out how to do that inside summary element
+.showhide2 {
+	display: flex;
+	max-width: 1000px;
+	height: 32px;
+	margin: 0 auto 30px;
 }
 
 %showhide-icon-base {
@@ -23,7 +33,7 @@
 	height: 32px;
 }
 
-.showhide__summary {
+%showhide__summary-base {
 	position: relative;
 	margin: 0 0 30px;
 	padding: 7px 0 7px 40px;
@@ -32,18 +42,70 @@
 	font-weight: bold;
 	text-transform: uppercase;
 
-	&:before { // icon background
+	&::before { // icon background
 		@extend %showhide-icon-base;
-		content: '';
 		border: 1px solid $design-light-gray-border-color;
 		border-radius: $form-element-border-radius;
 		background: $design-form-element-bg;
-	}
-
-	&:after { // icon image
-		@extend %showhide-icon-base;
 		content: '';
+	}
+}
+
+.showhide__summary {
+	@extend %showhide__summary-base;
+
+	&::after { // icon image
+		@extend %showhide-icon-base;
 		background: url('../images/icon_down-arrow2.svg') center / 12px no-repeat;
+		content: '';
 	}
 
+}
+
+.showhide2__summary {
+	@extend %showhide__summary-base;
+
+	&::after { // icon image
+		@extend %showhide-icon-base;
+		background: url('../images/icon_up-arrow2.svg') center / 12px no-repeat;
+		content: '';
+	}
+
+}
+
+.showhide__title-heading {
+	margin: 0;
+	font-size: inherit;
+}
+
+.showhide2__title-heading {
+	margin: 0 10px 0 0;
+
+	&:hover {
+		text-decoration: none; // bootstrap override
+	}
+
+        &[class~="collapsed"] .showhide2__summary {
+
+                &::after { // flip down arrow to up
+                        transform: rotate(-180deg);
+                }
+
+        }
+
+
+}
+
+.showhide2__icon-help {
+	margin: 4px 0 6px 18px;
+}
+
+.showhide2__accordion-body {
+	max-width: 1000px;
+	margin: 0 auto 30px;
+}
+
+// Used by "Read more" toggle used for help text under search box on search and manage pages
+.hide {
+	display: none;
 }

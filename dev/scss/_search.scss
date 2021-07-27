@@ -6,20 +6,29 @@ $search-layout-element-spacing: 30px;
 	// empty
 }
 
+.search__choose {
+	// empty. This is used as a go-to class for activating loadingIndicator() JS
+}
+
 .search__simple {
-	display: flex;
 	max-width: 1000px;
-	margin: 10px auto;
+	margin: 20px auto 10px;
 
 	@include bp(screen1) {
-		margin: $search-layout-element-spacing auto;
+		display: flex;
+		margin: $search-layout-element-spacing auto 5px;
 	}
 
 }
 
 .search__simple-button {
 	@extend %button__primary;
-	margin: 0 0 0 10px;
+	margin: 20px 0 0;
+
+        @include bp(screen1) {
+                margin: 0 0 0 10px;
+        }
+
 }
 
 .search__form-element-container {
@@ -50,3 +59,10 @@ $search-layout-element-spacing: 30px;
 	}
 
 }
+
+.search__simple-button2 {
+        @extend %button__primary;
+        margin: 20px 20px 0;
+        float: right;
+}
+

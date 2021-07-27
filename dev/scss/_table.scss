@@ -53,11 +53,11 @@
 
     }
 
-		&:not(:first-child):before {
-			content: attr(data-th)': ';
+		&:not(:first-child)::before {
 			flex: 0 0 auto;
 			width: 10em;
 			font-weight: bold;
+			content: attr(data-th)': ';
 
 			@include bp(screen1) {
 				display: none;

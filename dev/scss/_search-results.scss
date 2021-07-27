@@ -15,8 +15,20 @@
 }
 
 .search-results__simple-query {
-	margin: 10px 0 0;
+	display: none;
+
+	@include bp(screen2) {
+		display: block;
+		margin: 10px 0 0;
+		font-size: 1.4em;
+	}
 }
+
+.search-results__text-strong {
+	margin-right: 12px;
+	font-weight: bold;
+}
+
 
 .search-results__simple-button-group {
 	display: flex;
@@ -31,6 +43,7 @@
 
 .search-results__simple-button {
 	@extend %button__primary;
+	white-space: nowrap;
 
 	&:last-child {
 		margin: 0 0 0 10px;

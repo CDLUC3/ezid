@@ -42,22 +42,29 @@
 
 .manage__simple-search {
 	max-width: 1000px;
-	margin: 10px auto 30px;
+	margin: 20px auto 5px;
 
 	@include bp(screen1) {
 		display: flex;
-		margin: 30px auto;
+		margin: 30px auto 5px;
 	}
 
 }
 
 .manage__simple-search-button {
 	@extend %button__primary;
-	margin: 10px 0 0;
+	margin: 20px 0 0;
 
 	@include bp(screen1) {
+		min-width: 220px;
 		margin: 0 0 0 10px;
 	}
+
+}
+
+.manage__reset-button {
+	margin: 10px 20px 0;
+	float: right;
 
 }
 

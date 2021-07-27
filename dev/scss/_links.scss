@@ -9,12 +9,14 @@
 		text-decoration: none; // bootstrap override
 	}
 
-	&[href$='.pdf']:after {
+	&[href$='.pdf']::after {
+		display: inline-block;
+		position: relative;
+		top: 5px;
+		right: 4px;
+		left: 4px;
+		margin-right: 4px;
 		content: url('../images/pdf-icon_18x18.png');
-		position: absolute;
-		right: -25px;
-		width: 15px;
-		height: 15px;
 	}
 
 }
@@ -65,4 +67,26 @@
 
 .link__pop {
 	@extend %link__pop;
+}
+
+.download__link {
+	@extend %link__primary;
+	margin-left: 5px;
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+// Courtesy https://teamtreehouse.com/community/how-do-you-make-a-svg-clickable
+.object__clickable {
+	display: inline-block;
+	position: relative;
+}
+
+.object__clickable:after {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	content: '';
 }

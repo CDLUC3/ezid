@@ -1,12 +1,12 @@
 #!/bin/bash
 
 if [ ${1} == "dev" ]; then
-  cp ~/SITE/PROJECT/ui_library/css/main2.min.css ~/SITE/PROJECT/static/stylesheets/
+  cp ui_library/css/main2.min.css static/stylesheets/
   echo -e "Copied ui_library/css/main2.min.css to static/stylesheets"
-  cp ~/SITE/PROJECT/ui_library/js/main2.min.js ~/SITE/PROJECT/static/javascripts/
+  cp ui_library/js/main2.min.js static/javascripts/
   echo -e "Copied ui_library/js/main2.min.js to static/javascripts\n"
 elif [ ${1} == "css" ]; then
-  cleancss -o ~/SITE/PROJECT/ui_library/css/main2.min.css ~/SITE/PROJECT/static/dev/css/
+  cleancss -o ui_library/css/main2.min.css dev/css/main2.css
   echo -e "Minified ui_library/css/main2.min.css"
 else 
   echo "Usage: bash buildStyles.bash [dev|css]."

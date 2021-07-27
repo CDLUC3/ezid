@@ -45,10 +45,13 @@
 
 .header__main-logo-image {
 	width: 40vw;
-	height: 100%;
+	height: auto;
 
 	@include bp(screen2) {
 		width: 320px;
+		// Not defining a height here seems to cause problems in IE,
+		// maybe due to the fact that this is being called from within a picture element?
+		height: 48px;
 	}
 
 }
@@ -57,9 +60,14 @@
 	margin: 0 0 0 20px;
 }
 
-.header__affiliate-logo-image {
+%header__affiliate-logo-image-base {
 	width: 15vw;
-	height: 100%;
+	height: auto;
+
+}
+
+.header__affiliate-logo-image {
+	@extend %header__affiliate-logo-image-base;
 
 	@include bp(screen2) {
 		width: 130px;
@@ -67,7 +75,14 @@
 
 }
 
-// ***** Show/Hide Navigation ***** //
+.header__affiliate-logo-image-jisc {
+	@extend %header__affiliate-logo-image-base;
+
+	@include bp(screen2) {
+		width: 200px;
+	}
+
+}
 
 .header__nav-button {
 	position: absolute; // to .header
@@ -125,7 +140,6 @@
 
 %header__nav-items {
 	display: block;
-	box-sizing: content-box;
 	padding: 15px 0 15px 45px;
 	border: 1px solid $design-light-gray-border-color;
 	border-top: none;
@@ -138,6 +152,7 @@
 	font-weight: bold;
 	text-decoration: none;
 	text-transform: uppercase;
+	box-sizing: content-box;
 
 	@include bp(screen2) {
 		margin: 0;
@@ -184,6 +199,7 @@
 }
 
 .header__subnav-panel {
+	z-index: 99;
 
 	@include bp(screen2) {
 		position: absolute;
@@ -223,6 +239,18 @@
 			border-bottom: 1px dotted $design-black-color;
 		}
 
+		&:nth-of-type(8) {
+			background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+		        color: $design-white-color;
+		        font-weight: bold;
+		}
+
+	        &:hover:nth-of-type(8),
+	        &:focus:nth-of-type(8) {
+			background: linear-gradient(to bottom, $design-pop-gradient-top, $design-pop-gradient-bottom);
+        	        text-decoration: underline;
+	        }
+
 		&:hover {
 			background: linear-gradient(to bottom, $design-secondary-gradient-top, $design-secondary-color);
 			color: $design-white-color;
@@ -233,11 +261,11 @@
 	}
 
 	&::before {
-		content: '\2219'; // bullet
 		position: absolute;
 		top: 10px;
 		left: 22px;
 		font-size: 1.4em;
+		content: '\2219'; // bullet
 	}
 
 }
