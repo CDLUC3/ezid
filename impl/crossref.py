@@ -81,7 +81,7 @@ _schemaLocation = "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
 _schemaLocationTemplate =\
   "http://www.crossref.org/schema/deposit/crossref%s.xsd"
 _tagRE =\
-  re.compile("\{(http://www\.crossref\.org/schema/(4\.[34]\.\d))\}([-\w.]+)$")
+  re.compile("\{(http://www\.crossref\.org/schema/((4\.[34]\.\d)|(5\.[1]\.\d)))\}([-\w.]+)$")
 _rootTags = ["journal", "book", "conference", "sa_component", "dissertation",
   "report-paper", "standard", "database", "peer_review", "posted_content"]
 
